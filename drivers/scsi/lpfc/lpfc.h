@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
@@ -28,12 +22,9 @@
  *******************************************************************/
 
 #include <scsi/scsi_host.h>
-<<<<<<< HEAD
-=======
 #include <linux/hashtable.h>
 #include <linux/ktime.h>
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_DEBUG_FS) && !defined(CONFIG_SCSI_LPFC_DEBUG_FS)
 #define CONFIG_SCSI_LPFC_DEBUG_FS
@@ -41,12 +32,9 @@
 
 struct lpfc_sli2_slim;
 
-<<<<<<< HEAD
-=======
 #define ELX_MODEL_NAME_SIZE	80
 #define ELX_FW_NAME_SIZE	84
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_PCI_DEV_LP		0x1
 #define LPFC_PCI_DEV_OC		0x2
 
@@ -61,20 +49,6 @@ struct lpfc_sli2_slim;
 					   the NameServer  before giving up. */
 #define LPFC_CMD_PER_LUN	3	/* max outstanding cmds per lun */
 #define LPFC_DEFAULT_SG_SEG_CNT 64	/* sg element count per scsi cmnd */
-<<<<<<< HEAD
-#define LPFC_DEFAULT_MENLO_SG_SEG_CNT 128	/* sg element count per scsi
-		cmnd for menlo needs nearly twice as for firmware
-		downloads using bsg */
-#define LPFC_DEFAULT_PROT_SG_SEG_CNT 4096 /* sg protection elements count */
-#define LPFC_MAX_SG_SEG_CNT	4096	/* sg element count per scsi cmnd */
-#define LPFC_MAX_SGE_SIZE       0x80000000 /* Maximum data allowed in a SGE */
-#define LPFC_MAX_PROT_SG_SEG_CNT 4096	/* prot sg element count per scsi cmd*/
-#define LPFC_IOCB_LIST_CNT	2250	/* list of IOCBs for fast-path usage. */
-#define LPFC_Q_RAMP_UP_INTERVAL 120     /* lun q_depth ramp up interval */
-#define LPFC_VNAME_LEN		100	/* vport symbolic name length */
-#define LPFC_TGTQ_INTERVAL	40000	/* Min amount of time between tgt
-					   queue depth change in millisecs */
-=======
 
 #define LPFC_DEFAULT_XPSGL_SIZE	256
 #define LPFC_MAX_SG_TABLESIZE	0xffff
@@ -91,28 +65,17 @@ struct lpfc_sli2_slim;
 #define LPFC_IOCB_LIST_CNT	2250	/* list of IOCBs for fast-path usage. */
 #define LPFC_Q_RAMP_UP_INTERVAL 120     /* lun q_depth ramp up interval */
 #define LPFC_VNAME_LEN		100	/* vport symbolic name length */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_TGTQ_RAMPUP_PCENT	5	/* Target queue rampup in percentage */
 #define LPFC_MIN_TGT_QDEPTH	10
 #define LPFC_MAX_TGT_QDEPTH	0xFFFF
 
-<<<<<<< HEAD
-#define  LPFC_MAX_BUCKET_COUNT 20	/* Maximum no. of buckets for stat data
-					   collection. */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Following time intervals are used of adjusting SCSI device
  * queue depths when there are driver resource error or Firmware
  * resource error.
  */
-<<<<<<< HEAD
-#define QUEUE_RAMP_DOWN_INTERVAL	(1 * HZ)   /* 1 Second */
-#define QUEUE_RAMP_UP_INTERVAL		(300 * HZ) /* 5 minutes */
-=======
 /* 1 Second */
 #define QUEUE_RAMP_DOWN_INTERVAL	(msecs_to_jiffies(1000 * 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Number of exchanges reserved for discovery to complete */
 #define LPFC_DISC_IOCB_BUFF_COUNT 20
@@ -133,18 +96,12 @@ struct lpfc_sli2_slim;
 #define FC_MAX_ADPTMSG		64
 
 #define MAX_HBAEVT	32
-<<<<<<< HEAD
-=======
 #define MAX_HBAS_NO_RESET 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Number of MSI-X vectors the driver uses */
 #define LPFC_MSIX_VECTORS	2
 
 /* lpfc wait event data ready flag */
-<<<<<<< HEAD
-#define LPFC_DATA_READY		(1<<0)
-=======
 #define LPFC_DATA_READY		0	/* bit 0 */
 
 /* queue dump line buffer size */
@@ -159,15 +116,12 @@ struct lpfc_sli2_slim;
 
 #define lpfc_rangecheck(val, min, max) \
 	((uint)(val) >= (uint)(min) && (val) <= (max))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum lpfc_polling_flags {
 	ENABLE_FCP_RING_POLLING = 0x1,
 	DISABLE_FCP_RING_INT    = 0x2
 };
 
-<<<<<<< HEAD
-=======
 struct perf_prof {
 	uint16_t cmd_cpu[40];
 	uint16_t rsp_cpu[40];
@@ -182,7 +136,6 @@ struct perf_prof {
  */
 #define LPFC_FC4_TYPE_BITMASK	0x00000100
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Provide DMA memory definitions the driver uses per port instance. */
 struct lpfc_dmabuf {
 	struct list_head list;
@@ -191,8 +144,6 @@ struct lpfc_dmabuf {
 	uint32_t   buffer_tag;	/* used for tagged queue ring */
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_nvmet_ctxbuf {
 	struct list_head list;
 	struct lpfc_async_xchg_ctx *context;
@@ -201,7 +152,6 @@ struct lpfc_nvmet_ctxbuf {
 	struct work_struct defer_work;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_dma_pool {
 	struct lpfc_dmabuf   *elements;
 	uint32_t    max_count;
@@ -211,12 +161,6 @@ struct lpfc_dma_pool {
 struct hbq_dmabuf {
 	struct lpfc_dmabuf hbuf;
 	struct lpfc_dmabuf dbuf;
-<<<<<<< HEAD
-	uint32_t size;
-	uint32_t tag;
-	struct lpfc_cq_event cq_event;
-	unsigned long time_stamp;
-=======
 	uint16_t total_size;
 	uint16_t bytes_recv;
 	uint32_t tag;
@@ -233,7 +177,6 @@ struct rqb_dmabuf {
 	uint16_t idx;
 	struct lpfc_queue *hrq;	  /* ptr to associated Header RQ */
 	struct lpfc_queue *drq;	  /* ptr to associated Data RQ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Priority bit.  Set value to exceed low water mark in lpfc_mem. */
@@ -267,12 +210,7 @@ typedef struct lpfc_vpd {
 	} rev;
 	struct {
 #ifdef __BIG_ENDIAN_BITFIELD
-<<<<<<< HEAD
-		uint32_t rsvd3  :19;  /* Reserved                             */
-		uint32_t cdss	: 1;  /* Configure Data Security SLI          */
-=======
 		uint32_t rsvd3  :20;  /* Reserved                             */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t rsvd2	: 3;  /* Reserved                             */
 		uint32_t cbg	: 1;  /* Configure BlockGuard                 */
 		uint32_t cmv	: 1;  /* Configure Max VPIs                   */
@@ -294,21 +232,11 @@ typedef struct lpfc_vpd {
 		uint32_t cmv	: 1;  /* Configure Max VPIs                   */
 		uint32_t cbg	: 1;  /* Configure BlockGuard                 */
 		uint32_t rsvd2	: 3;  /* Reserved                             */
-<<<<<<< HEAD
-		uint32_t cdss	: 1;  /* Configure Data Security SLI          */
-		uint32_t rsvd3  :19;  /* Reserved                             */
-=======
 		uint32_t rsvd3  :20;  /* Reserved                             */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	} sli3Feat;
 } lpfc_vpd_t;
 
-<<<<<<< HEAD
-struct lpfc_scsi_buf;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * lpfc stat counters
@@ -335,20 +263,13 @@ struct lpfc_stats {
 	uint32_t elsRcvPRLI;
 	uint32_t elsRcvLIRR;
 	uint32_t elsRcvRLS;
-<<<<<<< HEAD
-	uint32_t elsRcvRPS;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t elsRcvRPL;
 	uint32_t elsRcvRRQ;
 	uint32_t elsRcvRTV;
 	uint32_t elsRcvECHO;
-<<<<<<< HEAD
-=======
 	uint32_t elsRcvLCB;
 	uint32_t elsRcvRDP;
 	uint32_t elsRcvRDF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t elsXmitFLOGI;
 	uint32_t elsXmitFDISC;
 	uint32_t elsXmitPLOGI;
@@ -356,10 +277,7 @@ struct lpfc_stats {
 	uint32_t elsXmitADISC;
 	uint32_t elsXmitLOGO;
 	uint32_t elsXmitSCR;
-<<<<<<< HEAD
-=======
 	uint32_t elsXmitRSCN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t elsXmitRNID;
 	uint32_t elsXmitFARP;
 	uint32_t elsXmitFARPR;
@@ -389,8 +307,6 @@ struct lpfc_stats {
 struct lpfc_hba;
 
 
-<<<<<<< HEAD
-=======
 #define LPFC_VMID_TIMER   300	/* timer interval in seconds */
 
 #define LPFC_MAX_VMID_SIZE      256
@@ -448,7 +364,6 @@ struct lpfc_vmid_priority_info {
 #define QFPA_ODD_ONLY  0x02
 #define QFPA_EVEN_ODD  0x03
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum discovery_state {
 	LPFC_VPORT_UNKNOWN     =  0,    /* vport state is unknown */
 	LPFC_VPORT_FAILED      =  1,    /* vport has failed */
@@ -478,8 +393,6 @@ enum hba_state {
 	LPFC_HBA_ERROR       =  -1
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_trunk_link_state {
 	enum hba_state state;
 	uint8_t fault;
@@ -660,7 +573,6 @@ enum lpfc_load_flag {
 	FC_DEREGISTER_ALL_APP_ID	/* Deregister all VMIDs */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_vport {
 	struct lpfc_hba *phba;
 	struct list_head listentry;
@@ -675,37 +587,7 @@ struct lpfc_vport {
 	uint8_t vpi_state;
 #define LPFC_VPI_REGISTERED	0x1
 
-<<<<<<< HEAD
-	uint32_t fc_flag;	/* FC flags */
-/* Several of these flags are HBA centric and should be moved to
- * phba->link_flag (e.g. FC_PTP, FC_PUBLIC_LOOP)
- */
-#define FC_PT2PT                0x1	 /* pt2pt with no fabric */
-#define FC_PT2PT_PLOGI          0x2	 /* pt2pt initiate PLOGI */
-#define FC_DISC_TMO             0x4	 /* Discovery timer running */
-#define FC_PUBLIC_LOOP          0x8	 /* Public loop */
-#define FC_LBIT                 0x10	 /* LOGIN bit in loopinit set */
-#define FC_RSCN_MODE            0x20	 /* RSCN cmd rcv'ed */
-#define FC_NLP_MORE             0x40	 /* More node to process in node tbl */
-#define FC_OFFLINE_MODE         0x80	 /* Interface is offline for diag */
-#define FC_FABRIC               0x100	 /* We are fabric attached */
-#define FC_VPORT_LOGO_RCVD      0x200    /* LOGO received on vport */
-#define FC_RSCN_DISCOVERY       0x400	 /* Auth all devices after RSCN */
-#define FC_LOGO_RCVD_DID_CHNG   0x800    /* FDISC on phys port detect DID chng*/
-#define FC_SCSI_SCAN_TMO        0x4000	 /* scsi scan timer running */
-#define FC_ABORT_DISCOVERY      0x8000	 /* we want to abort discovery */
-#define FC_NDISC_ACTIVE         0x10000	 /* NPort discovery active */
-#define FC_BYPASSED_MODE        0x20000	 /* NPort is in bypassed mode */
-#define FC_VPORT_NEEDS_REG_VPI	0x80000  /* Needs to have its vpi registered */
-#define FC_RSCN_DEFERRED	0x100000 /* A deferred RSCN being processed */
-#define FC_VPORT_NEEDS_INIT_VPI 0x200000 /* Need to INIT_VPI before FDISC */
-#define FC_VPORT_CVL_RCVD	0x400000 /* VLink failed due to CVL	 */
-#define FC_VFI_REGISTERED	0x800000 /* VFI is registered */
-#define FC_FDISC_COMPLETED	0x1000000/* FDISC completed */
-#define FC_DISC_DELAYED		0x2000000/* Delay NPort discovery */
-=======
 	unsigned long fc_flag;	/* FC flags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t ct_flags;
 #define FC_CT_RFF_ID		0x1	 /* RFF_ID accepted by switch */
@@ -713,20 +595,6 @@ struct lpfc_vport {
 #define FC_CT_RSNN_NN		0x4	 /* RSNN_NN accepted by switch */
 #define FC_CT_RSPN_ID		0x8	 /* RSPN_ID accepted by switch */
 #define FC_CT_RFT_ID		0x10	 /* RFT_ID accepted by switch */
-<<<<<<< HEAD
-
-	struct list_head fc_nodes;
-
-	/* Keep counters for the number of entries in each list. */
-	uint16_t fc_plogi_cnt;
-	uint16_t fc_adisc_cnt;
-	uint16_t fc_reglogin_cnt;
-	uint16_t fc_prli_cnt;
-	uint16_t fc_unmap_cnt;
-	uint16_t fc_map_cnt;
-	uint16_t fc_npr_cnt;
-	uint16_t fc_unused_cnt;
-=======
 #define FC_CT_RPRT_DEFER	0x20	 /* Defer issuing FDMI RPRT */
 
 	struct list_head fc_nodes;
@@ -742,7 +610,6 @@ struct lpfc_vport {
 	atomic_t fc_npr_cnt;
 	atomic_t fc_unused_cnt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct serv_parm fc_sparam;	/* buffer for our service parameters */
 
 	uint32_t fc_myDID;	/* fibre channel S_ID */
@@ -753,12 +620,8 @@ struct lpfc_vport {
 	int32_t stopped;   /* HBA has not been restarted since last ERATT */
 	uint8_t fc_linkspeed;	/* Link speed after last READ_LA */
 
-<<<<<<< HEAD
-	uint32_t num_disc_nodes;	/*in addition to hba_state */
-=======
 	uint32_t num_disc_nodes;	/* in addition to hba_state */
 	uint32_t gidft_inp;		/* cnt of outstanding GID_FTs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t fc_nlp_cnt;	/* outstanding NODELIST requests */
 	uint32_t fc_rscn_id_cnt;	/* count of RSCNs payloads in list */
@@ -777,10 +640,6 @@ struct lpfc_vport {
 	uint32_t work_port_events; /* Timeout to be handled  */
 #define WORKER_DISC_TMO                0x1	/* vport: Discovery timeout */
 #define WORKER_ELS_TMO                 0x2	/* vport: ELS timeout */
-<<<<<<< HEAD
-#define WORKER_FDMI_TMO                0x4	/* vport: FDMI timeout */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WORKER_DELAYED_DISC_TMO        0x8	/* vport: delayed discovery */
 
 #define WORKER_MBOX_TMO                0x100	/* hba: MBOX timeout */
@@ -789,18 +648,6 @@ struct lpfc_vport {
 #define WORKER_RAMP_DOWN_QUEUE         0x800	/* hba: Decrease Q depth */
 #define WORKER_RAMP_UP_QUEUE           0x1000	/* hba: Increase Q depth */
 #define WORKER_SERVICE_TXQ             0x2000	/* hba: IOCBs on the txq */
-<<<<<<< HEAD
-
-	struct timer_list fc_fdmitmo;
-	struct timer_list els_tmofunc;
-	struct timer_list delayed_disc_tmo;
-
-	int unreg_vpi_cmpl;
-
-	uint8_t load_flag;
-#define FC_LOADING		0x1	/* HBA in process of loading drvr */
-#define FC_UNLOADING		0x2	/* HBA in process of unloading drvr */
-=======
 #define WORKER_CHECK_INACTIVE_VMID     0x4000	/* hba: check inactive vmids */
 #define WORKER_CHECK_VMID_ISSUE_QFPA   0x8000	/* vport: Check if qfpa needs
 						 * to be issued */
@@ -809,7 +656,6 @@ struct lpfc_vport {
 	struct timer_list delayed_disc_tmo;
 
 	unsigned long load_flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Vport Config Parameters */
 	uint32_t cfg_scan_down;
 	uint32_t cfg_lun_queue_depth;
@@ -819,29 +665,13 @@ struct lpfc_vport {
 	uint32_t cfg_peer_port_login;
 	uint32_t cfg_fcp_class;
 	uint32_t cfg_use_adisc;
-<<<<<<< HEAD
-	uint32_t cfg_fdmi_on;
-	uint32_t cfg_discovery_threads;
-	uint32_t cfg_log_verbose;
-=======
 	uint32_t cfg_discovery_threads;
 	uint32_t cfg_log_verbose;
 	uint32_t cfg_enable_fc4_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t cfg_max_luns;
 	uint32_t cfg_enable_da_id;
 	uint32_t cfg_max_scsicmpl_time;
 	uint32_t cfg_tgt_queue_depth;
-<<<<<<< HEAD
-
-	uint32_t dev_loss_tmo_changed;
-
-	struct fc_vport *fc_vport;
-
-#ifdef CONFIG_SCSI_LPFC_DEBUG_FS
-	struct dentry *debug_disc_trc;
-	struct dentry *debug_nodelist;
-=======
 	uint32_t cfg_first_burst_size;
 	uint32_t dev_loss_tmo_changed;
 	/* VMID parameters */
@@ -882,19 +712,10 @@ struct lpfc_vport {
 	struct dentry *debug_scsistat;
 	struct dentry *debug_ioktime;
 	struct dentry *debug_hdwqstat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry *vport_debugfs_root;
 	struct lpfc_debugfs_trc *disc_trc;
 	atomic_t disc_trc_cnt;
 #endif
-<<<<<<< HEAD
-	uint8_t stat_data_enabled;
-	uint8_t stat_data_blocked;
-	struct list_head rcv_buffer_list;
-	unsigned long rcv_buffer_time_stamp;
-	uint32_t vport_flag;
-#define STATIC_VPORT	1
-=======
 	struct list_head rcv_buffer_list;
 	unsigned long rcv_buffer_time_stamp;
 	uint32_t vport_flag;
@@ -910,7 +731,6 @@ struct lpfc_vport {
 	uint8_t  nvmei_support; /* driver supports NVME Initiator */
 	uint32_t last_fcp_wqidx;
 	uint32_t rcv_flogi_cnt; /* How many unsol FLOGIs ACK'd. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hbq_s {
@@ -928,16 +748,9 @@ struct hbq_s {
 					       struct hbq_dmabuf *);
 };
 
-<<<<<<< HEAD
-#define LPFC_MAX_HBQS  4
-/* this matches the position in the lpfc_hbq_defs array */
-#define LPFC_ELS_HBQ	0
-#define LPFC_EXTRA_HBQ	1
-=======
 /* this matches the position in the lpfc_hbq_defs array */
 #define LPFC_ELS_HBQ	0
 #define LPFC_MAX_HBQS	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum hba_temp_state {
 	HBA_NORMAL_TEMP,
@@ -951,13 +764,6 @@ enum intr_type_t {
 	MSIX,
 };
 
-<<<<<<< HEAD
-struct unsol_rcv_ct_ctx {
-	uint32_t ctxt_id;
-	uint32_t SID;
-	uint32_t flags;
-#define UNSOL_VALID	0x00000001
-=======
 #define LPFC_CT_CTX_MAX		64
 struct unsol_rcv_ct_ctx {
 	uint32_t ctxt_id;
@@ -965,7 +771,6 @@ struct unsol_rcv_ct_ctx {
 	uint32_t valid;
 #define UNSOL_INVALID		0
 #define UNSOL_VALID		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t oxid;
 	uint16_t rxid;
 };
@@ -977,23 +782,11 @@ struct unsol_rcv_ct_ctx {
 #define LPFC_USER_LINK_SPEED_8G		8	/* 8 Gigabaud */
 #define LPFC_USER_LINK_SPEED_10G	10	/* 10 Gigabaud */
 #define LPFC_USER_LINK_SPEED_16G	16	/* 16 Gigabaud */
-<<<<<<< HEAD
-#define LPFC_USER_LINK_SPEED_MAX	LPFC_USER_LINK_SPEED_16G
-#define LPFC_USER_LINK_SPEED_BITMAP ((1 << LPFC_USER_LINK_SPEED_16G) | \
-				     (1 << LPFC_USER_LINK_SPEED_10G) | \
-				     (1 << LPFC_USER_LINK_SPEED_8G) | \
-				     (1 << LPFC_USER_LINK_SPEED_4G) | \
-				     (1 << LPFC_USER_LINK_SPEED_2G) | \
-				     (1 << LPFC_USER_LINK_SPEED_1G) | \
-				     (1 << LPFC_USER_LINK_SPEED_AUTO))
-#define LPFC_LINK_SPEED_STRING "0, 1, 2, 4, 8, 10, 16"
-=======
 #define LPFC_USER_LINK_SPEED_32G	32	/* 32 Gigabaud */
 #define LPFC_USER_LINK_SPEED_64G	64	/* 64 Gigabaud */
 #define LPFC_USER_LINK_SPEED_MAX	LPFC_USER_LINK_SPEED_64G
 
 #define LPFC_LINK_SPEED_STRING "0, 1, 2, 4, 8, 10, 16, 32, 64"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nemb_type {
 	nemb_mse = 1,
@@ -1031,25 +824,6 @@ struct lpfc_mbox_ext_buf_ctx {
 	struct list_head ext_dmabuf_list;
 };
 
-<<<<<<< HEAD
-struct lpfc_hba {
-	/* SCSI interface function jump table entries */
-	int (*lpfc_new_scsi_buf)
-		(struct lpfc_vport *, int);
-	struct lpfc_scsi_buf * (*lpfc_get_scsi_buf)
-		(struct lpfc_hba *, struct lpfc_nodelist *);
-	int (*lpfc_scsi_prep_dma_buf)
-		(struct lpfc_hba *, struct lpfc_scsi_buf *);
-	void (*lpfc_scsi_unprep_dma_buf)
-		(struct lpfc_hba *, struct lpfc_scsi_buf *);
-	void (*lpfc_release_scsi_buf)
-		(struct lpfc_hba *, struct lpfc_scsi_buf *);
-	void (*lpfc_rampdown_queue_depth)
-		(struct lpfc_hba *);
-	void (*lpfc_scsi_prep_cmnd)
-		(struct lpfc_vport *, struct lpfc_scsi_buf *,
-		 struct lpfc_nodelist *);
-=======
 struct lpfc_epd_pool {
 	/* Expedite pool */
 	struct list_head list;
@@ -1133,28 +907,17 @@ struct lpfc_hba {
 		(struct lpfc_vport *vport,
 		 struct lpfc_io_buf *lpfc_cmd,
 		 u64 lun, u8 task_mgmt_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* IOCB interface function jump table entries */
 	int (*__lpfc_sli_issue_iocb)
 		(struct lpfc_hba *, uint32_t,
 		 struct lpfc_iocbq *, uint32_t);
-<<<<<<< HEAD
-	void (*__lpfc_sli_release_iocbq)(struct lpfc_hba *,
-			 struct lpfc_iocbq *);
-	int (*lpfc_hba_down_post)(struct lpfc_hba *phba);
-	IOCB_t * (*lpfc_get_iocb_from_iocbq)
-		(struct lpfc_iocbq *);
-	void (*lpfc_scsi_cmd_iocb_cmpl)
-		(struct lpfc_hba *, struct lpfc_iocbq *, struct lpfc_iocbq *);
-=======
 	int (*__lpfc_sli_issue_fcp_io)
 		(struct lpfc_hba *phba, uint32_t ring_number,
 		 struct lpfc_iocbq *piocb, uint32_t flag);
 	void (*__lpfc_sli_release_iocbq)(struct lpfc_hba *,
 			 struct lpfc_iocbq *);
 	int (*lpfc_hba_down_post)(struct lpfc_hba *phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MBOX interface function jump table entries */
 	int (*lpfc_sli_issue_mbox)
@@ -1184,10 +947,6 @@ struct lpfc_hba {
 		(struct lpfc_hba *);
 
 	int (*lpfc_bg_scsi_prep_dma_buf)
-<<<<<<< HEAD
-		(struct lpfc_hba *, struct lpfc_scsi_buf *);
-	/* Add new entries here */
-=======
 		(struct lpfc_hba *, struct lpfc_io_buf *);
 
 	/* Prep SLI WQE/IOCB jump table entries */
@@ -1210,20 +969,16 @@ struct lpfc_hba {
 
 	/* expedite pool */
 	struct lpfc_epd_pool epd_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SLI4 specific HBA data structure */
 	struct lpfc_sli4_hba sli4_hba;
 
-<<<<<<< HEAD
-=======
 	struct workqueue_struct *wq;
 	struct delayed_work     eq_delay_work;
 
 #define LPFC_IDLE_STAT_DELAY 1000
 	struct delayed_work	idle_stat_delay_work;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli sli;
 	uint8_t pci_dev_grp;	/* lpfc PCI dev group: 0x0, 0x1, 0x2,... */
 	uint32_t sli_rev;		/* SLI2, SLI3, or SLI4 */
@@ -1239,10 +994,7 @@ struct lpfc_hba {
 	uint32_t iocb_cmd_size;
 	uint32_t iocb_rsp_size;
 
-<<<<<<< HEAD
-=======
 	struct lpfc_trunk_link  trunk_link;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum hba_state link_state;
 	uint32_t link_flag;	/* link state flags */
 #define LS_LOOPBACK_MODE      0x1	/* NPort is in Loopback mode */
@@ -1250,13 +1002,10 @@ struct lpfc_hba {
 					/* INIT_LINK mailbox command */
 #define LS_NPIV_FAB_SUPPORTED 0x2	/* Fabric supports NPIV */
 #define LS_IGNORE_ERATT       0x4	/* intr handler should ignore ERATT */
-<<<<<<< HEAD
-=======
 #define LS_MDS_LINK_DOWN      0x8	/* MDS Diagnostics Link Down */
 #define LS_MDS_LOOPBACK       0x10	/* MDS Diagnostics Link Up (Loopback) */
 #define LS_CT_VEN_RPA         0x20	/* Vendor RPA sent to switch */
 #define LS_EXTERNAL_LOOPBACK  0x40	/* External loopback plug inserted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t hba_flag;	/* hba generic flags */
 #define HBA_ERATT_HANDLED	0x1 /* This flag is set when eratt handled */
@@ -1264,23 +1013,13 @@ struct lpfc_hba {
 #define HBA_FCOE_MODE		0x4 /* HBA function in FCoE Mode */
 #define HBA_SP_QUEUE_EVT	0x8 /* Slow-path qevt posted to worker thread*/
 #define HBA_POST_RECEIVE_BUFFER 0x10 /* Rcv buffers need to be posted */
-<<<<<<< HEAD
-#define FCP_XRI_ABORT_EVENT	0x20
-#define ELS_XRI_ABORT_EVENT	0x40
-=======
 #define HBA_PERSISTENT_TOPO	0x20 /* Persistent topology support in hba */
 #define ELS_XRI_ABORT_EVENT	0x40 /* ELS_XRI abort event was queued */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ASYNC_EVENT		0x80
 #define LINK_DISABLED		0x100 /* Link disabled by user */
 #define FCF_TS_INPROG           0x200 /* FCF table scan in progress */
 #define FCF_RR_INPROG           0x400 /* FCF roundrobin flogi in progress */
 #define HBA_FIP_SUPPORT		0x800 /* FIP support in HBA */
-<<<<<<< HEAD
-#define HBA_AER_ENABLED		0x1000 /* AER enabled with HBA */
-#define HBA_DEVLOSS_TMO         0x2000 /* HBA in devloss timeout */
-#define HBA_RRQ_ACTIVE		0x4000 /* process the rrq active list */
-=======
 #define HBA_DEVLOSS_TMO         0x2000 /* HBA in devloss timeout */
 #define HBA_RRQ_ACTIVE		0x4000 /* process the rrq active list */
 #define HBA_IOQ_FLUSH		0x8000 /* FCP/NVME I/O queues being flushed */
@@ -1299,7 +1038,6 @@ struct lpfc_hba {
 #define HBA_RHBA_CMPL		0x20000000 /* RHBA FDMI command is successful */
 
 	struct completion *fw_dump_cmpl; /* cmpl event tracker for fw_dump */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t fcp_ring_in_use; /* When polling test if intr-hndlr active*/
 	struct lpfc_dmabuf slim2p;
 
@@ -1329,10 +1067,6 @@ struct lpfc_hba {
 	uint32_t fc_rttov;	/* R_T_TOV timer value */
 	uint32_t fc_altov;	/* AL_TOV timer value */
 	uint32_t fc_crtov;	/* C_R_TOV timer value */
-<<<<<<< HEAD
-	uint32_t fc_citov;	/* C_I_TOV timer value */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct serv_parm fc_fabparam;	/* fabric service parameters buffer */
 	uint8_t alpa_map[128];	/* AL_PA map from READ_LA */
@@ -1340,10 +1074,7 @@ struct lpfc_hba {
 	uint32_t lmt;
 
 	uint32_t fc_topology;	/* link topology, from LINK INIT */
-<<<<<<< HEAD
-=======
 	uint32_t fc_topology_changed;	/* link topology, from LINK INIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct lpfc_stats fc_stat;
 
@@ -1353,11 +1084,6 @@ struct lpfc_hba {
 	uint8_t  wwnn[8];
 	uint8_t  wwpn[8];
 	uint32_t RandomData[7];
-<<<<<<< HEAD
-
-	/* HBA Config Parameters */
-	uint32_t cfg_ack0;
-=======
 	uint8_t  fcp_embed_io;
 	uint8_t  nvmet_support;	/* driver supports NVMET */
 #define LPFC_NVMET_MAX_PORTS	32
@@ -1370,7 +1096,6 @@ struct lpfc_hba {
 	uint32_t cfg_ack0;
 	uint32_t cfg_xri_rebalancing;
 	uint32_t cfg_xpsgl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t cfg_enable_npiv;
 	uint32_t cfg_enable_rrq;
 	uint32_t cfg_topology;
@@ -1378,12 +1103,9 @@ struct lpfc_hba {
 #define LPFC_FCF_FOV 1		/* Fast fcf failover */
 #define LPFC_FCF_PRIORITY 2	/* Priority fcf failover */
 	uint32_t cfg_fcf_failover_policy;
-<<<<<<< HEAD
-=======
 	uint32_t cfg_fcp_io_sched;
 	uint32_t cfg_ns_query;
 	uint32_t cfg_fcp2_no_tgt_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t cfg_cr_delay;
 	uint32_t cfg_cr_count;
 	uint32_t cfg_multi_ring_support;
@@ -1391,33 +1113,6 @@ struct lpfc_hba {
 	uint32_t cfg_multi_ring_type;
 	uint32_t cfg_poll;
 	uint32_t cfg_poll_tmo;
-<<<<<<< HEAD
-	uint32_t cfg_use_msi;
-	uint32_t cfg_fcp_imax;
-	uint32_t cfg_fcp_wq_count;
-	uint32_t cfg_fcp_eq_count;
-	uint32_t cfg_sg_seg_cnt;
-	uint32_t cfg_prot_sg_seg_cnt;
-	uint32_t cfg_sg_dma_buf_size;
-	uint64_t cfg_soft_wwnn;
-	uint64_t cfg_soft_wwpn;
-	uint32_t cfg_hba_queue_depth;
-	uint32_t cfg_enable_hba_reset;
-	uint32_t cfg_enable_hba_heartbeat;
-	uint32_t cfg_enable_bg;
-	uint32_t cfg_hostmem_hgp;
-	uint32_t cfg_log_verbose;
-	uint32_t cfg_aer_support;
-	uint32_t cfg_sriov_nr_virtfn;
-	uint32_t cfg_iocb_cnt;
-	uint32_t cfg_suppress_link_up;
-#define LPFC_INITIALIZE_LINK              0	/* do normal init_link mbox */
-#define LPFC_DELAY_INIT_LINK              1	/* layered driver hold off */
-#define LPFC_DELAY_INIT_LINK_INDEFINITELY 2	/* wait, manual intervention */
-	uint32_t cfg_enable_dss;
-	lpfc_vpd_t vpd;		/* vital product data */
-
-=======
 	uint32_t cfg_task_mgmt_tmo;
 	uint32_t cfg_use_msi;
 	uint32_t cfg_auto_imax;
@@ -1508,7 +1203,6 @@ struct lpfc_hba {
 	u32 cfg_vmid_priority_tagging;
 	u32 cfg_vmid_inactivity_timeout;	/* Time after which the VMID */
 						/* deregisters from switch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pcidev;
 	struct list_head      work_list;
 	uint32_t              work_ha;      /* Host Attention Bits for WT */
@@ -1519,19 +1213,6 @@ struct lpfc_hba {
 	wait_queue_head_t    work_waitq;
 	struct task_struct   *worker_thread;
 	unsigned long data_flags;
-<<<<<<< HEAD
-
-	uint32_t hbq_in_use;		/* HBQs in use flag */
-	struct list_head rb_pend_list;  /* Received buffers to be processed */
-	uint32_t hbq_count;	        /* Count of configured HBQs */
-	struct hbq_s hbqs[LPFC_MAX_HBQS]; /* local copy of hbq indicies  */
-
-	uint32_t fcp_qidx;		/* next work queue to post work to */
-
-	unsigned long pci_bar0_map;     /* Physical address for PCI BAR0 */
-	unsigned long pci_bar1_map;     /* Physical address for PCI BAR1 */
-	unsigned long pci_bar2_map;     /* Physical address for PCI BAR2 */
-=======
 	uint32_t border_sge_num;
 
 	uint32_t hbq_in_use;		/* HBQs in use flag */
@@ -1544,14 +1225,11 @@ struct lpfc_hba {
 	phys_addr_t pci_bar0_map;     /* Physical address for PCI BAR0 */
 	phys_addr_t pci_bar1_map;     /* Physical address for PCI BAR1 */
 	phys_addr_t pci_bar2_map;     /* Physical address for PCI BAR2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *slim_memmap_p;	/* Kernel memory mapped address for
 					   PCI BAR0 */
 	void __iomem *ctrl_regs_memmap_p;/* Kernel memory mapped address for
 					    PCI BAR2 */
 
-<<<<<<< HEAD
-=======
 	void __iomem *pci_bar0_memmap_p; /* Kernel memory mapped address for
 					    PCI BAR0 with dual-ULP support */
 	void __iomem *pci_bar2_memmap_p; /* Kernel memory mapped address for
@@ -1561,7 +1239,6 @@ struct lpfc_hba {
 #define PCI_64BIT_BAR0	0
 #define PCI_64BIT_BAR2	2
 #define PCI_64BIT_BAR4	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *MBslimaddr;	/* virtual address for mbox cmds */
 	void __iomem *HAregaddr;	/* virtual address for host attn reg */
 	void __iomem *CAregaddr;	/* virtual address for chip attn reg */
@@ -1577,10 +1254,7 @@ struct lpfc_hba {
 	int brd_no;			/* FC board number */
 	char SerialNumber[32];		/* adapter Serial Number */
 	char OptionROMVersion[32];	/* adapter BIOS / Fcode version */
-<<<<<<< HEAD
-=======
 	char BIOSVersion[16];		/* Boot BIOS version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char ModelDesc[256];		/* Model Description */
 	char ModelName[80];		/* Model Name */
 	char ProgramType[256];		/* Program Type */
@@ -1593,53 +1267,25 @@ struct lpfc_hba {
 #define VPD_PORT            0x8         /* valid vpd port data */
 #define VPD_MASK            0xf         /* mask for any vpd data */
 
-<<<<<<< HEAD
-	uint8_t soft_wwn_enable;
-
-	struct timer_list fcp_poll_timer;
-	struct timer_list eratt_poll;
-
-	/*
-	 * stat  counters
-	 */
-	uint64_t fc4InputRequests;
-	uint64_t fc4OutputRequests;
-	uint64_t fc4ControlRequests;
-=======
 
 	struct timer_list fcp_poll_timer;
 	struct timer_list eratt_poll;
 	uint32_t eratt_poll_interval;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t bg_guard_err_cnt;
 	uint64_t bg_apptag_err_cnt;
 	uint64_t bg_reftag_err_cnt;
 
 	/* fastpath list. */
-<<<<<<< HEAD
-	spinlock_t scsi_buf_list_lock;
-	struct list_head lpfc_scsi_buf_list;
-=======
 	spinlock_t scsi_buf_list_get_lock;  /* SCSI buf alloc list lock */
 	spinlock_t scsi_buf_list_put_lock;  /* SCSI buf free list lock */
 	struct list_head lpfc_scsi_buf_list_get;
 	struct list_head lpfc_scsi_buf_list_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t total_scsi_bufs;
 	struct list_head lpfc_iocb_list;
 	uint32_t total_iocbq_bufs;
 	struct list_head active_rrq_list;
 	spinlock_t hbalock;
-<<<<<<< HEAD
-
-	/* pci_mem_pools */
-	struct pci_pool *lpfc_scsi_dma_buf_pool;
-	struct pci_pool *lpfc_mbuf_pool;
-	struct pci_pool *lpfc_hrb_pool;	/* header receive buffer pool */
-	struct pci_pool *lpfc_drb_pool; /* data receive buffer pool */
-	struct pci_pool *lpfc_hbq_pool;	/* SLI3 hbq buffer pool */
-=======
 	struct work_struct  unblock_request_work; /* SCSI layer unblock IOs */
 
 	/* dma_mem_pools */
@@ -1650,25 +1296,11 @@ struct lpfc_hba {
 	struct dma_pool *lpfc_nvmet_drb_pool; /* data receive buffer pool */
 	struct dma_pool *lpfc_hbq_pool;	/* SLI3 hbq buffer pool */
 	struct dma_pool *lpfc_cmd_rsp_buf_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_dma_pool lpfc_mbuf_safety_pool;
 
 	mempool_t *mbox_mem_pool;
 	mempool_t *nlp_mem_pool;
 	mempool_t *rrq_pool;
-<<<<<<< HEAD
-
-	struct fc_host_statistics link_stats;
-	enum intr_type_t intr_type;
-	uint32_t intr_mode;
-#define LPFC_INTR_ERROR	0xFFFFFFFF
-	struct msix_entry msix_entries[LPFC_MSIX_VECTORS];
-
-	struct list_head port_list;
-	struct lpfc_vport *pport;	/* physical lpfc_vport pointer */
-	uint16_t max_vpi;		/* Maximum virtual nports */
-#define LPFC_MAX_VPI 0xFFFF		/* Max number of VPI supported */
-=======
 	mempool_t *active_rrq_pool;
 
 	struct fc_host_statistics link_stats;
@@ -1682,7 +1314,6 @@ struct lpfc_hba {
 	uint16_t max_vpi;		/* Maximum virtual nports */
 #define LPFC_MAX_VPI	0xFF		/* Max number VPI supported 0 - 0xff */
 #define LPFC_MAX_VPORTS	0x100		/* Max vports per port, with pport */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t max_vports;            /*
 					 * For IOV HBAs max_vpi can change
 					 * after a reset. max_vports is max
@@ -1701,22 +1332,6 @@ struct lpfc_hba {
 	atomic_t fabric_iocb_count;
 	struct timer_list fabric_block_timer;
 	unsigned long bit_flags;
-<<<<<<< HEAD
-#define	FABRIC_COMANDS_BLOCKED	0
-	atomic_t num_rsrc_err;
-	atomic_t num_cmd_success;
-	unsigned long last_rsrc_error_time;
-	unsigned long last_ramp_down_time;
-	unsigned long last_ramp_up_time;
-#ifdef CONFIG_SCSI_LPFC_DEBUG_FS
-	struct dentry *hba_debugfs_root;
-	atomic_t debugfs_vport_count;
-	struct dentry *debug_hbqinfo;
-	struct dentry *debug_dumpHostSlim;
-	struct dentry *debug_dumpHBASlim;
-	struct dentry *debug_dumpData;   /* BlockGuard BPL */
-	struct dentry *debug_dumpDif;    /* BlockGuard BPL */
-=======
 	atomic_t num_rsrc_err;
 	unsigned long last_rsrc_error_time;
 	unsigned long last_ramp_down_time;
@@ -1727,7 +1342,6 @@ struct lpfc_hba {
 	struct dentry *debug_hbqinfo;
 	struct dentry *debug_dumpHostSlim;
 	struct dentry *debug_dumpHBASlim;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry *debug_InjErrLBA;  /* LBA to inject errors at */
 	struct dentry *debug_InjErrNPortID;  /* NPortID to inject errors at */
 	struct dentry *debug_InjErrWWPN;  /* WWPN to inject errors at */
@@ -1738,8 +1352,6 @@ struct lpfc_hba {
 	struct dentry *debug_readApp;    /* inject read app_tag errors */
 	struct dentry *debug_readRef;    /* inject read ref_tag errors */
 
-<<<<<<< HEAD
-=======
 	struct dentry *debug_nvmeio_trc;
 	struct lpfc_debugfs_nvmeio_trc *nvmeio_trc;
 	struct dentry *debug_hdwqinfo;
@@ -1753,7 +1365,6 @@ struct lpfc_hba {
 	uint32_t nvmeio_trc_size;
 	uint32_t nvmeio_trc_output_idx;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* T10 DIF error injection */
 	uint32_t lpfc_injerr_wgrd_cnt;
 	uint32_t lpfc_injerr_wapp_cnt;
@@ -1779,13 +1390,9 @@ struct lpfc_hba {
 	struct dentry *idiag_ctl_acc;
 	struct dentry *idiag_mbx_acc;
 	struct dentry *idiag_ext_acc;
-<<<<<<< HEAD
-#endif
-=======
 	uint8_t lpfc_idiag_last_eq;
 #endif
 	uint16_t nvmeio_trc_on;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Used for deferred freeing of ELS data buffers */
 	struct list_head elsbuf;
@@ -1797,34 +1404,14 @@ struct lpfc_hba {
 	unsigned long last_completion_time;
 	unsigned long skipped_hb;
 	struct timer_list hb_tmofunc;
-<<<<<<< HEAD
-	uint8_t hb_outstanding;
 	struct timer_list rrq_tmr;
 	enum hba_temp_state over_temp_state;
-	/* ndlp reference management */
-	spinlock_t ndlp_lock;
-=======
-	struct timer_list rrq_tmr;
-	enum hba_temp_state over_temp_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Following bit will be set for all buffer tags which are not
 	 * associated with any HBQ.
 	 */
 #define QUE_BUFTAG_BIT  (1<<31)
 	uint32_t buffer_tag_count;
-<<<<<<< HEAD
-	int wait_4_mlo_maint_flg;
-	wait_queue_head_t wait_4_mlo_m_q;
-	/* data structure used for latency data collection */
-#define LPFC_NO_BUCKET	   0
-#define LPFC_LINEAR_BUCKET 1
-#define LPFC_POWER2_BUCKET 2
-	uint8_t  bucket_type;
-	uint32_t bucket_base;
-	uint32_t bucket_step;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum number of events that can be outstanding at any time*/
 #define LPFC_MAX_EVT_COUNT 512
@@ -1839,20 +1426,6 @@ struct lpfc_hba {
 	uint16_t vlan_id;
 	struct list_head fcf_conn_rec_list;
 
-<<<<<<< HEAD
-	spinlock_t ct_ev_lock; /* synchronize access to ct_ev_waiters */
-	struct list_head ct_ev_waiters;
-	struct unsol_rcv_ct_ctx ct_ctx[64];
-	uint32_t ctx_idx;
-
-	uint8_t menlo_flag;	/* menlo generic flags */
-#define HBA_MENLO_SUPPORT	0x1 /* HBA supports menlo commands */
-	uint32_t iocb_cnt;
-	uint32_t iocb_max;
-	atomic_t sdev_cnt;
-	uint8_t fips_spec_rev;
-	uint8_t fips_level;
-=======
 	bool defer_flogi_acc_flag;
 	uint16_t defer_flogi_acc_rx_id;
 	uint16_t defer_flogi_acc_ox_id;
@@ -2035,7 +1608,6 @@ struct lpfc_rx_info_monitor {
 	u32 head_idx, tail_idx; /* index to head/tail of ring */
 	spinlock_t lock; /* spinlock for ring */
 	u32 entries; /* storing number entries/size of ring */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct Scsi_Host *
@@ -2106,8 +1678,6 @@ lpfc_sli_read_hs(struct lpfc_hba *phba)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 static inline struct lpfc_sli_ring *
 lpfc_phba_elsring(struct lpfc_hba *phba)
@@ -2310,4 +1880,3 @@ u32 get_job_els_rsp64_did(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 	else
 		return iocbq->iocb.un.elsreq64.remoteID;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

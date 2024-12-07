@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-
-#include <linux/module.h>
-#include <linux/gfp.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pagemap.h>
 #include <linux/highmem.h>
 #include <linux/ceph/pagelist.h>
 
-<<<<<<< HEAD
-=======
 struct ceph_pagelist *ceph_pagelist_alloc(gfp_t gfp_flags)
 {
 	struct ceph_pagelist *pl;
@@ -34,7 +26,6 @@ struct ceph_pagelist *ceph_pagelist_alloc(gfp_t gfp_flags)
 }
 EXPORT_SYMBOL(ceph_pagelist_alloc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ceph_pagelist_unmap_tail(struct ceph_pagelist *pl)
 {
 	if (pl->mapped_tail) {
@@ -44,15 +35,10 @@ static void ceph_pagelist_unmap_tail(struct ceph_pagelist *pl)
 	}
 }
 
-<<<<<<< HEAD
-int ceph_pagelist_release(struct ceph_pagelist *pl)
-{
-=======
 void ceph_pagelist_release(struct ceph_pagelist *pl)
 {
 	if (!refcount_dec_and_test(&pl->refcnt))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_pagelist_unmap_tail(pl);
 	while (!list_empty(&pl->head)) {
 		struct page *page = list_first_entry(&pl->head, struct page,
@@ -61,11 +47,7 @@ void ceph_pagelist_release(struct ceph_pagelist *pl)
 		__free_page(page);
 	}
 	ceph_pagelist_free_reserve(pl);
-<<<<<<< HEAD
-	return 0;
-=======
 	kfree(pl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ceph_pagelist_release);
 
@@ -95,11 +77,7 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
 		size_t bit = pl->room;
 		int ret;
 
-<<<<<<< HEAD
-		memcpy(pl->mapped_tail + (pl->length & ~PAGE_CACHE_MASK),
-=======
 		memcpy(pl->mapped_tail + (pl->length & ~PAGE_MASK),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       buf, bit);
 		pl->length += bit;
 		pl->room -= bit;
@@ -110,25 +88,15 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
 			return ret;
 	}
 
-<<<<<<< HEAD
-	memcpy(pl->mapped_tail + (pl->length & ~PAGE_CACHE_MASK), buf, len);
-=======
 	memcpy(pl->mapped_tail + (pl->length & ~PAGE_MASK), buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pl->length += len;
 	pl->room -= len;
 	return 0;
 }
 EXPORT_SYMBOL(ceph_pagelist_append);
 
-<<<<<<< HEAD
-/**
- * Allocate enough pages for a pagelist to append the given amount
- * of data without without allocating.
-=======
 /* Allocate enough pages for a pagelist to append the given amount
  * of data without allocating.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: 0 on success, -ENOMEM on error.
  */
 int ceph_pagelist_reserve(struct ceph_pagelist *pl, size_t space)
@@ -149,13 +117,7 @@ int ceph_pagelist_reserve(struct ceph_pagelist *pl, size_t space)
 }
 EXPORT_SYMBOL(ceph_pagelist_reserve);
 
-<<<<<<< HEAD
-/**
- * Free any pages that have been preallocated.
- */
-=======
 /* Free any pages that have been preallocated. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ceph_pagelist_free_reserve(struct ceph_pagelist *pl)
 {
 	while (!list_empty(&pl->free_list)) {
@@ -170,13 +132,7 @@ int ceph_pagelist_free_reserve(struct ceph_pagelist *pl)
 }
 EXPORT_SYMBOL(ceph_pagelist_free_reserve);
 
-<<<<<<< HEAD
-/**
- * Create a truncation point.
- */
-=======
 /* Create a truncation point. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ceph_pagelist_set_cursor(struct ceph_pagelist *pl,
 			      struct ceph_pagelist_cursor *c)
 {
@@ -186,12 +142,7 @@ void ceph_pagelist_set_cursor(struct ceph_pagelist *pl,
 }
 EXPORT_SYMBOL(ceph_pagelist_set_cursor);
 
-<<<<<<< HEAD
-/**
- * Truncate a pagelist to the given point. Move extra pages to reserve.
-=======
 /* Truncate a pagelist to the given point. Move extra pages to reserve.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This won't sleep.
  * Returns: 0 on success,
  *          -EINVAL if the pagelist doesn't match the trunc point pagelist
@@ -206,13 +157,8 @@ int ceph_pagelist_truncate(struct ceph_pagelist *pl,
 	ceph_pagelist_unmap_tail(pl);
 	while (pl->head.prev != c->page_lru) {
 		page = list_entry(pl->head.prev, struct page, lru);
-<<<<<<< HEAD
-		list_del(&page->lru);                /* remove from pagelist */
-		list_add_tail(&page->lru, &pl->free_list); /* add to reserve */
-=======
 		/* move from pagelist to reserve */
 		list_move_tail(&page->lru, &pl->free_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++pl->num_pages_free;
 	}
 	pl->room = c->room;

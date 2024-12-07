@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-config FRAME_POINTER
-	def_bool n
-
-config ZONE_DMA
-	def_bool y
-
-config XTENSA
-	def_bool y
-	select HAVE_IDE
-	select HAVE_GENERIC_HARDIRQS
-	select GENERIC_IRQ_SHOW
-	select GENERIC_CPU_DEVICES
-=======
 # SPDX-License-Identifier: GPL-2.0
 config XTENSA
 	def_bool y
@@ -70,64 +56,33 @@ config XTENSA
 	select MODULES_USE_ELF_RELA
 	select PERF_USE_VMALLOC
 	select TRACE_IRQFLAGS_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Xtensa processors are 32-bit RISC machines designed by Tensilica
 	  primarily for embedded systems.  These processors are both
 	  configurable and extensible.  The Linux port to the Xtensa
 	  architecture supports all processor configurations and extensions,
 	  with reasonable minimum requirements.  The Xtensa Linux project has
-<<<<<<< HEAD
-	  a home page at <http://xtensa.sourceforge.net/>.
-
-config RWSEM_XCHGADD_ALGORITHM
-	def_bool y
-=======
 	  a home page at <http://www.linux-xtensa.org/>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GENERIC_HWEIGHT
 	def_bool y
 
-<<<<<<< HEAD
-config GENERIC_GPIO
-	def_bool y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_HAS_ILOG2_U32
 	def_bool n
 
 config ARCH_HAS_ILOG2_U64
 	def_bool n
 
-<<<<<<< HEAD
-config NO_IOPORT
-	def_bool y
-
-=======
 config ARCH_MTD_XIP
 	def_bool y
 
 config NO_IOPORT_MAP
 	def_bool n
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HZ
 	int
 	default 100
 
-<<<<<<< HEAD
-source "init/Kconfig"
-source "kernel/Kconfig.freezer"
-
-config MMU
-	def_bool n
-
-config VARIANT_IRQ_SWITCH
-	def_bool n
-
-=======
 config LOCKDEP_SUPPORT
 	def_bool y
 
@@ -154,7 +109,6 @@ config CPU_LITTLE_ENDIAN
 config CC_HAVE_CALL0_ABI
 	def_bool $(success,test "$(shell,echo __XTENSA_CALL0_ABI__ | $(CC) -mabi=call0 -E -P - 2>/dev/null)" = 1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "Processor type and features"
 
 choice
@@ -168,20 +122,6 @@ config XTENSA_VARIANT_FSF
 config XTENSA_VARIANT_DC232B
 	bool "dc232b - Diamond 232L Standard Core Rev.B (LE)"
 	select MMU
-<<<<<<< HEAD
-	help
-	  This variant refers to Tensilica's Diamond 232L Standard core Rev.B (LE).
-
-config XTENSA_VARIANT_S6000
-	bool "s6000 - Stretch software configurable processor"
-	select VARIANT_IRQ_SWITCH
-	select ARCH_REQUIRE_GPIOLIB
-	select XTENSA_CALIBRATE_CCOUNT
-endchoice
-
-config XTENSA_UNALIGNED_USER
-	bool "Unaligned memory access in use space"
-=======
 	select HAVE_XTENSA_GPIO32
 	help
 	  This variant refers to Tensilica's Diamond 232L Standard core Rev.B (LE).
@@ -263,7 +203,6 @@ config PFAULT
 
 config XTENSA_UNALIGNED_USER
 	bool "Unaligned memory access in user space"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Xtensa architecture currently does not handle unaligned
 	  memory accesses in hardware but through an exception handler.
@@ -271,14 +210,6 @@ config XTENSA_UNALIGNED_USER
 
 	  Say Y here to enable unaligned memory access in user space.
 
-<<<<<<< HEAD
-source "kernel/Kconfig.preempt"
-
-config MATH_EMULATION
-	bool "Math emulation"
-	help
-	Can we use information of configuration file?
-=======
 config XTENSA_LOAD_STORE
 	bool "Load/store exception handler for memory only readable with l32"
 	help
@@ -446,7 +377,6 @@ config USER_ABI_CALL0_PROBE
 	  PS.WOE is disabled, check whether the target core supports it.
 
 endchoice
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endmenu
 
@@ -460,30 +390,9 @@ config XTENSA_CALIBRATE_CCOUNT
 config SERIAL_CONSOLE
 	def_bool n
 
-<<<<<<< HEAD
-config XTENSA_ISS_NETWORK
-	def_bool n
-
-menu "Bus options"
-
-config PCI
-	bool "PCI support"
-	default y
-	help
-	  Find out whether you have a PCI motherboard. PCI is the name of a
-	  bus system, i.e. the way the CPU talks to the other stuff inside
-	  your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
-	  VESA. If you have PCI, say Y, otherwise N.
-
-source "drivers/pci/Kconfig"
-
-endmenu
-
-=======
 config PLATFORM_HAVE_XIP
 	def_bool n
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "Platform options"
 
 choice
@@ -494,10 +403,6 @@ config XTENSA_PLATFORM_ISS
 	bool "ISS"
 	select XTENSA_CALIBRATE_CCOUNT
 	select SERIAL_CONSOLE
-<<<<<<< HEAD
-	select XTENSA_ISS_NETWORK
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  ISS is an acronym for Tensilica's Instruction Set Simulator.
 
@@ -507,14 +412,6 @@ config XTENSA_PLATFORM_XT2000
 	  XT2000 is the name of Tensilica's feature-rich emulation platform.
 	  This hardware is capable of running a full Linux distribution.
 
-<<<<<<< HEAD
-config XTENSA_PLATFORM_S6105
-	bool "S6105"
-	select SERIAL_CONSOLE
-
-endchoice
-
-=======
 config XTENSA_PLATFORM_XTFPGA
 	bool "XTFPGA"
 	select ETHOC if ETHERNET
@@ -532,7 +429,6 @@ config PLATFORM_NR_IRQS
 	int
 	default 3 if XTENSA_PLATFORM_XT2000
 	default 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config XTENSA_CPU_CLOCK
 	int "CPU clock rate [MHz]"
@@ -558,87 +454,6 @@ config CMDLINE
 	  time by entering them here. As a minimum, you should specify the
 	  memory size and the root device (e.g., mem=64M root=/dev/nfs).
 
-<<<<<<< HEAD
-source "mm/Kconfig"
-
-config HOTPLUG
-	bool "Support for hot-pluggable devices"
-	help
-	  Say Y here if you want to plug devices into your computer while
-	  the system is running, and be able to use them quickly.  In many
-	  cases, the devices can likewise be unplugged at any time too.
-
-	  One well known example of this is PCMCIA- or PC-cards, credit-card
-	  size devices such as network cards, modems or hard drives which are
-	  plugged into slots found on all modern laptop computers.  Another
-	  example, used on modern desktops as well as laptops, is USB.
-
-	  Enable HOTPLUG and build a modular kernel.  Get agent software
-	  (from <http://linux-hotplug.sourceforge.net/>) and install it.
-	  Then your kernel will automatically call out to a user mode "policy
-	  agent" (/sbin/hotplug) to load modules and set up software needed
-	  to use devices as you hotplug them.
-
-source "drivers/pcmcia/Kconfig"
-
-source "drivers/pci/hotplug/Kconfig"
-
-endmenu
-
-menu "Executable file formats"
-
-# only elf supported
-config KCORE_ELF
-	def_bool y
-        depends on PROC_FS
-        help
-          If you enabled support for /proc file system then the file
-          /proc/kcore will contain the kernel core image in ELF format. This
-          can be used in gdb:
-
-          $ cd /usr/src/linux ; gdb vmlinux /proc/kcore
-
-          This is especially useful if you have compiled the kernel with the
-          "-g" option to preserve debugging information. It is mainly used
-	  for examining kernel data structures on the live kernel.
-
-source "fs/Kconfig.binfmt"
-
-endmenu
-
-source "net/Kconfig"
-
-source "drivers/Kconfig"
-
-source "fs/Kconfig"
-
-menu "Xtensa initrd options"
-	depends on BLK_DEV_INITRD
-
-config EMBEDDED_RAMDISK
-	bool "Embed root filesystem ramdisk into the kernel"
-
-config EMBEDDED_RAMDISK_IMAGE
-	string "Filename of gzipped ramdisk image"
-	depends on EMBEDDED_RAMDISK
-	default "ramdisk.gz"
-	help
-	  This is the filename of the ramdisk image to be built into the
-	  kernel.  Relative pathnames are relative to arch/xtensa/boot/ramdisk/.
-	  The ramdisk image is not part of the kernel distribution; you must
-	  provide one yourself.
-endmenu
-
-source "arch/xtensa/Kconfig.debug"
-
-source "security/Kconfig"
-
-source "crypto/Kconfig"
-
-source "lib/Kconfig"
-
-
-=======
 config USE_OF
 	bool "Flattened Device Tree support"
 	select OF
@@ -998,4 +813,3 @@ config ARCH_HIBERNATION_POSSIBLE
 source "kernel/power/Kconfig"
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

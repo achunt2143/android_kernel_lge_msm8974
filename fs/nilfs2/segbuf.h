@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * segbuf.h - NILFS Segment buffer prototypes and definitions
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Written by Ryusuke Konishi <ryusuke@osrg.net>
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * NILFS Segment buffer prototypes and definitions
@@ -27,7 +5,6 @@
  * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Written by Ryusuke Konishi.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #ifndef _NILFS_SEGBUF_H
@@ -60,11 +37,7 @@ struct nilfs_segsum_info {
 	unsigned long		nfileblk;
 	u64			seg_seq;
 	__u64			cno;
-<<<<<<< HEAD
-	time_t			ctime;
-=======
 	time64_t		ctime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t		next;
 };
 
@@ -96,11 +69,7 @@ struct nilfs_segment_buffer {
 	__u64			sb_nextnum;
 	sector_t		sb_fseg_start, sb_fseg_end;
 	sector_t		sb_pseg_start;
-<<<<<<< HEAD
-	unsigned		sb_rest_blocks;
-=======
 	unsigned int		sb_rest_blocks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Buffers */
 	struct list_head	sb_segsum_buffers;
@@ -142,12 +111,8 @@ void nilfs_segbuf_map_cont(struct nilfs_segment_buffer *segbuf,
 			   struct nilfs_segment_buffer *prev);
 void nilfs_segbuf_set_next_segnum(struct nilfs_segment_buffer *, __u64,
 				  struct the_nilfs *);
-<<<<<<< HEAD
-int nilfs_segbuf_reset(struct nilfs_segment_buffer *, unsigned, time_t, __u64);
-=======
 int nilfs_segbuf_reset(struct nilfs_segment_buffer *, unsigned int, time64_t,
 		       __u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nilfs_segbuf_extend_segsum(struct nilfs_segment_buffer *);
 int nilfs_segbuf_extend_payload(struct nilfs_segment_buffer *,
 				struct buffer_head **);

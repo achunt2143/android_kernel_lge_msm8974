@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SPARC_KERNEL_H
 #define __SPARC_KERNEL_H
 
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/ftrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/traps.h>
 #include <asm/head.h>
@@ -20,14 +14,6 @@ extern const char *sparc_pmu_type;
 extern unsigned int fsr_storage;
 extern int ncpus_probed;
 
-<<<<<<< HEAD
-#ifdef CONFIG_SPARC64
-/* setup_64.c */
-struct seq_file;
-extern void cpucap_info(struct seq_file *);
-
-static inline unsigned long kimage_addr_to_ra(const char *p)
-=======
 /* process{_32,_64}.c */
 asmlinkage long sparc_clone(struct pt_regs *regs);
 asmlinkage long sparc_fork(struct pt_regs *regs);
@@ -39,26 +25,11 @@ struct seq_file;
 void cpucap_info(struct seq_file *);
 
 static inline unsigned long kimage_addr_to_ra(const void *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long val = (unsigned long) p;
 
 	return kern_base + (val - KERNBASE);
 }
-<<<<<<< HEAD
-#endif
-
-#ifdef CONFIG_SPARC32
-/* cpu.c */
-extern void cpu_probe(void);
-
-/* traps_32.c */
-extern void handle_hw_divzero(struct pt_regs *regs, unsigned long pc,
-                              unsigned long npc, unsigned long psr);
-/* muldiv.c */
-extern int do_user_muldiv (struct pt_regs *, unsigned long);
-
-=======
 
 /* sys_sparc_64.c */
 asmlinkage long sys_kern_features(void);
@@ -114,26 +85,11 @@ void cpu_probe(void);
 /* traps_32.c */
 void handle_hw_divzero(struct pt_regs *regs, unsigned long pc,
                        unsigned long npc, unsigned long psr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* irq_32.c */
 extern struct irqaction static_irqaction[];
 extern int static_irq_count;
 extern spinlock_t irq_action_lock;
 
-<<<<<<< HEAD
-extern void unexpected_irq(int irq, void *dev_id, struct pt_regs * regs);
-extern void init_IRQ(void);
-
-/* sun4c_irq.c */
-extern void sun4c_init_IRQ(void);
-
-/* sun4m_irq.c */
-extern unsigned int lvl14_resolution;
-
-extern void sun4m_init_IRQ(void);
-extern void sun4m_unmask_profile_irq(void);
-extern void sun4m_clear_profile_irq(int cpu);
-=======
 void unexpected_irq(int irq, void *dev_id, struct pt_regs * regs);
 
 /* sun4m_irq.c */
@@ -149,21 +105,10 @@ int smp4m_boot_one_cpu(int i, struct task_struct *idle);
 void __init smp4m_smp_done(void);
 void smp4m_cross_call_irq(void);
 void smp4m_percpu_timer_interrupt(struct pt_regs *regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sun4d_irq.c */
 extern spinlock_t sun4d_imsk_lock;
 
-<<<<<<< HEAD
-extern void sun4d_init_IRQ(void);
-extern int sun4d_request_irq(unsigned int irq,
-                             irq_handler_t handler,
-                             unsigned long irqflags,
-                             const char *devname, void *dev_id);
-extern int show_sun4d_interrupts(struct seq_file *, void *);
-extern void sun4d_distribute_irqs(void);
-extern void sun4d_free_irq(unsigned int irq, void *dev_id);
-=======
 void sun4d_init_IRQ(void);
 int sun4d_request_irq(unsigned int irq,
                       irq_handler_t handler,
@@ -187,23 +132,16 @@ void leon_cpu_pre_starting(void *arg);
 void leon_cpu_pre_online(void *arg);
 void leonsmp_ipi_interrupt(void);
 void leon_cross_call_irq(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* head_32.S */
 extern unsigned int t_nmi[];
 extern unsigned int linux_trap_ipi15_sun4d[];
 extern unsigned int linux_trap_ipi15_sun4m[];
 
-<<<<<<< HEAD
-extern struct tt_entry trapbase_cpu1;
-extern struct tt_entry trapbase_cpu2;
-extern struct tt_entry trapbase_cpu3;
-=======
 extern struct tt_entry trapbase[];
 extern struct tt_entry trapbase_cpu1[];
 extern struct tt_entry trapbase_cpu2[];
 extern struct tt_entry trapbase_cpu3[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern char cputypval[];
 
@@ -213,16 +151,6 @@ extern unsigned int real_irq_entry[];
 extern unsigned int smp4d_ticker[];
 extern unsigned int patchme_maybe_smp_msg[];
 
-<<<<<<< HEAD
-extern void floppy_hardint(void);
-
-/* trampoline_32.S */
-extern int __smp4m_processor_id(void);
-extern int __smp4d_processor_id(void);
-extern unsigned long sun4m_cpu_startup;
-extern unsigned long sun4d_cpu_startup;
-
-=======
 void floppy_hardint(void);
 
 /* trampoline_32.S */
@@ -259,7 +187,6 @@ void pcic_nmi(unsigned int pend, struct pt_regs *regs);
 /* time_32.c */
 void __init time_init(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* CONFIG_SPARC32 */
 #endif /* CONFIG_SPARC32 */
 #endif /* !(__SPARC_KERNEL_H) */

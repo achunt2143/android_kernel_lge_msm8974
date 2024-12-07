@@ -30,102 +30,11 @@
  * SOFTWARE.
  */
 /* Crude resource management */
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/random.h>
-#include <linux/slab.h>
-#include <linux/kfifo.h>
 #include <linux/spinlock.h>
-#include <linux/errno.h>
-=======
-#include <linux/spinlock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/genalloc.h>
 #include <linux/ratelimit.h>
 #include "iw_cxgb4.h"
 
-<<<<<<< HEAD
-#define RANDOM_SIZE 16
-
-static int __c4iw_init_resource_fifo(struct kfifo *fifo,
-				   spinlock_t *fifo_lock,
-				   u32 nr, u32 skip_low,
-				   u32 skip_high,
-				   int random)
-{
-	u32 i, j, entry = 0, idx;
-	u32 random_bytes;
-	u32 rarray[16];
-	spin_lock_init(fifo_lock);
-
-	if (kfifo_alloc(fifo, nr * sizeof(u32), GFP_KERNEL))
-		return -ENOMEM;
-
-	for (i = 0; i < skip_low + skip_high; i++)
-		kfifo_in(fifo, (unsigned char *) &entry, sizeof(u32));
-	if (random) {
-		j = 0;
-		random_bytes = random32();
-		for (i = 0; i < RANDOM_SIZE; i++)
-			rarray[i] = i + skip_low;
-		for (i = skip_low + RANDOM_SIZE; i < nr - skip_high; i++) {
-			if (j >= RANDOM_SIZE) {
-				j = 0;
-				random_bytes = random32();
-			}
-			idx = (random_bytes >> (j * 2)) & 0xF;
-			kfifo_in(fifo,
-				(unsigned char *) &rarray[idx],
-				sizeof(u32));
-			rarray[idx] = i;
-			j++;
-		}
-		for (i = 0; i < RANDOM_SIZE; i++)
-			kfifo_in(fifo,
-				(unsigned char *) &rarray[i],
-				sizeof(u32));
-	} else
-		for (i = skip_low; i < nr - skip_high; i++)
-			kfifo_in(fifo, (unsigned char *) &i, sizeof(u32));
-
-	for (i = 0; i < skip_low + skip_high; i++)
-		if (kfifo_out_locked(fifo, (unsigned char *) &entry,
-				     sizeof(u32), fifo_lock))
-			break;
-	return 0;
-}
-
-static int c4iw_init_resource_fifo(struct kfifo *fifo, spinlock_t * fifo_lock,
-				   u32 nr, u32 skip_low, u32 skip_high)
-{
-	return __c4iw_init_resource_fifo(fifo, fifo_lock, nr, skip_low,
-					  skip_high, 0);
-}
-
-static int c4iw_init_resource_fifo_random(struct kfifo *fifo,
-				   spinlock_t *fifo_lock,
-				   u32 nr, u32 skip_low, u32 skip_high)
-{
-	return __c4iw_init_resource_fifo(fifo, fifo_lock, nr, skip_low,
-					  skip_high, 1);
-}
-
-static int c4iw_init_qid_fifo(struct c4iw_rdev *rdev)
-{
-	u32 i;
-
-	spin_lock_init(&rdev->resource.qid_fifo_lock);
-
-	if (kfifo_alloc(&rdev->resource.qid_fifo, rdev->lldi.vr->qp.size *
-			sizeof(u32), GFP_KERNEL))
-		return -ENOMEM;
-
-	for (i = rdev->lldi.vr->qp.start;
-	     i < rdev->lldi.vr->qp.start + rdev->lldi.vr->qp.size; i++)
-		if (!(i & rdev->qpmask))
-			kfifo_in(&rdev->resource.qid_fifo,
-				    (unsigned char *) &i, sizeof(u32));
-=======
 static int c4iw_init_qid_table(struct c4iw_rdev *rdev)
 {
 	u32 i;
@@ -140,35 +49,10 @@ static int c4iw_init_qid_table(struct c4iw_rdev *rdev)
 		i < rdev->lldi.vr->qp.start + rdev->lldi.vr->qp.size; i++)
 		if (!(i & rdev->qpmask))
 			c4iw_id_free(&rdev->resource.qid_table, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* nr_* must be power of 2 */
-<<<<<<< HEAD
-int c4iw_init_resource(struct c4iw_rdev *rdev, u32 nr_tpt, u32 nr_pdid)
-{
-	int err = 0;
-	err = c4iw_init_resource_fifo_random(&rdev->resource.tpt_fifo,
-					     &rdev->resource.tpt_fifo_lock,
-					     nr_tpt, 1, 0);
-	if (err)
-		goto tpt_err;
-	err = c4iw_init_qid_fifo(rdev);
-	if (err)
-		goto qid_err;
-	err = c4iw_init_resource_fifo(&rdev->resource.pdid_fifo,
-				      &rdev->resource.pdid_fifo_lock,
-				      nr_pdid, 1, 0);
-	if (err)
-		goto pdid_err;
-	return 0;
-pdid_err:
-	kfifo_free(&rdev->resource.qid_fifo);
-qid_err:
-	kfifo_free(&rdev->resource.tpt_fifo);
-tpt_err:
-=======
 int c4iw_init_resource(struct c4iw_rdev *rdev, u32 nr_tpt,
 		       u32 nr_pdid, u32 nr_srqt)
 {
@@ -200,28 +84,12 @@ int c4iw_init_resource(struct c4iw_rdev *rdev, u32 nr_tpt,
  qid_err:
 	c4iw_id_table_free(&rdev->resource.tpt_table);
  tpt_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /*
  * returns 0 if no resource available
  */
-<<<<<<< HEAD
-u32 c4iw_get_resource(struct kfifo *fifo, spinlock_t *lock)
-{
-	u32 entry;
-	if (kfifo_out_locked(fifo, (unsigned char *) &entry, sizeof(u32), lock))
-		return entry;
-	else
-		return 0;
-}
-
-void c4iw_put_resource(struct kfifo *fifo, u32 entry, spinlock_t *lock)
-{
-	PDBG("%s entry 0x%x\n", __func__, entry);
-	kfifo_in_locked(fifo, (unsigned char *) &entry, sizeof(u32), lock);
-=======
 u32 c4iw_get_resource(struct c4iw_id_table *id_table)
 {
 	u32 entry;
@@ -235,7 +103,6 @@ void c4iw_put_resource(struct c4iw_id_table *id_table, u32 entry)
 {
 	pr_debug("entry 0x%x\n", entry);
 	c4iw_id_free(id_table, entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
@@ -252,14 +119,6 @@ u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		qid = entry->qid;
 		kfree(entry);
 	} else {
-<<<<<<< HEAD
-		qid = c4iw_get_resource(&rdev->resource.qid_fifo,
-					&rdev->resource.qid_fifo_lock);
-		if (!qid)
-			goto out;
-		for (i = qid+1; i & rdev->qpmask; i++) {
-			entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 		qid = c4iw_get_resource(&rdev->resource.qid_table);
 		if (!qid)
 			goto out;
@@ -268,7 +127,6 @@ u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		mutex_unlock(&rdev->stats.lock);
 		for (i = qid+1; i & rdev->qpmask; i++) {
 			entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!entry)
 				goto out;
 			entry->qid = i;
@@ -279,21 +137,13 @@ u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		 * now put the same ids on the qp list since they all
 		 * map to the same db/gts page.
 		 */
-<<<<<<< HEAD
-		entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 		entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!entry)
 			goto out;
 		entry->qid = qid;
 		list_add_tail(&entry->entry, &uctx->qpids);
 		for (i = qid+1; i & rdev->qpmask; i++) {
-<<<<<<< HEAD
-			entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 			entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!entry)
 				goto out;
 			entry->qid = i;
@@ -302,15 +152,11 @@ u32 c4iw_get_cqid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 	}
 out:
 	mutex_unlock(&uctx->lock);
-<<<<<<< HEAD
-	PDBG("%s qid 0x%x\n", __func__, qid);
-=======
 	pr_debug("qid 0x%x\n", qid);
 	mutex_lock(&rdev->stats.lock);
 	if (rdev->stats.qid.cur > rdev->stats.qid.max)
 		rdev->stats.qid.max = rdev->stats.qid.cur;
 	mutex_unlock(&rdev->stats.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qid;
 }
 
@@ -319,17 +165,10 @@ void c4iw_put_cqid(struct c4iw_rdev *rdev, u32 qid,
 {
 	struct c4iw_qid_list *entry;
 
-<<<<<<< HEAD
-	entry = kmalloc(sizeof *entry, GFP_KERNEL);
-	if (!entry)
-		return;
-	PDBG("%s qid 0x%x\n", __func__, qid);
-=======
 	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry)
 		return;
 	pr_debug("qid 0x%x\n", qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->qid = qid;
 	mutex_lock(&uctx->lock);
 	list_add_tail(&entry->entry, &uctx->cqids);
@@ -350,14 +189,6 @@ u32 c4iw_get_qpid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		qid = entry->qid;
 		kfree(entry);
 	} else {
-<<<<<<< HEAD
-		qid = c4iw_get_resource(&rdev->resource.qid_fifo,
-					&rdev->resource.qid_fifo_lock);
-		if (!qid)
-			goto out;
-		for (i = qid+1; i & rdev->qpmask; i++) {
-			entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 		qid = c4iw_get_resource(&rdev->resource.qid_table);
 		if (!qid) {
 			mutex_lock(&rdev->stats.lock);
@@ -370,7 +201,6 @@ u32 c4iw_get_qpid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		mutex_unlock(&rdev->stats.lock);
 		for (i = qid+1; i & rdev->qpmask; i++) {
 			entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!entry)
 				goto out;
 			entry->qid = i;
@@ -381,22 +211,13 @@ u32 c4iw_get_qpid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 		 * now put the same ids on the cq list since they all
 		 * map to the same db/gts page.
 		 */
-<<<<<<< HEAD
-		entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 		entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!entry)
 			goto out;
 		entry->qid = qid;
 		list_add_tail(&entry->entry, &uctx->cqids);
-<<<<<<< HEAD
-		for (i = qid; i & rdev->qpmask; i++) {
-			entry = kmalloc(sizeof *entry, GFP_KERNEL);
-=======
 		for (i = qid + 1; i & rdev->qpmask; i++) {
 			entry = kmalloc(sizeof(*entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!entry)
 				goto out;
 			entry->qid = i;
@@ -405,15 +226,11 @@ u32 c4iw_get_qpid(struct c4iw_rdev *rdev, struct c4iw_dev_ucontext *uctx)
 	}
 out:
 	mutex_unlock(&uctx->lock);
-<<<<<<< HEAD
-	PDBG("%s qid 0x%x\n", __func__, qid);
-=======
 	pr_debug("qid 0x%x\n", qid);
 	mutex_lock(&rdev->stats.lock);
 	if (rdev->stats.qid.cur > rdev->stats.qid.max)
 		rdev->stats.qid.max = rdev->stats.qid.cur;
 	mutex_unlock(&rdev->stats.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qid;
 }
 
@@ -422,17 +239,10 @@ void c4iw_put_qpid(struct c4iw_rdev *rdev, u32 qid,
 {
 	struct c4iw_qid_list *entry;
 
-<<<<<<< HEAD
-	entry = kmalloc(sizeof *entry, GFP_KERNEL);
-	if (!entry)
-		return;
-	PDBG("%s qid 0x%x\n", __func__, qid);
-=======
 	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry)
 		return;
 	pr_debug("qid 0x%x\n", qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->qid = qid;
 	mutex_lock(&uctx->lock);
 	list_add_tail(&entry->entry, &uctx->qpids);
@@ -441,15 +251,9 @@ void c4iw_put_qpid(struct c4iw_rdev *rdev, u32 qid,
 
 void c4iw_destroy_resource(struct c4iw_resource *rscp)
 {
-<<<<<<< HEAD
-	kfifo_free(&rscp->tpt_fifo);
-	kfifo_free(&rscp->qid_fifo);
-	kfifo_free(&rscp->pdid_fifo);
-=======
 	c4iw_id_table_free(&rscp->tpt_table);
 	c4iw_id_table_free(&rscp->qid_table);
 	c4iw_id_table_free(&rscp->pdid_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -461,19 +265,6 @@ void c4iw_destroy_resource(struct c4iw_resource *rscp)
 u32 c4iw_pblpool_alloc(struct c4iw_rdev *rdev, int size)
 {
 	unsigned long addr = gen_pool_alloc(rdev->pbl_pool, size);
-<<<<<<< HEAD
-	PDBG("%s addr 0x%x size %d\n", __func__, (u32)addr, size);
-	if (!addr)
-		printk_ratelimited(KERN_WARNING MOD "%s: Out of PBL memory\n",
-		       pci_name(rdev->lldi.pdev));
-	return (u32)addr;
-}
-
-void c4iw_pblpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
-{
-	PDBG("%s addr 0x%x size %d\n", __func__, addr, size);
-	gen_pool_free(rdev->pbl_pool, (unsigned long)addr, size);
-=======
 	pr_debug("addr 0x%x size %d\n", (u32)addr, size);
 	mutex_lock(&rdev->stats.lock);
 	if (addr) {
@@ -504,7 +295,6 @@ void c4iw_pblpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 	mutex_unlock(&rdev->stats.lock);
 	gen_pool_free(rdev->pbl_pool, (unsigned long)addr, size);
 	kref_put(&rdev->pbl_kref, destroy_pblpool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int c4iw_pblpool_create(struct c4iw_rdev *rdev)
@@ -522,32 +312,17 @@ int c4iw_pblpool_create(struct c4iw_rdev *rdev)
 	while (pbl_start < pbl_top) {
 		pbl_chunk = min(pbl_top - pbl_start + 1, pbl_chunk);
 		if (gen_pool_add(rdev->pbl_pool, pbl_start, pbl_chunk, -1)) {
-<<<<<<< HEAD
-			PDBG("%s failed to add PBL chunk (%x/%x)\n",
-			     __func__, pbl_start, pbl_chunk);
-			if (pbl_chunk <= 1024 << MIN_PBL_SHIFT) {
-				printk(KERN_WARNING MOD
-				       "Failed to add all PBL chunks (%x/%x)\n",
-				       pbl_start,
-				       pbl_top - pbl_start);
-=======
 			pr_debug("failed to add PBL chunk (%x/%x)\n",
 				 pbl_start, pbl_chunk);
 			if (pbl_chunk <= 1024 << MIN_PBL_SHIFT) {
 				pr_warn("Failed to add all PBL chunks (%x/%x)\n",
 					pbl_start, pbl_top - pbl_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			pbl_chunk >>= 1;
 		} else {
-<<<<<<< HEAD
-			PDBG("%s added PBL chunk (%x/%x)\n",
-			     __func__, pbl_start, pbl_chunk);
-=======
 			pr_debug("added PBL chunk (%x/%x)\n",
 				 pbl_start, pbl_chunk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pbl_start += pbl_chunk;
 		}
 	}
@@ -557,11 +332,7 @@ int c4iw_pblpool_create(struct c4iw_rdev *rdev)
 
 void c4iw_pblpool_destroy(struct c4iw_rdev *rdev)
 {
-<<<<<<< HEAD
-	gen_pool_destroy(rdev->pbl_pool);
-=======
 	kref_put(&rdev->pbl_kref, destroy_pblpool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -573,19 +344,6 @@ void c4iw_pblpool_destroy(struct c4iw_rdev *rdev)
 u32 c4iw_rqtpool_alloc(struct c4iw_rdev *rdev, int size)
 {
 	unsigned long addr = gen_pool_alloc(rdev->rqt_pool, size << 6);
-<<<<<<< HEAD
-	PDBG("%s addr 0x%x size %d\n", __func__, (u32)addr, size << 6);
-	if (!addr)
-		printk_ratelimited(KERN_WARNING MOD "%s: Out of RQT memory\n",
-		       pci_name(rdev->lldi.pdev));
-	return (u32)addr;
-}
-
-void c4iw_rqtpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
-{
-	PDBG("%s addr 0x%x size %d\n", __func__, addr, size << 6);
-	gen_pool_free(rdev->rqt_pool, (unsigned long)addr, size << 6);
-=======
 	pr_debug("addr 0x%x size %d\n", (u32)addr, size << 6);
 	if (!addr)
 		pr_warn_ratelimited("%s: Out of RQT memory\n",
@@ -619,25 +377,17 @@ void c4iw_rqtpool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 	mutex_unlock(&rdev->stats.lock);
 	gen_pool_free(rdev->rqt_pool, (unsigned long)addr, size << 6);
 	kref_put(&rdev->rqt_kref, destroy_rqtpool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
 {
 	unsigned rqt_start, rqt_chunk, rqt_top;
-<<<<<<< HEAD
-=======
 	int skip = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev->rqt_pool = gen_pool_create(MIN_RQT_SHIFT, -1);
 	if (!rdev->rqt_pool)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	rqt_start = rdev->lldi.vr->rq.start;
-	rqt_chunk = rdev->lldi.vr->rq.size;
-=======
 	/*
 	 * If SRQs are supported, then never use the first RQE from
 	 * the RQT region. This is because HW uses RQT index 0 as NULL.
@@ -647,37 +397,22 @@ int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
 
 	rqt_start = rdev->lldi.vr->rq.start + skip;
 	rqt_chunk = rdev->lldi.vr->rq.size - skip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rqt_top = rqt_start + rqt_chunk;
 
 	while (rqt_start < rqt_top) {
 		rqt_chunk = min(rqt_top - rqt_start + 1, rqt_chunk);
 		if (gen_pool_add(rdev->rqt_pool, rqt_start, rqt_chunk, -1)) {
-<<<<<<< HEAD
-			PDBG("%s failed to add RQT chunk (%x/%x)\n",
-			     __func__, rqt_start, rqt_chunk);
-			if (rqt_chunk <= 1024 << MIN_RQT_SHIFT) {
-				printk(KERN_WARNING MOD
-				       "Failed to add all RQT chunks (%x/%x)\n",
-				       rqt_start, rqt_top - rqt_start);
-=======
 			pr_debug("failed to add RQT chunk (%x/%x)\n",
 				 rqt_start, rqt_chunk);
 			if (rqt_chunk <= 1024 << MIN_RQT_SHIFT) {
 				pr_warn("Failed to add all RQT chunks (%x/%x)\n",
 					rqt_start, rqt_top - rqt_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			rqt_chunk >>= 1;
 		} else {
-<<<<<<< HEAD
-			PDBG("%s added RQT chunk (%x/%x)\n",
-			     __func__, rqt_start, rqt_chunk);
-=======
 			pr_debug("added RQT chunk (%x/%x)\n",
 				 rqt_start, rqt_chunk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rqt_start += rqt_chunk;
 		}
 	}
@@ -686,9 +421,6 @@ int c4iw_rqtpool_create(struct c4iw_rdev *rdev)
 
 void c4iw_rqtpool_destroy(struct c4iw_rdev *rdev)
 {
-<<<<<<< HEAD
-	gen_pool_destroy(rdev->rqt_pool);
-=======
 	kref_put(&rdev->rqt_kref, destroy_rqtpool);
 }
 
@@ -716,7 +448,6 @@ void c4iw_free_srq_idx(struct c4iw_rdev *rdev, int idx)
 	mutex_lock(&rdev->stats.lock);
 	rdev->stats.srqt.cur--;
 	mutex_unlock(&rdev->stats.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -727,9 +458,6 @@ void c4iw_free_srq_idx(struct c4iw_rdev *rdev, int idx)
 u32 c4iw_ocqp_pool_alloc(struct c4iw_rdev *rdev, int size)
 {
 	unsigned long addr = gen_pool_alloc(rdev->ocqp_pool, size);
-<<<<<<< HEAD
-	PDBG("%s addr 0x%x size %d\n", __func__, (u32)addr, size);
-=======
 	pr_debug("addr 0x%x size %d\n", (u32)addr, size);
 	if (addr) {
 		mutex_lock(&rdev->stats.lock);
@@ -738,20 +466,15 @@ u32 c4iw_ocqp_pool_alloc(struct c4iw_rdev *rdev, int size)
 			rdev->stats.ocqp.max = rdev->stats.ocqp.cur;
 		mutex_unlock(&rdev->stats.lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (u32)addr;
 }
 
 void c4iw_ocqp_pool_free(struct c4iw_rdev *rdev, u32 addr, int size)
 {
-<<<<<<< HEAD
-	PDBG("%s addr 0x%x size %d\n", __func__, addr, size);
-=======
 	pr_debug("addr 0x%x size %d\n", addr, size);
 	mutex_lock(&rdev->stats.lock);
 	rdev->stats.ocqp.cur -= roundup(size, 1 << MIN_OCQP_SHIFT);
 	mutex_unlock(&rdev->stats.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gen_pool_free(rdev->ocqp_pool, (unsigned long)addr, size);
 }
 
@@ -770,31 +493,17 @@ int c4iw_ocqp_pool_create(struct c4iw_rdev *rdev)
 	while (start < top) {
 		chunk = min(top - start + 1, chunk);
 		if (gen_pool_add(rdev->ocqp_pool, start, chunk, -1)) {
-<<<<<<< HEAD
-			PDBG("%s failed to add OCQP chunk (%x/%x)\n",
-			     __func__, start, chunk);
-			if (chunk <= 1024 << MIN_OCQP_SHIFT) {
-				printk(KERN_WARNING MOD
-				       "Failed to add all OCQP chunks (%x/%x)\n",
-				       start, top - start);
-=======
 			pr_debug("failed to add OCQP chunk (%x/%x)\n",
 				 start, chunk);
 			if (chunk <= 1024 << MIN_OCQP_SHIFT) {
 				pr_warn("Failed to add all OCQP chunks (%x/%x)\n",
 					start, top - start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			chunk >>= 1;
 		} else {
-<<<<<<< HEAD
-			PDBG("%s added OCQP chunk (%x/%x)\n",
-			     __func__, start, chunk);
-=======
 			pr_debug("added OCQP chunk (%x/%x)\n",
 				 start, chunk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start += chunk;
 		}
 	}

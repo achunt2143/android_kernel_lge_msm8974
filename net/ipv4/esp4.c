@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pr_fmt(fmt) "IPsec: " fmt
 
 #include <crypto/aead.h>
@@ -21,31 +18,22 @@
 #include <net/icmp.h>
 #include <net/protocol.h>
 #include <net/udp.h>
-<<<<<<< HEAD
-=======
 #include <net/tcp.h>
 #include <net/espintcp.h>
 
 #include <linux/highmem.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct esp_skb_cb {
 	struct xfrm_skb_cb xfrm;
 	void *tmp;
 };
 
-<<<<<<< HEAD
-#define ESP_SKB_CB(__skb) ((struct esp_skb_cb *)&((__skb)->cb[0]))
-
-static u32 esp4_get_mtu(struct xfrm_state *x, int mtu);
-=======
 struct esp_output_extra {
 	__be32 seqhi;
 	u32 esphoff;
 };
 
 #define ESP_SKB_CB(__skb) ((struct esp_skb_cb *)&((__skb)->cb[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Allocate an AEAD request structure with extra space for SG and IV.
@@ -55,19 +43,11 @@ struct esp_output_extra {
  *
  * TODO: Use spare space in skb for this where possible.
  */
-<<<<<<< HEAD
-static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int seqhilen)
-{
-	unsigned int len;
-
-	len = seqhilen;
-=======
 static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int extralen)
 {
 	unsigned int len;
 
 	len = extralen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len += crypto_aead_ivsize(aead);
 
@@ -77,11 +57,7 @@ static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int extralen)
 		len = ALIGN(len, crypto_tfm_ctx_alignment());
 	}
 
-<<<<<<< HEAD
-	len += sizeof(struct aead_givcrypt_request) + crypto_aead_reqsize(aead);
-=======
 	len += sizeof(struct aead_request) + crypto_aead_reqsize(aead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = ALIGN(len, __alignof__(struct scatterlist));
 
 	len += sizeof(struct scatterlist) * nfrags;
@@ -89,28 +65,6 @@ static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int extralen)
 	return kmalloc(len, GFP_ATOMIC);
 }
 
-<<<<<<< HEAD
-static inline __be32 *esp_tmp_seqhi(void *tmp)
-{
-	return PTR_ALIGN((__be32 *)tmp, __alignof__(__be32));
-}
-static inline u8 *esp_tmp_iv(struct crypto_aead *aead, void *tmp, int seqhilen)
-{
-	return crypto_aead_ivsize(aead) ?
-	       PTR_ALIGN((u8 *)tmp + seqhilen,
-			 crypto_aead_alignmask(aead) + 1) : tmp + seqhilen;
-}
-
-static inline struct aead_givcrypt_request *esp_tmp_givreq(
-	struct crypto_aead *aead, u8 *iv)
-{
-	struct aead_givcrypt_request *req;
-
-	req = (void *)PTR_ALIGN(iv + crypto_aead_ivsize(aead),
-				crypto_tfm_ctx_alignment());
-	aead_givcrypt_set_tfm(req, aead);
-	return req;
-=======
 static inline void *esp_tmp_extra(void *tmp)
 {
 	return PTR_ALIGN(tmp, __alignof__(struct esp_output_extra));
@@ -121,7 +75,6 @@ static inline u8 *esp_tmp_iv(struct crypto_aead *aead, void *tmp, int extralen)
 	return crypto_aead_ivsize(aead) ?
 	       PTR_ALIGN((u8 *)tmp + extralen,
 			 crypto_aead_alignmask(aead) + 1) : tmp + extralen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct aead_request *esp_tmp_req(struct crypto_aead *aead, u8 *iv)
@@ -142,55 +95,6 @@ static inline struct scatterlist *esp_req_sg(struct crypto_aead *aead,
 			     __alignof__(struct scatterlist));
 }
 
-<<<<<<< HEAD
-static inline struct scatterlist *esp_givreq_sg(
-	struct crypto_aead *aead, struct aead_givcrypt_request *req)
-{
-	return (void *)ALIGN((unsigned long)(req + 1) +
-			     crypto_aead_reqsize(aead),
-			     __alignof__(struct scatterlist));
-}
-
-static void esp_output_done(struct crypto_async_request *base, int err)
-{
-	struct sk_buff *skb = base->data;
-
-	kfree(ESP_SKB_CB(skb)->tmp);
-	xfrm_output_resume(skb, err);
-}
-
-static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
-{
-	int err;
-	struct ip_esp_hdr *esph;
-	struct crypto_aead *aead;
-	struct aead_givcrypt_request *req;
-	struct scatterlist *sg;
-	struct scatterlist *asg;
-	struct esp_data *esp;
-	struct sk_buff *trailer;
-	void *tmp;
-	u8 *iv;
-	u8 *tail;
-	int blksize;
-	int clen;
-	int alen;
-	int plen;
-	int tfclen;
-	int nfrags;
-	int assoclen;
-	int sglists;
-	int seqhilen;
-	__be32 *seqhi;
-
-	/* skb is pure payload to encrypt */
-
-	esp = x->data;
-	aead = esp->aead;
-	alen = crypto_aead_authsize(aead);
-
-	tfclen = 0;
-=======
 static void esp_ssg_unref(struct xfrm_state *x, void *tmp, struct sk_buff *skb)
 {
 	struct crypto_aead *aead = x->data;
@@ -766,155 +670,10 @@ static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
 	alen = crypto_aead_authsize(aead);
 
 	esp.tfclen = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (x->tfcpad) {
 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
 		u32 padto;
 
-<<<<<<< HEAD
-		padto = min(x->tfcpad, esp4_get_mtu(x, dst->child_mtu_cached));
-		if (skb->len < padto)
-			tfclen = padto - skb->len;
-	}
-	blksize = ALIGN(crypto_aead_blocksize(aead), 4);
-	clen = ALIGN(skb->len + 2 + tfclen, blksize);
-	if (esp->padlen)
-		clen = ALIGN(clen, esp->padlen);
-	plen = clen - skb->len - tfclen;
-
-	err = skb_cow_data(skb, tfclen + plen + alen, &trailer);
-	if (err < 0)
-		goto error;
-	nfrags = err;
-
-	assoclen = sizeof(*esph);
-	sglists = 1;
-	seqhilen = 0;
-
-	if (x->props.flags & XFRM_STATE_ESN) {
-		sglists += 2;
-		seqhilen += sizeof(__be32);
-		assoclen += seqhilen;
-	}
-
-	tmp = esp_alloc_tmp(aead, nfrags + sglists, seqhilen);
-	if (!tmp) {
-		err = -ENOMEM;
-		goto error;
-	}
-
-	seqhi = esp_tmp_seqhi(tmp);
-	iv = esp_tmp_iv(aead, tmp, seqhilen);
-	req = esp_tmp_givreq(aead, iv);
-	asg = esp_givreq_sg(aead, req);
-	sg = asg + sglists;
-
-	/* Fill padding... */
-	tail = skb_tail_pointer(trailer);
-	if (tfclen) {
-		memset(tail, 0, tfclen);
-		tail += tfclen;
-	}
-	do {
-		int i;
-		for (i = 0; i < plen - 2; i++)
-			tail[i] = i + 1;
-	} while (0);
-	tail[plen - 2] = plen - 2;
-	tail[plen - 1] = *skb_mac_header(skb);
-	pskb_put(skb, trailer, clen - skb->len + alen);
-
-	skb_push(skb, -skb_network_offset(skb));
-	esph = ip_esp_hdr(skb);
-	*skb_mac_header(skb) = IPPROTO_ESP;
-
-	/* this is non-NULL only with UDP Encapsulation */
-	if (x->encap) {
-		struct xfrm_encap_tmpl *encap = x->encap;
-		struct udphdr *uh;
-		__be32 *udpdata32;
-		__be16 sport, dport;
-		int encap_type;
-
-		spin_lock_bh(&x->lock);
-		sport = encap->encap_sport;
-		dport = encap->encap_dport;
-		encap_type = encap->encap_type;
-		spin_unlock_bh(&x->lock);
-
-		uh = (struct udphdr *)esph;
-		uh->source = sport;
-		uh->dest = dport;
-		uh->len = htons(skb->len - skb_transport_offset(skb));
-		uh->check = 0;
-
-		switch (encap_type) {
-		default:
-		case UDP_ENCAP_ESPINUDP:
-			esph = (struct ip_esp_hdr *)(uh + 1);
-			break;
-		case UDP_ENCAP_ESPINUDP_NON_IKE:
-			udpdata32 = (__be32 *)(uh + 1);
-			udpdata32[0] = udpdata32[1] = 0;
-			esph = (struct ip_esp_hdr *)(udpdata32 + 2);
-			break;
-		}
-
-		*skb_mac_header(skb) = IPPROTO_UDP;
-	}
-
-	esph->spi = x->id.spi;
-	esph->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.low);
-
-	sg_init_table(sg, nfrags);
-	skb_to_sgvec(skb, sg,
-		     esph->enc_data + crypto_aead_ivsize(aead) - skb->data,
-		     clen + alen);
-
-	if ((x->props.flags & XFRM_STATE_ESN)) {
-		sg_init_table(asg, 3);
-		sg_set_buf(asg, &esph->spi, sizeof(__be32));
-		*seqhi = htonl(XFRM_SKB_CB(skb)->seq.output.hi);
-		sg_set_buf(asg + 1, seqhi, seqhilen);
-		sg_set_buf(asg + 2, &esph->seq_no, sizeof(__be32));
-	} else
-		sg_init_one(asg, esph, sizeof(*esph));
-
-	aead_givcrypt_set_callback(req, 0, esp_output_done, skb);
-	aead_givcrypt_set_crypt(req, sg, sg, clen, iv);
-	aead_givcrypt_set_assoc(req, asg, assoclen);
-	aead_givcrypt_set_giv(req, esph->enc_data,
-			      XFRM_SKB_CB(skb)->seq.output.low);
-
-	ESP_SKB_CB(skb)->tmp = tmp;
-	err = crypto_aead_givencrypt(req);
-	if (err == -EINPROGRESS)
-		goto error;
-
-	if (err == -EBUSY)
-		err = NET_XMIT_DROP;
-
-	kfree(tmp);
-
-error:
-	return err;
-}
-
-static int esp_input_done2(struct sk_buff *skb, int err)
-{
-	const struct iphdr *iph;
-	struct xfrm_state *x = xfrm_input_state(skb);
-	struct esp_data *esp = x->data;
-	struct crypto_aead *aead = esp->aead;
-	int alen = crypto_aead_authsize(aead);
-	int hlen = sizeof(struct ip_esp_hdr) + crypto_aead_ivsize(aead);
-	int elen = skb->len - hlen;
-	int ihl;
-	u8 nexthdr[2];
-	int padlen;
-
-	kfree(ESP_SKB_CB(skb)->tmp);
-=======
 		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
 		if (skb->len < padto)
 			esp.tfclen = padto - skb->len;
@@ -994,40 +753,19 @@ int esp_input_done2(struct sk_buff *skb, int err)
 
 	if (!xo || !(xo->flags & CRYPTO_DONE))
 		kfree(ESP_SKB_CB(skb)->tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(err))
 		goto out;
 
-<<<<<<< HEAD
-	if (skb_copy_bits(skb, skb->len-alen-2, nexthdr, 2))
-		BUG();
-
-	err = -EINVAL;
-	padlen = nexthdr[0];
-	if (padlen + 2 + alen >= elen)
-		goto out;
-
-	/* ... check padding bits here. Silly. :-) */
-
-=======
 	err = esp_remove_trailer(skb);
 	if (unlikely(err < 0))
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iph = ip_hdr(skb);
 	ihl = iph->ihl * 4;
 
 	if (x->encap) {
 		struct xfrm_encap_tmpl *encap = x->encap;
-<<<<<<< HEAD
-		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
-
-		/*
-		 * 1) if the NAT-T peer's IP or port changed then
-		 *    advertize the change to the keying daemon.
-=======
 		struct tcphdr *th = (void *)(skb_network_header(skb) + ihl);
 		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
 		__be16 source;
@@ -1049,24 +787,15 @@ int esp_input_done2(struct sk_buff *skb, int err)
 		/*
 		 * 1) if the NAT-T peer's IP or port changed then
 		 *    advertise the change to the keying daemon.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *    This is an inbound SA, so just compare
 		 *    SRC ports.
 		 */
 		if (iph->saddr != x->props.saddr.a4 ||
-<<<<<<< HEAD
-		    uh->source != encap->encap_sport) {
-			xfrm_address_t ipaddr;
-
-			ipaddr.a4 = iph->saddr;
-			km_new_mapping(x, &ipaddr, uh->source);
-=======
 		    source != encap->encap_sport) {
 			xfrm_address_t ipaddr;
 
 			ipaddr.a4 = iph->saddr;
 			km_new_mapping(x, &ipaddr, source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* XXX: perhaps add an extra
 			 * policy check here, to see
@@ -1088,19 +817,11 @@ int esp_input_done2(struct sk_buff *skb, int err)
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 	}
 
-<<<<<<< HEAD
-	pskb_trim(skb, skb->len - alen - padlen - 2);
-	__skb_pull(skb, hlen);
-	skb_set_transport_header(skb, -ihl);
-
-	err = nexthdr[1];
-=======
 	skb_pull_rcsum(skb, hlen);
 	if (x->props.mode == XFRM_MODE_TUNNEL)
 		skb_reset_transport_header(skb);
 	else
 		skb_set_transport_header(skb, -ihl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RFC4303: Drop dummy packets without any error */
 	if (err == IPPROTO_NONE)
@@ -1109,24 +830,15 @@ int esp_input_done2(struct sk_buff *skb, int err)
 out:
 	return err;
 }
-<<<<<<< HEAD
-
-static void esp_input_done(struct crypto_async_request *base, int err)
-{
-	struct sk_buff *skb = base->data;
-=======
 EXPORT_SYMBOL_GPL(esp_input_done2);
 
 static void esp_input_done(void *data, int err)
 {
 	struct sk_buff *skb = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xfrm_input_resume(skb, esp_input_done2(skb, err));
 }
 
-<<<<<<< HEAD
-=======
 static void esp_input_restore_header(struct sk_buff *skb)
 {
 	esp_restore_header(skb, 0);
@@ -1158,7 +870,6 @@ static void esp_input_done_esn(void *data, int err)
 	esp_input_done(data, err);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Note: detecting truncated vs. non-truncated authentication data is very
  * expensive, so we only support truncated data, which is the recommended
@@ -1166,17 +877,6 @@ static void esp_input_done_esn(void *data, int err)
  */
 static int esp_input(struct xfrm_state *x, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct ip_esp_hdr *esph;
-	struct esp_data *esp = x->data;
-	struct crypto_aead *aead = esp->aead;
-	struct aead_request *req;
-	struct sk_buff *trailer;
-	int elen = skb->len - sizeof(*esph) - crypto_aead_ivsize(aead);
-	int nfrags;
-	int assoclen;
-	int sglists;
-=======
 	struct crypto_aead *aead = x->data;
 	struct aead_request *req;
 	struct sk_buff *trailer;
@@ -1184,52 +884,27 @@ static int esp_input(struct xfrm_state *x, struct sk_buff *skb)
 	int elen = skb->len - sizeof(struct ip_esp_hdr) - ivlen;
 	int nfrags;
 	int assoclen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int seqhilen;
 	__be32 *seqhi;
 	void *tmp;
 	u8 *iv;
 	struct scatterlist *sg;
-<<<<<<< HEAD
-	struct scatterlist *asg;
-	int err = -EINVAL;
-
-	if (!pskb_may_pull(skb, sizeof(*esph) + crypto_aead_ivsize(aead)))
-=======
 	int err = -EINVAL;
 
 	if (!pskb_may_pull(skb, sizeof(struct ip_esp_hdr) + ivlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	if (elen <= 0)
 		goto out;
 
-<<<<<<< HEAD
-	if ((err = skb_cow_data(skb, 0, &trailer)) < 0)
-		goto out;
-	nfrags = err;
-
-	assoclen = sizeof(*esph);
-	sglists = 1;
-	seqhilen = 0;
-
-	if (x->props.flags & XFRM_STATE_ESN) {
-		sglists += 2;
-=======
 	assoclen = sizeof(struct ip_esp_hdr);
 	seqhilen = 0;
 
 	if (x->props.flags & XFRM_STATE_ESN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seqhilen += sizeof(__be32);
 		assoclen += seqhilen;
 	}
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-	tmp = esp_alloc_tmp(aead, nfrags + sglists, seqhilen);
-=======
 	if (!skb_cloned(skb)) {
 		if (!skb_is_nonlinear(skb)) {
 			nfrags = 1;
@@ -1252,41 +927,10 @@ static int esp_input(struct xfrm_state *x, struct sk_buff *skb)
 skip_cow:
 	err = -ENOMEM;
 	tmp = esp_alloc_tmp(aead, nfrags, seqhilen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmp)
 		goto out;
 
 	ESP_SKB_CB(skb)->tmp = tmp;
-<<<<<<< HEAD
-	seqhi = esp_tmp_seqhi(tmp);
-	iv = esp_tmp_iv(aead, tmp, seqhilen);
-	req = esp_tmp_req(aead, iv);
-	asg = esp_req_sg(aead, req);
-	sg = asg + sglists;
-
-	skb->ip_summed = CHECKSUM_NONE;
-
-	esph = (struct ip_esp_hdr *)skb->data;
-
-	/* Get ivec. This can be wrong, check against another impls. */
-	iv = esph->enc_data;
-
-	sg_init_table(sg, nfrags);
-	skb_to_sgvec(skb, sg, sizeof(*esph) + crypto_aead_ivsize(aead), elen);
-
-	if ((x->props.flags & XFRM_STATE_ESN)) {
-		sg_init_table(asg, 3);
-		sg_set_buf(asg, &esph->spi, sizeof(__be32));
-		*seqhi = XFRM_SKB_CB(skb)->seq.input.hi;
-		sg_set_buf(asg + 1, seqhi, seqhilen);
-		sg_set_buf(asg + 2, &esph->seq_no, sizeof(__be32));
-	} else
-		sg_init_one(asg, esph, sizeof(*esph));
-
-	aead_request_set_callback(req, 0, esp_input_done, skb);
-	aead_request_set_crypt(req, sg, sg, elen, iv);
-	aead_request_set_assoc(req, asg, assoclen);
-=======
 	seqhi = esp_tmp_extra(tmp);
 	iv = esp_tmp_iv(aead, tmp, seqhilen);
 	req = esp_tmp_req(aead, iv);
@@ -1310,63 +954,27 @@ skip_cow:
 
 	aead_request_set_crypt(req, sg, sg, elen + ivlen, iv);
 	aead_request_set_ad(req, assoclen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = crypto_aead_decrypt(req);
 	if (err == -EINPROGRESS)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	if ((x->props.flags & XFRM_STATE_ESN))
 		esp_input_restore_header(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = esp_input_done2(skb, err);
 
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static u32 esp4_get_mtu(struct xfrm_state *x, int mtu)
-{
-	struct esp_data *esp = x->data;
-	u32 blksize = ALIGN(crypto_aead_blocksize(esp->aead), 4);
-	u32 align = max_t(u32, blksize, esp->padlen);
-	unsigned int net_adj;
-
-	switch (x->props.mode) {
-	case XFRM_MODE_TRANSPORT:
-	case XFRM_MODE_BEET:
-		net_adj = sizeof(struct iphdr);
-		break;
-	case XFRM_MODE_TUNNEL:
-		net_adj = 0;
-		break;
-	default:
-		BUG();
-	}
-
-	return ((mtu - x->props.header_len - crypto_aead_authsize(esp->aead) -
-		 net_adj) & ~(align - 1)) + (net_adj - 2);
-}
-
-static void esp4_err(struct sk_buff *skb, u32 info)
-=======
 static int esp4_err(struct sk_buff *skb, u32 info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = dev_net(skb->dev);
 	const struct iphdr *iph = (const struct iphdr *)skb->data;
 	struct ip_esp_hdr *esph = (struct ip_esp_hdr *)(skb->data+(iph->ihl<<2));
 	struct xfrm_state *x;
 
-<<<<<<< HEAD
-	if (icmp_hdr(skb)->type != ICMP_DEST_UNREACH ||
-	    icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
-		return;
-=======
 	switch (icmp_hdr(skb)->type) {
 	case ICMP_DEST_UNREACH:
 		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
@@ -1377,17 +985,10 @@ static int esp4_err(struct sk_buff *skb, u32 info)
 	default:
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x = xfrm_state_lookup(net, skb->mark, (const xfrm_address_t *)&iph->daddr,
 			      esph->spi, IPPROTO_ESP, AF_INET);
 	if (!x)
-<<<<<<< HEAD
-		return;
-	NETDEBUG(KERN_DEBUG "pmtu discovery on SA ESP/%08x/%08x\n",
-		 ntohl(esph->spi), ntohl(iph->daddr));
-	xfrm_state_put(x);
-=======
 		return 0;
 
 	if (icmp_hdr(skb)->type == ICMP_DEST_UNREACH)
@@ -1397,29 +998,10 @@ static int esp4_err(struct sk_buff *skb, u32 info)
 	xfrm_state_put(x);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void esp_destroy(struct xfrm_state *x)
 {
-<<<<<<< HEAD
-	struct esp_data *esp = x->data;
-
-	if (!esp)
-		return;
-
-	crypto_free_aead(esp->aead);
-	kfree(esp);
-}
-
-static int esp_init_aead(struct xfrm_state *x)
-{
-	struct esp_data *esp = x->data;
-	struct crypto_aead *aead;
-	int err;
-
-	aead = crypto_alloc_aead(x->aead->alg_name, 0, 0);
-=======
 	struct crypto_aead *aead = x->data;
 
 	if (!aead)
@@ -1441,16 +1023,11 @@ static int esp_init_aead(struct xfrm_state *x, struct netlink_ext_ack *extack)
 	}
 
 	aead = crypto_alloc_aead(aead_name, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(aead);
 	if (IS_ERR(aead))
 		goto error;
 
-<<<<<<< HEAD
-	esp->aead = aead;
-=======
 	x->data = aead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = crypto_aead_setkey(aead, x->aead->alg_key,
 				 (x->aead->alg_key_len + 7) / 8);
@@ -1461,15 +1038,6 @@ static int esp_init_aead(struct xfrm_state *x, struct netlink_ext_ack *extack)
 	if (err)
 		goto error;
 
-<<<<<<< HEAD
-error:
-	return err;
-}
-
-static int esp_init_authenc(struct xfrm_state *x)
-{
-	struct esp_data *esp = x->data;
-=======
 	return 0;
 
 error:
@@ -1480,7 +1048,6 @@ error:
 static int esp_init_authenc(struct xfrm_state *x,
 			    struct netlink_ext_ack *extack)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crypto_aead *aead;
 	struct crypto_authenc_key_param *param;
 	struct rtattr *rta;
@@ -1490,29 +1057,10 @@ static int esp_init_authenc(struct xfrm_state *x,
 	unsigned int keylen;
 	int err;
 
-<<<<<<< HEAD
-	err = -EINVAL;
-	if (x->ealg == NULL)
-		goto error;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENAMETOOLONG;
 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		if (snprintf(authenc_name, CRYPTO_MAX_ALG_NAME,
-<<<<<<< HEAD
-			     "authencesn(%s,%s)",
-			     x->aalg ? x->aalg->alg_name : "digest_null",
-			     x->ealg->alg_name) >= CRYPTO_MAX_ALG_NAME)
-			goto error;
-	} else {
-		if (snprintf(authenc_name, CRYPTO_MAX_ALG_NAME,
-			     "authenc(%s,%s)",
-			     x->aalg ? x->aalg->alg_name : "digest_null",
-			     x->ealg->alg_name) >= CRYPTO_MAX_ALG_NAME)
-			goto error;
-=======
 			     "%s%sauthencesn(%s,%s)%s",
 			     x->geniv ?: "", x->geniv ? "(" : "",
 			     x->aalg ? x->aalg->alg_name : "digest_null",
@@ -1531,24 +1079,16 @@ static int esp_init_authenc(struct xfrm_state *x,
 			NL_SET_ERR_MSG(extack, "Algorithm name is too long");
 			goto error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	aead = crypto_alloc_aead(authenc_name, 0, 0);
 	err = PTR_ERR(aead);
-<<<<<<< HEAD
-	if (IS_ERR(aead))
-		goto error;
-
-	esp->aead = aead;
-=======
 	if (IS_ERR(aead)) {
 		NL_SET_ERR_MSG(extack, "Kernel was unable to initialize cryptographic operations");
 		goto error;
 	}
 
 	x->data = aead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keylen = (x->aalg ? (x->aalg->alg_key_len + 7) / 8 : 0) +
 		 (x->ealg->alg_key_len + 7) / 8 + RTA_SPACE(sizeof(*param));
@@ -1574,32 +1114,18 @@ static int esp_init_authenc(struct xfrm_state *x,
 		BUG_ON(!aalg_desc);
 
 		err = -EINVAL;
-<<<<<<< HEAD
-		if (aalg_desc->uinfo.auth.icv_fullbits/8 !=
-		    crypto_aead_authsize(aead)) {
-			NETDEBUG(KERN_INFO "ESP: %s digestsize %u != %hu\n",
-				 x->aalg->alg_name,
-				 crypto_aead_authsize(aead),
-				 aalg_desc->uinfo.auth.icv_fullbits/8);
-=======
 		if (aalg_desc->uinfo.auth.icv_fullbits / 8 !=
 		    crypto_aead_authsize(aead)) {
 			NL_SET_ERR_MSG(extack, "Kernel was unable to initialize cryptographic operations");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto free_key;
 		}
 
 		err = crypto_aead_setauthsize(
 			aead, x->aalg->alg_trunc_len / 8);
-<<<<<<< HEAD
-		if (err)
-			goto free_key;
-=======
 		if (err) {
 			NL_SET_ERR_MSG(extack, "Kernel was unable to initialize cryptographic operations");
 			goto free_key;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	param->enckeylen = cpu_to_be32((x->ealg->alg_key_len + 7) / 8);
@@ -1608,40 +1134,18 @@ static int esp_init_authenc(struct xfrm_state *x,
 	err = crypto_aead_setkey(aead, key, keylen);
 
 free_key:
-<<<<<<< HEAD
-	kfree(key);
-=======
 	kfree_sensitive(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	return err;
 }
 
-<<<<<<< HEAD
-static int esp_init_state(struct xfrm_state *x)
-{
-	struct esp_data *esp;
-=======
 static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crypto_aead *aead;
 	u32 align;
 	int err;
 
-<<<<<<< HEAD
-	esp = kzalloc(sizeof(*esp), GFP_KERNEL);
-	if (esp == NULL)
-		return -ENOMEM;
-
-	x->data = esp;
-
-	if (x->aead)
-		err = esp_init_aead(x);
-	else
-		err = esp_init_authenc(x);
-=======
 	x->data = NULL;
 
 	if (x->aead) {
@@ -1652,18 +1156,11 @@ static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		NL_SET_ERR_MSG(extack, "ESP: AEAD or CRYPT must be provided");
 		err = -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		goto error;
 
-<<<<<<< HEAD
-	aead = esp->aead;
-
-	esp->padlen = 0;
-=======
 	aead = x->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x->props.header_len = sizeof(struct ip_esp_hdr) +
 			      crypto_aead_ivsize(aead);
@@ -1676,11 +1173,8 @@ static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 
 		switch (encap->encap_type) {
 		default:
-<<<<<<< HEAD
-=======
 			NL_SET_ERR_MSG(extack, "Unsupported encapsulation type for ESP");
 			err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		case UDP_ENCAP_ESPINUDP:
 			x->props.header_len += sizeof(struct udphdr);
@@ -1688,8 +1182,6 @@ static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		case UDP_ENCAP_ESPINUDP_NON_IKE:
 			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
 			break;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INET_ESPINTCP
 		case TCP_ENCAP_ESPINTCP:
 			/* only the length field, TCP encap is done by
@@ -1698,28 +1190,16 @@ static int esp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 			x->props.header_len += 2;
 			break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	align = ALIGN(crypto_aead_blocksize(aead), 4);
-<<<<<<< HEAD
-	if (esp->padlen)
-		align = max_t(u32, align, esp->padlen);
-	x->props.trailer_len = align + 1 + crypto_aead_authsize(esp->aead);
-=======
 	x->props.trailer_len = align + 1 + crypto_aead_authsize(aead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	return err;
 }
 
-<<<<<<< HEAD
-static const struct xfrm_type esp_type =
-{
-	.description	= "ESP4",
-=======
 static int esp4_rcv_cb(struct sk_buff *skb, int err)
 {
 	return 0;
@@ -1727,24 +1207,11 @@ static int esp4_rcv_cb(struct sk_buff *skb, int err)
 
 static const struct xfrm_type esp_type =
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		= THIS_MODULE,
 	.proto	     	= IPPROTO_ESP,
 	.flags		= XFRM_TYPE_REPLAY_PROT,
 	.init_state	= esp_init_state,
 	.destructor	= esp_destroy,
-<<<<<<< HEAD
-	.get_mtu	= esp4_get_mtu,
-	.input		= esp_input,
-	.output		= esp_output
-};
-
-static const struct net_protocol esp4_protocol = {
-	.handler	=	xfrm4_rcv,
-	.err_handler	=	esp4_err,
-	.no_policy	=	1,
-	.netns_ok	=	1,
-=======
 	.input		= esp_input,
 	.output		= esp_output,
 };
@@ -1755,7 +1222,6 @@ static struct xfrm4_protocol esp4_protocol = {
 	.cb_handler	=	esp4_rcv_cb,
 	.err_handler	=	esp4_err,
 	.priority	=	0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init esp4_init(void)
@@ -1764,11 +1230,7 @@ static int __init esp4_init(void)
 		pr_info("%s: can't add xfrm type\n", __func__);
 		return -EAGAIN;
 	}
-<<<<<<< HEAD
-	if (inet_add_protocol(&esp4_protocol, IPPROTO_ESP) < 0) {
-=======
 	if (xfrm4_protocol_register(&esp4_protocol, IPPROTO_ESP) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("%s: can't add protocol\n", __func__);
 		xfrm_unregister_type(&esp_type, AF_INET);
 		return -EAGAIN;
@@ -1778,23 +1240,13 @@ static int __init esp4_init(void)
 
 static void __exit esp4_fini(void)
 {
-<<<<<<< HEAD
-	if (inet_del_protocol(&esp4_protocol, IPPROTO_ESP) < 0)
-		pr_info("%s: can't remove protocol\n", __func__);
-	if (xfrm_unregister_type(&esp_type, AF_INET) < 0)
-		pr_info("%s: can't remove xfrm type\n", __func__);
-=======
 	if (xfrm4_protocol_deregister(&esp4_protocol, IPPROTO_ESP) < 0)
 		pr_info("%s: can't remove protocol\n", __func__);
 	xfrm_unregister_type(&esp_type, AF_INET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(esp4_init);
 module_exit(esp4_fini);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("IPv4 ESP transformation library");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_XFRM_TYPE(AF_INET, XFRM_PROTO_ESP);

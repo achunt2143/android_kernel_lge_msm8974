@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An I2C driver for the Philips PCF8563 RTC
  * Copyright 2005-06 Tower Technologies
@@ -11,32 +8,15 @@
  *
  * based on the other drivers in this same directory.
  *
-<<<<<<< HEAD
- * http://www.semiconductors.philips.com/acrobat/datasheets/PCF8563-04.pdf
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  * https://www.nxp.com/docs/en/data-sheet/PCF8563.pdf
  */
 
 #include <linux/clk-provider.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/bcd.h>
 #include <linux/rtc.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#define DRV_VERSION "0.4.3"
-
-#define PCF8563_REG_ST1		0x00 /* status */
-#define PCF8563_REG_ST2		0x01
-=======
 #include <linux/of.h>
 #include <linux/err.h>
 
@@ -45,7 +25,6 @@
 #define PCF8563_BIT_AIE		BIT(1)
 #define PCF8563_BIT_AF		BIT(3)
 #define PCF8563_BITS_ST2_N	(7 << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCF8563_REG_SC		0x02 /* datetime */
 #define PCF8563_REG_MN		0x03
@@ -56,14 +35,6 @@
 #define PCF8563_REG_YR		0x08
 
 #define PCF8563_REG_AMN		0x09 /* alarm */
-<<<<<<< HEAD
-#define PCF8563_REG_AHR		0x0A
-#define PCF8563_REG_ADM		0x0B
-#define PCF8563_REG_ADW		0x0C
-
-#define PCF8563_REG_CLKO	0x0D /* clock out */
-#define PCF8563_REG_TMRC	0x0E /* timer control */
-=======
 
 #define PCF8563_REG_CLKO		0x0D /* clock out */
 #define PCF8563_REG_CLKO_FE		0x80 /* clock out enabled */
@@ -81,7 +52,6 @@
 #define PCF8563_TMRC_1_60	3
 #define PCF8563_TMRC_MASK	3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCF8563_REG_TMR		0x0F /* timer */
 
 #define PCF8563_SC_LV		0x80 /* low voltage */
@@ -106,25 +76,6 @@ struct pcf8563 {
 	 * 1970...2069.
 	 */
 	int c_polarity;	/* 0: MO_C=1 means 19xx, otherwise MO_C=1 means 20xx */
-<<<<<<< HEAD
-};
-
-/*
- * In the routines that deal directly with the pcf8563 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
-static int pcf8563_get_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	struct pcf8563 *pcf8563 = i2c_get_clientdata(client);
-	unsigned char buf[13] = { PCF8563_REG_ST1 };
-
-	struct i2c_msg msgs[] = {
-		{ client->addr, 0, 1, buf },	/* setup read ptr */
-		{ client->addr, I2C_M_RD, 13, buf },	/* read status + date */
-	};
-
-	/* read registers */
-=======
 
 	struct i2c_client *client;
 #ifdef CONFIG_COMMON_CLK
@@ -149,17 +100,11 @@ static int pcf8563_read_block_data(struct i2c_client *client, unsigned char reg,
 		},
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((i2c_transfer(client->adapter, msgs, 2)) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	if (buf[PCF8563_REG_SC] & PCF8563_SC_LV)
-		dev_info(&client->dev,
-			"low voltage detected, date/time is not reliable.\n");
-=======
 	return 0;
 }
 
@@ -266,7 +211,6 @@ static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 			"low voltage detected, date/time is not reliable.\n");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev,
 		"%s: raw data is st1=%02x, st2=%02x, sec=%02x, min=%02x, hr=%02x, "
@@ -283,13 +227,7 @@ static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mday = bcd2bin(buf[PCF8563_REG_DM] & 0x3F);
 	tm->tm_wday = buf[PCF8563_REG_DW] & 0x07;
 	tm->tm_mon = bcd2bin(buf[PCF8563_REG_MO] & 0x1F) - 1; /* rtc mn 1-12 */
-<<<<<<< HEAD
-	tm->tm_year = bcd2bin(buf[PCF8563_REG_YR]);
-	if (tm->tm_year < 70)
-		tm->tm_year += 100;	/* assume we are in 1970...2069 */
-=======
 	tm->tm_year = bcd2bin(buf[PCF8563_REG_YR]) + 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* detect the polarity heuristically. see note above. */
 	pcf8563->c_polarity = (buf[PCF8563_REG_MO] & PCF8563_MO_C) ?
 		(tm->tm_year >= 100) : (tm->tm_year < 100);
@@ -300,21 +238,6 @@ static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-<<<<<<< HEAD
-	/* the clock can give out invalid datetime, but we cannot return
-	 * -EINVAL otherwise hwclock will refuse to set the time on bootup.
-	 */
-	if (rtc_valid_tm(tm) < 0)
-		dev_err(&client->dev, "retrieved date/time is not valid.\n");
-
-	return 0;
-}
-
-static int pcf8563_set_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	struct pcf8563 *pcf8563 = i2c_get_clientdata(client);
-	int i, err;
-=======
 	return 0;
 }
 
@@ -322,7 +245,6 @@ static int pcf8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct pcf8563 *pcf8563 = i2c_get_clientdata(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char buf[9];
 
 	dev_dbg(&client->dev, "%s: secs=%d, mins=%d, hours=%d, "
@@ -342,31 +264,12 @@ static int pcf8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	buf[PCF8563_REG_MO] = bin2bcd(tm->tm_mon + 1);
 
 	/* year and century */
-<<<<<<< HEAD
-	buf[PCF8563_REG_YR] = bin2bcd(tm->tm_year % 100);
-=======
 	buf[PCF8563_REG_YR] = bin2bcd(tm->tm_year - 100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcf8563->c_polarity ? (tm->tm_year >= 100) : (tm->tm_year < 100))
 		buf[PCF8563_REG_MO] |= PCF8563_MO_C;
 
 	buf[PCF8563_REG_DW] = tm->tm_wday & 0x07;
 
-<<<<<<< HEAD
-	/* write register's data */
-	for (i = 0; i < 7; i++) {
-		unsigned char data[2] = { PCF8563_REG_SC + i,
-						buf[PCF8563_REG_SC + i] };
-
-		err = i2c_master_send(client, data, sizeof(data));
-		if (err != sizeof(data)) {
-			dev_err(&client->dev,
-				"%s: err=%d addr=%02x, data=%02x\n",
-				__func__, err, data[0], data[1]);
-			return -EIO;
-		}
-	};
-=======
 	return pcf8563_write_block_data(client, PCF8563_REG_SC,
 				9 - PCF8563_REG_SC, buf + PCF8563_REG_SC);
 }
@@ -417,34 +320,10 @@ static int pcf8563_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *tm)
 		" enabled=%d, pending=%d\n", __func__, tm->time.tm_min,
 		tm->time.tm_hour, tm->time.tm_mday, tm->time.tm_wday,
 		tm->enabled, tm->pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
-{
-	return pcf8563_get_datetime(to_i2c_client(dev), tm);
-}
-
-static int pcf8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
-{
-	return pcf8563_set_datetime(to_i2c_client(dev), tm);
-}
-
-static const struct rtc_class_ops pcf8563_rtc_ops = {
-	.read_time	= pcf8563_rtc_read_time,
-	.set_time	= pcf8563_rtc_set_time,
-};
-
-static int pcf8563_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
-{
-	struct pcf8563 *pcf8563;
-
-	int err = 0;
-=======
 static int pcf8563_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -635,47 +514,12 @@ static int pcf8563_probe(struct i2c_client *client)
 	struct pcf8563 *pcf8563;
 	int err;
 	unsigned char buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev, "%s\n", __func__);
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	pcf8563 = kzalloc(sizeof(struct pcf8563), GFP_KERNEL);
-	if (!pcf8563)
-		return -ENOMEM;
-
-	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
-
-	i2c_set_clientdata(client, pcf8563);
-
-	pcf8563->rtc = rtc_device_register(pcf8563_driver.driver.name,
-				&client->dev, &pcf8563_rtc_ops, THIS_MODULE);
-
-	if (IS_ERR(pcf8563->rtc)) {
-		err = PTR_ERR(pcf8563->rtc);
-		goto exit_kfree;
-	}
-
-	return 0;
-
-exit_kfree:
-	kfree(pcf8563);
-
-	return err;
-}
-
-static int pcf8563_remove(struct i2c_client *client)
-{
-	struct pcf8563 *pcf8563 = i2c_get_clientdata(client);
-
-	if (pcf8563->rtc)
-		rtc_device_unregister(pcf8563->rtc);
-
-	kfree(pcf8563);
-=======
 	pcf8563 = devm_kzalloc(&client->dev, sizeof(struct pcf8563),
 				GFP_KERNEL);
 	if (!pcf8563)
@@ -740,7 +584,6 @@ static int pcf8563_remove(struct i2c_client *client)
 	/* register clk in common clk framework */
 	pcf8563_clkout_register_clk(pcf8563);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -748,22 +591,11 @@ static int pcf8563_remove(struct i2c_client *client)
 static const struct i2c_device_id pcf8563_id[] = {
 	{ "pcf8563", 0 },
 	{ "rtc8564", 0 },
-<<<<<<< HEAD
-=======
 	{ "pca8565", 0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, pcf8563_id);
 
-<<<<<<< HEAD
-static struct i2c_driver pcf8563_driver = {
-	.driver		= {
-		.name	= "rtc-pcf8563",
-	},
-	.probe		= pcf8563_probe,
-	.remove		= pcf8563_remove,
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id pcf8563_of_match[] = {
 	{ .compatible = "nxp,pcf8563" },
@@ -781,7 +613,6 @@ static struct i2c_driver pcf8563_driver = {
 		.of_match_table = of_match_ptr(pcf8563_of_match),
 	},
 	.probe		= pcf8563_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= pcf8563_id,
 };
 
@@ -790,7 +621,3 @@ module_i2c_driver(pcf8563_driver);
 MODULE_AUTHOR("Alessandro Zummo <a.zummo@towertech.it>");
 MODULE_DESCRIPTION("Philips PCF8563/Epson RTC8564 RTC driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

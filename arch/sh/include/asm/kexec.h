@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_KEXEC_H
 #define __ASM_SH_KEXEC_H
 
 #include <asm/ptrace.h>
 #include <asm/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * KEXEC_SOURCE_MEMORY_LIMIT maximum page get_free_page can return.
@@ -34,11 +28,7 @@
 /* The native architecture */
 #define KEXEC_ARCH KEXEC_ARCH_SH
 
-<<<<<<< HEAD
-#ifdef CONFIG_KEXEC
-=======
 #ifdef CONFIG_KEXEC_CORE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* arch/sh/kernel/machine_kexec.c */
 void reserve_crashkernel(void);
 
@@ -72,19 +62,11 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 		__asm__ __volatile__ ("stc gbr, %0" : "=r" (newregs->gbr));
 		__asm__ __volatile__ ("stc sr, %0" : "=r" (newregs->sr));
 
-<<<<<<< HEAD
-		newregs->pc = (unsigned long)current_text_addr();
-=======
 		newregs->pc = _THIS_IP_;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
 static inline void reserve_crashkernel(void) { }
-<<<<<<< HEAD
-#endif /* CONFIG_KEXEC */
-=======
 #endif /* CONFIG_KEXEC_CORE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_KEXEC_H */

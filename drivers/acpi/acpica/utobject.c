@@ -1,60 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-#include <acpi/acpi.h>
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
 #include <acpi/acpi.h>
 #include <linux/kmemleak.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "accommon.h"
 #include "acnamesp.h"
 
@@ -64,19 +18,11 @@ ACPI_MODULE_NAME("utobject")
 /* Local prototypes */
 static acpi_status
 acpi_ut_get_simple_object_size(union acpi_operand_object *obj,
-<<<<<<< HEAD
-			       acpi_size * obj_length);
-
-static acpi_status
-acpi_ut_get_package_object_size(union acpi_operand_object *obj,
-				acpi_size * obj_length);
-=======
 			       acpi_size *obj_length);
 
 static acpi_status
 acpi_ut_get_package_object_size(union acpi_operand_object *obj,
 				acpi_size *obj_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static acpi_status
 acpi_ut_get_element_length(u8 object_type,
@@ -90,11 +36,7 @@ acpi_ut_get_element_length(u8 object_type,
  * PARAMETERS:  module_name         - Source file name of caller
  *              line_number         - Line number of caller
  *              component_id        - Component type of caller
-<<<<<<< HEAD
- *              Type                - ACPI Type of the new object
-=======
  *              type                - ACPI Type of the new object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      A new internal object, null on failure
  *
@@ -102,11 +44,7 @@ acpi_ut_get_element_length(u8 object_type,
  *
  * NOTE:        We always allocate the worst-case object descriptor because
  *              these objects are cached, and we want them to be
-<<<<<<< HEAD
- *              one-size-satisifies-any-request.  This in itself may not be
-=======
  *              one-size-satisfies-any-request. This in itself may not be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              the most memory efficient, but the efficiency of the object
  *              cache should more than make up for this!
  *
@@ -133,10 +71,7 @@ union acpi_operand_object *acpi_ut_create_internal_object_dbg(const char
 	if (!object) {
 		return_PTR(NULL);
 	}
-<<<<<<< HEAD
-=======
 	kmemleak_not_leak(object);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case ACPI_TYPE_REGION:
@@ -145,15 +80,9 @@ union acpi_operand_object *acpi_ut_create_internal_object_dbg(const char
 
 		/* These types require a secondary object */
 
-<<<<<<< HEAD
-		second_object = acpi_ut_allocate_object_desc_dbg(module_name,
-								 line_number,
-								 component_id);
-=======
 		second_object =
 		    acpi_ut_allocate_object_desc_dbg(module_name, line_number,
 						     component_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!second_object) {
 			acpi_ut_delete_object_desc(object);
 			return_PTR(NULL);
@@ -168,10 +97,7 @@ union acpi_operand_object *acpi_ut_create_internal_object_dbg(const char
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* All others have no secondary object */
 		break;
 	}
@@ -193,11 +119,7 @@ union acpi_operand_object *acpi_ut_create_internal_object_dbg(const char
  *
  * FUNCTION:    acpi_ut_create_package_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Count               - Number of package elements
-=======
  * PARAMETERS:  count               - Number of package elements
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Pointer to a new Package object, null on failure
  *
@@ -223,17 +145,10 @@ union acpi_operand_object *acpi_ut_create_package_object(u32 count)
 	 * Create the element array. Count+1 allows the array to be null
 	 * terminated.
 	 */
-<<<<<<< HEAD
-	package_elements = ACPI_ALLOCATE_ZEROED(((acpi_size) count +
-						 1) * sizeof(void *));
-	if (!package_elements) {
-		acpi_ut_remove_reference(package_desc);
-=======
 	package_elements = ACPI_ALLOCATE_ZEROED(((acpi_size)count +
 						 1) * sizeof(void *));
 	if (!package_elements) {
 		ACPI_FREE(package_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_PTR(NULL);
 	}
 
@@ -306,12 +221,8 @@ union acpi_operand_object *acpi_ut_create_buffer_object(acpi_size buffer_size)
 		buffer = ACPI_ALLOCATE_ZEROED(buffer_size);
 		if (!buffer) {
 			ACPI_ERROR((AE_INFO, "Could not allocate size %u",
-<<<<<<< HEAD
-				    (u32) buffer_size));
-=======
 				    (u32)buffer_size));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			acpi_ut_remove_reference(buffer_desc);
 			return_PTR(NULL);
 		}
@@ -363,12 +274,8 @@ union acpi_operand_object *acpi_ut_create_string_object(acpi_size string_size)
 	string = ACPI_ALLOCATE_ZEROED(string_size + 1);
 	if (!string) {
 		ACPI_ERROR((AE_INFO, "Could not allocate size %u",
-<<<<<<< HEAD
-			    (u32) string_size));
-=======
 			    (u32)string_size));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ut_remove_reference(string_desc);
 		return_PTR(NULL);
 	}
@@ -387,19 +294,11 @@ union acpi_operand_object *acpi_ut_create_string_object(acpi_size string_size)
  *
  * FUNCTION:    acpi_ut_valid_internal_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object              - Object to be validated
- *
- * RETURN:      TRUE if object is valid, FALSE otherwise
- *
- * DESCRIPTION: Validate a pointer to be a union acpi_operand_object
-=======
  * PARAMETERS:  object              - Object to be validated
  *
  * RETURN:      TRUE if object is valid, FALSE otherwise
  *
  * DESCRIPTION: Validate a pointer to be of type union acpi_operand_object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -420,23 +319,14 @@ u8 acpi_ut_valid_internal_object(void *object)
 	switch (ACPI_GET_DESCRIPTOR_TYPE(object)) {
 	case ACPI_DESC_TYPE_OPERAND:
 
-<<<<<<< HEAD
-		/* The object appears to be a valid union acpi_operand_object    */
-=======
 		/* The object appears to be a valid union acpi_operand_object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return (TRUE);
 
 	default:
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
-				  "%p is not not an ACPI operand obj [%s]\n",
-=======
 
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 				  "%p is not an ACPI operand obj [%s]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  object, acpi_ut_get_descriptor_name(object)));
 		break;
 	}
@@ -452,15 +342,9 @@ u8 acpi_ut_valid_internal_object(void *object)
  *              line_number         - Caller's line number (for error output)
  *              component_id        - Caller's component ID (for error output)
  *
-<<<<<<< HEAD
- * RETURN:      Pointer to newly allocated object descriptor.  Null on error
- *
- * DESCRIPTION: Allocate a new object descriptor.  Gracefully handle
-=======
  * RETURN:      Pointer to newly allocated object descriptor. Null on error
  *
  * DESCRIPTION: Allocate a new object descriptor. Gracefully handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              error conditions.
  *
  ******************************************************************************/
@@ -482,10 +366,6 @@ void *acpi_ut_allocate_object_desc_dbg(const char *module_name,
 
 	/* Mark the descriptor type */
 
-<<<<<<< HEAD
-	memset(object, 0, sizeof(union acpi_operand_object));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_SET_DESCRIPTOR_TYPE(object, ACPI_DESC_TYPE_OPERAND);
 
 	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS, "%p Size %X\n",
@@ -498,11 +378,7 @@ void *acpi_ut_allocate_object_desc_dbg(const char *module_name,
  *
  * FUNCTION:    acpi_ut_delete_object_desc
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object          - An Acpi internal object to be deleted
-=======
  * PARAMETERS:  object          - An Acpi internal object to be deleted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None.
  *
@@ -514,11 +390,7 @@ void acpi_ut_delete_object_desc(union acpi_operand_object *object)
 {
 	ACPI_FUNCTION_TRACE_PTR(ut_delete_object_desc, object);
 
-<<<<<<< HEAD
-	/* Object must be a union acpi_operand_object    */
-=======
 	/* Object must be of type union acpi_operand_object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(object) != ACPI_DESC_TYPE_OPERAND) {
 		ACPI_ERROR((AE_INFO,
@@ -550,11 +422,7 @@ void acpi_ut_delete_object_desc(union acpi_operand_object *object)
 
 static acpi_status
 acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
-<<<<<<< HEAD
-			       acpi_size * obj_length)
-=======
 			       acpi_size *obj_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_size length;
 	acpi_size size;
@@ -562,27 +430,6 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 
 	ACPI_FUNCTION_TRACE_PTR(ut_get_simple_object_size, internal_object);
 
-<<<<<<< HEAD
-	/*
-	 * Handle a null object (Could be a uninitialized package
-	 * element -- which is legal)
-	 */
-	if (!internal_object) {
-		*obj_length = sizeof(union acpi_object);
-		return_ACPI_STATUS(AE_OK);
-	}
-
-	/* Start with the length of the Acpi object */
-
-	length = sizeof(union acpi_object);
-
-	if (ACPI_GET_DESCRIPTOR_TYPE(internal_object) == ACPI_DESC_TYPE_NAMED) {
-
-		/* Object is a named object (reference), just return the length */
-
-		*obj_length = ACPI_ROUND_UP_TO_NATIVE_WORD(length);
-		return_ACPI_STATUS(status);
-=======
 	/* Start with the length of the (external) Acpi object */
 
 	length = sizeof(union acpi_object);
@@ -610,7 +457,6 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 			    ACPI_CAST_PTR(struct acpi_namespace_node,
 					  internal_object)->name.ascii));
 		return_ACPI_STATUS(AE_AML_INTERNAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -622,20 +468,12 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 	switch (internal_object->common.type) {
 	case ACPI_TYPE_STRING:
 
-<<<<<<< HEAD
-		length += (acpi_size) internal_object->string.length + 1;
-=======
 		length += (acpi_size)internal_object->string.length + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_BUFFER:
 
-<<<<<<< HEAD
-		length += (acpi_size) internal_object->buffer.length;
-=======
 		length += (acpi_size)internal_object->buffer.length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_INTEGER:
@@ -650,10 +488,6 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 
 		switch (internal_object->reference.class) {
 		case ACPI_REFCLASS_NAME:
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Get the actual length of the full pathname to this object.
 			 * The reference will be converted to the pathname to the object
@@ -669,10 +503,6 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 			break;
 
 		default:
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * No other reference opcodes are supported.
 			 * Notably, Locals and Args are not supported, but this may be
@@ -701,11 +531,7 @@ acpi_ut_get_simple_object_size(union acpi_operand_object *internal_object,
 
 	/*
 	 * Account for the space required by the object rounded up to the next
-<<<<<<< HEAD
-	 * multiple of the machine word size.  This keeps each object aligned
-=======
 	 * multiple of the machine word size. This keeps each object aligned
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on a machine word boundary. (preventing alignment faults on some
 	 * machines.)
 	 */
@@ -736,10 +562,6 @@ acpi_ut_get_element_length(u8 object_type,
 
 	switch (object_type) {
 	case ACPI_COPY_TYPE_SIMPLE:
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Simple object - just get the size (Null object/entry is handled
 		 * here also) and sum it into the running package length
@@ -791,11 +613,7 @@ acpi_ut_get_element_length(u8 object_type,
 
 static acpi_status
 acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
-<<<<<<< HEAD
-				acpi_size * obj_length)
-=======
 				acpi_size *obj_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	struct acpi_pkg_info info;
@@ -806,14 +624,9 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 	info.object_space = 0;
 	info.num_packages = 1;
 
-<<<<<<< HEAD
-	status = acpi_ut_walk_package_tree(internal_object, NULL,
-					   acpi_ut_get_element_length, &info);
-=======
 	status =
 	    acpi_ut_walk_package_tree(internal_object, NULL,
 				      acpi_ut_get_element_length, &info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -823,14 +636,9 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 	 * just add the length of the package objects themselves.
 	 * Round up to the next machine word.
 	 */
-<<<<<<< HEAD
-	info.length += ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object)) *
-	    (acpi_size) info.num_packages;
-=======
 	info.length +=
 	    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object)) *
 	    (acpi_size)info.num_packages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return the total package length */
 
@@ -854,24 +662,15 @@ acpi_ut_get_package_object_size(union acpi_operand_object *internal_object,
 
 acpi_status
 acpi_ut_get_object_size(union acpi_operand_object *internal_object,
-<<<<<<< HEAD
-			acpi_size * obj_length)
-=======
 			acpi_size *obj_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_ENTRY();
 
 	if ((ACPI_GET_DESCRIPTOR_TYPE(internal_object) ==
-<<<<<<< HEAD
-	     ACPI_DESC_TYPE_OPERAND)
-	    && (internal_object->common.type == ACPI_TYPE_PACKAGE)) {
-=======
 	     ACPI_DESC_TYPE_OPERAND) &&
 	    (internal_object->common.type == ACPI_TYPE_PACKAGE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status =
 		    acpi_ut_get_package_object_size(internal_object,
 						    obj_length);

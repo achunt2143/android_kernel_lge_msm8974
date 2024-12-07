@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_BCMA_PRIVATE_H_
 #define LINUX_BCMA_PRIVATE_H_
 
@@ -12,9 +9,6 @@
 #include <linux/bcma/bcma.h>
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-#define BCMA_CORE_SIZE		0x1000
-=======
 #define bcma_err(bus, fmt, ...) \
 	dev_err((bus)->dev, "bus%d: " fmt, (bus)->num, ##__VA_ARGS__)
 #define bcma_warn(bus, fmt, ...) \
@@ -23,18 +17,10 @@
 	dev_info((bus)->dev, "bus%d: " fmt, (bus)->num, ##__VA_ARGS__)
 #define bcma_debug(bus, fmt, ...) \
 	dev_dbg((bus)->dev, "bus%d: " fmt, (bus)->num, ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bcma_bus;
 
 /* main.c */
-<<<<<<< HEAD
-int __devinit bcma_bus_register(struct bcma_bus *bus);
-void bcma_bus_unregister(struct bcma_bus *bus);
-int __init bcma_bus_early_register(struct bcma_bus *bus,
-				   struct bcma_device *core_cc,
-				   struct bcma_device *core_mips);
-=======
 bool bcma_wait_value(struct bcma_device *core, u16 reg, u32 mask, u32 value,
 		     int timeout);
 void bcma_prepare_core(struct bcma_bus *bus, struct bcma_device *core);
@@ -43,43 +29,26 @@ void bcma_unregister_cores(struct bcma_bus *bus);
 int bcma_bus_register(struct bcma_bus *bus);
 void bcma_bus_unregister(struct bcma_bus *bus);
 int __init bcma_bus_early_register(struct bcma_bus *bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 int bcma_bus_suspend(struct bcma_bus *bus);
 int bcma_bus_resume(struct bcma_bus *bus);
 #endif
 
 /* scan.c */
-<<<<<<< HEAD
-int bcma_bus_scan(struct bcma_bus *bus);
-int __init bcma_bus_scan_early(struct bcma_bus *bus,
-			       struct bcma_device_id *match,
-			       struct bcma_device *core);
-void bcma_init_bus(struct bcma_bus *bus);
-=======
 void bcma_detect_chip(struct bcma_bus *bus);
 int bcma_bus_scan(struct bcma_bus *bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sprom.c */
 int bcma_sprom_get(struct bcma_bus *bus);
 
 /* driver_chipcommon.c */
-<<<<<<< HEAD
-=======
 void bcma_core_chipcommon_early_init(struct bcma_drv_cc *cc);
 void bcma_core_chipcommon_init(struct bcma_drv_cc *cc);
 void bcma_chipco_bcm4331_ext_pa_lines_ctl(struct bcma_drv_cc *cc, bool enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BCMA_DRIVER_MIPS
 void bcma_chipco_serial_init(struct bcma_drv_cc *cc);
 #endif /* CONFIG_BCMA_DRIVER_MIPS */
 
-<<<<<<< HEAD
-/* driver_chipcommon_pmu.c */
-u32 bcma_pmu_alp_clock(struct bcma_drv_cc *cc);
-u32 bcma_pmu_get_clockcpu(struct bcma_drv_cc *cc);
-=======
 /* driver_chipcommon_b.c */
 int bcma_core_chipcommon_b_init(struct bcma_drv_cc_b *ccb);
 void bcma_core_chipcommon_b_free(struct bcma_drv_cc_b *ccb);
@@ -128,7 +97,6 @@ static inline int bcma_nflash_init(struct bcma_drv_cc *cc)
 	return 0;
 }
 #endif /* CONFIG_BCMA_NFLASH */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_BCMA_HOST_PCI
 /* host_pci.c */
@@ -136,16 +104,6 @@ extern int __init bcma_host_pci_init(void);
 extern void __exit bcma_host_pci_exit(void);
 #endif /* CONFIG_BCMA_HOST_PCI */
 
-<<<<<<< HEAD
-/* driver_pci.c */
-u32 bcma_pcie_read(struct bcma_drv_pci *pc, u32 address);
-
-#ifdef CONFIG_BCMA_DRIVER_PCI_HOSTMODE
-bool __devinit bcma_core_pci_is_in_hostmode(struct bcma_drv_pci *pc);
-void __devinit bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc);
-#endif /* CONFIG_BCMA_DRIVER_PCI_HOSTMODE */
-
-=======
 /* host_soc.c */
 #if defined(CONFIG_BCMA_HOST_SOC) && defined(CONFIG_OF)
 extern int __init bcma_host_soc_register_driver(void);
@@ -254,5 +212,4 @@ static inline int bcma_gpio_unregister(struct bcma_drv_cc *cc)
 }
 #endif /* CONFIG_BCMA_DRIVER_GPIO */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

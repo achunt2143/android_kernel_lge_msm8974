@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT=./
 ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
@@ -16,17 +13,10 @@ INSTALL = /usr/bin/install
 default: all
 
 $(OUTPUT)centrino-decode: ../i386/centrino-decode.c
-<<<<<<< HEAD
-	$(CC) $(CFLAGS) -o $@ $<
-
-$(OUTPUT)powernow-k8-decode: ../i386/powernow-k8-decode.c
-	$(CC) $(CFLAGS) -o $@ $<
-=======
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $<
 
 $(OUTPUT)powernow-k8-decode: ../i386/powernow-k8-decode.c
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $<
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 all: $(OUTPUT)centrino-decode $(OUTPUT)powernow-k8-decode
 

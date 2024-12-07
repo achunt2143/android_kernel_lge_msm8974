@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_FC_H__
@@ -35,10 +17,7 @@ typedef u64 wwn_t;
 
 #define WWN_NULL	(0)
 #define FC_SYMNAME_MAX	256	/*  max name server symbolic name size */
-<<<<<<< HEAD
-=======
 #define FC_ALPA_MAX	128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #pragma pack(1)
 
@@ -54,24 +33,6 @@ struct scsi_cdb_s {
 	u8         scsi_cdb[SCSI_MAX_CDBLEN];
 };
 
-<<<<<<< HEAD
-/* ------------------------------------------------------------
- * SCSI status byte values
- * ------------------------------------------------------------
- */
-#define SCSI_STATUS_GOOD                   0x00
-#define SCSI_STATUS_CHECK_CONDITION        0x02
-#define SCSI_STATUS_CONDITION_MET          0x04
-#define SCSI_STATUS_BUSY                   0x08
-#define SCSI_STATUS_INTERMEDIATE           0x10
-#define SCSI_STATUS_ICM                    0x14 /* intermediate condition met */
-#define SCSI_STATUS_RESERVATION_CONFLICT   0x18
-#define SCSI_STATUS_COMMAND_TERMINATED     0x22
-#define SCSI_STATUS_QUEUE_FULL             0x28
-#define SCSI_STATUS_ACA_ACTIVE             0x30
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCSI_MAX_ALLOC_LEN      0xFF    /* maximum allocarion length */
 
 /*
@@ -839,11 +800,7 @@ struct fc_rscn_pl_s {
 	u8	command;
 	u8	pagelen;
 	__be16	payldlen;
-<<<<<<< HEAD
-	struct fc_rscn_event_s event[1];
-=======
 	struct fc_rscn_event_s event[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1037,24 +994,17 @@ struct fc_symname_s {
 	u8         symname[FC_SYMNAME_MAX];
 };
 
-<<<<<<< HEAD
-=======
 struct fc_alpabm_s {
 	u8	alpa_bm[FC_ALPA_MAX / 8];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * protocol default timeout values
  */
 #define FC_ED_TOV	2
 #define FC_REC_TOV	(FC_ED_TOV + 1)
 #define FC_RA_TOV	10
-<<<<<<< HEAD
-#define FC_ELS_TOV	((2 * FC_RA_TOV) + 1)
-=======
 #define FC_ELS_TOV	(2 * FC_RA_TOV)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FC_FCCT_TOV	(3 * FC_RA_TOV)
 
 /*
@@ -1243,11 +1193,7 @@ enum {
 };
 
 /*
-<<<<<<< HEAD
- * defintions for CT reason code
-=======
  * definitions for CT reason code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum {
 	CT_RSN_INV_CMD		= 0x01,
@@ -1294,11 +1240,7 @@ enum {
 };
 
 /*
-<<<<<<< HEAD
- * defintions for the explanation code for all servers
-=======
  * definitions for the explanation code for all servers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum {
 	CT_EXP_AUTH_EXCEPTION		= 0xF1,
@@ -1320,10 +1262,7 @@ enum {
 	GS_GSPN_ID	= 0x0118,	/* Get symbolic PN on ID */
 	GS_RFT_ID	= 0x0217,	/* Register fc4type on ID */
 	GS_RSPN_ID	= 0x0218,	/* Register symbolic PN on ID */
-<<<<<<< HEAD
-=======
 	GS_RSNN_NN	= 0x0239,	/* Register symbolic NN on NN */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	GS_RPN_ID	= 0x0212,	/* Register port name */
 	GS_RNN_ID	= 0x0213,	/* Register node name */
 	GS_RCS_ID	= 0x0214,	/* Register class of service */
@@ -1402,8 +1341,6 @@ struct fcgs_rspnid_req_s {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * RSNN_NN
  */
 struct fcgs_rsnn_nn_req_s {
@@ -1413,7 +1350,6 @@ struct fcgs_rsnn_nn_req_s {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RPN_ID
  */
 struct fcgs_rpnid_req_s {
@@ -1573,15 +1509,12 @@ enum fdmi_hba_attribute_type {
 	FDMI_HBA_ATTRIB_FW_VERSION,	/* 0x0009 */
 	FDMI_HBA_ATTRIB_OS_NAME,	/* 0x000A */
 	FDMI_HBA_ATTRIB_MAX_CT,		/* 0x000B */
-<<<<<<< HEAD
-=======
 	FDMI_HBA_ATTRIB_NODE_SYM_NAME,  /* 0x000C */
 	FDMI_HBA_ATTRIB_VENDOR_INFO,    /* 0x000D */
 	FDMI_HBA_ATTRIB_NUM_PORTS,  /* 0x000E */
 	FDMI_HBA_ATTRIB_FABRIC_NAME,    /* 0x000F */
 	FDMI_HBA_ATTRIB_BIOS_VER,   /* 0x0010 */
 	FDMI_HBA_ATTRIB_VENDOR_ID = 0x00E0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FDMI_HBA_ATTRIB_MAX_TYPE
 };
@@ -1596,8 +1529,6 @@ enum fdmi_port_attribute_type {
 	FDMI_PORT_ATTRIB_FRAME_SIZE,	/* 0x0004 */
 	FDMI_PORT_ATTRIB_DEV_NAME,	/* 0x0005 */
 	FDMI_PORT_ATTRIB_HOST_NAME,	/* 0x0006 */
-<<<<<<< HEAD
-=======
 	FDMI_PORT_ATTRIB_NODE_NAME,     /* 0x0007 */
 	FDMI_PORT_ATTRIB_PORT_NAME,     /* 0x0008 */
 	FDMI_PORT_ATTRIB_PORT_SYM_NAME, /* 0x0009 */
@@ -1607,7 +1538,6 @@ enum fdmi_port_attribute_type {
 	FDMI_PORT_ATTRIB_PORT_FC4_TYPE, /* 0x000D */
 	FDMI_PORT_ATTRIB_PORT_STATE = 0x101,    /* 0x0101 */
 	FDMI_PORT_ATTRIB_PORT_NUM_RPRT = 0x102, /* 0x0102 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FDMI_PORT_ATTR_MAX_TYPE
 };
@@ -1618,11 +1548,7 @@ enum fdmi_port_attribute_type {
 struct fdmi_attr_s {
 	__be16        type;
 	__be16        len;
-<<<<<<< HEAD
-	u8         value[1];
-=======
 	u8         value[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

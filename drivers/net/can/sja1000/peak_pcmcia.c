@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010-2012 Stephane Grosjean <s.grosjean@peak-system.com>
  *
  * CAN driver for PEAK-System PCAN-PC Card
  * Derived from the PCAN project file driver/src/pcan_pccard.c
  * Copyright (C) 2006-2010 PEAK System-Technik GmbH
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the version 2 of the GNU General Public License
- * as published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,10 +22,6 @@
 MODULE_AUTHOR("Stephane Grosjean <s.grosjean@peak-system.com>");
 MODULE_DESCRIPTION("CAN driver for PEAK-System PCAN-PC Cards");
 MODULE_LICENSE("GPL v2");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("PEAK PCAN-PC Card");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PEAK-System PCMCIA driver name */
 #define PCC_NAME		"peak_pcmcia"
@@ -206,11 +187,7 @@ static void pcan_write_canreg(const struct sja1000_priv *priv, int port, u8 v)
 	int c = (priv->reg_base - card->ioport_addr) / PCC_CHAN_SIZE;
 
 	/* sja1000 register changes control the leds state */
-<<<<<<< HEAD
-	if (port == REG_MOD)
-=======
 	if (port == SJA1000_MOD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (v) {
 		case MOD_RM:
 			/* Reset Mode: set led on */
@@ -395,15 +372,9 @@ static inline void pcan_set_can_power(struct pcan_pccard *card, int onoff)
 /*
  * set leds state according to channel activity
  */
-<<<<<<< HEAD
-static void pcan_led_timer(unsigned long arg)
-{
-	struct pcan_pccard *card = (struct pcan_pccard *)arg;
-=======
 static void pcan_led_timer(struct timer_list *t)
 {
 	struct pcan_pccard *card = from_timer(card, t, led_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev;
 	int i, up_count = 0;
 	u8 ccr;
@@ -507,11 +478,7 @@ static void pcan_free_channels(struct pcan_pccard *card)
 		if (!netdev)
 			continue;
 
-<<<<<<< HEAD
-		strncpy(name, netdev->name, IFNAMSIZ);
-=======
 		strscpy(name, netdev->name, IFNAMSIZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		unregister_sja1000dev(netdev);
 
@@ -533,19 +500,11 @@ static void pcan_free_channels(struct pcan_pccard *card)
 static inline int pcan_channel_present(struct sja1000_priv *priv)
 {
 	/* make sure SJA1000 is in reset mode */
-<<<<<<< HEAD
-	pcan_write_canreg(priv, REG_MOD, 1);
-	pcan_write_canreg(priv, REG_CDR, CDR_PELICAN);
-
-	/* read reset-values */
-	if (pcan_read_canreg(priv, REG_CDR) == CDR_PELICAN)
-=======
 	pcan_write_canreg(priv, SJA1000_MOD, 1);
 	pcan_write_canreg(priv, SJA1000_CDR, CDR_PELICAN);
 
 	/* read reset-values */
 	if (pcan_read_canreg(priv, SJA1000_CDR) == CDR_PELICAN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -562,11 +521,7 @@ static int pcan_add_channels(struct pcan_pccard *card)
 	pcan_write_reg(card, PCC_CCR, ccr);
 
 	/* wait 2ms before unresetting channels */
-<<<<<<< HEAD
-	mdelay(2);
-=======
 	usleep_range(2000, 3000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccr &= ~PCC_CCR_RST_ALL;
 	pcan_write_reg(card, PCC_CCR, ccr);
@@ -586,10 +541,7 @@ static int pcan_add_channels(struct pcan_pccard *card)
 		priv = netdev_priv(netdev);
 		priv->priv = card;
 		SET_NETDEV_DEV(netdev, &pdev->dev);
-<<<<<<< HEAD
-=======
 		netdev->dev_id = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		priv->irq_flags = IRQF_SHARED;
 		netdev->irq = pdev->irq;
@@ -672,11 +624,7 @@ static void pcan_free(struct pcmcia_device *pdev)
 /*
  * setup PCMCIA socket and probe for PEAK-System PC-CARD
  */
-<<<<<<< HEAD
-static int __devinit pcan_probe(struct pcmcia_device *pdev)
-=======
 static int pcan_probe(struct pcmcia_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcan_pccard *card;
 	int err;
@@ -704,10 +652,6 @@ static int pcan_probe(struct pcmcia_device *pdev)
 
 	card = kzalloc(sizeof(struct pcan_pccard), GFP_KERNEL);
 	if (!card) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "couldn't allocate card memory\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto probe_err_2;
 	}
@@ -726,26 +670,13 @@ static int pcan_probe(struct pcmcia_device *pdev)
 	card->fw_major = pcan_read_reg(card, PCC_FW_MAJOR);
 	card->fw_minor = pcan_read_reg(card, PCC_FW_MINOR);
 
-<<<<<<< HEAD
-	/* display board name and firware version */
-=======
 	/* display board name and firmware version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev, "PEAK-System pcmcia card %s fw %d.%d\n",
 		pdev->prod_id[1] ? pdev->prod_id[1] : "PCAN-PC Card",
 		card->fw_major, card->fw_minor);
 
 	/* detect available channels */
 	pcan_add_channels(card);
-<<<<<<< HEAD
-	if (!card->chan_count)
-		goto probe_err_4;
-
-	/* init the timer which controls the leds */
-	init_timer(&card->led_timer);
-	card->led_timer.function = pcan_led_timer;
-	card->led_timer.data = (unsigned long)card;
-=======
 	if (!card->chan_count) {
 		err = -ENOMEM;
 		goto probe_err_4;
@@ -753,7 +684,6 @@ static int pcan_probe(struct pcmcia_device *pdev)
 
 	/* init the timer which controls the leds */
 	timer_setup(&card->led_timer, pcan_led_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* request the given irq */
 	err = request_irq(pdev->irq, &pcan_isr, IRQF_SHARED, PCC_NAME, card);
@@ -800,19 +730,4 @@ static struct pcmcia_driver pcan_driver = {
 	.remove = pcan_remove,
 	.id_table = pcan_table,
 };
-<<<<<<< HEAD
-
-static int __init pcan_init(void)
-{
-	return pcmcia_register_driver(&pcan_driver);
-}
-module_init(pcan_init);
-
-static void __exit pcan_exit(void)
-{
-	pcmcia_unregister_driver(&pcan_driver);
-}
-module_exit(pcan_exit);
-=======
 module_pcmcia_driver(pcan_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

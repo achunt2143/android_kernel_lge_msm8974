@@ -1,47 +1,9 @@
-<<<<<<< HEAD
-/*
- * drivers/net/phy/mdio_bus.c
- *
- * MDIO Bus interface
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /* MDIO Bus interface
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Andy Fleming
  *
  * Copyright (c) 2004 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
- */
-#include <linux/kernel.h>
-#include <linux/string.h>
-#include <linux/errno.h>
-#include <linux/unistd.h>
-#include <linux/slab.h>
-#include <linux/interrupt.h>
-#include <linux/init.h>
-#include <linux/delay.h>
-#include <linux/device.h>
-#include <linux/netdevice.h>
-#include <linux/etherdevice.h>
-#include <linux/skbuff.h>
-#include <linux/spinlock.h>
-#include <linux/mm.h>
-#include <linux/module.h>
-#include <linux/mii.h>
-#include <linux/ethtool.h>
-#include <linux/phy.h>
-
-#include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/uaccess.h>
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -173,7 +135,6 @@ bool mdiobus_is_registered_device(struct mii_bus *bus, int addr)
 	return mdiobus_find_device(bus, addr) != NULL;
 }
 EXPORT_SYMBOL(mdiobus_is_registered_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * mdiobus_alloc_size - allocate a mii_bus structure
@@ -188,10 +149,7 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
 	struct mii_bus *bus;
 	size_t aligned_size = ALIGN(sizeof(*bus), NETDEV_ALIGN);
 	size_t alloc_size;
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we alloc extra space, it should be aligned */
 	if (size)
@@ -200,12 +158,6 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
 		alloc_size = sizeof(*bus);
 
 	bus = kzalloc(alloc_size, GFP_KERNEL);
-<<<<<<< HEAD
-	if (bus) {
-		bus->state = MDIOBUS_ALLOCATED;
-		if (size)
-			bus->priv = (void *)bus + aligned_size;
-=======
 	if (!bus)
 		return NULL;
 
@@ -217,7 +169,6 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
 	for (i = 0; i < PHY_MAX_ADDR; i++) {
 		bus->irq[i] = PHY_POLL;
 		u64_stats_init(&bus->stats[i].syncp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return bus;
@@ -234,40 +185,6 @@ EXPORT_SYMBOL(mdiobus_alloc_size);
 static void mdiobus_release(struct device *d)
 {
 	struct mii_bus *bus = to_mii_bus(d);
-<<<<<<< HEAD
-	BUG_ON(bus->state != MDIOBUS_RELEASED &&
-	       /* for compatibility with error handling in drivers */
-	       bus->state != MDIOBUS_ALLOCATED);
-	kfree(bus);
-}
-
-static struct class mdio_bus_class = {
-	.name		= "mdio_bus",
-	.dev_release	= mdiobus_release,
-};
-
-/**
- * mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
- * @bus: target mii_bus
- *
- * Description: Called by a bus driver to bring up all the PHYs
- *   on a given bus, and attach them to the bus.
- *
- * Returns 0 on success or < 0 on error.
- */
-int mdiobus_register(struct mii_bus *bus)
-{
-	int i, err;
-
-	if (NULL == bus || NULL == bus->name ||
-			NULL == bus->read ||
-			NULL == bus->write)
-		return -EINVAL;
-
-	BUG_ON(bus->state != MDIOBUS_ALLOCATED &&
-	       bus->state != MDIOBUS_UNREGISTERED);
-
-=======
 
 	WARN(bus->state != MDIOBUS_RELEASED &&
 	     /* for compatibility with error handling in drivers */
@@ -792,17 +709,11 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
 	     "%s: not in ALLOCATED or UNREGISTERED state\n", bus->id);
 
 	bus->owner = owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus->dev.parent = bus->parent;
 	bus->dev.class = &mdio_bus_class;
 	bus->dev.groups = NULL;
 	dev_set_name(&bus->dev, "%s", bus->id);
 
-<<<<<<< HEAD
-	err = device_register(&bus->dev);
-	if (err) {
-		printk(KERN_ERR "mii_bus %s failed to register\n", bus->id);
-=======
 	/* If the bus state is allocated, we're registering a fresh bus
 	 * that may have a fwnode associated with it. Grab a reference
 	 * to the fwnode. This will be dropped when the bus is released.
@@ -822,56 +733,10 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
 	err = device_register(&bus->dev);
 	if (err) {
 		pr_err("mii_bus %s failed to register\n", bus->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	mutex_init(&bus->mdio_lock);
-<<<<<<< HEAD
-
-	if (bus->reset)
-		bus->reset(bus);
-
-	for (i = 0; i < PHY_MAX_ADDR; i++) {
-		if ((bus->phy_mask & (1 << i)) == 0) {
-			struct phy_device *phydev;
-
-			phydev = mdiobus_scan(bus, i);
-			if (IS_ERR(phydev)) {
-				err = PTR_ERR(phydev);
-				goto error;
-			}
-		}
-	}
-
-	bus->state = MDIOBUS_REGISTERED;
-	pr_info("%s: probed\n", bus->name);
-	return 0;
-
-error:
-	while (--i >= 0) {
-		if (bus->phy_map[i])
-			device_unregister(&bus->phy_map[i]->dev);
-	}
-	device_del(&bus->dev);
-	return err;
-}
-EXPORT_SYMBOL(mdiobus_register);
-
-void mdiobus_unregister(struct mii_bus *bus)
-{
-	int i;
-
-	BUG_ON(bus->state != MDIOBUS_REGISTERED);
-	bus->state = MDIOBUS_UNREGISTERED;
-
-	device_del(&bus->dev);
-	for (i = 0; i < PHY_MAX_ADDR; i++) {
-		if (bus->phy_map[i])
-			device_unregister(&bus->phy_map[i]->dev);
-		bus->phy_map[i] = NULL;
-	}
-=======
 	mutex_init(&bus->shared_lock);
 
 	/* assert bus level PHY GPIO reset */
@@ -961,7 +826,6 @@ void mdiobus_unregister(struct mii_bus *bus)
 		gpiod_set_value_cansleep(bus->reset_gpiod, 1);
 
 	device_del(&bus->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mdiobus_unregister);
 
@@ -975,50 +839,20 @@ EXPORT_SYMBOL(mdiobus_unregister);
  */
 void mdiobus_free(struct mii_bus *bus)
 {
-<<<<<<< HEAD
-	/*
-	 * For compatibility with error handling in drivers.
-	 */
-=======
 	/* For compatibility with error handling in drivers. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bus->state == MDIOBUS_ALLOCATED) {
 		kfree(bus);
 		return;
 	}
 
-<<<<<<< HEAD
-	BUG_ON(bus->state != MDIOBUS_UNREGISTERED);
-=======
 	WARN(bus->state != MDIOBUS_UNREGISTERED,
 	     "%s: not in UNREGISTERED state\n", bus->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus->state = MDIOBUS_RELEASED;
 
 	put_device(&bus->dev);
 }
 EXPORT_SYMBOL(mdiobus_free);
 
-<<<<<<< HEAD
-struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
-{
-	struct phy_device *phydev;
-	int err;
-
-	phydev = get_phy_device(bus, addr);
-	if (IS_ERR(phydev) || phydev == NULL)
-		return phydev;
-
-	err = phy_device_register(phydev);
-	if (err) {
-		phy_device_free(phydev);
-		return NULL;
-	}
-
-	return phydev;
-}
-EXPORT_SYMBOL(mdiobus_scan);
-=======
 static void mdiobus_stats_acct(struct mdio_bus_stats *stats, bool op, int ret)
 {
 	preempt_disable();
@@ -1245,7 +1079,6 @@ int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum)
 	return retval;
 }
 EXPORT_SYMBOL(mdiobus_read_nested);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * mdiobus_read - Convenience function for reading a given MII mgmt register
@@ -1261,15 +1094,8 @@ int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
 {
 	int retval;
 
-<<<<<<< HEAD
-	BUG_ON(in_interrupt());
-
-	mutex_lock(&bus->mdio_lock);
-	retval = bus->read(bus, addr, regnum);
-=======
 	mutex_lock(&bus->mdio_lock);
 	retval = __mdiobus_read(bus, addr, regnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bus->mdio_lock);
 
 	return retval;
@@ -1277,8 +1103,6 @@ int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
 EXPORT_SYMBOL(mdiobus_read);
 
 /**
-<<<<<<< HEAD
-=======
  * mdiobus_c45_read - Convenience function for reading a given MII mgmt register
  * @bus: the mii_bus struct
  * @addr: the phy address
@@ -1355,7 +1179,6 @@ int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val)
 EXPORT_SYMBOL(mdiobus_write_nested);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mdiobus_write - Convenience function for writing a given MII mgmt register
  * @bus: the mii_bus struct
  * @addr: the phy address
@@ -1370,15 +1193,8 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
 {
 	int err;
 
-<<<<<<< HEAD
-	BUG_ON(in_interrupt());
-
-	mutex_lock(&bus->mdio_lock);
-	err = bus->write(bus, addr, regnum, val);
-=======
 	mutex_lock(&bus->mdio_lock);
 	err = __mdiobus_write(bus, addr, regnum, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bus->mdio_lock);
 
 	return err;
@@ -1386,93 +1202,6 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
 EXPORT_SYMBOL(mdiobus_write);
 
 /**
-<<<<<<< HEAD
- * mdio_bus_match - determine if given PHY driver supports the given PHY device
- * @dev: target PHY device
- * @drv: given PHY driver
- *
- * Description: Given a PHY device, and a PHY driver, return 1 if
- *   the driver supports the device.  Otherwise, return 0.
- */
-static int mdio_bus_match(struct device *dev, struct device_driver *drv)
-{
-	struct phy_device *phydev = to_phy_device(dev);
-	struct phy_driver *phydrv = to_phy_driver(drv);
-
-	return ((phydrv->phy_id & phydrv->phy_id_mask) ==
-		(phydev->phy_id & phydrv->phy_id_mask));
-}
-
-#ifdef CONFIG_PM
-
-static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
-{
-	struct device_driver *drv = phydev->dev.driver;
-	struct phy_driver *phydrv = to_phy_driver(drv);
-	struct net_device *netdev = phydev->attached_dev;
-
-	if (!drv || !phydrv->suspend)
-		return false;
-
-	/* PHY not attached? May suspend. */
-	if (!netdev)
-		return true;
-
-	/*
-	 * Don't suspend PHY if the attched netdev parent may wakeup.
-	 * The parent may point to a PCI device, as in tg3 driver.
-	 */
-	if (netdev->dev.parent && device_may_wakeup(netdev->dev.parent))
-		return false;
-
-	/*
-	 * Also don't suspend PHY if the netdev itself may wakeup. This
-	 * is the case for devices w/o underlaying pwr. mgmt. aware bus,
-	 * e.g. SoC devices.
-	 */
-	if (device_may_wakeup(&netdev->dev))
-		return false;
-
-	return true;
-}
-
-static int mdio_bus_suspend(struct device *dev)
-{
-	struct phy_driver *phydrv = to_phy_driver(dev->driver);
-	struct phy_device *phydev = to_phy_device(dev);
-
-	/*
-	 * We must stop the state machine manually, otherwise it stops out of
-	 * control, possibly with the phydev->lock held. Upon resume, netdev
-	 * may call phy routines that try to grab the same lock, and that may
-	 * lead to a deadlock.
-	 */
-	if (phydev->attached_dev && phydev->adjust_link)
-		phy_stop_machine(phydev);
-
-	if (!mdio_bus_phy_may_suspend(phydev))
-		return 0;
-
-	return phydrv->suspend(phydev);
-}
-
-static int mdio_bus_resume(struct device *dev)
-{
-	struct phy_driver *phydrv = to_phy_driver(dev->driver);
-	struct phy_device *phydev = to_phy_device(dev);
-	int ret;
-
-	if (!mdio_bus_phy_may_suspend(phydev))
-		goto no_resume;
-
-	ret = phydrv->resume(phydev);
-	if (ret < 0)
-		return ret;
-
-no_resume:
-	if (phydev->attached_dev && phydev->adjust_link)
-		phy_start_machine(phydev, NULL);
-=======
  * mdiobus_c45_write - Convenience function for writing a given MII mgmt register
  * @bus: the mii_bus struct
  * @addr: the phy address
@@ -1661,31 +1390,10 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
 
 	if (mdio->bus_match)
 		return mdio->bus_match(dev, drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mdio_bus_restore(struct device *dev)
-{
-	struct phy_device *phydev = to_phy_device(dev);
-	struct net_device *netdev = phydev->attached_dev;
-	int ret;
-
-	if (!netdev)
-		return 0;
-
-	ret = phy_init_hw(phydev);
-	if (ret < 0)
-		return ret;
-
-	/* The PHY needs to renegotiate. */
-	phydev->link = 0;
-	phydev->state = PHY_UP;
-
-	phy_start_machine(phydev, NULL);
-=======
 static int mdio_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	int rc;
@@ -1694,33 +1402,10 @@ static int mdio_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	rc = of_device_uevent_modalias(dev, env);
 	if (rc != -ENODEV)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dev_pm_ops mdio_bus_pm_ops = {
-	.suspend = mdio_bus_suspend,
-	.resume = mdio_bus_resume,
-	.freeze = mdio_bus_suspend,
-	.thaw = mdio_bus_resume,
-	.restore = mdio_bus_restore,
-};
-
-#define MDIO_BUS_PM_OPS (&mdio_bus_pm_ops)
-
-#else
-
-#define MDIO_BUS_PM_OPS NULL
-
-#endif /* CONFIG_PM */
-
-struct bus_type mdio_bus_type = {
-	.name		= "mdio_bus",
-	.match		= mdio_bus_match,
-	.pm		= MDIO_BUS_PM_OPS,
-=======
 static struct attribute *mdio_bus_device_statistics_attrs[] = {
 	&dev_attr_mdio_bus_device_transfers.attr.attr,
 	&dev_attr_mdio_bus_device_errors.attr.attr,
@@ -1744,7 +1429,6 @@ const struct bus_type mdio_bus_type = {
 	.dev_groups	= mdio_bus_dev_groups,
 	.match		= mdio_bus_match,
 	.uevent		= mdio_uevent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(mdio_bus_type);
 
@@ -1762,17 +1446,12 @@ int __init mdio_bus_init(void)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_PHYLIB)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mdio_bus_exit(void)
 {
 	class_unregister(&mdio_bus_class);
 	bus_unregister(&mdio_bus_type);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(mdio_bus_exit);
 #else
 module_init(mdio_bus_init);
@@ -1780,4 +1459,3 @@ module_init(mdio_bus_init);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MDIO bus/device layer");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
- */
-
-#include "dtc.h"
-
-static struct del_list *head = NULL;
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
@@ -30,7 +5,6 @@ static struct del_list *head = NULL;
 
 #include "dtc.h"
 #include "srcpos.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tree building functions
@@ -62,36 +36,8 @@ void delete_labels(struct label **labels)
 		label->deleted = 1;
 }
 
-<<<<<<< HEAD
-/* write list of deleted properties and nodes */
-static void add_del_list(struct del_list **dlist, enum deltype type,
-		char *ditem)
-{
-	struct del_list *new;
-
-	new = xmalloc(sizeof(*new));
-	memset(new, 0, sizeof(*new));
-	new->name = ditem;
-	new->type = type;
-	new->next = *dlist;
-	*dlist = new;
-}
-
-void add_del_list_node(struct del_list **dlist, char *ditem)
-{
-	add_del_list(dlist, DEL_TYPE_NODE, ditem);
-}
-
-void add_del_list_property(struct del_list **dlist, char *ditem)
-{
-	add_del_list(dlist, DEL_TYPE_PROP, ditem);
-}
-
-struct property *build_property(char *name, struct data val)
-=======
 struct property *build_property(char *name, struct data val,
 				struct srcpos *srcpos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct property *new = xmalloc(sizeof(*new));
 
@@ -99,10 +45,7 @@ struct property *build_property(char *name, struct data val,
 
 	new->name = name;
 	new->val = val;
-<<<<<<< HEAD
-=======
 	new->srcpos = srcpos_copy(srcpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -116,10 +59,6 @@ struct property *build_property_delete(char *name)
 	new->name = name;
 	new->deleted = 1;
 
-<<<<<<< HEAD
-	add_del_list_property(&head, name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 }
 
@@ -146,12 +85,8 @@ struct property *reverse_properties(struct property *first)
 	return head;
 }
 
-<<<<<<< HEAD
-struct node *build_node(struct property *proplist, struct node *children)
-=======
 struct node *build_node(struct property *proplist, struct node *children,
 			struct srcpos *srcpos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct node *new = xmalloc(sizeof(*new));
 	struct node *child;
@@ -160,10 +95,7 @@ struct node *build_node(struct property *proplist, struct node *children,
 
 	new->proplist = reverse_properties(proplist);
 	new->children = children;
-<<<<<<< HEAD
-=======
 	new->srcpos = srcpos_copy(srcpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_child(new, child) {
 		child->parent = new;
@@ -172,21 +104,14 @@ struct node *build_node(struct property *proplist, struct node *children,
 	return new;
 }
 
-<<<<<<< HEAD
-struct node *build_node_delete(void)
-=======
 struct node *build_node_delete(struct srcpos *srcpos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct node *new = xmalloc(sizeof(*new));
 
 	memset(new, 0, sizeof(*new));
 
 	new->deleted = 1;
-<<<<<<< HEAD
-=======
 	new->srcpos = srcpos_copy(srcpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -200,8 +125,6 @@ struct node *name_node(struct node *node, char *name)
 	return node;
 }
 
-<<<<<<< HEAD
-=======
 struct node *omit_node_if_unused(struct node *node)
 {
 	node->omit_if_unused = 1;
@@ -216,7 +139,6 @@ struct node *reference_node(struct node *node)
 	return node;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct node *merge_nodes(struct node *old_node, struct node *new_node)
 {
 	struct property *new_prop, *old_prop;
@@ -252,11 +174,8 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 
 				old_prop->val = new_prop->val;
 				old_prop->deleted = 0;
-<<<<<<< HEAD
-=======
 				free(old_prop->srcpos);
 				old_prop->srcpos = new_prop->srcpos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				free(new_prop);
 				new_prop = NULL;
 				break;
@@ -292,20 +211,13 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 			}
 		}
 
-<<<<<<< HEAD
-		/* if no collision occured, add child to the old node. */
-=======
 		/* if no collision occurred, add child to the old node. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (new_child)
 			add_child(old_node, new_child);
 	}
 
-<<<<<<< HEAD
-=======
 	old_node->srcpos = srcpos_extend(old_node->srcpos, new_node->srcpos);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The new node contents are now merged into the old node.  Free
 	 * the new node. */
 	free(new_node);
@@ -313,8 +225,6 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 	return old_node;
 }
 
-<<<<<<< HEAD
-=======
 struct node * add_orphan_node(struct node *dt, struct node *new_node, char *ref)
 {
 	static unsigned int next_orphan_fragment = 0;
@@ -345,7 +255,6 @@ struct node * add_orphan_node(struct node *dt, struct node *new_node, char *ref)
 	return dt;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct node *chain_node(struct node *first, struct node *list)
 {
 	assert(first->next_sibling == NULL);
@@ -372,11 +281,7 @@ void delete_property_by_name(struct node *node, char *name)
 	struct property *prop = node->proplist;
 
 	while (prop) {
-<<<<<<< HEAD
-		if (!strcmp(prop->name, name)) {
-=======
 		if (streq(prop->name, name)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			delete_property(prop);
 			return;
 		}
@@ -409,11 +314,7 @@ void delete_node_by_name(struct node *parent, char *name)
 	struct node *node = parent->children;
 
 	while (node) {
-<<<<<<< HEAD
-		if (!strcmp(node->name, name)) {
-=======
 		if (streq(node->name, name)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			delete_node(node);
 			return;
 		}
@@ -432,9 +333,6 @@ void delete_node(struct node *node)
 	for_each_property(node, prop)
 		delete_property(prop);
 	delete_labels(&node->labels);
-<<<<<<< HEAD
-	add_del_list_node(&head, node->name);
-=======
 }
 
 void append_to_property(struct node *node,
@@ -455,7 +353,6 @@ void append_to_property(struct node *node,
 		p = build_property(name, d, NULL);
 		add_property(node, p);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct reserve_info *build_reserve_entry(uint64_t address, uint64_t size)
@@ -464,13 +361,8 @@ struct reserve_info *build_reserve_entry(uint64_t address, uint64_t size)
 
 	memset(new, 0, sizeof(*new));
 
-<<<<<<< HEAD
-	new->re.address = address;
-	new->re.size = size;
-=======
 	new->address = address;
 	new->size = size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -502,20 +394,6 @@ struct reserve_info *add_reserve_entry(struct reserve_info *list,
 	return list;
 }
 
-<<<<<<< HEAD
-struct boot_info *build_boot_info(struct reserve_info *reservelist,
-				  struct node *tree, uint32_t boot_cpuid_phys)
-{
-	struct boot_info *bi;
-
-	bi = xmalloc(sizeof(*bi));
-	bi->reservelist = reservelist;
-	bi->dt = tree;
-	bi->boot_cpuid_phys = boot_cpuid_phys;
-	bi->deleted_list = head;
-
-	return bi;
-=======
 struct dt_info *build_dt_info(unsigned int dtsflags,
 			      struct reserve_info *reservelist,
 			      struct node *tree, uint32_t boot_cpuid_phys)
@@ -529,7 +407,6 @@ struct dt_info *build_dt_info(unsigned int dtsflags,
 	dti->boot_cpuid_phys = boot_cpuid_phys;
 
 	return dti;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -558,9 +435,6 @@ struct property *get_property(struct node *node, const char *propname)
 cell_t propval_cell(struct property *prop)
 {
 	assert(prop->val.len == sizeof(cell_t));
-<<<<<<< HEAD
-	return fdt32_to_cpu(*((cell_t *)prop->val.val));
-=======
 	return fdt32_to_cpu(*((fdt32_t *)prop->val.val));
 }
 
@@ -568,7 +442,6 @@ cell_t propval_cell_n(struct property *prop, unsigned int n)
 {
 	assert(prop->val.len / sizeof(cell_t) >= n);
 	return fdt32_to_cpu(*((fdt32_t *)prop->val.val + n));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct property *get_property_by_label(struct node *tree, const char *label,
@@ -653,11 +526,7 @@ struct node *get_node_by_path(struct node *tree, const char *path)
 	p = strchr(path, '/');
 
 	for_each_child(tree, child) {
-<<<<<<< HEAD
-		if (p && strneq(path, child->name, p-path))
-=======
 		if (p && strprefixeq(path, (size_t)(p - path), child->name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return get_node_by_path(child, p+1);
 		else if (!p && streq(path, child->name))
 			return child;
@@ -690,14 +559,10 @@ struct node *get_node_by_phandle(struct node *tree, cell_t phandle)
 {
 	struct node *child, *node;
 
-<<<<<<< HEAD
-	assert((phandle != 0) && (phandle != -1));
-=======
 	if (!phandle_is_valid(phandle)) {
 		assert(generate_fixups);
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tree->phandle == phandle) {
 		if (tree->deleted)
@@ -716,12 +581,6 @@ struct node *get_node_by_phandle(struct node *tree, cell_t phandle)
 
 struct node *get_node_by_ref(struct node *tree, const char *ref)
 {
-<<<<<<< HEAD
-	if (ref[0] == '/')
-		return get_node_by_path(tree, ref);
-	else
-		return get_node_by_label(tree, ref);
-=======
 	struct node *target = tree;
 	const char *label = NULL, *path = NULL;
 
@@ -755,20 +614,14 @@ struct node *get_node_by_ref(struct node *tree, const char *ref)
 		target = get_node_by_path(target, path);
 
 	return target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 cell_t get_node_phandle(struct node *root, struct node *node)
 {
 	static cell_t phandle = 1; /* FIXME: ick, static local */
-<<<<<<< HEAD
-
-	if ((node->phandle != 0) && (node->phandle != -1))
-=======
 	struct data d = empty_data;
 
 	if (phandle_is_valid(node->phandle))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return node->phandle;
 
 	while (get_node_by_phandle(root, phandle))
@@ -776,19 +629,6 @@ cell_t get_node_phandle(struct node *root, struct node *node)
 
 	node->phandle = phandle;
 
-<<<<<<< HEAD
-	if (!get_property(node, "linux,phandle")
-	    && (phandle_format & PHANDLE_LEGACY))
-		add_property(node,
-			     build_property("linux,phandle",
-					    data_append_cell(empty_data, phandle)));
-
-	if (!get_property(node, "phandle")
-	    && (phandle_format & PHANDLE_EPAPR))
-		add_property(node,
-			     build_property("phandle",
-					    data_append_cell(empty_data, phandle)));
-=======
 	d = data_add_marker(d, TYPE_UINT32, NULL);
 	d = data_append_cell(d, phandle);
 
@@ -799,7 +639,6 @@ cell_t get_node_phandle(struct node *root, struct node *node)
 	if (!get_property(node, "phandle")
 	    && (phandle_format & PHANDLE_EPAPR))
 		add_property(node, build_property("phandle", d, NULL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the node *does* have a phandle property, we must
 	 * be dealing with a self-referencing phandle, which will be
@@ -838,15 +677,6 @@ static int cmp_reserve_info(const void *ax, const void *bx)
 	a = *((const struct reserve_info * const *)ax);
 	b = *((const struct reserve_info * const *)bx);
 
-<<<<<<< HEAD
-	if (a->re.address < b->re.address)
-		return -1;
-	else if (a->re.address > b->re.address)
-		return 1;
-	else if (a->re.size < b->re.size)
-		return -1;
-	else if (a->re.size > b->re.size)
-=======
 	if (a->address < b->address)
 		return -1;
 	else if (a->address > b->address)
@@ -854,26 +684,17 @@ static int cmp_reserve_info(const void *ax, const void *bx)
 	else if (a->size < b->size)
 		return -1;
 	else if (a->size > b->size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	else
 		return 0;
 }
 
-<<<<<<< HEAD
-static void sort_reserve_entries(struct boot_info *bi)
-=======
 static void sort_reserve_entries(struct dt_info *dti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct reserve_info *ri, **tbl;
 	int n = 0, i = 0;
 
-<<<<<<< HEAD
-	for (ri = bi->reservelist;
-=======
 	for (ri = dti->reservelist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ri;
 	     ri = ri->next)
 		n++;
@@ -883,22 +704,14 @@ static void sort_reserve_entries(struct dt_info *dti)
 
 	tbl = xmalloc(n * sizeof(*tbl));
 
-<<<<<<< HEAD
-	for (ri = bi->reservelist;
-=======
 	for (ri = dti->reservelist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ri;
 	     ri = ri->next)
 		tbl[i++] = ri;
 
 	qsort(tbl, n, sizeof(*tbl), cmp_reserve_info);
 
-<<<<<<< HEAD
-	bi->reservelist = tbl[0];
-=======
 	dti->reservelist = tbl[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < (n-1); i++)
 		tbl[i]->next = tbl[i+1];
 	tbl[n-1]->next = NULL;
@@ -988,12 +801,6 @@ static void sort_node(struct node *node)
 		sort_node(c);
 }
 
-<<<<<<< HEAD
-void sort_tree(struct boot_info *bi)
-{
-	sort_reserve_entries(bi);
-	sort_node(bi->dt);
-=======
 void sort_tree(struct dt_info *dti)
 {
 	sort_reserve_entries(dti);
@@ -1255,5 +1062,4 @@ void generate_local_fixups_tree(struct dt_info *dti, char *name)
 		return;
 	generate_local_fixups_tree_internal(dti, build_root_node(dti->dt, name),
 					    dti->dt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

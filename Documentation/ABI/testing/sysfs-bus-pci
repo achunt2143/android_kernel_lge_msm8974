@@ -1,8 +1,5 @@
 What:		/sys/bus/pci/drivers/.../bind
-<<<<<<< HEAD
-=======
 What:		/sys/devices/pciX/.../bind
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		December 2003
 Contact:	linux-pci@vger.kernel.org
 Description:
@@ -11,13 +8,6 @@ Description:
 		this location.	This is useful for overriding default
 		bindings.  The format for the location is: DDDD:BB:DD.F.
 		That is Domain:Bus:Device.Function and is the same as
-<<<<<<< HEAD
-		found in /sys/bus/pci/devices/.  For example:
-		# echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/bind
-		(Note: kernels before 2.6.28 may require echo -n).
-
-What:		/sys/bus/pci/drivers/.../unbind
-=======
 		found in /sys/bus/pci/devices/.  For example::
 
 		  # echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/bind
@@ -26,7 +16,6 @@ What:		/sys/bus/pci/drivers/.../unbind
 
 What:		/sys/bus/pci/drivers/.../unbind
 What:		/sys/devices/pciX/.../unbind
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		December 2003
 Contact:	linux-pci@vger.kernel.org
 Description:
@@ -35,13 +24,6 @@ Description:
 		this location.	This may be useful when overriding default
 		bindings.  The format for the location is: DDDD:BB:DD.F.
 		That is Domain:Bus:Device.Function and is the same as
-<<<<<<< HEAD
-		found in /sys/bus/pci/devices/. For example:
-		# echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/unbind
-		(Note: kernels before 2.6.28 may require echo -n).
-
-What:		/sys/bus/pci/drivers/.../new_id
-=======
 		found in /sys/bus/pci/devices/. For example::
 
 		  # echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/unbind
@@ -50,7 +32,6 @@ What:		/sys/bus/pci/drivers/.../new_id
 
 What:		/sys/bus/pci/drivers/.../new_id
 What:		/sys/devices/pciX/.../new_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		December 2003
 Contact:	linux-pci@vger.kernel.org
 Description:
@@ -64,19 +45,12 @@ Description:
 		Class, Class Mask, and Private Driver Data.  The Vendor ID
 		and Device ID fields are required, the rest are optional.
 		Upon successfully adding an ID, the driver will probe
-<<<<<<< HEAD
-		for the device and attempt to bind to it.  For example:
-		# echo "8086 10f5" > /sys/bus/pci/drivers/foo/new_id
-
-What:		/sys/bus/pci/drivers/.../remove_id
-=======
 		for the device and attempt to bind to it.  For example::
 
 		  # echo "8086 10f5" > /sys/bus/pci/drivers/foo/new_id
 
 What:		/sys/bus/pci/drivers/.../remove_id
 What:		/sys/devices/pciX/.../remove_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2009
 Contact:	Chris Wright <chrisw@sous-sol.org>
 Description:
@@ -89,14 +63,9 @@ Description:
 		required, the rest are optional.  After successfully
 		removing an ID, the driver will no longer support the
 		device.  This is useful to ensure auto probing won't
-<<<<<<< HEAD
-		match the driver to the device.  For example:
-		# echo "8086 10f5" > /sys/bus/pci/drivers/foo/remove_id
-=======
 		match the driver to the device.  For example::
 
 		  # echo "8086 10f5" > /sys/bus/pci/drivers/foo/remove_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/rescan
 Date:		January 2009
@@ -105,9 +74,6 @@ Description:
 		Writing a non-zero value to this attribute will
 		force a rescan of all PCI buses in the system, and
 		re-discover previously removed devices.
-<<<<<<< HEAD
-		Depends on CONFIG_HOTPLUG.
-=======
 
 What:		/sys/bus/pci/devices/.../msi_bus
 Date:		September 2014
@@ -118,34 +84,20 @@ Description:
 		is a bridge, MSI and MSI-X will be disallowed for future
 		drivers of all child devices under the bridge.  Drivers
 		must be reloaded for the new setting to take effect.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/devices/.../msi_irqs/
 Date:		September, 2011
 Contact:	Neil Horman <nhorman@tuxdriver.com>
 Description:
 		The /sys/devices/.../msi_irqs directory contains a variable set
-<<<<<<< HEAD
-		of sub-directories, with each sub-directory being named after a
-		corresponding msi irq vector allocated to that device.  Each
-		numbered sub-directory N contains attributes of that irq.
-		Note that this directory is not created for device drivers which
-		do not support msi irqs
-
-What:		/sys/bus/pci/devices/.../msi_irqs/<N>/mode
-=======
 		of files, with each file being named after a corresponding msi
 		irq vector allocated to that device.
 
 What:		/sys/bus/pci/devices/.../msi_irqs/<N>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2011
 Contact:	Neil Horman <nhorman@tuxdriver.com>
 Description:
 		This attribute indicates the mode that the irq vector named by
-<<<<<<< HEAD
-		the parent directory is in (msi vs. msix)
-=======
 		the file is in (msi vs. msix)
 
 What:		/sys/bus/pci/devices/.../irq
@@ -158,7 +110,6 @@ Description:
 
 		"irq" being set to 0 indicates that the device isn't
 		capable of generating legacy INTx interrupts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/devices/.../remove
 Date:		January 2009
@@ -166,10 +117,6 @@ Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
 Description:
 		Writing a non-zero value to this attribute will
 		hot-remove the PCI device and any of its children.
-<<<<<<< HEAD
-		Depends on CONFIG_HOTPLUG.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/devices/.../pci_bus/.../rescan
 Date:		May 2011
@@ -178,11 +125,7 @@ Description:
 		Writing a non-zero value to this attribute will
 		force a rescan of the bus and all child buses,
 		and re-discover devices removed earlier from this
-<<<<<<< HEAD
-		part of the device tree.  Depends on CONFIG_HOTPLUG.
-=======
 		part of the device tree.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/devices/.../rescan
 Date:		January 2009
@@ -192,9 +135,6 @@ Description:
 		force a rescan of the device's parent bus and all
 		child buses, and re-discover devices removed earlier
 		from this part of the device tree.
-<<<<<<< HEAD
-		Depends on CONFIG_HOTPLUG.
-=======
 
 What:		/sys/bus/pci/devices/.../reset_method
 Date:		August 2021
@@ -212,7 +152,6 @@ Description:
 		disables the ability to reset the device.  Writing
 		"default" enables all supported reset methods in the
 		default ordering.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/bus/pci/devices/.../reset
 Date:		July 2009
@@ -226,29 +165,17 @@ Description:
 
 What:		/sys/bus/pci/devices/.../vpd
 Date:		February 2008
-<<<<<<< HEAD
-Contact:	Ben Hutchings <bhutchings@solarflare.com>
-=======
 Contact:	Ben Hutchings <bwh@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Description:
 		A file named vpd in a device directory will be a
 		binary file containing the Vital Product Data for the
 		device.  It should follow the VPD format defined in
 		PCI Specification 2.1 or 2.2, but users should consider
-<<<<<<< HEAD
-		that some devices may have malformatted data.  If the
-		underlying VPD has a writable section then the
-		corresponding section of this file will be writable.
-
-What:		/sys/bus/pci/devices/.../virtfnN
-=======
 		that some devices may have incorrectly formatted data.  
 		If the underlying VPD has a writable section then the
 		corresponding section of this file will be writable.
 
 What:		/sys/bus/pci/devices/.../virtfn<N>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		March 2009
 Contact:	Yu Zhao <yu.zhao@intel.com>
 Description:
@@ -275,8 +202,6 @@ Description:
 		The symbolic link points to the PCI device sysfs entry of the
 		Physical Function this device associates with.
 
-<<<<<<< HEAD
-=======
 What:		/sys/bus/pci/devices/.../modalias
 Date:		May 2005
 Contact:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -295,7 +220,6 @@ Description:
 		    - scXX contains the device subclass;
 		    - iXX contains the device class programming interface.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 What:		/sys/bus/pci/slots/.../module
 Date:		June 2009
 Contact:	linux-pci@vger.kernel.org
@@ -321,12 +245,6 @@ What:		/sys/bus/pci/devices/.../index
 Date:		July 2010
 Contact:	Narendra K <narendra_k@dell.com>, linux-bugs@dell.com
 Description:
-<<<<<<< HEAD
-		Reading this attribute will provide the firmware
-		given instance (SMBIOS type 41 device type instance) of the
-		PCI device. The attribute will be created only if the firmware
-		has given an instance number to the PCI device.
-=======
 		Reading this attribute will provide the firmware given instance
 		number of the PCI device.  Depending on the platform this can
 		be for example the SMBIOS type 41 device type instance or the
@@ -334,7 +252,6 @@ Description:
 		only if the firmware has given an instance number to the PCI
 		device and that number is guaranteed to uniquely identify the
 		device in the system.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Users:
 		Userspace applications interested in knowing the
 		firmware assigned device type instance of the PCI
@@ -356,8 +273,6 @@ Users:
 		firmware assigned instance number of the PCI
 		device that can help in understanding the firmware
 		intended order of the PCI device.
-<<<<<<< HEAD
-=======
 
 What:		/sys/bus/pci/devices/.../d3cold_allowed
 Date:		July 2012
@@ -585,4 +500,3 @@ Description:
 		console drivers from the device.  Raw users of pci-sysfs
 		resourceN attributes must be terminated prior to resizing.
 		Success of the resizing operation is not guaranteed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

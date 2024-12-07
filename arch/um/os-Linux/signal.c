@@ -1,31 +1,15 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2004 PathScale, Inc
- * Copyright (C) 2004 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2015 Anton Ivanov (aivanov@{brocade.com,kot-begemot.co.uk})
  * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
  * Copyright (C) 2004 PathScale, Inc
  * Copyright (C) 2004 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <signal.h>
-<<<<<<< HEAD
-#include <strings.h>
-#include "as-layout.h"
-#include "kern_util.h"
-#include "os.h"
-#include "sysdep/mcontext.h"
-
-void (*sig_info[NSIG])(int, struct uml_pt_regs *) = {
-=======
 #include <string.h>
 #include <strings.h>
 #include <as-layout.h>
@@ -37,7 +21,6 @@ void (*sig_info[NSIG])(int, struct uml_pt_regs *) = {
 #include <timetravel.h>
 
 void (*sig_info[NSIG])(int, struct siginfo *, struct uml_pt_regs *) = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SIGTRAP]	= relay_signal,
 	[SIGFPE]	= relay_signal,
 	[SIGILL]	= relay_signal,
@@ -45,15 +28,9 @@ void (*sig_info[NSIG])(int, struct siginfo *, struct uml_pt_regs *) = {
 	[SIGBUS]	= bus_handler,
 	[SIGSEGV]	= segv_handler,
 	[SIGIO]		= sigio_handler,
-<<<<<<< HEAD
-	[SIGVTALRM]	= timer_handler };
-
-static void sig_handler_common(int sig, mcontext_t *mc)
-=======
 };
 
 static void sig_handler_common(int sig, struct siginfo *si, mcontext_t *mc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_pt_regs r;
 	int save_errno = errno;
@@ -66,17 +43,10 @@ static void sig_handler_common(int sig, struct siginfo *si, mcontext_t *mc)
 	}
 
 	/* enable signals if sig isn't IRQ signal */
-<<<<<<< HEAD
-	if ((sig != SIGIO) && (sig != SIGWINCH) && (sig != SIGVTALRM))
-		unblock_signals();
-
-	(*sig_info[sig])(sig, &r);
-=======
 	if ((sig != SIGIO) && (sig != SIGWINCH))
 		unblock_signals_trace();
 
 	(*sig_info[sig])(sig, si, &r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	errno = save_errno;
 }
@@ -90,32 +60,6 @@ static void sig_handler_common(int sig, struct siginfo *si, mcontext_t *mc)
 #define SIGIO_BIT 0
 #define SIGIO_MASK (1 << SIGIO_BIT)
 
-<<<<<<< HEAD
-#define SIGVTALRM_BIT 1
-#define SIGVTALRM_MASK (1 << SIGVTALRM_BIT)
-
-static int signals_enabled;
-static unsigned int signals_pending;
-
-void sig_handler(int sig, mcontext_t *mc)
-{
-	int enabled;
-
-	enabled = signals_enabled;
-	if (!enabled && (sig == SIGIO)) {
-		signals_pending |= SIGIO_MASK;
-		return;
-	}
-
-	block_signals();
-
-	sig_handler_common(sig, mc);
-
-	set_signals(enabled);
-}
-
-static void real_alarm_handler(mcontext_t *mc)
-=======
 #define SIGALRM_BIT 1
 #define SIGALRM_MASK (1 << SIGALRM_BIT)
 
@@ -154,47 +98,22 @@ void sig_handler(int sig, struct siginfo *si, mcontext_t *mc)
 }
 
 static void timer_real_alarm_handler(mcontext_t *mc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_pt_regs regs;
 
 	if (mc != NULL)
 		get_regs_from_mc(&regs, mc);
-<<<<<<< HEAD
-	regs.is_user = 0;
-	unblock_signals();
-	timer_handler(SIGVTALRM, &regs);
-}
-
-void alarm_handler(int sig, mcontext_t *mc)
-=======
 	else
 		memset(&regs, 0, sizeof(regs));
 	timer_handler(SIGALRM, NULL, &regs);
 }
 
 void timer_alarm_handler(int sig, struct siginfo *unused_si, mcontext_t *mc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int enabled;
 
 	enabled = signals_enabled;
 	if (!signals_enabled) {
-<<<<<<< HEAD
-		signals_pending |= SIGVTALRM_MASK;
-		return;
-	}
-
-	block_signals();
-
-	real_alarm_handler(mc);
-	set_signals(enabled);
-}
-
-void timer_init(void)
-{
-	set_handler(SIGVTALRM);
-=======
 		signals_pending |= SIGALRM_MASK;
 		return;
 	}
@@ -217,30 +136,20 @@ void deliver_alarm(void) {
 void timer_set_signal_handler(void)
 {
 	set_handler(SIGALRM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void set_sigstack(void *sig_stack, int size)
 {
-<<<<<<< HEAD
-	stack_t stack = ((stack_t) { .ss_flags	= 0,
-				     .ss_sp	= (__ptr_t) sig_stack,
-				     .ss_size 	= size - sizeof(void *) });
-=======
 	stack_t stack = {
 		.ss_flags = 0,
 		.ss_sp = sig_stack,
 		.ss_size = size
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sigaltstack(&stack, NULL) != 0)
 		panic("enabling signal stack failed, errno = %d\n", errno);
 }
 
-<<<<<<< HEAD
-static void (*handlers[_NSIG])(int sig, mcontext_t *mc) = {
-=======
 static void sigusr1_handler(int sig, struct siginfo *unused_si, mcontext_t *mc)
 {
 	uml_pm_wake();
@@ -252,7 +161,6 @@ void register_pm_wake_signal(void)
 }
 
 static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SIGSEGV] = sig_handler,
 	[SIGBUS] = sig_handler,
 	[SIGILL] = sig_handler,
@@ -261,15 +169,6 @@ static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
 
 	[SIGIO] = sig_handler,
 	[SIGWINCH] = sig_handler,
-<<<<<<< HEAD
-	[SIGVTALRM] = alarm_handler
-};
-
-
-static void hard_handler(int sig, siginfo_t *info, void *p)
-{
-	struct ucontext *uc = p;
-=======
 	[SIGALRM] = timer_alarm_handler,
 
 	[SIGUSR1] = sigusr1_handler,
@@ -278,7 +177,6 @@ static void hard_handler(int sig, siginfo_t *info, void *p)
 static void hard_handler(int sig, siginfo_t *si, void *p)
 {
 	ucontext_t *uc = p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcontext_t *mc = &uc->uc_mcontext;
 	unsigned long pending = 1UL << sig;
 
@@ -305,11 +203,7 @@ static void hard_handler(int sig, siginfo_t *si, void *p)
 		while ((sig = ffs(pending)) != 0){
 			sig--;
 			pending &= ~(1 << sig);
-<<<<<<< HEAD
-			(*handlers[sig])(sig, mc);
-=======
 			(*handlers[sig])(sig, (struct siginfo *)si, mc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -333,15 +227,9 @@ void set_handler(int sig)
 
 	/* block irq ones */
 	sigemptyset(&action.sa_mask);
-<<<<<<< HEAD
-	sigaddset(&action.sa_mask, SIGVTALRM);
-	sigaddset(&action.sa_mask, SIGIO);
-	sigaddset(&action.sa_mask, SIGWINCH);
-=======
 	sigaddset(&action.sa_mask, SIGIO);
 	sigaddset(&action.sa_mask, SIGWINCH);
 	sigaddset(&action.sa_mask, SIGALRM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sig == SIGSEGV)
 		flags |= SA_NODEFER;
@@ -360,14 +248,11 @@ void set_handler(int sig)
 		panic("sigprocmask failed - errno = %d\n", errno);
 }
 
-<<<<<<< HEAD
-=======
 void send_sigio_to_self(void)
 {
 	kill(os_getpid(), SIGIO);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int change_sig(int signal, int on)
 {
 	sigset_t sigset;
@@ -399,14 +284,11 @@ void unblock_signals(void)
 	if (signals_enabled == 1)
 		return;
 
-<<<<<<< HEAD
-=======
 	signals_enabled = 1;
 #ifdef UML_CONFIG_UML_TIME_TRAVEL_SUPPORT
 	deliver_time_travel_irqs();
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We loop because the IRQ handler returns with interrupts off.  So,
 	 * interrupts may have arrived and we need to re-enable them and
@@ -416,18 +298,9 @@ void unblock_signals(void)
 		/*
 		 * Save and reset save_pending after enabling signals.  This
 		 * way, signals_pending won't be changed while we're reading it.
-<<<<<<< HEAD
-		 */
-		signals_enabled = 1;
-
-		/*
-		 * Setting signals_enabled and reading signals_pending must
-		 * happen in this order.
-=======
 		 *
 		 * Setting signals_enabled and reading signals_pending must
 		 * happen in this order, so have the barrier here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		barrier();
 
@@ -440,12 +313,6 @@ void unblock_signals(void)
 		/*
 		 * We have pending interrupts, so disable signals, as the
 		 * handlers expect them off when they are called.  They will
-<<<<<<< HEAD
-		 * be enabled again above.
-		 */
-
-		signals_enabled = 0;
-=======
 		 * be enabled again above. We need to trace this, as we're
 		 * expected to be enabling interrupts already, but any more
 		 * tracing that happens inside the handlers we call for the
@@ -453,29 +320,11 @@ void unblock_signals(void)
 		 */
 		signals_enabled = 0;
 		um_trace_signals_off();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Deal with SIGIO first because the alarm handler might
 		 * schedule, leaving the pending SIGIO stranded until we come
 		 * back here.
-<<<<<<< HEAD
-		 */
-		if (save_pending & SIGIO_MASK)
-			sig_handler_common(SIGIO, NULL);
-
-		if (save_pending & SIGVTALRM_MASK)
-			real_alarm_handler(NULL);
-	}
-}
-
-int get_signals(void)
-{
-	return signals_enabled;
-}
-
-int set_signals(int enable)
-=======
 		 *
 		 * SIGIO's handler doesn't use siginfo or mcontext,
 		 * so they can be NULL.
@@ -500,7 +349,6 @@ int set_signals(int enable)
 }
 
 int um_set_signals(int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	if (signals_enabled == enable)
@@ -513,8 +361,6 @@ int um_set_signals(int enable)
 
 	return ret;
 }
-<<<<<<< HEAD
-=======
 
 int um_set_signals_trace(int enable)
 {
@@ -571,4 +417,3 @@ int os_is_signal_stack(void)
 
 	return ss.ss_flags & SS_ONSTACK;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

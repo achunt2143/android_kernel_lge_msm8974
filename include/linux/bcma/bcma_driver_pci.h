@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_BCMA_DRIVER_PCI_H_
 #define LINUX_BCMA_DRIVER_PCI_H_
 
@@ -84,19 +81,13 @@ struct pci_dev;
 #define  BCMA_CORE_PCI_MDIODATA_DEV_TX		0x1e	/* SERDES TX Dev */
 #define  BCMA_CORE_PCI_MDIODATA_DEV_RX		0x1f	/* SERDES RX Dev */
 #define BCMA_CORE_PCI_PCIEIND_ADDR		0x0130	/* indirect access to the internal register */
-<<<<<<< HEAD
-#define BCMA_CORE_PCI_PCIEIND_DATA		0x0134	/* Data to/from the internal regsiter */
-=======
 #define BCMA_CORE_PCI_PCIEIND_DATA		0x0134	/* Data to/from the internal register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CORE_PCI_CLKREQENCTRL		0x0138	/*  >= rev 6, Clkreq rdma control */
 #define BCMA_CORE_PCI_PCICFG0			0x0400	/* PCI config space 0 (rev >= 8) */
 #define BCMA_CORE_PCI_PCICFG1			0x0500	/* PCI config space 1 (rev >= 8) */
 #define BCMA_CORE_PCI_PCICFG2			0x0600	/* PCI config space 2 (rev >= 8) */
 #define BCMA_CORE_PCI_PCICFG3			0x0700	/* PCI config space 3 (rev >= 8) */
 #define BCMA_CORE_PCI_SPROM(wordoffset)		(0x0800 + ((wordoffset) * 2)) /* SPROM shadow area (72 bytes) */
-<<<<<<< HEAD
-=======
 #define  BCMA_CORE_PCI_SPROM_PI_OFFSET		0	/* first word */
 #define   BCMA_CORE_PCI_SPROM_PI_MASK		0xf000	/* bit 15:12 */
 #define   BCMA_CORE_PCI_SPROM_PI_SHIFT		12	/* bit 15:12 */
@@ -104,7 +95,6 @@ struct pci_dev;
 #define   BCMA_CORE_PCI_SPROM_L23READY_EXIT_NOPERST	0x8000	/* bit 15 */
 #define   BCMA_CORE_PCI_SPROM_CLKREQ_OFFSET_REV5	20	/* word 20 for srom rev <= 5 */
 #define   BCMA_CORE_PCI_SPROM_CLKREQ_ENB	0x0800	/* bit 11 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SBtoPCIx */
 #define BCMA_CORE_PCI_SBTOPCI_MEM		0x00000000
@@ -151,10 +141,7 @@ struct pci_dev;
 #define BCMA_CORE_PCI_DLLP_LRREG		0x120	/* Link Replay */
 #define BCMA_CORE_PCI_DLLP_LACKTOREG		0x124	/* Link Ack Timeout */
 #define BCMA_CORE_PCI_DLLP_PMTHRESHREG		0x128	/* Power Management Threshold */
-<<<<<<< HEAD
-=======
 #define  BCMA_CORE_PCI_ASPMTIMER_EXTEND		0x01000000 /* > rev7: enable extend ASPM timer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CORE_PCI_DLLP_RTRYWPREG		0x12C	/* Retry buffer write ptr */
 #define BCMA_CORE_PCI_DLLP_RTRYRPREG		0x130	/* Retry buffer Read ptr */
 #define BCMA_CORE_PCI_DLLP_RTRYPPREG		0x134	/* Retry buffer Purged ptr */
@@ -193,8 +180,6 @@ struct pci_dev;
 #define BCMA_CORE_PCI_CFG_FUN_MASK		7	/* Function mask */
 #define BCMA_CORE_PCI_CFG_OFF_MASK		0xfff	/* Register mask */
 
-<<<<<<< HEAD
-=======
 #define BCMA_CORE_PCI_CFG_DEVCTRL		0xd8
 
 #define BCMA_CORE_PCI_
@@ -217,15 +202,11 @@ struct pci_dev;
 #define BCMA_CORE_PCI_MDIO_SERDESID		0x831
 #define BCMA_CORE_PCI_MDIO_RXCTRL0		0x840
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCIE Root Capability Register bits (Host mode only) */
 #define BCMA_CORE_PCI_RC_CRS_VISIBILITY		0x0001
 
 struct bcma_drv_pci;
-<<<<<<< HEAD
-=======
 struct bcma_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_BCMA_DRIVER_PCI_HOSTMODE
 struct bcma_drv_pci_host {
@@ -243,10 +224,7 @@ struct bcma_drv_pci_host {
 
 struct bcma_drv_pci {
 	struct bcma_device *core;
-<<<<<<< HEAD
-=======
 	u8 early_setup_done:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 setup_done:1;
 	u8 hostmode:1;
 
@@ -256,17 +234,6 @@ struct bcma_drv_pci {
 };
 
 /* Register access */
-<<<<<<< HEAD
-#define pcicore_read32(pc, offset)		bcma_read32((pc)->core, offset)
-#define pcicore_write32(pc, offset, val)	bcma_write32((pc)->core, offset, val)
-
-extern void __devinit bcma_core_pci_init(struct bcma_drv_pci *pc);
-extern int bcma_core_pci_irq_ctl(struct bcma_drv_pci *pc,
-				 struct bcma_device *core, bool enable);
-
-extern int bcma_core_pci_pcibios_map_irq(const struct pci_dev *dev);
-extern int bcma_core_pci_plat_dev_init(struct pci_dev *dev);
-=======
 #define pcicore_read16(pc, offset)		bcma_read16((pc)->core, offset)
 #define pcicore_read32(pc, offset)		bcma_read32((pc)->core, offset)
 #define pcicore_write16(pc, offset, val)	bcma_write16((pc)->core, offset, val)
@@ -293,6 +260,5 @@ static inline int bcma_core_pci_plat_dev_init(struct pci_dev *dev)
 	return -ENOTSUPP;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* LINUX_BCMA_DRIVER_PCI_H_ */

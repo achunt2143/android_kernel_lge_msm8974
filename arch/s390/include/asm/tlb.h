@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _S390_TLB_H
 #define _S390_TLB_H
 
@@ -25,54 +22,6 @@
  * Pages used for the page tables is a different story. FIXME: more
  */
 
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/pagemap.h>
-#include <linux/swap.h>
-#include <asm/processor.h>
-#include <asm/pgalloc.h>
-#include <asm/tlbflush.h>
-
-struct mmu_gather {
-	struct mm_struct *mm;
-	struct mmu_table_batch *batch;
-	unsigned int fullmm;
-};
-
-struct mmu_table_batch {
-	struct rcu_head		rcu;
-	unsigned int		nr;
-	void			*tables[0];
-};
-
-#define MAX_TABLE_BATCH		\
-	((PAGE_SIZE - sizeof(struct mmu_table_batch)) / sizeof(void *))
-
-extern void tlb_table_flush(struct mmu_gather *tlb);
-extern void tlb_remove_table(struct mmu_gather *tlb, void *table);
-
-static inline void tlb_gather_mmu(struct mmu_gather *tlb,
-				  struct mm_struct *mm,
-				  unsigned int full_mm_flush)
-{
-	tlb->mm = mm;
-	tlb->fullmm = full_mm_flush;
-	tlb->batch = NULL;
-	if (tlb->fullmm)
-		__tlb_flush_mm(mm);
-}
-
-static inline void tlb_flush_mmu(struct mmu_gather *tlb)
-{
-	tlb_table_flush(tlb);
-}
-
-static inline void tlb_finish_mmu(struct mmu_gather *tlb,
-				  unsigned long start, unsigned long end)
-{
-	tlb_table_flush(tlb);
-}
-=======
 void __tlb_remove_table(void *_table);
 static inline void tlb_flush(struct mmu_gather *tlb);
 static inline bool __tlb_remove_page_size(struct mmu_gather *tlb,
@@ -88,24 +37,11 @@ static inline bool __tlb_remove_folio_pages(struct mmu_gather *tlb,
 
 #include <asm/tlbflush.h>
 #include <asm-generic/tlb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Release the page cache reference for a pte removed by
  * tlb_ptep_clear_flush. In both flush modes the tlb for a page cache page
  * has already been freed, so just do free_page_and_swap_cache.
-<<<<<<< HEAD
- */
-static inline int __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
-{
-	free_page_and_swap_cache(page);
-	return 1; /* avoid calling tlb_flush_mmu */
-}
-
-static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
-{
-	free_page_and_swap_cache(page);
-=======
  *
  * s390 doesn't delay rmap removal.
  */
@@ -136,7 +72,6 @@ static inline bool __tlb_remove_folio_pages(struct mmu_gather *tlb,
 static inline void tlb_flush(struct mmu_gather *tlb)
 {
 	__tlb_flush_mm_lazy(tlb->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -144,13 +79,6 @@ static inline void tlb_flush(struct mmu_gather *tlb)
  * page table from the tlb.
  */
 static inline void pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
-<<<<<<< HEAD
-				unsigned long address)
-{
-	if (!tlb->fullmm)
-		return page_table_free_rcu(tlb, (unsigned long *) pte);
-	page_table_free(tlb->mm, (unsigned long *) pte);
-=======
                                 unsigned long address)
 {
 	__tlb_adjust_range(tlb, address, PAGE_SIZE);
@@ -160,7 +88,6 @@ static inline void pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
 	if (mm_alloc_pgste(tlb->mm))
 		gmap_unlink(tlb->mm, (unsigned long *)pte, address);
 	tlb_remove_ptdesc(tlb, pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -173,15 +100,6 @@ static inline void pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
 static inline void pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmd,
 				unsigned long address)
 {
-<<<<<<< HEAD
-#ifdef __s390x__
-	if (tlb->mm->context.asce_limit <= (1UL << 31))
-		return;
-	if (!tlb->fullmm)
-		return tlb_remove_table(tlb, pmd);
-	crst_table_free(tlb->mm, (unsigned long *) pmd);
-#endif
-=======
 	if (mm_pmd_folded(tlb->mm))
 		return;
 	pagetable_pmd_dtor(virt_to_ptdesc(pmd));
@@ -208,7 +126,6 @@ static inline void p4d_free_tlb(struct mmu_gather *tlb, p4d_t *p4d,
 	tlb->mm->context.flush_mm = 1;
 	tlb->freed_tables = 1;
 	tlb_remove_ptdesc(tlb, p4d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -221,21 +138,6 @@ static inline void p4d_free_tlb(struct mmu_gather *tlb, p4d_t *p4d,
 static inline void pud_free_tlb(struct mmu_gather *tlb, pud_t *pud,
 				unsigned long address)
 {
-<<<<<<< HEAD
-#ifdef __s390x__
-	if (tlb->mm->context.asce_limit <= (1UL << 42))
-		return;
-	if (!tlb->fullmm)
-		return tlb_remove_table(tlb, pud);
-	crst_table_free(tlb->mm, (unsigned long *) pud);
-#endif
-}
-
-#define tlb_start_vma(tlb, vma)			do { } while (0)
-#define tlb_end_vma(tlb, vma)			do { } while (0)
-#define tlb_remove_tlb_entry(tlb, ptep, addr)	do { } while (0)
-#define tlb_migrate_finish(mm)			do { } while (0)
-=======
 	if (mm_pud_folded(tlb->mm))
 		return;
 	tlb->mm->context.flush_mm = 1;
@@ -244,6 +146,5 @@ static inline void pud_free_tlb(struct mmu_gather *tlb, pud_t *pud,
 	tlb_remove_ptdesc(tlb, pud);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _S390_TLB_H */

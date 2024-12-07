@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * user-mode-linux networking multicast transport
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
@@ -12,10 +9,6 @@
  * James Leu (jleu@mindspring.net).
  * Copyright (C) 2001 by various other people who didn't put their name here.
  *
-<<<<<<< HEAD
- * Licensed under the GPL.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -23,13 +16,8 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include "umcast.h"
-<<<<<<< HEAD
-#include "net_user.h"
-#include "um_malloc.h"
-=======
 #include <net_user.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct sockaddr_in *new_addr(char *addr, unsigned short port)
 {

@@ -1,38 +1,17 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-1.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
-<<<<<<< HEAD
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
  * Copyright (C) 2019 Renesas Electronics Corporation
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef RENESAS_USB_MOD_H
 #define RENESAS_USB_MOD_H
 
 #include <linux/spinlock.h>
 #include <linux/usb/renesas_usbhs.h>
-<<<<<<< HEAD
-#include "./common.h"
-=======
 #include "common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	struct
@@ -106,17 +85,6 @@ struct usbhs_mod_info {
 	/*
 	 * INTSTS0 :: VBINT
 	 *
-<<<<<<< HEAD
-	 * This function will be used as autonomy mode
-	 * when platform cannot call notify_hotplug.
-	 *
-	 * This callback cannot be member of "struct usbhs_mod"
-	 * because it will be used even though
-	 * host/gadget has not been selected.
-	 */
-	int (*irq_vbus)(struct usbhs_priv *priv,
-			struct usbhs_irq_state *irq_state);
-=======
 	 * This function will be used as autonomy mode (runtime_pwctrl == 0)
 	 * when the platform doesn't have own get_vbus function.
 	 *
@@ -131,7 +99,6 @@ struct usbhs_mod_info {
 	 * this member is in here.
 	 */
 	int (*get_vbus)(struct platform_device *pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -146,10 +113,7 @@ int usbhs_mod_probe(struct usbhs_priv *priv);
 void usbhs_mod_remove(struct usbhs_priv *priv);
 
 void usbhs_mod_autonomy_mode(struct usbhs_priv *priv);
-<<<<<<< HEAD
-=======
 void usbhs_mod_non_autonomy_mode(struct usbhs_priv *priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		status functions
@@ -172,8 +136,6 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod);
 		 mod->func(param);			\
 	})
 
-<<<<<<< HEAD
-=======
 #define usbhs_priv_to_modinfo(priv) (&priv->mod_info)
 #define usbhs_mod_info_call(priv, func, param...)	\
 ({							\
@@ -183,7 +145,6 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod);
 	 info->func(param);				\
 })
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * host / gadget control
  */

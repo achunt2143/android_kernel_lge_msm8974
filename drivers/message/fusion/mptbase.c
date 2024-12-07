@@ -57,17 +57,8 @@
 #include <linux/kdev_t.h>
 #include <linux/blkdev.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>		/* needed for in_interrupt() proto */
-#include <linux/dma-mapping.h>
-#include <asm/io.h>
-#ifdef CONFIG_MTRR
-#include <asm/mtrr.h>
-#endif
-=======
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include <scsi/scsi_host.h>
 
@@ -108,11 +99,7 @@ module_param(mpt_channel_mapping, int, 0);
 MODULE_PARM_DESC(mpt_channel_mapping, " Mapping id's to channels (default=0)");
 
 static int mpt_debug_level;
-<<<<<<< HEAD
-static int mpt_set_debug_level(const char *val, struct kernel_param *kp);
-=======
 static int mpt_set_debug_level(const char *val, const struct kernel_param *kp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_call(mpt_debug_level, mpt_set_debug_level, param_get_int,
 		  &mpt_debug_level, 0600);
 MODULE_PARM_DESC(mpt_debug_level,
@@ -210,15 +197,9 @@ static int	mpt_host_page_access_control(MPT_ADAPTER *ioc, u8 access_control_valu
 static int	mpt_host_page_alloc(MPT_ADAPTER *ioc, pIOCInit_t ioc_init);
 
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-static const struct file_operations mpt_summary_proc_fops;
-static const struct file_operations mpt_version_proc_fops;
-static const struct file_operations mpt_iocinfo_proc_fops;
-=======
 static int mpt_summary_proc_show(struct seq_file *m, void *v);
 static int mpt_version_proc_show(struct seq_file *m, void *v);
 static int mpt_iocinfo_proc_show(struct seq_file *m, void *v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 static void	mpt_get_fw_exp_ver(char *buf, MPT_ADAPTER *ioc);
 
@@ -261,11 +242,7 @@ pci_enable_io_access(struct pci_dev *pdev)
 	pci_write_config_word(pdev, PCI_COMMAND, command_reg);
 }
 
-<<<<<<< HEAD
-static int mpt_set_debug_level(const char *val, struct kernel_param *kp)
-=======
 static int mpt_set_debug_level(const char *val, const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = param_set_int(val, kp);
 	MPT_ADAPTER *ioc;
@@ -323,13 +300,8 @@ mpt_is_discovery_complete(MPT_ADAPTER *ioc)
 	if (!hdr.ExtPageLength)
 		goto out;
 
-<<<<<<< HEAD
-	buffer = pci_alloc_consistent(ioc->pcidev, hdr.ExtPageLength * 4,
-	    &dma_handle);
-=======
 	buffer = dma_alloc_coherent(&ioc->pcidev->dev, hdr.ExtPageLength * 4,
 				    &dma_handle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer)
 		goto out;
 
@@ -344,13 +316,8 @@ mpt_is_discovery_complete(MPT_ADAPTER *ioc)
 		rc = 1;
 
  out_free_consistent:
-<<<<<<< HEAD
-	pci_free_consistent(ioc->pcidev, hdr.ExtPageLength * 4,
-	    buffer, dma_handle);
-=======
 	dma_free_coherent(&ioc->pcidev->dev, hdr.ExtPageLength * 4, buffer,
 			  dma_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return rc;
 }
@@ -368,16 +335,6 @@ static int mpt_remove_dead_ioc_func(void *arg)
 	MPT_ADAPTER *ioc = (MPT_ADAPTER *)arg;
 	struct pci_dev *pdev;
 
-<<<<<<< HEAD
-	if ((ioc == NULL))
-		return -1;
-
-	pdev = ioc->pcidev;
-	if ((pdev == NULL))
-		return -1;
-
-	pci_stop_and_remove_bus_device(pdev);
-=======
 	if (!ioc)
 		return -1;
 
@@ -386,7 +343,6 @@ static int mpt_remove_dead_ioc_func(void *arg)
 		return -1;
 
 	pci_stop_and_remove_bus_device_locked(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -517,10 +473,6 @@ mpt_turbo_reply(MPT_ADAPTER *ioc, u32 pa)
 			mpt_free_msg_frame(ioc, mf);
 			mb();
 			return;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		mr = (MPT_FRAME_HDR *) CAST_U32_TO_PTR(pa);
 		break;
@@ -689,17 +641,6 @@ mptbase_reply(MPT_ADAPTER *ioc, MPT_FRAME_HDR *req, MPT_FRAME_HDR *reply)
 			freereq = 0;
 		if (event != MPI_EVENT_EVENT_CHANGE)
 			break;
-<<<<<<< HEAD
-	case MPI_FUNCTION_CONFIG:
-	case MPI_FUNCTION_SAS_IO_UNIT_CONTROL:
-		ioc->mptbase_cmds.status |= MPT_MGMT_STATUS_COMMAND_GOOD;
-		if (reply) {
-			ioc->mptbase_cmds.status |= MPT_MGMT_STATUS_RF_VALID;
-			memcpy(ioc->mptbase_cmds.reply, reply,
-			    min(MPT_DEFAULT_FRAME_SIZE,
-				4 * reply->u.reply.MsgLength));
-		}
-=======
 		fallthrough;
 	case MPI_FUNCTION_CONFIG:
 	case MPI_FUNCTION_SAS_IO_UNIT_CONTROL:
@@ -708,7 +649,6 @@ mptbase_reply(MPT_ADAPTER *ioc, MPT_FRAME_HDR *req, MPT_FRAME_HDR *reply)
 		memcpy(ioc->mptbase_cmds.reply, reply,
 		    min(MPT_DEFAULT_FRAME_SIZE,
 			4 * reply->u.reply.MsgLength));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ioc->mptbase_cmds.status & MPT_MGMT_STATUS_PENDING) {
 			ioc->mptbase_cmds.status &= ~MPT_MGMT_STATUS_PENDING;
 			complete(&ioc->mptbase_cmds.done);
@@ -772,11 +712,7 @@ mpt_register(MPT_CALLBACK cbfunc, MPT_DRIVER_CLASS dclass, char *func_name)
 			MptDriverClass[cb_idx] = dclass;
 			MptEvHandlers[cb_idx] = NULL;
 			last_drv_idx = cb_idx;
-<<<<<<< HEAD
-			strlcpy(MptCallbacksName[cb_idx], func_name,
-=======
 			strscpy(MptCallbacksName[cb_idx], func_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MPT_MAX_CALLBACKNAME_LEN+1);
 			break;
 		}
@@ -893,10 +829,6 @@ int
 mpt_device_driver_register(struct mpt_pci_driver * dd_cbfunc, u8 cb_idx)
 {
 	MPT_ADAPTER	*ioc;
-<<<<<<< HEAD
-	const struct pci_device_id *id;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!cb_idx || cb_idx >= MPT_MAX_PROTOCOL_DRIVERS)
 		return -EINVAL;
@@ -905,15 +837,8 @@ mpt_device_driver_register(struct mpt_pci_driver * dd_cbfunc, u8 cb_idx)
 
 	/* call per pci device probe entry point */
 	list_for_each_entry(ioc, &ioc_list, list) {
-<<<<<<< HEAD
-		id = ioc->pcidev->driver ?
-		    ioc->pcidev->driver->id_table : NULL;
-		if (dd_cbfunc->probe)
-			dd_cbfunc->probe(ioc->pcidev, id);
-=======
 		if (dd_cbfunc->probe)
 			dd_cbfunc->probe(ioc->pcidev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 }
 
 	return 0;
@@ -1030,11 +955,7 @@ mpt_put_msg_frame(u8 cb_idx, MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf)
 {
 	u32 mf_dma_addr;
 	int req_offset;
-<<<<<<< HEAD
-	u16	 req_idx;	/* Request index */
-=======
 	u16 req_idx;	/* Request index */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ensure values are reset properly! */
 	mf->u.frame.hwhdr.msgctxu.fld.cb_idx = cb_idx;		/* byte */
@@ -1070,11 +991,7 @@ mpt_put_msg_frame_hi_pri(u8 cb_idx, MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf)
 {
 	u32 mf_dma_addr;
 	int req_offset;
-<<<<<<< HEAD
-	u16	 req_idx;	/* Request index */
-=======
 	u16 req_idx;	/* Request index */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ensure values are reset properly! */
 	mf->u.frame.hwhdr.msgctxu.fld.cb_idx = cb_idx;
@@ -1111,11 +1028,7 @@ mpt_free_msg_frame(MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf)
 		goto out;
 	/* signature to know if this mf is freed */
 	mf->u.frame.linkage.arg1 = cpu_to_le32(0xdeadbeaf);
-<<<<<<< HEAD
-	list_add_tail(&mf->u.frame.linkage.list, &ioc->FreeQ);
-=======
 	list_add(&mf->u.frame.linkage.list, &ioc->FreeQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MFCNT
 	ioc->mfcnt--;
 #endif
@@ -1212,20 +1125,12 @@ mpt_add_sge_64bit_1078(void *pAddr, u32 flagslength, dma_addr_t dma_addr)
 static void
 mpt_add_chain(void *pAddr, u8 next, u16 length, dma_addr_t dma_addr)
 {
-<<<<<<< HEAD
-		SGEChain32_t *pChain = (SGEChain32_t *) pAddr;
-		pChain->Length = cpu_to_le16(length);
-		pChain->Flags = MPI_SGE_FLAGS_CHAIN_ELEMENT;
-		pChain->NextChainOffset = next;
-		pChain->Address = cpu_to_le32(dma_addr);
-=======
 	SGEChain32_t *pChain = (SGEChain32_t *) pAddr;
 
 	pChain->Length = cpu_to_le16(length);
 	pChain->Flags = MPI_SGE_FLAGS_CHAIN_ELEMENT;
 	pChain->NextChainOffset = next;
 	pChain->Address = cpu_to_le32(dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -1240,20 +1145,6 @@ mpt_add_chain(void *pAddr, u8 next, u16 length, dma_addr_t dma_addr)
 static void
 mpt_add_chain_64bit(void *pAddr, u8 next, u16 length, dma_addr_t dma_addr)
 {
-<<<<<<< HEAD
-		SGEChain64_t *pChain = (SGEChain64_t *) pAddr;
-		u32 tmp = dma_addr & 0xFFFFFFFF;
-
-		pChain->Length = cpu_to_le16(length);
-		pChain->Flags = (MPI_SGE_FLAGS_CHAIN_ELEMENT |
-				 MPI_SGE_FLAGS_64_BIT_ADDRESSING);
-
-		pChain->NextChainOffset = next;
-
-		pChain->Address.Low = cpu_to_le32(tmp);
-		tmp = (u32)(upper_32_bits(dma_addr));
-		pChain->Address.High = cpu_to_le32(tmp);
-=======
 	SGEChain64_t *pChain = (SGEChain64_t *) pAddr;
 	u32 tmp = dma_addr & 0xFFFFFFFF;
 
@@ -1266,7 +1157,6 @@ mpt_add_chain_64bit(void *pAddr, u8 next, u16 length, dma_addr_t dma_addr)
 	pChain->Address.Low = cpu_to_le32(tmp);
 	tmp = (u32)(upper_32_bits(dma_addr));
 	pChain->Address.High = cpu_to_le32(tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -1384,11 +1274,6 @@ mpt_send_handshake_request(u8 cb_idx, MPT_ADAPTER *ioc, int reqBytes, u32 *req, 
 static int
 mpt_host_page_access_control(MPT_ADAPTER *ioc, u8 access_control_value, int sleepFlag)
 {
-<<<<<<< HEAD
-	int	 r = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* return if in use */
 	if (CHIPREG_READ32(&ioc->chip->Doorbell)
 	    & MPI_DOORBELL_ACTIVE)
@@ -1402,15 +1287,9 @@ mpt_host_page_access_control(MPT_ADAPTER *ioc, u8 access_control_value, int slee
 		 (access_control_value<<12)));
 
 	/* Wait for IOC to clear Doorbell Status bit */
-<<<<<<< HEAD
-	if ((r = WaitForDoorbellAck(ioc, 5, sleepFlag)) < 0) {
-		return -2;
-	}else
-=======
 	if (WaitForDoorbellAck(ioc, 5, sleepFlag) < 0)
 		return -2;
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 }
 
@@ -1439,15 +1318,6 @@ mpt_host_page_alloc(MPT_ADAPTER *ioc, pIOCInit_t ioc_init)
 			return 0; /* fw doesn't need any host buffers */
 
 		/* spin till we get enough memory */
-<<<<<<< HEAD
-		while(host_page_buffer_sz > 0) {
-
-			if((ioc->HostPageBuffer = pci_alloc_consistent(
-			    ioc->pcidev,
-			    host_page_buffer_sz,
-			    &ioc->HostPageBuffer_dma)) != NULL) {
-
-=======
 		while (host_page_buffer_sz > 0) {
 			ioc->HostPageBuffer =
 				dma_alloc_coherent(&ioc->pcidev->dev,
@@ -1455,7 +1325,6 @@ mpt_host_page_alloc(MPT_ADAPTER *ioc, pIOCInit_t ioc_init)
 						&ioc->HostPageBuffer_dma,
 						GFP_KERNEL);
 			if (ioc->HostPageBuffer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT
 				    "host_page_buffer @ %p, dma @ %x, sz=%d bytes\n",
 				    ioc->name, ioc->HostPageBuffer,
@@ -1487,11 +1356,7 @@ mpt_host_page_alloc(MPT_ADAPTER *ioc, pIOCInit_t ioc_init)
 	ioc->add_sge(psge, flags_length, ioc->HostPageBuffer_dma);
 	ioc->facts.HostPageBufferSGE = ioc_init->HostPageBufferSGE;
 
-<<<<<<< HEAD
-return 0;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -1527,22 +1392,13 @@ mpt_verify_adapter(int iocid, MPT_ADAPTER **iocpp)
  *	@vendor: pci vendor id
  *	@device: pci device id
  *	@revision: pci revision id
-<<<<<<< HEAD
- *	@prod_name: string returned
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Returns product string displayed when driver loads,
  *	in /proc/mpt/summary and /sysfs/class/scsi_host/host<X>/version_product
  *
  **/
-<<<<<<< HEAD
-static void
-mpt_get_product_name(u16 vendor, u16 device, u8 revision, char *prod_name)
-=======
 static const char*
 mpt_get_product_name(u16 vendor, u16 device, u8 revision)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *product_str = NULL;
 
@@ -1768,12 +1624,7 @@ mpt_get_product_name(u16 vendor, u16 device, u8 revision)
 	}
 
  out:
-<<<<<<< HEAD
-	if (product_str)
-		sprintf(prod_name, "%s", product_str);
-=======
 	return product_str;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1790,10 +1641,6 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 	unsigned long	 port;
 	u32		 msize;
 	u32		 psize;
-<<<<<<< HEAD
-	u8		 revision;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		 r = -ENODEV;
 	struct pci_dev *pdev;
 
@@ -1807,41 +1654,21 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 	if (pci_request_selected_regions(pdev, ioc->bars, "mpt")) {
 		printk(MYIOC_s_ERR_FMT "pci_request_selected_regions() with "
 		    "MEM failed\n", ioc->name);
-<<<<<<< HEAD
-		return r;
-	}
-
-	pci_read_config_byte(pdev, PCI_CLASS_REVISION, &revision);
-
-=======
 		goto out_pci_disable_device;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sizeof(dma_addr_t) > 4) {
 		const uint64_t required_mask = dma_get_required_mask
 		    (&pdev->dev);
 		if (required_mask > DMA_BIT_MASK(32)
-<<<<<<< HEAD
-			&& !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))
-			&& !pci_set_consistent_dma_mask(pdev,
-						 DMA_BIT_MASK(64))) {
-=======
 			&& !dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))
 			&& !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioc->dma_mask = DMA_BIT_MASK(64);
 			dinitprintk(ioc, printk(MYIOC_s_INFO_FMT
 				": 64 BIT PCI BUS DMA ADDRESSING SUPPORTED\n",
 				ioc->name));
-<<<<<<< HEAD
-		} else if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))
-			&& !pci_set_consistent_dma_mask(pdev,
-						DMA_BIT_MASK(32))) {
-=======
 		} else if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))
 			   && !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioc->dma_mask = DMA_BIT_MASK(32);
 			dinitprintk(ioc, printk(MYIOC_s_INFO_FMT
 				": 32 BIT PCI BUS DMA ADDRESSING SUPPORTED\n",
@@ -1849,21 +1676,11 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 		} else {
 			printk(MYIOC_s_WARN_FMT "no suitable DMA mask for %s\n",
 			    ioc->name, pci_name(pdev));
-<<<<<<< HEAD
-			pci_release_selected_regions(pdev, ioc->bars);
-			return r;
-		}
-	} else {
-		if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))
-			&& !pci_set_consistent_dma_mask(pdev,
-						DMA_BIT_MASK(32))) {
-=======
 			goto out_pci_release_region;
 		}
 	} else {
 		if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))
 			&& !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioc->dma_mask = DMA_BIT_MASK(32);
 			dinitprintk(ioc, printk(MYIOC_s_INFO_FMT
 				": 32 BIT PCI BUS DMA ADDRESSING SUPPORTED\n",
@@ -1871,12 +1688,7 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 		} else {
 			printk(MYIOC_s_WARN_FMT "no suitable DMA mask for %s\n",
 			    ioc->name, pci_name(pdev));
-<<<<<<< HEAD
-			pci_release_selected_regions(pdev, ioc->bars);
-			return r;
-=======
 			goto out_pci_release_region;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1906,13 +1718,8 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 	if (mem == NULL) {
 		printk(MYIOC_s_ERR_FMT ": ERROR - Unable to map adapter"
 			" memory!\n", ioc->name);
-<<<<<<< HEAD
-		pci_release_selected_regions(pdev, ioc->bars);
-		return -EINVAL;
-=======
 		r = -EINVAL;
 		goto out_pci_release_region;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ioc->memmap = mem;
 	dinitprintk(ioc, printk(MYIOC_s_INFO_FMT "mem = %p, mem_phys = %llx\n",
@@ -1926,15 +1733,12 @@ mpt_mapresources(MPT_ADAPTER *ioc)
 	ioc->pio_chip = (SYSIF_REGS __iomem *)port;
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 out_pci_release_region:
 	pci_release_selected_regions(pdev, ioc->bars);
 out_pci_disable_device:
 	pci_disable_device(pdev);
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -1961,21 +1765,13 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 	MPT_ADAPTER	*ioc;
 	u8		 cb_idx;
 	int		 r = -ENODEV;
-<<<<<<< HEAD
-	u8		 revision;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		 pcixcmd;
 	static int	 mpt_ids = 0;
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry *dent;
 #endif
 
-<<<<<<< HEAD
-	ioc = kzalloc(sizeof(MPT_ADAPTER), GFP_ATOMIC);
-=======
 	ioc = kzalloc(sizeof(MPT_ADAPTER), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ioc == NULL) {
 		printk(KERN_ERR MYNAM ": ERROR - Insufficient memory to add adapter!\n");
 		return -ENOMEM;
@@ -1998,12 +1794,7 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	ioc->pcidev = pdev;
 	if (mpt_mapresources(ioc)) {
-<<<<<<< HEAD
-		kfree(ioc);
-		return r;
-=======
 		goto out_free_ioc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2067,16 +1858,6 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	snprintf(ioc->reset_work_q_name, MPT_KOBJ_NAME_LEN,
 		 "mpt_poll_%d", ioc->id);
-<<<<<<< HEAD
-	ioc->reset_work_q =
-		create_singlethread_workqueue(ioc->reset_work_q_name);
-	if (!ioc->reset_work_q) {
-		printk(MYIOC_s_ERR_FMT "Insufficient memory to add adapter!\n",
-		    ioc->name);
-		pci_release_selected_regions(pdev, ioc->bars);
-		kfree(ioc);
-		return -ENOMEM;
-=======
 	ioc->reset_work_q = alloc_workqueue(ioc->reset_work_q_name,
 					    WQ_MEM_RECLAIM, 0);
 	if (!ioc->reset_work_q) {
@@ -2084,29 +1865,20 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 		    ioc->name);
 		r = -ENOMEM;
 		goto out_unmap_resources;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dinitprintk(ioc, printk(MYIOC_s_INFO_FMT "facts @ %p, pfacts[0] @ %p\n",
 	    ioc->name, &ioc->facts, &ioc->pfacts[0]));
 
-<<<<<<< HEAD
-	pci_read_config_byte(pdev, PCI_CLASS_REVISION, &revision);
-	mpt_get_product_name(pdev->vendor, pdev->device, revision, ioc->prod_name);
-=======
 	ioc->prod_name = mpt_get_product_name(pdev->vendor, pdev->device,
 					      pdev->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (pdev->device)
 	{
 	case MPI_MANUFACTPAGE_DEVICEID_FC939X:
 	case MPI_MANUFACTPAGE_DEVICEID_FC949X:
 		ioc->errata_flag_1064 = 1;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MPI_MANUFACTPAGE_DEVICEID_FC909:
 	case MPI_MANUFACTPAGE_DEVICEID_FC929:
 	case MPI_MANUFACTPAGE_DEVICEID_FC919:
@@ -2115,11 +1887,7 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 		break;
 
 	case MPI_MANUFACTPAGE_DEVICEID_FC929X:
-<<<<<<< HEAD
-		if (revision < XL_929) {
-=======
 		if (pdev->revision < XL_929) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* 929X Chip Fix. Set Split transactions level
 		 	* for PCIX. Set MOST bits to zero.
 		 	*/
@@ -2150,19 +1918,12 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 		/* 1030 Chip Fix. Disable Split transactions
 		 * for PCIX. Set MOST bits to zero if Rev < C0( = 8).
 		 */
-<<<<<<< HEAD
-		if (revision < C0_1030) {
-=======
 		if (pdev->revision < C0_1030) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_read_config_byte(pdev, 0x6a, &pcixcmd);
 			pcixcmd &= 0x8F;
 			pci_write_config_byte(pdev, 0x6a, pcixcmd);
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MPI_MANUFACTPAGE_DEVID_1030_53C1035:
 		ioc->bus_type = SPI;
@@ -2226,9 +1987,6 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 	INIT_LIST_HEAD(&ioc->fw_event_list);
 	spin_lock_init(&ioc->fw_event_lock);
 	snprintf(ioc->fw_event_q_name, MPT_KOBJ_NAME_LEN, "mpt/%d", ioc->id);
-<<<<<<< HEAD
-	ioc->fw_event_q = create_singlethread_workqueue(ioc->fw_event_q_name);
-=======
 	ioc->fw_event_q = alloc_workqueue(ioc->fw_event_q_name,
 					  WQ_MEM_RECLAIM, 0);
 	if (!ioc->fw_event_q) {
@@ -2237,28 +1995,21 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 		r = -ENOMEM;
 		goto out_remove_ioc;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((r = mpt_do_ioc_recovery(ioc, MPT_HOSTEVENT_IOC_BRINGUP,
 	    CAN_SLEEP)) != 0){
 		printk(MYIOC_s_ERR_FMT "didn't initialize properly! (%d)\n",
 		    ioc->name, r);
 
-<<<<<<< HEAD
-=======
 		destroy_workqueue(ioc->fw_event_q);
 		ioc->fw_event_q = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&ioc->list);
 		if (ioc->alt_ioc)
 			ioc->alt_ioc->alt_ioc = NULL;
 		iounmap(ioc->memmap);
-<<<<<<< HEAD
-=======
 		if (pci_is_enabled(pdev))
 			pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r != -5)
 			pci_release_selected_regions(pdev, ioc->bars);
 
@@ -2266,10 +2017,6 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 		ioc->reset_work_q = NULL;
 
 		kfree(ioc);
-<<<<<<< HEAD
-		pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -2277,11 +2024,7 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 	for(cb_idx = 0; cb_idx < MPT_MAX_PROTOCOL_DRIVERS; cb_idx++) {
 		if(MptDeviceDriverHandlers[cb_idx] &&
 		  MptDeviceDriverHandlers[cb_idx]->probe) {
-<<<<<<< HEAD
-			MptDeviceDriverHandlers[cb_idx]->probe(pdev,id);
-=======
 			MptDeviceDriverHandlers[cb_idx]->probe(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2291,15 +2034,10 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 	 */
 	dent = proc_mkdir(ioc->name, mpt_proc_root_dir);
 	if (dent) {
-<<<<<<< HEAD
-		proc_create_data("info", S_IRUGO, dent, &mpt_iocinfo_proc_fops, ioc);
-		proc_create_data("summary", S_IRUGO, dent, &mpt_summary_proc_fops, ioc);
-=======
 		proc_create_single_data("info", S_IRUGO, dent,
 				mpt_iocinfo_proc_show, ioc);
 		proc_create_single_data("summary", S_IRUGO, dent,
 				mpt_summary_proc_show, ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -2308,8 +2046,6 @@ mpt_attach(struct pci_dev *pdev, const struct pci_device_id *id)
 			msecs_to_jiffies(MPT_POLLING_INTERVAL));
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 out_remove_ioc:
 	list_del(&ioc->list);
@@ -2328,7 +2064,6 @@ out_free_ioc:
 	kfree(ioc);
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -2341,11 +2076,7 @@ void
 mpt_detach(struct pci_dev *pdev)
 {
 	MPT_ADAPTER 	*ioc = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-	char pname[32];
-=======
 	char pname[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 cb_idx;
 	unsigned long flags;
 	struct workqueue_struct *wq;
@@ -2366,19 +2097,11 @@ mpt_detach(struct pci_dev *pdev)
 	spin_unlock_irqrestore(&ioc->fw_event_lock, flags);
 	destroy_workqueue(wq);
 
-<<<<<<< HEAD
-	sprintf(pname, MPT_PROCFS_MPTBASEDIR "/%s/summary", ioc->name);
-	remove_proc_entry(pname, NULL);
-	sprintf(pname, MPT_PROCFS_MPTBASEDIR "/%s/info", ioc->name);
-	remove_proc_entry(pname, NULL);
-	sprintf(pname, MPT_PROCFS_MPTBASEDIR "/%s", ioc->name);
-=======
 	snprintf(pname, sizeof(pname), MPT_PROCFS_MPTBASEDIR "/%s/summary", ioc->name);
 	remove_proc_entry(pname, NULL);
 	snprintf(pname, sizeof(pname), MPT_PROCFS_MPTBASEDIR "/%s/info", ioc->name);
 	remove_proc_entry(pname, NULL);
 	snprintf(pname, sizeof(pname), MPT_PROCFS_MPTBASEDIR "/%s", ioc->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_proc_entry(pname, NULL);
 
 	/* call per device driver remove entry point */
@@ -2426,11 +2149,7 @@ mpt_suspend(struct pci_dev *pdev, pm_message_t state)
 	    device_state);
 
 	/* put ioc into READY_STATE */
-<<<<<<< HEAD
-	if(SendIocReset(ioc, MPI_FUNCTION_IOC_MESSAGE_UNIT_RESET, CAN_SLEEP)) {
-=======
 	if (SendIocReset(ioc, MPI_FUNCTION_IOC_MESSAGE_UNIT_RESET, CAN_SLEEP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(MYIOC_s_ERR_FMT
 		"pci-suspend:  IOC msg unit reset failed!\n", ioc->name);
 	}
@@ -2863,14 +2582,7 @@ mpt_do_ioc_recovery(MPT_ADAPTER *ioc, u32 reason, int sleepFlag)
 				(void) GetLanConfigPages(ioc);
 				a = (u8*)&ioc->lan_cnfg_page1.HardwareAddressLow;
 				dprintk(ioc, printk(MYIOC_s_DEBUG_FMT
-<<<<<<< HEAD
-					"LanAddr = %02X:%02X:%02X"
-					":%02X:%02X:%02X\n",
-					ioc->name, a[5], a[4],
-					a[3], a[2], a[1], a[0]));
-=======
 					"LanAddr = %pMR\n", ioc->name, a));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 
@@ -3020,13 +2732,8 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
 		sz = ioc->alloc_sz;
 		dexitprintk(ioc, printk(MYIOC_s_INFO_FMT "free  @ %p, sz=%d bytes\n",
 		    ioc->name, ioc->alloc, ioc->alloc_sz));
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, sz,
-				ioc->alloc, ioc->alloc_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->alloc,
 				ioc->alloc_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioc->reply_frames = NULL;
 		ioc->req_frames = NULL;
 		ioc->alloc = NULL;
@@ -3035,13 +2742,8 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
 
 	if (ioc->sense_buf_pool != NULL) {
 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, sz,
-				ioc->sense_buf_pool, ioc->sense_buf_pool_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->sense_buf_pool,
 				ioc->sense_buf_pool_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioc->sense_buf_pool = NULL;
 		ioc->alloc_total -= sz;
 	}
@@ -3064,15 +2766,9 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
 
 	if (ioc->spi_data.pIocPg4 != NULL) {
 		sz = ioc->spi_data.IocPg4Sz;
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, sz,
-			ioc->spi_data.pIocPg4,
-			ioc->spi_data.IocPg4_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, sz,
 				  ioc->spi_data.pIocPg4,
 				  ioc->spi_data.IocPg4_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioc->spi_data.pIocPg4 = NULL;
 		ioc->alloc_total -= sz;
 	}
@@ -3097,11 +2793,7 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
 			"HostPageBuffer free  @ %p, sz=%d bytes\n",
 			ioc->name, ioc->HostPageBuffer,
 			ioc->HostPageBuffer_sz));
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, ioc->HostPageBuffer_sz,
-=======
 		dma_free_coherent(&ioc->pcidev->dev, ioc->HostPageBuffer_sz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ioc->HostPageBuffer, ioc->HostPageBuffer_dma);
 		ioc->HostPageBuffer = NULL;
 		ioc->HostPageBuffer_sz = 0;
@@ -3145,16 +2837,6 @@ mpt_adapter_dispose(MPT_ADAPTER *ioc)
 	pci_disable_device(ioc->pcidev);
 	pci_release_selected_regions(ioc->pcidev, ioc->bars);
 
-<<<<<<< HEAD
-#if defined(CONFIG_MTRR) && 0
-	if (ioc->mtrr_reg > 0) {
-		mtrr_del(ioc->mtrr_reg, 0, 0);
-		dprintk(ioc, printk(MYIOC_s_INFO_FMT "MTRR region de-registered\n", ioc->name));
-	}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*  Zap the adapter lookup ptr!  */
 	list_del(&ioc->list);
 
@@ -3180,37 +2862,21 @@ MptDisplayIocCapabilities(MPT_ADAPTER *ioc)
 
 	printk(KERN_INFO "%s: ", ioc->name);
 	if (ioc->prod_name)
-<<<<<<< HEAD
-		printk("%s: ", ioc->prod_name);
-	printk("Capabilities={");
-
-	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_INITIATOR) {
-		printk("Initiator");
-=======
 		pr_cont("%s: ", ioc->prod_name);
 	pr_cont("Capabilities={");
 
 	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_INITIATOR) {
 		pr_cont("Initiator");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
 	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_TARGET) {
-<<<<<<< HEAD
-		printk("%sTarget", i ? "," : "");
-=======
 		pr_cont("%sTarget", i ? "," : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
 	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_LAN) {
-<<<<<<< HEAD
-		printk("%sLAN", i ? "," : "");
-=======
 		pr_cont("%sLAN", i ? "," : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
@@ -3219,20 +2885,12 @@ MptDisplayIocCapabilities(MPT_ADAPTER *ioc)
 	 *  This would probably evoke more questions than it's worth
 	 */
 	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_TARGET) {
-<<<<<<< HEAD
-		printk("%sLogBusAddr", i ? "," : "");
-=======
 		pr_cont("%sLogBusAddr", i ? "," : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 #endif
 
-<<<<<<< HEAD
-	printk("}\n");
-=======
 	pr_cont("}\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -3418,11 +3076,7 @@ GetIocFacts(MPT_ADAPTER *ioc, int sleepFlag, int reason)
 	int			 req_sz;
 	int			 reply_sz;
 	int			 sz;
-<<<<<<< HEAD
-	u32			 status, vv;
-=======
 	u32			 vv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			 shiftFactor=1;
 
 	/* IOC *must* NOT be in RESET state! */
@@ -3480,10 +3134,6 @@ GetIocFacts(MPT_ADAPTER *ioc, int sleepFlag, int reason)
 		facts->IOCExceptions = le16_to_cpu(facts->IOCExceptions);
 		facts->IOCStatus = le16_to_cpu(facts->IOCStatus);
 		facts->IOCLogInfo = le32_to_cpu(facts->IOCLogInfo);
-<<<<<<< HEAD
-		status = le16_to_cpu(facts->IOCStatus) & MPI_IOCSTATUS_MASK;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* CHECKME! IOCStatus, IOCLogInfo */
 
 		facts->ReplyQueueDepth = le16_to_cpu(facts->ReplyQueueDepth);
@@ -3530,16 +3180,7 @@ GetIocFacts(MPT_ADAPTER *ioc, int sleepFlag, int reason)
 			facts->FWImageSize = le32_to_cpu(facts->FWImageSize);
 		}
 
-<<<<<<< HEAD
-		sz = facts->FWImageSize;
-		if ( sz & 0x01 )
-			sz += 1;
-		if ( sz & 0x02 )
-			sz += 2;
-		facts->FWImageSize = sz;
-=======
 		facts->FWImageSize = ALIGN(facts->FWImageSize, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!facts->RequestFrameSize) {
 			/*  Something is wrong!  */
@@ -3871,12 +3512,8 @@ mpt_alloc_fw_memory(MPT_ADAPTER *ioc, int size)
 		rc = 0;
 		goto out;
 	}
-<<<<<<< HEAD
-	ioc->cached_fw = pci_alloc_consistent(ioc->pcidev, size, &ioc->cached_fw_dma);
-=======
 	ioc->cached_fw = dma_alloc_coherent(&ioc->pcidev->dev, size,
 					    &ioc->cached_fw_dma, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ioc->cached_fw) {
 		printk(MYIOC_s_ERR_FMT "Unable to allocate memory for the cached firmware image!\n",
 		    ioc->name);
@@ -3909,12 +3546,8 @@ mpt_free_fw_memory(MPT_ADAPTER *ioc)
 	sz = ioc->facts.FWImageSize;
 	dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT "free_fw_memory: FW Image  @ %p[%p], sz=%d[%x] bytes\n",
 		 ioc->name, ioc->cached_fw, (void *)(ulong)ioc->cached_fw_dma, sz, sz));
-<<<<<<< HEAD
-	pci_free_consistent(ioc->pcidev, sz, ioc->cached_fw, ioc->cached_fw_dma);
-=======
 	dma_free_coherent(&ioc->pcidev->dev, sz, ioc->cached_fw,
 			  ioc->cached_fw_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioc->alloc_total -= sz;
 	ioc->cached_fw = NULL;
 }
@@ -4813,14 +4446,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 		 */
 		if (ioc->pcidev->device == MPI_MANUFACTPAGE_DEVID_SAS1078 &&
 		    ioc->dma_mask > DMA_BIT_MASK(35)) {
-<<<<<<< HEAD
-			if (!pci_set_dma_mask(ioc->pcidev, DMA_BIT_MASK(32))
-			    && !pci_set_consistent_dma_mask(ioc->pcidev,
-			    DMA_BIT_MASK(32))) {
-=======
 			if (!dma_set_mask(&ioc->pcidev->dev, DMA_BIT_MASK(32))
 			    && !dma_set_coherent_mask(&ioc->pcidev->dev, DMA_BIT_MASK(32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dma_mask = DMA_BIT_MASK(35);
 				d36memprintk(ioc, printk(MYIOC_s_DEBUG_FMT
 				    "setting 35 bit addressing for "
@@ -4828,17 +4455,10 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 				    ioc->name));
 			} else {
 				/*Reseting DMA mask to 64 bit*/
-<<<<<<< HEAD
-				pci_set_dma_mask(ioc->pcidev,
-					DMA_BIT_MASK(64));
-				pci_set_consistent_dma_mask(ioc->pcidev,
-					DMA_BIT_MASK(64));
-=======
 				dma_set_mask(&ioc->pcidev->dev,
 					     DMA_BIT_MASK(64));
 				dma_set_coherent_mask(&ioc->pcidev->dev,
 						      DMA_BIT_MASK(64));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				printk(MYIOC_s_ERR_FMT
 				    "failed setting 35 bit addressing for "
@@ -4868,12 +4488,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 			 	ioc->name, sz, sz, num_chain));
 
 		total_size += sz;
-<<<<<<< HEAD
-		mem = pci_alloc_consistent(ioc->pcidev, total_size, &alloc_dma);
-=======
 		mem = dma_alloc_coherent(&ioc->pcidev->dev, total_size,
 				&alloc_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mem == NULL) {
 			printk(MYIOC_s_ERR_FMT "Unable to allocate Reply, Request, Chain Buffers!\n",
 				ioc->name);
@@ -4907,22 +4523,6 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 
 		ioc->req_frames_low_dma = (u32) (alloc_dma & 0xFFFFFFFF);
 
-<<<<<<< HEAD
-#if defined(CONFIG_MTRR) && 0
-		/*
-		 *  Enable Write Combining MTRR for IOC's memory region.
-		 *  (at least as much as we can; "size and base must be
-		 *  multiples of 4 kiB"
-		 */
-		ioc->mtrr_reg = mtrr_add(ioc->req_frames_dma,
-					 sz,
-					 MTRR_TYPE_WRCOMB, 1);
-		dprintk(ioc, printk(MYIOC_s_DEBUG_FMT "MTRR region registered (base:size=%08x:%x)\n",
-				ioc->name, ioc->req_frames_dma, sz));
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < ioc->req_depth; i++) {
 			alloc_dma += ioc->req_sz;
 			mem += ioc->req_sz;
@@ -4966,13 +4566,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 		spin_unlock_irqrestore(&ioc->FreeQlock, flags);
 
 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
-<<<<<<< HEAD
-		ioc->sense_buf_pool =
-			pci_alloc_consistent(ioc->pcidev, sz, &ioc->sense_buf_pool_dma);
-=======
 		ioc->sense_buf_pool = dma_alloc_coherent(&ioc->pcidev->dev, sz,
 				&ioc->sense_buf_pool_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ioc->sense_buf_pool == NULL) {
 			printk(MYIOC_s_ERR_FMT "Unable to allocate Sense Buffers!\n",
 				ioc->name);
@@ -4998,13 +4593,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 		alloc_dma += ioc->reply_sz;
 	}
 
-<<<<<<< HEAD
-	if (dma_mask == DMA_BIT_MASK(35) && !pci_set_dma_mask(ioc->pcidev,
-	    ioc->dma_mask) && !pci_set_consistent_dma_mask(ioc->pcidev,
-=======
 	if (dma_mask == DMA_BIT_MASK(35) && !dma_set_mask(&ioc->pcidev->dev,
 	    ioc->dma_mask) && !dma_set_coherent_mask(&ioc->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ioc->dma_mask))
 		d36memprintk(ioc, printk(MYIOC_s_DEBUG_FMT
 		    "restoring 64 bit addressing\n", ioc->name));
@@ -5015,30 +4605,14 @@ out_fail:
 
 	if (ioc->alloc != NULL) {
 		sz = ioc->alloc_sz;
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev,
-				sz,
-				ioc->alloc, ioc->alloc_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->alloc,
 				ioc->alloc_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioc->reply_frames = NULL;
 		ioc->req_frames = NULL;
 		ioc->alloc_total -= sz;
 	}
 	if (ioc->sense_buf_pool != NULL) {
 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev,
-				sz,
-				ioc->sense_buf_pool, ioc->sense_buf_pool_dma);
-		ioc->sense_buf_pool = NULL;
-	}
-
-	if (dma_mask == DMA_BIT_MASK(35) && !pci_set_dma_mask(ioc->pcidev,
-	    DMA_BIT_MASK(64)) && !pci_set_consistent_dma_mask(ioc->pcidev,
-=======
 		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->sense_buf_pool,
 				ioc->sense_buf_pool_dma);
 		ioc->sense_buf_pool = NULL;
@@ -5046,7 +4620,6 @@ out_fail:
 
 	if (dma_mask == DMA_BIT_MASK(35) && !dma_set_mask(&ioc->pcidev->dev,
 	    DMA_BIT_MASK(64)) && !dma_set_coherent_mask(&ioc->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    DMA_BIT_MASK(64)))
 		d36memprintk(ioc, printk(MYIOC_s_DEBUG_FMT
 		    "restoring 64 bit addressing\n", ioc->name));
@@ -5393,12 +4966,8 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 
 	if (hdr.PageLength > 0) {
 		data_sz = hdr.PageLength * 4;
-<<<<<<< HEAD
-		ppage0_alloc = (LANPage0_t *) pci_alloc_consistent(ioc->pcidev, data_sz, &page0_dma);
-=======
 		ppage0_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
 						  &page0_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		if (ppage0_alloc) {
 			memset((u8 *)ppage0_alloc, 0, data_sz);
@@ -5412,12 +4981,8 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 
 			}
 
-<<<<<<< HEAD
-			pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage0_alloc, page0_dma);
-=======
 			dma_free_coherent(&ioc->pcidev->dev, data_sz,
 					  (u8 *)ppage0_alloc, page0_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* FIXME!
 			 *	Normalize endianness of structure data,
@@ -5449,12 +5014,8 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 
 	data_sz = hdr.PageLength * 4;
 	rc = -ENOMEM;
-<<<<<<< HEAD
-	ppage1_alloc = (LANPage1_t *) pci_alloc_consistent(ioc->pcidev, data_sz, &page1_dma);
-=======
 	ppage1_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
 					  &page1_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppage1_alloc) {
 		memset((u8 *)ppage1_alloc, 0, data_sz);
 		cfg.physAddr = page1_dma;
@@ -5466,12 +5027,8 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 			memcpy(&ioc->lan_cnfg_page1, ppage1_alloc, copy_sz);
 		}
 
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage1_alloc, page1_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, data_sz,
 				  (u8 *)ppage1_alloc, page1_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* FIXME!
 		 *	Normalize endianness of structure data,
@@ -5489,17 +5046,11 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
  *	@ioc: Pointer to MPT_ADAPTER structure
  *	@persist_opcode: see below
  *
-<<<<<<< HEAD
- *	MPI_SAS_OP_CLEAR_NOT_PRESENT - Free all persist TargetID mappings for
- *		devices not currently present.
- *	MPI_SAS_OP_CLEAR_ALL_PERSISTENT - Clear al persist TargetID mappings
-=======
  *	===============================  ======================================
  *	MPI_SAS_OP_CLEAR_NOT_PRESENT     Free all persist TargetID mappings for
  *					 devices not currently present.
  *	MPI_SAS_OP_CLEAR_ALL_PERSISTENT  Clear al persist TargetID mappings
  *	===============================  ======================================
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	NOTE: Don't use not this function during interrupt time.
  *
@@ -5766,12 +5317,8 @@ GetIoUnitPage2(MPT_ADAPTER *ioc)
 	/* Read the config page */
 	data_sz = hdr.PageLength * 4;
 	rc = -ENOMEM;
-<<<<<<< HEAD
-	ppage_alloc = (IOUnitPage2_t *) pci_alloc_consistent(ioc->pcidev, data_sz, &page_dma);
-=======
 	ppage_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
 					 &page_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppage_alloc) {
 		memset((u8 *)ppage_alloc, 0, data_sz);
 		cfg.physAddr = page_dma;
@@ -5781,12 +5328,8 @@ GetIoUnitPage2(MPT_ADAPTER *ioc)
 		if ((rc = mpt_config(ioc, &cfg)) == 0)
 			ioc->biosVersion = le32_to_cpu(ppage_alloc->BiosVersion);
 
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage_alloc, page_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, data_sz,
 				  (u8 *)ppage_alloc, page_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -5861,13 +5404,9 @@ mpt_GetScsiPortSettings(MPT_ADAPTER *ioc, int portnum)
 		 return -EFAULT;
 
 	if (header.PageLength > 0) {
-<<<<<<< HEAD
-		pbuf = pci_alloc_consistent(ioc->pcidev, header.PageLength * 4, &buf_dma);
-=======
 		pbuf = dma_alloc_coherent(&ioc->pcidev->dev,
 					  header.PageLength * 4, &buf_dma,
 					  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pbuf) {
 			cfg.action = MPI_CONFIG_ACTION_PAGE_READ_CURRENT;
 			cfg.physAddr = buf_dma;
@@ -5923,13 +5462,9 @@ mpt_GetScsiPortSettings(MPT_ADAPTER *ioc, int portnum)
 				}
 			}
 			if (pbuf) {
-<<<<<<< HEAD
-				pci_free_consistent(ioc->pcidev, header.PageLength * 4, pbuf, buf_dma);
-=======
 				dma_free_coherent(&ioc->pcidev->dev,
 						  header.PageLength * 4, pbuf,
 						  buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -5951,13 +5486,9 @@ mpt_GetScsiPortSettings(MPT_ADAPTER *ioc, int portnum)
 	if (header.PageLength > 0) {
 		/* Allocate memory and read SCSI Port Page 2
 		 */
-<<<<<<< HEAD
-		pbuf = pci_alloc_consistent(ioc->pcidev, header.PageLength * 4, &buf_dma);
-=======
 		pbuf = dma_alloc_coherent(&ioc->pcidev->dev,
 					  header.PageLength * 4, &buf_dma,
 					  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pbuf) {
 			cfg.action = MPI_CONFIG_ACTION_PAGE_READ_NVRAM;
 			cfg.physAddr = buf_dma;
@@ -6022,13 +5553,9 @@ mpt_GetScsiPortSettings(MPT_ADAPTER *ioc, int portnum)
 				}
 			}
 
-<<<<<<< HEAD
-			pci_free_consistent(ioc->pcidev, header.PageLength * 4, pbuf, buf_dma);
-=======
 			dma_free_coherent(&ioc->pcidev->dev,
 					  header.PageLength * 4, pbuf,
 					  buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -6144,13 +5671,8 @@ mpt_inactive_raid_volumes(MPT_ADAPTER *ioc, u8 channel, u8 id)
 	if (!hdr.PageLength)
 		goto out;
 
-<<<<<<< HEAD
-	buffer = pci_alloc_consistent(ioc->pcidev, hdr.PageLength * 4,
-	    &dma_handle);
-=======
 	buffer = dma_alloc_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				    &dma_handle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer)
 		goto out;
@@ -6197,13 +5719,8 @@ mpt_inactive_raid_volumes(MPT_ADAPTER *ioc, u8 channel, u8 id)
 
  out:
 	if (buffer)
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, hdr.PageLength * 4, buffer,
-		    dma_handle);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				  buffer, dma_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6247,13 +5764,8 @@ mpt_raid_phys_disk_pg0(MPT_ADAPTER *ioc, u8 phys_disk_num,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	buffer = pci_alloc_consistent(ioc->pcidev, hdr.PageLength * 4,
-	    &dma_handle);
-=======
 	buffer = dma_alloc_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				    &dma_handle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer) {
 		rc = -ENOMEM;
@@ -6276,13 +5788,8 @@ mpt_raid_phys_disk_pg0(MPT_ADAPTER *ioc, u8 phys_disk_num,
  out:
 
 	if (buffer)
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, hdr.PageLength * 4, buffer,
-		    dma_handle);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				  buffer, dma_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -6324,13 +5831,8 @@ mpt_raid_phys_disk_get_num_paths(MPT_ADAPTER *ioc, u8 phys_disk_num)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	buffer = pci_alloc_consistent(ioc->pcidev, hdr.PageLength * 4,
-	    &dma_handle);
-=======
 	buffer = dma_alloc_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				    &dma_handle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer) {
 		rc = 0;
@@ -6350,13 +5852,8 @@ mpt_raid_phys_disk_get_num_paths(MPT_ADAPTER *ioc, u8 phys_disk_num)
  out:
 
 	if (buffer)
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, hdr.PageLength * 4, buffer,
-		    dma_handle);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				  buffer, dma_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -6406,13 +5903,8 @@ mpt_raid_phys_disk_pg1(MPT_ADAPTER *ioc, u8 phys_disk_num,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	buffer = pci_alloc_consistent(ioc->pcidev, hdr.PageLength * 4,
-	    &dma_handle);
-=======
 	buffer = dma_alloc_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				    &dma_handle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer) {
 		rc = -ENOMEM;
@@ -6449,13 +5941,8 @@ mpt_raid_phys_disk_pg1(MPT_ADAPTER *ioc, u8 phys_disk_num,
  out:
 
 	if (buffer)
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, hdr.PageLength * 4, buffer,
-		    dma_handle);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				  buffer, dma_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -6511,12 +5998,8 @@ mpt_findImVolumes(MPT_ADAPTER *ioc)
 		return -EFAULT;
 
 	iocpage2sz = header.PageLength * 4;
-<<<<<<< HEAD
-	pIoc2 = pci_alloc_consistent(ioc->pcidev, iocpage2sz, &ioc2_dma);
-=======
 	pIoc2 = dma_alloc_coherent(&ioc->pcidev->dev, iocpage2sz, &ioc2_dma,
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pIoc2)
 		return -ENOMEM;
 
@@ -6525,20 +6008,12 @@ mpt_findImVolumes(MPT_ADAPTER *ioc)
 	if (mpt_config(ioc, &cfg) != 0)
 		goto out;
 
-<<<<<<< HEAD
-	mem = kmalloc(iocpage2sz, GFP_KERNEL);
-=======
 	mem = kmemdup(pIoc2, iocpage2sz, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mem) {
 		rc = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	memcpy(mem, (u8 *)pIoc2, iocpage2sz);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioc->raid_data.pIocPg2 = (IOCPage2_t *) mem;
 
 	mpt_read_ioc_pg_3(ioc);
@@ -6549,11 +6024,7 @@ mpt_findImVolumes(MPT_ADAPTER *ioc)
 		    pIoc2->RaidVolume[i].VolumeID);
 
  out:
-<<<<<<< HEAD
-	pci_free_consistent(ioc->pcidev, iocpage2sz, pIoc2, ioc2_dma);
-=======
 	dma_free_coherent(&ioc->pcidev->dev, iocpage2sz, pIoc2, ioc2_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -6595,12 +6066,8 @@ mpt_read_ioc_pg_3(MPT_ADAPTER *ioc)
 	/* Read Header good, alloc memory
 	 */
 	iocpage3sz = header.PageLength * 4;
-<<<<<<< HEAD
-	pIoc3 = pci_alloc_consistent(ioc->pcidev, iocpage3sz, &ioc3_dma);
-=======
 	pIoc3 = dma_alloc_coherent(&ioc->pcidev->dev, iocpage3sz, &ioc3_dma,
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pIoc3)
 		return 0;
 
@@ -6617,11 +6084,7 @@ mpt_read_ioc_pg_3(MPT_ADAPTER *ioc)
 		}
 	}
 
-<<<<<<< HEAD
-	pci_free_consistent(ioc->pcidev, iocpage3sz, pIoc3, ioc3_dma);
-=======
 	dma_free_coherent(&ioc->pcidev->dev, iocpage3sz, pIoc3, ioc3_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -6655,12 +6118,8 @@ mpt_read_ioc_pg_4(MPT_ADAPTER *ioc)
 
 	if ( (pIoc4 = ioc->spi_data.pIocPg4) == NULL ) {
 		iocpage4sz = (header.PageLength + 4) * 4; /* Allow 4 additional SEP's */
-<<<<<<< HEAD
-		pIoc4 = pci_alloc_consistent(ioc->pcidev, iocpage4sz, &ioc4_dma);
-=======
 		pIoc4 = dma_alloc_coherent(&ioc->pcidev->dev, iocpage4sz,
 					   &ioc4_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pIoc4)
 			return;
 		ioc->alloc_total += iocpage4sz;
@@ -6678,12 +6137,8 @@ mpt_read_ioc_pg_4(MPT_ADAPTER *ioc)
 		ioc->spi_data.IocPg4_dma = ioc4_dma;
 		ioc->spi_data.IocPg4Sz = iocpage4sz;
 	} else {
-<<<<<<< HEAD
-		pci_free_consistent(ioc->pcidev, iocpage4sz, pIoc4, ioc4_dma);
-=======
 		dma_free_coherent(&ioc->pcidev->dev, iocpage4sz, pIoc4,
 				  ioc4_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioc->spi_data.pIocPg4 = NULL;
 		ioc->alloc_total -= iocpage4sz;
 	}
@@ -6720,12 +6175,8 @@ mpt_read_ioc_pg_1(MPT_ADAPTER *ioc)
 	/* Read Header good, alloc memory
 	 */
 	iocpage1sz = header.PageLength * 4;
-<<<<<<< HEAD
-	pIoc1 = pci_alloc_consistent(ioc->pcidev, iocpage1sz, &ioc1_dma);
-=======
 	pIoc1 = dma_alloc_coherent(&ioc->pcidev->dev, iocpage1sz, &ioc1_dma,
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pIoc1)
 		return;
 
@@ -6776,11 +6227,7 @@ mpt_read_ioc_pg_1(MPT_ADAPTER *ioc)
 		}
 	}
 
-<<<<<<< HEAD
-	pci_free_consistent(ioc->pcidev, iocpage1sz, pIoc1, ioc1_dma);
-=======
 	dma_free_coherent(&ioc->pcidev->dev, iocpage1sz, pIoc1, ioc1_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -6809,12 +6256,8 @@ mpt_get_manufacturing_pg_0(MPT_ADAPTER *ioc)
 		goto out;
 
 	cfg.action = MPI_CONFIG_ACTION_PAGE_READ_CURRENT;
-<<<<<<< HEAD
-	pbuf = pci_alloc_consistent(ioc->pcidev, hdr.PageLength * 4, &buf_dma);
-=======
 	pbuf = dma_alloc_coherent(&ioc->pcidev->dev, hdr.PageLength * 4,
 				  &buf_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pbuf)
 		goto out;
 
@@ -6827,18 +6270,11 @@ mpt_get_manufacturing_pg_0(MPT_ADAPTER *ioc)
 	memcpy(ioc->board_assembly, pbuf->BoardAssembly, sizeof(ioc->board_assembly));
 	memcpy(ioc->board_tracer, pbuf->BoardTracerNumber, sizeof(ioc->board_tracer));
 
-<<<<<<< HEAD
-	out:
-
-	if (pbuf)
-		pci_free_consistent(ioc->pcidev, hdr.PageLength * 4, pbuf, buf_dma);
-=======
 out:
 
 	if (pbuf)
 		dma_free_coherent(&ioc->pcidev->dev, hdr.PageLength * 4, pbuf,
 				  buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -6912,10 +6348,6 @@ SendEventAck(MPT_ADAPTER *ioc, EventNotificationReply_t *evnp)
  *		Page header is updated.
  *
  *	Returns 0 for success
-<<<<<<< HEAD
- *	-EPERM if not allowed due to ISR context
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-EAGAIN if no msg frames currently available
  *	-EFAULT for non-successful reply or no reply (timeout)
  */
@@ -6933,26 +6365,10 @@ mpt_config(MPT_ADAPTER *ioc, CONFIGPARMS *pCfg)
 	u8		 page_type = 0, extend_page;
 	unsigned long 	 timeleft;
 	unsigned long	 flags;
-<<<<<<< HEAD
-    int		 in_isr;
-	u8		 issue_hard_reset = 0;
-	u8		 retry_count = 0;
-
-	/*	Prevent calling wait_event() (below), if caller happens
-	 *	to be in ISR context, because that is fatal!
-	 */
-	in_isr = in_interrupt();
-	if (in_isr) {
-		dcprintk(ioc, printk(MYIOC_s_WARN_FMT "Config request not allowed in ISR context!\n",
-				ioc->name));
-		return -EPERM;
-    }
-=======
 	u8		 issue_hard_reset = 0;
 	u8		 retry_count = 0;
 
 	might_sleep();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* don't send a config page during diag reset */
 	spin_lock_irqsave(&ioc->taskmgmt_lock, flags);
@@ -7066,10 +6482,7 @@ mpt_config(MPT_ADAPTER *ioc, CONFIGPARMS *pCfg)
 				printk(MYIOC_s_INFO_FMT "%s: host reset in"
 					" progress mpt_config timed out.!!\n",
 					__func__, ioc->name);
-<<<<<<< HEAD
-=======
 				mutex_unlock(&ioc->mptbase_cmds.mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EFAULT;
 			}
 			spin_unlock_irqrestore(&ioc->taskmgmt_lock, flags);
@@ -7200,15 +6613,10 @@ procmpt_create(void)
 	if (mpt_proc_root_dir == NULL)
 		return -ENOTDIR;
 
-<<<<<<< HEAD
-	proc_create("summary", S_IRUGO, mpt_proc_root_dir, &mpt_summary_proc_fops);
-	proc_create("version", S_IRUGO, mpt_proc_root_dir, &mpt_version_proc_fops);
-=======
 	proc_create_single("summary", S_IRUGO, mpt_proc_root_dir,
 			mpt_summary_proc_show);
 	proc_create_single("version", S_IRUGO, mpt_proc_root_dir,
 			mpt_version_proc_show);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -7247,40 +6655,16 @@ static int mpt_summary_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mpt_summary_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, mpt_summary_proc_show, PDE(inode)->data);
-}
-
-static const struct file_operations mpt_summary_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= mpt_summary_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static int mpt_version_proc_show(struct seq_file *m, void *v)
-{
-	u8	 cb_idx;
-	int	 scsi, fc, sas, lan, ctl, targ, dmp;
-=======
 static int mpt_version_proc_show(struct seq_file *m, void *v)
 {
 	u8	 cb_idx;
 	int	 scsi, fc, sas, lan, ctl, targ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char	*drvname;
 
 	seq_printf(m, "%s-%s\n", "mptlinux", MPT_LINUX_VERSION_COMMON);
 	seq_printf(m, "  Fusion MPT base driver\n");
 
-<<<<<<< HEAD
-	scsi = fc = sas = lan = ctl = targ = dmp = 0;
-=======
 	scsi = fc = sas = lan = ctl = targ = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cb_idx = MPT_MAX_PROTOCOL_DRIVERS-1; cb_idx; cb_idx--) {
 		drvname = NULL;
 		if (MptCallbacks[cb_idx]) {
@@ -7313,22 +6697,6 @@ static int mpt_version_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mpt_version_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, mpt_version_proc_show, NULL);
-}
-
-static const struct file_operations mpt_version_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= mpt_version_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mpt_iocinfo_proc_show(struct seq_file *m, void *v)
 {
 	MPT_ADAPTER	*ioc = m->private;
@@ -7396,12 +6764,7 @@ static int mpt_iocinfo_proc_show(struct seq_file *m, void *v)
 		if (ioc->bus_type == FC) {
 			if (ioc->pfacts[p].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_LAN) {
 				u8 *a = (u8*)&ioc->lan_cnfg_page1.HardwareAddressLow;
-<<<<<<< HEAD
-				seq_printf(m, "    LanAddr = %02X:%02X:%02X:%02X:%02X:%02X\n",
-						a[5], a[4], a[3], a[2], a[1], a[0]);
-=======
 				seq_printf(m, "    LanAddr = %pMR\n", a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			seq_printf(m, "    WWN = %08X%08X:%08X%08X\n",
 					ioc->fc_port_page0[p].WWNN.High,
@@ -7413,22 +6776,6 @@ static int mpt_iocinfo_proc_show(struct seq_file *m, void *v)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static int mpt_iocinfo_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, mpt_iocinfo_proc_show, PDE(inode)->data);
-}
-
-static const struct file_operations mpt_iocinfo_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= mpt_iocinfo_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif		/* CONFIG_PROC_FS } */
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -7481,12 +6828,7 @@ mpt_print_ioc_summary(MPT_ADAPTER *ioc, char *buffer, int *size, int len, int sh
 
 	if (showlan && (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_LAN)) {
 		u8 *a = (u8*)&ioc->lan_cnfg_page1.HardwareAddressLow;
-<<<<<<< HEAD
-		y += sprintf(buffer+len+y, ", LanAddr=%02X:%02X:%02X:%02X:%02X:%02X",
-			a[5], a[4], a[3], a[2], a[1], a[0]);
-=======
 		y += sprintf(buffer+len+y, ", LanAddr=%pMR", a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	y += sprintf(buffer+len+y, ", IRQ=%d", ioc->pci_irq);
@@ -7499,10 +6841,7 @@ mpt_print_ioc_summary(MPT_ADAPTER *ioc, char *buffer, int *size, int len, int sh
 	*size = y;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void seq_mpt_print_ioc_summary(MPT_ADAPTER *ioc, struct seq_file *m, int showlan)
 {
 	char expVer[32];
@@ -7523,12 +6862,7 @@ static void seq_mpt_print_ioc_summary(MPT_ADAPTER *ioc, struct seq_file *m, int 
 
 	if (showlan && (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_LAN)) {
 		u8 *a = (u8*)&ioc->lan_cnfg_page1.HardwareAddressLow;
-<<<<<<< HEAD
-		seq_printf(m, ", LanAddr=%02X:%02X:%02X:%02X:%02X:%02X",
-			a[5], a[4], a[3], a[2], a[1], a[0]);
-=======
 		seq_printf(m, ", LanAddr=%pMR", a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	seq_printf(m, ", IRQ=%d", ioc->pci_irq);
@@ -7538,10 +6872,7 @@ static void seq_mpt_print_ioc_summary(MPT_ADAPTER *ioc, struct seq_file *m, int 
 
 	seq_putc(m, '\n');
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	mpt_set_taskmgmt_in_progress_flag - set flags associated with task management
@@ -7604,11 +6935,7 @@ EXPORT_SYMBOL(mpt_clear_taskmgmt_in_progress_flag);
  *	@ioc: Pointer to MPT_ADAPTER structure
  *
  **/
-<<<<<<< HEAD
-void
-=======
 void __noreturn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mpt_halt_firmware(MPT_ADAPTER *ioc)
 {
 	u32	 ioc_raw_state;
@@ -7641,11 +6968,7 @@ EXPORT_SYMBOL(mpt_halt_firmware);
  *	IOC doesn't reply to any outstanding request. This will transfer IOC
  *	to READY state.
  **/
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mpt_SoftResetHandler(MPT_ADAPTER *ioc, int sleepFlag)
 {
 	int		 rc;
@@ -7684,11 +7007,6 @@ mpt_SoftResetHandler(MPT_ADAPTER *ioc, int sleepFlag)
 	ioc->ioc_reset_in_progress = 1;
 	spin_unlock_irqrestore(&ioc->taskmgmt_lock, flags);
 
-<<<<<<< HEAD
-	rc = -1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cb_idx = MPT_MAX_PROTOCOL_DRIVERS-1; cb_idx; cb_idx--) {
 		if (MptResetHandlers[cb_idx])
 			mpt_signal_reset(cb_idx, ioc, MPT_IOC_SETUP_RESET);
@@ -8047,11 +7365,7 @@ mpt_display_event_info(MPT_ADAPTER *ioc, EventNotificationReply_t *pEventReply)
 			break;
 		case MPI_EVENT_SAS_DEV_STAT_RC_NO_PERSIST_ADDED:
 			snprintf(evStr, EVENT_DESCR_STR_SZ,
-<<<<<<< HEAD
-			    "SAS Device Status Change: No Persistancy: "
-=======
 			    "SAS Device Status Change: No Persistency: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "id=%d channel=%d", id, channel);
 			break;
 		case MPI_EVENT_SAS_DEV_STAT_RC_UNSUPPORTED:
@@ -8256,19 +7570,11 @@ mpt_display_event_info(MPT_ADAPTER *ioc, EventNotificationReply_t *pEventReply)
 		u8 phy_num = (u8)(evData0);
 		u8 port_num = (u8)(evData0 >> 8);
 		u8 port_width = (u8)(evData0 >> 16);
-<<<<<<< HEAD
-		u8 primative = (u8)(evData0 >> 24);
-		snprintf(evStr, EVENT_DESCR_STR_SZ,
-		    "SAS Broadcase Primative: phy=%d port=%d "
-		    "width=%d primative=0x%02x",
-		    phy_num, port_num, port_width, primative);
-=======
 		u8 primitive = (u8)(evData0 >> 24);
 		snprintf(evStr, EVENT_DESCR_STR_SZ,
 		    "SAS Broadcast Primitive: phy=%d port=%d "
 		    "width=%d primitive=0x%02x",
 		    phy_num, port_num, port_width, primitive);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -8297,11 +7603,7 @@ mpt_display_event_info(MPT_ADAPTER *ioc, EventNotificationReply_t *pEventReply)
 
 		snprintf(evStr, EVENT_DESCR_STR_SZ,
 		    "SAS Initiator Device Table Overflow: max initiators=%02d "
-<<<<<<< HEAD
-		    "current initators=%02d",
-=======
 		    "current initiators=%02d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    max_init, current_init);
 		break;
 	}
@@ -8364,11 +7666,7 @@ mpt_display_event_info(MPT_ADAPTER *ioc, EventNotificationReply_t *pEventReply)
 		break;
 	}
 	if (ds)
-<<<<<<< HEAD
-		strncpy(evStr, ds, EVENT_DESCR_STR_SZ);
-=======
 		strscpy(evStr, ds, EVENT_DESCR_STR_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	devtprintk(ioc, printk(MYIOC_s_DEBUG_FMT
@@ -8763,17 +8061,6 @@ mpt_spi_log_info(MPT_ADAPTER *ioc, u32 log_info)
 static void
 mpt_sas_log_info(MPT_ADAPTER *ioc, u32 log_info, u8 cb_idx)
 {
-<<<<<<< HEAD
-union loginfo_type {
-	u32	loginfo;
-	struct {
-		u32	subcode:16;
-		u32	code:8;
-		u32	originator:4;
-		u32	bus_type:4;
-	}dw;
-};
-=======
 	union loginfo_type {
 		u32	loginfo;
 		struct {
@@ -8783,7 +8070,6 @@ union loginfo_type {
 			u32	bus_type:4;
 		} dw;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union loginfo_type sas_loginfo;
 	char *originator_desc = NULL;
 	char *code_desc = NULL;

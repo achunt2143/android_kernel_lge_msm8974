@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _RDS_RDS_H
 #define _RDS_RDS_H
 
@@ -11,12 +8,9 @@
 #include <rdma/rdma_cm.h>
 #include <linux/mutex.h>
 #include <linux/rds.h>
-<<<<<<< HEAD
-=======
 #include <linux/rhashtable.h>
 #include <linux/refcount.h>
 #include <linux/in6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "info.h"
 
@@ -25,23 +19,12 @@
  */
 #define RDS_PROTOCOL_3_0	0x0300
 #define RDS_PROTOCOL_3_1	0x0301
-<<<<<<< HEAD
-=======
 #define RDS_PROTOCOL_4_0	0x0400
 #define RDS_PROTOCOL_4_1	0x0401
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDS_PROTOCOL_VERSION	RDS_PROTOCOL_3_1
 #define RDS_PROTOCOL_MAJOR(v)	((v) >> 8)
 #define RDS_PROTOCOL_MINOR(v)	((v) & 255)
 #define RDS_PROTOCOL(maj, min)	(((maj) << 8) | min)
-<<<<<<< HEAD
-
-/*
- * XXX randomly chosen, but at least seems to be unused:
- * #               18464-18768 Unassigned
- * We should do better.  We want a reserved port to discourage unpriv'ed
- * userspace from listening.
-=======
 #define RDS_PROTOCOL_COMPAT_VERSION	RDS_PROTOCOL_3_1
 
 /* The following ports, 16385, 18634, 18635, are registered with IANA as
@@ -51,19 +34,13 @@
  * IPv6 work, RDMA_CM also uses 16385 as the listener port.  18634 is kept
  * to ensure compatibility with older RDS modules.  Those ports are defined
  * in each transport's header file.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define RDS_PORT	18634
 
 #ifdef ATOMIC64_INIT
 #define KERNEL_HAS_ATOMIC64
 #endif
-<<<<<<< HEAD
-
-#ifdef DEBUG
-=======
 #ifdef RDS_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define rdsdebug(fmt, args...) pr_debug("%s(): " fmt, __func__ , ##args)
 #else
 /* sigh, pr_debug() causes unused variable warnings */
@@ -73,33 +50,19 @@ void rdsdebug(char *fmt, ...)
 }
 #endif
 
-<<<<<<< HEAD
-/* XXX is there one of these somewhere? */
-#define ceil(x, y) \
-	({ unsigned long __x = (x), __y = (y); (__x + __y - 1) / __y; })
-
-#define RDS_FRAG_SHIFT	12
-#define RDS_FRAG_SIZE	((unsigned int)(1 << RDS_FRAG_SHIFT))
-
-=======
 #define RDS_FRAG_SHIFT	12
 #define RDS_FRAG_SIZE	((unsigned int)(1 << RDS_FRAG_SHIFT))
 
 /* Used to limit both RDMA and non-RDMA RDS message to 1MB */
 #define RDS_MAX_MSG_SIZE	((unsigned int)(1 << 20))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDS_CONG_MAP_BYTES	(65536 / 8)
 #define RDS_CONG_MAP_PAGES	(PAGE_ALIGN(RDS_CONG_MAP_BYTES) / PAGE_SIZE)
 #define RDS_CONG_MAP_PAGE_BITS	(PAGE_SIZE * 8)
 
 struct rds_cong_map {
 	struct rb_node		m_rb_node;
-<<<<<<< HEAD
-	__be32			m_addr;
-=======
 	struct in6_addr		m_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t	m_waitq;
 	struct list_head	m_conn_list;
 	unsigned long		m_page_addrs[RDS_CONG_MAP_PAGES];
@@ -117,10 +80,7 @@ enum {
 	RDS_CONN_CONNECTING,
 	RDS_CONN_DISCONNECTING,
 	RDS_CONN_UP,
-<<<<<<< HEAD
-=======
 	RDS_CONN_RESETTING,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RDS_CONN_ERROR,
 };
 
@@ -128,15 +88,6 @@ enum {
 #define RDS_LL_SEND_FULL	0
 #define RDS_RECONNECT_PENDING	1
 #define RDS_IN_XMIT		2
-<<<<<<< HEAD
-
-struct rds_connection {
-	struct hlist_node	c_hash_node;
-	__be32			c_laddr;
-	__be32			c_faddr;
-	unsigned int		c_loopback:1;
-	struct rds_connection	*c_passive;
-=======
 #define RDS_RECV_REFILL		3
 #define	RDS_DESTROY_PENDING	4
 
@@ -197,40 +148,10 @@ struct rds_connection {
 	int			c_npaths;
 	struct rds_connection	*c_passive;
 	struct rds_transport	*c_trans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct rds_cong_map	*c_lcong;
 	struct rds_cong_map	*c_fcong;
 
-<<<<<<< HEAD
-	struct rds_message	*c_xmit_rm;
-	unsigned long		c_xmit_sg;
-	unsigned int		c_xmit_hdr_off;
-	unsigned int		c_xmit_data_off;
-	unsigned int		c_xmit_atomic_sent;
-	unsigned int		c_xmit_rdma_sent;
-	unsigned int		c_xmit_data_sent;
-
-	spinlock_t		c_lock;		/* protect msg queues */
-	u64			c_next_tx_seq;
-	struct list_head	c_send_queue;
-	struct list_head	c_retrans;
-
-	u64			c_next_rx_seq;
-
-	struct rds_transport	*c_trans;
-	void			*c_transport_data;
-
-	atomic_t		c_state;
-	unsigned long		c_flags;
-	unsigned long		c_reconnect_jiffies;
-	struct delayed_work	c_send_w;
-	struct delayed_work	c_recv_w;
-	struct delayed_work	c_conn_w;
-	struct work_struct	c_down_w;
-	struct mutex		c_cm_lock;	/* protect conn state & cm */
-	wait_queue_head_t	c_waitq;
-=======
 	/* Protocol version */
 	unsigned int		c_proposed_version;
 	unsigned int		c_version;
@@ -238,20 +159,10 @@ struct rds_connection {
 
 	/* TOS */
 	u8			c_tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head	c_map_item;
 	unsigned long		c_map_queued;
 
-<<<<<<< HEAD
-	unsigned int		c_unacked_packets;
-	unsigned int		c_unacked_bytes;
-
-	/* Protocol version */
-	unsigned int		c_version;
-};
-
-=======
 	struct rds_conn_path	*c_path;
 	wait_queue_head_t	c_hs_waitq; /* handshake waitq */
 
@@ -271,14 +182,11 @@ void rds_conn_net_set(struct rds_connection *conn, struct net *net)
 	write_pnet(&conn->c_net, net);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDS_FLAG_CONG_BITMAP	0x01
 #define RDS_FLAG_ACK_REQUIRED	0x02
 #define RDS_FLAG_RETRANSMITTED	0x04
 #define RDS_MAX_ADV_CREDIT	255
 
-<<<<<<< HEAD
-=======
 /* RDS_FLAG_PROBE_PORT is the reserved sport used for sending a ping
  * probe to exchange control information before establishing a connection.
  * Currently the control information that is exchanged is the number of
@@ -290,7 +198,6 @@ void rds_conn_net_set(struct rds_connection *conn, struct net *net)
 #define	RDS_HS_PROBE(sport, dport) \
 		((sport == RDS_FLAG_PROBE_PORT && dport == 0) || \
 		 (sport == 0 && dport == RDS_FLAG_PROBE_PORT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Maximum space available for extension headers.
  */
@@ -350,19 +257,6 @@ struct rds_ext_header_rdma_dest {
 	__be32			h_rdma_offset;
 };
 
-<<<<<<< HEAD
-#define __RDS_EXTHDR_MAX	16 /* for now */
-
-struct rds_incoming {
-	atomic_t		i_refcount;
-	struct list_head	i_item;
-	struct rds_connection	*i_conn;
-	struct rds_header	i_hdr;
-	unsigned long		i_rx_jiffies;
-	__be32			i_saddr;
-
-	rds_rdma_cookie_t	i_rdma_cookie;
-=======
 /* Extension header announcing number of paths.
  * Implicit length = 2 bytes.
  */
@@ -393,16 +287,11 @@ struct rds_incoming {
 
 	struct rds_inc_usercopy i_usercopy;
 	u64			i_rx_lat_trace[RDS_RX_MAX_TRACES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rds_mr {
 	struct rb_node		r_rb_node;
-<<<<<<< HEAD
-	atomic_t		r_refcount;
-=======
 	struct kref		r_kref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			r_key;
 
 	/* A copy of the creation flags */
@@ -410,25 +299,11 @@ struct rds_mr {
 	unsigned int		r_invalidate:1;
 	unsigned int		r_write:1;
 
-<<<<<<< HEAD
-	/* This is for RDS_MR_DEAD.
-	 * It would be nice & consistent to make this part of the above
-	 * bit field here, but we need to use test_and_set_bit.
-	 */
-	unsigned long		r_state;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_sock		*r_sock; /* back pointer to the socket that owns us */
 	struct rds_transport	*r_trans;
 	void			*r_trans_private;
 };
 
-<<<<<<< HEAD
-/* Flags for mr->r_state */
-#define RDS_MR_DEAD		0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline rds_rdma_cookie_t rds_rdma_make_cookie(u32 r_key, u32 offset)
 {
 	return r_key | (((u64) offset) << 32);
@@ -484,11 +359,6 @@ static inline u32 rds_rdma_cookie_offset(rds_rdma_cookie_t cookie)
 #define RDS_MSG_RETRANSMITTED	5
 #define RDS_MSG_MAPPED		6
 #define RDS_MSG_PAGEVEC		7
-<<<<<<< HEAD
-
-struct rds_message {
-	atomic_t		m_refcount;
-=======
 #define RDS_MSG_FLUSH		8
 
 struct rds_znotifier {
@@ -529,16 +399,11 @@ struct rds_iov_vector_arr {
 
 struct rds_message {
 	refcount_t		m_refcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	m_sock_item;
 	struct list_head	m_conn_item;
 	struct rds_incoming	m_inc;
 	u64			m_ack_seq;
-<<<<<<< HEAD
-	__be32			m_daddr;
-=======
 	struct in6_addr		m_daddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		m_flags;
 
 	/* Never access m_rs without holding m_rs_lock.
@@ -604,22 +469,14 @@ struct rds_message {
 			struct rds_notifier	*op_notifier;
 
 			struct rds_mr		*op_rdma_mr;
-<<<<<<< HEAD
-=======
 
 			u64			op_odp_addr;
 			struct rds_mr		*op_odp_mr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} rdma;
 		struct rm_data_op {
 			unsigned int		op_active:1;
 			unsigned int		op_nents;
 			unsigned int		op_count;
-<<<<<<< HEAD
-			struct scatterlist	*op_sg;
-		} data;
-	};
-=======
 			unsigned int		op_dmasg;
 			unsigned int		op_dmaoff;
 			struct rds_znotifier	*op_mmp_znotifier;
@@ -628,7 +485,6 @@ struct rds_message {
 	};
 
 	struct rds_conn_path *m_conn_path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -644,14 +500,11 @@ struct rds_notifier {
 	int			n_status;
 };
 
-<<<<<<< HEAD
-=======
 /* Available as part of RDS core, so doesn't need to participate
  * in get_preferred transport etc
  */
 #define	RDS_TRANS_LOOP	3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct rds_transport -  transport specific behavioural hooks
  *
@@ -679,30 +532,10 @@ struct rds_notifier {
  *                 should try hard not to block.
  */
 
-<<<<<<< HEAD
-#define RDS_TRANS_IB	0
-#define RDS_TRANS_IWARP	1
-#define RDS_TRANS_TCP	2
-#define RDS_TRANS_COUNT	3
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rds_transport {
 	char			t_name[TRANSNAMSIZ];
 	struct list_head	t_item;
 	struct module		*t_owner;
-<<<<<<< HEAD
-	unsigned int		t_prefer_loopback:1;
-	unsigned int		t_type;
-
-	int (*laddr_check)(__be32 addr);
-	int (*conn_alloc)(struct rds_connection *conn, gfp_t gfp);
-	void (*conn_free)(void *data);
-	int (*conn_connect)(struct rds_connection *conn);
-	void (*conn_shutdown)(struct rds_connection *conn);
-	void (*xmit_prepare)(struct rds_connection *conn);
-	void (*xmit_complete)(struct rds_connection *conn);
-=======
 	unsigned int		t_prefer_loopback:1,
 				t_mp_capable:1;
 	unsigned int		t_type;
@@ -715,21 +548,10 @@ struct rds_transport {
 	void (*conn_path_shutdown)(struct rds_conn_path *conn);
 	void (*xmit_path_prepare)(struct rds_conn_path *cp);
 	void (*xmit_path_complete)(struct rds_conn_path *cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*xmit)(struct rds_connection *conn, struct rds_message *rm,
 		    unsigned int hdr_off, unsigned int sg, unsigned int off);
 	int (*xmit_rdma)(struct rds_connection *conn, struct rm_rdma_op *op);
 	int (*xmit_atomic)(struct rds_connection *conn, struct rm_atomic_op *op);
-<<<<<<< HEAD
-	int (*recv)(struct rds_connection *conn);
-	int (*inc_copy_to_user)(struct rds_incoming *inc, struct iovec *iov,
-				size_t size);
-	void (*inc_free)(struct rds_incoming *inc);
-
-	int (*cm_handle_connect)(struct rdma_cm_id *cm_id,
-				 struct rdma_cm_event *event);
-	int (*cm_initiate_connect)(struct rdma_cm_id *cm_id);
-=======
 	int (*recv_path)(struct rds_conn_path *cp);
 	int (*inc_copy_to_user)(struct rds_incoming *inc, struct iov_iter *to);
 	void (*inc_free)(struct rds_incoming *inc);
@@ -737,7 +559,6 @@ struct rds_transport {
 	int (*cm_handle_connect)(struct rdma_cm_id *cm_id,
 				 struct rdma_cm_event *event, bool isv6);
 	int (*cm_initiate_connect)(struct rdma_cm_id *cm_id, bool isv6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*cm_connect_complete)(struct rds_connection *conn,
 				    struct rdma_cm_event *event);
 
@@ -745,14 +566,6 @@ struct rds_transport {
 					unsigned int avail);
 	void (*exit)(void);
 	void *(*get_mr)(struct scatterlist *sg, unsigned long nr_sg,
-<<<<<<< HEAD
-			struct rds_sock *rs, u32 *key_ret);
-	void (*sync_mr)(void *trans_private, int direction);
-	void (*free_mr)(void *trans_private, int invalidate);
-	void (*flush_mrs)(void);
-};
-
-=======
 			struct rds_sock *rs, u32 *key_ret,
 			struct rds_connection *conn,
 			u64 start, u64 length, int need_odp);
@@ -769,7 +582,6 @@ struct rds_transport {
 #define RDS_BOUND_KEY_LEN \
 	(sizeof(struct in6_addr) + sizeof(__u32) + sizeof(__be16))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rds_sock {
 	struct sock		rs_sk;
 
@@ -780,12 +592,6 @@ struct rds_sock {
 	 * bound_addr used for both incoming and outgoing, no INADDR_ANY
 	 * support.
 	 */
-<<<<<<< HEAD
-	struct hlist_node	rs_bound_node;
-	__be32			rs_bound_addr;
-	__be32			rs_conn_addr;
-	__be16			rs_bound_port;
-=======
 	struct rhash_head	rs_bound_node;
 	u8			rs_bound_key[RDS_BOUND_KEY_LEN];
 	struct sockaddr_in6	rs_bound_sin6;
@@ -795,7 +601,6 @@ struct rds_sock {
 #define rs_bound_scope_id	rs_bound_sin6.sin6_scope_id
 	struct in6_addr		rs_conn_addr;
 #define rs_conn_addr_v4		rs_conn_addr.s6_addr32[3]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16			rs_conn_port;
 	struct rds_transport    *rs_transport;
 
@@ -844,8 +649,6 @@ struct rds_sock {
 	/* Socket options - in case there will be more */
 	unsigned char		rs_recverr,
 				rs_cong_monitor;
-<<<<<<< HEAD
-=======
 	u32			rs_hash_initval;
 
 	/* Socket receive path trace points*/
@@ -853,7 +656,6 @@ struct rds_sock {
 	u8			rs_rx_trace[RDS_MSG_RX_DGRAM_TRACE_MAX];
 	struct rds_msg_zcopy_queue rs_zcookie_queue;
 	u8			rs_tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct rds_sock *rds_sk_to_rs(const struct sock *sk)
@@ -913,19 +715,12 @@ struct rds_statistics {
 	uint64_t	s_cong_update_received;
 	uint64_t	s_cong_send_error;
 	uint64_t	s_cong_send_blocked;
-<<<<<<< HEAD
-};
-
-/* af_rds.c */
-char *rds_str_array(char **array, size_t elements, size_t index);
-=======
 	uint64_t	s_recv_bytes_added_to_socket;
 	uint64_t	s_recv_bytes_removed_from_socket;
 	uint64_t	s_send_stuck_rm;
 };
 
 /* af_rds.c */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_sock_addref(struct rds_sock *rs);
 void rds_sock_put(struct rds_sock *rs);
 void rds_wake_sk_sleep(struct rds_sock *rs);
@@ -942,14 +737,10 @@ extern wait_queue_head_t rds_poll_waitq;
 /* bind.c */
 int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
 void rds_remove_bound(struct rds_sock *rs);
-<<<<<<< HEAD
-struct rds_sock *rds_find_bound(__be32 addr, __be16 port);
-=======
 struct rds_sock *rds_find_bound(const struct in6_addr *addr, __be16 port,
 				__u32 scope_id);
 int rds_bind_lock_init(void);
 void rds_bind_lock_destroy(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* cong.c */
 int rds_cong_get_maps(struct rds_connection *conn);
@@ -966,19 +757,6 @@ void rds_cong_remove_socket(struct rds_sock *);
 void rds_cong_exit(void);
 struct rds_message *rds_cong_update_alloc(struct rds_connection *conn);
 
-<<<<<<< HEAD
-/* conn.c */
-int rds_conn_init(void);
-void rds_conn_exit(void);
-struct rds_connection *rds_conn_create(__be32 laddr, __be32 faddr,
-				       struct rds_transport *trans, gfp_t gfp);
-struct rds_connection *rds_conn_create_outgoing(__be32 laddr, __be32 faddr,
-			       struct rds_transport *trans, gfp_t gfp);
-void rds_conn_shutdown(struct rds_connection *conn);
-void rds_conn_destroy(struct rds_connection *conn);
-void rds_conn_drop(struct rds_connection *conn);
-void rds_conn_connect_if_down(struct rds_connection *conn);
-=======
 /* connection.c */
 extern u32 rds_gen_num;
 int rds_conn_init(void);
@@ -1001,18 +779,10 @@ void rds_conn_path_drop(struct rds_conn_path *cpath, bool destroy);
 void rds_conn_connect_if_down(struct rds_connection *conn);
 void rds_conn_path_connect_if_down(struct rds_conn_path *cp);
 void rds_check_all_paths(struct rds_connection *conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 			  struct rds_info_iterator *iter,
 			  struct rds_info_lengths *lens,
 			  int (*visitor)(struct rds_connection *, void *),
-<<<<<<< HEAD
-			  size_t item_len);
-__printf(2, 3)
-void __rds_conn_error(struct rds_connection *conn, const char *, ...);
-#define rds_conn_error(conn, fmt...) \
-	__rds_conn_error(conn, KERN_WARNING "RDS: " fmt)
-=======
 			  u64 *buffer,
 			  size_t item_len);
 
@@ -1026,14 +796,10 @@ rds_conn_path_transition(struct rds_conn_path *cp, int old, int new)
 {
 	return atomic_cmpxchg(&cp->cp_state, old, new) == old;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int
 rds_conn_transition(struct rds_connection *conn, int old, int new)
 {
-<<<<<<< HEAD
-	return atomic_cmpxchg(&conn->c_state, old, new) == old;
-=======
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_transition(&conn->c_path[0], old, new);
 }
@@ -1042,15 +808,11 @@ static inline int
 rds_conn_path_state(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
 rds_conn_state(struct rds_connection *conn)
 {
-<<<<<<< HEAD
-	return atomic_read(&conn->c_state);
-=======
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_state(&conn->c_path[0]);
 }
@@ -1065,15 +827,11 @@ static inline int
 rds_conn_path_down(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state) == RDS_CONN_DOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
 rds_conn_up(struct rds_connection *conn)
 {
-<<<<<<< HEAD
-	return atomic_read(&conn->c_state) == RDS_CONN_UP;
-=======
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_up(&conn->c_path[0]);
 }
@@ -1082,30 +840,20 @@ static inline int
 rds_conn_path_connecting(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state) == RDS_CONN_CONNECTING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
 rds_conn_connecting(struct rds_connection *conn)
 {
-<<<<<<< HEAD
-	return atomic_read(&conn->c_state) == RDS_CONN_CONNECTING;
-=======
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_connecting(&conn->c_path[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* message.c */
 struct rds_message *rds_message_alloc(unsigned int nents, gfp_t gfp);
 struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents);
-<<<<<<< HEAD
-int rds_message_copy_from_user(struct rds_message *rm, struct iovec *first_iov,
-					       size_t total_len);
-=======
 int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
 			       bool zcopy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned int total_len);
 void rds_message_populate_header(struct rds_header *hdr, __be16 sport,
 				 __be16 dport, u64 seq);
@@ -1114,21 +862,12 @@ int rds_message_add_extension(struct rds_header *hdr,
 int rds_message_next_extension(struct rds_header *hdr,
 			       unsigned int *pos, void *buf, unsigned int *buflen);
 int rds_message_add_rdma_dest_extension(struct rds_header *hdr, u32 r_key, u32 offset);
-<<<<<<< HEAD
-int rds_message_inc_copy_to_user(struct rds_incoming *inc,
-				 struct iovec *first_iov, size_t size);
-void rds_message_inc_free(struct rds_incoming *inc);
-=======
 int rds_message_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_message_addref(struct rds_message *rm);
 void rds_message_put(struct rds_message *rm);
 void rds_message_wait(struct rds_message *rm);
 void rds_message_unmapped(struct rds_message *rm);
-<<<<<<< HEAD
-=======
 void rds_notify_msg_zcopy_purge(struct rds_msg_zcopy_queue *info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void rds_message_make_checksum(struct rds_header *hdr)
 {
@@ -1145,28 +884,10 @@ static inline int rds_message_verify_checksum(const struct rds_header *hdr)
 /* page.c */
 int rds_page_remainder_alloc(struct scatterlist *scat, unsigned long bytes,
 			     gfp_t gfp);
-<<<<<<< HEAD
-int rds_page_copy_user(struct page *page, unsigned long offset,
-		       void __user *ptr, unsigned long bytes,
-		       int to_user);
-#define rds_page_copy_to_user(page, offset, ptr, bytes) \
-	rds_page_copy_user(page, offset, ptr, bytes, 1)
-#define rds_page_copy_from_user(page, offset, ptr, bytes) \
-	rds_page_copy_user(page, offset, ptr, bytes, 0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_page_exit(void);
 
 /* recv.c */
 void rds_inc_init(struct rds_incoming *inc, struct rds_connection *conn,
-<<<<<<< HEAD
-		  __be32 saddr);
-void rds_inc_put(struct rds_incoming *inc);
-void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
-		       struct rds_incoming *inc, gfp_t gfp);
-int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-		size_t size, int msg_flags);
-=======
 		  struct in6_addr *saddr);
 void rds_inc_path_init(struct rds_incoming *inc, struct rds_conn_path *conn,
 		       struct in6_addr *saddr);
@@ -1176,42 +897,11 @@ void rds_recv_incoming(struct rds_connection *conn, struct in6_addr *saddr,
 		       struct rds_incoming *inc, gfp_t gfp);
 int rds_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		int msg_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_clear_recv_queue(struct rds_sock *rs);
 int rds_notify_queue_get(struct rds_sock *rs, struct msghdr *msg);
 void rds_inc_info_copy(struct rds_incoming *inc,
 		       struct rds_info_iterator *iter,
 		       __be32 saddr, __be32 daddr, int flip);
-<<<<<<< HEAD
-
-/* send.c */
-int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-		size_t payload_len);
-void rds_send_reset(struct rds_connection *conn);
-int rds_send_xmit(struct rds_connection *conn);
-struct sockaddr_in;
-void rds_send_drop_to(struct rds_sock *rs, struct sockaddr_in *dest);
-typedef int (*is_acked_func)(struct rds_message *rm, uint64_t ack);
-void rds_send_drop_acked(struct rds_connection *conn, u64 ack,
-			 is_acked_func is_acked);
-int rds_send_pong(struct rds_connection *conn, __be16 dport);
-struct rds_message *rds_send_get_message(struct rds_connection *,
-					 struct rm_rdma_op *);
-
-/* rdma.c */
-void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force);
-int rds_get_mr(struct rds_sock *rs, char __user *optval, int optlen);
-int rds_get_mr_for_dest(struct rds_sock *rs, char __user *optval, int optlen);
-int rds_free_mr(struct rds_sock *rs, char __user *optval, int optlen);
-void rds_rdma_drop_keys(struct rds_sock *rs);
-int rds_rdma_extra_size(struct rds_rdma_args *args);
-int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
-			  struct cmsghdr *cmsg);
-int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
-			  struct cmsghdr *cmsg);
-int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
-			  struct cmsghdr *cmsg);
-=======
 void rds6_inc_info_copy(struct rds_incoming *inc,
 			struct rds_info_iterator *iter,
 			struct in6_addr *saddr, struct in6_addr *daddr,
@@ -1244,7 +934,6 @@ int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
 int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 			  struct cmsghdr *cmsg,
 			  struct rds_iov_vector *vec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int rds_cmsg_rdma_map(struct rds_sock *rs, struct rds_message *rm,
 			  struct cmsghdr *cmsg);
 void rds_rdma_free_op(struct rm_rdma_op *ro);
@@ -1254,15 +943,6 @@ void rds_atomic_send_complete(struct rds_message *rm, int wc_status);
 int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
 		    struct cmsghdr *cmsg);
 
-<<<<<<< HEAD
-extern void __rds_put_mr_final(struct rds_mr *mr);
-static inline void rds_mr_put(struct rds_mr *mr)
-{
-	if (atomic_dec_and_test(&mr->r_refcount))
-		__rds_put_mr_final(mr);
-}
-
-=======
 void __rds_put_mr_final(struct kref *kref);
 
 static inline bool rds_destroy_pending(struct rds_connection *conn)
@@ -1277,7 +957,6 @@ enum {
 	ODP_VIRTUAL
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* stats.c */
 DECLARE_PER_CPU_SHARED_ALIGNED(struct rds_statistics, rds_stats);
 #define rds_stats_inc_which(which, member) do {		\
@@ -1314,28 +993,11 @@ extern unsigned int  rds_sysctl_trace_level;
 int rds_threads_init(void);
 void rds_threads_exit(void);
 extern struct workqueue_struct *rds_wq;
-<<<<<<< HEAD
-void rds_queue_reconnect(struct rds_connection *conn);
-=======
 void rds_queue_reconnect(struct rds_conn_path *cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_connect_worker(struct work_struct *);
 void rds_shutdown_worker(struct work_struct *);
 void rds_send_worker(struct work_struct *);
 void rds_recv_worker(struct work_struct *);
-<<<<<<< HEAD
-void rds_connect_complete(struct rds_connection *conn);
-
-/* transport.c */
-int rds_trans_register(struct rds_transport *trans);
-void rds_trans_unregister(struct rds_transport *trans);
-struct rds_transport *rds_trans_get_preferred(__be32 addr);
-void rds_trans_put(struct rds_transport *trans);
-unsigned int rds_trans_stats_info_copy(struct rds_info_iterator *iter,
-				       unsigned int avail);
-int rds_trans_init(void);
-void rds_trans_exit(void);
-=======
 void rds_connect_path_complete(struct rds_conn_path *conn, int curr);
 void rds_connect_complete(struct rds_connection *conn);
 int rds_addr_cmp(const struct in6_addr *a1, const struct in6_addr *a2);
@@ -1350,6 +1012,5 @@ void rds_trans_put(struct rds_transport *trans);
 unsigned int rds_trans_stats_info_copy(struct rds_info_iterator *iter,
 				       unsigned int avail);
 struct rds_transport *rds_trans_get(int t_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

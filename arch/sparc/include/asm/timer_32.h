@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * timer.h:  Definitions for the timer chips on the Sparc.
  *
@@ -12,17 +9,6 @@
 #ifndef _SPARC_TIMER_H
 #define _SPARC_TIMER_H
 
-<<<<<<< HEAD
-#include <asm/cpu_type.h>  /* For SUN4M_NCPUS */
-#include <asm/btfixup.h>
-
-extern __volatile__ unsigned int *master_l10_counter;
-
-/* FIXME: Make do_[gs]ettimeofday btfixup calls */
-struct timespec;
-BTFIXUPDEF_CALL(int, bus_do_settimeofday, struct timespec *tv)
-#define bus_do_settimeofday(tv) BTFIXUP_CALL(bus_do_settimeofday)(tv)
-=======
 #include <linux/clocksource.h>
 #include <linux/irqreturn.h>
 
@@ -55,6 +41,5 @@ irqreturn_t notrace timer_interrupt(int dummy, void *dev_id);
 DECLARE_PER_CPU(struct clock_event_device, sparc32_clockevent);
 void register_percpu_ce(int cpu);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_SPARC_TIMER_H) */

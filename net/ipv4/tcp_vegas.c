@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TCP Vegas congestion control
  *
@@ -55,10 +52,6 @@ MODULE_PARM_DESC(beta, "upper bound of packets in network");
 module_param(gamma, int, 0644);
 MODULE_PARM_DESC(gamma, "limit on increase (scale by 2)");
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* There are several situations when we must "re-start" Vegas:
  *
  *  o when a connection is established
@@ -115,28 +108,16 @@ EXPORT_SYMBOL_GPL(tcp_vegas_init);
  *   o min-filter RTT samples from a much longer window (forever for now)
  *     to find the propagation delay (baseRTT)
  */
-<<<<<<< HEAD
-void tcp_vegas_pkts_acked(struct sock *sk, u32 cnt, s32 rtt_us)
-=======
 void tcp_vegas_pkts_acked(struct sock *sk, const struct ack_sample *sample)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vegas *vegas = inet_csk_ca(sk);
 	u32 vrtt;
 
-<<<<<<< HEAD
-	if (rtt_us < 0)
-		return;
-
-	/* Never allow zero rtt or baseRTT */
-	vrtt = rtt_us + 1;
-=======
 	if (sample->rtt_us < 0)
 		return;
 
 	/* Never allow zero rtt or baseRTT */
 	vrtt = sample->rtt_us + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Filter to find propagation delay: */
 	if (vrtt < vegas->baseRTT)
@@ -152,10 +133,6 @@ EXPORT_SYMBOL_GPL(tcp_vegas_pkts_acked);
 
 void tcp_vegas_state(struct sock *sk, u8 ca_state)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ca_state == TCP_CA_Open)
 		vegas_enable(sk);
 	else
@@ -182,27 +159,16 @@ EXPORT_SYMBOL_GPL(tcp_vegas_cwnd_event);
 
 static inline u32 tcp_vegas_ssthresh(struct tcp_sock *tp)
 {
-<<<<<<< HEAD
-	return  min(tp->snd_ssthresh, tp->snd_cwnd-1);
-}
-
-static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
-=======
 	return  min(tp->snd_ssthresh, tcp_snd_cwnd(tp));
 }
 
 static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct vegas *vegas = inet_csk_ca(sk);
 
 	if (!vegas->doing_vegas_now) {
-<<<<<<< HEAD
-		tcp_reno_cong_avoid(sk, ack, in_flight);
-=======
 		tcp_reno_cong_avoid(sk, ack, acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -227,11 +193,7 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 			/* We don't have enough RTT samples to do the Vegas
 			 * calculation, so we'll behave like Reno.
 			 */
-<<<<<<< HEAD
-			tcp_reno_cong_avoid(sk, ack, in_flight);
-=======
 			tcp_reno_cong_avoid(sk, ack, acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			u32 rtt, diff;
 			u64 target_cwnd;
@@ -255,26 +217,16 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 			 * This is:
 			 *     (actual rate in segments) * baseRTT
 			 */
-<<<<<<< HEAD
-			target_cwnd = (u64)tp->snd_cwnd * vegas->baseRTT;
-=======
 			target_cwnd = (u64)tcp_snd_cwnd(tp) * vegas->baseRTT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			do_div(target_cwnd, rtt);
 
 			/* Calculate the difference between the window we had,
 			 * and the window we would like to have. This quantity
 			 * is the "Diff" from the Arizona Vegas papers.
 			 */
-<<<<<<< HEAD
-			diff = tp->snd_cwnd * (rtt-vegas->baseRTT) / vegas->baseRTT;
-
-			if (diff > gamma && tp->snd_cwnd <= tp->snd_ssthresh) {
-=======
 			diff = tcp_snd_cwnd(tp) * (rtt-vegas->baseRTT) / vegas->baseRTT;
 
 			if (diff > gamma && tcp_in_slow_start(tp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Going too fast. Time to slow down
 				 * and switch to congestion avoidance.
 				 */
@@ -286,14 +238,6 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				 * truncation robs us of full link
 				 * utilization.
 				 */
-<<<<<<< HEAD
-				tp->snd_cwnd = min(tp->snd_cwnd, (u32)target_cwnd+1);
-				tp->snd_ssthresh = tcp_vegas_ssthresh(tp);
-
-			} else if (tp->snd_cwnd <= tp->snd_ssthresh) {
-				/* Slow start.  */
-				tcp_slow_start(tp);
-=======
 				tcp_snd_cwnd_set(tp, min(tcp_snd_cwnd(tp),
 							 (u32)target_cwnd + 1));
 				tp->snd_ssthresh = tcp_vegas_ssthresh(tp);
@@ -301,7 +245,6 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 			} else if (tcp_in_slow_start(tp)) {
 				/* Slow start.  */
 				tcp_slow_start(tp, acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				/* Congestion avoidance. */
 
@@ -312,22 +255,14 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 					/* The old window was too fast, so
 					 * we slow down.
 					 */
-<<<<<<< HEAD
-					tp->snd_cwnd--;
-=======
 					tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					tp->snd_ssthresh
 						= tcp_vegas_ssthresh(tp);
 				} else if (diff < alpha) {
 					/* We don't have enough extra packets
 					 * in the network, so speed up.
 					 */
-<<<<<<< HEAD
-					tp->snd_cwnd++;
-=======
 					tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else {
 					/* Sending just as fast as we
 					 * should be.
@@ -335,17 +270,10 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				}
 			}
 
-<<<<<<< HEAD
-			if (tp->snd_cwnd < 2)
-				tp->snd_cwnd = 2;
-			else if (tp->snd_cwnd > tp->snd_cwnd_clamp)
-				tp->snd_cwnd = tp->snd_cwnd_clamp;
-=======
 			if (tcp_snd_cwnd(tp) < 2)
 				tcp_snd_cwnd_set(tp, 2);
 			else if (tcp_snd_cwnd(tp) > tp->snd_cwnd_clamp)
 				tcp_snd_cwnd_set(tp, tp->snd_cwnd_clamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			tp->snd_ssthresh = tcp_current_ssthresh(sk);
 		}
@@ -355,27 +283,6 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 		vegas->minRTT = 0x7fffffff;
 	}
 	/* Use normal slow start */
-<<<<<<< HEAD
-	else if (tp->snd_cwnd <= tp->snd_ssthresh)
-		tcp_slow_start(tp);
-
-}
-
-/* Extract info for Tcp socket info provided via netlink. */
-void tcp_vegas_get_info(struct sock *sk, u32 ext, struct sk_buff *skb)
-{
-	const struct vegas *ca = inet_csk_ca(sk);
-	if (ext & (1 << (INET_DIAG_VEGASINFO - 1))) {
-		struct tcpvegas_info info = {
-			.tcpv_enabled = ca->doing_vegas_now,
-			.tcpv_rttcnt = ca->cntRTT,
-			.tcpv_rtt = ca->baseRTT,
-			.tcpv_minrtt = ca->minRTT,
-		};
-
-		nla_put(skb, INET_DIAG_VEGASINFO, sizeof(info), &info);
-	}
-=======
 	else if (tcp_in_slow_start(tp))
 		tcp_slow_start(tp, acked);
 }
@@ -396,23 +303,14 @@ size_t tcp_vegas_get_info(struct sock *sk, u32 ext, int *attr,
 		return sizeof(struct tcpvegas_info);
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(tcp_vegas_get_info);
 
 static struct tcp_congestion_ops tcp_vegas __read_mostly = {
-<<<<<<< HEAD
-	.flags		= TCP_CONG_RTT_STAMP,
-	.init		= tcp_vegas_init,
-	.ssthresh	= tcp_reno_ssthresh,
-	.cong_avoid	= tcp_vegas_cong_avoid,
-	.min_cwnd	= tcp_reno_min_cwnd,
-=======
 	.init		= tcp_vegas_init,
 	.ssthresh	= tcp_reno_ssthresh,
 	.undo_cwnd	= tcp_reno_undo_cwnd,
 	.cong_avoid	= tcp_vegas_cong_avoid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pkts_acked	= tcp_vegas_pkts_acked,
 	.set_state	= tcp_vegas_state,
 	.cwnd_event	= tcp_vegas_cwnd_event,

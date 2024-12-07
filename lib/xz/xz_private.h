@@ -37,12 +37,9 @@
 #		ifdef CONFIG_XZ_DEC_SPARC
 #			define XZ_DEC_SPARC
 #		endif
-<<<<<<< HEAD
-=======
 #		ifdef CONFIG_XZ_DEC_MICROLZMA
 #			define XZ_DEC_MICROLZMA
 #		endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #		define memeq(a, b, size) (memcmp(a, b, size) == 0)
 #		define memzero(buf, size) memset(buf, 0, size)
 #	endif
@@ -108,13 +105,10 @@
 #	endif
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef CRC32_POLY_LE
 #define CRC32_POLY_LE 0xedb88320
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate memory for LZMA2 decoder. xz_dec_lzma2_reset() must be used
  * before calling xz_dec_lzma2_run().

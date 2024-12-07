@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM btrfs
 
@@ -10,31 +7,18 @@
 
 #include <linux/writeback.h>
 #include <linux/tracepoint.h>
-<<<<<<< HEAD
-#include <trace/events/gfpflags.h>
-=======
 #include <trace/events/mmflags.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct btrfs_root;
 struct btrfs_fs_info;
 struct btrfs_inode;
 struct extent_map;
-<<<<<<< HEAD
-=======
 struct btrfs_file_extent_item;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct btrfs_ordered_extent;
 struct btrfs_delayed_ref_node;
 struct btrfs_delayed_tree_ref;
 struct btrfs_delayed_data_ref;
 struct btrfs_delayed_ref_head;
-<<<<<<< HEAD
-struct btrfs_block_group_cache;
-struct btrfs_free_cluster;
-struct map_lookup;
-struct extent_buffer;
-=======
 struct btrfs_block_group;
 struct btrfs_free_cluster;
 struct btrfs_chunk_map;
@@ -49,16 +33,11 @@ struct btrfs_space_info;
 struct btrfs_raid_bio;
 struct raid56_bio_trace_info;
 struct find_free_extent_ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define show_ref_type(type)						\
 	__print_symbolic(type,						\
 		{ BTRFS_TREE_BLOCK_REF_KEY, 	"TREE_BLOCK_REF" },	\
 		{ BTRFS_EXTENT_DATA_REF_KEY, 	"EXTENT_DATA_REF" },	\
-<<<<<<< HEAD
-		{ BTRFS_EXTENT_REF_V0_KEY, 	"EXTENT_REF_V0" },	\
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ BTRFS_SHARED_BLOCK_REF_KEY, 	"SHARED_BLOCK_REF" },	\
 		{ BTRFS_SHARED_DATA_REF_KEY, 	"SHARED_DATA_REF" })
 
@@ -72,41 +51,15 @@ struct find_free_extent_ctl;
 		{ BTRFS_ROOT_TREE_DIR_OBJECTID, "ROOT_TREE_DIR"	},	\
 		{ BTRFS_CSUM_TREE_OBJECTID, 	"CSUM_TREE"	},	\
 		{ BTRFS_TREE_LOG_OBJECTID,	"TREE_LOG"	},	\
-<<<<<<< HEAD
-		{ BTRFS_TREE_RELOC_OBJECTID,	"TREE_RELOC"	},	\
-=======
 		{ BTRFS_QUOTA_TREE_OBJECTID,	"QUOTA_TREE"	},	\
 		{ BTRFS_TREE_RELOC_OBJECTID,	"TREE_RELOC"	},	\
 		{ BTRFS_UUID_TREE_OBJECTID,	"UUID_TREE"	},	\
 		{ BTRFS_FREE_SPACE_TREE_OBJECTID, "FREE_SPACE_TREE" },	\
 		{ BTRFS_BLOCK_GROUP_TREE_OBJECTID, "BLOCK_GROUP_TREE" },\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ BTRFS_DATA_RELOC_TREE_OBJECTID, "DATA_RELOC_TREE" })
 
 #define show_root_type(obj)						\
 	obj, ((obj >= BTRFS_DATA_RELOC_TREE_OBJECTID) ||		\
-<<<<<<< HEAD
-	      (obj <= BTRFS_CSUM_TREE_OBJECTID )) ? __show_root_type(obj) : "-"
-
-#define BTRFS_GROUP_FLAGS	\
-	{ BTRFS_BLOCK_GROUP_DATA,	"DATA"}, \
-	{ BTRFS_BLOCK_GROUP_SYSTEM,	"SYSTEM"}, \
-	{ BTRFS_BLOCK_GROUP_METADATA,	"METADATA"}, \
-	{ BTRFS_BLOCK_GROUP_RAID0,	"RAID0"}, \
-	{ BTRFS_BLOCK_GROUP_RAID1,	"RAID1"}, \
-	{ BTRFS_BLOCK_GROUP_DUP,	"DUP"}, \
-	{ BTRFS_BLOCK_GROUP_RAID10,	"RAID10"}
-
-#define BTRFS_UUID_SIZE 16
-
-TRACE_EVENT(btrfs_transaction_commit,
-
-	TP_PROTO(struct btrfs_root *root),
-
-	TP_ARGS(root),
-
-	TP_STRUCT__entry(
-=======
 	      (obj >= BTRFS_ROOT_TREE_OBJECTID &&			\
 	       obj <= BTRFS_QUOTA_TREE_OBJECTID)) ? __show_root_type(obj) : "-"
 
@@ -235,21 +188,10 @@ TRACE_EVENT(btrfs_transaction_commit,
 	TP_ARGS(fs_info),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  generation		)
 		__field(	u64,  root_objectid		)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->generation	= root->fs_info->generation;
-		__entry->root_objectid	= root->root_key.objectid;
-	),
-
-	TP_printk("root = %llu(%s), gen = %llu",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->generation)
-=======
 	TP_fast_assign_btrfs(fs_info,
 		__entry->generation	= fs_info->generation;
 		__entry->root_objectid	= BTRFS_ROOT_TREE_OBJECTID;
@@ -258,20 +200,10 @@ TRACE_EVENT(btrfs_transaction_commit,
 	TP_printk_btrfs("root=%llu(%s) gen=%llu",
 		  show_root_type(__entry->root_objectid),
 		  __entry->generation)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(btrfs__inode,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode),
-
-	TP_ARGS(inode),
-
-	TP_STRUCT__entry(
-		__field(	ino_t,  ino			)
-		__field(	blkcnt_t,  blocks		)
-=======
 	TP_PROTO(const struct inode *inode),
 
 	TP_ARGS(inode),
@@ -279,7 +211,6 @@ DECLARE_EVENT_CLASS(btrfs__inode,
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,  ino			)
 		__field(	u64,  blocks			)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  disk_i_size		)
 		__field(	u64,  generation		)
 		__field(	u64,  last_trans		)
@@ -287,13 +218,8 @@ DECLARE_EVENT_CLASS(btrfs__inode,
 		__field(	u64,  root_objectid		)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->ino	= inode->i_ino;
-=======
 	TP_fast_assign_btrfs(btrfs_sb(inode->i_sb),
 		__entry->ino	= btrfs_ino(BTRFS_I(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->blocks	= inode->i_blocks;
 		__entry->disk_i_size  = BTRFS_I(inode)->disk_i_size;
 		__entry->generation = BTRFS_I(inode)->generation;
@@ -303,17 +229,6 @@ DECLARE_EVENT_CLASS(btrfs__inode,
 				BTRFS_I(inode)->root->root_key.objectid;
 	),
 
-<<<<<<< HEAD
-	TP_printk("root = %llu(%s), gen = %llu, ino = %lu, blocks = %llu, "
-		  "disk_i_size = %llu, last_trans = %llu, logged_trans = %llu",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->generation,
-		  (unsigned long)__entry->ino,
-		  (unsigned long long)__entry->blocks,
-		  (unsigned long long)__entry->disk_i_size,
-		  (unsigned long long)__entry->last_trans,
-		  (unsigned long long)__entry->logged_trans)
-=======
 	TP_printk_btrfs("root=%llu(%s) gen=%llu ino=%llu blocks=%llu "
 		  "disk_i_size=%llu last_trans=%llu logged_trans=%llu",
 		  show_root_type(__entry->root_objectid),
@@ -323,38 +238,25 @@ DECLARE_EVENT_CLASS(btrfs__inode,
 		  __entry->disk_i_size,
 		  __entry->last_trans,
 		  __entry->logged_trans)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__inode, btrfs_inode_new,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode),
-=======
 	TP_PROTO(const struct inode *inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode)
 );
 
 DEFINE_EVENT(btrfs__inode, btrfs_inode_request,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode),
-=======
 	TP_PROTO(const struct inode *inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode)
 );
 
 DEFINE_EVENT(btrfs__inode, btrfs_inode_evict,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode),
-=======
 	TP_PROTO(const struct inode *inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode)
 );
@@ -363,33 +265,13 @@ DEFINE_EVENT(btrfs__inode, btrfs_inode_evict,
 	__print_symbolic_u64(type,					\
 		{ EXTENT_MAP_LAST_BYTE, "LAST_BYTE" 	},		\
 		{ EXTENT_MAP_HOLE, 	"HOLE" 		},		\
-<<<<<<< HEAD
-		{ EXTENT_MAP_INLINE, 	"INLINE" 	},		\
-		{ EXTENT_MAP_DELALLOC,	"DELALLOC" 	})
-=======
 		{ EXTENT_MAP_INLINE,	"INLINE"	})
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define show_map_type(type)			\
 	type, (type >= EXTENT_MAP_LAST_BYTE) ? "-" :  __show_map_type(type)
 
 #define show_map_flags(flag)						\
 	__print_flags(flag, "|",					\
-<<<<<<< HEAD
-		{ EXTENT_FLAG_PINNED, 		"PINNED" 	},	\
-		{ EXTENT_FLAG_COMPRESSED, 	"COMPRESSED" 	},	\
-		{ EXTENT_FLAG_VACANCY, 		"VACANCY" 	},	\
-		{ EXTENT_FLAG_PREALLOC, 	"PREALLOC" 	})
-
-TRACE_EVENT(btrfs_get_extent,
-
-	TP_PROTO(struct btrfs_root *root, struct extent_map *map),
-
-	TP_ARGS(root, map),
-
-	TP_STRUCT__entry(
-		__field(	u64,  root_objectid	)
-=======
 		{ EXTENT_FLAG_PINNED,		"PINNED"	},\
 		{ EXTENT_FLAG_COMPRESS_ZLIB,	"COMPRESS_ZLIB"	},\
 		{ EXTENT_FLAG_COMPRESS_LZO,	"COMPRESS_LZO"	},\
@@ -410,22 +292,11 @@ TRACE_EVENT_CONDITION(btrfs_get_extent,
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,  root_objectid	)
 		__field(	u64,  ino		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  start		)
 		__field(	u64,  len		)
 		__field(	u64,  orig_start	)
 		__field(	u64,  block_start	)
 		__field(	u64,  block_len		)
-<<<<<<< HEAD
-		__field(	unsigned long,  flags	)
-		__field(	int,  refs		)
-		__field(	unsigned int,  compress_type	)
-	),
-
-	TP_fast_assign(
-		__entry->root_objectid	= root->root_key.objectid;
-		__entry->start 		= map->start;
-=======
 		__field(	u32,  flags		)
 		__field(	int,  refs		)
 	),
@@ -434,49 +305,11 @@ TRACE_EVENT_CONDITION(btrfs_get_extent,
 		__entry->root_objectid	= root->root_key.objectid;
 		__entry->ino		= btrfs_ino(inode);
 		__entry->start		= map->start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len		= map->len;
 		__entry->orig_start	= map->orig_start;
 		__entry->block_start	= map->block_start;
 		__entry->block_len	= map->block_len;
 		__entry->flags		= map->flags;
-<<<<<<< HEAD
-		__entry->refs		= atomic_read(&map->refs);
-		__entry->compress_type	= map->compress_type;
-	),
-
-	TP_printk("root = %llu(%s), start = %llu, len = %llu, "
-		  "orig_start = %llu, block_start = %llu(%s), "
-		  "block_len = %llu, flags = %s, refs = %u, "
-		  "compress_type = %u",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->start,
-		  (unsigned long long)__entry->len,
-		  (unsigned long long)__entry->orig_start,
-		  show_map_type(__entry->block_start),
-		  (unsigned long long)__entry->block_len,
-		  show_map_flags(__entry->flags),
-		  __entry->refs, __entry->compress_type)
-);
-
-#define show_ordered_flags(flags)					\
-	__print_symbolic(flags,					\
-		{ BTRFS_ORDERED_IO_DONE, 	"IO_DONE" 	},	\
-		{ BTRFS_ORDERED_COMPLETE, 	"COMPLETE" 	},	\
-		{ BTRFS_ORDERED_NOCOW, 		"NOCOW" 	},	\
-		{ BTRFS_ORDERED_COMPRESSED, 	"COMPRESSED" 	},	\
-		{ BTRFS_ORDERED_PREALLOC, 	"PREALLOC" 	},	\
-		{ BTRFS_ORDERED_DIRECT, 	"DIRECT" 	})
-
-DECLARE_EVENT_CLASS(btrfs__ordered_extent,
-
-	TP_PROTO(struct inode *inode, struct btrfs_ordered_extent *ordered),
-
-	TP_ARGS(inode, ordered),
-
-	TP_STRUCT__entry(
-		__field(	ino_t,  ino		)
-=======
 		__entry->refs		= refcount_read(&map->refs);
 	),
 
@@ -685,7 +518,6 @@ DECLARE_EVENT_CLASS(btrfs__ordered_extent,
 
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,  ino		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  file_offset	)
 		__field(	u64,  start		)
 		__field(	u64,  len		)
@@ -695,35 +527,6 @@ DECLARE_EVENT_CLASS(btrfs__ordered_extent,
 		__field(	int,  compress_type	)
 		__field(	int,  refs		)
 		__field(	u64,  root_objectid	)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		__entry->ino 		= inode->i_ino;
-		__entry->file_offset	= ordered->file_offset;
-		__entry->start		= ordered->start;
-		__entry->len		= ordered->len;
-		__entry->disk_len	= ordered->disk_len;
-		__entry->bytes_left	= ordered->bytes_left;
-		__entry->flags		= ordered->flags;
-		__entry->compress_type	= ordered->compress_type;
-		__entry->refs		= atomic_read(&ordered->refs);
-		__entry->root_objectid	=
-				BTRFS_I(inode)->root->root_key.objectid;
-	),
-
-	TP_printk("root = %llu(%s), ino = %llu, file_offset = %llu, "
-		  "start = %llu, len = %llu, disk_len = %llu, "
-		  "bytes_left = %llu, flags = %s, compress_type = %d, "
-		  "refs = %d",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->ino,
-		  (unsigned long long)__entry->file_offset,
-		  (unsigned long long)__entry->start,
-		  (unsigned long long)__entry->len,
-		  (unsigned long long)__entry->disk_len,
-		  (unsigned long long)__entry->bytes_left,
-=======
 		__field(	u64,  truncated_len	)
 	),
 
@@ -754,70 +557,42 @@ DECLARE_EVENT_CLASS(btrfs__ordered_extent,
 		  __entry->disk_len,
 		  __entry->truncated_len,
 		  __entry->bytes_left,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  show_ordered_flags(__entry->flags),
 		  __entry->compress_type, __entry->refs)
 );
 
 DEFINE_EVENT(btrfs__ordered_extent, btrfs_ordered_extent_add,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, struct btrfs_ordered_extent *ordered),
-=======
 	TP_PROTO(const struct btrfs_inode *inode,
 		 const struct btrfs_ordered_extent *ordered),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode, ordered)
 );
 
 DEFINE_EVENT(btrfs__ordered_extent, btrfs_ordered_extent_remove,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, struct btrfs_ordered_extent *ordered),
-=======
 	TP_PROTO(const struct btrfs_inode *inode,
 		 const struct btrfs_ordered_extent *ordered),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode, ordered)
 );
 
 DEFINE_EVENT(btrfs__ordered_extent, btrfs_ordered_extent_start,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, struct btrfs_ordered_extent *ordered),
-=======
 	TP_PROTO(const struct btrfs_inode *inode,
 		 const struct btrfs_ordered_extent *ordered),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode, ordered)
 );
 
 DEFINE_EVENT(btrfs__ordered_extent, btrfs_ordered_extent_put,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, struct btrfs_ordered_extent *ordered),
-=======
 	TP_PROTO(const struct btrfs_inode *inode,
 		 const struct btrfs_ordered_extent *ordered),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode, ordered)
 );
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(btrfs__writepage,
-
-	TP_PROTO(struct page *page, struct inode *inode,
-		 struct writeback_control *wbc),
-
-	TP_ARGS(page, inode, wbc),
-
-	TP_STRUCT__entry(
-		__field(	ino_t,  ino			)
-=======
 DEFINE_EVENT(btrfs__ordered_extent, btrfs_ordered_extent_lookup,
 
 	     TP_PROTO(const struct btrfs_inode *inode,
@@ -920,7 +695,6 @@ DECLARE_EVENT_CLASS(btrfs__writepage,
 
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,	ino			)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	pgoff_t,  index			)
 		__field(	long,   nr_to_write		)
 		__field(	long,   pages_skipped		)
@@ -929,21 +703,12 @@ DECLARE_EVENT_CLASS(btrfs__writepage,
 		__field(	char,   for_kupdate		)
 		__field(	char,   for_reclaim		)
 		__field(	char,   range_cyclic		)
-<<<<<<< HEAD
-		__field(	pgoff_t,  writeback_index	)
-		__field(	u64,    root_objectid		)
-	),
-
-	TP_fast_assign(
-		__entry->ino		= inode->i_ino;
-=======
 		__field(	unsigned long,  writeback_index	)
 		__field(	u64,    root_objectid		)
 	),
 
 	TP_fast_assign_btrfs(btrfs_sb(inode->i_sb),
 		__entry->ino		= btrfs_ino(BTRFS_I(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->index		= page->index;
 		__entry->nr_to_write	= wbc->nr_to_write;
 		__entry->pages_skipped	= wbc->pages_skipped;
@@ -957,56 +722,29 @@ DECLARE_EVENT_CLASS(btrfs__writepage,
 				 BTRFS_I(inode)->root->root_key.objectid;
 	),
 
-<<<<<<< HEAD
-	TP_printk("root = %llu(%s), ino = %lu, page_index = %lu, "
-		  "nr_to_write = %ld, pages_skipped = %ld, range_start = %llu, "
-		  "range_end = %llu, for_kupdate = %d, "
-		  "for_reclaim = %d, range_cyclic = %d, writeback_index = %lu",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long)__entry->ino, __entry->index,
-=======
 	TP_printk_btrfs("root=%llu(%s) ino=%llu page_index=%lu "
 		  "nr_to_write=%ld pages_skipped=%ld range_start=%llu "
 		  "range_end=%llu for_kupdate=%d "
 		  "for_reclaim=%d range_cyclic=%d writeback_index=%lu",
 		  show_root_type(__entry->root_objectid),
 		  __entry->ino, __entry->index,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->nr_to_write, __entry->pages_skipped,
 		  __entry->range_start, __entry->range_end,
 		  __entry->for_kupdate,
 		  __entry->for_reclaim, __entry->range_cyclic,
-<<<<<<< HEAD
-		  (unsigned long)__entry->writeback_index)
-=======
 		  __entry->writeback_index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__writepage, __extent_writepage,
 
-<<<<<<< HEAD
-	TP_PROTO(struct page *page, struct inode *inode,
-		 struct writeback_control *wbc),
-=======
 	TP_PROTO(const struct page *page, const struct inode *inode,
 		 const struct writeback_control *wbc),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(page, inode, wbc)
 );
 
 TRACE_EVENT(btrfs_writepage_end_io_hook,
 
-<<<<<<< HEAD
-	TP_PROTO(struct page *page, u64 start, u64 end, int uptodate),
-
-	TP_ARGS(page, start, end, uptodate),
-
-	TP_STRUCT__entry(
-		__field(	ino_t,	 ino		)
-		__field(	pgoff_t, index		)
-=======
 	TP_PROTO(const struct btrfs_inode *inode, u64 start, u64 end,
 		 int uptodate),
 
@@ -1014,31 +752,12 @@ TRACE_EVENT(btrfs_writepage_end_io_hook,
 
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,	 ino		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,	 start		)
 		__field(	u64,	 end		)
 		__field(	int,	 uptodate	)
 		__field(	u64,    root_objectid	)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->ino	= page->mapping->host->i_ino;
-		__entry->index	= page->index;
-		__entry->start	= start;
-		__entry->end	= end;
-		__entry->uptodate = uptodate;
-		__entry->root_objectid	=
-			 BTRFS_I(page->mapping->host)->root->root_key.objectid;
-	),
-
-	TP_printk("root = %llu(%s), ino = %lu, page_index = %lu, start = %llu, "
-		  "end = %llu, uptodate = %d",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long)__entry->ino, (unsigned long)__entry->index,
-		  (unsigned long long)__entry->start,
-		  (unsigned long long)__entry->end, __entry->uptodate)
-=======
 	TP_fast_assign_btrfs(inode->root->fs_info,
 		__entry->ino	= btrfs_ino(inode);
 		__entry->start	= start;
@@ -1051,20 +770,10 @@ TRACE_EVENT(btrfs_writepage_end_io_hook,
 		  show_root_type(__entry->root_objectid),
 		  __entry->ino, __entry->start,
 		  __entry->end, __entry->uptodate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(btrfs_sync_file,
 
-<<<<<<< HEAD
-	TP_PROTO(struct file *file, int datasync),
-
-	TP_ARGS(file, datasync),
-
-	TP_STRUCT__entry(
-		__field(	ino_t,  ino		)
-		__field(	ino_t,  parent		)
-=======
 	TP_PROTO(const struct file *file, int datasync),
 
 	TP_ARGS(file, datasync),
@@ -1072,61 +781,31 @@ TRACE_EVENT(btrfs_sync_file,
 	TP_STRUCT__entry_btrfs(
 		__field(	u64,	ino		)
 		__field(	u64,	parent		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,    datasync	)
 		__field(	u64,    root_objectid	)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		struct dentry *dentry = file->f_path.dentry;
-		struct inode *inode = dentry->d_inode;
-
-		__entry->ino		= inode->i_ino;
-		__entry->parent		= dentry->d_parent->d_inode->i_ino;
-=======
 		const struct dentry *dentry = file->f_path.dentry;
 		const struct inode *inode = d_inode(dentry);
 
 		TP_fast_assign_fsid(btrfs_sb(file->f_path.dentry->d_sb));
 		__entry->ino		= btrfs_ino(BTRFS_I(inode));
 		__entry->parent		= btrfs_ino(BTRFS_I(d_inode(dentry->d_parent)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->datasync	= datasync;
 		__entry->root_objectid	=
 				 BTRFS_I(inode)->root->root_key.objectid;
 	),
 
-<<<<<<< HEAD
-	TP_printk("root = %llu(%s), ino = %ld, parent = %ld, datasync = %d",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long)__entry->ino, (unsigned long)__entry->parent,
-=======
 	TP_printk_btrfs("root=%llu(%s) ino=%llu parent=%llu datasync=%d",
 		  show_root_type(__entry->root_objectid),
 		  __entry->ino,
 		  __entry->parent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->datasync)
 );
 
 TRACE_EVENT(btrfs_sync_fs,
 
-<<<<<<< HEAD
-	TP_PROTO(int wait),
-
-	TP_ARGS(wait),
-
-	TP_STRUCT__entry(
-		__field(	int,  wait		)
-	),
-
-	TP_fast_assign(
-		__entry->wait	= wait;
-	),
-
-	TP_printk("wait = %d", __entry->wait)
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info, int wait),
 
 	TP_ARGS(fs_info, wait),
@@ -1177,7 +856,6 @@ TRACE_EVENT(btrfs_add_block_group,
 				BTRFS_GROUP_FLAGS),
 		  __entry->bytes_used,
 		  __entry->bytes_super, __entry->create)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #define show_ref_action(action)						\
@@ -1188,17 +866,6 @@ TRACE_EVENT(btrfs_add_block_group,
 		{ BTRFS_UPDATE_DELAYED_HEAD, "UPDATE_DELAYED_HEAD" })
 			
 
-<<<<<<< HEAD
-TRACE_EVENT(btrfs_delayed_tree_ref,
-
-	TP_PROTO(struct btrfs_delayed_ref_node *ref,
-		 struct btrfs_delayed_tree_ref *full_ref,
-		 int action),
-
-	TP_ARGS(ref, full_ref, action),
-
-	TP_STRUCT__entry(
-=======
 DECLARE_EVENT_CLASS(btrfs_delayed_tree_ref,
 
 	TP_PROTO(const struct btrfs_fs_info *fs_info,
@@ -1209,7 +876,6 @@ DECLARE_EVENT_CLASS(btrfs_delayed_tree_ref,
 	TP_ARGS(fs_info, ref, full_ref, action),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  bytenr		)
 		__field(	u64,  num_bytes		)
 		__field(	int,  action		) 
@@ -1217,16 +883,10 @@ DECLARE_EVENT_CLASS(btrfs_delayed_tree_ref,
 		__field(	u64,  ref_root		)
 		__field(	int,  level		)
 		__field(	int,  type		)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-=======
 		__field(	u64,  seq		)
 	),
 
 	TP_fast_assign_btrfs(fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->bytenr		= ref->bytenr;
 		__entry->num_bytes	= ref->num_bytes;
 		__entry->action		= action;
@@ -1234,30 +894,6 @@ DECLARE_EVENT_CLASS(btrfs_delayed_tree_ref,
 		__entry->ref_root	= full_ref->root;
 		__entry->level		= full_ref->level;
 		__entry->type		= ref->type;
-<<<<<<< HEAD
-	),
-
-	TP_printk("bytenr = %llu, num_bytes = %llu, action = %s, "
-		  "parent = %llu(%s), ref_root = %llu(%s), level = %d, "
-		  "type = %s",
-		  (unsigned long long)__entry->bytenr,
-		  (unsigned long long)__entry->num_bytes,
-		  show_ref_action(__entry->action),
-		  show_root_type(__entry->parent),
-		  show_root_type(__entry->ref_root),
-		  __entry->level, show_ref_type(__entry->type))
-);
-
-TRACE_EVENT(btrfs_delayed_data_ref,
-
-	TP_PROTO(struct btrfs_delayed_ref_node *ref,
-		 struct btrfs_delayed_data_ref *full_ref,
-		 int action),
-
-	TP_ARGS(ref, full_ref, action),
-
-	TP_STRUCT__entry(
-=======
 		__entry->seq		= ref->seq;
 	),
 
@@ -1303,7 +939,6 @@ DECLARE_EVENT_CLASS(btrfs_delayed_data_ref,
 	TP_ARGS(fs_info, ref, full_ref, action),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  bytenr		)
 		__field(	u64,  num_bytes		)
 		__field(	int,  action		) 
@@ -1312,16 +947,10 @@ DECLARE_EVENT_CLASS(btrfs_delayed_data_ref,
 		__field(	u64,  owner		)
 		__field(	u64,  offset		)
 		__field(	int,  type		)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-=======
 		__field(	u64,  seq		)
 	),
 
 	TP_fast_assign_btrfs(fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->bytenr		= ref->bytenr;
 		__entry->num_bytes	= ref->num_bytes;
 		__entry->action		= action;
@@ -1330,32 +959,6 @@ DECLARE_EVENT_CLASS(btrfs_delayed_data_ref,
 		__entry->owner		= full_ref->objectid;
 		__entry->offset		= full_ref->offset;
 		__entry->type		= ref->type;
-<<<<<<< HEAD
-	),
-
-	TP_printk("bytenr = %llu, num_bytes = %llu, action = %s, "
-		  "parent = %llu(%s), ref_root = %llu(%s), owner = %llu, "
-		  "offset = %llu, type = %s",
-		  (unsigned long long)__entry->bytenr,
-		  (unsigned long long)__entry->num_bytes,
-		  show_ref_action(__entry->action),
-		  show_root_type(__entry->parent),
-		  show_root_type(__entry->ref_root),
-		  (unsigned long long)__entry->owner,
-		  (unsigned long long)__entry->offset,
-		  show_ref_type(__entry->type))
-);
-
-TRACE_EVENT(btrfs_delayed_ref_head,
-
-	TP_PROTO(struct btrfs_delayed_ref_node *ref,
-		 struct btrfs_delayed_ref_head *head_ref,
-		 int action),
-
-	TP_ARGS(ref, head_ref, action),
-
-	TP_STRUCT__entry(
-=======
 		__entry->seq		= ref->seq;
 	),
 
@@ -1402,41 +1005,26 @@ DECLARE_EVENT_CLASS(btrfs_delayed_ref_head,
 	TP_ARGS(fs_info, head_ref, action),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  bytenr		)
 		__field(	u64,  num_bytes		)
 		__field(	int,  action		) 
 		__field(	int,  is_data		)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->bytenr		= ref->bytenr;
-		__entry->num_bytes	= ref->num_bytes;
-=======
 	TP_fast_assign_btrfs(fs_info,
 		__entry->bytenr		= head_ref->bytenr;
 		__entry->num_bytes	= head_ref->num_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->action		= action;
 		__entry->is_data	= head_ref->is_data;
 	),
 
-<<<<<<< HEAD
-	TP_printk("bytenr = %llu, num_bytes = %llu, action = %s, is_data = %d",
-		  (unsigned long long)__entry->bytenr,
-		  (unsigned long long)__entry->num_bytes,
-=======
 	TP_printk_btrfs("bytenr=%llu num_bytes=%llu action=%s is_data=%d",
 		  __entry->bytenr,
 		  __entry->num_bytes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  show_ref_action(__entry->action),
 		  __entry->is_data)
 );
 
-<<<<<<< HEAD
-=======
 DEFINE_EVENT(btrfs_delayed_ref_head,  add_delayed_ref_head,
 
 	TP_PROTO(const struct btrfs_fs_info *fs_info,
@@ -1455,7 +1043,6 @@ DEFINE_EVENT(btrfs_delayed_ref_head,  run_delayed_ref_head,
 	TP_ARGS(fs_info, head_ref, action)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define show_chunk_type(type)					\
 	__print_flags(type, "|",				\
 		{ BTRFS_BLOCK_GROUP_DATA, 	"DATA"	},	\
@@ -1464,18 +1051,6 @@ DEFINE_EVENT(btrfs_delayed_ref_head,  run_delayed_ref_head,
 		{ BTRFS_BLOCK_GROUP_RAID0, 	"RAID0" },	\
 		{ BTRFS_BLOCK_GROUP_RAID1, 	"RAID1" },	\
 		{ BTRFS_BLOCK_GROUP_DUP, 	"DUP"	},	\
-<<<<<<< HEAD
-		{ BTRFS_BLOCK_GROUP_RAID10, 	"RAID10"})
-
-DECLARE_EVENT_CLASS(btrfs__chunk,
-
-	TP_PROTO(struct btrfs_root *root, struct map_lookup *map,
-		 u64 offset, u64 size),
-
-	TP_ARGS(root, map, offset, size),
-
-	TP_STRUCT__entry(
-=======
 		{ BTRFS_BLOCK_GROUP_RAID10, 	"RAID10"},	\
 		{ BTRFS_BLOCK_GROUP_RAID5, 	"RAID5"	},	\
 		{ BTRFS_BLOCK_GROUP_RAID6, 	"RAID6"	})
@@ -1488,7 +1063,6 @@ DECLARE_EVENT_CLASS(btrfs__chunk,
 	TP_ARGS(fs_info, map, offset, size),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,  num_stripes		)
 		__field(	u64,  type			)
 		__field(	int,  sub_stripes		)
@@ -1497,26 +1071,12 @@ DECLARE_EVENT_CLASS(btrfs__chunk,
 		__field(	u64,  root_objectid		)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-=======
 	TP_fast_assign_btrfs(fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->num_stripes	= map->num_stripes;
 		__entry->type		= map->type;
 		__entry->sub_stripes	= map->sub_stripes;
 		__entry->offset		= offset;
 		__entry->size		= size;
-<<<<<<< HEAD
-		__entry->root_objectid	= root->root_key.objectid;
-	),
-
-	TP_printk("root = %llu(%s), offset = %llu, size = %llu, "
-		  "num_stripes = %d, sub_stripes = %d, type = %s",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->offset,
-		  (unsigned long long)__entry->size,
-=======
 		__entry->root_objectid	= fs_info->chunk_root->root_key.objectid;
 	),
 
@@ -1525,58 +1085,34 @@ DECLARE_EVENT_CLASS(btrfs__chunk,
 		  show_root_type(__entry->root_objectid),
 		  __entry->offset,
 		  __entry->size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->num_stripes, __entry->sub_stripes,
 		  show_chunk_type(__entry->type))
 );
 
 DEFINE_EVENT(btrfs__chunk,  btrfs_chunk_alloc,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, struct map_lookup *map,
-		 u64 offset, u64 size),
-
-	TP_ARGS(root, map, offset, size)
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info,
 		 const struct btrfs_chunk_map *map, u64 offset, u64 size),
 
 	TP_ARGS(fs_info, map, offset, size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__chunk,  btrfs_chunk_free,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, struct map_lookup *map,
-		 u64 offset, u64 size),
-
-	TP_ARGS(root, map, offset, size)
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info,
 		 const struct btrfs_chunk_map *map, u64 offset, u64 size),
 
 	TP_ARGS(fs_info, map, offset, size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(btrfs_cow_block,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, struct extent_buffer *buf,
-		 struct extent_buffer *cow),
-
-	TP_ARGS(root, buf, cow),
-
-	TP_STRUCT__entry(
-=======
 	TP_PROTO(const struct btrfs_root *root, const struct extent_buffer *buf,
 		 const struct extent_buffer *cow),
 
 	TP_ARGS(root, buf, cow),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  root_objectid		)
 		__field(	u64,  buf_start			)
 		__field(	int,  refs			)
@@ -1585,11 +1121,7 @@ TRACE_EVENT(btrfs_cow_block,
 		__field(	int,  cow_level			)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-=======
 	TP_fast_assign_btrfs(root->fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->root_objectid	= root->root_key.objectid;
 		__entry->buf_start	= buf->start;
 		__entry->refs		= atomic_read(&buf->refs);
@@ -1598,15 +1130,6 @@ TRACE_EVENT(btrfs_cow_block,
 		__entry->cow_level	= btrfs_header_level(cow);
 	),
 
-<<<<<<< HEAD
-	TP_printk("root = %llu(%s), refs = %d, orig_buf = %llu "
-		  "(orig_level = %d), cow_buf = %llu (cow_level = %d)",
-		  show_root_type(__entry->root_objectid),
-		  __entry->refs,
-		  (unsigned long long)__entry->buf_start,
-		  __entry->buf_level,
-		  (unsigned long long)__entry->cow_start,
-=======
 	TP_printk_btrfs("root=%llu(%s) refs=%d orig_buf=%llu "
 		  "(orig_level=%d) cow_buf=%llu (cow_level=%d)",
 		  show_root_type(__entry->root_objectid),
@@ -1614,60 +1137,30 @@ TRACE_EVENT(btrfs_cow_block,
 		  __entry->buf_start,
 		  __entry->buf_level,
 		  __entry->cow_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->cow_level)
 );
 
 TRACE_EVENT(btrfs_space_reservation,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_fs_info *fs_info, char *type, u64 val,
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info, const char *type, u64 val,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 u64 bytes, int reserve),
 
 	TP_ARGS(fs_info, type, val, bytes, reserve),
 
-<<<<<<< HEAD
-	TP_STRUCT__entry(
-		__array(	u8,	fsid,	BTRFS_UUID_SIZE	)
-=======
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__string(	type,	type			)
 		__field(	u64,	val			)
 		__field(	u64,	bytes			)
 		__field(	int,	reserve			)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		memcpy(__entry->fsid, fs_info->fsid, BTRFS_UUID_SIZE);
-=======
 	TP_fast_assign_btrfs(fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__assign_str(type, type);
 		__entry->val		= val;
 		__entry->bytes		= bytes;
 		__entry->reserve	= reserve;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%pU: %s: %Lu %s %Lu", __entry->fsid, __get_str(type),
-		  __entry->val, __entry->reserve ? "reserve" : "release",
-		  __entry->bytes)
-);
-
-DECLARE_EVENT_CLASS(btrfs__reserved_extent,
-
-	TP_PROTO(struct btrfs_root *root, u64 start, u64 len),
-
-	TP_ARGS(root, start, len),
-
-	TP_STRUCT__entry(
-		__field(	u64,  root_objectid		)
-=======
 	TP_printk_btrfs("%s: %llu %s %llu", __get_str(type), __entry->val,
 			__entry->reserve ? "reserve" : "release",
 			__entry->bytes)
@@ -1743,87 +1236,37 @@ DECLARE_EVENT_CLASS(btrfs__reserved_extent,
 	TP_ARGS(fs_info, start, len),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,  start			)
 		__field(	u64,  len			)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->root_objectid	= root->root_key.objectid;
-=======
 	TP_fast_assign_btrfs(fs_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->start		= start;
 		__entry->len		= len;
 	),
 
-<<<<<<< HEAD
-	TP_printk("root = %llu(%s), start = %llu, len = %llu",
-		  show_root_type(__entry->root_objectid),
-		  (unsigned long long)__entry->start,
-		  (unsigned long long)__entry->len)
-=======
 	TP_printk_btrfs("root=%llu(%s) start=%llu len=%llu",
 		  show_root_type(BTRFS_EXTENT_TREE_OBJECTID),
 		  __entry->start,
 		  __entry->len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__reserved_extent,  btrfs_reserved_extent_alloc,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, u64 start, u64 len),
-
-	TP_ARGS(root, start, len)
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info, u64 start, u64 len),
 
 	TP_ARGS(fs_info, start, len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__reserved_extent,  btrfs_reserved_extent_free,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, u64 start, u64 len),
-
-	TP_ARGS(root, start, len)
-=======
 	TP_PROTO(const struct btrfs_fs_info *fs_info, u64 start, u64 len),
 
 	TP_ARGS(fs_info, start, len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(find_free_extent,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root, u64 num_bytes, u64 empty_size,
-		 u64 data),
-
-	TP_ARGS(root, num_bytes, empty_size, data),
-
-	TP_STRUCT__entry(
-		__field(	u64,	root_objectid		)
-		__field(	u64,	num_bytes		)
-		__field(	u64,	empty_size		)
-		__field(	u64,	data			)
-	),
-
-	TP_fast_assign(
-		__entry->root_objectid	= root->root_key.objectid;
-		__entry->num_bytes	= num_bytes;
-		__entry->empty_size	= empty_size;
-		__entry->data		= data;
-	),
-
-	TP_printk("root = %Lu(%s), len = %Lu, empty_size = %Lu, "
-		  "flags = %Lu(%s)", show_root_type(__entry->root_objectid),
-		  __entry->num_bytes, __entry->empty_size, __entry->data,
-		  __print_flags((unsigned long)__entry->data, "|",
-=======
 	TP_PROTO(const struct btrfs_root *root,
 		 const struct find_free_extent_ctl *ffe_ctl),
 
@@ -1918,42 +1361,11 @@ TRACE_EVENT(find_free_extent_have_block_group,
 		  __entry->loop, __entry->hinted,
 		  __entry->bg_start, __entry->bg_flags,
 		  __print_flags((unsigned long)__entry->bg_flags, "|",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 BTRFS_GROUP_FLAGS))
 );
 
 DECLARE_EVENT_CLASS(btrfs__reserve_extent,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root,
-		 struct btrfs_block_group_cache *block_group, u64 start,
-		 u64 len),
-
-	TP_ARGS(root, block_group, start, len),
-
-	TP_STRUCT__entry(
-		__field(	u64,	root_objectid		)
-		__field(	u64,	bg_objectid		)
-		__field(	u64,	flags			)
-		__field(	u64,	start			)
-		__field(	u64,	len			)
-	),
-
-	TP_fast_assign(
-		__entry->root_objectid	= root->root_key.objectid;
-		__entry->bg_objectid	= block_group->key.objectid;
-		__entry->flags		= block_group->flags;
-		__entry->start		= start;
-		__entry->len		= len;
-	),
-
-	TP_printk("root = %Lu(%s), block_group = %Lu, flags = %Lu(%s), "
-		  "start = %Lu, len = %Lu",
-		  show_root_type(__entry->root_objectid), __entry->bg_objectid,
-		  __entry->flags, __print_flags((unsigned long)__entry->flags,
-						"|", BTRFS_GROUP_FLAGS),
-		  __entry->start, __entry->len)
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group,
 		 const struct find_free_extent_ctl *ffe_ctl),
 
@@ -1989,57 +1401,32 @@ DECLARE_EVENT_CLASS(btrfs__reserve_extent,
 						"|", BTRFS_GROUP_FLAGS),
 		  __entry->bg_size_class, __entry->start, __entry->len,
 		  __entry->loop, __entry->hinted, __entry->size_class)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__reserve_extent, btrfs_reserve_extent,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root,
-		 struct btrfs_block_group_cache *block_group, u64 start,
-		 u64 len),
-
-	TP_ARGS(root, block_group, start, len)
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group,
 		 const struct find_free_extent_ctl *ffe_ctl),
 
 	TP_ARGS(block_group, ffe_ctl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(btrfs__reserve_extent, btrfs_reserve_extent_cluster,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_root *root,
-		 struct btrfs_block_group_cache *block_group, u64 start,
-		 u64 len),
-
-	TP_ARGS(root, block_group, start, len)
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group,
 		 const struct find_free_extent_ctl *ffe_ctl),
 
 	TP_ARGS(block_group, ffe_ctl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(btrfs_find_cluster,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_block_group_cache *block_group, u64 start,
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group, u64 start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 u64 bytes, u64 empty_size, u64 min_bytes),
 
 	TP_ARGS(block_group, start, bytes, empty_size, min_bytes),
 
-<<<<<<< HEAD
-	TP_STRUCT__entry(
-=======
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,	bg_objectid		)
 		__field(	u64,	flags			)
 		__field(	u64,	start			)
@@ -2048,13 +1435,8 @@ TRACE_EVENT(btrfs_find_cluster,
 		__field(	u64,	min_bytes		)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->bg_objectid	= block_group->key.objectid;
-=======
 	TP_fast_assign_btrfs(block_group->fs_info,
 		__entry->bg_objectid	= block_group->start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->flags		= block_group->flags;
 		__entry->start		= start;
 		__entry->bytes		= bytes;
@@ -2062,13 +1444,8 @@ TRACE_EVENT(btrfs_find_cluster,
 		__entry->min_bytes	= min_bytes;
 	),
 
-<<<<<<< HEAD
-	TP_printk("block_group = %Lu, flags = %Lu(%s), start = %Lu, len = %Lu,"
-		  " empty_size = %Lu, min_bytes = %Lu", __entry->bg_objectid,
-=======
 	TP_printk_btrfs("block_group=%llu flags=%llu(%s) start=%llu len=%llu "
 		  "empty_size=%llu min_bytes=%llu", __entry->bg_objectid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->flags,
 		  __print_flags((unsigned long)__entry->flags, "|",
 				BTRFS_GROUP_FLAGS), __entry->start,
@@ -2077,21 +1454,6 @@ TRACE_EVENT(btrfs_find_cluster,
 
 TRACE_EVENT(btrfs_failed_cluster_setup,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_block_group_cache *block_group),
-
-	TP_ARGS(block_group),
-
-	TP_STRUCT__entry(
-		__field(	u64,	bg_objectid		)
-	),
-
-	TP_fast_assign(
-		__entry->bg_objectid	= block_group->key.objectid;
-	),
-
-	TP_printk("block_group = %Lu", __entry->bg_objectid)
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group),
 
 	TP_ARGS(block_group),
@@ -2105,19 +1467,10 @@ TRACE_EVENT(btrfs_failed_cluster_setup,
 	),
 
 	TP_printk_btrfs("block_group=%llu", __entry->bg_objectid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(btrfs_setup_cluster,
 
-<<<<<<< HEAD
-	TP_PROTO(struct btrfs_block_group_cache *block_group,
-		 struct btrfs_free_cluster *cluster, u64 size, int bitmap),
-
-	TP_ARGS(block_group, cluster, size, bitmap),
-
-	TP_STRUCT__entry(
-=======
 	TP_PROTO(const struct btrfs_block_group *block_group,
 		 const struct btrfs_free_cluster *cluster,
 		 u64 size, int bitmap),
@@ -2125,7 +1478,6 @@ TRACE_EVENT(btrfs_setup_cluster,
 	TP_ARGS(block_group, cluster, size, bitmap),
 
 	TP_STRUCT__entry_btrfs(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u64,	bg_objectid		)
 		__field(	u64,	flags			)
 		__field(	u64,	start			)
@@ -2134,13 +1486,8 @@ TRACE_EVENT(btrfs_setup_cluster,
 		__field(	int,	bitmap			)
 	),
 
-<<<<<<< HEAD
-	TP_fast_assign(
-		__entry->bg_objectid	= block_group->key.objectid;
-=======
 	TP_fast_assign_btrfs(block_group->fs_info,
 		__entry->bg_objectid	= block_group->start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->flags		= block_group->flags;
 		__entry->start		= cluster->window_start;
 		__entry->max_size	= cluster->max_size;
@@ -2148,13 +1495,8 @@ TRACE_EVENT(btrfs_setup_cluster,
 		__entry->bitmap		= bitmap;
 	),
 
-<<<<<<< HEAD
-	TP_printk("block_group = %Lu, flags = %Lu(%s), window_start = %Lu, "
-		  "size = %Lu, max_size = %Lu, bitmap = %d",
-=======
 	TP_printk_btrfs("block_group=%llu flags=%llu(%s) window_start=%llu "
 		  "size=%llu max_size=%llu bitmap=%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->bg_objectid,
 		  __entry->flags,
 		  __print_flags((unsigned long)__entry->flags, "|",
@@ -2165,75 +1507,40 @@ TRACE_EVENT(btrfs_setup_cluster,
 struct extent_state;
 TRACE_EVENT(alloc_extent_state,
 
-<<<<<<< HEAD
-	TP_PROTO(struct extent_state *state, gfp_t mask, unsigned long IP),
-=======
 	TP_PROTO(const struct extent_state *state,
 		 gfp_t mask, unsigned long IP),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(state, mask, IP),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(struct extent_state *, state)
-		__field(gfp_t, mask)
-		__field(unsigned long, ip)
-=======
 		__field(const struct extent_state *, state)
 		__field(unsigned long, mask)
 		__field(const void*, ip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->state	= state,
-<<<<<<< HEAD
-		__entry->mask	= mask,
-		__entry->ip	= IP
-	),
-
-	TP_printk("state=%p; mask = %s; caller = %pF", __entry->state,
-		  show_gfp_flags(__entry->mask), (void *)__entry->ip)
-=======
 		__entry->mask	= (__force unsigned long)mask,
 		__entry->ip	= (const void *)IP
 	),
 
 	TP_printk("state=%p mask=%s caller=%pS", __entry->state,
 		  show_gfp_flags(__entry->mask), __entry->ip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(free_extent_state,
 
-<<<<<<< HEAD
-	TP_PROTO(struct extent_state *state, unsigned long IP),
-=======
 	TP_PROTO(const struct extent_state *state, unsigned long IP),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(state, IP),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(struct extent_state *, state)
-		__field(unsigned long, ip)
-=======
 		__field(const struct extent_state *, state)
 		__field(const void*, ip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->state	= state,
-<<<<<<< HEAD
-		__entry->ip = IP
-	),
-
-	TP_printk(" state=%p; caller = %pF", __entry->state,
-		  (void *)__entry->ip)
-=======
 		__entry->ip = (const void *)IP
 	),
 
@@ -3243,7 +2550,6 @@ TRACE_EVENT(btrfs_get_raid_extent_offset,
 	TP_printk_btrfs("logical=%llu length=%llu physical=%llu devid=%llu",
 			__entry->logical, __entry->length, __entry->physical,
 			__entry->devid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif /* _TRACE_BTRFS_H */

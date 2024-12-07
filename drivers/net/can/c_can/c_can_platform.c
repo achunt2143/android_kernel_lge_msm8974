@@ -29,62 +29,26 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/clk.h>
-=======
 #include <linux/pm_runtime.h>
 #include <linux/property.h>
 #include <linux/clk.h>
 #include <linux/of.h>
 #include <linux/mfd/syscon.h>
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/can/dev.h>
 
 #include "c_can.h"
 
-<<<<<<< HEAD
-/*
- * 16-bit c_can registers can be arranged differently in the memory
-=======
 #define DCAN_RAM_INIT_BIT BIT(3)
 
 static DEFINE_SPINLOCK(raminit_lock);
 
 /* 16-bit c_can registers can be arranged differently in the memory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * architecture of different implementations. For example: 16-bit
  * registers can be aligned to a 16-bit boundary or 32-bit boundary etc.
  * Handle the same by providing a common read/write interface.
  */
-<<<<<<< HEAD
-static u16 c_can_plat_read_reg_aligned_to_16bit(struct c_can_priv *priv,
-						void *reg)
-{
-	return readw(reg);
-}
-
-static void c_can_plat_write_reg_aligned_to_16bit(struct c_can_priv *priv,
-						void *reg, u16 val)
-{
-	writew(val, reg);
-}
-
-static u16 c_can_plat_read_reg_aligned_to_32bit(struct c_can_priv *priv,
-						void *reg)
-{
-	return readw(reg + (long)reg - (long)priv->regs);
-}
-
-static void c_can_plat_write_reg_aligned_to_32bit(struct c_can_priv *priv,
-						void *reg, u16 val)
-{
-	writew(val, reg + (long)reg - (long)priv->regs);
-}
-
-static int __devinit c_can_plat_probe(struct platform_device *pdev)
-=======
 static u16 c_can_plat_read_reg_aligned_to_16bit(const struct c_can_priv *priv,
 						enum reg index)
 {
@@ -290,7 +254,6 @@ static const struct of_device_id c_can_of_table[] = {
 MODULE_DEVICE_TABLE(of, c_can_of_table);
 
 static int c_can_plat_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	void __iomem *addr;
@@ -298,73 +261,6 @@ static int c_can_plat_probe(struct platform_device *pdev)
 	struct c_can_priv *priv;
 	struct resource *mem;
 	int irq;
-<<<<<<< HEAD
-#ifdef CONFIG_HAVE_CLK
-	struct clk *clk;
-
-	/* get the appropriate clk */
-	clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(clk)) {
-		dev_err(&pdev->dev, "no clock defined\n");
-		ret = -ENODEV;
-		goto exit;
-	}
-#endif
-
-	/* get the platform data */
-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	irq = platform_get_irq(pdev, 0);
-	if (!mem || irq <= 0) {
-		ret = -ENODEV;
-		goto exit_free_clk;
-	}
-
-	if (!request_mem_region(mem->start, resource_size(mem),
-				KBUILD_MODNAME)) {
-		dev_err(&pdev->dev, "resource unavailable\n");
-		ret = -ENODEV;
-		goto exit_free_clk;
-	}
-
-	addr = ioremap(mem->start, resource_size(mem));
-	if (!addr) {
-		dev_err(&pdev->dev, "failed to map can port\n");
-		ret = -ENOMEM;
-		goto exit_release_mem;
-	}
-
-	/* allocate the c_can device */
-	dev = alloc_c_can_dev();
-	if (!dev) {
-		ret = -ENOMEM;
-		goto exit_iounmap;
-	}
-
-	priv = netdev_priv(dev);
-
-	dev->irq = irq;
-	priv->regs = addr;
-#ifdef CONFIG_HAVE_CLK
-	priv->can.clock.freq = clk_get_rate(clk);
-	priv->priv = clk;
-#endif
-
-	switch (mem->flags & IORESOURCE_MEM_TYPE_MASK) {
-	case IORESOURCE_MEM_32BIT:
-		priv->read_reg = c_can_plat_read_reg_aligned_to_32bit;
-		priv->write_reg = c_can_plat_write_reg_aligned_to_32bit;
-		break;
-	case IORESOURCE_MEM_16BIT:
-	default:
-		priv->read_reg = c_can_plat_read_reg_aligned_to_16bit;
-		priv->write_reg = c_can_plat_write_reg_aligned_to_16bit;
-		break;
-	}
-
-	platform_set_drvdata(pdev, dev);
-	SET_NETDEV_DEV(dev, &pdev->dev);
-
-=======
 	struct clk *clk;
 	const struct c_can_driver_data *drvdata;
 	struct device_node *np = pdev->dev.of_node;
@@ -485,7 +381,6 @@ static int c_can_plat_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	pm_runtime_enable(priv->device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_c_can_dev(dev);
 	if (ret) {
 		dev_err(&pdev->dev, "registering %s failed (err=%d)\n",
@@ -494,23 +389,6 @@ static int c_can_plat_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev, "%s device registered (regs=%p, irq=%d)\n",
-<<<<<<< HEAD
-		 KBUILD_MODNAME, priv->regs, dev->irq);
-	return 0;
-
-exit_free_device:
-	platform_set_drvdata(pdev, NULL);
-	free_c_can_dev(dev);
-exit_iounmap:
-	iounmap(addr);
-exit_release_mem:
-	release_mem_region(mem->start, resource_size(mem));
-exit_free_clk:
-#ifdef CONFIG_HAVE_CLK
-	clk_put(clk);
-exit:
-#endif
-=======
 		 KBUILD_MODNAME, priv->base, dev->irq);
 	return 0;
 
@@ -518,32 +396,11 @@ exit_free_device:
 	pm_runtime_disable(priv->device);
 	free_c_can_dev(dev);
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(&pdev->dev, "probe failed\n");
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit c_can_plat_remove(struct platform_device *pdev)
-{
-	struct net_device *dev = platform_get_drvdata(pdev);
-	struct c_can_priv *priv = netdev_priv(dev);
-	struct resource *mem;
-
-	unregister_c_can_dev(dev);
-	platform_set_drvdata(pdev, NULL);
-
-	free_c_can_dev(dev);
-	iounmap(priv->regs);
-
-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(mem->start, resource_size(mem));
-
-#ifdef CONFIG_HAVE_CLK
-	clk_put(priv->priv);
-#endif
-=======
 static void c_can_plat_remove(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
@@ -578,20 +435,10 @@ static int c_can_suspend(struct platform_device *pdev, pm_message_t state)
 	}
 
 	priv->can.state = CAN_STATE_SLEEPING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_driver c_can_plat_driver = {
-	.driver = {
-		.name = KBUILD_MODNAME,
-		.owner = THIS_MODULE,
-	},
-	.probe = c_can_plat_probe,
-	.remove = __devexit_p(c_can_plat_remove),
-=======
 static int c_can_resume(struct platform_device *pdev)
 {
 	int ret;
@@ -633,7 +480,6 @@ static struct platform_driver c_can_plat_driver = {
 	.suspend = c_can_suspend,
 	.resume = c_can_resume,
 	.id_table = c_can_id_table,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(c_can_plat_driver);

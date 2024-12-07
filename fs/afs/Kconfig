@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-config AFS_FS
-	tristate "Andrew File System support (AFS) (EXPERIMENTAL)"
-	depends on INET && EXPERIMENTAL
-	select AF_RXRPC
-	select DNS_RESOLVER
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config AFS_FS
 	tristate "Andrew File System support (AFS)"
@@ -12,16 +5,11 @@ config AFS_FS
 	select AF_RXRPC
 	select DNS_RESOLVER
 	select NETFS_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say Y here, you will get an experimental Andrew File System
 	  driver. It currently only supports unsecured read-only AFS access.
 
-<<<<<<< HEAD
-	  See <file:Documentation/filesystems/afs.txt> for more information.
-=======
 	  See <file:Documentation/filesystems/afs.rst> for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say N.
 
@@ -31,27 +19,16 @@ config AFS_DEBUG
 	help
 	  Say Y here to make runtime controllable debugging messages appear.
 
-<<<<<<< HEAD
-	  See <file:Documentation/filesystems/afs.txt> for more information.
-=======
 	  See <file:Documentation/filesystems/afs.rst> for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say N.
 
 config AFS_FSCACHE
-<<<<<<< HEAD
-	bool "Provide AFS client caching support (EXPERIMENTAL)"
-	depends on EXPERIMENTAL
-=======
 	bool "Provide AFS client caching support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on AFS_FS=m && FSCACHE || AFS_FS=y && FSCACHE=y
 	help
 	  Say Y here if you want AFS data to be cached locally on disk through
 	  the generic filesystem cache manager
-<<<<<<< HEAD
-=======
 
 config AFS_DEBUG_CURSOR
 	bool "AFS server cursor debugging"
@@ -64,4 +41,3 @@ config AFS_DEBUG_CURSOR
 	  See <file:Documentation/filesystems/afs.rst> for more information.
 
 	  If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

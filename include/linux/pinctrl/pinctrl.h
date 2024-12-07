@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interface the pinctrl subsystem
  *
@@ -10,31 +7,10 @@
  * This interface is used in the core to keep track of pins.
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_PINCTRL_PINCTRL_H
 #define __LINUX_PINCTRL_PINCTRL_H
 
-<<<<<<< HEAD
-#ifdef CONFIG_PINCTRL
-
-#include <linux/radix-tree.h>
-#include <linux/list.h>
-#include <linux/seq_file.h>
-#include "pinctrl-state.h"
-
-struct device;
-struct pinctrl_dev;
-struct pinctrl_map;
-struct pinmux_ops;
-struct pinconf_ops;
-struct gpio_chip;
-struct device_node;
-=======
 #include <linux/types.h>
 
 struct device;
@@ -69,26 +45,18 @@ struct pingroup {
 	.pins = _pins,				\
 	.npins = _npins,			\
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct pinctrl_pin_desc - boards/machines provide information on their
  * pins, pads or other muxable units in this struct
  * @number: unique pin number from the global pin number space
  * @name: a name for this pin
-<<<<<<< HEAD
- */
-struct pinctrl_pin_desc {
-	unsigned number;
-	const char *name;
-=======
  * @drv_data: driver-defined per-pin data. pinctrl core does not touch this
  */
 struct pinctrl_pin_desc {
 	unsigned int number;
 	const char *name;
 	void *drv_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Convenience macro to define a single named or anonymous pin descriptor */
@@ -102,14 +70,9 @@ struct pinctrl_pin_desc {
  * @name: a name for the chip in this range
  * @id: an ID number for the chip in this range
  * @base: base offset of the GPIO range
-<<<<<<< HEAD
- * @pin_base: base pin number of the GPIO range
- * @npins: number of pins in the GPIO range, including the base number
-=======
  * @pin_base: base pin number of the GPIO range if pins == NULL
  * @npins: number of pins in the GPIO range, including the base number
  * @pins: enumeration of pins in GPIO range or NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @gc: an optional pointer to a gpio_chip
  */
 struct pinctrl_gpio_range {
@@ -119,10 +82,7 @@ struct pinctrl_gpio_range {
 	unsigned int base;
 	unsigned int pin_base;
 	unsigned int npins;
-<<<<<<< HEAD
-=======
 	unsigned int const *pins;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gpio_chip *gc;
 };
 
@@ -148,20 +108,6 @@ struct pinctrl_gpio_range {
 struct pinctrl_ops {
 	int (*get_groups_count) (struct pinctrl_dev *pctldev);
 	const char *(*get_group_name) (struct pinctrl_dev *pctldev,
-<<<<<<< HEAD
-				       unsigned selector);
-	int (*get_group_pins) (struct pinctrl_dev *pctldev,
-			       unsigned selector,
-			       const unsigned **pins,
-			       unsigned *num_pins);
-	void (*pin_dbg_show) (struct pinctrl_dev *pctldev, struct seq_file *s,
-			  unsigned offset);
-	int (*dt_node_to_map) (struct pinctrl_dev *pctldev,
-			       struct device_node *np_config,
-			       struct pinctrl_map **map, unsigned *num_maps);
-	void (*dt_free_map) (struct pinctrl_dev *pctldev,
-			     struct pinctrl_map *map, unsigned num_maps);
-=======
 				       unsigned int selector);
 	int (*get_group_pins) (struct pinctrl_dev *pctldev,
 			       unsigned int selector,
@@ -174,7 +120,6 @@ struct pinctrl_ops {
 			       struct pinctrl_map **map, unsigned int *num_maps);
 	void (*dt_free_map) (struct pinctrl_dev *pctldev,
 			     struct pinctrl_map *map, unsigned int num_maps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -191,24 +136,6 @@ struct pinctrl_ops {
  * @confops: pin config operations vtable, if you support pin configuration in
  *	your driver
  * @owner: module providing the pin controller, used for refcounting
-<<<<<<< HEAD
- */
-struct pinctrl_desc {
-	const char *name;
-	struct pinctrl_pin_desc const *pins;
-	unsigned int npins;
-	struct pinctrl_ops *pctlops;
-	struct pinmux_ops *pmxops;
-	struct pinconf_ops *confops;
-	struct module *owner;
-};
-
-/* External interface to pin controller */
-extern struct pinctrl_dev *pinctrl_register(struct pinctrl_desc *pctldesc,
-				struct device *dev, void *driver_data);
-extern void pinctrl_unregister(struct pinctrl_dev *pctldev);
-extern bool pin_is_valid(struct pinctrl_dev *pctldev, int pin);
-=======
  * @num_custom_params: Number of driver-specific custom parameters to be parsed
  *	from the hardware description
  * @custom_params: List of driver_specific custom parameters to be parsed from
@@ -262,16 +189,11 @@ extern struct pinctrl_dev *devm_pinctrl_register(struct device *dev,
 extern void devm_pinctrl_unregister(struct device *dev,
 				struct pinctrl_dev *pctldev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void pinctrl_add_gpio_range(struct pinctrl_dev *pctldev,
 				struct pinctrl_gpio_range *range);
 extern void pinctrl_add_gpio_ranges(struct pinctrl_dev *pctldev,
 				struct pinctrl_gpio_range *ranges,
-<<<<<<< HEAD
-				unsigned nranges);
-=======
 				unsigned int nranges);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void pinctrl_remove_gpio_range(struct pinctrl_dev *pctldev,
 				struct pinctrl_gpio_range *range);
 
@@ -280,10 +202,6 @@ extern struct pinctrl_dev *pinctrl_find_and_add_gpio_range(const char *devname,
 extern struct pinctrl_gpio_range *
 pinctrl_find_gpio_range_from_pin(struct pinctrl_dev *pctldev,
 				 unsigned int pin);
-<<<<<<< HEAD
-
-#ifdef CONFIG_OF
-=======
 extern int pinctrl_get_group_pins(struct pinctrl_dev *pctldev,
 				  const char *pin_group, const unsigned int **pins,
 				  unsigned int *num_pins);
@@ -309,7 +227,6 @@ struct pinfunction {
 	}
 
 #if IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_PINCTRL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct pinctrl_dev *of_pinctrl_get(struct device_node *np);
 #else
 static inline
@@ -322,19 +239,5 @@ struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 extern const char *pinctrl_dev_get_name(struct pinctrl_dev *pctldev);
 extern const char *pinctrl_dev_get_devname(struct pinctrl_dev *pctldev);
 extern void *pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev);
-<<<<<<< HEAD
-#else
-
-struct pinctrl_dev;
-
-/* Sufficiently stupid default functions when pinctrl is not in use */
-static inline bool pin_is_valid(struct pinctrl_dev *pctldev, int pin)
-{
-	return pin >= 0;
-}
-
-#endif /* !CONFIG_PINCTRL */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_PINCTRL_PINCTRL_H */

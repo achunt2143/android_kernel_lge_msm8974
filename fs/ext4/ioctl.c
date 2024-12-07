@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext4/ioctl.c
  *
@@ -12,29 +9,11 @@
  */
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/jbd2.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/time.h>
 #include <linux/compat.h>
 #include <linux/mount.h>
 #include <linux/file.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include "ext4_jbd2.h"
-#include "ext4.h"
-
-#define MAX_32_NUM ((((unsigned long long) 1) << 32) - 1)
-
-long ext4_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	struct inode *inode = filp->f_dentry->d_inode;
-	struct super_block *sb = inode->i_sb;
-	struct ext4_inode_info *ei = EXT4_I(inode);
-	unsigned int flags;
-=======
 #include <linux/quotaops.h>
 #include <linux/random.h>
 #include <linux/uaccess.h>
@@ -1256,130 +1235,12 @@ static long __ext4_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	struct inode *inode = file_inode(filp);
 	struct super_block *sb = inode->i_sb;
 	struct mnt_idmap *idmap = file_mnt_idmap(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ext4_debug("cmd = %u, arg = %lu\n", cmd, arg);
 
 	switch (cmd) {
-<<<<<<< HEAD
-	case EXT4_IOC_GETFLAGS:
-		ext4_get_inode_flags(ei);
-		flags = ei->i_flags & EXT4_FL_USER_VISIBLE;
-		return put_user(flags, (int __user *) arg);
-	case EXT4_IOC_SETFLAGS: {
-		handle_t *handle = NULL;
-		int err, migrate = 0;
-		struct ext4_iloc iloc;
-		unsigned int oldflags, mask, i;
-		unsigned int jflag;
-
-		if (!inode_owner_or_capable(inode))
-			return -EACCES;
-
-		if (get_user(flags, (int __user *) arg))
-			return -EFAULT;
-
-		err = mnt_want_write_file(filp);
-		if (err)
-			return err;
-
-		flags = ext4_mask_flags(inode->i_mode, flags);
-
-		err = -EPERM;
-		mutex_lock(&inode->i_mutex);
-		/* Is it quota file? Do not allow user to mess with it */
-		if (IS_NOQUOTA(inode))
-			goto flags_out;
-
-		oldflags = ei->i_flags;
-
-		/* The JOURNAL_DATA flag is modifiable only by root */
-		jflag = flags & EXT4_JOURNAL_DATA_FL;
-
-		/*
-		 * The IMMUTABLE and APPEND_ONLY flags can only be changed by
-		 * the relevant capability.
-		 *
-		 * This test looks nicer. Thanks to Pauline Middelink
-		 */
-		if ((flags ^ oldflags) & (EXT4_APPEND_FL | EXT4_IMMUTABLE_FL)) {
-			if (!capable(CAP_LINUX_IMMUTABLE))
-				goto flags_out;
-		}
-
-		/*
-		 * The JOURNAL_DATA flag can only be changed by
-		 * the relevant capability.
-		 */
-		if ((jflag ^ oldflags) & (EXT4_JOURNAL_DATA_FL)) {
-			if (!capable(CAP_SYS_RESOURCE))
-				goto flags_out;
-		}
-		if (oldflags & EXT4_EXTENTS_FL) {
-			/* We don't support clearning extent flags */
-			if (!(flags & EXT4_EXTENTS_FL)) {
-				err = -EOPNOTSUPP;
-				goto flags_out;
-			}
-		} else if (flags & EXT4_EXTENTS_FL) {
-			/* migrate the file */
-			migrate = 1;
-			flags &= ~EXT4_EXTENTS_FL;
-		}
-
-		if (flags & EXT4_EOFBLOCKS_FL) {
-			/* we don't support adding EOFBLOCKS flag */
-			if (!(oldflags & EXT4_EOFBLOCKS_FL)) {
-				err = -EOPNOTSUPP;
-				goto flags_out;
-			}
-		} else if (oldflags & EXT4_EOFBLOCKS_FL)
-			ext4_truncate(inode);
-
-		handle = ext4_journal_start(inode, 1);
-		if (IS_ERR(handle)) {
-			err = PTR_ERR(handle);
-			goto flags_out;
-		}
-		if (IS_SYNC(inode))
-			ext4_handle_sync(handle);
-		err = ext4_reserve_inode_write(handle, inode, &iloc);
-		if (err)
-			goto flags_err;
-
-		for (i = 0, mask = 1; i < 32; i++, mask <<= 1) {
-			if (!(mask & EXT4_FL_USER_MODIFIABLE))
-				continue;
-			if (mask & flags)
-				ext4_set_inode_flag(inode, i);
-			else
-				ext4_clear_inode_flag(inode, i);
-		}
-
-		ext4_set_inode_flags(inode);
-		inode->i_ctime = ext4_current_time(inode);
-
-		err = ext4_mark_iloc_dirty(handle, inode, &iloc);
-flags_err:
-		ext4_journal_stop(handle);
-		if (err)
-			goto flags_out;
-
-		if ((jflag ^ oldflags) & (EXT4_JOURNAL_DATA_FL))
-			err = ext4_change_inode_journal_flag(inode, jflag);
-		if (err)
-			goto flags_out;
-		if (migrate)
-			err = ext4_ext_migrate(inode);
-flags_out:
-		mutex_unlock(&inode->i_mutex);
-		mnt_drop_write_file(filp);
-		return err;
-	}
-=======
 	case FS_IOC_GETFSMAP:
 		return ext4_ioc_getfsmap(sb, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EXT4_IOC_GETVERSION:
 	case EXT4_IOC_GETVERSION_OLD:
 		return put_user(inode->i_generation, (int __user *) arg);
@@ -1390,18 +1251,10 @@ flags_out:
 		__u32 generation;
 		int err;
 
-<<<<<<< HEAD
-		if (!inode_owner_or_capable(inode))
-			return -EPERM;
-
-		if (EXT4_HAS_RO_COMPAT_FEATURE(inode->i_sb,
-				EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)) {
-=======
 		if (!inode_owner_or_capable(idmap, inode))
 			return -EPERM;
 
 		if (ext4_has_metadata_csum(inode->i_sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_warning(sb, "Setting inode version is not "
 				     "supported with metadata_csum enabled.");
 			return -ENOTTY;
@@ -1415,36 +1268,23 @@ flags_out:
 			goto setversion_out;
 		}
 
-<<<<<<< HEAD
-		mutex_lock(&inode->i_mutex);
-		handle = ext4_journal_start(inode, 1);
-=======
 		inode_lock(inode);
 		handle = ext4_journal_start(inode, EXT4_HT_INODE, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(handle)) {
 			err = PTR_ERR(handle);
 			goto unlock_out;
 		}
 		err = ext4_reserve_inode_write(handle, inode, &iloc);
 		if (err == 0) {
-<<<<<<< HEAD
-			inode->i_ctime = ext4_current_time(inode);
-=======
 			inode_set_ctime_current(inode);
 			inode_inc_iversion(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			inode->i_generation = generation;
 			err = ext4_mark_iloc_dirty(handle, inode, &iloc);
 		}
 		ext4_journal_stop(handle);
 
 unlock_out:
-<<<<<<< HEAD
-		mutex_unlock(&inode->i_mutex);
-=======
 		inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 setversion_out:
 		mnt_drop_write_file(filp);
 		return err;
@@ -1462,12 +1302,7 @@ setversion_out:
 			goto group_extend_out;
 		}
 
-<<<<<<< HEAD
-		if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
-=======
 		if (ext4_has_feature_bigalloc(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_msg(sb, KERN_ERR,
 				 "Online resizing not supported with bigalloc");
 			err = -EOPNOTSUPP;
@@ -1481,34 +1316,22 @@ setversion_out:
 		err = ext4_group_extend(sb, EXT4_SB(sb)->s_es, n_blocks_count);
 		if (EXT4_SB(sb)->s_journal) {
 			jbd2_journal_lock_updates(EXT4_SB(sb)->s_journal);
-<<<<<<< HEAD
-			err2 = jbd2_journal_flush(EXT4_SB(sb)->s_journal);
-=======
 			err2 = jbd2_journal_flush(EXT4_SB(sb)->s_journal, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jbd2_journal_unlock_updates(EXT4_SB(sb)->s_journal);
 		}
 		if (err == 0)
 			err = err2;
 		mnt_drop_write_file(filp);
 group_extend_out:
-<<<<<<< HEAD
-		ext4_resize_end(sb);
-=======
 		err2 = ext4_resize_end(sb, false);
 		if (err == 0)
 			err = err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	case EXT4_IOC_MOVE_EXT: {
 		struct move_extent me;
-<<<<<<< HEAD
-		struct file *donor_filp;
-=======
 		struct fd donor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int err;
 
 		if (!(filp->f_mode & FMODE_READ) ||
@@ -1520,30 +1343,15 @@ group_extend_out:
 			return -EFAULT;
 		me.moved_len = 0;
 
-<<<<<<< HEAD
-		donor_filp = fget(me.donor_fd);
-		if (!donor_filp)
-			return -EBADF;
-
-		if (!(donor_filp->f_mode & FMODE_WRITE)) {
-=======
 		donor = fdget(me.donor_fd);
 		if (!donor.file)
 			return -EBADF;
 
 		if (!(donor.file->f_mode & FMODE_WRITE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EBADF;
 			goto mext_out;
 		}
 
-<<<<<<< HEAD
-		if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
-			ext4_msg(sb, KERN_ERR,
-				 "Online defrag not supported with bigalloc");
-			return -EOPNOTSUPP;
-=======
 		if (ext4_has_feature_bigalloc(sb)) {
 			ext4_msg(sb, KERN_ERR,
 				 "Online defrag not supported with bigalloc");
@@ -1554,18 +1362,13 @@ group_extend_out:
 				 "Online defrag not supported with DAX");
 			err = -EOPNOTSUPP;
 			goto mext_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = mnt_want_write_file(filp);
 		if (err)
 			goto mext_out;
 
-<<<<<<< HEAD
-		err = ext4_move_extents(filp, donor_filp, me.orig_start,
-=======
 		err = ext4_move_extents(filp, donor.file, me.orig_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					me.donor_start, me.len, &me.moved_len);
 		mnt_drop_write_file(filp);
 
@@ -1573,71 +1376,24 @@ group_extend_out:
 				 &me, sizeof(me)))
 			err = -EFAULT;
 mext_out:
-<<<<<<< HEAD
-		fput(donor_filp);
-=======
 		fdput(donor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	case EXT4_IOC_GROUP_ADD: {
 		struct ext4_new_group_data input;
-<<<<<<< HEAD
-		int err, err2=0;
-
-		err = ext4_resize_begin(sb);
-		if (err)
-			return err;
-
-		if (copy_from_user(&input, (struct ext4_new_group_input __user *)arg,
-				sizeof(input))) {
-			err = -EFAULT;
-			goto group_add_out;
-		}
-
-		if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
-			ext4_msg(sb, KERN_ERR,
-				 "Online resizing not supported with bigalloc");
-			err = -EOPNOTSUPP;
-			goto group_add_out;
-		}
-
-		err = mnt_want_write_file(filp);
-		if (err)
-			goto group_add_out;
-
-		err = ext4_group_add(sb, &input);
-		if (EXT4_SB(sb)->s_journal) {
-			jbd2_journal_lock_updates(EXT4_SB(sb)->s_journal);
-			err2 = jbd2_journal_flush(EXT4_SB(sb)->s_journal);
-			jbd2_journal_unlock_updates(EXT4_SB(sb)->s_journal);
-		}
-		if (err == 0)
-			err = err2;
-		mnt_drop_write_file(filp);
-group_add_out:
-		ext4_resize_end(sb);
-		return err;
-=======
 
 		if (copy_from_user(&input, (struct ext4_new_group_input __user *)arg,
 				sizeof(input)))
 			return -EFAULT;
 
 		return ext4_ioctl_group_add(filp, &input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	case EXT4_IOC_MIGRATE:
 	{
 		int err;
-<<<<<<< HEAD
-		if (!inode_owner_or_capable(inode))
-=======
 		if (!inode_owner_or_capable(idmap, inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EACCES;
 
 		err = mnt_want_write_file(filp);
@@ -1649,15 +1405,9 @@ group_add_out:
 		 * ext4_ext_swap_inode_data before we switch the
 		 * inode format to prevent read.
 		 */
-<<<<<<< HEAD
-		mutex_lock(&(inode->i_mutex));
-		err = ext4_ext_migrate(inode);
-		mutex_unlock(&(inode->i_mutex));
-=======
 		inode_lock((inode));
 		err = ext4_ext_migrate(inode);
 		inode_unlock((inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mnt_drop_write_file(filp);
 		return err;
 	}
@@ -1665,11 +1415,7 @@ group_add_out:
 	case EXT4_IOC_ALLOC_DA_BLKS:
 	{
 		int err;
-<<<<<<< HEAD
-		if (!inode_owner_or_capable(inode))
-=======
 		if (!inode_owner_or_capable(idmap, inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EACCES;
 
 		err = mnt_want_write_file(filp);
@@ -1680,26 +1426,6 @@ group_add_out:
 		return err;
 	}
 
-<<<<<<< HEAD
-	case EXT4_IOC_RESIZE_FS: {
-		ext4_fsblk_t n_blocks_count;
-		struct super_block *sb = inode->i_sb;
-		int err = 0, err2 = 0;
-
-		if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
-			ext4_msg(sb, KERN_ERR,
-				 "Online resizing not (yet) supported with bigalloc");
-			return -EOPNOTSUPP;
-		}
-
-		if (EXT4_HAS_INCOMPAT_FEATURE(sb,
-			       EXT4_FEATURE_INCOMPAT_META_BG)) {
-			ext4_msg(sb, KERN_ERR,
-				 "Online resizing not (yet) supported with meta_bg");
-			return -EOPNOTSUPP;
-		}
-=======
 	case EXT4_IOC_SWAP_BOOT:
 	{
 		int err;
@@ -1717,55 +1443,29 @@ group_add_out:
 		ext4_fsblk_t n_blocks_count;
 		int err = 0, err2 = 0;
 		ext4_group_t o_group = EXT4_SB(sb)->s_groups_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&n_blocks_count, (__u64 __user *)arg,
 				   sizeof(__u64))) {
 			return -EFAULT;
 		}
 
-<<<<<<< HEAD
-		if (n_blocks_count > MAX_32_NUM &&
-		    !EXT4_HAS_INCOMPAT_FEATURE(sb,
-					       EXT4_FEATURE_INCOMPAT_64BIT)) {
-			ext4_msg(sb, KERN_ERR,
-				 "File system only supports 32-bit block numbers");
-			return -EOPNOTSUPP;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ext4_resize_begin(sb);
 		if (err)
 			return err;
 
-<<<<<<< HEAD
-		err = mnt_want_write(filp->f_path.mnt);
-=======
 		err = mnt_want_write_file(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto resizefs_out;
 
 		err = ext4_resize_fs(sb, n_blocks_count);
 		if (EXT4_SB(sb)->s_journal) {
-<<<<<<< HEAD
-			jbd2_journal_lock_updates(EXT4_SB(sb)->s_journal);
-			err2 = jbd2_journal_flush(EXT4_SB(sb)->s_journal);
-=======
 			ext4_fc_mark_ineligible(sb, EXT4_FC_REASON_RESIZE, NULL);
 			jbd2_journal_lock_updates(EXT4_SB(sb)->s_journal);
 			err2 = jbd2_journal_flush(EXT4_SB(sb)->s_journal, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jbd2_journal_unlock_updates(EXT4_SB(sb)->s_journal);
 		}
 		if (err == 0)
 			err = err2;
-<<<<<<< HEAD
-		mnt_drop_write(filp->f_path.mnt);
-resizefs_out:
-		ext4_resize_end(sb);
-=======
 		mnt_drop_write_file(filp);
 		if (!err && (o_group < EXT4_SB(sb)->s_groups_count) &&
 		    ext4_has_group_desc_csum(sb) &&
@@ -1776,33 +1476,17 @@ resizefs_out:
 		err2 = ext4_resize_end(sb, true);
 		if (err == 0)
 			err = err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	case FITRIM:
 	{
-<<<<<<< HEAD
-		struct request_queue *q = bdev_get_queue(sb->s_bdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct fstrim_range range;
 		int ret = 0;
 
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
 
-<<<<<<< HEAD
-		if (!blk_queue_discard(q))
-			return -EOPNOTSUPP;
-
-		if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			       EXT4_FEATURE_RO_COMPAT_BIGALLOC)) {
-			ext4_msg(sb, KERN_ERR,
-				 "FITRIM not supported with bigalloc");
-			return -EOPNOTSUPP;
-		}
-=======
 		if (!bdev_max_discard_sectors(sb->s_bdev))
 			return -EOPNOTSUPP;
 
@@ -1812,17 +1496,11 @@ resizefs_out:
 		 */
 		if (test_opt(sb, NOLOAD) && ext4_has_feature_journal(sb))
 			return -EROFS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&range, (struct fstrim_range __user *)arg,
 		    sizeof(range)))
 			return -EFAULT;
 
-<<<<<<< HEAD
-		range.minlen = max((unsigned int)range.minlen,
-				   q->limits.discard_granularity);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ext4_trim_fs(sb, &range);
 		if (ret < 0)
 			return ret;
@@ -1833,9 +1511,6 @@ resizefs_out:
 
 		return 0;
 	}
-<<<<<<< HEAD
-
-=======
 	case EXT4_IOC_PRECACHE_EXTENTS:
 		return ext4_ext_precache(inode);
 
@@ -1942,34 +1617,21 @@ resizefs_out:
 		return ext4_ioctl_getuuid(EXT4_SB(sb), (void __user *)arg);
 	case EXT4_IOC_SETFSUUID:
 		return ext4_ioctl_setuuid(filp, (const void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
 }
 
-<<<<<<< HEAD
-=======
 long ext4_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	return __ext4_ioctl(filp, cmd, arg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	/* These are just misnamed, they actually get/put from/to user an int */
 	switch (cmd) {
-<<<<<<< HEAD
-	case EXT4_IOC32_GETFLAGS:
-		cmd = EXT4_IOC_GETFLAGS;
-		break;
-	case EXT4_IOC32_SETFLAGS:
-		cmd = EXT4_IOC_SETFLAGS;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EXT4_IOC32_GETVERSION:
 		cmd = EXT4_IOC_GETVERSION;
 		break;
@@ -1993,12 +1655,7 @@ long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 	case EXT4_IOC32_GROUP_ADD: {
 		struct compat_ext4_new_group_input __user *uinput;
-<<<<<<< HEAD
-		struct ext4_new_group_input input;
-		mm_segment_t old_fs;
-=======
 		struct ext4_new_group_data input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int err;
 
 		uinput = compat_ptr(arg);
@@ -2011,18 +1668,6 @@ long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				&uinput->reserved_blocks);
 		if (err)
 			return -EFAULT;
-<<<<<<< HEAD
-		old_fs = get_fs();
-		set_fs(KERNEL_DS);
-		err = ext4_ioctl(file, EXT4_IOC_GROUP_ADD,
-				 (unsigned long) &input);
-		set_fs(old_fs);
-		return err;
-	}
-	case EXT4_IOC_MOVE_EXT:
-	case FITRIM:
-	case EXT4_IOC_RESIZE_FS:
-=======
 		return ext4_ioctl_group_add(file, &input);
 	}
 	case EXT4_IOC_MOVE_EXT:
@@ -2051,7 +1696,6 @@ long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case FS_IOC_SETFSLABEL:
 	case EXT4_IOC_GETFSUUID:
 	case EXT4_IOC_SETFSUUID:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENOIOCTLCMD;
@@ -2059,8 +1703,6 @@ long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ext4_ioctl(file, cmd, (unsigned long) compat_ptr(arg));
 }
 #endif
-<<<<<<< HEAD
-=======
 
 static void set_overhead(struct ext4_super_block *es, const void *arg)
 {
@@ -2079,4 +1721,3 @@ int ext4_update_overhead(struct super_block *sb, bool force)
 		return 0;
 	return ext4_update_superblocks_fn(sb, set_overhead, &sbi->s_overhead);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

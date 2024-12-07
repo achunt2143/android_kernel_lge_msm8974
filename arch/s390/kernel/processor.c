@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- *  arch/s390/kernel/processor.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright IBM Corp. 2008
  *  Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com)
  */
@@ -13,19 +7,6 @@
 #define KMSG_COMPONENT "cpu"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/smp.h>
-#include <linux/seq_file.h>
-#include <linux/delay.h>
-#include <linux/cpu.h>
-#include <asm/elf.h>
-#include <asm/lowcore.h>
-#include <asm/param.h>
-
-static DEFINE_PER_CPU(struct cpuid, cpu_id);
-=======
 #include <linux/stop_machine.h>
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -97,24 +78,10 @@ void notrace stop_machine_yield(const struct cpumask *cpumask)
 			smp_yield_cpu(cpu);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_init - initializes state that is per-CPU.
  */
-<<<<<<< HEAD
-void __cpuinit cpu_init(void)
-{
-	struct cpuid *id = &per_cpu(cpu_id, smp_processor_id());
-	struct s390_idle_data *idle = &__get_cpu_var(s390_idle);
-
-	get_cpu_id(id);
-	atomic_inc(&init_mm.mm_count);
-	current->active_mm = &init_mm;
-	BUG_ON(current->mm);
-	enter_lazy_tlb(&init_mm, current);
-	memset(idle, 0, sizeof(*idle));
-=======
 void cpu_init(void)
 {
 	struct cpuid *id = this_cpu_ptr(&cpu_info.cpu_id);
@@ -343,7 +310,6 @@ static void show_cpu_mhz(struct seq_file *m, unsigned long n)
 		return;
 	seq_printf(m, "cpu MHz dynamic : %d\n", c->cpu_mhz_dynamic);
 	seq_printf(m, "cpu MHz static  : %d\n", c->cpu_mhz_static);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -351,44 +317,6 @@ static void show_cpu_mhz(struct seq_file *m, unsigned long n)
  */
 static int show_cpuinfo(struct seq_file *m, void *v)
 {
-<<<<<<< HEAD
-	static const char *hwcap_str[10] = {
-		"esan3", "zarch", "stfle", "msa", "ldisp", "eimm", "dfp",
-		"edat", "etf3eh", "highgprs"
-	};
-	unsigned long n = (unsigned long) v - 1;
-	int i;
-
-	if (!n) {
-		s390_adjust_jiffies();
-		seq_printf(m, "vendor_id       : IBM/S390\n"
-			   "# processors    : %i\n"
-			   "bogomips per cpu: %lu.%02lu\n",
-			   num_online_cpus(), loops_per_jiffy/(500000/HZ),
-			   (loops_per_jiffy/(5000/HZ))%100);
-		seq_puts(m, "features\t: ");
-		for (i = 0; i < 10; i++)
-			if (hwcap_str[i] && (elf_hwcap & (1UL << i)))
-				seq_printf(m, "%s ", hwcap_str[i]);
-		seq_puts(m, "\n");
-	}
-	get_online_cpus();
-	if (cpu_online(n)) {
-		struct cpuid *id = &per_cpu(cpu_id, n);
-		seq_printf(m, "processor %li: "
-			   "version = %02X,  "
-			   "identification = %06X,  "
-			   "machine = %04X\n",
-			   n, id->version, id->ident, id->machine);
-	}
-	put_online_cpus();
-	return 0;
-}
-
-static void *c_start(struct seq_file *m, loff_t *pos)
-{
-	return *pos < nr_cpu_ids ? (void *)((unsigned long) *pos + 1) : NULL;
-=======
 	unsigned long n = (unsigned long) v - 1;
 	unsigned long first = cpumask_first(cpu_online_mask);
 
@@ -414,25 +342,17 @@ static void *c_start(struct seq_file *m, loff_t *pos)
 {
 	cpus_read_lock();
 	return c_update(pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 {
 	++*pos;
-<<<<<<< HEAD
-	return c_start(m, pos);
-=======
 	return c_update(pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void c_stop(struct seq_file *m, void *v)
 {
-<<<<<<< HEAD
-=======
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct seq_operations cpuinfo_op = {
@@ -441,7 +361,3 @@ const struct seq_operations cpuinfo_op = {
 	.stop	= c_stop,
 	.show	= show_cpuinfo,
 };
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

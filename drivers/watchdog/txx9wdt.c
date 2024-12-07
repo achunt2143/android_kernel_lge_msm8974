@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * txx9wdt: A Hardware Watchdog Driver for TXx9 SoCs
  *
  * Copyright (C) 2007 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -20,10 +10,6 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/miscdevice.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/watchdog.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -112,14 +98,8 @@ static struct watchdog_device txx9wdt = {
 	.ops = &txx9wdt_ops,
 };
 
-<<<<<<< HEAD
-static int __init txx9wdt_probe(struct platform_device *dev)
-{
-	struct resource *res;
-=======
 static int txx9wdt_probe(struct platform_device *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	txx9_imclk = clk_get(NULL, "imbus_clk");
@@ -128,27 +108,16 @@ static int txx9wdt_probe(struct platform_device *dev)
 		txx9_imclk = NULL;
 		goto exit;
 	}
-<<<<<<< HEAD
-	ret = clk_enable(txx9_imclk);
-=======
 	ret = clk_prepare_enable(txx9_imclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		clk_put(txx9_imclk);
 		txx9_imclk = NULL;
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-	txx9wdt_reg = devm_request_and_ioremap(&dev->dev, res);
-	if (!txx9wdt_reg) {
-		ret = -EBUSY;
-=======
 	txx9wdt_reg = devm_platform_ioremap_resource(dev, 0);
 	if (IS_ERR(txx9wdt_reg)) {
 		ret = PTR_ERR(txx9wdt_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -157,10 +126,7 @@ static int txx9wdt_probe(struct platform_device *dev)
 	txx9wdt.timeout = timeout;
 	txx9wdt.min_timeout = 1;
 	txx9wdt.max_timeout = WD_MAX_TIMEOUT;
-<<<<<<< HEAD
-=======
 	txx9wdt.parent = &dev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	watchdog_set_nowayout(&txx9wdt, nowayout);
 
 	ret = watchdog_register_device(&txx9wdt);
@@ -173,30 +139,17 @@ static int txx9wdt_probe(struct platform_device *dev)
 	return 0;
 exit:
 	if (txx9_imclk) {
-<<<<<<< HEAD
-		clk_disable(txx9_imclk);
-=======
 		clk_disable_unprepare(txx9_imclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk_put(txx9_imclk);
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __exit txx9wdt_remove(struct platform_device *dev)
-{
-	watchdog_unregister_device(&txx9wdt);
-	clk_disable(txx9_imclk);
-	clk_put(txx9_imclk);
-	return 0;
-=======
 static void txx9wdt_remove(struct platform_device *dev)
 {
 	watchdog_unregister_device(&txx9wdt);
 	clk_disable_unprepare(txx9_imclk);
 	clk_put(txx9_imclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9wdt_shutdown(struct platform_device *dev)
@@ -205,32 +158,6 @@ static void txx9wdt_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver txx9wdt_driver = {
-<<<<<<< HEAD
-	.remove = __exit_p(txx9wdt_remove),
-	.shutdown = txx9wdt_shutdown,
-	.driver = {
-		.name = "txx9wdt",
-		.owner = THIS_MODULE,
-	},
-};
-
-static int __init watchdog_init(void)
-{
-	return platform_driver_probe(&txx9wdt_driver, txx9wdt_probe);
-}
-
-static void __exit watchdog_exit(void)
-{
-	platform_driver_unregister(&txx9wdt_driver);
-}
-
-module_init(watchdog_init);
-module_exit(watchdog_exit);
-
-MODULE_DESCRIPTION("TXx9 Watchdog Driver");
-MODULE_LICENSE("GPL");
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
 	.probe = txx9wdt_probe,
 	.remove_new = txx9wdt_remove,
 	.shutdown = txx9wdt_shutdown,
@@ -242,5 +169,4 @@ module_platform_driver(txx9wdt_driver);
 
 MODULE_DESCRIPTION("TXx9 Watchdog Driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:txx9wdt");

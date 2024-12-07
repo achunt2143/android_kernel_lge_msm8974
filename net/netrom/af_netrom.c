@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  * Copyright Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
@@ -22,11 +14,7 @@
 #include <linux/in.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/string.h>
 #include <linux/sockios.h>
@@ -39,11 +27,7 @@
 #include <linux/skbuff.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/termios.h>	/* For TIOCINQ/OUTQ */
 #include <linux/mm.h>
@@ -117,16 +101,9 @@ static void nr_remove_socket(struct sock *sk)
 static void nr_kill_by_device(struct net_device *dev)
 {
 	struct sock *s;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock_bh(&nr_list_lock);
-	sk_for_each(s, node, &nr_list)
-=======
 
 	spin_lock_bh(&nr_list_lock);
 	sk_for_each(s, &nr_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nr_sk(s)->device == dev)
 			nr_disconnect(s, ENETUNREACH);
 	spin_unlock_bh(&nr_list_lock);
@@ -137,11 +114,7 @@ static void nr_kill_by_device(struct net_device *dev)
  */
 static int nr_device_event(struct notifier_block *this, unsigned long event, void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *dev = (struct net_device *)ptr;
-=======
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -172,22 +145,12 @@ static void nr_insert_socket(struct sock *sk)
 static struct sock *nr_find_listener(ax25_address *addr)
 {
 	struct sock *s;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock_bh(&nr_list_lock);
-	sk_for_each(s, node, &nr_list)
-		if (!ax25cmp(&nr_sk(s)->source_addr, addr) &&
-		    s->sk_state == TCP_LISTEN) {
-			bh_lock_sock(s);
-=======
 
 	spin_lock_bh(&nr_list_lock);
 	sk_for_each(s, &nr_list)
 		if (!ax25cmp(&nr_sk(s)->source_addr, addr) &&
 		    s->sk_state == TCP_LISTEN) {
 			sock_hold(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto found;
 		}
 	s = NULL;
@@ -202,16 +165,6 @@ found:
 static struct sock *nr_find_socket(unsigned char index, unsigned char id)
 {
 	struct sock *s;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock_bh(&nr_list_lock);
-	sk_for_each(s, node, &nr_list) {
-		struct nr_sock *nr = nr_sk(s);
-
-		if (nr->my_index == index && nr->my_id == id) {
-			bh_lock_sock(s);
-=======
 
 	spin_lock_bh(&nr_list_lock);
 	sk_for_each(s, &nr_list) {
@@ -219,7 +172,6 @@ static struct sock *nr_find_socket(unsigned char index, unsigned char id)
 
 		if (nr->my_index == index && nr->my_id == id) {
 			sock_hold(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto found;
 		}
 	}
@@ -236,25 +188,14 @@ static struct sock *nr_find_peer(unsigned char index, unsigned char id,
 	ax25_address *dest)
 {
 	struct sock *s;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock_bh(&nr_list_lock);
-	sk_for_each(s, node, &nr_list) {
-=======
 
 	spin_lock_bh(&nr_list_lock);
 	sk_for_each(s, &nr_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nr_sock *nr = nr_sk(s);
 
 		if (nr->your_index == index && nr->your_id == id &&
 		    !ax25cmp(&nr->dest_addr, dest)) {
-<<<<<<< HEAD
-			bh_lock_sock(s);
-=======
 			sock_hold(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto found;
 		}
 	}
@@ -280,11 +221,7 @@ static unsigned short nr_find_next_circuit(void)
 		if (i != 0 && j != 0) {
 			if ((sk=nr_find_socket(i, j)) == NULL)
 				break;
-<<<<<<< HEAD
-			bh_unlock_sock(sk);
-=======
 			sock_put(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		id++;
@@ -301,15 +238,9 @@ void nr_destroy_socket(struct sock *);
 /*
  *	Handler for deferred kills.
  */
-<<<<<<< HEAD
-static void nr_destroy_timer(unsigned long data)
-{
-	struct sock *sk=(struct sock *)data;
-=======
 static void nr_destroy_timer(struct timer_list *t)
 {
 	struct sock *sk = from_timer(sk, t, sk_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh_lock_sock(sk);
 	sock_hold(sk);
 	nr_destroy_socket(sk);
@@ -363,19 +294,11 @@ void nr_destroy_socket(struct sock *sk)
  */
 
 static int nr_setsockopt(struct socket *sock, int level, int optname,
-<<<<<<< HEAD
-	char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-	struct nr_sock *nr = nr_sk(sk);
-	unsigned long opt;
-=======
 		sockptr_t optval, unsigned int optlen)
 {
 	struct sock *sk = sock->sk;
 	struct nr_sock *nr = nr_sk(sk);
 	unsigned int opt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (level != SOL_NETROM)
 		return -ENOPROTOOPT;
@@ -383,30 +306,18 @@ static int nr_setsockopt(struct socket *sock, int level, int optname,
 	if (optlen < sizeof(unsigned int))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (get_user(opt, (unsigned int __user *)optval))
-=======
 	if (copy_from_sockptr(&opt, optval, sizeof(opt)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	switch (optname) {
 	case NETROM_T1:
-<<<<<<< HEAD
-		if (opt < 1 || opt > ULONG_MAX / HZ)
-=======
 		if (opt < 1 || opt > UINT_MAX / HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		nr->t1 = opt * HZ;
 		return 0;
 
 	case NETROM_T2:
-<<<<<<< HEAD
-		if (opt < 1 || opt > ULONG_MAX / HZ)
-=======
 		if (opt < 1 || opt > UINT_MAX / HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		nr->t2 = opt * HZ;
 		return 0;
@@ -418,21 +329,13 @@ static int nr_setsockopt(struct socket *sock, int level, int optname,
 		return 0;
 
 	case NETROM_T4:
-<<<<<<< HEAD
-		if (opt < 1 || opt > ULONG_MAX / HZ)
-=======
 		if (opt < 1 || opt > UINT_MAX / HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		nr->t4 = opt * HZ;
 		return 0;
 
 	case NETROM_IDLE:
-<<<<<<< HEAD
-		if (opt > ULONG_MAX / (60 * HZ))
-=======
 		if (opt > UINT_MAX / (60 * HZ))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		nr->idle = opt * 60 * HZ;
 		return 0;
@@ -497,14 +400,11 @@ static int nr_listen(struct socket *sock, int backlog)
 	struct sock *sk = sock->sk;
 
 	lock_sock(sk);
-<<<<<<< HEAD
-=======
 	if (sock->state != SS_UNCONNECTED) {
 		release_sock(sk);
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk->sk_state != TCP_LISTEN) {
 		memset(&nr_sk(sk)->user_addr, 0, AX25_ADDR_LEN);
 		sk->sk_max_ack_backlog = backlog;
@@ -535,11 +435,7 @@ static int nr_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_SEQPACKET || protocol != 0)
 		return -ESOCKTNOSUPPORT;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_NETROM, GFP_ATOMIC, &nr_proto);
-=======
 	sk = sk_alloc(net, PF_NETROM, GFP_ATOMIC, &nr_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk  == NULL)
 		return -ENOMEM;
 
@@ -557,18 +453,6 @@ static int nr_create(struct net *net, struct socket *sock, int protocol,
 	nr_init_timers(sk);
 
 	nr->t1     =
-<<<<<<< HEAD
-		msecs_to_jiffies(sysctl_netrom_transport_timeout);
-	nr->t2     =
-		msecs_to_jiffies(sysctl_netrom_transport_acknowledge_delay);
-	nr->n2     =
-		msecs_to_jiffies(sysctl_netrom_transport_maximum_tries);
-	nr->t4     =
-		msecs_to_jiffies(sysctl_netrom_transport_busy_delay);
-	nr->idle   =
-		msecs_to_jiffies(sysctl_netrom_transport_no_activity_timeout);
-	nr->window = sysctl_netrom_transport_requested_window_size;
-=======
 		msecs_to_jiffies(READ_ONCE(sysctl_netrom_transport_timeout));
 	nr->t2     =
 		msecs_to_jiffies(READ_ONCE(sysctl_netrom_transport_acknowledge_delay));
@@ -579,7 +463,6 @@ static int nr_create(struct net *net, struct socket *sock, int protocol,
 	nr->idle   =
 		msecs_to_jiffies(READ_ONCE(sysctl_netrom_transport_no_activity_timeout));
 	nr->window = READ_ONCE(sysctl_netrom_transport_requested_window_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr->bpqext = 1;
 	nr->state  = NR_STATE_0;
@@ -595,11 +478,7 @@ static struct sock *nr_make_new(struct sock *osk)
 	if (osk->sk_type != SOCK_SEQPACKET)
 		return NULL;
 
-<<<<<<< HEAD
-	sk = sk_alloc(sock_net(osk), PF_NETROM, GFP_ATOMIC, osk->sk_prot);
-=======
 	sk = sk_alloc(sock_net(osk), PF_NETROM, GFP_ATOMIC, osk->sk_prot, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk == NULL)
 		return NULL;
 
@@ -608,11 +487,7 @@ static struct sock *nr_make_new(struct sock *osk)
 	sock_init_data(NULL, sk);
 
 	sk->sk_type     = osk->sk_type;
-<<<<<<< HEAD
-	sk->sk_priority = osk->sk_priority;
-=======
 	sk->sk_priority = READ_ONCE(osk->sk_priority);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_protocol = osk->sk_protocol;
 	sk->sk_rcvbuf   = osk->sk_rcvbuf;
 	sk->sk_sndbuf   = osk->sk_sndbuf;
@@ -724,11 +599,7 @@ static int nr_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 		if (!capable(CAP_NET_BIND_SERVICE)) {
 			dev_put(dev);
 			release_sock(sk);
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		nr->user_addr   = addr->fsa_digipeater[0];
 		nr->source_addr = addr->fsa_ax25.sax25_call;
@@ -767,11 +638,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 	struct sock *sk = sock->sk;
 	struct nr_sock *nr = nr_sk(sk);
 	struct sockaddr_ax25 *addr = (struct sockaddr_ax25 *)uaddr;
-<<<<<<< HEAD
-	ax25_address *source = NULL;
-=======
 	const ax25_address *source = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ax25_uid_assoc *user;
 	struct net_device *dev;
 	int err = 0;
@@ -793,14 +660,11 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 		goto out_release;
 	}
 
-<<<<<<< HEAD
-=======
 	if (sock->state == SS_CONNECTING) {
 		err = -EALREADY;
 		goto out_release;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_state   = TCP_CLOSE;
 	sock->state = SS_UNCONNECTED;
 
@@ -819,11 +683,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 			err = -ENETUNREACH;
 			goto out_release;
 		}
-<<<<<<< HEAD
-		source = (ax25_address *)dev->dev_addr;
-=======
 		source = (const ax25_address *)dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		user = ax25_findbyuid(current_euid());
 		if (user) {
@@ -912,12 +772,8 @@ out_release:
 	return err;
 }
 
-<<<<<<< HEAD
-static int nr_accept(struct socket *sock, struct socket *newsock, int flags)
-=======
 static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
 		     bool kern)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	struct sock *newsk;
@@ -980,21 +836,14 @@ out_release:
 }
 
 static int nr_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-	int *uaddr_len, int peer)
-=======
 	int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct full_sockaddr_ax25 *sax = (struct full_sockaddr_ax25 *)uaddr;
 	struct sock *sk = sock->sk;
 	struct nr_sock *nr = nr_sk(sk);
-<<<<<<< HEAD
-=======
 	int uaddr_len;
 
 	memset(&sax->fsa_ax25, 0, sizeof(struct sockaddr_ax25));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_sock(sk);
 	if (peer != 0) {
@@ -1007,28 +856,16 @@ static int nr_getname(struct socket *sock, struct sockaddr *uaddr,
 		sax->fsa_ax25.sax25_call   = nr->user_addr;
 		memset(sax->fsa_digipeater, 0, sizeof(sax->fsa_digipeater));
 		sax->fsa_digipeater[0]     = nr->dest_addr;
-<<<<<<< HEAD
-		*uaddr_len = sizeof(struct full_sockaddr_ax25);
-=======
 		uaddr_len = sizeof(struct full_sockaddr_ax25);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		sax->fsa_ax25.sax25_family = AF_NETROM;
 		sax->fsa_ax25.sax25_ndigis = 0;
 		sax->fsa_ax25.sax25_call   = nr->source_addr;
-<<<<<<< HEAD
-		*uaddr_len = sizeof(struct sockaddr_ax25);
-	}
-	release_sock(sk);
-
-	return 0;
-=======
 		uaddr_len = sizeof(struct sockaddr_ax25);
 	}
 	release_sock(sk);
 
 	return uaddr_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
@@ -1042,11 +879,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	unsigned short frametype, flags, window, timeout;
 	int ret;
 
-<<<<<<< HEAD
-	skb->sk = NULL;		/* Initially we don't know who it's for */
-=======
 	skb_orphan(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	skb->data points to the netrom frame start
@@ -1094,10 +927,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	if (sk != NULL) {
-<<<<<<< HEAD
-=======
 		bh_lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_reset_transport_header(skb);
 
 		if (frametype == NR_CONNACK && skb->len == 22)
@@ -1107,10 +937,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 
 		ret = nr_process_rx_frame(sk, skb);
 		bh_unlock_sock(sk);
-<<<<<<< HEAD
-=======
 		sock_put(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -1127,11 +954,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 		 * G8PZT's Xrouter which is sending packets with command type 7
 		 * as an extension of the protocol.
 		 */
-<<<<<<< HEAD
-		if (sysctl_netrom_reset_circuit &&
-=======
 		if (READ_ONCE(sysctl_netrom_reset_circuit) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (frametype != NR_RESET || flags != 0))
 			nr_transmit_reset(skb, 1);
 
@@ -1146,15 +969,6 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	    (make = nr_make_new(sk)) == NULL) {
 		nr_transmit_refusal(skb, 0);
 		if (sk)
-<<<<<<< HEAD
-			bh_unlock_sock(sk);
-		return 0;
-	}
-
-	window = skb->data[20];
-
-	skb->sk             = make;
-=======
 			sock_put(sk);
 		return 0;
 	}
@@ -1166,7 +980,6 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	sock_hold(make);
 	skb->sk             = make;
 	skb->destructor     = sock_efree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	make->sk_state	    = TCP_ESTABLISHED;
 
 	/* Fill in his circuit details */
@@ -1213,16 +1026,10 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	skb_queue_head(&sk->sk_receive_queue, skb);
 
 	if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-		sk->sk_data_ready(sk, skb->len);
-
-	bh_unlock_sock(sk);
-=======
 		sk->sk_data_ready(sk);
 
 	bh_unlock_sock(sk);
 	sock_put(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_insert_socket(make);
 
@@ -1232,20 +1039,11 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int nr_sendmsg(struct kiocb *iocb, struct socket *sock,
-		      struct msghdr *msg, size_t len)
-{
-	struct sock *sk = sock->sk;
-	struct nr_sock *nr = nr_sk(sk);
-	struct sockaddr_ax25 *usax = (struct sockaddr_ax25 *)msg->msg_name;
-=======
 static int nr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct nr_sock *nr = nr_sk(sk);
 	DECLARE_SOCKADDR(struct sockaddr_ax25 *, usax, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct sockaddr_ax25 sax;
 	struct sk_buff *skb;
@@ -1330,11 +1128,7 @@ static int nr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	skb_put(skb, len);
 
 	/* User data follows immediately after the NET/ROM transport header */
-<<<<<<< HEAD
-	if (memcpy_fromiovec(skb_transport_header(skb), msg->msg_iov, len)) {
-=======
 	if (memcpy_from_msg(skb_transport_header(skb), msg, len)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		err = -EFAULT;
 		goto out;
@@ -1354,19 +1148,11 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int nr_recvmsg(struct kiocb *iocb, struct socket *sock,
-		      struct msghdr *msg, size_t size, int flags)
-{
-	struct sock *sk = sock->sk;
-	struct sockaddr_ax25 *sax = (struct sockaddr_ax25 *)msg->msg_name;
-=======
 static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		      int flags)
 {
 	struct sock *sk = sock->sk;
 	DECLARE_SOCKADDR(struct sockaddr_ax25 *, sax, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t copied;
 	struct sk_buff *skb;
 	int er;
@@ -1383,12 +1169,8 @@ static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	}
 
 	/* Now we can treat all alike */
-<<<<<<< HEAD
-	if ((skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT, flags & MSG_DONTWAIT, &er)) == NULL) {
-=======
 	skb = skb_recv_datagram(sk, flags, &er);
 	if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_sock(sk);
 		return er;
 	}
@@ -1401,11 +1183,7 @@ static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		msg->msg_flags |= MSG_TRUNC;
 	}
 
-<<<<<<< HEAD
-	er = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
-=======
 	er = skb_copy_datagram_msg(skb, 0, msg, copied);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (er < 0) {
 		skb_free_datagram(sk, skb);
 		release_sock(sk);
@@ -1431,10 +1209,6 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	struct sock *sk = sock->sk;
 	void __user *argp = (void __user *)arg;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case TIOCOUTQ: {
@@ -1460,21 +1234,6 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		return put_user(amount, (int __user *)argp);
 	}
 
-<<<<<<< HEAD
-	case SIOCGSTAMP:
-		lock_sock(sk);
-		ret = sock_get_timestamp(sk, argp);
-		release_sock(sk);
-		return ret;
-
-	case SIOCGSTAMPNS:
-		lock_sock(sk);
-		ret = sock_get_timestampns(sk, argp);
-		release_sock(sk);
-		return ret;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:
@@ -1504,10 +1263,7 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 #ifdef CONFIG_PROC_FS
 
 static void *nr_info_start(struct seq_file *seq, loff_t *pos)
-<<<<<<< HEAD
-=======
 	__acquires(&nr_list_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&nr_list_lock);
 	return seq_hlist_start_head(&nr_list, *pos);
@@ -1519,10 +1275,7 @@ static void *nr_info_next(struct seq_file *seq, void *v, loff_t *pos)
 }
 
 static void nr_info_stop(struct seq_file *seq, void *v)
-<<<<<<< HEAD
-=======
 	__releases(&nr_list_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_unlock_bh(&nr_list_lock);
 }
@@ -1589,22 +1342,6 @@ static const struct seq_operations nr_info_seqops = {
 	.stop = nr_info_stop,
 	.show = nr_info_show,
 };
-<<<<<<< HEAD
-
-static int nr_info_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &nr_info_seqops);
-}
-
-static const struct file_operations nr_info_fops = {
-	.owner = THIS_MODULE,
-	.open = nr_info_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = seq_release,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_PROC_FS */
 
 static const struct net_proto_family nr_family_ops = {
@@ -1624,10 +1361,7 @@ static const struct proto_ops nr_proto_ops = {
 	.getname	=	nr_getname,
 	.poll		=	datagram_poll,
 	.ioctl		=	nr_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	=	sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen		=	nr_listen,
 	.shutdown	=	sock_no_shutdown,
 	.setsockopt	=	nr_setsockopt,
@@ -1635,10 +1369,6 @@ static const struct proto_ops nr_proto_ops = {
 	.sendmsg	=	nr_sendmsg,
 	.recvmsg	=	nr_recvmsg,
 	.mmap		=	sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage	=	sock_no_sendpage,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct notifier_block nr_dev_notifier = {
@@ -1661,20 +1391,6 @@ static int __init nr_proto_init(void)
 	int i;
 	int rc = proto_register(&nr_proto, 0);
 
-<<<<<<< HEAD
-	if (rc != 0)
-		goto out;
-
-	if (nr_ndevs > 0x7fffffff/sizeof(struct net_device *)) {
-		printk(KERN_ERR "NET/ROM: nr_proto_init - nr_ndevs parameter to large\n");
-		return -1;
-	}
-
-	dev_nr = kzalloc(nr_ndevs * sizeof(struct net_device *), GFP_KERNEL);
-	if (dev_nr == NULL) {
-		printk(KERN_ERR "NET/ROM: nr_proto_init - unable to allocate device array\n");
-		return -1;
-=======
 	if (rc)
 		return rc;
 
@@ -1691,7 +1407,6 @@ static int __init nr_proto_init(void)
 		       __func__);
 		rc = -ENOMEM;
 		goto unregister_proto;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < nr_ndevs; i++) {
@@ -1699,26 +1414,15 @@ static int __init nr_proto_init(void)
 		struct net_device *dev;
 
 		sprintf(name, "nr%d", i);
-<<<<<<< HEAD
-		dev = alloc_netdev(0, name, nr_setup);
-		if (!dev) {
-			printk(KERN_ERR "NET/ROM: nr_proto_init - unable to allocate device structure\n");
-=======
 		dev = alloc_netdev(0, name, NET_NAME_UNKNOWN, nr_setup);
 		if (!dev) {
 			rc = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 		}
 
 		dev->base_addr = i;
-<<<<<<< HEAD
-		if (register_netdev(dev)) {
-			printk(KERN_ERR "NET/ROM: nr_proto_init - unable to register network device\n");
-=======
 		rc = register_netdev(dev);
 		if (rc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_netdev(dev);
 			goto fail;
 		}
@@ -1726,14 +1430,6 @@ static int __init nr_proto_init(void)
 		dev_nr[i] = dev;
 	}
 
-<<<<<<< HEAD
-	if (sock_register(&nr_family_ops)) {
-		printk(KERN_ERR "NET/ROM: nr_proto_init - unable to register socket family\n");
-		goto fail;
-	}
-
-	register_netdevice_notifier(&nr_dev_notifier);
-=======
 	rc = sock_register(&nr_family_ops);
 	if (rc)
 		goto fail;
@@ -1741,30 +1437,18 @@ static int __init nr_proto_init(void)
 	rc = register_netdevice_notifier(&nr_dev_notifier);
 	if (rc)
 		goto out_sock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ax25_register_pid(&nr_pid);
 	ax25_linkfail_register(&nr_linkfail_notifier);
 
 #ifdef CONFIG_SYSCTL
-<<<<<<< HEAD
-	nr_register_sysctl();
-=======
 	rc = nr_register_sysctl();
 	if (rc)
 		goto out_sysctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	nr_loopback_init();
 
-<<<<<<< HEAD
-	proc_net_fops_create(&init_net, "nr", S_IRUGO, &nr_info_fops);
-	proc_net_fops_create(&init_net, "nr_neigh", S_IRUGO, &nr_neigh_fops);
-	proc_net_fops_create(&init_net, "nr_nodes", S_IRUGO, &nr_nodes_fops);
-out:
-	return rc;
-=======
 	rc = -ENOMEM;
 	if (!proc_create_seq("nr", 0444, init_net.proc_net, &nr_info_seqops))
 		goto proc_remove1;
@@ -1795,22 +1479,15 @@ out_sysctl:
 	unregister_netdevice_notifier(&nr_dev_notifier);
 out_sock:
 	sock_unregister(PF_NETROM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 	while (--i >= 0) {
 		unregister_netdev(dev_nr[i]);
 		free_netdev(dev_nr[i]);
 	}
 	kfree(dev_nr);
-<<<<<<< HEAD
-	proto_unregister(&nr_proto);
-	rc = -1;
-	goto out;
-=======
 unregister_proto:
 	proto_unregister(&nr_proto);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(nr_proto_init);
@@ -1827,15 +1504,9 @@ static void __exit nr_exit(void)
 {
 	int i;
 
-<<<<<<< HEAD
-	proc_net_remove(&init_net, "nr");
-	proc_net_remove(&init_net, "nr_neigh");
-	proc_net_remove(&init_net, "nr_nodes");
-=======
 	remove_proc_entry("nr", init_net.proc_net);
 	remove_proc_entry("nr_neigh", init_net.proc_net);
 	remove_proc_entry("nr_nodes", init_net.proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr_loopback_clear();
 
 	nr_rt_free();

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/hardware/dec21285.h
  *
  *  Copyright (C) 1998 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  DC21285 registers
  */
 #define DC21285_PCI_IACK		0x79000000
@@ -32,8 +22,6 @@
 #define DC21285_IO(x)		(x)
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * The footbridge is programmed to expose the system RAM at 0xe0000000.
  * The requirement is that the RAM isn't placed at bus address 0, which
@@ -41,7 +29,6 @@
  */
 #define BUS_OFFSET 0xe0000000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CSR_PCICMD		DC21285_IO(0x0004)
 #define CSR_CLASSREV		DC21285_IO(0x0008)
 #define CSR_PCICACHELINESIZE	DC21285_IO(0x000c)
@@ -101,22 +88,6 @@
 #define SA110_CNTL_XCSDIR(x)		((x)<<28)
 #define SA110_CNTL_PCICFN		(1 << 31)
 
-<<<<<<< HEAD
-/*
- * footbridge_cfn_mode() is used when we want
- * to check whether we are the central function
- */
-#define __footbridge_cfn_mode() (*CSR_SA110_CNTL & SA110_CNTL_PCICFN)
-#if defined(CONFIG_FOOTBRIDGE_HOST) && defined(CONFIG_FOOTBRIDGE_ADDIN)
-#define footbridge_cfn_mode() __footbridge_cfn_mode()
-#elif defined(CONFIG_FOOTBRIDGE_HOST)
-#define footbridge_cfn_mode() (1)
-#else
-#define footbridge_cfn_mode() (0)
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CSR_PCIADDR_EXTN	DC21285_IO(0x0140)
 #define CSR_PREFETCHMEMRANGE	DC21285_IO(0x0144)
 #define CSR_XBUS_CYCLE		DC21285_IO(0x0148)

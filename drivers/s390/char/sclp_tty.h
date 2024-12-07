@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/sclp_tty.h
- *    interface to the SCLP-read/write driver
- *
- *  S390 version
- *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    interface to the SCLP-read/write driver
  *
  *  S390 version
  *    Copyright IBM Corp. 1999
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Peschke <mpeschke@de.ibm.com>
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
  */

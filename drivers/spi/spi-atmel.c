@@ -1,45 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Atmel AT32 and AT91 SPI Controllers
  *
  * Copyright (C) 2006 Atmel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
  */
 
 #include <linux/kernel.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-=======
 #include <linux/dmaengine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/interrupt.h>
 #include <linux/spi/spi.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-#include <mach/board.h>
-#include <asm/gpio.h>
-#include <mach/cpu.h>
-=======
 #include <linux/of.h>
 
 #include <linux/io.h>
@@ -48,7 +24,6 @@
 #include <linux/pm_runtime.h>
 #include <linux/iopoll.h>
 #include <trace/events/spi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SPI register offsets */
 #define SPI_CR					0x0000
@@ -63,12 +38,9 @@
 #define SPI_CSR1				0x0034
 #define SPI_CSR2				0x0038
 #define SPI_CSR3				0x003c
-<<<<<<< HEAD
-=======
 #define SPI_FMR					0x0040
 #define SPI_FLR					0x0044
 #define SPI_VERSION				0x00fc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPI_RPR					0x0100
 #define SPI_RCR					0x0104
 #define SPI_TPR					0x0108
@@ -89,8 +61,6 @@
 #define SPI_SWRST_SIZE				1
 #define SPI_LASTXFER_OFFSET			24
 #define SPI_LASTXFER_SIZE			1
-<<<<<<< HEAD
-=======
 #define SPI_TXFCLR_OFFSET			16
 #define SPI_TXFCLR_SIZE				1
 #define SPI_RXFCLR_OFFSET			17
@@ -99,7 +69,6 @@
 #define SPI_FIFOEN_SIZE				1
 #define SPI_FIFODIS_OFFSET			31
 #define SPI_FIFODIS_SIZE			1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bitfields in MR */
 #define SPI_MSTR_OFFSET				0
@@ -112,11 +81,8 @@
 #define SPI_FDIV_SIZE				1
 #define SPI_MODFDIS_OFFSET			4
 #define SPI_MODFDIS_SIZE			1
-<<<<<<< HEAD
-=======
 #define SPI_WDRBT_OFFSET			5
 #define SPI_WDRBT_SIZE				1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPI_LLB_OFFSET				7
 #define SPI_LLB_SIZE				1
 #define SPI_PCS_OFFSET				16
@@ -155,8 +121,6 @@
 #define SPI_TXEMPTY_SIZE			1
 #define SPI_SPIENS_OFFSET			16
 #define SPI_SPIENS_SIZE				1
-<<<<<<< HEAD
-=======
 #define SPI_TXFEF_OFFSET			24
 #define SPI_TXFEF_SIZE				1
 #define SPI_TXFFF_OFFSET			25
@@ -173,7 +137,6 @@
 #define SPI_TXFPTEF_SIZE			1
 #define SPI_RXFPTEF_OFFSET			31
 #define SPI_RXFPTEF_SIZE			1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bitfields in CSR0 */
 #define SPI_CPOL_OFFSET				0
@@ -217,8 +180,6 @@
 #define SPI_TXTDIS_OFFSET			9
 #define SPI_TXTDIS_SIZE				1
 
-<<<<<<< HEAD
-=======
 /* Bitfields in FMR */
 #define SPI_TXRDYM_OFFSET			0
 #define SPI_TXRDYM_SIZE				2
@@ -235,7 +196,6 @@
 #define SPI_RXFL_OFFSET				16
 #define SPI_RXFL_SIZE				6
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Constants for BITS */
 #define SPI_BITS_8_BPT				0
 #define SPI_BITS_9_BPT				1
@@ -246,32 +206,13 @@
 #define SPI_BITS_14_BPT				6
 #define SPI_BITS_15_BPT				7
 #define SPI_BITS_16_BPT				8
-<<<<<<< HEAD
-=======
 #define SPI_ONE_DATA				0
 #define SPI_TWO_DATA				1
 #define SPI_FOUR_DATA				2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bit manipulation macros */
 #define SPI_BIT(name) \
 	(1 << SPI_##name##_OFFSET)
-<<<<<<< HEAD
-#define SPI_BF(name,value) \
-	(((value) & ((1 << SPI_##name##_SIZE) - 1)) << SPI_##name##_OFFSET)
-#define SPI_BFEXT(name,value) \
-	(((value) >> SPI_##name##_OFFSET) & ((1 << SPI_##name##_SIZE) - 1))
-#define SPI_BFINS(name,value,old) \
-	( ((old) & ~(((1 << SPI_##name##_SIZE) - 1) << SPI_##name##_OFFSET)) \
-	  | SPI_BF(name,value))
-
-/* Register access macros */
-#define spi_readl(port,reg) \
-	__raw_readl((port)->regs + SPI_##reg)
-#define spi_writel(port,reg,value) \
-	__raw_writel((value), (port)->regs + SPI_##reg)
-
-=======
 #define SPI_BF(name, value) \
 	(((value) & ((1 << SPI_##name##_SIZE) - 1)) << SPI_##name##_OFFSET)
 #define SPI_BFEXT(name, value) \
@@ -301,7 +242,6 @@ struct atmel_spi_caps {
 	bool	has_dma_support;
 	bool	has_pdc_support;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The core SPI transfer engine just talks to a register bank to set up
@@ -310,30 +250,13 @@ struct atmel_spi_caps {
  */
 struct atmel_spi {
 	spinlock_t		lock;
-<<<<<<< HEAD
-
-=======
 	unsigned long		flags;
 
 	phys_addr_t		phybase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem		*regs;
 	int			irq;
 	struct clk		*clk;
 	struct platform_device	*pdev;
-<<<<<<< HEAD
-	struct spi_device	*stay;
-
-	u8			stopping;
-	struct list_head	queue;
-	struct spi_transfer	*current_transfer;
-	unsigned long		current_remaining_bytes;
-	struct spi_transfer	*next_transfer;
-	unsigned long		next_remaining_bytes;
-
-	void			*buffer;
-	dma_addr_t		buffer_dma;
-=======
 	unsigned long		spi_clk;
 
 	struct spi_transfer	*current_transfer;
@@ -357,21 +280,10 @@ struct atmel_spi {
 	bool			last_polarity;
 	u8			native_cs_free;
 	u8			native_cs_for_gpio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Controller-specific per-slave state */
 struct atmel_spi_device {
-<<<<<<< HEAD
-	unsigned int		npcs_pin;
-	u32			csr;
-};
-
-#define BUFFER_SIZE		PAGE_SIZE
-#define INVALID_DMA_ADDRESS	0xffffffff
-
-/*
-=======
 	u32			csr;
 };
 
@@ -395,26 +307,12 @@ struct atmel_spi_device {
 #define DUMMY_MSG		0xAA
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Version 2 of the SPI controller has
  *  - CR.LASTXFER
  *  - SPI_MR.DIV32 may become FDIV or must-be-zero (here: always zero)
  *  - SPI_SR.TXEMPTY, SPI_SR.NSSR (and corresponding irqs)
  *  - SPI_CSRx.CSAAT
  *  - SPI_CSRx.SBCR allows faster clocking
-<<<<<<< HEAD
- *
- * We can determine the controller version by reading the VERSION
- * register, but I haven't checked that it exists on all chips, and
- * this is cheaper anyway.
- */
-static bool atmel_spi_is_v2(void)
-{
-	return !cpu_is_at91rm9200();
-}
-
-/*
-=======
  */
 static bool atmel_spi_is_v2(struct atmel_spi *as)
 {
@@ -459,24 +357,15 @@ static void atmel_spi_send_dummy(struct atmel_spi *as, struct spi_device *spi, i
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Earlier SPI controllers (e.g. on at91rm9200) have a design bug whereby
  * they assume that spi slave device state will not change on deselect, so
  * that automagic deselection is OK.  ("NPCSx rises if no data is to be
  * transmitted")  Not so!  Workaround uses nCSx pins as GPIOs; or newer
  * controllers have CSAAT and friends.
  *
-<<<<<<< HEAD
- * Since the CSAAT functionality is a bit weird on newer controllers as
- * well, we use GPIO to control nCSx pins on all controllers, updating
- * MR.PCS to avoid confusing the controller.  Using GPIOs also lets us
- * support active-high chipselects despite the controller's belief that
- * only active-low devices/systems exists.
-=======
  * Even controller newer than ar91rm9200, using GPIOs can make sens as
  * it lets us support active-high chipselects despite the controller's
  * belief that only active-low devices/systems exists.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * However, at91rm9200 has a second erratum whereby nCS0 doesn't work
  * right when driven with GPIO.  ("Mode Fault does not allow more than one
@@ -484,31 +373,6 @@ static void atmel_spi_send_dummy(struct atmel_spi *as, struct spi_device *spi, i
  * nCS0 on that chip, we (a) don't use the GPIO, (b) can't support CS_HIGH,
  * and (c) will trigger that first erratum in some cases.
  *
-<<<<<<< HEAD
- * TODO: Test if the atmel_spi_is_v2() branch below works on
- * AT91RM9200 if we use some other register than CSR0. However, don't
- * do this unconditionally since AP7000 has an errata where the BITS
- * field in CSR0 overrides all other CSRs.
- */
-
-static void cs_activate(struct atmel_spi *as, struct spi_device *spi)
-{
-	struct atmel_spi_device *asd = spi->controller_state;
-	unsigned active = spi->mode & SPI_CS_HIGH;
-	u32 mr;
-
-	if (atmel_spi_is_v2()) {
-		/*
-		 * Always use CSR0. This ensures that the clock
-		 * switches to the correct idle polarity before we
-		 * toggle the CS.
-		 */
-		spi_writel(as, CSR0, asd->csr);
-		spi_writel(as, MR, SPI_BF(PCS, 0x0e) | SPI_BIT(MODFDIS)
-				| SPI_BIT(MSTR));
-		mr = spi_readl(as, MR);
-		gpio_set_value(asd->npcs_pin, active);
-=======
  * When changing the clock polarity, the SPI controller waits for the next
  * transmission to enforce the default clock state. This may be an issue when
  * using a GPIO as Chip Select: the clock level is applied only when the first
@@ -566,18 +430,13 @@ static void cs_activate(struct atmel_spi *as, struct spi_device *spi)
 				gpiod_set_value_cansleep(spi_get_csgpiod(spi, 0), 1);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		u32 cpol = (spi->mode & SPI_CPOL) ? SPI_BIT(CPOL) : 0;
 		int i;
 		u32 csr;
 
 		/* Make sure clock polarity is correct */
-<<<<<<< HEAD
-		for (i = 0; i < spi->master->num_chipselect; i++) {
-=======
 		for (i = 0; i < spi->controller->num_chipselect; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			csr = spi_readl(as, CSR0 + 4 * i);
 			if ((csr ^ cpol) & SPI_BIT(CPOL))
 				spi_writel(as, CSR0 + 4 * i,
@@ -585,33 +444,15 @@ static void cs_activate(struct atmel_spi *as, struct spi_device *spi)
 		}
 
 		mr = spi_readl(as, MR);
-<<<<<<< HEAD
-		mr = SPI_BFINS(PCS, ~(1 << spi->chip_select), mr);
-		if (spi->chip_select != 0)
-			gpio_set_value(asd->npcs_pin, active);
-		spi_writel(as, MR, mr);
-	}
-
-	dev_dbg(&spi->dev, "activate %u%s, mr %08x\n",
-			asd->npcs_pin, active ? " (high)" : "",
-			mr);
-=======
 		mr = SPI_BFINS(PCS, ~(1 << chip_select), mr);
 		spi_writel(as, MR, mr);
 	}
 
 	dev_dbg(&spi->dev, "activate NPCS, mr %08x\n", mr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cs_deactivate(struct atmel_spi *as, struct spi_device *spi)
 {
-<<<<<<< HEAD
-	struct atmel_spi_device *asd = spi->controller_state;
-	unsigned active = spi->mode & SPI_CS_HIGH;
-	u32 mr;
-
-=======
 	int chip_select;
 	u32 mr;
 
@@ -620,42 +461,15 @@ static void cs_deactivate(struct atmel_spi *as, struct spi_device *spi)
 	else
 		chip_select = spi_get_chipselect(spi, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* only deactivate *this* device; sometimes transfers to
 	 * another device may be active when this routine is called.
 	 */
 	mr = spi_readl(as, MR);
-<<<<<<< HEAD
-	if (~SPI_BFEXT(PCS, mr) & (1 << spi->chip_select)) {
-=======
 	if (~SPI_BFEXT(PCS, mr) & (1 << chip_select)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mr = SPI_BFINS(PCS, 0xf, mr);
 		spi_writel(as, MR, mr);
 	}
 
-<<<<<<< HEAD
-	dev_dbg(&spi->dev, "DEactivate %u%s, mr %08x\n",
-			asd->npcs_pin, active ? " (low)" : "",
-			mr);
-
-	if (atmel_spi_is_v2() || spi->chip_select != 0)
-		gpio_set_value(asd->npcs_pin, !active);
-}
-
-static inline int atmel_spi_xfer_is_last(struct spi_message *msg,
-					struct spi_transfer *xfer)
-{
-	return msg->transfers.prev == &xfer->transfer_list;
-}
-
-static inline int atmel_spi_xfer_can_be_chained(struct spi_transfer *xfer)
-{
-	return xfer->delay_usecs == 0 && !xfer->cs_change;
-}
-
-static void atmel_spi_next_xfer_data(struct spi_master *master,
-=======
 	dev_dbg(&spi->dev, "DEactivate NPCS, mr %08x\n", mr);
 
 	if (!spi_get_csgpiod(spi, 0))
@@ -1045,106 +859,11 @@ err_exit:
 }
 
 static void atmel_spi_next_xfer_data(struct spi_controller *host,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct spi_transfer *xfer,
 				dma_addr_t *tx_dma,
 				dma_addr_t *rx_dma,
 				u32 *plen)
 {
-<<<<<<< HEAD
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-	u32			len = *plen;
-
-	/* use scratch buffer only when rx or tx data is unspecified */
-	if (xfer->rx_buf)
-		*rx_dma = xfer->rx_dma + xfer->len - *plen;
-	else {
-		*rx_dma = as->buffer_dma;
-		if (len > BUFFER_SIZE)
-			len = BUFFER_SIZE;
-	}
-	if (xfer->tx_buf)
-		*tx_dma = xfer->tx_dma + xfer->len - *plen;
-	else {
-		*tx_dma = as->buffer_dma;
-		if (len > BUFFER_SIZE)
-			len = BUFFER_SIZE;
-		memset(as->buffer, 0, len);
-		dma_sync_single_for_device(&as->pdev->dev,
-				as->buffer_dma, len, DMA_TO_DEVICE);
-	}
-
-	*plen = len;
-}
-
-/*
- * Submit next transfer for DMA.
- * lock is held, spi irq is blocked
- */
-static void atmel_spi_next_xfer(struct spi_master *master,
-				struct spi_message *msg)
-{
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-	struct spi_transfer	*xfer;
-	u32			len, remaining;
-	u32			ieval;
-	dma_addr_t		tx_dma, rx_dma;
-
-	if (!as->current_transfer)
-		xfer = list_entry(msg->transfers.next,
-				struct spi_transfer, transfer_list);
-	else if (!as->next_transfer)
-		xfer = list_entry(as->current_transfer->transfer_list.next,
-				struct spi_transfer, transfer_list);
-	else
-		xfer = NULL;
-
-	if (xfer) {
-		spi_writel(as, PTCR, SPI_BIT(RXTDIS) | SPI_BIT(TXTDIS));
-
-		len = xfer->len;
-		atmel_spi_next_xfer_data(master, xfer, &tx_dma, &rx_dma, &len);
-		remaining = xfer->len - len;
-
-		spi_writel(as, RPR, rx_dma);
-		spi_writel(as, TPR, tx_dma);
-
-		if (msg->spi->bits_per_word > 8)
-			len >>= 1;
-		spi_writel(as, RCR, len);
-		spi_writel(as, TCR, len);
-
-		dev_dbg(&msg->spi->dev,
-			"  start xfer %p: len %u tx %p/%08x rx %p/%08x\n",
-			xfer, xfer->len, xfer->tx_buf, xfer->tx_dma,
-			xfer->rx_buf, xfer->rx_dma);
-	} else {
-		xfer = as->next_transfer;
-		remaining = as->next_remaining_bytes;
-	}
-
-	as->current_transfer = xfer;
-	as->current_remaining_bytes = remaining;
-
-	if (remaining > 0)
-		len = remaining;
-	else if (!atmel_spi_xfer_is_last(msg, xfer)
-			&& atmel_spi_xfer_can_be_chained(xfer)) {
-		xfer = list_entry(xfer->transfer_list.next,
-				struct spi_transfer, transfer_list);
-		len = xfer->len;
-	} else
-		xfer = NULL;
-
-	as->next_transfer = xfer;
-
-	if (xfer) {
-		u32	total;
-
-		total = len;
-		atmel_spi_next_xfer_data(master, xfer, &tx_dma, &rx_dma, &len);
-		as->next_remaining_bytes = total - len;
-=======
 	*rx_dma = xfer->rx_dma + xfer->len - *plen;
 	*tx_dma = xfer->tx_dma + xfer->len - *plen;
 	if (*plen > host->max_dma_len)
@@ -1234,39 +953,15 @@ static void atmel_spi_pdc_next_xfer(struct spi_controller *host,
 		len = as->current_remaining_bytes;
 		atmel_spi_next_xfer_data(host, xfer, &tx_dma, &rx_dma, &len);
 		as->current_remaining_bytes -= len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spi_writel(as, RNPR, rx_dma);
 		spi_writel(as, TNPR, tx_dma);
 
-<<<<<<< HEAD
-		if (msg->spi->bits_per_word > 8)
-=======
 		if (xfer->bits_per_word > 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len >>= 1;
 		spi_writel(as, RNCR, len);
 		spi_writel(as, TNCR, len);
 
-<<<<<<< HEAD
-		dev_dbg(&msg->spi->dev,
-			"  next xfer %p: len %u tx %p/%08x rx %p/%08x\n",
-			xfer, xfer->len, xfer->tx_buf, xfer->tx_dma,
-			xfer->rx_buf, xfer->rx_dma);
-		ieval = SPI_BIT(ENDRX) | SPI_BIT(OVRES);
-	} else {
-		spi_writel(as, RNCR, 0);
-		spi_writel(as, TNCR, 0);
-		ieval = SPI_BIT(RXBUFF) | SPI_BIT(ENDRX) | SPI_BIT(OVRES);
-	}
-
-	/* REVISIT: We're waiting for ENDRX before we start the next
-	 * transfer because we need to handle some difficult timing
-	 * issues otherwise. If we wait for ENDTX in one transfer and
-	 * then starts waiting for ENDRX in the next, it's difficult
-	 * to tell the difference between the ENDRX interrupt we're
-	 * actually waiting for and the ENDRX interrupt of the
-=======
 		dev_dbg(&host->dev,
 			"  next xfer %p: len %u tx %p/%08llx rx %p/%08llx\n",
 			xfer, xfer->len, xfer->tx_buf,
@@ -1280,49 +975,14 @@ static void atmel_spi_pdc_next_xfer(struct spi_controller *host,
 	 * then starts waiting for RXBUFF in the next, it's difficult
 	 * to tell the difference between the RXBUFF interrupt we're
 	 * actually waiting for and the RXBUFF interrupt of the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * previous transfer.
 	 *
 	 * It should be doable, though. Just not now...
 	 */
-<<<<<<< HEAD
-	spi_writel(as, IER, ieval);
-	spi_writel(as, PTCR, SPI_BIT(TXTEN) | SPI_BIT(RXTEN));
-}
-
-static void atmel_spi_next_message(struct spi_master *master)
-{
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-	struct spi_message	*msg;
-	struct spi_device	*spi;
-
-	BUG_ON(as->current_transfer);
-
-	msg = list_entry(as->queue.next, struct spi_message, queue);
-	spi = msg->spi;
-
-	dev_dbg(master->dev.parent, "start message %p for %s\n",
-			msg, dev_name(&spi->dev));
-
-	/* select chip if it's not still active */
-	if (as->stay) {
-		if (as->stay != spi) {
-			cs_deactivate(as, as->stay);
-			cs_activate(as, spi);
-		}
-		as->stay = NULL;
-	} else
-		cs_activate(as, spi);
-
-	atmel_spi_next_xfer(master, msg);
-}
-
-=======
 	spi_writel(as, IER, SPI_BIT(RXBUFF) | SPI_BIT(OVRES));
 	spi_writel(as, PTCR, SPI_BIT(TXTEN) | SPI_BIT(RXTEN));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For DMA, tx_buf/tx_dma have the same relationship as rx_buf/rx_dma:
  *  - The buffer is either valid for CPU access, else NULL
@@ -1362,64 +1022,6 @@ atmel_spi_dma_map_xfer(struct atmel_spi *as, struct spi_transfer *xfer)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void atmel_spi_dma_unmap_xfer(struct spi_master *master,
-				     struct spi_transfer *xfer)
-{
-	if (xfer->tx_dma != INVALID_DMA_ADDRESS)
-		dma_unmap_single(master->dev.parent, xfer->tx_dma,
-				 xfer->len, DMA_TO_DEVICE);
-	if (xfer->rx_dma != INVALID_DMA_ADDRESS)
-		dma_unmap_single(master->dev.parent, xfer->rx_dma,
-				 xfer->len, DMA_FROM_DEVICE);
-}
-
-static void
-atmel_spi_msg_done(struct spi_master *master, struct atmel_spi *as,
-		struct spi_message *msg, int status, int stay)
-{
-	if (!stay || status < 0)
-		cs_deactivate(as, msg->spi);
-	else
-		as->stay = msg->spi;
-
-	list_del(&msg->queue);
-	msg->status = status;
-
-	dev_dbg(master->dev.parent,
-		"xfer complete: %u bytes transferred\n",
-		msg->actual_length);
-
-	spin_unlock(&as->lock);
-	msg->complete(msg->context);
-	spin_lock(&as->lock);
-
-	as->current_transfer = NULL;
-	as->next_transfer = NULL;
-
-	/* continue if needed */
-	if (list_empty(&as->queue) || as->stopping)
-		spi_writel(as, PTCR, SPI_BIT(RXTDIS) | SPI_BIT(TXTDIS));
-	else
-		atmel_spi_next_message(master);
-}
-
-static irqreturn_t
-atmel_spi_interrupt(int irq, void *dev_id)
-{
-	struct spi_master	*master = dev_id;
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-	struct spi_message	*msg;
-	struct spi_transfer	*xfer;
-	u32			status, pending, imr;
-	int			ret = IRQ_NONE;
-
-	spin_lock(&as->lock);
-
-	xfer = as->current_transfer;
-	msg = list_entry(as->queue.next, struct spi_message, queue);
-
-=======
 static void atmel_spi_dma_unmap_xfer(struct spi_controller *host,
 				     struct spi_transfer *xfer)
 {
@@ -1521,24 +1123,14 @@ atmel_spi_pio_interrupt(int irq, void *dev_id)
 	struct spi_transfer	*xfer;
 	int			ret = IRQ_NONE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	imr = spi_readl(as, IMR);
 	status = spi_readl(as, SR);
 	pending = status & imr;
 
 	if (pending & SPI_BIT(OVRES)) {
-<<<<<<< HEAD
-		int timeout;
-
-		ret = IRQ_HANDLED;
-
-		spi_writel(as, IDR, (SPI_BIT(RXBUFF) | SPI_BIT(ENDRX)
-				     | SPI_BIT(OVRES)));
-=======
 		ret = IRQ_HANDLED;
 		spi_writel(as, IDR, SPI_BIT(OVRES));
 		dev_warn(host->dev.parent, "overrun\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * When we get an overrun, we disregard the current
@@ -1548,49 +1140,13 @@ atmel_spi_pio_interrupt(int irq, void *dev_id)
 		 *
 		 * We will also not process any remaning transfers in
 		 * the message.
-<<<<<<< HEAD
-		 *
-		 * First, stop the transfer and unmap the DMA buffers.
-		 */
-		spi_writel(as, PTCR, SPI_BIT(RXTDIS) | SPI_BIT(TXTDIS));
-		if (!msg->is_dma_mapped)
-			atmel_spi_dma_unmap_xfer(master, xfer);
-
-		/* REVISIT: udelay in irq is unfriendly */
-		if (xfer->delay_usecs)
-			udelay(xfer->delay_usecs);
-
-		dev_warn(master->dev.parent, "overrun (%u/%u remaining)\n",
-			 spi_readl(as, TCR), spi_readl(as, RCR));
-
-		/*
-		 * Clean up DMA registers and make sure the data
-		 * registers are empty.
-		 */
-		spi_writel(as, RNCR, 0);
-		spi_writel(as, TNCR, 0);
-		spi_writel(as, RCR, 0);
-		spi_writel(as, TCR, 0);
-		for (timeout = 1000; timeout; timeout--)
-			if (spi_readl(as, SR) & SPI_BIT(TXEMPTY))
-				break;
-		if (!timeout)
-			dev_warn(master->dev.parent,
-				 "timeout waiting for TXEMPTY");
-		while (spi_readl(as, SR) & SPI_BIT(RDRF))
-			spi_readl(as, RDR);
-=======
 		 */
 		as->done_status = -EIO;
 		smp_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Clear any overrun happening while cleaning up */
 		spi_readl(as, SR);
 
-<<<<<<< HEAD
-		atmel_spi_msg_done(master, as, msg, -EIO, 0);
-=======
 		complete(&as->xfer_completion);
 
 	} else if (pending & (SPI_BIT(RDRF) | SPI_BIT(RXFTHF))) {
@@ -1642,56 +1198,11 @@ atmel_spi_pdc_interrupt(int irq, void *dev_id)
 
 		complete(&as->xfer_completion);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (pending & (SPI_BIT(RXBUFF) | SPI_BIT(ENDRX))) {
 		ret = IRQ_HANDLED;
 
 		spi_writel(as, IDR, pending);
 
-<<<<<<< HEAD
-		if (as->current_remaining_bytes == 0) {
-			msg->actual_length += xfer->len;
-
-			if (!msg->is_dma_mapped)
-				atmel_spi_dma_unmap_xfer(master, xfer);
-
-			/* REVISIT: udelay in irq is unfriendly */
-			if (xfer->delay_usecs)
-				udelay(xfer->delay_usecs);
-
-			if (atmel_spi_xfer_is_last(msg, xfer)) {
-				/* report completed message */
-				atmel_spi_msg_done(master, as, msg, 0,
-						xfer->cs_change);
-			} else {
-				if (xfer->cs_change) {
-					cs_deactivate(as, msg->spi);
-					udelay(1);
-					cs_activate(as, msg->spi);
-				}
-
-				/*
-				 * Not done yet. Submit the next transfer.
-				 *
-				 * FIXME handle protocol options for xfer
-				 */
-				atmel_spi_next_xfer(master, msg);
-			}
-		} else {
-			/*
-			 * Keep going, we still have data to send in
-			 * the current transfer.
-			 */
-			atmel_spi_next_xfer(master, msg);
-		}
-	}
-
-	spin_unlock(&as->lock);
-
-	return ret;
-}
-
-=======
 		complete(&as->xfer_completion);
 	}
 
@@ -1744,73 +1255,10 @@ static void initialize_native_cs_for_gpio(struct atmel_spi *as)
 		as->native_cs_for_gpio = ffs(as->native_cs_free);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atmel_spi_setup(struct spi_device *spi)
 {
 	struct atmel_spi	*as;
 	struct atmel_spi_device	*asd;
-<<<<<<< HEAD
-	u32			scbr, csr;
-	unsigned int		bits = spi->bits_per_word;
-	unsigned long		bus_hz;
-	unsigned int		npcs_pin;
-	int			ret;
-
-	as = spi_master_get_devdata(spi->master);
-
-	if (as->stopping)
-		return -ESHUTDOWN;
-
-	if (spi->chip_select > spi->master->num_chipselect) {
-		dev_dbg(&spi->dev,
-				"setup: invalid chipselect %u (%u defined)\n",
-				spi->chip_select, spi->master->num_chipselect);
-		return -EINVAL;
-	}
-
-	if (bits < 8 || bits > 16) {
-		dev_dbg(&spi->dev,
-				"setup: invalid bits_per_word %u (8 to 16)\n",
-				bits);
-		return -EINVAL;
-	}
-
-	/* see notes above re chipselect */
-	if (!atmel_spi_is_v2()
-			&& spi->chip_select == 0
-			&& (spi->mode & SPI_CS_HIGH)) {
-		dev_dbg(&spi->dev, "setup: can't be active-high\n");
-		return -EINVAL;
-	}
-
-	/* v1 chips start out at half the peripheral bus speed. */
-	bus_hz = clk_get_rate(as->clk);
-	if (!atmel_spi_is_v2())
-		bus_hz /= 2;
-
-	if (spi->max_speed_hz) {
-		/*
-		 * Calculate the lowest divider that satisfies the
-		 * constraint, assuming div32/fdiv/mbz == 0.
-		 */
-		scbr = DIV_ROUND_UP(bus_hz, spi->max_speed_hz);
-
-		/*
-		 * If the resulting divider doesn't fit into the
-		 * register bitfield, we can't satisfy the constraint.
-		 */
-		if (scbr >= (1 << SPI_SCBR_SIZE)) {
-			dev_dbg(&spi->dev,
-				"setup: %d Hz too slow, scbr %u; min %ld Hz\n",
-				spi->max_speed_hz, scbr, bus_hz/255);
-			return -EINVAL;
-		}
-	} else
-		/* speed zero means "as slow as possible" */
-		scbr = 0xff;
-
-	csr = SPI_BF(SCBR, scbr) | SPI_BF(BITS, bits - 8);
-=======
 	u32			csr;
 	unsigned int		bits = spi->bits_per_word;
 	int chip_select;
@@ -1843,25 +1291,11 @@ static int atmel_spi_setup(struct spi_device *spi)
 		chip_select = spi_get_chipselect(spi, 0);
 
 	csr = SPI_BF(BITS, bits - 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (spi->mode & SPI_CPOL)
 		csr |= SPI_BIT(CPOL);
 	if (!(spi->mode & SPI_CPHA))
 		csr |= SPI_BIT(NCPHA);
 
-<<<<<<< HEAD
-	/* DLYBS is mostly irrelevant since we manage chipselect using GPIOs.
-	 *
-	 * DLYBCT would add delays between words, slowing down transfers.
-	 * It could potentially be useful to cope with DMA bottlenecks, but
-	 * in those cases it's probably best to just use a lower bitrate.
-	 */
-	csr |= SPI_BF(DLYBS, 0);
-	csr |= SPI_BF(DLYBCT, 0);
-
-	/* chipselect must have been muxed as GPIO (e.g. in board setup) */
-	npcs_pin = (unsigned int)spi->controller_data;
-=======
 	if (!spi_get_csgpiod(spi, 0))
 		csr |= SPI_BIT(CSAAT);
 	csr |= SPI_BF(DLYBS, 0);
@@ -1875,134 +1309,27 @@ static int atmel_spi_setup(struct spi_device *spi)
 	 */
 	csr |= SPI_BF(DLYBCT, word_delay_csr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asd = spi->controller_state;
 	if (!asd) {
 		asd = kzalloc(sizeof(struct atmel_spi_device), GFP_KERNEL);
 		if (!asd)
 			return -ENOMEM;
 
-<<<<<<< HEAD
-		ret = gpio_request(npcs_pin, dev_name(&spi->dev));
-		if (ret) {
-			kfree(asd);
-			return ret;
-		}
-
-		asd->npcs_pin = npcs_pin;
 		spi->controller_state = asd;
-		gpio_direction_output(npcs_pin, !(spi->mode & SPI_CS_HIGH));
-	} else {
-		unsigned long		flags;
-
-		spin_lock_irqsave(&as->lock, flags);
-		if (as->stay == spi)
-			as->stay = NULL;
-		cs_deactivate(as, spi);
-		spin_unlock_irqrestore(&as->lock, flags);
-=======
-		spi->controller_state = asd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	asd->csr = csr;
 
 	dev_dbg(&spi->dev,
-<<<<<<< HEAD
-		"setup: %lu Hz bpw %u mode 0x%x -> csr%d %08x\n",
-		bus_hz / scbr, bits, spi->mode, spi->chip_select, csr);
-
-	if (!atmel_spi_is_v2())
-		spi_writel(as, CSR0 + 4 * spi->chip_select, csr);
-=======
 		"setup: bpw %u mode 0x%x -> csr%d %08x\n",
 		bits, spi->mode, spi_get_chipselect(spi, 0), csr);
 
 	if (!atmel_spi_is_v2(as))
 		spi_writel(as, CSR0 + 4 * chip_select, csr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int atmel_spi_transfer(struct spi_device *spi, struct spi_message *msg)
-{
-	struct atmel_spi	*as;
-	struct spi_transfer	*xfer;
-	unsigned long		flags;
-	struct device		*controller = spi->master->dev.parent;
-	u8			bits;
-	struct atmel_spi_device	*asd;
-
-	as = spi_master_get_devdata(spi->master);
-
-	dev_dbg(controller, "new message %p submitted for %s\n",
-			msg, dev_name(&spi->dev));
-
-	if (unlikely(list_empty(&msg->transfers)))
-		return -EINVAL;
-
-	if (as->stopping)
-		return -ESHUTDOWN;
-
-	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-		if (!(xfer->tx_buf || xfer->rx_buf) && xfer->len) {
-			dev_dbg(&spi->dev, "missing rx or tx buf\n");
-			return -EINVAL;
-		}
-
-		if (xfer->bits_per_word) {
-			asd = spi->controller_state;
-			bits = (asd->csr >> 4) & 0xf;
-			if (bits != xfer->bits_per_word - 8) {
-				dev_dbg(&spi->dev, "you can't yet change "
-					 "bits_per_word in transfers\n");
-				return -ENOPROTOOPT;
-			}
-		}
-
-		/* FIXME implement these protocol options!! */
-		if (xfer->speed_hz) {
-			dev_dbg(&spi->dev, "no protocol options yet\n");
-			return -ENOPROTOOPT;
-		}
-
-		/*
-		 * DMA map early, for performance (empties dcache ASAP) and
-		 * better fault reporting.  This is a DMA-only driver.
-		 *
-		 * NOTE that if dma_unmap_single() ever starts to do work on
-		 * platforms supported by this driver, we would need to clean
-		 * up mappings for previously-mapped transfers.
-		 */
-		if (!msg->is_dma_mapped) {
-			if (atmel_spi_dma_map_xfer(as, xfer) < 0)
-				return -ENOMEM;
-		}
-	}
-
-#ifdef VERBOSE
-	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-		dev_dbg(controller,
-			"  xfer %p: len %u tx %p/%08x rx %p/%08x\n",
-			xfer, xfer->len,
-			xfer->tx_buf, xfer->tx_dma,
-			xfer->rx_buf, xfer->rx_dma);
-	}
-#endif
-
-	msg->status = -EINPROGRESS;
-	msg->actual_length = 0;
-
-	spin_lock_irqsave(&as->lock, flags);
-	list_add_tail(&msg->queue, &as->queue);
-	if (!as->current_transfer)
-		atmel_spi_next_message(spi->master);
-	spin_unlock_irqrestore(&as->lock, flags);
-
-	return 0;
-=======
 static void atmel_spi_set_cs(struct spi_device *spi, bool enable)
 {
 	struct atmel_spi *as = spi_controller_get_devdata(spi->controller);
@@ -2135,40 +1462,15 @@ static int atmel_spi_one_transfer(struct spi_controller *host,
 		atmel_spi_disable_pdc_transfer(as);
 
 	return as->done_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atmel_spi_cleanup(struct spi_device *spi)
 {
-<<<<<<< HEAD
-	struct atmel_spi	*as = spi_master_get_devdata(spi->master);
 	struct atmel_spi_device	*asd = spi->controller_state;
-	unsigned		gpio = (unsigned) spi->controller_data;
-	unsigned long		flags;
-=======
-	struct atmel_spi_device	*asd = spi->controller_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!asd)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&as->lock, flags);
-	if (as->stay == spi) {
-		as->stay = NULL;
-		cs_deactivate(as, spi);
-	}
-	spin_unlock_irqrestore(&as->lock, flags);
-
-	spi->controller_state = NULL;
-	gpio_free(gpio);
-	kfree(asd);
-}
-
-/*-------------------------------------------------------------------------*/
-
-static int __devinit atmel_spi_probe(struct platform_device *pdev)
-=======
 	spi->controller_state = NULL;
 	kfree(asd);
 }
@@ -2212,79 +1514,26 @@ static void atmel_spi_init(struct atmel_spi *as)
 }
 
 static int atmel_spi_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource		*regs;
 	int			irq;
 	struct clk		*clk;
 	int			ret;
-<<<<<<< HEAD
-	struct spi_master	*master;
-	struct atmel_spi	*as;
-
-	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!regs)
-		return -ENXIO;
-=======
 	struct spi_controller	*host;
 	struct atmel_spi	*as;
 
 	/* Select default pin state */
 	pinctrl_pm_select_default_state(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-<<<<<<< HEAD
-	clk = clk_get(&pdev->dev, "spi_clk");
-=======
 	clk = devm_clk_get(&pdev->dev, "spi_clk");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
 
 	/* setup spi core then atmel-specific driver state */
-<<<<<<< HEAD
-	ret = -ENOMEM;
-	master = spi_alloc_master(&pdev->dev, sizeof *as);
-	if (!master)
-		goto out_free;
-
-	/* the spi->mode bits understood by this driver: */
-	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
-
-	master->bus_num = pdev->id;
-	master->num_chipselect = 4;
-	master->setup = atmel_spi_setup;
-	master->transfer = atmel_spi_transfer;
-	master->cleanup = atmel_spi_cleanup;
-	platform_set_drvdata(pdev, master);
-
-	as = spi_master_get_devdata(master);
-
-	/*
-	 * Scratch buffer is used for throwaway rx and tx data.
-	 * It's coherent to minimize dcache pollution.
-	 */
-	as->buffer = dma_alloc_coherent(&pdev->dev, BUFFER_SIZE,
-					&as->buffer_dma, GFP_KERNEL);
-	if (!as->buffer)
-		goto out_free;
-
-	spin_lock_init(&as->lock);
-	INIT_LIST_HEAD(&as->queue);
-	as->pdev = pdev;
-	as->regs = ioremap(regs->start, resource_size(regs));
-	if (!as->regs)
-		goto out_free_buffer;
-	as->irq = irq;
-	as->clk = clk;
-
-	ret = request_irq(irq, atmel_spi_interrupt, 0,
-			dev_name(&pdev->dev), master);
-=======
 	host = spi_alloc_host(&pdev->dev, sizeof(*as));
 	if (!host)
 		return -ENOMEM;
@@ -2372,55 +1621,10 @@ static int atmel_spi_probe(struct platform_device *pdev)
 		ret = devm_request_irq(&pdev->dev, irq, atmel_spi_pio_interrupt,
 					0, dev_name(&pdev->dev), host);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_unmap_regs;
 
 	/* Initialize the hardware */
-<<<<<<< HEAD
-	clk_enable(clk);
-	spi_writel(as, CR, SPI_BIT(SWRST));
-	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
-	spi_writel(as, MR, SPI_BIT(MSTR) | SPI_BIT(MODFDIS));
-	spi_writel(as, PTCR, SPI_BIT(RXTDIS) | SPI_BIT(TXTDIS));
-	spi_writel(as, CR, SPI_BIT(SPIEN));
-
-	/* go! */
-	dev_info(&pdev->dev, "Atmel SPI Controller at 0x%08lx (irq %d)\n",
-			(unsigned long)regs->start, irq);
-
-	ret = spi_register_master(master);
-	if (ret)
-		goto out_reset_hw;
-
-	return 0;
-
-out_reset_hw:
-	spi_writel(as, CR, SPI_BIT(SWRST));
-	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
-	clk_disable(clk);
-	free_irq(irq, master);
-out_unmap_regs:
-	iounmap(as->regs);
-out_free_buffer:
-	dma_free_coherent(&pdev->dev, BUFFER_SIZE, as->buffer,
-			as->buffer_dma);
-out_free:
-	clk_put(clk);
-	spi_master_put(master);
-	return ret;
-}
-
-static int __devexit atmel_spi_remove(struct platform_device *pdev)
-{
-	struct spi_master	*master = platform_get_drvdata(pdev);
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-	struct spi_message	*msg;
-
-	/* reset the hardware and block queue progress */
-	spin_lock_irq(&as->lock);
-	as->stopping = 1;
-=======
 	ret = clk_prepare_enable(clk);
 	if (ret)
 		goto out_free_irq;
@@ -2489,61 +1693,11 @@ static void atmel_spi_remove(struct platform_device *pdev)
 	}
 
 	spin_lock_irq(&as->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_writel(as, CR, SPI_BIT(SWRST));
 	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
 	spi_readl(as, SR);
 	spin_unlock_irq(&as->lock);
 
-<<<<<<< HEAD
-	/* Terminate remaining queued transfers */
-	list_for_each_entry(msg, &as->queue, queue) {
-		/* REVISIT unmapping the dma is a NOP on ARM and AVR32
-		 * but we shouldn't depend on that...
-		 */
-		msg->status = -ESHUTDOWN;
-		msg->complete(msg->context);
-	}
-
-	dma_free_coherent(&pdev->dev, BUFFER_SIZE, as->buffer,
-			as->buffer_dma);
-
-	clk_disable(as->clk);
-	clk_put(as->clk);
-	free_irq(as->irq, master);
-	iounmap(as->regs);
-
-	spi_unregister_master(master);
-
-	return 0;
-}
-
-#ifdef	CONFIG_PM
-
-static int atmel_spi_suspend(struct platform_device *pdev, pm_message_t mesg)
-{
-	struct spi_master	*master = platform_get_drvdata(pdev);
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-
-	clk_disable(as->clk);
-	return 0;
-}
-
-static int atmel_spi_resume(struct platform_device *pdev)
-{
-	struct spi_master	*master = platform_get_drvdata(pdev);
-	struct atmel_spi	*as = spi_master_get_devdata(master);
-
-	clk_enable(as->clk);
-	return 0;
-}
-
-#else
-#define	atmel_spi_suspend	NULL
-#define	atmel_spi_resume	NULL
-#endif
-
-=======
 	clk_disable_unprepare(as->clk);
 
 	pm_runtime_put_noidle(&pdev->dev);
@@ -2623,25 +1777,15 @@ static const struct of_device_id atmel_spi_dt_ids[] = {
 };
 
 MODULE_DEVICE_TABLE(of, atmel_spi_dt_ids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver atmel_spi_driver = {
 	.driver		= {
 		.name	= "atmel_spi",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.suspend	= atmel_spi_suspend,
-	.resume		= atmel_spi_resume,
-	.probe		= atmel_spi_probe,
-	.remove		= __exit_p(atmel_spi_remove),
-=======
 		.pm	= pm_ptr(&atmel_spi_pm_ops),
 		.of_match_table	= atmel_spi_dt_ids,
 	},
 	.probe		= atmel_spi_probe,
 	.remove_new	= atmel_spi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(atmel_spi_driver);
 

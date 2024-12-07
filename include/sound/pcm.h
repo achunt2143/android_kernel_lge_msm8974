@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_PCM_H
 #define __SOUND_PCM_H
 
@@ -9,25 +6,6 @@
  *  Digital Audio (PCM) abstract layer
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Abramo Bagnara <abramo@alsa-project.org>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/asound.h>
@@ -37,22 +15,14 @@
 #include <linux/mm.h>
 #include <linux/bitops.h>
 #include <linux/pm_qos.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
 #include <linux/uio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define snd_pcm_substream_chip(substream) ((substream)->private_data)
 #define snd_pcm_chip(pcm) ((pcm)->private_data)
 
-<<<<<<< HEAD
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-#include "pcm_oss.h"
-=======
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
 #include <sound/pcm_oss.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -62,10 +32,7 @@
 struct snd_pcm_hardware {
 	unsigned int info;		/* SNDRV_PCM_INFO_* */
 	u64 formats;			/* SNDRV_PCM_FMTBIT_* */
-<<<<<<< HEAD
-=======
 	u32 subformats;			/* for S32_LE, SNDRV_PCM_SUBFMTBIT_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rates;		/* SNDRV_PCM_RATE_* */
 	unsigned int rate_min;		/* min rate */
 	unsigned int rate_max;		/* max rate */
@@ -79,17 +46,12 @@ struct snd_pcm_hardware {
 	size_t fifo_size;		/* fifo size in bytes */
 };
 
-<<<<<<< HEAD
-struct snd_pcm_substream;
-
-=======
 struct snd_pcm_status64;
 struct snd_pcm_substream;
 
 struct snd_pcm_audio_tstamp_config; /* definitions further down */
 struct snd_pcm_audio_tstamp_report;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_pcm_ops {
 	int (*open)(struct snd_pcm_substream *substream);
 	int (*close)(struct snd_pcm_substream *substream);
@@ -100,14 +62,6 @@ struct snd_pcm_ops {
 	int (*hw_free)(struct snd_pcm_substream *substream);
 	int (*prepare)(struct snd_pcm_substream *substream);
 	int (*trigger)(struct snd_pcm_substream *substream, int cmd);
-<<<<<<< HEAD
-	snd_pcm_uframes_t (*pointer)(struct snd_pcm_substream *substream);
-	int (*copy)(struct snd_pcm_substream *substream, int channel,
-		    snd_pcm_uframes_t pos,
-		    void __user *buf, snd_pcm_uframes_t count);
-	int (*silence)(struct snd_pcm_substream *substream, int channel, 
-		       snd_pcm_uframes_t pos, snd_pcm_uframes_t count);
-=======
 	int (*sync_stop)(struct snd_pcm_substream *substream);
 	snd_pcm_uframes_t (*pointer)(struct snd_pcm_substream *substream);
 	int (*get_time_info)(struct snd_pcm_substream *substream,
@@ -118,15 +72,10 @@ struct snd_pcm_ops {
 			    unsigned long pos, unsigned long bytes);
 	int (*copy)(struct snd_pcm_substream *substream, int channel,
 		    unsigned long pos, struct iov_iter *iter, unsigned long bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *(*page)(struct snd_pcm_substream *substream,
 			     unsigned long offset);
 	int (*mmap)(struct snd_pcm_substream *substream, struct vm_area_struct *vma);
 	int (*ack)(struct snd_pcm_substream *substream);
-<<<<<<< HEAD
-	int (*restart)(struct snd_pcm_substream *substream);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -139,20 +88,10 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_DEVICES	8
 #endif
 
-<<<<<<< HEAD
-#define SNDRV_PCM_IOCTL1_FALSE		((void *)0)
-#define SNDRV_PCM_IOCTL1_TRUE		((void *)1)
-
-#define SNDRV_PCM_IOCTL1_RESET		0
-#define SNDRV_PCM_IOCTL1_INFO		1
-#define SNDRV_PCM_IOCTL1_CHANNEL_INFO	2
-#define SNDRV_PCM_IOCTL1_GSTATE		3
-=======
 #define SNDRV_PCM_IOCTL1_RESET		0
 /* 1 is absent slot. */
 #define SNDRV_PCM_IOCTL1_CHANNEL_INFO	2
 /* 3 is absent slot. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_PCM_IOCTL1_FIFO_SIZE	4
 
 #define SNDRV_PCM_TRIGGER_STOP		0
@@ -161,40 +100,6 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_TRIGGER_PAUSE_RELEASE	4
 #define SNDRV_PCM_TRIGGER_SUSPEND	5
 #define SNDRV_PCM_TRIGGER_RESUME	6
-<<<<<<< HEAD
-
-#define SNDRV_PCM_POS_XRUN		((snd_pcm_uframes_t)-1)
-
-#define SNDRV_DMA_MODE          (0)
-#define SNDRV_NON_DMA_MODE      (1 << 0)
-#define SNDRV_RENDER_STOPPED    (1 << 1)
-#define SNDRV_RENDER_RUNNING    (1 << 2)
-
-
-/* If you change this don't forget to change rates[] table in pcm_native.c */
-#define SNDRV_PCM_RATE_5512		(1<<0)		/* 5512Hz */
-#define SNDRV_PCM_RATE_8000		(1<<1)		/* 8000Hz */
-#define SNDRV_PCM_RATE_11025		(1<<2)		/* 11025Hz */
-#define SNDRV_PCM_RATE_12000		(1<<3)		/* 12000Hz */
-#define SNDRV_PCM_RATE_16000		(1<<4)		/* 16000Hz */
-#define SNDRV_PCM_RATE_22050		(1<<5)		/* 22050Hz */
-#define SNDRV_PCM_RATE_24000		(1<<6)		/* 24000Hz */
-#define SNDRV_PCM_RATE_32000		(1<<7)		/* 32000Hz */
-#define SNDRV_PCM_RATE_44100		(1<<8)		/* 44100Hz */
-#define SNDRV_PCM_RATE_48000		(1<<9)		/* 48000Hz */
-#define SNDRV_PCM_RATE_64000		(1<<10)		/* 64000Hz */
-#define SNDRV_PCM_RATE_88200		(1<<11)		/* 88200Hz */
-#define SNDRV_PCM_RATE_96000		(1<<12)		/* 96000Hz */
-#define SNDRV_PCM_RATE_176400		(1<<13)		/* 176400Hz */
-#define SNDRV_PCM_RATE_192000		(1<<14)		/* 192000Hz */
-
-#define SNDRV_PCM_RATE_CONTINUOUS	(1<<30)		/* continuous range */
-#define SNDRV_PCM_RATE_KNOT		(1<<31)		/* supports more non-continuos rates */
-
-#define SNDRV_PCM_RATE_8000_44100	(SNDRV_PCM_RATE_8000|SNDRV_PCM_RATE_11025|\
-					 SNDRV_PCM_RATE_12000|SNDRV_PCM_RATE_16000|SNDRV_PCM_RATE_22050|\
-					 SNDRV_PCM_RATE_24000|SNDRV_PCM_RATE_32000|SNDRV_PCM_RATE_44100)
-=======
 #define SNDRV_PCM_TRIGGER_DRAIN		7
 
 #define SNDRV_PCM_POS_XRUN		((snd_pcm_uframes_t)-1)
@@ -222,18 +127,14 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_RATE_8000_44100	(SNDRV_PCM_RATE_8000|SNDRV_PCM_RATE_11025|\
 					 SNDRV_PCM_RATE_16000|SNDRV_PCM_RATE_22050|\
 					 SNDRV_PCM_RATE_32000|SNDRV_PCM_RATE_44100)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_PCM_RATE_8000_48000	(SNDRV_PCM_RATE_8000_44100|SNDRV_PCM_RATE_48000)
 #define SNDRV_PCM_RATE_8000_96000	(SNDRV_PCM_RATE_8000_48000|SNDRV_PCM_RATE_64000|\
 					 SNDRV_PCM_RATE_88200|SNDRV_PCM_RATE_96000)
 #define SNDRV_PCM_RATE_8000_192000	(SNDRV_PCM_RATE_8000_96000|SNDRV_PCM_RATE_176400|\
 					 SNDRV_PCM_RATE_192000)
-<<<<<<< HEAD
-=======
 #define SNDRV_PCM_RATE_8000_384000	(SNDRV_PCM_RATE_8000_192000|\
 					 SNDRV_PCM_RATE_352800|\
 					 SNDRV_PCM_RATE_384000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _SNDRV_PCM_FMTBIT(fmt)		(1ULL << (__force int)SNDRV_PCM_FORMAT_##fmt)
 #define SNDRV_PCM_FMTBIT_S8		_SNDRV_PCM_FMTBIT(S8)
 #define SNDRV_PCM_FMTBIT_U8		_SNDRV_PCM_FMTBIT(U8)
@@ -245,12 +146,9 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_FMTBIT_S24_BE		_SNDRV_PCM_FMTBIT(S24_BE)
 #define SNDRV_PCM_FMTBIT_U24_LE		_SNDRV_PCM_FMTBIT(U24_LE)
 #define SNDRV_PCM_FMTBIT_U24_BE		_SNDRV_PCM_FMTBIT(U24_BE)
-<<<<<<< HEAD
-=======
 // For S32/U32 formats, 'msbits' hardware parameter is often used to deliver information about the
 // available bit count in most significant bit. It's for the case of so-called 'left-justified' or
 // `right-padding` sample which has less width than 32 bit.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_PCM_FMTBIT_S32_LE		_SNDRV_PCM_FMTBIT(S32_LE)
 #define SNDRV_PCM_FMTBIT_S32_BE		_SNDRV_PCM_FMTBIT(S32_BE)
 #define SNDRV_PCM_FMTBIT_U32_LE		_SNDRV_PCM_FMTBIT(U32_LE)
@@ -266,13 +164,10 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_FMTBIT_IMA_ADPCM	_SNDRV_PCM_FMTBIT(IMA_ADPCM)
 #define SNDRV_PCM_FMTBIT_MPEG		_SNDRV_PCM_FMTBIT(MPEG)
 #define SNDRV_PCM_FMTBIT_GSM		_SNDRV_PCM_FMTBIT(GSM)
-<<<<<<< HEAD
-=======
 #define SNDRV_PCM_FMTBIT_S20_LE	_SNDRV_PCM_FMTBIT(S20_LE)
 #define SNDRV_PCM_FMTBIT_U20_LE	_SNDRV_PCM_FMTBIT(U20_LE)
 #define SNDRV_PCM_FMTBIT_S20_BE	_SNDRV_PCM_FMTBIT(S20_BE)
 #define SNDRV_PCM_FMTBIT_U20_BE	_SNDRV_PCM_FMTBIT(U20_BE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_PCM_FMTBIT_SPECIAL	_SNDRV_PCM_FMTBIT(SPECIAL)
 #define SNDRV_PCM_FMTBIT_S24_3LE	_SNDRV_PCM_FMTBIT(S24_3LE)
 #define SNDRV_PCM_FMTBIT_U24_3LE	_SNDRV_PCM_FMTBIT(U24_3LE)
@@ -290,14 +185,11 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_FMTBIT_G723_24_1B	_SNDRV_PCM_FMTBIT(G723_24_1B)
 #define SNDRV_PCM_FMTBIT_G723_40	_SNDRV_PCM_FMTBIT(G723_40)
 #define SNDRV_PCM_FMTBIT_G723_40_1B	_SNDRV_PCM_FMTBIT(G723_40_1B)
-<<<<<<< HEAD
-=======
 #define SNDRV_PCM_FMTBIT_DSD_U8		_SNDRV_PCM_FMTBIT(DSD_U8)
 #define SNDRV_PCM_FMTBIT_DSD_U16_LE	_SNDRV_PCM_FMTBIT(DSD_U16_LE)
 #define SNDRV_PCM_FMTBIT_DSD_U32_LE	_SNDRV_PCM_FMTBIT(DSD_U32_LE)
 #define SNDRV_PCM_FMTBIT_DSD_U16_BE	_SNDRV_PCM_FMTBIT(DSD_U16_BE)
 #define SNDRV_PCM_FMTBIT_DSD_U32_BE	_SNDRV_PCM_FMTBIT(DSD_U32_BE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef SNDRV_LITTLE_ENDIAN
 #define SNDRV_PCM_FMTBIT_S16		SNDRV_PCM_FMTBIT_S16_LE
@@ -309,11 +201,8 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_FMTBIT_FLOAT		SNDRV_PCM_FMTBIT_FLOAT_LE
 #define SNDRV_PCM_FMTBIT_FLOAT64	SNDRV_PCM_FMTBIT_FLOAT64_LE
 #define SNDRV_PCM_FMTBIT_IEC958_SUBFRAME SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE
-<<<<<<< HEAD
-=======
 #define SNDRV_PCM_FMTBIT_S20		SNDRV_PCM_FMTBIT_S20_LE
 #define SNDRV_PCM_FMTBIT_U20		SNDRV_PCM_FMTBIT_U20_LE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef SNDRV_BIG_ENDIAN
 #define SNDRV_PCM_FMTBIT_S16		SNDRV_PCM_FMTBIT_S16_BE
@@ -325,13 +214,6 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_FMTBIT_FLOAT		SNDRV_PCM_FMTBIT_FLOAT_BE
 #define SNDRV_PCM_FMTBIT_FLOAT64	SNDRV_PCM_FMTBIT_FLOAT64_BE
 #define SNDRV_PCM_FMTBIT_IEC958_SUBFRAME SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_BE
-<<<<<<< HEAD
-#endif
-
-struct snd_pcm_file {
-	struct snd_pcm_substream *substream;
-	int no_compat_mmap;
-=======
 #define SNDRV_PCM_FMTBIT_S20		SNDRV_PCM_FMTBIT_S20_BE
 #define SNDRV_PCM_FMTBIT_U20		SNDRV_PCM_FMTBIT_U20_BE
 #endif
@@ -346,7 +228,6 @@ struct snd_pcm_file {
 	struct snd_pcm_substream *substream;
 	int no_compat_mmap;
 	unsigned int user_pversion;	/* supported protocol version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_pcm_hw_rule;
@@ -355,16 +236,10 @@ typedef int (*snd_pcm_hw_rule_func_t)(struct snd_pcm_hw_params *params,
 
 struct snd_pcm_hw_rule {
 	unsigned int cond;
-<<<<<<< HEAD
-	snd_pcm_hw_rule_func_t func;
-	int var;
-	int deps[4];
-=======
 	int var;
 	int deps[5];
 
 	snd_pcm_hw_rule_func_t func;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *private;
 };
 
@@ -402,32 +277,11 @@ struct snd_ratden {
 
 struct snd_pcm_hw_constraint_ratnums {
 	int nrats;
-<<<<<<< HEAD
-	struct snd_ratnum *rats;
-=======
 	const struct snd_ratnum *rats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_pcm_hw_constraint_ratdens {
 	int nrats;
-<<<<<<< HEAD
-	struct snd_ratden *rats;
-};
-
-struct snd_pcm_hw_constraint_list {
-	unsigned int count;
-	unsigned int *list;
-	unsigned int mask;
-};
-
-struct snd_pcm_hwptr_log;
-
-struct snd_pcm_runtime {
-	/* -- Status -- */
-	struct snd_pcm_substream *trigger_master;
-	struct timespec trigger_tstamp;	/* trigger timestamp */
-=======
 	const struct snd_ratden *rats;
 };
 
@@ -502,7 +356,6 @@ struct snd_pcm_runtime {
 	struct snd_pcm_substream *trigger_master;
 	struct timespec64 trigger_tstamp;	/* trigger timestamp */
 	bool trigger_tstamp_latched;     /* trigger timestamp latched in low-level driver/hardware */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int overrange;
 	snd_pcm_uframes_t avail_max;
 	snd_pcm_uframes_t hw_ptr_base;	/* Position at buffer restart */
@@ -510,10 +363,7 @@ struct snd_pcm_runtime {
 	unsigned long hw_ptr_jiffies;	/* Time when hw_ptr is updated */
 	unsigned long hw_ptr_buffer_jiffies; /* buffer time in jiffies */
 	snd_pcm_sframes_t delay;	/* extra delay; typically FIFO size */
-<<<<<<< HEAD
-=======
 	u64 hw_ptr_wrap;                /* offset for hw_ptr due to boundary wrap-around */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* -- HW params -- */
 	snd_pcm_access_t access;	/* access mode */
@@ -532,22 +382,6 @@ struct snd_pcm_runtime {
 	unsigned int rate_num;
 	unsigned int rate_den;
 	unsigned int no_period_wakeup: 1;
-<<<<<<< HEAD
-	unsigned int render_flag;
-
-	/* -- SW params -- */
-	int tstamp_mode;		/* mmap timestamp is updated */
-  	unsigned int period_step;
-	snd_pcm_uframes_t start_threshold;
-	snd_pcm_uframes_t stop_threshold;
-	snd_pcm_uframes_t silence_threshold; /* Silence filling happens when
-						noise is nearest than this */
-	snd_pcm_uframes_t silence_size;	/* Silence filling size */
-	snd_pcm_uframes_t boundary;	/* pointers wrap point */
-
-	snd_pcm_uframes_t silence_start; /* starting pointer to silence area */
-	snd_pcm_uframes_t silence_filled; /* size filled with silence */
-=======
 
 	/* -- SW params; see struct snd_pcm_sw_params for comments -- */
 	int tstamp_mode;
@@ -561,7 +395,6 @@ struct snd_pcm_runtime {
 	/* internal data of auto-silencer */
 	snd_pcm_uframes_t silence_start; /* starting pointer to silence area */
 	snd_pcm_uframes_t silence_filled; /* already filled part of silence area */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union snd_pcm_sync_id sync;	/* hardware synchronization ID */
 
@@ -573,14 +406,10 @@ struct snd_pcm_runtime {
 	snd_pcm_uframes_t twake; 	/* do transfer (!poll) wakeup if non-zero */
 	wait_queue_head_t sleep;	/* poll sleep */
 	wait_queue_head_t tsleep;	/* transfer sleep */
-<<<<<<< HEAD
-	struct fasync_struct *fasync;
-=======
 	struct snd_fasync *fasync;
 	bool stop_operating;		/* sync_stop will be called */
 	struct mutex buffer_mutex;	/* protect for buffer changes */
 	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* -- private section -- */
 	void *private_data;
@@ -590,13 +419,6 @@ struct snd_pcm_runtime {
 	struct snd_pcm_hardware hw;
 	struct snd_pcm_hw_constraints hw_constraints;
 
-<<<<<<< HEAD
-	/* -- interrupt callbacks -- */
-	void (*transfer_ack_begin)(struct snd_pcm_substream *substream);
-	void (*transfer_ack_end)(struct snd_pcm_substream *substream);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* -- timer -- */
 	unsigned int timer_resolution;	/* timer resolution */
 	int tstamp_type;		/* timestamp type */
@@ -607,17 +429,6 @@ struct snd_pcm_runtime {
 	size_t dma_bytes;		/* size of DMA area */
 
 	struct snd_dma_buffer *dma_buffer_p;	/* allocated buffer */
-<<<<<<< HEAD
-
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-	/* -- OSS things -- */
-	struct snd_pcm_oss_runtime oss;
-#endif
-
-#ifdef CONFIG_SND_PCM_XRUN_DEBUG
-	struct snd_pcm_hwptr_log *hwptr_log;
-#endif
-=======
 	unsigned int buffer_changed:1;	/* buffer allocation changed; set only in managed mode */
 
 	/* -- audio timestamp config -- */
@@ -629,19 +440,13 @@ struct snd_pcm_runtime {
 	/* -- OSS things -- */
 	struct snd_pcm_oss_runtime oss;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_pcm_group {		/* keep linked substreams */
 	spinlock_t lock;
-<<<<<<< HEAD
-	struct list_head substreams;
-	int count;
-=======
 	struct mutex mutex;
 	struct list_head substreams;
 	refcount_t refs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pid;
@@ -656,25 +461,15 @@ struct snd_pcm_substream {
 	struct pm_qos_request latency_pm_qos_req; /* pm_qos request */
 	size_t buffer_bytes_max;	/* limit ring buffer size */
 	struct snd_dma_buffer dma_buffer;
-<<<<<<< HEAD
-	unsigned int dma_buf_id;
-	size_t dma_max;
-	/* -- hardware operations -- */
-	struct snd_pcm_ops *ops;
-=======
 	size_t dma_max;
 	/* -- hardware operations -- */
 	const struct snd_pcm_ops *ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* -- runtime information -- */
 	struct snd_pcm_runtime *runtime;
         /* -- timer section -- */
 	struct snd_timer *timer;		/* timer */
 	unsigned timer_running: 1;	/* time is running */
-<<<<<<< HEAD
-=======
 	long wait_time;	/* time in ms for R/W to wait for avail */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* -- next substream -- */
 	struct snd_pcm_substream *next;
 	/* -- linked substreams -- */
@@ -682,42 +477,21 @@ struct snd_pcm_substream {
 	struct snd_pcm_group self_group;	/* fake group for non linked substream (with substream lock inside) */
 	struct snd_pcm_group *group;		/* pointer to current group */
 	/* -- assigned files -- */
-<<<<<<< HEAD
-	void *file;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ref_count;
 	atomic_t mmap_count;
 	unsigned int f_flags;
 	void (*pcm_release)(struct snd_pcm_substream *);
 	struct pid *pid;
-<<<<<<< HEAD
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-=======
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* -- OSS things -- */
 	struct snd_pcm_oss_substream oss;
 #endif
 #ifdef CONFIG_SND_VERBOSE_PROCFS
 	struct snd_info_entry *proc_root;
-<<<<<<< HEAD
-	struct snd_info_entry *proc_info_entry;
-	struct snd_info_entry *proc_hw_params_entry;
-	struct snd_info_entry *proc_sw_params_entry;
-	struct snd_info_entry *proc_status_entry;
-	struct snd_info_entry *proc_prealloc_entry;
-	struct snd_info_entry *proc_prealloc_max_entry;
-#endif
-	/* misc flags */
-	unsigned int hw_opened: 1;
-	unsigned int hw_no_buffer: 1; /* substream may not have a buffer */
-=======
 #endif /* CONFIG_SND_VERBOSE_PROCFS */
 	/* misc flags */
 	unsigned int hw_opened: 1;
 	unsigned int managed_buffer_alloc:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SUBSTREAM_BUSY(substream) ((substream)->ref_count > 0)
@@ -730,33 +504,18 @@ struct snd_pcm_str {
 	unsigned int substream_count;
 	unsigned int substream_opened;
 	struct snd_pcm_substream *substream;
-<<<<<<< HEAD
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-=======
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* -- OSS things -- */
 	struct snd_pcm_oss_stream oss;
 #endif
 #ifdef CONFIG_SND_VERBOSE_PROCFS
 	struct snd_info_entry *proc_root;
-<<<<<<< HEAD
-	struct snd_info_entry *proc_info_entry;
-#ifdef CONFIG_SND_PCM_XRUN_DEBUG
-	unsigned int xrun_debug;	/* 0 = disabled, 1 = verbose, 2 = stacktrace */
-	struct snd_info_entry *proc_xrun_debug_entry;
-#endif
-#endif
-	struct snd_kcontrol *chmap_kctl; /* channel-mapping controls */
-	struct snd_kcontrol *vol_kctl; /* volume controls */
-=======
 #ifdef CONFIG_SND_PCM_XRUN_DEBUG
 	unsigned int xrun_debug;	/* 0 = disabled, 1 = verbose, 2 = stacktrace */
 #endif
 #endif
 	struct snd_kcontrol *chmap_kctl; /* channel-mapping controls */
 	struct device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_pcm {
@@ -773,30 +532,14 @@ struct snd_pcm {
 	wait_queue_head_t open_wait;
 	void *private_data;
 	void (*private_free) (struct snd_pcm *pcm);
-<<<<<<< HEAD
-	struct device *dev; /* actual hw device this belongs to */
-	bool internal; /* pcm is for internal use only */
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-=======
 	bool internal; /* pcm is for internal use only */
 	bool nonatomic; /* whole PCM operations are in non-atomic context */
 	bool no_device_suspend; /* don't invoke device PM suspend */
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_oss oss;
 #endif
 };
 
-<<<<<<< HEAD
-struct snd_pcm_notify {
-	int (*n_register) (struct snd_pcm * pcm);
-	int (*n_disconnect) (struct snd_pcm * pcm);
-	int (*n_unregister) (struct snd_pcm * pcm);
-	struct list_head list;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Registering
  */
@@ -806,20 +549,11 @@ extern const struct file_operations snd_pcm_f_ops[2];
 int snd_pcm_new(struct snd_card *card, const char *id, int device,
 		int playback_count, int capture_count,
 		struct snd_pcm **rpcm);
-<<<<<<< HEAD
-int snd_pcm_new_soc_be(struct snd_card *card, const char *id, int device,
-		int playback_count, int capture_count,
-		struct snd_pcm ** rpcm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_pcm_new_internal(struct snd_card *card, const char *id, int device,
 		int playback_count, int capture_count,
 		struct snd_pcm **rpcm);
 int snd_pcm_new_stream(struct snd_pcm *pcm, int stream, int substream_count);
 
-<<<<<<< HEAD
-int snd_pcm_notify(struct snd_pcm_notify *notify, int nfree);
-=======
 #if IS_ENABLED(CONFIG_SND_PCM_OSS)
 struct snd_pcm_notify {
 	int (*n_register) (struct snd_pcm * pcm);
@@ -829,27 +563,11 @@ struct snd_pcm_notify {
 };
 int snd_pcm_notify(struct snd_pcm_notify *notify, int nfree);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Native I/O
  */
 
-<<<<<<< HEAD
-extern rwlock_t snd_pcm_link_rwlock;
-
-int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info);
-int snd_pcm_info_user(struct snd_pcm_substream *substream,
-		      struct snd_pcm_info __user *info);
-int snd_pcm_status(struct snd_pcm_substream *substream,
-		   struct snd_pcm_status *status);
-int snd_pcm_start(struct snd_pcm_substream *substream);
-int snd_pcm_stop(struct snd_pcm_substream *substream, snd_pcm_state_t status);
-int snd_pcm_drain_done(struct snd_pcm_substream *substream);
-#ifdef CONFIG_PM
-int snd_pcm_suspend(struct snd_pcm_substream *substream);
-int snd_pcm_suspend_all(struct snd_pcm *pcm);
-=======
 int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info);
 int snd_pcm_info_user(struct snd_pcm_substream *substream,
 		      struct snd_pcm_info __user *info);
@@ -866,7 +584,6 @@ static inline int snd_pcm_suspend_all(struct snd_pcm *pcm)
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 int snd_pcm_kernel_ioctl(struct snd_pcm_substream *substream, unsigned int cmd, void *arg);
 int snd_pcm_open_substream(struct snd_pcm *pcm, int stream, struct file *file,
@@ -875,10 +592,6 @@ void snd_pcm_release_substream(struct snd_pcm_substream *substream);
 int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream, struct file *file,
 			     struct snd_pcm_substream **rsubstream);
 void snd_pcm_detach_substream(struct snd_pcm_substream *substream);
-<<<<<<< HEAD
-void snd_pcm_vma_notify_data(void *client, void *data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_pcm_mmap_data(struct snd_pcm_substream *substream, struct file *file, struct vm_area_struct *area);
 
 
@@ -897,68 +610,17 @@ snd_pcm_debug_name(struct snd_pcm_substream *substream, char *buf, size_t size)
  *  PCM library
  */
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_stream_linked - Check whether the substream is linked with others
  * @substream: substream to check
  *
  * Return: true if the given substream is being linked with others
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int snd_pcm_stream_linked(struct snd_pcm_substream *substream)
 {
 	return substream->group != &substream->self_group;
 }
 
-<<<<<<< HEAD
-static inline void snd_pcm_stream_lock(struct snd_pcm_substream *substream)
-{
-	read_lock(&snd_pcm_link_rwlock);
-	spin_lock(&substream->self_group.lock);
-}
-
-static inline void snd_pcm_stream_unlock(struct snd_pcm_substream *substream)
-{
-	spin_unlock(&substream->self_group.lock);
-	read_unlock(&snd_pcm_link_rwlock);
-}
-
-static inline void snd_pcm_stream_lock_irq(struct snd_pcm_substream *substream)
-{
-	read_lock_irq(&snd_pcm_link_rwlock);
-	spin_lock(&substream->self_group.lock);
-}
-
-static inline void snd_pcm_stream_unlock_irq(struct snd_pcm_substream *substream)
-{
-	spin_unlock(&substream->self_group.lock);
-	read_unlock_irq(&snd_pcm_link_rwlock);
-}
-
-#define snd_pcm_stream_lock_irqsave(substream, flags) \
-do { \
-	read_lock_irqsave(&snd_pcm_link_rwlock, (flags)); \
-	spin_lock(&substream->self_group.lock); \
-} while (0)
-
-#define snd_pcm_stream_unlock_irqrestore(substream, flags) \
-do { \
-	spin_unlock(&substream->self_group.lock); \
-	read_unlock_irqrestore(&snd_pcm_link_rwlock, (flags)); \
-} while (0)
-
-#define snd_pcm_group_for_each_entry(s, substream) \
-	list_for_each_entry(s, &substream->group->substreams, link_list)
-
-static inline int snd_pcm_running(struct snd_pcm_substream *substream)
-{
-	return (substream->runtime->status->state == SNDRV_PCM_STATE_RUNNING ||
-		(substream->runtime->status->state == SNDRV_PCM_STATE_DRAINING &&
-		 substream->stream == SNDRV_PCM_STREAM_PLAYBACK));
-}
-
-=======
 void snd_pcm_stream_lock(struct snd_pcm_substream *substream);
 void snd_pcm_stream_unlock(struct snd_pcm_substream *substream);
 void snd_pcm_stream_lock_irq(struct snd_pcm_substream *substream);
@@ -1061,14 +723,11 @@ static inline void __snd_pcm_set_state(struct snd_pcm_runtime *runtime,
  *
  * Return: the size in samples
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ssize_t bytes_to_samples(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * 8 / runtime->sample_bits;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * bytes_to_frames - Unit conversion of the size from bytes to frames
  * @runtime: PCM runtime instance
@@ -1076,14 +735,11 @@ static inline ssize_t bytes_to_samples(struct snd_pcm_runtime *runtime, ssize_t 
  *
  * Return: the size in frames
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline snd_pcm_sframes_t bytes_to_frames(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * 8 / runtime->frame_bits;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * samples_to_bytes - Unit conversion of the size from samples to bytes
  * @runtime: PCM runtime instance
@@ -1091,14 +747,11 @@ static inline snd_pcm_sframes_t bytes_to_frames(struct snd_pcm_runtime *runtime,
  *
  * Return: the byte size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ssize_t samples_to_bytes(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * runtime->sample_bits / 8;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * frames_to_bytes - Unit conversion of the size from frames to bytes
  * @runtime: PCM runtime instance
@@ -1106,14 +759,11 @@ static inline ssize_t samples_to_bytes(struct snd_pcm_runtime *runtime, ssize_t 
  *
  * Return: the byte size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ssize_t frames_to_bytes(struct snd_pcm_runtime *runtime, snd_pcm_sframes_t size)
 {
 	return size * runtime->frame_bits / 8;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * frame_aligned - Check whether the byte size is aligned to frames
  * @runtime: PCM runtime instance
@@ -1121,46 +771,35 @@ static inline ssize_t frames_to_bytes(struct snd_pcm_runtime *runtime, snd_pcm_s
  *
  * Return: true if aligned, or false if not
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int frame_aligned(struct snd_pcm_runtime *runtime, ssize_t bytes)
 {
 	return bytes % runtime->byte_align == 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_lib_buffer_bytes - Get the buffer size of the current PCM in bytes
  * @substream: PCM substream
  *
  * Return: buffer byte size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline size_t snd_pcm_lib_buffer_bytes(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	return frames_to_bytes(runtime, runtime->buffer_size);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_lib_period_bytes - Get the period size of the current PCM in bytes
  * @substream: PCM substream
  *
  * Return: period byte size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline size_t snd_pcm_lib_period_bytes(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	return frames_to_bytes(runtime, runtime->period_size);
 }
 
-<<<<<<< HEAD
-/*
- *  result is: 0 ... (boundary - 1)
-=======
 /**
  * snd_pcm_playback_avail - Get the available (writable) space for playback
  * @runtime: PCM runtime instance
@@ -1168,7 +807,6 @@ static inline size_t snd_pcm_lib_period_bytes(struct snd_pcm_substream *substrea
  * Result is between 0 ... (boundary - 1)
  *
  * Return: available frame size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline snd_pcm_uframes_t snd_pcm_playback_avail(struct snd_pcm_runtime *runtime)
 {
@@ -1180,10 +818,6 @@ static inline snd_pcm_uframes_t snd_pcm_playback_avail(struct snd_pcm_runtime *r
 	return avail;
 }
 
-<<<<<<< HEAD
-/*
- *  result is: 0 ... (boundary - 1)
-=======
 /**
  * snd_pcm_capture_avail - Get the available (readable) space for capture
  * @runtime: PCM runtime instance
@@ -1191,7 +825,6 @@ static inline snd_pcm_uframes_t snd_pcm_playback_avail(struct snd_pcm_runtime *r
  * Result is between 0 ... (boundary - 1)
  *
  * Return: available frame size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline snd_pcm_uframes_t snd_pcm_capture_avail(struct snd_pcm_runtime *runtime)
 {
@@ -1201,29 +834,23 @@ static inline snd_pcm_uframes_t snd_pcm_capture_avail(struct snd_pcm_runtime *ru
 	return avail;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_playback_hw_avail - Get the queued space for playback
  * @runtime: PCM runtime instance
  *
  * Return: available frame size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline snd_pcm_sframes_t snd_pcm_playback_hw_avail(struct snd_pcm_runtime *runtime)
 {
 	return runtime->buffer_size - snd_pcm_playback_avail(runtime);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_capture_hw_avail - Get the free space for capture
  * @runtime: PCM runtime instance
  *
  * Return: available frame size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline snd_pcm_sframes_t snd_pcm_capture_hw_avail(struct snd_pcm_runtime *runtime)
 {
 	return runtime->buffer_size - snd_pcm_capture_avail(runtime);
@@ -1235,11 +862,7 @@ static inline snd_pcm_sframes_t snd_pcm_capture_hw_avail(struct snd_pcm_runtime 
  *
  * Checks whether enough free space is available on the playback buffer.
  *
-<<<<<<< HEAD
- * Returns non-zero if available, or zero if not.
-=======
  * Return: Non-zero if available, or zero if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int snd_pcm_playback_ready(struct snd_pcm_substream *substream)
 {
@@ -1253,11 +876,7 @@ static inline int snd_pcm_playback_ready(struct snd_pcm_substream *substream)
  *
  * Checks whether enough capture data is available on the capture buffer.
  *
-<<<<<<< HEAD
- * Returns non-zero if available, or zero if not.
-=======
  * Return: Non-zero if available, or zero if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int snd_pcm_capture_ready(struct snd_pcm_substream *substream)
 {
@@ -1269,17 +888,10 @@ static inline int snd_pcm_capture_ready(struct snd_pcm_substream *substream)
  * snd_pcm_playback_data - check whether any data exists on the playback buffer
  * @substream: the pcm substream instance
  *
-<<<<<<< HEAD
- * Checks whether any data exists on the playback buffer. If stop_threshold
- * is bigger or equal to boundary, then this function returns always non-zero.
- *
- * Returns non-zero if exists, or zero if not.
-=======
  * Checks whether any data exists on the playback buffer.
  *
  * Return: Non-zero if any data exists, or zero if not. If stop_threshold
  * is bigger or equal to boundary, then this function returns always non-zero.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int snd_pcm_playback_data(struct snd_pcm_substream *substream)
 {
@@ -1296,11 +908,7 @@ static inline int snd_pcm_playback_data(struct snd_pcm_substream *substream)
  *
  * Checks whether the playback buffer is empty.
  *
-<<<<<<< HEAD
- * Returns non-zero if empty, or zero if not.
-=======
  * Return: Non-zero if empty, or zero if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int snd_pcm_playback_empty(struct snd_pcm_substream *substream)
 {
@@ -1314,11 +922,7 @@ static inline int snd_pcm_playback_empty(struct snd_pcm_substream *substream)
  *
  * Checks whether the capture buffer is empty.
  *
-<<<<<<< HEAD
- * Returns non-zero if empty, or zero if not.
-=======
  * Return: Non-zero if empty, or zero if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int snd_pcm_capture_empty(struct snd_pcm_substream *substream)
 {
@@ -1326,8 +930,6 @@ static inline int snd_pcm_capture_empty(struct snd_pcm_substream *substream)
 	return snd_pcm_capture_avail(runtime) == 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_trigger_done - Mark the master substream
  * @substream: the pcm substream instance
@@ -1342,7 +944,6 @@ static inline int snd_pcm_capture_empty(struct snd_pcm_substream *substream)
  * The trigger_master mark is cleared at timestamp updates at the end
  * of trigger operations.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_pcm_trigger_done(struct snd_pcm_substream *substream, 
 					struct snd_pcm_substream *master)
 {
@@ -1385,31 +986,6 @@ static inline const struct snd_interval *hw_param_interval_c(const struct snd_pc
 	return &params->intervals[var - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
 }
 
-<<<<<<< HEAD
-#define params_channels(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_CHANNELS)->min)
-#define params_rate(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_RATE)->min)
-#define params_period_size(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_PERIOD_SIZE)->min)
-#define params_periods(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_PERIODS)->min)
-#define params_buffer_size(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_BUFFER_SIZE)->min)
-#define params_buffer_bytes(p) \
-	(hw_param_interval_c((p), SNDRV_PCM_HW_PARAM_BUFFER_BYTES)->min)
-
-int snd_interval_refine(struct snd_interval *i, const struct snd_interval *v);
-void snd_interval_mul(const struct snd_interval *a, const struct snd_interval *b, struct snd_interval *c);
-void snd_interval_div(const struct snd_interval *a, const struct snd_interval *b, struct snd_interval *c);
-void snd_interval_muldivk(const struct snd_interval *a, const struct snd_interval *b, 
-			  unsigned int k, struct snd_interval *c);
-void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
-			  const struct snd_interval *b, struct snd_interval *c);
-int snd_interval_list(struct snd_interval *i, unsigned int count, unsigned int *list, unsigned int mask);
-int snd_interval_ratnum(struct snd_interval *i,
-			unsigned int rats_count, struct snd_ratnum *rats,
-=======
 /**
  * params_channels - Get the number of channels from the hw params
  * @p: hw params
@@ -1483,26 +1059,13 @@ int snd_interval_ranges(struct snd_interval *i, unsigned int count,
 			const struct snd_interval *list, unsigned int mask);
 int snd_interval_ratnum(struct snd_interval *i,
 			unsigned int rats_count, const struct snd_ratnum *rats,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int *nump, unsigned int *denp);
 
 void _snd_pcm_hw_params_any(struct snd_pcm_hw_params *params);
 void _snd_pcm_hw_param_setempty(struct snd_pcm_hw_params *params, snd_pcm_hw_param_t var);
-<<<<<<< HEAD
-int snd_pcm_hw_params_choose(struct snd_pcm_substream *substream, struct snd_pcm_hw_params *params);
 
 int snd_pcm_hw_refine(struct snd_pcm_substream *substream, struct snd_pcm_hw_params *params);
 
-int snd_pcm_hw_constraints_init(struct snd_pcm_substream *substream);
-int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream);
-
-int snd_pcm_hw_constraint_mask(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
-			       u_int32_t mask);
-=======
-
-int snd_pcm_hw_refine(struct snd_pcm_substream *substream, struct snd_pcm_hw_params *params);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 				 u_int64_t mask);
 int snd_pcm_hw_constraint_minmax(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
@@ -1511,17 +1074,6 @@ int snd_pcm_hw_constraint_integer(struct snd_pcm_runtime *runtime, snd_pcm_hw_pa
 int snd_pcm_hw_constraint_list(struct snd_pcm_runtime *runtime, 
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var,
-<<<<<<< HEAD
-			       struct snd_pcm_hw_constraint_list *l);
-int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime, 
-				  unsigned int cond,
-				  snd_pcm_hw_param_t var,
-				  struct snd_pcm_hw_constraint_ratnums *r);
-int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime, 
-				  unsigned int cond,
-				  snd_pcm_hw_param_t var,
-				  struct snd_pcm_hw_constraint_ratdens *r);
-=======
 			       const struct snd_pcm_hw_constraint_list *l);
 int snd_pcm_hw_constraint_ranges(struct snd_pcm_runtime *runtime,
 				 unsigned int cond,
@@ -1535,7 +1087,6 @@ int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime,
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
 				  const struct snd_pcm_hw_constraint_ratdens *r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_pcm_hw_constraint_msbits(struct snd_pcm_runtime *runtime, 
 				 unsigned int cond,
 				 unsigned int width,
@@ -1555,8 +1106,6 @@ int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime,
 			snd_pcm_hw_rule_func_t func, void *private,
 			int dep, ...);
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_hw_constraint_single() - Constrain parameter to a single value
  * @runtime: PCM runtime instance
@@ -1573,26 +1122,17 @@ static inline int snd_pcm_hw_constraint_single(
 	return snd_pcm_hw_constraint_minmax(runtime, var, val, val);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_pcm_format_signed(snd_pcm_format_t format);
 int snd_pcm_format_unsigned(snd_pcm_format_t format);
 int snd_pcm_format_linear(snd_pcm_format_t format);
 int snd_pcm_format_little_endian(snd_pcm_format_t format);
 int snd_pcm_format_big_endian(snd_pcm_format_t format);
-<<<<<<< HEAD
-#if 0 /* just for DocBook */
-=======
 #if 0 /* just for kernel-doc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_pcm_format_cpu_endian - Check the PCM format is CPU-endian
  * @format: the format to check
  *
-<<<<<<< HEAD
- * Returns 1 if the given PCM format is CPU-endian, 0 if
-=======
  * Return: 1 if the given PCM format is CPU-endian, 0 if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * opposite, or a negative error code if endian not specified.
  */
 int snd_pcm_format_cpu_endian(snd_pcm_format_t format);
@@ -1607,39 +1147,6 @@ int snd_pcm_format_physical_width(snd_pcm_format_t format);		/* in bits */
 ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples);
 const unsigned char *snd_pcm_format_silence_64(snd_pcm_format_t format);
 int snd_pcm_format_set_silence(snd_pcm_format_t format, void *buf, unsigned int frames);
-<<<<<<< HEAD
-snd_pcm_format_t snd_pcm_build_linear_format(int width, int unsignd, int big_endian);
-
-void snd_pcm_set_ops(struct snd_pcm * pcm, int direction, struct snd_pcm_ops *ops);
-void snd_pcm_set_sync(struct snd_pcm_substream *substream);
-int snd_pcm_lib_interleave_len(struct snd_pcm_substream *substream);
-int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
-		      unsigned int cmd, void *arg);                      
-int snd_pcm_update_state(struct snd_pcm_substream *substream,
-			 struct snd_pcm_runtime *runtime);
-int snd_pcm_update_hw_ptr(struct snd_pcm_substream *substream);
-int snd_pcm_playback_xrun_check(struct snd_pcm_substream *substream);
-int snd_pcm_capture_xrun_check(struct snd_pcm_substream *substream);
-int snd_pcm_playback_xrun_asap(struct snd_pcm_substream *substream);
-int snd_pcm_capture_xrun_asap(struct snd_pcm_substream *substream);
-void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_uframes_t new_hw_ptr);
-void snd_pcm_period_elapsed(struct snd_pcm_substream *substream);
-snd_pcm_sframes_t snd_pcm_lib_write(struct snd_pcm_substream *substream,
-				    const void __user *buf,
-				    snd_pcm_uframes_t frames);
-snd_pcm_sframes_t snd_pcm_lib_read(struct snd_pcm_substream *substream,
-				   void __user *buf, snd_pcm_uframes_t frames);
-snd_pcm_sframes_t snd_pcm_lib_writev(struct snd_pcm_substream *substream,
-				     void __user **bufs, snd_pcm_uframes_t frames);
-snd_pcm_sframes_t snd_pcm_lib_readv(struct snd_pcm_substream *substream,
-				    void __user **bufs, snd_pcm_uframes_t frames);
-
-extern const struct snd_pcm_hw_constraint_list snd_pcm_known_rates;
-
-int snd_pcm_limit_hw_rates(struct snd_pcm_runtime *runtime);
-unsigned int snd_pcm_rate_to_rate_bit(unsigned int rate);
-
-=======
 
 void snd_pcm_set_ops(struct snd_pcm * pcm, int direction,
 		     const struct snd_pcm_ops *ops);
@@ -1731,7 +1238,6 @@ unsigned int snd_pcm_rate_range_to_bits(unsigned int rate_min,
  * Copy the buffer information to runtime->dma_buffer when @bufp is non-NULL.
  * Otherwise it clears the current buffer information.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_pcm_set_runtime_buffer(struct snd_pcm_substream *substream,
 					      struct snd_dma_buffer *bufp)
 {
@@ -1749,23 +1255,6 @@ static inline void snd_pcm_set_runtime_buffer(struct snd_pcm_substream *substrea
 	}
 }
 
-<<<<<<< HEAD
-/*
- *  Timer interface
- */
-
-void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream);
-void snd_pcm_timer_init(struct snd_pcm_substream *substream);
-void snd_pcm_timer_done(struct snd_pcm_substream *substream);
-
-static inline void snd_pcm_gettime(struct snd_pcm_runtime *runtime,
-				   struct timespec *tv)
-{
-	if (runtime->tstamp_type == SNDRV_PCM_TSTAMP_TYPE_MONOTONIC)
-		do_posix_clock_monotonic_gettime(tv);
-	else
-		getnstimeofday(tv);
-=======
 /**
  * snd_pcm_gettime - Fill the timespec64 depending on the timestamp mode
  * @runtime: PCM runtime instance
@@ -1785,35 +1274,23 @@ static inline void snd_pcm_gettime(struct snd_pcm_runtime *runtime,
 		ktime_get_real_ts64(tv);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *  Memory
  */
 
-<<<<<<< HEAD
-int snd_pcm_lib_preallocate_free(struct snd_pcm_substream *substream);
-int snd_pcm_lib_preallocate_free_for_all(struct snd_pcm *pcm);
-int snd_pcm_lib_preallocate_pages(struct snd_pcm_substream *substream,
-				  int type, struct device *data,
-				  size_t size, size_t max);
-int snd_pcm_lib_preallocate_pages_for_all(struct snd_pcm *pcm,
-=======
 void snd_pcm_lib_preallocate_free(struct snd_pcm_substream *substream);
 void snd_pcm_lib_preallocate_free_for_all(struct snd_pcm *pcm);
 void snd_pcm_lib_preallocate_pages(struct snd_pcm_substream *substream,
 				  int type, struct device *data,
 				  size_t size, size_t max);
 void snd_pcm_lib_preallocate_pages_for_all(struct snd_pcm *pcm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  int type, void *data,
 					  size_t size, size_t max);
 int snd_pcm_lib_malloc_pages(struct snd_pcm_substream *substream, size_t size);
 int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream);
 
-<<<<<<< HEAD
-=======
 int snd_pcm_set_managed_buffer(struct snd_pcm_substream *substream, int type,
 			       struct device *data, size_t size, size_t max);
 int snd_pcm_set_managed_buffer_all(struct snd_pcm *pcm, int type,
@@ -1861,16 +1338,11 @@ snd_pcm_set_fixed_buffer_all(struct snd_pcm *pcm, int type,
 	return snd_pcm_set_managed_buffer_all(pcm, type, data, size, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int _snd_pcm_lib_alloc_vmalloc_buffer(struct snd_pcm_substream *substream,
 				      size_t size, gfp_t gfp_flags);
 int snd_pcm_lib_free_vmalloc_buffer(struct snd_pcm_substream *substream);
 struct page *snd_pcm_lib_get_vmalloc_page(struct snd_pcm_substream *substream,
 					  unsigned long offset);
-<<<<<<< HEAD
-#if 0 /* for kernel-doc */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_pcm_lib_alloc_vmalloc_buffer - allocate virtual DMA buffer
  * @substream: the substream to allocate the buffer to
@@ -1880,13 +1352,6 @@ struct page *snd_pcm_lib_get_vmalloc_page(struct snd_pcm_substream *substream,
  * contiguous in kernel virtual space, but not in physical memory.  Use this
  * if the buffer is accessed by kernel code but not by device DMA.
  *
-<<<<<<< HEAD
- * Returns 1 if the buffer was changed, 0 if not changed, or a negative error
- * code.
- */
-static int snd_pcm_lib_alloc_vmalloc_buffer
-			(struct snd_pcm_substream *substream, size_t size);
-=======
  * Return: 1 if the buffer was changed, 0 if not changed, or a negative error
  * code.
  */
@@ -1897,7 +1362,6 @@ static inline int snd_pcm_lib_alloc_vmalloc_buffer
 						 GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_pcm_lib_alloc_vmalloc_32_buffer - allocate 32-bit-addressable buffer
  * @substream: the substream to allocate the buffer to
@@ -1905,48 +1369,6 @@ static inline int snd_pcm_lib_alloc_vmalloc_buffer
  *
  * This function works like snd_pcm_lib_alloc_vmalloc_buffer(), but uses
  * vmalloc_32(), i.e., the pages are allocated from 32-bit-addressable memory.
-<<<<<<< HEAD
- */
-static int snd_pcm_lib_alloc_vmalloc_32_buffer
-			(struct snd_pcm_substream *substream, size_t size);
-#endif
-#define snd_pcm_lib_alloc_vmalloc_buffer(subs, size) \
-	_snd_pcm_lib_alloc_vmalloc_buffer \
-			(subs, size, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO)
-#define snd_pcm_lib_alloc_vmalloc_32_buffer(subs, size) \
-	_snd_pcm_lib_alloc_vmalloc_buffer \
-			(subs, size, GFP_KERNEL | GFP_DMA32 | __GFP_ZERO)
-
-#ifdef CONFIG_SND_DMA_SGBUF
-/*
- * SG-buffer handling
- */
-#define snd_pcm_substream_sgbuf(substream) \
-	((substream)->runtime->dma_buffer_p->private_data)
-
-static inline dma_addr_t
-snd_pcm_sgbuf_get_addr(struct snd_pcm_substream *substream, unsigned int ofs)
-{
-	struct snd_sg_buf *sg = snd_pcm_substream_sgbuf(substream);
-	return snd_sgbuf_get_addr(sg, ofs);
-}
-
-static inline void *
-snd_pcm_sgbuf_get_ptr(struct snd_pcm_substream *substream, unsigned int ofs)
-{
-	struct snd_sg_buf *sg = snd_pcm_substream_sgbuf(substream);
-	return snd_sgbuf_get_ptr(sg, ofs);
-}
-
-struct page *snd_pcm_sgbuf_ops_page(struct snd_pcm_substream *substream,
-				    unsigned long offset);
-unsigned int snd_pcm_sgbuf_get_chunk_size(struct snd_pcm_substream *substream,
-					  unsigned int ofs, unsigned int size);
-
-#else /* !SND_DMA_SGBUF */
-/*
- * fake using a continuous buffer
-=======
  *
  * Return: 1 if the buffer was changed, 0 if not changed, or a negative error
  * code.
@@ -1966,29 +1388,10 @@ static inline int snd_pcm_lib_alloc_vmalloc_32_buffer
  * @ofs: byte offset
  *
  * Return: DMA address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline dma_addr_t
 snd_pcm_sgbuf_get_addr(struct snd_pcm_substream *substream, unsigned int ofs)
 {
-<<<<<<< HEAD
-	return substream->runtime->dma_addr + ofs;
-}
-
-static inline void *
-snd_pcm_sgbuf_get_ptr(struct snd_pcm_substream *substream, unsigned int ofs)
-{
-	return substream->runtime->dma_area + ofs;
-}
-
-#define snd_pcm_sgbuf_ops_page	NULL
-
-#define snd_pcm_sgbuf_get_chunk_size(subs, ofs, size)	(size)
-
-#endif /* SND_DMA_SGBUF */
-
-/* handle mmap counter - PCM mmap callback should handle this counter properly */
-=======
 	return snd_sgbuf_get_addr(snd_pcm_get_dma_buf(substream), ofs);
 }
 
@@ -2014,22 +1417,18 @@ snd_pcm_sgbuf_get_chunk_size(struct snd_pcm_substream *substream,
  *
  * PCM mmap callback should handle this counter properly
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_pcm_mmap_data_open(struct vm_area_struct *area)
 {
 	struct snd_pcm_substream *substream = (struct snd_pcm_substream *)area->vm_private_data;
 	atomic_inc(&substream->mmap_count);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_pcm_mmap_data_close - decrease the mmap counter
  * @area: VMA
  *
  * PCM mmap callback should handle this counter properly
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_pcm_mmap_data_close(struct vm_area_struct *area)
 {
 	struct snd_pcm_substream *substream = (struct snd_pcm_substream *)area->vm_private_data;
@@ -2047,16 +1446,11 @@ int snd_pcm_lib_mmap_iomem(struct snd_pcm_substream *substream, struct vm_area_s
 #define snd_pcm_lib_mmap_iomem	NULL
 #endif
 
-<<<<<<< HEAD
-#define snd_pcm_lib_mmap_vmalloc NULL
-
-=======
 /**
  * snd_pcm_limit_isa_dma_size - Get the max size fitting with ISA DMA transfer
  * @dma: DMA number
  * @max: pointer to store the max size
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_pcm_limit_isa_dma_size(int dma, size_t *max)
 {
 	*max = dma < 4 ? 64 * 1024 : 128 * 1024;
@@ -2071,12 +1465,6 @@ static inline void snd_pcm_limit_isa_dma_size(int dma, size_t *max)
 					 (IEC958_AES1_CON_PCM_CODER<<8)|\
 					 (IEC958_AES3_CON_FS_48000<<24))
 
-<<<<<<< HEAD
-#define PCM_RUNTIME_CHECK(sub) snd_BUG_ON(!(sub) || !(sub)->runtime)
-
-const char *snd_pcm_format_name(snd_pcm_format_t format);
-
-=======
 const char *snd_pcm_format_name(snd_pcm_format_t format);
 
 /**
@@ -2104,7 +1492,6 @@ static inline const char *snd_pcm_stream_str(struct snd_pcm_substream *substream
 	return snd_pcm_direction_name(substream->stream);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCM channel-mapping control API
  */
@@ -2125,9 +1512,6 @@ struct snd_pcm_chmap {
 	void *private_data;	/* optional: private data pointer */
 };
 
-<<<<<<< HEAD
-/* get the PCM substream assigned to the given chmap info */
-=======
 /**
  * snd_pcm_chmap_substream - get the PCM substream assigned to the given chmap info
  * @info: chmap information
@@ -2135,7 +1519,6 @@ struct snd_pcm_chmap {
  *
  * Return: the matched PCM substream, or NULL if not found
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct snd_pcm_substream *
 snd_pcm_chmap_substream(struct snd_pcm_chmap *info, unsigned int idx)
 {
@@ -2162,31 +1545,6 @@ int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 			   unsigned long private_value,
 			   struct snd_pcm_chmap **info_ret);
 
-<<<<<<< HEAD
-/*
- * PCM Volume control API
- */
-/* array element of volume */
-struct snd_pcm_volume_elem {
-	int volume;
-};
-
-/* pp information; retrieved via snd_kcontrol_chip() */
-struct snd_pcm_volume {
-	struct snd_pcm *pcm;	/* assigned PCM instance */
-	int stream;		/* PLAYBACK or CAPTURE */
-	struct snd_kcontrol *kctl;
-	const struct snd_pcm_volume_elem *volume;
-	int max_length;
-	void *private_data;	/* optional: private data pointer */
-};
-
-int snd_pcm_add_volume_ctls(struct snd_pcm *pcm, int stream,
-			   const struct snd_pcm_volume_elem *volume,
-			   int max_length,
-			   unsigned long private_value,
-			   struct snd_pcm_volume **info_ret);
-=======
 /**
  * pcm_format_to_bits - Strong-typed conversion of pcm_format to bitwise
  * @pcm_format: PCM format
@@ -2270,6 +1628,5 @@ struct snd_pcm_status32 {
 
 #define SNDRV_PCM_IOCTL_STATUS32	_IOR('A', 0x20, struct snd_pcm_status32)
 #define SNDRV_PCM_IOCTL_STATUS_EXT32	_IOWR('A', 0x24, struct snd_pcm_status32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SOUND_PCM_H */

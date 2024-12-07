@@ -57,10 +57,7 @@
 #include "evergreen_reg.h"
 #include "ni_reg.h"
 #include "si_reg.h"
-<<<<<<< HEAD
-=======
 #include "cik_reg.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RADEON_MC_AGP_LOCATION		0x014c
 #define		RADEON_MC_AGP_START_MASK	0x0000FFFF
@@ -3710,8 +3707,6 @@
 
 #define RV530_GB_PIPE_SELECT2           0x4124
 
-<<<<<<< HEAD
-=======
 #define RADEON_CP_PACKET_GET_TYPE(h) (((h) >> 30) & 3)
 #define RADEON_CP_PACKET_GET_COUNT(h) (((h) >> 16) & 0x3FFF)
 #define RADEON_CP_PACKET0_GET_ONE_REG_WR(h) (((h) >> 15) & 1)
@@ -3727,5 +3722,4 @@
 
 #define RADEON_VLINE_STAT (1 << 12)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_VHOST_NET) += vhost_net.o
-vhost_net-y := vhost.o net.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-$(CONFIG_VHOST_NET) += vhost_net.o
 vhost_net-y := net.o
@@ -21,4 +17,3 @@ obj-$(CONFIG_VHOST)	+= vhost.o
 
 obj-$(CONFIG_VHOST_IOTLB) += vhost_iotlb.o
 vhost_iotlb-y := iotlb.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

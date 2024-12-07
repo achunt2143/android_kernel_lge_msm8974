@@ -57,11 +57,7 @@
  * QIB_VERBOSE_TRACING define as 1 if you want additional tracing in
  * fastpath code
  * QIB_TRACE_REGWRITES define as 1 if you want register writes to be
-<<<<<<< HEAD
- * traced in faspath code
-=======
  * traced in fastpath code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * _QIB_TRACING define as 0 if you want to remove all tracing in a
  * compilation unit
  */
@@ -261,11 +257,7 @@ struct qib_base_info {
 
 	/* shared memory page for send buffer disarm status */
 	__u64 spi_sendbuf_status;
-<<<<<<< HEAD
-} __attribute__ ((aligned(8)));
-=======
 } __aligned(8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This version number is given to the driver by the user code during
@@ -287,20 +279,12 @@ struct qib_base_info {
  * may not be implemented; the user code must deal with this if it
  * cares, or it must abort after initialization reports the difference.
  */
-<<<<<<< HEAD
-#define QIB_USER_SWMINOR 11
-=======
 #define QIB_USER_SWMINOR 13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QIB_USER_SWVERSION ((QIB_USER_SWMAJOR << 16) | QIB_USER_SWMINOR)
 
 #ifndef QIB_KERN_TYPE
 #define QIB_KERN_TYPE 0
-<<<<<<< HEAD
-#define QIB_IDSTR "QLogic kernel.org driver"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -317,8 +301,6 @@ struct qib_base_info {
 #define QIB_KERN_SWVERSION ((QIB_KERN_TYPE << 31) | QIB_USER_SWVERSION)
 
 /*
-<<<<<<< HEAD
-=======
  * Define the driver version number.  This is something that refers only
  * to the driver itself, not the software interfaces it supports.
  */
@@ -332,7 +314,6 @@ struct qib_base_info {
 #endif
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If the unit is specified via open, HCA choice is fixed.  If port is
  * specified, it's also fixed.  Otherwise we try to spread contexts
  * across ports and HCAs, using different algorithims.  WITHIN is
@@ -380,11 +361,7 @@ struct qib_user_info {
 	 */
 	__u64 spu_base_info;
 
-<<<<<<< HEAD
-} __attribute__ ((aligned(8)));
-=======
 } __aligned(8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* User commands. */
 
@@ -724,9 +701,6 @@ struct qib_message_header {
 	__be32 bth[3];
 	/* fields below this point are in host byte order */
 	struct qib_header iph;
-<<<<<<< HEAD
-	__u8 sub_opcode;
-=======
 	/* fields below are simplified, but should match PSM */
 	/* some are accessed by driver when packet spliting is needed */
 	__u8 sub_opcode;
@@ -758,7 +732,6 @@ struct qib_tid_session_member {
 	__u16 tid;
 	__u16 offset;
 	__u16 length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* IB - LRH header consts */
@@ -769,18 +742,7 @@ struct qib_tid_session_member {
 #define SIZE_OF_CRC 1
 
 #define QIB_DEFAULT_P_KEY 0xFFFF
-<<<<<<< HEAD
-#define QIB_PERMISSIVE_LID 0xFFFF
-#define QIB_AETH_CREDIT_SHIFT 24
-#define QIB_AETH_CREDIT_MASK 0x1F
-#define QIB_AETH_CREDIT_INVAL 0x1F
 #define QIB_PSN_MASK 0xFFFFFF
-#define QIB_MSN_MASK 0xFFFFFF
-#define QIB_QPN_MASK 0xFFFFFF
-#define QIB_MULTICAST_LID_BASE 0xC000
-=======
-#define QIB_PSN_MASK 0xFFFFFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QIB_EAGER_TID_ID QLOGIC_IB_I_TID_MASK
 #define QIB_MULTICAST_QPN 0xFFFFFF
 
@@ -833,14 +795,4 @@ static inline __u32 qib_hdrget_use_egr_buf(const __le32 *rbuf)
 {
 	return __le32_to_cpu(rbuf[0]) & QLOGIC_IB_RHF_L_USE_EGR;
 }
-<<<<<<< HEAD
-
-static inline __u32 qib_hdrget_qib_ver(__le32 hdrword)
-{
-	return (__le32_to_cpu(hdrword) >> QLOGIC_IB_I_VERS_SHIFT) &
-		QLOGIC_IB_I_VERS_MASK;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif                          /* _QIB_COMMON_H */

@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-mv78xx0/buffalo-wxl-setup.c
  *
  * Buffalo WXL (Terastation Duo) Setup routines
  *
  * sebastien requiem <sebastien@requiem.fr>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,30 +14,21 @@
 #include <linux/mv643xx_eth.h>
 #include <linux/ethtool.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <mach/mv78xx0.h>
-#include <asm/mach-types.h>
-#include <asm/mach/arch.h>
-=======
 #include <linux/gpio.h>
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include "mv78xx0.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 #include "mpp.h"
 
 
-<<<<<<< HEAD
-=======
 #define TSWXL_AUTO_SWITCH	15
 #define TSWXL_USB_POWER1	30
 #define TSWXL_USB_POWER2	31
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This arch has 2 Giga Ethernet */
 
 static struct mv643xx_eth_platform_data db78x00_ge00_data = {
@@ -66,11 +47,7 @@ static struct mv_sata_platform_data db78x00_sata_data = {
 };
 
 static struct i2c_board_info __initdata db78x00_i2c_rtc = {
-<<<<<<< HEAD
-	I2C_BOARD_INFO("ds1338", 0x68),
-=======
 	I2C_BOARD_INFO("rs5c372a", 0x32),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -88,15 +65,9 @@ static unsigned int wxl_mpp_config[] __initdata = {
 	MPP10_GE1_RXD2,
 	MPP11_GE1_RXD3,
 	MPP12_GPIO,
-<<<<<<< HEAD
-	MPP13_SYSRST_OUTn,
-	MPP14_SATA1_ACTn,
-	MPP15_SATA0_ACTn,
-=======
 	MPP13_GPIO,
 	MPP14_GPIO,
 	MPP15_GPIO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MPP16_GPIO,
 	MPP17_GPIO,
 	MPP18_GPIO,
@@ -110,11 +81,7 @@ static unsigned int wxl_mpp_config[] __initdata = {
 	MPP26_UA2_CTSn,
 	MPP27_UA2_RTSn,
 	MPP28_GPIO,
-<<<<<<< HEAD
-	MPP29_SYSRST_OUTn,
-=======
 	MPP29_GPIO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MPP30_GPIO,
 	MPP31_GPIO,
 	MPP32_GPIO,
@@ -125,21 +92,6 @@ static unsigned int wxl_mpp_config[] __initdata = {
 	MPP37_GPIO,
 	MPP38_GPIO,
 	MPP39_GPIO,
-<<<<<<< HEAD
-	MPP40_UNUSED,
-	MPP41_UNUSED,
-	MPP42_UNUSED,
-	MPP43_UNUSED,
-	MPP44_UNUSED,
-	MPP45_UNUSED,
-	MPP46_UNUSED,
-	MPP47_UNUSED,
-	MPP48_SATA1_ACTn,
-	MPP49_SATA0_ACTn,
-	0
-};
-
-=======
 	MPP40_GPIO,
 	MPP41_GPIO,
 	MPP42_GPIO,
@@ -175,7 +127,6 @@ static struct platform_device tswxl_button_device = {
 		.platform_data  = &tswxl_button_data,
 	},
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init wxl_init(void)
 {
@@ -190,10 +141,6 @@ static void __init wxl_init(void)
 	 */
 	mv78xx0_ehci0_init();
 	mv78xx0_ehci1_init();
-<<<<<<< HEAD
-	mv78xx0_ehci2_init();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mv78xx0_ge00_init(&db78x00_ge00_data);
 	mv78xx0_ge01_init(&db78x00_ge01_data);
 	mv78xx0_sata_init(&db78x00_sata_data);
@@ -201,10 +148,6 @@ static void __init wxl_init(void)
 	mv78xx0_uart1_init();
 	mv78xx0_uart2_init();
 	mv78xx0_uart3_init();
-<<<<<<< HEAD
-	mv78xx0_i2c_init();
-	i2c_register_board_info(0, &db78x00_i2c_rtc, 1);
-=======
 	mv78xx0_xor_init();
 	mv78xx0_crypto_init();
 	mv78xx0_i2c_init();
@@ -216,26 +159,12 @@ static void __init wxl_init(void)
 
 	//enable rear switch
 	platform_device_register(&tswxl_button_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init wxl_pci_init(void)
 {
-<<<<<<< HEAD
-	if (machine_is_terastation_wxl()) {
-		/*
-		 * Assign the x16 PCIe slot on the board to CPU core
-		 * #0, and let CPU core #1 have the four x1 slots.
-		 */
-		if (mv78xx0_core_index() == 0)
-			mv78xx0_pcie_init(0, 1);
-		else
-			mv78xx0_pcie_init(1, 0);
-	}
-=======
 	if (machine_is_terastation_wxl() && mv78xx0_core_index() == 0)
                 mv78xx0_pcie_init(1, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -244,18 +173,11 @@ subsys_initcall(wxl_pci_init);
 MACHINE_START(TERASTATION_WXL, "Buffalo Nas WXL")
 	/* Maintainer: Sebastien Requiem <sebastien@requiem.fr> */
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= MV78XX0_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= wxl_init,
 	.map_io		= mv78xx0_map_io,
 	.init_early	= mv78xx0_init_early,
 	.init_irq	= mv78xx0_init_irq,
-<<<<<<< HEAD
-	.timer		= &mv78xx0_timer,
-=======
 	.init_time	= mv78xx0_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= mv78xx0_restart,
 MACHINE_END

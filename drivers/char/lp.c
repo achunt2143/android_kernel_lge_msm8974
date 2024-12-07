@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic parallel printer driver
  *
@@ -50,13 +47,8 @@
  *	lp=auto				(assign lp devices to all ports that
  *				         have printers attached, as determined
  *					 by the IEEE-1284 autoprobe)
-<<<<<<< HEAD
- * 
- *	lp=reset			(reset the printer during 
-=======
  *
  *	lp=reset			(reset the printer during
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *					 initialisation)
  *
  *	lp=off				(disable the printer driver entirely)
@@ -126,11 +118,7 @@
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/major.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/fcntl.h>
 #include <linux/delay.h>
@@ -147,29 +135,19 @@
 #include <linux/lp.h>
 
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* if you have more than 8 printers, remember to increase LP_NO */
 #define LP_NO 8
 
 static DEFINE_MUTEX(lp_mutex);
 static struct lp_struct lp_table[LP_NO];
-<<<<<<< HEAD
-
-static unsigned int lp_count = 0;
-static struct class *lp_class;
-=======
 static int port_num[LP_NO];
 
 static unsigned int lp_count = 0;
 static const struct class lp_class = {
 	.name = "printer",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_LP_CONSOLE
 static struct parport *console_registered;
@@ -192,11 +170,7 @@ static struct parport *console_registered;
 static void lp_claim_parport_or_block(struct lp_struct *this_lp)
 {
 	if (!test_and_set_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
-<<<<<<< HEAD
-		parport_claim_or_block (this_lp->dev);
-=======
 		parport_claim_or_block(this_lp->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -204,11 +178,7 @@ static void lp_claim_parport_or_block(struct lp_struct *this_lp)
 static void lp_release_parport(struct lp_struct *this_lp)
 {
 	if (test_and_clear_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
-<<<<<<< HEAD
-		parport_release (this_lp->dev);
-=======
 		parport_release(this_lp->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -218,24 +188,6 @@ static int lp_preempt(void *handle)
 {
 	struct lp_struct *this_lp = (struct lp_struct *)handle;
 	set_bit(LP_PREEMPT_REQUEST, &this_lp->bits);
-<<<<<<< HEAD
-	return (1);
-}
-
-
-/* 
- * Try to negotiate to a new mode; if unsuccessful negotiate to
- * compatibility mode.  Return the mode we ended up in.
- */
-static int lp_negotiate(struct parport * port, int mode)
-{
-	if (parport_negotiate (port, mode) != 0) {
-		mode = IEEE1284_MODE_COMPAT;
-		parport_negotiate (port, mode);
-	}
-
-	return (mode);
-=======
 	return 1;
 }
 
@@ -252,24 +204,11 @@ static int lp_negotiate(struct parport *port, int mode)
 	}
 
 	return mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lp_reset(int minor)
 {
 	int retval;
-<<<<<<< HEAD
-	lp_claim_parport_or_block (&lp_table[minor]);
-	w_ctr(minor, LP_PSELECP);
-	udelay (LP_DELAY);
-	w_ctr(minor, LP_PSELECP | LP_PINITP);
-	retval = r_str(minor);
-	lp_release_parport (&lp_table[minor]);
-	return retval;
-}
-
-static void lp_error (int minor)
-=======
 	lp_claim_parport_or_block(&lp_table[minor]);
 	w_ctr(minor, LP_PSELECP);
 	udelay(LP_DELAY);
@@ -280,7 +219,6 @@ static void lp_error (int minor)
 }
 
 static void lp_error(int minor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEFINE_WAIT(wait);
 	int polling;
@@ -289,14 +227,6 @@ static void lp_error(int minor)
 		return;
 
 	polling = lp_table[minor].dev->port->irq == PARPORT_IRQ_NONE;
-<<<<<<< HEAD
-	if (polling) lp_release_parport (&lp_table[minor]);
-	prepare_to_wait(&lp_table[minor].waitq, &wait, TASK_INTERRUPTIBLE);
-	schedule_timeout(LP_TIMEOUT_POLLED);
-	finish_wait(&lp_table[minor].waitq, &wait);
-	if (polling) lp_claim_parport_or_block (&lp_table[minor]);
-	else parport_yield_blocking (lp_table[minor].dev);
-=======
 	if (polling)
 		lp_release_parport(&lp_table[minor]);
 	prepare_to_wait(&lp_table[minor].waitq, &wait, TASK_INTERRUPTIBLE);
@@ -306,7 +236,6 @@ static void lp_error(int minor)
 		lp_claim_parport_or_block(&lp_table[minor]);
 	else
 		parport_yield_blocking(lp_table[minor].dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lp_check_status(int minor)
@@ -337,11 +266,7 @@ static int lp_check_status(int minor)
 		error = -EIO;
 	} else {
 		last = 0; /* Come here if LP_CAREFUL is set and no
-<<<<<<< HEAD
-                             errors are reported. */
-=======
 			     errors are reported. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lp_table[minor].last_error = last;
@@ -358,16 +283,6 @@ static int lp_wait_ready(int minor, int nonblock)
 
 	/* If we're not in compatibility mode, we're ready now! */
 	if (lp_table[minor].current_mode != IEEE1284_MODE_COMPAT) {
-<<<<<<< HEAD
-	  return (0);
-	}
-
-	do {
-		error = lp_check_status (minor);
-		if (error && (nonblock || (LP_F(minor) & LP_ABORT)))
-			break;
-		if (signal_pending (current)) {
-=======
 		return 0;
 	}
 
@@ -376,7 +291,6 @@ static int lp_wait_ready(int minor, int nonblock)
 		if (error && (nonblock || (LP_F(minor) & LP_ABORT)))
 			break;
 		if (signal_pending(current)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EINTR;
 			break;
 		}
@@ -384,17 +298,10 @@ static int lp_wait_ready(int minor, int nonblock)
 	return error;
 }
 
-<<<<<<< HEAD
-static ssize_t lp_write(struct file * file, const char __user * buf,
-		        size_t count, loff_t *ppos)
-{
-	unsigned int minor = iminor(file->f_path.dentry->d_inode);
-=======
 static ssize_t lp_write(struct file *file, const char __user *buf,
 			size_t count, loff_t *ppos)
 {
 	unsigned int minor = iminor(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport *port = lp_table[minor].dev->port;
 	char *kbuf = lp_table[minor].lp_buffer;
 	ssize_t retv = 0;
@@ -417,32 +324,11 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 	if (mutex_lock_interruptible(&lp_table[minor].port_mutex))
 		return -EINTR;
 
-<<<<<<< HEAD
-	if (copy_from_user (kbuf, buf, copy_size)) {
-=======
 	if (copy_from_user(kbuf, buf, copy_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retv = -EFAULT;
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
- 	/* Claim Parport or sleep until it becomes available
- 	 */
-	lp_claim_parport_or_block (&lp_table[minor]);
-	/* Go to the proper mode. */
-	lp_table[minor].current_mode = lp_negotiate (port, 
-						     lp_table[minor].best_mode);
-
-	parport_set_timeout (lp_table[minor].dev,
-			     (nonblock ? PARPORT_INACTIVITY_O_NONBLOCK
-			      : lp_table[minor].timeout));
-
-	if ((retv = lp_wait_ready (minor, nonblock)) == 0)
-	do {
-		/* Write the data. */
-		written = parport_write (port, kbuf, copy_size);
-=======
 	/* Claim Parport or sleep until it becomes available
 	 */
 	lp_claim_parport_or_block(&lp_table[minor]);
@@ -458,7 +344,6 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 	do {
 		/* Write the data. */
 		written = parport_write(port, kbuf, copy_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (written > 0) {
 			copy_size -= written;
 			count -= written;
@@ -466,11 +351,7 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 			retv += written;
 		}
 
-<<<<<<< HEAD
-		if (signal_pending (current)) {
-=======
 		if (signal_pending(current)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (retv == 0)
 				retv = -EINTR;
 
@@ -481,19 +362,11 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 			/* incomplete write -> check error ! */
 			int error;
 
-<<<<<<< HEAD
-			parport_negotiate (lp_table[minor].dev->port, 
-					   IEEE1284_MODE_COMPAT);
-			lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
-
-			error = lp_wait_ready (minor, nonblock);
-=======
 			parport_negotiate(lp_table[minor].dev->port,
 					  IEEE1284_MODE_COMPAT);
 			lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
 
 			error = lp_wait_ready(minor, nonblock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (error) {
 				if (retv == 0)
@@ -505,15 +378,6 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 				break;
 			}
 
-<<<<<<< HEAD
-			parport_yield_blocking (lp_table[minor].dev);
-			lp_table[minor].current_mode 
-			  = lp_negotiate (port, 
-					  lp_table[minor].best_mode);
-
-		} else if (need_resched())
-			schedule ();
-=======
 			parport_yield_blocking(lp_table[minor].dev);
 			lp_table[minor].current_mode
 			  = lp_negotiate(port,
@@ -521,7 +385,6 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 
 		} else if (need_resched())
 			schedule();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (count) {
 			copy_size = count;
@@ -533,18 +396,6 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 					retv = -EFAULT;
 				break;
 			}
-<<<<<<< HEAD
-		}	
-	} while (count > 0);
-
-	if (test_and_clear_bit(LP_PREEMPT_REQUEST, 
-			       &lp_table[minor].bits)) {
-		printk(KERN_INFO "lp%d releasing parport\n", minor);
-		parport_negotiate (lp_table[minor].dev->port, 
-				   IEEE1284_MODE_COMPAT);
-		lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
-		lp_release_parport (&lp_table[minor]);
-=======
 		}
 	} while (count > 0);
 
@@ -555,34 +406,21 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
 				  IEEE1284_MODE_COMPAT);
 		lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
 		lp_release_parport(&lp_table[minor]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out_unlock:
 	mutex_unlock(&lp_table[minor].port_mutex);
 
-<<<<<<< HEAD
- 	return retv;
-=======
 	return retv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PARPORT_1284
 
 /* Status readback conforming to ieee1284 */
-<<<<<<< HEAD
-static ssize_t lp_read(struct file * file, char __user * buf,
-		       size_t count, loff_t *ppos)
-{
-	DEFINE_WAIT(wait);
-	unsigned int minor=iminor(file->f_path.dentry->d_inode);
-=======
 static ssize_t lp_read(struct file *file, char __user *buf,
 		       size_t count, loff_t *ppos)
 {
 	DEFINE_WAIT(wait);
 	unsigned int minor=iminor(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport *port = lp_table[minor].dev->port;
 	ssize_t retval = 0;
 	char *kbuf = lp_table[minor].lp_buffer;
@@ -595,17 +433,6 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 	if (mutex_lock_interruptible(&lp_table[minor].port_mutex))
 		return -EINTR;
 
-<<<<<<< HEAD
-	lp_claim_parport_or_block (&lp_table[minor]);
-
-	parport_set_timeout (lp_table[minor].dev,
-			     (nonblock ? PARPORT_INACTIVITY_O_NONBLOCK
-			      : lp_table[minor].timeout));
-
-	parport_negotiate (lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
-	if (parport_negotiate (lp_table[minor].dev->port,
-			       IEEE1284_MODE_NIBBLE)) {
-=======
 	lp_claim_parport_or_block(&lp_table[minor]);
 
 	parport_set_timeout(lp_table[minor].dev,
@@ -615,17 +442,12 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 	parport_negotiate(lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
 	if (parport_negotiate(lp_table[minor].dev->port,
 			      IEEE1284_MODE_NIBBLE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto out;
 	}
 
 	while (retval == 0) {
-<<<<<<< HEAD
-		retval = parport_read (port, kbuf, count);
-=======
 		retval = parport_read(port, kbuf, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (retval > 0)
 			break;
@@ -638,19 +460,11 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 		/* Wait for data. */
 
 		if (lp_table[minor].dev->port->irq == PARPORT_IRQ_NONE) {
-<<<<<<< HEAD
-			parport_negotiate (lp_table[minor].dev->port,
-					   IEEE1284_MODE_COMPAT);
-			lp_error (minor);
-			if (parport_negotiate (lp_table[minor].dev->port,
-					       IEEE1284_MODE_NIBBLE)) {
-=======
 			parport_negotiate(lp_table[minor].dev->port,
 					  IEEE1284_MODE_COMPAT);
 			lp_error(minor);
 			if (parport_negotiate(lp_table[minor].dev->port,
 					      IEEE1284_MODE_NIBBLE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				retval = -EIO;
 				goto out;
 			}
@@ -660,24 +474,11 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 			finish_wait(&lp_table[minor].waitq, &wait);
 		}
 
-<<<<<<< HEAD
-		if (signal_pending (current)) {
-=======
 		if (signal_pending(current)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = -ERESTARTSYS;
 			break;
 		}
 
-<<<<<<< HEAD
-		cond_resched ();
-	}
-	parport_negotiate (lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
- out:
-	lp_release_parport (&lp_table[minor]);
-
-	if (retval > 0 && copy_to_user (buf, kbuf, retval))
-=======
 		cond_resched();
 	}
 	parport_negotiate(lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
@@ -685,7 +486,6 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 	lp_release_parport(&lp_table[minor]);
 
 	if (retval > 0 && copy_to_user(buf, kbuf, retval))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EFAULT;
 
 	mutex_unlock(&lp_table[minor].port_mutex);
@@ -695,11 +495,7 @@ static ssize_t lp_read(struct file *file, char __user *buf,
 
 #endif /* IEEE 1284 support */
 
-<<<<<<< HEAD
-static int lp_open(struct inode * inode, struct file * file)
-=======
 static int lp_open(struct inode *inode, struct file *file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int minor = iminor(inode);
 	int ret = 0;
@@ -724,15 +520,9 @@ static int lp_open(struct inode *inode, struct file *file)
 	   should most likely only ever be used by the tunelp application. */
 	if ((LP_F(minor) & LP_ABORTOPEN) && !(file->f_flags & O_NONBLOCK)) {
 		int status;
-<<<<<<< HEAD
-		lp_claim_parport_or_block (&lp_table[minor]);
-		status = r_str(minor);
-		lp_release_parport (&lp_table[minor]);
-=======
 		lp_claim_parport_or_block(&lp_table[minor]);
 		status = r_str(minor);
 		lp_release_parport(&lp_table[minor]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status & LP_POUTPA) {
 			printk(KERN_INFO "lp%d out of paper\n", minor);
 			LP_F(minor) &= ~LP_BUSY;
@@ -757,47 +547,24 @@ static int lp_open(struct inode *inode, struct file *file)
 		goto out;
 	}
 	/* Determine if the peripheral supports ECP mode */
-<<<<<<< HEAD
-	lp_claim_parport_or_block (&lp_table[minor]);
-	if ( (lp_table[minor].dev->port->modes & PARPORT_MODE_ECP) &&
-             !parport_negotiate (lp_table[minor].dev->port, 
-                                 IEEE1284_MODE_ECP)) {
-		printk (KERN_INFO "lp%d: ECP mode\n", minor);
-=======
 	lp_claim_parport_or_block(&lp_table[minor]);
 	if ((lp_table[minor].dev->port->modes & PARPORT_MODE_ECP) &&
 	     !parport_negotiate(lp_table[minor].dev->port,
 				 IEEE1284_MODE_ECP)) {
 		printk(KERN_INFO "lp%d: ECP mode\n", minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp_table[minor].best_mode = IEEE1284_MODE_ECP;
 	} else {
 		lp_table[minor].best_mode = IEEE1284_MODE_COMPAT;
 	}
 	/* Leave peripheral in compatibility mode */
-<<<<<<< HEAD
-	parport_negotiate (lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
-	lp_release_parport (&lp_table[minor]);
-=======
 	parport_negotiate(lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
 	lp_release_parport(&lp_table[minor]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
 out:
 	mutex_unlock(&lp_mutex);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int lp_release(struct inode * inode, struct file * file)
-{
-	unsigned int minor = iminor(inode);
-
-	lp_claim_parport_or_block (&lp_table[minor]);
-	parport_negotiate (lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
-	lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
-	lp_release_parport (&lp_table[minor]);
-=======
 static int lp_release(struct inode *inode, struct file *file)
 {
 	unsigned int minor = iminor(inode);
@@ -806,7 +573,6 @@ static int lp_release(struct inode *inode, struct file *file)
 	parport_negotiate(lp_table[minor].dev->port, IEEE1284_MODE_COMPAT);
 	lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
 	lp_release_parport(&lp_table[minor]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(lp_table[minor].lp_buffer);
 	lp_table[minor].lp_buffer = NULL;
 	LP_F(minor) &= ~LP_BUSY;
@@ -826,15 +592,10 @@ static int lp_do_ioctl(unsigned int minor, unsigned int cmd,
 		return -ENODEV;
 	if ((LP_F(minor) & LP_EXIST) == 0)
 		return -ENODEV;
-<<<<<<< HEAD
-	switch ( cmd ) {
-		case LPTIME:
-=======
 	switch (cmd) {
 		case LPTIME:
 			if (arg > UINT_MAX / HZ)
 				return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			LP_TIME(minor) = arg * HZ/100;
 			break;
 		case LPCHAR:
@@ -861,32 +622,20 @@ static int lp_do_ioctl(unsigned int minor, unsigned int cmd,
 		case LPWAIT:
 			LP_WAIT(minor) = arg;
 			break;
-<<<<<<< HEAD
-		case LPSETIRQ: 
-			return -EINVAL;
-			break;
-=======
 		case LPSETIRQ:
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case LPGETIRQ:
 			if (copy_to_user(argp, &LP_IRQ(minor),
 					sizeof(int)))
 				return -EFAULT;
 			break;
 		case LPGETSTATUS:
-<<<<<<< HEAD
-			lp_claim_parport_or_block (&lp_table[minor]);
-			status = r_str(minor);
-			lp_release_parport (&lp_table[minor]);
-=======
 			if (mutex_lock_interruptible(&lp_table[minor].port_mutex))
 				return -EINTR;
 			lp_claim_parport_or_block(&lp_table[minor]);
 			status = r_str(minor);
 			lp_release_parport(&lp_table[minor]);
 			mutex_unlock(&lp_table[minor].port_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (copy_to_user(argp, &status, sizeof(int)))
 				return -EFAULT;
@@ -904,13 +653,8 @@ static int lp_do_ioctl(unsigned int minor, unsigned int cmd,
 						sizeof(struct lp_stats));
 			break;
 #endif
-<<<<<<< HEAD
- 		case LPGETFLAGS:
- 			status = LP_F(minor);
-=======
 		case LPGETFLAGS:
 			status = LP_F(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (copy_to_user(argp, &status, sizeof(int)))
 				return -EFAULT;
 			break;
@@ -921,23 +665,11 @@ static int lp_do_ioctl(unsigned int minor, unsigned int cmd,
 	return retval;
 }
 
-<<<<<<< HEAD
-static int lp_set_timeout(unsigned int minor, struct timeval *par_timeout)
-=======
 static int lp_set_timeout(unsigned int minor, s64 tv_sec, long tv_usec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long to_jiffies;
 
 	/* Convert to jiffies, place in lp_table */
-<<<<<<< HEAD
-	if ((par_timeout->tv_sec < 0) ||
-	    (par_timeout->tv_usec < 0)) {
-		return -EINVAL;
-	}
-	to_jiffies = DIV_ROUND_UP(par_timeout->tv_usec, 1000000/HZ);
-	to_jiffies += par_timeout->tv_sec * (long) HZ;
-=======
 	if (tv_sec < 0 || tv_usec < 0)
 		return -EINVAL;
 
@@ -958,7 +690,6 @@ static int lp_set_timeout(unsigned int minor, s64 tv_sec, long tv_usec)
 		to_jiffies += tv_sec * (long) HZ;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (to_jiffies <= 0) {
 		return -EINVAL;
 	}
@@ -966,8 +697,6 @@ static int lp_set_timeout(unsigned int minor, s64 tv_sec, long tv_usec)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int lp_set_timeout32(unsigned int minor, void __user *arg)
 {
 	s32 karg[2];
@@ -992,26 +721,10 @@ static int lp_set_timeout64(unsigned int minor, void __user *arg)
 	return lp_set_timeout(minor, karg[0], karg[1]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long lp_ioctl(struct file *file, unsigned int cmd,
 			unsigned long arg)
 {
 	unsigned int minor;
-<<<<<<< HEAD
-	struct timeval par_timeout;
-	int ret;
-
-	minor = iminor(file->f_path.dentry->d_inode);
-	mutex_lock(&lp_mutex);
-	switch (cmd) {
-	case LPSETTIMEOUT:
-		if (copy_from_user(&par_timeout, (void __user *)arg,
-					sizeof (struct timeval))) {
-			ret = -EFAULT;
-			break;
-		}
-		ret = lp_set_timeout(minor, &par_timeout);
-=======
 	int ret;
 
 	minor = iminor(file_inode(file));
@@ -1025,7 +738,6 @@ static long lp_ioctl(struct file *file, unsigned int cmd,
 		fallthrough;	/* for 64-bit */
 	case LPSETTIMEOUT_NEW:
 		ret = lp_set_timeout64(minor, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = lp_do_ioctl(minor, cmd, arg, (void __user *)arg);
@@ -1041,20 +753,6 @@ static long lp_compat_ioctl(struct file *file, unsigned int cmd,
 			unsigned long arg)
 {
 	unsigned int minor;
-<<<<<<< HEAD
-	struct timeval par_timeout;
-	int ret;
-
-	minor = iminor(file->f_path.dentry->d_inode);
-	mutex_lock(&lp_mutex);
-	switch (cmd) {
-	case LPSETTIMEOUT:
-		if (compat_get_timeval(&par_timeout, compat_ptr(arg))) {
-			ret = -EFAULT;
-			break;
-		}
-		ret = lp_set_timeout(minor, &par_timeout);
-=======
 	int ret;
 
 	minor = iminor(file_inode(file));
@@ -1068,7 +766,6 @@ static long lp_compat_ioctl(struct file *file, unsigned int cmd,
 		fallthrough;	/* for x32 mode */
 	case LPSETTIMEOUT_NEW:
 		ret = lp_set_timeout64(minor, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #ifdef LP_STATS
 	case LPGETSTATS:
@@ -1114,28 +811,13 @@ static const struct file_operations lp_fops = {
 
 /* The console must be locked when we get here. */
 
-<<<<<<< HEAD
-static void lp_console_write (struct console *co, const char *s,
-			      unsigned count)
-=======
 static void lp_console_write(struct console *co, const char *s,
 			     unsigned count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pardevice *dev = lp_table[CONSOLE_LP].dev;
 	struct parport *port = dev->port;
 	ssize_t written;
 
-<<<<<<< HEAD
-	if (parport_claim (dev))
-		/* Nothing we can do. */
-		return;
-
-	parport_set_timeout (dev, 0);
-
-	/* Go to compatibility mode. */
-	parport_negotiate (port, IEEE1284_MODE_COMPAT);
-=======
 	if (parport_claim(dev))
 		/* Nothing we can do. */
 		return;
@@ -1144,25 +826,16 @@ static void lp_console_write(struct console *co, const char *s,
 
 	/* Go to compatibility mode. */
 	parport_negotiate(port, IEEE1284_MODE_COMPAT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		/* Write the data, converting LF->CRLF as we go. */
 		ssize_t canwrite = count;
-<<<<<<< HEAD
-		char *lf = memchr (s, '\n', count);
-=======
 		char *lf = memchr(s, '\n', count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lf)
 			canwrite = lf - s;
 
 		if (canwrite > 0) {
-<<<<<<< HEAD
-			written = parport_write (port, s, canwrite);
-=======
 			written = parport_write(port, s, canwrite);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (written <= 0)
 				continue;
@@ -1180,26 +853,16 @@ static void lp_console_write(struct console *co, const char *s,
 			s++;
 			count--;
 			do {
-<<<<<<< HEAD
-				written = parport_write (port, crlf, i);
-				if (written > 0)
-					i -= written, crlf += written;
-=======
 				written = parport_write(port, crlf, i);
 				if (written > 0) {
 					i -= written;
 					crlf += written;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} while (i > 0 && (CONSOLE_LP_STRICT || written > 0));
 		}
 	} while (count > 0 && (CONSOLE_LP_STRICT || written > 0));
 
-<<<<<<< HEAD
-	parport_release (dev);
-=======
 	parport_release(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct console lpcons = {
@@ -1220,11 +883,7 @@ module_param_array(parport, charp, NULL, 0);
 module_param(reset, bool, 0);
 
 #ifndef MODULE
-<<<<<<< HEAD
-static int __init lp_setup (char *str)
-=======
 static int __init lp_setup(char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int parport_ptr;
 	int x;
@@ -1247,11 +906,6 @@ static int __init lp_setup(char *str)
 	} else if (!strcmp(str, "auto")) {
 		parport_nr[0] = LP_PARPORT_AUTO;
 	} else if (!strcmp(str, "none")) {
-<<<<<<< HEAD
-		parport_nr[parport_ptr++] = LP_PARPORT_NONE;
-	} else if (!strcmp(str, "reset")) {
-		reset = 1;
-=======
 		if (parport_ptr < LP_NO)
 			parport_nr[parport_ptr++] = LP_PARPORT_NONE;
 		else
@@ -1259,7 +913,6 @@ static int __init lp_setup(char *str)
 			       str);
 	} else if (!strcmp(str, "reset")) {
 		reset = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
@@ -1267,11 +920,6 @@ static int __init lp_setup(char *str)
 
 static int lp_register(int nr, struct parport *port)
 {
-<<<<<<< HEAD
-	lp_table[nr].dev = parport_register_device(port, "lp", 
-						   lp_preempt, NULL, NULL, 0,
-						   (void *) &lp_table[nr]);
-=======
 	struct pardev_cb ppdev_cb;
 
 	memset(&ppdev_cb, 0, sizeof(ppdev_cb));
@@ -1279,7 +927,6 @@ static int lp_register(int nr, struct parport *port)
 	ppdev_cb.private = &lp_table[nr];
 	lp_table[nr].dev = parport_register_dev_model(port, "lp",
 						      &ppdev_cb, nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lp_table[nr].dev == NULL)
 		return 1;
 	lp_table[nr].flags |= LP_EXIST;
@@ -1287,17 +934,10 @@ static int lp_register(int nr, struct parport *port)
 	if (reset)
 		lp_reset(nr);
 
-<<<<<<< HEAD
-	device_create(lp_class, port->dev, MKDEV(LP_MAJOR, nr), NULL,
-		      "lp%d", nr);
-
-	printk(KERN_INFO "lp%d: using %s (%s).\n", nr, port->name, 
-=======
 	device_create(&lp_class, port->dev, MKDEV(LP_MAJOR, nr), NULL,
 		      "lp%d", nr);
 
 	printk(KERN_INFO "lp%d: using %s (%s).\n", nr, port->name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (port->irq == PARPORT_IRQ_NONE)?"polling":"interrupt-driven");
 
 #ifdef CONFIG_LP_CONSOLE
@@ -1305,14 +945,6 @@ static int lp_register(int nr, struct parport *port)
 		if (port->modes & PARPORT_MODE_SAFEININT) {
 			register_console(&lpcons);
 			console_registered = port;
-<<<<<<< HEAD
-			printk (KERN_INFO "lp%d: console ready\n", CONSOLE_LP);
-		} else
-			printk (KERN_ERR "lp%d: cannot run console on %s\n",
-				CONSOLE_LP, port->name);
-	}
-#endif
-=======
 			printk(KERN_INFO "lp%d: console ready\n", CONSOLE_LP);
 		} else
 			printk(KERN_ERR "lp%d: cannot run console on %s\n",
@@ -1320,16 +952,11 @@ static int lp_register(int nr, struct parport *port)
 	}
 #endif
 	port_num[nr] = port->number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void lp_attach (struct parport *port)
-=======
 static void lp_attach(struct parport *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -1343,15 +970,11 @@ static void lp_attach(struct parport *port)
 			printk(KERN_INFO "lp: ignoring parallel port (max. %d)\n",LP_NO);
 			return;
 		}
-<<<<<<< HEAD
-		if (!lp_register(lp_count, port))
-=======
 		for (i = 0; i < LP_NO; i++)
 			if (port_num[i] == -1)
 				break;
 
 		if (!lp_register(i, port))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lp_count++;
 		break;
 
@@ -1367,15 +990,10 @@ static void lp_attach(struct parport *port)
 	}
 }
 
-<<<<<<< HEAD
-static void lp_detach (struct parport *port)
-{
-=======
 static void lp_detach(struct parport *port)
 {
 	int n;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Write this some day. */
 #ifdef CONFIG_LP_CONSOLE
 	if (console_registered == port) {
@@ -1383,8 +1001,6 @@ static void lp_detach(struct parport *port)
 		console_registered = NULL;
 	}
 #endif /* CONFIG_LP_CONSOLE */
-<<<<<<< HEAD
-=======
 
 	for (n = 0; n < LP_NO; n++) {
 		if (port_num[n] == port->number) {
@@ -1394,20 +1010,10 @@ static void lp_detach(struct parport *port)
 			parport_unregister_device(lp_table[n].dev);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct parport_driver lp_driver = {
 	.name = "lp",
-<<<<<<< HEAD
-	.attach = lp_attach,
-	.detach = lp_detach,
-};
-
-static int __init lp_init (void)
-{
-	int i, err = 0;
-=======
 	.match_port = lp_attach,
 	.detach = lp_detach,
 	.devmodel = true,
@@ -1416,7 +1022,6 @@ static int __init lp_init (void)
 static int __init lp_init(void)
 {
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parport_nr[0] == LP_PARPORT_OFF)
 		return 0;
@@ -1431,30 +1036,6 @@ static int __init lp_init(void)
 #ifdef LP_STATS
 		lp_table[i].lastcall = 0;
 		lp_table[i].runchars = 0;
-<<<<<<< HEAD
-		memset (&lp_table[i].stats, 0, sizeof (struct lp_stats));
-#endif
-		lp_table[i].last_error = 0;
-		init_waitqueue_head (&lp_table[i].waitq);
-		init_waitqueue_head (&lp_table[i].dataq);
-		mutex_init(&lp_table[i].port_mutex);
-		lp_table[i].timeout = 10 * HZ;
-	}
-
-	if (register_chrdev (LP_MAJOR, "lp", &lp_fops)) {
-		printk (KERN_ERR "lp: unable to get major %d\n", LP_MAJOR);
-		return -EIO;
-	}
-
-	lp_class = class_create(THIS_MODULE, "printer");
-	if (IS_ERR(lp_class)) {
-		err = PTR_ERR(lp_class);
-		goto out_reg;
-	}
-
-	if (parport_register_driver (&lp_driver)) {
-		printk (KERN_ERR "lp: unable to register with parport\n");
-=======
 		memset(&lp_table[i].stats, 0, sizeof(struct lp_stats));
 #endif
 		lp_table[i].last_error = 0;
@@ -1476,44 +1057,28 @@ static int __init lp_init(void)
 
 	if (parport_register_driver(&lp_driver)) {
 		printk(KERN_ERR "lp: unable to register with parport\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EIO;
 		goto out_class;
 	}
 
 	if (!lp_count) {
-<<<<<<< HEAD
-		printk (KERN_INFO "lp: driver loaded but no devices found\n");
-#ifndef CONFIG_PARPORT_1284
-		if (parport_nr[0] == LP_PARPORT_AUTO)
-			printk (KERN_INFO "lp: (is IEEE 1284 support enabled?)\n");
-=======
 		printk(KERN_INFO "lp: driver loaded but no devices found\n");
 #ifndef CONFIG_PARPORT_1284
 		if (parport_nr[0] == LP_PARPORT_AUTO)
 			printk(KERN_INFO "lp: (is IEEE 1284 support enabled?)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 
 	return 0;
 
 out_class:
-<<<<<<< HEAD
-	class_destroy(lp_class);
-=======
 	class_unregister(&lp_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_reg:
 	unregister_chrdev(LP_MAJOR, "lp");
 	return err;
 }
 
-<<<<<<< HEAD
-static int __init lp_init_module (void)
-=======
 static int __init lp_init_module(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (parport[0]) {
 		/* The user gave some parameters.  Let's see what they were.  */
@@ -1527,11 +1092,7 @@ static int __init lp_init_module(void)
 				else {
 					char *ep;
 					unsigned long r = simple_strtoul(parport[n], &ep, 0);
-<<<<<<< HEAD
-					if (ep != parport[n]) 
-=======
 					if (ep != parport[n])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						parport_nr[n] = r;
 					else {
 						printk(KERN_ERR "lp: bad port specifier `%s'\n", parport[n]);
@@ -1545,26 +1106,6 @@ static int __init lp_init_module(void)
 	return lp_init();
 }
 
-<<<<<<< HEAD
-static void lp_cleanup_module (void)
-{
-	unsigned int offset;
-
-	parport_unregister_driver (&lp_driver);
-
-#ifdef CONFIG_LP_CONSOLE
-	unregister_console (&lpcons);
-#endif
-
-	unregister_chrdev(LP_MAJOR, "lp");
-	for (offset = 0; offset < LP_NO; offset++) {
-		if (lp_table[offset].dev == NULL)
-			continue;
-		parport_unregister_device(lp_table[offset].dev);
-		device_destroy(lp_class, MKDEV(LP_MAJOR, offset));
-	}
-	class_destroy(lp_class);
-=======
 static void lp_cleanup_module(void)
 {
 	parport_unregister_driver(&lp_driver);
@@ -1575,7 +1116,6 @@ static void lp_cleanup_module(void)
 
 	unregister_chrdev(LP_MAJOR, "lp");
 	class_unregister(&lp_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __setup("lp=", lp_setup);

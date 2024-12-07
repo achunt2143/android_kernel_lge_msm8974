@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-/* For general debugging purposes */
-
-#include "../perf.h"
-
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-
-#include "cache.h"
-#include "color.h"
-#include "event.h"
-#include "debug.h"
-#include "util.h"
-
-int verbose;
-bool dump_trace = false, quiet = false;
-
-int eprintf(int level, const char *fmt, ...)
-{
-	va_list args;
-	int ret = 0;
-
-	if (verbose >= level) {
-		va_start(args, fmt);
-		if (use_browser > 0)
-			ret = ui_helpline__show_help(fmt, args);
-		else
-			ret = vfprintf(stderr, fmt, args);
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* For general debugging purposes */
 
@@ -160,15 +130,12 @@ int eprintf_time(int level, int var, u64 t, const char *fmt, ...)
 	if (var >= level) {
 		va_start(args, fmt);
 		ret = veprintf_time(t, fmt, args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		va_end(args);
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Overloading libtraceevent standard info print
  * function, display with -v in perf.
@@ -183,7 +150,6 @@ void pr_stat(const char *fmt, ...)
 	eprintf(1, verbose, "\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dump_printf(const char *fmt, ...)
 {
 	va_list args;
@@ -198,28 +164,6 @@ int dump_printf(const char *fmt, ...)
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef NO_NEWT_SUPPORT
-int ui__warning(const char *format, ...)
-{
-	va_list args;
-
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-	return 0;
-}
-#endif
-
-int ui__error_paranoid(void)
-{
-	return ui__error("Permission error - are you root?\n"
-		    "Consider tweaking /proc/sys/kernel/perf_event_paranoid:\n"
-		    " -1 - Not paranoid at all\n"
-		    "  0 - Disallow raw tracepoint access for unpriv\n"
-		    "  1 - Disallow cpu events for unpriv\n"
-		    "  2 - Disallow kernel profiling for unpriv\n");
-=======
 static int trace_event_printer(enum binary_printer_ops op,
 			       unsigned int val, void *extra, FILE *fp)
 {
@@ -267,48 +211,15 @@ static int trace_event_printer(enum binary_printer_ops op,
 	}
 
 	return printed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void trace_event(union perf_event *event)
 {
 	unsigned char *raw_event = (void *)event;
-<<<<<<< HEAD
-	const char *color = PERF_COLOR_BLUE;
-	int i, j;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dump_trace)
 		return;
 
-<<<<<<< HEAD
-	printf(".");
-	color_fprintf(stdout, color, "\n. ... raw event: size %d bytes\n",
-		      event->header.size);
-
-	for (i = 0; i < event->header.size; i++) {
-		if ((i & 15) == 0) {
-			printf(".");
-			color_fprintf(stdout, color, "  %04x: ", i);
-		}
-
-		color_fprintf(stdout, color, " %02x", raw_event[i]);
-
-		if (((i & 15) == 15) || i == event->header.size-1) {
-			color_fprintf(stdout, color, "  ");
-			for (j = 0; j < 15-(i & 15); j++)
-				color_fprintf(stdout, color, "   ");
-			for (j = i & ~15; j <= i; j++) {
-				color_fprintf(stdout, color, "%c",
-					      isprint(raw_event[j]) ?
-					      raw_event[j] : '.');
-			}
-			color_fprintf(stdout, color, "\n");
-		}
-	}
-	printf(".\n");
-=======
 	print_binary(raw_event, event->header.size, 16,
 		     trace_event_printer, event);
 }
@@ -410,5 +321,4 @@ void sighandler_dump_stack(int sig)
 	dump_stack();
 	signal(sig, SIG_DFL);
 	raise(sig);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

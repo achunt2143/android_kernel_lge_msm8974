@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 **  linux/amiga/chipram.c
 **
@@ -91,11 +88,7 @@ void *amiga_chip_alloc_res(unsigned long size, struct resource *res)
 
 	atomic_sub(size, &chipavail);
 	pr_debug("amiga_chip_alloc_res: returning %pR\n", res);
-<<<<<<< HEAD
-	return (void *)ZTWO_VADDR(res->start);
-=======
 	return ZTWO_VADDR(res->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void amiga_chip_free(void *ptr)

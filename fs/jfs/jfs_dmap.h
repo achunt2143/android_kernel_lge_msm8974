@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef	_H_JFS_DMAP
 #define _H_JFS_DMAP
@@ -202,11 +183,7 @@ typedef union dmtree {
 #define	dmt_leafidx	t1.leafidx
 #define	dmt_height	t1.height
 #define	dmt_budmin	t1.budmin
-<<<<<<< HEAD
-#define	dmt_stree	t1.stree
-=======
 #define	dmt_stree	t2.stree
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	on-disk aggregate disk allocation map descriptor.
@@ -321,9 +298,6 @@ extern int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks);
 extern int dbExtendFS(struct inode *ipbmap, s64 blkno, s64 nblocks);
 extern void dbFinalizeBmap(struct inode *ipbmap);
 extern s64 dbMapFileSizeToMapSize(struct inode *ipbmap);
-<<<<<<< HEAD
-=======
 extern s64 dbDiscardAG(struct inode *ip, int agno, s64 minlen);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* _H_JFS_DMAP */

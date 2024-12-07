@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  i8042 keyboard and mouse controller driver for Linux
  *
  *  Copyright (c) 1999-2004 Vojtech Pavlik
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,11 +20,8 @@
 #include <linux/platform_device.h>
 #include <linux/i8042.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/suspend.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 
@@ -59,11 +45,6 @@ static bool i8042_unlock;
 module_param_named(unlock, i8042_unlock, bool, 0);
 MODULE_PARM_DESC(unlock, "Ignore keyboard lock.");
 
-<<<<<<< HEAD
-static bool i8042_reset;
-module_param_named(reset, i8042_reset, bool, 0);
-MODULE_PARM_DESC(reset, "Reset controller during init and cleanup.");
-=======
 static bool i8042_probe_defer;
 module_param_named(probe_defer, i8042_probe_defer, bool, 0);
 MODULE_PARM_DESC(probe_defer, "Allow deferred probing.");
@@ -101,7 +82,6 @@ static const struct kernel_param_ops param_ops_reset_param = {
 	__param_check(name, p, enum i8042_controller_reset_mode)
 module_param_named(reset, i8042_reset, reset_param, 0);
 MODULE_PARM_DESC(reset, "Reset controller on resume, cleanup or both");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool i8042_direct;
 module_param_named(direct, i8042_direct, bool, 0);
@@ -140,11 +120,6 @@ MODULE_PARM_DESC(nopnp, "Do not use PNP to detect controller settings");
 static bool i8042_debug;
 module_param_named(debug, i8042_debug, bool, 0600);
 MODULE_PARM_DESC(debug, "Turn i8042 debugging mode on and off");
-<<<<<<< HEAD
-#endif
-
-static bool i8042_bypass_aux_irq_test;
-=======
 
 static bool i8042_unmask_kbd_data;
 module_param_named(unmask_kbd_data, i8042_unmask_kbd_data, bool, 0600);
@@ -156,7 +131,6 @@ static bool i8042_bypass_aux_irq_test;
 static char i8042_kbd_firmware_id[128];
 static char i8042_aux_firmware_id[128];
 static struct fwnode_handle *i8042_kbd_fwnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "i8042.h"
 
@@ -169,11 +143,7 @@ static DEFINE_SPINLOCK(i8042_lock);
 /*
  * Writers to AUX and KBD ports as well as users issuing i8042_command
  * directly should acquire i8042_mutex (by means of calling
-<<<<<<< HEAD
- * i8042_lock_chip() and i8042_unlock_ship() helpers) to ensure that
-=======
  * i8042_lock_chip() and i8042_unlock_chip() helpers) to ensure that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * they do not disturb each other (unfortunately in many i8042
  * implementations write to one of the ports will immediately abort
  * command that is being processed by another port).
@@ -184,10 +154,7 @@ struct i8042_port {
 	struct serio *serio;
 	int irq;
 	bool exists;
-<<<<<<< HEAD
-=======
 	bool driver_bound;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	signed char mux;
 };
 
@@ -205,10 +172,7 @@ static bool i8042_kbd_irq_registered;
 static bool i8042_aux_irq_registered;
 static unsigned char i8042_suppress_kbd_ack;
 static struct platform_device *i8042_platform_device;
-<<<<<<< HEAD
-=======
 static struct notifier_block i8042_kbd_bind_notifier_block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t i8042_interrupt(int irq, void *dev_id);
 static bool (*i8042_platform_filter)(unsigned char data, unsigned char str,
@@ -305,18 +269,6 @@ static int i8042_flush(void)
 {
 	unsigned long flags;
 	unsigned char data, str;
-<<<<<<< HEAD
-	int i = 0;
-
-	spin_lock_irqsave(&i8042_lock, flags);
-
-	while (((str = i8042_read_status()) & I8042_STR_OBF) && (i < I8042_BUFFER_SIZE)) {
-		udelay(50);
-		data = i8042_read_data();
-		i++;
-		dbg("%02x <- i8042 (flush, %s)\n",
-		    data, str & I8042_STR_AUXDATA ? "aux" : "kbd");
-=======
 	int count = 0;
 	int retval = 0;
 
@@ -332,16 +284,11 @@ static int i8042_flush(void)
 			retval = -EIO;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&i8042_lock, flags);
 
-<<<<<<< HEAD
-	return i;
-=======
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -368,15 +315,10 @@ static int __i8042_command(unsigned char *param, int command)
 
 	for (i = 0; i < ((command >> 12) & 0xf); i++) {
 		error = i8042_wait_write();
-<<<<<<< HEAD
-		if (error)
-			return error;
-=======
 		if (error) {
 			dbg("     -- i8042 (wait write timeout)\n");
 			return error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dbg("%02x -> i8042 (parameter)\n", param[i]);
 		i8042_write_data(param[i]);
 	}
@@ -384,11 +326,7 @@ static int __i8042_command(unsigned char *param, int command)
 	for (i = 0; i < ((command >> 8) & 0xf); i++) {
 		error = i8042_wait_read();
 		if (error) {
-<<<<<<< HEAD
-			dbg("     -- i8042 (timeout)\n");
-=======
 			dbg("     -- i8042 (wait read timeout)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return error;
 		}
 
@@ -410,12 +348,9 @@ int i8042_command(unsigned char *param, int command)
 	unsigned long flags;
 	int retval;
 
-<<<<<<< HEAD
-=======
 	if (!i8042_present)
 		return -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&i8042_lock, flags);
 	retval = __i8042_command(param, command);
 	spin_unlock_irqrestore(&i8042_lock, flags);
@@ -460,11 +395,7 @@ static int i8042_aux_write(struct serio *serio, unsigned char c)
 
 
 /*
-<<<<<<< HEAD
- * i8042_aux_close attempts to clear AUX or KBD port state by disabling
-=======
  * i8042_port_close attempts to clear AUX or KBD port state by disabling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and then re-enabling it.
  */
 
@@ -511,10 +442,6 @@ static int i8042_start(struct serio *serio)
 {
 	struct i8042_port *port = serio->port_data;
 
-<<<<<<< HEAD
-	port->exists = true;
-	mb();
-=======
 	device_set_wakeup_capable(&serio->dev, true);
 
 	/*
@@ -533,7 +460,6 @@ static int i8042_start(struct serio *serio)
 	port->exists = true;
 	spin_unlock_irq(&i8042_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -546,11 +472,6 @@ static void i8042_stop(struct serio *serio)
 {
 	struct i8042_port *port = serio->port_data;
 
-<<<<<<< HEAD
-	port->exists = false;
-
-	/*
-=======
 	spin_lock_irq(&i8042_lock);
 	port->exists = false;
 	port->serio = NULL;
@@ -559,17 +480,12 @@ static void i8042_stop(struct serio *serio)
 	/*
 	 * We need to make sure that interrupt handler finishes using
 	 * our serio port before we return from this function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We synchronize with both AUX and KBD IRQs because there is
 	 * a (very unlikely) chance that AUX IRQ is raised for KBD port
 	 * and vice versa.
 	 */
 	synchronize_irq(I8042_AUX_IRQ);
 	synchronize_irq(I8042_KBD_IRQ);
-<<<<<<< HEAD
-	port->serio = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -654,11 +570,7 @@ static irqreturn_t i8042_interrupt(int irq, void *dev_id)
 						str = last_str;
 						break;
 					}
-<<<<<<< HEAD
-					/* fall through - report timeout */
-=======
 					fallthrough;	/* report timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case 0xfc:
 				case 0xfd:
 				case 0xfe: dfl = SERIO_TIMEOUT; data = 0xfe; break;
@@ -681,27 +593,16 @@ static irqreturn_t i8042_interrupt(int irq, void *dev_id)
 	port = &i8042_ports[port_no];
 	serio = port->exists ? port->serio : NULL;
 
-<<<<<<< HEAD
-	dbg("%02x <- i8042 (interrupt, %d, %d%s%s)\n",
-	    data, port_no, irq,
-	    dfl & SERIO_PARITY ? ", bad parity" : "",
-	    dfl & SERIO_TIMEOUT ? ", timeout" : "");
-=======
 	filter_dbg(port->driver_bound, data, "<- i8042 (interrupt, %d, %d%s%s)\n",
 		   port_no, irq,
 		   dfl & SERIO_PARITY ? ", bad parity" : "",
 		   dfl & SERIO_TIMEOUT ? ", timeout" : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	filtered = i8042_filter(data, str, serio);
 
 	spin_unlock_irqrestore(&i8042_lock, flags);
 
-<<<<<<< HEAD
-	if (likely(port->exists && !filtered))
-=======
 	if (likely(serio && !filtered))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		serio_interrupt(serio, data, dfl);
 
  out:
@@ -814,11 +715,7 @@ static int i8042_set_mux_mode(bool multiplex, unsigned char *mux_version)
  * LCS/Telegraphics.
  */
 
-<<<<<<< HEAD
-static int __init i8042_check_mux(void)
-=======
 static int i8042_check_mux(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char mux_version;
 
@@ -847,17 +744,10 @@ static int i8042_check_mux(void)
 /*
  * The following is used to test AUX IRQ delivery.
  */
-<<<<<<< HEAD
-static struct completion i8042_aux_irq_delivered __initdata;
-static bool i8042_irq_being_tested __initdata;
-
-static irqreturn_t __init i8042_aux_test_irq(int irq, void *dev_id)
-=======
 static struct completion i8042_aux_irq_delivered;
 static bool i8042_irq_being_tested;
 
 static irqreturn_t i8042_aux_test_irq(int irq, void *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned char str, data;
@@ -884,11 +774,7 @@ static irqreturn_t i8042_aux_test_irq(int irq, void *dev_id)
  * verifies success by readinng CTR. Used when testing for presence of AUX
  * port.
  */
-<<<<<<< HEAD
-static int __init i8042_toggle_aux(bool on)
-=======
 static int i8042_toggle_aux(bool on)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char param;
 	int i;
@@ -916,11 +802,7 @@ static int i8042_toggle_aux(bool on)
  * the presence of an AUX interface.
  */
 
-<<<<<<< HEAD
-static int __init i8042_check_aux(void)
-=======
 static int i8042_check_aux(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval = -1;
 	bool irq_registered = false;
@@ -1053,13 +935,8 @@ static int i8042_check_aux(void)
 
 static int i8042_controller_check(void)
 {
-<<<<<<< HEAD
-	if (i8042_flush() == I8042_BUFFER_SIZE) {
-		pr_err("No controller found\n");
-=======
 	if (i8042_flush()) {
 		pr_info("No controller found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1106,11 +983,7 @@ static int i8042_controller_selftest(void)
 }
 
 /*
-<<<<<<< HEAD
- * i8042_controller init initializes the i8042 controller, and,
-=======
  * i8042_controller_init initializes the i8042 controller, and,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * most importantly, sets it into non-xlated mode if that's
  * desired.
  */
@@ -1136,11 +1009,7 @@ static int i8042_controller_init(void)
 
 		if (i8042_command(&ctr[n++ % 2], I8042_CMD_CTL_RCTR)) {
 			pr_err("Can't read CTR while initializing i8042\n");
-<<<<<<< HEAD
-			return -EIO;
-=======
 			return i8042_probe_defer ? -EPROBE_DEFER : -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	} while (n < 2 || ctr[0] != ctr[1]);
@@ -1208,11 +1077,7 @@ static int i8042_controller_init(void)
  * Reset the controller and reset CRT to the original value set by BIOS.
  */
 
-<<<<<<< HEAD
-static void i8042_controller_reset(bool force_reset)
-=======
 static void i8042_controller_reset(bool s2r_wants_reset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i8042_flush();
 
@@ -1237,15 +1102,10 @@ static void i8042_controller_reset(bool s2r_wants_reset)
  * Reset the controller if requested.
  */
 
-<<<<<<< HEAD
-	if (i8042_reset || force_reset)
-		i8042_controller_selftest();
-=======
 	if (i8042_reset == I8042_RESET_ALWAYS ||
 	    (i8042_reset == I8042_RESET_ON_S2RAM && s2r_wants_reset)) {
 		i8042_controller_selftest();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Restore the original control register setting.
@@ -1259,11 +1119,7 @@ static void i8042_controller_reset(bool s2r_wants_reset)
 /*
  * i8042_panic_blink() will turn the keyboard LEDs on or off and is called
  * when kernel panics. Flashing LEDs is useful for users running X who may
-<<<<<<< HEAD
- * not see the console and will help distingushing panics from "real"
-=======
  * not see the console and will help distinguishing panics from "real"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lockups.
  *
  * Note that DELAY has a limit of 10ms so we will not get stuck here
@@ -1314,11 +1170,7 @@ static void i8042_dritek_enable(void)
  * before suspending.
  */
 
-<<<<<<< HEAD
-static int i8042_controller_resume(bool force_reset)
-=======
 static int i8042_controller_resume(bool s2r_wants_reset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -1326,12 +1178,8 @@ static int i8042_controller_resume(bool s2r_wants_reset)
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	if (i8042_reset || force_reset) {
-=======
 	if (i8042_reset == I8042_RESET_ALWAYS ||
 	    (i8042_reset == I8042_RESET_ON_S2RAM && s2r_wants_reset)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = i8042_controller_selftest();
 		if (error)
 			return error;
@@ -1382,9 +1230,6 @@ static int i8042_controller_resume(bool s2r_wants_reset)
 
 static int i8042_pm_suspend(struct device *dev)
 {
-<<<<<<< HEAD
-	i8042_controller_reset(true);
-=======
 	int i;
 
 	if (pm_suspend_via_firmware())
@@ -1405,21 +1250,12 @@ static int i8042_pm_resume_noirq(struct device *dev)
 {
 	if (!pm_resume_via_firmware())
 		i8042_interrupt(0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int i8042_pm_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	/*
-	 * On resume from S2R we always try to reset the controller
-	 * to bring it in a sane state. (In case of S2D we expect
-	 * BIOS to reset the controller for us.)
-	 */
-	return i8042_controller_resume(true);
-=======
 	bool want_reset;
 	int i;
 
@@ -1446,7 +1282,6 @@ static int i8042_pm_resume(struct device *dev)
 	want_reset = pm_resume_via_firmware();
 
 	return i8042_controller_resume(want_reset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int i8042_pm_thaw(struct device *dev)
@@ -1470,10 +1305,7 @@ static int i8042_pm_restore(struct device *dev)
 
 static const struct dev_pm_ops i8042_pm_ops = {
 	.suspend	= i8042_pm_suspend,
-<<<<<<< HEAD
-=======
 	.resume_noirq	= i8042_pm_resume_noirq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resume		= i8042_pm_resume,
 	.thaw		= i8042_pm_thaw,
 	.poweroff	= i8042_pm_reset,
@@ -1492,11 +1324,7 @@ static void i8042_shutdown(struct platform_device *dev)
 	i8042_controller_reset(false);
 }
 
-<<<<<<< HEAD
-static int __init i8042_create_kbd_port(void)
-=======
 static int i8042_create_kbd_port(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio;
 	struct i8042_port *port = &i8042_ports[I8042_KBD_PORT_NO];
@@ -1510,12 +1338,6 @@ static int i8042_create_kbd_port(void)
 	serio->start		= i8042_start;
 	serio->stop		= i8042_stop;
 	serio->close		= i8042_port_close;
-<<<<<<< HEAD
-	serio->port_data	= port;
-	serio->dev.parent	= &i8042_platform_device->dev;
-	strlcpy(serio->name, "i8042 KBD port", sizeof(serio->name));
-	strlcpy(serio->phys, I8042_KBD_PHYS_DESC, sizeof(serio->phys));
-=======
 	serio->ps2_cmd_mutex	= &i8042_mutex;
 	serio->port_data	= port;
 	serio->dev.parent	= &i8042_platform_device->dev;
@@ -1524,7 +1346,6 @@ static int i8042_create_kbd_port(void)
 	strscpy(serio->firmware_id, i8042_kbd_firmware_id,
 		sizeof(serio->firmware_id));
 	set_primary_fwnode(&serio->dev, i8042_kbd_fwnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port->serio = serio;
 	port->irq = I8042_KBD_IRQ;
@@ -1532,11 +1353,7 @@ static int i8042_create_kbd_port(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __init i8042_create_aux_port(int idx)
-=======
 static int i8042_create_aux_port(int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio;
 	int port_no = idx < 0 ? I8042_AUX_PORT_NO : I8042_MUX_PORT_NO + idx;
@@ -1550,13 +1367,6 @@ static int i8042_create_aux_port(int idx)
 	serio->write		= i8042_aux_write;
 	serio->start		= i8042_start;
 	serio->stop		= i8042_stop;
-<<<<<<< HEAD
-	serio->port_data	= port;
-	serio->dev.parent	= &i8042_platform_device->dev;
-	if (idx < 0) {
-		strlcpy(serio->name, "i8042 AUX port", sizeof(serio->name));
-		strlcpy(serio->phys, I8042_AUX_PHYS_DESC, sizeof(serio->phys));
-=======
 	serio->ps2_cmd_mutex	= &i8042_mutex;
 	serio->port_data	= port;
 	serio->dev.parent	= &i8042_platform_device->dev;
@@ -1565,16 +1375,12 @@ static int i8042_create_aux_port(int idx)
 		strscpy(serio->phys, I8042_AUX_PHYS_DESC, sizeof(serio->phys));
 		strscpy(serio->firmware_id, i8042_aux_firmware_id,
 			sizeof(serio->firmware_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		serio->close = i8042_port_close;
 	} else {
 		snprintf(serio->name, sizeof(serio->name), "i8042 AUX%d port", idx);
 		snprintf(serio->phys, sizeof(serio->phys), I8042_MUX_PHYS_DESC, idx + 1);
-<<<<<<< HEAD
-=======
 		strscpy(serio->firmware_id, i8042_aux_firmware_id,
 			sizeof(serio->firmware_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	port->serio = serio;
@@ -1584,21 +1390,13 @@ static int i8042_create_aux_port(int idx)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __init i8042_free_kbd_port(void)
-=======
 static void i8042_free_kbd_port(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kfree(i8042_ports[I8042_KBD_PORT_NO].serio);
 	i8042_ports[I8042_KBD_PORT_NO].serio = NULL;
 }
 
-<<<<<<< HEAD
-static void __init i8042_free_aux_ports(void)
-=======
 static void i8042_free_aux_ports(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1608,29 +1406,11 @@ static void i8042_free_aux_ports(void)
 	}
 }
 
-<<<<<<< HEAD
-static void __init i8042_register_ports(void)
-=======
 static void i8042_register_ports(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 0; i < I8042_NUM_PORTS; i++) {
-<<<<<<< HEAD
-		if (i8042_ports[i].serio) {
-			printk(KERN_INFO "serio: %s at %#lx,%#lx irq %d\n",
-				i8042_ports[i].serio->name,
-				(unsigned long) I8042_DATA_REG,
-				(unsigned long) I8042_COMMAND_REG,
-				i8042_ports[i].irq);
-			serio_register_port(i8042_ports[i].serio);
-		}
-	}
-}
-
-static void __devexit i8042_unregister_ports(void)
-=======
 		struct serio *serio = i8042_ports[i].serio;
 
 		if (!serio)
@@ -1646,7 +1426,6 @@ static void __devexit i8042_unregister_ports(void)
 }
 
 static void i8042_unregister_ports(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1658,24 +1437,6 @@ static void i8042_unregister_ports(void)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * Checks whether port belongs to i8042 controller.
- */
-bool i8042_check_port_owner(const struct serio *port)
-{
-	int i;
-
-	for (i = 0; i < I8042_NUM_PORTS; i++)
-		if (i8042_ports[i].serio == port)
-			return true;
-
-	return false;
-}
-EXPORT_SYMBOL(i8042_check_port_owner);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void i8042_free_irqs(void)
 {
 	if (i8042_aux_irq_registered)
@@ -1686,11 +1447,7 @@ static void i8042_free_irqs(void)
 	i8042_aux_irq_registered = i8042_kbd_irq_registered = false;
 }
 
-<<<<<<< HEAD
-static int __init i8042_setup_aux(void)
-=======
 static int i8042_setup_aux(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int (*aux_enable)(void);
 	int error;
@@ -1718,12 +1475,8 @@ static int i8042_setup_aux(void)
 	if (error)
 		goto err_free_ports;
 
-<<<<<<< HEAD
-	if (aux_enable())
-=======
 	error = aux_enable();
 	if (error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_irq;
 
 	i8042_aux_irq_registered = true;
@@ -1736,11 +1489,7 @@ static int i8042_setup_aux(void)
 	return error;
 }
 
-<<<<<<< HEAD
-static int __init i8042_setup_kbd(void)
-=======
 static int i8042_setup_kbd(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -1767,15 +1516,6 @@ static int i8042_setup_kbd(void)
 	return error;
 }
 
-<<<<<<< HEAD
-static int __init i8042_probe(struct platform_device *dev)
-{
-	int error;
-
-	i8042_platform_device = dev;
-
-	if (i8042_reset) {
-=======
 static int i8042_kbd_bind_notifier(struct notifier_block *nb,
 				   unsigned long action, void *data)
 {
@@ -1804,7 +1544,6 @@ static int i8042_probe(struct platform_device *dev)
 	int error;
 
 	if (i8042_reset == I8042_RESET_ALWAYS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = i8042_controller_selftest();
 		if (error)
 			return error;
@@ -1841,51 +1580,24 @@ static int i8042_probe(struct platform_device *dev)
 	i8042_free_aux_ports();	/* in case KBD failed but AUX not */
 	i8042_free_irqs();
 	i8042_controller_reset(false);
-<<<<<<< HEAD
-	i8042_platform_device = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-static int __devexit i8042_remove(struct platform_device *dev)
-=======
 static void i8042_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i8042_unregister_ports();
 	i8042_free_irqs();
 	i8042_controller_reset(false);
-<<<<<<< HEAD
-	i8042_platform_device = NULL;
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver i8042_driver = {
 	.driver		= {
 		.name	= "i8042",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 		.pm	= &i8042_pm_ops,
 #endif
 	},
-<<<<<<< HEAD
-	.remove		= __devexit_p(i8042_remove),
-	.shutdown	= i8042_shutdown,
-};
-
-static int __init i8042_init(void)
-{
-	struct platform_device *pdev;
-=======
 	.probe		= i8042_probe,
 	.remove_new	= i8042_remove,
 	.shutdown	= i8042_shutdown,
@@ -1897,31 +1609,18 @@ static struct notifier_block i8042_kbd_bind_notifier_block = {
 
 static int __init i8042_init(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	dbg_init();
 
 	err = i8042_platform_init();
 	if (err)
-<<<<<<< HEAD
-		return err;
-=======
 		return (err == -ENODEV) ? 0 : err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = i8042_controller_check();
 	if (err)
 		goto err_platform_exit;
 
-<<<<<<< HEAD
-	pdev = platform_create_bundle(&i8042_driver, i8042_probe, NULL, 0, NULL, 0);
-	if (IS_ERR(pdev)) {
-		err = PTR_ERR(pdev);
-		goto err_platform_exit;
-	}
-
-=======
 	/* Set this before creating the dev to allow i8042_command to work right away */
 	i8042_present = true;
 
@@ -1940,18 +1639,14 @@ static int __init i8042_init(void)
 		goto err_free_device;
 
 	bus_register_notifier(&serio_bus, &i8042_kbd_bind_notifier_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	panic_blink = i8042_panic_blink;
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 err_free_device:
 	platform_device_put(i8042_platform_device);
 err_unregister_driver:
 	platform_driver_unregister(&i8042_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_platform_exit:
 	i8042_platform_exit();
 	return err;
@@ -1959,20 +1654,14 @@ err_unregister_driver:
 
 static void __exit i8042_exit(void)
 {
-<<<<<<< HEAD
-=======
 	if (!i8042_present)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_unregister(i8042_platform_device);
 	platform_driver_unregister(&i8042_driver);
 	i8042_platform_exit();
 
-<<<<<<< HEAD
-=======
 	bus_unregister_notifier(&serio_bus, &i8042_kbd_bind_notifier_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	panic_blink = NULL;
 }
 

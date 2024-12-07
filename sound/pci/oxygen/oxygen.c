@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * C-Media CMI8788 driver for C-Media's reference design and similar models
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, version 2.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this driver; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -75,12 +56,6 @@
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
 MODULE_DESCRIPTION("C-Media CMI8788 driver");
 MODULE_LICENSE("GPL v2");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{C-Media,CMI8786}"
-			",{C-Media,CMI8787}"
-			",{C-Media,CMI8788}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;
@@ -104,16 +79,10 @@ enum {
 	MODEL_2CH_OUTPUT,
 	MODEL_HG2PCI,
 	MODEL_XONAR_DG,
-<<<<<<< HEAD
-};
-
-static DEFINE_PCI_DEVICE_TABLE(oxygen_ids) = {
-=======
 	MODEL_XONAR_DGX,
 };
 
 static const struct pci_device_id oxygen_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* C-Media's reference design */
 	{ OXYGEN_PCI_SUBID(0x10b0, 0x0216), .driver_data = MODEL_CMEDIA_REF },
 	{ OXYGEN_PCI_SUBID(0x10b0, 0x0217), .driver_data = MODEL_CMEDIA_REF },
@@ -126,11 +95,8 @@ static const struct pci_device_id oxygen_ids[] = {
 	{ OXYGEN_PCI_SUBID(0x1a58, 0x0910), .driver_data = MODEL_CMEDIA_REF },
 	/* Asus Xonar DG */
 	{ OXYGEN_PCI_SUBID(0x1043, 0x8467), .driver_data = MODEL_XONAR_DG },
-<<<<<<< HEAD
-=======
 	/* Asus Xonar DGX */
 	{ OXYGEN_PCI_SUBID(0x1043, 0x8521), .driver_data = MODEL_XONAR_DGX },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PCI 2.0 HD Audio */
 	{ OXYGEN_PCI_SUBID(0x13f6, 0x8782), .driver_data = MODEL_2CH_OUTPUT },
 	/* Kuroutoshikou CMI8787-HG2PCI */
@@ -775,13 +741,8 @@ static const struct oxygen_model model_generic = {
 	.adc_i2s_format = OXYGEN_I2S_FORMAT_LJUST,
 };
 
-<<<<<<< HEAD
-static int __devinit get_oxygen_model(struct oxygen *chip,
-				      const struct pci_device_id *id)
-=======
 static int get_oxygen_model(struct oxygen *chip,
 			    const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char *const names[] = {
 		[MODEL_MERIDIAN]	= "AuzenTech X-Meridian",
@@ -791,11 +752,8 @@ static int get_oxygen_model(struct oxygen *chip,
 		[MODEL_FANTASIA]	= "TempoTec HiFier Fantasia",
 		[MODEL_SERENADE]	= "TempoTec HiFier Serenade",
 		[MODEL_HG2PCI]		= "CMI8787-HG2PCI",
-<<<<<<< HEAD
-=======
 		[MODEL_XONAR_DG]        = "Xonar DG",
 		[MODEL_XONAR_DGX]       = "Xonar DGX",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	chip->model = model_generic;
@@ -858,10 +816,7 @@ static int get_oxygen_model(struct oxygen *chip,
 		chip->model.dac_channels_mixer = 2;
 		break;
 	case MODEL_XONAR_DG:
-<<<<<<< HEAD
-=======
 	case MODEL_XONAR_DGX:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->model = model_xonar_dg;
 		break;
 	}
@@ -876,13 +831,8 @@ static int get_oxygen_model(struct oxygen *chip,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit generic_oxygen_probe(struct pci_dev *pci,
-					  const struct pci_device_id *pci_id)
-=======
 static int generic_oxygen_probe(struct pci_dev *pci,
 				const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	int err;
@@ -904,27 +854,6 @@ static struct pci_driver oxygen_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = oxygen_ids,
 	.probe = generic_oxygen_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(oxygen_pci_remove),
-#ifdef CONFIG_PM
-	.suspend = oxygen_pci_suspend,
-	.resume = oxygen_pci_resume,
-#endif
-};
-
-static int __init alsa_card_oxygen_init(void)
-{
-	return pci_register_driver(&oxygen_driver);
-}
-
-static void __exit alsa_card_oxygen_exit(void)
-{
-	pci_unregister_driver(&oxygen_driver);
-}
-
-module_init(alsa_card_oxygen_init)
-module_exit(alsa_card_oxygen_exit)
-=======
 #ifdef CONFIG_PM_SLEEP
 	.driver = {
 		.pm = &oxygen_pci_pm,
@@ -933,4 +862,3 @@ module_exit(alsa_card_oxygen_exit)
 };
 
 module_pci_driver(oxygen_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

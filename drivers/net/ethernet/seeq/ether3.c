@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/net/ether3.c
  *
  *  Copyright (C) 1995-2000 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SEEQ nq8005 ethernet driver for Acorn/ANT Ether3 card
  *  for Acorn machines
  *
@@ -74,11 +64,7 @@
 #include <asm/ecard.h>
 #include <asm/io.h>
 
-<<<<<<< HEAD
-static char version[] __devinitdata = "ether3 ethernet driver (c) 1995-2000 R.M.King v1.17\n";
-=======
 static char version[] = "ether3 ethernet driver (c) 1995-2000 R.M.King v1.17\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ether3.h"
 
@@ -88,20 +74,12 @@ static void	ether3_setmulticastlist(struct net_device *dev);
 static int	ether3_rx(struct net_device *dev, unsigned int maxcnt);
 static void	ether3_tx(struct net_device *dev);
 static int	ether3_open (struct net_device *dev);
-<<<<<<< HEAD
-static int	ether3_sendpacket (struct sk_buff *skb, struct net_device *dev);
-static irqreturn_t ether3_interrupt (int irq, void *dev_id);
-static int	ether3_close (struct net_device *dev);
-static void	ether3_setmulticastlist (struct net_device *dev);
-static void	ether3_timeout(struct net_device *dev);
-=======
 static netdev_tx_t	ether3_sendpacket(struct sk_buff *skb,
 					  struct net_device *dev);
 static irqreturn_t ether3_interrupt (int irq, void *dev_id);
 static int	ether3_close (struct net_device *dev);
 static void	ether3_setmulticastlist (struct net_device *dev);
 static void	ether3_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BUS_16		2
 #define BUS_8		1
@@ -119,21 +97,13 @@ typedef enum {
  * The SEEQ8005 doesn't like us writing to its registers
  * too quickly.
  */
-<<<<<<< HEAD
-static inline void ether3_outb(int v, const void __iomem *r)
-=======
 static inline void ether3_outb(int v, void __iomem *r)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writeb(v, r);
 	udelay(1);
 }
 
-<<<<<<< HEAD
-static inline void ether3_outw(int v, const void __iomem *r)
-=======
 static inline void ether3_outw(int v, void __iomem *r)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writew(v, r);
 	udelay(1);
@@ -198,17 +168,11 @@ ether3_setbuffer(struct net_device *dev, buffer_rw_t read, int start)
 /*
  * Switch LED off...
  */
-<<<<<<< HEAD
-static void ether3_ledoff(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-=======
 static void ether3_ledoff(struct timer_list *t)
 {
 	struct dev_priv *private = from_timer(private, t, timer);
 	struct net_device *dev = private->dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ether3_outw(priv(dev)->regs.config2 |= CFG2_CTRLO, REG_CONFIG2);
 }
 
@@ -219,11 +183,6 @@ static inline void ether3_ledon(struct net_device *dev)
 {
 	del_timer(&priv(dev)->timer);
 	priv(dev)->timer.expires = jiffies + HZ / 50; /* leave on for 1/50th second */
-<<<<<<< HEAD
-	priv(dev)->timer.data = (unsigned long)dev;
-	priv(dev)->timer.function = ether3_ledoff;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&priv(dev)->timer);
 	if (priv(dev)->regs.config2 & CFG2_CTRLO)
 		ether3_outw(priv(dev)->regs.config2 &= ~CFG2_CTRLO, REG_CONFIG2);
@@ -233,11 +192,7 @@ static inline void ether3_ledon(struct net_device *dev)
  * Read the ethernet address string from the on board rom.
  * This is an ascii string!!!
  */
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether3_addr(char *addr, struct expansion_card *ec)
 {
 	struct in_chunk_dir cd;
@@ -262,11 +217,7 @@ ether3_addr(char *addr, struct expansion_card *ec)
 
 /* --------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether3_ramtest(struct net_device *dev, unsigned char byte)
 {
 	unsigned char *buffer = kmalloc(RX_END, GFP_KERNEL);
@@ -315,11 +266,7 @@ ether3_ramtest(struct net_device *dev, unsigned char byte)
 
 /* ------------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int __devinit ether3_init_2(struct net_device *dev)
-=======
 static int ether3_init_2(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -450,15 +397,6 @@ ether3_probe_bus_16(struct net_device *dev, int val)
 static int
 ether3_open(struct net_device *dev)
 {
-<<<<<<< HEAD
-	if (!is_valid_ether_addr(dev->dev_addr)) {
-		printk(KERN_WARNING "%s: invalid ethernet MAC address\n",
-			dev->name);
-		return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (request_irq(dev->irq, ether3_interrupt, 0, "ether3", dev))
 		return -EAGAIN;
 
@@ -512,11 +450,7 @@ static void ether3_setmulticastlist(struct net_device *dev)
 	ether3_outw(priv(dev)->regs.config1 | CFG1_LOCBUFMEM, REG_CONFIG1);
 }
 
-<<<<<<< HEAD
-static void ether3_timeout(struct net_device *dev)
-=======
 static void ether3_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -545,11 +479,7 @@ static void ether3_timeout(struct net_device *dev, unsigned int txqueue)
 /*
  * Transmit a packet
  */
-<<<<<<< HEAD
-static int
-=======
 static netdev_tx_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether3_sendpacket(struct sk_buff *skb, struct net_device *dev)
 {
 	unsigned long flags;
@@ -680,27 +610,14 @@ static int ether3_rx(struct net_device *dev, unsigned int maxcnt)
 		ether3_readbuffer(dev, addrs+2, 12);
 
 if (next_ptr < RX_START || next_ptr >= RX_END) {
-<<<<<<< HEAD
- int i;
- printk("%s: bad next pointer @%04X: ", dev->name, priv(dev)->rx_head);
- printk("%02X %02X %02X %02X ", next_ptr >> 8, next_ptr & 255, status & 255, status >> 8);
- for (i = 2; i < 14; i++)
-   printk("%02X ", addrs[i]);
- printk("\n");
-=======
  printk("%s: bad next pointer @%04X: ", dev->name, priv(dev)->rx_head);
  printk("%02X %02X %02X %02X ", next_ptr >> 8, next_ptr & 255, status & 255, status >> 8);
  printk("%pM %pM\n", addrs + 2, addrs + 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  next_ptr = priv(dev)->rx_head;
  break;
 }
 		/*
-<<<<<<< HEAD
- 		 * ignore our own packets...
-=======
 		 * ignore our own packets...
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 	 */
 		if (!(*(unsigned long *)&dev->dev_addr[0] ^ *(unsigned long *)&addrs[2+6]) &&
 		    !(*(unsigned short *)&dev->dev_addr[4] ^ *(unsigned short *)&addrs[2+10])) {
@@ -729,16 +646,11 @@ if (next_ptr < RX_START || next_ptr >= RX_END) {
 				skb->protocol = eth_type_trans(skb, dev);
 				netif_rx(skb);
 				received ++;
-<<<<<<< HEAD
-			} else
-				goto dropping;
-=======
 			} else {
 				ether3_outw(next_ptr >> 8, REG_RECVEND);
 				dev->stats.rx_dropped++;
 				goto done;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			struct net_device_stats *stats = &dev->stats;
 			ether3_outw(next_ptr >> 8, REG_RECVEND);
@@ -760,33 +672,11 @@ done:
 	 */
 	if (!(ether3_inw(REG_STATUS) & STAT_RXON)) {
 		dev->stats.rx_dropped++;
-<<<<<<< HEAD
-    		ether3_outw(next_ptr, REG_RECVPTR);
-=======
 		ether3_outw(next_ptr, REG_RECVPTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ether3_outw(priv(dev)->regs.command | CMD_RXON, REG_COMMAND);
 	}
 
 	return maxcnt;
-<<<<<<< HEAD
-
-dropping:{
-	static unsigned long last_warned;
-
-	ether3_outw(next_ptr >> 8, REG_RECVEND);
-	/*
-	 * Don't print this message too many times...
-	 */
-	if (time_after(jiffies, last_warned + 10 * HZ)) {
-		last_warned = jiffies;
-		printk("%s: memory squeeze, dropping packet.\n", dev->name);
-	}
-	dev->stats.rx_dropped++;
-	goto done;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -800,19 +690,11 @@ static void ether3_tx(struct net_device *dev)
 	do {
 	    	unsigned long status;
 
-<<<<<<< HEAD
-    		/*
-	    	 * Read the packet header
-    		 */
-	    	ether3_setbuffer(dev, buffer_read, tx_tail * 0x600);
-    		status = ether3_readlong(dev);
-=======
 		/*
 	    	 * Read the packet header
 		 */
 	    	ether3_setbuffer(dev, buffer_read, tx_tail * 0x600);
 		status = ether3_readlong(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Check to see if this packet has been transmitted
@@ -843,11 +725,7 @@ static void ether3_tx(struct net_device *dev)
 	}
 }
 
-<<<<<<< HEAD
-static void __devinit ether3_banner(void)
-=======
 static void ether3_banner(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static unsigned version_printed = 0;
 
@@ -862,27 +740,16 @@ static const struct net_device_ops ether3_netdev_ops = {
 	.ndo_set_rx_mode	= ether3_setmulticastlist,
 	.ndo_tx_timeout		= ether3_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-	.ndo_set_mac_address	= eth_mac_addr,
-};
-
-static int __devinit
-=======
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether3_probe(struct expansion_card *ec, const struct ecard_id *id)
 {
 	const struct ether3_data *data = id->data;
 	struct net_device *dev;
 	int bus_type, ret;
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ether3_banner();
 
@@ -910,17 +777,11 @@ ether3_probe(struct expansion_card *ec, const struct ecard_id *id)
 	priv(dev)->seeq = priv(dev)->base + data->base_offset;
 	dev->irq = ec->irq;
 
-<<<<<<< HEAD
-	ether3_addr(dev->dev_addr, ec);
-
-	init_timer(&priv(dev)->timer);
-=======
 	ether3_addr(addr, ec);
 	eth_hw_addr_set(dev, addr);
 
 	priv(dev)->dev = dev;
 	timer_setup(&priv(dev)->timer, ether3_ledoff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset card...
 	 */
@@ -982,11 +843,7 @@ ether3_probe(struct expansion_card *ec, const struct ecard_id *id)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit ether3_remove(struct expansion_card *ec)
-=======
 static void ether3_remove(struct expansion_card *ec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = ecard_get_drvdata(ec);
 
@@ -1016,11 +873,7 @@ static const struct ecard_id ether3_ids[] = {
 
 static struct ecard_driver ether3_driver = {
 	.probe		= ether3_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ether3_remove),
-=======
 	.remove		= ether3_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ether3_ids,
 	.drv = {
 		.name	= "ether3",

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-extern void highbank_set_cpu_jump(int cpu, void *jump_addr);
-extern void highbank_clocks_init(void);
-extern void highbank_restart(char, const char *);
-extern void __iomem *scu_base_addr;
-#ifdef CONFIG_DEBUG_HIGHBANK_UART
-extern void highbank_lluart_map_io(void);
-#else
-static inline void highbank_lluart_map_io(void) {}
-#endif
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __HIGHBANK_CORE_H
 #define __HIGHBANK_CORE_H
@@ -28,4 +16,3 @@ static inline void highbank_pm_init(void) {}
 extern void highbank_smc1(int fn, int arg);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

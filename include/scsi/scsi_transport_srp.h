@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SCSI_TRANSPORT_SRP_H
 #define SCSI_TRANSPORT_SRP_H
 
@@ -17,9 +14,6 @@ struct srp_rport_identifiers {
 	u8 roles;
 };
 
-<<<<<<< HEAD
-struct srp_rport {
-=======
 /**
  * enum srp_rport_state - SRP transport layer state
  * @SRP_RPORT_RUNNING:   Transport layer operational.
@@ -59,19 +53,10 @@ enum srp_rport_state {
 struct srp_rport {
 	/* for initiator and target drivers */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device dev;
 
 	u8 port_id[16];
 	u8 roles;
-<<<<<<< HEAD
-};
-
-struct srp_function_template {
-	/* for target drivers */
-	int (* tsk_mgmt_response)(struct Scsi_Host *, u64, u64, int);
-	int (* it_nexus_response)(struct Scsi_Host *, u64, int);
-=======
 
 	/* for initiator drivers */
 
@@ -115,20 +100,12 @@ struct srp_function_template {
 	int (*reconnect)(struct srp_rport *rport);
 	void (*terminate_rport_io)(struct srp_rport *rport);
 	void (*rport_delete)(struct srp_rport *rport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct scsi_transport_template *
 srp_attach_transport(struct srp_function_template *);
 extern void srp_release_transport(struct scsi_transport_template *);
 
-<<<<<<< HEAD
-extern struct srp_rport *srp_rport_add(struct Scsi_Host *,
-				       struct srp_rport_identifiers *);
-extern void srp_rport_del(struct srp_rport *);
-
-extern void srp_remove_host(struct Scsi_Host *);
-=======
 extern void srp_rport_get(struct srp_rport *rport);
 extern void srp_rport_put(struct srp_rport *rport);
 extern struct srp_rport *srp_rport_add(struct Scsi_Host *,
@@ -164,6 +141,5 @@ static inline int srp_chkready(struct srp_rport *rport)
 		return DID_NO_CONNECT << 16;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

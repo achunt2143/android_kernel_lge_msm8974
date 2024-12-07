@@ -1,52 +1,23 @@
-<<<<<<< HEAD
-/*
- *Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- *
- *This program is free software; you can redistribute it and/or modify
- *it under the terms of the GNU General Public License as published by
- *the Free Software Foundation; version 2 of the License.
- *
- *This program is distributed in the hope that it will be useful,
- *but WITHOUT ANY WARRANTY; without even the implied warranty of
- *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *GNU General Public License for more details.
- *
- *You should have received a copy of the GNU General Public License
- *along with this program; if not, write to the Free Software
- *Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
- */
-#include <linux/kernel.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
  */
 #include <linux/kernel.h>
 #include <linux/serial.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_reg.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-=======
 #include <linux/console.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/dmi.h>
-<<<<<<< HEAD
-#include <linux/console.h>
-#include <linux/nmi.h>
-#include <linux/delay.h>
-=======
 #include <linux/nmi.h>
 #include <linux/delay.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/debugfs.h>
 #include <linux/dmaengine.h>
@@ -58,15 +29,7 @@ enum {
 	PCH_UART_HANDLED_RX_ERR_INT_SHIFT,
 	PCH_UART_HANDLED_RX_TRG_INT_SHIFT,
 	PCH_UART_HANDLED_MS_INT_SHIFT,
-<<<<<<< HEAD
-};
-
-enum {
-	PCH_UART_8LINE,
-	PCH_UART_2LINE,
-=======
 	PCH_UART_HANDLED_LS_INT_SHIFT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PCH_UART_DRIVER_DEVICE "ttyPCH"
@@ -86,11 +49,8 @@ enum {
 					PCH_UART_HANDLED_RX_TRG_INT_SHIFT)<<1))
 #define PCH_UART_HANDLED_MS_INT	(1<<((PCH_UART_HANDLED_MS_INT_SHIFT)<<1))
 
-<<<<<<< HEAD
-=======
 #define PCH_UART_HANDLED_LS_INT	(1<<((PCH_UART_HANDLED_LS_INT_SHIFT)<<1))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCH_UART_RBR		0x00
 #define PCH_UART_THR		0x00
 
@@ -230,22 +190,12 @@ enum {
 #define PCH_UART_HAL_LOOP		(PCH_UART_MCR_LOOP)
 #define PCH_UART_HAL_AFE		(PCH_UART_MCR_AFE)
 
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_ROHM		0x10DB
-
-#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_UARTCLK   1843200 /*   1.8432 MHz */
 #define CMITC_UARTCLK   192000000 /* 192.0000 MHz */
 #define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
 #define FRI2_48_UARTCLK  48000000 /*  48.0000 MHz */
 #define NTC1_UARTCLK     64000000 /*  64.0000 MHz */
-<<<<<<< HEAD
-=======
 #define MINNOW_UARTCLK   50000000 /*  50.0000 MHz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pch_uart_buffer {
 	unsigned char *buf;
@@ -260,18 +210,10 @@ struct eg20t_port {
 	unsigned int iobase;
 	struct pci_dev *pdev;
 	int fifo_size;
-<<<<<<< HEAD
-	int uartclk;
-	int start_tx;
-	int start_rx;
-	int tx_empty;
-	int int_dis_flag;
-=======
 	unsigned int uartclk;
 	int start_tx;
 	int start_rx;
 	int tx_empty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int trigger;
 	int trigger_level;
 	struct pch_uart_buffer rxbuf;
@@ -279,10 +221,6 @@ struct eg20t_port {
 	unsigned int fcr;
 	unsigned int mcr;
 	unsigned int use_dma;
-<<<<<<< HEAD
-	unsigned int use_dma_flag;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_async_tx_descriptor	*desc_tx;
 	struct dma_async_tx_descriptor	*desc_rx;
 	struct pch_dma_slave		param_tx;
@@ -291,33 +229,19 @@ struct eg20t_port {
 	struct dma_chan			*chan_rx;
 	struct scatterlist		*sg_tx_p;
 	int				nent;
-<<<<<<< HEAD
-=======
 	int				orig_nent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist		sg_rx;
 	int				tx_dma_use;
 	void				*rx_buf_virt;
 	dma_addr_t			rx_buf_dma;
 
-<<<<<<< HEAD
-	struct dentry	*debugfs;
-
-	/* protect the eg20t_port private structure and io access to membase */
-	spinlock_t lock;
-=======
 #define IRQ_NAME_SIZE 17
 	char				irq_name[IRQ_NAME_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct pch_uart_driver_data - private data structure for UART-DMA
-<<<<<<< HEAD
- * @port_type:			The number of DMA channel
-=======
  * @port_type:			The type of UART port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @line_no:			UART port line number (0, 1, 2...)
  */
 struct pch_uart_driver_data {
@@ -340,19 +264,6 @@ enum pch_uart_num_t {
 };
 
 static struct pch_uart_driver_data drv_dat[] = {
-<<<<<<< HEAD
-	[pch_et20t_uart0] = {PCH_UART_8LINE, 0},
-	[pch_et20t_uart1] = {PCH_UART_2LINE, 1},
-	[pch_et20t_uart2] = {PCH_UART_2LINE, 2},
-	[pch_et20t_uart3] = {PCH_UART_2LINE, 3},
-	[pch_ml7213_uart0] = {PCH_UART_8LINE, 0},
-	[pch_ml7213_uart1] = {PCH_UART_2LINE, 1},
-	[pch_ml7213_uart2] = {PCH_UART_2LINE, 2},
-	[pch_ml7223_uart0] = {PCH_UART_8LINE, 0},
-	[pch_ml7223_uart1] = {PCH_UART_2LINE, 1},
-	[pch_ml7831_uart0] = {PCH_UART_8LINE, 0},
-	[pch_ml7831_uart1] = {PCH_UART_2LINE, 1},
-=======
 	[pch_et20t_uart0] = {PORT_PCH_8LINE, 0},
 	[pch_et20t_uart1] = {PORT_PCH_2LINE, 1},
 	[pch_et20t_uart2] = {PORT_PCH_2LINE, 2},
@@ -364,7 +275,6 @@ static struct pch_uart_driver_data drv_dat[] = {
 	[pch_ml7223_uart1] = {PORT_PCH_2LINE, 1},
 	[pch_ml7831_uart0] = {PORT_PCH_8LINE, 0},
 	[pch_ml7831_uart1] = {PORT_PCH_2LINE, 1},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
@@ -377,11 +287,6 @@ static const int trigger_level_64[4] = { 1, 16, 32, 56 };
 static const int trigger_level_16[4] = { 1, 4, 8, 14 };
 static const int trigger_level_1[4] = { 1, 1, 1, 1 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_FS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCH_REGS_BUFSIZE	1024
 
 
@@ -398,26 +303,6 @@ static ssize_t port_show_regs(struct file *file, char __user *user_buf,
 	if (!buf)
 		return 0;
 
-<<<<<<< HEAD
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"PCH EG20T port[%d] regs:\n", priv->port.line);
-
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"=================================\n");
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"IER: \t0x%02x\n", ioread8(priv->membase + UART_IER));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"IIR: \t0x%02x\n", ioread8(priv->membase + UART_IIR));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"LCR: \t0x%02x\n", ioread8(priv->membase + UART_LCR));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"MCR: \t0x%02x\n", ioread8(priv->membase + UART_MCR));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"LSR: \t0x%02x\n", ioread8(priv->membase + UART_LSR));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"MSR: \t0x%02x\n", ioread8(priv->membase + UART_MSR));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-=======
 	len += scnprintf(buf + len, PCH_REGS_BUFSIZE - len,
 			"PCH EG20T port[%d] regs:\n", priv->port.line);
 
@@ -436,21 +321,14 @@ static ssize_t port_show_regs(struct file *file, char __user *user_buf,
 	len += scnprintf(buf + len, PCH_REGS_BUFSIZE - len,
 			"MSR: \t0x%02x\n", ioread8(priv->membase + UART_MSR));
 	len += scnprintf(buf + len, PCH_REGS_BUFSIZE - len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"BRCSR: \t0x%02x\n",
 			ioread8(priv->membase + PCH_UART_BRCSR));
 
 	lcr = ioread8(priv->membase + UART_LCR);
 	iowrite8(PCH_UART_LCR_DLAB, priv->membase + UART_LCR);
-<<<<<<< HEAD
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-			"DLL: \t0x%02x\n", ioread8(priv->membase + UART_DLL));
-	len += snprintf(buf + len, PCH_REGS_BUFSIZE - len,
-=======
 	len += scnprintf(buf + len, PCH_REGS_BUFSIZE - len,
 			"DLL: \t0x%02x\n", ioread8(priv->membase + UART_DLL));
 	len += scnprintf(buf + len, PCH_REGS_BUFSIZE - len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"DLM: \t0x%02x\n", ioread8(priv->membase + UART_DLM));
 	iowrite8(lcr, priv->membase + UART_LCR);
 
@@ -468,14 +346,6 @@ static const struct file_operations port_regs_ops = {
 	.read		= port_show_regs,
 	.llseek		= default_llseek,
 };
-<<<<<<< HEAD
-#endif	/* CONFIG_DEBUG_FS */
-
-/* Return UART clock, checking for board specific clocks. */
-static int pch_uart_get_uartclk(void)
-{
-	const char *cmp;
-=======
 
 static const struct dmi_system_id pch_uart_dmi_table[] = {
 	{
@@ -527,34 +397,13 @@ static const struct dmi_system_id pch_uart_dmi_table[] = {
 static unsigned int pch_uart_get_uartclk(void)
 {
 	const struct dmi_system_id *d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (user_uartclk)
 		return user_uartclk;
 
-<<<<<<< HEAD
-	cmp = dmi_get_system_info(DMI_BOARD_NAME);
-	if (cmp && strstr(cmp, "CM-iTC"))
-		return CMITC_UARTCLK;
-
-	cmp = dmi_get_system_info(DMI_BIOS_VERSION);
-	if (cmp && strnstr(cmp, "FRI2", 4))
-		return FRI2_64_UARTCLK;
-
-	cmp = dmi_get_system_info(DMI_PRODUCT_NAME);
-	if (cmp && strstr(cmp, "Fish River Island II"))
-		return FRI2_48_UARTCLK;
-
-	/* Kontron COMe-mTT10 (nanoETXexpress-TT) */
-	cmp = dmi_get_system_info(DMI_BOARD_NAME);
-	if (cmp && (strstr(cmp, "COMe-mTT") ||
-		    strstr(cmp, "nanoETXexpress-TT")))
-		return NTC1_UARTCLK;
-=======
 	d = dmi_first_match(pch_uart_dmi_table);
 	if (d)
 		return (unsigned long)d->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return DEFAULT_UARTCLK;
 }
@@ -575,11 +424,7 @@ static void pch_uart_hal_disable_interrupt(struct eg20t_port *priv,
 	iowrite8(ier, priv->membase + UART_IER);
 }
 
-<<<<<<< HEAD
-static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
-=======
 static int pch_uart_hal_set_line(struct eg20t_port *priv, unsigned int baud,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 unsigned int parity, unsigned int bits,
 				 unsigned int stb)
 {
@@ -614,11 +459,7 @@ static int pch_uart_hal_set_line(struct eg20t_port *priv, unsigned int baud,
 	lcr |= bits;
 	lcr |= stb;
 
-<<<<<<< HEAD
-	dev_dbg(priv->port.dev, "%s:baud = %d, div = %04x, lcr = %02x (%lu)\n",
-=======
 	dev_dbg(priv->port.dev, "%s:baud = %u, div = %04x, lcr = %02x (%lu)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 __func__, baud, div, lcr, jiffies);
 	iowrite8(PCH_UART_LCR_DLAB, priv->membase + UART_LCR);
 	iowrite8(dll, priv->membase + PCH_UART_DLL);
@@ -705,34 +546,11 @@ static u8 pch_uart_hal_get_modem(struct eg20t_port *priv)
 	return (u8)msr;
 }
 
-<<<<<<< HEAD
-static void pch_uart_hal_write(struct eg20t_port *priv,
-			      const unsigned char *buf, int tx_size)
-{
-	int i;
-	unsigned int thr;
-
-	for (i = 0; i < tx_size;) {
-		thr = buf[i++];
-		iowrite8(thr, priv->membase + PCH_UART_THR);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pch_uart_hal_read(struct eg20t_port *priv, unsigned char *buf,
 			     int rx_size)
 {
 	int i;
 	u8 rbr, lsr;
-<<<<<<< HEAD
-
-	lsr = ioread8(priv->membase + UART_LSR);
-	for (i = 0, lsr = ioread8(priv->membase + UART_LSR);
-	     i < rx_size && lsr & UART_LSR_DR;
-	     lsr = ioread8(priv->membase + UART_LSR)) {
-		rbr = ioread8(priv->membase + PCH_UART_RBR);
-=======
 	struct uart_port *port = &priv->port;
 
 	lsr = ioread8(priv->membase + UART_LSR);
@@ -749,27 +567,15 @@ static int pch_uart_hal_read(struct eg20t_port *priv, unsigned char *buf,
 		if (uart_prepare_sysrq_char(port, rbr))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf[i++] = rbr;
 	}
 	return i;
 }
 
-<<<<<<< HEAD
-static unsigned int pch_uart_hal_get_iid(struct eg20t_port *priv)
-{
-	unsigned int iir;
-	int ret;
-
-	iir = ioread8(priv->membase + UART_IIR);
-	ret = (iir & (PCH_UART_IIR_IID | PCH_UART_IIR_TOI | PCH_UART_IIR_IP));
-	return ret;
-=======
 static unsigned char pch_uart_hal_get_iid(struct eg20t_port *priv)
 {
 	return ioread8(priv->membase + UART_IIR) &\
 		      (PCH_UART_IIR_IID | PCH_UART_IIR_TOI | PCH_UART_IIR_IP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u8 pch_uart_hal_get_line_status(struct eg20t_port *priv)
@@ -790,42 +596,6 @@ static void pch_uart_hal_set_break(struct eg20t_port *priv, int on)
 	iowrite8(lcr, priv->membase + UART_LCR);
 }
 
-<<<<<<< HEAD
-static int push_rx(struct eg20t_port *priv, const unsigned char *buf,
-		   int size)
-{
-	struct uart_port *port;
-	struct tty_struct *tty;
-
-	port = &priv->port;
-	tty = tty_port_tty_get(&port->state->port);
-	if (!tty) {
-		dev_dbg(priv->port.dev, "%s:tty is busy now", __func__);
-		return -EBUSY;
-	}
-
-	tty_insert_flip_string(tty, buf, size);
-	tty_flip_buffer_push(tty);
-	tty_kref_put(tty);
-
-	return 0;
-}
-
-static int pop_tx_x(struct eg20t_port *priv, unsigned char *buf)
-{
-	int ret = 0;
-	struct uart_port *port = &priv->port;
-
-	if (port->x_char) {
-		dev_dbg(priv->port.dev, "%s:X character send %02x (%lu)\n",
-			__func__, port->x_char, jiffies);
-		buf[0] = port->x_char;
-		port->x_char = 0;
-		ret = 1;
-	}
-
-	return ret;
-=======
 static void push_rx(struct eg20t_port *priv, const unsigned char *buf,
 		    int size)
 {
@@ -834,51 +604,25 @@ static void push_rx(struct eg20t_port *priv, const unsigned char *buf,
 
 	tty_insert_flip_string(tport, buf, size);
 	tty_flip_buffer_push(tport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dma_push_rx(struct eg20t_port *priv, int size)
 {
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	int room;
-	struct uart_port *port = &priv->port;
-
-	port = &priv->port;
-	tty = tty_port_tty_get(&port->state->port);
-	if (!tty) {
-		dev_dbg(priv->port.dev, "%s:tty is busy now", __func__);
-		return 0;
-	}
-
-	room = tty_buffer_request_room(tty, size);
-=======
 	int room;
 	struct uart_port *port = &priv->port;
 	struct tty_port *tport = &port->state->port;
 
 	room = tty_buffer_request_room(tport, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (room < size)
 		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
 			 size - room);
 	if (!room)
-<<<<<<< HEAD
-		goto out;
-
-	tty_insert_flip_string(tty, sg_virt(&priv->sg_rx), size);
-
-	port->icount.rx += room;
-out:
-	tty_kref_put(tty);
-=======
 		return 0;
 
 	tty_insert_flip_string(tport, sg_virt(&priv->sg_rx), size);
 
 	port->icount.rx += room;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return room;
 }
@@ -896,12 +640,6 @@ static void pch_free_dma(struct uart_port *port)
 		dma_release_channel(priv->chan_rx);
 		priv->chan_rx = NULL;
 	}
-<<<<<<< HEAD
-	if (sg_dma_address(&priv->sg_rx))
-		dma_free_coherent(port->dev, port->fifosize,
-				  sg_virt(&priv->sg_rx),
-				  sg_dma_address(&priv->sg_rx));
-=======
 
 	if (priv->rx_buf_dma) {
 		dma_free_coherent(port->dev, port->fifosize, priv->rx_buf_virt,
@@ -909,7 +647,6 @@ static void pch_free_dma(struct uart_port *port)
 		priv->rx_buf_virt = NULL;
 		priv->rx_buf_dma = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -938,16 +675,10 @@ static void pch_request_dma(struct uart_port *port)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-<<<<<<< HEAD
-	dma_dev = pci_get_bus_and_slot(priv->pdev->bus->number,
-				       PCI_DEVFN(0xa, 0)); /* Get DMA's dev
-								information */
-=======
 	/* Get DMA's dev information */
 	dma_dev = pci_get_slot(priv->pdev->bus,
 			PCI_DEVFN(PCI_SLOT(priv->pdev->devfn), 0));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set Tx DMA */
 	param = &priv->param_tx;
 	param->dma_dev = &dma_dev->dev;
@@ -958,10 +689,7 @@ static void pch_request_dma(struct uart_port *port)
 	if (!chan) {
 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
 			__func__);
-<<<<<<< HEAD
-=======
 		pci_dev_put(dma_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	priv->chan_tx = chan;
@@ -978,10 +706,7 @@ static void pch_request_dma(struct uart_port *port)
 			__func__);
 		dma_release_channel(priv->chan_tx);
 		priv->chan_tx = NULL;
-<<<<<<< HEAD
-=======
 		pci_dev_put(dma_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -989,39 +714,20 @@ static void pch_request_dma(struct uart_port *port)
 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
 				    &priv->rx_buf_dma, GFP_KERNEL);
 	priv->chan_rx = chan;
-<<<<<<< HEAD
-=======
 
 	pci_dev_put(dma_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pch_dma_rx_complete(void *arg)
 {
 	struct eg20t_port *priv = arg;
 	struct uart_port *port = &priv->port;
-<<<<<<< HEAD
-	struct tty_struct *tty = tty_port_tty_get(&port->state->port);
-	int count;
-
-	if (!tty) {
-		dev_dbg(priv->port.dev, "%s:tty is busy now", __func__);
-		return;
-	}
-
-	dma_sync_sg_for_cpu(port->dev, &priv->sg_rx, 1, DMA_FROM_DEVICE);
-	count = dma_push_rx(priv, priv->trigger_level);
-	if (count)
-		tty_flip_buffer_push(tty);
-	tty_kref_put(tty);
-=======
 	int count;
 
 	dma_sync_sg_for_cpu(port->dev, &priv->sg_rx, 1, DMA_FROM_DEVICE);
 	count = dma_push_rx(priv, priv->trigger_level);
 	if (count)
 		tty_flip_buffer_push(&port->state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	async_tx_ack(priv->desc_rx);
 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT |
 					    PCH_UART_HAL_RX_ERR_INT);
@@ -1031,21 +737,6 @@ static void pch_dma_tx_complete(void *arg)
 {
 	struct eg20t_port *priv = arg;
 	struct uart_port *port = &priv->port;
-<<<<<<< HEAD
-	struct circ_buf *xmit = &port->state->xmit;
-	struct scatterlist *sg = priv->sg_tx_p;
-	int i;
-
-	for (i = 0; i < priv->nent; i++, sg++) {
-		xmit->tail += sg_dma_len(sg);
-		port->icount.tx += sg_dma_len(sg);
-	}
-	xmit->tail &= UART_XMIT_SIZE - 1;
-	async_tx_ack(priv->desc_tx);
-	dma_unmap_sg(port->dev, sg, priv->nent, DMA_TO_DEVICE);
-	priv->tx_dma_use = 0;
-	priv->nent = 0;
-=======
 	struct scatterlist *sg = priv->sg_tx_p;
 	int i;
 
@@ -1057,48 +748,15 @@ static void pch_dma_tx_complete(void *arg)
 	priv->tx_dma_use = 0;
 	priv->nent = 0;
 	priv->orig_nent = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv->sg_tx_p);
 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
 }
 
-<<<<<<< HEAD
-static int pop_tx(struct eg20t_port *priv, int size)
-{
-	int count = 0;
-	struct uart_port *port = &priv->port;
-	struct circ_buf *xmit = &port->state->xmit;
-
-	if (uart_tx_stopped(port) || uart_circ_empty(xmit) || count >= size)
-		goto pop_tx_end;
-
-	do {
-		int cnt_to_end =
-		    CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-		int sz = min(size - count, cnt_to_end);
-		pch_uart_hal_write(priv, &xmit->buf[xmit->tail], sz);
-		xmit->tail = (xmit->tail + sz) & (UART_XMIT_SIZE - 1);
-		count += sz;
-	} while (!uart_circ_empty(xmit) && count < size);
-
-pop_tx_end:
-	dev_dbg(priv->port.dev, "%d characters. Remained %d characters.(%lu)\n",
-		 count, size - count, jiffies);
-
-	return count;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int handle_rx_to(struct eg20t_port *priv)
 {
 	struct pch_uart_buffer *buf;
 	int rx_size;
-<<<<<<< HEAD
-	int ret;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv->start_rx) {
 		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT |
 						     PCH_UART_HAL_RX_ERR_INT);
@@ -1107,26 +765,12 @@ static int handle_rx_to(struct eg20t_port *priv)
 	buf = &priv->rxbuf;
 	do {
 		rx_size = pch_uart_hal_read(priv, buf->buf, buf->size);
-<<<<<<< HEAD
-		ret = push_rx(priv, buf->buf, rx_size);
-		if (ret)
-			return 0;
-=======
 		push_rx(priv, buf->buf, rx_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (rx_size == buf->size);
 
 	return PCH_UART_HANDLED_RX_INT;
 }
 
-<<<<<<< HEAD
-static int handle_rx(struct eg20t_port *priv)
-{
-	return handle_rx_to(priv);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dma_handle_rx(struct eg20t_port *priv)
 {
 	struct uart_port *port = &priv->port;
@@ -1141,12 +785,7 @@ static int dma_handle_rx(struct eg20t_port *priv)
 	sg_dma_len(sg) = priv->trigger_level;
 
 	sg_set_page(&priv->sg_rx, virt_to_page(priv->rx_buf_virt),
-<<<<<<< HEAD
-		     sg_dma_len(sg), (unsigned long)priv->rx_buf_virt &
-		     ~PAGE_MASK);
-=======
 		     sg_dma_len(sg), offset_in_page(priv->rx_buf_virt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_dma_address(sg) = priv->rx_buf_dma;
 
@@ -1171,11 +810,6 @@ static unsigned int handle_tx(struct eg20t_port *priv)
 	struct uart_port *port = &priv->port;
 	struct circ_buf *xmit = &port->state->xmit;
 	int fifo_size;
-<<<<<<< HEAD
-	int tx_size;
-	int size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tx_empty;
 
 	if (!priv->start_tx) {
@@ -1188,21 +822,6 @@ static unsigned int handle_tx(struct eg20t_port *priv)
 
 	fifo_size = max(priv->fifo_size, 1);
 	tx_empty = 1;
-<<<<<<< HEAD
-	if (pop_tx_x(priv, xmit->buf)) {
-		pch_uart_hal_write(priv, xmit->buf, 1);
-		port->icount.tx++;
-		tx_empty = 0;
-		fifo_size--;
-	}
-	size = min(xmit->head - xmit->tail, fifo_size);
-	if (size < 0)
-		size = fifo_size;
-
-	tx_size = pop_tx(priv, size);
-	if (tx_size > 0) {
-		port->icount.tx += tx_size;
-=======
 	if (port->x_char) {
 		iowrite8(port->x_char, priv->membase + PCH_UART_THR);
 		port->icount.tx++;
@@ -1215,7 +834,6 @@ static unsigned int handle_tx(struct eg20t_port *priv)
 		iowrite8(xmit->buf[xmit->tail], priv->membase + PCH_UART_THR);
 		uart_xmit_advance(port, 1);
 		fifo_size--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_empty = 0;
 	}
 
@@ -1236,10 +854,6 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 	struct scatterlist *sg;
 	int nent;
 	int fifo_size;
-<<<<<<< HEAD
-	int tx_empty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_async_tx_descriptor *desc;
 	int num;
 	int i;
@@ -1264,19 +878,6 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 	}
 
 	fifo_size = max(priv->fifo_size, 1);
-<<<<<<< HEAD
-	tx_empty = 1;
-	if (pop_tx_x(priv, xmit->buf)) {
-		pch_uart_hal_write(priv, xmit->buf, 1);
-		port->icount.tx++;
-		tx_empty = 0;
-		fifo_size--;
-	}
-
-	bytes = min((int)CIRC_CNT(xmit->head, xmit->tail,
-			     UART_XMIT_SIZE), CIRC_CNT_TO_END(xmit->head,
-			     xmit->tail, UART_XMIT_SIZE));
-=======
 
 	if (port->x_char) {
 		iowrite8(port->x_char, priv->membase + PCH_UART_THR);
@@ -1286,7 +887,6 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 	}
 
 	bytes = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bytes) {
 		dev_dbg(priv->port.dev, "%s 0 bytes return\n", __func__);
 		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_TX_INT);
@@ -1309,15 +909,11 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 
 	priv->tx_dma_use = 1;
 
-<<<<<<< HEAD
-	priv->sg_tx_p = kzalloc(sizeof(struct scatterlist)*num, GFP_ATOMIC);
-=======
 	priv->sg_tx_p = kmalloc_array(num, sizeof(struct scatterlist), GFP_ATOMIC);
 	if (!priv->sg_tx_p) {
 		dev_err(priv->port.dev, "%s:kzalloc Failed\n", __func__);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_init_table(priv->sg_tx_p, num); /* Initialize SG table */
 	sg = priv->sg_tx_p;
@@ -1337,10 +933,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 		dev_err(priv->port.dev, "%s:dma_map_sg Failed\n", __func__);
 		return 0;
 	}
-<<<<<<< HEAD
-=======
 	priv->orig_nent = num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->nent = nent;
 
 	for (i = 0; i < nent; i++, sg++) {
@@ -1358,11 +951,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 					priv->sg_tx_p, nent, DMA_MEM_TO_DEV,
 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
 	if (!desc) {
-<<<<<<< HEAD
-		dev_err(priv->port.dev, "%s:device_prep_slave_sg Failed\n",
-=======
 		dev_err(priv->port.dev, "%s:dmaengine_prep_slave_sg Failed\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__);
 		return 0;
 	}
@@ -1380,22 +969,11 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 
 static void pch_uart_err_ir(struct eg20t_port *priv, unsigned int lsr)
 {
-<<<<<<< HEAD
-	u8 fcr = ioread8(priv->membase + UART_FCR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_port *port = &priv->port;
 	struct tty_struct *tty = tty_port_tty_get(&port->state->port);
 	char   *error_msg[5] = {};
 	int    i = 0;
 
-<<<<<<< HEAD
-	/* Reset FIFO */
-	fcr |= UART_FCR_CLEAR_RCVR;
-	iowrite8(fcr, priv->membase + UART_FCR);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lsr & PCH_UART_LSR_ERR)
 		error_msg[i++] = "Error data in FIFO\n";
 
@@ -1428,14 +1006,6 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 	unsigned int handled;
 	u8 lsr;
 	int ret = 0;
-<<<<<<< HEAD
-	unsigned int iid;
-	unsigned long flags;
-
-	spin_lock_irqsave(&priv->lock, flags);
-	handled = 0;
-	while ((iid = pch_uart_hal_get_iid(priv)) > 1) {
-=======
 	unsigned char iid;
 	int next = 1;
 	u8 msr;
@@ -1446,7 +1016,6 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 		iid = pch_uart_hal_get_iid(priv);
 		if (iid & PCH_UART_IIR_IP) /* No Interrupt */
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (iid) {
 		case PCH_UART_IID_RLS:	/* Receiver Line Status */
 			lsr = pch_uart_hal_get_line_status(priv);
@@ -1454,11 +1023,8 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 						UART_LSR_PE | UART_LSR_OE)) {
 				pch_uart_err_ir(priv, lsr);
 				ret = PCH_UART_HANDLED_RX_ERR_INT;
-<<<<<<< HEAD
-=======
 			} else {
 				ret = PCH_UART_HANDLED_LS_INT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case PCH_UART_IID_RDR:	/* Received Data Ready */
@@ -1472,11 +1038,7 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 						PCH_UART_HAL_RX_INT |
 						PCH_UART_HAL_RX_ERR_INT);
 			} else {
-<<<<<<< HEAD
-				ret = handle_rx(priv);
-=======
 				ret = handle_rx_to(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case PCH_UART_IID_RDR_TO:	/* Received Data Ready
@@ -1491,14 +1053,6 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 				ret = handle_tx(priv);
 			break;
 		case PCH_UART_IID_MS:	/* Modem Status */
-<<<<<<< HEAD
-			ret = PCH_UART_HANDLED_MS_INT;
-			break;
-		default:	/* Never junp to this label */
-			dev_err(priv->port.dev, "%s:iid=%d (%lu)\n", __func__,
-				iid, jiffies);
-			ret = -1;
-=======
 			msr = pch_uart_hal_get_modem(priv);
 			next = 0; /* MS ir prioirty is the lowest. So, MS ir
 				     means final interrupt */
@@ -1511,22 +1065,12 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 				iid, jiffies);
 			ret = -1;
 			next = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		handled |= (unsigned int)ret;
 	}
-<<<<<<< HEAD
-	if (handled == 0 && iid <= 1) {
-		if (priv->int_dis_flag)
-			priv->int_dis_flag = 0;
-	}
-
-	spin_unlock_irqrestore(&priv->lock, flags);
-=======
 
 	uart_unlock_and_check_sysrq(&priv->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_RETVAL(handled);
 }
 
@@ -1620,10 +1164,6 @@ static void pch_uart_stop_rx(struct uart_port *port)
 	priv->start_rx = 0;
 	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT |
 					     PCH_UART_HAL_RX_ERR_INT);
-<<<<<<< HEAD
-	priv->int_dis_flag = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Enable the modem status interrupts. */
@@ -1641,15 +1181,9 @@ static void pch_uart_break_ctl(struct uart_port *port, int ctl)
 	unsigned long flags;
 
 	priv = container_of(port, struct eg20t_port, port);
-<<<<<<< HEAD
-	spin_lock_irqsave(&priv->lock, flags);
-	pch_uart_hal_set_break(priv, ctl);
-	spin_unlock_irqrestore(&priv->lock, flags);
-=======
 	uart_port_lock_irqsave(&priv->port, &flags);
 	pch_uart_hal_set_break(priv, ctl);
 	uart_port_unlock_irqrestore(&priv->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Grab any interrupt resources and initialise any low level driver state. */
@@ -1714,11 +1248,7 @@ static int pch_uart_startup(struct uart_port *port)
 		return ret;
 
 	ret = request_irq(priv->port.irq, pch_uart_interrupt, IRQF_SHARED,
-<<<<<<< HEAD
-			KBUILD_MODNAME, priv);
-=======
 			priv->irq_name, priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -1756,19 +1286,11 @@ static void pch_uart_shutdown(struct uart_port *port)
  *bits.  Update read_status_mask and ignore_status_mask to indicate
  *the types of events we are interested in receiving.  */
 static void pch_uart_set_termios(struct uart_port *port,
-<<<<<<< HEAD
-				 struct ktermios *termios, struct ktermios *old)
-{
-	int baud;
-	int rtn;
-	unsigned int parity, bits, stb;
-=======
 				 struct ktermios *termios,
 				 const struct ktermios *old)
 {
 	int rtn;
 	unsigned int baud, parity, bits, stb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct eg20t_port *priv;
 	unsigned long flags;
 
@@ -1811,12 +1333,7 @@ static void pch_uart_set_termios(struct uart_port *port,
 
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&priv->lock, flags);
-	spin_lock(&port->lock);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_update_timeout(port, termios->c_cflag, baud);
 	rtn = pch_uart_hal_set_line(priv, baud, parity, bits, stb);
@@ -1829,12 +1346,7 @@ static void pch_uart_set_termios(struct uart_port *port,
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
 out:
-<<<<<<< HEAD
-	spin_unlock(&port->lock);
-	spin_unlock_irqrestore(&priv->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *pch_uart_type(struct uart_port *port)
@@ -1900,13 +1412,6 @@ static int pch_uart_verify_port(struct uart_port *port,
 			__func__);
 		return -EOPNOTSUPP;
 #endif
-<<<<<<< HEAD
-		priv->use_dma_flag = 1;
-		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
-		if (!priv->use_dma)
-			pch_request_dma(port);
-		priv->use_dma = 1;
-=======
 		if (!priv->use_dma) {
 			pch_request_dma(port);
 			if (priv->chan_rx)
@@ -1915,39 +1420,12 @@ static int pch_uart_verify_port(struct uart_port *port,
 		dev_info(priv->port.dev, "PCH UART: %s\n",
 				priv->use_dma ?
 				"Use DMA Mode" : "No DMA");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct uart_ops pch_uart_ops = {
-	.tx_empty = pch_uart_tx_empty,
-	.set_mctrl = pch_uart_set_mctrl,
-	.get_mctrl = pch_uart_get_mctrl,
-	.stop_tx = pch_uart_stop_tx,
-	.start_tx = pch_uart_start_tx,
-	.stop_rx = pch_uart_stop_rx,
-	.enable_ms = pch_uart_enable_ms,
-	.break_ctl = pch_uart_break_ctl,
-	.startup = pch_uart_startup,
-	.shutdown = pch_uart_shutdown,
-	.set_termios = pch_uart_set_termios,
-/*	.pm		= pch_uart_pm,		Not supported yet */
-/*	.set_wake	= pch_uart_set_wake,	Not supported yet */
-	.type = pch_uart_type,
-	.release_port = pch_uart_release_port,
-	.request_port = pch_uart_request_port,
-	.config_port = pch_uart_config_port,
-	.verify_port = pch_uart_verify_port
-};
-
-#ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
-
-=======
 #if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_PCH_UART_CONSOLE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Wait for transmitter & holding register to empty
  */
@@ -1978,10 +1456,6 @@ static void wait_for_xmitr(struct eg20t_port *up, int bits)
 		}
 	}
 }
-<<<<<<< HEAD
-
-static void pch_console_putchar(struct uart_port *port, int ch)
-=======
 #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_PCH_UART_CONSOLE */
 
 #ifdef CONFIG_CONSOLE_POLL
@@ -2057,7 +1531,6 @@ static const struct uart_ops pch_uart_ops = {
 #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
 
 static void pch_console_putchar(struct uart_port *port, unsigned char ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct eg20t_port *priv =
 		container_of(port, struct eg20t_port, port);
@@ -2077,37 +1550,17 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
 {
 	struct eg20t_port *priv;
 	unsigned long flags;
-<<<<<<< HEAD
-	int priv_locked = 1;
-	int port_locked = 1;
-=======
 	int locked = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ier;
 
 	priv = pch_uart_ports[co->index];
 
 	touch_nmi_watchdog();
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-	if (priv->port.sysrq) {
-		spin_lock(&priv->lock);
-		/* serial8250_handle_port() already took the port lock */
-		port_locked = 0;
-	} else if (oops_in_progress) {
-		priv_locked = spin_trylock(&priv->lock);
-		port_locked = spin_trylock(&priv->port.lock);
-	} else {
-		spin_lock(&priv->lock);
-		spin_lock(&priv->port.lock);
-	}
-=======
 	if (oops_in_progress)
 		locked = uart_port_trylock_irqsave(&priv->port, &flags);
 	else
 		uart_port_lock_irqsave(&priv->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First save the IER then disable the interrupts
@@ -2122,22 +1575,11 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
 	 *	Finally, wait for transmitter to become empty
 	 *	and restore the IER
 	 */
-<<<<<<< HEAD
-	wait_for_xmitr(priv, BOTH_EMPTY);
-	iowrite8(ier, priv->membase + UART_IER);
-
-	if (port_locked)
-		spin_unlock(&priv->port.lock);
-	if (priv_locked)
-		spin_unlock(&priv->lock);
-	local_irq_restore(flags);
-=======
 	wait_for_xmitr(priv, UART_LSR_BOTH_EMPTY);
 	iowrite8(ier, priv->membase + UART_IER);
 
 	if (locked)
 		uart_port_unlock_irqrestore(&priv->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pch_console_setup(struct console *co, char *options)
@@ -2183,11 +1625,7 @@ static struct console pch_console = {
 #define PCH_CONSOLE	(&pch_console)
 #else
 #define PCH_CONSOLE	NULL
-<<<<<<< HEAD
-#endif
-=======
 #endif	/* CONFIG_SERIAL_PCH_UART_CONSOLE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct uart_driver pch_uart_driver = {
 	.owner = THIS_MODULE,
@@ -2210,11 +1648,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	int fifosize;
 	int port_type;
 	struct pch_uart_driver_data *board;
-<<<<<<< HEAD
-	char name[32];	/* for debugfs file name */
-=======
 	char name[32];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	board = &drv_dat[id->driver_data];
 	port_type = board->port_type;
@@ -2228,17 +1662,10 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 		goto init_port_free_txbuf;
 
 	switch (port_type) {
-<<<<<<< HEAD
-	case PORT_UNKNOWN:
-		fifosize = 256; /* EG20T/ML7213: UART0 */
-		break;
-	case PORT_8250:
-=======
 	case PORT_PCH_8LINE:
 		fifosize = 256; /* EG20T/ML7213: UART0 */
 		break;
 	case PORT_PCH_2LINE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fifosize = 64; /* EG20T:UART1~3  ML7213: UART1~2*/
 		break;
 	default:
@@ -2249,11 +1676,6 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	pci_enable_msi(pdev);
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-	spin_lock_init(&priv->lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iobase = pci_resource_start(pdev, 0);
 	mapbase = pci_resource_start(pdev, 1);
 	priv->mapbase = mapbase;
@@ -2265,11 +1687,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 
 	priv->fifo_size = fifosize;
 	priv->uartclk = pch_uart_get_uartclk();
-<<<<<<< HEAD
-	priv->port_type = PORT_MAX_8250 + port_type + 1;
-=======
 	priv->port_type = port_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->port.dev = &pdev->dev;
 	priv->port.iobase = iobase;
 	priv->port.membase = NULL;
@@ -2280,30 +1698,21 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	priv->port.flags = UPF_BOOT_AUTOCONF;
 	priv->port.fifosize = fifosize;
 	priv->port.line = board->line_no;
-<<<<<<< HEAD
-	priv->trigger = PCH_UART_HAL_TRIGGER_M;
-
-	spin_lock_init(&priv->port.lock);
-=======
 	priv->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PCH_UART_CONSOLE);
 	priv->trigger = PCH_UART_HAL_TRIGGER_M;
 
 	snprintf(priv->irq_name, IRQ_NAME_SIZE,
 		 KBUILD_MODNAME ":" PCH_UART_DRIVER_DEVICE "%d",
 		 priv->port.line);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pdev, priv);
 	priv->trigger_level = 1;
 	priv->fcr = 0;
 
-<<<<<<< HEAD
-=======
 	if (pdev->dev.of_node)
 		of_property_read_u32(pdev->dev.of_node, "clock-frequency"
 					 , &user_uartclk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
 	pch_uart_ports[board->line_no] = priv;
 #endif
@@ -2311,17 +1720,9 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	if (ret < 0)
 		goto init_port_hal_free;
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_FS
-	snprintf(name, sizeof(name), "uart%d_regs", board->line_no);
-	priv->debugfs = debugfs_create_file(name, S_IFREG | S_IRUGO,
-				NULL, priv, &port_regs_ops);
-#endif
-=======
 	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
 	debugfs_create_file(name, S_IFREG | S_IRUGO, NULL, priv,
 			    &port_regs_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return priv;
 
@@ -2339,21 +1740,11 @@ init_port_alloc_err:
 
 static void pch_uart_exit_port(struct eg20t_port *priv)
 {
-<<<<<<< HEAD
-
-#ifdef CONFIG_DEBUG_FS
-	if (priv->debugfs)
-		debugfs_remove(priv->debugfs);
-#endif
-	uart_remove_one_port(&pch_uart_driver, &priv->port);
-	pci_set_drvdata(priv->pdev, NULL);
-=======
 	char name[32];
 
 	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
 	debugfs_lookup_and_remove(name, NULL);
 	uart_remove_one_port(&pch_uart_driver, &priv->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_page((unsigned long)priv->rxbuf.buf);
 }
 
@@ -2371,34 +1762,6 @@ static void pch_uart_pci_remove(struct pci_dev *pdev)
 	kfree(priv);
 	return;
 }
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int pch_uart_pci_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct eg20t_port *priv = pci_get_drvdata(pdev);
-
-	uart_suspend_port(&pch_uart_driver, &priv->port);
-
-	pci_save_state(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-	return 0;
-}
-
-static int pch_uart_pci_resume(struct pci_dev *pdev)
-{
-	struct eg20t_port *priv = pci_get_drvdata(pdev);
-	int ret;
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-
-	ret = pci_enable_device(pdev);
-	if (ret) {
-		dev_err(&pdev->dev,
-		"%s-pci_enable_device failed(ret=%d) ", __func__, ret);
-		return ret;
-	}
-=======
 
 static int __maybe_unused pch_uart_pci_suspend(struct device *dev)
 {
@@ -2412,23 +1775,13 @@ static int __maybe_unused pch_uart_pci_suspend(struct device *dev)
 static int __maybe_unused pch_uart_pci_resume(struct device *dev)
 {
 	struct eg20t_port *priv = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_resume_port(&pch_uart_driver, &priv->port);
 
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define pch_uart_pci_suspend NULL
-#define pch_uart_pci_resume NULL
-#endif
-
-static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
-=======
 
 static const struct pci_device_id pch_uart_pci_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8811),
 	 .driver_data = pch_et20t_uart0},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8812),
@@ -2454,11 +1807,7 @@ static const struct pci_device_id pch_uart_pci_id[] = {
 	{0,},
 };
 
-<<<<<<< HEAD
-static int __devinit pch_uart_pci_probe(struct pci_dev *pdev,
-=======
 static int pch_uart_pci_probe(struct pci_dev *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const struct pci_device_id *id)
 {
 	int ret;
@@ -2484,25 +1833,16 @@ probe_error:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(pch_uart_pci_pm_ops,
 			 pch_uart_pci_suspend,
 			 pch_uart_pci_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver pch_uart_pci_driver = {
 	.name = "pch_uart",
 	.id_table = pch_uart_pci_id,
 	.probe = pch_uart_pci_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(pch_uart_pci_remove),
-	.suspend = pch_uart_pci_suspend,
-	.resume = pch_uart_pci_resume,
-=======
 	.remove = pch_uart_pci_remove,
 	.driver.pm = &pch_uart_pci_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pch_uart_module_init(void)
@@ -2532,11 +1872,8 @@ module_exit(pch_uart_module_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("Intel EG20T PCH UART PCI Driver");
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(pci, pch_uart_pci_id);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(default_baud, uint, S_IRUGO);
 MODULE_PARM_DESC(default_baud,
                  "Default BAUD for initial driver state and console (default 9600)");

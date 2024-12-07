@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 STRATO AG
- * written by Arne Jansen <sensille@gmx.net>
- * Distributed under the GNU GPL license version 2.
- *
- */
-
-#ifndef __ULIST__
-#define __ULIST__
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2011 STRATO AG
@@ -21,7 +10,6 @@
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/rbtree.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ulist is a generic data structure to hold a collection of unique u64
@@ -29,36 +17,20 @@
  * enumerating it.
  * It is possible to store an auxiliary value along with the key.
  *
-<<<<<<< HEAD
- * The implementation is preliminary and can probably be sped up
- * significantly. A first step would be to store the values in an rbtree
- * as soon as ULIST_SIZE is exceeded.
- */
-
-/*
- * number of elements statically allocated inside struct ulist
- */
-#define ULIST_SIZE 16
-=======
  */
 struct ulist_iterator {
 	struct list_head *cur_list;  /* hint to start search */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * element of the list
  */
 struct ulist_node {
 	u64 val;		/* value to store */
-<<<<<<< HEAD
-	unsigned long aux;	/* auxiliary value saved along with the val */
-=======
 	u64 aux;		/* auxiliary value saved along with the val */
 
 	struct list_head list;  /* used to link node */
 	struct rb_node rb_node;	/* used to speed up search */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ulist {
@@ -67,34 +39,6 @@ struct ulist {
 	 */
 	unsigned long nnodes;
 
-<<<<<<< HEAD
-	/*
-	 * number of nodes we already have room for
-	 */
-	unsigned long nodes_alloced;
-
-	/*
-	 * pointer to the array storing the elements. The first ULIST_SIZE
-	 * elements are stored inline. In this case the it points to int_nodes.
-	 * After exceeding ULIST_SIZE, dynamic memory is allocated.
-	 */
-	struct ulist_node *nodes;
-
-	/*
-	 * inline storage space for the first ULIST_SIZE entries
-	 */
-	struct ulist_node int_nodes[ULIST_SIZE];
-};
-
-void ulist_init(struct ulist *ulist);
-void ulist_fini(struct ulist *ulist);
-void ulist_reinit(struct ulist *ulist);
-struct ulist *ulist_alloc(unsigned long gfp_mask);
-void ulist_free(struct ulist *ulist);
-int ulist_add(struct ulist *ulist, u64 val, unsigned long aux,
-	      unsigned long gfp_mask);
-struct ulist_node *ulist_next(struct ulist *ulist, struct ulist_node *prev);
-=======
 	struct list_head nodes;
 	struct rb_root root;
 };
@@ -127,6 +71,5 @@ struct ulist_node *ulist_next(const struct ulist *ulist,
 			      struct ulist_iterator *uiter);
 
 #define ULIST_ITER_INIT(uiter) ((uiter)->cur_list = NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

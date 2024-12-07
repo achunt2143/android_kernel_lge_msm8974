@@ -246,11 +246,7 @@ struct {								\
 /*
  * List declarations.
  */
-<<<<<<< HEAD
-#define	LIST_HEAD(name, type)						\
-=======
 #define	BSD_LIST_HEAD(name, type)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct name {								\
 	struct type *lh_first;	/* first element */			\
 }

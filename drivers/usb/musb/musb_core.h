@@ -1,42 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MUSB OTG driver defines
  *
  * Copyright 2005 Mentor Graphics Corporation
  * Copyright (C) 2005-2006 by Texas Instruments
  * Copyright (C) 2006-2007 Nokia Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
- * NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MUSB_CORE_H__
@@ -53,19 +21,13 @@
 #include <linux/usb.h>
 #include <linux/usb/otg.h>
 #include <linux/usb/musb.h>
-<<<<<<< HEAD
-=======
 #include <linux/phy/phy.h>
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct musb;
 struct musb_hw_ep;
 struct musb_ep;
-<<<<<<< HEAD
-=======
 struct musb_qh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Helper defines for struct musb->hwvers */
 #define MUSB_HWVERS_MAJOR(x)	((x >> 10) & 0x1f)
@@ -81,65 +43,17 @@ struct musb_qh;
 #include "musb_dma.h"
 
 #include "musb_io.h"
-<<<<<<< HEAD
-#include "musb_regs.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "musb_gadget.h"
 #include <linux/usb/hcd.h>
 #include "musb_host.h"
 
-<<<<<<< HEAD
-#define	is_peripheral_enabled(musb)	((musb)->board_mode != MUSB_HOST)
-#define	is_host_enabled(musb)		((musb)->board_mode != MUSB_PERIPHERAL)
-#define	is_otg_enabled(musb)		((musb)->board_mode == MUSB_OTG)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NOTE:  otg and peripheral-only state machines start at B_IDLE.
  * OTG or host-only go to A_IDLE when ID is sensed.
  */
 #define is_peripheral_active(m)		(!(m)->is_host)
 #define is_host_active(m)		((m)->is_host)
 
-<<<<<<< HEAD
-#ifndef CONFIG_HAVE_CLK
-/* Dummy stub for clk framework */
-#define clk_get(dev, id)	NULL
-#define clk_put(clock)		do {} while (0)
-#define clk_enable(clock)	do {} while (0)
-#define clk_disable(clock)	do {} while (0)
-#endif
-
-#ifdef CONFIG_PROC_FS
-#include <linux/fs.h>
-#define MUSB_CONFIG_PROC_FS
-#endif
-
-/****************************** PERIPHERAL ROLE *****************************/
-
-#define	is_peripheral_capable()	(1)
-
-extern irqreturn_t musb_g_ep0_irq(struct musb *);
-extern void musb_g_tx(struct musb *, u8);
-extern void musb_g_rx(struct musb *, u8);
-extern void musb_g_reset(struct musb *);
-extern void musb_g_suspend(struct musb *);
-extern void musb_g_resume(struct musb *);
-extern void musb_g_wakeup(struct musb *);
-extern void musb_g_disconnect(struct musb *);
-
-/****************************** HOST ROLE ***********************************/
-
-#define	is_host_capable()	(1)
-
-extern irqreturn_t musb_h_ep0_irq(struct musb *);
-extern void musb_host_tx(struct musb *, u8);
-extern void musb_host_rx(struct musb *, u8);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************** CONSTANTS ********************************/
 
 #ifndef MUSB_C_NUM_EPS
@@ -179,44 +93,6 @@ enum musb_g_ep0_state {
 #define OTG_TIME_A_AIDL_BDIS	200		/* min 200 msec */
 #define OTG_TIME_B_ASE0_BRST	100		/* min 3.125 ms */
 
-<<<<<<< HEAD
-
-/*************************** REGISTER ACCESS ********************************/
-
-/* Endpoint registers (other than dynfifo setup) can be accessed either
- * directly with the "flat" model, or after setting up an index register.
- */
-
-#if defined(CONFIG_ARCH_DAVINCI) || defined(CONFIG_SOC_OMAP2430) \
-		|| defined(CONFIG_SOC_OMAP3430) || defined(CONFIG_BLACKFIN) \
-		|| defined(CONFIG_ARCH_OMAP4)
-/* REVISIT indexed access seemed to
- * misbehave (on DaVinci) for at least peripheral IN ...
- */
-#define	MUSB_FLAT_REG
-#endif
-
-/* TUSB mapping: "flat" plus ep0 special cases */
-#if defined(CONFIG_USB_MUSB_TUSB6010) || \
-	defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
-#define musb_ep_select(_mbase, _epnum) \
-	musb_writeb((_mbase), MUSB_INDEX, (_epnum))
-#define	MUSB_EP_OFFSET			MUSB_TUSB_OFFSET
-
-/* "flat" mapping: each endpoint has its own i/o address */
-#elif	defined(MUSB_FLAT_REG)
-#define musb_ep_select(_mbase, _epnum)	(((void)(_mbase)), ((void)(_epnum)))
-#define	MUSB_EP_OFFSET			MUSB_FLAT_OFFSET
-
-/* "indexed" mapping: INDEX register controls register bank select */
-#else
-#define musb_ep_select(_mbase, _epnum) \
-	musb_writeb((_mbase), MUSB_INDEX, (_epnum))
-#define	MUSB_EP_OFFSET			MUSB_INDEXED_OFFSET
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************** FUNCTIONS ********************************/
 
 #define MUSB_HST_MODE(_musb)\
@@ -231,19 +107,6 @@ enum musb_g_ep0_state {
 
 /******************************** TYPES *************************************/
 
-<<<<<<< HEAD
-/**
- * struct musb_platform_ops - Operations passed to musb_core by HW glue layer
- * @init:	turns on clocks, sets up platform-specific registers, etc
- * @exit:	undoes @init
- * @set_mode:	forcefully changes operating mode
- * @try_ilde:	tries to idle the IP
- * @vbus_status: returns vbus status if possible
- * @set_vbus:	forces vbus status
- * @adjust_channel_params: pre check for standard dma channel_program func
- */
-struct musb_platform_ops {
-=======
 struct musb_io;
 
 /**
@@ -292,17 +155,12 @@ struct musb_platform_ops {
 #define MUSB_INDEXED_EP		BIT(0)
 	u32	quirks;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	(*init)(struct musb *musb);
 	int	(*exit)(struct musb *musb);
 
 	void	(*enable)(struct musb *musb);
 	void	(*disable)(struct musb *musb);
 
-<<<<<<< HEAD
-	int	(*set_mode)(struct musb *musb, u8 mode);
-	void	(*try_idle)(struct musb *musb, unsigned long timeout);
-=======
 	u32	(*ep_offset)(u8 epnum, u16 offset);
 	void	(*ep_select)(void __iomem *mbase, u8 epnum);
 	u16	fifo_mode;
@@ -324,21 +182,14 @@ struct musb_platform_ops {
 	int	(*set_mode)(struct musb *musb, u8 mode);
 	void	(*try_idle)(struct musb *musb, unsigned long timeout);
 	int	(*recover)(struct musb *musb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int	(*vbus_status)(struct musb *musb);
 	void	(*set_vbus)(struct musb *musb, int on);
 
-<<<<<<< HEAD
-	int	(*adjust_channel_params)(struct dma_channel *channel,
-				u16 packet_sz, u8 *mode,
-				dma_addr_t *dma_addr, u32 *len);
-=======
 	void	(*pre_root_reset_end)(struct musb *musb);
 	void	(*post_root_reset_end)(struct musb *musb);
 	int	(*phy_callback)(enum musb_vbus_id_status status);
 	void	(*clear_ep_rxintr)(struct musb *musb, int epnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -351,12 +202,7 @@ struct musb_hw_ep {
 	void __iomem		*fifo;
 	void __iomem		*regs;
 
-<<<<<<< HEAD
-#if defined(CONFIG_USB_MUSB_TUSB6010) || \
-	defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
-=======
 #if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem		*conf;
 #endif
 
@@ -373,23 +219,13 @@ struct musb_hw_ep {
 	struct dma_channel	*tx_channel;
 	struct dma_channel	*rx_channel;
 
-<<<<<<< HEAD
-#if defined(CONFIG_USB_MUSB_TUSB6010) || \
-	defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
-=======
 #if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* TUSB has "asynchronous" and "synchronous" dma modes */
 	dma_addr_t		fifo_async;
 	dma_addr_t		fifo_sync;
 	void __iomem		*fifo_sync_va;
 #endif
 
-<<<<<<< HEAD
-	void __iomem		*target_regs;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* currently scheduled peripheral endpoint */
 	struct musb_qh		*in_qh;
 	struct musb_qh		*out_qh;
@@ -425,10 +261,6 @@ struct musb_csr_regs {
 struct musb_context_registers {
 
 	u8 power;
-<<<<<<< HEAD
-	u16 intrtxe, intrrxe;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 intrusbe;
 	u16 frame;
 	u8 index, testmode;
@@ -445,23 +277,13 @@ struct musb_context_registers {
 struct musb {
 	/* device lock */
 	spinlock_t		lock;
-<<<<<<< HEAD
-
-=======
 	spinlock_t		list_lock;	/* resume work list lock */
 
 	struct musb_io		io;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct musb_platform_ops *ops;
 	struct musb_context_registers context;
 
 	irqreturn_t		(*isr)(int, void *);
-<<<<<<< HEAD
-	struct work_struct	irq_work;
-	struct work_struct	otg_notifier_work;
-	u16			hwvers;
-
-=======
 	struct delayed_work	irq_work;
 	struct delayed_work	deassert_reset_work;
 	struct delayed_work	finish_resume_work;
@@ -470,7 +292,6 @@ struct musb {
 
 	u16			intrrxe;
 	u16			intrtxe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* this hub status bit is reserved by USB 2.0 and not seen by usbcore */
 #define MUSB_PORT_STAT_RESUME	(1 << 31)
 
@@ -491,15 +312,10 @@ struct musb {
 	struct list_head	control;	/* of musb_qh */
 	struct list_head	in_bulk;	/* of musb_qh */
 	struct list_head	out_bulk;	/* of musb_qh */
-<<<<<<< HEAD
-
-	struct timer_list	otg_timer;
-=======
 	struct list_head	pending_list;	/* pending work list */
 
 	struct timer_list	otg_timer;
 	struct timer_list	dev_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct notifier_block	nb;
 
 	struct dma_controller	*dma_controller;
@@ -508,19 +324,11 @@ struct musb {
 	void __iomem		*ctrl_base;
 	void __iomem		*mregs;
 
-<<<<<<< HEAD
-#if defined(CONFIG_USB_MUSB_TUSB6010) || \
-	defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
-	dma_addr_t		async;
-	dma_addr_t		sync;
-	void __iomem		*sync_va;
-=======
 #if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
 	dma_addr_t		async;
 	dma_addr_t		sync;
 	void __iomem		*sync_va;
 	u8			tusb_revision;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* passed down from chip/board specific irq handlers */
@@ -529,13 +337,9 @@ struct musb {
 	u16			int_tx;
 
 	struct usb_phy		*xceiv;
-<<<<<<< HEAD
-	u8			xceiv_event;
-=======
 	struct phy		*phy;
 
 	enum usb_otg_state	otg_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int nIrq;
 	unsigned		irq_wake:1;
@@ -548,57 +352,34 @@ struct musb {
 	u16 epmask;
 	u8 nr_endpoints;
 
-<<<<<<< HEAD
-	u8 board_mode;		/* enum musb_mode */
-	int			(*board_set_power)(int state);
-
-	u8			min_power;	/* vbus for periph, in mA/2 */
-
-=======
 	u8			min_power;	/* vbus for periph, in mA/2 */
 
 	enum musb_mode		port_mode;
 	bool			session;
 	unsigned long		quirk_retries;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool			is_host;
 
 	int			a_wait_bcon;	/* VBUS timeout in msecs */
 	unsigned long		idle_timeout;	/* Next timeout in jiffies */
 
-<<<<<<< HEAD
-=======
 	unsigned		is_initialized:1;
 	unsigned		is_runtime_suspended:1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* active means connected and not suspended */
 	unsigned		is_active:1;
 
 	unsigned is_multipoint:1;
-<<<<<<< HEAD
-	unsigned ignore_disconnect:1;	/* during bus resets */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned		hb_iso_rx:1;	/* high bandwidth iso rx? */
 	unsigned		hb_iso_tx:1;	/* high bandwidth iso tx? */
 	unsigned		dyn_fifo:1;	/* dynamic FIFO supported? */
 
 	unsigned		bulk_split:1;
-<<<<<<< HEAD
-#define	can_bulk_split(musb,type) \
-	(((type) == USB_ENDPOINT_XFER_BULK) && (musb)->bulk_split)
-
-	unsigned		bulk_combine:1;
-#define	can_bulk_combine(musb,type) \
-=======
 #define	can_bulk_split(musb, type) \
 	(((type) == USB_ENDPOINT_XFER_BULK) && (musb)->bulk_split)
 
 	unsigned		bulk_combine:1;
 #define	can_bulk_combine(musb, type) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(((type) == USB_ENDPOINT_XFER_BULK) && (musb)->bulk_combine)
 
 	/* is_suspended means USB B_PERIPHERAL suspend */
@@ -618,40 +399,14 @@ struct musb {
 	unsigned		test_mode:1;
 	unsigned		softconnect:1;
 
-<<<<<<< HEAD
-=======
 	unsigned		flush_irq_work:1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			address;
 	u8			test_mode_nr;
 	u16			ackpend;		/* ep0 */
 	enum musb_g_ep0_state	ep0_state;
 	struct usb_gadget	g;			/* the gadget */
 	struct usb_gadget_driver *gadget_driver;	/* its driver */
-<<<<<<< HEAD
-
-	/*
-	 * FIXME: Remove this flag.
-	 *
-	 * This is only added to allow Blackfin to work
-	 * with current driver. For some unknown reason
-	 * Blackfin doesn't work with double buffering
-	 * and that's enabled by default.
-	 *
-	 * We added this flag to forcefully disable double
-	 * buffering until we get it working.
-	 */
-	unsigned                double_buffer_not_ok:1;
-
-	struct musb_hdrc_config	*config;
-
-#ifdef MUSB_CONFIG_PROC_FS
-	struct proc_dir_entry *proc_entry;
-#endif
-};
-
-=======
 	struct usb_hcd		*hcd;			/* the usb hcd */
 
 	const struct musb_hdrc_config *config;
@@ -665,50 +420,11 @@ struct musb {
 /* This must be included after struct musb is defined */
 #include "musb_regs.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct musb *gadget_to_musb(struct usb_gadget *g)
 {
 	return container_of(g, struct musb, g);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_BLACKFIN
-static inline int musb_read_fifosize(struct musb *musb,
-		struct musb_hw_ep *hw_ep, u8 epnum)
-{
-	musb->nr_endpoints++;
-	musb->epmask |= (1 << epnum);
-
-	if (epnum < 5) {
-		hw_ep->max_packet_sz_tx = 128;
-		hw_ep->max_packet_sz_rx = 128;
-	} else {
-		hw_ep->max_packet_sz_tx = 1024;
-		hw_ep->max_packet_sz_rx = 1024;
-	}
-	hw_ep->is_shared_fifo = false;
-
-	return 0;
-}
-
-static inline void musb_configure_ep0(struct musb *musb)
-{
-	musb->endpoints[0].max_packet_sz_tx = MUSB_EP0_FIFOSIZE;
-	musb->endpoints[0].max_packet_sz_rx = MUSB_EP0_FIFOSIZE;
-	musb->endpoints[0].is_shared_fifo = true;
-}
-
-#else
-
-static inline int musb_read_fifosize(struct musb *musb,
-		struct musb_hw_ep *hw_ep, u8 epnum)
-{
-	void *mbase = musb->mregs;
-	u8 reg = 0;
-
-	/* read from core using indexed model */
-	reg = musb_readb(mbase, MUSB_EP_OFFSET(epnum, MUSB_FIFOSIZE));
-=======
 static inline char *musb_ep_xfertype_string(u8 type)
 {
 	char *s;
@@ -741,7 +457,6 @@ static inline int musb_read_fifosize(struct musb *musb,
 
 	/* read from core using indexed model */
 	reg = musb_readb(mbase, musb->io.ep_offset(epnum, MUSB_FIFOSIZE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 0's returned when no more endpoints */
 	if (!reg)
 		return -ENODEV;
@@ -770,46 +485,30 @@ static inline void musb_configure_ep0(struct musb *musb)
 	musb->endpoints[0].max_packet_sz_rx = MUSB_EP0_FIFOSIZE;
 	musb->endpoints[0].is_shared_fifo = true;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_BLACKFIN */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***************************** Glue it together *****************************/
 
 extern const char musb_driver_name[];
 
-<<<<<<< HEAD
-extern void musb_start(struct musb *musb);
-extern void musb_stop(struct musb *musb);
-=======
 extern void musb_stop(struct musb *musb);
 extern void musb_start(struct musb *musb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void musb_write_fifo(struct musb_hw_ep *ep, u16 len, const u8 *src);
 extern void musb_read_fifo(struct musb_hw_ep *ep, u16 len, u8 *dst);
 
-<<<<<<< HEAD
-=======
 extern int musb_set_host(struct musb *musb);
 extern int musb_set_peripheral(struct musb *musb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void musb_load_testpacket(struct musb *);
 
 extern irqreturn_t musb_interrupt(struct musb *);
 
 extern void musb_hnp_stop(struct musb *musb);
 
-<<<<<<< HEAD
-=======
 int musb_queue_resume_work(struct musb *musb,
 			   int (*callback)(struct musb *musb, void *data),
 			   void *data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void musb_platform_set_vbus(struct musb *musb, int is_on)
 {
 	if (musb->ops->set_vbus)
@@ -843,12 +542,6 @@ static inline void musb_platform_try_idle(struct musb *musb,
 		musb->ops->try_idle(musb, timeout);
 }
 
-<<<<<<< HEAD
-static inline int musb_platform_get_vbus_status(struct musb *musb)
-{
-	if (!musb->ops->vbus_status)
-		return 0;
-=======
 static inline int  musb_platform_recover(struct musb *musb)
 {
 	if (!musb->ops->recover)
@@ -861,7 +554,6 @@ static inline int musb_platform_get_vbus_status(struct musb *musb)
 {
 	if (!musb->ops->vbus_status)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return musb->ops->vbus_status(musb);
 }
@@ -882,8 +574,6 @@ static inline int musb_platform_exit(struct musb *musb)
 	return musb->ops->exit(musb);
 }
 
-<<<<<<< HEAD
-=======
 static inline void musb_platform_pre_root_reset_end(struct musb *musb)
 {
 	if (musb->ops->pre_root_reset_end)
@@ -930,5 +620,4 @@ static inline const char *musb_otg_state_string(struct musb *musb)
  */
 extern enum musb_mode musb_get_mode(struct device *dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __MUSB_CORE_H__ */

@@ -38,11 +38,7 @@
 #include <linux/sunrpc/gss_asn1.h>
 
 
-<<<<<<< HEAD
-#ifdef RPC_DEBUG
-=======
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
@@ -226,21 +222,10 @@ g_verify_token_header(struct xdr_netobj *mech, int *body_size,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (!ret) {
-		*buf_in = buf;
-		*body_size = toksize;
-	}
-=======
 	*buf_in = buf;
 	*body_size = toksize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 EXPORT_SYMBOL_GPL(g_verify_token_header);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

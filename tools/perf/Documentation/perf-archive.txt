@@ -12,15 +12,9 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-<<<<<<< HEAD
-This command runs runs perf-buildid-list --with-hits, and collects the files
-with the buildids found so that analisys of perf.data contents can be possible
-on another machine.
-=======
 This command runs perf-buildid-list --with-hits, and collects the files with the
 buildids found so that analysis of perf.data contents can be possible on another
 machine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 SEE ALSO

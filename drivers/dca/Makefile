@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_DCA) += dca.o
 dca-objs := dca-core.o dca-sysfs.o

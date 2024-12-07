@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  mm/mprotect.c
  *
@@ -12,11 +9,7 @@
  *  (C) Copyright 2002 Red Hat Inc, All Rights Reserved
  */
 
-<<<<<<< HEAD
-#include <linux/mm.h>
-=======
 #include <linux/pagewalk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hugetlb.h>
 #include <linux/shm.h>
 #include <linux/mman.h>
@@ -31,49 +24,6 @@
 #include <linux/mmu_notifier.h>
 #include <linux/migrate.h>
 #include <linux/perf_event.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-#include <asm/cacheflush.h>
-#include <asm/tlbflush.h>
-
-#ifndef pgprot_modify
-static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
-{
-	return newprot;
-}
-#endif
-
-static void change_pte_range(struct mm_struct *mm, pmd_t *pmd,
-		unsigned long addr, unsigned long end, pgprot_t newprot,
-		int dirty_accountable)
-{
-	pte_t *pte, oldpte;
-	spinlock_t *ptl;
-
-	pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
-	arch_enter_lazy_mmu_mode();
-	do {
-		oldpte = *pte;
-		if (pte_present(oldpte)) {
-			pte_t ptent;
-
-			ptent = ptep_modify_prot_start(mm, addr, pte);
-			ptent = pte_modify(ptent, newprot);
-
-			/*
-			 * Avoid taking write faults for pages we know to be
-			 * dirty.
-			 */
-			if (dirty_accountable && pte_dirty(ptent))
-				ptent = pte_mkwrite(ptent);
-
-			ptep_modify_prot_commit(mm, addr, pte, ptent);
-		} else if (IS_ENABLED(CONFIG_MIGRATION) && !pte_file(oldpte)) {
-			swp_entry_t entry = pte_to_swp_entry(oldpte);
-
-			if (is_write_migration_entry(entry)) {
-=======
 #include <linux/pkeys.h>
 #include <linux/ksm.h>
 #include <linux/uaccess.h>
@@ -250,16 +200,10 @@ static long change_pte_range(struct mmu_gather *tlb,
 			if (is_writable_migration_entry(entry)) {
 				struct folio *folio = pfn_swap_entry_folio(entry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * A protection check is difficult so
 				 * just be safe and disable write
 				 */
-<<<<<<< HEAD
-				make_migration_entry_read(&entry);
-				set_pte_at(mm, addr, pte,
-					swp_entry_to_pte(entry));
-=======
 				if (folio_test_anon(folio))
 					entry = make_readable_exclusive_migration_entry(
 							     swp_offset(entry));
@@ -337,60 +281,11 @@ static long change_pte_range(struct mmu_gather *tlb,
 				set_pte_at(vma->vm_mm, addr, pte,
 					   make_pte_marker(PTE_MARKER_UFFD_WP));
 				pages++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	} while (pte++, addr += PAGE_SIZE, addr != end);
 	arch_leave_lazy_mmu_mode();
 	pte_unmap_unlock(pte - 1, ptl);
-<<<<<<< HEAD
-}
-
-static inline void change_pmd_range(struct vm_area_struct *vma, pud_t *pud,
-		unsigned long addr, unsigned long end, pgprot_t newprot,
-		int dirty_accountable)
-{
-	pmd_t *pmd;
-	unsigned long next;
-
-	pmd = pmd_offset(pud, addr);
-	do {
-		next = pmd_addr_end(addr, end);
-		if (pmd_trans_huge(*pmd)) {
-			if (next - addr != HPAGE_PMD_SIZE)
-				split_huge_page_pmd(vma->vm_mm, pmd);
-			else if (change_huge_pmd(vma, pmd, addr, newprot))
-				continue;
-			/* fall through */
-		}
-		if (pmd_none_or_clear_bad(pmd))
-			continue;
-		change_pte_range(vma->vm_mm, pmd, addr, next, newprot,
-				 dirty_accountable);
-	} while (pmd++, addr = next, addr != end);
-}
-
-static inline void change_pud_range(struct vm_area_struct *vma, pgd_t *pgd,
-		unsigned long addr, unsigned long end, pgprot_t newprot,
-		int dirty_accountable)
-{
-	pud_t *pud;
-	unsigned long next;
-
-	pud = pud_offset(pgd, addr);
-	do {
-		next = pud_addr_end(addr, end);
-		if (pud_none_or_clear_bad(pud))
-			continue;
-		change_pmd_range(vma, pud, addr, next, newprot,
-				 dirty_accountable);
-	} while (pud++, addr = next, addr != end);
-}
-
-static void change_protection(struct vm_area_struct *vma,
-		unsigned long addr, unsigned long end, pgprot_t newprot,
-		int dirty_accountable)
-=======
 
 	return pages;
 }
@@ -590,31 +485,10 @@ static inline long change_p4d_range(struct mmu_gather *tlb,
 static long change_protection_range(struct mmu_gather *tlb,
 		struct vm_area_struct *vma, unsigned long addr,
 		unsigned long end, pgprot_t newprot, unsigned long cp_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm = vma->vm_mm;
 	pgd_t *pgd;
 	unsigned long next;
-<<<<<<< HEAD
-	unsigned long start = addr;
-
-	BUG_ON(addr >= end);
-	pgd = pgd_offset(mm, addr);
-	flush_cache_range(vma, addr, end);
-	do {
-		next = pgd_addr_end(addr, end);
-		if (pgd_none_or_clear_bad(pgd))
-			continue;
-		change_pud_range(vma, pgd, addr, next, newprot,
-				 dirty_accountable);
-	} while (pgd++, addr = next, addr != end);
-	flush_tlb_range(vma, start, end);
-}
-
-int
-mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
-	unsigned long start, unsigned long end, unsigned long newflags)
-=======
 	long pages = 0, ret;
 
 	BUG_ON(addr >= end);
@@ -703,21 +577,13 @@ int
 mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
 	       struct vm_area_struct *vma, struct vm_area_struct **pprev,
 	       unsigned long start, unsigned long end, unsigned long newflags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm = vma->vm_mm;
 	unsigned long oldflags = vma->vm_flags;
 	long nrpages = (end - start) >> PAGE_SHIFT;
-<<<<<<< HEAD
-	unsigned long charged = 0;
-	pgoff_t pgoff;
-	int error;
-	int dirty_accountable = 0;
-=======
 	unsigned int mm_cp_flags = 0;
 	unsigned long charged = 0;
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (newflags == oldflags) {
 		*pprev = vma;
@@ -725,14 +591,6 @@ mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * If we make a private mapping writable we increase our commit;
-	 * but (without finer accounting) cannot reduce our commit if we
-	 * make it unwritable again. hugetlb mapping were accounted for
-	 * even if read-only so there is no need to account for them here
-	 */
-	if (newflags & VM_WRITE) {
-=======
 	 * Do PROT_NONE PFN permission checks here when we can still
 	 * bail out without undoing a lot of state. This is a rather
 	 * uncommon case, so doesn't need to be very optimized.
@@ -762,7 +620,6 @@ mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
 		if (!may_expand_vm(mm, newflags, nrpages) &&
 				may_expand_vm(mm, oldflags, nrpages))
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(oldflags & (VM_ACCOUNT|VM_WRITE|VM_HUGETLB|
 						VM_SHARED|VM_NORESERVE))) {
 			charged = nrpages;
@@ -770,20 +627,6 @@ mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
 				return -ENOMEM;
 			newflags |= VM_ACCOUNT;
 		}
-<<<<<<< HEAD
-	}
-
-	/*
-	 * First try to merge with previous and/or next vma.
-	 */
-	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
-	*pprev = vma_merge(mm, *pprev, start, end, newflags,
-			vma->anon_vma, vma->vm_file, pgoff, vma_policy(vma),
-			vma_get_anon_name(vma));
-	if (*pprev) {
-		vma = *pprev;
-		goto success;
-=======
 	} else if ((oldflags & VM_ACCOUNT) && vma_is_anonymous(vma) &&
 		   !vma->anon_vma) {
 		newflags &= ~VM_ACCOUNT;
@@ -793,47 +636,10 @@ mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
 	if (IS_ERR(vma)) {
 		error = PTR_ERR(vma);
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	*pprev = vma;
 
-<<<<<<< HEAD
-	if (start != vma->vm_start) {
-		error = split_vma(mm, vma, start, 1);
-		if (error)
-			goto fail;
-	}
-
-	if (end != vma->vm_end) {
-		error = split_vma(mm, vma, end, 0);
-		if (error)
-			goto fail;
-	}
-
-success:
-	/*
-	 * vm_flags and vm_page_prot are protected by the mmap_sem
-	 * held in write mode.
-	 */
-	vma->vm_flags = newflags;
-	vma->vm_page_prot = pgprot_modify(vma->vm_page_prot,
-					  vm_get_page_prot(newflags));
-
-	if (vma_wants_writenotify(vma)) {
-		vma->vm_page_prot = vm_get_page_prot(newflags & ~VM_SHARED);
-		dirty_accountable = 1;
-	}
-
-	mmu_notifier_invalidate_range_start(mm, start, end);
-	if (is_vm_hugetlb_page(vma))
-		hugetlb_change_protection(vma, start, end, vma->vm_page_prot);
-	else
-		change_protection(vma, start, end, vma->vm_page_prot, dirty_accountable);
-	mmu_notifier_invalidate_range_end(mm, start, end);
-	vm_stat_account(mm, oldflags, vma->vm_file, -nrpages);
-	vm_stat_account(mm, newflags, vma->vm_file, nrpages);
-=======
 	/*
 	 * vm_flags and vm_page_prot are protected by the mmap_lock
 	 * held in write mode.
@@ -860,7 +666,6 @@ success:
 
 	vm_stat_account(mm, oldflags, -nrpages);
 	vm_stat_account(mm, newflags, nrpages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_event_mmap(vma);
 	return 0;
 
@@ -869,15 +674,6 @@ fail:
 	return error;
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE3(mprotect, unsigned long, start, size_t, len,
-		unsigned long, prot)
-{
-	unsigned long vm_flags, nstart, end, tmp, reqprot;
-	struct vm_area_struct *vma, *prev;
-	int error = -EINVAL;
-	const int grows = prot & (PROT_GROWSDOWN|PROT_GROWSUP);
-=======
 /*
  * pkey==-1 when doing a legacy mprotect()
  */
@@ -895,7 +691,6 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 
 	start = untagged_addr(start);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prot &= ~(PROT_GROWSDOWN|PROT_GROWSUP);
 	if (grows == (PROT_GROWSDOWN|PROT_GROWSUP)) /* can't be both */
 		return -EINVAL;
@@ -908,27 +703,6 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 	end = start + len;
 	if (end <= start)
 		return -ENOMEM;
-<<<<<<< HEAD
-	if (!arch_validate_prot(prot))
-		return -EINVAL;
-
-	reqprot = prot;
-	/*
-	 * Does the application expect PROT_READ to imply PROT_EXEC:
-	 */
-	if ((prot & PROT_READ) && (current->personality & READ_IMPLIES_EXEC))
-		prot |= PROT_EXEC;
-
-	vm_flags = calc_vm_prot_bits(prot);
-
-	down_write(&current->mm->mmap_sem);
-
-	vma = find_vma(current->mm, start);
-	error = -ENOMEM;
-	if (!vma)
-		goto out;
-	prev = vma->vm_prev;
-=======
 	if (!arch_validate_prot(prot, start))
 		return -EINVAL;
 
@@ -951,7 +725,6 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 	if (!vma)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(grows & PROT_GROWSDOWN)) {
 		if (vma->vm_start >= end)
 			goto out;
@@ -959,12 +732,7 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 		error = -EINVAL;
 		if (!(vma->vm_flags & VM_GROWSDOWN))
 			goto out;
-<<<<<<< HEAD
-	}
-	else {
-=======
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (vma->vm_start > start)
 			goto out;
 		if (unlikely(grows & PROT_GROWSUP)) {
@@ -974,22 +742,6 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 				goto out;
 		}
 	}
-<<<<<<< HEAD
-	if (start > vma->vm_start)
-		prev = vma;
-
-	for (nstart = start ; ; ) {
-		unsigned long newflags;
-
-		/* Here we know that  vma->vm_start <= nstart < vma->vm_end. */
-
-		newflags = vm_flags | (vma->vm_flags & ~(VM_READ | VM_WRITE | VM_EXEC));
-
-		/* newflags >> 4 shift VM_MAY% in place of VM_% */
-		if ((newflags & ~(newflags >> 4)) & (VM_READ | VM_WRITE | VM_EXEC)) {
-			error = -EACCES;
-			goto out;
-=======
 
 	prev = vma_prev(&vmi);
 	if (start > vma->vm_start)
@@ -1038,42 +790,15 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
 		if (!arch_validate_flags(newflags)) {
 			error = -EINVAL;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		error = security_file_mprotect(vma, reqprot, prot);
 		if (error)
-<<<<<<< HEAD
-			goto out;
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tmp = vma->vm_end;
 		if (tmp > end)
 			tmp = end;
-<<<<<<< HEAD
-		error = mprotect_fixup(vma, &prev, nstart, tmp, newflags);
-		if (error)
-			goto out;
-		nstart = tmp;
-
-		if (nstart < prev->vm_end)
-			nstart = prev->vm_end;
-		if (nstart >= end)
-			goto out;
-
-		vma = prev->vm_next;
-		if (!vma || vma->vm_start != nstart) {
-			error = -ENOMEM;
-			goto out;
-		}
-	}
-out:
-	up_write(&current->mm->mmap_sem);
-	return error;
-}
-=======
 
 		if (vma->vm_ops && vma->vm_ops->mprotect) {
 			error = vma->vm_ops->mprotect(vma, nstart, tmp, newflags);
@@ -1159,4 +884,3 @@ SYSCALL_DEFINE1(pkey_free, int, pkey)
 }
 
 #endif /* CONFIG_ARCH_HAS_PKEYS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -17,10 +17,7 @@
 /*
  * Sets up all exception vectors
  */
-<<<<<<< HEAD
-=======
 #include <linux/cpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/linkage.h>
@@ -31,11 +28,8 @@
 #include <asm/fpu.h>
 #include <asm/traps.h>
 
-<<<<<<< HEAD
-=======
 #include "vectors.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* assembler routines */
 asmlinkage void system_call(void);
 asmlinkage void buserr(void);

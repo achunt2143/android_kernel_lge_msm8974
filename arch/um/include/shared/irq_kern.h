@@ -1,29 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001, 2002 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2001, 2002 Jeff Dike (jdike@karaya.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __IRQ_KERN_H__
 #define __IRQ_KERN_H__
 
-<<<<<<< HEAD
-#include "linux/interrupt.h"
-#include "asm/ptrace.h"
-
-extern int um_request_irq(unsigned int irq, int fd, int type,
-			  irq_handler_t handler,
-			  unsigned long irqflags,  const char * devname,
-			  void *dev_id);
-
-#endif
-
-=======
 #include <linux/interrupt.h>
 #include <linux/time-internal.h>
 #include <asm/ptrace.h>
@@ -96,4 +78,3 @@ static inline bool um_irq_timetravel_handler_used(void)
 void um_free_irq(int irq, void *dev_id);
 void free_irqs(void);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

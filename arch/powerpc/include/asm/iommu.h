@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Mike Corrigan & Dave Engebretsen, IBM Corporation
  * Rewrite, cleanup:
  * Copyright (C) 2004 Olof Johansson <olof@lixom.net>, IBM Corporation
-<<<<<<< HEAD
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_IOMMU_H
@@ -32,17 +12,6 @@
 #include <linux/compiler.h>
 #include <linux/spinlock.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/dma-mapping.h>
-#include <linux/bitops.h>
-#include <asm/machdep.h>
-#include <asm/types.h>
-
-#define IOMMU_PAGE_SHIFT      12
-#define IOMMU_PAGE_SIZE       (ASM_CONST(1) << IOMMU_PAGE_SHIFT)
-#define IOMMU_PAGE_MASK       (~((1 << IOMMU_PAGE_SHIFT) - 1))
-#define IOMMU_PAGE_ALIGN(addr) _ALIGN_UP(addr, IOMMU_PAGE_SIZE)
-=======
 #include <linux/dma-map-ops.h>
 #include <linux/bitops.h>
 #include <asm/machdep.h>
@@ -61,20 +30,11 @@
 
 #define DIRECT64_PROPNAME "linux,direct64-ddr-window-info"
 #define DMA64_PROPNAME "linux,dma64-ddr-window-info"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Boot time flags */
 extern int iommu_is_off;
 extern int iommu_force_on;
 
-<<<<<<< HEAD
-/* Pure 2^n version of get_order */
-static __inline__ __attribute_const__ int get_iommu_order(unsigned long size)
-{
-	return __ilog2((size - 1) >> IOMMU_PAGE_SHIFT) + 1;
-}
-
-=======
 struct iommu_table_ops {
 	/*
 	 * When called with direction==DMA_NONE, it is equal to clear().
@@ -113,7 +73,6 @@ struct iommu_table_ops {
 /* These are used by VIO */
 extern struct iommu_table_ops iommu_table_lpar_multi_ops;
 extern struct iommu_table_ops iommu_table_pseries_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IOMAP_MAX_ORDER defines the largest contiguous block
@@ -122,11 +81,6 @@ extern struct iommu_table_ops iommu_table_pseries_ops;
  */
 #define IOMAP_MAX_ORDER		13
 
-<<<<<<< HEAD
-struct iommu_table {
-	unsigned long  it_busno;     /* Bus number this table belongs to */
-	unsigned long  it_size;      /* Size of iommu table in entries */
-=======
 #define IOMMU_POOL_HASHBITS	2
 #define IOMMU_NR_POOLS		(1 << IOMMU_POOL_HASHBITS)
 
@@ -143,26 +97,11 @@ struct iommu_table {
 	unsigned long  it_indirect_levels;
 	unsigned long  it_level_size;
 	unsigned long  it_allocated_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long  it_offset;    /* Offset into global table */
 	unsigned long  it_base;      /* mapped address of tce table */
 	unsigned long  it_index;     /* which iommu table this is */
 	unsigned long  it_type;      /* type: PCI or Virtual Bus */
 	unsigned long  it_blocksize; /* Entries in each block (cacheline) */
-<<<<<<< HEAD
-	unsigned long  it_hint;      /* Hint for next alloc */
-	unsigned long  it_largehint; /* Hint for large allocs */
-	unsigned long  it_halfpoint; /* Breaking point for small/large allocs */
-	spinlock_t     it_lock;      /* Protects it_map */
-	unsigned long *it_map;       /* A simple allocation bitmap for now */
-};
-
-struct scatterlist;
-
-static inline void set_iommu_table_base(struct device *dev, void *base)
-{
-	dev->archdata.dma_data.iommu_table_base = base;
-=======
 	unsigned long  poolsize;
 	unsigned long  nr_pools;
 	struct iommu_pool large_pool;
@@ -199,18 +138,10 @@ static inline void set_iommu_table_base(struct device *dev,
 					struct iommu_table *base)
 {
 	dev->archdata.iommu_table_base = base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void *get_iommu_table_base(struct device *dev)
 {
-<<<<<<< HEAD
-	return dev->archdata.dma_data.iommu_table_base;
-}
-
-/* Frees table for an individual device node */
-extern void iommu_free_table(struct iommu_table *tbl, const char *node_name);
-=======
 	return dev->archdata.iommu_table_base;
 }
 
@@ -218,23 +149,10 @@ extern int dma_iommu_dma_supported(struct device *dev, u64 mask);
 
 extern struct iommu_table *iommu_tce_table_get(struct iommu_table *tbl);
 extern int iommu_tce_table_put(struct iommu_table *tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Initializes an iommu_table based in values set in the passed-in
  * structure
  */
-<<<<<<< HEAD
-extern struct iommu_table *iommu_init_table(struct iommu_table * tbl,
-					    int nid);
-
-extern int iommu_map_sg(struct device *dev, struct iommu_table *tbl,
-			struct scatterlist *sglist, int nelems,
-			unsigned long mask, enum dma_data_direction direction,
-			struct dma_attrs *attrs);
-extern void iommu_unmap_sg(struct iommu_table *tbl, struct scatterlist *sglist,
-			   int nelems, enum dma_data_direction direction,
-			   struct dma_attrs *attrs);
-=======
 extern struct iommu_table *iommu_init_table(struct iommu_table *tbl,
 		int nid, unsigned long res_start, unsigned long res_end);
 bool iommu_table_in_use(struct iommu_table *tbl);
@@ -340,7 +258,6 @@ extern void ppc_iommu_unmap_sg(struct iommu_table *tbl,
 			       int nelems,
 			       enum dma_data_direction direction,
 			       unsigned long attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void *iommu_alloc_coherent(struct device *dev, struct iommu_table *tbl,
 				  size_t size, dma_addr_t *dma_handle,
@@ -351,32 +268,6 @@ extern dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
 				 struct page *page, unsigned long offset,
 				 size_t size, unsigned long mask,
 				 enum dma_data_direction direction,
-<<<<<<< HEAD
-				 struct dma_attrs *attrs);
-extern void iommu_unmap_page(struct iommu_table *tbl, dma_addr_t dma_handle,
-			     size_t size, enum dma_data_direction direction,
-			     struct dma_attrs *attrs);
-
-extern void iommu_init_early_pSeries(void);
-extern void iommu_init_early_dart(void);
-extern void iommu_init_early_pasemi(void);
-
-#ifdef CONFIG_PCI
-extern void pci_iommu_init(void);
-extern void pci_direct_iommu_init(void);
-#else
-static inline void pci_iommu_init(void) { }
-#endif
-
-extern void alloc_dart_table(void);
-#if defined(CONFIG_PPC64) && defined(CONFIG_PM)
-static inline void iommu_save(void)
-{
-	if (ppc_md.iommu_save)
-		ppc_md.iommu_save();
-}
-
-=======
 				 unsigned long attrs);
 extern void iommu_unmap_page(struct iommu_table *tbl, dma_addr_t dma_handle,
 			     size_t size, enum dma_data_direction direction,
@@ -387,7 +278,6 @@ extern void iommu_init_early_dart(struct pci_controller_ops *controller_ops);
 extern void iommu_init_early_pasemi(void);
 
 #if defined(CONFIG_PPC64) && defined(CONFIG_PM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void iommu_restore(void)
 {
 	if (ppc_md.iommu_restore)
@@ -395,8 +285,6 @@ static inline void iommu_restore(void)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 /* The API to support IOMMU operations for VFIO */
 extern int iommu_tce_check_ioba(unsigned long page_shift,
 		unsigned long offset, unsigned long size,
@@ -427,6 +315,5 @@ extern bool iommu_fixed_is_weak;
 
 extern const struct dma_map_ops dma_iommu_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 #endif /* _ASM_IOMMU_H */

@@ -1,36 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ST Microelectronics MFD: stmpe's driver
  *
  * Copyright (C) ST-Ericsson SA 2010
  *
-<<<<<<< HEAD
- * License Terms: GNU General Public License, version 2
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
-
-#include <linux/gpio.h>
-=======
  * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
  */
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/pm.h>
-#include <linux/slab.h>
-#include <linux/mfd/core.h>
-#include "stmpe.h"
-
-=======
 #include <linux/irqdomain.h>
 #include <linux/of.h>
 #include <linux/pm.h>
@@ -56,7 +38,6 @@ struct stmpe_platform_data {
 	int autosleep_timeout;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __stmpe_enable(struct stmpe *stmpe, unsigned int blocks)
 {
 	return stmpe->variant->enable(stmpe, blocks, true);
@@ -283,11 +264,7 @@ int stmpe_set_altfunc(struct stmpe *stmpe, u32 pins, enum stmpe_block block)
 	int af_bits = variant->af_bits;
 	int numregs = DIV_ROUND_UP(stmpe->num_gpios * af_bits, 8);
 	int mask = (1 << af_bits) - 1;
-<<<<<<< HEAD
-	u8 regs[numregs];
-=======
 	u8 regs[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int af, afperreg, ret;
 
 	if (!variant->get_altfunc)
@@ -336,26 +313,16 @@ static struct resource stmpe_gpio_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell stmpe_gpio_cell = {
-	.name		= "stmpe-gpio",
-=======
 static const struct mfd_cell stmpe_gpio_cell = {
 	.name		= "stmpe-gpio",
 	.of_compatible	= "st,stmpe-gpio",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resources	= stmpe_gpio_resources,
 	.num_resources	= ARRAY_SIZE(stmpe_gpio_resources),
 };
 
-<<<<<<< HEAD
-static struct mfd_cell stmpe_gpio_cell_noirq = {
-	.name		= "stmpe-gpio",
-=======
 static const struct mfd_cell stmpe_gpio_cell_noirq = {
 	.name		= "stmpe-gpio",
 	.of_compatible	= "st,stmpe-gpio",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* gpio cell resources consist of an irq only so no resources here */
 };
 
@@ -364,44 +331,25 @@ static const struct mfd_cell stmpe_gpio_cell_noirq = {
  */
 
 static struct resource stmpe_keypad_resources[] = {
-<<<<<<< HEAD
-	{
-		.name	= "KEYPAD",
-		.start	= 0,
-		.end	= 0,
-=======
 	/* Start and end filled dynamically */
 	{
 		.name	= "KEYPAD",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
 		.name	= "KEYPAD_OVER",
-<<<<<<< HEAD
-		.start	= 1,
-		.end	= 1,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell stmpe_keypad_cell = {
-	.name		= "stmpe-keypad",
-=======
 static const struct mfd_cell stmpe_keypad_cell = {
 	.name		= "stmpe-keypad",
 	.of_compatible  = "st,stmpe-keypad",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resources	= stmpe_keypad_resources,
 	.num_resources	= ARRAY_SIZE(stmpe_keypad_resources),
 };
 
 /*
-<<<<<<< HEAD
-=======
  * PWM (1601, 2401, 2403)
  */
 static struct resource stmpe_pwm_resources[] = {
@@ -428,7 +376,6 @@ static const struct mfd_cell stmpe_pwm_cell = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STMPE801
  */
 static const u8 stmpe801_regs[] = {
@@ -495,44 +442,25 @@ static struct stmpe_variant_info stmpe801_noirq = {
  */
 
 static struct resource stmpe_ts_resources[] = {
-<<<<<<< HEAD
-	{
-		.name	= "TOUCH_DET",
-		.start	= 0,
-		.end	= 0,
-=======
 	/* Start and end filled dynamically */
 	{
 		.name	= "TOUCH_DET",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
 		.name	= "FIFO_TH",
-<<<<<<< HEAD
-		.start	= 1,
-		.end	= 1,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell stmpe_ts_cell = {
-	.name		= "stmpe-ts",
-=======
 static const struct mfd_cell stmpe_ts_cell = {
 	.name		= "stmpe-ts",
 	.of_compatible	= "st,stmpe-ts",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resources	= stmpe_ts_resources,
 	.num_resources	= ARRAY_SIZE(stmpe_ts_resources),
 };
 
 /*
-<<<<<<< HEAD
-=======
  * ADC (STMPE811)
  */
 
@@ -556,17 +484,13 @@ static const struct mfd_cell stmpe_adc_cell = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STMPE811 or STMPE610
  */
 
 static const u8 stmpe811_regs[] = {
 	[STMPE_IDX_CHIP_ID]	= STMPE811_REG_CHIP_ID,
-<<<<<<< HEAD
-=======
 	[STMPE_IDX_SYS_CTRL]	= STMPE811_REG_SYS_CTRL,
 	[STMPE_IDX_SYS_CTRL2]	= STMPE811_REG_SYS_CTRL2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[STMPE_IDX_ICR_LSB]	= STMPE811_REG_INT_CTRL,
 	[STMPE_IDX_IER_LSB]	= STMPE811_REG_INT_EN,
 	[STMPE_IDX_ISR_MSB]	= STMPE811_REG_INT_STA,
@@ -579,11 +503,7 @@ static const u8 stmpe811_regs[] = {
 	[STMPE_IDX_GPAFR_U_MSB]	= STMPE811_REG_GPIO_AF,
 	[STMPE_IDX_IEGPIOR_LSB]	= STMPE811_REG_GPIO_INT_EN,
 	[STMPE_IDX_ISGPIOR_MSB]	= STMPE811_REG_GPIO_INT_STA,
-<<<<<<< HEAD
-	[STMPE_IDX_GPEDR_MSB]	= STMPE811_REG_GPIO_ED,
-=======
 	[STMPE_IDX_GPEDR_LSB]	= STMPE811_REG_GPIO_ED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct stmpe_variant_block stmpe811_blocks[] = {
@@ -597,14 +517,11 @@ static struct stmpe_variant_block stmpe811_blocks[] = {
 		.irq	= STMPE811_IRQ_TOUCH_DET,
 		.block	= STMPE_BLOCK_TOUCHSCREEN,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.cell	= &stmpe_adc_cell,
 		.irq	= STMPE811_IRQ_TEMP_SENS,
 		.block	= STMPE_BLOCK_ADC,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int stmpe811_enable(struct stmpe *stmpe, unsigned int blocks,
@@ -621,12 +538,6 @@ static int stmpe811_enable(struct stmpe *stmpe, unsigned int blocks,
 	if (blocks & STMPE_BLOCK_TOUCHSCREEN)
 		mask |= STMPE811_SYS_CTRL2_TSC_OFF;
 
-<<<<<<< HEAD
-	return __stmpe_set_bits(stmpe, STMPE811_REG_SYS_CTRL2, mask,
-				enable ? 0 : mask);
-}
-
-=======
 	return __stmpe_set_bits(stmpe, stmpe->regs[STMPE_IDX_SYS_CTRL2], mask,
 				enable ? 0 : mask);
 }
@@ -660,7 +571,6 @@ int stmpe811_adc_common_init(struct stmpe *stmpe)
 }
 EXPORT_SYMBOL_GPL(stmpe811_adc_common_init);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int stmpe811_get_altfunc(struct stmpe *stmpe, enum stmpe_block block)
 {
 	/* 0 for touchscreen, 1 for GPIO */
@@ -697,8 +607,6 @@ static struct stmpe_variant_info stmpe610 = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * STMPE1600
  * Compared to all others STMPE variant, LSB and MSB regs are located in this
  * order :	LSB   addr
@@ -754,27 +662,11 @@ static struct stmpe_variant_info stmpe1600 = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STMPE1601
  */
 
 static const u8 stmpe1601_regs[] = {
 	[STMPE_IDX_CHIP_ID]	= STMPE1601_REG_CHIP_ID,
-<<<<<<< HEAD
-	[STMPE_IDX_ICR_LSB]	= STMPE1601_REG_ICR_LSB,
-	[STMPE_IDX_IER_LSB]	= STMPE1601_REG_IER_LSB,
-	[STMPE_IDX_ISR_MSB]	= STMPE1601_REG_ISR_MSB,
-	[STMPE_IDX_GPMR_LSB]	= STMPE1601_REG_GPIO_MP_LSB,
-	[STMPE_IDX_GPSR_LSB]	= STMPE1601_REG_GPIO_SET_LSB,
-	[STMPE_IDX_GPCR_LSB]	= STMPE1601_REG_GPIO_CLR_LSB,
-	[STMPE_IDX_GPDR_LSB]	= STMPE1601_REG_GPIO_SET_DIR_LSB,
-	[STMPE_IDX_GPRER_LSB]	= STMPE1601_REG_GPIO_RE_LSB,
-	[STMPE_IDX_GPFER_LSB]	= STMPE1601_REG_GPIO_FE_LSB,
-	[STMPE_IDX_GPAFR_U_MSB]	= STMPE1601_REG_GPIO_AF_U_MSB,
-	[STMPE_IDX_IEGPIOR_LSB]	= STMPE1601_REG_INT_EN_GPIO_MASK_LSB,
-	[STMPE_IDX_ISGPIOR_MSB]	= STMPE1601_REG_INT_STA_GPIO_MSB,
-	[STMPE_IDX_GPEDR_MSB]	= STMPE1601_REG_GPIO_ED_MSB,
-=======
 	[STMPE_IDX_SYS_CTRL]	= STMPE1601_REG_SYS_CTRL,
 	[STMPE_IDX_SYS_CTRL2]	= STMPE1601_REG_SYS_CTRL2,
 	[STMPE_IDX_ICR_LSB]	= STMPE1601_REG_ICR_LSB,
@@ -800,26 +692,16 @@ static const u8 stmpe1601_regs[] = {
 	[STMPE_IDX_IEGPIOR_LSB]	= STMPE1601_REG_INT_EN_GPIO_MASK_LSB,
 	[STMPE_IDX_IEGPIOR_CSB]	= STMPE1601_REG_INT_EN_GPIO_MASK_MSB,
 	[STMPE_IDX_ISGPIOR_MSB]	= STMPE1601_REG_INT_STA_GPIO_MSB,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct stmpe_variant_block stmpe1601_blocks[] = {
 	{
 		.cell	= &stmpe_gpio_cell,
-<<<<<<< HEAD
-		.irq	= STMPE24XX_IRQ_GPIOC,
-=======
 		.irq	= STMPE1601_IRQ_GPIOC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.block	= STMPE_BLOCK_GPIO,
 	},
 	{
 		.cell	= &stmpe_keypad_cell,
-<<<<<<< HEAD
-		.irq	= STMPE24XX_IRQ_KEYPAD,
-		.block	= STMPE_BLOCK_KEYPAD,
-	},
-=======
 		.irq	= STMPE1601_IRQ_KEYPAD,
 		.block	= STMPE_BLOCK_KEYPAD,
 	},
@@ -828,7 +710,6 @@ static struct stmpe_variant_block stmpe1601_blocks[] = {
 		.irq	= STMPE1601_IRQ_PWM0,
 		.block	= STMPE_BLOCK_PWM,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* supported autosleep timeout delay (in msecs) */
@@ -881,21 +762,13 @@ static int stmpe1601_autosleep(struct stmpe *stmpe,
 		return timeout;
 	}
 
-<<<<<<< HEAD
-	ret = __stmpe_set_bits(stmpe, STMPE1601_REG_SYS_CTRL2,
-=======
 	ret = __stmpe_set_bits(stmpe, stmpe->regs[STMPE_IDX_SYS_CTRL2],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			STMPE1601_AUTOSLEEP_TIMEOUT_MASK,
 			timeout);
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	return __stmpe_set_bits(stmpe, STMPE1601_REG_SYS_CTRL2,
-=======
 	return __stmpe_set_bits(stmpe, stmpe->regs[STMPE_IDX_SYS_CTRL2],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			STPME1601_AUTOSLEEP_ENABLE,
 			STPME1601_AUTOSLEEP_ENABLE);
 }
@@ -907,13 +780,6 @@ static int stmpe1601_enable(struct stmpe *stmpe, unsigned int blocks,
 
 	if (blocks & STMPE_BLOCK_GPIO)
 		mask |= STMPE1601_SYS_CTRL_ENABLE_GPIO;
-<<<<<<< HEAD
-
-	if (blocks & STMPE_BLOCK_KEYPAD)
-		mask |= STMPE1601_SYS_CTRL_ENABLE_KPC;
-
-	return __stmpe_set_bits(stmpe, STMPE1601_REG_SYS_CTRL, mask,
-=======
 	else
 		mask &= ~STMPE1601_SYS_CTRL_ENABLE_GPIO;
 
@@ -928,7 +794,6 @@ static int stmpe1601_enable(struct stmpe *stmpe, unsigned int blocks,
 		mask &= ~STMPE1601_SYS_CTRL_ENABLE_SPWM;
 
 	return __stmpe_set_bits(stmpe, stmpe->regs[STMPE_IDX_SYS_CTRL], mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				enable ? mask : 0);
 }
 
@@ -963,8 +828,6 @@ static struct stmpe_variant_info stmpe1601 = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * STMPE1801
  */
 static const u8 stmpe1801_regs[] = {
@@ -1074,26 +937,11 @@ static struct stmpe_variant_info stmpe1801 = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STMPE24XX
  */
 
 static const u8 stmpe24xx_regs[] = {
 	[STMPE_IDX_CHIP_ID]	= STMPE24XX_REG_CHIP_ID,
-<<<<<<< HEAD
-	[STMPE_IDX_ICR_LSB]	= STMPE24XX_REG_ICR_LSB,
-	[STMPE_IDX_IER_LSB]	= STMPE24XX_REG_IER_LSB,
-	[STMPE_IDX_ISR_MSB]	= STMPE24XX_REG_ISR_MSB,
-	[STMPE_IDX_GPMR_LSB]	= STMPE24XX_REG_GPMR_LSB,
-	[STMPE_IDX_GPSR_LSB]	= STMPE24XX_REG_GPSR_LSB,
-	[STMPE_IDX_GPCR_LSB]	= STMPE24XX_REG_GPCR_LSB,
-	[STMPE_IDX_GPDR_LSB]	= STMPE24XX_REG_GPDR_LSB,
-	[STMPE_IDX_GPRER_LSB]	= STMPE24XX_REG_GPRER_LSB,
-	[STMPE_IDX_GPFER_LSB]	= STMPE24XX_REG_GPFER_LSB,
-	[STMPE_IDX_GPAFR_U_MSB]	= STMPE24XX_REG_GPAFR_U_MSB,
-	[STMPE_IDX_IEGPIOR_LSB]	= STMPE24XX_REG_IEGPIOR_LSB,
-	[STMPE_IDX_ISGPIOR_MSB]	= STMPE24XX_REG_ISGPIOR_MSB,
-=======
 	[STMPE_IDX_SYS_CTRL]	= STMPE24XX_REG_SYS_CTRL,
 	[STMPE_IDX_SYS_CTRL2]	= STMPE24XX_REG_SYS_CTRL2,
 	[STMPE_IDX_ICR_LSB]	= STMPE24XX_REG_ICR_LSB,
@@ -1127,7 +975,6 @@ static const u8 stmpe24xx_regs[] = {
 	[STMPE_IDX_ISGPIOR_MSB]	= STMPE24XX_REG_ISGPIOR_MSB,
 	[STMPE_IDX_GPEDR_LSB]	= STMPE24XX_REG_GPEDR_LSB,
 	[STMPE_IDX_GPEDR_CSB]	= STMPE24XX_REG_GPEDR_CSB,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[STMPE_IDX_GPEDR_MSB]	= STMPE24XX_REG_GPEDR_MSB,
 };
 
@@ -1142,14 +989,11 @@ static struct stmpe_variant_block stmpe24xx_blocks[] = {
 		.irq	= STMPE24XX_IRQ_KEYPAD,
 		.block	= STMPE_BLOCK_KEYPAD,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.cell	= &stmpe_pwm_cell,
 		.irq	= STMPE24XX_IRQ_PWM0,
 		.block	= STMPE_BLOCK_PWM,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int stmpe24xx_enable(struct stmpe *stmpe, unsigned int blocks,
@@ -1163,11 +1007,7 @@ static int stmpe24xx_enable(struct stmpe *stmpe, unsigned int blocks,
 	if (blocks & STMPE_BLOCK_KEYPAD)
 		mask |= STMPE24XX_SYS_CTRL_ENABLE_KPC;
 
-<<<<<<< HEAD
-	return __stmpe_set_bits(stmpe, STMPE24XX_REG_SYS_CTRL, mask,
-=======
 	return __stmpe_set_bits(stmpe, stmpe->regs[STMPE_IDX_SYS_CTRL], mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				enable ? mask : 0);
 }
 
@@ -1178,10 +1018,7 @@ static int stmpe24xx_get_altfunc(struct stmpe *stmpe, enum stmpe_block block)
 		return 2;
 
 	case STMPE_BLOCK_KEYPAD:
-<<<<<<< HEAD
-=======
 	case STMPE_BLOCK_PWM:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	case STMPE_BLOCK_GPIO:
@@ -1223,13 +1060,9 @@ static struct stmpe_variant_info *stmpe_variant_info[STMPE_NBR_PARTS] = {
 	[STMPE610]	= &stmpe610,
 	[STMPE801]	= &stmpe801,
 	[STMPE811]	= &stmpe811,
-<<<<<<< HEAD
-	[STMPE1601]	= &stmpe1601,
-=======
 	[STMPE1600]	= &stmpe1600,
 	[STMPE1601]	= &stmpe1601,
 	[STMPE1801]	= &stmpe1801,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[STMPE2401]	= &stmpe2401,
 	[STMPE2403]	= &stmpe2403,
 };
@@ -1249,18 +1082,6 @@ static irqreturn_t stmpe_irq(int irq, void *data)
 	struct stmpe *stmpe = data;
 	struct stmpe_variant_info *variant = stmpe->variant;
 	int num = DIV_ROUND_UP(variant->num_irqs, 8);
-<<<<<<< HEAD
-	u8 israddr = stmpe->regs[STMPE_IDX_ISR_MSB];
-	u8 isr[num];
-	int ret;
-	int i;
-
-	if (variant->id_val == STMPE801_ID) {
-		handle_nested_irq(stmpe->irq_base);
-		return IRQ_HANDLED;
-	}
-
-=======
 	u8 israddr;
 	u8 isr[3];
 	int ret;
@@ -1279,7 +1100,6 @@ static irqreturn_t stmpe_irq(int irq, void *data)
 	else
 		israddr = stmpe->regs[STMPE_IDX_ISR_MSB];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = stmpe_block_read(stmpe, israddr, num, isr);
 	if (ret < 0)
 		return IRQ_NONE;
@@ -1297,14 +1117,9 @@ static irqreturn_t stmpe_irq(int irq, void *data)
 		while (status) {
 			int bit = __ffs(status);
 			int line = bank * 8 + bit;
-<<<<<<< HEAD
-
-			handle_nested_irq(stmpe->irq_base + line);
-=======
 			int nestedirq = irq_find_mapping(stmpe->domain, line);
 
 			handle_nested_irq(nestedirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status &= ~(1 << bit);
 		}
 
@@ -1336,11 +1151,7 @@ static void stmpe_irq_sync_unlock(struct irq_data *data)
 			continue;
 
 		stmpe->oldier[i] = new;
-<<<<<<< HEAD
-		stmpe_reg_write(stmpe, stmpe->regs[STMPE_IDX_IER_LSB] - i, new);
-=======
 		stmpe_reg_write(stmpe, stmpe->regs[STMPE_IDX_IER_LSB + i], new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&stmpe->irq_lock);
@@ -1349,11 +1160,7 @@ static void stmpe_irq_sync_unlock(struct irq_data *data)
 static void stmpe_irq_mask(struct irq_data *data)
 {
 	struct stmpe *stmpe = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-	int offset = data->irq - stmpe->irq_base;
-=======
 	int offset = data->hwirq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int regoffset = offset / 8;
 	int mask = 1 << (offset % 8);
 
@@ -1363,11 +1170,7 @@ static void stmpe_irq_mask(struct irq_data *data)
 static void stmpe_irq_unmask(struct irq_data *data)
 {
 	struct stmpe *stmpe = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-	int offset = data->irq - stmpe->irq_base;
-=======
 	int offset = data->hwirq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int regoffset = offset / 8;
 	int mask = 1 << (offset % 8);
 
@@ -1382,35 +1185,15 @@ static struct irq_chip stmpe_irq_chip = {
 	.irq_unmask		= stmpe_irq_unmask,
 };
 
-<<<<<<< HEAD
-static int __devinit stmpe_irq_init(struct stmpe *stmpe)
-{
-	struct irq_chip *chip = NULL;
-	int num_irqs = stmpe->variant->num_irqs;
-	int base = stmpe->irq_base;
-	int irq;
-=======
 static int stmpe_irq_map(struct irq_domain *d, unsigned int virq,
                                 irq_hw_number_t hwirq)
 {
 	struct stmpe *stmpe = d->host_data;
 	struct irq_chip *chip = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (stmpe->variant->id_val != STMPE801_ID)
 		chip = &stmpe_irq_chip;
 
-<<<<<<< HEAD
-	for (irq = base; irq < base + num_irqs; irq++) {
-		irq_set_chip_data(irq, stmpe);
-		irq_set_chip_and_handler(irq, chip, handle_edge_irq);
-		irq_set_nested_thread(irq, 1);
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, IRQF_VALID);
-#else
-		irq_set_noprobe(irq);
-#endif
-=======
 	irq_set_chip_data(virq, stmpe);
 	irq_set_chip_and_handler(virq, chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
@@ -1441,32 +1224,12 @@ static int stmpe_irq_init(struct stmpe *stmpe, struct device_node *np)
 	if (!stmpe->domain) {
 		dev_err(stmpe->dev, "Failed to create irqdomain\n");
 		return -ENOSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void stmpe_irq_remove(struct stmpe *stmpe)
-{
-	int num_irqs = stmpe->variant->num_irqs;
-	int base = stmpe->irq_base;
-	int irq;
-
-	for (irq = base; irq < base + num_irqs; irq++) {
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, 0);
-#endif
-		irq_set_chip_and_handler(irq, NULL, NULL);
-		irq_set_chip_data(irq, NULL);
-	}
-}
-
-static int __devinit stmpe_chip_init(struct stmpe *stmpe)
-=======
 static int stmpe_chip_init(struct stmpe *stmpe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int irq_trigger = stmpe->pdata->irq_trigger;
 	int autosleep_timeout = stmpe->pdata->autosleep_timeout;
@@ -1494,16 +1257,6 @@ static int stmpe_chip_init(struct stmpe *stmpe)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (stmpe->irq >= 0) {
-		if (id == STMPE801_ID)
-			icr = STMPE801_REG_SYS_CTRL_INT_EN;
-		else
-			icr = STMPE_ICR_LSB_GIM;
-
-		/* STMPE801 doesn't support Edge interrupts */
-		if (id != STMPE801_ID) {
-=======
 	ret =  stmpe_reset(stmpe);
 	if (ret < 0)
 		return ret;
@@ -1516,7 +1269,6 @@ static int stmpe_chip_init(struct stmpe *stmpe)
 
 		/* STMPE801 and STMPE1600 don't support Edge interrupts */
 		if (id != STMPE801_ID && id != STMPE1600_ID) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (irq_trigger == IRQF_TRIGGER_FALLING ||
 					irq_trigger == IRQF_TRIGGER_RISING)
 				icr |= STMPE_ICR_LSB_EDGE;
@@ -1524,26 +1276,11 @@ static int stmpe_chip_init(struct stmpe *stmpe)
 
 		if (irq_trigger == IRQF_TRIGGER_RISING ||
 				irq_trigger == IRQF_TRIGGER_HIGH) {
-<<<<<<< HEAD
-			if (id == STMPE801_ID)
-				icr |= STMPE801_REG_SYS_CTRL_INT_HI;
-			else
-				icr |= STMPE_ICR_LSB_HIGH;
-		}
-
-		if (stmpe->pdata->irq_invert_polarity) {
-			if (id == STMPE801_ID)
-				icr ^= STMPE801_REG_SYS_CTRL_INT_HI;
-			else
-				icr ^= STMPE_ICR_LSB_HIGH;
-		}
-=======
 			if (id == STMPE801_ID || id == STMPE1600_ID)
 				icr |= STMPE_SYS_CTRL_INT_HI;
 			else
 				icr |= STMPE_ICR_LSB_HIGH;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (stmpe->pdata->autosleep) {
@@ -1555,16 +1292,6 @@ static int stmpe_chip_init(struct stmpe *stmpe)
 	return stmpe_reg_write(stmpe, stmpe->regs[STMPE_IDX_ICR_LSB], icr);
 }
 
-<<<<<<< HEAD
-static int __devinit stmpe_add_device(struct stmpe *stmpe,
-				      struct mfd_cell *cell, int irq)
-{
-	return mfd_add_devices(stmpe->dev, stmpe->pdata->id, cell, 1,
-			       NULL, stmpe->irq_base + irq);
-}
-
-static int __devinit stmpe_devices_init(struct stmpe *stmpe)
-=======
 static int stmpe_add_device(struct stmpe *stmpe, const struct mfd_cell *cell)
 {
 	return mfd_add_devices(stmpe->dev, stmpe->pdata->id, cell, 1,
@@ -1572,16 +1299,11 @@ static int stmpe_add_device(struct stmpe *stmpe, const struct mfd_cell *cell)
 }
 
 static int stmpe_devices_init(struct stmpe *stmpe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct stmpe_variant_info *variant = stmpe->variant;
 	unsigned int platform_blocks = stmpe->pdata->blocks;
 	int ret = -EINVAL;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < variant->num_blocks; i++) {
 		struct stmpe_variant_block *block = &variant->blocks[i];
@@ -1589,10 +1311,6 @@ static int stmpe_devices_init(struct stmpe *stmpe)
 		if (!(platform_blocks & block->block))
 			continue;
 
-<<<<<<< HEAD
-		platform_blocks &= ~block->block;
-		ret = stmpe_add_device(stmpe, block->cell, block->irq);
-=======
 		for (j = 0; j < block->cell->num_resources; j++) {
 			struct resource *res =
 				(struct resource *) &block->cell->resources[j];
@@ -1604,7 +1322,6 @@ static int stmpe_devices_init(struct stmpe *stmpe)
 
 		platform_blocks &= ~block->block;
 		ret = stmpe_add_device(stmpe, block->cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -1617,19 +1334,6 @@ static int stmpe_devices_init(struct stmpe *stmpe)
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Called from client specific probe routines */
-int __devinit stmpe_probe(struct stmpe_client_info *ci, int partnum)
-{
-	struct stmpe_platform_data *pdata = dev_get_platdata(ci->dev);
-	struct stmpe *stmpe;
-	int ret;
-
-	if (!pdata)
-		return -EINVAL;
-
-	stmpe = kzalloc(sizeof(struct stmpe), GFP_KERNEL);
-=======
 static void stmpe_of_probe(struct stmpe_platform_data *pdata,
 			   struct device_node *np)
 {
@@ -1678,19 +1382,12 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 		ci->irq = -1;
 
 	stmpe = devm_kzalloc(ci->dev, sizeof(struct stmpe), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!stmpe)
 		return -ENOMEM;
 
 	mutex_init(&stmpe->irq_lock);
 	mutex_init(&stmpe->lock);
 
-<<<<<<< HEAD
-	stmpe->dev = ci->dev;
-	stmpe->client = ci->client;
-	stmpe->pdata = pdata;
-	stmpe->irq_base = pdata->irq_base;
-=======
 	if (!of_property_read_u32(np, "st,sample-time", &val))
 		stmpe->sample_time = val;
 	if (!of_property_read_u32(np, "st,mod-12b", &val))
@@ -1703,14 +1400,11 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 	stmpe->dev = ci->dev;
 	stmpe->client = ci->client;
 	stmpe->pdata = pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stmpe->ci = ci;
 	stmpe->partnum = partnum;
 	stmpe->variant = stmpe_variant_info[partnum];
 	stmpe->regs = stmpe->variant->regs;
 	stmpe->num_gpios = stmpe->variant->num_gpios;
-<<<<<<< HEAD
-=======
 	stmpe->vcc = devm_regulator_get_optional(ci->dev, "vcc");
 	if (!IS_ERR(stmpe->vcc)) {
 		ret = regulator_enable(stmpe->vcc);
@@ -1723,25 +1417,11 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 		if (ret)
 			dev_warn(ci->dev, "failed to enable VIO supply\n");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(stmpe->dev, stmpe);
 
 	if (ci->init)
 		ci->init(stmpe);
 
-<<<<<<< HEAD
-	if (pdata->irq_over_gpio) {
-		ret = gpio_request_one(pdata->irq_gpio, GPIOF_DIR_IN, "stmpe");
-		if (ret) {
-			dev_err(stmpe->dev, "failed to request IRQ GPIO: %d\n",
-					ret);
-			goto out_free;
-		}
-
-		stmpe->irq = gpio_to_irq(pdata->irq_gpio);
-	} else {
-		stmpe->irq = ci->irq;
-=======
 	irq_gpio = devm_gpiod_get_optional(ci->dev, "irq", GPIOD_ASIS);
 	ret = PTR_ERR_OR_ZERO(irq_gpio);
 	if (ret) {
@@ -1756,7 +1436,6 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 	} else {
 		stmpe->irq = ci->irq;
 		pdata->irq_trigger = IRQF_TRIGGER_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (stmpe->irq < 0) {
@@ -1768,33 +1447,15 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 			dev_err(stmpe->dev,
 				"%s does not support no-irq mode!\n",
 				stmpe->variant->name);
-<<<<<<< HEAD
-			ret = -ENODEV;
-			goto free_gpio;
-		}
-		stmpe->variant = stmpe_noirq_variant_info[stmpe->partnum];
-=======
 			return -ENODEV;
 		}
 		stmpe->variant = stmpe_noirq_variant_info[stmpe->partnum];
 	} else if (pdata->irq_trigger == IRQF_TRIGGER_NONE) {
 		pdata->irq_trigger = irq_get_trigger_type(stmpe->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = stmpe_chip_init(stmpe);
 	if (ret)
-<<<<<<< HEAD
-		goto free_gpio;
-
-	if (stmpe->irq >= 0) {
-		ret = stmpe_irq_init(stmpe);
-		if (ret)
-			goto free_gpio;
-
-		ret = request_threaded_irq(stmpe->irq, NULL, stmpe_irq,
-				pdata->irq_trigger | IRQF_ONESHOT,
-=======
 		return ret;
 
 	if (stmpe->irq >= 0) {
@@ -1804,62 +1465,15 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 
 		ret = devm_request_threaded_irq(ci->dev, stmpe->irq, NULL,
 				stmpe_irq, pdata->irq_trigger | IRQF_ONESHOT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"stmpe", stmpe);
 		if (ret) {
 			dev_err(stmpe->dev, "failed to request IRQ: %d\n",
 					ret);
-<<<<<<< HEAD
-			goto out_removeirq;
-=======
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	ret = stmpe_devices_init(stmpe);
-<<<<<<< HEAD
-	if (ret) {
-		dev_err(stmpe->dev, "failed to add children\n");
-		goto out_removedevs;
-	}
-
-	return 0;
-
-out_removedevs:
-	mfd_remove_devices(stmpe->dev);
-	if (stmpe->irq >= 0)
-		free_irq(stmpe->irq, stmpe);
-out_removeirq:
-	if (stmpe->irq >= 0)
-		stmpe_irq_remove(stmpe);
-free_gpio:
-	if (pdata->irq_over_gpio)
-		gpio_free(pdata->irq_gpio);
-out_free:
-	kfree(stmpe);
-	return ret;
-}
-
-int stmpe_remove(struct stmpe *stmpe)
-{
-	mfd_remove_devices(stmpe->dev);
-
-	if (stmpe->irq >= 0) {
-		free_irq(stmpe->irq, stmpe);
-		stmpe_irq_remove(stmpe);
-	}
-
-	if (stmpe->pdata->irq_over_gpio)
-		gpio_free(stmpe->pdata->irq_gpio);
-
-	kfree(stmpe);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-=======
 	if (!ret)
 		return 0;
 
@@ -1881,7 +1495,6 @@ void stmpe_remove(struct stmpe *stmpe)
 	mfd_remove_devices(stmpe->dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int stmpe_suspend(struct device *dev)
 {
 	struct stmpe *stmpe = dev_get_drvdata(dev);
@@ -1902,13 +1515,5 @@ static int stmpe_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-const struct dev_pm_ops stmpe_dev_pm_ops = {
-	.suspend	= stmpe_suspend,
-	.resume		= stmpe_resume,
-};
-#endif
-=======
 EXPORT_GPL_SIMPLE_DEV_PM_OPS(stmpe_dev_pm_ops,
 			     stmpe_suspend, stmpe_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

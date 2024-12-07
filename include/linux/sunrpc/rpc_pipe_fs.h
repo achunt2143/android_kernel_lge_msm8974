@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_SUNRPC_RPC_PIPE_FS_H
-#define _LINUX_SUNRPC_RPC_PIPE_FS_H
-
-#ifdef __KERNEL__
-
-#include <linux/workqueue.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_SUNRPC_RPC_PIPE_FS_H
 #define _LINUX_SUNRPC_RPC_PIPE_FS_H
@@ -33,7 +24,6 @@ struct rpc_pipe_dir_object_ops {
 			struct rpc_pipe_dir_object *pdo);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rpc_pipe_msg {
 	struct list_head list;
 	void *data;
@@ -93,12 +83,8 @@ enum {
 
 extern struct dentry *rpc_d_lookup_sb(const struct super_block *sb,
 				      const unsigned char *dir_name);
-<<<<<<< HEAD
-extern void rpc_pipefs_init_net(struct net *net);
-=======
 extern int rpc_pipefs_init_net(struct net *net);
 extern void rpc_pipefs_exit_net(struct net *net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct super_block *rpc_get_sb_net(const struct net *net);
 extern void rpc_put_sb_net(const struct net *net);
 
@@ -106,15 +92,6 @@ extern ssize_t rpc_pipe_generic_upcall(struct file *, struct rpc_pipe_msg *,
 				       char __user *, size_t);
 extern int rpc_queue_upcall(struct rpc_pipe *, struct rpc_pipe_msg *);
 
-<<<<<<< HEAD
-struct rpc_clnt;
-extern struct dentry *rpc_create_client_dir(struct dentry *, struct qstr *, struct rpc_clnt *);
-extern int rpc_remove_client_dir(struct dentry *);
-
-struct cache_detail;
-extern struct dentry *rpc_create_cache_dir(struct dentry *,
-					   struct qstr *,
-=======
 /* returns true if the msg is in-flight, i.e., already eaten by the peer */
 static inline bool rpc_msg_is_inflight(const struct rpc_pipe_msg *msg) {
 	return (msg->copied != 0 && list_empty(&msg->list));
@@ -144,16 +121,10 @@ extern struct rpc_pipe_dir_object *rpc_find_or_alloc_pipe_dir_object(
 struct cache_detail;
 extern struct dentry *rpc_create_cache_dir(struct dentry *,
 					   const char *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   umode_t umode,
 					   struct cache_detail *);
 extern void rpc_remove_cache_dir(struct dentry *);
 
-<<<<<<< HEAD
-extern int rpc_rmdir(struct dentry *dentry);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rpc_pipe *rpc_mkpipe_data(const struct rpc_pipe_ops *ops, int flags);
 void rpc_destroy_pipe_data(struct rpc_pipe *pipe);
 extern struct dentry *rpc_mkpipe_dentry(struct dentry *, const char *, void *,
@@ -162,10 +133,6 @@ extern int rpc_unlink(struct dentry *);
 extern int register_rpc_pipefs(void);
 extern void unregister_rpc_pipefs(void);
 
-<<<<<<< HEAD
-#endif
-=======
 extern bool gssd_running(struct net *net);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

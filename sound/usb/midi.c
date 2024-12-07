@@ -47,10 +47,7 @@
 #include <linux/usb.h>
 #include <linux/wait.h>
 #include <linux/usb/audio.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/midi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include <sound/core.h>
@@ -68,11 +65,7 @@
 /* #define DUMP_PACKETS */
 
 /*
-<<<<<<< HEAD
- * how long to wait after some USB errors, so that khubd can disconnect() us
-=======
  * how long to wait after some USB errors, so that hub_wq can disconnect() us
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * without too many spurious errors
  */
 #define ERROR_DELAY_JIFFIES (HZ / 10)
@@ -85,26 +78,6 @@ MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
 MODULE_DESCRIPTION("USB Audio/MIDI helper module");
 MODULE_LICENSE("Dual BSD/GPL");
 
-<<<<<<< HEAD
-
-struct usb_ms_header_descriptor {
-	__u8  bLength;
-	__u8  bDescriptorType;
-	__u8  bDescriptorSubtype;
-	__u8  bcdMSC[2];
-	__le16 wTotalLength;
-} __attribute__ ((packed));
-
-struct usb_ms_endpoint_descriptor {
-	__u8  bLength;
-	__u8  bDescriptorType;
-	__u8  bDescriptorSubtype;
-	__u8  bNumEmbMIDIJack;
-	__u8  baAssocJackID[0];
-} __attribute__ ((packed));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_usb_midi_in_endpoint;
 struct snd_usb_midi_out_endpoint;
 struct snd_usb_midi_endpoint;
@@ -113,13 +86,8 @@ struct usb_protocol_ops {
 	void (*input)(struct snd_usb_midi_in_endpoint*, uint8_t*, int);
 	void (*output)(struct snd_usb_midi_out_endpoint *ep, struct urb *urb);
 	void (*output_packet)(struct urb*, uint8_t, uint8_t, uint8_t, uint8_t);
-<<<<<<< HEAD
-	void (*init_out_endpoint)(struct snd_usb_midi_out_endpoint*);
-	void (*finish_out_endpoint)(struct snd_usb_midi_out_endpoint*);
-=======
 	void (*init_out_endpoint)(struct snd_usb_midi_out_endpoint *);
 	void (*finish_out_endpoint)(struct snd_usb_midi_out_endpoint *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_usb_midi {
@@ -128,11 +96,7 @@ struct snd_usb_midi {
 	struct usb_interface *iface;
 	const struct snd_usb_audio_quirk *quirk;
 	struct snd_rawmidi *rmidi;
-<<<<<<< HEAD
-	struct usb_protocol_ops* usb_protocol_ops;
-=======
 	const struct usb_protocol_ops *usb_protocol_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;
 	struct timer_list error_timer;
 	spinlock_t disc_lock;
@@ -154,11 +118,7 @@ struct snd_usb_midi {
 };
 
 struct snd_usb_midi_out_endpoint {
-<<<<<<< HEAD
-	struct snd_usb_midi* umidi;
-=======
 	struct snd_usb_midi *umidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct out_urb_context {
 		struct urb *urb;
 		struct snd_usb_midi_out_endpoint *ep;
@@ -166,20 +126,12 @@ struct snd_usb_midi_out_endpoint {
 	unsigned int active_urbs;
 	unsigned int drain_urbs;
 	int max_transfer;		/* size of urb buffer */
-<<<<<<< HEAD
-	struct tasklet_struct tasklet;
-=======
 	struct work_struct work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int next_urb;
 	spinlock_t buffer_lock;
 
 	struct usbmidi_out_port {
-<<<<<<< HEAD
-		struct snd_usb_midi_out_endpoint* ep;
-=======
 		struct snd_usb_midi_out_endpoint *ep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct snd_rawmidi_substream *substream;
 		int active;
 		uint8_t cable;		/* cable number << 4 */
@@ -199,13 +151,8 @@ struct snd_usb_midi_out_endpoint {
 };
 
 struct snd_usb_midi_in_endpoint {
-<<<<<<< HEAD
-	struct snd_usb_midi* umidi;
-	struct urb* urbs[INPUT_URBS];
-=======
 	struct snd_usb_midi *umidi;
 	struct urb *urbs[INPUT_URBS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usbmidi_in_port {
 		struct snd_rawmidi_substream *substream;
 		u8 running_status_length;
@@ -217,11 +164,7 @@ struct snd_usb_midi_in_endpoint {
 	int current_port;
 };
 
-<<<<<<< HEAD
-static void snd_usbmidi_do_output(struct snd_usb_midi_out_endpoint* ep);
-=======
 static void snd_usbmidi_do_output(struct snd_usb_midi_out_endpoint *ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const uint8_t snd_usbmidi_cin_length[] = {
 	0, 0, 2, 3, 3, 1, 2, 3, 3, 3, 3, 3, 2, 2, 3, 1
@@ -230,34 +173,20 @@ static const uint8_t snd_usbmidi_cin_length[] = {
 /*
  * Submits the URB, with error handling.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_submit_urb(struct urb* urb, gfp_t flags)
-{
-	int err = usb_submit_urb(urb, flags);
-	if (err < 0 && err != -ENODEV)
-		snd_printk(KERN_ERR "usb_submit_urb: %d\n", err);
-=======
 static int snd_usbmidi_submit_urb(struct urb *urb, gfp_t flags)
 {
 	int err = usb_submit_urb(urb, flags);
 	if (err < 0 && err != -ENODEV)
 		dev_err(&urb->dev->dev, "usb_submit_urb: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /*
  * Error handling for URB completion functions.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_urb_error(int status)
-{
-	switch (status) {
-=======
 static int snd_usbmidi_urb_error(const struct urb *urb)
 {
 	switch (urb->status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* manually unlinked, or device gone */
 	case -ENOENT:
 	case -ECONNRESET:
@@ -270,11 +199,7 @@ static int snd_usbmidi_urb_error(const struct urb *urb)
 	case -EILSEQ:
 		return -EIO;
 	default:
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "urb status %d\n", status);
-=======
 		dev_err(&urb->dev->dev, "urb status %d\n", urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0; /* continue */
 	}
 }
@@ -282,15 +207,6 @@ static int snd_usbmidi_urb_error(const struct urb *urb)
 /*
  * Receives a chunk of MIDI data.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_input_data(struct snd_usb_midi_in_endpoint* ep, int portidx,
-				   uint8_t* data, int length)
-{
-	struct usbmidi_in_port* port = &ep->ports[portidx];
-
-	if (!port->substream) {
-		snd_printd("unexpected port %d!\n", portidx);
-=======
 static void snd_usbmidi_input_data(struct snd_usb_midi_in_endpoint *ep,
 				   int portidx, uint8_t *data, int length)
 {
@@ -298,7 +214,6 @@ static void snd_usbmidi_input_data(struct snd_usb_midi_in_endpoint *ep,
 
 	if (!port->substream) {
 		dev_dbg(&ep->umidi->dev->dev, "unexpected port %d!\n", portidx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (!test_bit(port->substream->number, &ep->umidi->input_triggered))
@@ -311,13 +226,8 @@ static void dump_urb(const char *type, const u8 *data, int length)
 {
 	snd_printk(KERN_DEBUG "%s packet: [", type);
 	for (; length > 0; ++data, --length)
-<<<<<<< HEAD
-		printk(" %02x", *data);
-	printk(" ]\n");
-=======
 		printk(KERN_CONT " %02x", *data);
 	printk(KERN_CONT " ]\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #define dump_urb(type, data, length) /* nothing */
@@ -326,26 +236,16 @@ static void dump_urb(const char *type, const u8 *data, int length)
 /*
  * Processes the data read from the device.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_in_urb_complete(struct urb* urb)
-{
-	struct snd_usb_midi_in_endpoint* ep = urb->context;
-=======
 static void snd_usbmidi_in_urb_complete(struct urb *urb)
 {
 	struct snd_usb_midi_in_endpoint *ep = urb->context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (urb->status == 0) {
 		dump_urb("received", urb->transfer_buffer, urb->actual_length);
 		ep->umidi->usb_protocol_ops->input(ep, urb->transfer_buffer,
 						   urb->actual_length);
 	} else {
-<<<<<<< HEAD
-		int err = snd_usbmidi_urb_error(urb->status);
-=======
 		int err = snd_usbmidi_urb_error(urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0) {
 			if (err != -ENODEV) {
 				ep->error_resubmit = 1;
@@ -360,15 +260,6 @@ static void snd_usbmidi_in_urb_complete(struct urb *urb)
 	snd_usbmidi_submit_urb(urb, GFP_ATOMIC);
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_out_urb_complete(struct urb* urb)
-{
-	struct out_urb_context *context = urb->context;
-	struct snd_usb_midi_out_endpoint* ep = context->ep;
-	unsigned int urb_index;
-
-	spin_lock(&ep->buffer_lock);
-=======
 static void snd_usbmidi_out_urb_complete(struct urb *urb)
 {
 	struct out_urb_context *context = urb->context;
@@ -377,22 +268,15 @@ static void snd_usbmidi_out_urb_complete(struct urb *urb)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ep->buffer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	urb_index = context - ep->urbs;
 	ep->active_urbs &= ~(1 << urb_index);
 	if (unlikely(ep->drain_urbs)) {
 		ep->drain_urbs &= ~(1 << urb_index);
 		wake_up(&ep->drain_wait);
 	}
-<<<<<<< HEAD
-	spin_unlock(&ep->buffer_lock);
-	if (urb->status < 0) {
-		int err = snd_usbmidi_urb_error(urb->status);
-=======
 	spin_unlock_irqrestore(&ep->buffer_lock, flags);
 	if (urb->status < 0) {
 		int err = snd_usbmidi_urb_error(urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0) {
 			if (err != -ENODEV)
 				mod_timer(&ep->umidi->error_timer,
@@ -407,17 +291,10 @@ static void snd_usbmidi_out_urb_complete(struct urb *urb)
  * This is called when some data should be transferred to the device
  * (from one or more substreams).
  */
-<<<<<<< HEAD
-static void snd_usbmidi_do_output(struct snd_usb_midi_out_endpoint* ep)
-{
-	unsigned int urb_index;
-	struct urb* urb;
-=======
 static void snd_usbmidi_do_output(struct snd_usb_midi_out_endpoint *ep)
 {
 	unsigned int urb_index;
 	struct urb *urb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ep->buffer_lock, flags);
@@ -451,30 +328,18 @@ static void snd_usbmidi_do_output(struct snd_usb_midi_out_endpoint *ep)
 	spin_unlock_irqrestore(&ep->buffer_lock, flags);
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_out_tasklet(unsigned long data)
-{
-	struct snd_usb_midi_out_endpoint* ep = (struct snd_usb_midi_out_endpoint *) data;
-=======
 static void snd_usbmidi_out_work(struct work_struct *work)
 {
 	struct snd_usb_midi_out_endpoint *ep =
 		container_of(work, struct snd_usb_midi_out_endpoint, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_usbmidi_do_output(ep);
 }
 
 /* called after transfers had been interrupted due to some USB error */
-<<<<<<< HEAD
-static void snd_usbmidi_error_timer(unsigned long data)
-{
-	struct snd_usb_midi *umidi = (struct snd_usb_midi *)data;
-=======
 static void snd_usbmidi_error_timer(struct timer_list *t)
 {
 	struct snd_usb_midi *umidi = from_timer(umidi, t, error_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i, j;
 
 	spin_lock(&umidi->disc_lock);
@@ -500,11 +365,7 @@ static void snd_usbmidi_error_timer(struct timer_list *t)
 }
 
 /* helper function to send static data that may not DMA-able */
-<<<<<<< HEAD
-static int send_bulk_static_data(struct snd_usb_midi_out_endpoint* ep,
-=======
 static int send_bulk_static_data(struct snd_usb_midi_out_endpoint *ep,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 const void *data, int len)
 {
 	int err = 0;
@@ -525,13 +386,8 @@ static int send_bulk_static_data(struct snd_usb_midi_out_endpoint *ep,
  * fourth byte in each packet, and uses length instead of CIN.
  */
 
-<<<<<<< HEAD
-static void snd_usbmidi_standard_input(struct snd_usb_midi_in_endpoint* ep,
-				       uint8_t* buffer, int buffer_length)
-=======
 static void snd_usbmidi_standard_input(struct snd_usb_midi_in_endpoint *ep,
 				       uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -539,14 +395,6 @@ static void snd_usbmidi_standard_input(struct snd_usb_midi_in_endpoint *ep,
 		if (buffer[i] != 0) {
 			int cable = buffer[i] >> 4;
 			int length = snd_usbmidi_cin_length[buffer[i] & 0x0f];
-<<<<<<< HEAD
-			snd_usbmidi_input_data(ep, cable, &buffer[i + 1], length);
-		}
-}
-
-static void snd_usbmidi_midiman_input(struct snd_usb_midi_in_endpoint* ep,
-				      uint8_t* buffer, int buffer_length)
-=======
 			snd_usbmidi_input_data(ep, cable, &buffer[i + 1],
 					       length);
 		}
@@ -554,7 +402,6 @@ static void snd_usbmidi_midiman_input(struct snd_usb_midi_in_endpoint* ep,
 
 static void snd_usbmidi_midiman_input(struct snd_usb_midi_in_endpoint *ep,
 				      uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -571,13 +418,8 @@ static void snd_usbmidi_midiman_input(struct snd_usb_midi_in_endpoint *ep,
  * the data bytes but not the status byte and that is marked with CIN 4.
  */
 static void snd_usbmidi_maudio_broken_running_status_input(
-<<<<<<< HEAD
-					struct snd_usb_midi_in_endpoint* ep,
-					uint8_t* buffer, int buffer_length)
-=======
 					struct snd_usb_midi_in_endpoint *ep,
 					uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -607,12 +449,8 @@ static void snd_usbmidi_maudio_broken_running_status_input(
 				 * doesn't use this format.)
 				 */
 				port->running_status_length = 0;
-<<<<<<< HEAD
-			snd_usbmidi_input_data(ep, cable, &buffer[i + 1], length);
-=======
 			snd_usbmidi_input_data(ep, cable, &buffer[i + 1],
 					       length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 }
 
@@ -666,13 +504,6 @@ static void snd_usbmidi_cme_input(struct snd_usb_midi_in_endpoint *ep,
 /*
  * Adds one USB MIDI packet to the output buffer.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_output_standard_packet(struct urb* urb, uint8_t p0,
-					       uint8_t p1, uint8_t p2, uint8_t p3)
-{
-
-	uint8_t* buf = (uint8_t*)urb->transfer_buffer + urb->transfer_buffer_length;
-=======
 static void snd_usbmidi_output_standard_packet(struct urb *urb, uint8_t p0,
 					       uint8_t p1, uint8_t p2,
 					       uint8_t p3)
@@ -680,7 +511,6 @@ static void snd_usbmidi_output_standard_packet(struct urb *urb, uint8_t p0,
 
 	uint8_t *buf =
 		(uint8_t *)urb->transfer_buffer + urb->transfer_buffer_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[0] = p0;
 	buf[1] = p1;
 	buf[2] = p2;
@@ -691,13 +521,6 @@ static void snd_usbmidi_output_standard_packet(struct urb *urb, uint8_t p0,
 /*
  * Adds one Midiman packet to the output buffer.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_output_midiman_packet(struct urb* urb, uint8_t p0,
-					      uint8_t p1, uint8_t p2, uint8_t p3)
-{
-
-	uint8_t* buf = (uint8_t*)urb->transfer_buffer + urb->transfer_buffer_length;
-=======
 static void snd_usbmidi_output_midiman_packet(struct urb *urb, uint8_t p0,
 					      uint8_t p1, uint8_t p2,
 					      uint8_t p3)
@@ -705,7 +528,6 @@ static void snd_usbmidi_output_midiman_packet(struct urb *urb, uint8_t p0,
 
 	uint8_t *buf =
 		(uint8_t *)urb->transfer_buffer + urb->transfer_buffer_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[0] = p1;
 	buf[1] = p2;
 	buf[2] = p3;
@@ -716,13 +538,8 @@ static void snd_usbmidi_output_midiman_packet(struct urb *urb, uint8_t p0,
 /*
  * Converts MIDI commands to USB MIDI packets.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_transmit_byte(struct usbmidi_out_port* port,
-				      uint8_t b, struct urb* urb)
-=======
 static void snd_usbmidi_transmit_byte(struct usbmidi_out_port *port,
 				      uint8_t b, struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint8_t p0 = port->cable;
 	void (*output_packet)(struct urb*, uint8_t, uint8_t, uint8_t, uint8_t) =
@@ -759,19 +576,12 @@ static void snd_usbmidi_transmit_byte(struct usbmidi_out_port *port,
 				output_packet(urb, p0 | 0x05, 0xf7, 0, 0);
 				break;
 			case STATE_SYSEX_1:
-<<<<<<< HEAD
-				output_packet(urb, p0 | 0x06, port->data[0], 0xf7, 0);
-				break;
-			case STATE_SYSEX_2:
-				output_packet(urb, p0 | 0x07, port->data[0], port->data[1], 0xf7);
-=======
 				output_packet(urb, p0 | 0x06, port->data[0],
 					      0xf7, 0);
 				break;
 			case STATE_SYSEX_2:
 				output_packet(urb, p0 | 0x07, port->data[0],
 					      port->data[1], 0xf7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			port->state = STATE_UNKNOWN;
@@ -817,34 +627,22 @@ static void snd_usbmidi_transmit_byte(struct usbmidi_out_port *port,
 			port->state = STATE_SYSEX_2;
 			break;
 		case STATE_SYSEX_2:
-<<<<<<< HEAD
-			output_packet(urb, p0 | 0x04, port->data[0], port->data[1], b);
-=======
 			output_packet(urb, p0 | 0x04, port->data[0],
 				      port->data[1], b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port->state = STATE_SYSEX_0;
 			break;
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_standard_output(struct snd_usb_midi_out_endpoint* ep,
-=======
 static void snd_usbmidi_standard_output(struct snd_usb_midi_out_endpoint *ep,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct urb *urb)
 {
 	int p;
 
 	/* FIXME: lower-numbered ports can starve higher-numbered ports */
 	for (p = 0; p < 0x10; ++p) {
-<<<<<<< HEAD
-		struct usbmidi_out_port* port = &ep->ports[p];
-=======
 		struct usbmidi_out_port *port = &ep->ports[p];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!port->active)
 			continue;
 		while (urb->transfer_buffer_length + 3 < ep->max_transfer) {
@@ -858,52 +656,32 @@ static void snd_usbmidi_standard_output(struct snd_usb_midi_out_endpoint *ep,
 	}
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_standard_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_standard_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_standard_input,
 	.output = snd_usbmidi_standard_output,
 	.output_packet = snd_usbmidi_output_standard_packet,
 };
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_midiman_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_midiman_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_midiman_input,
 	.output = snd_usbmidi_standard_output,
 	.output_packet = snd_usbmidi_output_midiman_packet,
 };
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_maudio_broken_running_status_ops = {
-=======
 static const
 struct usb_protocol_ops snd_usbmidi_maudio_broken_running_status_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_maudio_broken_running_status_input,
 	.output = snd_usbmidi_standard_output,
 	.output_packet = snd_usbmidi_output_standard_packet,
 };
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_cme_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_cme_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_cme_input,
 	.output = snd_usbmidi_standard_output,
 	.output_packet = snd_usbmidi_output_standard_packet,
 };
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_ch345_broken_sysex_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_ch345_broken_sysex_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = ch345_broken_sysex_input,
 	.output = snd_usbmidi_standard_output,
 	.output_packet = snd_usbmidi_output_standard_packet,
@@ -1003,11 +781,7 @@ static void snd_usbmidi_akai_output(struct snd_usb_midi_out_endpoint *ep,
 	}
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_akai_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_akai_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_akai_input,
 	.output = snd_usbmidi_akai_output,
 };
@@ -1018,30 +792,18 @@ static const struct usb_protocol_ops snd_usbmidi_akai_ops = {
  * at the third byte.
  */
 
-<<<<<<< HEAD
-static void snd_usbmidi_novation_input(struct snd_usb_midi_in_endpoint* ep,
-				       uint8_t* buffer, int buffer_length)
-=======
 static void snd_usbmidi_novation_input(struct snd_usb_midi_in_endpoint *ep,
 				       uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (buffer_length < 2 || !buffer[0] || buffer_length < buffer[0] + 1)
 		return;
 	snd_usbmidi_input_data(ep, 0, &buffer[2], buffer[0] - 1);
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_novation_output(struct snd_usb_midi_out_endpoint* ep,
-					struct urb *urb)
-{
-	uint8_t* transfer_buffer;
-=======
 static void snd_usbmidi_novation_output(struct snd_usb_midi_out_endpoint *ep,
 					struct urb *urb)
 {
 	uint8_t *transfer_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count;
 
 	if (!ep->ports[0].active)
@@ -1059,11 +821,7 @@ static void snd_usbmidi_novation_output(struct snd_usb_midi_out_endpoint *ep,
 	urb->transfer_buffer_length = 2 + count;
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_novation_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_novation_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_novation_input,
 	.output = snd_usbmidi_novation_output,
 };
@@ -1072,22 +830,13 @@ static const struct usb_protocol_ops snd_usbmidi_novation_ops = {
  * "raw" protocol: just move raw MIDI bytes from/to the endpoint
  */
 
-<<<<<<< HEAD
-static void snd_usbmidi_raw_input(struct snd_usb_midi_in_endpoint* ep,
-				  uint8_t* buffer, int buffer_length)
-=======
 static void snd_usbmidi_raw_input(struct snd_usb_midi_in_endpoint *ep,
 				  uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	snd_usbmidi_input_data(ep, 0, buffer, buffer_length);
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_raw_output(struct snd_usb_midi_out_endpoint* ep,
-=======
 static void snd_usbmidi_raw_output(struct snd_usb_midi_out_endpoint *ep,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct urb *urb)
 {
 	int count;
@@ -1104,11 +853,7 @@ static void snd_usbmidi_raw_output(struct snd_usb_midi_out_endpoint *ep,
 	urb->transfer_buffer_length = count;
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_raw_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_raw_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_raw_input,
 	.output = snd_usbmidi_raw_output,
 };
@@ -1117,23 +862,14 @@ static const struct usb_protocol_ops snd_usbmidi_raw_ops = {
  * FTDI protocol: raw MIDI bytes, but input packets have two modem status bytes.
  */
 
-<<<<<<< HEAD
-static void snd_usbmidi_ftdi_input(struct snd_usb_midi_in_endpoint* ep,
-				   uint8_t* buffer, int buffer_length)
-=======
 static void snd_usbmidi_ftdi_input(struct snd_usb_midi_in_endpoint *ep,
 				   uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (buffer_length > 2)
 		snd_usbmidi_input_data(ep, 0, buffer + 2, buffer_length - 2);
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_ftdi_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_ftdi_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_ftdi_input,
 	.output = snd_usbmidi_raw_output,
 };
@@ -1160,10 +896,7 @@ static void snd_usbmidi_us122l_output(struct snd_usb_midi_out_endpoint *ep,
 	switch (snd_usb_get_speed(ep->umidi->dev)) {
 	case USB_SPEED_HIGH:
 	case USB_SPEED_SUPER:
-<<<<<<< HEAD
-=======
 	case USB_SPEED_SUPER_PLUS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = 1;
 		break;
 	default:
@@ -1181,11 +914,7 @@ static void snd_usbmidi_us122l_output(struct snd_usb_midi_out_endpoint *ep,
 	urb->transfer_buffer_length = ep->max_transfer;
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_122l_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_122l_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_us122l_input,
 	.output = snd_usbmidi_us122l_output,
 };
@@ -1194,11 +923,7 @@ static const struct usb_protocol_ops snd_usbmidi_122l_ops = {
  * Emagic USB MIDI protocol: raw MIDI with "F5 xx" port switching.
  */
 
-<<<<<<< HEAD
-static void snd_usbmidi_emagic_init_out(struct snd_usb_midi_out_endpoint* ep)
-=======
 static void snd_usbmidi_emagic_init_out(struct snd_usb_midi_out_endpoint *ep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const u8 init_data[] = {
 		/* initialization magic: "get version" */
@@ -1215,11 +940,7 @@ static void snd_usbmidi_emagic_init_out(struct snd_usb_midi_out_endpoint *ep)
 	send_bulk_static_data(ep, init_data, sizeof(init_data));
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_emagic_finish_out(struct snd_usb_midi_out_endpoint* ep)
-=======
 static void snd_usbmidi_emagic_finish_out(struct snd_usb_midi_out_endpoint *ep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const u8 finish_data[] = {
 		/* switch to patch mode with last preset */
@@ -1235,13 +956,8 @@ static void snd_usbmidi_emagic_finish_out(struct snd_usb_midi_out_endpoint *ep)
 	send_bulk_static_data(ep, finish_data, sizeof(finish_data));
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_emagic_input(struct snd_usb_midi_in_endpoint* ep,
-				     uint8_t* buffer, int buffer_length)
-=======
 static void snd_usbmidi_emagic_input(struct snd_usb_midi_in_endpoint *ep,
 				     uint8_t *buffer, int buffer_length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1284,30 +1000,18 @@ static void snd_usbmidi_emagic_input(struct snd_usb_midi_in_endpoint *ep,
 	}
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_emagic_output(struct snd_usb_midi_out_endpoint* ep,
-				      struct urb *urb)
-{
-	int port0 = ep->current_port;
-	uint8_t* buf = urb->transfer_buffer;
-=======
 static void snd_usbmidi_emagic_output(struct snd_usb_midi_out_endpoint *ep,
 				      struct urb *urb)
 {
 	int port0 = ep->current_port;
 	uint8_t *buf = urb->transfer_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int buf_free = ep->max_transfer;
 	int length, i;
 
 	for (i = 0; i < 0x10; ++i) {
 		/* round-robin, starting at the last current port */
 		int portnum = (port0 + i) & 15;
-<<<<<<< HEAD
-		struct usbmidi_out_port* port = &ep->ports[portnum];
-=======
 		struct usbmidi_out_port *port = &ep->ports[portnum];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!port->active)
 			continue;
@@ -1343,11 +1047,7 @@ static void snd_usbmidi_emagic_output(struct snd_usb_midi_out_endpoint *ep,
 	urb->transfer_buffer_length = ep->max_transfer - buf_free;
 }
 
-<<<<<<< HEAD
-static struct usb_protocol_ops snd_usbmidi_emagic_ops = {
-=======
 static const struct usb_protocol_ops snd_usbmidi_emagic_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.input = snd_usbmidi_emagic_input,
 	.output = snd_usbmidi_emagic_output,
 	.init_out_endpoint = snd_usbmidi_emagic_init_out,
@@ -1355,11 +1055,7 @@ static const struct usb_protocol_ops snd_usbmidi_emagic_ops = {
 };
 
 
-<<<<<<< HEAD
-static void update_roland_altsetting(struct snd_usb_midi* umidi)
-=======
 static void update_roland_altsetting(struct snd_usb_midi *umidi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_interface *intf;
 	struct usb_host_interface *hostif;
@@ -1381,11 +1077,7 @@ static void update_roland_altsetting(struct snd_usb_midi *umidi)
 static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 			  int open)
 {
-<<<<<<< HEAD
-	struct snd_usb_midi* umidi = substream->rmidi->private_data;
-=======
 	struct snd_usb_midi *umidi = substream->rmidi->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_kcontrol *ctl;
 
 	down_read(&umidi->disc_rwsem);
@@ -1399,12 +1091,8 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 		if (!umidi->opened[0] && !umidi->opened[1]) {
 			if (umidi->roland_load_ctl) {
 				ctl = umidi->roland_load_ctl;
-<<<<<<< HEAD
-				ctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
-=======
 				ctl->vd[0].access |=
 					SNDRV_CTL_ELEM_ACCESS_INACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_ctl_notify(umidi->card,
 				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
 				update_roland_altsetting(umidi);
@@ -1420,12 +1108,8 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 		if (!umidi->opened[0] && !umidi->opened[1]) {
 			if (umidi->roland_load_ctl) {
 				ctl = umidi->roland_load_ctl;
-<<<<<<< HEAD
-				ctl->vd[0].access &= ~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
-=======
 				ctl->vd[0].access &=
 					~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_ctl_notify(umidi->card,
 				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
 			}
@@ -1438,13 +1122,8 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 
 static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_usb_midi* umidi = substream->rmidi->private_data;
-	struct usbmidi_out_port* port = NULL;
-=======
 	struct snd_usb_midi *umidi = substream->rmidi->private_data;
 	struct usbmidi_out_port *port = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j;
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
@@ -1454,15 +1133,8 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 					port = &umidi->endpoints[i].out->ports[j];
 					break;
 				}
-<<<<<<< HEAD
-	if (!port) {
-		snd_BUG();
-		return -ENXIO;
-	}
-=======
 	if (!port)
 		return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	substream->runtime->private_data = port;
 	port->state = STATE_UNKNOWN;
@@ -1471,14 +1143,6 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 
 static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
-	return substream_open(substream, 0, 0);
-}
-
-static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream, int up)
-{
-	struct usbmidi_out_port* port = (struct usbmidi_out_port*)substream->runtime->private_data;
-=======
 	struct usbmidi_out_port *port = substream->runtime->private_data;
 
 	cancel_work_sync(&port->ep->work);
@@ -1490,35 +1154,22 @@ static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream,
 {
 	struct usbmidi_out_port *port =
 		(struct usbmidi_out_port *)substream->runtime->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port->active = up;
 	if (up) {
 		if (port->ep->umidi->disconnected) {
 			/* gobble up remaining bytes to prevent wait in
 			 * snd_rawmidi_drain_output */
-<<<<<<< HEAD
-			while (!snd_rawmidi_transmit_empty(substream))
-				snd_rawmidi_transmit_ack(substream, 1);
-			return;
-		}
-		tasklet_schedule(&port->ep->tasklet);
-=======
 			snd_rawmidi_proceed(substream);
 			return;
 		}
 		queue_work(system_highpri_wq, &port->ep->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void snd_usbmidi_output_drain(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
-	struct usbmidi_out_port* port = substream->runtime->private_data;
-=======
 	struct usbmidi_out_port *port = substream->runtime->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_usb_midi_out_endpoint *ep = port->ep;
 	unsigned int drain_urbs;
 	DEFINE_WAIT(wait);
@@ -1544,10 +1195,7 @@ static void snd_usbmidi_output_drain(struct snd_rawmidi_substream *substream)
 		} while (drain_urbs && timeout);
 		finish_wait(&ep->drain_wait, &wait);
 	}
-<<<<<<< HEAD
-=======
 	port->active = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&ep->buffer_lock);
 }
 
@@ -1561,16 +1209,10 @@ static int snd_usbmidi_input_close(struct snd_rawmidi_substream *substream)
 	return substream_open(substream, 1, 0);
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_input_trigger(struct snd_rawmidi_substream *substream, int up)
-{
-	struct snd_usb_midi* umidi = substream->rmidi->private_data;
-=======
 static void snd_usbmidi_input_trigger(struct snd_rawmidi_substream *substream,
 				      int up)
 {
 	struct snd_usb_midi *umidi = substream->rmidi->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (up)
 		set_bit(substream->number, &umidi->input_triggered);
@@ -1578,22 +1220,14 @@ static void snd_usbmidi_input_trigger(struct snd_rawmidi_substream *substream,
 		clear_bit(substream->number, &umidi->input_triggered);
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_usbmidi_output_ops = {
-=======
 static const struct snd_rawmidi_ops snd_usbmidi_output_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = snd_usbmidi_output_open,
 	.close = snd_usbmidi_output_close,
 	.trigger = snd_usbmidi_output_trigger,
 	.drain = snd_usbmidi_output_drain,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_usbmidi_input_ops = {
-=======
 static const struct snd_rawmidi_ops snd_usbmidi_input_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = snd_usbmidi_input_open,
 	.close = snd_usbmidi_input_close,
 	.trigger = snd_usbmidi_input_trigger
@@ -1611,11 +1245,7 @@ static void free_urb_and_buffer(struct snd_usb_midi *umidi, struct urb *urb,
  * Frees an input endpoint.
  * May be called when ep hasn't been initialized completely.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_in_endpoint_delete(struct snd_usb_midi_in_endpoint* ep)
-=======
 static void snd_usbmidi_in_endpoint_delete(struct snd_usb_midi_in_endpoint *ep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -1629,17 +1259,6 @@ static void snd_usbmidi_in_endpoint_delete(struct snd_usb_midi_in_endpoint *ep)
 /*
  * Creates an input endpoint.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_in_endpoint_create(struct snd_usb_midi* umidi,
-					  struct snd_usb_midi_endpoint_info* ep_info,
-					  struct snd_usb_midi_endpoint* rep)
-{
-	struct snd_usb_midi_in_endpoint* ep;
-	void* buffer;
-	unsigned int pipe;
-	int length;
-	unsigned int i;
-=======
 static int snd_usbmidi_in_endpoint_create(struct snd_usb_midi *umidi,
 					  struct snd_usb_midi_endpoint_info *ep_info,
 					  struct snd_usb_midi_endpoint *rep)
@@ -1650,7 +1269,6 @@ static int snd_usbmidi_in_endpoint_create(struct snd_usb_midi *umidi,
 	int length;
 	unsigned int i;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rep->in = NULL;
 	ep = kzalloc(sizeof(*ep), GFP_KERNEL);
@@ -1661,35 +1279,21 @@ static int snd_usbmidi_in_endpoint_create(struct snd_usb_midi *umidi,
 	for (i = 0; i < INPUT_URBS; ++i) {
 		ep->urbs[i] = usb_alloc_urb(0, GFP_KERNEL);
 		if (!ep->urbs[i]) {
-<<<<<<< HEAD
-			snd_usbmidi_in_endpoint_delete(ep);
-			return -ENOMEM;
-=======
 			err = -ENOMEM;
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (ep_info->in_interval)
 		pipe = usb_rcvintpipe(umidi->dev, ep_info->in_ep);
 	else
 		pipe = usb_rcvbulkpipe(umidi->dev, ep_info->in_ep);
-<<<<<<< HEAD
-	length = usb_maxpacket(umidi->dev, pipe, 0);
-=======
 	length = usb_maxpacket(umidi->dev, pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < INPUT_URBS; ++i) {
 		buffer = usb_alloc_coherent(umidi->dev, length, GFP_KERNEL,
 					    &ep->urbs[i]->transfer_dma);
 		if (!buffer) {
-<<<<<<< HEAD
-			snd_usbmidi_in_endpoint_delete(ep);
-			return -ENOMEM;
-=======
 			err = -ENOMEM;
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ep_info->in_interval)
 			usb_fill_int_urb(ep->urbs[i], umidi->dev,
@@ -1701,26 +1305,20 @@ static int snd_usbmidi_in_endpoint_create(struct snd_usb_midi *umidi,
 					  pipe, buffer, length,
 					  snd_usbmidi_in_urb_complete, ep);
 		ep->urbs[i]->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
-<<<<<<< HEAD
-=======
 		err = usb_urb_ep_type_check(ep->urbs[i]);
 		if (err < 0) {
 			dev_err(&umidi->dev->dev, "invalid MIDI in EP %x\n",
 				ep_info->in_ep);
 			goto error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rep->in = ep;
 	return 0;
-<<<<<<< HEAD
-=======
 
  error:
 	snd_usbmidi_in_endpoint_delete(ep);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1748,16 +1346,6 @@ static void snd_usbmidi_out_endpoint_delete(struct snd_usb_midi_out_endpoint *ep
 /*
  * Creates an output endpoint, and initializes output ports.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi* umidi,
-					   struct snd_usb_midi_endpoint_info* ep_info,
-					   struct snd_usb_midi_endpoint* rep)
-{
-	struct snd_usb_midi_out_endpoint* ep;
-	unsigned int i;
-	unsigned int pipe;
-	void* buffer;
-=======
 static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 					   struct snd_usb_midi_endpoint_info *ep_info,
 					   struct snd_usb_midi_endpoint *rep)
@@ -1767,7 +1355,6 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 	unsigned int pipe;
 	void *buffer;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rep->out = NULL;
 	ep = kzalloc(sizeof(*ep), GFP_KERNEL);
@@ -1778,13 +1365,8 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 	for (i = 0; i < OUTPUT_URBS; ++i) {
 		ep->urbs[i].urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!ep->urbs[i].urb) {
-<<<<<<< HEAD
-			snd_usbmidi_out_endpoint_delete(ep);
-			return -ENOMEM;
-=======
 			err = -ENOMEM;
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ep->urbs[i].ep = ep;
 	}
@@ -1794,11 +1376,7 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 		pipe = usb_sndbulkpipe(umidi->dev, ep_info->out_ep);
 	switch (umidi->usb_id) {
 	default:
-<<<<<<< HEAD
-		ep->max_transfer = usb_maxpacket(umidi->dev, pipe, 1);
-=======
 		ep->max_transfer = usb_maxpacket(umidi->dev, pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 		/*
 		 * Various chips declare a packet size larger than 4 bytes, but
@@ -1816,13 +1394,8 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 		/*
 		 * Some devices only work with 9 bytes packet size:
 		 */
-<<<<<<< HEAD
-	case USB_ID(0x0644, 0x800E): /* Tascam US-122L */
-	case USB_ID(0x0644, 0x800F): /* Tascam US-144 */
-=======
 	case USB_ID(0x0644, 0x800e): /* Tascam US-122L */
 	case USB_ID(0x0644, 0x800f): /* Tascam US-144 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ep->max_transfer = 9;
 		break;
 	}
@@ -1831,13 +1404,8 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 					    ep->max_transfer, GFP_KERNEL,
 					    &ep->urbs[i].urb->transfer_dma);
 		if (!buffer) {
-<<<<<<< HEAD
-			snd_usbmidi_out_endpoint_delete(ep);
-			return -ENOMEM;
-=======
 			err = -ENOMEM;
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ep_info->out_interval)
 			usb_fill_int_urb(ep->urbs[i].urb, umidi->dev,
@@ -1849,24 +1417,17 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 					  pipe, buffer, ep->max_transfer,
 					  snd_usbmidi_out_urb_complete,
 					  &ep->urbs[i]);
-<<<<<<< HEAD
-=======
 		err = usb_urb_ep_type_check(ep->urbs[i].urb);
 		if (err < 0) {
 			dev_err(&umidi->dev->dev, "invalid MIDI out EP %x\n",
 				ep_info->out_ep);
 			goto error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ep->urbs[i].urb->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
 	}
 
 	spin_lock_init(&ep->buffer_lock);
-<<<<<<< HEAD
-	tasklet_init(&ep->tasklet, snd_usbmidi_out_tasklet, (unsigned long)ep);
-=======
 	INIT_WORK(&ep->work, snd_usbmidi_out_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&ep->drain_wait);
 
 	for (i = 0; i < 0x10; ++i)
@@ -1880,32 +1441,21 @@ static int snd_usbmidi_out_endpoint_create(struct snd_usb_midi *umidi,
 
 	rep->out = ep;
 	return 0;
-<<<<<<< HEAD
-=======
 
  error:
 	snd_usbmidi_out_endpoint_delete(ep);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Frees everything.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_free(struct snd_usb_midi* umidi)
-=======
 static void snd_usbmidi_free(struct snd_usb_midi *umidi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
-<<<<<<< HEAD
-		struct snd_usb_midi_endpoint* ep = &umidi->endpoints[i];
-=======
 		struct snd_usb_midi_endpoint *ep = &umidi->endpoints[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->out)
 			snd_usbmidi_out_endpoint_delete(ep->out);
 		if (ep->in)
@@ -1918,15 +1468,9 @@ static void snd_usbmidi_free(struct snd_usb_midi *umidi)
 /*
  * Unlinks all URBs (must be done before the usb_device is deleted).
  */
-<<<<<<< HEAD
-void snd_usbmidi_disconnect(struct list_head* p)
-{
-	struct snd_usb_midi* umidi;
-=======
 void snd_usbmidi_disconnect(struct list_head *p)
 {
 	struct snd_usb_midi *umidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i, j;
 
 	umidi = list_entry(p, struct snd_usb_midi, list);
@@ -1941,19 +1485,12 @@ void snd_usbmidi_disconnect(struct list_head *p)
 	spin_unlock_irq(&umidi->disc_lock);
 	up_write(&umidi->disc_rwsem);
 
-<<<<<<< HEAD
-	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
-		struct snd_usb_midi_endpoint* ep = &umidi->endpoints[i];
-		if (ep->out)
-			tasklet_kill(&ep->out->tasklet);
-=======
 	del_timer_sync(&umidi->error_timer);
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
 		struct snd_usb_midi_endpoint *ep = &umidi->endpoints[i];
 		if (ep->out)
 			cancel_work_sync(&ep->out->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->out) {
 			for (j = 0; j < OUTPUT_URBS; ++j)
 				usb_kill_urb(ep->out->urbs[j].urb);
@@ -1976,24 +1513,6 @@ void snd_usbmidi_disconnect(struct list_head *p)
 			ep->in = NULL;
 		}
 	}
-<<<<<<< HEAD
-	del_timer_sync(&umidi->error_timer);
-}
-
-static void snd_usbmidi_rawmidi_free(struct snd_rawmidi *rmidi)
-{
-	struct snd_usb_midi* umidi = rmidi->private_data;
-	snd_usbmidi_free(umidi);
-}
-
-static struct snd_rawmidi_substream *snd_usbmidi_find_substream(struct snd_usb_midi* umidi,
-								int stream, int number)
-{
-	struct list_head* list;
-
-	list_for_each(list, &umidi->rmidi->streams[stream].substreams) {
-		struct snd_rawmidi_substream *substream = list_entry(list, struct snd_rawmidi_substream, list);
-=======
 }
 EXPORT_SYMBOL(snd_usbmidi_disconnect);
 
@@ -2011,7 +1530,6 @@ static struct snd_rawmidi_substream *snd_usbmidi_find_substream(struct snd_usb_m
 
 	list_for_each_entry(substream, &umidi->rmidi->streams[stream].substreams,
 			    list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (substream->number == number)
 			return substream;
 	}
@@ -2043,15 +1561,12 @@ static struct port_info {
 	PORT_INFO(vendor, product, num, name, 0, \
 		  SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC | \
 		  SNDRV_SEQ_PORT_TYPE_HARDWARE)
-<<<<<<< HEAD
-=======
 #define GM_SYNTH_PORT(vendor, product, num, name, voices) \
 	PORT_INFO(vendor, product, num, name, voices, \
 		  SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC | \
 		  SNDRV_SEQ_PORT_TYPE_MIDI_GM | \
 		  SNDRV_SEQ_PORT_TYPE_HARDWARE | \
 		  SNDRV_SEQ_PORT_TYPE_SYNTHESIZER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ROLAND_SYNTH_PORT(vendor, product, num, name, voices) \
 	PORT_INFO(vendor, product, num, name, voices, \
 		  SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC | \
@@ -2071,14 +1586,11 @@ static struct port_info {
 		  SNDRV_SEQ_PORT_TYPE_MIDI_MT32 | \
 		  SNDRV_SEQ_PORT_TYPE_HARDWARE | \
 		  SNDRV_SEQ_PORT_TYPE_SYNTHESIZER)
-<<<<<<< HEAD
-=======
 	/* Yamaha MOTIF XF */
 	GM_SYNTH_PORT(0x0499, 0x105c, 0, "%s Tone Generator", 128),
 	CONTROL_PORT(0x0499, 0x105c, 1, "%s Remote Control"),
 	EXTERNAL_PORT(0x0499, 0x105c, 2, "%s Thru"),
 	CONTROL_PORT(0x0499, 0x105c, 3, "%s Editor"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Roland UA-100 */
 	CONTROL_PORT(0x0582, 0x0000, 2, "%s Control"),
 	/* Roland SC-8850 */
@@ -2146,10 +1658,6 @@ static struct port_info {
 	EXTERNAL_PORT(0x0582, 0x004d, 0, "%s MIDI"),
 	EXTERNAL_PORT(0x0582, 0x004d, 1, "%s 1"),
 	EXTERNAL_PORT(0x0582, 0x004d, 2, "%s 2"),
-<<<<<<< HEAD
-	/* Edirol UM-3EX */
-	CONTROL_PORT(0x0582, 0x009a, 3, "%s Control"),
-=======
 	/* BOSS GT-PRO */
 	CONTROL_PORT(0x0582, 0x0089, 0, "%s Control"),
 	/* Edirol UM-3EX */
@@ -2185,7 +1693,6 @@ static struct port_info {
 	/* Roland INTEGRA-7 */
 	ROLAND_SYNTH_PORT(0x0582, 0x015b, 0, "%s Synth", 128),
 	CONTROL_PORT(0x0582, 0x015b, 1, "%s Control"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* M-Audio MidiSport 8x8 */
 	CONTROL_PORT(0x0763, 0x1031, 8, "%s Control"),
 	CONTROL_PORT(0x0763, 0x1033, 8, "%s Control"),
@@ -2209,11 +1716,7 @@ static struct port_info {
 		SNDRV_SEQ_PORT_TYPE_SYNTHESIZER),
 };
 
-<<<<<<< HEAD
-static struct port_info *find_port_info(struct snd_usb_midi* umidi, int number)
-=======
 static struct port_info *find_port_info(struct snd_usb_midi *umidi, int number)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -2239,26 +1742,6 @@ static void snd_usbmidi_get_port_info(struct snd_rawmidi *rmidi, int number,
 	}
 }
 
-<<<<<<< HEAD
-static void snd_usbmidi_init_substream(struct snd_usb_midi* umidi,
-				       int stream, int number,
-				       struct snd_rawmidi_substream ** rsubstream)
-{
-	struct port_info *port_info;
-	const char *name_format;
-
-	struct snd_rawmidi_substream *substream = snd_usbmidi_find_substream(umidi, stream, number);
-	if (!substream) {
-		snd_printd(KERN_ERR "substream %d:%d not found\n", stream, number);
-		return;
-	}
-
-	/* TODO: read port name from jack descriptor */
-	port_info = find_port_info(umidi, number);
-	name_format = port_info ? port_info->name : "%s MIDI %d";
-	snprintf(substream->name, sizeof(substream->name),
-		 name_format, umidi->card->shortname, number + 1);
-=======
 /* return iJack for the corresponding jackID */
 static int find_usb_ijack(struct usb_host_interface *hostif, uint8_t jack_id)
 {
@@ -2338,7 +1821,6 @@ static void snd_usbmidi_init_substream(struct snd_usb_midi *umidi,
 		(jack_name != default_jack_name  ? "%s %s" : "%s %s %d");
 	snprintf(substream->name, sizeof(substream->name),
 		 name_format, umidi->card->shortname, jack_name, number + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rsubstream = substream;
 }
@@ -2346,36 +1828,23 @@ static void snd_usbmidi_init_substream(struct snd_usb_midi *umidi,
 /*
  * Creates the endpoints and their ports.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_create_endpoints(struct snd_usb_midi* umidi,
-					struct snd_usb_midi_endpoint_info* endpoints)
-=======
 static int snd_usbmidi_create_endpoints(struct snd_usb_midi *umidi,
 					struct snd_usb_midi_endpoint_info *endpoints)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j, err;
 	int out_ports = 0, in_ports = 0;
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
 		if (endpoints[i].out_cables) {
-<<<<<<< HEAD
-			err = snd_usbmidi_out_endpoint_create(umidi, &endpoints[i],
-=======
 			err = snd_usbmidi_out_endpoint_create(umidi,
 							      &endpoints[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							      &umidi->endpoints[i]);
 			if (err < 0)
 				return err;
 		}
 		if (endpoints[i].in_cables) {
-<<<<<<< HEAD
-			err = snd_usbmidi_in_endpoint_create(umidi, &endpoints[i],
-=======
 			err = snd_usbmidi_in_endpoint_create(umidi,
 							     &endpoints[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							     &umidi->endpoints[i]);
 			if (err < 0)
 				return err;
@@ -2383,56 +1852,28 @@ static int snd_usbmidi_create_endpoints(struct snd_usb_midi *umidi,
 
 		for (j = 0; j < 0x10; ++j) {
 			if (endpoints[i].out_cables & (1 << j)) {
-<<<<<<< HEAD
-				snd_usbmidi_init_substream(umidi, SNDRV_RAWMIDI_STREAM_OUTPUT, out_ports,
-=======
 				snd_usbmidi_init_substream(umidi,
 							   SNDRV_RAWMIDI_STREAM_OUTPUT,
 							   out_ports,
 							   endpoints[i].assoc_out_jacks[j],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   &umidi->endpoints[i].out->ports[j].substream);
 				++out_ports;
 			}
 			if (endpoints[i].in_cables & (1 << j)) {
-<<<<<<< HEAD
-				snd_usbmidi_init_substream(umidi, SNDRV_RAWMIDI_STREAM_INPUT, in_ports,
-=======
 				snd_usbmidi_init_substream(umidi,
 							   SNDRV_RAWMIDI_STREAM_INPUT,
 							   in_ports,
 							   endpoints[i].assoc_in_jacks[j],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   &umidi->endpoints[i].in->ports[j].substream);
 				++in_ports;
 			}
 		}
 	}
-<<<<<<< HEAD
-	snd_printdd(KERN_INFO "created %d output and %d input ports\n",
-=======
 	dev_dbg(&umidi->dev->dev, "created %d output and %d input ports\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    out_ports, in_ports);
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Returns MIDIStreaming device capabilities.
- */
-static int snd_usbmidi_get_ms_info(struct snd_usb_midi* umidi,
-			   	   struct snd_usb_midi_endpoint_info* endpoints)
-{
-	struct usb_interface* intf;
-	struct usb_host_interface *hostif;
-	struct usb_interface_descriptor* intfd;
-	struct usb_ms_header_descriptor* ms_header;
-	struct usb_host_endpoint *hostep;
-	struct usb_endpoint_descriptor* ep;
-	struct usb_ms_endpoint_descriptor* ms_ep;
-	int i, epidx;
-=======
 static struct usb_ms_endpoint_descriptor *find_usb_ms_endpoint_descriptor(
 					struct usb_host_endpoint *hostep)
 {
@@ -2469,34 +1910,22 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 	struct usb_endpoint_descriptor *ep;
 	struct usb_ms_endpoint_descriptor *ms_ep;
 	int i, j, epidx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intf = umidi->iface;
 	if (!intf)
 		return -ENXIO;
 	hostif = &intf->altsetting[0];
 	intfd = get_iface_desc(hostif);
-<<<<<<< HEAD
-	ms_header = (struct usb_ms_header_descriptor*)hostif->extra;
-=======
 	ms_header = (struct usb_ms_header_descriptor *)hostif->extra;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hostif->extralen >= 7 &&
 	    ms_header->bLength >= 7 &&
 	    ms_header->bDescriptorType == USB_DT_CS_INTERFACE &&
 	    ms_header->bDescriptorSubtype == UAC_HEADER)
-<<<<<<< HEAD
-		snd_printdd(KERN_INFO "MIDIStreaming version %02x.%02x\n",
-			    ms_header->bcdMSC[1], ms_header->bcdMSC[0]);
-	else
-		snd_printk(KERN_WARNING "MIDIStreaming interface descriptor not found\n");
-=======
 		dev_dbg(&umidi->dev->dev, "MIDIStreaming version %02x.%02x\n",
 			    ((uint8_t *)&ms_header->bcdMSC)[1], ((uint8_t *)&ms_header->bcdMSC)[0]);
 	else
 		dev_warn(&umidi->dev->dev,
 			 "MIDIStreaming interface descriptor not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	epidx = 0;
 	for (i = 0; i < intfd->bNumEndpoints; ++i) {
@@ -2504,13 +1933,6 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 		ep = get_ep_desc(hostep);
 		if (!usb_endpoint_xfer_bulk(ep) && !usb_endpoint_xfer_int(ep))
 			continue;
-<<<<<<< HEAD
-		ms_ep = (struct usb_ms_endpoint_descriptor*)hostep->extra;
-		if (hostep->extralen < 4 ||
-		    ms_ep->bLength < 4 ||
-		    ms_ep->bDescriptorType != USB_DT_CS_ENDPOINT ||
-		    ms_ep->bDescriptorSubtype != UAC_MS_GENERAL)
-=======
 		ms_ep = find_usb_ms_endpoint_descriptor(hostep);
 		if (!ms_ep)
 			continue;
@@ -2519,17 +1941,12 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 		if (ms_ep->bNumEmbMIDIJack > 0x10)
 			continue;
 		if (ms_ep->bLength < sizeof(*ms_ep) + ms_ep->bNumEmbMIDIJack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (usb_endpoint_dir_out(ep)) {
 			if (endpoints[epidx].out_ep) {
 				if (++epidx >= MIDI_MAX_ENDPOINTS) {
-<<<<<<< HEAD
-					snd_printk(KERN_WARNING "too many endpoints\n");
-=======
 					dev_warn(&umidi->dev->dev,
 						 "too many endpoints\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 			}
@@ -2543,15 +1960,6 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 				 * ESI MIDI Mate that try to use them anyway.
 				 */
 				endpoints[epidx].out_interval = 1;
-<<<<<<< HEAD
-			endpoints[epidx].out_cables = (1 << ms_ep->bNumEmbMIDIJack) - 1;
-			snd_printdd(KERN_INFO "EP %02X: %d jack(s)\n",
-				    ep->bEndpointAddress, ms_ep->bNumEmbMIDIJack);
-		} else {
-			if (endpoints[epidx].in_ep) {
-				if (++epidx >= MIDI_MAX_ENDPOINTS) {
-					snd_printk(KERN_WARNING "too many endpoints\n");
-=======
 			endpoints[epidx].out_cables =
 				(1 << ms_ep->bNumEmbMIDIJack) - 1;
 			for (j = 0; j < ms_ep->bNumEmbMIDIJack; ++j)
@@ -2565,7 +1973,6 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 				if (++epidx >= MIDI_MAX_ENDPOINTS) {
 					dev_warn(&umidi->dev->dev,
 						 "too many endpoints\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 			}
@@ -2574,11 +1981,6 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 				endpoints[epidx].in_interval = ep->bInterval;
 			else if (snd_usb_get_speed(umidi->dev) == USB_SPEED_LOW)
 				endpoints[epidx].in_interval = 1;
-<<<<<<< HEAD
-			endpoints[epidx].in_cables = (1 << ms_ep->bNumEmbMIDIJack) - 1;
-			snd_printdd(KERN_INFO "EP %02X: %d jack(s)\n",
-				    ep->bEndpointAddress, ms_ep->bNumEmbMIDIJack);
-=======
 			endpoints[epidx].in_cables =
 				(1 << ms_ep->bNumEmbMIDIJack) - 1;
 			for (j = 0; j < ms_ep->bNumEmbMIDIJack; ++j)
@@ -2587,7 +1989,6 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 				endpoints[epidx].assoc_in_jacks[j] = -1;
 			dev_dbg(&umidi->dev->dev, "EP %02X: %d jack(s)\n",
 				ep->bEndpointAddress, ms_ep->bNumEmbMIDIJack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -2611,11 +2012,7 @@ static int roland_load_get(struct snd_kcontrol *kcontrol,
 static int roland_load_put(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *value)
 {
-<<<<<<< HEAD
-	struct snd_usb_midi* umidi = kcontrol->private_data;
-=======
 	struct snd_usb_midi *umidi = kcontrol->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int changed;
 
 	if (value->value.enumerated.item[0] > 1)
@@ -2628,11 +2025,7 @@ static int roland_load_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new roland_load_ctl = {
-=======
 static const struct snd_kcontrol_new roland_load_ctl = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "MIDI Input Mode",
 	.info = roland_load_info,
@@ -2645,19 +2038,11 @@ static const struct snd_kcontrol_new roland_load_ctl = {
  * On Roland devices, use the second alternate setting to be able to use
  * the interrupt input endpoint.
  */
-<<<<<<< HEAD
-static void snd_usbmidi_switch_roland_altsetting(struct snd_usb_midi* umidi)
-{
-	struct usb_interface* intf;
-	struct usb_host_interface *hostif;
-	struct usb_interface_descriptor* intfd;
-=======
 static void snd_usbmidi_switch_roland_altsetting(struct snd_usb_midi *umidi)
 {
 	struct usb_interface *intf;
 	struct usb_host_interface *hostif;
 	struct usb_interface_descriptor *intfd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intf = umidi->iface;
 	if (!intf || intf->num_altsetting != 2)
@@ -2665,14 +2050,6 @@ static void snd_usbmidi_switch_roland_altsetting(struct snd_usb_midi *umidi)
 
 	hostif = &intf->altsetting[1];
 	intfd = get_iface_desc(hostif);
-<<<<<<< HEAD
-	if (intfd->bNumEndpoints != 2 ||
-	    (get_endpoint(hostif, 0)->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) != USB_ENDPOINT_XFER_BULK ||
-	    (get_endpoint(hostif, 1)->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) != USB_ENDPOINT_XFER_INT)
-		return;
-
-	snd_printdd(KERN_INFO "switching to altsetting %d with int ep\n",
-=======
        /* If either or both of the endpoints support interrupt transfer,
         * then use the alternate setting
         */
@@ -2684,7 +2061,6 @@ static void snd_usbmidi_switch_roland_altsetting(struct snd_usb_midi *umidi)
 		return;
 
 	dev_dbg(&umidi->dev->dev, "switching to altsetting %d with int ep\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    intfd->bAlternateSetting);
 	usb_set_interface(umidi->dev, intfd->bInterfaceNumber,
 			  intfd->bAlternateSetting);
@@ -2697,16 +2073,6 @@ static void snd_usbmidi_switch_roland_altsetting(struct snd_usb_midi *umidi)
 /*
  * Try to find any usable endpoints in the interface.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_detect_endpoints(struct snd_usb_midi* umidi,
-					struct snd_usb_midi_endpoint_info* endpoint,
-					int max_endpoints)
-{
-	struct usb_interface* intf;
-	struct usb_host_interface *hostif;
-	struct usb_interface_descriptor* intfd;
-	struct usb_endpoint_descriptor* epd;
-=======
 static int snd_usbmidi_detect_endpoints(struct snd_usb_midi *umidi,
 					struct snd_usb_midi_endpoint_info *endpoint,
 					int max_endpoints)
@@ -2715,7 +2081,6 @@ static int snd_usbmidi_detect_endpoints(struct snd_usb_midi *umidi,
 	struct usb_host_interface *hostif;
 	struct usb_interface_descriptor *intfd;
 	struct usb_endpoint_descriptor *epd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, out_eps = 0, in_eps = 0;
 
 	if (USB_ID_VENDOR(umidi->usb_id) == 0x0582)
@@ -2756,13 +2121,8 @@ static int snd_usbmidi_detect_endpoints(struct snd_usb_midi *umidi,
 /*
  * Detects the endpoints for one-port-per-endpoint protocols.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_detect_per_port_endpoints(struct snd_usb_midi* umidi,
-						 struct snd_usb_midi_endpoint_info* endpoints)
-=======
 static int snd_usbmidi_detect_per_port_endpoints(struct snd_usb_midi *umidi,
 						 struct snd_usb_midi_endpoint_info *endpoints)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 
@@ -2779,15 +2139,6 @@ static int snd_usbmidi_detect_per_port_endpoints(struct snd_usb_midi *umidi,
 /*
  * Detects the endpoints and ports of Yamaha devices.
  */
-<<<<<<< HEAD
-static int snd_usbmidi_detect_yamaha(struct snd_usb_midi* umidi,
-				     struct snd_usb_midi_endpoint_info* endpoint)
-{
-	struct usb_interface* intf;
-	struct usb_host_interface *hostif;
-	struct usb_interface_descriptor* intfd;
-	uint8_t* cs_desc;
-=======
 static int snd_usbmidi_detect_yamaha(struct snd_usb_midi *umidi,
 				     struct snd_usb_midi_endpoint_info *endpoint)
 {
@@ -2795,7 +2146,6 @@ static int snd_usbmidi_detect_yamaha(struct snd_usb_midi *umidi,
 	struct usb_host_interface *hostif;
 	struct usb_interface_descriptor *intfd;
 	uint8_t *cs_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intf = umidi->iface;
 	if (!intf)
@@ -2814,17 +2164,11 @@ static int snd_usbmidi_detect_yamaha(struct snd_usb_midi *umidi,
 	     cs_desc += cs_desc[0]) {
 		if (cs_desc[1] == USB_DT_CS_INTERFACE) {
 			if (cs_desc[2] == UAC_MIDI_IN_JACK)
-<<<<<<< HEAD
-				endpoint->in_cables = (endpoint->in_cables << 1) | 1;
-			else if (cs_desc[2] == UAC_MIDI_OUT_JACK)
-				endpoint->out_cables = (endpoint->out_cables << 1) | 1;
-=======
 				endpoint->in_cables =
 					(endpoint->in_cables << 1) | 1;
 			else if (cs_desc[2] == UAC_MIDI_OUT_JACK)
 				endpoint->out_cables =
 					(endpoint->out_cables << 1) | 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (!endpoint->in_cables && !endpoint->out_cables)
@@ -2834,18 +2178,6 @@ static int snd_usbmidi_detect_yamaha(struct snd_usb_midi *umidi,
 }
 
 /*
-<<<<<<< HEAD
- * Creates the endpoints and their ports for Midiman devices.
- */
-static int snd_usbmidi_create_endpoints_midiman(struct snd_usb_midi* umidi,
-						struct snd_usb_midi_endpoint_info* endpoint)
-{
-	struct snd_usb_midi_endpoint_info ep_info;
-	struct usb_interface* intf;
-	struct usb_host_interface *hostif;
-	struct usb_interface_descriptor* intfd;
-	struct usb_endpoint_descriptor* epd;
-=======
  * Detects the endpoints and ports of Roland devices.
  */
 static int snd_usbmidi_detect_roland(struct snd_usb_midi *umidi,
@@ -2896,7 +2228,6 @@ static int snd_usbmidi_create_endpoints_midiman(struct snd_usb_midi *umidi,
 	struct usb_host_interface *hostif;
 	struct usb_interface_descriptor *intfd;
 	struct usb_endpoint_descriptor *epd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cable, err;
 
 	intf = umidi->iface;
@@ -2915,59 +2246,30 @@ static int snd_usbmidi_create_endpoints_midiman(struct snd_usb_midi *umidi,
 	 * input bulk endpoints (at indices 1 and 3) which aren't used.
 	 */
 	if (intfd->bNumEndpoints < (endpoint->out_cables > 0x0001 ? 5 : 3)) {
-<<<<<<< HEAD
-		snd_printdd(KERN_ERR "not enough endpoints\n");
-=======
 		dev_dbg(&umidi->dev->dev, "not enough endpoints\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
 	epd = get_endpoint(hostif, 0);
 	if (!usb_endpoint_dir_in(epd) || !usb_endpoint_xfer_int(epd)) {
-<<<<<<< HEAD
-		snd_printdd(KERN_ERR "endpoint[0] isn't interrupt\n");
-=======
 		dev_dbg(&umidi->dev->dev, "endpoint[0] isn't interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 	epd = get_endpoint(hostif, 2);
 	if (!usb_endpoint_dir_out(epd) || !usb_endpoint_xfer_bulk(epd)) {
-<<<<<<< HEAD
-		snd_printdd(KERN_ERR "endpoint[2] isn't bulk output\n");
-=======
 		dev_dbg(&umidi->dev->dev, "endpoint[2] isn't bulk output\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 	if (endpoint->out_cables > 0x0001) {
 		epd = get_endpoint(hostif, 4);
 		if (!usb_endpoint_dir_out(epd) ||
 		    !usb_endpoint_xfer_bulk(epd)) {
-<<<<<<< HEAD
-			snd_printdd(KERN_ERR "endpoint[4] isn't bulk output\n");
-=======
 			dev_dbg(&umidi->dev->dev,
 				"endpoint[4] isn't bulk output\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENXIO;
 		}
 	}
 
-<<<<<<< HEAD
-	ep_info.out_ep = get_endpoint(hostif, 2)->bEndpointAddress & USB_ENDPOINT_NUMBER_MASK;
-	ep_info.out_interval = 0;
-	ep_info.out_cables = endpoint->out_cables & 0x5555;
-	err = snd_usbmidi_out_endpoint_create(umidi, &ep_info, &umidi->endpoints[0]);
-	if (err < 0)
-		return err;
-
-	ep_info.in_ep = get_endpoint(hostif, 0)->bEndpointAddress & USB_ENDPOINT_NUMBER_MASK;
-	ep_info.in_interval = get_endpoint(hostif, 0)->bInterval;
-	ep_info.in_cables = endpoint->in_cables;
-	err = snd_usbmidi_in_endpoint_create(umidi, &ep_info, &umidi->endpoints[0]);
-=======
 	ep_info.out_ep = get_endpoint(hostif, 2)->bEndpointAddress &
 		USB_ENDPOINT_NUMBER_MASK;
 	ep_info.out_interval = 0;
@@ -2983,34 +2285,21 @@ static int snd_usbmidi_create_endpoints_midiman(struct snd_usb_midi *umidi,
 	ep_info.in_cables = endpoint->in_cables;
 	err = snd_usbmidi_in_endpoint_create(umidi, &ep_info,
 					     &umidi->endpoints[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	if (endpoint->out_cables > 0x0001) {
-<<<<<<< HEAD
-		ep_info.out_ep = get_endpoint(hostif, 4)->bEndpointAddress & USB_ENDPOINT_NUMBER_MASK;
-		ep_info.out_cables = endpoint->out_cables & 0xaaaa;
-		err = snd_usbmidi_out_endpoint_create(umidi, &ep_info, &umidi->endpoints[1]);
-=======
 		ep_info.out_ep = get_endpoint(hostif, 4)->bEndpointAddress &
 			USB_ENDPOINT_NUMBER_MASK;
 		ep_info.out_cables = endpoint->out_cables & 0xaaaa;
 		err = snd_usbmidi_out_endpoint_create(umidi, &ep_info,
 						      &umidi->endpoints[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
 
 	for (cable = 0; cable < 0x10; ++cable) {
 		if (endpoint->out_cables & (1 << cable))
-<<<<<<< HEAD
-			snd_usbmidi_init_substream(umidi, SNDRV_RAWMIDI_STREAM_OUTPUT, cable,
-						   &umidi->endpoints[cable & 1].out->ports[cable].substream);
-		if (endpoint->in_cables & (1 << cable))
-			snd_usbmidi_init_substream(umidi, SNDRV_RAWMIDI_STREAM_INPUT, cable,
-=======
 			snd_usbmidi_init_substream(umidi,
 						   SNDRV_RAWMIDI_STREAM_OUTPUT,
 						   cable,
@@ -3021,25 +2310,16 @@ static int snd_usbmidi_create_endpoints_midiman(struct snd_usb_midi *umidi,
 						   SNDRV_RAWMIDI_STREAM_INPUT,
 						   cable,
 						   -1 /* prevent trying to find jack */,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   &umidi->endpoints[0].in->ports[cable].substream);
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_global_ops snd_usbmidi_ops = {
-	.get_port_info = snd_usbmidi_get_port_info,
-};
-
-static int snd_usbmidi_create_rawmidi(struct snd_usb_midi* umidi,
-=======
 static const struct snd_rawmidi_global_ops snd_usbmidi_ops = {
 	.get_port_info = snd_usbmidi_get_port_info,
 };
 
 static int snd_usbmidi_create_rawmidi(struct snd_usb_midi *umidi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      int out_ports, int in_ports)
 {
 	struct snd_rawmidi *rmidi;
@@ -3057,15 +2337,10 @@ static int snd_usbmidi_create_rawmidi(struct snd_usb_midi *umidi,
 	rmidi->ops = &snd_usbmidi_ops;
 	rmidi->private_data = umidi;
 	rmidi->private_free = snd_usbmidi_rawmidi_free;
-<<<<<<< HEAD
-	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_usbmidi_output_ops);
-	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_INPUT, &snd_usbmidi_input_ops);
-=======
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT,
 			    &snd_usbmidi_output_ops);
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_INPUT,
 			    &snd_usbmidi_input_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	umidi->rmidi = rmidi;
 	return 0;
@@ -3074,38 +2349,22 @@ static int snd_usbmidi_create_rawmidi(struct snd_usb_midi *umidi,
 /*
  * Temporarily stop input.
  */
-<<<<<<< HEAD
-void snd_usbmidi_input_stop(struct list_head* p)
-{
-	struct snd_usb_midi* umidi;
-=======
 void snd_usbmidi_input_stop(struct list_head *p)
 {
 	struct snd_usb_midi *umidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i, j;
 
 	umidi = list_entry(p, struct snd_usb_midi, list);
 	if (!umidi->input_running)
 		return;
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
-<<<<<<< HEAD
-		struct snd_usb_midi_endpoint* ep = &umidi->endpoints[i];
-=======
 		struct snd_usb_midi_endpoint *ep = &umidi->endpoints[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->in)
 			for (j = 0; j < INPUT_URBS; ++j)
 				usb_kill_urb(ep->in->urbs[j]);
 	}
 	umidi->input_running = 0;
 }
-<<<<<<< HEAD
-
-static void snd_usbmidi_input_start_ep(struct snd_usb_midi_in_endpoint* ep)
-{
-	unsigned int i;
-=======
 EXPORT_SYMBOL(snd_usbmidi_input_stop);
 
 static void snd_usbmidi_input_start_ep(struct snd_usb_midi *umidi,
@@ -3113,16 +2372,10 @@ static void snd_usbmidi_input_start_ep(struct snd_usb_midi *umidi,
 {
 	unsigned int i;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ep)
 		return;
 	for (i = 0; i < INPUT_URBS; ++i) {
-<<<<<<< HEAD
-		struct urb* urb = ep->urbs[i];
-		urb->dev = ep->umidi->dev;
-		snd_usbmidi_submit_urb(urb, GFP_KERNEL);
-=======
 		struct urb *urb = ep->urbs[i];
 		spin_lock_irqsave(&umidi->disc_lock, flags);
 		if (!atomic_read(&urb->use_count)) {
@@ -3130,33 +2383,21 @@ static void snd_usbmidi_input_start_ep(struct snd_usb_midi *umidi,
 			snd_usbmidi_submit_urb(urb, GFP_ATOMIC);
 		}
 		spin_unlock_irqrestore(&umidi->disc_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * Resume input after a call to snd_usbmidi_input_stop().
  */
-<<<<<<< HEAD
-void snd_usbmidi_input_start(struct list_head* p)
-{
-	struct snd_usb_midi* umidi;
-=======
 void snd_usbmidi_input_start(struct list_head *p)
 {
 	struct snd_usb_midi *umidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	umidi = list_entry(p, struct snd_usb_midi, list);
 	if (umidi->input_running || !umidi->opened[1])
 		return;
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
-<<<<<<< HEAD
-		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
-	umidi->input_running = 1;
-}
-=======
 		snd_usbmidi_input_start_ep(umidi, umidi->endpoints[i].in);
 	umidi->input_running = 1;
 }
@@ -3189,19 +2430,10 @@ void snd_usbmidi_resume(struct list_head *p)
 	mutex_unlock(&umidi->mutex);
 }
 EXPORT_SYMBOL(snd_usbmidi_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Creates and registers everything needed for a MIDI streaming interface.
  */
-<<<<<<< HEAD
-int snd_usbmidi_create(struct snd_card *card,
-		       struct usb_interface* iface,
-		       struct list_head *midi_list,
-		       const struct snd_usb_audio_quirk* quirk)
-{
-	struct snd_usb_midi* umidi;
-=======
 int __snd_usbmidi_create(struct snd_card *card,
 			 struct usb_interface *iface,
 			 struct list_head *midi_list,
@@ -3210,7 +2442,6 @@ int __snd_usbmidi_create(struct snd_card *card,
 			 unsigned int *num_rawmidis)
 {
 	struct snd_usb_midi *umidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_usb_midi_endpoint_info endpoints[MIDI_MAX_ENDPOINTS];
 	int out_ports, in_ports;
 	int i, err;
@@ -3223,16 +2454,6 @@ int __snd_usbmidi_create(struct snd_card *card,
 	umidi->iface = iface;
 	umidi->quirk = quirk;
 	umidi->usb_protocol_ops = &snd_usbmidi_standard_ops;
-<<<<<<< HEAD
-	init_timer(&umidi->error_timer);
-	spin_lock_init(&umidi->disc_lock);
-	init_rwsem(&umidi->disc_rwsem);
-	mutex_init(&umidi->mutex);
-	umidi->usb_id = USB_ID(le16_to_cpu(umidi->dev->descriptor.idVendor),
-			       le16_to_cpu(umidi->dev->descriptor.idProduct));
-	umidi->error_timer.function = snd_usbmidi_error_timer;
-	umidi->error_timer.data = (unsigned long)umidi;
-=======
 	if (num_rawmidis)
 		umidi->next_midi_device = *num_rawmidis;
 	spin_lock_init(&umidi->disc_lock);
@@ -3243,7 +2464,6 @@ int __snd_usbmidi_create(struct snd_card *card,
 			       le16_to_cpu(umidi->dev->descriptor.idProduct));
 	umidi->usb_id = usb_id;
 	timer_setup(&umidi->error_timer, snd_usbmidi_error_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* detect the endpoint(s) to use */
 	memset(endpoints, 0, sizeof(endpoints));
@@ -3256,11 +2476,7 @@ int __snd_usbmidi_create(struct snd_card *card,
 		break;
 	case QUIRK_MIDI_US122L:
 		umidi->usb_protocol_ops = &snd_usbmidi_122l_ops;
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QUIRK_MIDI_FIXED_ENDPOINT:
 		memcpy(&endpoints[0], quirk->data,
 		       sizeof(struct snd_usb_midi_endpoint_info));
@@ -3269,12 +2485,9 @@ int __snd_usbmidi_create(struct snd_card *card,
 	case QUIRK_MIDI_YAMAHA:
 		err = snd_usbmidi_detect_yamaha(umidi, &endpoints[0]);
 		break;
-<<<<<<< HEAD
-=======
 	case QUIRK_MIDI_ROLAND:
 		err = snd_usbmidi_detect_roland(umidi, &endpoints[0]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QUIRK_MIDI_MIDIMAN:
 		umidi->usb_protocol_ops = &snd_usbmidi_midiman_ops;
 		memcpy(&endpoints[0], quirk->data,
@@ -3332,16 +2545,6 @@ int __snd_usbmidi_create(struct snd_card *card,
 		err = snd_usbmidi_detect_per_port_endpoints(umidi, endpoints);
 		break;
 	default:
-<<<<<<< HEAD
-		snd_printd(KERN_ERR "invalid quirk type %d\n", quirk->type);
-		err = -ENXIO;
-		break;
-	}
-	if (err < 0) {
-		kfree(umidi);
-		return err;
-	}
-=======
 		dev_err(&umidi->dev->dev, "invalid quirk type %d\n",
 			quirk->type);
 		err = -ENXIO;
@@ -3349,7 +2552,6 @@ int __snd_usbmidi_create(struct snd_card *card,
 	}
 	if (err < 0)
 		goto free_midi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create rawmidi device */
 	out_ports = 0;
@@ -3359,42 +2561,20 @@ int __snd_usbmidi_create(struct snd_card *card,
 		in_ports += hweight16(endpoints[i].in_cables);
 	}
 	err = snd_usbmidi_create_rawmidi(umidi, out_ports, in_ports);
-<<<<<<< HEAD
-	if (err < 0) {
-		kfree(umidi);
-		return err;
-	}
-=======
 	if (err < 0)
 		goto free_midi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create endpoint/port structures */
 	if (quirk && quirk->type == QUIRK_MIDI_MIDIMAN)
 		err = snd_usbmidi_create_endpoints_midiman(umidi, &endpoints[0]);
 	else
 		err = snd_usbmidi_create_endpoints(umidi, endpoints);
-<<<<<<< HEAD
-	if (err < 0) {
-		return err;
-	}
-=======
 	if (err < 0)
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_autopm_get_interface_no_resume(umidi->iface);
 
 	list_add_tail(&umidi->list, midi_list);
-<<<<<<< HEAD
-	return 0;
-}
-
-EXPORT_SYMBOL(snd_usbmidi_create);
-EXPORT_SYMBOL(snd_usbmidi_input_stop);
-EXPORT_SYMBOL(snd_usbmidi_input_start);
-EXPORT_SYMBOL(snd_usbmidi_disconnect);
-=======
 	if (num_rawmidis)
 		*num_rawmidis = umidi->next_midi_device;
 	return 0;
@@ -3405,4 +2585,3 @@ exit:
 	return err;
 }
 EXPORT_SYMBOL(__snd_usbmidi_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

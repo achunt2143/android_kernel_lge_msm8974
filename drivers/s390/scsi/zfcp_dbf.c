@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Debug traces for zfcp.
  *
-<<<<<<< HEAD
- * Copyright IBM Corporation 2002, 2010
-=======
  * Copyright IBM Corp. 2002, 2023
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "zfcp"
@@ -31,8 +24,6 @@ module_param(dbfsize, uint, 0400);
 MODULE_PARM_DESC(dbfsize,
 		 "number of pages for each debug feature area (default 4)");
 
-<<<<<<< HEAD
-=======
 static u32 dbflevel = 3;
 
 module_param(dbflevel, uint, 0400);
@@ -40,7 +31,6 @@ MODULE_PARM_DESC(dbflevel,
 		 "log level for each debug feature area "
 		 "(default 3, range 0..6)");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int zfcp_dbf_plen(unsigned int offset)
 {
 	return sizeof(struct zfcp_dbf_pay) + offset - ZFCP_DBF_PAY_MAX_REC;
@@ -73,18 +63,11 @@ void zfcp_dbf_pl_write(struct zfcp_dbf *dbf, void *data, u16 length, char *area,
 
 /**
  * zfcp_dbf_hba_fsf_res - trace event for fsf responses
-<<<<<<< HEAD
- * @tag: tag indicating which kind of unsolicited status has been received
- * @req: request for which a response was received
- */
-void zfcp_dbf_hba_fsf_res(char *tag, struct zfcp_fsf_req *req)
-=======
  * @tag: tag indicating which kind of FSF response has been received
  * @level: trace level to be used for event
  * @req: request for which a response was received
  */
 void zfcp_dbf_hba_fsf_res(char *tag, int level, struct zfcp_fsf_req *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_dbf *dbf = req->adapter->dbf;
 	struct fsf_qtcb_prefix *q_pref = &req->qtcb->prefix;
@@ -99,13 +82,6 @@ void zfcp_dbf_hba_fsf_res(char *tag, int level, struct zfcp_fsf_req *req)
 	rec->id = ZFCP_DBF_HBA_RES;
 	rec->fsf_req_id = req->req_id;
 	rec->fsf_req_status = req->status;
-<<<<<<< HEAD
-	rec->fsf_cmd = req->fsf_command;
-	rec->fsf_seq_no = req->seq_no;
-	rec->u.res.req_issued = req->issued;
-	rec->u.res.prot_status = q_pref->prot_status;
-	rec->u.res.fsf_status = q_head->fsf_status;
-=======
 	rec->fsf_cmd = q_head->fsf_command;
 	rec->fsf_seq_no = q_pref->req_seq_no;
 	rec->u.res.req_issued = req->issued;
@@ -113,22 +89,12 @@ void zfcp_dbf_hba_fsf_res(char *tag, int level, struct zfcp_fsf_req *req)
 	rec->u.res.fsf_status = q_head->fsf_status;
 	rec->u.res.port_handle = q_head->port_handle;
 	rec->u.res.lun_handle = q_head->lun_handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(rec->u.res.prot_status_qual, &q_pref->prot_status_qual,
 	       FSF_PROT_STATUS_QUAL_SIZE);
 	memcpy(rec->u.res.fsf_status_qual, &q_head->fsf_status_qual,
 	       FSF_STATUS_QUALIFIER_SIZE);
 
-<<<<<<< HEAD
-	if (req->fsf_command != FSF_QTCB_FCP_CMND) {
-		rec->pl_len = q_head->log_length;
-		zfcp_dbf_pl_write(dbf, (char *)q_pref + q_head->log_start,
-				  rec->pl_len, "fsf_res", req->req_id);
-	}
-
-	debug_event(dbf->hba, 1, rec, sizeof(*rec));
-=======
 	rec->pl_len = q_head->log_length;
 	zfcp_dbf_pl_write(dbf, (char *)q_pref + q_head->log_start,
 			  rec->pl_len, "fsf_res", req->req_id);
@@ -218,7 +184,6 @@ void zfcp_dbf_hba_fsf_reqid(const char *const tag, const int level,
 	res->lun_handle = ~0u;
 
 	debug_event(dbf->hba, level, rec, sizeof(*rec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbf->hba_lock, flags);
 }
 
@@ -232,17 +197,12 @@ void zfcp_dbf_hba_fsf_uss(char *tag, struct zfcp_fsf_req *req)
 	struct zfcp_dbf *dbf = req->adapter->dbf;
 	struct fsf_status_read_buffer *srb = req->data;
 	struct zfcp_dbf_hba *rec = &dbf->hba_buf;
-<<<<<<< HEAD
-	unsigned long flags;
-
-=======
 	static int const level = 2;
 	unsigned long flags;
 
 	if (unlikely(!debug_level_enabled(dbf->hba, level)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dbf->hba_lock, flags);
 	memset(rec, 0, sizeof(*rec));
 
@@ -250,11 +210,7 @@ void zfcp_dbf_hba_fsf_uss(char *tag, struct zfcp_fsf_req *req)
 	rec->id = ZFCP_DBF_HBA_USS;
 	rec->fsf_req_id = req->req_id;
 	rec->fsf_req_status = req->status;
-<<<<<<< HEAD
-	rec->fsf_cmd = req->fsf_command;
-=======
 	rec->fsf_cmd = FSF_QTCB_UNSOLICITED_STATUS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!srb)
 		goto log;
@@ -274,21 +230,13 @@ void zfcp_dbf_hba_fsf_uss(char *tag, struct zfcp_fsf_req *req)
 		zfcp_dbf_pl_write(dbf, srb->payload.data, rec->pl_len,
 				  "fsf_uss", req->req_id);
 log:
-<<<<<<< HEAD
-	debug_event(dbf->hba, 2, rec, sizeof(*rec));
-=======
 	debug_event(dbf->hba, level, rec, sizeof(*rec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbf->hba_lock, flags);
 }
 
 /**
  * zfcp_dbf_hba_bit_err - trace event for bit error conditions
-<<<<<<< HEAD
- * @tag: tag indicating which kind of unsolicited status has been received
-=======
  * @tag: tag indicating which kind of bit error unsolicited status was received
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @req: request which caused the bit_error condition
  */
 void zfcp_dbf_hba_bit_err(char *tag, struct zfcp_fsf_req *req)
@@ -296,17 +244,12 @@ void zfcp_dbf_hba_bit_err(char *tag, struct zfcp_fsf_req *req)
 	struct zfcp_dbf *dbf = req->adapter->dbf;
 	struct zfcp_dbf_hba *rec = &dbf->hba_buf;
 	struct fsf_status_read_buffer *sr_buf = req->data;
-<<<<<<< HEAD
-	unsigned long flags;
-
-=======
 	static int const level = 1;
 	unsigned long flags;
 
 	if (unlikely(!debug_level_enabled(dbf->hba, level)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dbf->hba_lock, flags);
 	memset(rec, 0, sizeof(*rec));
 
@@ -314,19 +257,11 @@ void zfcp_dbf_hba_bit_err(char *tag, struct zfcp_fsf_req *req)
 	rec->id = ZFCP_DBF_HBA_BIT;
 	rec->fsf_req_id = req->req_id;
 	rec->fsf_req_status = req->status;
-<<<<<<< HEAD
-	rec->fsf_cmd = req->fsf_command;
-	memcpy(&rec->u.be, &sr_buf->payload.bit_error,
-	       sizeof(struct fsf_bit_error_payload));
-
-	debug_event(dbf->hba, 1, rec, sizeof(*rec));
-=======
 	rec->fsf_cmd = FSF_QTCB_UNSOLICITED_STATUS;
 	memcpy(&rec->u.be, &sr_buf->payload.bit_error,
 	       sizeof(struct fsf_bit_error_payload));
 
 	debug_event(dbf->hba, level, rec, sizeof(*rec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbf->hba_lock, flags);
 }
 
@@ -343,17 +278,12 @@ void zfcp_dbf_hba_def_err(struct zfcp_adapter *adapter, u64 req_id, u16 scount,
 	struct zfcp_dbf *dbf = adapter->dbf;
 	struct zfcp_dbf_pay *payload = &dbf->pay_buf;
 	unsigned long flags;
-<<<<<<< HEAD
-	u16 length;
-
-=======
 	static int const level = 1;
 	u16 length;
 
 	if (unlikely(!debug_level_enabled(dbf->pay, level)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pl)
 		return;
 
@@ -368,40 +298,13 @@ void zfcp_dbf_hba_def_err(struct zfcp_adapter *adapter, u64 req_id, u16 scount,
 
 	while (payload->counter < scount && (char *)pl[payload->counter]) {
 		memcpy(payload->data, (char *)pl[payload->counter], length);
-<<<<<<< HEAD
-		debug_event(dbf->pay, 1, payload, zfcp_dbf_plen(length));
-=======
 		debug_event(dbf->pay, level, payload, zfcp_dbf_plen(length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		payload->counter++;
 	}
 
 	spin_unlock_irqrestore(&dbf->pay_lock, flags);
 }
 
-<<<<<<< HEAD
-/**
- * zfcp_dbf_hba_basic - trace event for basic adapter events
- * @adapter: pointer to struct zfcp_adapter
- */
-void zfcp_dbf_hba_basic(char *tag, struct zfcp_adapter *adapter)
-{
-	struct zfcp_dbf *dbf = adapter->dbf;
-	struct zfcp_dbf_hba *rec = &dbf->hba_buf;
-	unsigned long flags;
-
-	spin_lock_irqsave(&dbf->hba_lock, flags);
-	memset(rec, 0, sizeof(*rec));
-
-	memcpy(rec->tag, tag, ZFCP_DBF_TAG_LEN);
-	rec->id = ZFCP_DBF_HBA_BASIC;
-
-	debug_event(dbf->hba, 1, rec, sizeof(*rec));
-	spin_unlock_irqrestore(&dbf->hba_lock, flags);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void zfcp_dbf_set_common(struct zfcp_dbf_rec *rec,
 				struct zfcp_adapter *adapter,
 				struct zfcp_port *port,
@@ -416,12 +319,8 @@ static void zfcp_dbf_set_common(struct zfcp_dbf_rec *rec,
 	if (sdev) {
 		rec->lun_status = atomic_read(&sdev_to_zfcp(sdev)->status);
 		rec->lun = zfcp_scsi_dev_lun(sdev);
-<<<<<<< HEAD
-	}
-=======
 	} else
 		rec->lun = ZFCP_DBF_INVALID_LUN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -441,11 +340,6 @@ void zfcp_dbf_rec_trig(char *tag, struct zfcp_adapter *adapter,
 {
 	struct zfcp_dbf *dbf = adapter->dbf;
 	struct zfcp_dbf_rec *rec = &dbf->rec_buf;
-<<<<<<< HEAD
-	struct list_head *entry;
-	unsigned long flags;
-
-=======
 	static int const level = 1;
 	struct list_head *entry;
 	unsigned long flags;
@@ -455,7 +349,6 @@ void zfcp_dbf_rec_trig(char *tag, struct zfcp_adapter *adapter,
 	if (unlikely(!debug_level_enabled(dbf->rec, level)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dbf->rec_lock, flags);
 	memset(rec, 0, sizeof(*rec));
 
@@ -472,19 +365,6 @@ void zfcp_dbf_rec_trig(char *tag, struct zfcp_adapter *adapter,
 	rec->u.trig.want = want;
 	rec->u.trig.need = need;
 
-<<<<<<< HEAD
-	debug_event(dbf->rec, 1, rec, sizeof(*rec));
-	spin_unlock_irqrestore(&dbf->rec_lock, flags);
-}
-
-
-/**
- * zfcp_dbf_rec_run - trace event related to running recovery
- * @tag: identifier for event
- * @erp: erp_action running
- */
-void zfcp_dbf_rec_run(char *tag, struct zfcp_erp_action *erp)
-=======
 	debug_event(dbf->rec, level, rec, sizeof(*rec));
 	spin_unlock_irqrestore(&dbf->rec_lock, flags);
 }
@@ -518,18 +398,14 @@ void zfcp_dbf_rec_trig_lock(char *tag, struct zfcp_adapter *adapter,
  * @erp: erp_action running
  */
 void zfcp_dbf_rec_run_lvl(int level, char *tag, struct zfcp_erp_action *erp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_dbf *dbf = erp->adapter->dbf;
 	struct zfcp_dbf_rec *rec = &dbf->rec_buf;
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	if (!debug_level_enabled(dbf->rec, level))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dbf->rec_lock, flags);
 	memset(rec, 0, sizeof(*rec));
 
@@ -540,11 +416,7 @@ void zfcp_dbf_rec_run_lvl(int level, char *tag, struct zfcp_erp_action *erp)
 	rec->u.run.fsf_req_id = erp->fsf_req_id;
 	rec->u.run.rec_status = erp->status;
 	rec->u.run.rec_step = erp->step;
-<<<<<<< HEAD
-	rec->u.run.rec_action = erp->action;
-=======
 	rec->u.run.rec_action = erp->type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (erp->sdev)
 		rec->u.run.rec_count =
@@ -554,15 +426,6 @@ void zfcp_dbf_rec_run_lvl(int level, char *tag, struct zfcp_erp_action *erp)
 	else
 		rec->u.run.rec_count = atomic_read(&erp->adapter->erp_counter);
 
-<<<<<<< HEAD
-	debug_event(dbf->rec, 1, rec, sizeof(*rec));
-	spin_unlock_irqrestore(&dbf->rec_lock, flags);
-}
-
-static inline
-void zfcp_dbf_san(char *tag, struct zfcp_dbf *dbf, void *data, u8 id, u16 len,
-		  u64 req_id, u32 d_id)
-=======
 	debug_event(dbf->rec, level, rec, sizeof(*rec));
 	spin_unlock_irqrestore(&dbf->rec_lock, flags);
 }
@@ -619,16 +482,12 @@ static inline
 void zfcp_dbf_san(char *tag, struct zfcp_dbf *dbf,
 		  char *paytag, struct scatterlist *sg, u8 id, u16 len,
 		  u64 req_id, u32 d_id, u16 cap_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_dbf_san *rec = &dbf->san_buf;
 	u16 rec_len;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	struct zfcp_dbf_pay *payload = &dbf->pay_buf;
 	u16 pay_sum = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&dbf->san_lock, flags);
 	memset(rec, 0, sizeof(*rec));
@@ -636,13 +495,6 @@ void zfcp_dbf_san(char *tag, struct zfcp_dbf *dbf,
 	rec->id = id;
 	rec->fsf_req_id = req_id;
 	rec->d_id = d_id;
-<<<<<<< HEAD
-	rec_len = min(len, (u16)ZFCP_DBF_SAN_MAX_PAYLOAD);
-	memcpy(rec->payload, data, rec_len);
-	memcpy(rec->tag, tag, ZFCP_DBF_TAG_LEN);
-
-	debug_event(dbf->san, 1, rec, sizeof(*rec));
-=======
 	memcpy(rec->tag, tag, ZFCP_DBF_TAG_LEN);
 	rec->pl_len = len; /* full length even if we cap pay below */
 	if (!sg)
@@ -679,20 +531,14 @@ void zfcp_dbf_san(char *tag, struct zfcp_dbf *dbf,
 
 out:
 	debug_event(dbf->san, ZFCP_DBF_SAN_LEVEL, rec, sizeof(*rec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbf->san_lock, flags);
 }
 
 /**
  * zfcp_dbf_san_req - trace event for issued SAN request
-<<<<<<< HEAD
- * @tag: indentifier for event
- * @fsf_req: request containing issued CT data
-=======
  * @tag: identifier for event
  * @fsf: request containing issued CT or ELS data
  * @d_id: N_Port_ID where SAN request is sent to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * d_id: destination ID
  */
 void zfcp_dbf_san_req(char *tag, struct zfcp_fsf_req *fsf, u32 d_id)
@@ -701,11 +547,6 @@ void zfcp_dbf_san_req(char *tag, struct zfcp_fsf_req *fsf, u32 d_id)
 	struct zfcp_fsf_ct_els *ct_els = fsf->data;
 	u16 length;
 
-<<<<<<< HEAD
-	length = (u16)(ct_els->req->length + FC_CT_HDR_LEN);
-	zfcp_dbf_san(tag, dbf, sg_virt(ct_els->req), ZFCP_DBF_SAN_REQ, length,
-		     fsf->req_id, d_id);
-=======
 	if (unlikely(!debug_level_enabled(dbf->san, ZFCP_DBF_SAN_LEVEL)))
 		return;
 
@@ -774,18 +615,12 @@ static u16 zfcp_dbf_san_res_cap_len_if_gpn_ft(char *tag,
 	}
 	len = min(len, (u16)(x * sizeof(struct fc_gpn_ft_resp)));
 	return len; /* cap after last entry */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * zfcp_dbf_san_res - trace event for received SAN request
-<<<<<<< HEAD
- * @tag: indentifier for event
- * @fsf_req: request containing issued CT data
-=======
  * @tag: identifier for event
  * @fsf: request containing received CT or ELS data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void zfcp_dbf_san_res(char *tag, struct zfcp_fsf_req *fsf)
 {
@@ -793,11 +628,6 @@ void zfcp_dbf_san_res(char *tag, struct zfcp_fsf_req *fsf)
 	struct zfcp_fsf_ct_els *ct_els = fsf->data;
 	u16 length;
 
-<<<<<<< HEAD
-	length = (u16)(ct_els->resp->length + FC_CT_HDR_LEN);
-	zfcp_dbf_san(tag, dbf, sg_virt(ct_els->resp), ZFCP_DBF_SAN_RES, length,
-		     fsf->req_id, 0);
-=======
 	if (unlikely(!debug_level_enabled(dbf->san, ZFCP_DBF_SAN_LEVEL)))
 		return;
 
@@ -805,18 +635,12 @@ void zfcp_dbf_san_res(char *tag, struct zfcp_fsf_req *fsf)
 	zfcp_dbf_san(tag, dbf, "san_res", ct_els->resp, ZFCP_DBF_SAN_RES,
 		     length, fsf->req_id, ct_els->d_id,
 		     zfcp_dbf_san_res_cap_len_if_gpn_ft(tag, fsf, length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * zfcp_dbf_san_in_els - trace event for incoming ELS
-<<<<<<< HEAD
- * @tag: indentifier for event
- * @fsf_req: request containing issued CT data
-=======
  * @tag: identifier for event
  * @fsf: request containing received ELS data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void zfcp_dbf_san_in_els(char *tag, struct zfcp_fsf_req *fsf)
 {
@@ -824,25 +648,6 @@ void zfcp_dbf_san_in_els(char *tag, struct zfcp_fsf_req *fsf)
 	struct fsf_status_read_buffer *srb =
 		(struct fsf_status_read_buffer *) fsf->data;
 	u16 length;
-<<<<<<< HEAD
-
-	length = (u16)(srb->length -
-			offsetof(struct fsf_status_read_buffer, payload));
-	zfcp_dbf_san(tag, dbf, srb->payload.data, ZFCP_DBF_SAN_ELS, length,
-		     fsf->req_id, ntoh24(srb->d_id));
-}
-
-/**
- * zfcp_dbf_scsi - trace event for scsi commands
- * @tag: identifier for event
- * @sc: pointer to struct scsi_cmnd
- * @fsf: pointer to struct zfcp_fsf_req
- */
-void zfcp_dbf_scsi(char *tag, struct scsi_cmnd *sc, struct zfcp_fsf_req *fsf)
-{
-	struct zfcp_adapter *adapter =
-		(struct zfcp_adapter *) sc->device->host->hostdata[0];
-=======
 	struct scatterlist sg;
 
 	if (unlikely(!debug_level_enabled(dbf->san, ZFCP_DBF_SAN_LEVEL)))
@@ -868,7 +673,6 @@ void zfcp_dbf_scsi_common(char *tag, int level, struct scsi_device *sdev,
 {
 	struct zfcp_adapter *adapter =
 		(struct zfcp_adapter *) sdev->host->hostdata[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zfcp_dbf *dbf = adapter->dbf;
 	struct zfcp_dbf_scsi *rec = &dbf->scsi_buf;
 	struct fcp_resp_with_ext *fcp_rsp;
@@ -880,22 +684,6 @@ void zfcp_dbf_scsi_common(char *tag, int level, struct scsi_device *sdev,
 
 	memcpy(rec->tag, tag, ZFCP_DBF_TAG_LEN);
 	rec->id = ZFCP_DBF_SCSI_CMND;
-<<<<<<< HEAD
-	rec->scsi_result = sc->result;
-	rec->scsi_retries = sc->retries;
-	rec->scsi_allowed = sc->allowed;
-	rec->scsi_id = sc->device->id;
-	rec->scsi_lun = sc->device->lun;
-	rec->host_scribble = (unsigned long)sc->host_scribble;
-
-	memcpy(rec->scsi_opcode, sc->cmnd,
-	       min((int)sc->cmd_len, ZFCP_DBF_SCSI_OPCODE));
-
-	if (fsf) {
-		rec->fsf_req_id = fsf->req_id;
-		fcp_rsp = (struct fcp_resp_with_ext *)
-				&(fsf->qtcb->bottom.io.fcp_rsp);
-=======
 	if (sc) {
 		rec->scsi_result = sc->result;
 		rec->scsi_retries = sc->retries;
@@ -924,23 +712,10 @@ void zfcp_dbf_scsi_common(char *tag, int level, struct scsi_device *sdev,
 		rec->pl_len = FCP_RESP_WITH_EXT;
 		fcp_rsp = &(fsf->qtcb->bottom.io.fcp_rsp.iu);
 		/* mandatory parts of FCP_RSP IU in this SCSI record */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(&rec->fcp_rsp, fcp_rsp, FCP_RESP_WITH_EXT);
 		if (fcp_rsp->resp.fr_flags & FCP_RSP_LEN_VAL) {
 			fcp_rsp_info = (struct fcp_resp_rsp_info *) &fcp_rsp[1];
 			rec->fcp_rsp_info = fcp_rsp_info->rsp_code;
-<<<<<<< HEAD
-		}
-		if (fcp_rsp->resp.fr_flags & FCP_SNS_LEN_VAL) {
-			rec->pl_len = min((u16)SCSI_SENSE_BUFFERSIZE,
-					  (u16)ZFCP_DBF_PAY_MAX_REC);
-			zfcp_dbf_pl_write(dbf, sc->sense_buffer, rec->pl_len,
-					  "fcp_sns", fsf->req_id);
-		}
-	}
-
-	debug_event(dbf->scsi, 1, rec, sizeof(*rec));
-=======
 			rec->pl_len += be32_to_cpu(fcp_rsp->ext.fr_rsp_len);
 		}
 		if (fcp_rsp->resp.fr_flags & FCP_SNS_LEN_VAL) {
@@ -1002,7 +777,6 @@ void zfcp_dbf_scsi_eh(char *tag, struct zfcp_adapter *adapter,
 	memset(rec->scsi_opcode, 0xff, ZFCP_DBF_SCSI_OPCODE);
 
 	debug_event(dbf->scsi, level, rec, sizeof(*rec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbf->scsi_lock, flags);
 }
 
@@ -1015,11 +789,7 @@ static debug_info_t *zfcp_dbf_reg(const char *name, int size, int rec_size)
 		return NULL;
 
 	debug_register_view(d, &debug_hex_ascii_view);
-<<<<<<< HEAD
-	debug_set_level(d, 3);
-=======
 	debug_set_level(d, dbflevel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return d;
 }
@@ -1038,11 +808,7 @@ static void zfcp_dbf_unregister(struct zfcp_dbf *dbf)
 }
 
 /**
-<<<<<<< HEAD
- * zfcp_adapter_debug_register - registers debug feature for an adapter
-=======
  * zfcp_dbf_adapter_register - registers debug feature for an adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adapter: pointer to adapter for which debug features should be registered
  * return: -ENOMEM on error, 0 otherwise
  */
@@ -1100,11 +866,7 @@ err_out:
 }
 
 /**
-<<<<<<< HEAD
- * zfcp_adapter_debug_unregister - unregisters debug feature for an adapter
-=======
  * zfcp_dbf_adapter_unregister - unregisters debug feature for an adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adapter: pointer to adapter for which debug features should be unregistered
  */
 void zfcp_dbf_adapter_unregister(struct zfcp_adapter *adapter)

@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i915
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(_I915_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _I915_TRACE_H_
 
@@ -13,22 +10,11 @@
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 
-<<<<<<< HEAD
-#include <drm/drmP.h>
-#include "i915_drv.h"
-#include "intel_ringbuffer.h"
-
-#undef TRACE_SYSTEM
-#define TRACE_SYSTEM i915
-#define TRACE_SYSTEM_STRING __stringify(TRACE_SYSTEM)
-#define TRACE_INCLUDE_FILE i915_trace
-=======
 #include <drm/drm_drv.h>
 
 #include "gt/intel_engine.h"
 
 #include "i915_drv.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* object tracking */
 
@@ -38,11 +24,7 @@ TRACE_EVENT(i915_gem_object_create,
 
 	    TP_STRUCT__entry(
 			     __field(struct drm_i915_gem_object *, obj)
-<<<<<<< HEAD
-			     __field(u32, size)
-=======
 			     __field(u64, size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     ),
 
 	    TP_fast_assign(
@@ -50,80 +32,6 @@ TRACE_EVENT(i915_gem_object_create,
 			   __entry->size = obj->base.size;
 			   ),
 
-<<<<<<< HEAD
-	    TP_printk("obj=%p, size=%u", __entry->obj, __entry->size)
-);
-
-TRACE_EVENT(i915_gem_object_bind,
-	    TP_PROTO(struct drm_i915_gem_object *obj, bool mappable),
-	    TP_ARGS(obj, mappable),
-
-	    TP_STRUCT__entry(
-			     __field(struct drm_i915_gem_object *, obj)
-			     __field(u32, offset)
-			     __field(u32, size)
-			     __field(bool, mappable)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->obj = obj;
-			   __entry->offset = obj->gtt_space->start;
-			   __entry->size = obj->gtt_space->size;
-			   __entry->mappable = mappable;
-			   ),
-
-	    TP_printk("obj=%p, offset=%08x size=%x%s",
-		      __entry->obj, __entry->offset, __entry->size,
-		      __entry->mappable ? ", mappable" : "")
-);
-
-TRACE_EVENT(i915_gem_object_unbind,
-	    TP_PROTO(struct drm_i915_gem_object *obj),
-	    TP_ARGS(obj),
-
-	    TP_STRUCT__entry(
-			     __field(struct drm_i915_gem_object *, obj)
-			     __field(u32, offset)
-			     __field(u32, size)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->obj = obj;
-			   __entry->offset = obj->gtt_space->start;
-			   __entry->size = obj->gtt_space->size;
-			   ),
-
-	    TP_printk("obj=%p, offset=%08x size=%x",
-		      __entry->obj, __entry->offset, __entry->size)
-);
-
-TRACE_EVENT(i915_gem_object_change_domain,
-	    TP_PROTO(struct drm_i915_gem_object *obj, u32 old_read, u32 old_write),
-	    TP_ARGS(obj, old_read, old_write),
-
-	    TP_STRUCT__entry(
-			     __field(struct drm_i915_gem_object *, obj)
-			     __field(u32, read_domains)
-			     __field(u32, write_domain)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->obj = obj;
-			   __entry->read_domains = obj->base.read_domains | (old_read << 16);
-			   __entry->write_domain = obj->base.write_domain | (old_write << 16);
-			   ),
-
-	    TP_printk("obj=%p, read=%02x=>%02x, write=%02x=>%02x",
-		      __entry->obj,
-		      __entry->read_domains >> 16,
-		      __entry->read_domains & 0xffff,
-		      __entry->write_domain >> 16,
-		      __entry->write_domain & 0xffff)
-);
-
-TRACE_EVENT(i915_gem_object_pwrite,
-	    TP_PROTO(struct drm_i915_gem_object *obj, u32 offset, u32 len),
-=======
 	    TP_printk("obj=%p, size=0x%llx", __entry->obj, __entry->size)
 );
 
@@ -197,18 +105,12 @@ TRACE_EVENT(i915_vma_unbind,
 
 TRACE_EVENT(i915_gem_object_pwrite,
 	    TP_PROTO(struct drm_i915_gem_object *obj, u64 offset, u64 len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TP_ARGS(obj, offset, len),
 
 	    TP_STRUCT__entry(
 			     __field(struct drm_i915_gem_object *, obj)
-<<<<<<< HEAD
-			     __field(u32, offset)
-			     __field(u32, len)
-=======
 			     __field(u64, offset)
 			     __field(u64, len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     ),
 
 	    TP_fast_assign(
@@ -217,31 +119,18 @@ TRACE_EVENT(i915_gem_object_pwrite,
 			   __entry->len = len;
 			   ),
 
-<<<<<<< HEAD
-	    TP_printk("obj=%p, offset=%u, len=%u",
-=======
 	    TP_printk("obj=%p, offset=0x%llx, len=0x%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      __entry->obj, __entry->offset, __entry->len)
 );
 
 TRACE_EVENT(i915_gem_object_pread,
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_i915_gem_object *obj, u32 offset, u32 len),
-=======
 	    TP_PROTO(struct drm_i915_gem_object *obj, u64 offset, u64 len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TP_ARGS(obj, offset, len),
 
 	    TP_STRUCT__entry(
 			     __field(struct drm_i915_gem_object *, obj)
-<<<<<<< HEAD
-			     __field(u32, offset)
-			     __field(u32, len)
-=======
 			     __field(u64, offset)
 			     __field(u64, len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     ),
 
 	    TP_fast_assign(
@@ -250,29 +139,17 @@ TRACE_EVENT(i915_gem_object_pread,
 			   __entry->len = len;
 			   ),
 
-<<<<<<< HEAD
-	    TP_printk("obj=%p, offset=%u, len=%u",
-=======
 	    TP_printk("obj=%p, offset=0x%llx, len=0x%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      __entry->obj, __entry->offset, __entry->len)
 );
 
 TRACE_EVENT(i915_gem_object_fault,
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_i915_gem_object *obj, u32 index, bool gtt, bool write),
-=======
 	    TP_PROTO(struct drm_i915_gem_object *obj, u64 index, bool gtt, bool write),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TP_ARGS(obj, index, gtt, write),
 
 	    TP_STRUCT__entry(
 			     __field(struct drm_i915_gem_object *, obj)
-<<<<<<< HEAD
-			     __field(u32, index)
-=======
 			     __field(u64, index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     __field(bool, gtt)
 			     __field(bool, write)
 			     ),
@@ -284,11 +161,7 @@ TRACE_EVENT(i915_gem_object_fault,
 			   __entry->write = write;
 			   ),
 
-<<<<<<< HEAD
-	    TP_printk("obj=%p, %s index=%u %s",
-=======
 	    TP_printk("obj=%p, %s index=%llu %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      __entry->obj,
 		      __entry->gtt ? "GTT" : "CPU",
 		      __entry->index,
@@ -321,205 +194,6 @@ DEFINE_EVENT(i915_gem_object, i915_gem_object_destroy,
 );
 
 TRACE_EVENT(i915_gem_evict,
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_device *dev, u32 size, u32 align, bool mappable),
-	    TP_ARGS(dev, size, align, mappable),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(u32, size)
-			     __field(u32, align)
-			     __field(bool, mappable)
-			    ),
-
-	    TP_fast_assign(
-			   __entry->dev = dev->primary->index;
-			   __entry->size = size;
-			   __entry->align = align;
-			   __entry->mappable = mappable;
-			  ),
-
-	    TP_printk("dev=%d, size=%d, align=%d %s",
-		      __entry->dev, __entry->size, __entry->align,
-		      __entry->mappable ? ", mappable" : "")
-);
-
-TRACE_EVENT(i915_gem_evict_everything,
-	    TP_PROTO(struct drm_device *dev, bool purgeable),
-	    TP_ARGS(dev, purgeable),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(bool, purgeable)
-			    ),
-
-	    TP_fast_assign(
-			   __entry->dev = dev->primary->index;
-			   __entry->purgeable = purgeable;
-			  ),
-
-	    TP_printk("dev=%d%s",
-		      __entry->dev,
-		      __entry->purgeable ? ", purgeable only" : "")
-);
-
-TRACE_EVENT(i915_gem_ring_dispatch,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(u32, ring)
-			     __field(u32, seqno)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->dev = ring->dev->primary->index;
-			   __entry->ring = ring->id;
-			   __entry->seqno = seqno;
-			   i915_trace_irq_get(ring, seqno);
-			   ),
-
-	    TP_printk("dev=%u, ring=%u, seqno=%u",
-		      __entry->dev, __entry->ring, __entry->seqno)
-);
-
-TRACE_EVENT(i915_gem_ring_flush,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 invalidate, u32 flush),
-	    TP_ARGS(ring, invalidate, flush),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(u32, ring)
-			     __field(u32, invalidate)
-			     __field(u32, flush)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->dev = ring->dev->primary->index;
-			   __entry->ring = ring->id;
-			   __entry->invalidate = invalidate;
-			   __entry->flush = flush;
-			   ),
-
-	    TP_printk("dev=%u, ring=%x, invalidate=%04x, flush=%04x",
-		      __entry->dev, __entry->ring,
-		      __entry->invalidate, __entry->flush)
-);
-
-DECLARE_EVENT_CLASS(i915_gem_request,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(u32, ring)
-			     __field(u32, seqno)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->dev = ring->dev->primary->index;
-			   __entry->ring = ring->id;
-			   __entry->seqno = seqno;
-			   ),
-
-	    TP_printk("dev=%u, ring=%u, seqno=%u",
-		      __entry->dev, __entry->ring, __entry->seqno)
-);
-
-DEFINE_EVENT(i915_gem_request, i915_gem_request_add,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno)
-);
-
-DEFINE_EVENT(i915_gem_request, i915_gem_request_complete,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno)
-);
-
-DEFINE_EVENT(i915_gem_request, i915_gem_request_retire,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno)
-);
-
-DEFINE_EVENT(i915_gem_request, i915_gem_request_wait_begin,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno)
-);
-
-DEFINE_EVENT(i915_gem_request, i915_gem_request_wait_end,
-	    TP_PROTO(struct intel_ring_buffer *ring, u32 seqno),
-	    TP_ARGS(ring, seqno)
-);
-
-DECLARE_EVENT_CLASS(i915_ring,
-	    TP_PROTO(struct intel_ring_buffer *ring),
-	    TP_ARGS(ring),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-			     __field(u32, ring)
-			     ),
-
-	    TP_fast_assign(
-			   __entry->dev = ring->dev->primary->index;
-			   __entry->ring = ring->id;
-			   ),
-
-	    TP_printk("dev=%u, ring=%u", __entry->dev, __entry->ring)
-);
-
-DEFINE_EVENT(i915_ring, i915_ring_wait_begin,
-	    TP_PROTO(struct intel_ring_buffer *ring),
-	    TP_ARGS(ring)
-);
-
-DEFINE_EVENT(i915_ring, i915_ring_wait_end,
-	    TP_PROTO(struct intel_ring_buffer *ring),
-	    TP_ARGS(ring)
-);
-
-TRACE_EVENT(i915_flip_request,
-	    TP_PROTO(int plane, struct drm_i915_gem_object *obj),
-
-	    TP_ARGS(plane, obj),
-
-	    TP_STRUCT__entry(
-		    __field(int, plane)
-		    __field(struct drm_i915_gem_object *, obj)
-		    ),
-
-	    TP_fast_assign(
-		    __entry->plane = plane;
-		    __entry->obj = obj;
-		    ),
-
-	    TP_printk("plane=%d, obj=%p", __entry->plane, __entry->obj)
-);
-
-TRACE_EVENT(i915_flip_complete,
-	    TP_PROTO(int plane, struct drm_i915_gem_object *obj),
-
-	    TP_ARGS(plane, obj),
-
-	    TP_STRUCT__entry(
-		    __field(int, plane)
-		    __field(struct drm_i915_gem_object *, obj)
-		    ),
-
-	    TP_fast_assign(
-		    __entry->plane = plane;
-		    __entry->obj = obj;
-		    ),
-
-	    TP_printk("plane=%d, obj=%p", __entry->plane, __entry->obj)
-);
-
-TRACE_EVENT(i915_reg_rw,
-	TP_PROTO(bool write, u32 reg, u64 val, int len),
-
-	TP_ARGS(write, reg, val, len),
-=======
 	    TP_PROTO(struct i915_address_space *vm, u64 size, u64 align, unsigned int flags),
 	    TP_ARGS(vm, size, align, flags),
 
@@ -974,7 +648,6 @@ TRACE_EVENT_CONDITION(i915_reg_rw,
 	TP_ARGS(write, reg, val, len, trace),
 
 	TP_CONDITION(trace),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(u64, val)
@@ -985,11 +658,7 @@ TRACE_EVENT_CONDITION(i915_reg_rw,
 
 	TP_fast_assign(
 		__entry->val = (u64)val;
-<<<<<<< HEAD
-		__entry->reg = reg;
-=======
 		__entry->reg = i915_mmio_reg_offset(reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->write = write;
 		__entry->len = len;
 		),
@@ -1001,8 +670,6 @@ TRACE_EVENT_CONDITION(i915_reg_rw,
 		(u32)(__entry->val >> 32))
 );
 
-<<<<<<< HEAD
-=======
 /**
  * DOC: i915_ppgtt_create and i915_ppgtt_release tracepoints
  *
@@ -1077,16 +744,11 @@ DEFINE_EVENT(i915_context, i915_context_free,
 	TP_ARGS(ctx)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _I915_TRACE_H_ */
 
 /* This part must be outside protection */
 #undef TRACE_INCLUDE_PATH
-<<<<<<< HEAD
-#define TRACE_INCLUDE_PATH .
-=======
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/i915
 #define TRACE_INCLUDE_FILE i915_trace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <trace/define_trace.h>

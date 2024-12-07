@@ -1,11 +1,7 @@
 /*
  * net/tipc/msg.h: Include file for TIPC message header routines
  *
-<<<<<<< HEAD
- * Copyright (c) 2000-2007, Ericsson AB
-=======
  * Copyright (c) 2000-2007, 2014-2017 Ericsson AB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005-2008, 2010-2011, Wind River Systems
  * All rights reserved.
  *
@@ -41,25 +37,16 @@
 #ifndef _TIPC_MSG_H
 #define _TIPC_MSG_H
 
-<<<<<<< HEAD
-#include "bearer.h"
-=======
 #include <linux/tipc.h>
 #include "core.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Constants and routines used to read and write TIPC payload message headers
  *
  * Note: Some items are also used with TIPC internal message headers
  */
-<<<<<<< HEAD
-
-#define TIPC_VERSION              2
-=======
 #define TIPC_VERSION              2
 struct plist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Payload message users are defined in TIPC's public API:
@@ -68,22 +55,12 @@ struct plist;
  * - TIPC_HIGH_IMPORTANCE
  * - TIPC_CRITICAL_IMPORTANCE
  */
-<<<<<<< HEAD
-=======
 #define TIPC_SYSTEM_IMPORTANCE	4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Payload message types
  */
-<<<<<<< HEAD
-
-#define TIPC_CONN_MSG		0
-#define TIPC_MCAST_MSG		1
-#define TIPC_NAMED_MSG		2
-#define TIPC_DIRECT_MSG		3
-=======
 #define TIPC_CONN_MSG           0
 #define TIPC_MCAST_MSG          1
 #define TIPC_NAMED_MSG          2
@@ -108,33 +85,20 @@ struct plist;
 #define  MSG_CRYPTO           14
 #define  SOCK_WAKEUP          14       /* pseudo user */
 #define  TOP_SRV              15       /* pseudo user */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Message header sizes
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SHORT_H_SIZE              24	/* In-cluster basic payload message */
 #define BASIC_H_SIZE              32	/* Basic payload message */
 #define NAMED_H_SIZE              40	/* Named payload message */
 #define MCAST_H_SIZE              44	/* Multicast payload message */
-<<<<<<< HEAD
-=======
 #define GROUP_H_SIZE              44	/* Group payload message */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INT_H_SIZE                40	/* Internal messages */
 #define MIN_H_SIZE                24	/* Smallest legal TIPC header size */
 #define MAX_H_SIZE                60	/* Largest possible TIPC header size */
 
 #define MAX_MSG_SIZE (MAX_H_SIZE + TIPC_MAX_USER_MSG_SIZE)
-<<<<<<< HEAD
-
-#define TIPC_MEDIA_ADDR_OFFSET	5
-
-=======
 #define TIPC_MEDIA_INFO_OFFSET	5
 
 extern const int one_page_mtu;
@@ -180,14 +144,11 @@ struct tipc_skb_cb {
 } __packed;
 
 #define TIPC_SKB_CB(__skb) ((struct tipc_skb_cb *)&((__skb)->cb[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct tipc_msg {
 	__be32 hdr[15];
 };
 
-<<<<<<< HEAD
-=======
 /* struct tipc_gap_ack - TIPC Gap ACK block
  * @ack: seqno of the last consecutive packet in link deferdq
  * @gap: number of gap packets since the last ack
@@ -240,7 +201,6 @@ static inline struct tipc_msg *buf_msg(struct sk_buff *skb)
 {
 	return (struct tipc_msg *)skb->data;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 msg_word(struct tipc_msg *m, u32 pos)
 {
@@ -266,24 +226,9 @@ static inline void msg_set_bits(struct tipc_msg *m, u32 w,
 	m->hdr[w] |= htonl(val);
 }
 
-<<<<<<< HEAD
-static inline void msg_swap_words(struct tipc_msg *msg, u32 a, u32 b)
-{
-	u32 temp = msg->hdr[a];
-
-	msg->hdr[a] = msg->hdr[b];
-	msg->hdr[b] = temp;
-}
-
 /*
  * Word 0
  */
-
-=======
-/*
- * Word 0
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_version(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 29, 7);
@@ -309,19 +254,6 @@ static inline void msg_set_user(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 0, 25, 0xf, n);
 }
 
-<<<<<<< HEAD
-static inline u32 msg_importance(struct tipc_msg *m)
-{
-	return msg_bits(m, 0, 25, 0xf);
-}
-
-static inline void msg_set_importance(struct tipc_msg *m, u32 i)
-{
-	msg_set_user(m, i);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_hdr_sz(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 21, 0xf) << 2;
@@ -337,14 +269,11 @@ static inline u32 msg_size(struct tipc_msg *m)
 	return msg_bits(m, 0, 0, 0x1ffff);
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_blocks(struct tipc_msg *m)
 {
 	return (msg_size(m) / 1024) + 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_data_sz(struct tipc_msg *m)
 {
 	return msg_size(m) - msg_hdr_sz(m);
@@ -360,8 +289,6 @@ static inline void msg_set_non_seq(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 0, 20, 1, n);
 }
 
-<<<<<<< HEAD
-=======
 static inline int msg_is_syn(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 17, 1);
@@ -372,7 +299,6 @@ static inline void msg_set_syn(struct tipc_msg *m, u32 d)
 	msg_set_bits(m, 0, 17, 1, d);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int msg_dest_droppable(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 19, 1);
@@ -383,8 +309,6 @@ static inline void msg_set_dest_droppable(struct tipc_msg *m, u32 d)
 	msg_set_bits(m, 0, 19, 1, d);
 }
 
-<<<<<<< HEAD
-=======
 static inline int msg_is_keepalive(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 19, 1);
@@ -395,7 +319,6 @@ static inline void msg_set_is_keepalive(struct tipc_msg *m, u32 d)
 	msg_set_bits(m, 0, 19, 1, d);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int msg_src_droppable(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 18, 1);
@@ -406,8 +329,6 @@ static inline void msg_set_src_droppable(struct tipc_msg *m, u32 d)
 	msg_set_bits(m, 0, 18, 1, d);
 }
 
-<<<<<<< HEAD
-=======
 static inline int msg_ack_required(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 18, 1);
@@ -438,14 +359,11 @@ static inline void msg_set_is_rcast(struct tipc_msg *m, bool d)
 	msg_set_bits(m, 0, 18, 0x1, d);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void msg_set_size(struct tipc_msg *m, u32 sz)
 {
 	m->hdr[0] = htonl((msg_word(m, 0) & ~0x1ffff) | sz);
 }
 
-<<<<<<< HEAD
-=======
 static inline unchar *msg_data(struct tipc_msg *m)
 {
 	return ((unchar *)m) + msg_hdr_sz(m);
@@ -455,15 +373,10 @@ static inline struct tipc_msg *msg_inner_hdr(struct tipc_msg *m)
 {
 	return (struct tipc_msg *)msg_data(m);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Word 1
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_type(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 29, 0x7);
@@ -474,8 +387,6 @@ static inline void msg_set_type(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 1, 29, 0x7, n);
 }
 
-<<<<<<< HEAD
-=======
 static inline int msg_in_group(struct tipc_msg *m)
 {
 	int mtyp = msg_type(m);
@@ -488,7 +399,6 @@ static inline bool msg_is_grp_evt(struct tipc_msg *m)
 	return msg_type(m) == TIPC_GRP_MEMBER_EVT;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_named(struct tipc_msg *m)
 {
 	return msg_type(m) == TIPC_NAMED_MSG;
@@ -496,14 +406,10 @@ static inline u32 msg_named(struct tipc_msg *m)
 
 static inline u32 msg_mcast(struct tipc_msg *m)
 {
-<<<<<<< HEAD
-	return msg_type(m) == TIPC_MCAST_MSG;
-=======
 	int mtyp = msg_type(m);
 
 	return ((mtyp == TIPC_MCAST_MSG) || (mtyp == TIPC_GRP_BCAST_MSG) ||
 		(mtyp == TIPC_GRP_MCAST_MSG));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 msg_connected(struct tipc_msg *m)
@@ -511,14 +417,11 @@ static inline u32 msg_connected(struct tipc_msg *m)
 	return msg_type(m) == TIPC_CONN_MSG;
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_direct(struct tipc_msg *m)
 {
 	return msg_type(m) == TIPC_DIRECT_MSG;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_errcode(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 25, 0xf);
@@ -529,8 +432,6 @@ static inline void msg_set_errcode(struct tipc_msg *m, u32 err)
 	msg_set_bits(m, 1, 25, 0xf, err);
 }
 
-<<<<<<< HEAD
-=======
 static inline void msg_set_bulk(struct tipc_msg *m)
 {
 	msg_set_bits(m, 1, 28, 0x1, 1);
@@ -561,7 +462,6 @@ static inline u32 msg_is_legacy(struct tipc_msg *m)
 	return !msg_bits(m, 1, 26, 0x1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_reroute_cnt(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 21, 0xf);
@@ -572,14 +472,6 @@ static inline void msg_incr_reroute_cnt(struct tipc_msg *m)
 	msg_set_bits(m, 1, 21, 0xf, msg_reroute_cnt(m) + 1);
 }
 
-<<<<<<< HEAD
-static inline void msg_reset_reroute_cnt(struct tipc_msg *m)
-{
-	msg_set_bits(m, 1, 21, 0xf, 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_lookup_scope(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 19, 0x3);
@@ -590,26 +482,16 @@ static inline void msg_set_lookup_scope(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 1, 19, 0x3, n);
 }
 
-<<<<<<< HEAD
-static inline u32 msg_bcast_ack(struct tipc_msg *m)
-=======
 static inline u16 msg_bcast_ack(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 1, 0, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_bcast_ack(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_bcast_ack(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 1, 0, 0xffff, n);
 }
 
-<<<<<<< HEAD
-=======
 /* Note: reusing bits in word 1 for ACTIVATE_MSG only, to re-synch
  * link peer session number
  */
@@ -632,44 +514,26 @@ static inline void msg_set_dest_session(struct tipc_msg *m, u16 n)
 {
 	msg_set_bits(m, 1, 0, 0xffff, n);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Word 2
  */
-<<<<<<< HEAD
-
-static inline u32 msg_ack(struct tipc_msg *m)
-=======
 static inline u16 msg_ack(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 2, 16, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_ack(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_ack(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 2, 16, 0xffff, n);
 }
 
-<<<<<<< HEAD
-static inline u32 msg_seqno(struct tipc_msg *m)
-=======
 static inline u16 msg_seqno(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 2, 0, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_seqno(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_seqno(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 2, 0, 0xffff, n);
 }
@@ -677,9 +541,6 @@ static inline void msg_set_seqno(struct tipc_msg *m, u16 n)
 /*
  * Words 3-10
  */
-<<<<<<< HEAD
-
-=======
 static inline u32 msg_importance(struct tipc_msg *m)
 {
 	int usr = msg_user(m);
@@ -702,7 +563,6 @@ static inline void msg_set_importance(struct tipc_msg *m, u32 i)
 	else
 		pr_warn("Trying to set illegal importance in message\n");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 msg_prevnode(struct tipc_msg *m)
 {
@@ -716,11 +576,8 @@ static inline void msg_set_prevnode(struct tipc_msg *m, u32 a)
 
 static inline u32 msg_origport(struct tipc_msg *m)
 {
-<<<<<<< HEAD
-=======
 	if (msg_user(m) == MSG_FRAGMENTER)
 		m = msg_inner_hdr(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return msg_word(m, 4);
 }
 
@@ -729,8 +586,6 @@ static inline void msg_set_origport(struct tipc_msg *m, u32 p)
 	msg_set_word(m, 4, p);
 }
 
-<<<<<<< HEAD
-=======
 static inline u16 msg_named_seqno(struct tipc_msg *m)
 {
 	return msg_bits(m, 4, 0, 0xffff);
@@ -741,7 +596,6 @@ static inline void msg_set_named_seqno(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 4, 0, 0xffff, n);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_destport(struct tipc_msg *m)
 {
 	return msg_word(m, 5);
@@ -829,47 +683,13 @@ static inline void msg_set_nameupper(struct tipc_msg *m, u32 n)
 	msg_set_word(m, 10, n);
 }
 
-<<<<<<< HEAD
-static inline unchar *msg_data(struct tipc_msg *m)
-{
-	return ((unchar *)m) + msg_hdr_sz(m);
-}
-
-static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
-{
-	return (struct tipc_msg *)msg_data(m);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Constants and routines used to read and write TIPC internal message headers
  */
 
 /*
-<<<<<<< HEAD
- * Internal message users
- */
-
-#define  BCAST_PROTOCOL       5
-#define  MSG_BUNDLER          6
-#define  LINK_PROTOCOL        7
-#define  CONN_MANAGER         8
-#define  ROUTE_DISTRIBUTOR    9		/* obsoleted */
-#define  CHANGEOVER_PROTOCOL  10
-#define  NAME_DISTRIBUTOR     11
-#define  MSG_FRAGMENTER       12
-#define  LINK_CONFIG          13
-
-/*
  *  Connection management protocol message types
  */
-
-=======
- *  Connection management protocol message types
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CONN_PROBE        0
 #define CONN_PROBE_REPLY  1
 #define CONN_ACK          2
@@ -877,20 +697,12 @@ static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
 /*
  * Name distributor message types
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PUBLICATION       0
 #define WITHDRAWAL        1
 
 /*
  * Segmentation message types
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FIRST_FRAGMENT		0
 #define FRAGMENT		1
 #define LAST_FRAGMENT		2
@@ -898,10 +710,6 @@ static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
 /*
  * Link management protocol message types
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define STATE_MSG		0
 #define RESET_MSG		1
 #define ACTIVATE_MSG		2
@@ -909,23 +717,12 @@ static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
 /*
  * Changeover tunnel message types
  */
-<<<<<<< HEAD
-#define DUPLICATE_MSG		0
-#define ORIGINAL_MSG		1
-=======
 #define SYNCH_MSG		0
 #define FAILOVER_MSG		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Config protocol message types
  */
-<<<<<<< HEAD
-
-#define DSC_REQ_MSG		0
-#define DSC_RESP_MSG		1
-
-=======
 #define DSC_REQ_MSG		0
 #define DSC_RESP_MSG		1
 #define DSC_TRIAL_MSG		2
@@ -943,15 +740,10 @@ static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
 
 /* Crypto message types */
 #define KEY_DISTR_MSG		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Word 1
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_seq_gap(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 16, 0x1fff);
@@ -972,8 +764,6 @@ static inline void msg_set_node_sig(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 1, 0, 0xffff, n);
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_node_capabilities(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 15, 0x1fff);
@@ -983,15 +773,10 @@ static inline void msg_set_node_capabilities(struct tipc_msg *m, u32 n)
 {
 	msg_set_bits(m, 1, 15, 0x1fff, n);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Word 2
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_dest_domain(struct tipc_msg *m)
 {
 	return msg_word(m, 2);
@@ -1002,14 +787,6 @@ static inline void msg_set_dest_domain(struct tipc_msg *m, u32 n)
 	msg_set_word(m, 2, n);
 }
 
-<<<<<<< HEAD
-static inline u32 msg_bcgap_after(struct tipc_msg *m)
-{
-	return msg_bits(m, 2, 16, 0xffff);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void msg_set_bcgap_after(struct tipc_msg *m, u32 n)
 {
 	msg_set_bits(m, 2, 16, 0xffff, n);
@@ -1025,37 +802,24 @@ static inline void msg_set_bcgap_to(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 2, 0, 0xffff, n);
 }
 
-<<<<<<< HEAD
-
 /*
  * Word 4
  */
-
-=======
-/*
- * Word 4
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_last_bcast(struct tipc_msg *m)
 {
 	return msg_bits(m, 4, 16, 0xffff);
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_bc_snd_nxt(struct tipc_msg *m)
 {
 	return msg_last_bcast(m) + 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void msg_set_last_bcast(struct tipc_msg *m, u32 n)
 {
 	msg_set_bits(m, 4, 16, 0xffff, n);
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_nof_fragms(struct tipc_msg *m)
 {
 	return msg_bits(m, 4, 0, 0xffff);
@@ -1065,7 +829,6 @@ static inline void msg_set_nof_fragms(struct tipc_msg *m, u32 n)
 {
 	msg_set_bits(m, 4, 0, 0xffff, n);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 msg_fragm_no(struct tipc_msg *m)
 {
@@ -1077,32 +840,12 @@ static inline void msg_set_fragm_no(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 4, 16, 0xffff, n);
 }
 
-<<<<<<< HEAD
-
-static inline u32 msg_next_sent(struct tipc_msg *m)
-=======
 static inline u16 msg_next_sent(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 4, 0, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_next_sent(struct tipc_msg *m, u32 n)
-{
-	msg_set_bits(m, 4, 0, 0xffff, n);
-}
-
-
-static inline u32 msg_long_msgno(struct tipc_msg *m)
-{
-	return msg_bits(m, 4, 0, 0xffff);
-}
-
-static inline void msg_set_long_msgno(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_next_sent(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 4, 0, 0xffff, n);
 }
@@ -1119,21 +862,6 @@ static inline void msg_set_bc_netid(struct tipc_msg *m, u32 id)
 
 static inline u32 msg_link_selector(struct tipc_msg *m)
 {
-<<<<<<< HEAD
-	return msg_bits(m, 4, 0, 1);
-}
-
-static inline void msg_set_link_selector(struct tipc_msg *m, u32 n)
-{
-	msg_set_bits(m, 4, 0, 1, n);
-}
-
-/*
- * Word 5
- */
-
-static inline u32 msg_session(struct tipc_msg *m)
-=======
 	if (msg_user(m) == MSG_FRAGMENTER)
 		m = (void *)msg_data(m);
 	return msg_bits(m, 4, 0, 1);
@@ -1143,16 +871,11 @@ static inline u32 msg_session(struct tipc_msg *m)
  * Word 5
  */
 static inline u16 msg_session(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 5, 16, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_session(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_session(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 5, 16, 0xffff, n);
 }
@@ -1207,11 +930,6 @@ static inline void msg_set_redundant_link(struct tipc_msg *m, u32 r)
 	msg_set_bits(m, 5, 12, 0x1, r);
 }
 
-<<<<<<< HEAD
-static inline char *msg_media_addr(struct tipc_msg *m)
-{
-	return (char *)&m->hdr[TIPC_MEDIA_ADDR_OFFSET];
-=======
 static inline u32 msg_peer_stopping(struct tipc_msg *m)
 {
 	return msg_bits(m, 5, 13, 0x1);
@@ -1252,51 +970,31 @@ static inline u32 msg_bc_gap(struct tipc_msg *m)
 static inline void msg_set_bc_gap(struct tipc_msg *m, u32 n)
 {
 	msg_set_bits(m, 8, 0, 0x3ff, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Word 9
  */
-<<<<<<< HEAD
-
-static inline u32 msg_msgcnt(struct tipc_msg *m)
-=======
 static inline u16 msg_msgcnt(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 9, 16, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_msgcnt(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_msgcnt(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 9, 16, 0xffff, n);
 }
 
-<<<<<<< HEAD
-static inline u32 msg_bcast_tag(struct tipc_msg *m)
-=======
 static inline u16 msg_syncpt(struct tipc_msg *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return msg_bits(m, 9, 16, 0xffff);
 }
 
-<<<<<<< HEAD
-static inline void msg_set_bcast_tag(struct tipc_msg *m, u32 n)
-=======
 static inline void msg_set_syncpt(struct tipc_msg *m, u16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg_set_bits(m, 9, 16, 0xffff, n);
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 msg_conn_ack(struct tipc_msg *m)
 {
 	return msg_bits(m, 9, 16, 0xffff);
@@ -1317,7 +1015,6 @@ static inline void msg_set_adv_win(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 9, 0, 0xffff, n);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 msg_max_pkt(struct tipc_msg *m)
 {
 	return msg_bits(m, 9, 16, 0xffff) * 4;
@@ -1338,14 +1035,6 @@ static inline void msg_set_link_tolerance(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 9, 0, 0xffff, n);
 }
 
-<<<<<<< HEAD
-u32 tipc_msg_tot_importance(struct tipc_msg *m);
-void tipc_msg_init(struct tipc_msg *m, u32 user, u32 type,
-			    u32 hsize, u32 destnode);
-int tipc_msg_build(struct tipc_msg *hdr, struct iovec const *msg_sect,
-		   u32 num_sect, unsigned int total_len,
-			    int max_size, int usrmem, struct sk_buff **buf);
-=======
 static inline u16 msg_grp_bc_syncpt(struct tipc_msg *m)
 {
 	return msg_bits(m, 9, 16, 0xffff);
@@ -1617,6 +1306,5 @@ static inline struct sk_buff *__tipc_skb_dequeue(struct sk_buff_head *list,
 	}
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

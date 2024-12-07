@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -60,11 +50,8 @@
  * but never before the maximum hash table size has been reached.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/buffer_head.h>
@@ -72,10 +59,7 @@
 #include <linux/gfs2_ondisk.h>
 #include <linux/crc32.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-=======
 #include <linux/bio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -89,21 +73,12 @@
 #include "bmap.h"
 #include "util.h"
 
-<<<<<<< HEAD
-#define IS_LEAF     1 /* Hashed (leaf) directory */
-#define IS_DINODE   2 /* Linear (stuffed dinode block) directory */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_RA_BLOCKS 32 /* max read-ahead blocks */
 
 #define gfs2_disk_hash2offset(h) (((u64)(h)) >> 1)
 #define gfs2_dir_offset2hash(p) ((u32)(((u64)(p)) << 1))
-<<<<<<< HEAD
-=======
 #define GFS2_HASH_INDEX_MASK 0xffffc000
 #define GFS2_USE_HASH_FLAG 0x2000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qstr gfs2_qdot __read_mostly;
 struct qstr gfs2_qdotdot __read_mostly;
@@ -117,11 +92,7 @@ int gfs2_dir_get_new_buffer(struct gfs2_inode *ip, u64 block,
 	struct buffer_head *bh;
 
 	bh = gfs2_meta_new(ip->i_gl, block);
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_metatype_set(bh, GFS2_METATYPE_JD, GFS2_FORMAT_JD);
 	gfs2_buffer_clear_tail(bh, sizeof(struct gfs2_meta_header));
 	*bhp = bh;
@@ -134,11 +105,7 @@ static int gfs2_dir_get_existing_buffer(struct gfs2_inode *ip, u64 block,
 	struct buffer_head *bh;
 	int error;
 
-<<<<<<< HEAD
-	error = gfs2_meta_read(ip->i_gl, block, DIO_WAIT, &bh);
-=======
 	error = gfs2_meta_read(ip->i_gl, block, DIO_WAIT, 0, &bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	if (gfs2_metatype_check(GFS2_SB(&ip->i_inode), bh, GFS2_METATYPE_JD)) {
@@ -159,19 +126,11 @@ static int gfs2_dir_write_stuffed(struct gfs2_inode *ip, const char *buf,
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-	memcpy(dibh->b_data + offset + sizeof(struct gfs2_dinode), buf, size);
-	if (ip->i_inode.i_size < offset + size)
-		i_size_write(&ip->i_inode, offset + size);
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-=======
 	gfs2_trans_add_meta(ip->i_gl, dibh);
 	memcpy(dibh->b_data + offset + sizeof(struct gfs2_dinode), buf, size);
 	if (ip->i_inode.i_size < offset + size)
 		i_size_write(&ip->i_inode, offset + size);
 	inode_set_mtime_to_ts(&ip->i_inode, inode_set_ctime_current(&ip->i_inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_dinode_out(ip, dibh->b_data);
 
 	brelse(dibh);
@@ -200,21 +159,12 @@ static int gfs2_dir_write_data(struct gfs2_inode *ip, const char *buf,
 	unsigned int o;
 	int copied = 0;
 	int error = 0;
-<<<<<<< HEAD
-	int new = 0;
-=======
 	bool new = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!size)
 		return 0;
 
-<<<<<<< HEAD
-	if (gfs2_is_stuffed(ip) &&
-	    offset + size <= sdp->sd_sb.sb_bsize - sizeof(struct gfs2_dinode))
-=======
 	if (gfs2_is_stuffed(ip) && offset + size <= gfs2_max_stuffed_size(ip))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return gfs2_dir_write_stuffed(ip, buf, (unsigned int)offset,
 					      size);
 
@@ -222,11 +172,7 @@ static int gfs2_dir_write_data(struct gfs2_inode *ip, const char *buf,
 		return -EINVAL;
 
 	if (gfs2_is_stuffed(ip)) {
-<<<<<<< HEAD
-		error = gfs2_unstuff_dinode(ip, NULL);
-=======
 		error = gfs2_unstuff_dinode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			return error;
 	}
@@ -243,15 +189,9 @@ static int gfs2_dir_write_data(struct gfs2_inode *ip, const char *buf,
 			amount = sdp->sd_sb.sb_bsize - o;
 
 		if (!extlen) {
-<<<<<<< HEAD
-			new = 1;
-			error = gfs2_extent_map(&ip->i_inode, lblock, &new,
-						&dblock, &extlen);
-=======
 			extlen = 1;
 			error = gfs2_alloc_extent(&ip->i_inode, lblock, &dblock,
 						  &extlen, &new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error)
 				goto fail;
 			error = -EIO;
@@ -267,11 +207,7 @@ static int gfs2_dir_write_data(struct gfs2_inode *ip, const char *buf,
 		if (error)
 			goto fail;
 
-<<<<<<< HEAD
-		gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 		gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(bh->b_data + o, buf, amount);
 		brelse(bh);
 
@@ -291,15 +227,9 @@ out:
 
 	if (ip->i_inode.i_size < offset + copied)
 		i_size_write(&ip->i_inode, offset + copied);
-<<<<<<< HEAD
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 	inode_set_mtime_to_ts(&ip->i_inode, inode_set_ctime_current(&ip->i_inode));
 
 	gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_dinode_out(ip, dibh->b_data);
 	brelse(dibh);
 
@@ -356,34 +286,21 @@ static int gfs2_dir_read_data(struct gfs2_inode *ip, __be64 *buf,
 	while (copied < size) {
 		unsigned int amount;
 		struct buffer_head *bh;
-<<<<<<< HEAD
-		int new;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		amount = size - copied;
 		if (amount > sdp->sd_sb.sb_bsize - o)
 			amount = sdp->sd_sb.sb_bsize - o;
 
 		if (!extlen) {
-<<<<<<< HEAD
-			new = 0;
-			error = gfs2_extent_map(&ip->i_inode, lblock, &new,
-=======
 			extlen = 32;
 			error = gfs2_get_extent(&ip->i_inode, lblock,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						&dblock, &extlen);
 			if (error || !dblock)
 				goto fail;
 			BUG_ON(extlen < 1);
 			bh = gfs2_meta_ra(ip->i_gl, dblock, extlen);
 		} else {
-<<<<<<< HEAD
-			error = gfs2_meta_read(ip->i_gl, dblock, DIO_WAIT, &bh);
-=======
 			error = gfs2_meta_read(ip->i_gl, dblock, DIO_WAIT, 0, &bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error)
 				goto fail;
 		}
@@ -427,54 +344,33 @@ static __be64 *gfs2_dir_get_hash_table(struct gfs2_inode *ip)
 	if (hc)
 		return hc;
 
-<<<<<<< HEAD
-	hsize = 1 << ip->i_depth;
-=======
 	hsize = BIT(ip->i_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hsize *= sizeof(__be64);
 	if (hsize != i_size_read(&ip->i_inode)) {
 		gfs2_consist_inode(ip);
 		return ERR_PTR(-EIO);
 	}
 
-<<<<<<< HEAD
-	hc = kmalloc(hsize, GFP_NOFS);
-	ret = -ENOMEM;
-=======
 	hc = kmalloc(hsize, GFP_NOFS | __GFP_NOWARN);
 	if (hc == NULL)
 		hc = __vmalloc(hsize, GFP_NOFS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hc == NULL)
 		return ERR_PTR(-ENOMEM);
 
 	ret = gfs2_dir_read_data(ip, hc, hsize);
 	if (ret < 0) {
-<<<<<<< HEAD
-		kfree(hc);
-=======
 		kvfree(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(ret);
 	}
 
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	if (ip->i_hash_cache)
-		kfree(hc);
-	else
-		ip->i_hash_cache = hc;
-	spin_unlock(&inode->i_lock);
-=======
 	if (likely(!ip->i_hash_cache)) {
 		ip->i_hash_cache = hc;
 		hc = NULL;
 	}
 	spin_unlock(&inode->i_lock);
 	kvfree(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ip->i_hash_cache;
 }
@@ -487,11 +383,6 @@ static __be64 *gfs2_dir_get_hash_table(struct gfs2_inode *ip)
  */
 void gfs2_dir_hash_inval(struct gfs2_inode *ip)
 {
-<<<<<<< HEAD
-	__be64 *hc = ip->i_hash_cache;
-	ip->i_hash_cache = NULL;
-	kfree(hc);
-=======
 	__be64 *hc;
 
 	spin_lock(&ip->i_inode.i_lock);
@@ -500,7 +391,6 @@ void gfs2_dir_hash_inval(struct gfs2_inode *ip)
 	spin_unlock(&ip->i_inode.i_lock);
 
 	kvfree(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int gfs2_dirent_sentinel(const struct gfs2_dirent *dent)
@@ -548,8 +438,6 @@ static int gfs2_dirent_last(const struct gfs2_dirent *dent,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* Look for the dirent that contains the offset specified in data. Once we
  * find that dirent, there must be space available there for the new dirent */
 static int gfs2_dirent_find_offset(const struct gfs2_dirent *dent,
@@ -571,7 +459,6 @@ static int gfs2_dirent_find_offset(const struct gfs2_dirent *dent,
 	return -1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int gfs2_dirent_find_space(const struct gfs2_dirent *dent,
 				  const struct qstr *name,
 				  void *opaque)
@@ -612,12 +499,8 @@ static int gfs2_dirent_gather(const struct gfs2_dirent *dent,
  * For now the most important thing is to check that the various sizes
  * are correct.
  */
-<<<<<<< HEAD
-static int gfs2_check_dirent(struct gfs2_dirent *dent, unsigned int offset,
-=======
 static int gfs2_check_dirent(struct gfs2_sbd *sdp,
 			     struct gfs2_dirent *dent, unsigned int offset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned int size, unsigned int len, int first)
 {
 	const char *msg = "gfs2_dirent too small";
@@ -639,21 +522,12 @@ static int gfs2_check_dirent(struct gfs2_sbd *sdp,
 		goto error;
 	return 0;
 error:
-<<<<<<< HEAD
-	printk(KERN_WARNING "gfs2_check_dirent: %s (%s)\n", msg,
-	       first ? "first in block" : "not first in block");
-	return -EIO;
-}
-
-static int gfs2_dirent_offset(const void *buf)
-=======
 	fs_warn(sdp, "%s: %s (%s)\n",
 		__func__, msg, first ? "first in block" : "not first in block");
 	return -EIO;
 }
 
 static int gfs2_dirent_offset(struct gfs2_sbd *sdp, const void *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct gfs2_meta_header *h = buf;
 	int offset;
@@ -672,13 +546,8 @@ static int gfs2_dirent_offset(struct gfs2_sbd *sdp, const void *buf)
 	}
 	return offset;
 wrong_type:
-<<<<<<< HEAD
-	printk(KERN_WARNING "gfs2_scan_dirent: wrong block type %u\n",
-	       be32_to_cpu(h->mh_type));
-=======
 	fs_warn(sdp, "%s: wrong block type %u\n", __func__,
 		be32_to_cpu(h->mh_type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -692,11 +561,7 @@ static struct gfs2_dirent *gfs2_dirent_scan(struct inode *inode, void *buf,
 	unsigned size;
 	int ret = 0;
 
-<<<<<<< HEAD
-	ret = gfs2_dirent_offset(buf);
-=======
 	ret = gfs2_dirent_offset(GFS2_SB(inode), buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto consist_inode;
 
@@ -704,11 +569,7 @@ static struct gfs2_dirent *gfs2_dirent_scan(struct inode *inode, void *buf,
 	prev = NULL;
 	dent = buf + offset;
 	size = be16_to_cpu(dent->de_rec_len);
-<<<<<<< HEAD
-	if (gfs2_check_dirent(dent, offset, size, len, 1))
-=======
 	if (gfs2_check_dirent(GFS2_SB(inode), dent, offset, size, len, 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto consist_inode;
 	do {
 		ret = scan(dent, name, opaque);
@@ -720,12 +581,8 @@ static struct gfs2_dirent *gfs2_dirent_scan(struct inode *inode, void *buf,
 		prev = dent;
 		dent = buf + offset;
 		size = be16_to_cpu(dent->de_rec_len);
-<<<<<<< HEAD
-		if (gfs2_check_dirent(dent, offset, size, len, 0))
-=======
 		if (gfs2_check_dirent(GFS2_SB(inode), dent, offset, size,
 				      len, 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto consist_inode;
 	} while(1);
 
@@ -818,11 +675,7 @@ static void dirent_del(struct gfs2_inode *dip, struct buffer_head *bh,
 		return;
 	}
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(dip->i_gl, bh, 1);
-=======
 	gfs2_trans_add_meta(dip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If there is no prev entry, this is the first entry in the block.
 	   The de_rec_len is already as big as it needs to be.  Just zero
@@ -848,8 +701,6 @@ static void dirent_del(struct gfs2_inode *dip, struct buffer_head *bh,
 	prev->de_rec_len = cpu_to_be16(prev_rec_len);
 }
 
-<<<<<<< HEAD
-=======
 
 static struct gfs2_dirent *do_init_dirent(struct inode *inode,
 					  struct gfs2_dirent *dent,
@@ -871,7 +722,6 @@ static struct gfs2_dirent *do_init_dirent(struct inode *inode,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Takes a dent from which to grab space as an argument. Returns the
  * newly created dent.
@@ -881,33 +731,6 @@ static struct gfs2_dirent *gfs2_init_dirent(struct inode *inode,
 					    const struct qstr *name,
 					    struct buffer_head *bh)
 {
-<<<<<<< HEAD
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct gfs2_dirent *ndent;
-	unsigned offset = 0, totlen;
-
-	if (!gfs2_dirent_sentinel(dent))
-		offset = GFS2_DIRENT_SIZE(be16_to_cpu(dent->de_name_len));
-	totlen = be16_to_cpu(dent->de_rec_len);
-	BUG_ON(offset + name->len > totlen);
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-	ndent = (struct gfs2_dirent *)((char *)dent + offset);
-	dent->de_rec_len = cpu_to_be16(offset);
-	gfs2_qstr2dirent(name, totlen - offset, ndent);
-	return ndent;
-}
-
-static struct gfs2_dirent *gfs2_dirent_alloc(struct inode *inode,
-					     struct buffer_head *bh,
-					     const struct qstr *name)
-{
-	struct gfs2_dirent *dent;
-	dent = gfs2_dirent_scan(inode, bh->b_data, bh->b_size,
-				gfs2_dirent_find_space, name, NULL);
-	if (!dent || IS_ERR(dent))
-		return dent;
-	return gfs2_init_dirent(inode, dent, name, bh);
-=======
 	unsigned offset = 0;
 
 	if (!gfs2_dirent_sentinel(dent))
@@ -927,7 +750,6 @@ static struct gfs2_dirent *gfs2_dirent_split_alloc(struct inode *inode,
 		return dent;
 	return do_init_dirent(inode, dent, name, bh,
 			      (unsigned)(ptr - (void *)dent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_leaf(struct gfs2_inode *dip, u64 leaf_no,
@@ -935,15 +757,9 @@ static int get_leaf(struct gfs2_inode *dip, u64 leaf_no,
 {
 	int error;
 
-<<<<<<< HEAD
-	error = gfs2_meta_read(dip->i_gl, leaf_no, DIO_WAIT, bhp);
-	if (!error && gfs2_metatype_check(GFS2_SB(&dip->i_inode), *bhp, GFS2_METATYPE_LF)) {
-		/* printk(KERN_INFO "block num=%llu\n", leaf_no); */
-=======
 	error = gfs2_meta_read(dip->i_gl, leaf_no, DIO_WAIT, 0, bhp);
 	if (!error && gfs2_metatype_check(GFS2_SB(&dip->i_inode), *bhp, GFS2_METATYPE_LF)) {
 		/* pr_info("block num=%llu\n", leaf_no); */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -EIO;
 	}
 
@@ -953,29 +769,12 @@ static int get_leaf(struct gfs2_inode *dip, u64 leaf_no,
 /**
  * get_leaf_nr - Get a leaf number associated with the index
  * @dip: The GFS2 inode
-<<<<<<< HEAD
- * @index:
- * @leaf_out:
-=======
  * @index: hash table index of the targeted leaf
  * @leaf_out: Resulting leaf block number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, error code otherwise
  */
 
-<<<<<<< HEAD
-static int get_leaf_nr(struct gfs2_inode *dip, u32 index,
-		       u64 *leaf_out)
-{
-	__be64 *hash;
-
-	hash = gfs2_dir_get_hash_table(dip);
-	if (IS_ERR(hash))
-		return PTR_ERR(hash);
-	*leaf_out = be64_to_cpu(*(hash + index));
-	return 0;
-=======
 static int get_leaf_nr(struct gfs2_inode *dip, u32 index, u64 *leaf_out)
 {
 	__be64 *hash;
@@ -988,7 +787,6 @@ static int get_leaf_nr(struct gfs2_inode *dip, u32 index, u64 *leaf_out)
 		*leaf_out = be64_to_cpu(*(hash + index));
 
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_first_leaf(struct gfs2_inode *dip, u32 index,
@@ -1016,13 +814,8 @@ static struct gfs2_dirent *gfs2_dirent_search(struct inode *inode,
 
 	if (ip->i_diskflags & GFS2_DIF_EXHASH) {
 		struct gfs2_leaf *leaf;
-<<<<<<< HEAD
-		unsigned hsize = 1 << ip->i_depth;
-		unsigned index;
-=======
 		unsigned int hsize = BIT(ip->i_depth);
 		unsigned int index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 ln;
 		if (hsize * sizeof(u64) != i_size_read(inode)) {
 			gfs2_consist_inode(ip);
@@ -1056,11 +849,7 @@ static struct gfs2_dirent *gfs2_dirent_search(struct inode *inode,
 		return ERR_PTR(error);
 	dent = gfs2_dirent_scan(inode, bh->b_data, bh->b_size, scan, name, NULL);
 got_dent:
-<<<<<<< HEAD
-	if (unlikely(dent == NULL || IS_ERR(dent))) {
-=======
 	if (IS_ERR_OR_NULL(dent)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		bh = NULL;
 	}
@@ -1077,39 +866,23 @@ static struct gfs2_leaf *new_leaf(struct inode *inode, struct buffer_head **pbh,
 	struct buffer_head *bh;
 	struct gfs2_leaf *leaf;
 	struct gfs2_dirent *dent;
-<<<<<<< HEAD
-	struct qstr name = { .name = "" };
-
-	error = gfs2_alloc_blocks(ip, &bn, &n, 0, NULL);
-=======
 	struct timespec64 tv = current_time(inode);
 
 	error = gfs2_alloc_blocks(ip, &bn, &n, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return NULL;
 	bh = gfs2_meta_new(ip->i_gl, bn);
 	if (!bh)
 		return NULL;
 
-<<<<<<< HEAD
-	gfs2_trans_add_unrevoke(GFS2_SB(inode), bn, 1);
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	gfs2_trans_remove_revoke(GFS2_SB(inode), bn, 1);
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_metatype_set(bh, GFS2_METATYPE_LF, GFS2_FORMAT_LF);
 	leaf = (struct gfs2_leaf *)bh->b_data;
 	leaf->lf_depth = cpu_to_be16(depth);
 	leaf->lf_entries = 0;
 	leaf->lf_dirent_format = cpu_to_be32(GFS2_FORMAT_DE);
 	leaf->lf_next = 0;
-<<<<<<< HEAD
-	memset(leaf->lf_reserved, 0, sizeof(leaf->lf_reserved));
-	dent = (struct gfs2_dirent *)(leaf+1);
-	gfs2_qstr2dirent(&name, bh->b_size - sizeof(struct gfs2_leaf), dent);
-=======
 	leaf->lf_inode = cpu_to_be64(ip->i_no_addr);
 	leaf->lf_dist = cpu_to_be32(1);
 	leaf->lf_nsec = cpu_to_be32(tv.tv_nsec);
@@ -1117,18 +890,13 @@ static struct gfs2_leaf *new_leaf(struct inode *inode, struct buffer_head **pbh,
 	memset(leaf->lf_reserved2, 0, sizeof(leaf->lf_reserved2));
 	dent = (struct gfs2_dirent *)(leaf+1);
 	gfs2_qstr2dirent(&empty_name, bh->b_size - sizeof(struct gfs2_leaf), dent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pbh = bh;
 	return leaf;
 }
 
 /**
  * dir_make_exhash - Convert a stuffed directory into an ExHash directory
-<<<<<<< HEAD
- * @dip: The GFS2 inode
-=======
  * @inode: The directory inode to be converted to exhash
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, error code otherwise
  */
@@ -1158,11 +926,7 @@ static int dir_make_exhash(struct inode *inode)
 		return -ENOSPC;
 	bn = bh->b_blocknr;
 
-<<<<<<< HEAD
-	gfs2_assert(sdp, dip->i_entries < (1 << 16));
-=======
 	gfs2_assert(sdp, dip->i_entries < BIT(16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	leaf->lf_entries = cpu_to_be16(dip->i_entries);
 
 	/*  Copy dirents  */
@@ -1201,11 +965,7 @@ static int dir_make_exhash(struct inode *inode)
 	/*  We're done with the new leaf block, now setup the new
 	    hash table.  */
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(dip->i_gl, dibh, 1);
-=======
 	gfs2_trans_add_meta(dip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode));
 
 	lp = (__be64 *)(dibh->b_data + sizeof(struct gfs2_dinode));
@@ -1229,14 +989,8 @@ static int dir_make_exhash(struct inode *inode)
 
 /**
  * dir_split_leaf - Split a leaf block into two
-<<<<<<< HEAD
- * @dip: The GFS2 inode
- * @index:
- * @leaf_no:
-=======
  * @inode: The directory inode to be split
  * @name: name of the dirent we're trying to insert
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, error code on failure
  */
@@ -1251,11 +1005,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	u64 bn, leaf_no;
 	__be64 *lp;
 	u32 index;
-<<<<<<< HEAD
-	int x, moved = 0;
-=======
 	int x;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	index = name->hash >> (32 - dip->i_depth);
@@ -1274,11 +1024,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 		return 1; /* can't split */
 	}
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(dip->i_gl, obh, 1);
-=======
 	gfs2_trans_add_meta(dip->i_gl, obh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nleaf = new_leaf(inode, &nbh, be16_to_cpu(oleaf->lf_depth) + 1);
 	if (!nleaf) {
@@ -1288,18 +1034,11 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	bn = nbh->b_blocknr;
 
 	/*  Compute the start and len of leaf pointers in the hash table.  */
-<<<<<<< HEAD
-	len = 1 << (dip->i_depth - be16_to_cpu(oleaf->lf_depth));
-	half_len = len >> 1;
-	if (!half_len) {
-		printk(KERN_WARNING "i_depth %u lf_depth %u index %u\n", dip->i_depth, be16_to_cpu(oleaf->lf_depth), index);
-=======
 	len = BIT(dip->i_depth - be16_to_cpu(oleaf->lf_depth));
 	half_len = len >> 1;
 	if (!half_len) {
 		fs_warn(GFS2_SB(inode), "i_depth %u lf_depth %u index %u\n",
 			dip->i_depth, be16_to_cpu(oleaf->lf_depth), index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_consist_inode(dip);
 		error = -EIO;
 		goto fail_brelse;
@@ -1310,11 +1049,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	/* Change the pointers.
 	   Don't bother distinguishing stuffed from non-stuffed.
 	   This code is complicated enough already. */
-<<<<<<< HEAD
-	lp = kmalloc(half_len * sizeof(__be64), GFP_NOFS);
-=======
 	lp = kmalloc_array(half_len, sizeof(__be64), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lp) {
 		error = -ENOMEM;
 		goto fail_brelse;
@@ -1350,18 +1085,11 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 		if (!gfs2_dirent_sentinel(dent) &&
 		    be32_to_cpu(dent->de_hash) < divider) {
 			struct qstr str;
-<<<<<<< HEAD
-			str.name = (char*)(dent+1);
-			str.len = be16_to_cpu(dent->de_name_len);
-			str.hash = be32_to_cpu(dent->de_hash);
-			new = gfs2_dirent_alloc(inode, nbh, &str);
-=======
 			void *ptr = ((char *)dent - obh->b_data) + nbh->b_data;
 			str.name = (char*)(dent+1);
 			str.len = be16_to_cpu(dent->de_name_len);
 			str.hash = be32_to_cpu(dent->de_hash);
 			new = gfs2_dirent_split_alloc(inode, nbh, &str, ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(new)) {
 				error = PTR_ERR(new);
 				break;
@@ -1379,11 +1107,6 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 
 			if (!prev)
 				prev = dent;
-<<<<<<< HEAD
-
-			moved = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			prev = dent;
 		}
@@ -1394,11 +1117,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 
 	error = gfs2_meta_inode_buffer(dip, &dibh);
 	if (!gfs2_assert_withdraw(GFS2_SB(&dip->i_inode), !error)) {
-<<<<<<< HEAD
-		gfs2_trans_add_bh(dip->i_gl, dibh, 1);
-=======
 		gfs2_trans_add_meta(dip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_add_inode_blocks(&dip->i_inode, 1);
 		gfs2_dinode_out(dip, dibh->b_data);
 		brelse(dibh);
@@ -1435,23 +1154,13 @@ static int dir_double_exhash(struct gfs2_inode *dip)
 	int x;
 	int error = 0;
 
-<<<<<<< HEAD
-	hsize = 1 << dip->i_depth;
-=======
 	hsize = BIT(dip->i_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hsize_bytes = hsize * sizeof(__be64);
 
 	hc = gfs2_dir_get_hash_table(dip);
 	if (IS_ERR(hc))
 		return PTR_ERR(hc);
 
-<<<<<<< HEAD
-	h = hc2 = kmalloc(hsize_bytes * 2, GFP_NOFS);
-	if (!hc2)
-		return -ENOMEM;
-
-=======
 	hc2 = kmalloc_array(hsize_bytes, 2, GFP_NOFS | __GFP_NOWARN);
 	if (hc2 == NULL)
 		hc2 = __vmalloc(hsize_bytes * 2, GFP_NOFS);
@@ -1460,7 +1169,6 @@ static int dir_double_exhash(struct gfs2_inode *dip)
 		return -ENOMEM;
 
 	h = hc2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = gfs2_meta_inode_buffer(dip, &dibh);
 	if (error)
 		goto out_kfree;
@@ -1489,11 +1197,7 @@ fail:
 	gfs2_dinode_out(dip, dibh->b_data);
 	brelse(dibh);
 out_kfree:
-<<<<<<< HEAD
-	kfree(hc2);
-=======
 	kvfree(hc2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1515,17 +1219,10 @@ static int compare_dents(const void *a, const void *b)
 	int ret = 0;
 
 	dent_a = *(const struct gfs2_dirent **)a;
-<<<<<<< HEAD
-	hash_a = be32_to_cpu(dent_a->de_hash);
-
-	dent_b = *(const struct gfs2_dirent **)b;
-	hash_b = be32_to_cpu(dent_b->de_hash);
-=======
 	hash_a = dent_a->de_cookie;
 
 	dent_b = *(const struct gfs2_dirent **)b;
 	hash_b = dent_b->de_cookie;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hash_a > hash_b)
 		ret = 1;
@@ -1549,18 +1246,10 @@ static int compare_dents(const void *a, const void *b)
 /**
  * do_filldir_main - read out directory entries
  * @dip: The GFS2 inode
-<<<<<<< HEAD
- * @offset: The offset in the file to read from
- * @opaque: opaque data to pass to filldir
- * @filldir: The function to pass entries to
- * @darr: an array of struct gfs2_dirent pointers to read
- * @entries: the number of entries in darr
-=======
  * @ctx: what to feed the entries to
  * @darr: an array of struct gfs2_dirent pointers to read
  * @entries: the number of entries in darr
  * @sort_start: index of the directory array to start our sort
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @copied: pointer to int that's non-zero if a entry has been copied out
  *
  * Jump through some hoops to make sure that if there are hash collsions,
@@ -1568,36 +1257,17 @@ static int compare_dents(const void *a, const void *b)
  * the possibility that they will fall into different readdir buffers or
  * that someone will want to seek to that location.
  *
-<<<<<<< HEAD
- * Returns: errno, >0 on exception from filldir
- */
-
-static int do_filldir_main(struct gfs2_inode *dip, u64 *offset,
-			   void *opaque, filldir_t filldir,
-			   const struct gfs2_dirent **darr, u32 entries,
-			   int *copied)
-=======
  * Returns: errno, >0 if the actor tells you to stop
  */
 
 static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 			   struct gfs2_dirent **darr, u32 entries,
 			   u32 sort_start, int *copied)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct gfs2_dirent *dent, *dent_next;
 	u64 off, off_next;
 	unsigned int x, y;
 	int run = 0;
-<<<<<<< HEAD
-	int error = 0;
-
-	sort(darr, entries, sizeof(struct gfs2_dirent *), compare_dents, NULL);
-
-	dent_next = darr[0];
-	off_next = be32_to_cpu(dent_next->de_hash);
-	off_next = gfs2_disk_hash2offset(off_next);
-=======
 
 	if (sort_start < entries)
 		sort(&darr[sort_start], entries - sort_start,
@@ -1605,7 +1275,6 @@ static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 
 	dent_next = darr[0];
 	off_next = dent_next->de_cookie;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (x = 0, y = 1; x < entries; x++, y++) {
 		dent = dent_next;
@@ -1613,20 +1282,11 @@ static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 
 		if (y < entries) {
 			dent_next = darr[y];
-<<<<<<< HEAD
-			off_next = be32_to_cpu(dent_next->de_hash);
-			off_next = gfs2_disk_hash2offset(off_next);
-
-			if (off < *offset)
-				continue;
-			*offset = off;
-=======
 			off_next = dent_next->de_cookie;
 
 			if (off < ctx->pos)
 				continue;
 			ctx->pos = off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (off_next == off) {
 				if (*copied && !run)
@@ -1635,18 +1295,6 @@ static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 			} else
 				run = 0;
 		} else {
-<<<<<<< HEAD
-			if (off < *offset)
-				continue;
-			*offset = off;
-		}
-
-		error = filldir(opaque, (const char *)(dent + 1),
-				be16_to_cpu(dent->de_name_len),
-				off, be64_to_cpu(dent->de_inum.no_addr),
-				be16_to_cpu(dent->de_type));
-		if (error)
-=======
 			if (off < ctx->pos)
 				continue;
 			ctx->pos = off;
@@ -1656,25 +1304,16 @@ static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 				be16_to_cpu(dent->de_name_len),
 				be64_to_cpu(dent->de_inum.no_addr),
 				be16_to_cpu(dent->de_type)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 
 		*copied = 1;
 	}
 
-<<<<<<< HEAD
-	/* Increment the *offset by one, so the next time we come into the
-	   do_filldir fxn, we get the next entry instead of the last one in the
-	   current leaf */
-
-	(*offset)++;
-=======
 	/* Increment the ctx->pos by one, so the next time we come into the
 	   do_filldir fxn, we get the next entry instead of the last one in the
 	   current leaf */
 
 	ctx->pos++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1686,22 +1325,6 @@ static void *gfs2_alloc_sort_buffer(unsigned size)
 	if (size < KMALLOC_MAX_SIZE)
 		ptr = kmalloc(size, GFP_NOFS | __GFP_NOWARN);
 	if (!ptr)
-<<<<<<< HEAD
-		ptr = __vmalloc(size, GFP_NOFS, PAGE_KERNEL);
-	return ptr;
-}
-
-static void gfs2_free_sort_buffer(void *ptr)
-{
-	if (is_vmalloc_addr(ptr))
-		vfree(ptr);
-	else
-		kfree(ptr);
-}
-
-static int gfs2_dir_read_leaf(struct inode *inode, u64 *offset, void *opaque,
-			      filldir_t filldir, int *copied, unsigned *depth,
-=======
 		ptr = __vmalloc(size, GFP_NOFS);
 	return ptr;
 }
@@ -1742,7 +1365,6 @@ static int gfs2_set_cookies(struct gfs2_sbd *sdp, struct buffer_head *bh,
 
 static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 			      int *copied, unsigned *depth,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u64 leaf_no)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
@@ -1750,20 +1372,11 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 	struct buffer_head *bh;
 	struct gfs2_leaf *lf;
 	unsigned entries = 0, entries2 = 0;
-<<<<<<< HEAD
-	unsigned leaves = 0;
-	const struct gfs2_dirent **darr, *dent;
-	struct dirent_gather g;
-	struct buffer_head **larr;
-	int leaf = 0;
-	int error, i;
-=======
 	unsigned leaves = 0, leaf = 0, offset, sort_offset;
 	struct gfs2_dirent **darr, *dent;
 	struct dirent_gather g;
 	struct buffer_head **larr;
 	int error, i, need_sort = 0, sort_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 lfn = leaf_no;
 
 	do {
@@ -1779,14 +1392,11 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 		brelse(bh);
 	} while(lfn);
 
-<<<<<<< HEAD
-=======
 	if (*depth < GFS2_DIR_MAX_DEPTH || !sdp->sd_args.ar_loccookie) {
 		need_sort = 1;
 		sort_offset = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entries)
 		return 0;
 
@@ -1800,13 +1410,8 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 	larr = gfs2_alloc_sort_buffer((leaves + entries + 99) * sizeof(void *));
 	if (!larr)
 		goto out;
-<<<<<<< HEAD
-	darr = (const struct gfs2_dirent **)(larr + leaves);
-	g.pdent = darr;
-=======
 	darr = (struct gfs2_dirent **)(larr + leaves);
 	g.pdent = (const struct gfs2_dirent **)darr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	g.offset = 0;
 	lfn = leaf_no;
 
@@ -1817,10 +1422,7 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 		lf = (struct gfs2_leaf *)bh->b_data;
 		lfn = be64_to_cpu(lf->lf_next);
 		if (lf->lf_entries) {
-<<<<<<< HEAD
-=======
 			offset = g.offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			entries2 += be16_to_cpu(lf->lf_entries);
 			dent = gfs2_dirent_scan(inode, bh->b_data, bh->b_size,
 						gfs2_dirent_gather, NULL, &g);
@@ -1833,19 +1435,11 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 						"g.offset (%u)\n",
 					(unsigned long long)bh->b_blocknr,
 					entries2, g.offset);
-<<<<<<< HEAD
-					
-=======
 				gfs2_consist_inode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				error = -EIO;
 				goto out_free;
 			}
 			error = 0;
-<<<<<<< HEAD
-			larr[leaf++] = bh;
-		} else {
-=======
 			sort_id = gfs2_set_cookies(sdp, bh, leaf, &darr[offset],
 						   be16_to_cpu(lf->lf_entries));
 			if (!need_sort && sort_id >= 0) {
@@ -1855,40 +1449,27 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 			larr[leaf++] = bh;
 		} else {
 			larr[leaf++] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			brelse(bh);
 		}
 	} while(lfn);
 
 	BUG_ON(entries2 != entries);
-<<<<<<< HEAD
-	error = do_filldir_main(ip, offset, opaque, filldir, darr,
-				entries, copied);
-out_free:
-	for(i = 0; i < leaf; i++)
-		brelse(larr[i]);
-	gfs2_free_sort_buffer(larr);
-=======
 	error = do_filldir_main(ip, ctx, darr, entries, need_sort ?
 				sort_offset : entries, copied);
 out_free:
 	for(i = 0; i < leaf; i++)
 		brelse(larr[i]);
 	kvfree(larr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
 
 /**
  * gfs2_dir_readahead - Issue read-ahead requests for leaf blocks.
-<<<<<<< HEAD
-=======
  * @inode: the directory inode
  * @hsize: hash table size
  * @index: index into the hash table
  * @f_ra: read-ahead parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: we can't calculate each index like dir_e_read can because we don't
  * have the leaf, and therefore we don't have the depth, and therefore we
@@ -1927,12 +1508,8 @@ static void gfs2_dir_readahead(struct inode *inode, unsigned hsize, u32 index,
 				continue;
 			}
 			bh->b_end_io = end_buffer_read_sync;
-<<<<<<< HEAD
-			submit_bh(READA | REQ_META, bh);
-=======
 			submit_bh(REQ_OP_READ | REQ_RAHEAD | REQ_META |
 				  REQ_PRIO, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		brelse(bh);
@@ -1941,27 +1518,15 @@ static void gfs2_dir_readahead(struct inode *inode, unsigned hsize, u32 index,
 
 /**
  * dir_e_read - Reads the entries from a directory into a filldir buffer
-<<<<<<< HEAD
- * @dip: dinode pointer
- * @offset: the hash of the last entry read shifted to the right once
- * @opaque: buffer for the filldir function to fill
- * @filldir: points to the filldir function to use
-=======
  * @inode: the directory inode
  * @ctx: actor to feed the entries to
  * @f_ra: read-ahead parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int dir_e_read(struct inode *inode, u64 *offset, void *opaque,
-		      filldir_t filldir, struct file_ra_state *f_ra)
-=======
 static int dir_e_read(struct inode *inode, struct dir_context *ctx,
 		      struct file_ra_state *f_ra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_inode *dip = GFS2_I(inode);
 	u32 hsize, len = 0;
@@ -1971,13 +1536,8 @@ static int dir_e_read(struct inode *inode, struct dir_context *ctx,
 	int error = 0;
 	unsigned depth = 0;
 
-<<<<<<< HEAD
-	hsize = 1 << dip->i_depth;
-	hash = gfs2_dir_offset2hash(*offset);
-=======
 	hsize = BIT(dip->i_depth);
 	hash = gfs2_dir_offset2hash(ctx->pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	index = hash >> (32 - dip->i_depth);
 
 	if (dip->i_hash_cache == NULL)
@@ -1989,21 +1549,13 @@ static int dir_e_read(struct inode *inode, struct dir_context *ctx,
 	gfs2_dir_readahead(inode, hsize, index, f_ra);
 
 	while (index < hsize) {
-<<<<<<< HEAD
-		error = gfs2_dir_read_leaf(inode, offset, opaque, filldir,
-=======
 		error = gfs2_dir_read_leaf(inode, ctx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   &copied, &depth,
 					   be64_to_cpu(lp[index]));
 		if (error)
 			break;
 
-<<<<<<< HEAD
-		len = 1 << (dip->i_depth - depth);
-=======
 		len = BIT(dip->i_depth - depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		index = (index & ~(len - 1)) + len;
 	}
 
@@ -2012,22 +1564,13 @@ static int dir_e_read(struct inode *inode, struct dir_context *ctx,
 	return error;
 }
 
-<<<<<<< HEAD
-int gfs2_dir_read(struct inode *inode, u64 *offset, void *opaque,
-		  filldir_t filldir, struct file_ra_state *f_ra)
-=======
 int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 		  struct file_ra_state *f_ra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_inode *dip = GFS2_I(inode);
 	struct gfs2_sbd *sdp = GFS2_SB(inode);
 	struct dirent_gather g;
-<<<<<<< HEAD
-	const struct gfs2_dirent **darr, *dent;
-=======
 	struct gfs2_dirent **darr, *dent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *dibh;
 	int copied = 0;
 	int error;
@@ -2036,11 +1579,7 @@ int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 		return 0;
 
 	if (dip->i_diskflags & GFS2_DIF_EXHASH)
-<<<<<<< HEAD
-		return dir_e_read(inode, offset, opaque, filldir, f_ra);
-=======
 		return dir_e_read(inode, ctx, f_ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!gfs2_is_stuffed(dip)) {
 		gfs2_consist_inode(dip);
@@ -2053,15 +1592,9 @@ int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 
 	error = -ENOMEM;
 	/* 96 is max number of dirents which can be stuffed into an inode */
-<<<<<<< HEAD
-	darr = kmalloc(96 * sizeof(struct gfs2_dirent *), GFP_NOFS);
-	if (darr) {
-		g.pdent = darr;
-=======
 	darr = kmalloc_array(96, sizeof(struct gfs2_dirent *), GFP_NOFS);
 	if (darr) {
 		g.pdent = (const struct gfs2_dirent **)darr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		g.offset = 0;
 		dent = gfs2_dirent_scan(inode, dibh->b_data, dibh->b_size,
 					gfs2_dirent_gather, NULL, &g);
@@ -2075,13 +1608,6 @@ int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 				(unsigned long long)dip->i_no_addr,
 				dip->i_entries,
 				g.offset);
-<<<<<<< HEAD
-			error = -EIO;
-			goto out;
-		}
-		error = do_filldir_main(dip, offset, opaque, filldir, darr,
-					dip->i_entries, &copied);
-=======
 			gfs2_consist_inode(dip);
 			error = -EIO;
 			goto out;
@@ -2089,7 +1615,6 @@ int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 		gfs2_set_cookies(sdp, dibh, 0, darr, dip->i_entries);
 		error = do_filldir_main(dip, ctx, darr,
 					dip->i_entries, 0, &copied);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 		kfree(darr);
 	}
@@ -2104,15 +1629,9 @@ out:
 
 /**
  * gfs2_dir_search - Search a directory
-<<<<<<< HEAD
- * @dip: The GFS2 inode
- * @filename:
- * @inode:
-=======
  * @dir: The GFS2 directory inode
  * @name: The name we are looking up
  * @fail_on_exist: Fail if the name exists rather than looking it up
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine searches a directory for a file or another directory.
  * Assumes a glock is held on dip.
@@ -2120,23 +1639,6 @@ out:
  * Returns: errno
  */
 
-<<<<<<< HEAD
-struct inode *gfs2_dir_search(struct inode *dir, const struct qstr *name)
-{
-	struct buffer_head *bh;
-	struct gfs2_dirent *dent;
-	struct inode *inode;
-
-	dent = gfs2_dirent_search(dir, name, gfs2_dirent_find, &bh);
-	if (dent) {
-		if (IS_ERR(dent))
-			return ERR_CAST(dent);
-		inode = gfs2_inode_lookup(dir->i_sb, 
-				be16_to_cpu(dent->de_type),
-				be64_to_cpu(dent->de_inum.no_addr),
-				be64_to_cpu(dent->de_inum.no_formal_ino), 0);
-		brelse(bh);
-=======
 struct inode *gfs2_dir_search(struct inode *dir, const struct qstr *name,
 			      bool fail_on_exist)
 {
@@ -2163,7 +1665,6 @@ struct inode *gfs2_dir_search(struct inode *dir, const struct qstr *name,
 					  GFS2_BLKST_FREE /* ignore */);
 		if (!IS_ERR(inode))
 			GFS2_I(inode)->i_rahead = rahead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return inode;
 	}
 	return ERR_PTR(-ENOENT);
@@ -2200,8 +1701,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * dir_new_leaf - Add a new leaf onto hash chain
  * @inode: The directory
@@ -2221,16 +1720,12 @@ out:
  * Returns: 0 on success, or -ve on error
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dir_new_leaf(struct inode *inode, const struct qstr *name)
 {
 	struct buffer_head *bh, *obh;
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct gfs2_leaf *leaf, *oleaf;
-<<<<<<< HEAD
-=======
 	u32 dist = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	u32 index;
 	u64 bn;
@@ -2240,10 +1735,7 @@ static int dir_new_leaf(struct inode *inode, const struct qstr *name)
 	if (error)
 		return error;
 	do {
-<<<<<<< HEAD
-=======
 		dist++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		oleaf = (struct gfs2_leaf *)obh->b_data;
 		bn = be64_to_cpu(oleaf->lf_next);
 		if (!bn)
@@ -2254,21 +1746,14 @@ static int dir_new_leaf(struct inode *inode, const struct qstr *name)
 			return error;
 	} while(1);
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, obh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, obh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	leaf = new_leaf(inode, &bh, be16_to_cpu(oleaf->lf_depth));
 	if (!leaf) {
 		brelse(obh);
 		return -ENOSPC;
 	}
-<<<<<<< HEAD
-=======
 	leaf->lf_dist = cpu_to_be32(dist);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oleaf->lf_next = cpu_to_be64(bh->b_blocknr);
 	brelse(bh);
 	brelse(obh);
@@ -2276,25 +1761,13 @@ static int dir_new_leaf(struct inode *inode, const struct qstr *name)
 	error = gfs2_meta_inode_buffer(ip, &bh);
 	if (error)
 		return error;
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_add_inode_blocks(&ip->i_inode, 1);
 	gfs2_dinode_out(ip, bh->b_data);
 	brelse(bh);
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * gfs2_dir_add - Add new filename into directory
- * @dip: The GFS2 inode
- * @filename: The new name
- * @inode: The inode number of the entry
- * @type: The type of the entry
-=======
 static u16 gfs2_inode_ra_len(const struct gfs2_inode *ip)
 {
 	u64 where = ip->i_no_addr + 1;
@@ -2315,62 +1788,31 @@ static u16 gfs2_inode_ra_len(const struct gfs2_inode *ip)
  * a pointer to the directory entry and the bh in which it resides. We
  * can use that without having to repeat the search. If there was no
  * free space, then we must now create more space.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, error code on failure
  */
 
 int gfs2_dir_add(struct inode *inode, const struct qstr *name,
-<<<<<<< HEAD
-		 const struct gfs2_inode *nip)
-{
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct buffer_head *bh;
-	struct gfs2_dirent *dent;
-=======
 		 const struct gfs2_inode *nip, struct gfs2_diradd *da)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct buffer_head *bh = da->bh;
 	struct gfs2_dirent *dent = da->dent;
 	struct timespec64 tv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_leaf *leaf;
 	int error;
 
 	while(1) {
-<<<<<<< HEAD
-		dent = gfs2_dirent_search(inode, name, gfs2_dirent_find_space,
-					  &bh);
-=======
 		if (da->bh == NULL) {
 			dent = gfs2_dirent_search(inode, name,
 						  gfs2_dirent_find_space, &bh);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dent) {
 			if (IS_ERR(dent))
 				return PTR_ERR(dent);
 			dent = gfs2_init_dirent(inode, dent, name, bh);
 			gfs2_inum_out(nip, dent);
 			dent->de_type = cpu_to_be16(IF2DT(nip->i_inode.i_mode));
-<<<<<<< HEAD
-			if (ip->i_diskflags & GFS2_DIF_EXHASH) {
-				leaf = (struct gfs2_leaf *)bh->b_data;
-				be16_add_cpu(&leaf->lf_entries, 1);
-			}
-			brelse(bh);
-			error = gfs2_meta_inode_buffer(ip, &bh);
-			if (error)
-				break;
-			gfs2_trans_add_bh(ip->i_gl, bh, 1);
-			ip->i_entries++;
-			ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-			if (S_ISDIR(nip->i_inode.i_mode))
-				inc_nlink(&ip->i_inode);
-			gfs2_dinode_out(ip, bh->b_data);
-			brelse(bh);
-=======
 			dent->de_rahead = cpu_to_be16(gfs2_inode_ra_len(nip));
 			tv = inode_set_ctime_current(&ip->i_inode);
 			if (ip->i_diskflags & GFS2_DIF_EXHASH) {
@@ -2387,7 +1829,6 @@ int gfs2_dir_add(struct inode *inode, const struct qstr *name,
 			if (S_ISDIR(nip->i_inode.i_mode))
 				inc_nlink(&ip->i_inode);
 			mark_inode_dirty(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = 0;
 			break;
 		}
@@ -2425,11 +1866,7 @@ int gfs2_dir_add(struct inode *inode, const struct qstr *name,
 /**
  * gfs2_dir_del - Delete a directory entry
  * @dip: The GFS2 inode
-<<<<<<< HEAD
- * @filename: The filename
-=======
  * @dentry: The directory entry we want to delete
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, error code on failure
  */
@@ -2439,10 +1876,7 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 	const struct qstr *name = &dentry->d_name;
 	struct gfs2_dirent *dent, *prev = NULL;
 	struct buffer_head *bh;
-<<<<<<< HEAD
-=======
 	struct timespec64 tv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Returns _either_ the entry (if its first in block) or the
 	   previous entry otherwise */
@@ -2462,34 +1896,23 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 	}
 
 	dirent_del(dip, bh, prev, dent);
-<<<<<<< HEAD
-=======
 	tv = inode_set_ctime_current(&dip->i_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dip->i_diskflags & GFS2_DIF_EXHASH) {
 		struct gfs2_leaf *leaf = (struct gfs2_leaf *)bh->b_data;
 		u16 entries = be16_to_cpu(leaf->lf_entries);
 		if (!entries)
 			gfs2_consist_inode(dip);
 		leaf->lf_entries = cpu_to_be16(--entries);
-<<<<<<< HEAD
-=======
 		leaf->lf_nsec = cpu_to_be32(tv.tv_nsec);
 		leaf->lf_sec = cpu_to_be64(tv.tv_sec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	brelse(bh);
 
 	if (!dip->i_entries)
 		gfs2_consist_inode(dip);
 	dip->i_entries--;
-<<<<<<< HEAD
-	dip->i_inode.i_mtime = dip->i_inode.i_ctime = CURRENT_TIME;
-	if (S_ISDIR(dentry->d_inode->i_mode))
-=======
 	inode_set_mtime_to_ts(&dip->i_inode, tv);
 	if (d_is_dir(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drop_nlink(&dip->i_inode);
 	mark_inode_dirty(&dip->i_inode);
 
@@ -2498,16 +1921,10 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 
 /**
  * gfs2_dir_mvino - Change inode number of directory entry
-<<<<<<< HEAD
- * @dip: The GFS2 inode
- * @filename:
- * @new_inode:
-=======
  * @dip: The GFS2 directory inode
  * @filename: the filename to be moved
  * @nip: the new GFS2 inode
  * @new_type: the de_type of the new dirent
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine changes the inode number of a directory entry.  It's used
  * by rename to change ".." when a directory is moved.
@@ -2521,10 +1938,6 @@ int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
 {
 	struct buffer_head *bh;
 	struct gfs2_dirent *dent;
-<<<<<<< HEAD
-	int error;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dent = gfs2_dirent_search(&dip->i_inode, filename, gfs2_dirent_find, &bh);
 	if (!dent) {
@@ -2534,23 +1947,6 @@ int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
 	if (IS_ERR(dent))
 		return PTR_ERR(dent);
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(dip->i_gl, bh, 1);
-	gfs2_inum_out(nip, dent);
-	dent->de_type = cpu_to_be16(new_type);
-
-	if (dip->i_diskflags & GFS2_DIF_EXHASH) {
-		brelse(bh);
-		error = gfs2_meta_inode_buffer(dip, &bh);
-		if (error)
-			return error;
-		gfs2_trans_add_bh(dip->i_gl, bh, 1);
-	}
-
-	dip->i_inode.i_mtime = dip->i_inode.i_ctime = CURRENT_TIME;
-	gfs2_dinode_out(dip, bh->b_data);
-	brelse(bh);
-=======
 	gfs2_trans_add_meta(dip->i_gl, bh);
 	gfs2_inum_out(nip, dent);
 	dent->de_type = cpu_to_be16(new_type);
@@ -2558,7 +1954,6 @@ int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
 
 	inode_set_mtime_to_ts(&dip->i_inode, inode_set_ctime_current(&dip->i_inode));
 	mark_inode_dirty_sync(&dip->i_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2569,11 +1964,7 @@ int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
  * @len: the number of pointers to this leaf
  * @leaf_no: the leaf number
  * @leaf_bh: buffer_head for the starting leaf
-<<<<<<< HEAD
- * last_dealloc: 1 if this is the final dealloc for the leaf, else 0
-=======
  * @last_dealloc: 1 if this is the final dealloc for the leaf, else 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
@@ -2598,20 +1989,6 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 
 	memset(&rlist, 0, sizeof(struct gfs2_rgrp_list));
 
-<<<<<<< HEAD
-	ht = kzalloc(size, GFP_NOFS);
-	if (!ht)
-		return -ENOMEM;
-
-	if (!gfs2_qadata_get(dip)) {
-		error = -ENOMEM;
-		goto out;
-	}
-
-	error = gfs2_quota_hold(dip, NO_QUOTA_CHANGE, NO_QUOTA_CHANGE);
-	if (error)
-		goto out_put;
-=======
 	ht = kzalloc(size, GFP_NOFS | __GFP_NOWARN);
 	if (ht == NULL)
 		ht = __vmalloc(size, GFP_NOFS | __GFP_NOWARN | __GFP_ZERO);
@@ -2621,7 +1998,6 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 	error = gfs2_quota_hold(dip, NO_UID_QUOTA_CHANGE, NO_GID_QUOTA_CHANGE);
 	if (error)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*  Count the number of leaves  */
 	bh = leaf_bh;
@@ -2641,19 +2017,11 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 		l_blocks++;
 	}
 
-<<<<<<< HEAD
-	gfs2_rlist_alloc(&rlist, LM_ST_EXCLUSIVE);
-
-	for (x = 0; x < rlist.rl_rgrps; x++) {
-		struct gfs2_rgrpd *rgd;
-		rgd = rlist.rl_ghs[x].gh_gl->gl_object;
-=======
 	gfs2_rlist_alloc(&rlist, LM_ST_EXCLUSIVE, LM_FLAG_NODE_SCOPE);
 
 	for (x = 0; x < rlist.rl_rgrps; x++) {
 		struct gfs2_rgrpd *rgd = gfs2_glock2rgrp(rlist.rl_ghs[x].gh_gl);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rg_blocks += rgd->rd_length;
 	}
 
@@ -2663,23 +2031,16 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 
 	error = gfs2_trans_begin(sdp,
 			rg_blocks + (DIV_ROUND_UP(size, sdp->sd_jbsize) + 1) +
-<<<<<<< HEAD
-			RES_DINODE + RES_STATFS + RES_QUOTA, l_blocks);
-=======
 			RES_DINODE + RES_STATFS + RES_QUOTA, RES_DINODE +
 				 l_blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_rg_gunlock;
 
 	bh = leaf_bh;
 
 	for (blk = leaf_no; blk; blk = nblk) {
-<<<<<<< HEAD
-=======
 		struct gfs2_rgrpd *rgd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (blk != leaf_no) {
 			error = get_leaf(dip, blk, &bh);
 			if (error)
@@ -2690,12 +2051,8 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 		if (blk != leaf_no)
 			brelse(bh);
 
-<<<<<<< HEAD
-		gfs2_free_meta(dip, blk, 1);
-=======
 		rgd = gfs2_blk2rgrpd(sdp, blk, true);
 		gfs2_free_meta(dip, rgd, blk, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_add_inode_blocks(&dip->i_inode, -1);
 	}
 
@@ -2710,11 +2067,7 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 	if (error)
 		goto out_end_trans;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(dip->i_gl, dibh, 1);
-=======
 	gfs2_trans_add_meta(dip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On the last dealloc, make this a regular file in case we crash.
 	   (We don't want to free these blocks a second time.)  */
 	if (last_dealloc)
@@ -2729,15 +2082,8 @@ out_rg_gunlock:
 out_rlist:
 	gfs2_rlist_free(&rlist);
 	gfs2_quota_unhold(dip);
-<<<<<<< HEAD
-out_put:
-	gfs2_qadata_put(dip);
-out:
-	kfree(ht);
-=======
 out:
 	kvfree(ht);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2761,11 +2107,7 @@ int gfs2_dir_exhash_dealloc(struct gfs2_inode *dip)
 	u64 leaf_no;
 	int error = 0, last;
 
-<<<<<<< HEAD
-	hsize = 1 << dip->i_depth;
-=======
 	hsize = BIT(dip->i_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp = gfs2_dir_get_hash_table(dip);
 	if (IS_ERR(lp))
@@ -2778,11 +2120,7 @@ int gfs2_dir_exhash_dealloc(struct gfs2_inode *dip)
 			if (error)
 				goto out;
 			leaf = (struct gfs2_leaf *)bh->b_data;
-<<<<<<< HEAD
-			len = 1 << (dip->i_depth - be16_to_cpu(leaf->lf_depth));
-=======
 			len = BIT(dip->i_depth - be16_to_cpu(leaf->lf_depth));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			next_index = (index & ~(len - 1)) + len;
 			last = ((next_index >= hsize) ? 1 : 0);
@@ -2808,26 +2146,6 @@ out:
 
 /**
  * gfs2_diradd_alloc_required - find if adding entry will require an allocation
-<<<<<<< HEAD
- * @ip: the file being written to
- * @filname: the filename that's going to be added
- *
- * Returns: 1 if alloc required, 0 if not, -ve on error
- */
-
-int gfs2_diradd_alloc_required(struct inode *inode, const struct qstr *name)
-{
-	struct gfs2_dirent *dent;
-	struct buffer_head *bh;
-
-	dent = gfs2_dirent_search(inode, name, gfs2_dirent_find_space, &bh);
-	if (!dent) {
-		return 1;
-	}
-	if (IS_ERR(dent))
-		return PTR_ERR(dent);
-	brelse(bh);
-=======
  * @inode: the directory inode being written to
  * @name: the filename that's going to be added
  * @da: The structure to return dir alloc info
@@ -2865,7 +2183,6 @@ int gfs2_diradd_alloc_required(struct inode *inode, const struct qstr *name,
 	} else {
 		brelse(bh);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

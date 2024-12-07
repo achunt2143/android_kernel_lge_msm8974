@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2003-2006, Cluster File Systems, Inc, info@clusterfs.com
- * Written by Alex Tomas <alex@clusterfs.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public Licens
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2003-2006, Cluster File Systems, Inc, info@clusterfs.com
  * Written by Alex Tomas <alex@clusterfs.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -30,11 +11,6 @@
 
 #include "ext4_jbd2.h"
 #include "mballoc.h"
-<<<<<<< HEAD
-#include <linux/debugfs.h>
-#include <linux/slab.h>
-#include <trace/events/ext4.h>
-=======
 #include <linux/log2.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -43,7 +19,6 @@
 #include <linux/freezer.h>
 #include <trace/events/ext4.h>
 #include <kunit/static_stub.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MUSTDO:
@@ -128,11 +103,7 @@
  *
  *
  * one block each for bitmap and buddy information.  So for each group we
-<<<<<<< HEAD
- * take up 2 blocks. A page can contain blocks_per_page (PAGE_CACHE_SIZE /
-=======
  * take up 2 blocks. A page can contain blocks_per_page (PAGE_SIZE /
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * blocksize) blocks.  So it can have information regarding groups_per_page
  * which is blocks_per_page/2
  *
@@ -155,11 +126,6 @@
  * /sys/fs/ext4/<partition>/mb_group_prealloc. The value is represented in
  * terms of number of blocks. If we have mounted the file system with -O
  * stripe=<value> option the group prealloc request is normalized to the
-<<<<<<< HEAD
- * the smallest multiple of the stripe value (sbi->s_stripe) which is
- * greater than the default mb_group_prealloc.
- *
-=======
  * smallest multiple of the stripe value (sbi->s_stripe) which is
  * greater than the default mb_group_prealloc.
  *
@@ -216,16 +182,12 @@
  * linear order which requires O(N) search time for each CR_POWER2_ALIGNED and
  * CR_GOAL_LEN_FAST phase.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The regular allocator (using the buddy cache) supports a few tunables.
  *
  * /sys/fs/ext4/<partition>/mb_min_to_scan
  * /sys/fs/ext4/<partition>/mb_max_to_scan
  * /sys/fs/ext4/<partition>/mb_order2_req
-<<<<<<< HEAD
-=======
  * /sys/fs/ext4/<partition>/mb_linear_limit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The regular allocator uses buddy scan only if the request len is power of
  * 2 blocks and the order of allocation is >= sbi->s_mb_order2_reqs. The
@@ -243,8 +205,6 @@
  * can be used for allocation. ext4_mb_good_group explains how the groups are
  * checked.
  *
-<<<<<<< HEAD
-=======
  * When "mb_optimize_scan" is turned on, as mentioned above, the groups may not
  * get traversed linearly. That may result in subsequent allocations being not
  * close to each other. And so, the underlying device may get filled up in a
@@ -255,7 +215,6 @@
  * non rotational devices, this value defaults to 0 and for rotational devices
  * this is set to MB_DEFAULT_LINEAR_LIMIT.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Both the prealloc space are getting populated as above. So for the first
  * request we will hit the buddy cache which will result in this prealloc
  * space getting filled. The prealloc space is then later used for the
@@ -406,11 +365,8 @@
  *  - bitlock on a group	(group)
  *  - object (inode/locality)	(object)
  *  - per-pa lock		(pa)
-<<<<<<< HEAD
-=======
  *  - cr_power2_aligned lists lock	(cr_power2_aligned)
  *  - cr_goal_len_fast lists lock	(cr_goal_len_fast)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Paths:
  *  - new pa
@@ -440,12 +396,9 @@
  *    group
  *        object
  *
-<<<<<<< HEAD
-=======
  *  - allocation path (ext4_mb_regular_allocator)
  *    group
  *    cr_power2_aligned/cr_goal_len_fast
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct kmem_cache *ext4_pspace_cachep;
 static struct kmem_cache *ext4_ac_cachep;
@@ -457,11 +410,7 @@ static struct kmem_cache *ext4_free_data_cachep;
 #define NR_GRPINFO_CACHES 8
 static struct kmem_cache *ext4_groupinfo_caches[NR_GRPINFO_CACHES];
 
-<<<<<<< HEAD
-static const char *ext4_groupinfo_slab_names[NR_GRPINFO_CACHES] = {
-=======
 static const char * const ext4_groupinfo_slab_names[NR_GRPINFO_CACHES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ext4_groupinfo_1k", "ext4_groupinfo_2k", "ext4_groupinfo_4k",
 	"ext4_groupinfo_8k", "ext4_groupinfo_16k", "ext4_groupinfo_32k",
 	"ext4_groupinfo_64k", "ext4_groupinfo_128k"
@@ -469,12 +418,6 @@ static const char * const ext4_groupinfo_slab_names[NR_GRPINFO_CACHES] = {
 
 static void ext4_mb_generate_from_pa(struct super_block *sb, void *bitmap,
 					ext4_group_t group);
-<<<<<<< HEAD
-static void ext4_mb_generate_from_freelist(struct super_block *sb, void *bitmap,
-						ext4_group_t group);
-static void ext4_free_data_callback(struct super_block *sb,
-				struct ext4_journal_cb_entry *jce, int rc);
-=======
 static void ext4_mb_new_preallocation(struct ext4_allocation_context *ac);
 
 static bool ext4_mb_good_group(struct ext4_allocation_context *ac,
@@ -512,7 +455,6 @@ static inline u64 ext4_get_discard_pa_seq_sum(void)
 		__seq += per_cpu(discard_pa_seq, __cpu);
 	return __seq;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void *mb_correct_addr_and_bit(int *bit, void *addr)
 {
@@ -550,15 +492,12 @@ static inline void mb_clear_bit(int bit, void *addr)
 	ext4_clear_bit(bit, addr);
 }
 
-<<<<<<< HEAD
-=======
 static inline int mb_test_and_clear_bit(int bit, void *addr)
 {
 	addr = mb_correct_addr_and_bit(&bit, addr);
 	return ext4_test_and_clear_bit(bit, addr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int mb_find_next_zero_bit(void *addr, int max, int start)
 {
 	int fix = 0, ret, tmpmax;
@@ -625,11 +564,8 @@ static void mb_free_blocks_double(struct inode *inode, struct ext4_buddy *e4b,
 
 			blocknr = ext4_group_first_block_no(sb, e4b->bd_group);
 			blocknr += EXT4_C2B(EXT4_SB(sb), first + i);
-<<<<<<< HEAD
-=======
 			ext4_mark_group_bitmap_corrupted(sb, e4b->bd_group,
 					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_grp_locked_error(sb, e4b->bd_group,
 					      inode ? inode->i_ino : 0,
 					      blocknr,
@@ -656,11 +592,8 @@ static void mb_mark_used_double(struct ext4_buddy *e4b, int first, int count)
 
 static void mb_cmp_bitmaps(struct ext4_buddy *e4b, void *bitmap)
 {
-<<<<<<< HEAD
-=======
 	if (unlikely(e4b->bd_info->bb_bitmap == NULL))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (memcmp(e4b->bd_info->bb_bitmap, bitmap, e4b->bd_sb->s_blocksize)) {
 		unsigned char *b1, *b2;
 		int i;
@@ -679,8 +612,6 @@ static void mb_cmp_bitmaps(struct ext4_buddy *e4b, void *bitmap)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void mb_group_bb_bitmap_alloc(struct super_block *sb,
 			struct ext4_group_info *grp, ext4_group_t group)
 {
@@ -706,7 +637,6 @@ static void mb_group_bb_bitmap_free(struct ext4_group_info *grp)
 	kfree(grp->bb_bitmap);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void mb_free_blocks_double(struct inode *inode,
 				struct ext4_buddy *e4b, int first, int count)
@@ -722,8 +652,6 @@ static inline void mb_cmp_bitmaps(struct ext4_buddy *e4b, void *bitmap)
 {
 	return;
 }
-<<<<<<< HEAD
-=======
 
 static inline void mb_group_bb_bitmap_alloc(struct super_block *sb,
 			struct ext4_group_info *grp, ext4_group_t group)
@@ -735,7 +663,6 @@ static inline void mb_group_bb_bitmap_free(struct ext4_group_info *grp)
 {
 	return;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef AGGRESSIVE_CHECK
@@ -750,11 +677,7 @@ do {									\
 	}								\
 } while (0)
 
-<<<<<<< HEAD
-static int __mb_check_buddy(struct ext4_buddy *e4b, char *file,
-=======
 static void __mb_check_buddy(struct ext4_buddy *e4b, char *file,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const char *function, int line)
 {
 	struct super_block *sb = e4b->bd_sb;
@@ -772,16 +695,8 @@ static void __mb_check_buddy(struct ext4_buddy *e4b, char *file,
 	void *buddy;
 	void *buddy2;
 
-<<<<<<< HEAD
-	{
-		static int mb_check_counter;
-		if (mb_check_counter++ % 100 != 0)
-			return 0;
-	}
-=======
 	if (e4b->bd_info->bb_check_counter++ % 10)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (order > 1) {
 		buddy = mb_find_buddy(e4b, order, &max);
@@ -795,20 +710,10 @@ static void __mb_check_buddy(struct ext4_buddy *e4b, char *file,
 		for (i = 0; i < max; i++) {
 
 			if (mb_test_bit(i, buddy)) {
-<<<<<<< HEAD
-				/* only single bit in buddy2 may be 1 */
-				if (!mb_test_bit(i << 1, buddy2)) {
-					MB_CHECK_ASSERT(
-						mb_test_bit((i<<1)+1, buddy2));
-				} else if (!mb_test_bit((i << 1) + 1, buddy2)) {
-					MB_CHECK_ASSERT(
-						mb_test_bit(i << 1, buddy2));
-=======
 				/* only single bit in buddy2 may be 0 */
 				if (!mb_test_bit(i << 1, buddy2)) {
 					MB_CHECK_ASSERT(
 						mb_test_bit((i<<1)+1, buddy2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				continue;
 			}
@@ -852,11 +757,8 @@ static void __mb_check_buddy(struct ext4_buddy *e4b, char *file,
 	MB_CHECK_ASSERT(e4b->bd_info->bb_fragments == fragments);
 
 	grp = ext4_get_group_info(sb, e4b->bd_group);
-<<<<<<< HEAD
-=======
 	if (!grp)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each(cur, &grp->bb_prealloc_list) {
 		ext4_group_t groupnr;
 		struct ext4_prealloc_space *pa;
@@ -866,10 +768,6 @@ static void __mb_check_buddy(struct ext4_buddy *e4b, char *file,
 		for (i = 0; i < pa->pa_len; i++)
 			MB_CHECK_ASSERT(mb_test_bit(k + i, buddy));
 	}
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #undef MB_CHECK_ASSERT
 #define mb_check_buddy(e4b) __mb_check_buddy(e4b,	\
@@ -892,11 +790,7 @@ static void ext4_mb_mark_free_simple(struct super_block *sb,
 	ext4_grpblk_t min;
 	ext4_grpblk_t max;
 	ext4_grpblk_t chunk;
-<<<<<<< HEAD
-	unsigned short border;
-=======
 	unsigned int border;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(len > EXT4_CLUSTERS_PER_GROUP(sb));
 
@@ -924,8 +818,6 @@ static void ext4_mb_mark_free_simple(struct super_block *sb,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int mb_avg_fragment_size_order(struct super_block *sb, ext4_grpblk_t len)
 {
 	int order;
@@ -1246,7 +1138,6 @@ static void ext4_mb_choose_next_group(struct ext4_allocation_context *ac,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cache the order of the largest free extent we have available in this block
  * group.
@@ -1254,19 +1145,6 @@ static void ext4_mb_choose_next_group(struct ext4_allocation_context *ac,
 static void
 mb_set_largest_free_order(struct super_block *sb, struct ext4_group_info *grp)
 {
-<<<<<<< HEAD
-	int i;
-	int bits;
-
-	grp->bb_largest_free_order = -1; /* uninit */
-
-	bits = sb->s_blocksize_bits + 1;
-	for (i = bits; i >= 0; i--) {
-		if (grp->bb_counters[i] > 0) {
-			grp->bb_largest_free_order = i;
-			break;
-		}
-=======
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	int i;
 
@@ -1295,22 +1173,15 @@ mb_set_largest_free_order(struct super_block *sb, struct ext4_group_info *grp)
 		      &sbi->s_mb_largest_free_orders[grp->bb_largest_free_order]);
 		write_unlock(&sbi->s_mb_largest_free_orders_locks[
 					      grp->bb_largest_free_order]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static noinline_for_stack
 void ext4_mb_generate_buddy(struct super_block *sb,
-<<<<<<< HEAD
-				void *buddy, void *bitmap, ext4_group_t group)
-{
-	struct ext4_group_info *grp = ext4_get_group_info(sb, group);
-=======
 			    void *buddy, void *bitmap, ext4_group_t group,
 			    struct ext4_group_info *grp)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_grpblk_t max = EXT4_CLUSTERS_PER_GROUP(sb);
 	ext4_grpblk_t i = 0;
 	ext4_grpblk_t first;
@@ -1340,17 +1211,6 @@ void ext4_mb_generate_buddy(struct super_block *sb,
 
 	if (free != grp->bb_free) {
 		ext4_grp_locked_error(sb, group, 0, 0,
-<<<<<<< HEAD
-				      "%u clusters in bitmap, %u in gd",
-				      free, grp->bb_free);
-		/*
-		 * If we intent to continue, we consider group descritor
-		 * corrupt and update bb_free using bitmap value
-		 */
-		grp->bb_free = free;
-	}
-	mb_set_largest_free_order(sb, grp);
-=======
 				      "block bitmap and bg descriptor "
 				      "inconsistent: %u vs %u free clusters",
 				      free, grp->bb_free);
@@ -1364,17 +1224,10 @@ void ext4_mb_generate_buddy(struct super_block *sb,
 	}
 	mb_set_largest_free_order(sb, grp);
 	mb_update_avg_fragment_size(sb, grp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(EXT4_GROUP_INFO_NEED_INIT_BIT, &(grp->bb_state));
 
 	period = get_cycles() - period;
-<<<<<<< HEAD
-	spin_lock(&EXT4_SB(sb)->s_bal_lock);
-	EXT4_SB(sb)->s_mb_buddies_generated++;
-	EXT4_SB(sb)->s_mb_generation_time += period;
-	spin_unlock(&EXT4_SB(sb)->s_bal_lock);
-=======
 	atomic_inc(&sbi->s_mb_buddies_generated);
 	atomic64_add(period, &sbi->s_mb_generation_time);
 }
@@ -1395,7 +1248,6 @@ static void mb_regenerate_buddy(struct ext4_buddy *e4b)
 
 	ext4_mb_generate_buddy(e4b->bd_sb, e4b->bd_buddy,
 		e4b->bd_bitmap, e4b->bd_group, e4b->bd_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The buddy information is attached the buddy cache inode
@@ -1410,11 +1262,7 @@ static void mb_regenerate_buddy(struct ext4_buddy *e4b)
  *
  * one block each for bitmap and buddy information.
  * So for each group we take up 2 blocks. A page can
-<<<<<<< HEAD
- * contain blocks_per_page (PAGE_CACHE_SIZE / blocksize)  blocks.
-=======
  * contain blocks_per_page (PAGE_SIZE / blocksize)  blocks.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * So it can have information regarding groups_per_page which
  * is blocks_per_page/2
  *
@@ -1422,17 +1270,10 @@ static void mb_regenerate_buddy(struct ext4_buddy *e4b)
  * for this page; do not hold this lock when calling this routine!
  */
 
-<<<<<<< HEAD
-static int ext4_mb_init_cache(struct page *page, char *incore)
-{
-	ext4_group_t ngroups;
-	int blocksize;
-=======
 static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 {
 	ext4_group_t ngroups;
 	unsigned int blocksize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int blocks_per_page;
 	int groups_per_page;
 	int err = 0;
@@ -1447,15 +1288,6 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 	char *bitmap;
 	struct ext4_group_info *grinfo;
 
-<<<<<<< HEAD
-	mb_debug(1, "init page %lu\n", page->index);
-
-	inode = page->mapping->host;
-	sb = inode->i_sb;
-	ngroups = ext4_get_groups_count(sb);
-	blocksize = 1 << inode->i_blkbits;
-	blocks_per_page = PAGE_CACHE_SIZE / blocksize;
-=======
 	inode = page->mapping->host;
 	sb = inode->i_sb;
 	ngroups = ext4_get_groups_count(sb);
@@ -1463,7 +1295,6 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 	blocks_per_page = PAGE_SIZE / blocksize;
 
 	mb_debug(sb, "init page %lu\n", page->index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	groups_per_page = blocks_per_page >> 1;
 	if (groups_per_page == 0)
@@ -1472,17 +1303,9 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 	/* allocate buffer_heads to read bitmaps */
 	if (groups_per_page > 1) {
 		i = sizeof(struct buffer_head *) * groups_per_page;
-<<<<<<< HEAD
-		bh = kzalloc(i, GFP_NOFS);
-		if (bh == NULL) {
-			err = -ENOMEM;
-			goto out;
-		}
-=======
 		bh = kzalloc(i, gfp);
 		if (bh == NULL)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		bh = &bhs;
 
@@ -1494,11 +1317,8 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 			break;
 
 		grinfo = ext4_get_group_info(sb, group);
-<<<<<<< HEAD
-=======
 		if (!grinfo)
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If page is uptodate then we came here after online resize
 		 * which added some new uninitialized group info structs, so
@@ -1509,13 +1329,6 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 			bh[i] = NULL;
 			continue;
 		}
-<<<<<<< HEAD
-		if (!(bh[i] = ext4_read_block_bitmap_nowait(sb, group))) {
-			err = -ENOMEM;
-			goto out;
-		}
-		mb_debug(1, "read bitmap for group %u\n", group);
-=======
 		bh[i] = ext4_read_block_bitmap_nowait(sb, group, false);
 		if (IS_ERR(bh[i])) {
 			err = PTR_ERR(bh[i]);
@@ -1523,17 +1336,10 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 			goto out;
 		}
 		mb_debug(sb, "read bitmap for group %u\n", group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* wait for I/O completion */
 	for (i = 0, group = first_group; i < groups_per_page; i++, group++) {
-<<<<<<< HEAD
-		if (bh[i] && ext4_wait_block_bitmap(sb, group, bh[i])) {
-			err = -EIO;
-			goto out;
-		}
-=======
 		int err2;
 
 		if (!bh[i])
@@ -1541,16 +1347,10 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 		err2 = ext4_wait_block_bitmap(sb, group, bh[i]);
 		if (!err)
 			err = err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	first_block = page->index * blocks_per_page;
 	for (i = 0; i < blocks_per_page; i++) {
-<<<<<<< HEAD
-		int group;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		group = (first_block + i) >> 1;
 		if (group >= ngroups)
 			break;
@@ -1559,14 +1359,11 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 			/* skip initialized uptodate buddy */
 			continue;
 
-<<<<<<< HEAD
-=======
 		if (!buffer_verified(bh[group - first_group]))
 			/* Skip faulty bitmaps */
 			continue;
 		err = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * data carry information regarding this
 		 * particular group in the format specified
@@ -1580,19 +1377,6 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 		 * We place the buddy block and bitmap block
 		 * close together
 		 */
-<<<<<<< HEAD
-		if ((first_block + i) & 1) {
-			/* this is block of buddy */
-			BUG_ON(incore == NULL);
-			mb_debug(1, "put buddy for group %u in page %lu/%x\n",
-				group, page->index, i * blocksize);
-			trace_ext4_mb_buddy_bitmap_load(sb, group);
-			grinfo = ext4_get_group_info(sb, group);
-			grinfo->bb_fragments = 0;
-			memset(grinfo->bb_counters, 0,
-			       sizeof(*grinfo->bb_counters) *
-				(sb->s_blocksize_bits+2));
-=======
 		grinfo = ext4_get_group_info(sb, group);
 		if (!grinfo) {
 			err = -EFSCORRUPTED;
@@ -1608,28 +1392,19 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 			memset(grinfo->bb_counters, 0,
 			       sizeof(*grinfo->bb_counters) *
 			       (MB_NUM_ORDERS(sb)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * incore got set to the group block bitmap below
 			 */
 			ext4_lock_group(sb, group);
 			/* init the buddy */
 			memset(data, 0xff, blocksize);
-<<<<<<< HEAD
-			ext4_mb_generate_buddy(sb, data, incore, group);
-=======
 			ext4_mb_generate_buddy(sb, data, incore, group, grinfo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_unlock_group(sb, group);
 			incore = NULL;
 		} else {
 			/* this is block of bitmap */
 			BUG_ON(incore != NULL);
-<<<<<<< HEAD
-			mb_debug(1, "put bitmap for group %u in page %lu/%x\n",
-=======
 			mb_debug(sb, "put bitmap for group %u in page %lu/%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				group, page->index, i * blocksize);
 			trace_ext4_mb_bitmap_load(sb, group);
 
@@ -1639,11 +1414,7 @@ static int ext4_mb_init_cache(struct page *page, char *incore, gfp_t gfp)
 
 			/* mark all preallocated blks used in in-core bitmap */
 			ext4_mb_generate_from_pa(sb, data, group);
-<<<<<<< HEAD
-			ext4_mb_generate_from_freelist(sb, data, group);
-=======
 			WARN_ON_ONCE(!RB_EMPTY_ROOT(&grinfo->bb_free_root));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_unlock_group(sb, group);
 
 			/* set incore so that the buddy information can be
@@ -1671,11 +1442,7 @@ out:
  * are on the same page e4b->bd_buddy_page is NULL and return value is 0.
  */
 static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
-<<<<<<< HEAD
-		ext4_group_t group, struct ext4_buddy *e4b)
-=======
 		ext4_group_t group, struct ext4_buddy *e4b, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = EXT4_SB(sb)->s_buddy_cache;
 	int block, pnum, poff;
@@ -1685,11 +1452,7 @@ static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
 	e4b->bd_buddy_page = NULL;
 	e4b->bd_bitmap_page = NULL;
 
-<<<<<<< HEAD
-	blocks_per_page = PAGE_CACHE_SIZE / sb->s_blocksize;
-=======
 	blocks_per_page = PAGE_SIZE / sb->s_blocksize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * the buddy cache inode stores the block bitmap
 	 * and buddy information in consecutive blocks.
@@ -1698,15 +1461,9 @@ static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
 	block = group * 2;
 	pnum = block / blocks_per_page;
 	poff = block % blocks_per_page;
-<<<<<<< HEAD
-	page = find_or_create_page(inode->i_mapping, pnum, GFP_NOFS);
-	if (!page)
-		return -EIO;
-=======
 	page = find_or_create_page(inode->i_mapping, pnum, gfp);
 	if (!page)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(page->mapping != inode->i_mapping);
 	e4b->bd_bitmap_page = page;
 	e4b->bd_bitmap = page_address(page) + (poff * sb->s_blocksize);
@@ -1716,19 +1473,10 @@ static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	block++;
-	pnum = block / blocks_per_page;
-	poff = block % blocks_per_page;
-	page = find_or_create_page(inode->i_mapping, pnum, GFP_NOFS);
-	if (!page)
-		return -EIO;
-=======
 	/* blocks_per_page == 1, hence we need another page for the buddy */
 	page = find_or_create_page(inode->i_mapping, block + 1, gfp);
 	if (!page)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(page->mapping != inode->i_mapping);
 	e4b->bd_buddy_page = page;
 	return 0;
@@ -1738,19 +1486,11 @@ static void ext4_mb_put_buddy_page_lock(struct ext4_buddy *e4b)
 {
 	if (e4b->bd_bitmap_page) {
 		unlock_page(e4b->bd_bitmap_page);
-<<<<<<< HEAD
-		page_cache_release(e4b->bd_bitmap_page);
-	}
-	if (e4b->bd_buddy_page) {
-		unlock_page(e4b->bd_buddy_page);
-		page_cache_release(e4b->bd_buddy_page);
-=======
 		put_page(e4b->bd_bitmap_page);
 	}
 	if (e4b->bd_buddy_page) {
 		unlock_page(e4b->bd_buddy_page);
 		put_page(e4b->bd_buddy_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1760,11 +1500,7 @@ static void ext4_mb_put_buddy_page_lock(struct ext4_buddy *e4b)
  * calling this routine!
  */
 static noinline_for_stack
-<<<<<<< HEAD
-int ext4_mb_init_group(struct super_block *sb, ext4_group_t group)
-=======
 int ext4_mb_init_group(struct super_block *sb, ext4_group_t group, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct ext4_group_info *this_grp;
@@ -1772,32 +1508,22 @@ int ext4_mb_init_group(struct super_block *sb, ext4_group_t group, gfp_t gfp)
 	struct page *page;
 	int ret = 0;
 
-<<<<<<< HEAD
-	mb_debug(1, "init group %u\n", group);
-	this_grp = ext4_get_group_info(sb, group);
-=======
 	might_sleep();
 	mb_debug(sb, "init group %u\n", group);
 	this_grp = ext4_get_group_info(sb, group);
 	if (!this_grp)
 		return -EFSCORRUPTED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This ensures that we don't reinit the buddy cache
 	 * page which map to the group from which we are already
 	 * allocating. If we are looking at the buddy cache we would
 	 * have taken a reference using ext4_mb_load_buddy and that
 	 * would have pinned buddy page to page cache.
-<<<<<<< HEAD
-	 */
-	ret = ext4_mb_get_buddy_page_lock(sb, group, &e4b);
-=======
 	 * The call to ext4_mb_get_buddy_page_lock will mark the
 	 * page accessed.
 	 */
 	ret = ext4_mb_get_buddy_page_lock(sb, group, &e4b, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret || !EXT4_MB_GRP_NEED_INIT(this_grp)) {
 		/*
 		 * somebody initialized the group
@@ -1807,21 +1533,13 @@ int ext4_mb_init_group(struct super_block *sb, ext4_group_t group, gfp_t gfp)
 	}
 
 	page = e4b.bd_bitmap_page;
-<<<<<<< HEAD
-	ret = ext4_mb_init_cache(page, NULL);
-=======
 	ret = ext4_mb_init_cache(page, NULL, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err;
 	if (!PageUptodate(page)) {
 		ret = -EIO;
 		goto err;
 	}
-<<<<<<< HEAD
-	mark_page_accessed(page);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (e4b.bd_buddy_page == NULL) {
 		/*
@@ -1834,21 +1552,13 @@ int ext4_mb_init_group(struct super_block *sb, ext4_group_t group, gfp_t gfp)
 	}
 	/* init buddy cache */
 	page = e4b.bd_buddy_page;
-<<<<<<< HEAD
-	ret = ext4_mb_init_cache(page, e4b.bd_bitmap);
-=======
 	ret = ext4_mb_init_cache(page, e4b.bd_bitmap, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err;
 	if (!PageUptodate(page)) {
 		ret = -EIO;
 		goto err;
 	}
-<<<<<<< HEAD
-	mark_page_accessed(page);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	ext4_mb_put_buddy_page_lock(&e4b);
 	return ret;
@@ -1860,13 +1570,8 @@ err:
  * calling this routine!
  */
 static noinline_for_stack int
-<<<<<<< HEAD
-ext4_mb_load_buddy(struct super_block *sb, ext4_group_t group,
-					struct ext4_buddy *e4b)
-=======
 ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 		       struct ext4_buddy *e4b, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int blocks_per_page;
 	int block;
@@ -1878,12 +1583,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct inode *inode = sbi->s_buddy_cache;
 
-<<<<<<< HEAD
-	mb_debug(1, "load group %u\n", group);
-
-	blocks_per_page = PAGE_CACHE_SIZE / sb->s_blocksize;
-	grp = ext4_get_group_info(sb, group);
-=======
 	might_sleep();
 	mb_debug(sb, "load group %u\n", group);
 
@@ -1891,7 +1590,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 	grp = ext4_get_group_info(sb, group);
 	if (!grp)
 		return -EFSCORRUPTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	e4b->bd_blkbits = sb->s_blocksize_bits;
 	e4b->bd_info = grp;
@@ -1905,11 +1603,7 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 		 * we need full data about the group
 		 * to make a good selection
 		 */
-<<<<<<< HEAD
-		ret = ext4_mb_init_group(sb, group);
-=======
 		ret = ext4_mb_init_group(sb, group, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -1925,11 +1619,7 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 
 	/* we could use find_or_create_page(), but it locks page
 	 * what we'd like to avoid in fast path ... */
-<<<<<<< HEAD
-	page = find_get_page(inode->i_mapping, pnum);
-=======
 	page = find_get_page_flags(inode->i_mapping, pnum, FGP_ACCESSED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (page == NULL || !PageUptodate(page)) {
 		if (page)
 			/*
@@ -1940,14 +1630,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 			 * is yet to initialize the same. So
 			 * wait for it to initialize.
 			 */
-<<<<<<< HEAD
-			page_cache_release(page);
-		page = find_or_create_page(inode->i_mapping, pnum, GFP_NOFS);
-		if (page) {
-			BUG_ON(page->mapping != inode->i_mapping);
-			if (!PageUptodate(page)) {
-				ret = ext4_mb_init_cache(page, NULL);
-=======
 			put_page(page);
 		page = find_or_create_page(inode->i_mapping, pnum, gfp);
 		if (page) {
@@ -1960,7 +1642,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 			}
 			if (!PageUptodate(page)) {
 				ret = ext4_mb_init_cache(page, NULL, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret) {
 					unlock_page(page);
 					goto err;
@@ -1971,15 +1652,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 			unlock_page(page);
 		}
 	}
-<<<<<<< HEAD
-	if (page == NULL || !PageUptodate(page)) {
-		ret = -EIO;
-		goto err;
-	}
-	e4b->bd_bitmap_page = page;
-	e4b->bd_bitmap = page_address(page) + (poff * sb->s_blocksize);
-	mark_page_accessed(page);
-=======
 	if (page == NULL) {
 		ret = -ENOMEM;
 		goto err;
@@ -1992,23 +1664,11 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 	/* Pages marked accessed already */
 	e4b->bd_bitmap_page = page;
 	e4b->bd_bitmap = page_address(page) + (poff * sb->s_blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	block++;
 	pnum = block / blocks_per_page;
 	poff = block % blocks_per_page;
 
-<<<<<<< HEAD
-	page = find_get_page(inode->i_mapping, pnum);
-	if (page == NULL || !PageUptodate(page)) {
-		if (page)
-			page_cache_release(page);
-		page = find_or_create_page(inode->i_mapping, pnum, GFP_NOFS);
-		if (page) {
-			BUG_ON(page->mapping != inode->i_mapping);
-			if (!PageUptodate(page)) {
-				ret = ext4_mb_init_cache(page, e4b->bd_bitmap);
-=======
 	page = find_get_page_flags(inode->i_mapping, pnum, FGP_ACCESSED);
 	if (page == NULL || !PageUptodate(page)) {
 		if (page)
@@ -2025,7 +1685,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 			if (!PageUptodate(page)) {
 				ret = ext4_mb_init_cache(page, e4b->bd_bitmap,
 							 gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret) {
 					unlock_page(page);
 					goto err;
@@ -2034,18 +1693,6 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 			unlock_page(page);
 		}
 	}
-<<<<<<< HEAD
-	if (page == NULL || !PageUptodate(page)) {
-		ret = -EIO;
-		goto err;
-	}
-	e4b->bd_buddy_page = page;
-	e4b->bd_buddy = page_address(page) + (poff * sb->s_blocksize);
-	mark_page_accessed(page);
-
-	BUG_ON(e4b->bd_bitmap_page == NULL);
-	BUG_ON(e4b->bd_buddy_page == NULL);
-=======
 	if (page == NULL) {
 		ret = -ENOMEM;
 		goto err;
@@ -2058,37 +1705,20 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
 	/* Pages marked accessed already */
 	e4b->bd_buddy_page = page;
 	e4b->bd_buddy = page_address(page) + (poff * sb->s_blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err:
 	if (page)
-<<<<<<< HEAD
-		page_cache_release(page);
-	if (e4b->bd_bitmap_page)
-		page_cache_release(e4b->bd_bitmap_page);
-	if (e4b->bd_buddy_page)
-		page_cache_release(e4b->bd_buddy_page);
-=======
 		put_page(page);
 	if (e4b->bd_bitmap_page)
 		put_page(e4b->bd_bitmap_page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e4b->bd_buddy = NULL;
 	e4b->bd_bitmap = NULL;
 	return ret;
 }
 
-<<<<<<< HEAD
-static void ext4_mb_unload_buddy(struct ext4_buddy *e4b)
-{
-	if (e4b->bd_bitmap_page)
-		page_cache_release(e4b->bd_bitmap_page);
-	if (e4b->bd_buddy_page)
-		page_cache_release(e4b->bd_buddy_page);
-=======
 static int ext4_mb_load_buddy(struct super_block *sb, ext4_group_t group,
 			      struct ext4_buddy *e4b)
 {
@@ -2101,39 +1731,23 @@ static void ext4_mb_unload_buddy(struct ext4_buddy *e4b)
 		put_page(e4b->bd_bitmap_page);
 	if (e4b->bd_buddy_page)
 		put_page(e4b->bd_buddy_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int mb_find_order_for_block(struct ext4_buddy *e4b, int block)
 {
-<<<<<<< HEAD
-	int order = 1;
-=======
 	int order = 1, max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *bb;
 
 	BUG_ON(e4b->bd_bitmap == e4b->bd_buddy);
 	BUG_ON(block >= (1 << (e4b->bd_blkbits + 3)));
 
-<<<<<<< HEAD
-	bb = e4b->bd_buddy;
-	while (order <= e4b->bd_blkbits + 1) {
-		block = block >> 1;
-		if (!mb_test_bit(block, bb)) {
-			/* this block is part of buddy of order 'order' */
-			return order;
-		}
-		bb += 1 << (e4b->bd_blkbits - order);
-=======
 	while (order <= e4b->bd_blkbits + 1) {
 		bb = mb_find_buddy(e4b, order, &max);
 		if (!mb_test_bit(block >> order, bb)) {
 			/* this block is part of buddy of order 'order' */
 			return order;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		order++;
 	}
 	return 0;
@@ -2157,9 +1771,6 @@ static void mb_clear_bits(void *bm, int cur, int len)
 	}
 }
 
-<<<<<<< HEAD
-void ext4_set_bits(void *bm, int cur, int len)
-=======
 /* clear bits in given range
  * will return first found zero bit if any, -1 otherwise
  */
@@ -2188,7 +1799,6 @@ static int mb_test_and_clear_bits(void *bm, int cur, int len)
 }
 
 void mb_set_bits(void *bm, int cur, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u32 *addr;
 
@@ -2206,23 +1816,6 @@ void mb_set_bits(void *bm, int cur, int len)
 	}
 }
 
-<<<<<<< HEAD
-static void mb_free_blocks(struct inode *inode, struct ext4_buddy *e4b,
-			  int first, int count)
-{
-	int block = 0;
-	int max = 0;
-	int order;
-	void *buddy;
-	void *buddy2;
-	struct super_block *sb = e4b->bd_sb;
-
-	BUG_ON(first + count > (sb->s_blocksize << 3));
-	assert_spin_locked(ext4_group_lock_ptr(sb, e4b->bd_group));
-	mb_check_buddy(e4b);
-	mb_free_blocks_double(inode, e4b, first, count);
-
-=======
 static inline int mb_buddy_adjust_border(int* bit, void* bitmap, int side)
 {
 	if (mb_test_bit(*bit + side, bitmap)) {
@@ -2349,83 +1942,11 @@ static void mb_free_blocks(struct inode *inode, struct ext4_buddy *e4b,
 	}
 
 	this_cpu_inc(discard_pa_seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e4b->bd_info->bb_free += count;
 	if (first < e4b->bd_info->bb_first_free)
 		e4b->bd_info->bb_first_free = first;
 
 	/* let's maintain fragments counter */
-<<<<<<< HEAD
-	if (first != 0)
-		block = !mb_test_bit(first - 1, e4b->bd_bitmap);
-	if (first + count < EXT4_SB(sb)->s_mb_maxs[0])
-		max = !mb_test_bit(first + count, e4b->bd_bitmap);
-	if (block && max)
-		e4b->bd_info->bb_fragments--;
-	else if (!block && !max)
-		e4b->bd_info->bb_fragments++;
-
-	/* let's maintain buddy itself */
-	while (count-- > 0) {
-		block = first++;
-		order = 0;
-
-		if (!mb_test_bit(block, e4b->bd_bitmap)) {
-			ext4_fsblk_t blocknr;
-
-			blocknr = ext4_group_first_block_no(sb, e4b->bd_group);
-			blocknr += EXT4_C2B(EXT4_SB(sb), block);
-			ext4_grp_locked_error(sb, e4b->bd_group,
-					      inode ? inode->i_ino : 0,
-					      blocknr,
-					      "freeing already freed block "
-					      "(bit %u)", block);
-		}
-		mb_clear_bit(block, e4b->bd_bitmap);
-		e4b->bd_info->bb_counters[order]++;
-
-		/* start of the buddy */
-		buddy = mb_find_buddy(e4b, order, &max);
-
-		do {
-			block &= ~1UL;
-			if (mb_test_bit(block, buddy) ||
-					mb_test_bit(block + 1, buddy))
-				break;
-
-			/* both the buddies are free, try to coalesce them */
-			buddy2 = mb_find_buddy(e4b, order + 1, &max);
-
-			if (!buddy2)
-				break;
-
-			if (order > 0) {
-				/* for special purposes, we don't set
-				 * free bits in bitmap */
-				mb_set_bit(block, buddy);
-				mb_set_bit(block + 1, buddy);
-			}
-			e4b->bd_info->bb_counters[order]--;
-			e4b->bd_info->bb_counters[order]--;
-
-			block = block >> 1;
-			order++;
-			e4b->bd_info->bb_counters[order]++;
-
-			mb_clear_bit(block, buddy2);
-			buddy = buddy2;
-		} while (1);
-	}
-	mb_set_largest_free_order(sb, e4b->bd_info);
-	mb_check_buddy(e4b);
-}
-
-static int mb_find_extent(struct ext4_buddy *e4b, int order, int block,
-				int needed, struct ext4_free_extent *ex)
-{
-	int next = block;
-	int max;
-=======
 	if (left_is_free && right_is_free)
 		e4b->bd_info->bb_fragments--;
 	else if (!left_is_free && !right_is_free)
@@ -2459,17 +1980,12 @@ static int mb_find_extent(struct ext4_buddy *e4b, int block,
 				int needed, struct ext4_free_extent *ex)
 {
 	int max, order, next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *buddy;
 
 	assert_spin_locked(ext4_group_lock_ptr(e4b->bd_sb, e4b->bd_group));
 	BUG_ON(ex == NULL);
 
-<<<<<<< HEAD
-	buddy = mb_find_buddy(e4b, order, &max);
-=======
 	buddy = mb_find_buddy(e4b, 0, &max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(buddy == NULL);
 	BUG_ON(block >= max);
 	if (mb_test_bit(block, buddy)) {
@@ -2479,26 +1995,6 @@ static int mb_find_extent(struct ext4_buddy *e4b, int block,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	/* FIXME dorp order completely ? */
-	if (likely(order == 0)) {
-		/* find actual order */
-		order = mb_find_order_for_block(e4b, block);
-		block = block >> order;
-	}
-
-	ex->fe_len = 1 << order;
-	ex->fe_start = block << order;
-	ex->fe_group = e4b->bd_group;
-
-	/* calc difference from given start */
-	next = next - ex->fe_start;
-	ex->fe_len -= next;
-	ex->fe_start += next;
-
-	while (needed > ex->fe_len &&
-	       (buddy = mb_find_buddy(e4b, order, &max))) {
-=======
 	/* find actual order */
 	order = mb_find_order_for_block(e4b, block);
 
@@ -2510,7 +2006,6 @@ static int mb_find_extent(struct ext4_buddy *e4b, int block,
 
 	while (needed > ex->fe_len &&
 	       mb_find_buddy(e4b, order, &max)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (block + 1 >= max)
 			break;
@@ -2525,9 +2020,6 @@ static int mb_find_extent(struct ext4_buddy *e4b, int block,
 		ex->fe_len += 1 << order;
 	}
 
-<<<<<<< HEAD
-	BUG_ON(ex->fe_start + ex->fe_len > (1 << (e4b->bd_blkbits + 3)));
-=======
 	if (ex->fe_start + ex->fe_len > EXT4_CLUSTERS_PER_GROUP(e4b->bd_sb)) {
 		/* Should never happen! (but apparently sometimes does?!?) */
 		WARN_ON(1);
@@ -2540,7 +2032,6 @@ static int mb_find_extent(struct ext4_buddy *e4b, int block,
 		ex->fe_start = 0;
 		ex->fe_group = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ex->fe_len;
 }
 
@@ -2555,10 +2046,7 @@ static int mb_mark_used(struct ext4_buddy *e4b, struct ext4_free_extent *ex)
 	unsigned ret = 0;
 	int len0 = len;
 	void *buddy;
-<<<<<<< HEAD
-=======
 	bool split = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(start + len > (e4b->bd_sb->s_blocksize << 3));
 	BUG_ON(e4b->bd_group != ex->fe_group);
@@ -2566,10 +2054,7 @@ static int mb_mark_used(struct ext4_buddy *e4b, struct ext4_free_extent *ex)
 	mb_check_buddy(e4b);
 	mb_mark_used_double(e4b, start, len);
 
-<<<<<<< HEAD
-=======
 	this_cpu_inc(discard_pa_seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e4b->bd_info->bb_free -= len;
 	if (e4b->bd_info->bb_first_free == start)
 		e4b->bd_info->bb_first_free += len;
@@ -2586,24 +2071,16 @@ static int mb_mark_used(struct ext4_buddy *e4b, struct ext4_free_extent *ex)
 
 	/* let's maintain buddy itself */
 	while (len) {
-<<<<<<< HEAD
-		ord = mb_find_order_for_block(e4b, start);
-=======
 		if (!split)
 			ord = mb_find_order_for_block(e4b, start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (((start >> ord) << ord) == start && len >= (1 << ord)) {
 			/* the whole chunk may be allocated at once! */
 			mlen = 1 << ord;
-<<<<<<< HEAD
-			buddy = mb_find_buddy(e4b, ord, &max);
-=======
 			if (!split)
 				buddy = mb_find_buddy(e4b, ord, &max);
 			else
 				split = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BUG_ON((start >> ord) >= max);
 			mb_set_bit(start >> ord, buddy);
 			e4b->bd_info->bb_counters[ord]--;
@@ -2630,19 +2107,12 @@ static int mb_mark_used(struct ext4_buddy *e4b, struct ext4_free_extent *ex)
 		mb_clear_bit(cur + 1, buddy);
 		e4b->bd_info->bb_counters[ord]++;
 		e4b->bd_info->bb_counters[ord]++;
-<<<<<<< HEAD
-	}
-	mb_set_largest_free_order(e4b->bd_sb, e4b->bd_info);
-
-	ext4_set_bits(e4b->bd_bitmap, ex->fe_start, len0);
-=======
 		split = true;
 	}
 	mb_set_largest_free_order(e4b->bd_sb, e4b->bd_info);
 
 	mb_update_avg_fragment_size(e4b->bd_sb, e4b->bd_info);
 	mb_set_bits(e4b->bd_bitmap, ex->fe_start, len0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb_check_buddy(e4b);
 
 	return ret;
@@ -2690,13 +2160,6 @@ static void ext4_mb_use_best_found(struct ext4_allocation_context *ac,
 		sbi->s_mb_last_start = ac->ac_f_ex.fe_start;
 		spin_unlock(&sbi->s_md_lock);
 	}
-<<<<<<< HEAD
-}
-
-/*
- * regular allocator, for general purposes allocation
- */
-=======
 	/*
 	 * As we've just preallocated more space than
 	 * user requested originally, we store allocated
@@ -2706,7 +2169,6 @@ static void ext4_mb_use_best_found(struct ext4_allocation_context *ac,
 		ext4_mb_new_preallocation(ac);
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
 					struct ext4_buddy *e4b,
@@ -2715,11 +2177,6 @@ static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
 	struct ext4_free_extent *bex = &ac->ac_b_ex;
 	struct ext4_free_extent *gex = &ac->ac_g_ex;
-<<<<<<< HEAD
-	struct ext4_free_extent ex;
-	int max;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ac->ac_status == AC_STATUS_FOUND)
 		return;
@@ -2738,22 +2195,8 @@ static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
 	if (bex->fe_len < gex->fe_len)
 		return;
 
-<<<<<<< HEAD
-	if ((finish_group || ac->ac_found > sbi->s_mb_min_to_scan)
-			&& bex->fe_group == e4b->bd_group) {
-		/* recheck chunk's availability - we don't know
-		 * when it was found (within this lock-unlock
-		 * period or not) */
-		max = mb_find_extent(e4b, 0, bex->fe_start, gex->fe_len, &ex);
-		if (max >= gex->fe_len) {
-			ext4_mb_use_best_found(ac, e4b);
-			return;
-		}
-	}
-=======
 	if (finish_group || ac->ac_found > sbi->s_mb_min_to_scan)
 		ext4_mb_use_best_found(ac, e4b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2764,8 +2207,6 @@ static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
  * in the context. Later, the best found extent will be used, if
  * mballoc can't find good enough extent.
  *
-<<<<<<< HEAD
-=======
  * The algorithm used is roughly as follows:
  *
  * * If free extent found is exactly as big as goal, then
@@ -2780,7 +2221,6 @@ static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
  *   stopping the scan and using the extent.
  *
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FIXME: real allocation policy is to be designed yet!
  */
 static void ext4_mb_measure_extent(struct ext4_allocation_context *ac,
@@ -2796,10 +2236,7 @@ static void ext4_mb_measure_extent(struct ext4_allocation_context *ac,
 	BUG_ON(ac->ac_status != AC_STATUS_CONTINUE);
 
 	ac->ac_found++;
-<<<<<<< HEAD
-=======
 	ac->ac_cX_found[ac->ac_criteria]++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The special case - take what you catch first
@@ -2847,11 +2284,7 @@ static void ext4_mb_measure_extent(struct ext4_allocation_context *ac,
 }
 
 static noinline_for_stack
-<<<<<<< HEAD
-int ext4_mb_try_best_found(struct ext4_allocation_context *ac,
-=======
 void ext4_mb_try_best_found(struct ext4_allocation_context *ac,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct ext4_buddy *e4b)
 {
 	struct ext4_free_extent ex = ac->ac_b_ex;
@@ -2862,12 +2295,6 @@ void ext4_mb_try_best_found(struct ext4_allocation_context *ac,
 	BUG_ON(ex.fe_len <= 0);
 	err = ext4_mb_load_buddy(ac->ac_sb, group, e4b);
 	if (err)
-<<<<<<< HEAD
-		return err;
-
-	ext4_lock_group(ac->ac_sb, group);
-	max = mb_find_extent(e4b, 0, ex.fe_start, ex.fe_len, &ex);
-=======
 		return;
 
 	ext4_lock_group(ac->ac_sb, group);
@@ -2875,23 +2302,15 @@ void ext4_mb_try_best_found(struct ext4_allocation_context *ac,
 		goto out;
 
 	max = mb_find_extent(e4b, ex.fe_start, ex.fe_len, &ex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (max > 0) {
 		ac->ac_b_ex = ex;
 		ext4_mb_use_best_found(ac, e4b);
 	}
 
-<<<<<<< HEAD
-	ext4_unlock_group(ac->ac_sb, group);
-	ext4_mb_unload_buddy(e4b);
-
-	return 0;
-=======
 out:
 	ext4_unlock_group(ac->ac_sb, group);
 	ext4_mb_unload_buddy(e4b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack
@@ -2902,11 +2321,6 @@ int ext4_mb_find_by_goal(struct ext4_allocation_context *ac,
 	int max;
 	int err;
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
-<<<<<<< HEAD
-	struct ext4_free_extent ex;
-
-	if (!(ac->ac_flags & EXT4_MB_HINT_TRY_GOAL))
-=======
 	struct ext4_group_info *grp = ext4_get_group_info(ac->ac_sb, group);
 	struct ext4_free_extent ex;
 
@@ -2915,7 +2329,6 @@ int ext4_mb_find_by_goal(struct ext4_allocation_context *ac,
 	if (!(ac->ac_flags & (EXT4_MB_HINT_TRY_GOAL | EXT4_MB_HINT_GOAL_ONLY)))
 		return 0;
 	if (grp->bb_free == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	err = ext4_mb_load_buddy(ac->ac_sb, group, e4b);
@@ -2923,16 +2336,6 @@ int ext4_mb_find_by_goal(struct ext4_allocation_context *ac,
 		return err;
 
 	ext4_lock_group(ac->ac_sb, group);
-<<<<<<< HEAD
-	max = mb_find_extent(e4b, 0, ac->ac_g_ex.fe_start,
-			     ac->ac_g_ex.fe_len, &ex);
-
-	if (max >= ac->ac_g_ex.fe_len && ac->ac_g_ex.fe_len == sbi->s_stripe) {
-		ext4_fsblk_t start;
-
-		start = ext4_group_first_block_no(ac->ac_sb, e4b->bd_group) +
-			ex.fe_start;
-=======
 	if (unlikely(EXT4_MB_GRP_BBITMAP_CORRUPT(e4b->bd_info)))
 		goto out;
 
@@ -2945,7 +2348,6 @@ int ext4_mb_find_by_goal(struct ext4_allocation_context *ac,
 		ext4_fsblk_t start;
 
 		start = ext4_grp_offs_to_block(ac->ac_sb, &ex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* use do_div to get remainder (would be 64-bit modulo) */
 		if (do_div(start, sbi->s_stripe) == 0) {
 			ac->ac_found++;
@@ -2969,10 +2371,7 @@ int ext4_mb_find_by_goal(struct ext4_allocation_context *ac,
 		ac->ac_b_ex = ex;
 		ext4_mb_use_best_found(ac, e4b);
 	}
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_unlock_group(ac->ac_sb, group);
 	ext4_mb_unload_buddy(e4b);
 
@@ -2995,23 +2394,11 @@ void ext4_mb_simple_scan_group(struct ext4_allocation_context *ac,
 	int max;
 
 	BUG_ON(ac->ac_2order <= 0);
-<<<<<<< HEAD
-	for (i = ac->ac_2order; i <= sb->s_blocksize_bits + 1; i++) {
-=======
 	for (i = ac->ac_2order; i < MB_NUM_ORDERS(sb); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (grp->bb_counters[i] == 0)
 			continue;
 
 		buddy = mb_find_buddy(e4b, i, &max);
-<<<<<<< HEAD
-		BUG_ON(buddy == NULL);
-
-		k = mb_find_next_zero_bit(buddy, max, 0);
-		BUG_ON(k >= max);
-
-		ac->ac_found++;
-=======
 		if (WARN_RATELIMIT(buddy == NULL,
 			 "ext4: mb_simple_scan_group: mb_find_buddy failed, (%d)\n", i))
 			continue;
@@ -3028,7 +2415,6 @@ void ext4_mb_simple_scan_group(struct ext4_allocation_context *ac,
 		}
 		ac->ac_found++;
 		ac->ac_cX_found[ac->ac_criteria]++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ac->ac_b_ex.fe_len = 1 << i;
 		ac->ac_b_ex.fe_start = k << i;
@@ -3036,11 +2422,7 @@ void ext4_mb_simple_scan_group(struct ext4_allocation_context *ac,
 
 		ext4_mb_use_best_found(ac, e4b);
 
-<<<<<<< HEAD
-		BUG_ON(ac->ac_b_ex.fe_len != ac->ac_g_ex.fe_len);
-=======
 		BUG_ON(ac->ac_f_ex.fe_len != ac->ac_g_ex.fe_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (EXT4_SB(sb)->s_mb_stats)
 			atomic_inc(&EXT4_SB(sb)->s_bal_2orders);
@@ -3061,20 +2443,12 @@ void ext4_mb_complex_scan_group(struct ext4_allocation_context *ac,
 	struct super_block *sb = ac->ac_sb;
 	void *bitmap = e4b->bd_bitmap;
 	struct ext4_free_extent ex;
-<<<<<<< HEAD
-	int i;
-	int free;
-
-	free = e4b->bd_info->bb_free;
-	BUG_ON(free <= 0);
-=======
 	int i, j, freelen;
 	int free;
 
 	free = e4b->bd_info->bb_free;
 	if (WARN_ON(free <= 0))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = e4b->bd_info->bb_first_free;
 
@@ -3085,15 +2459,10 @@ void ext4_mb_complex_scan_group(struct ext4_allocation_context *ac,
 			/*
 			 * IF we have corrupt bitmap, we won't find any
 			 * free blocks even though group info says we
-<<<<<<< HEAD
-			 * we have free blocks
-			 */
-=======
 			 * have free blocks
 			 */
 			ext4_mark_group_bitmap_corrupted(sb, e4b->bd_group,
 					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_grp_locked_error(sb, e4b->bd_group, 0, 0,
 					"%d free clusters as per "
 					"group info. But bitmap says 0",
@@ -3101,11 +2470,6 @@ void ext4_mb_complex_scan_group(struct ext4_allocation_context *ac,
 			break;
 		}
 
-<<<<<<< HEAD
-		mb_find_extent(e4b, 0, i, ac->ac_g_ex.fe_len, &ex);
-		BUG_ON(ex.fe_len <= 0);
-		if (free < ex.fe_len) {
-=======
 		if (!ext4_mb_cr_expensive(ac->ac_criteria)) {
 			/*
 			 * In CR_GOAL_LEN_FAST and CR_BEST_AVAIL_LEN, we are
@@ -3130,7 +2494,6 @@ void ext4_mb_complex_scan_group(struct ext4_allocation_context *ac,
 		if (free < ex.fe_len) {
 			ext4_mark_group_bitmap_corrupted(sb, e4b->bd_group,
 					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_grp_locked_error(sb, e4b->bd_group, 0, 0,
 					"%d free clusters as per "
 					"group info. But got %d blocks",
@@ -3142,11 +2505,7 @@ void ext4_mb_complex_scan_group(struct ext4_allocation_context *ac,
 			 */
 			break;
 		}
-<<<<<<< HEAD
-
-=======
 		ex.fe_logical = 0xDEADC0DE; /* debug value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_mb_measure_extent(ac, &ex, e4b);
 
 		i += ex.fe_len;
@@ -3170,11 +2529,7 @@ void ext4_mb_scan_aligned(struct ext4_allocation_context *ac,
 	struct ext4_free_extent ex;
 	ext4_fsblk_t first_group_block;
 	ext4_fsblk_t a;
-<<<<<<< HEAD
-	ext4_grpblk_t i;
-=======
 	ext4_grpblk_t i, stripe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int max;
 
 	BUG_ON(sbi->s_stripe == 0);
@@ -3186,13 +2541,6 @@ void ext4_mb_scan_aligned(struct ext4_allocation_context *ac,
 	do_div(a, sbi->s_stripe);
 	i = (a * sbi->s_stripe) - first_group_block;
 
-<<<<<<< HEAD
-	while (i < EXT4_CLUSTERS_PER_GROUP(sb)) {
-		if (!mb_test_bit(i, bitmap)) {
-			max = mb_find_extent(e4b, 0, i, sbi->s_stripe, &ex);
-			if (max >= sbi->s_stripe) {
-				ac->ac_found++;
-=======
 	stripe = EXT4_B2C(sbi, sbi->s_stripe);
 	i = EXT4_B2C(sbi, i);
 	while (i < EXT4_CLUSTERS_PER_GROUP(sb)) {
@@ -3202,49 +2550,11 @@ void ext4_mb_scan_aligned(struct ext4_allocation_context *ac,
 				ac->ac_found++;
 				ac->ac_cX_found[ac->ac_criteria]++;
 				ex.fe_logical = 0xDEADF00D; /* debug value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ac->ac_b_ex = ex;
 				ext4_mb_use_best_found(ac, e4b);
 				break;
 			}
 		}
-<<<<<<< HEAD
-		i += sbi->s_stripe;
-	}
-}
-
-/* This is now called BEFORE we load the buddy bitmap. */
-static int ext4_mb_good_group(struct ext4_allocation_context *ac,
-				ext4_group_t group, int cr)
-{
-	unsigned free, fragments;
-	int flex_size = ext4_flex_bg_size(EXT4_SB(ac->ac_sb));
-	struct ext4_group_info *grp = ext4_get_group_info(ac->ac_sb, group);
-
-	BUG_ON(cr < 0 || cr >= 4);
-
-	/* We only do this if the grp has never been initialized */
-	if (unlikely(EXT4_MB_GRP_NEED_INIT(grp))) {
-		int ret = ext4_mb_init_group(ac->ac_sb, group);
-		if (ret)
-			return 0;
-	}
-
-	free = grp->bb_free;
-	fragments = grp->bb_fragments;
-	if (free == 0)
-		return 0;
-	if (fragments == 0)
-		return 0;
-
-	switch (cr) {
-	case 0:
-		BUG_ON(ac->ac_2order == 0);
-
-		if (grp->bb_largest_free_order < ac->ac_2order)
-			return 0;
-
-=======
 		i += stripe;
 	}
 }
@@ -3278,26 +2588,10 @@ static bool ext4_mb_good_group(struct ext4_allocation_context *ac,
 	case CR_POWER2_ALIGNED:
 		BUG_ON(ac->ac_2order == 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Avoid using the first bg of a flexgroup for data files */
 		if ((ac->ac_flags & EXT4_MB_HINT_DATA) &&
 		    (flex_size >= EXT4_FLEX_SIZE_DIR_ALLOC_SCHEME) &&
 		    ((group % flex_size) == 0))
-<<<<<<< HEAD
-			return 0;
-
-		return 1;
-	case 1:
-		if ((free / fragments) >= ac->ac_g_ex.fe_len)
-			return 1;
-		break;
-	case 2:
-		if (free >= ac->ac_g_ex.fe_len)
-			return 1;
-		break;
-	case 3:
-		return 1;
-=======
 			return false;
 
 		if (free < ac->ac_g_ex.fe_len)
@@ -3321,14 +2615,10 @@ static bool ext4_mb_good_group(struct ext4_allocation_context *ac,
 		break;
 	case CR_ANY_FREE:
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
 }
 
@@ -3489,20 +2779,11 @@ void ext4_mb_prefetch_fini(struct super_block *sb, ext4_group_t group,
 				break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack int
 ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 {
-<<<<<<< HEAD
-	ext4_group_t ngroups, group, i;
-	int cr;
-	int err = 0;
-	struct ext4_sb_info *sbi;
-	struct super_block *sb;
-	struct ext4_buddy e4b;
-=======
 	ext4_group_t prefetch_grp = 0, ngroups, group, i;
 	enum criteria new_cr, cr = CR_GOAL_LEN_FAST;
 	int err = 0, first_err = 0;
@@ -3511,7 +2792,6 @@ ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 	struct super_block *sb;
 	struct ext4_buddy e4b;
 	int lost;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sb = ac->ac_sb;
 	sbi = EXT4_SB(sb);
@@ -3531,15 +2811,9 @@ ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 		goto out;
 
 	/*
-<<<<<<< HEAD
-	 * ac->ac2_order is set only if the fe_len is a power of 2
-	 * if ac2_order is set we also set criteria to 0 so that we
-	 * try exact allocation using buddy.
-=======
 	 * ac->ac_2order is set only if the fe_len is a power of 2
 	 * if ac->ac_2order is set we also set criteria to CR_POWER2_ALIGNED
 	 * so that we try exact allocation using buddy.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	i = fls(ac->ac_g_ex.fe_len);
 	ac->ac_2order = 0;
@@ -3547,15 +2821,6 @@ ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 	 * We search using buddy data only if the order of the request
 	 * is greater than equal to the sbi_s_mb_order2_reqs
 	 * You can tune it via /sys/fs/ext4/<partition>/mb_order2_req
-<<<<<<< HEAD
-	 */
-	if (i >= sbi->s_mb_order2_reqs) {
-		/*
-		 * This should tell if fe_len is exactly power of 2
-		 */
-		if ((ac->ac_g_ex.fe_len & (~(1 << (i - 1)))) == 0)
-			ac->ac_2order = i - 1;
-=======
 	 * We also support searching for power-of-two requests only for
 	 * requests upto maximum buddy size we have constructed.
 	 */
@@ -3563,7 +2828,6 @@ ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 		if (is_power_of_2(ac->ac_g_ex.fe_len))
 			ac->ac_2order = array_index_nospec(i - 1,
 							   MB_NUM_ORDERS(sb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* if stream allocation is enabled, use global goal */
@@ -3575,16 +2839,6 @@ ext4_mb_regular_allocator(struct ext4_allocation_context *ac)
 		spin_unlock(&sbi->s_md_lock);
 	}
 
-<<<<<<< HEAD
-	/* Let's just scan groups to find more-less suitable blocks */
-	cr = ac->ac_2order ? 0 : 1;
-	/*
-	 * cr == 0 try to get exact allocation,
-	 * cr == 3  try to get anything
-	 */
-repeat:
-	for (; cr < 4 && ac->ac_status == AC_STATUS_CONTINUE; cr++) {
-=======
 	/*
 	 * Let's just scan groups to find more-less suitable blocks We
 	 * start with CR_GOAL_LEN_FAST, unless it is power of 2
@@ -3594,27 +2848,12 @@ repeat:
 		cr = CR_POWER2_ALIGNED;
 repeat:
 	for (; cr < EXT4_MB_NUM_CRS && ac->ac_status == AC_STATUS_CONTINUE; cr++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ac->ac_criteria = cr;
 		/*
 		 * searching for the right group start
 		 * from the goal value specified
 		 */
 		group = ac->ac_g_ex.fe_group;
-<<<<<<< HEAD
-
-		for (i = 0; i < ngroups; group++, i++) {
-			/*
-			 * Artificially restricted ngroups for non-extent
-			 * files makes group > ngroups possible on first loop.
-			 */
-			if (group >= ngroups)
-				group = 0;
-
-			/* This now checks without needing the buddy page */
-			if (!ext4_mb_good_group(ac, group, cr))
-				continue;
-=======
 		ac->ac_groups_linear_remaining = sbi->s_mb_max_linear_groups;
 		prefetch_grp = group;
 
@@ -3654,7 +2893,6 @@ repeat:
 					first_err = ret;
 				continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			err = ext4_mb_load_buddy(sb, group, &e4b);
 			if (err)
@@ -3666,27 +2904,14 @@ repeat:
 			 * We need to check again after locking the
 			 * block group
 			 */
-<<<<<<< HEAD
-			if (!ext4_mb_good_group(ac, group, cr)) {
-=======
 			ret = ext4_mb_good_group(ac, group, cr);
 			if (ret == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ext4_unlock_group(sb, group);
 				ext4_mb_unload_buddy(&e4b);
 				continue;
 			}
 
 			ac->ac_groups_scanned++;
-<<<<<<< HEAD
-			if (cr == 0)
-				ext4_mb_simple_scan_group(ac, &e4b);
-			else if (cr == 1 && sbi->s_stripe &&
-					!(ac->ac_g_ex.fe_len % sbi->s_stripe))
-				ext4_mb_scan_aligned(ac, &e4b);
-			else
-				ext4_mb_complex_scan_group(ac, &e4b);
-=======
 			if (cr == CR_POWER2_ALIGNED)
 				ext4_mb_simple_scan_group(ac, &e4b);
 			else {
@@ -3702,7 +2927,6 @@ repeat:
 				if (ac->ac_status == AC_STATUS_CONTINUE)
 					ext4_mb_complex_scan_group(ac, &e4b);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ext4_unlock_group(sb, group);
 			ext4_mb_unload_buddy(&e4b);
@@ -3710,8 +2934,6 @@ repeat:
 			if (ac->ac_status != AC_STATUS_CONTINUE)
 				break;
 		}
-<<<<<<< HEAD
-=======
 		/* Processed all groups and haven't found blocks */
 		if (sbi->s_mb_stats && i == ngroups)
 			atomic64_inc(&sbi->s_bal_cX_failed[cr]);
@@ -3720,7 +2942,6 @@ repeat:
 			/* Reset goal length to original goal length before
 			 * falling into CR_GOAL_LEN_SLOW */
 			ac->ac_g_ex.fe_len = ac->ac_orig_goal_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ac->ac_b_ex.fe_len > 0 && ac->ac_status != AC_STATUS_FOUND &&
@@ -3729,40 +2950,23 @@ repeat:
 		 * We've been searching too long. Let's try to allocate
 		 * the best chunk we've found so far
 		 */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_mb_try_best_found(ac, &e4b);
 		if (ac->ac_status != AC_STATUS_FOUND) {
 			/*
 			 * Someone more lucky has already allocated it.
 			 * The only thing we can do is just take first
 			 * found block(s)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "EXT4-fs: someone won our chunk\n");
-			 */
-=======
 			 */
 			lost = atomic_inc_return(&sbi->s_mb_lost_chunks);
 			mb_debug(sb, "lost chunk, group: %u, start: %d, len: %d, lost: %d\n",
 				 ac->ac_b_ex.fe_group, ac->ac_b_ex.fe_start,
 				 ac->ac_b_ex.fe_len, lost);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ac->ac_b_ex.fe_group = 0;
 			ac->ac_b_ex.fe_start = 0;
 			ac->ac_b_ex.fe_len = 0;
 			ac->ac_status = AC_STATUS_CONTINUE;
 			ac->ac_flags |= EXT4_MB_HINT_FIRST;
-<<<<<<< HEAD
-			cr = 3;
-			atomic_inc(&sbi->s_mb_lost_chunks);
-			goto repeat;
-		}
-	}
-out:
-=======
 			cr = CR_ANY_FREE;
 			goto repeat;
 		}
@@ -3781,17 +2985,12 @@ out:
 	if (nr)
 		ext4_mb_prefetch_fini(sb, prefetch_grp, nr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void *ext4_mb_seq_groups_start(struct seq_file *seq, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct super_block *sb = seq->private;
-=======
 	struct super_block *sb = pde_data(file_inode(seq->file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_group_t group;
 
 	if (*pos < 0 || *pos >= ext4_get_groups_count(sb))
@@ -3802,11 +3001,7 @@ static void *ext4_mb_seq_groups_start(struct seq_file *seq, loff_t *pos)
 
 static void *ext4_mb_seq_groups_next(struct seq_file *seq, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct super_block *sb = seq->private;
-=======
 	struct super_block *sb = pde_data(file_inode(seq->file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_group_t group;
 
 	++*pos;
@@ -3818,16 +3013,6 @@ static void *ext4_mb_seq_groups_next(struct seq_file *seq, void *v, loff_t *pos)
 
 static int ext4_mb_seq_groups_show(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-	struct super_block *sb = seq->private;
-	ext4_group_t group = (ext4_group_t) ((unsigned long) v);
-	int i;
-	int err;
-	struct ext4_buddy e4b;
-	struct sg {
-		struct ext4_group_info info;
-		ext4_grpblk_t counters[16];
-=======
 	struct super_block *sb = pde_data(file_inode(seq->file));
 	ext4_group_t group = (ext4_group_t) ((unsigned long) v);
 	int i, err;
@@ -3840,38 +3025,10 @@ static int ext4_mb_seq_groups_show(struct seq_file *seq, void *v)
 	struct sg {
 		struct ext4_group_info info;
 		ext4_grpblk_t counters[EXT4_MAX_BLOCK_LOG_SIZE + 2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sg;
 
 	group--;
 	if (group == 0)
-<<<<<<< HEAD
-		seq_printf(seq, "#%-5s: %-5s %-5s %-5s "
-				"[ %-5s %-5s %-5s %-5s %-5s %-5s %-5s "
-				  "%-5s %-5s %-5s %-5s %-5s %-5s %-5s ]\n",
-			   "group", "free", "frags", "first",
-			   "2^0", "2^1", "2^2", "2^3", "2^4", "2^5", "2^6",
-			   "2^7", "2^8", "2^9", "2^10", "2^11", "2^12", "2^13");
-
-	i = (sb->s_blocksize_bits + 2) * sizeof(sg.info.bb_counters[0]) +
-		sizeof(struct ext4_group_info);
-	err = ext4_mb_load_buddy(sb, group, &e4b);
-	if (err) {
-		seq_printf(seq, "#%-5u: I/O error\n", group);
-		return 0;
-	}
-	ext4_lock_group(sb, group);
-	memcpy(&sg, ext4_get_group_info(sb, group), i);
-	ext4_unlock_group(sb, group);
-	ext4_mb_unload_buddy(&e4b);
-
-	seq_printf(seq, "#%-5u: %-5u %-5u %-5u [", group, sg.info.bb_free,
-			sg.info.bb_fragments, sg.info.bb_first_free);
-	for (i = 0; i <= 13; i++)
-		seq_printf(seq, " %-5u", i <= sb->s_blocksize_bits + 1 ?
-				sg.info.bb_counters[i] : 0);
-	seq_printf(seq, " ]\n");
-=======
 		seq_puts(seq, "#group: free  frags first ["
 			      " 2^0   2^1   2^2   2^3   2^4   2^5   2^6  "
 			      " 2^7   2^8   2^9   2^10  2^11  2^12  2^13  ]\n");
@@ -3906,7 +3063,6 @@ static int ext4_mb_seq_groups_show(struct seq_file *seq, void *v)
 	if (EXT4_MB_GRP_BBITMAP_CORRUPT(&sg.info))
 		seq_puts(seq, " Block bitmap corrupted!");
 	seq_puts(seq, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3915,39 +3071,13 @@ static void ext4_mb_seq_groups_stop(struct seq_file *seq, void *v)
 {
 }
 
-<<<<<<< HEAD
-static const struct seq_operations ext4_mb_seq_groups_ops = {
-=======
 const struct seq_operations ext4_mb_seq_groups_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start  = ext4_mb_seq_groups_start,
 	.next   = ext4_mb_seq_groups_next,
 	.stop   = ext4_mb_seq_groups_stop,
 	.show   = ext4_mb_seq_groups_show,
 };
 
-<<<<<<< HEAD
-static int ext4_mb_seq_groups_open(struct inode *inode, struct file *file)
-{
-	struct super_block *sb = PDE(inode)->data;
-	int rc;
-
-	rc = seq_open(file, &ext4_mb_seq_groups_ops);
-	if (rc == 0) {
-		struct seq_file *m = file->private_data;
-		m->private = sb;
-	}
-	return rc;
-
-}
-
-static const struct file_operations ext4_mb_seq_groups_fops = {
-	.owner		= THIS_MODULE,
-	.open		= ext4_mb_seq_groups_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-=======
 int ext4_seq_mb_stats_show(struct seq_file *seq, void *offset)
 {
 	struct super_block *sb = seq->private;
@@ -4130,7 +3260,6 @@ const struct seq_operations ext4_mb_seq_structs_summary_ops = {
 	.next   = ext4_mb_seq_structs_summary_next,
 	.stop   = ext4_mb_seq_structs_summary_stop,
 	.show   = ext4_mb_seq_structs_summary_show,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct kmem_cache *get_groupinfo_cache(int blocksize_bits)
@@ -4142,8 +3271,6 @@ static struct kmem_cache *get_groupinfo_cache(int blocksize_bits)
 	return cachep;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Allocate the top-level s_group_info array for the specified number
  * of groups
@@ -4180,17 +3307,13 @@ int ext4_mb_alloc_groupinfo(struct super_block *sb, ext4_group_t ngroups)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Create and initialize ext4_group_info data for the given group. */
 int ext4_mb_add_groupinfo(struct super_block *sb, ext4_group_t group,
 			  struct ext4_group_desc *desc)
 {
 	int i;
 	int metalen = 0;
-<<<<<<< HEAD
-=======
 	int idx = group >> EXT4_DESC_PER_BLOCK_BITS(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct ext4_group_info **meta_group_info;
 	struct kmem_cache *cachep = get_groupinfo_cache(sb->s_blocksize_bits);
@@ -4203,23 +3326,6 @@ int ext4_mb_add_groupinfo(struct super_block *sb, ext4_group_t group,
 	if (group % EXT4_DESC_PER_BLOCK(sb) == 0) {
 		metalen = sizeof(*meta_group_info) <<
 			EXT4_DESC_PER_BLOCK_BITS(sb);
-<<<<<<< HEAD
-		meta_group_info = kmalloc(metalen, GFP_KERNEL);
-		if (meta_group_info == NULL) {
-			ext4_msg(sb, KERN_ERR, "can't allocate mem "
-				 "for a buddy group");
-			goto exit_meta_group_info;
-		}
-		sbi->s_group_info[group >> EXT4_DESC_PER_BLOCK_BITS(sb)] =
-			meta_group_info;
-	}
-
-	meta_group_info =
-		sbi->s_group_info[group >> EXT4_DESC_PER_BLOCK_BITS(sb)];
-	i = group & (EXT4_DESC_PER_BLOCK(sb) - 1);
-
-	meta_group_info[i] = kmem_cache_alloc(cachep, GFP_KERNEL);
-=======
 		meta_group_info = kmalloc(metalen, GFP_NOFS);
 		if (meta_group_info == NULL) {
 			ext4_msg(sb, KERN_ERR, "can't allocate mem "
@@ -4235,15 +3341,10 @@ int ext4_mb_add_groupinfo(struct super_block *sb, ext4_group_t group,
 	i = group & (EXT4_DESC_PER_BLOCK(sb) - 1);
 
 	meta_group_info[i] = kmem_cache_zalloc(cachep, GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (meta_group_info[i] == NULL) {
 		ext4_msg(sb, KERN_ERR, "can't allocate buddy mem");
 		goto exit_group_info;
 	}
-<<<<<<< HEAD
-	memset(meta_group_info[i], 0, kmem_cache_size(cachep));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(EXT4_GROUP_INFO_NEED_INIT_BIT,
 		&(meta_group_info[i]->bb_state));
 
@@ -4263,24 +3364,6 @@ int ext4_mb_add_groupinfo(struct super_block *sb, ext4_group_t group,
 	INIT_LIST_HEAD(&meta_group_info[i]->bb_prealloc_list);
 	init_rwsem(&meta_group_info[i]->alloc_sem);
 	meta_group_info[i]->bb_free_root = RB_ROOT;
-<<<<<<< HEAD
-	meta_group_info[i]->bb_largest_free_order = -1;  /* uninit */
-
-#ifdef DOUBLE_CHECK
-	{
-		struct buffer_head *bh;
-		meta_group_info[i]->bb_bitmap =
-			kmalloc(sb->s_blocksize, GFP_KERNEL);
-		BUG_ON(meta_group_info[i]->bb_bitmap == NULL);
-		bh = ext4_read_block_bitmap(sb, group);
-		BUG_ON(bh == NULL);
-		memcpy(meta_group_info[i]->bb_bitmap, bh->b_data,
-			sb->s_blocksize);
-		put_bh(bh);
-	}
-#endif
-
-=======
 	INIT_LIST_HEAD(&meta_group_info[i]->bb_largest_free_order_node);
 	INIT_LIST_HEAD(&meta_group_info[i]->bb_avg_fragment_size_node);
 	meta_group_info[i]->bb_largest_free_order = -1;  /* uninit */
@@ -4288,18 +3371,11 @@ int ext4_mb_add_groupinfo(struct super_block *sb, ext4_group_t group,
 	meta_group_info[i]->bb_group = group;
 
 	mb_group_bb_bitmap_alloc(sb, meta_group_info[i], group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 exit_group_info:
 	/* If a meta_group_info table has been allocated, release it now */
 	if (group % EXT4_DESC_PER_BLOCK(sb) == 0) {
-<<<<<<< HEAD
-		kfree(sbi->s_group_info[group >> EXT4_DESC_PER_BLOCK_BITS(sb)]);
-		sbi->s_group_info[group >> EXT4_DESC_PER_BLOCK_BITS(sb)] = NULL;
-	}
-exit_meta_group_info:
-=======
 		struct ext4_group_info ***group_info;
 
 		rcu_read_lock();
@@ -4308,7 +3384,6 @@ exit_meta_group_info:
 		group_info[idx] = NULL;
 		rcu_read_unlock();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 } /* ext4_mb_add_groupinfo */
 
@@ -4317,51 +3392,6 @@ static int ext4_mb_init_backend(struct super_block *sb)
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
 	ext4_group_t i;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
-<<<<<<< HEAD
-	struct ext4_super_block *es = sbi->s_es;
-	int num_meta_group_infos;
-	int num_meta_group_infos_max;
-	int array_size;
-	struct ext4_group_desc *desc;
-	struct kmem_cache *cachep;
-
-	/* This is the number of blocks used by GDT */
-	num_meta_group_infos = (ngroups + EXT4_DESC_PER_BLOCK(sb) -
-				1) >> EXT4_DESC_PER_BLOCK_BITS(sb);
-
-	/*
-	 * This is the total number of blocks used by GDT including
-	 * the number of reserved blocks for GDT.
-	 * The s_group_info array is allocated with this value
-	 * to allow a clean online resize without a complex
-	 * manipulation of pointer.
-	 * The drawback is the unused memory when no resize
-	 * occurs but it's very low in terms of pages
-	 * (see comments below)
-	 * Need to handle this properly when META_BG resizing is allowed
-	 */
-	num_meta_group_infos_max = num_meta_group_infos +
-				le16_to_cpu(es->s_reserved_gdt_blocks);
-
-	/*
-	 * array_size is the size of s_group_info array. We round it
-	 * to the next power of two because this approximation is done
-	 * internally by kmalloc so we can have some more memory
-	 * for free here (e.g. may be used for META_BG resize).
-	 */
-	array_size = 1;
-	while (array_size < sizeof(*sbi->s_group_info) *
-	       num_meta_group_infos_max)
-		array_size = array_size << 1;
-	/* An 8TB filesystem with 64-bit pointers requires a 4096 byte
-	 * kmalloc. A 128kb malloc should suffice for a 256TB filesystem.
-	 * So a two level scheme suffices for now. */
-	sbi->s_group_info = ext4_kvzalloc(array_size, GFP_KERNEL);
-	if (sbi->s_group_info == NULL) {
-		ext4_msg(sb, KERN_ERR, "can't allocate buddy meta group");
-		return -ENOMEM;
-	}
-=======
 	int err;
 	struct ext4_group_desc *desc;
 	struct ext4_group_info ***group_info;
@@ -4371,7 +3401,6 @@ static int ext4_mb_init_backend(struct super_block *sb)
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi->s_buddy_cache = new_inode(sb);
 	if (sbi->s_buddy_cache == NULL) {
 		ext4_msg(sb, KERN_ERR, "can't get new inode");
@@ -4384,10 +3413,7 @@ static int ext4_mb_init_backend(struct super_block *sb)
 	sbi->s_buddy_cache->i_ino = EXT4_BAD_INO;
 	EXT4_I(sbi->s_buddy_cache)->i_disksize = 0;
 	for (i = 0; i < ngroups; i++) {
-<<<<<<< HEAD
-=======
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc = ext4_get_group_desc(sb, i, NULL);
 		if (desc == NULL) {
 			ext4_msg(sb, KERN_ERR, "can't read descriptor %u", i);
@@ -4397,8 +3423,6 @@ static int ext4_mb_init_backend(struct super_block *sb)
 			goto err_freebuddy;
 	}
 
-<<<<<<< HEAD
-=======
 	if (ext4_has_feature_flex_bg(sb)) {
 		/* a single flex group is supposed to be read by a single IO.
 		 * 2 ^ s_log_groups_per_flex != UINT_MAX as s_mb_prefetch is
@@ -4427,21 +3451,10 @@ static int ext4_mb_init_backend(struct super_block *sb)
 	if (sbi->s_mb_prefetch_limit > ext4_get_groups_count(sb))
 		sbi->s_mb_prefetch_limit = ext4_get_groups_count(sb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_freebuddy:
 	cachep = get_groupinfo_cache(sb->s_blocksize_bits);
-<<<<<<< HEAD
-	while (i-- > 0)
-		kmem_cache_free(cachep, ext4_get_group_info(sb, i));
-	i = num_meta_group_infos;
-	while (i-- > 0)
-		kfree(sbi->s_group_info[i]);
-	iput(sbi->s_buddy_cache);
-err_freesgi:
-	ext4_kvfree(sbi->s_group_info);
-=======
 	while (i-- > 0) {
 		struct ext4_group_info *grp = ext4_get_group_info(sb, i);
 
@@ -4459,7 +3472,6 @@ err_freesgi:
 	rcu_read_lock();
 	kvfree(rcu_dereference(sbi->s_group_info));
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -4468,12 +3480,7 @@ static void ext4_groupinfo_destroy_slabs(void)
 	int i;
 
 	for (i = 0; i < NR_GRPINFO_CACHES; i++) {
-<<<<<<< HEAD
-		if (ext4_groupinfo_caches[i])
-			kmem_cache_destroy(ext4_groupinfo_caches[i]);
-=======
 		kmem_cache_destroy(ext4_groupinfo_caches[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_groupinfo_caches[i] = NULL;
 	}
 }
@@ -4517,17 +3524,6 @@ static int ext4_groupinfo_create_slab(size_t size)
 	return 0;
 }
 
-<<<<<<< HEAD
-int ext4_mb_init(struct super_block *sb, int needs_recovery)
-{
-	struct ext4_sb_info *sbi = EXT4_SB(sb);
-	unsigned i, j;
-	unsigned offset;
-	unsigned max;
-	int ret;
-
-	i = (sb->s_blocksize_bits + 2) * sizeof(*sbi->s_mb_offsets);
-=======
 static void ext4_discard_work(struct work_struct *work)
 {
 	struct ext4_sb_info *sbi = container_of(work,
@@ -4587,7 +3583,6 @@ int ext4_mb_init(struct super_block *sb)
 	int ret;
 
 	i = MB_NUM_ORDERS(sb) * sizeof(*sbi->s_mb_offsets);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbi->s_mb_offsets = kmalloc(i, GFP_KERNEL);
 	if (sbi->s_mb_offsets == NULL) {
@@ -4595,11 +3590,7 @@ int ext4_mb_init(struct super_block *sb)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	i = (sb->s_blocksize_bits + 2) * sizeof(*sbi->s_mb_maxs);
-=======
 	i = MB_NUM_ORDERS(sb) * sizeof(*sbi->s_mb_maxs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi->s_mb_maxs = kmalloc(i, GFP_KERNEL);
 	if (sbi->s_mb_maxs == NULL) {
 		ret = -ENOMEM;
@@ -4616,23 +3607,11 @@ int ext4_mb_init(struct super_block *sb)
 
 	i = 1;
 	offset = 0;
-<<<<<<< HEAD
-=======
 	offset_incr = 1 << (sb->s_blocksize_bits - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max = sb->s_blocksize << 2;
 	do {
 		sbi->s_mb_offsets[i] = offset;
 		sbi->s_mb_maxs[i] = max;
-<<<<<<< HEAD
-		offset += 1 << (sb->s_blocksize_bits - i);
-		max = max >> 1;
-		i++;
-	} while (i <= sb->s_blocksize_bits + 1);
-
-	spin_lock_init(&sbi->s_md_lock);
-	spin_lock_init(&sbi->s_bal_lock);
-=======
 		offset += offset_incr;
 		offset_incr = offset_incr >> 1;
 		max = max >> 1;
@@ -4683,18 +3662,14 @@ int ext4_mb_init(struct super_block *sb)
 	INIT_LIST_HEAD(&sbi->s_discard_list);
 	INIT_WORK(&sbi->s_discard_work, ext4_discard_work);
 	atomic_set(&sbi->s_retry_alloc_pending, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbi->s_mb_max_to_scan = MB_DEFAULT_MAX_TO_SCAN;
 	sbi->s_mb_min_to_scan = MB_DEFAULT_MIN_TO_SCAN;
 	sbi->s_mb_stats = MB_DEFAULT_STATS;
 	sbi->s_mb_stream_request = MB_DEFAULT_STREAM_THRESHOLD;
 	sbi->s_mb_order2_reqs = MB_DEFAULT_ORDER2_REQS;
-<<<<<<< HEAD
-=======
 	sbi->s_mb_best_avail_max_trim_order = MB_DEFAULT_BEST_AVAIL_TRIM_ORDER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The default group preallocation is 512, which for 4k block
 	 * sizes translates to 2 megabytes.  However for bigalloc file
@@ -4719,21 +3694,13 @@ int ext4_mb_init(struct super_block *sb)
 	 */
 	if (sbi->s_stripe > 1) {
 		sbi->s_mb_group_prealloc = roundup(
-<<<<<<< HEAD
-			sbi->s_mb_group_prealloc, sbi->s_stripe);
-=======
 			sbi->s_mb_group_prealloc, EXT4_B2C(sbi, sbi->s_stripe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sbi->s_locality_groups = alloc_percpu(struct ext4_locality_group);
 	if (sbi->s_locality_groups == NULL) {
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		goto out_free_groupinfo_slab;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for_each_possible_cpu(i) {
 		struct ext4_locality_group *lg;
@@ -4744,41 +3711,25 @@ int ext4_mb_init(struct super_block *sb)
 		spin_lock_init(&lg->lg_prealloc_lock);
 	}
 
-<<<<<<< HEAD
-=======
 	if (bdev_nonrot(sb->s_bdev))
 		sbi->s_mb_max_linear_groups = 0;
 	else
 		sbi->s_mb_max_linear_groups = MB_DEFAULT_LINEAR_LIMIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* init file for buddy data */
 	ret = ext4_mb_init_backend(sb);
 	if (ret != 0)
 		goto out_free_locality_groups;
 
-<<<<<<< HEAD
-	if (sbi->s_proc)
-		proc_create_data("mb_groups", S_IRUGO, sbi->s_proc,
-				 &ext4_mb_seq_groups_fops, sb);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_free_locality_groups:
 	free_percpu(sbi->s_locality_groups);
 	sbi->s_locality_groups = NULL;
-<<<<<<< HEAD
-out_free_groupinfo_slab:
-	ext4_groupinfo_destroy_slabs();
-out:
-=======
 out:
 	kfree(sbi->s_mb_avg_fragment_size);
 	kfree(sbi->s_mb_avg_fragment_size_locks);
 	kfree(sbi->s_mb_largest_free_orders);
 	kfree(sbi->s_mb_largest_free_orders_locks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sbi->s_mb_offsets);
 	sbi->s_mb_offsets = NULL;
 	kfree(sbi->s_mb_maxs);
@@ -4787,11 +3738,7 @@ out:
 }
 
 /* need to called with the ext4 group lock held */
-<<<<<<< HEAD
-static void ext4_mb_cleanup_pa(struct ext4_group_info *grp)
-=======
 static int ext4_mb_cleanup_pa(struct ext4_group_info *grp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_prealloc_space *pa;
 	struct list_head *cur, *tmp;
@@ -4803,40 +3750,14 @@ static int ext4_mb_cleanup_pa(struct ext4_group_info *grp)
 		count++;
 		kmem_cache_free(ext4_pspace_cachep, pa);
 	}
-<<<<<<< HEAD
-	if (count)
-		mb_debug(1, "mballoc: %u PAs left\n", count);
-
-}
-
-int ext4_mb_release(struct super_block *sb)
-=======
 	return count;
 }
 
 void ext4_mb_release(struct super_block *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
 	ext4_group_t i;
 	int num_meta_group_infos;
-<<<<<<< HEAD
-	struct ext4_group_info *grinfo;
-	struct ext4_sb_info *sbi = EXT4_SB(sb);
-	struct kmem_cache *cachep = get_groupinfo_cache(sb->s_blocksize_bits);
-
-	if (sbi->s_proc)
-		remove_proc_entry("mb_groups", sbi->s_proc);
-
-	if (sbi->s_group_info) {
-		for (i = 0; i < ngroups; i++) {
-			grinfo = ext4_get_group_info(sb, i);
-#ifdef DOUBLE_CHECK
-			kfree(grinfo->bb_bitmap);
-#endif
-			ext4_lock_group(sb, i);
-			ext4_mb_cleanup_pa(grinfo);
-=======
 	struct ext4_group_info *grinfo, ***group_info;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct kmem_cache *cachep = get_groupinfo_cache(sb->s_blocksize_bits);
@@ -4862,23 +3783,12 @@ void ext4_mb_release(struct super_block *sb)
 			if (count)
 				mb_debug(sb, "mballoc: %d PAs left\n",
 					 count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_unlock_group(sb, i);
 			kmem_cache_free(cachep, grinfo);
 		}
 		num_meta_group_infos = (ngroups +
 				EXT4_DESC_PER_BLOCK(sb) - 1) >>
 			EXT4_DESC_PER_BLOCK_BITS(sb);
-<<<<<<< HEAD
-		for (i = 0; i < num_meta_group_infos; i++)
-			kfree(sbi->s_group_info[i]);
-		ext4_kvfree(sbi->s_group_info);
-	}
-	kfree(sbi->s_mb_offsets);
-	kfree(sbi->s_mb_maxs);
-	if (sbi->s_buddy_cache)
-		iput(sbi->s_buddy_cache);
-=======
 		rcu_read_lock();
 		group_info = rcu_dereference(sbi->s_group_info);
 		for (i = 0; i < num_meta_group_infos; i++)
@@ -4893,7 +3803,6 @@ void ext4_mb_release(struct super_block *sb)
 	kfree(sbi->s_mb_offsets);
 	kfree(sbi->s_mb_maxs);
 	iput(sbi->s_buddy_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->s_mb_stats) {
 		ext4_msg(sb, KERN_INFO,
 		       "mballoc: %u blocks %u reqs (%u success)",
@@ -4901,30 +3810,18 @@ void ext4_mb_release(struct super_block *sb)
 				atomic_read(&sbi->s_bal_reqs),
 				atomic_read(&sbi->s_bal_success));
 		ext4_msg(sb, KERN_INFO,
-<<<<<<< HEAD
-		      "mballoc: %u extents scanned, %u goal hits, "
-				"%u 2^N hits, %u breaks, %u lost",
-				atomic_read(&sbi->s_bal_ex_scanned),
-=======
 		      "mballoc: %u extents scanned, %u groups scanned, %u goal hits, "
 				"%u 2^N hits, %u breaks, %u lost",
 				atomic_read(&sbi->s_bal_ex_scanned),
 				atomic_read(&sbi->s_bal_groups_scanned),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				atomic_read(&sbi->s_bal_goals),
 				atomic_read(&sbi->s_bal_2orders),
 				atomic_read(&sbi->s_bal_breaks),
 				atomic_read(&sbi->s_mb_lost_chunks));
 		ext4_msg(sb, KERN_INFO,
-<<<<<<< HEAD
-		       "mballoc: %lu generated and it took %Lu",
-				sbi->s_mb_buddies_generated,
-				sbi->s_mb_generation_time);
-=======
 		       "mballoc: %u generated and it took %llu",
 				atomic_read(&sbi->s_mb_buddies_generated),
 				atomic64_read(&sbi->s_mb_generation_time));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_msg(sb, KERN_INFO,
 		       "mballoc: %u preallocated, %u discarded",
 				atomic_read(&sbi->s_mb_preallocated),
@@ -4932,11 +3829,6 @@ void ext4_mb_release(struct super_block *sb)
 	}
 
 	free_percpu(sbi->s_locality_groups);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ext4_issue_discard(struct super_block *sb,
@@ -4949,31 +3841,6 @@ static inline int ext4_issue_discard(struct super_block *sb,
 	count = EXT4_C2B(EXT4_SB(sb), count);
 	trace_ext4_discard_blocks(sb,
 			(unsigned long long) discard_block, count);
-<<<<<<< HEAD
-	return sb_issue_discard(sb, discard_block, count, GFP_NOFS, 0);
-}
-
-/*
- * This function is called by the jbd2 layer once the commit has finished,
- * so we know we can free the blocks that were released with that commit.
- */
-static void ext4_free_data_callback(struct super_block *sb,
-				    struct ext4_journal_cb_entry *jce,
-				    int rc)
-{
-	struct ext4_free_data *entry = (struct ext4_free_data *)jce;
-	struct ext4_buddy e4b;
-	struct ext4_group_info *db;
-	int err, count = 0, count2 = 0;
-
-	mb_debug(1, "gonna free %u blocks in group %u (0x%p):",
-		 entry->efd_count, entry->efd_group, entry);
-
-	if (test_opt(sb, DISCARD))
-		ext4_issue_discard(sb, entry->efd_group,
-				   entry->efd_start_cluster, entry->efd_count);
-
-=======
 
 	return sb_issue_discard(sb, discard_block, count, GFP_NOFS, 0);
 }
@@ -4988,25 +3855,17 @@ static void ext4_free_data_in_buddy(struct super_block *sb,
 	mb_debug(sb, "gonna free %u blocks in group %u (0x%p):",
 		 entry->efd_count, entry->efd_group, entry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ext4_mb_load_buddy(sb, entry->efd_group, &e4b);
 	/* we expect to find existing buddy because it's pinned */
 	BUG_ON(err != 0);
 
-<<<<<<< HEAD
-=======
 	spin_lock(&EXT4_SB(sb)->s_md_lock);
 	EXT4_SB(sb)->s_mb_free_pending -= entry->efd_count;
 	spin_unlock(&EXT4_SB(sb)->s_md_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	db = e4b.bd_info;
 	/* there are blocks to put in buddy to make them really free */
 	count += entry->efd_count;
-<<<<<<< HEAD
-	count2++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_lock_group(sb, entry->efd_group);
 	/* Take it out of per group rb tree */
 	rb_erase(&entry->efd_node, &(db->bb_free_root));
@@ -5025,52 +3884,6 @@ static void ext4_free_data_in_buddy(struct super_block *sb,
 		/* No more items in the per group rb tree
 		 * balance refcounts from ext4_mb_free_metadata()
 		 */
-<<<<<<< HEAD
-		page_cache_release(e4b.bd_buddy_page);
-		page_cache_release(e4b.bd_bitmap_page);
-	}
-	ext4_unlock_group(sb, entry->efd_group);
-	kmem_cache_free(ext4_free_data_cachep, entry);
-	ext4_mb_unload_buddy(&e4b);
-
-	mb_debug(1, "freed %u blocks in %u structures\n", count, count2);
-}
-
-#ifdef CONFIG_EXT4_DEBUG
-u8 mb_enable_debug __read_mostly;
-
-static struct dentry *debugfs_dir;
-static struct dentry *debugfs_debug;
-
-static void __init ext4_create_debugfs_entry(void)
-{
-	debugfs_dir = debugfs_create_dir("ext4", NULL);
-	if (debugfs_dir)
-		debugfs_debug = debugfs_create_u8("mballoc-debug",
-						  S_IRUGO | S_IWUSR,
-						  debugfs_dir,
-						  &mb_enable_debug);
-}
-
-static void ext4_remove_debugfs_entry(void)
-{
-	debugfs_remove(debugfs_debug);
-	debugfs_remove(debugfs_dir);
-}
-
-#else
-
-static void __init ext4_create_debugfs_entry(void)
-{
-}
-
-static void ext4_remove_debugfs_entry(void)
-{
-}
-
-#endif
-
-=======
 		put_page(e4b.bd_buddy_page);
 		put_page(e4b.bd_bitmap_page);
 	}
@@ -5110,32 +3923,11 @@ void ext4_process_freed_data(struct super_block *sb, tid_t commit_tid)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init ext4_init_mballoc(void)
 {
 	ext4_pspace_cachep = KMEM_CACHE(ext4_prealloc_space,
 					SLAB_RECLAIM_ACCOUNT);
 	if (ext4_pspace_cachep == NULL)
-<<<<<<< HEAD
-		return -ENOMEM;
-
-	ext4_ac_cachep = KMEM_CACHE(ext4_allocation_context,
-				    SLAB_RECLAIM_ACCOUNT);
-	if (ext4_ac_cachep == NULL) {
-		kmem_cache_destroy(ext4_pspace_cachep);
-		return -ENOMEM;
-	}
-
-	ext4_free_data_cachep = KMEM_CACHE(ext4_free_data,
-					   SLAB_RECLAIM_ACCOUNT);
-	if (ext4_free_data_cachep == NULL) {
-		kmem_cache_destroy(ext4_pspace_cachep);
-		kmem_cache_destroy(ext4_ac_cachep);
-		return -ENOMEM;
-	}
-	ext4_create_debugfs_entry();
-	return 0;
-=======
 		goto out;
 
 	ext4_ac_cachep = KMEM_CACHE(ext4_allocation_context,
@@ -5156,7 +3948,6 @@ out_pa_free:
 	kmem_cache_destroy(ext4_pspace_cachep);
 out:
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ext4_exit_mballoc(void)
@@ -5170,11 +3961,6 @@ void ext4_exit_mballoc(void)
 	kmem_cache_destroy(ext4_ac_cachep);
 	kmem_cache_destroy(ext4_free_data_cachep);
 	ext4_groupinfo_destroy_slabs();
-<<<<<<< HEAD
-	ext4_remove_debugfs_entry();
-}
-
-=======
 }
 
 #define EXT4_MB_BITMAP_MARKED_CHECK 0x0001
@@ -5282,7 +4068,6 @@ out_err:
 	brelse(bitmap_bh);
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check quota and mark chosen space (ac->ac_b_ex) non-free in bitmaps
@@ -5292,22 +4077,13 @@ static noinline_for_stack int
 ext4_mb_mark_diskspace_used(struct ext4_allocation_context *ac,
 				handle_t *handle, unsigned int reserv_clstrs)
 {
-<<<<<<< HEAD
-	struct buffer_head *bitmap_bh = NULL;
 	struct ext4_group_desc *gdp;
-	struct buffer_head *gdp_bh;
-=======
-	struct ext4_group_desc *gdp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_sb_info *sbi;
 	struct super_block *sb;
 	ext4_fsblk_t block;
 	int err, len;
-<<<<<<< HEAD
-=======
 	int flags = 0;
 	ext4_grpblk_t changed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(ac->ac_status != AC_STATUS_FOUND);
 	BUG_ON(ac->ac_b_ex.fe_len <= 0);
@@ -5315,74 +4091,6 @@ ext4_mb_mark_diskspace_used(struct ext4_allocation_context *ac,
 	sb = ac->ac_sb;
 	sbi = EXT4_SB(sb);
 
-<<<<<<< HEAD
-	err = -EIO;
-	bitmap_bh = ext4_read_block_bitmap(sb, ac->ac_b_ex.fe_group);
-	if (!bitmap_bh)
-		goto out_err;
-
-	err = ext4_journal_get_write_access(handle, bitmap_bh);
-	if (err)
-		goto out_err;
-
-	err = -EIO;
-	gdp = ext4_get_group_desc(sb, ac->ac_b_ex.fe_group, &gdp_bh);
-	if (!gdp)
-		goto out_err;
-
-	ext4_debug("using block group %u(%d)\n", ac->ac_b_ex.fe_group,
-			ext4_free_group_clusters(sb, gdp));
-
-	err = ext4_journal_get_write_access(handle, gdp_bh);
-	if (err)
-		goto out_err;
-
-	block = ext4_grp_offs_to_block(sb, &ac->ac_b_ex);
-
-	len = EXT4_C2B(sbi, ac->ac_b_ex.fe_len);
-	if (!ext4_data_block_valid(sbi, block, len)) {
-		ext4_error(sb, "Allocating blocks %llu-%llu which overlap "
-			   "fs metadata", block, block+len);
-		/* File system mounted not to panic on error
-		 * Fix the bitmap and repeat the block allocation
-		 * We leak some of the blocks here.
-		 */
-		ext4_lock_group(sb, ac->ac_b_ex.fe_group);
-		ext4_set_bits(bitmap_bh->b_data, ac->ac_b_ex.fe_start,
-			      ac->ac_b_ex.fe_len);
-		ext4_unlock_group(sb, ac->ac_b_ex.fe_group);
-		err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
-		if (!err)
-			err = -EAGAIN;
-		goto out_err;
-	}
-
-	ext4_lock_group(sb, ac->ac_b_ex.fe_group);
-#ifdef AGGRESSIVE_CHECK
-	{
-		int i;
-		for (i = 0; i < ac->ac_b_ex.fe_len; i++) {
-			BUG_ON(mb_test_bit(ac->ac_b_ex.fe_start + i,
-						bitmap_bh->b_data));
-		}
-	}
-#endif
-	ext4_set_bits(bitmap_bh->b_data, ac->ac_b_ex.fe_start,
-		      ac->ac_b_ex.fe_len);
-	if (ext4_has_group_desc_csum(sb) &&
-	    (gdp->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT))) {
-		gdp->bg_flags &= cpu_to_le16(~EXT4_BG_BLOCK_UNINIT);
-		ext4_free_group_clusters_set(sb, gdp,
-					     ext4_free_clusters_after_init(sb,
-						ac->ac_b_ex.fe_group, gdp));
-	}
-	len = ext4_free_group_clusters(sb, gdp) - ac->ac_b_ex.fe_len;
-	ext4_free_group_clusters_set(sb, gdp, len);
-	ext4_block_bitmap_csum_set(sb, ac->ac_b_ex.fe_group, gdp, bitmap_bh);
-	ext4_group_desc_csum_set(sb, ac->ac_b_ex.fe_group, gdp);
-
-	ext4_unlock_group(sb, ac->ac_b_ex.fe_group);
-=======
 	gdp = ext4_get_group_desc(sb, ac->ac_b_ex.fe_group, NULL);
 	if (!gdp)
 		return -EIO;
@@ -5421,7 +4129,6 @@ ext4_mb_mark_diskspace_used(struct ext4_allocation_context *ac,
 #ifdef AGGRESSIVE_CHECK
 	BUG_ON(changed != ac->ac_b_ex.fe_len);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	percpu_counter_sub(&sbi->s_freeclusters_counter, ac->ac_b_ex.fe_len);
 	/*
 	 * Now reduce the dirty block count also. Should not go negative
@@ -5431,30 +4138,10 @@ ext4_mb_mark_diskspace_used(struct ext4_allocation_context *ac,
 		percpu_counter_sub(&sbi->s_dirtyclusters_counter,
 				   reserv_clstrs);
 
-<<<<<<< HEAD
-	if (sbi->s_log_groups_per_flex) {
-		ext4_group_t flex_group = ext4_flex_group(sbi,
-							  ac->ac_b_ex.fe_group);
-		atomic64_sub(ac->ac_b_ex.fe_len,
-			     &sbi->s_flex_groups[flex_group].free_clusters);
-	}
-
-	err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
-	if (err)
-		goto out_err;
-	err = ext4_handle_dirty_metadata(handle, NULL, gdp_bh);
-
-out_err:
-	ext4_mark_super_dirty(sb);
-	brelse(bitmap_bh);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Idempotent helper for Ext4 fast commit replay path to set the state of
  * blocks in bitmaps and update counters.
  */
@@ -5504,7 +4191,6 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * here we normalize request for locality group
  * Group request are normalized to s_mb_group_prealloc, which goes to
  * s_strip if we set the same via mount option.
@@ -5520,10 +4206,6 @@ static void ext4_mb_normalize_group_request(struct ext4_allocation_context *ac)
 
 	BUG_ON(lg == NULL);
 	ac->ac_g_ex.fe_len = EXT4_SB(sb)->s_mb_group_prealloc;
-<<<<<<< HEAD
-	mb_debug(1, "#%u: goal %u blocks for locality group\n",
-		current->pid, ac->ac_g_ex.fe_len);
-=======
 	mb_debug(sb, "goal %u blocks for locality group\n", ac->ac_g_ex.fe_len);
 }
 
@@ -5716,7 +4398,6 @@ ext4_mb_pa_adjust_overlap(struct ext4_allocation_context *ac,
 
 	*start = new_start;
 	*end = new_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5728,21 +4409,11 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 				struct ext4_allocation_request *ar)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
-<<<<<<< HEAD
-	int bsbits, max;
-	ext4_lblk_t end;
-	loff_t size, start_off;
-	loff_t orig_size __maybe_unused;
-	ext4_lblk_t start;
-	struct ext4_inode_info *ei = EXT4_I(ac->ac_inode);
-	struct ext4_prealloc_space *pa;
-=======
 	struct ext4_super_block *es = sbi->s_es;
 	int bsbits, max;
 	loff_t size, start_off, end;
 	loff_t orig_size __maybe_unused;
 	ext4_lblk_t start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* do normalize only data requests, metadata requests
 	   do not need preallocation */
@@ -5767,11 +4438,7 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 
 	/* first, let's learn actual file size
 	 * given current request is allocated */
-<<<<<<< HEAD
-	size = ac->ac_o_ex.fe_logical + EXT4_C2B(sbi, ac->ac_o_ex.fe_len);
-=======
 	size = extent_logical_end(sbi, &ac->ac_o_ex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size = size << bsbits;
 	if (size < i_size_read(ac->ac_inode))
 		size = i_size_read(ac->ac_inode);
@@ -5808,30 +4475,19 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 		start_off = ((loff_t)ac->ac_o_ex.fe_logical >>
 							(22 - bsbits)) << 22;
 		size = 4 * 1024 * 1024;
-<<<<<<< HEAD
-	} else if (NRL_CHECK_SIZE(ac->ac_o_ex.fe_len,
-=======
 	} else if (NRL_CHECK_SIZE(EXT4_C2B(sbi, ac->ac_o_ex.fe_len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(8<<20)>>bsbits, max, 8 * 1024)) {
 		start_off = ((loff_t)ac->ac_o_ex.fe_logical >>
 							(23 - bsbits)) << 23;
 		size = 8 * 1024 * 1024;
 	} else {
-<<<<<<< HEAD
-		start_off = (loff_t)ac->ac_o_ex.fe_logical << bsbits;
-		size	  = ac->ac_o_ex.fe_len << bsbits;
-=======
 		start_off = (loff_t) ac->ac_o_ex.fe_logical << bsbits;
 		size	  = (loff_t) EXT4_C2B(sbi,
 					      ac->ac_o_ex.fe_len) << bsbits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	size = size >> bsbits;
 	start = start_off >> bsbits;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * For tiny groups (smaller than 8MB) the chosen allocation
 	 * alignment may be larger than group size. Make sure the
@@ -5845,7 +4501,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 	if (start + size > EXT_MAX_BLOCKS)
 		size = EXT_MAX_BLOCKS - start;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* don't cover already allocated blocks in selected range */
 	if (ar->pleft && start <= ar->lleft) {
 		size -= ar->lleft + 1 - start;
@@ -5854,66 +4509,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 	if (ar->pright && start + size - 1 >= ar->lright)
 		size -= start + size - ar->lright;
 
-<<<<<<< HEAD
-	end = start + size;
-
-	/* check we don't cross already preallocated blocks */
-	rcu_read_lock();
-	list_for_each_entry_rcu(pa, &ei->i_prealloc_list, pa_inode_list) {
-		ext4_lblk_t pa_end;
-
-		if (pa->pa_deleted)
-			continue;
-		spin_lock(&pa->pa_lock);
-		if (pa->pa_deleted) {
-			spin_unlock(&pa->pa_lock);
-			continue;
-		}
-
-		pa_end = pa->pa_lstart + EXT4_C2B(EXT4_SB(ac->ac_sb),
-						  pa->pa_len);
-
-		/* PA must not overlap original request */
-		BUG_ON(!(ac->ac_o_ex.fe_logical >= pa_end ||
-			ac->ac_o_ex.fe_logical < pa->pa_lstart));
-
-		/* skip PAs this normalized request doesn't overlap with */
-		if (pa->pa_lstart >= end || pa_end <= start) {
-			spin_unlock(&pa->pa_lock);
-			continue;
-		}
-		BUG_ON(pa->pa_lstart <= start && pa_end >= end);
-
-		/* adjust start or end to be adjacent to this pa */
-		if (pa_end <= ac->ac_o_ex.fe_logical) {
-			BUG_ON(pa_end < start);
-			start = pa_end;
-		} else if (pa->pa_lstart > ac->ac_o_ex.fe_logical) {
-			BUG_ON(pa->pa_lstart > end);
-			end = pa->pa_lstart;
-		}
-		spin_unlock(&pa->pa_lock);
-	}
-	rcu_read_unlock();
-	size = end - start;
-
-	/* XXX: extra loop to check we really don't overlap preallocations */
-	rcu_read_lock();
-	list_for_each_entry_rcu(pa, &ei->i_prealloc_list, pa_inode_list) {
-		ext4_lblk_t pa_end;
-
-		spin_lock(&pa->pa_lock);
-		if (pa->pa_deleted == 0) {
-			pa_end = pa->pa_lstart + EXT4_C2B(EXT4_SB(ac->ac_sb),
-							  pa->pa_len);
-			BUG_ON(!(start >= pa_end || end <= pa->pa_lstart));
-		}
-		spin_unlock(&pa->pa_lock);
-	}
-	rcu_read_unlock();
-
-	if (start + size <= ac->ac_o_ex.fe_logical &&
-=======
 	/*
 	 * Trim allocation request for filesystems with artificially small
 	 * groups.
@@ -5943,20 +4538,13 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 	 * (See ext4_mb_use_inode_pa() for more details)
 	 */
 	if (start + size <= ac->ac_o_ex.fe_logical ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start > ac->ac_o_ex.fe_logical) {
 		ext4_msg(ac->ac_sb, KERN_ERR,
 			 "start %lu, size %lu, fe_logical %lu",
 			 (unsigned long) start, (unsigned long) size,
 			 (unsigned long) ac->ac_o_ex.fe_logical);
-<<<<<<< HEAD
-	}
-	BUG_ON(start + size <= ac->ac_o_ex.fe_logical &&
-			start > ac->ac_o_ex.fe_logical);
-=======
 		BUG();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(size <= 0 || size > EXT4_BLOCKS_PER_GROUP(ac->ac_sb));
 
 	/* now prepare goal request */
@@ -5965,27 +4553,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 	 * placement or satisfy big request as is */
 	ac->ac_g_ex.fe_logical = start;
 	ac->ac_g_ex.fe_len = EXT4_NUM_B2C(sbi, size);
-<<<<<<< HEAD
-
-	/* define goal start in order to merge */
-	if (ar->pright && (ar->lright == (start + size))) {
-		/* merge to the right */
-		ext4_get_group_no_and_offset(ac->ac_sb, ar->pright - size,
-						&ac->ac_f_ex.fe_group,
-						&ac->ac_f_ex.fe_start);
-		ac->ac_flags |= EXT4_MB_HINT_TRY_GOAL;
-	}
-	if (ar->pleft && (ar->lleft + 1 == start)) {
-		/* merge to the left */
-		ext4_get_group_no_and_offset(ac->ac_sb, ar->pleft + 1,
-						&ac->ac_f_ex.fe_group,
-						&ac->ac_f_ex.fe_start);
-		ac->ac_flags |= EXT4_MB_HINT_TRY_GOAL;
-	}
-
-	mb_debug(1, "goal: %u(was %u) blocks at %u\n", (unsigned) size,
-		(unsigned) orig_size, (unsigned) start);
-=======
 	ac->ac_orig_goal_len = ac->ac_g_ex.fe_len;
 
 	/* define goal start in order to merge */
@@ -6009,28 +4576,17 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 
 	mb_debug(ac->ac_sb, "goal: %lld(was %lld) blocks at %u\n", size,
 		 orig_size, start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ext4_mb_collect_stats(struct ext4_allocation_context *ac)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
 
-<<<<<<< HEAD
-	if (sbi->s_mb_stats && ac->ac_g_ex.fe_len > 1) {
-=======
 	if (sbi->s_mb_stats && ac->ac_g_ex.fe_len >= 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&sbi->s_bal_reqs);
 		atomic_add(ac->ac_b_ex.fe_len, &sbi->s_bal_allocated);
 		if (ac->ac_b_ex.fe_len >= ac->ac_o_ex.fe_len)
 			atomic_inc(&sbi->s_bal_success);
-<<<<<<< HEAD
-		atomic_add(ac->ac_found, &sbi->s_bal_ex_scanned);
-		if (ac->ac_g_ex.fe_start == ac->ac_b_ex.fe_start &&
-				ac->ac_g_ex.fe_group == ac->ac_b_ex.fe_group)
-			atomic_inc(&sbi->s_bal_goals);
-=======
 
 		atomic_add(ac->ac_found, &sbi->s_bal_ex_scanned);
 		for (int i=0; i<EXT4_MB_NUM_CRS; i++) {
@@ -6045,7 +4601,6 @@ static void ext4_mb_collect_stats(struct ext4_allocation_context *ac)
 		if (ac->ac_f_ex.fe_len == ac->ac_orig_goal_len)
 			atomic_inc(&sbi->s_bal_len_goals);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ac->ac_found > sbi->s_mb_max_to_scan)
 			atomic_inc(&sbi->s_bal_breaks);
 	}
@@ -6065,15 +4620,6 @@ static void ext4_mb_collect_stats(struct ext4_allocation_context *ac)
 static void ext4_discard_allocated_blocks(struct ext4_allocation_context *ac)
 {
 	struct ext4_prealloc_space *pa = ac->ac_pa;
-<<<<<<< HEAD
-	int len;
-
-	if (pa && pa->pa_type == MB_INODE_PA) {
-		len = ac->ac_b_ex.fe_len;
-		pa->pa_free += len;
-	}
-
-=======
 	struct ext4_buddy e4b;
 	int err;
 
@@ -6101,7 +4647,6 @@ static void ext4_discard_allocated_blocks(struct ext4_allocation_context *ac)
 		pa->pa_free += ac->ac_b_ex.fe_len;
 		spin_unlock(&pa->pa_lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6129,16 +4674,10 @@ static void ext4_mb_use_inode_pa(struct ext4_allocation_context *ac,
 	BUG_ON(start < pa->pa_pstart);
 	BUG_ON(end > pa->pa_pstart + EXT4_C2B(sbi, pa->pa_len));
 	BUG_ON(pa->pa_free < len);
-<<<<<<< HEAD
-	pa->pa_free -= len;
-
-	mb_debug(1, "use %llu/%u from inode pa %p\n", start, len, pa);
-=======
 	BUG_ON(ac->ac_b_ex.fe_len <= 0);
 	pa->pa_free -= len;
 
 	mb_debug(ac->ac_sb, "use %llu/%d from inode pa %p\n", start, len, pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6156,22 +4695,14 @@ static void ext4_mb_use_group_pa(struct ext4_allocation_context *ac,
 	ac->ac_status = AC_STATUS_FOUND;
 	ac->ac_pa = pa;
 
-<<<<<<< HEAD
-	/* we don't correct pa_pstart or pa_plen here to avoid
-=======
 	/* we don't correct pa_pstart or pa_len here to avoid
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * possible race when the group is being loaded concurrently
 	 * instead we correct pa later, after blocks are marked
 	 * in on-disk bitmap -- see ext4_mb_release_context()
 	 * Other CPUs are prevented from allocating from this pa by lg_mutex
 	 */
-<<<<<<< HEAD
-	mb_debug(1, "use %u/%u from group pa %p\n", pa->pa_lstart-len, len, pa);
-=======
 	mb_debug(ac->ac_sb, "use %u/%u from group pa %p\n",
 		 pa->pa_lstart, len, pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6204,11 +4735,6 @@ ext4_mb_check_group_pa(ext4_fsblk_t goal_block,
 }
 
 /*
-<<<<<<< HEAD
- * search goal blocks in preallocated space
- */
-static noinline_for_stack int
-=======
  * check if found pa meets EXT4_MB_HINT_GOAL_ONLY
  */
 static bool
@@ -6243,61 +4769,18 @@ ext4_mb_pa_goal_check(struct ext4_allocation_context *ac,
  * search goal blocks in preallocated space
  */
 static noinline_for_stack bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_use_preallocated(struct ext4_allocation_context *ac)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
 	int order, i;
 	struct ext4_inode_info *ei = EXT4_I(ac->ac_inode);
 	struct ext4_locality_group *lg;
-<<<<<<< HEAD
-	struct ext4_prealloc_space *pa, *cpa = NULL;
-=======
 	struct ext4_prealloc_space *tmp_pa = NULL, *cpa = NULL;
 	struct rb_node *iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_fsblk_t goal_block;
 
 	/* only data can be preallocated */
 	if (!(ac->ac_flags & EXT4_MB_HINT_DATA))
-<<<<<<< HEAD
-		return 0;
-
-	/* first, try per-file preallocation */
-	rcu_read_lock();
-	list_for_each_entry_rcu(pa, &ei->i_prealloc_list, pa_inode_list) {
-
-		/* all fields in this condition don't change,
-		 * so we can skip locking for them */
-		if (ac->ac_o_ex.fe_logical < pa->pa_lstart ||
-		    ac->ac_o_ex.fe_logical >= (pa->pa_lstart +
-					       EXT4_C2B(sbi, pa->pa_len)))
-			continue;
-
-		/* non-extent files can't have physical blocks past 2^32 */
-		if (!(ext4_test_inode_flag(ac->ac_inode, EXT4_INODE_EXTENTS)) &&
-		    (pa->pa_pstart + EXT4_C2B(sbi, pa->pa_len) >
-		     EXT4_MAX_BLOCK_FILE_PHYS))
-			continue;
-
-		/* found preallocated blocks, use them */
-		spin_lock(&pa->pa_lock);
-		if (pa->pa_deleted == 0 && pa->pa_free) {
-			atomic_inc(&pa->pa_count);
-			ext4_mb_use_inode_pa(ac, pa);
-			spin_unlock(&pa->pa_lock);
-			ac->ac_criteria = 10;
-			rcu_read_unlock();
-			return 1;
-		}
-		spin_unlock(&pa->pa_lock);
-	}
-	rcu_read_unlock();
-
-	/* can we use group allocation? */
-	if (!(ac->ac_flags & EXT4_MB_HINT_GROUP_ALLOC))
-		return 0;
-=======
 		return false;
 
 	/*
@@ -6448,16 +4931,11 @@ try_group_pa:
 	/* can we use group allocation? */
 	if (!(ac->ac_flags & EXT4_MB_HINT_GROUP_ALLOC))
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* inode may have no locality group for some reason */
 	lg = ac->ac_lg;
 	if (lg == NULL)
-<<<<<<< HEAD
-		return 0;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	order  = fls(ac->ac_o_ex.fe_len) - 1;
 	if (order > PREALLOC_TB_SIZE - 1)
 		/* The max size of hash table is PREALLOC_TB_SIZE */
@@ -6470,18 +4948,6 @@ try_group_pa:
 	 */
 	for (i = order; i < PREALLOC_TB_SIZE; i++) {
 		rcu_read_lock();
-<<<<<<< HEAD
-		list_for_each_entry_rcu(pa, &lg->lg_prealloc_list[i],
-					pa_inode_list) {
-			spin_lock(&pa->pa_lock);
-			if (pa->pa_deleted == 0 &&
-					pa->pa_free >= ac->ac_o_ex.fe_len) {
-
-				cpa = ext4_mb_check_group_pa(goal_block,
-								pa, cpa);
-			}
-			spin_unlock(&pa->pa_lock);
-=======
 		list_for_each_entry_rcu(tmp_pa, &lg->lg_prealloc_list[i],
 					pa_node.lg_list) {
 			spin_lock(&tmp_pa->pa_lock);
@@ -6492,46 +4958,14 @@ try_group_pa:
 								tmp_pa, cpa);
 			}
 			spin_unlock(&tmp_pa->pa_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		rcu_read_unlock();
 	}
 	if (cpa) {
 		ext4_mb_use_group_pa(ac, cpa);
-<<<<<<< HEAD
-		ac->ac_criteria = 20;
-		return 1;
-	}
-	return 0;
-}
-
-/*
- * the function goes through all block freed in the group
- * but not yet committed and marks them used in in-core bitmap.
- * buddy must be generated from this bitmap
- * Need to be called with the ext4 group lock held
- */
-static void ext4_mb_generate_from_freelist(struct super_block *sb, void *bitmap,
-						ext4_group_t group)
-{
-	struct rb_node *n;
-	struct ext4_group_info *grp;
-	struct ext4_free_data *entry;
-
-	grp = ext4_get_group_info(sb, group);
-	n = rb_first(&(grp->bb_free_root));
-
-	while (n) {
-		entry = rb_entry(n, struct ext4_free_data, efd_node);
-		ext4_set_bits(bitmap, entry->efd_start_cluster, entry->efd_count);
-		n = rb_next(n);
-	}
-	return;
-=======
 		return true;
 	}
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6551,12 +4985,9 @@ void ext4_mb_generate_from_pa(struct super_block *sb, void *bitmap,
 	int preallocated = 0;
 	int len;
 
-<<<<<<< HEAD
-=======
 	if (!grp)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* all form of preallocation discards first load group,
 	 * so the only competing code is preallocation use.
 	 * we don't need any locking here
@@ -6575,12 +5006,6 @@ void ext4_mb_generate_from_pa(struct super_block *sb, void *bitmap,
 		if (unlikely(len == 0))
 			continue;
 		BUG_ON(groupnr != group);
-<<<<<<< HEAD
-		ext4_set_bits(bitmap, start, len);
-		preallocated += len;
-	}
-	mb_debug(1, "prellocated %u for group %u\n", preallocated, group);
-=======
 		mb_set_bits(bitmap, start, len);
 		preallocated += len;
 	}
@@ -6613,23 +5038,14 @@ static inline void ext4_mb_pa_free(struct ext4_prealloc_space *pa)
 	BUG_ON(atomic_read(&pa->pa_count));
 	BUG_ON(pa->pa_deleted == 0);
 	kmem_cache_free(ext4_pspace_cachep, pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ext4_mb_pa_callback(struct rcu_head *head)
 {
 	struct ext4_prealloc_space *pa;
-<<<<<<< HEAD
-	pa = container_of(head, struct ext4_prealloc_space, u.pa_rcu);
-
-	BUG_ON(atomic_read(&pa->pa_count));
-	BUG_ON(pa->pa_deleted == 0);
-	kmem_cache_free(ext4_pspace_cachep, pa);
-=======
 
 	pa = container_of(head, struct ext4_prealloc_space, u.pa_rcu);
 	ext4_mb_pa_free(pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6641,10 +5057,7 @@ static void ext4_mb_put_pa(struct ext4_allocation_context *ac,
 {
 	ext4_group_t grp;
 	ext4_fsblk_t grp_blk;
-<<<<<<< HEAD
-=======
 	struct ext4_inode_info *ei = EXT4_I(ac->ac_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* in this short window concurrent discard can set pa_deleted */
 	spin_lock(&pa->pa_lock);
@@ -6658,11 +5071,7 @@ static void ext4_mb_put_pa(struct ext4_allocation_context *ac,
 		return;
 	}
 
-<<<<<<< HEAD
-	pa->pa_deleted = 1;
-=======
 	ext4_mb_mark_pa_deleted(sb, pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&pa->pa_lock);
 
 	grp_blk = pa->pa_pstart;
@@ -6673,11 +5082,7 @@ static void ext4_mb_put_pa(struct ext4_allocation_context *ac,
 	if (pa->pa_type == MB_GROUP_PA)
 		grp_blk--;
 
-<<<<<<< HEAD
-	ext4_get_group_no_and_offset(sb, grp_blk, &grp, NULL);
-=======
 	grp = ext4_get_group_number(sb, grp_blk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * possible race:
@@ -6697,13 +5102,6 @@ static void ext4_mb_put_pa(struct ext4_allocation_context *ac,
 	list_del(&pa->pa_group_list);
 	ext4_unlock_group(sb, grp);
 
-<<<<<<< HEAD
-	spin_lock(pa->pa_obj_lock);
-	list_del_rcu(&pa->pa_inode_list);
-	spin_unlock(pa->pa_obj_lock);
-
-	call_rcu(&(pa)->u.pa_rcu, ext4_mb_pa_callback);
-=======
 	if (pa->pa_type == MB_INODE_PA) {
 		write_lock(pa->pa_node_lock.inode_lock);
 		rb_erase(&pa->pa_node.inode_node, &ei->i_prealloc_node);
@@ -6740,17 +5138,12 @@ static void ext4_mb_pa_rb_insert(struct rb_root *root, struct rb_node *new)
 
 	rb_link_node(new, parent, iter);
 	rb_insert_color(new, root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * creates new preallocated space for given inode
  */
-<<<<<<< HEAD
-static noinline_for_stack int
-=======
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_new_inode_pa(struct ext4_allocation_context *ac)
 {
 	struct super_block *sb = ac->ac_sb;
@@ -6763,51 +5156,6 @@ ext4_mb_new_inode_pa(struct ext4_allocation_context *ac)
 	BUG_ON(ac->ac_o_ex.fe_len >= ac->ac_b_ex.fe_len);
 	BUG_ON(ac->ac_status != AC_STATUS_FOUND);
 	BUG_ON(!S_ISREG(ac->ac_inode->i_mode));
-<<<<<<< HEAD
-
-	pa = kmem_cache_alloc(ext4_pspace_cachep, GFP_NOFS);
-	if (pa == NULL)
-		return -ENOMEM;
-
-	if (ac->ac_b_ex.fe_len < ac->ac_g_ex.fe_len) {
-		int winl;
-		int wins;
-		int win;
-		int offs;
-
-		/* we can't allocate as much as normalizer wants.
-		 * so, found space must get proper lstart
-		 * to cover original request */
-		BUG_ON(ac->ac_g_ex.fe_logical > ac->ac_o_ex.fe_logical);
-		BUG_ON(ac->ac_g_ex.fe_len < ac->ac_o_ex.fe_len);
-
-		/* we're limited by original request in that
-		 * logical block must be covered any way
-		 * winl is window we can move our chunk within */
-		winl = ac->ac_o_ex.fe_logical - ac->ac_g_ex.fe_logical;
-
-		/* also, we should cover whole original request */
-		wins = EXT4_C2B(sbi, ac->ac_b_ex.fe_len - ac->ac_o_ex.fe_len);
-
-		/* the smallest one defines real window */
-		win = min(winl, wins);
-
-		offs = ac->ac_o_ex.fe_logical %
-			EXT4_C2B(sbi, ac->ac_b_ex.fe_len);
-		if (offs && offs < win)
-			win = offs;
-
-		ac->ac_b_ex.fe_logical = ac->ac_o_ex.fe_logical -
-			EXT4_NUM_B2C(sbi, win);
-		BUG_ON(ac->ac_o_ex.fe_logical < ac->ac_b_ex.fe_logical);
-		BUG_ON(ac->ac_o_ex.fe_len > ac->ac_b_ex.fe_len);
-	}
-
-	/* preallocation can change ac_b_ex, thus we store actually
-	 * allocated blocks for history */
-	ac->ac_f_ex = ac->ac_b_ex;
-
-=======
 	BUG_ON(ac->ac_pa == NULL);
 
 	pa = ac->ac_pa;
@@ -6860,46 +5208,15 @@ adjust_bex:
 		BUG_ON(extent_logical_end(sbi, &ex) > orig_goal_end);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pa->pa_lstart = ac->ac_b_ex.fe_logical;
 	pa->pa_pstart = ext4_grp_offs_to_block(sb, &ac->ac_b_ex);
 	pa->pa_len = ac->ac_b_ex.fe_len;
 	pa->pa_free = pa->pa_len;
-<<<<<<< HEAD
-	atomic_set(&pa->pa_count, 1);
 	spin_lock_init(&pa->pa_lock);
-	INIT_LIST_HEAD(&pa->pa_inode_list);
-=======
-	spin_lock_init(&pa->pa_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&pa->pa_group_list);
 	pa->pa_deleted = 0;
 	pa->pa_type = MB_INODE_PA;
 
-<<<<<<< HEAD
-	mb_debug(1, "new inode pa %p: %llu/%u for %u\n", pa,
-			pa->pa_pstart, pa->pa_len, pa->pa_lstart);
-	trace_ext4_mb_new_inode_pa(ac, pa);
-
-	ext4_mb_use_inode_pa(ac, pa);
-	atomic_add(pa->pa_free, &sbi->s_mb_preallocated);
-
-	ei = EXT4_I(ac->ac_inode);
-	grp = ext4_get_group_info(sb, ac->ac_b_ex.fe_group);
-
-	pa->pa_obj_lock = &ei->i_prealloc_lock;
-	pa->pa_inode = ac->ac_inode;
-
-	ext4_lock_group(sb, ac->ac_b_ex.fe_group);
-	list_add(&pa->pa_group_list, &grp->bb_prealloc_list);
-	ext4_unlock_group(sb, ac->ac_b_ex.fe_group);
-
-	spin_lock(pa->pa_obj_lock);
-	list_add_rcu(&pa->pa_inode_list, &ei->i_prealloc_list);
-	spin_unlock(pa->pa_obj_lock);
-
-	return 0;
-=======
 	mb_debug(sb, "new inode pa %p: %llu/%d for %u\n", pa, pa->pa_pstart,
 		 pa->pa_len, pa->pa_lstart);
 	trace_ext4_mb_new_inode_pa(ac, pa);
@@ -6921,17 +5238,12 @@ adjust_bex:
 	ext4_mb_pa_rb_insert(&ei->i_prealloc_node, &pa->pa_node.inode_node);
 	write_unlock(pa->pa_node_lock.inode_lock);
 	atomic_inc(&ei->i_prealloc_active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * creates new preallocated space for locality group inodes belongs to
  */
-<<<<<<< HEAD
-static noinline_for_stack int
-=======
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_new_group_pa(struct ext4_allocation_context *ac)
 {
 	struct super_block *sb = ac->ac_sb;
@@ -6943,62 +5255,28 @@ ext4_mb_new_group_pa(struct ext4_allocation_context *ac)
 	BUG_ON(ac->ac_o_ex.fe_len >= ac->ac_b_ex.fe_len);
 	BUG_ON(ac->ac_status != AC_STATUS_FOUND);
 	BUG_ON(!S_ISREG(ac->ac_inode->i_mode));
-<<<<<<< HEAD
-
-	BUG_ON(ext4_pspace_cachep == NULL);
-	pa = kmem_cache_alloc(ext4_pspace_cachep, GFP_NOFS);
-	if (pa == NULL)
-		return -ENOMEM;
-
-	/* preallocation can change ac_b_ex, thus we store actually
-	 * allocated blocks for history */
-	ac->ac_f_ex = ac->ac_b_ex;
-=======
 	BUG_ON(ac->ac_pa == NULL);
 
 	pa = ac->ac_pa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pa->pa_pstart = ext4_grp_offs_to_block(sb, &ac->ac_b_ex);
 	pa->pa_lstart = pa->pa_pstart;
 	pa->pa_len = ac->ac_b_ex.fe_len;
 	pa->pa_free = pa->pa_len;
-<<<<<<< HEAD
-	atomic_set(&pa->pa_count, 1);
-	spin_lock_init(&pa->pa_lock);
-	INIT_LIST_HEAD(&pa->pa_inode_list);
-=======
 	spin_lock_init(&pa->pa_lock);
 	INIT_LIST_HEAD(&pa->pa_node.lg_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&pa->pa_group_list);
 	pa->pa_deleted = 0;
 	pa->pa_type = MB_GROUP_PA;
 
-<<<<<<< HEAD
-	mb_debug(1, "new group pa %p: %llu/%u for %u\n", pa,
-			pa->pa_pstart, pa->pa_len, pa->pa_lstart);
-=======
 	mb_debug(sb, "new group pa %p: %llu/%d for %u\n", pa, pa->pa_pstart,
 		 pa->pa_len, pa->pa_lstart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_ext4_mb_new_group_pa(ac, pa);
 
 	ext4_mb_use_group_pa(ac, pa);
 	atomic_add(pa->pa_free, &EXT4_SB(sb)->s_mb_preallocated);
 
 	grp = ext4_get_group_info(sb, ac->ac_b_ex.fe_group);
-<<<<<<< HEAD
-	lg = ac->ac_lg;
-	BUG_ON(lg == NULL);
-
-	pa->pa_obj_lock = &lg->lg_prealloc_lock;
-	pa->pa_inode = NULL;
-
-	ext4_lock_group(sb, ac->ac_b_ex.fe_group);
-	list_add(&pa->pa_group_list, &grp->bb_prealloc_list);
-	ext4_unlock_group(sb, ac->ac_b_ex.fe_group);
-=======
 	if (!grp)
 		return;
 	lg = ac->ac_lg;
@@ -7008,26 +5286,11 @@ ext4_mb_new_group_pa(struct ext4_allocation_context *ac)
 	pa->pa_inode = NULL;
 
 	list_add(&pa->pa_group_list, &grp->bb_prealloc_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We will later add the new pa to the right bucket
 	 * after updating the pa_free in ext4_mb_release_context
 	 */
-<<<<<<< HEAD
-	return 0;
-}
-
-static int ext4_mb_new_preallocation(struct ext4_allocation_context *ac)
-{
-	int err;
-
-	if (ac->ac_flags & EXT4_MB_HINT_GROUP_ALLOC)
-		err = ext4_mb_new_group_pa(ac);
-	else
-		err = ext4_mb_new_inode_pa(ac);
-	return err;
-=======
 }
 
 static void ext4_mb_new_preallocation(struct ext4_allocation_context *ac)
@@ -7036,7 +5299,6 @@ static void ext4_mb_new_preallocation(struct ext4_allocation_context *ac)
 		ext4_mb_new_group_pa(ac);
 	else
 		ext4_mb_new_inode_pa(ac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -7047,11 +5309,7 @@ static void ext4_mb_new_preallocation(struct ext4_allocation_context *ac)
  * the caller MUST hold group/inode locks.
  * TODO: optimize the case when there are no in-core structures yet
  */
-<<<<<<< HEAD
-static noinline_for_stack int
-=======
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 			struct ext4_prealloc_space *pa)
 {
@@ -7062,10 +5320,6 @@ ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 	ext4_group_t group;
 	ext4_grpblk_t bit;
 	unsigned long long grp_blk_start;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int free = 0;
 
 	BUG_ON(pa->pa_deleted == 0);
@@ -7079,11 +5333,7 @@ ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 		if (bit >= end)
 			break;
 		next = mb_find_next_bit(bitmap_bh->b_data, end, bit);
-<<<<<<< HEAD
-		mb_debug(1, "    free preallocated %u/%u in group %u\n",
-=======
 		mb_debug(sb, "free preallocated %u/%u in group %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (unsigned) ext4_group_first_block_no(sb, group) + bit,
 			 (unsigned) next - bit, (unsigned) group);
 		free += next - bit;
@@ -7097,17 +5347,10 @@ ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 	}
 	if (free != pa->pa_free) {
 		ext4_msg(e4b->bd_sb, KERN_CRIT,
-<<<<<<< HEAD
-			 "pa %p: logic %lu, phys. %lu, len %lu",
-			 pa, (unsigned long) pa->pa_lstart,
-			 (unsigned long) pa->pa_pstart,
-			 (unsigned long) pa->pa_len);
-=======
 			 "pa %p: logic %lu, phys. %lu, len %d",
 			 pa, (unsigned long) pa->pa_lstart,
 			 (unsigned long) pa->pa_pstart,
 			 pa->pa_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_grp_locked_error(sb, group, 0, 0, "free %u, pa_free %u",
 					free, pa->pa_free);
 		/*
@@ -7116,17 +5359,9 @@ ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 		 */
 	}
 	atomic_add(free, &sbi->s_mb_discarded);
-<<<<<<< HEAD
-
-	return err;
-}
-
-static noinline_for_stack int
-=======
 }
 
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_release_group_pa(struct ext4_buddy *e4b,
 				struct ext4_prealloc_space *pa)
 {
@@ -7137,14 +5372,6 @@ ext4_mb_release_group_pa(struct ext4_buddy *e4b,
 	trace_ext4_mb_release_group_pa(sb, pa);
 	BUG_ON(pa->pa_deleted == 0);
 	ext4_get_group_no_and_offset(sb, pa->pa_pstart, &group, &bit);
-<<<<<<< HEAD
-	BUG_ON(group != e4b->bd_group && pa->pa_len != 0);
-	mb_free_blocks(pa->pa_inode, e4b, bit, pa->pa_len);
-	atomic_add(pa->pa_len, &EXT4_SB(sb)->s_mb_discarded);
-	trace_ext4_mballoc_discard(sb, NULL, group, bit, pa->pa_len);
-
-	return 0;
-=======
 	if (unlikely(group != e4b->bd_group && pa->pa_len != 0)) {
 		ext4_warning(sb, "bad group: expected %u, group %u, pa_start %llu",
 			     e4b->bd_group, group, pa->pa_pstart);
@@ -7153,7 +5380,6 @@ ext4_mb_release_group_pa(struct ext4_buddy *e4b,
 	mb_free_blocks(pa->pa_inode, e4b, bit, pa->pa_len);
 	atomic_add(pa->pa_len, &EXT4_SB(sb)->s_mb_discarded);
 	trace_ext4_mballoc_discard(sb, NULL, group, bit, pa->pa_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -7167,32 +5393,11 @@ ext4_mb_release_group_pa(struct ext4_buddy *e4b,
  */
 static noinline_for_stack int
 ext4_mb_discard_group_preallocations(struct super_block *sb,
-<<<<<<< HEAD
-					ext4_group_t group, int needed)
-=======
 				     ext4_group_t group, int *busy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_group_info *grp = ext4_get_group_info(sb, group);
 	struct buffer_head *bitmap_bh = NULL;
 	struct ext4_prealloc_space *pa, *tmp;
-<<<<<<< HEAD
-	struct list_head list;
-	struct ext4_buddy e4b;
-	int err;
-	int busy = 0;
-	int free = 0;
-
-	mb_debug(1, "discard preallocation for group %u\n", group);
-
-	if (list_empty(&grp->bb_prealloc_list))
-		return 0;
-
-	bitmap_bh = ext4_read_block_bitmap(sb, group);
-	if (bitmap_bh == NULL) {
-		ext4_error(sb, "Error reading block bitmap for %u", group);
-		return 0;
-=======
 	LIST_HEAD(list);
 	struct ext4_buddy e4b;
 	struct ext4_inode_info *ei;
@@ -7212,41 +5417,23 @@ ext4_mb_discard_group_preallocations(struct super_block *sb,
 			       "Error %d reading block bitmap for %u",
 			       err, group);
 		goto out_dbg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ext4_mb_load_buddy(sb, group, &e4b);
 	if (err) {
-<<<<<<< HEAD
-		ext4_error(sb, "Error loading buddy information for %u", group);
-		put_bh(bitmap_bh);
-		return 0;
-	}
-
-	if (needed == 0)
-		needed = EXT4_CLUSTERS_PER_GROUP(sb) + 1;
-
-	INIT_LIST_HEAD(&list);
-repeat:
-=======
 		ext4_warning(sb, "Error %d loading buddy information for %u",
 			     err, group);
 		put_bh(bitmap_bh);
 		goto out_dbg;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_lock_group(sb, group);
 	list_for_each_entry_safe(pa, tmp,
 				&grp->bb_prealloc_list, pa_group_list) {
 		spin_lock(&pa->pa_lock);
 		if (atomic_read(&pa->pa_count)) {
 			spin_unlock(&pa->pa_lock);
-<<<<<<< HEAD
-			busy = 1;
-=======
 			*busy = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		if (pa->pa_deleted) {
@@ -7255,14 +5442,10 @@ repeat:
 		}
 
 		/* seems this one can be freed ... */
-<<<<<<< HEAD
-		pa->pa_deleted = 1;
-=======
 		ext4_mb_mark_pa_deleted(sb, pa);
 
 		if (!free)
 			this_cpu_inc(discard_pa_seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* we can trust pa_free ... */
 		free += pa->pa_free;
@@ -7273,50 +5456,10 @@ repeat:
 		list_add(&pa->u.pa_tmp_list, &list);
 	}
 
-<<<<<<< HEAD
-	/* if we still need more blocks and some PAs were used, try again */
-	if (free < needed && busy) {
-		busy = 0;
-		ext4_unlock_group(sb, group);
-		/*
-		 * Yield the CPU here so that we don't get soft lockup
-		 * in non preempt case.
-		 */
-		yield();
-		goto repeat;
-	}
-
-	/* found anything to free? */
-	if (list_empty(&list)) {
-		BUG_ON(free != 0);
-		goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* now free all selected PAs */
 	list_for_each_entry_safe(pa, tmp, &list, u.pa_tmp_list) {
 
 		/* remove from object (inode or locality group) */
-<<<<<<< HEAD
-		spin_lock(pa->pa_obj_lock);
-		list_del_rcu(&pa->pa_inode_list);
-		spin_unlock(pa->pa_obj_lock);
-
-		if (pa->pa_type == MB_GROUP_PA)
-			ext4_mb_release_group_pa(&e4b, pa);
-		else
-			ext4_mb_release_inode_pa(&e4b, bitmap_bh, pa);
-
-		list_del(&pa->u.pa_tmp_list);
-		call_rcu(&(pa)->u.pa_rcu, ext4_mb_pa_callback);
-	}
-
-out:
-	ext4_unlock_group(sb, group);
-	ext4_mb_unload_buddy(&e4b);
-	put_bh(bitmap_bh);
-=======
 		if (pa->pa_type == MB_GROUP_PA) {
 			spin_lock(pa->pa_node_lock.lg_lock);
 			list_del_rcu(&pa->pa_node.lg_list);
@@ -7345,7 +5488,6 @@ out:
 out_dbg:
 	mb_debug(sb, "discarded (%d) blocks preallocated for group %u bb_free (%d)\n",
 		 free, group, grp->bb_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return free;
 }
 
@@ -7365,29 +5507,6 @@ void ext4_discard_preallocations(struct inode *inode)
 	struct buffer_head *bitmap_bh = NULL;
 	struct ext4_prealloc_space *pa, *tmp;
 	ext4_group_t group = 0;
-<<<<<<< HEAD
-	struct list_head list;
-	struct ext4_buddy e4b;
-	int err;
-
-	if (!S_ISREG(inode->i_mode)) {
-		/*BUG_ON(!list_empty(&ei->i_prealloc_list));*/
-		return;
-	}
-
-	mb_debug(1, "discard preallocation for inode %lu\n", inode->i_ino);
-	trace_ext4_discard_preallocations(inode);
-
-	INIT_LIST_HEAD(&list);
-
-repeat:
-	/* first, collect all pa's in the inode */
-	spin_lock(&ei->i_prealloc_lock);
-	while (!list_empty(&ei->i_prealloc_list)) {
-		pa = list_entry(ei->i_prealloc_list.next,
-				struct ext4_prealloc_space, pa_inode_list);
-		BUG_ON(pa->pa_obj_lock != &ei->i_prealloc_lock);
-=======
 	LIST_HEAD(list);
 	struct ext4_buddy e4b;
 	struct rb_node *iter;
@@ -7413,17 +5532,12 @@ repeat:
 			      pa_node.inode_node);
 		BUG_ON(pa->pa_node_lock.inode_lock != &ei->i_prealloc_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&pa->pa_lock);
 		if (atomic_read(&pa->pa_count)) {
 			/* this shouldn't happen often - nobody should
 			 * use preallocation while we're discarding it */
 			spin_unlock(&pa->pa_lock);
-<<<<<<< HEAD
-			spin_unlock(&ei->i_prealloc_lock);
-=======
 			write_unlock(&ei->i_prealloc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_msg(sb, KERN_ERR,
 				 "uh-oh! used pa while discarding");
 			WARN_ON(1);
@@ -7432,26 +5546,16 @@ repeat:
 
 		}
 		if (pa->pa_deleted == 0) {
-<<<<<<< HEAD
-			pa->pa_deleted = 1;
-			spin_unlock(&pa->pa_lock);
-			list_del_rcu(&pa->pa_inode_list);
-=======
 			ext4_mb_mark_pa_deleted(sb, pa);
 			spin_unlock(&pa->pa_lock);
 			rb_erase(&pa->pa_node.inode_node, &ei->i_prealloc_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add(&pa->u.pa_tmp_list, &list);
 			continue;
 		}
 
 		/* someone is deleting pa right now */
 		spin_unlock(&pa->pa_lock);
-<<<<<<< HEAD
-		spin_unlock(&ei->i_prealloc_lock);
-=======
 		write_unlock(&ei->i_prealloc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* we have to wait here because pa_deleted
 		 * doesn't mean pa is already unlinked from
@@ -7468,18 +5572,6 @@ repeat:
 		schedule_timeout_uninterruptible(HZ);
 		goto repeat;
 	}
-<<<<<<< HEAD
-	spin_unlock(&ei->i_prealloc_lock);
-
-	list_for_each_entry_safe(pa, tmp, &list, u.pa_tmp_list) {
-		BUG_ON(pa->pa_type != MB_INODE_PA);
-		ext4_get_group_no_and_offset(sb, pa->pa_pstart, &group, NULL);
-
-		err = ext4_mb_load_buddy(sb, group, &e4b);
-		if (err) {
-			ext4_error(sb, "Error loading buddy information for %u",
-					group);
-=======
 	write_unlock(&ei->i_prealloc_lock);
 
 	list_for_each_entry_safe(pa, tmp, &list, u.pa_tmp_list) {
@@ -7491,21 +5583,14 @@ repeat:
 		if (err) {
 			ext4_error_err(sb, -err, "Error %d loading buddy information for %u",
 				       err, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		bitmap_bh = ext4_read_block_bitmap(sb, group);
-<<<<<<< HEAD
-		if (bitmap_bh == NULL) {
-			ext4_error(sb, "Error reading block bitmap for %u",
-					group);
-=======
 		if (IS_ERR(bitmap_bh)) {
 			err = PTR_ERR(bitmap_bh);
 			ext4_error_err(sb, -err, "Error %d reading block bitmap for %u",
 				       err, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_mb_unload_buddy(&e4b);
 			continue;
 		}
@@ -7519,28 +5604,6 @@ repeat:
 		put_bh(bitmap_bh);
 
 		list_del(&pa->u.pa_tmp_list);
-<<<<<<< HEAD
-		call_rcu(&(pa)->u.pa_rcu, ext4_mb_pa_callback);
-	}
-}
-
-#ifdef CONFIG_EXT4_DEBUG
-static void ext4_mb_show_ac(struct ext4_allocation_context *ac)
-{
-	struct super_block *sb = ac->ac_sb;
-	ext4_group_t ngroups, i;
-
-	if (!mb_enable_debug ||
-	    (EXT4_SB(sb)->s_mount_flags & EXT4_MF_FS_ABORTED))
-		return;
-
-	ext4_msg(ac->ac_sb, KERN_ERR, "Can't allocate:"
-			" Allocation context details:");
-	ext4_msg(ac->ac_sb, KERN_ERR, "status %d flags %d",
-			ac->ac_status, ac->ac_flags);
-	ext4_msg(ac->ac_sb, KERN_ERR, "orig %lu/%lu/%lu@%lu, "
-		 	"goal %lu/%lu/%lu@%lu, "
-=======
 		ext4_mb_pa_free(pa);
 	}
 }
@@ -7622,7 +5685,6 @@ static void ext4_mb_show_ac(struct ext4_allocation_context *ac)
 			ac->ac_status, ac->ac_flags);
 	mb_debug(sb, "orig %lu/%lu/%lu@%lu, "
 			"goal %lu/%lu/%lu@%lu, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"best %lu/%lu/%lu@%lu cr %d",
 			(unsigned long)ac->ac_o_ex.fe_group,
 			(unsigned long)ac->ac_o_ex.fe_start,
@@ -7637,41 +5699,6 @@ static void ext4_mb_show_ac(struct ext4_allocation_context *ac)
 			(unsigned long)ac->ac_b_ex.fe_len,
 			(unsigned long)ac->ac_b_ex.fe_logical,
 			(int)ac->ac_criteria);
-<<<<<<< HEAD
-	ext4_msg(ac->ac_sb, KERN_ERR, "%lu scanned, %d found",
-		 ac->ac_ex_scanned, ac->ac_found);
-	ext4_msg(ac->ac_sb, KERN_ERR, "groups: ");
-	ngroups = ext4_get_groups_count(sb);
-	for (i = 0; i < ngroups; i++) {
-		struct ext4_group_info *grp = ext4_get_group_info(sb, i);
-		struct ext4_prealloc_space *pa;
-		ext4_grpblk_t start;
-		struct list_head *cur;
-		ext4_lock_group(sb, i);
-		list_for_each(cur, &grp->bb_prealloc_list) {
-			pa = list_entry(cur, struct ext4_prealloc_space,
-					pa_group_list);
-			spin_lock(&pa->pa_lock);
-			ext4_get_group_no_and_offset(sb, pa->pa_pstart,
-						     NULL, &start);
-			spin_unlock(&pa->pa_lock);
-			printk(KERN_ERR "PA:%u:%d:%u \n", i,
-			       start, pa->pa_len);
-		}
-		ext4_unlock_group(sb, i);
-
-		if (grp->bb_free == 0)
-			continue;
-		printk(KERN_ERR "%u: %d/%d \n",
-		       i, grp->bb_free, grp->bb_fragments);
-	}
-	printk(KERN_ERR "\n");
-}
-#else
-static inline void ext4_mb_show_ac(struct ext4_allocation_context *ac)
-{
-	return;
-=======
 	mb_debug(sb, "%u found", ac->ac_found);
 	mb_debug(sb, "used pa: %s, ", ac->ac_pa ? "yes" : "no");
 	if (ac->ac_pa)
@@ -7686,7 +5713,6 @@ static inline void ext4_mb_show_pa(struct super_block *sb)
 static inline void ext4_mb_show_ac(struct ext4_allocation_context *ac)
 {
 	ext4_mb_show_pa(ac->ac_sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -7702,10 +5728,7 @@ static void ext4_mb_group_or_file(struct ext4_allocation_context *ac)
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
 	int bsbits = ac->ac_sb->s_blocksize_bits;
 	loff_t size, isize;
-<<<<<<< HEAD
-=======
 	bool inode_pa_eligible, group_pa_eligible;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(ac->ac_flags & EXT4_MB_HINT_DATA))
 		return;
@@ -7713,28 +5736,6 @@ static void ext4_mb_group_or_file(struct ext4_allocation_context *ac)
 	if (unlikely(ac->ac_flags & EXT4_MB_HINT_GOAL_ONLY))
 		return;
 
-<<<<<<< HEAD
-	size = ac->ac_o_ex.fe_logical + EXT4_C2B(sbi, ac->ac_o_ex.fe_len);
-	isize = (i_size_read(ac->ac_inode) + ac->ac_sb->s_blocksize - 1)
-		>> bsbits;
-
-	if ((size == isize) &&
-	    !ext4_fs_is_busy(sbi) &&
-	    (atomic_read(&ac->ac_inode->i_writecount) == 0)) {
-		ac->ac_flags |= EXT4_MB_HINT_NOPREALLOC;
-		return;
-	}
-
-	if (sbi->s_mb_group_prealloc <= 0) {
-		ac->ac_flags |= EXT4_MB_STREAM_ALLOC;
-		return;
-	}
-
-	/* don't use group allocation for large files */
-	size = max(size, isize);
-	if (size > sbi->s_mb_stream_request) {
-		ac->ac_flags |= EXT4_MB_STREAM_ALLOC;
-=======
 	group_pa_eligible = sbi->s_mb_group_prealloc > 0;
 	inode_pa_eligible = true;
 	size = extent_logical_end(sbi, &ac->ac_o_ex);
@@ -7756,7 +5757,6 @@ static void ext4_mb_group_or_file(struct ext4_allocation_context *ac)
 			ac->ac_flags |= EXT4_MB_STREAM_ALLOC;
 		else
 			ac->ac_flags |= EXT4_MB_HINT_NOPREALLOC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -7766,11 +5766,7 @@ static void ext4_mb_group_or_file(struct ext4_allocation_context *ac)
 	 * per cpu locality group is to reduce the contention between block
 	 * request from multiple CPUs.
 	 */
-<<<<<<< HEAD
-	ac->ac_lg = __this_cpu_ptr(sbi->s_locality_groups);
-=======
 	ac->ac_lg = raw_cpu_ptr(sbi->s_locality_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we're going to use group allocation */
 	ac->ac_flags |= EXT4_MB_HINT_GROUP_ALLOC;
@@ -7779,11 +5775,7 @@ static void ext4_mb_group_or_file(struct ext4_allocation_context *ac)
 	mutex_lock(&ac->ac_lg->lg_mutex);
 }
 
-<<<<<<< HEAD
-static noinline_for_stack int
-=======
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_initialize_context(struct ext4_allocation_context *ac,
 				struct ext4_allocation_request *ar)
 {
@@ -7799,13 +5791,8 @@ ext4_mb_initialize_context(struct ext4_allocation_context *ac,
 	len = ar->len;
 
 	/* just a dirty hack to filter too big requests  */
-<<<<<<< HEAD
-	if (len >= EXT4_CLUSTERS_PER_GROUP(sb) - 10)
-		len = EXT4_CLUSTERS_PER_GROUP(sb) - 10;
-=======
 	if (len >= EXT4_CLUSTERS_PER_GROUP(sb))
 		len = EXT4_CLUSTERS_PER_GROUP(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start searching from the goal */
 	goal = ar->goal;
@@ -7815,12 +5802,7 @@ ext4_mb_initialize_context(struct ext4_allocation_context *ac,
 	ext4_get_group_no_and_offset(sb, goal, &group, &block);
 
 	/* set up allocation goals */
-<<<<<<< HEAD
-	memset(ac, 0, sizeof(struct ext4_allocation_context));
-	ac->ac_b_ex.fe_logical = ar->logical & ~(sbi->s_cluster_ratio - 1);
-=======
 	ac->ac_b_ex.fe_logical = EXT4_LBLK_CMASK(sbi, ar->logical);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ac->ac_status = AC_STATUS_CONTINUE;
 	ac->ac_sb = sb;
 	ac->ac_inode = ar->inode;
@@ -7829,15 +5811,6 @@ ext4_mb_initialize_context(struct ext4_allocation_context *ac,
 	ac->ac_o_ex.fe_start = block;
 	ac->ac_o_ex.fe_len = len;
 	ac->ac_g_ex = ac->ac_o_ex;
-<<<<<<< HEAD
-	ac->ac_flags = ar->flags;
-
-	/* we have to define context: we'll we work with a file or
-	 * locality group. this is a policy, actually */
-	ext4_mb_group_or_file(ac);
-
-	mb_debug(1, "init ac: %u blocks @ %u, goal %u, flags %x, 2^%d, "
-=======
 	ac->ac_orig_goal_len = ac->ac_g_ex.fe_len;
 	ac->ac_flags = ar->flags;
 
@@ -7846,19 +5819,12 @@ ext4_mb_initialize_context(struct ext4_allocation_context *ac,
 	ext4_mb_group_or_file(ac);
 
 	mb_debug(sb, "init ac: %u blocks @ %u, goal %u, flags 0x%x, 2^%d, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"left: %u/%u, right %u/%u to %swritable\n",
 			(unsigned) ar->len, (unsigned) ar->logical,
 			(unsigned) ar->goal, ac->ac_flags, ac->ac_2order,
 			(unsigned) ar->lleft, (unsigned) ar->pleft,
 			(unsigned) ar->lright, (unsigned) ar->pright,
-<<<<<<< HEAD
-			atomic_read(&ar->inode->i_writecount) ? "" : "non-");
-	return 0;
-
-=======
 			inode_is_open_for_write(ar->inode) ? "" : "non-");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack void
@@ -7868,18 +5834,6 @@ ext4_mb_discard_lg_preallocations(struct super_block *sb,
 {
 	ext4_group_t group = 0;
 	struct ext4_buddy e4b;
-<<<<<<< HEAD
-	struct list_head discard_list;
-	struct ext4_prealloc_space *pa, *tmp;
-
-	mb_debug(1, "discard locality group preallocation\n");
-
-	INIT_LIST_HEAD(&discard_list);
-
-	spin_lock(&lg->lg_prealloc_lock);
-	list_for_each_entry_rcu(pa, &lg->lg_prealloc_list[order],
-						pa_inode_list) {
-=======
 	LIST_HEAD(discard_list);
 	struct ext4_prealloc_space *pa, *tmp;
 
@@ -7889,7 +5843,6 @@ ext4_mb_discard_lg_preallocations(struct super_block *sb,
 	list_for_each_entry_rcu(pa, &lg->lg_prealloc_list[order],
 				pa_node.lg_list,
 				lockdep_is_held(&lg->lg_prealloc_lock)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&pa->pa_lock);
 		if (atomic_read(&pa->pa_count)) {
 			/*
@@ -7908,17 +5861,10 @@ ext4_mb_discard_lg_preallocations(struct super_block *sb,
 		BUG_ON(pa->pa_type != MB_GROUP_PA);
 
 		/* seems this one can be freed ... */
-<<<<<<< HEAD
-		pa->pa_deleted = 1;
-		spin_unlock(&pa->pa_lock);
-
-		list_del_rcu(&pa->pa_inode_list);
-=======
 		ext4_mb_mark_pa_deleted(sb, pa);
 		spin_unlock(&pa->pa_lock);
 
 		list_del_rcu(&pa->pa_node.lg_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&pa->u.pa_tmp_list, &discard_list);
 
 		total_entries--;
@@ -7935,13 +5881,6 @@ ext4_mb_discard_lg_preallocations(struct super_block *sb,
 	spin_unlock(&lg->lg_prealloc_lock);
 
 	list_for_each_entry_safe(pa, tmp, &discard_list, u.pa_tmp_list) {
-<<<<<<< HEAD
-
-		ext4_get_group_no_and_offset(sb, pa->pa_pstart, &group, NULL);
-		if (ext4_mb_load_buddy(sb, group, &e4b)) {
-			ext4_error(sb, "Error loading buddy information for %u",
-					group);
-=======
 		int err;
 
 		group = ext4_get_group_number(sb, pa->pa_pstart);
@@ -7950,7 +5889,6 @@ ext4_mb_discard_lg_preallocations(struct super_block *sb,
 		if (err) {
 			ext4_error_err(sb, -err, "Error %d loading buddy information for %u",
 				       err, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		ext4_lock_group(sb, group);
@@ -7987,12 +5925,8 @@ static void ext4_mb_add_n_trim(struct ext4_allocation_context *ac)
 	/* Add the prealloc space to lg */
 	spin_lock(&lg->lg_prealloc_lock);
 	list_for_each_entry_rcu(tmp_pa, &lg->lg_prealloc_list[order],
-<<<<<<< HEAD
-						pa_inode_list) {
-=======
 				pa_node.lg_list,
 				lockdep_is_held(&lg->lg_prealloc_lock)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&tmp_pa->pa_lock);
 		if (tmp_pa->pa_deleted) {
 			spin_unlock(&tmp_pa->pa_lock);
@@ -8000,13 +5934,8 @@ static void ext4_mb_add_n_trim(struct ext4_allocation_context *ac)
 		}
 		if (!added && pa->pa_free < tmp_pa->pa_free) {
 			/* Add to the tail of the previous entry */
-<<<<<<< HEAD
-			list_add_tail_rcu(&pa->pa_inode_list,
-						&tmp_pa->pa_inode_list);
-=======
 			list_add_tail_rcu(&pa->pa_node.lg_list,
 						&tmp_pa->pa_node.lg_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			added = 1;
 			/*
 			 * we want to count the total
@@ -8017,37 +5946,20 @@ static void ext4_mb_add_n_trim(struct ext4_allocation_context *ac)
 		lg_prealloc_count++;
 	}
 	if (!added)
-<<<<<<< HEAD
-		list_add_tail_rcu(&pa->pa_inode_list,
-=======
 		list_add_tail_rcu(&pa->pa_node.lg_list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					&lg->lg_prealloc_list[order]);
 	spin_unlock(&lg->lg_prealloc_lock);
 
 	/* Now trim the list to be not more than 8 elements */
-<<<<<<< HEAD
-	if (lg_prealloc_count > 8) {
-		ext4_mb_discard_lg_preallocations(sb, lg,
-						  order, lg_prealloc_count);
-		return;
-	}
-	return ;
-=======
 	if (lg_prealloc_count > 8)
 		ext4_mb_discard_lg_preallocations(sb, lg,
 						  order, lg_prealloc_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * release all resource we used in allocation
  */
-<<<<<<< HEAD
-static int ext4_mb_release_context(struct ext4_allocation_context *ac)
-=======
 static void ext4_mb_release_context(struct ext4_allocation_context *ac)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
 	struct ext4_prealloc_space *pa = ac->ac_pa;
@@ -8060,33 +5972,6 @@ static void ext4_mb_release_context(struct ext4_allocation_context *ac)
 			pa->pa_free -= ac->ac_b_ex.fe_len;
 			pa->pa_len -= ac->ac_b_ex.fe_len;
 			spin_unlock(&pa->pa_lock);
-<<<<<<< HEAD
-		}
-	}
-	if (pa) {
-		/*
-		 * We want to add the pa to the right bucket.
-		 * Remove it from the list and while adding
-		 * make sure the list to which we are adding
-		 * doesn't grow big.
-		 */
-		if ((pa->pa_type == MB_GROUP_PA) && likely(pa->pa_free)) {
-			spin_lock(pa->pa_obj_lock);
-			list_del_rcu(&pa->pa_inode_list);
-			spin_unlock(pa->pa_obj_lock);
-			ext4_mb_add_n_trim(ac);
-		}
-		ext4_mb_put_pa(ac, ac->ac_sb, pa);
-	}
-	if (ac->ac_bitmap_page)
-		page_cache_release(ac->ac_bitmap_page);
-	if (ac->ac_buddy_page)
-		page_cache_release(ac->ac_buddy_page);
-	if (ac->ac_flags & EXT4_MB_HINT_GROUP_ALLOC)
-		mutex_unlock(&ac->ac_lg->lg_mutex);
-	ext4_mb_collect_stats(ac);
-	return 0;
-=======
 
 			/*
 			 * We want to add the pa to the right bucket.
@@ -8111,22 +5996,12 @@ static void ext4_mb_release_context(struct ext4_allocation_context *ac)
 	if (ac->ac_flags & EXT4_MB_HINT_GROUP_ALLOC)
 		mutex_unlock(&ac->ac_lg->lg_mutex);
 	ext4_mb_collect_stats(ac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ext4_mb_discard_preallocations(struct super_block *sb, int needed)
 {
 	ext4_group_t i, ngroups = ext4_get_groups_count(sb);
 	int ret;
-<<<<<<< HEAD
-	int freed = 0;
-
-	trace_ext4_mb_discard_preallocations(sb, needed);
-	for (i = 0; i < ngroups && needed > 0; i++) {
-		ret = ext4_mb_discard_group_preallocations(sb, i, needed);
-		freed += ret;
-		needed -= ret;
-=======
 	int freed = 0, busy = 0;
 	int retry = 0;
 
@@ -8145,14 +6020,11 @@ static int ext4_mb_discard_preallocations(struct super_block *sb, int needed)
 	if (needed > 0 && busy && ++retry < 3) {
 		busy = 0;
 		goto repeat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return freed;
 }
 
-<<<<<<< HEAD
-=======
 static bool ext4_mb_discard_preallocations_should_retry(struct super_block *sb,
 			struct ext4_allocation_context *ac, u64 *seq)
 {
@@ -8244,7 +6116,6 @@ ext4_mb_new_blocks_simple(struct ext4_allocation_request *ar, int *errp)
 	return block;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Main entry point into mballoc to allocate blocks
  * it tries to use preallocation first, then falls back
@@ -8253,43 +6124,20 @@ ext4_mb_new_blocks_simple(struct ext4_allocation_request *ar, int *errp)
 ext4_fsblk_t ext4_mb_new_blocks(handle_t *handle,
 				struct ext4_allocation_request *ar, int *errp)
 {
-<<<<<<< HEAD
-	int freed;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_allocation_context *ac = NULL;
 	struct ext4_sb_info *sbi;
 	struct super_block *sb;
 	ext4_fsblk_t block = 0;
 	unsigned int inquota = 0;
 	unsigned int reserv_clstrs = 0;
-<<<<<<< HEAD
-
-=======
 	int retries = 0;
 	u64 seq;
 
 	might_sleep();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb = ar->inode->i_sb;
 	sbi = EXT4_SB(sb);
 
 	trace_ext4_request_blocks(ar);
-<<<<<<< HEAD
-
-	/* Allow to use superuser reservation for quota file */
-	if (IS_NOQUOTA(ar->inode))
-		ar->flags |= EXT4_MB_USE_ROOT_BLOCKS;
-
-	/*
-	 * For delayed allocation, we could skip the ENOSPC and
-	 * EDQUOT check, as blocks and quotas have been already
-	 * reserved when data being copied into pagecache.
-	 */
-	if (ext4_test_inode_state(ar->inode, EXT4_STATE_DELALLOC_RESERVED))
-		ar->flags |= EXT4_MB_DELALLOC_RESERVED;
-	else {
-=======
 	if (sbi->s_mount_state & EXT4_FC_REPLAY)
 		return ext4_mb_new_blocks_simple(ar, errp);
 
@@ -8298,7 +6146,6 @@ ext4_fsblk_t ext4_mb_new_blocks(handle_t *handle,
 		ar->flags |= EXT4_MB_USE_ROOT_BLOCKS;
 
 	if ((ar->flags & EXT4_MB_DELALLOC_RESERVED) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Without delayed allocation we need to verify
 		 * there is enough free blocks to do block allocation
 		 * and verify allocation doesn't exceed the quota limits.
@@ -8307,18 +6154,11 @@ ext4_fsblk_t ext4_mb_new_blocks(handle_t *handle,
 			ext4_claim_free_clusters(sbi, ar->len, ar->flags)) {
 
 			/* let others to free the space */
-<<<<<<< HEAD
-			yield();
-			ar->len = ar->len >> 1;
-		}
-		if (!ar->len) {
-=======
 			cond_resched();
 			ar->len = ar->len >> 1;
 		}
 		if (!ar->len) {
 			ext4_mb_show_pa(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*errp = -ENOSPC;
 			return 0;
 		}
@@ -8342,59 +6182,13 @@ ext4_fsblk_t ext4_mb_new_blocks(handle_t *handle,
 		}
 	}
 
-<<<<<<< HEAD
-	ac = kmem_cache_alloc(ext4_ac_cachep, GFP_NOFS);
-=======
 	ac = kmem_cache_zalloc(ext4_ac_cachep, GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ac) {
 		ar->len = 0;
 		*errp = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	*errp = ext4_mb_initialize_context(ac, ar);
-	if (*errp) {
-		ar->len = 0;
-		goto out;
-	}
-
-	ac->ac_op = EXT4_MB_HISTORY_PREALLOC;
-	if (!ext4_mb_use_preallocated(ac)) {
-		ac->ac_op = EXT4_MB_HISTORY_ALLOC;
-		ext4_mb_normalize_request(ac, ar);
-repeat:
-		/* allocate space in core */
-		*errp = ext4_mb_regular_allocator(ac);
-		if (*errp)
-			goto errout;
-
-		/* as we've just preallocated more space than
-		 * user requested orinally, we store allocated
-		 * space in a special descriptor */
-		if (ac->ac_status == AC_STATUS_FOUND &&
-				ac->ac_o_ex.fe_len < ac->ac_b_ex.fe_len)
-			ext4_mb_new_preallocation(ac);
-	}
-	if (likely(ac->ac_status == AC_STATUS_FOUND)) {
-		*errp = ext4_mb_mark_diskspace_used(ac, handle, reserv_clstrs);
-		if (*errp == -EAGAIN) {
-			/*
-			 * drop the reference that we took
-			 * in ext4_mb_use_best_found
-			 */
-			ext4_mb_release_context(ac);
-			ac->ac_b_ex.fe_group = 0;
-			ac->ac_b_ex.fe_start = 0;
-			ac->ac_b_ex.fe_len = 0;
-			ac->ac_status = AC_STATUS_CONTINUE;
-			goto repeat;
-		} else if (*errp)
-		errout:
-			ext4_discard_allocated_blocks(ac);
-		else {
-=======
 	ext4_mb_initialize_context(ac, ar);
 
 	ac->ac_op = EXT4_MB_HISTORY_PREALLOC;
@@ -8431,16 +6225,10 @@ repeat:
 			ext4_discard_allocated_blocks(ac);
 			goto errout;
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			block = ext4_grp_offs_to_block(sb, &ac->ac_b_ex);
 			ar->len = ac->ac_b_ex.fe_len;
 		}
 	} else {
-<<<<<<< HEAD
-		freed  = ext4_mb_discard_preallocations(sb, ac->ac_o_ex.fe_len);
-		if (freed)
-			goto repeat;
-=======
 		if (++retries < 3 &&
 		    ext4_mb_discard_preallocations_should_retry(sb, ac, &seq))
 			goto repeat;
@@ -8449,37 +6237,22 @@ repeat:
 		 * needs to be freed here itself.
 		 */
 		ext4_mb_pa_put_free(ac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*errp = -ENOSPC;
 	}
 
 	if (*errp) {
-<<<<<<< HEAD
-=======
 errout:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ac->ac_b_ex.fe_len = 0;
 		ar->len = 0;
 		ext4_mb_show_ac(ac);
 	}
 	ext4_mb_release_context(ac);
-<<<<<<< HEAD
-out:
-	if (ac)
-		kmem_cache_free(ext4_ac_cachep, ac);
-	if (inquota && ar->len < inquota)
-		dquot_free_block(ar->inode, EXT4_C2B(sbi, inquota - ar->len));
-	if (!ar->len) {
-		if (!ext4_test_inode_state(ar->inode,
-					   EXT4_STATE_DELALLOC_RESERVED))
-=======
 	kmem_cache_free(ext4_ac_cachep, ac);
 out:
 	if (inquota && ar->len < inquota)
 		dquot_free_block(ar->inode, EXT4_C2B(sbi, inquota - ar->len));
 	if (!ar->len) {
 		if ((ar->flags & EXT4_MB_DELALLOC_RESERVED) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* release all the reserved blocks if non delalloc */
 			percpu_counter_sub(&sbi->s_dirtyclusters_counter,
 						reserv_clstrs);
@@ -8495,19 +6268,6 @@ out:
  * are contiguous, AND the extents were freed by the same transaction,
  * AND the blocks are associated with the same group.
  */
-<<<<<<< HEAD
-static int can_merge(struct ext4_free_data *entry1,
-			struct ext4_free_data *entry2)
-{
-	if ((entry1->efd_tid == entry2->efd_tid) &&
-	    (entry1->efd_group == entry2->efd_group) &&
-	    ((entry1->efd_start_cluster + entry1->efd_count) == entry2->efd_start_cluster))
-		return 1;
-	return 0;
-}
-
-static noinline_for_stack int
-=======
 static void ext4_try_merge_freed_extent(struct ext4_sb_info *sbi,
 					struct ext4_free_data *entry,
 					struct ext4_free_data *new_entry,
@@ -8533,16 +6293,12 @@ static void ext4_try_merge_freed_extent(struct ext4_sb_info *sbi,
 }
 
 static noinline_for_stack void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ext4_mb_free_metadata(handle_t *handle, struct ext4_buddy *e4b,
 		      struct ext4_free_data *new_entry)
 {
 	ext4_group_t group = e4b->bd_group;
 	ext4_grpblk_t cluster;
-<<<<<<< HEAD
-=======
 	ext4_grpblk_t clusters = new_entry->efd_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_free_data *entry;
 	struct ext4_group_info *db = e4b->bd_info;
 	struct super_block *sb = e4b->bd_sb;
@@ -8563,13 +6319,8 @@ ext4_mb_free_metadata(handle_t *handle, struct ext4_buddy *e4b,
 		 * otherwise we'll refresh it from
 		 * on-disk bitmap and lose not-yet-available
 		 * blocks */
-<<<<<<< HEAD
-		page_cache_get(e4b->bd_buddy_page);
-		page_cache_get(e4b->bd_bitmap_page);
-=======
 		get_page(e4b->bd_buddy_page);
 		get_page(e4b->bd_bitmap_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	while (*n) {
 		parent = *n;
@@ -8583,12 +6334,8 @@ ext4_mb_free_metadata(handle_t *handle, struct ext4_buddy *e4b,
 				ext4_group_first_block_no(sb, group) +
 				EXT4_C2B(sbi, cluster),
 				"Block already on to-be-freed list");
-<<<<<<< HEAD
-			return 0;
-=======
 			kmem_cache_free(ext4_free_data_cachep, new_entry);
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -8599,36 +6346,13 @@ ext4_mb_free_metadata(handle_t *handle, struct ext4_buddy *e4b,
 	node = rb_prev(new_node);
 	if (node) {
 		entry = rb_entry(node, struct ext4_free_data, efd_node);
-<<<<<<< HEAD
-		if (can_merge(entry, new_entry) &&
-		    ext4_journal_callback_try_del(handle, &entry->efd_jce)) {
-			new_entry->efd_start_cluster = entry->efd_start_cluster;
-			new_entry->efd_count += entry->efd_count;
-			rb_erase(node, &(db->bb_free_root));
-			kmem_cache_free(ext4_free_data_cachep, entry);
-		}
-=======
 		ext4_try_merge_freed_extent(sbi, entry, new_entry,
 					    &(db->bb_free_root));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	node = rb_next(new_node);
 	if (node) {
 		entry = rb_entry(node, struct ext4_free_data, efd_node);
-<<<<<<< HEAD
-		if (can_merge(new_entry, entry) &&
-		    ext4_journal_callback_try_del(handle, &entry->efd_jce)) {
-			new_entry->efd_count += entry->efd_count;
-			rb_erase(node, &(db->bb_free_root));
-			kmem_cache_free(ext4_free_data_cachep, entry);
-		}
-	}
-	/* Add the extent to transaction's private list */
-	ext4_journal_callback_add(handle, ext4_free_data_callback,
-				  &new_entry->efd_jce);
-	return 0;
-=======
 		ext4_try_merge_freed_extent(sbi, entry, new_entry,
 					    &(db->bb_free_root));
 	}
@@ -8811,48 +6535,26 @@ error_clean:
 	ext4_mb_unload_buddy(&e4b);
 error_out:
 	ext4_std_error(sb, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ext4_free_blocks() -- Free given blocks and update quota
  * @handle:		handle for this transaction
  * @inode:		inode
-<<<<<<< HEAD
- * @block:		start physical block to free
- * @count:		number of blocks to count
-=======
  * @bh:			optional buffer of the block to be freed
  * @block:		starting physical block to be freed
  * @count:		number of blocks to be freed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags:		flags used by ext4_free_blocks
  */
 void ext4_free_blocks(handle_t *handle, struct inode *inode,
 		      struct buffer_head *bh, ext4_fsblk_t block,
 		      unsigned long count, int flags)
 {
-<<<<<<< HEAD
-	struct buffer_head *bitmap_bh = NULL;
-	struct super_block *sb = inode->i_sb;
-	struct ext4_group_desc *gdp;
-	unsigned long freed = 0;
-	unsigned int overflow;
-	ext4_grpblk_t bit;
-	struct buffer_head *gd_bh;
-	ext4_group_t block_group;
-	struct ext4_sb_info *sbi;
-	struct ext4_buddy e4b;
-	unsigned int count_clusters;
-	int err = 0;
-	int ret;
-=======
 	struct super_block *sb = inode->i_sb;
 	unsigned int overflow;
 	struct ext4_sb_info *sbi;
 
 	sbi = EXT4_SB(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bh) {
 		if (block)
@@ -8861,15 +6563,6 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 			block = bh->b_blocknr;
 	}
 
-<<<<<<< HEAD
-	sbi = EXT4_SB(sb);
-	if (!(flags & EXT4_FREE_BLOCKS_VALIDATED) &&
-	    !ext4_data_block_valid(sbi, block, count)) {
-		ext4_error(sb, "Freeing blocks not in datazone - "
-			   "block = %llu, count = %lu", block, count);
-		goto error_return;
-	}
-=======
 	if (sbi->s_mount_state & EXT4_FC_REPLAY) {
 		ext4_free_blocks_simple(inode, block, EXT4_NUM_B2C(sbi, count));
 		return;
@@ -8884,41 +6577,10 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 		return;
 	}
 	flags |= EXT4_FREE_BLOCKS_VALIDATED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ext4_debug("freeing block %llu\n", block);
 	trace_ext4_free_blocks(inode, block, count, flags);
 
-<<<<<<< HEAD
-	if (flags & EXT4_FREE_BLOCKS_FORGET) {
-		struct buffer_head *tbh = bh;
-		int i;
-
-		BUG_ON(bh && (count > 1));
-
-		for (i = 0; i < count; i++) {
-			if (!bh)
-				tbh = sb_find_get_block(inode->i_sb,
-							block + i);
-			if (unlikely(!tbh))
-				continue;
-			ext4_forget(handle, flags & EXT4_FREE_BLOCKS_METADATA,
-				    inode, tbh, block + i);
-		}
-	}
-
-	/*
-	 * We need to make sure we don't reuse the freed block until
-	 * after the transaction is committed, which we can do by
-	 * treating the block as metadata, below.  We make an
-	 * exception if the inode is to be written in writeback mode
-	 * since writeback mode has weak data consistency guarantees.
-	 */
-	if (!ext4_should_writeback_data(inode))
-		flags |= EXT4_FREE_BLOCKS_METADATA;
-
-	/*
-=======
 	if (bh && (flags & EXT4_FREE_BLOCKS_FORGET)) {
 		BUG_ON(count > 1);
 
@@ -8927,18 +6589,13 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If the extent to be freed does not begin on a cluster
 	 * boundary, we need to deal with partial clusters at the
 	 * beginning and end of the extent.  Normally we will free
 	 * blocks at the beginning or the end unless we are explicitly
 	 * requested to avoid doing so.
 	 */
-<<<<<<< HEAD
-	overflow = block & (sbi->s_cluster_ratio - 1);
-=======
 	overflow = EXT4_PBLK_COFF(sbi, block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (overflow) {
 		if (flags & EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER) {
 			overflow = sbi->s_cluster_ratio - overflow;
@@ -8951,15 +6608,10 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 			block -= overflow;
 			count += overflow;
 		}
-<<<<<<< HEAD
-	}
-	overflow = count & (sbi->s_cluster_ratio - 1);
-=======
 		/* The range changed so it's no longer validated */
 		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
 	}
 	overflow = EXT4_LBLK_COFF(sbi, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (overflow) {
 		if (flags & EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER) {
 			if (count > overflow)
@@ -8968,145 +6620,6 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 				return;
 		} else
 			count += sbi->s_cluster_ratio - overflow;
-<<<<<<< HEAD
-	}
-
-do_more:
-	overflow = 0;
-	ext4_get_group_no_and_offset(sb, block, &block_group, &bit);
-
-	/*
-	 * Check to see if we are freeing blocks across a group
-	 * boundary.
-	 */
-	if (EXT4_C2B(sbi, bit) + count > EXT4_BLOCKS_PER_GROUP(sb)) {
-		overflow = EXT4_C2B(sbi, bit) + count -
-			EXT4_BLOCKS_PER_GROUP(sb);
-		count -= overflow;
-	}
-	count_clusters = EXT4_NUM_B2C(sbi, count);
-	bitmap_bh = ext4_read_block_bitmap(sb, block_group);
-	if (!bitmap_bh) {
-		err = -EIO;
-		goto error_return;
-	}
-	gdp = ext4_get_group_desc(sb, block_group, &gd_bh);
-	if (!gdp) {
-		err = -EIO;
-		goto error_return;
-	}
-
-	if (in_range(ext4_block_bitmap(sb, gdp), block, count) ||
-	    in_range(ext4_inode_bitmap(sb, gdp), block, count) ||
-	    in_range(block, ext4_inode_table(sb, gdp),
-		     EXT4_SB(sb)->s_itb_per_group) ||
-	    in_range(block + count - 1, ext4_inode_table(sb, gdp),
-		     EXT4_SB(sb)->s_itb_per_group)) {
-
-		ext4_error(sb, "Freeing blocks in system zone - "
-			   "Block = %llu, count = %lu", block, count);
-		/* err = 0. ext4_std_error should be a no op */
-		goto error_return;
-	}
-
-	BUFFER_TRACE(bitmap_bh, "getting write access");
-	err = ext4_journal_get_write_access(handle, bitmap_bh);
-	if (err)
-		goto error_return;
-
-	/*
-	 * We are about to modify some metadata.  Call the journal APIs
-	 * to unshare ->b_data if a currently-committing transaction is
-	 * using it
-	 */
-	BUFFER_TRACE(gd_bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, gd_bh);
-	if (err)
-		goto error_return;
-#ifdef AGGRESSIVE_CHECK
-	{
-		int i;
-		for (i = 0; i < count_clusters; i++)
-			BUG_ON(!mb_test_bit(bit + i, bitmap_bh->b_data));
-	}
-#endif
-	trace_ext4_mballoc_free(sb, inode, block_group, bit, count_clusters);
-
-	err = ext4_mb_load_buddy(sb, block_group, &e4b);
-	if (err)
-		goto error_return;
-
-	if ((flags & EXT4_FREE_BLOCKS_METADATA) && ext4_handle_valid(handle)) {
-		struct ext4_free_data *new_entry;
-		/*
-		 * blocks being freed are metadata. these blocks shouldn't
-		 * be used until this transaction is committed
-		 *
-		 * We use __GFP_NOFAIL because ext4_free_blocks() is not allowed
-		 * to fail.
-		 */
-		new_entry = kmem_cache_alloc(ext4_free_data_cachep,
-				GFP_NOFS|__GFP_NOFAIL);
-		new_entry->efd_start_cluster = bit;
-		new_entry->efd_group = block_group;
-		new_entry->efd_count = count_clusters;
-		new_entry->efd_tid = handle->h_transaction->t_tid;
-
-		ext4_lock_group(sb, block_group);
-		mb_clear_bits(bitmap_bh->b_data, bit, count_clusters);
-		ext4_mb_free_metadata(handle, &e4b, new_entry);
-	} else {
-		/* need to update group_info->bb_free and bitmap
-		 * with group lock held. generate_buddy look at
-		 * them with group lock_held
-		 */
-		ext4_lock_group(sb, block_group);
-		mb_clear_bits(bitmap_bh->b_data, bit, count_clusters);
-		mb_free_blocks(inode, &e4b, bit, count_clusters);
-	}
-
-	ret = ext4_free_group_clusters(sb, gdp) + count_clusters;
-	ext4_free_group_clusters_set(sb, gdp, ret);
-	ext4_block_bitmap_csum_set(sb, block_group, gdp, bitmap_bh);
-	ext4_group_desc_csum_set(sb, block_group, gdp);
-	ext4_unlock_group(sb, block_group);
-	percpu_counter_add(&sbi->s_freeclusters_counter, count_clusters);
-
-	if (sbi->s_log_groups_per_flex) {
-		ext4_group_t flex_group = ext4_flex_group(sbi, block_group);
-		atomic64_add(count_clusters,
-			     &sbi->s_flex_groups[flex_group].free_clusters);
-	}
-
-	ext4_mb_unload_buddy(&e4b);
-
-	freed += count;
-
-	if (!(flags & EXT4_FREE_BLOCKS_NO_QUOT_UPDATE))
-		dquot_free_block(inode, EXT4_C2B(sbi, count_clusters));
-
-	/* We dirtied the bitmap block */
-	BUFFER_TRACE(bitmap_bh, "dirtied bitmap block");
-	err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
-
-	/* And the group descriptor block */
-	BUFFER_TRACE(gd_bh, "dirtied group descriptor block");
-	ret = ext4_handle_dirty_metadata(handle, NULL, gd_bh);
-	if (!err)
-		err = ret;
-
-	if (overflow && !err) {
-		block += count;
-		count = overflow;
-		put_bh(bitmap_bh);
-		goto do_more;
-	}
-	ext4_mark_super_dirty(sb);
-error_return:
-	brelse(bitmap_bh);
-	ext4_std_error(sb, err);
-	return;
-=======
 		/* The range changed so it's no longer validated */
 		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
 	}
@@ -9124,18 +6637,13 @@ error_return:
 	}
 
 	ext4_mb_clear_bb(handle, inode, block, count, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ext4_group_add_blocks() -- Add given blocks to an existing group
  * @handle:			handle to this transaction
  * @sb:				super block
-<<<<<<< HEAD
- * @block:			start physcial block to add to the block group
-=======
  * @block:			start physical block to add to the block group
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count:			number of blocks to free
  *
  * This marks the blocks as free in the bitmap and buddy.
@@ -9143,22 +6651,6 @@ error_return:
 int ext4_group_add_blocks(handle_t *handle, struct super_block *sb,
 			 ext4_fsblk_t block, unsigned long count)
 {
-<<<<<<< HEAD
-	struct buffer_head *bitmap_bh = NULL;
-	struct buffer_head *gd_bh;
-	ext4_group_t block_group;
-	ext4_grpblk_t bit;
-	unsigned int i;
-	struct ext4_group_desc *desc;
-	struct ext4_sb_info *sbi = EXT4_SB(sb);
-	struct ext4_buddy e4b;
-	int err = 0, ret, blk_free_count;
-	ext4_grpblk_t blocks_freed;
-
-	ext4_debug("Adding block(s) %llu-%llu\n", block, block + count - 1);
-
-	if (count == 0)
-=======
 	ext4_group_t block_group;
 	ext4_grpblk_t bit;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
@@ -9172,7 +6664,6 @@ int ext4_group_add_blocks(handle_t *handle, struct super_block *sb,
 	ext4_debug("Adding block(s) %llu-%llu\n", block, block + count - 1);
 
 	if (cluster_count == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ext4_get_group_no_and_offset(sb, block, &block_group, &bit);
@@ -9180,113 +6671,15 @@ int ext4_group_add_blocks(handle_t *handle, struct super_block *sb,
 	 * Check to see if we are freeing blocks across a group
 	 * boundary.
 	 */
-<<<<<<< HEAD
-	if (bit + count > EXT4_BLOCKS_PER_GROUP(sb)) {
-		ext4_warning(sb, "too much blocks added to group %u\n",
-			     block_group);
-		err = -EINVAL;
-		goto error_return;
-	}
-
-	bitmap_bh = ext4_read_block_bitmap(sb, block_group);
-	if (!bitmap_bh) {
-		err = -EIO;
-		goto error_return;
-	}
-
-	desc = ext4_get_group_desc(sb, block_group, &gd_bh);
-	if (!desc) {
-		err = -EIO;
-		goto error_return;
-	}
-
-	if (in_range(ext4_block_bitmap(sb, desc), block, count) ||
-	    in_range(ext4_inode_bitmap(sb, desc), block, count) ||
-	    in_range(block, ext4_inode_table(sb, desc), sbi->s_itb_per_group) ||
-	    in_range(block + count - 1, ext4_inode_table(sb, desc),
-		     sbi->s_itb_per_group)) {
-		ext4_error(sb, "Adding blocks in system zones - "
-			   "Block = %llu, count = %lu",
-			   block, count);
-		err = -EINVAL;
-		goto error_return;
-	}
-
-	BUFFER_TRACE(bitmap_bh, "getting write access");
-	err = ext4_journal_get_write_access(handle, bitmap_bh);
-	if (err)
-		goto error_return;
-
-	/*
-	 * We are about to modify some metadata.  Call the journal APIs
-	 * to unshare ->b_data if a currently-committing transaction is
-	 * using it
-	 */
-	BUFFER_TRACE(gd_bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, gd_bh);
-	if (err)
-		goto error_return;
-
-	for (i = 0, blocks_freed = 0; i < count; i++) {
-		BUFFER_TRACE(bitmap_bh, "clear bit");
-		if (!mb_test_bit(bit + i, bitmap_bh->b_data)) {
-			ext4_error(sb, "bit already cleared for block %llu",
-				   (ext4_fsblk_t)(block + i));
-			BUFFER_TRACE(bitmap_bh, "bit already cleared");
-		} else {
-			blocks_freed++;
-		}
-=======
 	if (bit + cluster_count > EXT4_CLUSTERS_PER_GROUP(sb)) {
 		ext4_warning(sb, "too many blocks added to group %u",
 			     block_group);
 		err = -EINVAL;
 		goto error_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ext4_mb_load_buddy(sb, block_group, &e4b);
 	if (err)
-<<<<<<< HEAD
-		goto error_return;
-
-	/*
-	 * need to update group_info->bb_free and bitmap
-	 * with group lock held. generate_buddy look at
-	 * them with group lock_held
-	 */
-	ext4_lock_group(sb, block_group);
-	mb_clear_bits(bitmap_bh->b_data, bit, count);
-	mb_free_blocks(NULL, &e4b, bit, count);
-	blk_free_count = blocks_freed + ext4_free_group_clusters(sb, desc);
-	ext4_free_group_clusters_set(sb, desc, blk_free_count);
-	ext4_block_bitmap_csum_set(sb, block_group, desc, bitmap_bh);
-	ext4_group_desc_csum_set(sb, block_group, desc);
-	ext4_unlock_group(sb, block_group);
-	percpu_counter_add(&sbi->s_freeclusters_counter,
-			   EXT4_NUM_B2C(sbi, blocks_freed));
-
-	if (sbi->s_log_groups_per_flex) {
-		ext4_group_t flex_group = ext4_flex_group(sbi, block_group);
-		atomic64_add(EXT4_NUM_B2C(sbi, blocks_freed),
-			     &sbi->s_flex_groups[flex_group].free_clusters);
-	}
-
-	ext4_mb_unload_buddy(&e4b);
-
-	/* We dirtied the bitmap block */
-	BUFFER_TRACE(bitmap_bh, "dirtied bitmap block");
-	err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
-
-	/* And the group descriptor block */
-	BUFFER_TRACE(gd_bh, "dirtied group descriptor block");
-	ret = ext4_handle_dirty_metadata(handle, NULL, gd_bh);
-	if (!err)
-		err = ret;
-
-error_return:
-	brelse(bitmap_bh);
-=======
 		goto error_out;
 
 	if (!ext4_sb_block_valid(sb, NULL, block, count)) {
@@ -9315,7 +6708,6 @@ error_return:
 error_clean:
 	ext4_mb_unload_buddy(&e4b);
 error_out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_std_error(sb, err);
 	return err;
 }
@@ -9325,22 +6717,12 @@ error_out:
  * @sb:		super block for the file system
  * @start:	starting block of the free extent in the alloc. group
  * @count:	number of blocks to TRIM
-<<<<<<< HEAD
- * @group:	alloc. group we are working with
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @e4b:	ext4 buddy for the group
  *
  * Trim "count" blocks starting at "start" in the "group". To assure that no
  * one will allocate those blocks, mark it as used in buddy bitmap. This must
  * be called with under the group lock.
  */
-<<<<<<< HEAD
-static void ext4_trim_extent(struct super_block *sb, int start, int count,
-			     ext4_group_t group, struct ext4_buddy *e4b)
-{
-	struct ext4_free_extent ex;
-=======
 static int ext4_trim_extent(struct super_block *sb,
 		int start, int count, struct ext4_buddy *e4b)
 __releases(bitlock)
@@ -9349,7 +6731,6 @@ __acquires(bitlock)
 	struct ext4_free_extent ex;
 	ext4_group_t group = e4b->bd_group;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ext4_trim_extent(sb, group, start, count);
 
@@ -9365,11 +6746,6 @@ __acquires(bitlock)
 	 */
 	mb_mark_used(e4b, &ex);
 	ext4_unlock_group(sb, group);
-<<<<<<< HEAD
-	ext4_issue_discard(sb, group, start, count);
-	ext4_lock_group(sb, group);
-	mb_free_blocks(NULL, e4b, start, ex.fe_len);
-=======
 	ret = ext4_issue_discard(sb, group, start, count);
 	ext4_lock_group(sb, group);
 	mb_free_blocks(NULL, e4b, start, ex.fe_len);
@@ -9454,7 +6830,6 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
 		EXT4_MB_GRP_SET_TRIMMED(e4b->bd_info);
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -9465,33 +6840,16 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
  * @max:		last group block to examine
  * @minblocks:		minimum extent block count
  *
-<<<<<<< HEAD
- * ext4_trim_all_free walks through group's buddy bitmap searching for free
- * extents. When the free block is found, ext4_trim_extent is called to TRIM
- * the extent.
- *
- *
- * ext4_trim_all_free walks through group's block bitmap searching for free
- * extents. When the free extent is found, mark it as used in group buddy
- * bitmap. Then issue a TRIM command on this extent and free the extent in
- * the group buddy bitmap. This is done until whole group is scanned.
-=======
  * ext4_trim_all_free walks through group's block bitmap searching for free
  * extents. When the free extent is found, mark it as used in group buddy
  * bitmap. Then issue a TRIM command on this extent and free the extent in
  * the group buddy bitmap.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static ext4_grpblk_t
 ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 		   ext4_grpblk_t start, ext4_grpblk_t max,
 		   ext4_grpblk_t minblocks)
 {
-<<<<<<< HEAD
-	void *bitmap;
-	ext4_grpblk_t next, count = 0, free_count = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_buddy e4b;
 	int ret;
 
@@ -9499,54 +6857,6 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 
 	ret = ext4_mb_load_buddy(sb, group, &e4b);
 	if (ret) {
-<<<<<<< HEAD
-		ext4_error(sb, "Error in loading buddy "
-				"information for %u", group);
-		return ret;
-	}
-	bitmap = e4b.bd_bitmap;
-
-	ext4_lock_group(sb, group);
-	if (EXT4_MB_GRP_WAS_TRIMMED(e4b.bd_info) &&
-	    minblocks >= atomic_read(&EXT4_SB(sb)->s_last_trim_minblks))
-		goto out;
-
-	start = (e4b.bd_info->bb_first_free > start) ?
-		e4b.bd_info->bb_first_free : start;
-
-	while (start <= max) {
-		start = mb_find_next_zero_bit(bitmap, max + 1, start);
-		if (start > max)
-			break;
-		next = mb_find_next_bit(bitmap, max + 1, start);
-
-		if ((next - start) >= minblocks) {
-			ext4_trim_extent(sb, start,
-					 next - start, group, &e4b);
-			count += next - start;
-		}
-		free_count += next - start;
-		start = next + 1;
-
-		if (fatal_signal_pending(current)) {
-			count = -ERESTARTSYS;
-			break;
-		}
-
-		if (need_resched()) {
-			ext4_unlock_group(sb, group);
-			cond_resched();
-			ext4_lock_group(sb, group);
-		}
-
-		if ((e4b.bd_info->bb_free - free_count) < minblocks)
-			break;
-	}
-
-	if (!ret)
-		EXT4_MB_GRP_SET_TRIMMED(e4b.bd_info);
-out:
-=======
 		ext4_warning(sb, "Error %d loading buddy information for %u",
 			     ret, group);
 		return ret;
@@ -9560,20 +6870,13 @@ out:
 	else
 		ret = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_unlock_group(sb, group);
 	ext4_mb_unload_buddy(&e4b);
 
 	ext4_debug("trimmed %d blocks in the group %d\n",
-<<<<<<< HEAD
-		count, group);
-
-	return count;
-=======
 		ret, group);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -9590,10 +6893,7 @@ out:
  */
 int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 {
-<<<<<<< HEAD
-=======
 	unsigned int discard_granularity = bdev_discard_granularity(sb->s_bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_group_info *grp;
 	ext4_group_t group, first_group, last_group;
 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
@@ -9605,20 +6905,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 
 	start = range->start >> sb->s_blocksize_bits;
 	end = start + (range->len >> sb->s_blocksize_bits) - 1;
-<<<<<<< HEAD
-	minlen = range->minlen >> sb->s_blocksize_bits;
-=======
 	minlen = EXT4_NUM_B2C(EXT4_SB(sb),
 			      range->minlen >> sb->s_blocksize_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (minlen > EXT4_CLUSTERS_PER_GROUP(sb) ||
 	    start >= max_blks ||
 	    range->len < sb->s_blocksize)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (end >= max_blks)
-=======
 	/* No point to try to trim less than discard granularity */
 	if (range->minlen < discard_granularity) {
 		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
@@ -9627,7 +6920,6 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 			goto out;
 	}
 	if (end >= max_blks - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		end = max_blks - 1;
 	if (end <= first_data_blk)
 		goto out;
@@ -9644,12 +6936,6 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	end = EXT4_CLUSTERS_PER_GROUP(sb) - 1;
 
 	for (group = first_group; group <= last_group; group++) {
-<<<<<<< HEAD
-		grp = ext4_get_group_info(sb, group);
-		/* We only do this if the grp has never been initialized */
-		if (unlikely(EXT4_MB_GRP_NEED_INIT(grp))) {
-			ret = ext4_mb_init_group(sb, group);
-=======
 		if (ext4_trim_interrupted())
 			break;
 		grp = ext4_get_group_info(sb, group);
@@ -9658,7 +6944,6 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 		/* We only do this if the grp has never been initialized */
 		if (unlikely(EXT4_MB_GRP_NEED_INIT(grp))) {
 			ret = ext4_mb_init_group(sb, group, GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				break;
 		}
@@ -9671,16 +6956,9 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 		 */
 		if (group == last_group)
 			end = last_cluster;
-<<<<<<< HEAD
-
-		if (grp->bb_free >= minlen) {
-			cnt = ext4_trim_all_free(sb, group, first_cluster,
-						end, minlen);
-=======
 		if (grp->bb_free >= minlen) {
 			cnt = ext4_trim_all_free(sb, group, first_cluster,
 						 end, minlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cnt < 0) {
 				ret = cnt;
 				break;
@@ -9696,14 +6974,6 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	}
 
 	if (!ret)
-<<<<<<< HEAD
-		atomic_set(&EXT4_SB(sb)->s_last_trim_minblks, minlen);
-
-out:
-	range->len = trimmed * sb->s_blocksize;
-	return ret;
-}
-=======
 		EXT4_SB(sb)->s_last_trim_minblks = minlen;
 
 out:
@@ -9762,4 +7032,3 @@ out_unload:
 #ifdef CONFIG_EXT4_KUNIT_TESTS
 #include "mballoc-test.c"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

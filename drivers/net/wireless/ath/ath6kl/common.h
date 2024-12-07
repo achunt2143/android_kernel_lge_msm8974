@@ -22,11 +22,7 @@
 
 #define ATH6KL_MAX_IE			256
 
-<<<<<<< HEAD
-extern int ath6kl_printk(const char *level, const char *fmt, ...);
-=======
 __printf(2, 3) void ath6kl_printk(const char *level, const char *fmt, ...);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reflects the version of binary interface exposed by ATH6KL target
@@ -71,11 +67,7 @@ struct ath6kl_llc_snap_hdr {
 	__be16 eth_type;
 } __packed;
 
-<<<<<<< HEAD
-enum crypto_type {
-=======
 enum ath6kl_crypto_type {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NONE_CRYPT          = 0x01,
 	WEP_CRYPT           = 0x02,
 	TKIP_CRYPT          = 0x04,
@@ -85,10 +77,7 @@ enum ath6kl_crypto_type {
 
 struct htc_endpoint_credit_dist;
 struct ath6kl;
-<<<<<<< HEAD
-=======
 struct ath6kl_htcap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum htc_credit_dist_reason;
 struct ath6kl_htc_credit_info;
 

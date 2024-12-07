@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   pata-legacy.c - Legacy port PATA/SATA controller driver.
  *   Copyright 2005/2006 Red Hat, all rights reserved.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   An ATA driver for the legacy ATA ports.
  *
  *   Data Sources:
@@ -62,10 +42,6 @@
  *
  *  For now use autospeed and pio_mask as above with the W83759A. This may
  *  change.
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/async.h>
@@ -87,9 +63,6 @@
 
 static int all;
 module_param(all, int, 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(all, "Grab all legacy port devices, even if PCI(0=off, 1=on)");
-=======
 MODULE_PARM_DESC(all,
 		 "Set to probe unclaimed pri/sec ISA port ranges even if PCI");
 
@@ -150,7 +123,6 @@ MODULE_PARM_DESC(winbond,
 		 "Set to probe Winbond controllers, "
 		 "give I/O port if non standard");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum controller {
 	BIOS = 0,
@@ -204,33 +176,6 @@ static struct ata_host *legacy_host[NR_HOST];
 static int nr_legacy_host;
 
 
-<<<<<<< HEAD
-static int probe_all;		/* Set to check all ISA port ranges */
-static int ht6560a;		/* HT 6560A on primary 1, second 2, both 3 */
-static int ht6560b;		/* HT 6560A on primary 1, second 2, both 3 */
-static int opti82c611a;		/* Opti82c611A on primary 1, sec 2, both 3 */
-static int opti82c46x;		/* Opti 82c465MV present(pri/sec autodetect) */
-static int autospeed;		/* Chip present which snoops speed changes */
-static int pio_mask = ATA_PIO4;	/* PIO range for autospeed devices */
-static int iordy_mask = 0xFFFFFFFF;	/* Use iordy if available */
-
-/* Set to probe QDI controllers */
-#ifdef CONFIG_PATA_QDI_MODULE
-static int qdi = 1;
-#else
-static int qdi;
-#endif
-
-#ifdef CONFIG_PATA_WINBOND_VLB_MODULE
-static int winbond = 1;		/* Set to probe Winbond controllers,
-					give I/O port if non standard */
-#else
-static int winbond;		/* Set to probe Winbond controllers,
-					give I/O port if non standard */
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	legacy_probe_add	-	Add interface to probe list
  *	@port: Controller port
@@ -258,11 +203,8 @@ static int legacy_probe_add(unsigned long port, unsigned int irq,
 			free = lp;
 		/* Matching port, or the correct slot for ordering */
 		if (lp->port == port || legacy_port[i] == port) {
-<<<<<<< HEAD
-=======
 			if (!(probe_mask & 1 << i))
 				return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free = lp;
 			break;
 		}
@@ -308,11 +250,7 @@ static int legacy_set_mode(struct ata_link *link, struct ata_device **unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template legacy_sht = {
-=======
 static const struct scsi_host_template legacy_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -331,20 +269,12 @@ static const struct ata_port_operations legacy_base_port_ops = {
 
 static struct ata_port_operations simple_port_ops = {
 	.inherits	= &legacy_base_port_ops,
-<<<<<<< HEAD
-	.sff_data_xfer	= ata_sff_data_xfer_noirq,
-=======
 	.sff_data_xfer	= ata_sff_data_xfer32,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations legacy_port_ops = {
 	.inherits	= &legacy_base_port_ops,
-<<<<<<< HEAD
-	.sff_data_xfer	= ata_sff_data_xfer_noirq,
-=======
 	.sff_data_xfer	= ata_sff_data_xfer32,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_mode	= legacy_set_mode,
 };
 
@@ -385,16 +315,10 @@ static void pdc20230_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	outb(inb(0x1F4) & 0x07, 0x1F4);
 
 	rt = inb(0x1F3);
-<<<<<<< HEAD
-	rt &= 0x07 << (3 * adev->devno);
-	if (pio)
-		rt |= (1 + 3 * pio) << (3 * adev->devno);
-=======
 	rt &= ~(0x07 << (3 * !adev->devno));
 	if (pio)
 		rt |= (1 + 3 * pio) << (3 * !adev->devno);
 	outb(rt, 0x1F3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udelay(100);
 	outb(inb(0x1F2) | 0x01, 0x1F2);
@@ -403,20 +327,12 @@ static void pdc20230_set_piomode(struct ata_port *ap, struct ata_device *adev)
 
 }
 
-<<<<<<< HEAD
-static unsigned int pdc_data_xfer_vlb(struct ata_device *dev,
-			unsigned char *buf, unsigned int buflen, int rw)
-{
-	int slop = buflen & 3;
-	struct ata_port *ap = dev->link->ap;
-=======
 static unsigned int pdc_data_xfer_vlb(struct ata_queued_cmd *qc,
 			unsigned char *buf, unsigned int buflen, int rw)
 {
 	struct ata_device *dev = qc->dev;
 	struct ata_port *ap = dev->link->ap;
 	int slop = buflen & 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 32bit I/O capable *and* we need to write a whole number of dwords */
 	if (ata_id_has_dword_io(dev->id) && (slop == 0 || slop == 3)
@@ -437,12 +353,8 @@ static unsigned int pdc_data_xfer_vlb(struct ata_queued_cmd *qc,
 			iowrite32_rep(ap->ioaddr.data_addr, buf, buflen >> 2);
 
 		if (unlikely(slop)) {
-<<<<<<< HEAD
-			__le32 pad;
-=======
 			__le32 pad = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rw == READ) {
 				pad = cpu_to_le32(ioread32(ap->ioaddr.data_addr));
 				memcpy(buf + buflen - slop, &pad, slop);
@@ -454,11 +366,7 @@ static unsigned int pdc_data_xfer_vlb(struct ata_queued_cmd *qc,
 		}
 		local_irq_restore(flags);
 	} else
-<<<<<<< HEAD
-		buflen = ata_sff_data_xfer_noirq(dev, buf, buflen, rw);
-=======
 		buflen = ata_sff_data_xfer32(qc, buf, buflen, rw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return buflen;
 }
@@ -660,11 +568,7 @@ static void opti82c46x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	u8 sysclk;
 
 	/* Get the clock */
-<<<<<<< HEAD
-	sysclk = opti_syscfg(0xAC) & 0xC0;	/* BIOS set */
-=======
 	sysclk = (opti_syscfg(0xAC) & 0xC0) >> 6;	/* BIOS set */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enter configuration mode */
 	ioread16(ap->ioaddr.error_addr);
@@ -723,11 +627,7 @@ static void opti82c46x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 }
 
 /**
-<<<<<<< HEAD
- *	opt82c465mv_qc_issue		-	command issue
-=======
  *	opti82c46x_qc_issue		-	command issue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: command pending
  *
  *	Called when the libata layer is about to issue a command. We wrap
@@ -828,17 +728,11 @@ static unsigned int qdi_qc_issue(struct ata_queued_cmd *qc)
 	return ata_sff_qc_issue(qc);
 }
 
-<<<<<<< HEAD
-static unsigned int vlb32_data_xfer(struct ata_device *adev, unsigned char *buf,
-					unsigned int buflen, int rw)
-{
-=======
 static unsigned int vlb32_data_xfer(struct ata_queued_cmd *qc,
 				    unsigned char *buf,
 				    unsigned int buflen, int rw)
 {
 	struct ata_device *adev = qc->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_port *ap = adev->link->ap;
 	int slop = buflen & 3;
 
@@ -850,12 +744,8 @@ static unsigned int vlb32_data_xfer(struct ata_queued_cmd *qc,
 			ioread32_rep(ap->ioaddr.data_addr, buf, buflen >> 2);
 
 		if (unlikely(slop)) {
-<<<<<<< HEAD
-			__le32 pad;
-=======
 			__le32 pad = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rw == WRITE) {
 				memcpy(&pad, buf + buflen - slop, slop);
 				iowrite32(le32_to_cpu(pad), ap->ioaddr.data_addr);
@@ -866,11 +756,7 @@ static unsigned int vlb32_data_xfer(struct ata_queued_cmd *qc,
 		}
 		return (buflen + 3) & ~3;
 	} else
-<<<<<<< HEAD
-		return ata_sff_data_xfer(adev, buf, buflen, rw);
-=======
 		return ata_sff_data_xfer(qc, buf, buflen, rw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qdi_port(struct platform_device *dev,
@@ -1059,10 +945,6 @@ static __init int probe_chip_type(struct legacy_probe *probe)
 			local_irq_restore(flags);
 			return BIOS;
 		}
-<<<<<<< HEAD
-		local_irq_restore(flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ht6560a & mask)
@@ -1081,11 +963,7 @@ static __init int probe_chip_type(struct legacy_probe *probe)
 
 /**
  *	legacy_init_one		-	attach a legacy interface
-<<<<<<< HEAD
- *	@pl: probe record
-=======
  *	@probe: probe record
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Register an ISA bus IDE interface. Such interfaces are PIO and we
  *	assume do not support IRQ sharing.
@@ -1171,13 +1049,8 @@ fail:
 /**
  *	legacy_check_special_cases	-	ATA special cases
  *	@p: PCI device to check
-<<<<<<< HEAD
- *	@master: set this if we find an ATA master
- *	@master: set this if we find an ATA secondary
-=======
  *	@primary: set this if we find an ATA master
  *	@secondary: set this if we find an ATA secondary
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	A small number of vendors implemented early PCI ATA interfaces
  *	on bridge logic without the ATA interface being PCI visible.
@@ -1417,19 +1290,5 @@ MODULE_VERSION(DRV_VERSION);
 MODULE_ALIAS("pata_qdi");
 MODULE_ALIAS("pata_winbond");
 
-<<<<<<< HEAD
-module_param(probe_all, int, 0);
-module_param(autospeed, int, 0);
-module_param(ht6560a, int, 0);
-module_param(ht6560b, int, 0);
-module_param(opti82c611a, int, 0);
-module_param(opti82c46x, int, 0);
-module_param(qdi, int, 0);
-module_param(winbond, int, 0);
-module_param(pio_mask, int, 0);
-module_param(iordy_mask, int, 0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(legacy_init);
 module_exit(legacy_exit);

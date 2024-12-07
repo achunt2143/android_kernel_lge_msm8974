@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram pcxhr compatible soundcards
  *
  * hwdep device manager
  *
  * Copyright (c) 2004 by Digigram <alsa@digigram.com>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -32,11 +12,7 @@
 #include <linux/firmware.h>
 #include <linux/pci.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/hwdep.h>
 #include "pcxhr.h"
@@ -46,16 +22,6 @@
 #include "pcxhr_mix22.h"
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_FW_LOADER) || defined(CONFIG_FW_LOADER_MODULE)
-#if !defined(CONFIG_USE_PCXHRLOADER) && !defined(CONFIG_SND_PCXHR) /* built-in kernel */
-#define SND_PCXHR_FW_LOADER	/* use the standard firmware loader */
-#endif
-#endif
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pcxhr_sub_init(struct pcxhr_mgr *mgr);
 /*
  * get basic information and init pcxhr card
@@ -80,17 +46,10 @@ static int pcxhr_init_board(struct pcxhr_mgr *mgr)
 	err = pcxhr_send_msg(mgr, &rmh);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	/* test 8 or 12 phys out */
-	if ((rmh.stat[0] & MASK_FIRST_FIELD) != mgr->playback_chips * 2)
-		return -EINVAL;
-	/* test 8 or 2 phys in */
-=======
 	/* test 4, 8 or 12 phys out */
 	if ((rmh.stat[0] & MASK_FIRST_FIELD) < mgr->playback_chips * 2)
 		return -EINVAL;
 	/* test 4, 8 or 2 phys in */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (((rmh.stat[0] >> (2 * FIELD_SIZE)) & MASK_FIRST_FIELD) <
 	    mgr->capture_chips * 2)
 		return -EINVAL;
@@ -100,12 +59,8 @@ static int pcxhr_init_board(struct pcxhr_mgr *mgr)
 	/* test max nb substream per pipe */
 	if (((rmh.stat[1] >> 7) & 0x5F) < PCXHR_PLAYBACK_STREAMS)
 		return -EINVAL;
-<<<<<<< HEAD
-	snd_printdd("supported formats : playback=%x capture=%x\n",
-=======
 	dev_dbg(&mgr->pci->dev,
 		"supported formats : playback=%x capture=%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rmh.stat[2], rmh.stat[3]);
 
 	pcxhr_init_rmh(&rmh, CMD_VERSION);
@@ -117,12 +72,8 @@ static int pcxhr_init_board(struct pcxhr_mgr *mgr)
 	err = pcxhr_send_msg(mgr, &rmh);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	snd_printdd("PCXHR DSP version is %d.%d.%d\n", (rmh.stat[0]>>16)&0xff,
-=======
 	dev_dbg(&mgr->pci->dev,
 		"PCXHR DSP version is %d.%d.%d\n", (rmh.stat[0]>>16)&0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (rmh.stat[0]>>8)&0xff, rmh.stat[0]&0xff);
 	mgr->dsp_version = rmh.stat[0];
 
@@ -217,11 +168,7 @@ static int pcxhr_dsp_allocate_pipe(struct pcxhr_mgr *mgr,
 		stream_count = PCXHR_PLAYBACK_STREAMS;
 		audio_count = 2;	/* always stereo */
 	}
-<<<<<<< HEAD
-	snd_printdd("snd_add_ref_pipe pin(%d) pcm%c0\n",
-=======
 	dev_dbg(&mgr->pci->dev, "snd_add_ref_pipe pin(%d) pcm%c0\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    pin, is_capture ? 'c' : 'p');
 	pipe->is_capture = is_capture;
 	pipe->first_audio = pin;
@@ -236,11 +183,7 @@ static int pcxhr_dsp_allocate_pipe(struct pcxhr_mgr *mgr,
 	}
 	err = pcxhr_send_msg(mgr, &rmh);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "error pipe allocation "
-=======
 		dev_err(&mgr->pci->dev, "error pipe allocation "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "(CMD_RES_PIPE) err=%x!\n", err);
 		return err;
 	}
@@ -268,22 +211,14 @@ static int pcxhr_dsp_free_pipe( struct pcxhr_mgr *mgr, struct pcxhr_pipe *pipe)
 	/* stop one pipe */
 	err = pcxhr_set_pipe_state(mgr, playback_mask, capture_mask, 0);
 	if (err < 0)
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "error stopping pipe!\n");
-=======
 		dev_err(&mgr->pci->dev, "error stopping pipe!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* release the pipe */
 	pcxhr_init_rmh(&rmh, CMD_FREE_PIPE);
 	pcxhr_set_pipe_cmd_params(&rmh, pipe->is_capture, pipe->first_audio,
 				  0, 0);
 	err = pcxhr_send_msg(mgr, &rmh);
 	if (err < 0)
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "error pipe release "
-=======
 		dev_err(&mgr->pci->dev, "error pipe release "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "(CMD_FREE_PIPE) err(%x)\n", err);
 	pipe->status = PCXHR_PIPE_UNDEFINED;
 	return err;
@@ -343,12 +278,8 @@ static int pcxhr_dsp_load(struct pcxhr_mgr *mgr, int index,
 {
 	int err, card_index;
 
-<<<<<<< HEAD
-	snd_printdd("loading dsp [%d] size = %Zd\n", index, dsp->size);
-=======
 	dev_dbg(&mgr->pci->dev,
 		"loading dsp [%d] size = %zd\n", index, dsp->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (index) {
 	case PCXHR_FIRMWARE_XLX_INT_INDEX:
@@ -372,47 +303,25 @@ static int pcxhr_dsp_load(struct pcxhr_mgr *mgr, int index,
 			return err;
 		break;	/* continue with first init */
 	default:
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "wrong file index\n");
-=======
 		dev_err(&mgr->pci->dev, "wrong file index\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	} /* end of switch file index*/
 
 	/* first communication with embedded */
 	err = pcxhr_init_board(mgr);
         if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "pcxhr could not be set up\n");
-=======
 		dev_err(&mgr->pci->dev, "pcxhr could not be set up\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	err = pcxhr_config_pipes(mgr);
         if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "pcxhr pipes could not be set up\n");
-=======
 		dev_err(&mgr->pci->dev, "pcxhr pipes could not be set up\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
        	/* create devices and mixer in accordance with HW options*/
         for (card_index = 0; card_index < mgr->num_cards; card_index++) {
 		struct snd_pcxhr *chip = mgr->chip[card_index];
 
-<<<<<<< HEAD
-		if ((err = pcxhr_create_pcm(chip)) < 0)
-			return err;
-
-		if (card_index == 0) {
-			if ((err = pcxhr_create_mixer(chip->mgr)) < 0)
-				return err;
-		}
-		if ((err = snd_card_register(chip->card)) < 0)
-=======
 		err = pcxhr_create_pcm(chip);
 		if (err < 0)
 			return err;
@@ -424,23 +333,15 @@ static int pcxhr_dsp_load(struct pcxhr_mgr *mgr, int index,
 		}
 		err = snd_card_register(chip->card);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	err = pcxhr_start_pipes(mgr);
         if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "pcxhr pipes could not be started\n");
-		return err;
-	}
-	snd_printdd("pcxhr firmware downloaded and successfully set up\n");
-=======
 		dev_err(&mgr->pci->dev, "pcxhr pipes could not be started\n");
 		return err;
 	}
 	dev_dbg(&mgr->pci->dev,
 		"pcxhr firmware downloaded and successfully set up\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -448,17 +349,9 @@ static int pcxhr_dsp_load(struct pcxhr_mgr *mgr, int index,
 /*
  * fw loader entry
  */
-<<<<<<< HEAD
-#ifdef SND_PCXHR_FW_LOADER
-
-int pcxhr_setup_firmware(struct pcxhr_mgr *mgr)
-{
-	static char *fw_files[][5] = {
-=======
 int pcxhr_setup_firmware(struct pcxhr_mgr *mgr)
 {
 	static const char * const fw_files[][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = { "xlxint.dat", "xlxc882hr.dat",
 		"dspe882.e56", "dspb882hr.b56", "dspd882.d56" },
 	[1] = { "xlxint.dat", "xlxc882e.dat",
@@ -483,12 +376,8 @@ int pcxhr_setup_firmware(struct pcxhr_mgr *mgr)
 			continue;
 		sprintf(path, "pcxhr/%s", fw_files[fw_set][i]);
 		if (request_firmware(&fw_entry, path, &mgr->pci->dev)) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "pcxhr: can't load firmware %s\n",
-=======
 			dev_err(&mgr->pci->dev,
 				"pcxhr: can't load firmware %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   path);
 			return -ENOENT;
 		}
@@ -521,83 +410,3 @@ MODULE_FIRMWARE("pcxhr/xlxc924.dat");
 MODULE_FIRMWARE("pcxhr/dspe924.e56");
 MODULE_FIRMWARE("pcxhr/dspb924.b56");
 MODULE_FIRMWARE("pcxhr/dspd222.d56");
-<<<<<<< HEAD
-
-
-#else /* old style firmware loading */
-
-/* pcxhr hwdep interface id string */
-#define PCXHR_HWDEP_ID       "pcxhr loader"
-
-
-static int pcxhr_hwdep_dsp_status(struct snd_hwdep *hw,
-				  struct snd_hwdep_dsp_status *info)
-{
-	struct pcxhr_mgr *mgr = hw->private_data;
-	sprintf(info->id, "pcxhr%d", mgr->fw_file_set);
-        info->num_dsps = PCXHR_FIRMWARE_FILES_MAX_INDEX;
-
-	if (hw->dsp_loaded & (1 << PCXHR_FIRMWARE_DSP_MAIN_INDEX))
-		info->chip_ready = 1;
-
-	info->version = PCXHR_DRIVER_VERSION;
-	return 0;
-}
-
-static int pcxhr_hwdep_dsp_load(struct snd_hwdep *hw,
-				struct snd_hwdep_dsp_image *dsp)
-{
-	struct pcxhr_mgr *mgr = hw->private_data;
-	int err;
-	struct firmware fw;
-
-	fw.size = dsp->length;
-	fw.data = vmalloc(fw.size);
-	if (! fw.data) {
-		snd_printk(KERN_ERR "pcxhr: cannot allocate dsp image "
-			   "(%lu bytes)\n", (unsigned long)fw.size);
-		return -ENOMEM;
-	}
-	if (copy_from_user((void *)fw.data, dsp->image, dsp->length)) {
-		vfree(fw.data);
-		return -EFAULT;
-	}
-	err = pcxhr_dsp_load(mgr, dsp->index, &fw);
-	vfree(fw.data);
-	if (err < 0)
-		return err;
-	mgr->dsp_loaded |= 1 << dsp->index;
-	return 0;
-}
-
-int pcxhr_setup_firmware(struct pcxhr_mgr *mgr)
-{
-	int err;
-	struct snd_hwdep *hw;
-
-	/* only create hwdep interface for first cardX
-	 * (see "index" module parameter)
-	 */
-	err = snd_hwdep_new(mgr->chip[0]->card, PCXHR_HWDEP_ID, 0, &hw);
-	if (err < 0)
-		return err;
-
-	hw->iface = SNDRV_HWDEP_IFACE_PCXHR;
-	hw->private_data = mgr;
-	hw->ops.dsp_status = pcxhr_hwdep_dsp_status;
-	hw->ops.dsp_load = pcxhr_hwdep_dsp_load;
-	hw->exclusive = 1;
-	/* stereo cards don't need fw_file_0 -> dsp_loaded = 1 */
-	hw->dsp_loaded = mgr->is_hr_stereo ? 1 : 0;
-	mgr->dsp_loaded = 0;
-	sprintf(hw->name, PCXHR_HWDEP_ID);
-
-	err = snd_card_register(mgr->chip[0]->card);
-	if (err < 0)
-		return err;
-	return 0;
-}
-
-#endif /* SND_PCXHR_FW_LOADER */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

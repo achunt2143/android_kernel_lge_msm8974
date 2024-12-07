@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2007
  *
@@ -38,38 +22,6 @@
 #include <asm/kvm_asm.h>
 #include <asm/processor.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-
-#define KVM_MAX_VCPUS		NR_CPUS
-#define KVM_MAX_VCORES		NR_CPUS
-#define KVM_MEMORY_SLOTS 32
-/* memory slots that does not exposed to userspace */
-#define KVM_PRIVATE_MEM_SLOTS 4
-#define KVM_MEM_SLOTS_NUM (KVM_MEMORY_SLOTS + KVM_PRIVATE_MEM_SLOTS)
-
-#ifdef CONFIG_KVM_MMIO
-#define KVM_COALESCED_MMIO_PAGE_OFFSET 1
-#endif
-
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-#include <linux/mmu_notifier.h>
-
-#define KVM_ARCH_WANT_MMU_NOTIFIER
-
-struct kvm;
-extern int kvm_unmap_hva(struct kvm *kvm, unsigned long hva);
-extern int kvm_age_hva(struct kvm *kvm, unsigned long hva);
-extern int kvm_test_age_hva(struct kvm *kvm, unsigned long hva);
-extern void kvm_set_spte_hva(struct kvm *kvm, unsigned long hva, pte_t pte);
-
-#endif
-
-/* We don't currently support large pages. */
-#define KVM_HPAGE_GFN_SHIFT(x)	0
-#define KVM_NR_PAGE_SIZES	1
-#define KVM_PAGES_PER_HPAGE(x)	(1UL<<31)
-
-=======
 #include <asm/cacheflush.h>
 #include <asm/hvcall.h>
 #include <asm/mce.h>
@@ -111,71 +63,21 @@ extern void kvm_set_spte_hva(struct kvm *kvm, unsigned long hva, pte_t pte);
 
 #include <linux/mmu_notifier.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPTEG_CACHE_NUM			(1 << 15)
 #define HPTEG_HASH_BITS_PTE		13
 #define HPTEG_HASH_BITS_PTE_LONG	12
 #define HPTEG_HASH_BITS_VPTE		13
 #define HPTEG_HASH_BITS_VPTE_LONG	5
-<<<<<<< HEAD
-=======
 #define HPTEG_HASH_BITS_VPTE_64K	11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPTEG_HASH_NUM_PTE		(1 << HPTEG_HASH_BITS_PTE)
 #define HPTEG_HASH_NUM_PTE_LONG		(1 << HPTEG_HASH_BITS_PTE_LONG)
 #define HPTEG_HASH_NUM_VPTE		(1 << HPTEG_HASH_BITS_VPTE)
 #define HPTEG_HASH_NUM_VPTE_LONG	(1 << HPTEG_HASH_BITS_VPTE_LONG)
-<<<<<<< HEAD
-=======
 #define HPTEG_HASH_NUM_VPTE_64K		(1 << HPTEG_HASH_BITS_VPTE_64K)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Physical Address Mask - allowed range of real mode RAM access */
 #define KVM_PAM			0x0fffffffffffffffULL
 
-<<<<<<< HEAD
-struct kvm;
-struct kvm_run;
-struct kvm_vcpu;
-
-struct lppaca;
-struct slb_shadow;
-struct dtl;
-
-struct kvm_vm_stat {
-	u32 remote_tlb_flush;
-};
-
-struct kvm_vcpu_stat {
-	u32 sum_exits;
-	u32 mmio_exits;
-	u32 dcr_exits;
-	u32 signal_exits;
-	u32 light_exits;
-	/* Account for special types of light exits: */
-	u32 itlb_real_miss_exits;
-	u32 itlb_virt_miss_exits;
-	u32 dtlb_real_miss_exits;
-	u32 dtlb_virt_miss_exits;
-	u32 syscall_exits;
-	u32 isi_exits;
-	u32 dsi_exits;
-	u32 emulated_inst_exits;
-	u32 dec_exits;
-	u32 ext_intr_exits;
-	u32 halt_wakeup;
-#ifdef CONFIG_PPC_BOOK3S
-	u32 pf_storage;
-	u32 pf_instruc;
-	u32 sp_storage;
-	u32 sp_instruc;
-	u32 queue_intr;
-	u32 ld;
-	u32 ld_slow;
-	u32 st;
-	u32 st_slow;
-#endif
-=======
 struct lppaca;
 struct slb_shadow;
 struct dtl_entry;
@@ -224,15 +126,10 @@ struct kvm_vcpu_stat {
 	u64 pthru_all;
 	u64 pthru_host;
 	u64 pthru_bad_aff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum kvm_exit_types {
 	MMIO_EXITS,
-<<<<<<< HEAD
-	DCR_EXITS,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SIGNAL_EXITS,
 	ITLB_REAL_MISS_EXITS,
 	ITLB_VIRT_MISS_EXITS,
@@ -251,11 +148,8 @@ enum kvm_exit_types {
 	EMULATED_TLBSX_EXITS,
 	EMULATED_TLBWE_EXITS,
 	EMULATED_RFI_EXITS,
-<<<<<<< HEAD
-=======
 	EMULATED_RFCI_EXITS,
 	EMULATED_RFDI_EXITS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEC_EXITS,
 	EXT_INTR_EXITS,
 	HALT_WAKEUP,
@@ -263,11 +157,8 @@ enum kvm_exit_types {
 	FP_UNAVAIL,
 	DEBUG_EXITS,
 	TIMEINGUEST,
-<<<<<<< HEAD
-=======
 	DBELL_EXITS,
 	GDBELL_EXITS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__NUMBER_OF_KVM_EXIT_TYPES
 };
 
@@ -286,8 +177,6 @@ struct kvmppc_pginfo {
 	atomic_t refcnt;
 };
 
-<<<<<<< HEAD
-=======
 struct kvmppc_spapr_tce_iommu_table {
 	struct rcu_head rcu;
 	struct list_head next;
@@ -297,25 +186,10 @@ struct kvmppc_spapr_tce_iommu_table {
 
 #define TCES_PER_PAGE	(PAGE_SIZE / sizeof(u64))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kvmppc_spapr_tce_table {
 	struct list_head list;
 	struct kvm *kvm;
 	u64 liobn;
-<<<<<<< HEAD
-	u32 window_size;
-	struct page *pages[0];
-};
-
-struct kvmppc_linear_info {
-	void		*base_virt;
-	unsigned long	 base_pfn;
-	unsigned long	 npages;
-	struct list_head list;
-	atomic_t	 use_count;
-	int		 type;
-};
-=======
 	struct rcu_head rcu;
 	u32 page_shift;
 	u64 offset;		/* in pages */
@@ -337,7 +211,6 @@ extern struct kvm_device_ops kvm_xive_ops;
 extern struct kvm_device_ops kvm_xive_native_ops;
 
 struct kvmppc_passthru_irqmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The reverse mapping array has one entry for each HPTE,
@@ -353,33 +226,6 @@ struct revmap_entry {
 };
 
 /*
-<<<<<<< HEAD
- * We use the top bit of each memslot->rmap entry as a lock bit,
- * and bit 32 as a present flag.  The bottom 32 bits are the
- * index in the guest HPT of a HPTE that points to the page.
- */
-#define KVMPPC_RMAP_LOCK_BIT	63
-#define KVMPPC_RMAP_RC_SHIFT	32
-#define KVMPPC_RMAP_REFERENCED	(HPTE_R_R << KVMPPC_RMAP_RC_SHIFT)
-#define KVMPPC_RMAP_CHANGED	(HPTE_R_C << KVMPPC_RMAP_RC_SHIFT)
-#define KVMPPC_RMAP_PRESENT	0x100000000ul
-#define KVMPPC_RMAP_INDEX	0xfffffffful
-
-/* Low-order bits in kvm->arch.slot_phys[][] */
-#define KVMPPC_PAGE_ORDER_MASK	0x1f
-#define KVMPPC_PAGE_NO_CACHE	HPTE_R_I	/* 0x20 */
-#define KVMPPC_PAGE_WRITETHRU	HPTE_R_W	/* 0x40 */
-#define KVMPPC_GOT_PAGE		0x80
-
-struct kvm_arch_memory_slot {
-};
-
-struct kvm_arch {
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-	unsigned long hpt_virt;
-	struct revmap_entry *revmap;
-	unsigned int lpid;
-=======
  * The rmap array of size number of guest pages is allocated for each memslot.
  * This array is used to store usage specific information about the guest page.
  * Below are the encodings of the various possible usage types.
@@ -436,61 +282,10 @@ struct kvm_arch {
 	unsigned int tlb_sets;
 	struct kvm_hpt_info hpt;
 	atomic64_t mmio_update;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int host_lpid;
 	unsigned long host_lpcr;
 	unsigned long sdr1;
 	unsigned long host_sdr1;
-<<<<<<< HEAD
-	int tlbie_lock;
-	unsigned long lpcr;
-	unsigned long rmor;
-	struct kvmppc_linear_info *rma;
-	unsigned long vrma_slb_v;
-	int rma_setup_done;
-	int using_mmu_notifiers;
-	struct list_head spapr_tce_tables;
-	spinlock_t slot_phys_lock;
-	unsigned long *slot_phys[KVM_MEM_SLOTS_NUM];
-	int slot_npages[KVM_MEM_SLOTS_NUM];
-	unsigned short last_vcpu[NR_CPUS];
-	struct kvmppc_vcore *vcores[KVM_MAX_VCORES];
-	struct kvmppc_linear_info *hpt_li;
-#endif /* CONFIG_KVM_BOOK3S_64_HV */
-};
-
-/*
- * Struct for a virtual core.
- * Note: entry_exit_count combines an entry count in the bottom 8 bits
- * and an exit count in the next 8 bits.  This is so that we can
- * atomically increment the entry count iff the exit count is 0
- * without taking the lock.
- */
-struct kvmppc_vcore {
-	int n_runnable;
-	int n_busy;
-	int num_threads;
-	int entry_exit_count;
-	int n_woken;
-	int nap_count;
-	int napping_threads;
-	u16 pcpu;
-	u8 vcore_state;
-	u8 in_guest;
-	struct list_head runnable_threads;
-	spinlock_t lock;
-	wait_queue_head_t wq;
-};
-
-#define VCORE_ENTRY_COUNT(vc)	((vc)->entry_exit_count & 0xff)
-#define VCORE_EXIT_COUNT(vc)	((vc)->entry_exit_count >> 8)
-
-/* Values for vcore_state */
-#define VCORE_INACTIVE	0
-#define VCORE_RUNNING	1
-#define VCORE_EXITING	2
-#define VCORE_SLEEPING	3
-=======
 	unsigned long lpcr;
 	unsigned long vrma_slb_v;
 	int mmu_ready;
@@ -577,7 +372,6 @@ struct kvmppc_vpa {
 	u8 update_pending;	/* 1 => update pinned_addr from next_gpa */
 	bool dirty;		/* true => area has been modified by kernel */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kvmppc_pte {
 	ulong eaddr;
@@ -586,13 +380,10 @@ struct kvmppc_pte {
 	bool may_read		: 1;
 	bool may_write		: 1;
 	bool may_execute	: 1;
-<<<<<<< HEAD
-=======
 	unsigned long wimg;
 	unsigned long rc;
 	u8 page_size;		/* MMU_PAGE_xxx */
 	u8 page_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct kvmppc_mmu {
@@ -600,22 +391,14 @@ struct kvmppc_mmu {
 	void (*slbmte)(struct kvm_vcpu *vcpu, u64 rb, u64 rs);
 	u64  (*slbmfee)(struct kvm_vcpu *vcpu, u64 slb_nr);
 	u64  (*slbmfev)(struct kvm_vcpu *vcpu, u64 slb_nr);
-<<<<<<< HEAD
-=======
 	int  (*slbfee)(struct kvm_vcpu *vcpu, gva_t eaddr, ulong *ret_slb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*slbie)(struct kvm_vcpu *vcpu, u64 slb_nr);
 	void (*slbia)(struct kvm_vcpu *vcpu);
 	/* book3s */
 	void (*mtsrin)(struct kvm_vcpu *vcpu, u32 srnum, ulong value);
 	u32  (*mfsrin)(struct kvm_vcpu *vcpu, u32 srnum);
-<<<<<<< HEAD
-	int  (*xlate)(struct kvm_vcpu *vcpu, gva_t eaddr, struct kvmppc_pte *pte, bool data);
-	void (*reset_msr)(struct kvm_vcpu *vcpu);
-=======
 	int  (*xlate)(struct kvm_vcpu *vcpu, gva_t eaddr,
 		      struct kvmppc_pte *pte, bool data, bool iswrite);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*tlbie)(struct kvm_vcpu *vcpu, ulong addr, bool large);
 	int  (*esid_to_vsid)(struct kvm_vcpu *vcpu, ulong esid, u64 *vsid);
 	u64  (*ea_to_vp)(struct kvm_vcpu *vcpu, gva_t eaddr, bool data);
@@ -634,8 +417,6 @@ struct kvmppc_slb {
 	bool large	: 1;	/* PTEs are 16MB */
 	bool tb		: 1;	/* 1TB segment */
 	bool class	: 1;
-<<<<<<< HEAD
-=======
 	u8 base_page_size;	/* MMU_PAGE_xxx */
 };
 
@@ -742,7 +523,6 @@ struct kvmhv_nestedv2_io {
 	struct kvmppc_gs_msg *vcpu_message;
 	struct kvmppc_gs_msg *vcore_message;
 	struct kvmppc_gs_bitmap valids;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct kvm_vcpu_arch {
@@ -753,14 +533,6 @@ struct kvm_vcpu_arch {
 	int slb_max;		/* 1 + index of last valid entry in slb[] */
 	int slb_nr;		/* total number of entries in SLB */
 	struct kvmppc_mmu mmu;
-<<<<<<< HEAD
-#endif
-
-	ulong gpr[32];
-
-	u64 fpr[32];
-	u64 fpscr;
-=======
 	struct kvmppc_vcpu_book3s *book3s;
 #endif
 #ifdef CONFIG_PPC_BOOK3S_32
@@ -774,7 +546,6 @@ struct kvm_vcpu_arch {
 	struct pt_regs regs __aligned(512);
 
 	struct thread_fp_state fp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPE
 	ulong evr[32];
@@ -783,14 +554,6 @@ struct kvm_vcpu_arch {
 	u64 acc;
 #endif
 #ifdef CONFIG_ALTIVEC
-<<<<<<< HEAD
-	vector128 vr[32];
-	vector128 vscr;
-#endif
-
-#ifdef CONFIG_VSX
-	u64 vsr[64];
-=======
 	struct thread_vr_state vr;
 #endif
 
@@ -808,7 +571,6 @@ struct kvm_vcpu_arch {
 #if defined(CONFIG_KVM_BOOKE_HV) || defined(CONFIG_64BIT)
 	u32 epcr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_PPC_BOOK3S
@@ -816,34 +578,15 @@ struct kvm_vcpu_arch {
 	u32 qpr[32];
 #endif
 
-<<<<<<< HEAD
-	ulong pc;
-	ulong ctr;
-	ulong lr;
-
-	ulong xer;
-	u32 cr;
-=======
 #ifdef CONFIG_PPC_BOOK3S
 	ulong tar;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC_BOOK3S
 	ulong hflags;
 	ulong guest_owned_ext;
 	ulong purr;
 	ulong spurr;
-<<<<<<< HEAD
-	ulong dscr;
-	ulong amr;
-	ulong uamor;
-	u32 ctrl;
-	ulong dabr;
-#endif
-	u32 vrsave; /* also USPRG0 */
-	u32 mmucr;
-=======
 	ulong ic;
 	ulong dscr;
 	ulong amr;
@@ -882,7 +625,6 @@ struct kvm_vcpu_arch {
 	u32 vrsave; /* also USPRG0 */
 	u32 mmucr;
 	/* shadow_msr is unused for BookE HV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ulong shadow_msr;
 	ulong csrr0;
 	ulong csrr1;
@@ -891,12 +633,6 @@ struct kvm_vcpu_arch {
 	ulong mcsrr0;
 	ulong mcsrr1;
 	ulong mcsr;
-<<<<<<< HEAD
-	u32 dec;
-	u32 decar;
-	u32 tbl;
-	u32 tbu;
-=======
 	ulong dec;
 #ifdef CONFIG_BOOKE
 	u32 decar;
@@ -905,7 +641,6 @@ struct kvm_vcpu_arch {
 	u64 entry_tb;
 	u64 entry_vtb;
 	u64 entry_ic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tcr;
 	ulong tsr; /* we need to perform set/clr_bits() which requires ulong */
 	u32 ivor[64];
@@ -919,14 +654,6 @@ struct kvm_vcpu_arch {
 
 	u32 ccr0;
 	u32 ccr1;
-<<<<<<< HEAD
-	u32 dbcr0;
-	u32 dbcr1;
-	u32 dbsr;
-
-	u64 mmcr[3];
-	u32 pmc[8];
-=======
 	u32 dbsr;
 
 	u64 mmcr[4];	/* MMCR0, MMCR1, MMCR2, MMCR3 */
@@ -959,7 +686,6 @@ struct kvm_vcpu_arch {
 	struct thread_vr_state vr_tm;
 	u32 vrsave_tm; /* also USPRG0 */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KVM_EXIT_TIMING
 	struct mutex exit_timing_lock;
@@ -972,17 +698,11 @@ struct kvm_vcpu_arch {
 	u64 timing_min_duration[__NUMBER_OF_KVM_EXIT_TYPES];
 	u64 timing_max_duration[__NUMBER_OF_KVM_EXIT_TYPES];
 	u64 timing_last_exit;
-<<<<<<< HEAD
-	struct dentry *debugfs_exit_timing;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_PPC_BOOK3S
 	ulong fault_dar;
 	u32 fault_dsisr;
-<<<<<<< HEAD
-=======
 	unsigned long intr_msr;
 	/*
 	 * POWER9 and later: fault_gpa contains the guest real address of page
@@ -990,7 +710,6 @@ struct kvm_vcpu_arch {
 	 * from slbmfev of SLB entry that translated the EA) for hash guests.
 	 */
 	ulong fault_gpa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_BOOKE
@@ -998,22 +717,6 @@ struct kvm_vcpu_arch {
 	ulong fault_esr;
 	ulong queued_dear;
 	ulong queued_esr;
-<<<<<<< HEAD
-#endif
-	gpa_t paddr_accessed;
-
-	u8 io_gpr; /* GPR used as IO source/target */
-	u8 mmio_is_bigendian;
-	u8 mmio_sign_extend;
-	u8 dcr_needed;
-	u8 dcr_is_write;
-	u8 osi_needed;
-	u8 osi_enabled;
-	u8 papr_enabled;
-	u8 sane;
-	u8 cpu_type;
-	u8 hcall_needed;
-=======
 	spinlock_t wdt_lock;
 	struct timer_list wdt_timer;
 	u32 tlbcfg[4];
@@ -1060,28 +763,10 @@ struct kvm_vcpu_arch {
 	u8 epr_flags; /* KVMPPC_EPR_xxx */
 	u8 epr_needed;
 	u8 external_oneshot;	/* clear external irq after delivery */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 cpr0_cfgaddr; /* holds the last set cpr0_cfgaddr */
 
 	struct hrtimer dec_timer;
-<<<<<<< HEAD
-	struct tasklet_struct tasklet;
-	u64 dec_jiffies;
-	u64 dec_expires;
-	unsigned long pending_exceptions;
-	u16 last_cpu;
-	u8 ceded;
-	u8 prodded;
-	u32 last_inst;
-
-	struct lppaca *vpa;
-	struct slb_shadow *slb_shadow;
-	struct dtl *dtl;
-	struct dtl *dtl_end;
-
-	wait_queue_head_t *wqp;
-=======
 	u64 dec_jiffies;
 	u64 dec_expires;	/* Relative to guest timebase. */
 	unsigned long pending_exceptions;
@@ -1093,47 +778,11 @@ struct kvm_vcpu_arch {
 
 	struct rcuwait wait;
 	struct rcuwait *waitp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kvmppc_vcore *vcore;
 	int ret;
 	int trap;
 	int state;
 	int ptid;
-<<<<<<< HEAD
-	bool timer_running;
-	wait_queue_head_t cpu_run;
-
-	struct kvm_vcpu_arch_shared *shared;
-	unsigned long magic_page_pa; /* phys addr to map the magic page to */
-	unsigned long magic_page_ea; /* effect. addr to map the magic page to */
-
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-	struct kvm_vcpu_arch_shared shregs;
-
-	unsigned long pgfault_addr;
-	long pgfault_index;
-	unsigned long pgfault_hpte[2];
-
-	struct list_head run_list;
-	struct task_struct *run_task;
-	struct kvm_run *kvm_run;
-	pgd_t *pgdir;
-#endif
-};
-
-/* Values for vcpu->arch.state */
-#define KVMPPC_VCPU_STOPPED		0
-#define KVMPPC_VCPU_BUSY_IN_HOST	1
-#define KVMPPC_VCPU_RUNNABLE		2
-
-/* Values for vcpu->arch.io_gpr */
-#define KVM_MMIO_REG_MASK	0x001f
-#define KVM_MMIO_REG_EXT_MASK	0xffe0
-#define KVM_MMIO_REG_GPR	0x0000
-#define KVM_MMIO_REG_FPR	0x0020
-#define KVM_MMIO_REG_QPR	0x0040
-#define KVM_MMIO_REG_FQPR	0x0060
-=======
 	int thread_cpu;
 	int prev_cpu;
 	bool timer_running;
@@ -1251,6 +900,5 @@ static inline void kvm_arch_flush_shadow_all(struct kvm *kvm) {}
 static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
 static inline void kvm_arch_vcpu_blocking(struct kvm_vcpu *vcpu) {}
 static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __POWERPC_KVM_HOST_H__ */

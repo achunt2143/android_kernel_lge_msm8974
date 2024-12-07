@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/lib/vsprintf.c
  *
@@ -20,34 +17,17 @@
  * - scnprintf and vscnprintf
  */
 
-<<<<<<< HEAD
-#include <stdarg.h>
-=======
 #include <linux/stdarg.h>
 #include <linux/build_bug.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/errname.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>	/* for KSYM_SYMBOL_LEN */
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
 #include <linux/kernel.h>
 #include <linux/kallsyms.h>
-<<<<<<< HEAD
-#include <linux/uaccess.h>
-#include <linux/ioport.h>
-#include <linux/cred.h>
-#include <net/addrconf.h>
-
-#include <asm/page.h>		/* for PAGE_SIZE */
-#include <asm/div64.h>
-#include <asm/sections.h>	/* for dereference_function_descriptor() */
-
-#include "kstrtox.h"
-
-=======
 #include <linux/math64.h>
 #include <linux/uaccess.h>
 #include <linux/ioport.h>
@@ -105,29 +85,11 @@ static unsigned long long simple_strntoull(const char *startp, char **endp, unsi
 	return result;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * simple_strtoull - convert a string to an unsigned long long
  * @cp: The start of the string
  * @endp: A pointer to the end of the parsed string will be placed here
  * @base: The number base to use
-<<<<<<< HEAD
- */
-unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base)
-{
-	unsigned long long result;
-	unsigned int rv;
-
-	cp = _parse_integer_fixup_radix(cp, &base);
-	rv = _parse_integer(cp, base, &result);
-	/* FIXME */
-	cp += (rv & ~KSTRTOX_OVERFLOW);
-
-	if (endp)
-		*endp = (char *)cp;
-
-	return result;
-=======
  *
  * This function has caveats. Please use kstrtoull instead.
  */
@@ -135,7 +97,6 @@ noinline
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base)
 {
 	return simple_strntoull(cp, endp, base, INT_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(simple_strtoull);
 
@@ -144,11 +105,8 @@ EXPORT_SYMBOL(simple_strtoull);
  * @cp: The start of the string
  * @endp: A pointer to the end of the parsed string will be placed here
  * @base: The number base to use
-<<<<<<< HEAD
-=======
  *
  * This function has caveats. Please use kstrtoul instead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned long simple_strtoul(const char *cp, char **endp, unsigned int base)
 {
@@ -161,11 +119,8 @@ EXPORT_SYMBOL(simple_strtoul);
  * @cp: The start of the string
  * @endp: A pointer to the end of the parsed string will be placed here
  * @base: The number base to use
-<<<<<<< HEAD
-=======
  *
  * This function has caveats. Please use kstrtol instead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 long simple_strtol(const char *cp, char **endp, unsigned int base)
 {
@@ -176,8 +131,6 @@ long simple_strtol(const char *cp, char **endp, unsigned int base)
 }
 EXPORT_SYMBOL(simple_strtol);
 
-<<<<<<< HEAD
-=======
 noinline
 static long long simple_strntoll(const char *cp, char **endp, unsigned int base, size_t max_chars)
 {
@@ -193,28 +146,17 @@ static long long simple_strntoll(const char *cp, char **endp, unsigned int base,
 	return simple_strntoull(cp, endp, base, max_chars);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * simple_strtoll - convert a string to a signed long long
  * @cp: The start of the string
  * @endp: A pointer to the end of the parsed string will be placed here
  * @base: The number base to use
-<<<<<<< HEAD
- */
-long long simple_strtoll(const char *cp, char **endp, unsigned int base)
-{
-	if (*cp == '-')
-		return -simple_strtoull(cp + 1, endp, base);
-
-	return simple_strtoull(cp, endp, base);
-=======
  *
  * This function has caveats. Please use kstrtoll instead.
  */
 long long simple_strtoll(const char *cp, char **endp, unsigned int base)
 {
 	return simple_strntoll(cp, endp, base, INT_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(simple_strtoll);
 
@@ -223,122 +165,13 @@ int skip_atoi(const char **s)
 {
 	int i = 0;
 
-<<<<<<< HEAD
-	while (isdigit(**s))
-		i = i*10 + *((*s)++) - '0';
-=======
 	do {
 		i = i*10 + *((*s)++) - '0';
 	} while (isdigit(**s));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return i;
 }
 
-<<<<<<< HEAD
-/* Decimal conversion is by far the most typical, and is used
- * for /proc and /sys data. This directly impacts e.g. top performance
- * with many processes running. We optimize it for speed
- * using code from
- * http://www.cs.uiowa.edu/~jones/bcd/decimal.html
- * (with permission from the author, Douglas W. Jones). */
-
-/* Formats correctly any integer in [0,99999].
- * Outputs from one to five digits depending on input.
- * On i386 gcc 4.1.2 -O2: ~250 bytes of code. */
-static noinline_for_stack
-char *put_dec_trunc(char *buf, unsigned q)
-{
-	unsigned d3, d2, d1, d0;
-	d1 = (q>>4) & 0xf;
-	d2 = (q>>8) & 0xf;
-	d3 = (q>>12);
-
-	d0 = 6*(d3 + d2 + d1) + (q & 0xf);
-	q = (d0 * 0xcd) >> 11;
-	d0 = d0 - 10*q;
-	*buf++ = d0 + '0'; /* least significant digit */
-	d1 = q + 9*d3 + 5*d2 + d1;
-	if (d1 != 0) {
-		q = (d1 * 0xcd) >> 11;
-		d1 = d1 - 10*q;
-		*buf++ = d1 + '0'; /* next digit */
-
-		d2 = q + 2*d2;
-		if ((d2 != 0) || (d3 != 0)) {
-			q = (d2 * 0xd) >> 7;
-			d2 = d2 - 10*q;
-			*buf++ = d2 + '0'; /* next digit */
-
-			d3 = q + 4*d3;
-			if (d3 != 0) {
-				q = (d3 * 0xcd) >> 11;
-				d3 = d3 - 10*q;
-				*buf++ = d3 + '0';  /* next digit */
-				if (q != 0)
-					*buf++ = q + '0'; /* most sign. digit */
-			}
-		}
-	}
-
-	return buf;
-}
-/* Same with if's removed. Always emits five digits */
-static noinline_for_stack
-char *put_dec_full(char *buf, unsigned q)
-{
-	/* BTW, if q is in [0,9999], 8-bit ints will be enough, */
-	/* but anyway, gcc produces better code with full-sized ints */
-	unsigned d3, d2, d1, d0;
-	d1 = (q>>4) & 0xf;
-	d2 = (q>>8) & 0xf;
-	d3 = (q>>12);
-
-	/*
-	 * Possible ways to approx. divide by 10
-	 * gcc -O2 replaces multiply with shifts and adds
-	 * (x * 0xcd) >> 11: 11001101 - shorter code than * 0x67 (on i386)
-	 * (x * 0x67) >> 10:  1100111
-	 * (x * 0x34) >> 9:    110100 - same
-	 * (x * 0x1a) >> 8:     11010 - same
-	 * (x * 0x0d) >> 7:      1101 - same, shortest code (on i386)
-	 */
-	d0 = 6*(d3 + d2 + d1) + (q & 0xf);
-	q = (d0 * 0xcd) >> 11;
-	d0 = d0 - 10*q;
-	*buf++ = d0 + '0';
-	d1 = q + 9*d3 + 5*d2 + d1;
-		q = (d1 * 0xcd) >> 11;
-		d1 = d1 - 10*q;
-		*buf++ = d1 + '0';
-
-		d2 = q + 2*d2;
-			q = (d2 * 0xd) >> 7;
-			d2 = d2 - 10*q;
-			*buf++ = d2 + '0';
-
-			d3 = q + 4*d3;
-				q = (d3 * 0xcd) >> 11; /* - shorter code */
-				/* q = (d3 * 0x67) >> 10; - would also work */
-				d3 = d3 - 10*q;
-				*buf++ = d3 + '0';
-					*buf++ = q + '0';
-
-	return buf;
-}
-/* No inlining helps gcc to use registers better */
-static noinline_for_stack
-char *put_dec(char *buf, unsigned long long num)
-{
-	while (1) {
-		unsigned rem;
-		if (num < 100000)
-			return put_dec_trunc(buf, num);
-		rem = do_div(num, 100000);
-		buf = put_dec_full(buf, rem);
-	}
-}
-=======
 /*
  * Decimal conversion is by far the most typical, and is used for
  * /proc and /sys data. This directly impacts e.g. top performance
@@ -536,7 +369,6 @@ char *put_dec(char *buf, unsigned long long n)
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Convert passed number to decimal string.
@@ -544,30 +376,6 @@ char *put_dec(char *buf, unsigned long long n)
  *
  * If speed is not important, use snprintf(). It's easy to read the code.
  */
-<<<<<<< HEAD
-int num_to_str(char *buf, int size, unsigned long long num)
-{
-	char tmp[21];		/* Enough for 2^64 in decimal */
-	int idx, len;
-
-	len = put_dec(tmp, num) - tmp;
-
-	if (len > size)
-		return 0;
-	for (idx = 0; idx < len; ++idx)
-		buf[idx] = tmp[len - idx - 1];
-	return  len;
-}
-
-#define ZEROPAD	1		/* pad with zero */
-#define SIGN	2		/* unsigned/signed long */
-#define PLUS	4		/* show plus */
-#define SPACE	8		/* space if plus */
-#define LEFT	16		/* left justified */
-#define SMALL	32		/* use lowercase in hex (must be 32 == 0x20) */
-#define SPECIAL	64		/* prefix hex with "0x", octal with "0" */
-
-=======
 int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
 {
 	/* put_dec requires 2-byte alignment of the buffer. */
@@ -611,7 +419,6 @@ static_assert(SIGN == 1);
 static_assert(ZEROPAD == ('0' - ' '));
 static_assert(SMALL == ('a' ^ 'A'));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum format_type {
 	FORMAT_TYPE_NONE, /* Just a string part */
 	FORMAT_TYPE_WIDTH,
@@ -630,24 +437,11 @@ enum format_type {
 	FORMAT_TYPE_SHORT,
 	FORMAT_TYPE_UINT,
 	FORMAT_TYPE_INT,
-<<<<<<< HEAD
-	FORMAT_TYPE_NRCHARS,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FORMAT_TYPE_SIZE_T,
 	FORMAT_TYPE_PTRDIFF
 };
 
 struct printf_spec {
-<<<<<<< HEAD
-	u8	type;		/* format_type enum */
-	u8	flags;		/* flags to number() */
-	u8	base;		/* number base, 8, 10 or 16 only */
-	u8	qualifier;	/* number qualifier, one of 'hHlLtzZ' */
-	s16	field_width;	/* width of output field */
-	s16	precision;	/* # of digits/chars */
-};
-=======
 	unsigned int	type:8;		/* format_type enum */
 	signed int	field_width:24;	/* width of output field */
 	unsigned int	flags:8;	/* flags to number() */
@@ -658,31 +452,20 @@ static_assert(sizeof(struct printf_spec) == 8);
 
 #define FIELD_WIDTH_MAX ((1 << 23) - 1)
 #define PRECISION_MAX ((1 << 15) - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static noinline_for_stack
 char *number(char *buf, char *end, unsigned long long num,
 	     struct printf_spec spec)
 {
-<<<<<<< HEAD
-	/* we are called with base 8, 10 or 16, only, thus don't need "G..."  */
-	static const char digits[16] = "0123456789ABCDEF"; /* "GHIJKLMNOPQRSTUVWXYZ"; */
-
-	char tmp[66];
-=======
 	/* put_dec requires 2-byte alignment of the buffer. */
 	char tmp[3 * sizeof(num)] __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char sign;
 	char locase;
 	int need_pfx = ((spec.flags & SPECIAL) && spec.base != 10);
 	int i;
-<<<<<<< HEAD
-=======
 	bool is_zero = num == 0LL;
 	int field_width = spec.field_width;
 	int precision = spec.precision;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
 	 * produces same digits or (maybe lowercased) letters */
@@ -694,21 +477,6 @@ char *number(char *buf, char *end, unsigned long long num,
 		if ((signed long long)num < 0) {
 			sign = '-';
 			num = -(signed long long)num;
-<<<<<<< HEAD
-			spec.field_width--;
-		} else if (spec.flags & PLUS) {
-			sign = '+';
-			spec.field_width--;
-		} else if (spec.flags & SPACE) {
-			sign = ' ';
-			spec.field_width--;
-		}
-	}
-	if (need_pfx) {
-		spec.field_width--;
-		if (spec.base == 16)
-			spec.field_width--;
-=======
 			field_width--;
 		} else if (spec.flags & PLUS) {
 			sign = '+';
@@ -723,23 +491,12 @@ char *number(char *buf, char *end, unsigned long long num,
 			field_width -= 2;
 		else if (!is_zero)
 			field_width--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* generate full string in tmp[], in reverse order */
 	i = 0;
-<<<<<<< HEAD
-	if (num == 0)
-		tmp[i++] = '0';
-	/* Generic code, for any base:
-	else do {
-		tmp[i++] = (digits[do_div(num,base)] | locase);
-	} while (num != 0);
-	*/
-=======
 	if (num < spec.base)
 		tmp[i++] = hex_asc_upper[num] | locase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (spec.base != 10) { /* 8 or 16 */
 		int mask = spec.base - 1;
 		int shift = 3;
@@ -747,11 +504,7 @@ char *number(char *buf, char *end, unsigned long long num,
 		if (spec.base == 16)
 			shift = 4;
 		do {
-<<<<<<< HEAD
-			tmp[i++] = (digits[((unsigned char)num) & mask] | locase);
-=======
 			tmp[i++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			num >>= shift;
 		} while (num);
 	} else { /* base 10 */
@@ -759,21 +512,12 @@ char *number(char *buf, char *end, unsigned long long num,
 	}
 
 	/* printing 100 using %2d gives "100", not "00" */
-<<<<<<< HEAD
-	if (i > spec.precision)
-		spec.precision = i;
-	/* leading space padding */
-	spec.field_width -= spec.precision;
-	if (!(spec.flags & (ZEROPAD+LEFT))) {
-		while (--spec.field_width >= 0) {
-=======
 	if (i > precision)
 		precision = i;
 	/* leading space padding */
 	field_width -= precision;
 	if (!(spec.flags & (ZEROPAD | LEFT))) {
 		while (--field_width >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (buf < end)
 				*buf = ' ';
 			++buf;
@@ -787,17 +531,11 @@ char *number(char *buf, char *end, unsigned long long num,
 	}
 	/* "0x" / "0" prefix */
 	if (need_pfx) {
-<<<<<<< HEAD
-		if (buf < end)
-			*buf = '0';
-		++buf;
-=======
 		if (spec.base == 16 || !is_zero) {
 			if (buf < end)
 				*buf = '0';
 			++buf;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (spec.base == 16) {
 			if (buf < end)
 				*buf = ('X' | locase);
@@ -806,25 +544,16 @@ char *number(char *buf, char *end, unsigned long long num,
 	}
 	/* zero or space padding */
 	if (!(spec.flags & LEFT)) {
-<<<<<<< HEAD
-		char c = (spec.flags & ZEROPAD) ? '0' : ' ';
-		while (--spec.field_width >= 0) {
-=======
 		char c = ' ' + (spec.flags & ZEROPAD);
 
 		while (--field_width >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (buf < end)
 				*buf = c;
 			++buf;
 		}
 	}
 	/* hmm even more zero padding? */
-<<<<<<< HEAD
-	while (i <= --spec.precision) {
-=======
 	while (i <= --precision) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (buf < end)
 			*buf = '0';
 		++buf;
@@ -836,11 +565,7 @@ char *number(char *buf, char *end, unsigned long long num,
 		++buf;
 	}
 	/* trailing space padding */
-<<<<<<< HEAD
-	while (--spec.field_width >= 0) {
-=======
 	while (--field_width >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (buf < end)
 			*buf = ' ';
 		++buf;
@@ -850,30 +575,6 @@ char *number(char *buf, char *end, unsigned long long num,
 }
 
 static noinline_for_stack
-<<<<<<< HEAD
-char *string(char *buf, char *end, const char *s, struct printf_spec spec)
-{
-	int len, i;
-
-	if ((unsigned long)s < PAGE_SIZE)
-		s = "(null)";
-
-	len = strnlen(s, spec.precision);
-
-	if (!(spec.flags & LEFT)) {
-		while (len < spec.field_width--) {
-			if (buf < end)
-				*buf = ' ';
-			++buf;
-		}
-	}
-	for (i = 0; i < len; ++i) {
-		if (buf < end)
-			*buf = *s;
-		++buf; ++s;
-	}
-	while (len < spec.field_width--) {
-=======
 char *special_hex_number(char *buf, char *end, unsigned long long num, int size)
 {
 	struct printf_spec spec;
@@ -927,27 +628,10 @@ char *widen_string(char *buf, int n, char *end, struct printf_spec spec)
 		return buf + spaces;
 	}
 	while (spaces--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (buf < end)
 			*buf = ' ';
 		++buf;
 	}
-<<<<<<< HEAD
-
-	return buf;
-}
-
-static noinline_for_stack
-char *symbol_string(char *buf, char *end, void *ptr,
-		    struct printf_spec spec, char ext)
-{
-	unsigned long value = (unsigned long) ptr;
-#ifdef CONFIG_KALLSYMS
-	char sym[KSYM_SYMBOL_LEN];
-	if (ext == 'B')
-		sprint_backtrace(sym, value);
-	else if (ext != 'f' && ext != 's')
-=======
 	return buf;
 }
 
@@ -1315,23 +999,10 @@ char *symbol_string(char *buf, char *end, void *ptr,
 	else if (*fmt == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b')))
 		sprint_symbol_build_id(sym, value);
 	else if (*fmt != 's')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sprint_symbol(sym, value);
 	else
 		sprint_symbol_no_offset(sym, value);
 
-<<<<<<< HEAD
-	return string(buf, end, sym, spec);
-#else
-	spec.field_width = 2 * sizeof(void *);
-	spec.flags |= SPECIAL | SMALL | ZEROPAD;
-	spec.base = 16;
-
-	return number(buf, end, value, spec);
-#endif
-}
-
-=======
 	return string_nocheck(buf, end, sym, spec);
 #else
 	return special_hex_number(buf, end, value, sizeof(void *));
@@ -1368,7 +1039,6 @@ static const struct printf_spec default_dec04_spec = {
 	.flags = ZEROPAD,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static noinline_for_stack
 char *resource_string(char *buf, char *end, struct resource *res,
 		      struct printf_spec spec, const char *fmt)
@@ -1398,27 +1068,11 @@ char *resource_string(char *buf, char *end, struct resource *res,
 		.precision = -1,
 		.flags = SMALL | ZEROPAD,
 	};
-<<<<<<< HEAD
-	static const struct printf_spec dec_spec = {
-		.base = 10,
-		.precision = -1,
-		.flags = 0,
-	};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const struct printf_spec str_spec = {
 		.field_width = -1,
 		.precision = 10,
 		.flags = LEFT,
 	};
-<<<<<<< HEAD
-	static const struct printf_spec flag_spec = {
-		.base = 16,
-		.precision = -1,
-		.flags = SPECIAL | SMALL,
-	};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 32-bit res (sizeof==4): 10 chars in dec, 10 in hex ("0x" + 8)
 	 * 64-bit res (sizeof==8): 20 chars in dec, 18 in hex ("0x" + 16) */
@@ -1433,46 +1087,6 @@ char *resource_string(char *buf, char *end, struct resource *res,
 	int decode = (fmt[0] == 'R') ? 1 : 0;
 	const struct printf_spec *specp;
 
-<<<<<<< HEAD
-	*p++ = '[';
-	if (res->flags & IORESOURCE_IO) {
-		p = string(p, pend, "io  ", str_spec);
-		specp = &io_spec;
-	} else if (res->flags & IORESOURCE_MEM) {
-		p = string(p, pend, "mem ", str_spec);
-		specp = &mem_spec;
-	} else if (res->flags & IORESOURCE_IRQ) {
-		p = string(p, pend, "irq ", str_spec);
-		specp = &dec_spec;
-	} else if (res->flags & IORESOURCE_DMA) {
-		p = string(p, pend, "dma ", str_spec);
-		specp = &dec_spec;
-	} else if (res->flags & IORESOURCE_BUS) {
-		p = string(p, pend, "bus ", str_spec);
-		specp = &bus_spec;
-	} else {
-		p = string(p, pend, "??? ", str_spec);
-		specp = &mem_spec;
-		decode = 0;
-	}
-	p = number(p, pend, res->start, *specp);
-	if (res->start != res->end) {
-		*p++ = '-';
-		p = number(p, pend, res->end, *specp);
-	}
-	if (decode) {
-		if (res->flags & IORESOURCE_MEM_64)
-			p = string(p, pend, " 64bit", str_spec);
-		if (res->flags & IORESOURCE_PREFETCH)
-			p = string(p, pend, " pref", str_spec);
-		if (res->flags & IORESOURCE_WINDOW)
-			p = string(p, pend, " window", str_spec);
-		if (res->flags & IORESOURCE_DISABLED)
-			p = string(p, pend, " disabled", str_spec);
-	} else {
-		p = string(p, pend, " flags ", str_spec);
-		p = number(p, pend, res->flags, flag_spec);
-=======
 	if (check_pointer(&buf, end, res, spec))
 		return buf;
 
@@ -1519,14 +1133,10 @@ char *resource_string(char *buf, char *end, struct resource *res,
 	} else {
 		p = string_nocheck(p, pend, " flags ", str_spec);
 		p = number(p, pend, res->flags, default_flag_spec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*p++ = ']';
 	*p = '\0';
 
-<<<<<<< HEAD
-	return string(buf, end, sym, spec);
-=======
 	return string_nocheck(buf, end, sym, spec);
 }
 
@@ -1653,7 +1263,6 @@ char *bitmap_list_string(char *buf, char *end, const unsigned long *bitmap,
 		buf = number(++buf, end, rtop - 1, default_dec_spec);
 	}
 	return buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack
@@ -1664,17 +1273,6 @@ char *mac_address_string(char *buf, char *end, u8 *addr,
 	char *p = mac_addr;
 	int i;
 	char separator;
-<<<<<<< HEAD
-
-	if (fmt[1] == 'F') {		/* FDDI canonical format */
-		separator = '-';
-	} else {
-		separator = ':';
-	}
-
-	for (i = 0; i < 6; i++) {
-		p = hex_byte_pack(p, addr[i]);
-=======
 	bool reversed = false;
 
 	if (check_pointer(&buf, end, addr, spec))
@@ -1700,17 +1298,12 @@ char *mac_address_string(char *buf, char *end, u8 *addr,
 		else
 			p = hex_byte_pack(p, addr[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fmt[0] == 'M' && i != 5)
 			*p++ = separator;
 	}
 	*p = '\0';
 
-<<<<<<< HEAD
-	return string(buf, end, mac_addr, spec);
-=======
 	return string_nocheck(buf, end, mac_addr, spec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack
@@ -1743,13 +1336,8 @@ char *ip4_string(char *p, const u8 *addr, const char *fmt)
 		break;
 	}
 	for (i = 0; i < 4; i++) {
-<<<<<<< HEAD
-		char temp[3];	/* hold each IP quad in reverse order */
-		int digits = put_dec_trunc(temp, addr[index]) - temp;
-=======
 		char temp[4] __aligned(2);	/* hold each IP quad in reverse order */
 		int digits = put_dec_trunc8(temp, addr[index]) - temp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (leading_zeros) {
 			if (digits < 3)
 				*p++ = '0';
@@ -1878,11 +1466,7 @@ char *ip6_addr_string(char *buf, char *end, const u8 *addr,
 	else
 		ip6_string(ip6_addr, addr, fmt);
 
-<<<<<<< HEAD
-	return string(buf, end, ip6_addr, spec);
-=======
 	return string_nocheck(buf, end, ip6_addr, spec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack
@@ -1893,9 +1477,6 @@ char *ip4_addr_string(char *buf, char *end, const u8 *addr,
 
 	ip4_string(ip4_addr, addr, fmt);
 
-<<<<<<< HEAD
-	return string(buf, end, ip4_addr, spec);
-=======
 	return string_nocheck(buf, end, ip4_addr, spec);
 }
 
@@ -2103,28 +1684,12 @@ static char *va_format(char *buf, char *end, struct va_format *va_fmt,
 	va_end(va);
 
 	return buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline_for_stack
 char *uuid_string(char *buf, char *end, const u8 *addr,
 		  struct printf_spec spec, const char *fmt)
 {
-<<<<<<< HEAD
-	char uuid[sizeof("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")];
-	char *p = uuid;
-	int i;
-	static const u8 be[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-	static const u8 le[16] = {3,2,1,0,5,4,7,6,8,9,10,11,12,13,14,15};
-	const u8 *index = be;
-	bool uc = false;
-
-	switch (*(++fmt)) {
-	case 'L':
-		uc = true;		/* fall-through */
-	case 'l':
-		index = le;
-=======
 	char uuid[UUID_STRING_LEN + 1];
 	char *p = uuid;
 	int i;
@@ -2140,7 +1705,6 @@ char *uuid_string(char *buf, char *end, const u8 *addr,
 		fallthrough;
 	case 'l':
 		index = guid_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 'B':
 		uc = true;
@@ -2148,14 +1712,10 @@ char *uuid_string(char *buf, char *end, const u8 *addr,
 	}
 
 	for (i = 0; i < 16; i++) {
-<<<<<<< HEAD
-		p = hex_byte_pack(p, addr[index[i]]);
-=======
 		if (uc)
 			p = hex_byte_pack_upper(p, addr[index[i]]);
 		else
 			p = hex_byte_pack(p, addr[index[i]]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (i) {
 		case 3:
 		case 5:
@@ -2168,31 +1728,6 @@ char *uuid_string(char *buf, char *end, const u8 *addr,
 
 	*p = 0;
 
-<<<<<<< HEAD
-	if (uc) {
-		p = uuid;
-		do {
-			*p = toupper(*p);
-		} while (*(++p));
-	}
-
-	return string(buf, end, uuid, spec);
-}
-
-static
-char *netdev_feature_string(char *buf, char *end, const u8 *addr,
-		      struct printf_spec spec)
-{
-	spec.flags |= SPECIAL | SMALL | ZEROPAD;
-	if (spec.field_width == -1)
-		spec.field_width = 2 + 2 * sizeof(netdev_features_t);
-	spec.base = 16;
-
-	return number(buf, end, *(const netdev_features_t *)addr, spec);
-}
-
-int kptr_restrict __read_mostly;
-=======
 	return string_nocheck(buf, end, uuid, spec);
 }
 
@@ -2742,24 +2277,12 @@ early_param("no_hash_pointers", no_hash_pointers_enable);
 
 /* Used for Rust formatting ('%pA'). */
 char *rust_fmt_argument(char *buf, char *end, void *ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Show a '%p' thing.  A kernel extension is that the '%p' is followed
  * by an extra set of alphanumeric characters that are extended format
  * specifiers.
  *
-<<<<<<< HEAD
- * Right now we handle:
- *
- * - 'F' For symbolic function descriptor pointers with offset
- * - 'f' For simple symbolic function names without offset
- * - 'S' For symbolic direct pointers with offset
- * - 's' For symbolic direct pointers without offset
- * - 'B' For backtraced symbolic direct pointers with offset
- * - 'R' For decoded struct resource, e.g., [mem 0x0-0x1f 64bit pref]
- * - 'r' For raw struct resource, e.g., [mem 0x0-0x1f flags 0x201]
-=======
  * Please update scripts/checkpatch.pl when adding/removing conversion
  * characters.  (Search for "check for vsprintf extension").
  *
@@ -2779,23 +2302,11 @@ char *rust_fmt_argument(char *buf, char *end, void *ptr);
  *       width which must be explicitly specified either as part of the
  *       format string '%32b[l]' or through '%*b[l]', [l] selects
  *       range-list format instead of hex format
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - 'M' For a 6-byte MAC address, it prints the address in the
  *       usual colon-separated hex notation
  * - 'm' For a 6-byte MAC address, it prints the hex address without colons
  * - 'MF' For a 6-byte MAC FDDI address, it prints the address
  *       with a dash-separated hex notation
-<<<<<<< HEAD
- * - 'I' [46] for IPv4/IPv6 addresses printed in the usual way
- *       IPv4 uses dot-separated decimal without leading 0's (1.2.3.4)
- *       IPv6 uses colon separated network-order 16 bit hex with leading 0's
- * - 'i' [46] for 'raw' IPv4/IPv6 addresses
- *       IPv6 omits the colons (01020304...0f)
- *       IPv4 uses dot-separated decimal with leading 0's (010.123.045.006)
- * - '[Ii]4[hnbl]' IPv4 addresses in host, network, big or little endian order
- * - 'I6c' for IPv6 addresses printed as specified by
- *       http://tools.ietf.org/html/rfc5952
-=======
  * - '[mM]R' For a 6-byte MAC address, Reverse order (Bluetooth)
  * - 'I' [46] for IPv4/IPv6 addresses printed in the usual way
  *       IPv4 uses dot-separated decimal without leading 0's (1.2.3.4)
@@ -2823,7 +2334,6 @@ char *rust_fmt_argument(char *buf, char *end, void *ptr);
  *                  p - ESCAPE_NP
  *                  s - ESCAPE_SPACE
  *                By default ESCAPE_ANY_NP is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - 'U' For a 16 byte UUID/GUID, it prints the UUID/GUID in the form
  *       "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
  *       Options for %pU are:
@@ -2840,15 +2350,6 @@ char *rust_fmt_argument(char *buf, char *end, void *ptr);
  *       Implements a "recursive vsnprintf".
  *       Do not use this feature without some mechanism to verify the
  *       correctness of the format string and va_list arguments.
-<<<<<<< HEAD
- * - 'K' For a kernel pointer that should be hidden from unprivileged users
- * - 'NF' For a netdev_features_t
- * - 'a' For a phys_addr_t type and its derivative types (passed by reference)
- *
- * Note: The difference between 'S' and 'F' is that on ia64 and ppc64
- * function pointers are really function descriptors, which contain a
- * pointer to the real address.
-=======
  * - 'K' For a kernel pointer that should be hidden from unprivileged users.
  *       Use only for procfs, sysfs and similar files, not printk(); please
  *       read the documentation (path below) first.
@@ -2907,39 +2408,11 @@ char *rust_fmt_argument(char *buf, char *end, void *ptr);
  * There is also a '%pA' format specifier, but it is only intended to be used
  * from Rust code to format core::fmt::Arguments. Do *not* use it from C.
  * See rust/kernel/print.rs for details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static noinline_for_stack
 char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	      struct printf_spec spec)
 {
-<<<<<<< HEAD
-	if (!ptr && *fmt != 'K') {
-		/*
-		 * Print (null) with the same width as a pointer so it makes
-		 * tabular output look nice.
-		 */
-		if (spec.field_width == -1)
-			spec.field_width = 2 * sizeof(void *);
-		return string(buf, end, "(null)", spec);
-	}
-
-	switch (*fmt) {
-	case 'F':
-	case 'f':
-		ptr = dereference_function_descriptor(ptr);
-		/* Fallthrough */
-	case 'S':
-	case 's':
-	case 'B':
-		return symbol_string(buf, end, ptr, spec, *fmt);
-	case 'R':
-	case 'r':
-		return resource_string(buf, end, ptr, spec, fmt);
-	case 'M':			/* Colon separated: 00:01:02:03:04:05 */
-	case 'm':			/* Contiguous: 000102030405 */
-					/* [mM]F (FDDI, bit reversed) */
-=======
 	switch (*fmt) {
 	case 'S':
 	case 's':
@@ -2963,7 +2436,6 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	case 'm':			/* Contiguous: 000102030405 */
 					/* [mM]F (FDDI) */
 					/* [mM]R (Reverse order; Bluetooth) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return mac_address_string(buf, end, ptr, spec, fmt);
 	case 'I':			/* Formatted IP supported
 					 * 4:	1.2.3.4
@@ -2974,90 +2446,6 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 					 * 4:	001.002.003.004
 					 * 6:   000102...0f
 					 */
-<<<<<<< HEAD
-		switch (fmt[1]) {
-		case '6':
-			return ip6_addr_string(buf, end, ptr, spec, fmt);
-		case '4':
-			return ip4_addr_string(buf, end, ptr, spec, fmt);
-		}
-		break;
-	case 'U':
-		return uuid_string(buf, end, ptr, spec, fmt);
-	case 'V':
-		{
-			va_list va;
-
-			va_copy(va, *((struct va_format *)ptr)->va);
-			buf += vsnprintf(buf, end > buf ? end - buf : 0,
-					 ((struct va_format *)ptr)->fmt, va);
-			va_end(va);
-			return buf;
-		}
-	case 'K':
-		/*
-		 * %pK cannot be used in IRQ context because its test
-		 * for CAP_SYSLOG would be meaningless.
-		 */
-		if (kptr_restrict && (in_irq() || in_serving_softirq() ||
-				      in_nmi())) {
-			if (spec.field_width == -1)
-				spec.field_width = 2 * sizeof(void *);
-			return string(buf, end, "pK-error", spec);
-		}
-
-		switch (kptr_restrict) {
-		case 0:
-			/* Always print %pK values */
-			break;
-		case 1: {
-			/*
-			 * Only print the real pointer value if the current
-			 * process has CAP_SYSLOG and is running with the
-			 * same credentials it started with. This is because
-			 * access to files is checked at open() time, but %pK
-			 * checks permission at read() time. We don't want to
-			 * leak pointer values if a binary opens a file using
-			 * %pK and then elevates privileges before reading it.
-			 */
-			const struct cred *cred = current_cred();
-
-			if (!has_capability_noaudit(current, CAP_SYSLOG) ||
-			    (cred->euid != cred->uid) ||
-			    (cred->egid != cred->gid))
-				ptr = NULL;
-			break;
-		}
-		case 2:
-		default:
-			/* Always print 0's for %pK */
-			ptr = NULL;
-			break;
-		}
-		break;
-
-	case 'N':
-		switch (fmt[1]) {
-		case 'F':
-			return netdev_feature_string(buf, end, ptr, spec);
-		}
-		break;
-	case 'a':
-		spec.flags |= SPECIAL | SMALL | ZEROPAD;
-		spec.field_width = sizeof(phys_addr_t) * 2 + 2;
-		spec.base = 16;
-		return number(buf, end,
-			      (unsigned long long) *((phys_addr_t *)ptr), spec);
-	}
-	spec.flags |= SMALL;
-	if (spec.field_width == -1) {
-		spec.field_width = 2 * sizeof(void *);
-		spec.flags |= ZEROPAD;
-	}
-	spec.base = 16;
-
-	return number(buf, end, (unsigned long) ptr, spec);
-=======
 		return ip_addr_string(buf, end, ptr, spec, fmt);
 	case 'E':
 		return escaped_string(buf, end, ptr, spec, fmt);
@@ -3116,7 +2504,6 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	default:
 		return default_pointer(buf, end, ptr, spec);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3129,10 +2516,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  * 'h', 'l', or 'L' for integer fields
  * 'z' support added 23/7/1999 S.H.
  * 'z' changed to 'Z' --davidm 1/25/99
-<<<<<<< HEAD
-=======
  * 'Z' changed to 'z' --adobriyan 2017-01-25
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 't' added for ptrdiff_t
  *
  * @fmt: the format string
@@ -3147,10 +2531,7 @@ static noinline_for_stack
 int format_decode(const char *fmt, struct printf_spec *spec)
 {
 	const char *start = fmt;
-<<<<<<< HEAD
-=======
 	char qualifier;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we finished early by reading the field width */
 	if (spec->type == FORMAT_TYPE_WIDTH) {
@@ -3233,18 +2614,6 @@ precision:
 
 qualifier:
 	/* get the conversion qualifier */
-<<<<<<< HEAD
-	spec->qualifier = -1;
-	if (*fmt == 'h' || _tolower(*fmt) == 'l' ||
-	    _tolower(*fmt) == 'z' || *fmt == 't') {
-		spec->qualifier = *fmt++;
-		if (unlikely(spec->qualifier == *fmt)) {
-			if (spec->qualifier == 'l') {
-				spec->qualifier = 'L';
-				++fmt;
-			} else if (spec->qualifier == 'h') {
-				spec->qualifier = 'H';
-=======
 	qualifier = 0;
 	if (*fmt == 'h' || _tolower(*fmt) == 'l' ||
 	    *fmt == 'z' || *fmt == 't') {
@@ -3255,7 +2624,6 @@ qualifier:
 				++fmt;
 			} else if (qualifier == 'h') {
 				qualifier = 'H';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				++fmt;
 			}
 		}
@@ -3274,14 +2642,6 @@ qualifier:
 
 	case 'p':
 		spec->type = FORMAT_TYPE_PTR;
-<<<<<<< HEAD
-		return fmt - start;
-		/* skip alnum */
-
-	case 'n':
-		spec->type = FORMAT_TYPE_NRCHARS;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ++fmt - start;
 
 	case '%':
@@ -3295,10 +2655,7 @@ qualifier:
 
 	case 'x':
 		spec->flags |= SMALL;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 'X':
 		spec->base = 16;
@@ -3307,12 +2664,6 @@ qualifier:
 	case 'd':
 	case 'i':
 		spec->flags |= SIGN;
-<<<<<<< HEAD
-	case 'u':
-		break;
-
-	default:
-=======
 		break;
 	case 'u':
 		break;
@@ -3327,39 +2678,10 @@ qualifier:
 
 	default:
 		WARN_ONCE(1, "Please remove unsupported %%%c in format string\n", *fmt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spec->type = FORMAT_TYPE_INVALID;
 		return fmt - start;
 	}
 
-<<<<<<< HEAD
-	if (spec->qualifier == 'L')
-		spec->type = FORMAT_TYPE_LONG_LONG;
-	else if (spec->qualifier == 'l') {
-		if (spec->flags & SIGN)
-			spec->type = FORMAT_TYPE_LONG;
-		else
-			spec->type = FORMAT_TYPE_ULONG;
-	} else if (_tolower(spec->qualifier) == 'z') {
-		spec->type = FORMAT_TYPE_SIZE_T;
-	} else if (spec->qualifier == 't') {
-		spec->type = FORMAT_TYPE_PTRDIFF;
-	} else if (spec->qualifier == 'H') {
-		if (spec->flags & SIGN)
-			spec->type = FORMAT_TYPE_BYTE;
-		else
-			spec->type = FORMAT_TYPE_UBYTE;
-	} else if (spec->qualifier == 'h') {
-		if (spec->flags & SIGN)
-			spec->type = FORMAT_TYPE_SHORT;
-		else
-			spec->type = FORMAT_TYPE_USHORT;
-	} else {
-		if (spec->flags & SIGN)
-			spec->type = FORMAT_TYPE_INT;
-		else
-			spec->type = FORMAT_TYPE_UINT;
-=======
 	if (qualifier == 'L')
 		spec->type = FORMAT_TYPE_LONG_LONG;
 	else if (qualifier == 'l') {
@@ -3378,14 +2700,11 @@ qualifier:
 	} else {
 		BUILD_BUG_ON(FORMAT_TYPE_UINT + SIGN != FORMAT_TYPE_INT);
 		spec->type = FORMAT_TYPE_UINT + (spec->flags & SIGN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ++fmt - start;
 }
 
-<<<<<<< HEAD
-=======
 static void
 set_field_width(struct printf_spec *spec, int width)
 {
@@ -3404,7 +2723,6 @@ set_precision(struct printf_spec *spec, int prec)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * vsnprintf - Format a string and place it in a buffer
  * @buf: The buffer to place the result into
@@ -3412,26 +2730,6 @@ set_precision(struct printf_spec *spec, int prec)
  * @fmt: The format string to use
  * @args: Arguments for the format string
  *
-<<<<<<< HEAD
- * This function follows C99 vsnprintf, but has some extensions:
- * %pS output the name of a text symbol with offset
- * %ps output the name of a text symbol without offset
- * %pF output the name of a function pointer with its offset
- * %pf output the name of a function pointer without its offset
- * %pB output the name of a backtrace symbol with its offset
- * %pR output the address range in a struct resource with decoded flags
- * %pr output the address range in a struct resource with raw flags
- * %pM output a 6-byte MAC address with colons
- * %pm output a 6-byte MAC address without colons
- * %pI4 print an IPv4 address without leading zeros
- * %pi4 print an IPv4 address with leading zeros
- * %pI6 print an IPv6 address with colons
- * %pi6 print an IPv6 address without colons
- * %pI6c print an IPv6 address as specified by RFC 5952
- * %pU[bBlL] print a UUID/GUID in big or little endian using lower or upper
- *   case.
- * %n is ignored
-=======
  * This function generally follows C99 vsnprintf, but has some
  * extensions and a few limitations:
  *
@@ -3442,7 +2740,6 @@ set_precision(struct printf_spec *spec, int prec)
  * extensive description.
  *
  * **Please update the documentation in both places when making changes**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The return value is the number of characters which would
  * be generated for the given input, excluding the trailing
@@ -3462,11 +2759,7 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 
 	/* Reject out-of-range values early.  Large positive sizes are
 	   used for unknown buffer sizes. */
-<<<<<<< HEAD
-	if (WARN_ON_ONCE((int) size < 0))
-=======
 	if (WARN_ON_ONCE(size > INT_MAX))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	str = buf;
@@ -3497,19 +2790,11 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 		}
 
 		case FORMAT_TYPE_WIDTH:
-<<<<<<< HEAD
-			spec.field_width = va_arg(args, int);
-			break;
-
-		case FORMAT_TYPE_PRECISION:
-			spec.precision = va_arg(args, int);
-=======
 			set_field_width(&spec, va_arg(args, int));
 			break;
 
 		case FORMAT_TYPE_PRECISION:
 			set_precision(&spec, va_arg(args, int));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case FORMAT_TYPE_CHAR: {
@@ -3540,11 +2825,7 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 			break;
 
 		case FORMAT_TYPE_PTR:
-<<<<<<< HEAD
-			str = pointer(fmt+1, str, end, va_arg(args, void *),
-=======
 			str = pointer(fmt, str, end, va_arg(args, void *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      spec);
 			while (isalnum(*fmt))
 				fmt++;
@@ -3557,26 +2838,6 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 			break;
 
 		case FORMAT_TYPE_INVALID:
-<<<<<<< HEAD
-			if (str < end)
-				*str = '%';
-			++str;
-			break;
-
-		case FORMAT_TYPE_NRCHARS: {
-			/*
-			 * Since %n poses a greater security risk than
-			 * utility, ignore %n and skip its argument.
-			 */
-			void *skip_arg;
-
-			WARN_ONCE(1, "Please remove ignored %%n in '%s'\n",
-					old_fmt);
-
-			skip_arg = va_arg(args, void *);
-			break;
-		}
-=======
 			/*
 			 * Presumably the arguments passed gcc's type
 			 * checking, but there is no safe or sane way
@@ -3586,7 +2847,6 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 			 * sync.
 			 */
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			switch (spec.type) {
@@ -3600,14 +2860,10 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 				num = va_arg(args, long);
 				break;
 			case FORMAT_TYPE_SIZE_T:
-<<<<<<< HEAD
-				num = va_arg(args, size_t);
-=======
 				if (spec.flags & SIGN)
 					num = va_arg(args, ssize_t);
 				else
 					num = va_arg(args, size_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case FORMAT_TYPE_PTRDIFF:
 				num = va_arg(args, ptrdiff_t);
@@ -3635,10 +2891,7 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size > 0) {
 		if (str < end)
 			*str = '\0';
@@ -3671,24 +2924,15 @@ int vscnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	int i;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(!size))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = vsnprintf(buf, size, fmt, args);
 
 	if (likely(i < size))
 		return i;
-<<<<<<< HEAD
-	if (size != 0)
-		return size - 1;
-	return 0;
-=======
 
 	return size - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(vscnprintf);
 
@@ -3803,11 +3047,7 @@ EXPORT_SYMBOL(sprintf);
  * @args: Arguments for the format string
  *
  * The format follows C99 vsnprintf, except %n is ignored, and its argument
-<<<<<<< HEAD
- * is skiped.
-=======
  * is skipped.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The return value is the number of words(32bits) which would be generated for
  * the given input.
@@ -3820,35 +3060,12 @@ int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args)
 {
 	struct printf_spec spec = {0};
 	char *str, *end;
-<<<<<<< HEAD
-=======
 	int width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str = (char *)bin_buf;
 	end = (char *)(bin_buf + size);
 
 #define save_arg(type)							\
-<<<<<<< HEAD
-do {									\
-	if (sizeof(type) == 8) {					\
-		unsigned long long value;				\
-		str = PTR_ALIGN(str, sizeof(u32));			\
-		value = va_arg(args, unsigned long long);		\
-		if (str + sizeof(type) <= end) {			\
-			*(u32 *)str = *(u32 *)&value;			\
-			*(u32 *)(str + 4) = *((u32 *)&value + 1);	\
-		}							\
-	} else {							\
-		unsigned long value;					\
-		str = PTR_ALIGN(str, sizeof(type));			\
-		value = va_arg(args, int);				\
-		if (str + sizeof(type) <= end)				\
-			*(typeof(type) *)str = (type)value;		\
-	}								\
-	str += sizeof(type);						\
-} while (0)
-=======
 ({									\
 	unsigned long long value;					\
 	if (sizeof(type) == 8) {					\
@@ -3871,7 +3088,6 @@ do {									\
 	str += sizeof(type);						\
 	value;								\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (*fmt) {
 		int read = format_decode(fmt, &spec);
@@ -3880,15 +3096,6 @@ do {									\
 
 		switch (spec.type) {
 		case FORMAT_TYPE_NONE:
-<<<<<<< HEAD
-		case FORMAT_TYPE_INVALID:
-		case FORMAT_TYPE_PERCENT_CHAR:
-			break;
-
-		case FORMAT_TYPE_WIDTH:
-		case FORMAT_TYPE_PRECISION:
-			save_arg(int);
-=======
 		case FORMAT_TYPE_PERCENT_CHAR:
 			break;
 		case FORMAT_TYPE_INVALID:
@@ -3900,7 +3107,6 @@ do {									\
 			/* Pointers may require the width */
 			if (*fmt == 'p')
 				set_field_width(&spec, width);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case FORMAT_TYPE_CHAR:
@@ -3909,13 +3115,6 @@ do {									\
 
 		case FORMAT_TYPE_STR: {
 			const char *save_str = va_arg(args, char *);
-<<<<<<< HEAD
-			size_t len;
-
-			if ((unsigned long)save_str > (unsigned long)-PAGE_SIZE
-					|| (unsigned long)save_str < PAGE_SIZE)
-				save_str = "(null)";
-=======
 			const char *err_msg;
 			size_t len;
 
@@ -3923,7 +3122,6 @@ do {									\
 			if (err_msg)
 				save_str = err_msg;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len = strlen(save_str) + 1;
 			if (str + len < end)
 				memcpy(str, save_str, len);
@@ -3932,9 +3130,6 @@ do {									\
 		}
 
 		case FORMAT_TYPE_PTR:
-<<<<<<< HEAD
-			save_arg(void *);
-=======
 			/* Dereferenced pointers must be done now */
 			switch (*fmt) {
 			/* Dereference of functions is still OK */
@@ -3957,28 +3152,11 @@ do {									\
 				else
 					end[-1] = '\0'; /* Must be nul terminated */
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* skip all alphanumeric pointer suffixes */
 			while (isalnum(*fmt))
 				fmt++;
 			break;
 
-<<<<<<< HEAD
-		case FORMAT_TYPE_NRCHARS: {
-			/* skip %n 's argument */
-			u8 qualifier = spec.qualifier;
-			void *skip_arg;
-			if (qualifier == 'l')
-				skip_arg = va_arg(args, long *);
-			else if (_tolower(qualifier) == 'z')
-				skip_arg = va_arg(args, size_t *);
-			else
-				skip_arg = va_arg(args, int *);
-			break;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			switch (spec.type) {
 
@@ -4009,10 +3187,7 @@ do {									\
 		}
 	}
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (u32 *)(PTR_ALIGN(str, sizeof(u32))) - bin_buf;
 #undef save_arg
 }
@@ -4046,11 +3221,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 	char *str, *end;
 	const char *args = (const char *)bin_buf;
 
-<<<<<<< HEAD
-	if (WARN_ON_ONCE((int) size < 0))
-=======
 	if (WARN_ON_ONCE(size > INT_MAX))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	str = buf;
@@ -4096,19 +3267,11 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 		}
 
 		case FORMAT_TYPE_WIDTH:
-<<<<<<< HEAD
-			spec.field_width = get_arg(int);
-			break;
-
-		case FORMAT_TYPE_PRECISION:
-			spec.precision = get_arg(int);
-=======
 			set_field_width(&spec, get_arg(int));
 			break;
 
 		case FORMAT_TYPE_PRECISION:
 			set_precision(&spec, get_arg(int));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case FORMAT_TYPE_CHAR: {
@@ -4140,16 +3303,6 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 			break;
 		}
 
-<<<<<<< HEAD
-		case FORMAT_TYPE_PTR:
-			str = pointer(fmt+1, str, end, get_arg(void *), spec);
-			while (isalnum(*fmt))
-				fmt++;
-			break;
-
-		case FORMAT_TYPE_PERCENT_CHAR:
-		case FORMAT_TYPE_INVALID:
-=======
 		case FORMAT_TYPE_PTR: {
 			bool process = false;
 			int copy, len;
@@ -4186,20 +3339,13 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 		}
 
 		case FORMAT_TYPE_PERCENT_CHAR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (str < end)
 				*str = '%';
 			++str;
 			break;
 
-<<<<<<< HEAD
-		case FORMAT_TYPE_NRCHARS:
-			/* skip */
-			break;
-=======
 		case FORMAT_TYPE_INVALID:
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default: {
 			unsigned long long num;
@@ -4243,10 +3389,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 		} /* switch(spec.type) */
 	} /* while(*fmt) */
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size > 0) {
 		if (str < end)
 			*str = '\0';
@@ -4299,15 +3442,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 	char digit;
 	int num = 0;
 	u8 qualifier;
-<<<<<<< HEAD
-	u8 base;
-	s16 field_width;
-	bool is_sign;
-
-	while (*fmt && *str) {
-		/* skip any white space in format */
-		/* white space in format matchs any amount of
-=======
 	unsigned int base;
 	union {
 		long long s;
@@ -4319,7 +3453,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 	while (*fmt) {
 		/* skip any white space in format */
 		/* white space in format matches any amount of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * white space, including none, in the input.
 		 */
 		if (isspace(*fmt)) {
@@ -4342,10 +3475,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 		 * advance both strings to next white space
 		 */
 		if (*fmt == '*') {
-<<<<<<< HEAD
-			while (!isspace(*fmt) && *fmt != '%' && *fmt)
-				fmt++;
-=======
 			if (!*str)
 				break;
 			while (!isspace(*fmt) && *fmt != '%' && *fmt) {
@@ -4354,7 +3483,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 					return num;
 				fmt++;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while (!isspace(*str) && *str)
 				str++;
 			continue;
@@ -4362,25 +3490,16 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 
 		/* get field width */
 		field_width = -1;
-<<<<<<< HEAD
-		if (isdigit(*fmt))
-			field_width = skip_atoi(&fmt);
-=======
 		if (isdigit(*fmt)) {
 			field_width = skip_atoi(&fmt);
 			if (field_width <= 0)
 				break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* get conversion qualifier */
 		qualifier = -1;
 		if (*fmt == 'h' || _tolower(*fmt) == 'l' ||
-<<<<<<< HEAD
-		    _tolower(*fmt) == 'z') {
-=======
 		    *fmt == 'z') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qualifier = *fmt++;
 			if (unlikely(qualifier == *fmt)) {
 				if (qualifier == 'h') {
@@ -4393,13 +3512,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			}
 		}
 
-<<<<<<< HEAD
-		if (!*fmt || !*str)
-			break;
-
-		base = 10;
-		is_sign = 0;
-=======
 		if (!*fmt)
 			break;
 
@@ -4415,7 +3527,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 
 		base = 10;
 		is_sign = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (*fmt++) {
 		case 'c':
@@ -4444,13 +3555,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			num++;
 		}
 		continue;
-<<<<<<< HEAD
-		case 'n':
-			/* return number of characters read so far */
-		{
-			int *i = (int *)va_arg(args, int*);
-			*i = str - buf;
-=======
 		/*
 		 * Warning: This implementation of the '[' conversion specifier
 		 * deviates from its glibc counterpart in the following ways:
@@ -4502,7 +3606,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 				*s++ = *str++;
 			*s = '\0';
 			++num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		continue;
 		case 'o':
@@ -4514,15 +3617,10 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			break;
 		case 'i':
 			base = 0;
-<<<<<<< HEAD
-		case 'd':
-			is_sign = 1;
-=======
 			fallthrough;
 		case 'd':
 			is_sign = true;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'u':
 			break;
 		case '%':
@@ -4541,79 +3639,16 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 		str = skip_spaces(str);
 
 		digit = *str;
-<<<<<<< HEAD
-		if (is_sign && digit == '-')
-			digit = *(str + 1);
-=======
 		if (is_sign && digit == '-') {
 			if (field_width == 1)
 				break;
 
 			digit = *(str + 1);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!digit
 		    || (base == 16 && !isxdigit(digit))
 		    || (base == 10 && !isdigit(digit))
-<<<<<<< HEAD
-		    || (base == 8 && (!isdigit(digit) || digit > '7'))
-		    || (base == 0 && !isdigit(digit)))
-			break;
-
-		switch (qualifier) {
-		case 'H':	/* that's 'hh' in format */
-			if (is_sign) {
-				signed char *s = (signed char *)va_arg(args, signed char *);
-				*s = (signed char)simple_strtol(str, &next, base);
-			} else {
-				unsigned char *s = (unsigned char *)va_arg(args, unsigned char *);
-				*s = (unsigned char)simple_strtoul(str, &next, base);
-			}
-			break;
-		case 'h':
-			if (is_sign) {
-				short *s = (short *)va_arg(args, short *);
-				*s = (short)simple_strtol(str, &next, base);
-			} else {
-				unsigned short *s = (unsigned short *)va_arg(args, unsigned short *);
-				*s = (unsigned short)simple_strtoul(str, &next, base);
-			}
-			break;
-		case 'l':
-			if (is_sign) {
-				long *l = (long *)va_arg(args, long *);
-				*l = simple_strtol(str, &next, base);
-			} else {
-				unsigned long *l = (unsigned long *)va_arg(args, unsigned long *);
-				*l = simple_strtoul(str, &next, base);
-			}
-			break;
-		case 'L':
-			if (is_sign) {
-				long long *l = (long long *)va_arg(args, long long *);
-				*l = simple_strtoll(str, &next, base);
-			} else {
-				unsigned long long *l = (unsigned long long *)va_arg(args, unsigned long long *);
-				*l = simple_strtoull(str, &next, base);
-			}
-			break;
-		case 'Z':
-		case 'z':
-		{
-			size_t *s = (size_t *)va_arg(args, size_t *);
-			*s = (size_t)simple_strtoul(str, &next, base);
-		}
-		break;
-		default:
-			if (is_sign) {
-				int *i = (int *)va_arg(args, int *);
-				*i = (int)simple_strtol(str, &next, base);
-			} else {
-				unsigned int *i = (unsigned int *)va_arg(args, unsigned int*);
-				*i = (unsigned int)simple_strtoul(str, &next, base);
-			}
-=======
 		    || (base == 8 && !isodigit(digit))
 		    || (base == 0 && !isdigit(digit)))
 			break;
@@ -4658,7 +3693,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 				*va_arg(args, int *) = val.s;
 			else
 				*va_arg(args, unsigned int *) = val.u;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		num++;
@@ -4668,19 +3702,6 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 		str = next;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Now we've come all the way through so either the input string or the
-	 * format ended. In the former case, there can be a %n at the current
-	 * position in the format that needs to be filled.
-	 */
-	if (*fmt == '%' && *(fmt + 1) == 'n') {
-		int *p = (int *)va_arg(args, int *);
-		*p = str - buf;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return num;
 }
 EXPORT_SYMBOL(vsscanf);

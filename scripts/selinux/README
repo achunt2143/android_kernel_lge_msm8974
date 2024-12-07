@@ -1,6 +1,2 @@
-<<<<<<< HEAD
-Please see Documentation/security/SELinux.txt for information on
-=======
 Please see Documentation/admin-guide/LSM/SELinux.rst for information on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 installing a dummy SELinux policy.

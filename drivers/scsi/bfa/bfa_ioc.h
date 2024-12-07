@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_IOC_H__
@@ -83,11 +65,7 @@ struct bfa_sge_s {
 } while (0)
 
 #define bfa_swap_words(_x)  (	\
-<<<<<<< HEAD
-	((_x) << 32) | ((_x) >> 32))
-=======
 	((u64)(_x) << 32) | ((u64)(_x) >> 32))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __BIG_ENDIAN
 #define bfa_sge_to_be(_x)
@@ -125,22 +103,6 @@ struct bfa_meminfo_s {
 	struct bfa_mem_kva_s kva_info;
 };
 
-<<<<<<< HEAD
-/* BFA memory segment setup macros */
-#define bfa_mem_dma_setup(_meminfo, _dm_ptr, _seg_sz) do {	\
-	((bfa_mem_dma_t *)(_dm_ptr))->mem_len = (_seg_sz);	\
-	if (_seg_sz)						\
-		list_add_tail(&((bfa_mem_dma_t *)_dm_ptr)->qe,	\
-			      &(_meminfo)->dma_info.qe);	\
-} while (0)
-
-#define bfa_mem_kva_setup(_meminfo, _kva_ptr, _seg_sz) do {	\
-	((bfa_mem_kva_t *)(_kva_ptr))->mem_len = (_seg_sz);	\
-	if (_seg_sz)						\
-		list_add_tail(&((bfa_mem_kva_t *)_kva_ptr)->qe,	\
-			      &(_meminfo)->kva_info.qe);	\
-} while (0)
-=======
 /* BFA memory segment setup helpers */
 static inline void bfa_mem_dma_setup(struct bfa_meminfo_s *meminfo,
 				     struct bfa_mem_dma_s *dm_ptr,
@@ -159,7 +121,6 @@ static inline void bfa_mem_kva_setup(struct bfa_meminfo_s *meminfo,
 	if (seg_sz)
 		list_add_tail(&kva_ptr->qe, &meminfo->kva_info.qe);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BFA dma memory segments iterator */
 #define bfa_mem_dma_sptr(_mod, _i)	(&(_mod)->dma_seg[(_i)])
@@ -299,8 +260,6 @@ struct bfa_ioc_cbfn_s {
 /*
  * IOC event notification mechanism.
  */
-<<<<<<< HEAD
-=======
 enum ioc_event {
 	IOC_E_RESET		= 1,	/*  IOC reset request		*/
 	IOC_E_ENABLE		= 2,	/*  IOC enable request		*/
@@ -319,7 +278,6 @@ enum ioc_event {
 struct bfa_ioc_s;
 typedef void (*bfa_ioc_sm_t)(struct bfa_ioc_s *fsm, enum ioc_event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bfa_ioc_event_e {
 	BFA_IOC_E_ENABLED	= 1,
 	BFA_IOC_E_DISABLED	= 2,
@@ -342,10 +300,6 @@ struct bfa_ioc_notify_s {
 	(__notify)->cbarg = (__cbarg);      \
 } while (0)
 
-<<<<<<< HEAD
-struct bfa_iocpf_s {
-	bfa_fsm_t		fsm;
-=======
 /*
  * IOCPF state machine events
  */
@@ -369,7 +323,6 @@ typedef void (*bfa_iocpf_sm_t)(struct bfa_iocpf_s *fsm, enum iocpf_event);
 
 struct bfa_iocpf_s {
 	bfa_iocpf_sm_t		fsm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_ioc_s	*ioc;
 	bfa_boolean_t		fw_mismatch_notified;
 	bfa_boolean_t		auto_recover;
@@ -377,11 +330,7 @@ struct bfa_iocpf_s {
 };
 
 struct bfa_ioc_s {
-<<<<<<< HEAD
-	bfa_fsm_t		fsm;
-=======
 	bfa_ioc_sm_t		fsm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_s		*bfa;
 	struct bfa_pcidev_s	pcidev;
 	struct bfa_timer_mod_s	*timer_mod;
@@ -433,15 +382,12 @@ struct bfa_ioc_hwif_s {
 	void		(*ioc_sync_ack)		(struct bfa_ioc_s *ioc);
 	bfa_boolean_t	(*ioc_sync_complete)	(struct bfa_ioc_s *ioc);
 	bfa_boolean_t	(*ioc_lpu_read_stat)	(struct bfa_ioc_s *ioc);
-<<<<<<< HEAD
-=======
 	void		(*ioc_set_fwstate)	(struct bfa_ioc_s *ioc,
 					enum bfi_ioc_state fwstate);
 	enum bfi_ioc_state	(*ioc_get_fwstate)	(struct bfa_ioc_s *ioc);
 	void		(*ioc_set_alt_fwstate)	(struct bfa_ioc_s *ioc,
 					enum bfi_ioc_state fwstate);
 	enum bfi_ioc_state	(*ioc_get_alt_fwstate)	(struct bfa_ioc_s *ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -454,26 +400,18 @@ struct bfa_reqq_wait_s {
 	void	*cbarg;
 };
 
-<<<<<<< HEAD
-typedef void	(*bfa_cb_cbfn_t) (void *cbarg, bfa_boolean_t complete);
-=======
 typedef void (*bfa_cb_cbfn_t) (void *cbarg, bfa_boolean_t complete);
 typedef void (*bfa_cb_cbfn_status_t) (void *cbarg, bfa_status_t status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic BFA callback element.
  */
 struct bfa_cb_qe_s {
 	struct list_head	qe;
-<<<<<<< HEAD
-	bfa_cb_cbfn_t	cbfn;
-=======
 	union {
 		bfa_cb_cbfn_status_t	cbfn_status;
 		bfa_cb_cbfn_t		cbfn;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_boolean_t	once;
 	bfa_boolean_t	pre_rmv;	/* set for stack based qe(s) */
 	bfa_status_t	fw_status;	/* to access fw status in comp proc */
@@ -481,25 +419,6 @@ struct bfa_cb_qe_s {
 };
 
 /*
-<<<<<<< HEAD
- * IOCFC state machine definitions/declarations
- */
-enum iocfc_event {
-	IOCFC_E_INIT		= 1,	/* IOCFC init request		*/
-	IOCFC_E_START		= 2,	/* IOCFC mod start request	*/
-	IOCFC_E_STOP		= 3,	/* IOCFC stop request		*/
-	IOCFC_E_ENABLE		= 4,	/* IOCFC enable request		*/
-	IOCFC_E_DISABLE		= 5,	/* IOCFC disable request	*/
-	IOCFC_E_IOC_ENABLED	= 6,	/* IOC enabled message		*/
-	IOCFC_E_IOC_DISABLED	= 7,	/* IOC disabled message		*/
-	IOCFC_E_IOC_FAILED	= 8,	/* failure notice by IOC sm	*/
-	IOCFC_E_DCONF_DONE	= 9,	/* dconf read/write done	*/
-	IOCFC_E_CFG_DONE	= 10,	/* IOCFC config complete	*/
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ASIC block configurtion related
  */
 
@@ -620,11 +539,8 @@ void bfa_flash_attach(struct bfa_flash_s *flash, struct bfa_ioc_s *ioc,
 		void *dev, struct bfa_trc_mod_s *trcmod, bfa_boolean_t mincfg);
 void bfa_flash_memclaim(struct bfa_flash_s *flash,
 		u8 *dm_kva, u64 dm_pa, bfa_boolean_t mincfg);
-<<<<<<< HEAD
-=======
 bfa_status_t    bfa_flash_raw_read(void __iomem *pci_bar_kva,
 				u32 offset, char *buf, u32 len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	DIAG module specific
@@ -646,11 +562,7 @@ struct bfa_diag_results_fwping {
 
 struct bfa_diag_qtest_result_s {
 	u32	status;
-<<<<<<< HEAD
-	u16	count;	/* sucessful queue test count */
-=======
 	u16	count;	/* successful queue test count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	queue;
 	u8	rsvd;	/* 64-bit align */
 };
@@ -822,8 +734,6 @@ void bfa_phy_memclaim(struct bfa_phy_s *phy,
 void bfa_phy_intr(void *phyarg, struct bfi_mbmsg_s *msg);
 
 /*
-<<<<<<< HEAD
-=======
  * FRU module specific
  */
 typedef void (*bfa_cb_fru_t) (void *cbarg, bfa_status_t status);
@@ -874,7 +784,6 @@ void bfa_fru_memclaim(struct bfa_fru_s *fru,
 void bfa_fru_intr(void *fruarg, struct bfi_mbmsg_s *msg);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Driver Config( dconf) specific
  */
 #define BFI_DCONF_SIGNATURE	0xabcdabcd
@@ -889,13 +798,6 @@ struct bfa_dconf_hdr_s {
 struct bfa_dconf_s {
 	struct bfa_dconf_hdr_s		hdr;
 	struct bfa_lunmask_cfg_s	lun_mask;
-<<<<<<< HEAD
-};
-#pragma pack()
-
-struct bfa_dconf_mod_s {
-	bfa_sm_t		sm;
-=======
 	struct bfa_throttle_cfg_s	throttle_cfg;
 };
 #pragma pack()
@@ -917,7 +819,6 @@ typedef void (*bfa_dconf_sm_t)(struct bfa_dconf_mod_s *fsm, enum bfa_dconf_event
 
 struct bfa_dconf_mod_s {
 	bfa_dconf_sm_t		sm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			instance;
 	bfa_boolean_t		read_data_valid;
 	bfa_boolean_t		min_cfg;
@@ -935,11 +836,8 @@ struct bfa_dconf_mod_s {
 #define bfa_dconf_read_data_valid(__bfa)	\
 	(BFA_DCONF_MOD(__bfa)->read_data_valid)
 #define BFA_DCONF_UPDATE_TOV	5000	/* memtest timeout in msec */
-<<<<<<< HEAD
-=======
 #define bfa_dconf_get_min_cfg(__bfa)	\
 	(BFA_DCONF_MOD(__bfa)->min_cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void	bfa_dconf_modinit(struct bfa_s *bfa);
 void	bfa_dconf_modexit(struct bfa_s *bfa);
@@ -963,12 +861,8 @@ bfa_status_t	bfa_dconf_update(struct bfa_s *bfa);
 #define bfa_ioc_maxfrsize(__ioc)	((__ioc)->attr->maxfrsize)
 #define bfa_ioc_rx_bbcredit(__ioc)	((__ioc)->attr->rx_bbcredit)
 #define bfa_ioc_speed_sup(__ioc)	\
-<<<<<<< HEAD
-	BFI_ADAPTER_GETP(SPEED, (__ioc)->attr->adapter_prop)
-=======
 	((bfa_ioc_is_cna(__ioc)) ? BFA_PORT_SPEED_10GBPS :	\
 	 BFI_ADAPTER_GETP(SPEED, (__ioc)->attr->adapter_prop))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define bfa_ioc_get_nports(__ioc)	\
 	BFI_ADAPTER_GETP(NPORTS, (__ioc)->attr->adapter_prop)
 
@@ -1027,10 +921,7 @@ void bfa_ioc_attach(struct bfa_ioc_s *ioc, void *bfa,
 		struct bfa_ioc_cbfn_s *cbfn, struct bfa_timer_mod_s *timer_mod);
 void bfa_ioc_auto_recover(bfa_boolean_t auto_recover);
 void bfa_ioc_detach(struct bfa_ioc_s *ioc);
-<<<<<<< HEAD
-=======
 void bfa_ioc_suspend(struct bfa_ioc_s *ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bfa_ioc_pci_init(struct bfa_ioc_s *ioc, struct bfa_pcidev_s *pcidev,
 		enum bfi_pcifn_class clscode);
 void bfa_ioc_mem_claim(struct bfa_ioc_s *ioc,  u8 *dm_kva, u64 dm_pa);
@@ -1038,11 +929,7 @@ void bfa_ioc_enable(struct bfa_ioc_s *ioc);
 void bfa_ioc_disable(struct bfa_ioc_s *ioc);
 bfa_boolean_t bfa_ioc_intx_claim(struct bfa_ioc_s *ioc);
 
-<<<<<<< HEAD
-void bfa_ioc_boot(struct bfa_ioc_s *ioc, u32 boot_type,
-=======
 bfa_status_t bfa_ioc_boot(struct bfa_ioc_s *ioc, u32 boot_type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 boot_env);
 void bfa_ioc_isr(struct bfa_ioc_s *ioc, struct bfi_mbmsg_s *msg);
 void bfa_ioc_error_isr(struct bfa_ioc_s *ioc);
@@ -1073,10 +960,7 @@ bfa_status_t bfa_ioc_debug_fwtrc(struct bfa_ioc_s *ioc, void *trcdata,
 				 int *trclen);
 bfa_status_t bfa_ioc_debug_fwcore(struct bfa_ioc_s *ioc, void *buf,
 	u32 *offset, int *buflen);
-<<<<<<< HEAD
-=======
 bfa_status_t bfa_ioc_fwsig_invalidate(struct bfa_ioc_s *ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_boolean_t bfa_ioc_sem_get(void __iomem *sem_reg);
 void bfa_ioc_fwver_get(struct bfa_ioc_s *ioc,
 			struct bfi_ioc_image_hdr_s *fwhdr);
@@ -1085,10 +969,7 @@ bfa_boolean_t bfa_ioc_fwver_cmp(struct bfa_ioc_s *ioc,
 void bfa_ioc_aen_post(struct bfa_ioc_s *ioc, enum bfa_ioc_aen_event event);
 bfa_status_t bfa_ioc_fw_stats_get(struct bfa_ioc_s *ioc, void *stats);
 bfa_status_t bfa_ioc_fw_stats_clear(struct bfa_ioc_s *ioc);
-<<<<<<< HEAD
-=======
 void bfa_ioc_debug_save_ftrc(struct bfa_ioc_s *ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * asic block configuration related APIs
@@ -1106,31 +987,19 @@ bfa_status_t bfa_ablk_port_config(struct bfa_ablk_s *ablk, int port,
 		enum bfa_mode_s mode, int max_pf, int max_vf,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
 bfa_status_t bfa_ablk_pf_create(struct bfa_ablk_s *ablk, u16 *pcifn,
-<<<<<<< HEAD
-		u8 port, enum bfi_pcifn_class personality, int bw,
-		bfa_ablk_cbfn_t cbfn, void *cbarg);
-bfa_status_t bfa_ablk_pf_delete(struct bfa_ablk_s *ablk, int pcifn,
-		bfa_ablk_cbfn_t cbfn, void *cbarg);
-bfa_status_t bfa_ablk_pf_update(struct bfa_ablk_s *ablk, int pcifn, int bw,
-		bfa_ablk_cbfn_t cbfn, void *cbarg);
-=======
 		u8 port, enum bfi_pcifn_class personality,
 		u16 bw_min, u16 bw_max, bfa_ablk_cbfn_t cbfn, void *cbarg);
 bfa_status_t bfa_ablk_pf_delete(struct bfa_ablk_s *ablk, int pcifn,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
 bfa_status_t bfa_ablk_pf_update(struct bfa_ablk_s *ablk, int pcifn,
 		u16 bw_min, u16 bw_max, bfa_ablk_cbfn_t cbfn, void *cbarg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_status_t bfa_ablk_optrom_en(struct bfa_ablk_s *ablk,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
 bfa_status_t bfa_ablk_optrom_dis(struct bfa_ablk_s *ablk,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
 
-<<<<<<< HEAD
-=======
 bfa_status_t bfa_ioc_flash_img_get_chnk(struct bfa_ioc_s *ioc, u32 off,
 				u32 *fwimg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bfa mfg wwn API functions
  */

@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-config PPC_MPC512x
-	bool "512x-based boards"
-	depends on 6xx
-	select FSL_SOC
-	select IPIC
-	select PPC_CLOCK
-	select PPC_PCI_CHOICE
-	select FSL_PCI if PCI
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-=======
 # SPDX-License-Identifier: GPL-2.0
 config PPC_MPC512x
 	bool "512x-based boards"
@@ -26,7 +15,6 @@ config MPC512x_LPBFIFO
 	depends on PPC_MPC512x && MPC512X_DMA
 	help
 	  Enable support for Freescale MPC512x LocalPlus Bus FIFO (SCLPC).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MPC5121_ADS
 	bool "Freescale MPC5121E ADS"
@@ -35,18 +23,6 @@ config MPC5121_ADS
 	help
 	  This option enables support for the MPC5121E ADS board.
 
-<<<<<<< HEAD
-config MPC5121_GENERIC
-	bool "Generic support for simple MPC5121 based boards"
-	depends on PPC_MPC512x
-	select DEFAULT_UIMAGE
-	help
-	  This option enables support for simple MPC5121 based boards
-	  which do not need custom platform specific setup.
-
-	  Compatible boards include:  Protonic LVT base boards (ZANMCU
-	  and VICVT2).
-=======
 config MPC512x_GENERIC
 	bool "Generic support for simple MPC512x based boards"
 	depends on PPC_MPC512x
@@ -57,7 +33,6 @@ config MPC512x_GENERIC
 
 	  Compatible boards include:  Protonic LVT base boards (ZANMCU
 	  and VICVT2), Freescale MPC5125 Tower system.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PDM360NG
 	bool "ifm PDM360NG board"

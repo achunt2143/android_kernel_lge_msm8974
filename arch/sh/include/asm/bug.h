@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_BUG_H
 #define __ASM_SH_BUG_H
 
@@ -28,22 +25,14 @@
  */
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 #define _EMIT_BUG_ENTRY				\
-<<<<<<< HEAD
-	"\t.pushsection __bug_table,\"a\"\n"	\
-=======
 	"\t.pushsection __bug_table,\"aw\"\n"	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"2:\t.long 1b, %O1\n"			\
 	"\t.short %O2, %O3\n"			\
 	"\t.org 2b+%O4\n"			\
 	"\t.popsection\n"
 #else
 #define _EMIT_BUG_ENTRY				\
-<<<<<<< HEAD
-	"\t.pushsection __bug_table,\"a\"\n"	\
-=======
 	"\t.pushsection __bug_table,\"aw\"\n"	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"2:\t.long 1b\n"			\
 	"\t.short %O3\n"			\
 	"\t.org 2b+%O4\n"			\
@@ -60,16 +49,10 @@ do {							\
 		   "i" (__FILE__),			\
 		   "i" (__LINE__), "i" (0),		\
 		   "i" (sizeof(struct bug_entry)));	\
-<<<<<<< HEAD
-} while (0)
-
-#define __WARN_TAINT(taint)				\
-=======
 	unreachable();					\
 } while (0)
 
 #define __WARN_FLAGS(flags)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {							\
 	__asm__ __volatile__ (				\
 		"1:\t.short %O0\n"			\
@@ -78,11 +61,7 @@ do {							\
 		 : "n" (TRAPA_BUG_OPCODE),		\
 		   "i" (__FILE__),			\
 		   "i" (__LINE__),			\
-<<<<<<< HEAD
-		   "i" (BUGFLAG_TAINT(taint)),		\
-=======
 		   "i" (BUGFLAG_WARNING|(flags)),	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "i" (sizeof(struct bug_entry)));	\
 } while (0)
 
@@ -133,14 +112,10 @@ do {							\
 #include <asm-generic/bug.h>
 
 struct pt_regs;
-<<<<<<< HEAD
-extern void die(const char *str, struct pt_regs *regs, long err) __attribute__ ((noreturn));
-=======
 
 /* arch/sh/kernel/traps.c */
 extern void die(const char *str, struct pt_regs *regs, long err) __attribute__ ((noreturn));
 extern void die_if_kernel(const char *str, struct pt_regs *regs, long err);
 extern void die_if_no_fixup(const char *str, struct pt_regs *regs, long err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_BUG_H */

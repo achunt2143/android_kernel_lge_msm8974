@@ -51,11 +51,7 @@ u32 mthca_alloc(struct mthca_alloc *alloc)
 	}
 
 	if (obj < alloc->max) {
-<<<<<<< HEAD
-		set_bit(obj, alloc->table);
-=======
 		__set_bit(obj, alloc->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		obj |= alloc->top;
 	} else
 		obj = -1;
@@ -73,11 +69,7 @@ void mthca_free(struct mthca_alloc *alloc, u32 obj)
 
 	spin_lock_irqsave(&alloc->lock, flags);
 
-<<<<<<< HEAD
-	clear_bit(obj, alloc->table);
-=======
 	__clear_bit(obj, alloc->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	alloc->last = min(alloc->last, obj);
 	alloc->top = (alloc->top + alloc->max) & alloc->mask;
 
@@ -87,11 +79,6 @@ void mthca_free(struct mthca_alloc *alloc, u32 obj)
 int mthca_alloc_init(struct mthca_alloc *alloc, u32 num, u32 mask,
 		     u32 reserved)
 {
-<<<<<<< HEAD
-	int i;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* num must be a power of 2 */
 	if (num != 1 << (ffs(num) - 1))
 		return -EINVAL;
@@ -101,33 +88,18 @@ int mthca_alloc_init(struct mthca_alloc *alloc, u32 num, u32 mask,
 	alloc->max  = num;
 	alloc->mask = mask;
 	spin_lock_init(&alloc->lock);
-<<<<<<< HEAD
-	alloc->table = kmalloc(BITS_TO_LONGS(num) * sizeof (long),
-			       GFP_KERNEL);
-	if (!alloc->table)
-		return -ENOMEM;
-
-	bitmap_zero(alloc->table, num);
-	for (i = 0; i < reserved; ++i)
-		set_bit(i, alloc->table);
-=======
 	alloc->table = bitmap_zalloc(num, GFP_KERNEL);
 	if (!alloc->table)
 		return -ENOMEM;
 
 	bitmap_set(alloc->table, 0, reserved);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void mthca_alloc_cleanup(struct mthca_alloc *alloc)
 {
-<<<<<<< HEAD
-	kfree(alloc->table);
-=======
 	bitmap_free(alloc->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -185,12 +157,8 @@ int mthca_array_init(struct mthca_array *array, int nent)
 	int npage = (nent * sizeof (void *) + PAGE_SIZE - 1) / PAGE_SIZE;
 	int i;
 
-<<<<<<< HEAD
-	array->page_list = kmalloc(npage * sizeof *array->page_list, GFP_KERNEL);
-=======
 	array->page_list = kmalloc_array(npage, sizeof(*array->page_list),
 					 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!array->page_list)
 		return -ENOMEM;
 
@@ -241,22 +209,13 @@ int mthca_buf_alloc(struct mthca_dev *dev, int size, int max_direct,
 
 		dma_unmap_addr_set(&buf->direct, mapping, t);
 
-<<<<<<< HEAD
-		memset(buf->direct.buf, 0, size);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (t & ((1 << shift) - 1)) {
 			--shift;
 			npages *= 2;
 		}
 
-<<<<<<< HEAD
-		dma_list = kmalloc(npages * sizeof *dma_list, GFP_KERNEL);
-=======
 		dma_list = kmalloc_array(npages, sizeof(*dma_list),
 					 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dma_list)
 			goto err_free;
 
@@ -267,14 +226,6 @@ int mthca_buf_alloc(struct mthca_dev *dev, int size, int max_direct,
 		npages     = (size + PAGE_SIZE - 1) / PAGE_SIZE;
 		shift      = PAGE_SHIFT;
 
-<<<<<<< HEAD
-		dma_list = kmalloc(npages * sizeof *dma_list, GFP_KERNEL);
-		if (!dma_list)
-			return -ENOMEM;
-
-		buf->page_list = kmalloc(npages * sizeof *buf->page_list,
-					 GFP_KERNEL);
-=======
 		dma_list = kmalloc_array(npages, sizeof(*dma_list),
 					 GFP_KERNEL);
 		if (!dma_list)
@@ -283,7 +234,6 @@ int mthca_buf_alloc(struct mthca_dev *dev, int size, int max_direct,
 		buf->page_list = kmalloc_array(npages,
 					       sizeof(*buf->page_list),
 					       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!buf->page_list)
 			goto err_out;
 

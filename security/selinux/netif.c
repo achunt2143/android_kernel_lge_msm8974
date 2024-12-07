@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Network interface table.
  *
@@ -13,13 +10,6 @@
  * Copyright (C) 2003 Red Hat, Inc., James Morris <jmorris@redhat.com>
  * Copyright (C) 2007 Hewlett-Packard Development Company, L.P.
  *		      Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/types.h>
@@ -46,19 +36,12 @@ struct sel_netif {
 };
 
 static u32 sel_netif_total;
-<<<<<<< HEAD
-static LIST_HEAD(sel_netif_list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(sel_netif_lock);
 static struct list_head sel_netif_hash[SEL_NETIF_HASH_SIZE];
 
 /**
  * sel_netif_hashfn - Hashing function for the interface table
-<<<<<<< HEAD
-=======
  * @ns: the network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ifindex: the network interface
  *
  * Description:
@@ -66,23 +49,14 @@ static struct list_head sel_netif_hash[SEL_NETIF_HASH_SIZE];
  * bucket number for the given interface.
  *
  */
-<<<<<<< HEAD
-static inline u32 sel_netif_hashfn(int ifindex)
-{
-	return (ifindex & (SEL_NETIF_HASH_SIZE - 1));
-=======
 static inline u32 sel_netif_hashfn(const struct net *ns, int ifindex)
 {
 	return (((uintptr_t)ns + ifindex) & (SEL_NETIF_HASH_SIZE - 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * sel_netif_find - Search for an interface record
-<<<<<<< HEAD
-=======
  * @ns: the network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ifindex: the network interface
  *
  * Description:
@@ -90,17 +64,6 @@ static inline u32 sel_netif_hashfn(const struct net *ns, int ifindex)
  * If an entry can not be found in the table return NULL.
  *
  */
-<<<<<<< HEAD
-static inline struct sel_netif *sel_netif_find(int ifindex)
-{
-	int idx = sel_netif_hashfn(ifindex);
-	struct sel_netif *netif;
-
-	list_for_each_entry_rcu(netif, &sel_netif_hash[idx], list)
-		/* all of the devices should normally fit in the hash, so we
-		 * optimize for that case */
-		if (likely(netif->nsec.ifindex == ifindex))
-=======
 static inline struct sel_netif *sel_netif_find(const struct net *ns,
 					       int ifindex)
 {
@@ -110,7 +73,6 @@ static inline struct sel_netif *sel_netif_find(const struct net *ns,
 	list_for_each_entry_rcu(netif, &sel_netif_hash[idx], list)
 		if (net_eq(netif->nsec.ns, ns) &&
 		    netif->nsec.ifindex == ifindex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return netif;
 
 	return NULL;
@@ -127,20 +89,12 @@ static inline struct sel_netif *sel_netif_find(const struct net *ns,
  */
 static int sel_netif_insert(struct sel_netif *netif)
 {
-<<<<<<< HEAD
-	int idx;
-=======
 	u32 idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sel_netif_total >= SEL_NETIF_HASH_MAX)
 		return -ENOSPC;
 
-<<<<<<< HEAD
-	idx = sel_netif_hashfn(netif->nsec.ifindex);
-=======
 	idx = sel_netif_hashfn(netif->nsec.ns, netif->nsec.ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_rcu(&netif->list, &sel_netif_hash[idx]);
 	sel_netif_total++;
 
@@ -164,79 +118,35 @@ static void sel_netif_destroy(struct sel_netif *netif)
 
 /**
  * sel_netif_sid_slow - Lookup the SID of a network interface using the policy
-<<<<<<< HEAD
-=======
  * @ns: the network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ifindex: the network interface
  * @sid: interface SID
  *
  * Description:
-<<<<<<< HEAD
- * This function determines the SID of a network interface by quering the
-=======
  * This function determines the SID of a network interface by querying the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * security policy.  The result is added to the network interface table to
  * speedup future queries.  Returns zero on success, negative values on
  * failure.
  *
  */
-<<<<<<< HEAD
-static int sel_netif_sid_slow(int ifindex, u32 *sid)
-{
-	int ret;
-	struct sel_netif *netif;
-	struct sel_netif *new = NULL;
-=======
 static int sel_netif_sid_slow(struct net *ns, int ifindex, u32 *sid)
 {
 	int ret = 0;
 	struct sel_netif *netif;
 	struct sel_netif *new;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *dev;
 
 	/* NOTE: we always use init's network namespace since we don't
 	 * currently support containers */
 
-<<<<<<< HEAD
-	dev = dev_get_by_index(&init_net, ifindex);
-	if (unlikely(dev == NULL)) {
-		printk(KERN_WARNING
-		       "SELinux: failure in sel_netif_sid_slow(),"
-		       " invalid network interface (%d)\n", ifindex);
-=======
 	dev = dev_get_by_index(ns, ifindex);
 	if (unlikely(dev == NULL)) {
 		pr_warn("SELinux: failure in %s(), invalid network interface (%d)\n",
 			__func__, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
 	spin_lock_bh(&sel_netif_lock);
-<<<<<<< HEAD
-	netif = sel_netif_find(ifindex);
-	if (netif != NULL) {
-		*sid = netif->nsec.sid;
-		ret = 0;
-		goto out;
-	}
-	new = kzalloc(sizeof(*new), GFP_ATOMIC);
-	if (new == NULL) {
-		ret = -ENOMEM;
-		goto out;
-	}
-	ret = security_netif_sid(dev->name, &new->nsec.sid);
-	if (ret != 0)
-		goto out;
-	new->nsec.ifindex = ifindex;
-	ret = sel_netif_insert(new);
-	if (ret != 0)
-		goto out;
-	*sid = new->nsec.sid;
-=======
 	netif = sel_netif_find(ns, ifindex);
 	if (netif != NULL) {
 		*sid = netif->nsec.sid;
@@ -254,33 +164,19 @@ static int sel_netif_sid_slow(struct net *ns, int ifindex, u32 *sid)
 		if (sel_netif_insert(new))
 			kfree(new);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_unlock_bh(&sel_netif_lock);
 	dev_put(dev);
-<<<<<<< HEAD
-	if (unlikely(ret)) {
-		printk(KERN_WARNING
-		       "SELinux: failure in sel_netif_sid_slow(),"
-		       " unable to determine network interface label (%d)\n",
-		       ifindex);
-		kfree(new);
-	}
-=======
 	if (unlikely(ret))
 		pr_warn("SELinux: failure in %s(), unable to determine network interface label (%d)\n",
 			__func__, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
  * sel_netif_sid - Lookup the SID of a network interface
-<<<<<<< HEAD
-=======
  * @ns: the network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ifindex: the network interface
  * @sid: interface SID
  *
@@ -292,20 +188,12 @@ out:
  * on failure.
  *
  */
-<<<<<<< HEAD
-int sel_netif_sid(int ifindex, u32 *sid)
-=======
 int sel_netif_sid(struct net *ns, int ifindex, u32 *sid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sel_netif *netif;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	netif = sel_netif_find(ifindex);
-=======
 	netif = sel_netif_find(ns, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(netif != NULL)) {
 		*sid = netif->nsec.sid;
 		rcu_read_unlock();
@@ -313,19 +201,12 @@ int sel_netif_sid(struct net *ns, int ifindex, u32 *sid)
 	}
 	rcu_read_unlock();
 
-<<<<<<< HEAD
-	return sel_netif_sid_slow(ifindex, sid);
-=======
 	return sel_netif_sid_slow(ns, ifindex, sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * sel_netif_kill - Remove an entry from the network interface table
-<<<<<<< HEAD
-=======
  * @ns: the network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ifindex: the network interface
  *
  * Description:
@@ -333,21 +214,13 @@ int sel_netif_sid(struct net *ns, int ifindex, u32 *sid)
  * table if it exists.
  *
  */
-<<<<<<< HEAD
-static void sel_netif_kill(int ifindex)
-=======
 static void sel_netif_kill(const struct net *ns, int ifindex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sel_netif *netif;
 
 	rcu_read_lock();
 	spin_lock_bh(&sel_netif_lock);
-<<<<<<< HEAD
-	netif = sel_netif_find(ifindex);
-=======
 	netif = sel_netif_find(ns, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif)
 		sel_netif_destroy(netif);
 	spin_unlock_bh(&sel_netif_lock);
@@ -361,11 +234,7 @@ static void sel_netif_kill(const struct net *ns, int ifindex)
  * Remove all entries from the network interface table.
  *
  */
-<<<<<<< HEAD
-static void sel_netif_flush(void)
-=======
 void sel_netif_flush(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx;
 	struct sel_netif *netif;
@@ -377,28 +246,6 @@ void sel_netif_flush(void)
 	spin_unlock_bh(&sel_netif_lock);
 }
 
-<<<<<<< HEAD
-static int sel_netif_avc_callback(u32 event, u32 ssid, u32 tsid,
-				  u16 class, u32 perms, u32 *retained)
-{
-	if (event == AVC_CALLBACK_RESET) {
-		sel_netif_flush();
-		synchronize_net();
-	}
-	return 0;
-}
-
-static int sel_netif_netdev_notifier_handler(struct notifier_block *this,
-					     unsigned long event, void *ptr)
-{
-	struct net_device *dev = ptr;
-
-	if (dev_net(dev) != &init_net)
-		return NOTIFY_DONE;
-
-	if (event == NETDEV_DOWN)
-		sel_netif_kill(dev->ifindex);
-=======
 static int sel_netif_netdev_notifier_handler(struct notifier_block *this,
 					     unsigned long event, void *ptr)
 {
@@ -406,7 +253,6 @@ static int sel_netif_netdev_notifier_handler(struct notifier_block *this,
 
 	if (event == NETDEV_DOWN)
 		sel_netif_kill(dev_net(dev), dev->ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
@@ -417,15 +263,9 @@ static struct notifier_block sel_netif_netdev_notifier = {
 
 static __init int sel_netif_init(void)
 {
-<<<<<<< HEAD
-	int i, err;
-
-	if (!selinux_enabled)
-=======
 	int i;
 
 	if (!selinux_enabled_boot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	for (i = 0; i < SEL_NETIF_HASH_SIZE; i++)
@@ -433,16 +273,7 @@ static __init int sel_netif_init(void)
 
 	register_netdevice_notifier(&sel_netif_netdev_notifier);
 
-<<<<<<< HEAD
-	err = avc_add_callback(sel_netif_avc_callback, AVC_CALLBACK_RESET,
-			       SECSID_NULL, SECSID_NULL, SECCLASS_NULL, 0);
-	if (err)
-		panic("avc_add_callback() failed, error %d\n", err);
-
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __initcall(sel_netif_init);

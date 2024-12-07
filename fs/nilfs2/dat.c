@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * dat.c - NILFS disk address translation.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Written by Koji Sato <koji@osrg.net>.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * NILFS disk address translation.
@@ -27,7 +5,6 @@
  * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Written by Koji Sato.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -43,15 +20,12 @@
 #define NILFS_CNO_MIN	((__u64)1)
 #define NILFS_CNO_MAX	(~(__u64)0)
 
-<<<<<<< HEAD
-=======
 /**
  * struct nilfs_dat_info - on-memory private data of DAT file
  * @mi: on-memory private data of metadata file
  * @palloc_cache: persistent object allocator cache of DAT file
  * @shadow: shadow map of DAT file
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nilfs_dat_info {
 	struct nilfs_mdt_info mi;
 	struct nilfs_palloc_cache palloc_cache;
@@ -66,10 +40,6 @@ static inline struct nilfs_dat_info *NILFS_DAT_I(struct inode *dat)
 static int nilfs_dat_prepare_entry(struct inode *dat,
 				   struct nilfs_palloc_req *req, int create)
 {
-<<<<<<< HEAD
-	return nilfs_palloc_get_entry_block(dat, req->pr_entry_nr,
-					    create, &req->pr_entry_bh);
-=======
 	int ret;
 
 	ret = nilfs_palloc_get_entry_block(dat, req->pr_entry_nr,
@@ -85,7 +55,6 @@ static int nilfs_dat_prepare_entry(struct inode *dat,
 		ret = -EINVAL;
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nilfs_dat_commit_entry(struct inode *dat,
@@ -122,21 +91,13 @@ void nilfs_dat_commit_alloc(struct inode *dat, struct nilfs_palloc_req *req)
 	struct nilfs_dat_entry *entry;
 	void *kaddr;
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	entry->de_start = cpu_to_le64(NILFS_CNO_MIN);
 	entry->de_end = cpu_to_le64(NILFS_CNO_MAX);
 	entry->de_blocknr = cpu_to_le64(0);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nilfs_palloc_commit_alloc_entry(dat, req);
 	nilfs_dat_commit_entry(dat, req);
@@ -154,21 +115,12 @@ static void nilfs_dat_commit_free(struct inode *dat,
 	struct nilfs_dat_entry *entry;
 	void *kaddr;
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	entry->de_start = cpu_to_le64(NILFS_CNO_MIN);
 	entry->de_end = cpu_to_le64(NILFS_CNO_MIN);
 	entry->de_blocknr = cpu_to_le64(0);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-
-	nilfs_dat_commit_entry(dat, req);
-=======
 	kunmap_local(kaddr);
 
 	nilfs_dat_commit_entry(dat, req);
@@ -179,21 +131,12 @@ static void nilfs_dat_commit_free(struct inode *dat,
 			    (unsigned long long)req->pr_entry_nr);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs_palloc_commit_free_entry(dat, req);
 }
 
 int nilfs_dat_prepare_start(struct inode *dat, struct nilfs_palloc_req *req)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = nilfs_dat_prepare_entry(dat, req, 0);
-	WARN_ON(ret == -ENOENT);
-	return ret;
-=======
 	return nilfs_dat_prepare_entry(dat, req, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nilfs_dat_commit_start(struct inode *dat, struct nilfs_palloc_req *req,
@@ -202,20 +145,12 @@ void nilfs_dat_commit_start(struct inode *dat, struct nilfs_palloc_req *req,
 	struct nilfs_dat_entry *entry;
 	void *kaddr;
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	entry->de_start = cpu_to_le64(nilfs_mdt_cno(dat));
 	entry->de_blocknr = cpu_to_le64(blocknr);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nilfs_dat_commit_entry(dat, req);
 }
@@ -229,28 +164,15 @@ int nilfs_dat_prepare_end(struct inode *dat, struct nilfs_palloc_req *req)
 	int ret;
 
 	ret = nilfs_dat_prepare_entry(dat, req, 0);
-<<<<<<< HEAD
-	if (ret < 0) {
-		WARN_ON(ret == -ENOENT);
-		return ret;
-	}
-
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	if (ret < 0)
 		return ret;
 
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	start = le64_to_cpu(entry->de_start);
 	blocknr = le64_to_cpu(entry->de_blocknr);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (blocknr == 0) {
 		ret = nilfs_palloc_prepare_free_entry(dat, req);
@@ -259,8 +181,6 @@ int nilfs_dat_prepare_end(struct inode *dat, struct nilfs_palloc_req *req)
 			return ret;
 		}
 	}
-<<<<<<< HEAD
-=======
 	if (unlikely(start > nilfs_mdt_cno(dat))) {
 		nilfs_err(dat->i_sb,
 			  "vblocknr = %llu has abnormal lifetime: start cno (= %llu) > current cno (= %llu)",
@@ -270,7 +190,6 @@ int nilfs_dat_prepare_end(struct inode *dat, struct nilfs_palloc_req *req)
 		nilfs_dat_abort_entry(dat, req);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -283,11 +202,7 @@ void nilfs_dat_commit_end(struct inode *dat, struct nilfs_palloc_req *req,
 	sector_t blocknr;
 	void *kaddr;
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	end = start = le64_to_cpu(entry->de_start);
@@ -297,11 +212,7 @@ void nilfs_dat_commit_end(struct inode *dat, struct nilfs_palloc_req *req,
 	}
 	entry->de_end = cpu_to_le64(end);
 	blocknr = le64_to_cpu(entry->de_blocknr);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (blocknr == 0)
 		nilfs_dat_commit_free(dat, req);
@@ -316,20 +227,12 @@ void nilfs_dat_abort_end(struct inode *dat, struct nilfs_palloc_req *req)
 	sector_t blocknr;
 	void *kaddr;
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(req->pr_entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(req->pr_entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, req->pr_entry_nr,
 					     req->pr_entry_bh, kaddr);
 	start = le64_to_cpu(entry->de_start);
 	blocknr = le64_to_cpu(entry->de_blocknr);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (start == nilfs_mdt_cno(dat) && blocknr == 0)
 		nilfs_palloc_abort_free_entry(dat, req);
@@ -459,16 +362,6 @@ int nilfs_dat_move(struct inode *dat, __u64 vblocknr, sector_t blocknr)
 		}
 	}
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(entry_bh->b_page);
-	entry = nilfs_palloc_block_get_entry(dat, vblocknr, entry_bh, kaddr);
-	if (unlikely(entry->de_blocknr == cpu_to_le64(0))) {
-		printk(KERN_CRIT "%s: vbn = %llu, [%llu, %llu)\n", __func__,
-		       (unsigned long long)vblocknr,
-		       (unsigned long long)le64_to_cpu(entry->de_start),
-		       (unsigned long long)le64_to_cpu(entry->de_end));
-		kunmap_atomic(kaddr);
-=======
 	kaddr = kmap_local_page(entry_bh->b_page);
 	entry = nilfs_palloc_block_get_entry(dat, vblocknr, entry_bh, kaddr);
 	if (unlikely(entry->de_blocknr == cpu_to_le64(0))) {
@@ -478,17 +371,12 @@ int nilfs_dat_move(struct inode *dat, __u64 vblocknr, sector_t blocknr)
 			   (unsigned long long)le64_to_cpu(entry->de_start),
 			   (unsigned long long)le64_to_cpu(entry->de_end));
 		kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(entry_bh);
 		return -EINVAL;
 	}
 	WARN_ON(blocknr == 0);
 	entry->de_blocknr = cpu_to_le64(blocknr);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_buffer_dirty(entry_bh);
 	nilfs_mdt_mark_dirty(dat);
@@ -538,11 +426,7 @@ int nilfs_dat_translate(struct inode *dat, __u64 vblocknr, sector_t *blocknrp)
 		}
 	}
 
-<<<<<<< HEAD
-	kaddr = kmap_atomic(entry_bh->b_page);
-=======
 	kaddr = kmap_local_page(entry_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = nilfs_palloc_block_get_entry(dat, vblocknr, entry_bh, kaddr);
 	blocknr = le64_to_cpu(entry->de_blocknr);
 	if (blocknr == 0) {
@@ -552,20 +436,12 @@ int nilfs_dat_translate(struct inode *dat, __u64 vblocknr, sector_t *blocknrp)
 	*blocknrp = blocknr;
 
  out:
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-=======
 	kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(entry_bh);
 	return ret;
 }
 
-<<<<<<< HEAD
-ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned visz,
-=======
 ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned int visz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    size_t nvi)
 {
 	struct buffer_head *entry_bh;
@@ -581,17 +457,10 @@ ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned int visz,
 						   0, &entry_bh);
 		if (ret < 0)
 			return ret;
-<<<<<<< HEAD
-		kaddr = kmap_atomic(entry_bh->b_page);
-		/* last virtual block number in this block */
-		first = vinfo->vi_vblocknr;
-		do_div(first, entries_per_block);
-=======
 		kaddr = kmap_local_page(entry_bh->b_page);
 		/* last virtual block number in this block */
 		first = vinfo->vi_vblocknr;
 		first = div64_ul(first, entries_per_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		first *= entries_per_block;
 		last = first + entries_per_block - 1;
 		for (j = i, n = 0;
@@ -604,11 +473,7 @@ ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned int visz,
 			vinfo->vi_end = le64_to_cpu(entry->de_end);
 			vinfo->vi_blocknr = le64_to_cpu(entry->de_blocknr);
 		}
-<<<<<<< HEAD
-		kunmap_atomic(kaddr);
-=======
 		kunmap_local(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(entry_bh);
 	}
 
@@ -630,8 +495,6 @@ int nilfs_dat_read(struct super_block *sb, size_t entry_size,
 	struct nilfs_dat_info *di;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (entry_size > sb->s_blocksize) {
 		nilfs_err(sb, "too large DAT entry size: %zu bytes",
 			  entry_size);
@@ -642,7 +505,6 @@ int nilfs_dat_read(struct super_block *sb, size_t entry_size,
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dat = nilfs_iget_locked(sb, NULL, NILFS_DAT_INO);
 	if (unlikely(!dat))
 		return -ENOMEM;
@@ -660,13 +522,9 @@ int nilfs_dat_read(struct super_block *sb, size_t entry_size,
 	di = NILFS_DAT_I(dat);
 	lockdep_set_class(&di->mi.mi_sem, &dat_lock_key);
 	nilfs_palloc_setup_cache(dat, &di->palloc_cache);
-<<<<<<< HEAD
-	nilfs_mdt_setup_shadow_map(dat, &di->shadow);
-=======
 	err = nilfs_mdt_setup_shadow_map(dat, &di->shadow);
 	if (err)
 		goto failed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = nilfs_read_inode_common(dat, raw_inode);
 	if (err)

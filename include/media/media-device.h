@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Media device
  *
@@ -9,22 +6,6 @@
  *
  * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
  *	     Sakari Ailus <sakari.ailus@iki.fi>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MEDIA_DEVICE_H
@@ -32,19 +13,12 @@
 
 #include <linux/list.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-=======
 #include <linux/pci.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/media-devnode.h>
 #include <media/media-entity.h>
 
-<<<<<<< HEAD
-struct device;
-=======
 struct ida;
 struct media_device;
 
@@ -97,30 +71,19 @@ struct media_device_ops {
 	int (*req_validate)(struct media_request *req);
 	void (*req_queue)(struct media_request *req);
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct media_device - Media device
  * @dev:	Parent device
  * @devnode:	Media device node
-<<<<<<< HEAD
-=======
  * @driver_name: Optional device driver name. If not set, calls to
  *		%MEDIA_IOC_DEVICE_INFO will return ``dev->driver->name``.
  *		This is needed for USB drivers for example, as otherwise
  *		they'll all appear as if the driver name was "usb".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @model:	Device model name
  * @serial:	Device serial number (optional)
  * @bus_info:	Unique and stable device location identifier
  * @hw_revision: Hardware device revision
-<<<<<<< HEAD
- * @driver_version: Device driver version
- * @entity_id:	ID of the next entity to be registered
- * @entities:	List of registered entities
- * @lock:	Entities list lock
- * @graph_mutex: Entities graph operation lock
-=======
  * @topology_version: Monotonic counter for storing the version of the graph
  *		topology. Should be incremented each time the topology changes.
  * @id:		Unique ID used on the last registered graph object
@@ -144,7 +107,6 @@ struct media_device_ops {
  * @req_queue_mutex: Serialise the MEDIA_REQUEST_IOC_QUEUE ioctl w.r.t.
  *		     other operations that stop or start streaming.
  * @request_id: Used to generate unique request IDs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure represents an abstract high-level media device. It allows easy
  * access to entities and provides basic media device-level support. The
@@ -155,8 +117,6 @@ struct media_device_ops {
  *
  * @model is a descriptive model name exported through sysfs. It doesn't have to
  * be unique.
-<<<<<<< HEAD
-=======
  *
  * @enable_source is a handler to find source entity for the
  * sink entity  and activate the link between them if source
@@ -181,46 +141,10 @@ struct media_device_ops {
  *    necessary to run @enable_source and @disable_source handlers.
  *    Callers should hold graph_mutex to access and call @enable_source
  *    and @disable_source handlers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct media_device {
 	/* dev->driver_data points to this struct. */
 	struct device *dev;
-<<<<<<< HEAD
-	struct media_devnode devnode;
-
-	char model[32];
-	char serial[40];
-	char bus_info[32];
-	u32 hw_revision;
-	u32 driver_version;
-
-	u32 entity_id;
-	struct list_head entities;
-
-	/* Protects the entities list */
-	spinlock_t lock;
-	/* Serializes graph operations. */
-	struct mutex graph_mutex;
-
-	int (*link_notify)(struct media_pad *source,
-			   struct media_pad *sink, u32 flags);
-};
-
-/* media_devnode to media_device */
-#define to_media_device(node) container_of(node, struct media_device, devnode)
-
-int __must_check media_device_register(struct media_device *mdev);
-void media_device_unregister(struct media_device *mdev);
-
-int __must_check media_device_register_entity(struct media_device *mdev,
-					      struct media_entity *entity);
-void media_device_unregister_entity(struct media_entity *entity);
-
-/* Iterate over all entities. */
-#define media_device_for_each_entity(entity, mdev)			\
-	list_for_each_entry(entity, &(mdev)->entities, list)
-=======
 	struct media_devnode *devnode;
 
 	char model[32];
@@ -584,6 +508,5 @@ media_set_bus_info(char *bus_info, size_t bus_info_size, struct device *dev)
 	else if (dev_is_pci(dev))
 		snprintf(bus_info, bus_info_size, "PCI:%s", dev_name(dev));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

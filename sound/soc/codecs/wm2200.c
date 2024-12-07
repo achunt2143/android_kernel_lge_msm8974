@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm2200.c  --  WM2200 ALSA SoC Audio driver
  *
  * Copyright 2012 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -22,14 +12,9 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-#include <linux/gcd.h>
-#include <linux/gpio.h>
-=======
 #include <linux/firmware.h>
 #include <linux/gcd.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
@@ -45,8 +30,6 @@
 #include <sound/wm2200.h>
 
 #include "wm2200.h"
-<<<<<<< HEAD
-=======
 #include "wm_adsp.h"
 
 #define WM2200_DSP_CONTROL_1                   0x00
@@ -80,7 +63,6 @@
 #define WM2200_DSP_CONTROL_29                  0x23
 #define WM2200_DSP_CONTROL_30                  0x24
 #define WM2200_DSP_CONTROL_31                  0x26
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The code assumes DCVDD is generated internally */
 #define WM2200_NUM_CORE_SUPPLIES 2
@@ -89,22 +71,6 @@ static const char *wm2200_core_supply_names[WM2200_NUM_CORE_SUPPLIES] = {
 	"LDOVDD",
 };
 
-<<<<<<< HEAD
-struct wm2200_fll {
-	int fref;
-	int fout;
-	int src;
-	struct completion lock;
-};
-
-/* codec private data */
-struct wm2200_priv {
-	struct regmap *regmap;
-	struct device *dev;
-	struct snd_soc_codec *codec;
-	struct wm2200_pdata pdata;
-	struct regulator_bulk_data core_supplies[WM2200_NUM_CORE_SUPPLIES];
-=======
 /* codec private data */
 struct wm2200_priv {
 	struct wm_adsp dsp[2];
@@ -115,7 +81,6 @@ struct wm2200_priv {
 	struct regulator_bulk_data core_supplies[WM2200_NUM_CORE_SUPPLIES];
 	struct gpio_desc *ldo_ena;
 	struct gpio_desc *reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct completion fll_lock;
 	int fll_fout;
@@ -124,11 +89,6 @@ struct wm2200_priv {
 
 	int rev;
 	int sysclk;
-<<<<<<< HEAD
-};
-
-static struct reg_default wm2200_reg_defaults[] = {
-=======
 
 	unsigned int symmetric_rates:1;
 };
@@ -200,7 +160,6 @@ static const struct cs_dsp_region wm2200_dsp2_regions[] = {
 };
 
 static const struct reg_default wm2200_reg_defaults[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x000B, 0x0000 },   /* R11    - Tone Generator 1 */
 	{ 0x0102, 0x0000 },   /* R258   - Clocking 3 */
 	{ 0x0103, 0x0011 },   /* R259   - Clocking 4 */
@@ -543,8 +502,6 @@ static const struct reg_default wm2200_reg_defaults[] = {
 
 static bool wm2200_volatile_register(struct device *dev, unsigned int reg)
 {
-<<<<<<< HEAD
-=======
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(wm2200_ranges); i++)
@@ -555,7 +512,6 @@ static bool wm2200_volatile_register(struct device *dev, unsigned int reg)
 		     reg <= wm2200_ranges[i].range_max))
 			return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (reg) {
 	case WM2200_SOFTWARE_RESET:
 	case WM2200_DEVICE_REVISION:
@@ -572,8 +528,6 @@ static bool wm2200_volatile_register(struct device *dev, unsigned int reg)
 
 static bool wm2200_readable_register(struct device *dev, unsigned int reg)
 {
-<<<<<<< HEAD
-=======
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(wm2200_ranges); i++)
@@ -584,7 +538,6 @@ static bool wm2200_readable_register(struct device *dev, unsigned int reg)
 		     reg <= wm2200_ranges[i].range_max))
 			return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (reg) {
 	case WM2200_SOFTWARE_RESET:
 	case WM2200_DEVICE_REVISION:
@@ -937,11 +890,7 @@ static bool wm2200_readable_register(struct device *dev, unsigned int reg)
 	}
 }
 
-<<<<<<< HEAD
-static const struct reg_default wm2200_reva_patch[] = {
-=======
 static const struct reg_sequence wm2200_reva_patch[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x07, 0x0003 },
 	{ 0x102, 0x0200 },
 	{ 0x203, 0x0084 },
@@ -1028,16 +977,10 @@ static const struct reg_sequence wm2200_reva_patch[] = {
 
 static int wm2200_reset(struct wm2200_priv *wm2200)
 {
-<<<<<<< HEAD
-	if (wm2200->pdata.reset) {
-		gpio_set_value_cansleep(wm2200->pdata.reset, 0);
-		gpio_set_value_cansleep(wm2200->pdata.reset, 1);
-=======
 	if (wm2200->reset) {
 		/* Descriptor flagged active low, so this will be inverted */
 		gpiod_set_value_cansleep(wm2200->reset, 1);
 		gpiod_set_value_cansleep(wm2200->reset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	} else {
@@ -1050,17 +993,10 @@ static DECLARE_TLV_DB_SCALE(in_tlv, -6300, 100, 0);
 static DECLARE_TLV_DB_SCALE(digital_tlv, -6400, 50, 0);
 static DECLARE_TLV_DB_SCALE(out_tlv, -6400, 100, 0);
 
-<<<<<<< HEAD
-static const char *wm2200_mixer_texts[] = {
-	"None",
-	"Tone Generator",
-	"AEC loopback",
-=======
 static const char * const wm2200_mixer_texts[] = {
 	"None",
 	"Tone Generator",
 	"AEC Loopback",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"IN1L",
 	"IN1R",
 	"IN2L",
@@ -1091,11 +1027,7 @@ static const char * const wm2200_mixer_texts[] = {
 	"DSP2.6",
 };
 
-<<<<<<< HEAD
-static int wm2200_mixer_values[] = {
-=======
 static unsigned int wm2200_mixer_values[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00,
 	0x04,   /* Tone */
 	0x08,   /* AEC */
@@ -1145,11 +1077,7 @@ static unsigned int wm2200_mixer_values[] = {
 
 #define WM2200_MUX_CTL_DECL(name) \
 	const struct snd_kcontrol_new name##_mux =	\
-<<<<<<< HEAD
-		SOC_DAPM_VALUE_ENUM("Route", name##_enum)
-=======
 		SOC_DAPM_ENUM("Route", name##_enum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM2200_MIXER_ENUMS(name, base_reg) \
 	static WM2200_MUX_ENUM_DECL(name##_in1_enum, base_reg);	     \
@@ -1161,8 +1089,6 @@ static unsigned int wm2200_mixer_values[] = {
 	static WM2200_MUX_CTL_DECL(name##_in3); \
 	static WM2200_MUX_CTL_DECL(name##_in4)
 
-<<<<<<< HEAD
-=======
 #define WM2200_DSP_ENUMS(name, base_reg) \
 	static WM2200_MUX_ENUM_DECL(name##_aux1_enum, base_reg);     \
 	static WM2200_MUX_ENUM_DECL(name##_aux2_enum, base_reg + 1); \
@@ -1186,7 +1112,6 @@ static SOC_ENUM_SINGLE_DECL(wm2200_rxanc_input_sel,
 			    WM2200_IN_RXANC_SEL_SHIFT,
 			    wm2200_rxanc_input_sel_texts);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_kcontrol_new wm2200_snd_controls[] = {
 SOC_SINGLE("IN1 High Performance Switch", WM2200_IN1L_CONTROL,
 	   WM2200_IN1_OSR_SHIFT, 1, 0),
@@ -1219,15 +1144,12 @@ SOC_DOUBLE_R_TLV("IN3 Digital Volume", WM2200_ADC_DIGITAL_VOLUME_3L,
 		 WM2200_ADC_DIGITAL_VOLUME_3R, WM2200_IN3L_DIG_VOL_SHIFT,
 		 0xbf, 0, digital_tlv),
 
-<<<<<<< HEAD
-=======
 SND_SOC_BYTES_MASK("EQL Coefficients", WM2200_EQL_1, 20, WM2200_EQL_ENA),
 SND_SOC_BYTES_MASK("EQR Coefficients", WM2200_EQR_1, 20, WM2200_EQR_ENA),
 
 SND_SOC_BYTES("LHPF1 Coefficients", WM2200_HPLPF1_2, 1),
 SND_SOC_BYTES("LHPF2 Coefficients", WM2200_HPLPF2_2, 1),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SOC_SINGLE("OUT1 High Performance Switch", WM2200_DAC_DIGITAL_VOLUME_1L,
 	   WM2200_OUT1_OSR_SHIFT, 1, 0),
 SOC_SINGLE("OUT2 High Performance Switch", WM2200_DAC_DIGITAL_VOLUME_2L,
@@ -1249,13 +1171,10 @@ SOC_DOUBLE_R_TLV("OUT2 Digital Volume", WM2200_DAC_DIGITAL_VOLUME_2L,
 		 digital_tlv),
 SOC_DOUBLE("OUT2 Switch", WM2200_PDM_1, WM2200_SPK1L_MUTE_SHIFT,
 	   WM2200_SPK1R_MUTE_SHIFT, 1, 1),
-<<<<<<< HEAD
-=======
 SOC_ENUM("RxANC Src", wm2200_rxanc_input_sel),
 
 WM_ADSP_FW_CONTROL("DSP1", 0),
 WM_ADSP_FW_CONTROL("DSP2", 1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 WM2200_MIXER_ENUMS(OUT1L, WM2200_OUT1LMIX_INPUT_1_SOURCE);
@@ -1278,21 +1197,14 @@ WM2200_MIXER_ENUMS(DSP1R, WM2200_DSP1RMIX_INPUT_1_SOURCE);
 WM2200_MIXER_ENUMS(DSP2L, WM2200_DSP2LMIX_INPUT_1_SOURCE);
 WM2200_MIXER_ENUMS(DSP2R, WM2200_DSP2RMIX_INPUT_1_SOURCE);
 
-<<<<<<< HEAD
-=======
 WM2200_DSP_ENUMS(DSP1, WM2200_DSP1AUX1MIX_INPUT_1_SOURCE);
 WM2200_DSP_ENUMS(DSP2, WM2200_DSP2AUX1MIX_INPUT_1_SOURCE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WM2200_MIXER_ENUMS(LHPF1, WM2200_LHPF1MIX_INPUT_1_SOURCE);
 WM2200_MIXER_ENUMS(LHPF2, WM2200_LHPF2MIX_INPUT_1_SOURCE);
 
 #define WM2200_MUX(name, ctrl) \
-<<<<<<< HEAD
-	SND_SOC_DAPM_VALUE_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
-=======
 	SND_SOC_DAPM_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM2200_MIXER_WIDGETS(name, name_str)	\
 	WM2200_MUX(name_str " Input 1", &name##_in1_mux), \
@@ -1301,10 +1213,6 @@ WM2200_MIXER_ENUMS(LHPF2, WM2200_LHPF2MIX_INPUT_1_SOURCE);
 	WM2200_MUX(name_str " Input 4", &name##_in4_mux), \
 	SND_SOC_DAPM_MIXER(name_str " Mixer", SND_SOC_NOPM, 0, 0, NULL, 0)
 
-<<<<<<< HEAD
-#define WM2200_MIXER_INPUT_ROUTES(name)	\
-	{ name, "Tone Generator", "Tone Generator" }, \
-=======
 #define WM2200_DSP_WIDGETS(name, name_str) \
 	WM2200_MIXER_WIDGETS(name##L, name_str "L"), \
 	WM2200_MIXER_WIDGETS(name##R, name_str "R"), \
@@ -1318,7 +1226,6 @@ WM2200_MIXER_ENUMS(LHPF2, WM2200_LHPF2MIX_INPUT_1_SOURCE);
 #define WM2200_MIXER_INPUT_ROUTES(name)	\
 	{ name, "Tone Generator", "Tone Generator" }, \
 	{ name, "AEC Loopback", "AEC Loopback" }, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         { name, "IN1L", "IN1L PGA" }, \
         { name, "IN1R", "IN1R PGA" }, \
         { name, "IN2L", "IN2L PGA" }, \
@@ -1359,8 +1266,6 @@ WM2200_MIXER_ENUMS(LHPF2, WM2200_LHPF2MIX_INPUT_1_SOURCE);
 	WM2200_MIXER_INPUT_ROUTES(name " Input 3"), \
 	WM2200_MIXER_INPUT_ROUTES(name " Input 4")
 
-<<<<<<< HEAD
-=======
 #define WM2200_DSP_AUX_ROUTES(name) \
 	{ name, NULL, name " Aux 1" }, \
 	{ name, NULL, name " Aux 2" }, \
@@ -1387,7 +1292,6 @@ static SOC_ENUM_SINGLE_DECL(wm2200_aec_loopback,
 static const struct snd_kcontrol_new wm2200_aec_loopback_mux =
 	SOC_DAPM_ENUM("AEC Loopback", wm2200_aec_loopback);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_widget wm2200_dapm_widgets[] = {
 SND_SOC_DAPM_SUPPLY("SYSCLK", WM2200_CLOCKING_3, WM2200_SYSCLK_ENA_SHIFT, 0,
 		    NULL, 0),
@@ -1399,13 +1303,8 @@ SND_SOC_DAPM_SUPPLY("MICBIAS1", WM2200_MIC_BIAS_CTRL_1, WM2200_MICB1_ENA_SHIFT,
 		    0, NULL, 0),
 SND_SOC_DAPM_SUPPLY("MICBIAS2", WM2200_MIC_BIAS_CTRL_2, WM2200_MICB2_ENA_SHIFT,
 		    0, NULL, 0),
-<<<<<<< HEAD
-SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20),
-SND_SOC_DAPM_REGULATOR_SUPPLY("AVDD", 20),
-=======
 SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20, 0),
 SND_SOC_DAPM_REGULATOR_SUPPLY("AVDD", 20, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SND_SOC_DAPM_INPUT("IN1L"),
 SND_SOC_DAPM_INPUT("IN1R"),
@@ -1452,13 +1351,8 @@ SND_SOC_DAPM_PGA("LHPF1", WM2200_HPLPF1_1, WM2200_LHPF1_ENA_SHIFT, 0,
 SND_SOC_DAPM_PGA("LHPF2", WM2200_HPLPF2_1, WM2200_LHPF2_ENA_SHIFT, 0,
 		 NULL, 0),
 
-<<<<<<< HEAD
-SND_SOC_DAPM_PGA_E("DSP1", SND_SOC_NOPM, 0, 0, NULL, 0, NULL, 0),
-SND_SOC_DAPM_PGA_E("DSP2", SND_SOC_NOPM, 1, 0, NULL, 0, NULL, 0),
-=======
 WM_ADSP1("DSP1", 0),
 WM_ADSP1("DSP2", 1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SND_SOC_DAPM_AIF_OUT("AIF1TX1", "Capture", 0,
 		    WM2200_AUDIO_IF_1_22, WM2200_AIF1TX1_ENA_SHIFT, 0),
@@ -1473,12 +1367,9 @@ SND_SOC_DAPM_AIF_OUT("AIF1TX5", "Capture", 4,
 SND_SOC_DAPM_AIF_OUT("AIF1TX6", "Capture", 5,
 		    WM2200_AUDIO_IF_1_22, WM2200_AIF1TX6_ENA_SHIFT, 0),
 
-<<<<<<< HEAD
-=======
 SND_SOC_DAPM_MUX("AEC Loopback", WM2200_DAC_AEC_CONTROL_1,
 		 WM2200_AEC_LOOPBACK_ENA_SHIFT, 0, &wm2200_aec_loopback_mux),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SND_SOC_DAPM_PGA_S("OUT1L", 0, WM2200_OUTPUT_ENABLES,
 		   WM2200_OUT1L_ENA_SHIFT, 0, NULL, 0),
 SND_SOC_DAPM_PGA_S("OUT1R", 0, WM2200_OUTPUT_ENABLES,
@@ -1529,15 +1420,8 @@ WM2200_MIXER_WIDGETS(EQR, "EQR"),
 WM2200_MIXER_WIDGETS(LHPF1, "LHPF1"),
 WM2200_MIXER_WIDGETS(LHPF2, "LHPF2"),
 
-<<<<<<< HEAD
-WM2200_MIXER_WIDGETS(DSP1L, "DSP1L"),
-WM2200_MIXER_WIDGETS(DSP1R, "DSP1R"),
-WM2200_MIXER_WIDGETS(DSP2L, "DSP2L"),
-WM2200_MIXER_WIDGETS(DSP2R, "DSP2R"),
-=======
 WM2200_DSP_WIDGETS(DSP1, "DSP1"),
 WM2200_DSP_WIDGETS(DSP2, "DSP2"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 WM2200_MIXER_WIDGETS(AIF1TX1, "AIF1TX1"),
 WM2200_MIXER_WIDGETS(AIF1TX2, "AIF1TX2"),
@@ -1629,25 +1513,19 @@ static const struct snd_soc_dapm_route wm2200_dapm_routes[] = {
 	{ "SPK", NULL, "OUT2L" },
 	{ "SPK", NULL, "OUT2R" },
 
-<<<<<<< HEAD
-=======
 	{ "AEC Loopback", "OUT1L", "OUT1L" },
 	{ "AEC Loopback", "OUT1R", "OUT1R" },
 	{ "AEC Loopback", "OUT2L", "OUT2L" },
 	{ "AEC Loopback", "OUT2R", "OUT2R" },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WM2200_MIXER_ROUTES("DSP1", "DSP1L"),
 	WM2200_MIXER_ROUTES("DSP1", "DSP1R"),
 	WM2200_MIXER_ROUTES("DSP2", "DSP2L"),
 	WM2200_MIXER_ROUTES("DSP2", "DSP2R"),
 
-<<<<<<< HEAD
-=======
 	WM2200_DSP_AUX_ROUTES("DSP1"),
 	WM2200_DSP_AUX_ROUTES("DSP2"),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WM2200_MIXER_ROUTES("OUT1L", "OUT1L"),
 	WM2200_MIXER_ROUTES("OUT1R", "OUT1R"),
 	WM2200_MIXER_ROUTES("OUT2L", "OUT2L"),
@@ -1667,24 +1545,6 @@ static const struct snd_soc_dapm_route wm2200_dapm_routes[] = {
 	WM2200_MIXER_ROUTES("LHPF2", "LHPF2"),
 };
 
-<<<<<<< HEAD
-static int wm2200_probe(struct snd_soc_codec *codec)
-{
-	struct wm2200_priv *wm2200 = dev_get_drvdata(codec->dev);
-	int ret;
-
-	wm2200->codec = codec;
-	codec->control_data = wm2200->regmap;
-	codec->dapm.bias_level = SND_SOC_BIAS_OFF;
-
-	ret = snd_soc_codec_set_cache_io(codec, 16, 16, SND_SOC_REGMAP);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	return ret;
-=======
 static int wm2200_probe(struct snd_soc_component *component)
 {
 	struct wm2200_priv *wm2200 = snd_soc_component_get_drvdata(component);
@@ -1692,16 +1552,11 @@ static int wm2200_probe(struct snd_soc_component *component)
 	wm2200->component = component;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm2200_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-=======
 	struct snd_soc_component *component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int lrclk, bclk, fmt_val;
 
 	lrclk = 0;
@@ -1715,11 +1570,7 @@ static int wm2200_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		fmt_val = 2;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported DAI format %d\n",
-=======
 		dev_err(component->dev, "Unsupported DAI format %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fmt & SND_SOC_DAIFMT_FORMAT_MASK);
 		return -EINVAL;
 	}
@@ -1738,11 +1589,7 @@ static int wm2200_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		bclk |= WM2200_AIF1_BCLK_MSTR;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported master mode %d\n",
-=======
 		dev_err(component->dev, "Unsupported master mode %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fmt & SND_SOC_DAIFMT_MASTER_MASK);
 		return -EINVAL;
 	}
@@ -1764,17 +1611,6 @@ static int wm2200_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_1, WM2200_AIF1_BCLK_MSTR |
-			    WM2200_AIF1_BCLK_INV, bclk);
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_2,
-			    WM2200_AIF1TX_LRCLK_MSTR | WM2200_AIF1TX_LRCLK_INV,
-			    lrclk);
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_3,
-			    WM2200_AIF1TX_LRCLK_MSTR | WM2200_AIF1TX_LRCLK_INV,
-			    lrclk);
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_5,
-=======
 	snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_1, WM2200_AIF1_BCLK_MSTR |
 			    WM2200_AIF1_BCLK_INV, bclk);
 	snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_2,
@@ -1784,7 +1620,6 @@ static int wm2200_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 			    WM2200_AIF1TX_LRCLK_MSTR | WM2200_AIF1TX_LRCLK_INV,
 			    lrclk);
 	snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_5,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_AIF1_FMT_MASK, fmt_val);
 
 	return 0;
@@ -1853,33 +1688,20 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct wm2200_priv *wm2200 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm2200_priv *wm2200 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, bclk, lrclk, wl, fl, sr_code;
 	int *bclk_rates;
 
 	/* Data sizes if not using TDM */
-<<<<<<< HEAD
-	wl = snd_pcm_format_width(params_format(params));
-=======
 	wl = params_width(params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wl < 0)
 		return wl;
 	fl = snd_soc_params_to_frame_size(params);
 	if (fl < 0)
 		return fl;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Word length %d bits, frame length %d bits\n",
-=======
 	dev_dbg(component->dev, "Word length %d bits, frame length %d bits\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wl, fl);
 
 	/* Target BCLK rate */
@@ -1888,11 +1710,7 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 		return bclk;
 
 	if (!wm2200->sysclk) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "SYSCLK has no rate set\n");
-=======
 		dev_err(component->dev, "SYSCLK has no rate set\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1900,21 +1718,13 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 		if (wm2200_sr_code[i] == params_rate(params))
 			break;
 	if (i == ARRAY_SIZE(wm2200_sr_code)) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported sample rate: %dHz\n",
-=======
 		dev_err(component->dev, "Unsupported sample rate: %dHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			params_rate(params));
 		return -EINVAL;
 	}
 	sr_code = i;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Target BCLK is %dHz, using %dHz SYSCLK\n",
-=======
 	dev_dbg(component->dev, "Target BCLK is %dHz, using %dHz SYSCLK\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bclk, wm2200->sysclk);
 
 	if (wm2200->sysclk % 4000)
@@ -1926,31 +1736,13 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 		if (bclk_rates[i] >= bclk && (bclk_rates[i] % bclk == 0))
 			break;
 	if (i == WM2200_NUM_BCLK_RATES) {
-<<<<<<< HEAD
-		dev_err(codec->dev,
-=======
 		dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"No valid BCLK for %dHz found from %dHz SYSCLK\n",
 			bclk, wm2200->sysclk);
 		return -EINVAL;
 	}
 
 	bclk = i;
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Setting %dHz BCLK\n", bclk_rates[bclk]);
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_1,
-			    WM2200_AIF1_BCLK_DIV_MASK, bclk);
-
-	lrclk = bclk_rates[bclk] / params_rate(params);
-	dev_dbg(codec->dev, "Setting %dHz LRCLK\n", bclk_rates[bclk] / lrclk);
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
-	    dai->symmetric_rates)
-		snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_7,
-				    WM2200_AIF1RX_BCPF_MASK, lrclk);
-	else
-		snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_6,
-=======
 	dev_dbg(component->dev, "Setting %dHz BCLK\n", bclk_rates[bclk]);
 	snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_1,
 			    WM2200_AIF1_BCLK_DIV_MASK, bclk);
@@ -1963,22 +1755,10 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 				    WM2200_AIF1RX_BCPF_MASK, lrclk);
 	else
 		snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM2200_AIF1TX_BCPF_MASK, lrclk);
 
 	i = (wl << WM2200_AIF1TX_WL_SHIFT) | wl;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_9,
-				    WM2200_AIF1RX_WL_MASK |
-				    WM2200_AIF1RX_SLOT_LEN_MASK, i);
-	else
-		snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_8,
-				    WM2200_AIF1TX_WL_MASK |
-				    WM2200_AIF1TX_SLOT_LEN_MASK, i);
-
-	snd_soc_update_bits(codec, WM2200_CLOCKING_4,
-=======
 		snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_9,
 				    WM2200_AIF1RX_WL_MASK |
 				    WM2200_AIF1RX_SLOT_LEN_MASK, i);
@@ -1988,28 +1768,15 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 				    WM2200_AIF1TX_SLOT_LEN_MASK, i);
 
 	snd_soc_component_update_bits(component, WM2200_CLOCKING_4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_SAMPLE_RATE_1_MASK, sr_code);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct snd_soc_dai_ops wm2200_dai_ops = {
-	.set_fmt = wm2200_set_fmt,
-	.hw_params = wm2200_hw_params,
-};
-
-static int wm2200_set_sysclk(struct snd_soc_codec *codec, int clk_id,
-			     int source, unsigned int freq, int dir)
-{
-	struct wm2200_priv *wm2200 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm2200_set_sysclk(struct snd_soc_component *component, int clk_id,
 			     int source, unsigned int freq, int dir)
 {
 	struct wm2200_priv *wm2200 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fval;
 
 	switch (clk_id) {
@@ -2017,11 +1784,7 @@ static int wm2200_set_sysclk(struct snd_soc_component *component, int clk_id,
 		break;
 
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unknown clock %d\n", clk_id);
-=======
 		dev_err(component->dev, "Unknown clock %d\n", clk_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2032,11 +1795,7 @@ static int wm2200_set_sysclk(struct snd_soc_component *component, int clk_id,
 	case WM2200_CLKSRC_BCLK1:
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid source %d\n", source);
-=======
 		dev_err(component->dev, "Invalid source %d\n", source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2046,11 +1805,7 @@ static int wm2200_set_sysclk(struct snd_soc_component *component, int clk_id,
 		fval = 2;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid clock rate: %d\n", freq);
-=======
 		dev_err(component->dev, "Invalid clock rate: %d\n", freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2058,11 +1813,7 @@ static int wm2200_set_sysclk(struct snd_soc_component *component, int clk_id,
 	 * match.
 	 */
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM2200_CLOCKING_3, WM2200_SYSCLK_FREQ_MASK |
-=======
 	snd_soc_component_update_bits(component, WM2200_CLOCKING_3, WM2200_SYSCLK_FREQ_MASK |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_SYSCLK_SRC_MASK,
 			    fval << WM2200_SYSCLK_FREQ_SHIFT | source);
 
@@ -2170,24 +1921,6 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm2200_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
-			  unsigned int Fref, unsigned int Fout)
-{
-	struct i2c_client *i2c = to_i2c_client(codec->dev);
-	struct wm2200_priv *wm2200 = snd_soc_codec_get_drvdata(codec);
-	struct _fll_div factors;
-	int ret, i, timeout;
-
-	if (!Fout) {
-		dev_dbg(codec->dev, "FLL disabled");
-
-		if (wm2200->fll_fout)
-			pm_runtime_put(codec->dev);
-
-		wm2200->fll_fout = 0;
-		snd_soc_update_bits(codec, WM2200_FLL_CONTROL_1,
-=======
 static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int source,
 			  unsigned int Fref, unsigned int Fout)
 {
@@ -2205,7 +1938,6 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 
 		wm2200->fll_fout = 0;
 		snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM2200_FLL_ENA, 0);
 		return 0;
 	}
@@ -2216,11 +1948,7 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 	case WM2200_FLL_SRC_BCLK:
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid FLL source %d\n", source);
-=======
 		dev_err(component->dev, "Invalid FLL source %d\n", source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2229,39 +1957,13 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 		return ret;
 
 	/* Disable the FLL while we reconfigure */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_1, WM2200_FLL_ENA, 0);
-
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_2,
-=======
 	snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_1, WM2200_FLL_ENA, 0);
 
 	snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_FLL_OUTDIV_MASK | WM2200_FLL_FRATIO_MASK,
 			    (factors.fll_outdiv << WM2200_FLL_OUTDIV_SHIFT) |
 			    factors.fll_fratio);
 	if (factors.theta) {
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM2200_FLL_CONTROL_3,
-				    WM2200_FLL_FRACN_ENA,
-				    WM2200_FLL_FRACN_ENA);
-		snd_soc_update_bits(codec, WM2200_FLL_EFS_2,
-				    WM2200_FLL_EFS_ENA,
-				    WM2200_FLL_EFS_ENA);
-	} else {
-		snd_soc_update_bits(codec, WM2200_FLL_CONTROL_3,
-				    WM2200_FLL_FRACN_ENA, 0);
-		snd_soc_update_bits(codec, WM2200_FLL_EFS_2,
-				    WM2200_FLL_EFS_ENA, 0);
-	}
-
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_4, WM2200_FLL_THETA_MASK,
-			    factors.theta);
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_6, WM2200_FLL_N_MASK,
-			    factors.n);
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_7,
-=======
 		snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_3,
 				    WM2200_FLL_FRACN_ENA,
 				    WM2200_FLL_FRACN_ENA);
@@ -2280,30 +1982,19 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 	snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_6, WM2200_FLL_N_MASK,
 			    factors.n);
 	snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_FLL_CLK_REF_DIV_MASK |
 			    WM2200_FLL_CLK_REF_SRC_MASK,
 			    (factors.fll_refclk_div
 			     << WM2200_FLL_CLK_REF_DIV_SHIFT) | source);
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM2200_FLL_EFS_1,
-=======
 	snd_soc_component_update_bits(component, WM2200_FLL_EFS_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_FLL_LAMBDA_MASK, factors.lambda);
 
 	/* Clear any pending completions */
 	try_wait_for_completion(&wm2200->fll_lock);
 
-<<<<<<< HEAD
-	pm_runtime_get_sync(codec->dev);
-
-	snd_soc_update_bits(codec, WM2200_FLL_CONTROL_1,
-=======
 	pm_runtime_get_sync(component->dev);
 
 	snd_soc_component_update_bits(component, WM2200_FLL_CONTROL_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_FLL_ENA, WM2200_FLL_ENA);
 
 	if (i2c->irq)
@@ -2311,42 +2002,25 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 	else
 		timeout = 50;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM2200_CLOCKING_3, WM2200_SYSCLK_ENA,
-=======
 	snd_soc_component_update_bits(component, WM2200_CLOCKING_3, WM2200_SYSCLK_ENA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_SYSCLK_ENA);
 
 	/* Poll for the lock; will use the interrupt to exit quickly */
 	for (i = 0; i < timeout; i++) {
 		if (i2c->irq) {
-<<<<<<< HEAD
-			ret = wait_for_completion_timeout(&wm2200->fll_lock,
-							  msecs_to_jiffies(25));
-			if (ret > 0)
-=======
 			time_left = wait_for_completion_timeout(
 							&wm2200->fll_lock,
 							msecs_to_jiffies(25));
 			if (time_left > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		} else {
 			msleep(1);
 		}
 
-<<<<<<< HEAD
-		ret = snd_soc_read(codec,
-				   WM2200_INTERRUPT_RAW_STATUS_2);
-		if (ret < 0) {
-			dev_err(codec->dev,
-=======
 		ret = snd_soc_component_read(component,
 				   WM2200_INTERRUPT_RAW_STATUS_2);
 		if (ret < 0) {
 			dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Failed to read FLL status: %d\n",
 				ret);
 			continue;
@@ -2355,13 +2029,8 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 			break;
 	}
 	if (i == timeout) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "FLL lock timed out\n");
-		pm_runtime_put(codec->dev);
-=======
 		dev_err(component->dev, "FLL lock timed out\n");
 		pm_runtime_put(component->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 
@@ -2369,34 +2038,13 @@ static int wm2200_set_fll(struct snd_soc_component *component, int fll_id, int s
 	wm2200->fll_fref = Fref;
 	wm2200->fll_fout = Fout;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "FLL running %dHz->%dHz\n", Fref, Fout);
-=======
 	dev_dbg(component->dev, "FLL running %dHz->%dHz\n", Fref, Fout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int wm2200_dai_probe(struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	unsigned int val = 0;
-	int ret;
-
-	ret = snd_soc_read(codec, WM2200_GPIO_CTRL_1);
-	if (ret >= 0) {
-		if ((ret & WM2200_GP1_FN_MASK) != 0) {
-			dai->symmetric_rates = true;
-			val = WM2200_AIF1TX_LRCLK_SRC;
-		}
-	} else {
-		dev_err(codec->dev, "Failed to read GPIO 1 config: %d\n", ret);
-	}
-
-	snd_soc_update_bits(codec, WM2200_AUDIO_IF_1_2,
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm2200_priv *wm2200 = snd_soc_component_get_drvdata(component);
 	unsigned int val = 0;
@@ -2413,21 +2061,17 @@ static int wm2200_dai_probe(struct snd_soc_dai *dai)
 	}
 
 	snd_soc_component_update_bits(component, WM2200_AUDIO_IF_1_2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM2200_AIF1TX_LRCLK_SRC, val);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static const struct snd_soc_dai_ops wm2200_dai_ops = {
 	.probe = wm2200_dai_probe,
 	.set_fmt = wm2200_set_fmt,
 	.hw_params = wm2200_hw_params,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM2200_RATES SNDRV_PCM_RATE_8000_48000
 
 #define WM2200_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
@@ -2435,10 +2079,6 @@ static const struct snd_soc_dai_ops wm2200_dai_ops = {
 
 static struct snd_soc_dai_driver wm2200_dai = {
 	.name = "wm2200",
-<<<<<<< HEAD
-	.probe = wm2200_dai_probe,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.playback = {
 		.stream_name = "Playback",
 		.channels_min = 2,
@@ -2456,22 +2096,6 @@ static struct snd_soc_dai_driver wm2200_dai = {
 	.ops = &wm2200_dai_ops,
 };
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver soc_codec_wm2200 = {
-	.probe = wm2200_probe,
-
-	.idle_bias_off = true,
-	.ignore_pmdown_time = true,
-	.set_sysclk = wm2200_set_sysclk,
-	.set_pll = wm2200_set_fll,
-
-	.controls = wm2200_snd_controls,
-	.num_controls = ARRAY_SIZE(wm2200_snd_controls),
-	.dapm_widgets = wm2200_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(wm2200_dapm_widgets),
-	.dapm_routes = wm2200_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(wm2200_dapm_routes),
-=======
 static const struct snd_soc_component_driver soc_component_wm2200 = {
 	.probe			= wm2200_probe,
 	.set_sysclk		= wm2200_set_sysclk,
@@ -2483,7 +2107,6 @@ static const struct snd_soc_component_driver soc_component_wm2200 = {
 	.dapm_routes		= wm2200_dapm_routes,
 	.num_dapm_routes	= ARRAY_SIZE(wm2200_dapm_routes),
 	.endianness		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t wm2200_irq(int irq, void *data)
@@ -2525,23 +2148,15 @@ static const struct regmap_config wm2200_regmap = {
 	.reg_bits = 16,
 	.val_bits = 16,
 
-<<<<<<< HEAD
-	.max_register = WM2200_MAX_REGISTER,
-=======
 	.max_register = WM2200_MAX_REGISTER + (ARRAY_SIZE(wm2200_ranges) *
 					       WM2200_DSP_SPACING),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_defaults = wm2200_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm2200_reg_defaults),
 	.volatile_reg = wm2200_volatile_register,
 	.readable_reg = wm2200_readable_register,
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
 	.ranges = wm2200_ranges,
 	.num_ranges = ARRAY_SIZE(wm2200_ranges),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const unsigned int wm2200_dig_vu[] = {
@@ -2563,21 +2178,13 @@ static const unsigned int wm2200_mic_ctrl_reg[] = {
 	WM2200_IN3L_CONTROL,
 };
 
-<<<<<<< HEAD
-static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-=======
 static int wm2200_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm2200_pdata *pdata = dev_get_platdata(&i2c->dev);
 	struct wm2200_priv *wm2200;
 	unsigned int reg;
 	int ret, i;
-<<<<<<< HEAD
-=======
 	int val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm2200 = devm_kzalloc(&i2c->dev, sizeof(struct wm2200_priv),
 			      GFP_KERNEL);
@@ -2587,20 +2194,11 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 	wm2200->dev = &i2c->dev;
 	init_completion(&wm2200->fll_lock);
 
-<<<<<<< HEAD
-	wm2200->regmap = regmap_init_i2c(i2c, &wm2200_regmap);
-=======
 	wm2200->regmap = devm_regmap_init_i2c(i2c, &wm2200_regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm2200->regmap)) {
 		ret = PTR_ERR(wm2200->regmap);
 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
 			ret);
-<<<<<<< HEAD
-		goto err;
-	}
-
-=======
 		return ret;
 	}
 
@@ -2626,7 +2224,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 	for (i = 0; i < ARRAY_SIZE(wm2200->dsp); i++)
 		wm_adsp1_init(&wm2200->dsp[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata)
 		wm2200->pdata = *pdata;
 
@@ -2635,14 +2232,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 	for (i = 0; i < ARRAY_SIZE(wm2200->core_supplies); i++)
 		wm2200->core_supplies[i].supply = wm2200_core_supply_names[i];
 
-<<<<<<< HEAD
-	ret = regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm2200->core_supplies),
-				 wm2200->core_supplies);
-	if (ret != 0) {
-		dev_err(&i2c->dev, "Failed to request core supplies: %d\n",
-			ret);
-		goto err_regmap;
-=======
 	ret = devm_regulator_bulk_get(&i2c->dev,
 				      ARRAY_SIZE(wm2200->core_supplies),
 				      wm2200->core_supplies);
@@ -2650,7 +2239,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 		dev_err(&i2c->dev, "Failed to request core supplies: %d\n",
 			ret);
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm2200->core_supplies),
@@ -2658,31 +2246,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to enable core supplies: %d\n",
 			ret);
-<<<<<<< HEAD
-		goto err_core;
-	}
-
-	if (wm2200->pdata.ldo_ena) {
-		ret = gpio_request_one(wm2200->pdata.ldo_ena,
-				       GPIOF_OUT_INIT_HIGH, "WM2200 LDOENA");
-		if (ret < 0) {
-			dev_err(&i2c->dev, "Failed to request LDOENA %d: %d\n",
-				wm2200->pdata.ldo_ena, ret);
-			goto err_enable;
-		}
-		msleep(2);
-	}
-
-	if (wm2200->pdata.reset) {
-		ret = gpio_request_one(wm2200->pdata.reset,
-				       GPIOF_OUT_INIT_HIGH, "WM2200 /RESET");
-		if (ret < 0) {
-			dev_err(&i2c->dev, "Failed to request /RESET %d: %d\n",
-				wm2200->pdata.reset, ret);
-			goto err_ldo;
-		}
-	}
-=======
 		return ret;
 	}
 
@@ -2708,7 +2271,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 		goto err_ldo;
 	}
 	gpiod_set_consumer_name(wm2200->reset, "WM2200 /RESET");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = regmap_read(wm2200->regmap, WM2200_SOFTWARE_RESET, &reg);
 	if (ret < 0) {
@@ -2773,8 +2335,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 		regmap_write(wm2200->regmap, WM2200_AUDIO_IF_1_16 + i, i);
 	}
 
-<<<<<<< HEAD
-=======
 	for (i = 0; i < WM2200_MAX_MICBIAS; i++) {
 		if (!wm2200->pdata.micbias[i].mb_lvl &&
 		    !wm2200->pdata.micbias[i].bypass)
@@ -2805,7 +2365,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 				   WM2200_MICB1_RATE, val);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(wm2200->pdata.in_mode); i++) {
 		regmap_update_bits(wm2200->regmap, wm2200_mic_ctrl_reg[i],
 				   WM2200_IN1_MODE_MASK |
@@ -2833,11 +2392,7 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 	pm_runtime_enable(&i2c->dev);
 	pm_request_idle(&i2c->dev);
 
-<<<<<<< HEAD
-	ret = snd_soc_register_codec(&i2c->dev, &soc_codec_wm2200,
-=======
 	ret = devm_snd_soc_register_component(&i2c->dev, &soc_component_wm2200,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     &wm2200_dai, 1);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
@@ -2848,53 +2403,6 @@ static int wm2200_i2c_probe(struct i2c_client *i2c)
 
 err_pm_runtime:
 	pm_runtime_disable(&i2c->dev);
-<<<<<<< HEAD
-err_reset:
-	if (wm2200->pdata.reset) {
-		gpio_set_value_cansleep(wm2200->pdata.reset, 0);
-		gpio_free(wm2200->pdata.reset);
-	}
-err_ldo:
-	if (wm2200->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm2200->pdata.ldo_ena, 0);
-		gpio_free(wm2200->pdata.ldo_ena);
-	}
-err_enable:
-	regulator_bulk_disable(ARRAY_SIZE(wm2200->core_supplies),
-			       wm2200->core_supplies);
-err_core:
-	regulator_bulk_free(ARRAY_SIZE(wm2200->core_supplies),
-			    wm2200->core_supplies);
-err_regmap:
-	regmap_exit(wm2200->regmap);
-err:
-	return ret;
-}
-
-static __devexit int wm2200_i2c_remove(struct i2c_client *i2c)
-{
-	struct wm2200_priv *wm2200 = i2c_get_clientdata(i2c);
-
-	snd_soc_unregister_codec(&i2c->dev);
-	if (i2c->irq)
-		free_irq(i2c->irq, wm2200);
-	if (wm2200->pdata.reset) {
-		gpio_set_value_cansleep(wm2200->pdata.reset, 0);
-		gpio_free(wm2200->pdata.reset);
-	}
-	if (wm2200->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm2200->pdata.ldo_ena, 0);
-		gpio_free(wm2200->pdata.ldo_ena);
-	}
-	regulator_bulk_free(ARRAY_SIZE(wm2200->core_supplies),
-			    wm2200->core_supplies);
-	regmap_exit(wm2200->regmap);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_RUNTIME
-=======
 	if (i2c->irq)
 		free_irq(i2c->irq, wm2200);
 err_reset:
@@ -2922,19 +2430,13 @@ static void wm2200_i2c_remove(struct i2c_client *i2c)
 }
 
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wm2200_runtime_suspend(struct device *dev)
 {
 	struct wm2200_priv *wm2200 = dev_get_drvdata(dev);
 
 	regcache_cache_only(wm2200->regmap, true);
 	regcache_mark_dirty(wm2200->regmap);
-<<<<<<< HEAD
-	if (wm2200->pdata.ldo_ena)
-		gpio_set_value_cansleep(wm2200->pdata.ldo_ena, 0);
-=======
 	gpiod_set_value_cansleep(wm2200->ldo_ena, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regulator_bulk_disable(ARRAY_SIZE(wm2200->core_supplies),
 			       wm2200->core_supplies);
 
@@ -2954,13 +2456,8 @@ static int wm2200_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	if (wm2200->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm2200->pdata.ldo_ena, 1);
-=======
 	if (wm2200->ldo_ena) {
 		gpiod_set_value_cansleep(wm2200->ldo_ena, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(2);
 	}
 
@@ -2971,11 +2468,7 @@ static int wm2200_runtime_resume(struct device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-static struct dev_pm_ops wm2200_pm = {
-=======
 static const struct dev_pm_ops wm2200_pm = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_RUNTIME_PM_OPS(wm2200_runtime_suspend, wm2200_runtime_resume,
 			   NULL)
 };
@@ -2989,27 +2482,6 @@ MODULE_DEVICE_TABLE(i2c, wm2200_i2c_id);
 static struct i2c_driver wm2200_i2c_driver = {
 	.driver = {
 		.name = "wm2200",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.pm = &wm2200_pm,
-	},
-	.probe =    wm2200_i2c_probe,
-	.remove =   __devexit_p(wm2200_i2c_remove),
-	.id_table = wm2200_i2c_id,
-};
-
-static int __init wm2200_modinit(void)
-{
-	return i2c_add_driver(&wm2200_i2c_driver);
-}
-module_init(wm2200_modinit);
-
-static void __exit wm2200_exit(void)
-{
-	i2c_del_driver(&wm2200_i2c_driver);
-}
-module_exit(wm2200_exit);
-=======
 		.pm = &wm2200_pm,
 	},
 	.probe =    wm2200_i2c_probe,
@@ -3018,7 +2490,6 @@ module_exit(wm2200_exit);
 };
 
 module_i2c_driver(wm2200_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM2200 driver");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");

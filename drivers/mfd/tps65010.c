@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tps65010 - driver for tps6501x power management chips
  *
  * Copyright (C) 2004 Texas Instruments
  * Copyright (C) 2004-2005 David Brownell
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -39,15 +19,9 @@
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
 
-<<<<<<< HEAD
-#include <linux/i2c/tps65010.h>
-
-#include <linux/gpio.h>
-=======
 #include <linux/mfd/tps65010.h>
 
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*-------------------------------------------------------------------------*/
@@ -255,13 +229,8 @@ static int dbg_show(struct seq_file *s, void *_)
 	seq_printf(s, "mask2     %s\n", buf);
 	/* ignore ackint2 */
 
-<<<<<<< HEAD
-	schedule_delayed_work(&tps->work, POWER_POLL_DELAY);
-
-=======
 	queue_delayed_work(system_power_efficient_wq, &tps->work,
 			   POWER_POLL_DELAY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* VMAIN voltage, enable lowpower, etc */
 	value = i2c_smbus_read_byte_data(tps->client, TPS_VDCDC1);
@@ -418,12 +387,8 @@ static void tps65010_interrupt(struct tps65010 *tps)
 			&& (tps->chgstatus & (TPS_CHG_USB|TPS_CHG_AC)))
 		poll = 1;
 	if (poll)
-<<<<<<< HEAD
-		schedule_delayed_work(&tps->work, POWER_POLL_DELAY);
-=======
 		queue_delayed_work(system_power_efficient_wq, &tps->work,
 				   POWER_POLL_DELAY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* also potentially gpio-in rise or fall */
 }
@@ -439,10 +404,6 @@ static void tps65010_work(struct work_struct *work)
 	tps65010_interrupt(tps);
 
 	if (test_and_clear_bit(FLAG_VBUS_CHANGED, &tps->flags)) {
-<<<<<<< HEAD
-		int	status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8	chgconfig, tmp;
 
 		chgconfig = i2c_smbus_read_byte_data(tps->client,
@@ -453,13 +414,8 @@ static void tps65010_work(struct work_struct *work)
 		else if (tps->vbus >= 100)
 			chgconfig |= TPS_VBUS_CHARGING;
 
-<<<<<<< HEAD
-		status = i2c_smbus_write_byte_data(tps->client,
-				TPS_CHGCONFIG, chgconfig);
-=======
 		i2c_smbus_write_byte_data(tps->client,
 					  TPS_CHGCONFIG, chgconfig);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* vbus update fails unless VBUS is connected! */
 		tmp = i2c_smbus_read_byte_data(tps->client, TPS_CHGCONFIG);
@@ -479,11 +435,7 @@ static irqreturn_t tps65010_irq(int irq, void *_tps)
 
 	disable_irq_nosync(irq);
 	set_bit(FLAG_IRQ_ENABLE, &tps->flags);
-<<<<<<< HEAD
-	schedule_delayed_work(&tps->work, 0);
-=======
 	queue_delayed_work(system_power_efficient_wq, &tps->work, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -511,11 +463,7 @@ tps65010_output(struct gpio_chip *chip, unsigned offset, int value)
 	if (offset < 4) {
 		struct tps65010		*tps;
 
-<<<<<<< HEAD
-		tps = container_of(chip, struct tps65010, chip);
-=======
 		tps = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(tps->outmask & (1 << offset)))
 			return -EINVAL;
 		tps65010_set_gpio_out_value(offset + 1, value);
@@ -532,28 +480,16 @@ static int tps65010_gpio_get(struct gpio_chip *chip, unsigned offset)
 	int			value;
 	struct tps65010		*tps;
 
-<<<<<<< HEAD
-	tps = container_of(chip, struct tps65010, chip);
-=======
 	tps = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (offset < 4) {
 		value = i2c_smbus_read_byte_data(tps->client, TPS_DEFGPIO);
 		if (value < 0)
-<<<<<<< HEAD
-			return 0;
-		if (value & (1 << (offset + 4)))	/* output */
-			return !(value & (1 << offset));
-		else					/* input */
-			return (value & (1 << offset));
-=======
 			return value;
 		if (value & (1 << (offset + 4)))	/* output */
 			return !(value & (1 << offset));
 		else					/* input */
 			return !!(value & (1 << offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* REVISIT we *could* report LED1/nPG and LED2 state ... */
@@ -565,19 +501,6 @@ static int tps65010_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static struct tps65010 *the_tps;
 
-<<<<<<< HEAD
-static int __exit tps65010_remove(struct i2c_client *client)
-{
-	struct tps65010		*tps = i2c_get_clientdata(client);
-	struct tps65010_board	*board = client->dev.platform_data;
-
-	if (board && board->teardown) {
-		int status = board->teardown(client, board->context);
-		if (status < 0)
-			dev_dbg(&client->dev, "board %s %s err %d\n",
-				"teardown", client->name, status);
-	}
-=======
 static void tps65010_remove(struct i2c_client *client)
 {
 	struct tps65010		*tps = i2c_get_clientdata(client);
@@ -585,24 +508,10 @@ static void tps65010_remove(struct i2c_client *client)
 
 	if (board && board->teardown)
 		board->teardown(client, &tps->chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (client->irq > 0)
 		free_irq(client->irq, tps);
 	cancel_delayed_work_sync(&tps->work);
 	debugfs_remove(tps->file);
-<<<<<<< HEAD
-	kfree(tps);
-	the_tps = NULL;
-	return 0;
-}
-
-static int tps65010_probe(struct i2c_client *client,
-			  const struct i2c_device_id *id)
-{
-	struct tps65010		*tps;
-	int			status;
-	struct tps65010_board	*board = client->dev.platform_data;
-=======
 	the_tps = NULL;
 }
 
@@ -612,7 +521,6 @@ static int tps65010_probe(struct i2c_client *client)
 	struct tps65010		*tps;
 	int			status;
 	struct tps65010_board	*board = dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (the_tps) {
 		dev_dbg(&client->dev, "only one tps6501x chip allowed\n");
@@ -622,11 +530,7 @@ static int tps65010_probe(struct i2c_client *client)
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	tps = kzalloc(sizeof *tps, GFP_KERNEL);
-=======
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tps)
 		return -ENOMEM;
 
@@ -640,20 +544,11 @@ static int tps65010_probe(struct i2c_client *client)
 	 */
 	if (client->irq > 0) {
 		status = request_irq(client->irq, tps65010_irq,
-<<<<<<< HEAD
-			IRQF_SAMPLE_RANDOM | IRQF_TRIGGER_FALLING,
-			DRIVER_NAME, tps);
-		if (status < 0) {
-			dev_dbg(&client->dev, "can't get IRQ %d, err %d\n",
-					client->irq, status);
-			goto fail1;
-=======
 				     IRQF_TRIGGER_FALLING, DRIVER_NAME, tps);
 		if (status < 0) {
 			dev_dbg(&client->dev, "can't get IRQ %d, err %d\n",
 					client->irq, status);
 			return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* annoying race here, ideally we'd have an option
 		 * to claim the irq now and enable it later.
@@ -720,19 +615,11 @@ static int tps65010_probe(struct i2c_client *client)
 				tps, DEBUG_FOPS);
 
 	/* optionally register GPIOs */
-<<<<<<< HEAD
-	if (board && board->base != 0) {
-		tps->outmask = board->outmask;
-
-		tps->chip.label = client->name;
-		tps->chip.dev = &client->dev;
-=======
 	if (board) {
 		tps->outmask = board->outmask;
 
 		tps->chip.label = client->name;
 		tps->chip.parent = &client->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tps->chip.owner = THIS_MODULE;
 
 		tps->chip.set = tps65010_gpio_set;
@@ -741,28 +628,16 @@ static int tps65010_probe(struct i2c_client *client)
 		/* NOTE:  only partial support for inputs; nyet IRQs */
 		tps->chip.get = tps65010_gpio_get;
 
-<<<<<<< HEAD
-		tps->chip.base = board->base;
-		tps->chip.ngpio = 7;
-		tps->chip.can_sleep = 1;
-
-		status = gpiochip_add(&tps->chip);
-=======
 		tps->chip.base = -1;
 		tps->chip.ngpio = 7;
 		tps->chip.can_sleep = 1;
 
 		status = gpiochip_add_data(&tps->chip, tps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0)
 			dev_err(&client->dev, "can't add gpiochip, err %d\n",
 					status);
 		else if (board->setup) {
-<<<<<<< HEAD
-			status = board->setup(client, board->context);
-=======
 			status = board->setup(client, &tps->chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (status < 0) {
 				dev_dbg(&client->dev,
 					"board %s %s err %d\n",
@@ -773,12 +648,6 @@ static int tps65010_probe(struct i2c_client *client)
 	}
 
 	return 0;
-<<<<<<< HEAD
-fail1:
-	kfree(tps);
-	return status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id tps65010_id[] = {
@@ -795,13 +664,8 @@ static struct i2c_driver tps65010_driver = {
 	.driver = {
 		.name	= "tps65010",
 	},
-<<<<<<< HEAD
-	.probe	= tps65010_probe,
-	.remove	= __exit_p(tps65010_remove),
-=======
 	.probe = tps65010_probe,
 	.remove	= tps65010_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = tps65010_id,
 };
 
@@ -832,12 +696,8 @@ int tps65010_set_vbus_draw(unsigned mA)
 			&& test_and_set_bit(
 				FLAG_VBUS_CHANGED, &the_tps->flags)) {
 		/* gadget drivers call this in_irq() */
-<<<<<<< HEAD
-		schedule_delayed_work(&the_tps->work, 0);
-=======
 		queue_delayed_work(system_power_efficient_wq, &the_tps->work,
 				   0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	local_irq_restore(flags);
 
@@ -1180,30 +1040,7 @@ EXPORT_SYMBOL(tps65013_set_low_pwr);
 
 static int __init tps_init(void)
 {
-<<<<<<< HEAD
-	u32	tries = 3;
-	int	status = -ENODEV;
-
-	printk(KERN_INFO "%s: version %s\n", DRIVER_NAME, DRIVER_VERSION);
-
-	/* some boards have startup glitches */
-	while (tries--) {
-		status = i2c_add_driver(&tps65010_driver);
-		if (the_tps)
-			break;
-		i2c_del_driver(&tps65010_driver);
-		if (!tries) {
-			printk(KERN_ERR "%s: no chip?\n", DRIVER_NAME);
-			return -ENODEV;
-		}
-		pr_debug("%s: re-probe ...\n", DRIVER_NAME);
-		msleep(10);
-	}
-
-	return status;
-=======
 	return i2c_add_driver(&tps65010_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /* NOTE:  this MUST be initialized before the other parts of the system
  * that rely on it ... but after the i2c bus on which this relies.

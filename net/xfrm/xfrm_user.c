@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* xfrm_user.c: User interface to configure xfrm engine.
  *
  * Copyright (C) 2002 David S. Miller (davem@redhat.com)
@@ -14,10 +11,7 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crypto.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -35,19 +29,6 @@
 #include <net/xfrm.h>
 #include <net/netlink.h>
 #include <net/ah.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#if IS_ENABLED(CONFIG_IPV6)
-#include <linux/in6.h>
-#endif
-
-static inline int aead_len(struct xfrm_algo_aead *alg)
-{
-	return sizeof(*alg) + ((alg->alg_key_len + 7) / 8);
-}
-
-static int verify_one_alg(struct nlattr **attrs, enum xfrm_attr_type_t type)
-=======
 #include <linux/uaccess.h>
 #if IS_ENABLED(CONFIG_IPV6)
 #include <linux/in6.h>
@@ -56,7 +37,6 @@ static int verify_one_alg(struct nlattr **attrs, enum xfrm_attr_type_t type)
 
 static int verify_one_alg(struct nlattr **attrs, enum xfrm_attr_type_t type,
 			  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[type];
 	struct xfrm_algo *algp;
@@ -65,15 +45,10 @@ static int verify_one_alg(struct nlattr **attrs, enum xfrm_attr_type_t type,
 		return 0;
 
 	algp = nla_data(rt);
-<<<<<<< HEAD
-	if (nla_len(rt) < xfrm_alg_len(algp))
-		return -EINVAL;
-=======
 	if (nla_len(rt) < (int)xfrm_alg_len(algp)) {
 		NL_SET_ERR_MSG(extack, "Invalid AUTH/CRYPT/COMP attribute length");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case XFRMA_ALG_AUTH:
@@ -82,16 +57,6 @@ static int verify_one_alg(struct nlattr **attrs, enum xfrm_attr_type_t type,
 		break;
 
 	default:
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-
-	algp->alg_name[CRYPTO_MAX_ALG_NAME - 1] = '\0';
-	return 0;
-}
-
-static int verify_auth_trunc(struct nlattr **attrs)
-=======
 		NL_SET_ERR_MSG(extack, "Invalid algorithm attribute type");
 		return -EINVAL;
 	}
@@ -102,7 +67,6 @@ static int verify_auth_trunc(struct nlattr **attrs)
 
 static int verify_auth_trunc(struct nlattr **attrs,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_ALG_AUTH_TRUNC];
 	struct xfrm_algo_auth *algp;
@@ -111,16 +75,6 @@ static int verify_auth_trunc(struct nlattr **attrs,
 		return 0;
 
 	algp = nla_data(rt);
-<<<<<<< HEAD
-	if (nla_len(rt) < xfrm_alg_auth_len(algp))
-		return -EINVAL;
-
-	algp->alg_name[CRYPTO_MAX_ALG_NAME - 1] = '\0';
-	return 0;
-}
-
-static int verify_aead(struct nlattr **attrs)
-=======
 	if (nla_len(rt) < (int)xfrm_alg_auth_len(algp)) {
 		NL_SET_ERR_MSG(extack, "Invalid AUTH_TRUNC attribute length");
 		return -EINVAL;
@@ -131,7 +85,6 @@ static int verify_aead(struct nlattr **attrs)
 }
 
 static int verify_aead(struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_ALG_AEAD];
 	struct xfrm_algo_aead *algp;
@@ -140,19 +93,12 @@ static int verify_aead(struct nlattr **attrs, struct netlink_ext_ack *extack)
 		return 0;
 
 	algp = nla_data(rt);
-<<<<<<< HEAD
-	if (nla_len(rt) < aead_len(algp))
-		return -EINVAL;
-
-	algp->alg_name[CRYPTO_MAX_ALG_NAME - 1] = '\0';
-=======
 	if (nla_len(rt) < (int)aead_len(algp)) {
 		NL_SET_ERR_MSG(extack, "Invalid AEAD attribute length");
 		return -EINVAL;
 	}
 
 	algp->alg_name[sizeof(algp->alg_name) - 1] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -165,11 +111,7 @@ static void verify_one_addr(struct nlattr **attrs, enum xfrm_attr_type_t type,
 		*addrp = nla_data(rt);
 }
 
-<<<<<<< HEAD
-static inline int verify_sec_ctx_len(struct nlattr **attrs)
-=======
 static inline int verify_sec_ctx_len(struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_SEC_CTX];
 	struct xfrm_user_sec_ctx *uctx;
@@ -178,55 +120,22 @@ static inline int verify_sec_ctx_len(struct nlattr **attrs, struct netlink_ext_a
 		return 0;
 
 	uctx = nla_data(rt);
-<<<<<<< HEAD
-	if (uctx->len != (sizeof(struct xfrm_user_sec_ctx) + uctx->ctx_len))
-		return -EINVAL;
-=======
 	if (uctx->len > nla_len(rt) ||
 	    uctx->len != (sizeof(struct xfrm_user_sec_ctx) + uctx->ctx_len)) {
 		NL_SET_ERR_MSG(extack, "Invalid security context length");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static inline int verify_replay(struct xfrm_usersa_info *p,
-<<<<<<< HEAD
-				struct nlattr **attrs)
-=======
 				struct nlattr **attrs,
 				struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_REPLAY_ESN_VAL];
 	struct xfrm_replay_state_esn *rs;
 
-<<<<<<< HEAD
-	if (p->flags & XFRM_STATE_ESN) {
-		if (!rt)
-			return -EINVAL;
-
-		rs = nla_data(rt);
-
-		if (rs->bmp_len > XFRMA_REPLAY_ESN_MAX / sizeof(rs->bmp[0]) / 8)
-			return -EINVAL;
-
-		if (nla_len(rt) < xfrm_replay_state_esn_len(rs) &&
-		    nla_len(rt) != sizeof(*rs))
-			return -EINVAL;
-	}
-
-	if (!rt)
-		return 0;
-
-	if (p->id.proto != IPPROTO_ESP)
-		return -EINVAL;
-
-	if (p->replay_window != 0)
-		return -EINVAL;
-=======
 	if (!rt) {
 		if (p->flags & XFRM_STATE_ESN) {
 			NL_SET_ERR_MSG(extack, "Missing required attribute for ESN");
@@ -258,18 +167,13 @@ static inline int verify_replay(struct xfrm_usersa_info *p,
 		NL_SET_ERR_MSG(extack, "ESN not compatible with legacy replay_window");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int verify_newsa_info(struct xfrm_usersa_info *p,
-<<<<<<< HEAD
-			     struct nlattr **attrs)
-=======
 			     struct nlattr **attrs,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -283,16 +187,11 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 		break;
 #else
 		err = -EAFNOSUPPORT;
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "IPv6 support disabled");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 #endif
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Invalid address family");
 		goto out;
 	}
@@ -325,50 +224,12 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 
 	default:
 		NL_SET_ERR_MSG(extack, "Invalid address family in selector");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	err = -EINVAL;
 	switch (p->id.proto) {
 	case IPPROTO_AH:
-<<<<<<< HEAD
-		if ((!attrs[XFRMA_ALG_AUTH]	&&
-		     !attrs[XFRMA_ALG_AUTH_TRUNC]) ||
-		    attrs[XFRMA_ALG_AEAD]	||
-		    attrs[XFRMA_ALG_CRYPT]	||
-		    attrs[XFRMA_ALG_COMP]	||
-		    attrs[XFRMA_TFCPAD])
-			goto out;
-		break;
-
-	case IPPROTO_ESP:
-		if (attrs[XFRMA_ALG_COMP])
-			goto out;
-		if (!attrs[XFRMA_ALG_AUTH] &&
-		    !attrs[XFRMA_ALG_AUTH_TRUNC] &&
-		    !attrs[XFRMA_ALG_CRYPT] &&
-		    !attrs[XFRMA_ALG_AEAD])
-			goto out;
-		if ((attrs[XFRMA_ALG_AUTH] ||
-		     attrs[XFRMA_ALG_AUTH_TRUNC] ||
-		     attrs[XFRMA_ALG_CRYPT]) &&
-		    attrs[XFRMA_ALG_AEAD])
-			goto out;
-		if (attrs[XFRMA_TFCPAD] &&
-		    p->mode != XFRM_MODE_TUNNEL)
-			goto out;
-		break;
-
-	case IPPROTO_COMP:
-		if (!attrs[XFRMA_ALG_COMP]	||
-		    attrs[XFRMA_ALG_AEAD]	||
-		    attrs[XFRMA_ALG_AUTH]	||
-		    attrs[XFRMA_ALG_AUTH_TRUNC]	||
-		    attrs[XFRMA_ALG_CRYPT]	||
-		    attrs[XFRMA_TFCPAD])
-			goto out;
-=======
 		if (!attrs[XFRMA_ALG_AUTH]	&&
 		    !attrs[XFRMA_ALG_AUTH_TRUNC]) {
 			NL_SET_ERR_MSG(extack, "Missing required attribute for AH: AUTH_TRUNC or AUTH");
@@ -432,7 +293,6 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 			NL_SET_ERR_MSG(extack, "SPI is too large for COMP (must be < 0x10000)");
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 #if IS_ENABLED(CONFIG_IPV6)
@@ -445,11 +305,6 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 		    attrs[XFRMA_ALG_CRYPT]	||
 		    attrs[XFRMA_ENCAP]		||
 		    attrs[XFRMA_SEC_CTX]	||
-<<<<<<< HEAD
-		    attrs[XFRMA_TFCPAD]		||
-		    !attrs[XFRMA_COADDR])
-			goto out;
-=======
 		    attrs[XFRMA_TFCPAD]) {
 			NL_SET_ERR_MSG(extack, "Invalid attributes for DSTOPTS/ROUTING");
 			goto out;
@@ -459,29 +314,10 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 			NL_SET_ERR_MSG(extack, "Missing required COADDR attribute for DSTOPTS/ROUTING");
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 
 	default:
-<<<<<<< HEAD
-		goto out;
-	}
-
-	if ((err = verify_aead(attrs)))
-		goto out;
-	if ((err = verify_auth_trunc(attrs)))
-		goto out;
-	if ((err = verify_one_alg(attrs, XFRMA_ALG_AUTH)))
-		goto out;
-	if ((err = verify_one_alg(attrs, XFRMA_ALG_CRYPT)))
-		goto out;
-	if ((err = verify_one_alg(attrs, XFRMA_ALG_COMP)))
-		goto out;
-	if ((err = verify_sec_ctx_len(attrs)))
-		goto out;
-	if ((err = verify_replay(p, attrs)))
-=======
 		NL_SET_ERR_MSG(extack, "Unsupported protocol");
 		goto out;
 	}
@@ -499,7 +335,6 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 	if ((err = verify_sec_ctx_len(attrs, extack)))
 		goto out;
 	if ((err = verify_replay(p, attrs, extack)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = -EINVAL;
@@ -511,17 +346,12 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Unsupported mode");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	err = 0;
 
-<<<<<<< HEAD
-=======
 	if (attrs[XFRMA_MTIMER_THRESH]) {
 		if (!attrs[XFRMA_ENCAP]) {
 			NL_SET_ERR_MSG(extack, "MTIMER_THRESH attribute can only be set on ENCAP states");
@@ -530,18 +360,13 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
 
 static int attach_one_algo(struct xfrm_algo **algpp, u8 *props,
 			   struct xfrm_algo_desc *(*get_byname)(const char *, int),
-<<<<<<< HEAD
-			   struct nlattr *rta)
-=======
 			   struct nlattr *rta, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_algo *p, *ualg;
 	struct xfrm_algo_desc *algo;
@@ -552,15 +377,10 @@ static int attach_one_algo(struct xfrm_algo **algpp, u8 *props,
 	ualg = nla_data(rta);
 
 	algo = get_byname(ualg->alg_name, 1);
-<<<<<<< HEAD
-	if (!algo)
-		return -ENOSYS;
-=======
 	if (!algo) {
 		NL_SET_ERR_MSG(extack, "Requested COMP algorithm not found");
 		return -ENOSYS;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*props = algo->desc.sadb_alg_id;
 
 	p = kmemdup(ualg, xfrm_alg_len(ualg), GFP_KERNEL);
@@ -572,10 +392,6 @@ static int attach_one_algo(struct xfrm_algo **algpp, u8 *props,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int attach_auth(struct xfrm_algo_auth **algpp, u8 *props,
-		       struct nlattr *rta)
-=======
 static int attach_crypt(struct xfrm_state *x, struct nlattr *rta,
 			struct netlink_ext_ack *extack)
 {
@@ -606,7 +422,6 @@ static int attach_crypt(struct xfrm_state *x, struct nlattr *rta,
 
 static int attach_auth(struct xfrm_algo_auth **algpp, u8 *props,
 		       struct nlattr *rta, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_algo *ualg;
 	struct xfrm_algo_auth *p;
@@ -618,15 +433,10 @@ static int attach_auth(struct xfrm_algo_auth **algpp, u8 *props,
 	ualg = nla_data(rta);
 
 	algo = xfrm_aalg_get_byname(ualg->alg_name, 1);
-<<<<<<< HEAD
-	if (!algo)
-		return -ENOSYS;
-=======
 	if (!algo) {
 		NL_SET_ERR_MSG(extack, "Requested AUTH algorithm not found");
 		return -ENOSYS;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*props = algo->desc.sadb_alg_id;
 
 	p = kmalloc(sizeof(*p) + (ualg->alg_key_len + 7) / 8, GFP_KERNEL);
@@ -643,11 +453,7 @@ static int attach_auth(struct xfrm_algo_auth **algpp, u8 *props,
 }
 
 static int attach_auth_trunc(struct xfrm_algo_auth **algpp, u8 *props,
-<<<<<<< HEAD
-			     struct nlattr *rta)
-=======
 			     struct nlattr *rta, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_algo_auth *p, *ualg;
 	struct xfrm_algo_desc *algo;
@@ -658,13 +464,6 @@ static int attach_auth_trunc(struct xfrm_algo_auth **algpp, u8 *props,
 	ualg = nla_data(rta);
 
 	algo = xfrm_aalg_get_byname(ualg->alg_name, 1);
-<<<<<<< HEAD
-	if (!algo)
-		return -ENOSYS;
-	if ((ualg->alg_trunc_len / 8) > MAX_AH_AUTH_LEN ||
-	    ualg->alg_trunc_len > algo->uinfo.auth.icv_fullbits)
-		return -EINVAL;
-=======
 	if (!algo) {
 		NL_SET_ERR_MSG(extack, "Requested AUTH_TRUNC algorithm not found");
 		return -ENOSYS;
@@ -673,7 +472,6 @@ static int attach_auth_trunc(struct xfrm_algo_auth **algpp, u8 *props,
 		NL_SET_ERR_MSG(extack, "Invalid length requested for truncated ICV");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*props = algo->desc.sadb_alg_id;
 
 	p = kmemdup(ualg, xfrm_alg_auth_len(ualg), GFP_KERNEL);
@@ -688,13 +486,8 @@ static int attach_auth_trunc(struct xfrm_algo_auth **algpp, u8 *props,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int attach_aead(struct xfrm_algo_aead **algpp, u8 *props,
-		       struct nlattr *rta)
-=======
 static int attach_aead(struct xfrm_state *x, struct nlattr *rta,
 		       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_algo_aead *p, *ualg;
 	struct xfrm_algo_desc *algo;
@@ -705,45 +498,28 @@ static int attach_aead(struct xfrm_state *x, struct nlattr *rta,
 	ualg = nla_data(rta);
 
 	algo = xfrm_aead_get_byname(ualg->alg_name, ualg->alg_icv_len, 1);
-<<<<<<< HEAD
-	if (!algo)
-		return -ENOSYS;
-	*props = algo->desc.sadb_alg_id;
-=======
 	if (!algo) {
 		NL_SET_ERR_MSG(extack, "Requested AEAD algorithm not found");
 		return -ENOSYS;
 	}
 	x->props.ealgo = algo->desc.sadb_alg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = kmemdup(ualg, aead_len(ualg), GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
 
 	strcpy(p->alg_name, algo->name);
-<<<<<<< HEAD
-	*algpp = p;
-=======
 	x->aead = p;
 	x->geniv = algo->uinfo.aead.geniv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static inline int xfrm_replay_verify_len(struct xfrm_replay_state_esn *replay_esn,
-<<<<<<< HEAD
-					 struct nlattr *rp)
-{
-	struct xfrm_replay_state_esn *up;
-	int ulen;
-=======
 					 struct nlattr *rp,
 					 struct netlink_ext_ack *extack)
 {
 	struct xfrm_replay_state_esn *up;
 	unsigned int ulen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!replay_esn || !rp)
 		return 0;
@@ -753,15 +529,6 @@ static inline int xfrm_replay_verify_len(struct xfrm_replay_state_esn *replay_es
 
 	/* Check the overall length and the internal bitmap length to avoid
 	 * potential overflow. */
-<<<<<<< HEAD
-	if (nla_len(rp) < ulen ||
-	    xfrm_replay_state_esn_len(replay_esn) != ulen ||
-	    replay_esn->bmp_len != up->bmp_len)
-		return -EINVAL;
-
-	if (up->replay_window > up->bmp_len * sizeof(__u32) * 8)
-		return -EINVAL;
-=======
 	if (nla_len(rp) < (int)ulen) {
 		NL_SET_ERR_MSG(extack, "ESN attribute is too short");
 		return -EINVAL;
@@ -781,7 +548,6 @@ static inline int xfrm_replay_verify_len(struct xfrm_replay_state_esn *replay_es
 		NL_SET_ERR_MSG(extack, "ESN replay window is longer than the bitmap");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -791,22 +557,14 @@ static int xfrm_alloc_replay_state_esn(struct xfrm_replay_state_esn **replay_esn
 				       struct nlattr *rta)
 {
 	struct xfrm_replay_state_esn *p, *pp, *up;
-<<<<<<< HEAD
-	int klen, ulen;
-=======
 	unsigned int klen, ulen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rta)
 		return 0;
 
 	up = nla_data(rta);
 	klen = xfrm_replay_state_esn_len(up);
-<<<<<<< HEAD
-	ulen = nla_len(rta) >= klen ? klen : sizeof(*up);
-=======
 	ulen = nla_len(rta) >= (int)klen ? klen : sizeof(*up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = kzalloc(klen, GFP_KERNEL);
 	if (!p)
@@ -827,15 +585,9 @@ static int xfrm_alloc_replay_state_esn(struct xfrm_replay_state_esn **replay_esn
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int xfrm_user_sec_ctx_size(struct xfrm_sec_ctx *xfrm_ctx)
-{
-	int len = 0;
-=======
 static inline unsigned int xfrm_user_sec_ctx_size(struct xfrm_sec_ctx *xfrm_ctx)
 {
 	unsigned int len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xfrm_ctx) {
 		len += sizeof(struct xfrm_user_sec_ctx);
@@ -850,12 +602,8 @@ static void copy_from_user_state(struct xfrm_state *x, struct xfrm_usersa_info *
 	memcpy(&x->sel, &p->sel, sizeof(x->sel));
 	memcpy(&x->lft, &p->lft, sizeof(x->lft));
 	x->props.mode = p->mode;
-<<<<<<< HEAD
-	x->props.replay_window = p->replay_window;
-=======
 	x->props.replay_window = min_t(unsigned int, p->replay_window,
 					sizeof(x->replay.bitmap) * 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	x->props.reqid = p->reqid;
 	x->props.family = p->family;
 	memcpy(&x->props.saddr, &p->saddr, sizeof(x->props.saddr));
@@ -878,14 +626,9 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
 	struct nlattr *lt = attrs[XFRMA_LTIME_VAL];
 	struct nlattr *et = attrs[XFRMA_ETIMER_THRESH];
 	struct nlattr *rt = attrs[XFRMA_REPLAY_THRESH];
-<<<<<<< HEAD
-
-	if (re) {
-=======
 	struct nlattr *mt = attrs[XFRMA_MTIMER_THRESH];
 
 	if (re && x->replay_esn && x->preplay_esn) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xfrm_replay_state_esn *replay_esn;
 		replay_esn = nla_data(re);
 		memcpy(x->replay_esn, replay_esn,
@@ -915,8 +658,6 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
 
 	if (rt)
 		x->replay_maxdiff = nla_get_u32(rt);
-<<<<<<< HEAD
-=======
 
 	if (mt)
 		x->mapping_maxage = nla_get_u32(mt);
@@ -933,18 +674,13 @@ static void xfrm_smark_init(struct nlattr **attrs, struct xfrm_mark *m)
 	} else {
 		m->v = m->m = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xfrm_state *xfrm_state_construct(struct net *net,
 					       struct xfrm_usersa_info *p,
 					       struct nlattr **attrs,
-<<<<<<< HEAD
-					       int *errp)
-=======
 					       int *errp,
 					       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_state *x = xfrm_state_alloc(net);
 	int err = -ENOMEM;
@@ -954,29 +690,6 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 
 	copy_from_user_state(x, p);
 
-<<<<<<< HEAD
-	if ((err = attach_aead(&x->aead, &x->props.ealgo,
-			       attrs[XFRMA_ALG_AEAD])))
-		goto error;
-	if ((err = attach_auth_trunc(&x->aalg, &x->props.aalgo,
-				     attrs[XFRMA_ALG_AUTH_TRUNC])))
-		goto error;
-	if (!x->props.aalgo) {
-		if ((err = attach_auth(&x->aalg, &x->props.aalgo,
-				       attrs[XFRMA_ALG_AUTH])))
-			goto error;
-	}
-	if ((err = attach_one_algo(&x->ealg, &x->props.ealgo,
-				   xfrm_ealg_get_byname,
-				   attrs[XFRMA_ALG_CRYPT])))
-		goto error;
-	if ((err = attach_one_algo(&x->calg, &x->props.calgo,
-				   xfrm_calg_get_byname,
-				   attrs[XFRMA_ALG_COMP])))
-		goto error;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (attrs[XFRMA_ENCAP]) {
 		x->encap = kmemdup(nla_data(attrs[XFRMA_ENCAP]),
 				   sizeof(*x->encap), GFP_KERNEL);
@@ -984,12 +697,6 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 			goto error;
 	}
 
-<<<<<<< HEAD
-	if (attrs[XFRMA_TFCPAD])
-		x->tfcpad = nla_get_u32(attrs[XFRMA_TFCPAD]);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (attrs[XFRMA_COADDR]) {
 		x->coaddr = kmemdup(nla_data(attrs[XFRMA_COADDR]),
 				    sizeof(*x->coaddr), GFP_KERNEL);
@@ -997,17 +704,6 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 			goto error;
 	}
 
-<<<<<<< HEAD
-	xfrm_mark_get(attrs, &x->mark);
-
-	err = __xfrm_init_state(x, false);
-	if (err)
-		goto error;
-
-	if (attrs[XFRMA_SEC_CTX] &&
-	    security_xfrm_state_alloc(x, nla_data(attrs[XFRMA_SEC_CTX])))
-		goto error;
-=======
 	if (attrs[XFRMA_SA_EXTRA_FLAGS])
 		x->props.extra_flags = nla_get_u32(attrs[XFRMA_SA_EXTRA_FLAGS]);
 
@@ -1048,7 +744,6 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 		if (err)
 			goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((err = xfrm_alloc_replay_state_esn(&x->replay_esn, &x->preplay_esn,
 					       attrs[XFRMA_REPLAY_ESN_VAL])))
@@ -1059,18 +754,12 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 	/* sysctl_xfrm_aevent_etime is in 100ms units */
 	x->replay_maxage = (net->xfrm.sysctl_aevent_etime*HZ)/XFRM_AE_ETH_M;
 
-<<<<<<< HEAD
-	if ((err = xfrm_init_replay(x)))
-=======
 	if ((err = xfrm_init_replay(x, extack)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	/* override default values from above */
 	xfrm_update_ae_params(x, attrs, 0);
 
-<<<<<<< HEAD
-=======
 	/* configure the hardware if offload is requested */
 	if (attrs[XFRMA_OFFLOAD_DEV]) {
 		err = xfrm_dev_state_add(net, x,
@@ -1080,7 +769,6 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 			goto error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return x;
 
 error:
@@ -1092,35 +780,19 @@ error_no_put:
 }
 
 static int xfrm_add_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 		       struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_usersa_info *p = nlmsg_data(nlh);
 	struct xfrm_state *x;
 	int err;
 	struct km_event c;
-<<<<<<< HEAD
-	uid_t loginuid = audit_get_loginuid(current);
-	u32 sessionid = audit_get_sessionid(current);
-	u32 sid;
-
-	err = verify_newsa_info(p, attrs);
-	if (err)
-		return err;
-
-	x = xfrm_state_construct(net, p, attrs, &err);
-=======
 
 	err = verify_newsa_info(p, attrs, extack);
 	if (err)
 		return err;
 
 	x = xfrm_state_construct(net, p, attrs, &err, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!x)
 		return err;
 
@@ -1130,33 +802,20 @@ static int xfrm_add_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 	else
 		err = xfrm_state_update(x);
 
-<<<<<<< HEAD
-	security_task_getsecid(current, &sid);
-	xfrm_audit_state_add(x, err ? 0 : 1, loginuid, sessionid, sid);
-
-	if (err < 0) {
-		x->km.state = XFRM_STATE_DEAD;
-=======
 	xfrm_audit_state_add(x, err ? 0 : 1, true);
 
 	if (err < 0) {
 		x->km.state = XFRM_STATE_DEAD;
 		xfrm_dev_state_delete(x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__xfrm_state_put(x);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	c.seq = nlh->nlmsg_seq;
-	c.pid = nlh->nlmsg_pid;
-=======
 	if (x->km.state == XFRM_STATE_VOID)
 		x->km.state = XFRM_STATE_VALID;
 
 	c.seq = nlh->nlmsg_seq;
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c.event = nlh->nlmsg_type;
 
 	km_state_notify(x, &c);
@@ -1200,23 +859,13 @@ static struct xfrm_state *xfrm_user_state_lookup(struct net *net,
 }
 
 static int xfrm_del_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 		       struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_state *x;
 	int err = -ESRCH;
 	struct km_event c;
 	struct xfrm_usersa_id *p = nlmsg_data(nlh);
-<<<<<<< HEAD
-	uid_t loginuid = audit_get_loginuid(current);
-	u32 sessionid = audit_get_sessionid(current);
-	u32 sid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x = xfrm_user_state_lookup(net, p, attrs, &err);
 	if (x == NULL)
@@ -1226,38 +875,22 @@ static int xfrm_del_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 		goto out;
 
 	if (xfrm_state_kern(x)) {
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "SA is in use by tunnels");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EPERM;
 		goto out;
 	}
 
 	err = xfrm_state_delete(x);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto out;
 
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-=======
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c.event = nlh->nlmsg_type;
 	km_state_notify(x, &c);
 
 out:
-<<<<<<< HEAD
-	security_task_getsecid(current, &sid);
-	xfrm_audit_state_delete(x, err ? 0 : 1, loginuid, sessionid, sid);
-=======
 	xfrm_audit_state_delete(x, err ? 0 : 1, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xfrm_state_put(x);
 	return err;
 }
@@ -1268,17 +901,12 @@ static void copy_to_user_state(struct xfrm_state *x, struct xfrm_usersa_info *p)
 	memcpy(&p->id, &x->id, sizeof(p->id));
 	memcpy(&p->sel, &x->sel, sizeof(p->sel));
 	memcpy(&p->lft, &x->lft, sizeof(p->lft));
-<<<<<<< HEAD
-	memcpy(&p->curlft, &x->curlft, sizeof(p->curlft));
-	memcpy(&p->stats, &x->stats, sizeof(p->stats));
-=======
 	if (x->xso.dev)
 		xfrm_dev_state_update_stats(x);
 	memcpy(&p->curlft, &x->curlft, sizeof(p->curlft));
 	put_unaligned(x->stats.replay_window, &p->stats.replay_window);
 	put_unaligned(x->stats.replay, &p->stats.replay);
 	put_unaligned(x->stats.integrity_failed, &p->stats.integrity_failed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&p->saddr, &x->props.saddr, sizeof(p->saddr));
 	p->mode = x->props.mode;
 	p->replay_window = x->props.replay_window;
@@ -1316,12 +944,6 @@ static int copy_sec_ctx(struct xfrm_sec_ctx *s, struct sk_buff *skb)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int copy_to_user_auth(struct xfrm_algo_auth *auth, struct sk_buff *skb)
-{
-	struct xfrm_algo *algo;
-	struct nlattr *nla;
-=======
 static int copy_user_offload(struct xfrm_dev_offload *xso, struct sk_buff *skb)
 {
 	struct xfrm_user_offload *xuo;
@@ -1354,23 +976,11 @@ static int copy_to_user_auth(struct xfrm_algo_auth *auth, struct sk_buff *skb)
 	struct xfrm_algo_auth *ap;
 	struct nlattr *nla;
 	bool redact_secret = xfrm_redact();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nla = nla_reserve(skb, XFRMA_ALG_AUTH,
 			  sizeof(*algo) + (auth->alg_key_len + 7) / 8);
 	if (!nla)
 		return -EMSGSIZE;
-<<<<<<< HEAD
-
-	algo = nla_data(nla);
-	strncpy(algo->alg_name, auth->alg_name, sizeof(algo->alg_name));
-	memcpy(algo->alg_key, auth->alg_key, (auth->alg_key_len + 7) / 8);
-	algo->alg_key_len = auth->alg_key_len;
-
-	return 0;
-}
-
-=======
 	algo = nla_data(nla);
 	strncpy(algo->alg_name, auth->alg_name, sizeof(algo->alg_name));
 
@@ -1484,56 +1094,11 @@ static int xfrm_smark_put(struct sk_buff *skb, struct xfrm_mark *m)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Don't change this without updating xfrm_sa_len! */
 static int copy_to_user_state_extra(struct xfrm_state *x,
 				    struct xfrm_usersa_info *p,
 				    struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	copy_to_user_state(x, p);
-
-	if (x->coaddr)
-		NLA_PUT(skb, XFRMA_COADDR, sizeof(*x->coaddr), x->coaddr);
-
-	if (x->lastused)
-		NLA_PUT_U64(skb, XFRMA_LASTUSED, x->lastused);
-
-	if (x->aead)
-		NLA_PUT(skb, XFRMA_ALG_AEAD, aead_len(x->aead), x->aead);
-	if (x->aalg) {
-		if (copy_to_user_auth(x->aalg, skb))
-			goto nla_put_failure;
-
-		NLA_PUT(skb, XFRMA_ALG_AUTH_TRUNC,
-			xfrm_alg_auth_len(x->aalg), x->aalg);
-	}
-	if (x->ealg)
-		NLA_PUT(skb, XFRMA_ALG_CRYPT, xfrm_alg_len(x->ealg), x->ealg);
-	if (x->calg)
-		NLA_PUT(skb, XFRMA_ALG_COMP, sizeof(*(x->calg)), x->calg);
-
-	if (x->encap)
-		NLA_PUT(skb, XFRMA_ENCAP, sizeof(*x->encap), x->encap);
-
-	if (x->tfcpad)
-		NLA_PUT_U32(skb, XFRMA_TFCPAD, x->tfcpad);
-
-	if (xfrm_mark_put(skb, &x->mark))
-		goto nla_put_failure;
-
-	if (x->replay_esn)
-		NLA_PUT(skb, XFRMA_REPLAY_ESN_VAL,
-			xfrm_replay_state_esn_len(x->replay_esn), x->replay_esn);
-
-	if (x->security && copy_sec_ctx(x->security, skb) < 0)
-		goto nla_put_failure;
-
-	return 0;
-
-nla_put_failure:
-	return -EMSGSIZE;
-=======
 	int ret = 0;
 
 	copy_to_user_state(x, p);
@@ -1621,7 +1186,6 @@ nla_put_failure:
 		ret = nla_put_u32(skb, XFRMA_MTIMER_THRESH, x->mapping_maxage);
 out:
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dump_one_state(struct xfrm_state *x, int count, void *ptr)
@@ -1629,19 +1193,12 @@ static int dump_one_state(struct xfrm_state *x, int count, void *ptr)
 	struct xfrm_dump_info *sp = ptr;
 	struct sk_buff *in_skb = sp->in_skb;
 	struct sk_buff *skb = sp->out_skb;
-<<<<<<< HEAD
-=======
 	struct xfrm_translator *xtr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xfrm_usersa_info *p;
 	struct nlmsghdr *nlh;
 	int err;
 
-<<<<<<< HEAD
-	nlh = nlmsg_put(skb, NETLINK_CB(in_skb).pid, sp->nlmsg_seq,
-=======
 	nlh = nlmsg_put(skb, NETLINK_CB(in_skb).portid, sp->nlmsg_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_MSG_NEWSA, sizeof(*p), sp->nlmsg_flags);
 	if (nlh == NULL)
 		return -EMSGSIZE;
@@ -1649,17 +1206,6 @@ static int dump_one_state(struct xfrm_state *x, int count, void *ptr)
 	p = nlmsg_data(nlh);
 
 	err = copy_to_user_state_extra(x, p, skb);
-<<<<<<< HEAD
-	if (err)
-		goto nla_put_failure;
-
-	nlmsg_end(skb, nlh);
-	return 0;
-
-nla_put_failure:
-	nlmsg_cancel(skb, nlh);
-	return err;
-=======
 	if (err) {
 		nlmsg_cancel(skb, nlh);
 		return err;
@@ -1678,21 +1224,16 @@ nla_put_failure:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_dump_sa_done(struct netlink_callback *cb)
 {
 	struct xfrm_state_walk *walk = (struct xfrm_state_walk *) &cb->args[1];
-<<<<<<< HEAD
-	xfrm_state_walk_done(walk);
-=======
 	struct sock *sk = cb->skb->sk;
 	struct net *net = sock_net(sk);
 
 	if (cb->args[0])
 		xfrm_state_walk_done(walk, net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1711,10 +1252,6 @@ static int xfrm_dump_sa(struct sk_buff *skb, struct netlink_callback *cb)
 	info.nlmsg_flags = NLM_F_MULTI;
 
 	if (!cb->args[0]) {
-<<<<<<< HEAD
-		cb->args[0] = 1;
-		xfrm_state_walk_init(walk, 0);
-=======
 		struct nlattr *attrs[XFRMA_MAX+1];
 		struct xfrm_address_filter *filter = NULL;
 		u8 proto = 0;
@@ -1746,7 +1283,6 @@ static int xfrm_dump_sa(struct sk_buff *skb, struct netlink_callback *cb)
 
 		xfrm_state_walk_init(walk, proto, filter);
 		cb->args[0] = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	(void) xfrm_state_walk(net, walk, dump_one_state, &info);
@@ -1779,17 +1315,6 @@ static struct sk_buff *xfrm_state_netlink(struct sk_buff *in_skb,
 	return skb;
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_spdinfo_msgsize(void)
-{
-	return NLMSG_ALIGN(4)
-	       + nla_total_size(sizeof(struct xfrmu_spdinfo))
-	       + nla_total_size(sizeof(struct xfrmu_spdhinfo));
-}
-
-static int build_spdinfo(struct sk_buff *skb, struct net *net,
-			 u32 pid, u32 seq, u32 flags)
-=======
 /* A wrapper for nlmsg_multicast() checking that nlsk is still available.
  * Must be called with RCU read lock.
  */
@@ -1829,17 +1354,10 @@ static inline unsigned int xfrm_spdinfo_msgsize(void)
 
 static int build_spdinfo(struct sk_buff *skb, struct net *net,
 			 u32 portid, u32 seq, u32 flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrmk_spdinfo si;
 	struct xfrmu_spdinfo spc;
 	struct xfrmu_spdhinfo sph;
-<<<<<<< HEAD
-	struct nlmsghdr *nlh;
-	u32 *f;
-
-	nlh = nlmsg_put(skb, pid, seq, XFRM_MSG_NEWSPDINFO, sizeof(u32), 0);
-=======
 	struct xfrmu_spdhthresh spt4, spt6;
 	struct nlmsghdr *nlh;
 	int err;
@@ -1847,7 +1365,6 @@ static int build_spdinfo(struct sk_buff *skb, struct net *net,
 	unsigned lseq;
 
 	nlh = nlmsg_put(skb, portid, seq, XFRM_MSG_NEWSPDINFO, sizeof(u32), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL) /* shouldn't really happen ... */
 		return -EMSGSIZE;
 
@@ -1863,20 +1380,6 @@ static int build_spdinfo(struct sk_buff *skb, struct net *net,
 	sph.spdhcnt = si.spdhcnt;
 	sph.spdhmcnt = si.spdhmcnt;
 
-<<<<<<< HEAD
-	NLA_PUT(skb, XFRMA_SPD_INFO, sizeof(spc), &spc);
-	NLA_PUT(skb, XFRMA_SPD_HINFO, sizeof(sph), &sph);
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-}
-
-static int xfrm_get_spdinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 	do {
 		lseq = read_seqbegin(&net->xfrm.policy_hthresh.lock);
 
@@ -1959,33 +1462,18 @@ static int xfrm_set_spdinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
 static int xfrm_get_spdinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
 			    struct nlattr **attrs,
 			    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct sk_buff *r_skb;
 	u32 *flags = nlmsg_data(nlh);
-<<<<<<< HEAD
-	u32 spid = NETLINK_CB(skb).pid;
-	u32 seq = nlh->nlmsg_seq;
-=======
 	u32 sportid = NETLINK_CB(skb).portid;
 	u32 seq = nlh->nlmsg_seq;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r_skb = nlmsg_new(xfrm_spdinfo_msgsize(), GFP_ATOMIC);
 	if (r_skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_spdinfo(r_skb, net, spid, seq, *flags) < 0)
-		BUG();
-
-	return nlmsg_unicast(net->xfrm.nlsk, r_skb, spid);
-}
-
-static inline size_t xfrm_sadinfo_msgsize(void)
-=======
 	err = build_spdinfo(r_skb, net, sportid, seq, *flags);
 	BUG_ON(err < 0);
 
@@ -1993,7 +1481,6 @@ static inline size_t xfrm_sadinfo_msgsize(void)
 }
 
 static inline unsigned int xfrm_sadinfo_msgsize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(4)
 	       + nla_total_size(sizeof(struct xfrmu_sadhinfo))
@@ -2001,25 +1488,15 @@ static inline unsigned int xfrm_sadinfo_msgsize(void)
 }
 
 static int build_sadinfo(struct sk_buff *skb, struct net *net,
-<<<<<<< HEAD
-			 u32 pid, u32 seq, u32 flags)
-=======
 			 u32 portid, u32 seq, u32 flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrmk_sadinfo si;
 	struct xfrmu_sadhinfo sh;
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-	u32 *f;
-
-	nlh = nlmsg_put(skb, pid, seq, XFRM_MSG_NEWSADINFO, sizeof(u32), 0);
-=======
 	int err;
 	u32 *f;
 
 	nlh = nlmsg_put(skb, portid, seq, XFRM_MSG_NEWSADINFO, sizeof(u32), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL) /* shouldn't really happen ... */
 		return -EMSGSIZE;
 
@@ -2030,20 +1507,6 @@ static int build_sadinfo(struct sk_buff *skb, struct net *net,
 	sh.sadhmcnt = si.sadhmcnt;
 	sh.sadhcnt = si.sadhcnt;
 
-<<<<<<< HEAD
-	NLA_PUT_U32(skb, XFRMA_SAD_CNT, si.sadcnt);
-	NLA_PUT(skb, XFRMA_SAD_HINFO, sizeof(sh), &sh);
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-}
-
-static int xfrm_get_sadinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 	err = nla_put_u32(skb, XFRMA_SAD_CNT, si.sadcnt);
 	if (!err)
 		err = nla_put(skb, XFRMA_SAD_HINFO, sizeof(sh), &sh);
@@ -2059,34 +1522,18 @@ static int xfrm_get_sadinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
 static int xfrm_get_sadinfo(struct sk_buff *skb, struct nlmsghdr *nlh,
 			    struct nlattr **attrs,
 			    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct sk_buff *r_skb;
 	u32 *flags = nlmsg_data(nlh);
-<<<<<<< HEAD
-	u32 spid = NETLINK_CB(skb).pid;
-	u32 seq = nlh->nlmsg_seq;
-=======
 	u32 sportid = NETLINK_CB(skb).portid;
 	u32 seq = nlh->nlmsg_seq;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r_skb = nlmsg_new(xfrm_sadinfo_msgsize(), GFP_ATOMIC);
 	if (r_skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_sadinfo(r_skb, net, spid, seq, *flags) < 0)
-		BUG();
-
-	return nlmsg_unicast(net->xfrm.nlsk, r_skb, spid);
-}
-
-static int xfrm_get_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 	err = build_sadinfo(r_skb, net, sportid, seq, *flags);
 	BUG_ON(err < 0);
 
@@ -2095,7 +1542,6 @@ static int xfrm_get_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 static int xfrm_get_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 		       struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_usersa_id *p = nlmsg_data(nlh);
@@ -2111,72 +1557,31 @@ static int xfrm_get_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (IS_ERR(resp_skb)) {
 		err = PTR_ERR(resp_skb);
 	} else {
-<<<<<<< HEAD
-		err = nlmsg_unicast(net->xfrm.nlsk, resp_skb, NETLINK_CB(skb).pid);
-=======
 		err = nlmsg_unicast(net->xfrm.nlsk, resp_skb, NETLINK_CB(skb).portid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	xfrm_state_put(x);
 out_noput:
 	return err;
 }
 
-<<<<<<< HEAD
-static int verify_userspi_info(struct xfrm_userspi_info *p)
-{
-	switch (p->info.id.proto) {
-	case IPPROTO_AH:
-	case IPPROTO_ESP:
-		break;
-
-	case IPPROTO_COMP:
-		/* IPCOMP spi is 16-bits. */
-		if (p->max >= 0x10000)
-			return -EINVAL;
-		break;
-
-	default:
-		return -EINVAL;
-	}
-
-	if (p->min > p->max)
-		return -EINVAL;
-
-	return 0;
-}
-
-static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 			      struct nlattr **attrs,
 			      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_state *x;
 	struct xfrm_userspi_info *p;
-<<<<<<< HEAD
-=======
 	struct xfrm_translator *xtr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *resp_skb;
 	xfrm_address_t *daddr;
 	int family;
 	int err;
 	u32 mark;
 	struct xfrm_mark m;
-<<<<<<< HEAD
-
-	p = nlmsg_data(nlh);
-	err = verify_userspi_info(p);
-=======
 	u32 if_id = 0;
 
 	p = nlmsg_data(nlh);
 	err = verify_spi_info(p->info.id.proto, p->min, p->max, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_noput;
 
@@ -2186,11 +1591,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 	x = NULL;
 
 	mark = xfrm_mark_get(attrs, &m);
-<<<<<<< HEAD
-	if (p->info.seq) {
-		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-		if (x && xfrm_addr_cmp(&x->id.daddr, daddr, family)) {
-=======
 
 	if (attrs[XFRMA_IF_ID])
 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
@@ -2198,7 +1598,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (p->info.seq) {
 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
 		if (x && !xfrm_addr_equal(&x->id.daddr, daddr, family)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xfrm_state_put(x);
 			x = NULL;
 		}
@@ -2206,16 +1605,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	if (!x)
 		x = xfrm_find_acq(net, &m, p->info.mode, p->info.reqid,
-<<<<<<< HEAD
-				  p->info.id.proto, daddr,
-				  &p->info.saddr, 1,
-				  family);
-	err = -ENOENT;
-	if (x == NULL)
-		goto out_noput;
-
-	err = xfrm_alloc_spi(x, p->min, p->max);
-=======
 				  if_id, p->info.id.proto, daddr,
 				  &p->info.saddr, 1,
 				  family);
@@ -2226,7 +1615,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 	}
 
 	err = xfrm_alloc_spi(x, p->min, p->max, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -2236,9 +1624,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	err = nlmsg_unicast(net->xfrm.nlsk, resp_skb, NETLINK_CB(skb).pid);
-=======
 	xtr = xfrm_get_translator();
 	if (xtr) {
 		err = xtr->alloc_compat(skb, nlmsg_hdr(skb));
@@ -2251,7 +1636,6 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 	}
 
 	err = nlmsg_unicast(net->xfrm.nlsk, resp_skb, NETLINK_CB(skb).portid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	xfrm_state_put(x);
@@ -2259,11 +1643,7 @@ out_noput:
 	return err;
 }
 
-<<<<<<< HEAD
-static int verify_policy_dir(u8 dir)
-=======
 static int verify_policy_dir(u8 dir, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (dir) {
 	case XFRM_POLICY_IN:
@@ -2272,21 +1652,14 @@ static int verify_policy_dir(u8 dir, struct netlink_ext_ack *extack)
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Invalid policy direction");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int verify_policy_type(u8 type)
-=======
 static int verify_policy_type(u8 type, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (type) {
 	case XFRM_POLICY_TYPE_MAIN:
@@ -2296,26 +1669,18 @@ static int verify_policy_type(u8 type, struct netlink_ext_ack *extack)
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Invalid policy type");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int verify_newpolicy_info(struct xfrm_userpolicy_info *p)
-{
-=======
 static int verify_newpolicy_info(struct xfrm_userpolicy_info *p,
 				 struct netlink_ext_ack *extack)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (p->share) {
 	case XFRM_SHARE_ANY:
 	case XFRM_SHARE_SESSION:
@@ -2324,10 +1689,7 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Invalid policy share");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2337,31 +1699,21 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Invalid policy action");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	switch (p->sel.family) {
 	case AF_INET:
-<<<<<<< HEAD
-=======
 		if (p->sel.prefixlen_d > 32 || p->sel.prefixlen_s > 32) {
 			NL_SET_ERR_MSG(extack, "Invalid prefix length in selector (must be <= 32 for IPv4)");
 			return -EINVAL;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case AF_INET6:
 #if IS_ENABLED(CONFIG_IPV6)
-<<<<<<< HEAD
-		break;
-#else
-=======
 		if (p->sel.prefixlen_d > 128 || p->sel.prefixlen_s > 128) {
 			NL_SET_ERR_MSG(extack, "Invalid prefix length in selector (must be <= 128 for IPv6)");
 			return -EINVAL;
@@ -2370,17 +1722,10 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p,
 		break;
 #else
 		NL_SET_ERR_MSG(extack, "IPv6 support disabled");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return  -EAFNOSUPPORT;
 #endif
 
 	default:
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-
-	return verify_policy_dir(p->dir);
-=======
 		NL_SET_ERR_MSG(extack, "Invalid selector family");
 		return -EINVAL;
 	}
@@ -2394,7 +1739,6 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int copy_from_user_sec_ctx(struct xfrm_policy *pol, struct nlattr **attrs)
@@ -2406,11 +1750,7 @@ static int copy_from_user_sec_ctx(struct xfrm_policy *pol, struct nlattr **attrs
 		return 0;
 
 	uctx = nla_data(rt);
-<<<<<<< HEAD
-	return security_xfrm_policy_alloc(&pol->security, uctx);
-=======
 	return security_xfrm_policy_alloc(&pol->security, uctx, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void copy_templates(struct xfrm_policy *xp, struct xfrm_user_tmpl *ut,
@@ -2438,14 +1778,6 @@ static void copy_templates(struct xfrm_policy *xp, struct xfrm_user_tmpl *ut,
 	}
 }
 
-<<<<<<< HEAD
-static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family)
-{
-	int i;
-
-	if (nr > XFRM_MAX_DEPTH)
-		return -EINVAL;
-=======
 static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 			 int dir, struct netlink_ext_ack *extack)
 {
@@ -2458,7 +1790,6 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 	}
 
 	prev_family = family;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < nr; i++) {
 		/* We never validated the ut->family value, so many
@@ -2471,8 +1802,6 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 		if (!ut[i].family)
 			ut[i].family = family;
 
-<<<<<<< HEAD
-=======
 		switch (ut[i].mode) {
 		case XFRM_MODE_TUNNEL:
 		case XFRM_MODE_BEET:
@@ -2495,7 +1824,6 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 
 		prev_family = ut[i].family;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ut[i].family) {
 		case AF_INET:
 			break;
@@ -2504,15 +1832,12 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 			break;
 #endif
 		default:
-<<<<<<< HEAD
-=======
 			NL_SET_ERR_MSG(extack, "Invalid family in template");
 			return -EINVAL;
 		}
 
 		if (!xfrm_id_proto_valid(ut[i].id.proto)) {
 			NL_SET_ERR_MSG(extack, "Invalid XFRM protocol in template");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -2520,12 +1845,8 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs)
-=======
 static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs,
 			       int dir, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_TMPL];
 
@@ -2536,11 +1857,7 @@ static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs,
 		int nr = nla_len(rt) / sizeof(*utmpl);
 		int err;
 
-<<<<<<< HEAD
-		err = validate_tmpl(nr, utmpl, pol->family);
-=======
 		err = validate_tmpl(nr, utmpl, pol->family, dir, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -2549,12 +1866,8 @@ static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int copy_from_user_policy_type(u8 *tp, struct nlattr **attrs)
-=======
 static int copy_from_user_policy_type(u8 *tp, struct nlattr **attrs,
 				      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_POLICY_TYPE];
 	struct xfrm_userpolicy_type *upt;
@@ -2566,11 +1879,7 @@ static int copy_from_user_policy_type(u8 *tp, struct nlattr **attrs,
 		type = upt->type;
 	}
 
-<<<<<<< HEAD
-	err = verify_policy_type(type);
-=======
 	err = verify_policy_type(type, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -2605,15 +1914,11 @@ static void copy_to_user_policy(struct xfrm_policy *xp, struct xfrm_userpolicy_i
 	p->share = XFRM_SHARE_ANY; /* XXX xp->share */
 }
 
-<<<<<<< HEAD
-static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_userpolicy_info *p, struct nlattr **attrs, int *errp)
-=======
 static struct xfrm_policy *xfrm_policy_construct(struct net *net,
 						 struct xfrm_userpolicy_info *p,
 						 struct nlattr **attrs,
 						 int *errp,
 						 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_policy *xp = xfrm_policy_alloc(net, GFP_KERNEL);
 	int err;
@@ -2625,27 +1930,17 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net,
 
 	copy_from_user_policy(xp, p);
 
-<<<<<<< HEAD
-	err = copy_from_user_policy_type(&xp->type, attrs);
-	if (err)
-		goto error;
-
-	if (!(err = copy_from_user_tmpl(xp, attrs)))
-=======
 	err = copy_from_user_policy_type(&xp->type, attrs, extack);
 	if (err)
 		goto error;
 
 	if (!(err = copy_from_user_tmpl(xp, attrs, p->dir, extack)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = copy_from_user_sec_ctx(xp, attrs);
 	if (err)
 		goto error;
 
 	xfrm_mark_get(attrs, &xp->mark);
 
-<<<<<<< HEAD
-=======
 	if (attrs[XFRMA_IF_ID])
 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
 
@@ -2658,7 +1953,6 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net,
 			goto error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xp;
  error:
 	*errp = err;
@@ -2668,12 +1962,8 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net,
 }
 
 static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			   struct nlattr **attrs,
 			   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_userpolicy_info *p = nlmsg_data(nlh);
@@ -2681,20 +1971,6 @@ static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 	struct km_event c;
 	int err;
 	int excl;
-<<<<<<< HEAD
-	uid_t loginuid = audit_get_loginuid(current);
-	u32 sessionid = audit_get_sessionid(current);
-	u32 sid;
-
-	err = verify_newpolicy_info(p);
-	if (err)
-		return err;
-	err = verify_sec_ctx_len(attrs);
-	if (err)
-		return err;
-
-	xp = xfrm_policy_construct(net, p, attrs, &err);
-=======
 
 	err = verify_newpolicy_info(p, extack);
 	if (err)
@@ -2704,22 +1980,11 @@ static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return err;
 
 	xp = xfrm_policy_construct(net, p, attrs, &err, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xp)
 		return err;
 
 	/* shouldn't excl be based on nlh flags??
 	 * Aha! this is anti-netlink really i.e  more pfkey derived
-<<<<<<< HEAD
-	 * in netlink excl is a flag and you wouldnt need
-	 * a type XFRM_MSG_UPDPOLICY - JHS */
-	excl = nlh->nlmsg_type == XFRM_MSG_NEWPOLICY;
-	err = xfrm_policy_insert(p->dir, xp, excl);
-	security_task_getsecid(current, &sid);
-	xfrm_audit_policy_add(xp, err ? 0 : 1, loginuid, sessionid, sid);
-
-	if (err) {
-=======
 	 * in netlink excl is a flag and you wouldn't need
 	 * a type XFRM_MSG_UPDPOLICY - JHS */
 	excl = nlh->nlmsg_type == XFRM_MSG_NEWPOLICY;
@@ -2729,7 +1994,6 @@ static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (err) {
 		xfrm_dev_policy_delete(xp);
 		xfrm_dev_policy_free(xp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		security_xfrm_policy_free(xp->security);
 		kfree(xp);
 		return err;
@@ -2737,11 +2001,7 @@ static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	c.event = nlh->nlmsg_type;
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-=======
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	km_policy_notify(xp, p->dir, &c);
 
 	xfrm_pol_put(xp);
@@ -2757,12 +2017,9 @@ static int copy_to_user_tmpl(struct xfrm_policy *xp, struct sk_buff *skb)
 	if (xp->xfrm_nr == 0)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (xp->xfrm_nr > XFRM_MAX_DEPTH)
 		return -ENOBUFS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < xp->xfrm_nr; i++) {
 		struct xfrm_user_tmpl *up = &vec[i];
 		struct xfrm_tmpl *kp = &xp->xfrm_vec[i];
@@ -2794,20 +2051,11 @@ static inline int copy_to_user_state_sec_ctx(struct xfrm_state *x, struct sk_buf
 
 static inline int copy_to_user_sec_ctx(struct xfrm_policy *xp, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	if (xp->security) {
-		return copy_sec_ctx(xp->security, skb);
-	}
-	return 0;
-}
-static inline size_t userpolicy_type_attrsize(void)
-=======
 	if (xp->security)
 		return copy_sec_ctx(xp->security, skb);
 	return 0;
 }
 static inline unsigned int userpolicy_type_attrsize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_XFRM_SUB_POLICY
 	return nla_total_size(sizeof(struct xfrm_userpolicy_type));
@@ -2819,17 +2067,11 @@ static inline unsigned int userpolicy_type_attrsize(void)
 #ifdef CONFIG_XFRM_SUB_POLICY
 static int copy_to_user_policy_type(u8 type, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct xfrm_userpolicy_type upt = {
-		.type = type,
-	};
-=======
 	struct xfrm_userpolicy_type upt;
 
 	/* Sadly there are two holes in struct xfrm_userpolicy_type */
 	memset(&upt, 0, sizeof(upt));
 	upt.type = type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nla_put(skb, XFRMA_POLICY_TYPE, sizeof(upt), &upt);
 }
@@ -2847,41 +2089,17 @@ static int dump_one_policy(struct xfrm_policy *xp, int dir, int count, void *ptr
 	struct xfrm_userpolicy_info *p;
 	struct sk_buff *in_skb = sp->in_skb;
 	struct sk_buff *skb = sp->out_skb;
-<<<<<<< HEAD
-	struct nlmsghdr *nlh;
-
-	nlh = nlmsg_put(skb, NETLINK_CB(in_skb).pid, sp->nlmsg_seq,
-=======
 	struct xfrm_translator *xtr;
 	struct nlmsghdr *nlh;
 	int err;
 
 	nlh = nlmsg_put(skb, NETLINK_CB(in_skb).portid, sp->nlmsg_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_MSG_NEWPOLICY, sizeof(*p), sp->nlmsg_flags);
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
 	p = nlmsg_data(nlh);
 	copy_to_user_policy(xp, p, dir);
-<<<<<<< HEAD
-	if (copy_to_user_tmpl(xp, skb) < 0)
-		goto nlmsg_failure;
-	if (copy_to_user_sec_ctx(xp, skb))
-		goto nlmsg_failure;
-	if (copy_to_user_policy_type(xp->type, skb) < 0)
-		goto nlmsg_failure;
-	if (xfrm_mark_put(skb, &xp->mark))
-		goto nla_put_failure;
-
-	nlmsg_end(skb, nlh);
-	return 0;
-
-nla_put_failure:
-nlmsg_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-=======
 	err = copy_to_user_tmpl(xp, skb);
 	if (!err)
 		err = copy_to_user_sec_ctx(xp, skb);
@@ -2911,17 +2129,10 @@ nlmsg_failure:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_dump_policy_done(struct netlink_callback *cb)
 {
-<<<<<<< HEAD
-	struct xfrm_policy_walk *walk = (struct xfrm_policy_walk *) &cb->args[1];
-
-	if (cb->args[0])
-		xfrm_policy_walk_done(walk);
-=======
 	struct xfrm_policy_walk *walk = (struct xfrm_policy_walk *)cb->args;
 	struct net *net = sock_net(cb->skb->sk);
 
@@ -2936,38 +2147,20 @@ static int xfrm_dump_policy_start(struct netlink_callback *cb)
 	BUILD_BUG_ON(sizeof(*walk) > sizeof(cb->args));
 
 	xfrm_policy_walk_init(walk, XFRM_POLICY_TYPE_ANY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int xfrm_dump_policy(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct net *net = sock_net(skb->sk);
-<<<<<<< HEAD
-	struct xfrm_policy_walk *walk = (struct xfrm_policy_walk *) &cb->args[1];
-	struct xfrm_dump_info info;
-
-	BUILD_BUG_ON(sizeof(struct xfrm_policy_walk) >
-		     sizeof(cb->args) - sizeof(cb->args[0]));
-
-=======
 	struct xfrm_policy_walk *walk = (struct xfrm_policy_walk *)cb->args;
 	struct xfrm_dump_info info;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.in_skb = cb->skb;
 	info.out_skb = skb;
 	info.nlmsg_seq = cb->nlh->nlmsg_seq;
 	info.nlmsg_flags = NLM_F_MULTI;
 
-<<<<<<< HEAD
-	if (!cb->args[0]) {
-		cb->args[0] = 1;
-		xfrm_policy_walk_init(walk, XFRM_POLICY_TYPE_ANY);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void) xfrm_policy_walk(net, walk, dump_one_policy, &info);
 
 	return skb->len;
@@ -2999,10 +2192,6 @@ static struct sk_buff *xfrm_policy_netlink(struct sk_buff *in_skb,
 	return skb;
 }
 
-<<<<<<< HEAD
-static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 static int xfrm_notify_userpolicy(struct net *net)
 {
 	struct xfrm_userpolicy_default *up;
@@ -3095,7 +2284,6 @@ static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
 static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 			   struct nlattr **attrs,
 			   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_policy *xp;
@@ -3105,27 +2293,11 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 	struct km_event c;
 	int delete;
 	struct xfrm_mark m;
-<<<<<<< HEAD
-	u32 mark = xfrm_mark_get(attrs, &m);
-=======
 	u32 if_id = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = nlmsg_data(nlh);
 	delete = nlh->nlmsg_type == XFRM_MSG_DELPOLICY;
 
-<<<<<<< HEAD
-	err = copy_from_user_policy_type(&type, attrs);
-	if (err)
-		return err;
-
-	err = verify_policy_dir(p->dir);
-	if (err)
-		return err;
-
-	if (p->index)
-		xp = xfrm_policy_byid(net, mark, type, p->dir, p->index, delete, &err);
-=======
 	err = copy_from_user_policy_type(&type, attrs, extack);
 	if (err)
 		return err;
@@ -3142,16 +2314,11 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (p->index)
 		xp = xfrm_policy_byid(net, &m, if_id, type, p->dir,
 				      p->index, delete, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
 		struct xfrm_sec_ctx *ctx;
 
-<<<<<<< HEAD
-		err = verify_sec_ctx_len(attrs);
-=======
 		err = verify_sec_ctx_len(attrs, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -3159,21 +2326,12 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 		if (rt) {
 			struct xfrm_user_sec_ctx *uctx = nla_data(rt);
 
-<<<<<<< HEAD
-			err = security_xfrm_policy_alloc(&ctx, uctx);
-			if (err)
-				return err;
-		}
-		xp = xfrm_policy_bysel_ctx(net, mark, type, p->dir, &p->sel,
-					   ctx, delete, &err);
-=======
 			err = security_xfrm_policy_alloc(&ctx, uctx, GFP_KERNEL);
 			if (err)
 				return err;
 		}
 		xp = xfrm_policy_bysel_ctx(net, &m, if_id, type, p->dir,
 					   &p->sel, ctx, delete, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		security_xfrm_policy_free(ctx);
 	}
 	if (xp == NULL)
@@ -3187,24 +2345,11 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 			err = PTR_ERR(resp_skb);
 		} else {
 			err = nlmsg_unicast(net->xfrm.nlsk, resp_skb,
-<<<<<<< HEAD
-					    NETLINK_CB(skb).pid);
-		}
-	} else {
-		uid_t loginuid = audit_get_loginuid(current);
-		u32 sessionid = audit_get_sessionid(current);
-		u32 sid;
-
-		security_task_getsecid(current, &sid);
-		xfrm_audit_policy_delete(xp, err ? 0 : 1, loginuid, sessionid,
-					 sid);
-=======
 					    NETLINK_CB(skb).portid);
 		}
 	} else {
 		xfrm_dev_policy_delete(xp);
 		xfrm_audit_policy_delete(xp, err ? 0 : 1, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (err != 0)
 			goto out;
@@ -3212,11 +2357,7 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 		c.data.byid = p->index;
 		c.event = nlh->nlmsg_type;
 		c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-		c.pid = nlh->nlmsg_pid;
-=======
 		c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		km_policy_notify(xp, p->dir, &c);
 	}
 
@@ -3226,29 +2367,15 @@ out:
 }
 
 static int xfrm_flush_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			 struct nlattr **attrs,
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct km_event c;
 	struct xfrm_usersa_flush *p = nlmsg_data(nlh);
-<<<<<<< HEAD
-	struct xfrm_audit audit_info;
-	int err;
-
-	audit_info.loginuid = audit_get_loginuid(current);
-	audit_info.sessionid = audit_get_sessionid(current);
-	security_task_getsecid(current, &audit_info.secid);
-	err = xfrm_state_flush(net, p->proto, &audit_info);
-=======
 	int err;
 
 	err = xfrm_state_flush(net, p->proto, true, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err == -ESRCH) /* empty table */
 			return 0;
@@ -3257,36 +2384,22 @@ static int xfrm_flush_sa(struct sk_buff *skb, struct nlmsghdr *nlh,
 	c.data.proto = p->proto;
 	c.event = nlh->nlmsg_type;
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-=======
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c.net = net;
 	km_state_notify(NULL, &c);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_aevent_msgsize(struct xfrm_state *x)
-{
-	size_t replay_size = x->replay_esn ?
-=======
 static inline unsigned int xfrm_aevent_msgsize(struct xfrm_state *x)
 {
 	unsigned int replay_size = x->replay_esn ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      xfrm_replay_state_esn_len(x->replay_esn) :
 			      sizeof(struct xfrm_replay_state);
 
 	return NLMSG_ALIGN(sizeof(struct xfrm_aevent_id))
 	       + nla_total_size(replay_size)
-<<<<<<< HEAD
-	       + nla_total_size(sizeof(struct xfrm_lifetime_cur))
-=======
 	       + nla_total_size_64bit(sizeof(struct xfrm_lifetime_cur))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       + nla_total_size(sizeof(struct xfrm_mark))
 	       + nla_total_size(4) /* XFRM_AE_RTHR */
 	       + nla_total_size(4); /* XFRM_AE_ETHR */
@@ -3296,56 +2409,13 @@ static int build_aevent(struct sk_buff *skb, struct xfrm_state *x, const struct 
 {
 	struct xfrm_aevent_id *id;
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-
-	nlh = nlmsg_put(skb, c->pid, c->seq, XFRM_MSG_NEWAE, sizeof(*id), 0);
-=======
 	int err;
 
 	nlh = nlmsg_put(skb, c->portid, c->seq, XFRM_MSG_NEWAE, sizeof(*id), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
 	id = nlmsg_data(nlh);
-<<<<<<< HEAD
-	memcpy(&id->sa_id.daddr, &x->id.daddr,sizeof(x->id.daddr));
-	id->sa_id.spi = x->id.spi;
-	id->sa_id.family = x->props.family;
-	id->sa_id.proto = x->id.proto;
-	memcpy(&id->saddr, &x->props.saddr,sizeof(x->props.saddr));
-	id->reqid = x->props.reqid;
-	id->flags = c->data.aevent;
-
-	if (x->replay_esn)
-		NLA_PUT(skb, XFRMA_REPLAY_ESN_VAL,
-			xfrm_replay_state_esn_len(x->replay_esn),
-			x->replay_esn);
-	else
-		NLA_PUT(skb, XFRMA_REPLAY_VAL, sizeof(x->replay), &x->replay);
-
-	NLA_PUT(skb, XFRMA_LTIME_VAL, sizeof(x->curlft), &x->curlft);
-
-	if (id->flags & XFRM_AE_RTHR)
-		NLA_PUT_U32(skb, XFRMA_REPLAY_THRESH, x->replay_maxdiff);
-
-	if (id->flags & XFRM_AE_ETHR)
-		NLA_PUT_U32(skb, XFRMA_ETIMER_THRESH,
-			    x->replay_maxage * 10 / HZ);
-
-	if (xfrm_mark_put(skb, &x->mark))
-		goto nla_put_failure;
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-}
-
-static int xfrm_get_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
-		struct nlattr **attrs)
-=======
 	memset(&id->sa_id, 0, sizeof(id->sa_id));
 	memcpy(&id->sa_id.daddr, &x->id.daddr, sizeof(x->id.daddr));
 	id->sa_id.spi = x->id.spi;
@@ -3399,7 +2469,6 @@ out_cancel:
 
 static int xfrm_get_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 		       struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_state *x;
@@ -3431,55 +2500,30 @@ static int xfrm_get_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 	spin_lock_bh(&x->lock);
 	c.data.aevent = p->flags;
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-
-	if (build_aevent(r_skb, x, &c) < 0)
-		BUG();
-	err = nlmsg_unicast(net->xfrm.nlsk, r_skb, NETLINK_CB(skb).pid);
-=======
 	c.portid = nlh->nlmsg_pid;
 
 	err = build_aevent(r_skb, x, &c);
 	BUG_ON(err < 0);
 
 	err = nlmsg_unicast(net->xfrm.nlsk, r_skb, NETLINK_CB(skb).portid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&x->lock);
 	xfrm_state_put(x);
 	return err;
 }
 
 static int xfrm_new_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 		       struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_state *x;
 	struct km_event c;
-<<<<<<< HEAD
-	int err = - EINVAL;
-=======
 	int err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mark = 0;
 	struct xfrm_mark m;
 	struct xfrm_aevent_id *p = nlmsg_data(nlh);
 	struct nlattr *rp = attrs[XFRMA_REPLAY_VAL];
 	struct nlattr *re = attrs[XFRMA_REPLAY_ESN_VAL];
 	struct nlattr *lt = attrs[XFRMA_LTIME_VAL];
-<<<<<<< HEAD
-
-	if (!lt && !rp && !re)
-		return err;
-
-	/* pedantic mode - thou shalt sayeth replaceth */
-	if (!(nlh->nlmsg_flags&NLM_F_REPLACE))
-		return err;
-=======
 	struct nlattr *et = attrs[XFRMA_ETIMER_THRESH];
 	struct nlattr *rt = attrs[XFRMA_REPLAY_THRESH];
 
@@ -3493,7 +2537,6 @@ static int xfrm_new_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 		NL_SET_ERR_MSG(extack, "NLM_F_REPLACE flag is required");
 		return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark = xfrm_mark_get(attrs, &m);
 
@@ -3501,19 +2544,12 @@ static int xfrm_new_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (x == NULL)
 		return -ESRCH;
 
-<<<<<<< HEAD
-	if (x->km.state != XFRM_STATE_VALID)
-		goto out;
-
-	err = xfrm_replay_verify_len(x->replay_esn, rp);
-=======
 	if (x->km.state != XFRM_STATE_VALID) {
 		NL_SET_ERR_MSG(extack, "SA must be in VALID state");
 		goto out;
 	}
 
 	err = xfrm_replay_verify_len(x->replay_esn, re, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -3523,11 +2559,7 @@ static int xfrm_new_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	c.event = nlh->nlmsg_type;
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-=======
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c.data.aevent = XFRM_AE_CU;
 	km_state_notify(x, &c);
 	err = 0;
@@ -3537,36 +2569,19 @@ out:
 }
 
 static int xfrm_flush_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			     struct nlattr **attrs,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct km_event c;
 	u8 type = XFRM_POLICY_TYPE_MAIN;
 	int err;
-<<<<<<< HEAD
-	struct xfrm_audit audit_info;
-
-	err = copy_from_user_policy_type(&type, attrs);
-	if (err)
-		return err;
-
-	audit_info.loginuid = audit_get_loginuid(current);
-	audit_info.sessionid = audit_get_sessionid(current);
-	security_task_getsecid(current, &audit_info.secid);
-	err = xfrm_policy_flush(net, type, &audit_info);
-=======
 
 	err = copy_from_user_policy_type(&type, attrs, extack);
 	if (err)
 		return err;
 
 	err = xfrm_policy_flush(net, type, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err == -ESRCH) /* empty table */
 			return 0;
@@ -3576,23 +2591,15 @@ static int xfrm_flush_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
 	c.data.type = type;
 	c.event = nlh->nlmsg_type;
 	c.seq = nlh->nlmsg_seq;
-<<<<<<< HEAD
-	c.pid = nlh->nlmsg_pid;
-=======
 	c.portid = nlh->nlmsg_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c.net = net;
 	km_policy_notify(NULL, 0, &c);
 	return 0;
 }
 
 static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			       struct nlattr **attrs,
 			       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_policy *xp;
@@ -3601,20 +2608,6 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 	u8 type = XFRM_POLICY_TYPE_MAIN;
 	int err = -ENOENT;
 	struct xfrm_mark m;
-<<<<<<< HEAD
-	u32 mark = xfrm_mark_get(attrs, &m);
-
-	err = copy_from_user_policy_type(&type, attrs);
-	if (err)
-		return err;
-
-	err = verify_policy_dir(p->dir);
-	if (err)
-		return err;
-
-	if (p->index)
-		xp = xfrm_policy_byid(net, mark, type, p->dir, p->index, 0, &err);
-=======
 	u32 if_id = 0;
 
 	err = copy_from_user_policy_type(&type, attrs, extack);
@@ -3633,16 +2626,11 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (p->index)
 		xp = xfrm_policy_byid(net, &m, if_id, type, p->dir, p->index,
 				      0, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
 		struct xfrm_sec_ctx *ctx;
 
-<<<<<<< HEAD
-		err = verify_sec_ctx_len(attrs);
-=======
 		err = verify_sec_ctx_len(attrs, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -3650,19 +2638,11 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 		if (rt) {
 			struct xfrm_user_sec_ctx *uctx = nla_data(rt);
 
-<<<<<<< HEAD
-			err = security_xfrm_policy_alloc(&ctx, uctx);
-			if (err)
-				return err;
-		}
-		xp = xfrm_policy_bysel_ctx(net, mark, type, p->dir,
-=======
 			err = security_xfrm_policy_alloc(&ctx, uctx, GFP_KERNEL);
 			if (err)
 				return err;
 		}
 		xp = xfrm_policy_bysel_ctx(net, &m, if_id, type, p->dir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   &p->sel, ctx, 0, &err);
 		security_xfrm_policy_free(ctx);
 	}
@@ -3674,26 +2654,10 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	err = 0;
 	if (up->hard) {
-<<<<<<< HEAD
-		uid_t loginuid = audit_get_loginuid(current);
-		u32 sessionid = audit_get_sessionid(current);
-		u32 sid;
-
-		security_task_getsecid(current, &sid);
-		xfrm_policy_delete(xp, p->dir);
-		xfrm_audit_policy_delete(xp, 1, loginuid, sessionid, sid);
-
-	} else {
-		// reset the timers here?
-		WARN(1, "Dont know what to do with soft policy expire\n");
-	}
-	km_policy_expired(xp, p->dir, up->hard, current->pid);
-=======
 		xfrm_policy_delete(xp, p->dir);
 		xfrm_audit_policy_delete(xp, 1, true);
 	}
 	km_policy_expired(xp, p->dir, up->hard, nlh->nlmsg_pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	xfrm_pol_put(xp);
@@ -3701,12 +2665,8 @@ out:
 }
 
 static int xfrm_add_sa_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			      struct nlattr **attrs,
 			      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_state *x;
@@ -3724,20 +2684,6 @@ static int xfrm_add_sa_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	spin_lock_bh(&x->lock);
 	err = -EINVAL;
-<<<<<<< HEAD
-	if (x->km.state != XFRM_STATE_VALID)
-		goto out;
-	km_state_expired(x, ue->hard, current->pid);
-
-	if (ue->hard) {
-		uid_t loginuid = audit_get_loginuid(current);
-		u32 sessionid = audit_get_sessionid(current);
-		u32 sid;
-
-		security_task_getsecid(current, &sid);
-		__xfrm_state_delete(x);
-		xfrm_audit_state_delete(x, 1, loginuid, sessionid, sid);
-=======
 	if (x->km.state != XFRM_STATE_VALID) {
 		NL_SET_ERR_MSG(extack, "SA must be in VALID state");
 		goto out;
@@ -3748,7 +2694,6 @@ static int xfrm_add_sa_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (ue->hard) {
 		__xfrm_state_delete(x);
 		xfrm_audit_state_delete(x, 1, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = 0;
 out:
@@ -3758,12 +2703,8 @@ out:
 }
 
 static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-		struct nlattr **attrs)
-=======
 			    struct nlattr **attrs,
 			    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_policy *xp;
@@ -3781,14 +2722,6 @@ static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	xfrm_mark_get(attrs, &mark);
 
-<<<<<<< HEAD
-	err = verify_newpolicy_info(&ua->policy);
-	if (err)
-		goto bad_policy;
-
-	/*   build an XP */
-	xp = xfrm_policy_construct(net, &ua->policy, attrs, &err);
-=======
 	err = verify_newpolicy_info(&ua->policy, extack);
 	if (err)
 		goto free_state;
@@ -3798,7 +2731,6 @@ static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	/*   build an XP */
 	xp = xfrm_policy_construct(net, &ua->policy, attrs, &err, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xp)
 		goto free_state;
 
@@ -3822,24 +2754,13 @@ static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	}
 
-<<<<<<< HEAD
-	kfree(x);
-=======
 	xfrm_state_free(x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(xp);
 
 	return 0;
 
-<<<<<<< HEAD
-bad_policy:
-	WARN(1, "BAD policy passed\n");
-free_state:
-	kfree(x);
-=======
 free_state:
 	xfrm_state_free(x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nomem:
 	return err;
 }
@@ -3847,12 +2768,8 @@ nomem:
 #ifdef CONFIG_XFRM_MIGRATE
 static int copy_from_user_migrate(struct xfrm_migrate *ma,
 				  struct xfrm_kmaddress *k,
-<<<<<<< HEAD
-				  struct nlattr **attrs, int *num)
-=======
 				  struct nlattr **attrs, int *num,
 				  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *rt = attrs[XFRMA_MIGRATE];
 	struct xfrm_user_migrate *um;
@@ -3871,15 +2788,10 @@ static int copy_from_user_migrate(struct xfrm_migrate *ma,
 	um = nla_data(rt);
 	num_migrate = nla_len(rt) / sizeof(*um);
 
-<<<<<<< HEAD
-	if (num_migrate <= 0 || num_migrate > XFRM_MAX_DEPTH)
-		return -EINVAL;
-=======
 	if (num_migrate <= 0 || num_migrate > XFRM_MAX_DEPTH) {
 		NL_SET_ERR_MSG(extack, "Invalid number of SAs to migrate, must be 0 < num <= XFRM_MAX_DEPTH (6)");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num_migrate; i++, um++, ma++) {
 		memcpy(&ma->old_daddr, &um->old_daddr, sizeof(ma->old_daddr));
@@ -3900,11 +2812,7 @@ static int copy_from_user_migrate(struct xfrm_migrate *ma,
 }
 
 static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
-<<<<<<< HEAD
-			   struct nlattr **attrs)
-=======
 			   struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_userpolicy_id *pi = nlmsg_data(nlh);
 	struct xfrm_migrate m[XFRM_MAX_DEPTH];
@@ -3912,19 +2820,6 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
 	u8 type;
 	int err;
 	int n = 0;
-<<<<<<< HEAD
-
-	if (attrs[XFRMA_MIGRATE] == NULL)
-		return -EINVAL;
-
-	kmp = attrs[XFRMA_KMADDRESS] ? &km : NULL;
-
-	err = copy_from_user_policy_type(&type, attrs);
-	if (err)
-		return err;
-
-	err = copy_from_user_migrate((struct xfrm_migrate *)m, kmp, attrs, &n);
-=======
 	struct net *net = sock_net(skb->sk);
 	struct xfrm_encap_tmpl  *encap = NULL;
 	u32 if_id = 0;
@@ -3941,22 +2836,12 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return err;
 
 	err = copy_from_user_migrate(m, kmp, attrs, &n, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	if (!n)
 		return 0;
 
-<<<<<<< HEAD
-	xfrm_migrate(&pi->sel, pi->dir, type, m, n, kmp);
-
-	return 0;
-}
-#else
-static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
-			   struct nlattr **attrs)
-=======
 	if (attrs[XFRMA_ENCAP]) {
 		encap = kmemdup(nla_data(attrs[XFRMA_ENCAP]),
 				sizeof(*encap), GFP_KERNEL);
@@ -3977,7 +2862,6 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
 #else
 static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
 			   struct nlattr **attrs, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOPROTOOPT;
 }
@@ -4015,40 +2899,25 @@ static int copy_to_user_kmaddress(const struct xfrm_kmaddress *k, struct sk_buff
 	return nla_put(skb, XFRMA_KMADDRESS, sizeof(uk), &uk);
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_migrate_msgsize(int num_migrate, int with_kma)
-{
-	return NLMSG_ALIGN(sizeof(struct xfrm_userpolicy_id))
-	      + (with_kma ? nla_total_size(sizeof(struct xfrm_kmaddress)) : 0)
-=======
 static inline unsigned int xfrm_migrate_msgsize(int num_migrate, int with_kma,
 						int with_encp)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_userpolicy_id))
 	      + (with_kma ? nla_total_size(sizeof(struct xfrm_kmaddress)) : 0)
 	      + (with_encp ? nla_total_size(sizeof(struct xfrm_encap_tmpl)) : 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      + nla_total_size(sizeof(struct xfrm_user_migrate) * num_migrate)
 	      + userpolicy_type_attrsize();
 }
 
 static int build_migrate(struct sk_buff *skb, const struct xfrm_migrate *m,
 			 int num_migrate, const struct xfrm_kmaddress *k,
-<<<<<<< HEAD
-			 const struct xfrm_selector *sel, u8 dir, u8 type)
-=======
 			 const struct xfrm_selector *sel,
 			 const struct xfrm_encap_tmpl *encap, u8 dir, u8 type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct xfrm_migrate *mp;
 	struct xfrm_userpolicy_id *pol_id;
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nlh = nlmsg_put(skb, 0, 0, XFRM_MSG_MIGRATE, sizeof(*pol_id), 0);
 	if (nlh == NULL)
@@ -4060,23 +2929,6 @@ static int build_migrate(struct sk_buff *skb, const struct xfrm_migrate *m,
 	memcpy(&pol_id->sel, sel, sizeof(pol_id->sel));
 	pol_id->dir = dir;
 
-<<<<<<< HEAD
-	if (k != NULL && (copy_to_user_kmaddress(k, skb) < 0))
-			goto nlmsg_failure;
-
-	if (copy_to_user_policy_type(type, skb) < 0)
-		goto nlmsg_failure;
-
-	for (i = 0, mp = m ; i < num_migrate; i++, mp++) {
-		if (copy_to_user_migrate(mp, skb) < 0)
-			goto nlmsg_failure;
-	}
-
-	return nlmsg_end(skb, nlh);
-nlmsg_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-=======
 	if (k != NULL) {
 		err = copy_to_user_kmaddress(k, skb);
 		if (err)
@@ -4102,19 +2954,10 @@ nlmsg_failure:
 out_cancel:
 	nlmsg_cancel(skb, nlh);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_send_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 			     const struct xfrm_migrate *m, int num_migrate,
-<<<<<<< HEAD
-			     const struct xfrm_kmaddress *k)
-{
-	struct net *net = &init_net;
-	struct sk_buff *skb;
-
-	skb = nlmsg_new(xfrm_migrate_msgsize(num_migrate, !!k), GFP_ATOMIC);
-=======
 			     const struct xfrm_kmaddress *k,
 			     const struct xfrm_encap_tmpl *encap)
 {
@@ -4124,32 +2967,20 @@ static int xfrm_send_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 
 	skb = nlmsg_new(xfrm_migrate_msgsize(num_migrate, !!k, !!encap),
 			GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb == NULL)
 		return -ENOMEM;
 
 	/* build migrate */
-<<<<<<< HEAD
-	if (build_migrate(skb, m, num_migrate, k, sel, dir, type) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_MIGRATE, GFP_ATOMIC);
-=======
 	err = build_migrate(skb, m, num_migrate, k, sel, encap, dir, type);
 	BUG_ON(err < 0);
 
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static int xfrm_send_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 			     const struct xfrm_migrate *m, int num_migrate,
-<<<<<<< HEAD
-			     const struct xfrm_kmaddress *k)
-=======
 			     const struct xfrm_kmaddress *k,
 			     const struct xfrm_encap_tmpl *encap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOPROTOOPT;
 }
@@ -4157,11 +2988,7 @@ static int xfrm_send_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 
 #define XMSGSIZE(type) sizeof(struct type)
 
-<<<<<<< HEAD
-static const int xfrm_msg_min[XFRM_NR_MSGTYPES] = {
-=======
 const int xfrm_msg_min[XFRM_NR_MSGTYPES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[XFRM_MSG_NEWSA       - XFRM_MSG_BASE] = XMSGSIZE(xfrm_usersa_info),
 	[XFRM_MSG_DELSA       - XFRM_MSG_BASE] = XMSGSIZE(xfrm_usersa_id),
 	[XFRM_MSG_GETSA       - XFRM_MSG_BASE] = XMSGSIZE(xfrm_usersa_id),
@@ -4181,14 +3008,6 @@ const int xfrm_msg_min[XFRM_NR_MSGTYPES] = {
 	[XFRM_MSG_REPORT      - XFRM_MSG_BASE] = XMSGSIZE(xfrm_user_report),
 	[XFRM_MSG_MIGRATE     - XFRM_MSG_BASE] = XMSGSIZE(xfrm_userpolicy_id),
 	[XFRM_MSG_GETSADINFO  - XFRM_MSG_BASE] = sizeof(u32),
-<<<<<<< HEAD
-	[XFRM_MSG_GETSPDINFO  - XFRM_MSG_BASE] = sizeof(u32),
-};
-
-#undef XMSGSIZE
-
-static const struct nla_policy xfrma_policy[XFRMA_MAX+1] = {
-=======
 	[XFRM_MSG_NEWSPDINFO  - XFRM_MSG_BASE] = sizeof(u32),
 	[XFRM_MSG_GETSPDINFO  - XFRM_MSG_BASE] = sizeof(u32),
 	[XFRM_MSG_SETDEFAULT  - XFRM_MSG_BASE] = XMSGSIZE(xfrm_userpolicy_default),
@@ -4199,7 +3018,6 @@ EXPORT_SYMBOL_GPL(xfrm_msg_min);
 #undef XMSGSIZE
 
 const struct nla_policy xfrma_policy[XFRMA_MAX+1] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[XFRMA_SA]		= { .len = sizeof(struct xfrm_usersa_info)},
 	[XFRMA_POLICY]		= { .len = sizeof(struct xfrm_userpolicy_info)},
 	[XFRMA_LASTUSED]	= { .type = NLA_U64},
@@ -4210,11 +3028,7 @@ const struct nla_policy xfrma_policy[XFRMA_MAX+1] = {
 	[XFRMA_ALG_COMP]	= { .len = sizeof(struct xfrm_algo) },
 	[XFRMA_ENCAP]		= { .len = sizeof(struct xfrm_encap_tmpl) },
 	[XFRMA_TMPL]		= { .len = sizeof(struct xfrm_user_tmpl) },
-<<<<<<< HEAD
-	[XFRMA_SEC_CTX]		= { .len = sizeof(struct xfrm_sec_ctx) },
-=======
 	[XFRMA_SEC_CTX]		= { .len = sizeof(struct xfrm_user_sec_ctx) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[XFRMA_LTIME_VAL]	= { .len = sizeof(struct xfrm_lifetime_cur) },
 	[XFRMA_REPLAY_VAL]	= { .len = sizeof(struct xfrm_replay_state) },
 	[XFRMA_REPLAY_THRESH]	= { .type = NLA_U32 },
@@ -4227,14 +3041,6 @@ const struct nla_policy xfrma_policy[XFRMA_MAX+1] = {
 	[XFRMA_MARK]		= { .len = sizeof(struct xfrm_mark) },
 	[XFRMA_TFCPAD]		= { .type = NLA_U32 },
 	[XFRMA_REPLAY_ESN_VAL]	= { .len = sizeof(struct xfrm_replay_state_esn) },
-<<<<<<< HEAD
-};
-
-static struct xfrm_link {
-	int (*doit)(struct sk_buff *, struct nlmsghdr *, struct nlattr **);
-	int (*dump)(struct sk_buff *, struct netlink_callback *);
-	int (*done)(struct netlink_callback *);
-=======
 	[XFRMA_SA_EXTRA_FLAGS]	= { .type = NLA_U32 },
 	[XFRMA_PROTO]		= { .type = NLA_U8 },
 	[XFRMA_ADDRESS_FILTER]	= { .len = sizeof(struct xfrm_address_filter) },
@@ -4259,7 +3065,6 @@ static const struct xfrm_link {
 	int (*done)(struct netlink_callback *);
 	const struct nla_policy *nla_pol;
 	int nla_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } xfrm_dispatch[XFRM_NR_MSGTYPES] = {
 	[XFRM_MSG_NEWSA       - XFRM_MSG_BASE] = { .doit = xfrm_add_sa        },
 	[XFRM_MSG_DELSA       - XFRM_MSG_BASE] = { .doit = xfrm_del_sa        },
@@ -4269,10 +3074,7 @@ static const struct xfrm_link {
 	[XFRM_MSG_NEWPOLICY   - XFRM_MSG_BASE] = { .doit = xfrm_add_policy    },
 	[XFRM_MSG_DELPOLICY   - XFRM_MSG_BASE] = { .doit = xfrm_get_policy    },
 	[XFRM_MSG_GETPOLICY   - XFRM_MSG_BASE] = { .doit = xfrm_get_policy,
-<<<<<<< HEAD
-=======
 						   .start = xfrm_dump_policy_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   .dump = xfrm_dump_policy,
 						   .done = xfrm_dump_policy_done },
 	[XFRM_MSG_ALLOCSPI    - XFRM_MSG_BASE] = { .doit = xfrm_alloc_userspi },
@@ -4287,16 +3089,6 @@ static const struct xfrm_link {
 	[XFRM_MSG_GETAE       - XFRM_MSG_BASE] = { .doit = xfrm_get_ae  },
 	[XFRM_MSG_MIGRATE     - XFRM_MSG_BASE] = { .doit = xfrm_do_migrate    },
 	[XFRM_MSG_GETSADINFO  - XFRM_MSG_BASE] = { .doit = xfrm_get_sadinfo   },
-<<<<<<< HEAD
-	[XFRM_MSG_GETSPDINFO  - XFRM_MSG_BASE] = { .doit = xfrm_get_spdinfo   },
-};
-
-static int xfrm_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
-{
-	struct net *net = sock_net(skb->sk);
-	struct nlattr *attrs[XFRMA_MAX+1];
-	struct xfrm_link *link;
-=======
 	[XFRM_MSG_NEWSPDINFO  - XFRM_MSG_BASE] = { .doit = xfrm_set_spdinfo,
 						   .nla_pol = xfrma_spd_policy,
 						   .nla_max = XFRMA_SPD_MAX },
@@ -4312,7 +3104,6 @@ static int xfrm_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 	struct nlattr *attrs[XFRMA_MAX+1];
 	const struct xfrm_link *link;
 	struct nlmsghdr *nlh64 = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int type, err;
 
 	type = nlh->nlmsg_type;
@@ -4323,35 +3114,6 @@ static int xfrm_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 	link = &xfrm_dispatch[type];
 
 	/* All operations require privileges, even GET */
-<<<<<<< HEAD
-	if (!capable(CAP_NET_ADMIN))
-		return -EPERM;
-
-	if ((type == (XFRM_MSG_GETSA - XFRM_MSG_BASE) ||
-	     type == (XFRM_MSG_GETPOLICY - XFRM_MSG_BASE)) &&
-	    (nlh->nlmsg_flags & NLM_F_DUMP)) {
-		if (link->dump == NULL)
-			return -EINVAL;
-
-		{
-			struct netlink_dump_control c = {
-				.dump = link->dump,
-				.done = link->done,
-			};
-			return netlink_dump_start(net->xfrm.nlsk, skb, nlh, &c);
-		}
-	}
-
-	err = nlmsg_parse(nlh, xfrm_msg_min[type], attrs, XFRMA_MAX,
-			  xfrma_policy);
-	if (err < 0)
-		return err;
-
-	if (link->doit == NULL)
-		return -EINVAL;
-
-	return link->doit(skb, nlh, attrs);
-=======
 	if (!netlink_net_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
@@ -4414,19 +3176,10 @@ static int xfrm_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 err:
 	kvfree(nlh64);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xfrm_netlink_rcv(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	mutex_lock(&xfrm_cfg_mutex);
-	netlink_rcv_skb(skb, &xfrm_user_rcv_msg);
-	mutex_unlock(&xfrm_cfg_mutex);
-}
-
-static inline size_t xfrm_expire_msgsize(void)
-=======
 	struct net *net = sock_net(skb->sk);
 
 	mutex_lock(&net->xfrm.xfrm_cfg_mutex);
@@ -4435,7 +3188,6 @@ static inline size_t xfrm_expire_msgsize(void)
 }
 
 static inline unsigned int xfrm_expire_msgsize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_user_expire))
 	       + nla_total_size(sizeof(struct xfrm_mark));
@@ -4445,30 +3197,15 @@ static int build_expire(struct sk_buff *skb, struct xfrm_state *x, const struct 
 {
 	struct xfrm_user_expire *ue;
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-
-	nlh = nlmsg_put(skb, c->pid, 0, XFRM_MSG_EXPIRE, sizeof(*ue), 0);
-=======
 	int err;
 
 	nlh = nlmsg_put(skb, c->portid, 0, XFRM_MSG_EXPIRE, sizeof(*ue), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
 	ue = nlmsg_data(nlh);
 	copy_to_user_state(x, &ue->state);
 	ue->hard = (c->data.hard != 0) ? 1 : 0;
-<<<<<<< HEAD
-
-	if (xfrm_mark_put(skb, &x->mark))
-		goto nla_put_failure;
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-	return -EMSGSIZE;
-=======
 	/* clear the padding bytes */
 	memset_after(ue, 0, hard);
 
@@ -4482,7 +3219,6 @@ nla_put_failure:
 
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_exp_state_notify(struct xfrm_state *x, const struct km_event *c)
@@ -4499,37 +3235,23 @@ static int xfrm_exp_state_notify(struct xfrm_state *x, const struct km_event *c)
 		return -EMSGSIZE;
 	}
 
-<<<<<<< HEAD
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_EXPIRE, GFP_ATOMIC);
-=======
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_EXPIRE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_aevent_state_notify(struct xfrm_state *x, const struct km_event *c)
 {
 	struct net *net = xs_net(x);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = nlmsg_new(xfrm_aevent_msgsize(x), GFP_ATOMIC);
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_aevent(skb, x, c) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_AEVENTS, GFP_ATOMIC);
-=======
 	err = build_aevent(skb, x, c);
 	BUG_ON(err < 0);
 
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_AEVENTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_notify_sa_flush(const struct km_event *c)
@@ -4544,11 +3266,7 @@ static int xfrm_notify_sa_flush(const struct km_event *c)
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	nlh = nlmsg_put(skb, c->pid, c->seq, XFRM_MSG_FLUSHSA, sizeof(*p), 0);
-=======
 	nlh = nlmsg_put(skb, c->portid, c->seq, XFRM_MSG_FLUSHSA, sizeof(*p), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL) {
 		kfree_skb(skb);
 		return -EMSGSIZE;
@@ -4559,21 +3277,12 @@ static int xfrm_notify_sa_flush(const struct km_event *c)
 
 	nlmsg_end(skb, nlh);
 
-<<<<<<< HEAD
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_SA, GFP_ATOMIC);
-}
-
-static inline size_t xfrm_sa_len(struct xfrm_state *x)
-{
-	size_t l = 0;
-=======
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_SA);
 }
 
 static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
 {
 	unsigned int l = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (x->aead)
 		l += nla_total_size(aead_len(x->aead));
 	if (x->aalg) {
@@ -4591,21 +3300,13 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
 		l += nla_total_size(sizeof(x->tfcpad));
 	if (x->replay_esn)
 		l += nla_total_size(xfrm_replay_state_esn_len(x->replay_esn));
-<<<<<<< HEAD
-=======
 	else
 		l += nla_total_size(sizeof(struct xfrm_replay_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (x->security)
 		l += nla_total_size(sizeof(struct xfrm_user_sec_ctx) +
 				    x->security->ctx_len);
 	if (x->coaddr)
 		l += nla_total_size(sizeof(*x->coaddr));
-<<<<<<< HEAD
-
-	/* Must count x->lastused as it may become non-zero behind our back. */
-	l += nla_total_size(sizeof(u64));
-=======
 	if (x->props.extra_flags)
 		l += nla_total_size(sizeof(x->props.extra_flags));
 	if (x->xso.dev)
@@ -4622,7 +3323,6 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
 
 	if (x->mapping_maxage)
 		l += nla_total_size(sizeof(x->mapping_maxage));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return l;
 }
@@ -4634,14 +3334,9 @@ static int xfrm_notify_sa(struct xfrm_state *x, const struct km_event *c)
 	struct xfrm_usersa_id *id;
 	struct nlmsghdr *nlh;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	int len = xfrm_sa_len(x);
-	int headlen;
-=======
 	unsigned int len = xfrm_sa_len(x);
 	unsigned int headlen;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	headlen = sizeof(*p);
 	if (c->event == XFRM_MSG_DELSA) {
@@ -4655,52 +3350,23 @@ static int xfrm_notify_sa(struct xfrm_state *x, const struct km_event *c)
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	nlh = nlmsg_put(skb, c->pid, c->seq, c->event, headlen, 0);
-	if (nlh == NULL)
-		goto nla_put_failure;
-=======
 	nlh = nlmsg_put(skb, c->portid, c->seq, c->event, headlen, 0);
 	err = -EMSGSIZE;
 	if (nlh == NULL)
 		goto out_free_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = nlmsg_data(nlh);
 	if (c->event == XFRM_MSG_DELSA) {
 		struct nlattr *attr;
 
 		id = nlmsg_data(nlh);
-<<<<<<< HEAD
-=======
 		memset(id, 0, sizeof(*id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(&id->daddr, &x->id.daddr, sizeof(id->daddr));
 		id->spi = x->id.spi;
 		id->family = x->props.family;
 		id->proto = x->id.proto;
 
 		attr = nla_reserve(skb, XFRMA_SA, sizeof(*p));
-<<<<<<< HEAD
-		if (attr == NULL)
-			goto nla_put_failure;
-
-		p = nla_data(attr);
-	}
-
-	if (copy_to_user_state_extra(x, p, skb))
-		goto nla_put_failure;
-
-	nlmsg_end(skb, nlh);
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_SA, GFP_ATOMIC);
-
-nla_put_failure:
-	/* Somebody screwed up with xfrm_sa_len! */
-	WARN_ON(1);
-	kfree_skb(skb);
-	return -1;
-=======
 		err = -EMSGSIZE;
 		if (attr == NULL)
 			goto out_free_skb;
@@ -4718,7 +3384,6 @@ nla_put_failure:
 out_free_skb:
 	kfree_skb(skb);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_send_state_notify(struct xfrm_state *x, const struct km_event *c)
@@ -4745,13 +3410,8 @@ static int xfrm_send_state_notify(struct xfrm_state *x, const struct km_event *c
 
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_acquire_msgsize(struct xfrm_state *x,
-					  struct xfrm_policy *xp)
-=======
 static inline unsigned int xfrm_acquire_msgsize(struct xfrm_state *x,
 						struct xfrm_policy *xp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_user_acquire))
 	       + nla_total_size(sizeof(struct xfrm_user_tmpl) * xp->xfrm_nr)
@@ -4761,21 +3421,12 @@ static inline unsigned int xfrm_acquire_msgsize(struct xfrm_state *x,
 }
 
 static int build_acquire(struct sk_buff *skb, struct xfrm_state *x,
-<<<<<<< HEAD
-			 struct xfrm_tmpl *xt, struct xfrm_policy *xp,
-			 int dir)
-{
-	struct xfrm_user_acquire *ua;
-	struct nlmsghdr *nlh;
-	__u32 seq = xfrm_get_acqseq();
-=======
 			 struct xfrm_tmpl *xt, struct xfrm_policy *xp)
 {
 	__u32 seq = xfrm_get_acqseq();
 	struct xfrm_user_acquire *ua;
 	struct nlmsghdr *nlh;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nlh = nlmsg_put(skb, 0, 0, XFRM_MSG_ACQUIRE, sizeof(*ua), 0);
 	if (nlh == NULL)
@@ -4785,40 +3436,12 @@ static int build_acquire(struct sk_buff *skb, struct xfrm_state *x,
 	memcpy(&ua->id, &x->id, sizeof(ua->id));
 	memcpy(&ua->saddr, &x->props.saddr, sizeof(ua->saddr));
 	memcpy(&ua->sel, &x->sel, sizeof(ua->sel));
-<<<<<<< HEAD
-	copy_to_user_policy(xp, &ua->policy, dir);
-=======
 	copy_to_user_policy(xp, &ua->policy, XFRM_POLICY_OUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ua->aalgos = xt->aalgos;
 	ua->ealgos = xt->ealgos;
 	ua->calgos = xt->calgos;
 	ua->seq = x->km.seq = seq;
 
-<<<<<<< HEAD
-	if (copy_to_user_tmpl(xp, skb) < 0)
-		goto nlmsg_failure;
-	if (copy_to_user_state_sec_ctx(x, skb))
-		goto nlmsg_failure;
-	if (copy_to_user_policy_type(xp->type, skb) < 0)
-		goto nlmsg_failure;
-	if (xfrm_mark_put(skb, &xp->mark))
-		goto nla_put_failure;
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-nlmsg_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-}
-
-static int xfrm_send_acquire(struct xfrm_state *x, struct xfrm_tmpl *xt,
-			     struct xfrm_policy *xp, int dir)
-{
-	struct net *net = xs_net(x);
-	struct sk_buff *skb;
-=======
 	err = copy_to_user_tmpl(xp, skb);
 	if (!err)
 		err = copy_to_user_state_sec_ctx(x, skb);
@@ -4845,23 +3468,15 @@ static int xfrm_send_acquire(struct xfrm_state *x, struct xfrm_tmpl *xt,
 	struct net *net = xs_net(x);
 	struct sk_buff *skb;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = nlmsg_new(xfrm_acquire_msgsize(x, xp), GFP_ATOMIC);
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_acquire(skb, x, xt, xp, dir) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_ACQUIRE, GFP_ATOMIC);
-=======
 	err = build_acquire(skb, x, xt, xp);
 	BUG_ON(err < 0);
 
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_ACQUIRE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* User gives us xfrm_user_policy_info followed by an array of 0
@@ -4899,19 +3514,11 @@ static struct xfrm_policy *xfrm_compile_policy(struct sock *sk, int opt,
 	*dir = -EINVAL;
 
 	if (len < sizeof(*p) ||
-<<<<<<< HEAD
-	    verify_newpolicy_info(p))
-		return NULL;
-
-	nr = ((len - sizeof(*p)) / sizeof(*ut));
-	if (validate_tmpl(nr, ut, p->sel.family))
-=======
 	    verify_newpolicy_info(p, NULL))
 		return NULL;
 
 	nr = ((len - sizeof(*p)) / sizeof(*ut));
 	if (validate_tmpl(nr, ut, p->sel.family, p->dir, NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (p->dir > XFRM_POLICY_OUT)
@@ -4932,11 +3539,7 @@ static struct xfrm_policy *xfrm_compile_policy(struct sock *sk, int opt,
 	return xp;
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_polexpire_msgsize(struct xfrm_policy *xp)
-=======
 static inline unsigned int xfrm_polexpire_msgsize(struct xfrm_policy *xp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_user_polexpire))
 	       + nla_total_size(sizeof(struct xfrm_user_tmpl) * xp->xfrm_nr)
@@ -4949,41 +3552,16 @@ static int build_polexpire(struct sk_buff *skb, struct xfrm_policy *xp,
 			   int dir, const struct km_event *c)
 {
 	struct xfrm_user_polexpire *upe;
-<<<<<<< HEAD
-	struct nlmsghdr *nlh;
-	int hard = c->data.hard;
-
-	nlh = nlmsg_put(skb, c->pid, 0, XFRM_MSG_POLEXPIRE, sizeof(*upe), 0);
-=======
 	int hard = c->data.hard;
 	struct nlmsghdr *nlh;
 	int err;
 
 	nlh = nlmsg_put(skb, c->portid, 0, XFRM_MSG_POLEXPIRE, sizeof(*upe), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
 	upe = nlmsg_data(nlh);
 	copy_to_user_policy(xp, &upe->pol, dir);
-<<<<<<< HEAD
-	if (copy_to_user_tmpl(xp, skb) < 0)
-		goto nlmsg_failure;
-	if (copy_to_user_sec_ctx(xp, skb))
-		goto nlmsg_failure;
-	if (copy_to_user_policy_type(xp->type, skb) < 0)
-		goto nlmsg_failure;
-	if (xfrm_mark_put(skb, &xp->mark))
-		goto nla_put_failure;
-	upe->hard = !!hard;
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-nlmsg_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-=======
 	err = copy_to_user_tmpl(xp, skb);
 	if (!err)
 		err = copy_to_user_sec_ctx(xp, skb);
@@ -5003,53 +3581,34 @@ nlmsg_failure:
 
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_exp_policy_notify(struct xfrm_policy *xp, int dir, const struct km_event *c)
 {
 	struct net *net = xp_net(xp);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = nlmsg_new(xfrm_polexpire_msgsize(xp), GFP_ATOMIC);
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_polexpire(skb, xp, dir, c) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_EXPIRE, GFP_ATOMIC);
-=======
 	err = build_polexpire(skb, xp, dir, c);
 	BUG_ON(err < 0);
 
 	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_EXPIRE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_notify_policy(struct xfrm_policy *xp, int dir, const struct km_event *c)
 {
-<<<<<<< HEAD
-=======
 	unsigned int len = nla_total_size(sizeof(struct xfrm_user_tmpl) * xp->xfrm_nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = xp_net(xp);
 	struct xfrm_userpolicy_info *p;
 	struct xfrm_userpolicy_id *id;
 	struct nlmsghdr *nlh;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	int len = nla_total_size(sizeof(struct xfrm_user_tmpl) * xp->xfrm_nr);
-	int headlen;
-=======
 	unsigned int headlen;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	headlen = sizeof(*p);
 	if (c->event == XFRM_MSG_DELPOLICY) {
@@ -5064,16 +3623,10 @@ static int xfrm_notify_policy(struct xfrm_policy *xp, int dir, const struct km_e
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	nlh = nlmsg_put(skb, c->pid, c->seq, c->event, headlen, 0);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-=======
 	nlh = nlmsg_put(skb, c->portid, c->seq, c->event, headlen, 0);
 	err = -EMSGSIZE;
 	if (nlh == NULL)
 		goto out_free_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = nlmsg_data(nlh);
 	if (c->event == XFRM_MSG_DELPOLICY) {
@@ -5088,37 +3641,14 @@ static int xfrm_notify_policy(struct xfrm_policy *xp, int dir, const struct km_e
 			memcpy(&id->sel, &xp->selector, sizeof(id->sel));
 
 		attr = nla_reserve(skb, XFRMA_POLICY, sizeof(*p));
-<<<<<<< HEAD
-		if (attr == NULL)
-			goto nlmsg_failure;
-=======
 		err = -EMSGSIZE;
 		if (attr == NULL)
 			goto out_free_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		p = nla_data(attr);
 	}
 
 	copy_to_user_policy(xp, p, dir);
-<<<<<<< HEAD
-	if (copy_to_user_tmpl(xp, skb) < 0)
-		goto nlmsg_failure;
-	if (copy_to_user_policy_type(xp->type, skb) < 0)
-		goto nlmsg_failure;
-
-	if (xfrm_mark_put(skb, &xp->mark))
-		goto nla_put_failure;
-
-	nlmsg_end(skb, nlh);
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_POLICY, GFP_ATOMIC);
-
-nla_put_failure:
-nlmsg_failure:
-	kfree_skb(skb);
-	return -1;
-=======
 	err = copy_to_user_tmpl(xp, skb);
 	if (!err)
 		err = copy_to_user_policy_type(xp->type, skb);
@@ -5138,7 +3668,6 @@ nlmsg_failure:
 out_free_skb:
 	kfree_skb(skb);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_notify_policy_flush(const struct km_event *c)
@@ -5146,30 +3675,12 @@ static int xfrm_notify_policy_flush(const struct km_event *c)
 	struct net *net = c->net;
 	struct nlmsghdr *nlh;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = nlmsg_new(userpolicy_type_attrsize(), GFP_ATOMIC);
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	nlh = nlmsg_put(skb, c->pid, c->seq, XFRM_MSG_FLUSHPOLICY, 0, 0);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-	if (copy_to_user_policy_type(c->data.type, skb) < 0)
-		goto nlmsg_failure;
-
-	nlmsg_end(skb, nlh);
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_POLICY, GFP_ATOMIC);
-
-nlmsg_failure:
-	kfree_skb(skb);
-	return -1;
-=======
 	nlh = nlmsg_put(skb, c->portid, c->seq, XFRM_MSG_FLUSHPOLICY, 0, 0);
 	err = -EMSGSIZE;
 	if (nlh == NULL)
@@ -5185,7 +3696,6 @@ nlmsg_failure:
 out_free_skb:
 	kfree_skb(skb);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_send_policy_notify(struct xfrm_policy *xp, int dir, const struct km_event *c)
@@ -5209,11 +3719,7 @@ static int xfrm_send_policy_notify(struct xfrm_policy *xp, int dir, const struct
 
 }
 
-<<<<<<< HEAD
-static inline size_t xfrm_report_msgsize(void)
-=======
 static inline unsigned int xfrm_report_msgsize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_user_report));
 }
@@ -5232,16 +3738,6 @@ static int build_report(struct sk_buff *skb, u8 proto,
 	ur->proto = proto;
 	memcpy(&ur->sel, sel, sizeof(ur->sel));
 
-<<<<<<< HEAD
-	if (addr)
-		NLA_PUT(skb, XFRMA_COADDR, sizeof(*addr), addr);
-
-	return nlmsg_end(skb, nlh);
-
-nla_put_failure:
-	nlmsg_cancel(skb, nlh);
-	return -EMSGSIZE;
-=======
 	if (addr) {
 		int err = nla_put(skb, XFRMA_COADDR, sizeof(*addr), addr);
 		if (err) {
@@ -5251,31 +3747,18 @@ nla_put_failure:
 	}
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_send_report(struct net *net, u8 proto,
 			    struct xfrm_selector *sel, xfrm_address_t *addr)
 {
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = nlmsg_new(xfrm_report_msgsize(), GFP_ATOMIC);
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_report(skb, proto, sel, addr) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_REPORT, GFP_ATOMIC);
-}
-
-static inline size_t xfrm_mapping_msgsize(void)
-=======
 	err = build_report(skb, proto, sel, addr);
 	BUG_ON(err < 0);
 
@@ -5283,7 +3766,6 @@ static inline size_t xfrm_mapping_msgsize(void)
 }
 
 static inline unsigned int xfrm_mapping_msgsize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct xfrm_user_mapping));
 }
@@ -5310,12 +3792,8 @@ static int build_mapping(struct sk_buff *skb, struct xfrm_state *x,
 	um->old_sport = x->encap->encap_sport;
 	um->reqid = x->props.reqid;
 
-<<<<<<< HEAD
-	return nlmsg_end(skb, nlh);
-=======
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_send_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr,
@@ -5323,10 +3801,7 @@ static int xfrm_send_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr,
 {
 	struct net *net = xs_net(x);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (x->id.proto != IPPROTO_ESP)
 		return -EINVAL;
@@ -5338,16 +3813,6 @@ static int xfrm_send_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr,
 	if (skb == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (build_mapping(skb, x, ipaddr, sport) < 0)
-		BUG();
-
-	return nlmsg_multicast(net->xfrm.nlsk, skb, 0, XFRMNLGRP_MAPPING, GFP_ATOMIC);
-}
-
-static struct xfrm_mgr netlink_mgr = {
-	.id		= "netlink",
-=======
 	err = build_mapping(skb, x, ipaddr, sport);
 	BUG_ON(err < 0);
 
@@ -5360,7 +3825,6 @@ static bool xfrm_is_alive(const struct km_event *c)
 }
 
 static struct xfrm_mgr netlink_mgr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.notify		= xfrm_send_state_notify,
 	.acquire	= xfrm_send_acquire,
 	.compile_policy	= xfrm_compile_policy,
@@ -5368,27 +3832,18 @@ static struct xfrm_mgr netlink_mgr = {
 	.report		= xfrm_send_report,
 	.migrate	= xfrm_send_migrate,
 	.new_mapping	= xfrm_send_mapping,
-<<<<<<< HEAD
-=======
 	.is_alive	= xfrm_is_alive,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __net_init xfrm_user_net_init(struct net *net)
 {
 	struct sock *nlsk;
-<<<<<<< HEAD
-
-	nlsk = netlink_kernel_create(net, NETLINK_XFRM, XFRMNLGRP_MAX,
-				     xfrm_netlink_rcv, NULL, THIS_MODULE);
-=======
 	struct netlink_kernel_cfg cfg = {
 		.groups	= XFRMNLGRP_MAX,
 		.input	= xfrm_netlink_rcv,
 	};
 
 	nlsk = netlink_kernel_create(net, NETLINK_XFRM, &cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlsk == NULL)
 		return -ENOMEM;
 	net->xfrm.nlsk_stash = nlsk; /* Don't set to NULL */
@@ -5396,14 +3851,6 @@ static int __net_init xfrm_user_net_init(struct net *net)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __net_exit xfrm_user_net_exit(struct list_head *net_exit_list)
-{
-	struct net *net;
-	list_for_each_entry(net, net_exit_list, exit_list)
-		RCU_INIT_POINTER(net->xfrm.nlsk, NULL);
-	synchronize_net();
-=======
 static void __net_exit xfrm_user_net_pre_exit(struct net *net)
 {
 	RCU_INIT_POINTER(net->xfrm.nlsk, NULL);
@@ -5413,17 +3860,13 @@ static void __net_exit xfrm_user_net_exit(struct list_head *net_exit_list)
 {
 	struct net *net;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(net, net_exit_list, exit_list)
 		netlink_kernel_release(net->xfrm.nlsk_stash);
 }
 
 static struct pernet_operations xfrm_user_net_ops = {
 	.init	    = xfrm_user_net_init,
-<<<<<<< HEAD
-=======
 	.pre_exit   = xfrm_user_net_pre_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.exit_batch = xfrm_user_net_exit,
 };
 
@@ -5436,15 +3879,8 @@ static int __init xfrm_user_init(void)
 	rv = register_pernet_subsys(&xfrm_user_net_ops);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	rv = xfrm_register_km(&netlink_mgr);
-	if (rv < 0)
-		unregister_pernet_subsys(&xfrm_user_net_ops);
-	return rv;
-=======
 	xfrm_register_km(&netlink_mgr);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit xfrm_user_exit(void)
@@ -5455,12 +3891,6 @@ static void __exit xfrm_user_exit(void)
 
 module_init(xfrm_user_init);
 module_exit(xfrm_user_exit);
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-MODULE_ALIAS_NET_PF_PROTO(PF_NETLINK, NETLINK_XFRM);
-
-=======
 MODULE_DESCRIPTION("XFRM User interface");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_NET_PF_PROTO(PF_NETLINK, NETLINK_XFRM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

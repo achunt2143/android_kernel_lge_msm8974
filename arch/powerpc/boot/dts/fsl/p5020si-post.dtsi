@@ -1,11 +1,7 @@
 /*
  * P5020/5010 Silicon/SoC Device Tree Source (post include)
  *
-<<<<<<< HEAD
- * Copyright 2011 Freescale Semiconductor Inc.
-=======
  * Copyright 2011 - 2015 Freescale Semiconductor Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,8 +32,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-<<<<<<< HEAD
-=======
 &bman_fbpr {
 	compatible = "fsl,bman-fbpr";
 	alloc-ranges = <0 0 0x10000 0>;
@@ -53,7 +47,6 @@
 	alloc-ranges = <0 0 0x10000 0>;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 &lbc {
 	compatible = "fsl,p5020-elbc", "fsl,elbc", "simple-bus";
 	interrupts = <25 2 0 0>;
@@ -70,11 +63,8 @@
 	bus-range = <0x0 0xff>;
 	clock-frequency = <33333333>;
 	interrupts = <16 2 1 15>;
-<<<<<<< HEAD
-=======
 	fsl,iommu-parent = <&pamu0>;
 	fsl,liodn-reg = <&guts 0x500>; /* PEX1LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcie@0 {
 		reg = <0 0 0 0 0>;
 		#interrupt-cells = <1>;
@@ -102,11 +92,8 @@
 	bus-range = <0 0xff>;
 	clock-frequency = <33333333>;
 	interrupts = <16 2 1 14>;
-<<<<<<< HEAD
-=======
 	fsl,iommu-parent = <&pamu0>;
 	fsl,liodn-reg = <&guts 0x504>; /* PEX2LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcie@0 {
 		reg = <0 0 0 0 0>;
 		#interrupt-cells = <1>;
@@ -134,11 +121,8 @@
 	bus-range = <0x0 0xff>;
 	clock-frequency = <33333333>;
 	interrupts = <16 2 1 13>;
-<<<<<<< HEAD
-=======
 	fsl,iommu-parent = <&pamu0>;
 	fsl,liodn-reg = <&guts 0x508>; /* PEX3LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcie@0 {
 		reg = <0 0 0 0 0>;
 		#interrupt-cells = <1>;
@@ -166,11 +150,8 @@
 	bus-range = <0x0 0xff>;
 	clock-frequency = <33333333>;
 	interrupts = <16 2 1 12>;
-<<<<<<< HEAD
-=======
 	fsl,iommu-parent = <&pamu0>;
 	fsl,liodn-reg = <&guts 0x50c>; /* PEX4LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcie@0 {
 		reg = <0 0 0 0 0>;
 		#interrupt-cells = <1>;
@@ -194,30 +175,21 @@
 	interrupts = <16 2 1 11>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-<<<<<<< HEAD
-=======
 	fsl,iommu-parent = <&pamu0>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ranges;
 
 	port1 {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		cell-index = <1>;
-<<<<<<< HEAD
-=======
 		fsl,liodn-reg = <&guts 0x510>; /* RIO1LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	port2 {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		cell-index = <2>;
-<<<<<<< HEAD
-=======
 		fsl,liodn-reg = <&guts 0x514>; /* RIO2LIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };
 
@@ -227,11 +199,7 @@
 	compatible = "fsl,dcsr", "simple-bus";
 
 	dcsr-epu@0 {
-<<<<<<< HEAD
-		compatible = "fsl,dcsr-epu";
-=======
 		compatible = "fsl,p5020-dcsr-epu", "fsl,dcsr-epu";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		interrupts = <52 2 0 0
 			      84 2 0 0
 			      85 2 0 0>;
@@ -287,13 +255,10 @@
 	};
 };
 
-<<<<<<< HEAD
-=======
 /include/ "qoriq-bman1-portals.dtsi"
 
 /include/ "qoriq-qman1-portals.dtsi"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 &soc {
 	#address-cells = <1>;
 	#size-cells = <1>;
@@ -332,11 +297,7 @@
 	};
 
 	corenet-cf@18000 {
-<<<<<<< HEAD
-		compatible = "fsl,corenet-cf";
-=======
 		compatible = "fsl,corenet1-cf", "fsl,corenet-cf";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg = <0x18000 0x1000>;
 		interrupts = <16 2 1 31>;
 		fsl,ccf-num-csdids = <32>;
@@ -345,12 +306,6 @@
 
 	iommu@20000 {
 		compatible = "fsl,pamu-v1.0", "fsl,pamu";
-<<<<<<< HEAD
-		reg = <0x20000 0x4000>;
-		interrupts = <
-			24 2 0 0
-			16 2 1 30>;
-=======
 		reg = <0x20000 0x4000>; /* for compatibility with older PAMU drivers */
 		ranges = <0 0x20000 0x4000>;
 		#address-cells = <1>;
@@ -383,7 +338,6 @@
 			fsl,primary-cache-geometry = <32 1>;
 			fsl,secondary-cache-geometry = <128 2>;
 		};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 /include/ "qoriq-mpic.dtsi"
@@ -402,16 +356,9 @@
 		#sleep-cells = <2>;
 	};
 
-<<<<<<< HEAD
-	clockgen: global-utilities@e1000 {
-		compatible = "fsl,p5020-clockgen", "fsl,qoriq-clockgen-1.0";
-		reg = <0xe1000 0x1000>;
-		clock-frequency = <0>;
-=======
 /include/ "qoriq-clockgen1.dtsi"
 	global-utilities@e1000 {
 		compatible = "fsl,p5020-clockgen", "fsl,qoriq-clockgen-1.0";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	rcpm: global-utilities@e2000 {
@@ -431,9 +378,6 @@
 	};
 
 /include/ "qoriq-dma-0.dtsi"
-<<<<<<< HEAD
-/include/ "qoriq-dma-1.dtsi"
-=======
 	dma@100300 {
 		fsl,iommu-parent = <&pamu0>;
 		fsl,liodn-reg = <&guts 0x580>; /* DMA1LIODNR */
@@ -445,7 +389,6 @@
 		fsl,liodn-reg = <&guts 0x584>; /* DMA2LIODNR */
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /include/ "qoriq-espi-0.dtsi"
 	spi@110000 {
 		fsl,espi-num-chipselects = <4>;
@@ -453,12 +396,9 @@
 
 /include/ "qoriq-esdhc-0.dtsi"
 	sdhc@114000 {
-<<<<<<< HEAD
-=======
 		compatible = "fsl,p5020-esdhc", "fsl,esdhc";
 		fsl,iommu-parent = <&pamu1>;
 		fsl,liodn-reg = <&guts 0x530>; /* eSDHCLIODNR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sdhci,auto-cmd12;
 	};
 
@@ -468,24 +408,6 @@
 /include/ "qoriq-duart-1.dtsi"
 /include/ "qoriq-gpio-0.dtsi"
 /include/ "qoriq-usb2-mph-0.dtsi"
-<<<<<<< HEAD
-		usb0: usb@210000 {
-			compatible = "fsl-usb2-mph-v1.6", "fsl,mpc85xx-usb2-mph", "fsl-usb2-mph";
-			phy_type = "utmi";
-			port0;
-		};
-
-/include/ "qoriq-usb2-dr-0.dtsi"
-		usb1: usb@211000 {
-			compatible = "fsl-usb2-dr-v1.6", "fsl,mpc85xx-usb2-dr", "fsl-usb2-dr";
-			dr_mode = "host";
-			phy_type = "utmi";
-		};
-
-/include/ "qoriq-sata2-0.dtsi"
-/include/ "qoriq-sata2-1.dtsi"
-/include/ "qoriq-sec4.2-0.dtsi"
-=======
 	usb0: usb@210000 {
 		compatible = "fsl-usb2-mph-v1.6", "fsl,mpc85xx-usb2-mph", "fsl-usb2-mph";
 		fsl,iommu-parent = <&pamu1>;
@@ -553,5 +475,4 @@
 		enet5: ethernet@f0000 {
 		};
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

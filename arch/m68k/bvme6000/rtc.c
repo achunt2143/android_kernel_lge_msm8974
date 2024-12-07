@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Real Time Clock interface for Linux on the BVME6000
  *
@@ -19,20 +16,12 @@
 #include <linux/init.h>
 #include <linux/poll.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/mc146818rtc.h>	/* For struct rtc_time and ioctls, etc */
-=======
 #include <linux/rtc.h>	/* For struct rtc_time and ioctls, etc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bcd.h>
 #include <asm/bvme6000hw.h>
 
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 
 /*
@@ -180,11 +169,7 @@ static int __init rtc_DP8570A_init(void)
 	if (!MACH_IS_BVME6000)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "DP8570A Real Time Clock Driver v%s\n", RTC_VERSION);
-=======
 	pr_info("DP8570A Real Time Clock Driver v%s\n", RTC_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return misc_register(&rtc_dev);
 }
 module_init(rtc_DP8570A_init);

@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright IBM Corp. 2004
- * tape_class.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright IBM Corp. 2004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Tape class device support
  *
@@ -23,22 +17,14 @@
 
 MODULE_AUTHOR("Stefan Bader <shbader@de.ibm.com>");
 MODULE_DESCRIPTION(
-<<<<<<< HEAD
-	"(C) Copyright IBM Corp. 2004   All Rights Reserved.\n"
-=======
 	"Copyright IBM Corp. 2004   All Rights Reserved.\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"tape_class.c"
 );
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-static struct class *tape_class;
-=======
 static const struct class tape_class = {
 	.name = "tape390",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register a tape device and return a pointer to the cdev structure.
@@ -70,17 +56,10 @@ struct tape_class_device *register_tape_dev(
 	if (!tcd)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	strncpy(tcd->device_name, device_name, TAPECLASS_NAME_LEN);
-	for (s = strchr(tcd->device_name, '/'); s; s = strchr(s, '/'))
-		*s = '!';
-	strncpy(tcd->mode_name, mode_name, TAPECLASS_NAME_LEN);
-=======
 	strscpy(tcd->device_name, device_name, TAPECLASS_NAME_LEN);
 	for (s = strchr(tcd->device_name, '/'); s; s = strchr(s, '/'))
 		*s = '!';
 	strscpy(tcd->mode_name, mode_name, TAPECLASS_NAME_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (s = strchr(tcd->mode_name, '/'); s; s = strchr(s, '/'))
 		*s = '!';
 
@@ -92,18 +71,6 @@ struct tape_class_device *register_tape_dev(
 
 	tcd->char_device->owner = fops->owner;
 	tcd->char_device->ops   = fops;
-<<<<<<< HEAD
-	tcd->char_device->dev   = dev;
-
-	rc = cdev_add(tcd->char_device, tcd->char_device->dev, 1);
-	if (rc)
-		goto fail_with_cdev;
-
-	tcd->class_device = device_create(tape_class, device,
-					  tcd->char_device->dev, NULL,
-					  "%s", tcd->device_name);
-	rc = IS_ERR(tcd->class_device) ? PTR_ERR(tcd->class_device) : 0;
-=======
 
 	rc = cdev_add(tcd->char_device, dev, 1);
 	if (rc)
@@ -113,7 +80,6 @@ struct tape_class_device *register_tape_dev(
 					  tcd->char_device->dev, NULL,
 					  "%s", tcd->device_name);
 	rc = PTR_ERR_OR_ZERO(tcd->class_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto fail_with_cdev;
 	rc = sysfs_create_link(
@@ -127,11 +93,7 @@ struct tape_class_device *register_tape_dev(
 	return tcd;
 
 fail_with_class_device:
-<<<<<<< HEAD
-	device_destroy(tape_class, tcd->char_device->dev);
-=======
 	device_destroy(&tape_class, tcd->char_device->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 fail_with_cdev:
 	cdev_del(tcd->char_device);
@@ -147,11 +109,7 @@ void unregister_tape_dev(struct device *device, struct tape_class_device *tcd)
 {
 	if (tcd != NULL && !IS_ERR(tcd)) {
 		sysfs_remove_link(&device->kobj, tcd->mode_name);
-<<<<<<< HEAD
-		device_destroy(tape_class, tcd->char_device->dev);
-=======
 		device_destroy(&tape_class, tcd->char_device->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cdev_del(tcd->char_device);
 		kfree(tcd);
 	}
@@ -161,23 +119,12 @@ EXPORT_SYMBOL(unregister_tape_dev);
 
 static int __init tape_init(void)
 {
-<<<<<<< HEAD
-	tape_class = class_create(THIS_MODULE, "tape390");
-
-	return 0;
-=======
 	return class_register(&tape_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit tape_exit(void)
 {
-<<<<<<< HEAD
-	class_destroy(tape_class);
-	tape_class = NULL;
-=======
 	class_unregister(&tape_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 postcore_initcall(tape_init);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCLP line mode console driver
  *
@@ -13,10 +10,7 @@
 #include <linux/kmod.h>
 #include <linux/console.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/panic_notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/jiffies.h>
 #include <linux/termios.h>
@@ -33,39 +27,21 @@
 #define sclp_console_name  "ttyS"
 
 /* Lock to guard over changes to global variables */
-<<<<<<< HEAD
-static spinlock_t sclp_con_lock;
-/* List of free pages that can be used for console output buffering */
-static struct list_head sclp_con_pages;
-/* List of full struct sclp_buffer structures ready for output */
-static struct list_head sclp_con_outqueue;
-=======
 static DEFINE_SPINLOCK(sclp_con_lock);
 /* List of free pages that can be used for console output buffering */
 static LIST_HEAD(sclp_con_pages);
 /* List of full struct sclp_buffer structures ready for output */
 static LIST_HEAD(sclp_con_outqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Pointer to current console buffer */
 static struct sclp_buffer *sclp_conbuf;
 /* Timer for delayed output of console messages */
 static struct timer_list sclp_con_timer;
-<<<<<<< HEAD
-/* Suspend mode flag */
-static int sclp_con_suspended;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Flag that output queue is currently running */
 static int sclp_con_queue_running;
 
 /* Output format for console messages */
-<<<<<<< HEAD
-static unsigned short sclp_con_columns;
-static unsigned short sclp_con_width_htab;
-=======
 #define SCLP_CON_COLUMNS	320
 #define SPACES_PER_TAB		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 sclp_conbuf_callback(struct sclp_buffer *buffer, int rc)
@@ -86,11 +62,7 @@ sclp_conbuf_callback(struct sclp_buffer *buffer, int rc)
 		if (!list_empty(&sclp_con_outqueue))
 			buffer = list_first_entry(&sclp_con_outqueue,
 						  struct sclp_buffer, list);
-<<<<<<< HEAD
-		if (!buffer || sclp_con_suspended) {
-=======
 		if (!buffer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sclp_con_queue_running = 0;
 			spin_unlock_irqrestore(&sclp_con_lock, flags);
 			break;
@@ -112,11 +84,7 @@ static void sclp_conbuf_emit(void)
 	if (sclp_conbuf)
 		list_add_tail(&sclp_conbuf->list, &sclp_con_outqueue);
 	sclp_conbuf = NULL;
-<<<<<<< HEAD
-	if (sclp_con_queue_running || sclp_con_suspended)
-=======
 	if (sclp_con_queue_running)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	if (list_empty(&sclp_con_outqueue))
 		goto out_unlock;
@@ -141,12 +109,7 @@ static void sclp_console_sync_queue(void)
 	unsigned long flags;
 
 	spin_lock_irqsave(&sclp_con_lock, flags);
-<<<<<<< HEAD
-	if (timer_pending(&sclp_con_timer))
-		del_timer(&sclp_con_timer);
-=======
 	del_timer(&sclp_con_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (sclp_con_queue_running) {
 		spin_unlock_irqrestore(&sclp_con_lock, flags);
 		sclp_sync_wait();
@@ -160,18 +123,12 @@ static void sclp_console_sync_queue(void)
  * temporary write buffer without further waiting on a final new line.
  */
 static void
-<<<<<<< HEAD
-sclp_console_timeout(unsigned long data)
-=======
 sclp_console_timeout(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sclp_conbuf_emit();
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Drop oldest console buffer if sclp_con_drop is set
  */
 static int
@@ -197,7 +154,6 @@ sclp_console_drop_buffer(void)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Writes the given message to S390 system console
  */
 static void
@@ -218,30 +174,19 @@ sclp_console_write(struct console *console, const char *message,
 	do {
 		/* make sure we have a console output buffer */
 		if (sclp_conbuf == NULL) {
-<<<<<<< HEAD
-			while (list_empty(&sclp_con_pages)) {
-				if (sclp_con_suspended)
-					goto out;
-=======
 			if (list_empty(&sclp_con_pages))
 				sclp_console_full++;
 			while (list_empty(&sclp_con_pages)) {
 				if (sclp_console_drop_buffer())
 					break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_unlock_irqrestore(&sclp_con_lock, flags);
 				sclp_sync_wait();
 				spin_lock_irqsave(&sclp_con_lock, flags);
 			}
 			page = sclp_con_pages.next;
 			list_del((struct list_head *) page);
-<<<<<<< HEAD
-			sclp_conbuf = sclp_make_buffer(page, sclp_con_columns,
-						       sclp_con_width_htab);
-=======
 			sclp_conbuf = sclp_make_buffer(page, SCLP_CON_COLUMNS,
 						       SPACES_PER_TAB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* try to write the string to the current output buffer */
 		written = sclp_write(sclp_conbuf, (const unsigned char *)
@@ -262,18 +207,8 @@ sclp_console_write(struct console *console, const char *message,
 	/* Setup timer to output current console buffer after 1/10 second */
 	if (sclp_conbuf != NULL && sclp_chars_in_buffer(sclp_conbuf) != 0 &&
 	    !timer_pending(&sclp_con_timer)) {
-<<<<<<< HEAD
-		init_timer(&sclp_con_timer);
-		sclp_con_timer.function = sclp_console_timeout;
-		sclp_con_timer.data = 0UL;
-		sclp_con_timer.expires = jiffies + HZ/10;
-		add_timer(&sclp_con_timer);
-	}
-out:
-=======
 		mod_timer(&sclp_con_timer, jiffies + HZ / 10);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&sclp_con_lock, flags);
 }
 
@@ -285,48 +220,6 @@ sclp_console_device(struct console *c, int *index)
 }
 
 /*
-<<<<<<< HEAD
- * Make sure that all buffers will be flushed to the SCLP.
- */
-static void
-sclp_console_flush(void)
-{
-	sclp_conbuf_emit();
-	sclp_console_sync_queue();
-}
-
-/*
- * Resume console: If there are cached messages, emit them.
- */
-static void sclp_console_resume(void)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&sclp_con_lock, flags);
-	sclp_con_suspended = 0;
-	spin_unlock_irqrestore(&sclp_con_lock, flags);
-	sclp_conbuf_emit();
-}
-
-/*
- * Suspend console: Set suspend flag and flush console
- */
-static void sclp_console_suspend(void)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&sclp_con_lock, flags);
-	sclp_con_suspended = 1;
-	spin_unlock_irqrestore(&sclp_con_lock, flags);
-	sclp_console_flush();
-}
-
-static int sclp_console_notify(struct notifier_block *self,
-			       unsigned long event, void *data)
-{
-	sclp_console_flush();
-	return NOTIFY_OK;
-=======
  * This panic/reboot notifier makes sure that all buffers
  * will be flushed to the SCLP.
  */
@@ -345,25 +238,16 @@ static int sclp_console_notify(struct notifier_block *self,
 	sclp_console_sync_queue();
 
 	return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block on_panic_nb = {
 	.notifier_call = sclp_console_notify,
-<<<<<<< HEAD
-	.priority = SCLP_PANIC_PRIO_CLIENT,
-=======
 	.priority = INT_MIN + 1, /* run the callback late */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct notifier_block on_reboot_nb = {
 	.notifier_call = sclp_console_notify,
-<<<<<<< HEAD
-	.priority = 1,
-=======
 	.priority = INT_MIN + 1, /* run the callback late */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -380,25 +264,6 @@ static struct console sclp_console =
 };
 
 /*
-<<<<<<< HEAD
- * This function is called for SCLP suspend and resume events.
- */
-void sclp_console_pm_event(enum sclp_pm_event sclp_pm_event)
-{
-	switch (sclp_pm_event) {
-	case SCLP_PM_EVENT_FREEZE:
-		sclp_console_suspend();
-		break;
-	case SCLP_PM_EVENT_RESTORE:
-	case SCLP_PM_EVENT_THAW:
-		sclp_console_resume();
-		break;
-	}
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * called by console_init() in drivers/char/tty_io.c at boot-time.
  */
 static int __init
@@ -408,46 +273,19 @@ sclp_console_init(void)
 	int i;
 	int rc;
 
-<<<<<<< HEAD
-	if (!CONSOLE_IS_SCLP)
-=======
 	/* SCLP consoles are handled together */
 	if (!(CONSOLE_IS_SCLP || CONSOLE_IS_VT220))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	rc = sclp_rw_init();
 	if (rc)
 		return rc;
 	/* Allocate pages for output buffering */
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&sclp_con_pages);
-	for (i = 0; i < MAX_CONSOLE_PAGES; i++) {
-		page = (void *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
-		list_add_tail(page, &sclp_con_pages);
-	}
-	INIT_LIST_HEAD(&sclp_con_outqueue);
-	spin_lock_init(&sclp_con_lock);
-	sclp_conbuf = NULL;
-	init_timer(&sclp_con_timer);
-
-	/* Set output format */
-	if (MACHINE_IS_VM)
-		/*
-		 * save 4 characters for the CPU number
-		 * written at start of each line by VM/CP
-		 */
-		sclp_con_columns = 76;
-	else
-		sclp_con_columns = 80;
-	sclp_con_width_htab = 8;
-=======
 	for (i = 0; i < sclp_console_pages; i++) {
 		page = (void *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 		list_add_tail(page, &sclp_con_pages);
 	}
 	sclp_conbuf = NULL;
 	timer_setup(&sclp_con_timer, sclp_console_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable printk-access to this driver */
 	atomic_notifier_chain_register(&panic_notifier_list, &on_panic_nb);

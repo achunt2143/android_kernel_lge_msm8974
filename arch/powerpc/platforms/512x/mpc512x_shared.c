@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007,2008 Freescale Semiconductor, Inc. All rights reserved.
  *
@@ -9,21 +6,6 @@
  *
  * Description:
  * MPC512x Shared code
-<<<<<<< HEAD
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
-#include <linux/kernel.h>
-#include <linux/io.h>
-#include <linux/irq.h>
-#include <linux/of_platform.h>
-#include <linux/fsl-diu-fb.h>
-#include <linux/bootmem.h>
-=======
  */
 
 #include <linux/clk.h>
@@ -34,16 +16,11 @@
 #include <linux/of_platform.h>
 #include <linux/fsl-diu-fb.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sysdev/fsl_soc.h>
 
 #include <asm/cacheflush.h>
 #include <asm/machdep.h>
 #include <asm/ipic.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 #include <asm/mpc5121.h>
 #include <asm/mpc52xx_psc.h>
@@ -52,23 +29,7 @@
 
 static struct mpc512x_reset_module __iomem *reset_module_base;
 
-<<<<<<< HEAD
-static void __init mpc512x_restart_init(void)
-{
-	struct device_node *np;
-
-	np = of_find_compatible_node(NULL, NULL, "fsl,mpc5121-reset");
-	if (!np)
-		return;
-
-	reset_module_base = of_iomap(np, 0);
-	of_node_put(np);
-}
-
-void mpc512x_restart(char *cmd)
-=======
 void __noreturn mpc512x_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (reset_module_base) {
 		/* Enable software reset "RSTE" */
@@ -90,126 +51,6 @@ struct fsl_diu_shared_fb {
 	bool		in_use;
 };
 
-<<<<<<< HEAD
-u32 mpc512x_get_pixel_format(enum fsl_diu_monitor_port port,
-			     unsigned int bits_per_pixel)
-{
-	switch (bits_per_pixel) {
-	case 32:
-		return 0x88883316;
-	case 24:
-		return 0x88082219;
-	case 16:
-		return 0x65053118;
-	}
-	return 0x00000400;
-}
-
-void mpc512x_set_gamma_table(enum fsl_diu_monitor_port port,
-			     char *gamma_table_base)
-{
-}
-
-void mpc512x_set_monitor_port(enum fsl_diu_monitor_port port)
-{
-}
-
-#define DIU_DIV_MASK	0x000000ff
-void mpc512x_set_pixel_clock(unsigned int pixclock)
-{
-	unsigned long bestval, bestfreq, speed, busfreq;
-	unsigned long minpixclock, maxpixclock, pixval;
-	struct mpc512x_ccm __iomem *ccm;
-	struct device_node *np;
-	u32 temp;
-	long err;
-	int i;
-
-	np = of_find_compatible_node(NULL, NULL, "fsl,mpc5121-clock");
-	if (!np) {
-		pr_err("Can't find clock control module.\n");
-		return;
-	}
-
-	ccm = of_iomap(np, 0);
-	of_node_put(np);
-	if (!ccm) {
-		pr_err("Can't map clock control module reg.\n");
-		return;
-	}
-
-	np = of_find_node_by_type(NULL, "cpu");
-	if (np) {
-		const unsigned int *prop =
-			of_get_property(np, "bus-frequency", NULL);
-
-		of_node_put(np);
-		if (prop) {
-			busfreq = *prop;
-		} else {
-			pr_err("Can't get bus-frequency property\n");
-			return;
-		}
-	} else {
-		pr_err("Can't find 'cpu' node.\n");
-		return;
-	}
-
-	/* Pixel Clock configuration */
-	pr_debug("DIU: Bus Frequency = %lu\n", busfreq);
-	speed = busfreq * 4; /* DIU_DIV ratio is 4 * CSB_CLK / DIU_CLK */
-
-	/* Calculate the pixel clock with the smallest error */
-	/* calculate the following in steps to avoid overflow */
-	pr_debug("DIU pixclock in ps - %d\n", pixclock);
-	temp = (1000000000 / pixclock) * 1000;
-	pixclock = temp;
-	pr_debug("DIU pixclock freq - %u\n", pixclock);
-
-	temp = temp / 20; /* pixclock * 0.05 */
-	pr_debug("deviation = %d\n", temp);
-	minpixclock = pixclock - temp;
-	maxpixclock = pixclock + temp;
-	pr_debug("DIU minpixclock - %lu\n", minpixclock);
-	pr_debug("DIU maxpixclock - %lu\n", maxpixclock);
-	pixval = speed/pixclock;
-	pr_debug("DIU pixval = %lu\n", pixval);
-
-	err = LONG_MAX;
-	bestval = pixval;
-	pr_debug("DIU bestval = %lu\n", bestval);
-
-	bestfreq = 0;
-	for (i = -1; i <= 1; i++) {
-		temp = speed / (pixval+i);
-		pr_debug("DIU test pixval i=%d, pixval=%lu, temp freq. = %u\n",
-			i, pixval, temp);
-		if ((temp < minpixclock) || (temp > maxpixclock))
-			pr_debug("DIU exceeds monitor range (%lu to %lu)\n",
-				minpixclock, maxpixclock);
-		else if (abs(temp - pixclock) < err) {
-			pr_debug("Entered the else if block %d\n", i);
-			err = abs(temp - pixclock);
-			bestval = pixval + i;
-			bestfreq = temp;
-		}
-	}
-
-	pr_debug("DIU chose = %lx\n", bestval);
-	pr_debug("DIU error = %ld\n NomPixClk ", err);
-	pr_debug("DIU: Best Freq = %lx\n", bestfreq);
-	/* Modify DIU_DIV in CCM SCFR1 */
-	temp = in_be32(&ccm->scfr1);
-	pr_debug("DIU: Current value of SCFR1: 0x%08x\n", temp);
-	temp &= ~DIU_DIV_MASK;
-	temp |= (bestval & DIU_DIV_MASK);
-	out_be32(&ccm->scfr1, temp);
-	pr_debug("DIU: Modified value of SCFR1: 0x%08x\n", temp);
-	iounmap(ccm);
-}
-
-enum fsl_diu_monitor_port
-=======
 /* receives a pixel clock spec in pico seconds, adjusts the DIU clock rate */
 static void mpc512x_set_pixel_clock(unsigned int pixclock)
 {
@@ -319,7 +160,6 @@ static void mpc512x_set_pixel_clock(unsigned int pixclock)
 }
 
 static enum fsl_diu_monitor_port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mpc512x_valid_monitor_port(enum fsl_diu_monitor_port port)
 {
 	return FSL_DIU_PORT_DVI;
@@ -327,21 +167,6 @@ mpc512x_valid_monitor_port(enum fsl_diu_monitor_port port)
 
 static struct fsl_diu_shared_fb __attribute__ ((__aligned__(8))) diu_shared_fb;
 
-<<<<<<< HEAD
-#if defined(CONFIG_FB_FSL_DIU) || \
-    defined(CONFIG_FB_FSL_DIU_MODULE)
-static inline void mpc512x_free_bootmem(struct page *page)
-{
-	__ClearPageReserved(page);
-	BUG_ON(PageTail(page));
-	BUG_ON(atomic_read(&page->_count) > 1);
-	atomic_set(&page->_count, 1);
-	__free_page(page);
-	totalram_pages++;
-}
-
-void mpc512x_release_bootmem(void)
-=======
 static inline void mpc512x_free_bootmem(struct page *page)
 {
 	BUG_ON(PageTail(page));
@@ -350,7 +175,6 @@ static inline void mpc512x_free_bootmem(struct page *page)
 }
 
 static void mpc512x_release_bootmem(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr = diu_shared_fb.fb_phys & PAGE_MASK;
 	unsigned long size = diu_shared_fb.fb_len;
@@ -367,10 +191,6 @@ static void mpc512x_release_bootmem(void)
 	}
 	diu_ops.release_bootmem	= NULL;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check if DIU was pre-initialized. If so, perform steps
@@ -380,11 +200,7 @@ static void mpc512x_release_bootmem(void)
  * address range will be reserved in setup_arch() after bootmem
  * allocator is up.
  */
-<<<<<<< HEAD
-void __init mpc512x_init_diu(void)
-=======
 static void __init mpc512x_init_diu(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 	struct diu __iomem *diu_reg;
@@ -453,62 +269,32 @@ out:
 	iounmap(diu_reg);
 }
 
-<<<<<<< HEAD
-void __init mpc512x_setup_diu(void)
-=======
 static void __init mpc512x_setup_diu(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	/*
 	 * We do not allocate and configure new area for bitmap buffer
-<<<<<<< HEAD
-	 * because it would requere copying bitmap data (splash image)
-	 * and so negatively affect boot time. Instead we reserve the
-	 * already configured frame buffer area so that it won't be
-	 * destroyed. The starting address of the area to reserve and
-	 * also it's length is passed to reserve_bootmem(). It will be
-=======
 	 * because it would require copying bitmap data (splash image)
 	 * and so negatively affect boot time. Instead we reserve the
 	 * already configured frame buffer area so that it won't be
 	 * destroyed. The starting address of the area to reserve and
 	 * also it's length is passed to memblock_reserve(). It will be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * freed later on first open of fbdev, when splash image is not
 	 * needed any more.
 	 */
 	if (diu_shared_fb.in_use) {
-<<<<<<< HEAD
-		ret = reserve_bootmem(diu_shared_fb.fb_phys,
-				      diu_shared_fb.fb_len,
-				      BOOTMEM_EXCLUSIVE);
-=======
 		ret = memblock_reserve(diu_shared_fb.fb_phys,
 				       diu_shared_fb.fb_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			pr_err("%s: reserve bootmem failed\n", __func__);
 			diu_shared_fb.in_use = false;
 		}
 	}
 
-<<<<<<< HEAD
-#if defined(CONFIG_FB_FSL_DIU) || \
-    defined(CONFIG_FB_FSL_DIU_MODULE)
-	diu_ops.get_pixel_format	= mpc512x_get_pixel_format;
-	diu_ops.set_gamma_table		= mpc512x_set_gamma_table;
-	diu_ops.set_monitor_port	= mpc512x_set_monitor_port;
 	diu_ops.set_pixel_clock		= mpc512x_set_pixel_clock;
 	diu_ops.valid_monitor_port	= mpc512x_valid_monitor_port;
 	diu_ops.release_bootmem		= mpc512x_release_bootmem;
-#endif
-=======
-	diu_ops.set_pixel_clock		= mpc512x_set_pixel_clock;
-	diu_ops.valid_monitor_port	= mpc512x_valid_monitor_port;
-	diu_ops.release_bootmem		= mpc512x_release_bootmem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init mpc512x_init_IRQ(void)
@@ -532,27 +318,6 @@ void __init mpc512x_init_IRQ(void)
 /*
  * Nodes to do bus probe on, soc and localbus
  */
-<<<<<<< HEAD
-static struct of_device_id __initdata of_bus_ids[] = {
-	{ .compatible = "fsl,mpc5121-immr", },
-	{ .compatible = "fsl,mpc5121-localbus", },
-	{},
-};
-
-void __init mpc512x_declare_of_platform_devices(void)
-{
-	struct device_node *np;
-
-	if (of_platform_bus_probe(NULL, of_bus_ids, NULL))
-		printk(KERN_ERR __FILE__ ": "
-			"Error while probing of_platform bus\n");
-
-	np = of_find_compatible_node(NULL, NULL, "fsl,mpc5121-nfc");
-	if (np) {
-		of_platform_device_create(np, NULL, NULL);
-		of_node_put(np);
-	}
-=======
 static const struct of_device_id of_bus_ids[] __initconst = {
 	{ .compatible = "fsl,mpc5121-immr", },
 	{ .compatible = "fsl,mpc5121-localbus", },
@@ -569,13 +334,10 @@ static void __init mpc512x_declare_of_platform_devices(void)
 	if (of_platform_bus_probe(NULL, of_bus_ids, NULL))
 		printk(KERN_ERR __FILE__ ": "
 			"Error while probing of_platform bus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define DEFAULT_FIFO_SIZE 16
 
-<<<<<<< HEAD
-=======
 const char *__init mpc512x_select_psc_compat(void)
 {
 	if (of_machine_is_compatible("fsl,mpc5121"))
@@ -598,7 +360,6 @@ static const char *__init mpc512x_select_reset_compat(void)
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int __init get_fifo_size(struct device_node *np,
 					 char *prop_name)
 {
@@ -608,13 +369,8 @@ static unsigned int __init get_fifo_size(struct device_node *np,
 	if (fp)
 		return *fp;
 
-<<<<<<< HEAD
-	pr_warning("no %s property in %s node, defaulting to %d\n",
-		   prop_name, np->full_name, DEFAULT_FIFO_SIZE);
-=======
 	pr_warn("no %s property in %pOF node, defaulting to %d\n",
 		prop_name, np, DEFAULT_FIFO_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return DEFAULT_FIFO_SIZE;
 }
@@ -623,21 +379,12 @@ static unsigned int __init get_fifo_size(struct device_node *np,
 		    ((u32)(_base) + sizeof(struct mpc52xx_psc)))
 
 /* Init PSC FIFO space for TX and RX slices */
-<<<<<<< HEAD
-void __init mpc512x_psc_fifo_init(void)
-=======
 static void __init mpc512x_psc_fifo_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 	void __iomem *psc;
 	unsigned int tx_fifo_size;
 	unsigned int rx_fifo_size;
-<<<<<<< HEAD
-	int fifobase = 0; /* current fifo address in 32 bit words */
-
-	for_each_compatible_node(np, NULL, "fsl,mpc5121-psc") {
-=======
 	const char *psc_compat;
 	int fifobase = 0; /* current fifo address in 32 bit words */
 
@@ -648,7 +395,6 @@ static void __init mpc512x_psc_fifo_init(void)
 	}
 
 	for_each_compatible_node(np, NULL, psc_compat) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_fifo_size = get_fifo_size(np, "fsl,tx-fifo-size");
 		rx_fifo_size = get_fifo_size(np, "fsl,rx-fifo-size");
 
@@ -662,25 +408,15 @@ static void __init mpc512x_psc_fifo_init(void)
 
 		psc = of_iomap(np, 0);
 		if (!psc) {
-<<<<<<< HEAD
-			pr_err("%s: Can't map %s device\n",
-				__func__, np->full_name);
-=======
 			pr_err("%s: Can't map %pOF device\n",
 				__func__, np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		/* FIFO space is 4KiB, check if requested size is available */
 		if ((fifobase + tx_fifo_size + rx_fifo_size) > 0x1000) {
-<<<<<<< HEAD
-			pr_err("%s: no fifo space available for %s\n",
-				__func__, np->full_name);
-=======
 			pr_err("%s: no fifo space available for %pOF\n",
 				__func__, np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iounmap(psc);
 			/*
 			 * chances are that another device requests less
@@ -705,15 +441,6 @@ static void __init mpc512x_psc_fifo_init(void)
 	}
 }
 
-<<<<<<< HEAD
-void __init mpc512x_init(void)
-{
-	mpc512x_declare_of_platform_devices();
-	mpc5121_clk_init();
-	mpc512x_restart_init();
-	mpc512x_psc_fifo_init();
-}
-=======
 static void __init mpc512x_restart_init(void)
 {
 	struct device_node *np;
@@ -777,4 +504,3 @@ int mpc512x_cs_config(unsigned int cs, u32 val)
 	return 0;
 }
 EXPORT_SYMBOL(mpc512x_cs_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

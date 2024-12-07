@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/* arch/sparc64/kernel/traps.c
- *
- * Copyright (C) 1995,1997,2008,2009 David S. Miller (davem@davemloft.net)
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* arch/sparc64/kernel/traps.c
  *
  * Copyright (C) 1995,1997,2008,2009,2012 David S. Miller (davem@davemloft.net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1997,1999,2000 Jakub Jelinek (jakub@redhat.com)
  */
 
@@ -15,47 +9,30 @@
  * I like traps on v9, :))))
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/sched.h>
-=======
 #include <linux/cpu.h>
 #include <linux/extable.h>
 #include <linux/sched/mm.h>
 #include <linux/sched/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <linux/kernel.h>
 #include <linux/signal.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/kdebug.h>
-#include <linux/ftrace.h>
-#include <linux/gfp.h>
-=======
 #include <linux/kallsyms.h>
 #include <linux/kdebug.h>
 #include <linux/ftrace.h>
 #include <linux/reboot.h>
 #include <linux/gfp.h>
 #include <linux/context_tracking.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/smp.h>
 #include <asm/delay.h>
 #include <asm/ptrace.h>
 #include <asm/oplib.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/unistd.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/unistd.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fpumacro.h>
 #include <asm/lsu.h>
 #include <asm/dcu.h>
@@ -69,15 +46,10 @@
 #include <asm/prom.h>
 #include <asm/memctrl.h>
 #include <asm/cacheflush.h>
-<<<<<<< HEAD
-
-#include "entry.h"
-=======
 #include <asm/setup.h>
 
 #include "entry.h"
 #include "kernel.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "kstack.h"
 
 /* When an irrecoverable trap occurs at tl > 0, the trap entry
@@ -116,12 +88,7 @@ static void dump_tl1_traplog(struct tl1_traplog *p)
 
 void bad_trap(struct pt_regs *regs, long lvl)
 {
-<<<<<<< HEAD
-	char buffer[32];
-	siginfo_t info;
-=======
 	char buffer[36];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_die(DIE_TRAP, "bad trap", regs,
 		       0, lvl, SIGTRAP) == NOTIFY_STOP)
@@ -141,26 +108,13 @@ void bad_trap(struct pt_regs *regs, long lvl)
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_ILLTRP;
-	info.si_addr = (void __user *)regs->tpc;
-	info.si_trapno = lvl;
-	force_sig_info(SIGILL, &info, current);
-=======
 	force_sig_fault_trapno(SIGILL, ILL_ILLTRP,
 			       (void __user *)regs->tpc, lvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bad_trap_tl1(struct pt_regs *regs, long lvl)
 {
-<<<<<<< HEAD
-	char buffer[32];
-=======
 	char buffer[36];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (notify_die(DIE_TRAP_TL1, "bad trap tl1", regs,
 		       0, lvl, SIGTRAP) == NOTIFY_STOP)
@@ -233,19 +187,11 @@ EXPORT_SYMBOL_GPL(unregister_dimm_printer);
 
 void spitfire_insn_access_exception(struct pt_regs *regs, unsigned long sfsr, unsigned long sfar)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "instruction access exception", regs,
-		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
-		return;
-=======
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "instruction access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (regs->tstate & TSTATE_PRIV) {
 		printk("spitfire_insn_access_exception: SFSR[%016lx] "
@@ -256,18 +202,9 @@ void spitfire_insn_access_exception(struct pt_regs *regs, unsigned long sfsr, un
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGSEGV;
-	info.si_errno = 0;
-	info.si_code = SEGV_MAPERR;
-	info.si_addr = (void __user *)regs->tpc;
-	info.si_trapno = 0;
-	force_sig_info(SIGSEGV, &info, current);
-=======
 	force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *)regs->tpc);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void spitfire_insn_access_exception_tl1(struct pt_regs *regs, unsigned long sfsr, unsigned long sfar)
@@ -284,10 +221,6 @@ void sun4v_insn_access_exception(struct pt_regs *regs, unsigned long addr, unsig
 {
 	unsigned short type = (type_ctx >> 16);
 	unsigned short ctx  = (type_ctx & 0xffff);
-<<<<<<< HEAD
-	siginfo_t info;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_die(DIE_TRAP, "instruction access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
@@ -304,16 +237,7 @@ void sun4v_insn_access_exception(struct pt_regs *regs, unsigned long addr, unsig
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGSEGV;
-	info.si_errno = 0;
-	info.si_code = SEGV_MAPERR;
-	info.si_addr = (void __user *) addr;
-	info.si_trapno = 0;
-	force_sig_info(SIGSEGV, &info, current);
-=======
 	force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *) addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sun4v_insn_access_exception_tl1(struct pt_regs *regs, unsigned long addr, unsigned long type_ctx)
@@ -326,15 +250,6 @@ void sun4v_insn_access_exception_tl1(struct pt_regs *regs, unsigned long addr, u
 	sun4v_insn_access_exception(regs, addr, type_ctx);
 }
 
-<<<<<<< HEAD
-void spitfire_data_access_exception(struct pt_regs *regs, unsigned long sfsr, unsigned long sfar)
-{
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "data access exception", regs,
-		       0, 0x30, SIGTRAP) == NOTIFY_STOP)
-		return;
-=======
 bool is_no_fault_exception(struct pt_regs *regs)
 {
 	unsigned char asi;
@@ -380,7 +295,6 @@ void spitfire_data_access_exception(struct pt_regs *regs, unsigned long sfsr, un
 	if (notify_die(DIE_TRAP, "data access exception", regs,
 		       0, 0x30, SIGTRAP) == NOTIFY_STOP)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (regs->tstate & TSTATE_PRIV) {
 		/* Test if this comes from uaccess places. */
@@ -396,11 +310,7 @@ void spitfire_data_access_exception(struct pt_regs *regs, unsigned long sfsr, un
 #endif
 			regs->tpc = entry->fixup;
 			regs->tnpc = regs->tpc + 4;
-<<<<<<< HEAD
-			return;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Shit... */
 		printk("spitfire_data_access_exception: SFSR[%016lx] "
@@ -408,21 +318,12 @@ void spitfire_data_access_exception(struct pt_regs *regs, unsigned long sfsr, un
 		die_if_kernel("Dax", regs);
 	}
 
-<<<<<<< HEAD
-	info.si_signo = SIGSEGV;
-	info.si_errno = 0;
-	info.si_code = SEGV_MAPERR;
-	info.si_addr = (void __user *)sfar;
-	info.si_trapno = 0;
-	force_sig_info(SIGSEGV, &info, current);
-=======
 	if (is_no_fault_exception(regs))
 		return;
 
 	force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *)sfar);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void spitfire_data_access_exception_tl1(struct pt_regs *regs, unsigned long sfsr, unsigned long sfar)
@@ -439,10 +340,6 @@ void sun4v_data_access_exception(struct pt_regs *regs, unsigned long addr, unsig
 {
 	unsigned short type = (type_ctx >> 16);
 	unsigned short ctx  = (type_ctx & 0xffff);
-<<<<<<< HEAD
-	siginfo_t info;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_die(DIE_TRAP, "data access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
@@ -474,14 +371,6 @@ void sun4v_data_access_exception(struct pt_regs *regs, unsigned long addr, unsig
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGSEGV;
-	info.si_errno = 0;
-	info.si_code = SEGV_MAPERR;
-	info.si_addr = (void __user *) addr;
-	info.si_trapno = 0;
-	force_sig_info(SIGSEGV, &info, current);
-=======
 	if (is_no_fault_exception(regs))
 		return;
 
@@ -505,7 +394,6 @@ void sun4v_data_access_exception(struct pt_regs *regs, unsigned long addr, unsig
 		force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *)addr);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sun4v_data_access_exception_tl1(struct pt_regs *regs, unsigned long addr, unsigned long type_ctx)
@@ -646,11 +534,6 @@ static void spitfire_cee_log(unsigned long afsr, unsigned long afar, unsigned lo
 
 static void spitfire_ue_log(unsigned long afsr, unsigned long afar, unsigned long udbh, unsigned long udbl, unsigned long tt, int tl1, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_WARNING "CPU[%d]: Uncorrectable Error AFSR[%lx] "
 	       "AFAR[%lx] UDBL[%lx] UDBH[%ld] TT[%lx] TL>1[%d]\n",
 	       smp_processor_id(), afsr, afar, udbl, udbh, tt, tl1);
@@ -685,16 +568,7 @@ static void spitfire_ue_log(unsigned long afsr, unsigned long afar, unsigned lon
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_OBJERR;
-	info.si_addr = (void *)0;
-	info.si_trapno = 0;
-	force_sig_info(SIGBUS, &info, current);
-=======
 	force_sig_fault(SIGBUS, BUS_OBJERR, (void *)0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void spitfire_access_error(struct pt_regs *regs, unsigned long status_encoded, unsigned long afar)
@@ -1016,11 +890,7 @@ void __init cheetah_ecache_flush_init(void)
 	ecache_flush_physbase = find_ecache_flush_span(ecache_flush_size);
 
 	if (ecache_flush_physbase == ~0UL) {
-<<<<<<< HEAD
-		prom_printf("cheetah_ecache_flush_init: Cannot find %d byte "
-=======
 		prom_printf("cheetah_ecache_flush_init: Cannot find %ld byte "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "contiguous physical memory.\n",
 			    ecache_flush_size);
 		prom_halt();
@@ -1028,11 +898,7 @@ void __init cheetah_ecache_flush_init(void)
 
 	/* Now allocate error trap reporting scoreboard. */
 	sz = NR_CPUS * (2 * sizeof(struct cheetah_err_info));
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; order++) {
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; order++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((PAGE_SIZE << order) >= sz)
 			break;
 	}
@@ -1934,12 +1800,6 @@ void cheetah_plus_parity_error(int type, struct pt_regs *regs)
 }
 
 struct sun4v_error_entry {
-<<<<<<< HEAD
-	u64		err_handle;
-	u64		err_stick;
-
-	u32		err_type;
-=======
 	/* Unique error handle */
 /*0x00*/u64		err_handle;
 
@@ -1950,16 +1810,10 @@ struct sun4v_error_entry {
 
 	/* Error type */
 /*0x13*/u8		err_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUN4V_ERR_TYPE_UNDEFINED	0
 #define SUN4V_ERR_TYPE_UNCORRECTED_RES	1
 #define SUN4V_ERR_TYPE_PRECISE_NONRES	2
 #define SUN4V_ERR_TYPE_DEFERRED_NONRES	3
-<<<<<<< HEAD
-#define SUN4V_ERR_TYPE_WARNING_RES	4
-
-	u32		err_attrs;
-=======
 #define SUN4V_ERR_TYPE_SHUTDOWN_RQST	4
 #define SUN4V_ERR_TYPE_DUMP_CORE	5
 #define SUN4V_ERR_TYPE_SP_STATE_CHANGE	6
@@ -1967,22 +1821,11 @@ struct sun4v_error_entry {
 
 	/* Error attributes */
 /*0x14*/u32		err_attrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUN4V_ERR_ATTRS_PROCESSOR	0x00000001
 #define SUN4V_ERR_ATTRS_MEMORY		0x00000002
 #define SUN4V_ERR_ATTRS_PIO		0x00000004
 #define SUN4V_ERR_ATTRS_INT_REGISTERS	0x00000008
 #define SUN4V_ERR_ATTRS_FPU_REGISTERS	0x00000010
-<<<<<<< HEAD
-#define SUN4V_ERR_ATTRS_USER_MODE	0x01000000
-#define SUN4V_ERR_ATTRS_PRIV_MODE	0x02000000
-#define SUN4V_ERR_ATTRS_RES_QUEUE_FULL	0x80000000
-
-	u64		err_raddr;
-	u32		err_size;
-	u16		err_cpu;
-	u16		err_pad;
-=======
 #define SUN4V_ERR_ATTRS_SHUTDOWN_RQST	0x00000020
 #define SUN4V_ERR_ATTRS_ASR		0x00000040
 #define SUN4V_ERR_ATTRS_ASI		0x00000080
@@ -2025,64 +1868,11 @@ struct sun4v_error_entry {
 /*0x2c*/u32		reserved_3;
 /*0x30*/u64		reserved_4;
 /*0x38*/u64		reserved_5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static atomic_t sun4v_resum_oflow_cnt = ATOMIC_INIT(0);
 static atomic_t sun4v_nonresum_oflow_cnt = ATOMIC_INIT(0);
 
-<<<<<<< HEAD
-static const char *sun4v_err_type_to_str(u32 type)
-{
-	switch (type) {
-	case SUN4V_ERR_TYPE_UNDEFINED:
-		return "undefined";
-	case SUN4V_ERR_TYPE_UNCORRECTED_RES:
-		return "uncorrected resumable";
-	case SUN4V_ERR_TYPE_PRECISE_NONRES:
-		return "precise nonresumable";
-	case SUN4V_ERR_TYPE_DEFERRED_NONRES:
-		return "deferred nonresumable";
-	case SUN4V_ERR_TYPE_WARNING_RES:
-		return "warning resumable";
-	default:
-		return "unknown";
-	}
-}
-
-static void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent, int cpu, const char *pfx, atomic_t *ocnt)
-{
-	int cnt;
-
-	printk("%s: Reporting on cpu %d\n", pfx, cpu);
-	printk("%s: err_handle[%llx] err_stick[%llx] err_type[%08x:%s]\n",
-	       pfx,
-	       ent->err_handle, ent->err_stick,
-	       ent->err_type,
-	       sun4v_err_type_to_str(ent->err_type));
-	printk("%s: err_attrs[%08x:%s %s %s %s %s %s %s %s]\n",
-	       pfx,
-	       ent->err_attrs,
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_PROCESSOR) ?
-		"processor" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_MEMORY) ?
-		"memory" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_PIO) ?
-		"pio" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_INT_REGISTERS) ?
-		"integer-regs" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_FPU_REGISTERS) ?
-		"fpu-regs" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_USER_MODE) ?
-		"user" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_PRIV_MODE) ?
-		"privileged" : ""),
-	       ((ent->err_attrs & SUN4V_ERR_ATTRS_RES_QUEUE_FULL) ?
-		"queue-full" : ""));
-	printk("%s: err_raddr[%016llx] err_size[%u] err_cpu[%u]\n",
-	       pfx,
-	       ent->err_raddr, ent->err_size, ent->err_cpu);
-=======
 static const char *sun4v_err_type_to_str(u8 type)
 {
 	static const char *types[SUN4V_ERR_TYPE_NUM] = {
@@ -2228,7 +2018,6 @@ static void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 	    (ent->err_asr & SUN4V_ERR_ASR_VALID) != 0)
 		printk("%s: reg [0x%04x]\n",
 		       pfx, ent->err_asr & ~SUN4V_ERR_ASR_VALID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	show_regs(regs);
 
@@ -2240,8 +2029,6 @@ static void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 	}
 }
 
-<<<<<<< HEAD
-=======
 /* Handle memory corruption detected error which is vectored in
  * through resumable error trap.
  */
@@ -2285,16 +2072,12 @@ void do_mcd_err(struct pt_regs *regs, struct sun4v_error_entry ent)
 	force_sig_fault(SIGSEGV, SEGV_ADIDERR, (void __user *)ent.err_raddr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* We run with %pil set to PIL_NORMAL_MAX and PSTATE_IE enabled in %pstate.
  * Log the event and clear the first word of the entry.
  */
 void sun4v_resum_error(struct pt_regs *regs, unsigned long offset)
 {
-<<<<<<< HEAD
-=======
 	enum ctx_state prev_state = exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sun4v_error_entry *ent, local_copy;
 	struct trap_per_cpu *tb;
 	unsigned long paddr;
@@ -2314,15 +2097,6 @@ void sun4v_resum_error(struct pt_regs *regs, unsigned long offset)
 
 	put_cpu();
 
-<<<<<<< HEAD
-	if (ent->err_type == SUN4V_ERR_TYPE_WARNING_RES) {
-		/* If err_type is 0x4, it's a powerdown request.  Do
-		 * not do the usual resumable error log because that
-		 * makes it look like some abnormal error.
-		 */
-		printk(KERN_INFO "Power down request...\n");
-		kill_cad_pid(SIGINT, 1);
-=======
 	if (local_copy.err_type == SUN4V_ERR_TYPE_SHUTDOWN_RQST) {
 		/* We should really take the seconds field of
 		 * the error report and use it for the shutdown
@@ -2340,18 +2114,14 @@ void sun4v_resum_error(struct pt_regs *regs, unsigned long offset)
 	 */
 	if (local_copy.err_attrs & SUN4V_ERR_ATTRS_MCD) {
 		do_mcd_err(regs, local_copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	sun4v_log_error(regs, &local_copy, cpu,
 			KERN_ERR "RESUMABLE ERROR",
 			&sun4v_resum_oflow_cnt);
-<<<<<<< HEAD
-=======
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* If we try to printk() we'll probably make matters worse, by trying
@@ -2363,8 +2133,6 @@ void sun4v_resum_overflow(struct pt_regs *regs)
 	atomic_inc(&sun4v_resum_oflow_cnt);
 }
 
-<<<<<<< HEAD
-=======
 /* Given a set of registers, get the virtual addressi that was being accessed
  * by the faulting instructions at tpc.
  */
@@ -2423,7 +2191,6 @@ bool sun4v_nonresum_error_user_handled(struct pt_regs *regs,
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* We run with %pil set to PIL_NORMAL_MAX and PSTATE_IE enabled in %pstate.
  * Log the event, clear the first word of the entry, and die.
  */
@@ -2448,15 +2215,12 @@ void sun4v_nonresum_error(struct pt_regs *regs, unsigned long offset)
 
 	put_cpu();
 
-<<<<<<< HEAD
-=======
 	if (!(regs->tstate & TSTATE_PRIV) &&
 	    sun4v_nonresum_error_user_handled(regs, &local_copy)) {
 		/* DON'T PANIC: This userspace error was handled. */
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCI
 	/* Check for the special PCI poke sequence. */
 	if (pci_poke_in_progress && pci_poke_cpu == cpu) {
@@ -2486,14 +2250,11 @@ void sun4v_nonresum_overflow(struct pt_regs *regs)
 	atomic_inc(&sun4v_nonresum_oflow_cnt);
 }
 
-<<<<<<< HEAD
-=======
 static void sun4v_tlb_error(struct pt_regs *regs)
 {
 	die_if_kernel("TLB/TSB error", regs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long sun4v_err_itlb_vaddr;
 unsigned long sun4v_err_itlb_ctx;
 unsigned long sun4v_err_itlb_pte;
@@ -2501,12 +2262,7 @@ unsigned long sun4v_err_itlb_error;
 
 void sun4v_itlb_error_report(struct pt_regs *regs, int tl)
 {
-<<<<<<< HEAD
-	if (tl > 1)
-		dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-=======
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_EMERG "SUN4V-ITLB: Error at TPC[%lx], tl %d\n",
 	       regs->tpc, tl);
@@ -2519,11 +2275,7 @@ void sun4v_itlb_error_report(struct pt_regs *regs, int tl)
 	       sun4v_err_itlb_vaddr, sun4v_err_itlb_ctx,
 	       sun4v_err_itlb_pte, sun4v_err_itlb_error);
 
-<<<<<<< HEAD
-	prom_halt();
-=======
 	sun4v_tlb_error(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long sun4v_err_dtlb_vaddr;
@@ -2533,12 +2285,7 @@ unsigned long sun4v_err_dtlb_error;
 
 void sun4v_dtlb_error_report(struct pt_regs *regs, int tl)
 {
-<<<<<<< HEAD
-	if (tl > 1)
-		dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-=======
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_EMERG "SUN4V-DTLB: Error at TPC[%lx], tl %d\n",
 	       regs->tpc, tl);
@@ -2551,11 +2298,7 @@ void sun4v_dtlb_error_report(struct pt_regs *regs, int tl)
 	       sun4v_err_dtlb_vaddr, sun4v_err_dtlb_ctx,
 	       sun4v_err_dtlb_pte, sun4v_err_dtlb_error);
 
-<<<<<<< HEAD
-	prom_halt();
-=======
 	sun4v_tlb_error(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hypervisor_tlbop_error(unsigned long err, unsigned long op)
@@ -2570,47 +2313,19 @@ void hypervisor_tlbop_error_xcall(unsigned long err, unsigned long op)
 	       err, op);
 }
 
-<<<<<<< HEAD
-void do_fpe_common(struct pt_regs *regs)
-=======
 static void do_fpe_common(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (regs->tstate & TSTATE_PRIV) {
 		regs->tpc = regs->tnpc;
 		regs->tnpc += 4;
 	} else {
 		unsigned long fsr = current_thread_info()->xfsr[0];
-<<<<<<< HEAD
-		siginfo_t info;
-=======
 		int code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (test_thread_flag(TIF_32BIT)) {
 			regs->tpc &= 0xffffffff;
 			regs->tnpc &= 0xffffffff;
 		}
-<<<<<<< HEAD
-		info.si_signo = SIGFPE;
-		info.si_errno = 0;
-		info.si_addr = (void __user *)regs->tpc;
-		info.si_trapno = 0;
-		info.si_code = __SI_FAULT;
-		if ((fsr & 0x1c000) == (1 << 14)) {
-			if (fsr & 0x10)
-				info.si_code = FPE_FLTINV;
-			else if (fsr & 0x08)
-				info.si_code = FPE_FLTOVF;
-			else if (fsr & 0x04)
-				info.si_code = FPE_FLTUND;
-			else if (fsr & 0x02)
-				info.si_code = FPE_FLTDIV;
-			else if (fsr & 0x01)
-				info.si_code = FPE_FLTRES;
-		}
-		force_sig_info(SIGFPE, &info, current);
-=======
 		code = FPE_FLTUNK;
 		if ((fsr & 0x1c000) == (1 << 14)) {
 			if (fsr & 0x10)
@@ -2625,25 +2340,11 @@ static void do_fpe_common(struct pt_regs *regs)
 				code = FPE_FLTRES;
 		}
 		force_sig_fault(SIGFPE, code, (void __user *)regs->tpc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void do_fpieee(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	if (notify_die(DIE_TRAP, "fpu exception ieee", regs,
-		       0, 0x24, SIGFPE) == NOTIFY_STOP)
-		return;
-
-	do_fpe_common(regs);
-}
-
-extern int do_mathemu(struct pt_regs *, struct fpustate *);
-
-void do_fpother(struct pt_regs *regs)
-{
-=======
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "fpu exception ieee", regs,
@@ -2658,29 +2359,16 @@ out:
 void do_fpother(struct pt_regs *regs)
 {
 	enum ctx_state prev_state = exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fpustate *f = FPUSTATE;
 	int ret = 0;
 
 	if (notify_die(DIE_TRAP, "fpu exception other", regs,
 		       0, 0x25, SIGFPE) == NOTIFY_STOP)
-<<<<<<< HEAD
-		return;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch ((current_thread_info()->xfsr[0] & 0x1c000)) {
 	case (2 << 14): /* unfinished_FPop */
 	case (3 << 14): /* unimplemented_FPop */
-<<<<<<< HEAD
-		ret = do_mathemu(regs, f);
-		break;
-	}
-	if (ret)
-		return;
-	do_fpe_common(regs);
-=======
 		ret = do_mathemu(regs, f, false);
 		break;
 	}
@@ -2689,24 +2377,15 @@ void do_fpother(struct pt_regs *regs)
 	do_fpe_common(regs);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_tof(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "tagged arithmetic overflow", regs,
-		       0, 0x26, SIGEMT) == NOTIFY_STOP)
-		return;
-=======
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "tagged arithmetic overflow", regs,
 		       0, 0x26, SIGEMT) == NOTIFY_STOP)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (regs->tstate & TSTATE_PRIV)
 		die_if_kernel("Penguin overflow trap from kernel mode", regs);
@@ -2714,35 +2393,18 @@ void do_tof(struct pt_regs *regs)
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGEMT;
-	info.si_errno = 0;
-	info.si_code = EMT_TAGOVF;
-	info.si_addr = (void __user *)regs->tpc;
-	info.si_trapno = 0;
-	force_sig_info(SIGEMT, &info, current);
-=======
 	force_sig_fault(SIGEMT, EMT_TAGOVF, (void __user *)regs->tpc);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_div0(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "integer division by zero", regs,
-		       0, 0x28, SIGFPE) == NOTIFY_STOP)
-		return;
-=======
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "integer division by zero", regs,
 		       0, 0x28, SIGFPE) == NOTIFY_STOP)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (regs->tstate & TSTATE_PRIV)
 		die_if_kernel("TL0: Kernel divide by zero.", regs);
@@ -2750,18 +2412,9 @@ void do_div0(struct pt_regs *regs)
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGFPE;
-	info.si_errno = 0;
-	info.si_code = FPE_INTDIV;
-	info.si_addr = (void __user *)regs->tpc;
-	info.si_trapno = 0;
-	force_sig_info(SIGFPE, &info, current);
-=======
 	force_sig_fault(SIGFPE, FPE_INTDIV, (void __user *)regs->tpc);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void instruction_dump(unsigned int *pc)
@@ -2794,11 +2447,7 @@ static void user_instruction_dump(unsigned int __user *pc)
 	printk("\n");
 }
 
-<<<<<<< HEAD
-void show_stack(struct task_struct *tsk, unsigned long *_ksp)
-=======
 void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long fp, ksp;
 	struct thread_info *tp;
@@ -2822,11 +2471,7 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 
 	fp = ksp + STACK_BIAS;
 
-<<<<<<< HEAD
-	printk("Call Trace:\n");
-=======
 	printk("%sCall Trace:\n", loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		struct sparc_stackf *sf;
 		struct pt_regs *regs;
@@ -2847,15 +2492,6 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 			fp = (unsigned long)sf->fp + STACK_BIAS;
 		}
 
-<<<<<<< HEAD
-		printk(" [%016lx] %pS\n", pc, (void *) pc);
-#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-		if ((pc + 8UL) == (unsigned long) &return_to_handler) {
-			int index = tsk->curr_ret_stack;
-			if (tsk->ret_stack && index >= graph) {
-				pc = tsk->ret_stack[index - graph].ret;
-				printk(" [%016lx] %pS\n", pc, (void *) pc);
-=======
 		print_ip_sym(loglvl, pc);
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 		if ((pc + 8UL) == (unsigned long) &return_to_handler) {
@@ -2864,7 +2500,6 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 			if (ret_stack) {
 				pc = ret_stack->ret;
 				print_ip_sym(loglvl, pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				graph++;
 			}
 		}
@@ -2872,16 +2507,6 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 	} while (++count < 16);
 }
 
-<<<<<<< HEAD
-void dump_stack(void)
-{
-	show_stack(current, NULL);
-}
-
-EXPORT_SYMBOL(dump_stack);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct reg_window *kernel_stack_up(struct reg_window *rw)
 {
 	unsigned long fp = rw->ins[6];
@@ -2892,11 +2517,7 @@ static inline struct reg_window *kernel_stack_up(struct reg_window *rw)
 	return (struct reg_window *) (fp + STACK_BIAS);
 }
 
-<<<<<<< HEAD
-void die_if_kernel(char *str, struct pt_regs *regs)
-=======
 void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int die_counter;
 	int count = 0;
@@ -2912,11 +2533,7 @@ void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
 	notify_die(DIE_OOPS, str, regs, 0, 255, SIGSEGV);
 	__asm__ __volatile__("flushw");
 	show_regs(regs);
-<<<<<<< HEAD
-	add_taint(TAINT_DIE);
-=======
 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (regs->tstate & TSTATE_PRIV) {
 		struct thread_info *tp = current_thread_info();
 		struct reg_window *rw = (struct reg_window *)
@@ -2941,36 +2558,15 @@ void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
 		}
 		user_instruction_dump ((unsigned int __user *) regs->tpc);
 	}
-<<<<<<< HEAD
-	if (regs->tstate & TSTATE_PRIV)
-		do_exit(SIGKILL);
-	do_exit(SIGSEGV);
-=======
 	if (panic_on_oops)
 		panic("Fatal exception");
 	make_task_dead((regs->tstate & TSTATE_PRIV)? SIGKILL : SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(die_if_kernel);
 
 #define VIS_OPCODE_MASK	((0x3 << 30) | (0x3f << 19))
 #define VIS_OPCODE_VAL	((0x2 << 30) | (0x36 << 19))
 
-<<<<<<< HEAD
-extern int handle_popc(u32 insn, struct pt_regs *regs);
-extern int handle_ldf_stq(u32 insn, struct pt_regs *regs);
-
-void do_illegal_instruction(struct pt_regs *regs)
-{
-	unsigned long pc = regs->tpc;
-	unsigned long tstate = regs->tstate;
-	u32 insn;
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "illegal instruction", regs,
-		       0, 0x10, SIGILL) == NOTIFY_STOP)
-		return;
-=======
 void do_illegal_instruction(struct pt_regs *regs)
 {
 	enum ctx_state prev_state = exception_enter();
@@ -2981,7 +2577,6 @@ void do_illegal_instruction(struct pt_regs *regs)
 	if (notify_die(DIE_TRAP, "illegal instruction", regs,
 		       0, 0x10, SIGILL) == NOTIFY_STOP)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tstate & TSTATE_PRIV)
 		die_if_kernel("Kernel illegal instruction", regs);
@@ -2990,55 +2585,6 @@ void do_illegal_instruction(struct pt_regs *regs)
 	if (get_user(insn, (u32 __user *) pc) != -EFAULT) {
 		if ((insn & 0xc1ffc000) == 0x81700000) /* POPC */ {
 			if (handle_popc(insn, regs))
-<<<<<<< HEAD
-				return;
-		} else if ((insn & 0xc1580000) == 0xc1100000) /* LDQ/STQ */ {
-			if (handle_ldf_stq(insn, regs))
-				return;
-		} else if (tlb_type == hypervisor) {
-			if ((insn & VIS_OPCODE_MASK) == VIS_OPCODE_VAL) {
-				if (!vis_emul(regs, insn))
-					return;
-			} else {
-				struct fpustate *f = FPUSTATE;
-
-				/* XXX maybe verify XFSR bits like
-				 * XXX do_fpother() does?
-				 */
-				if (do_mathemu(regs, f))
-					return;
-			}
-		}
-	}
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_ILLOPC;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	force_sig_info(SIGILL, &info, current);
-}
-
-extern void kernel_unaligned_trap(struct pt_regs *regs, unsigned int insn);
-
-void mem_address_unaligned(struct pt_regs *regs, unsigned long sfar, unsigned long sfsr)
-{
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "memory address unaligned", regs,
-		       0, 0x34, SIGSEGV) == NOTIFY_STOP)
-		return;
-
-	if (regs->tstate & TSTATE_PRIV) {
-		kernel_unaligned_trap(regs, *((unsigned int *)regs->tpc));
-		return;
-	}
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_ADRALN;
-	info.si_addr = (void __user *)sfar;
-	info.si_trapno = 0;
-	force_sig_info(SIGBUS, &info, current);
-=======
 				goto out;
 		} else if ((insn & 0xc1580000) == 0xc1100000) /* LDQ/STQ */ {
 			if (handle_ldf_stq(insn, regs))
@@ -3083,16 +2629,10 @@ void mem_address_unaligned(struct pt_regs *regs, unsigned long sfar, unsigned lo
 	force_sig_fault(SIGBUS, BUS_ADRALN, (void __user *)sfar);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sun4v_do_mna(struct pt_regs *regs, unsigned long addr, unsigned long type_ctx)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (notify_die(DIE_TRAP, "memory address unaligned", regs,
 		       0, 0x34, SIGSEGV) == NOTIFY_STOP)
 		return;
@@ -3101,24 +2641,6 @@ void sun4v_do_mna(struct pt_regs *regs, unsigned long addr, unsigned long type_c
 		kernel_unaligned_trap(regs, *((unsigned int *)regs->tpc));
 		return;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_ADRALN;
-	info.si_addr = (void __user *) addr;
-	info.si_trapno = 0;
-	force_sig_info(SIGBUS, &info, current);
-}
-
-void do_privop(struct pt_regs *regs)
-{
-	siginfo_t info;
-
-	if (notify_die(DIE_TRAP, "privileged operation", regs,
-		       0, 0x11, SIGILL) == NOTIFY_STOP)
-		return;
-
-=======
 	if (is_no_fault_exception(regs))
 		return;
 
@@ -3165,19 +2687,10 @@ void sun4v_mem_corrupt_detect_precise(struct pt_regs *regs, unsigned long addr,
 		die_if_kernel("MCD precise", regs);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_thread_flag(TIF_32BIT)) {
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
-<<<<<<< HEAD
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_PRVOPC;
-	info.si_addr = (void __user *)regs->tpc;
-	info.si_trapno = 0;
-	force_sig_info(SIGILL, &info, current);
-=======
 	force_sig_fault(SIGSEGV, SEGV_ADIPERR, (void __user *)addr);
 }
 
@@ -3196,7 +2709,6 @@ void do_privop(struct pt_regs *regs)
 	force_sig_fault(SIGILL, ILL_PRVOPC, (void __user *)regs->tpc);
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_privact(struct pt_regs *regs)
@@ -3207,31 +2719,6 @@ void do_privact(struct pt_regs *regs)
 /* Trap level 1 stuff or other traps we should never see... */
 void do_cee(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	die_if_kernel("TL0: Cache Error Exception", regs);
-}
-
-void do_cee_tl1(struct pt_regs *regs)
-{
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-	die_if_kernel("TL1: Cache Error Exception", regs);
-}
-
-void do_dae_tl1(struct pt_regs *regs)
-{
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-	die_if_kernel("TL1: Data Access Exception", regs);
-}
-
-void do_iae_tl1(struct pt_regs *regs)
-{
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-	die_if_kernel("TL1: Instruction Access Exception", regs);
-}
-
-void do_div0_tl1(struct pt_regs *regs)
-{
-=======
 	exception_enter();
 	die_if_kernel("TL0: Cache Error Exception", regs);
 }
@@ -3239,123 +2726,81 @@ void do_div0_tl1(struct pt_regs *regs)
 void do_div0_tl1(struct pt_regs *regs)
 {
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: DIV0 Exception", regs);
 }
 
-<<<<<<< HEAD
-void do_fpdis_tl1(struct pt_regs *regs)
-{
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
-	die_if_kernel("TL1: FPU Disabled", regs);
-}
-
-void do_fpieee_tl1(struct pt_regs *regs)
-{
-=======
 void do_fpieee_tl1(struct pt_regs *regs)
 {
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: FPU IEEE Exception", regs);
 }
 
 void do_fpother_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: FPU Other Exception", regs);
 }
 
 void do_ill_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Illegal Instruction Exception", regs);
 }
 
 void do_irq_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: IRQ Exception", regs);
 }
 
 void do_lddfmna_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: LDDF Exception", regs);
 }
 
 void do_stdfmna_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: STDF Exception", regs);
 }
 
 void do_paw(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	die_if_kernel("TL0: Phys Watchpoint Exception", regs);
 }
 
 void do_paw_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Phys Watchpoint Exception", regs);
 }
 
 void do_vaw(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	die_if_kernel("TL0: Virt Watchpoint Exception", regs);
 }
 
 void do_vaw_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Virt Watchpoint Exception", regs);
 }
 
 void do_tof_tl1(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Tag Overflow Exception", regs);
 }
@@ -3371,10 +2816,7 @@ void do_getpsr(struct pt_regs *regs)
 	}
 }
 
-<<<<<<< HEAD
-=======
 u64 cpu_mondo_counter[NR_CPUS] = {0};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct trap_per_cpu trap_block[NR_CPUS];
 EXPORT_SYMBOL(trap_block);
 
@@ -3407,11 +2849,6 @@ void __init trap_init(void)
 					       fault_address) ||
 		     TI_KREGS != offsetof(struct thread_info, kregs) ||
 		     TI_UTRAPS != offsetof(struct thread_info, utraps) ||
-<<<<<<< HEAD
-		     TI_EXEC_DOMAIN != offsetof(struct thread_info,
-						exec_domain) ||
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     TI_REG_WINDOW != offsetof(struct thread_info,
 					       reg_window) ||
 		     TI_RWIN_SPTRS != offsetof(struct thread_info,
@@ -3421,13 +2858,6 @@ void __init trap_init(void)
 		     TI_PRE_COUNT != offsetof(struct thread_info,
 					      preempt_count) ||
 		     TI_NEW_CHILD != offsetof(struct thread_info, new_child) ||
-<<<<<<< HEAD
-		     TI_SYS_NOERROR != offsetof(struct thread_info,
-						syscall_noerror) ||
-		     TI_RESTART_BLOCK != offsetof(struct thread_info,
-						  restart_block) ||
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     TI_KUNA_REGS != offsetof(struct thread_info,
 					      kern_una_regs) ||
 		     TI_KUNA_INSN != offsetof(struct thread_info,
@@ -3490,10 +2920,6 @@ void __init trap_init(void)
 	/* Attach to the address space of init_task.  On SMP we
 	 * do this in smp.c:smp_callin for other cpus.
 	 */
-<<<<<<< HEAD
-	atomic_inc(&init_mm.mm_count);
-=======
 	mmgrab(&init_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->active_mm = &init_mm;
 }

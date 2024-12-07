@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Virtual DMA allocation
  *
@@ -18,23 +15,14 @@
 #include <linux/init.h>
 #include <linux/bitops.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 
 #include <asm/sun3x.h>
 #include <asm/dvma.h>
 #include <asm/io.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/pgalloc.h>
-=======
 #include <asm/tlbflush.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IOMMU support */
 
@@ -70,23 +58,6 @@ static volatile unsigned long *iommu_pte = (unsigned long *)SUN3X_IOMMU;
 					 ((addr & 0x03c00000) >>     \
 						(DVMA_PAGE_SHIFT+4)))
 
-<<<<<<< HEAD
-#undef DEBUG
-
-#ifdef DEBUG
-/* code to print out a dvma mapping for debugging purposes */
-void dvma_print (unsigned long dvma_addr)
-{
-
-        unsigned long index;
-
-        index = dvma_addr >> DVMA_PAGE_SHIFT;
-
-        printk("idx %lx dvma_addr %08lx paddr %08lx\n", index, dvma_addr,
-               dvma_entry_paddr(index));
-
-
-=======
 #ifdef DEBUG
 /* code to print out a dvma mapping for debugging purposes */
 static void dvma_print (unsigned long dvma_addr)
@@ -98,7 +69,6 @@ static void dvma_print (unsigned long dvma_addr)
 
 	pr_info("idx %lx dvma_addr %08lx paddr %08lx\n", index, dvma_addr,
 		dvma_entry_paddr(index));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -109,11 +79,8 @@ inline int dvma_map_cpu(unsigned long kaddr,
 			       unsigned long vaddr, int len)
 {
 	pgd_t *pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
 	pud_t *pud;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long end;
 	int ret = 0;
 
@@ -122,28 +89,16 @@ inline int dvma_map_cpu(unsigned long kaddr,
 
 	end = PAGE_ALIGN(vaddr + len);
 
-<<<<<<< HEAD
-#ifdef DEBUG
-	printk("dvma: mapping kern %08lx to virt %08lx\n",
-	       kaddr, vaddr);
-#endif
-	pgd = pgd_offset_k(vaddr);
-=======
 	pr_debug("dvma: mapping kern %08lx to virt %08lx\n", kaddr, vaddr);
 	pgd = pgd_offset_k(vaddr);
 	p4d = p4d_offset(pgd, vaddr);
 	pud = pud_offset(p4d, vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		pmd_t *pmd;
 		unsigned long end2;
 
-<<<<<<< HEAD
-		if((pmd = pmd_alloc(&init_mm, pgd, vaddr)) == NULL) {
-=======
 		if((pmd = pmd_alloc(&init_mm, pud, vaddr)) == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto out;
 		}
@@ -168,17 +123,9 @@ inline int dvma_map_cpu(unsigned long kaddr,
 				end3 = end2;
 
 			do {
-<<<<<<< HEAD
-#ifdef DEBUG
-				printk("mapping %08lx phys to %08lx\n",
-				       __pa(kaddr), vaddr);
-#endif
-				set_pte(pte, pfn_pte(virt_to_pfn(kaddr),
-=======
 				pr_debug("mapping %08lx phys to %08lx\n",
 					 __pa(kaddr), vaddr);
 				set_pte(pte, pfn_pte(virt_to_pfn((void *)kaddr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     PAGE_KERNEL));
 				pte++;
 				kaddr += PAGE_SIZE;
@@ -196,12 +143,7 @@ inline int dvma_map_cpu(unsigned long kaddr,
 }
 
 
-<<<<<<< HEAD
-inline int dvma_map_iommu(unsigned long kaddr, unsigned long baddr,
-				 int len)
-=======
 int dvma_map_iommu(unsigned long kaddr, unsigned long baddr, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long end, index;
 
@@ -214,12 +156,8 @@ int dvma_map_iommu(unsigned long kaddr, unsigned long baddr, int len)
 	for(; index < end ; index++) {
 //		if(dvma_entry_use(index))
 //			BUG();
-<<<<<<< HEAD
-//		printk("mapping pa %lx to ba %lx\n", __pa(kaddr), index << DVMA_PAGE_SHIFT);
-=======
 //		pr_info("mapping pa %lx to ba %lx\n", __pa(kaddr),
 //			index << DVMA_PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dvma_entry_set(index, __pa(kaddr));
 
@@ -247,22 +185,12 @@ void dvma_unmap_iommu(unsigned long baddr, int len)
 	end = (DVMA_PAGE_ALIGN(baddr+len) >> DVMA_PAGE_SHIFT);
 
 	for(; index < end ; index++) {
-<<<<<<< HEAD
-#ifdef DEBUG
-		printk("freeing bus mapping %08x\n", index << DVMA_PAGE_SHIFT);
-#endif
-#if 0
-		if(!dvma_entry_use(index))
-			printk("dvma_unmap freeing unused entry %04x\n",
-			       index);
-=======
 		pr_debug("freeing bus mapping %08x\n",
 			 index << DVMA_PAGE_SHIFT);
 #if 0
 		if(!dvma_entry_use(index))
 			pr_info("dvma_unmap freeing unused entry %04x\n",
 				index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dvma_entry_dec(index);
 #endif
@@ -270,7 +198,3 @@ void dvma_unmap_iommu(unsigned long baddr, int len)
 	}
 
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

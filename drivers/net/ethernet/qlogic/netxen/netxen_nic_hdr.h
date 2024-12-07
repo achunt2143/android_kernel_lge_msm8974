@@ -1,33 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution
- * in the file called "COPYING".
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __NETXEN_NIC_HDR_H_
@@ -741,12 +716,9 @@ enum {
 #define NIC_CRB_BASE_2		(NETXEN_CAM_RAM(0x700))
 #define NETXEN_NIC_REG(X)	(NIC_CRB_BASE+(X))
 #define NETXEN_NIC_REG_2(X)	(NIC_CRB_BASE_2+(X))
-<<<<<<< HEAD
-=======
 #define NETXEN_INTR_MODE_REG	NETXEN_NIC_REG(0x44)
 #define NETXEN_MSI_MODE		0x1
 #define NETXEN_INTX_MODE	0x2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NX_CDRP_CRB_OFFSET		(NETXEN_NIC_REG(0x18))
 #define NX_ARG1_CRB_OFFSET		(NETXEN_NIC_REG(0x1c))
@@ -789,10 +761,7 @@ enum {
 #define CRB_SW_INT_MASK_3		(NETXEN_NIC_REG(0x1e8))
 
 #define CRB_FW_CAPABILITIES_1		(NETXEN_CAM_RAM(0x128))
-<<<<<<< HEAD
-=======
 #define CRB_FW_CAPABILITIES_2		(NETXEN_CAM_RAM(0x12c))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CRB_MAC_BLOCK_START		(NETXEN_CAM_RAM(0x1c0))
 
 /*
@@ -971,8 +940,6 @@ enum {
 #define NETXEN_PEG_HALT_STATUS2 	(NETXEN_CAM_RAM(0xac))
 #define NX_CRB_DEV_REF_COUNT		(NETXEN_CAM_RAM(0x138))
 #define NX_CRB_DEV_STATE		(NETXEN_CAM_RAM(0x140))
-<<<<<<< HEAD
-=======
 #define NETXEN_ULA_KEY			(NETXEN_CAM_RAM(0x178))
 
 /* MiniDIMM related macros */
@@ -999,7 +966,6 @@ enum {
 #define NETXEN_DIMM_TYPE_Micro_DIMM	0x8
 #define NETXEN_DIMM_TYPE_Mini_RDIMM	0x10
 #define NETXEN_DIMM_TYPE_Mini_UDIMM	0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device State */
 #define NX_DEV_COLD		1

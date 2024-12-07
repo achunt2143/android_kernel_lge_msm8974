@@ -1,45 +1,20 @@
-<<<<<<< HEAD
-/*
- * An interface between IEEE802.15.4 device and rest of the kernel.
- *
- * Copyright (C) 2007, 2008, 2009 Siemens AG
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * An interface between IEEE802.15.4 device and rest of the kernel.
  *
  * Copyright (C) 2007-2012 Siemens AG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written by:
  * Pavel Smolenskiy <pavel.smolenskiy@gmail.com>
  * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
  * Maxim Osipov <maxim.osipov@siemens.com>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-<<<<<<< HEAD
-=======
  * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef IEEE802154_NETDEVICE_H
 #define IEEE802154_NETDEVICE_H
 
-<<<<<<< HEAD
-=======
 #define IEEE802154_REQUIRED_SIZE(struct_type, member) \
 	(offsetof(typeof(struct_type), member) + \
 	sizeof(((typeof(struct_type) *)(NULL))->member))
@@ -403,19 +378,12 @@ static inline void ieee802154_addr_to_sa(struct ieee802154_addr_sa *sa,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A control block of skb passed between the ARPHRD_IEEE802154 device
  * and other stack parts.
  */
 struct ieee802154_mac_cb {
 	u8 lqi;
-<<<<<<< HEAD
-	struct ieee802154_addr sa;
-	struct ieee802154_addr da;
-	u8 flags;
-	u8 seq;
-=======
 	u8 type;
 	bool ackreq;
 	bool secen;
@@ -424,7 +392,6 @@ struct ieee802154_mac_cb {
 	bool seclevel_override;
 	struct ieee802154_addr source;
 	struct ieee802154_addr dest;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct ieee802154_mac_cb *mac_cb(struct sk_buff *skb)
@@ -432,33 +399,6 @@ static inline struct ieee802154_mac_cb *mac_cb(struct sk_buff *skb)
 	return (struct ieee802154_mac_cb *)skb->cb;
 }
 
-<<<<<<< HEAD
-#define MAC_CB_FLAG_TYPEMASK		((1 << 3) - 1)
-
-#define MAC_CB_FLAG_ACKREQ		(1 << 3)
-#define MAC_CB_FLAG_SECEN		(1 << 4)
-#define MAC_CB_FLAG_INTRAPAN		(1 << 5)
-
-static inline int mac_cb_is_ackreq(struct sk_buff *skb)
-{
-	return mac_cb(skb)->flags & MAC_CB_FLAG_ACKREQ;
-}
-
-static inline int mac_cb_is_secen(struct sk_buff *skb)
-{
-	return mac_cb(skb)->flags & MAC_CB_FLAG_SECEN;
-}
-
-static inline int mac_cb_is_intrapan(struct sk_buff *skb)
-{
-	return mac_cb(skb)->flags & MAC_CB_FLAG_INTRAPAN;
-}
-
-static inline int mac_cb_type(struct sk_buff *skb)
-{
-	return mac_cb(skb)->flags & MAC_CB_FLAG_TYPEMASK;
-}
-=======
 static inline struct ieee802154_mac_cb *mac_cb_init(struct sk_buff *skb)
 {
 	BUILD_BUG_ON(sizeof(struct ieee802154_mac_cb) > sizeof(skb->cb));
@@ -474,16 +414,12 @@ enum {
 
 	__IEEE802154_LLSEC_DEVKEY_MAX,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IEEE802154_MAC_SCAN_ED		0
 #define IEEE802154_MAC_SCAN_ACTIVE	1
 #define IEEE802154_MAC_SCAN_PASSIVE	2
 #define IEEE802154_MAC_SCAN_ORPHAN	3
 
-<<<<<<< HEAD
-struct wpan_phy;
-=======
 struct ieee802154_mac_params {
 	s8 transmit_power;
 	u8 min_be;
@@ -544,7 +480,6 @@ struct ieee802154_llsec_ops {
 			  struct ieee802154_llsec_table **t);
 	void (*unlock_table)(struct net_device *dev);
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This should be located at net_device->ml_priv
  *
@@ -552,21 +487,14 @@ struct ieee802154_llsec_ops {
  * Use wpan_wpy_put to put that reference.
  */
 struct ieee802154_mlme_ops {
-<<<<<<< HEAD
-=======
 	/* The following fields are optional (can be NULL). */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*assoc_req)(struct net_device *dev,
 			struct ieee802154_addr *addr,
 			u8 channel, u8 page, u8 cap);
 	int (*assoc_resp)(struct net_device *dev,
 			struct ieee802154_addr *addr,
-<<<<<<< HEAD
-			u16 short_addr, u8 status);
-=======
 			__le16 short_addr, u8 status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*disassoc_req)(struct net_device *dev,
 			struct ieee802154_addr *addr,
 			u8 reason);
@@ -577,22 +505,6 @@ struct ieee802154_mlme_ops {
 	int (*scan_req)(struct net_device *dev,
 			u8 type, u32 channels, u8 page, u8 duration);
 
-<<<<<<< HEAD
-	struct wpan_phy *(*get_phy)(const struct net_device *dev);
-
-	/*
-	 * FIXME: these should become the part of PIB/MIB interface.
-	 * However we still don't have IB interface of any kind
-	 */
-	u16 (*get_pan_id)(const struct net_device *dev);
-	u16 (*get_short_addr)(const struct net_device *dev);
-	u8 (*get_dsn)(const struct net_device *dev);
-	u8 (*get_bsn)(const struct net_device *dev);
-};
-
-static inline struct ieee802154_mlme_ops *ieee802154_mlme_ops(
-		const struct net_device *dev)
-=======
 	int (*set_mac_params)(struct net_device *dev,
 			      const struct ieee802154_mac_params *params);
 	void (*get_mac_params)(struct net_device *dev,
@@ -603,14 +515,8 @@ static inline struct ieee802154_mlme_ops *ieee802154_mlme_ops(
 
 static inline struct ieee802154_mlme_ops *
 ieee802154_mlme_ops(const struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->ml_priv;
 }
 
 #endif
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

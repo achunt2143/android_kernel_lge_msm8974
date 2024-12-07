@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC time.c
  *
@@ -11,14 +8,6 @@
  *
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,13 +20,6 @@
 #include <linux/clockchips.h>
 #include <linux/irq.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <asm/cpuinfo.h>
-
-static int openrisc_timer_set_next_event(unsigned long delta,
-					 struct clock_event_device *dev)
-=======
 #include <linux/of_clk.h>
 
 #include <asm/cpuinfo.h>
@@ -53,7 +35,6 @@ inline void openrisc_timer_set(unsigned long count)
 
 /* Set the timer to trigger in delta cycles */
 inline void openrisc_timer_set_next(unsigned long delta)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 c;
 
@@ -69,33 +50,6 @@ inline void openrisc_timer_set_next(unsigned long delta)
 	 * Keep timer in continuous mode always.
 	 */
 	mtspr(SPR_TTMR, SPR_TTMR_CR | SPR_TTMR_IE | c);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static void openrisc_timer_set_mode(enum clock_event_mode mode,
-				    struct clock_event_device *evt)
-{
-	switch (mode) {
-	case CLOCK_EVT_MODE_PERIODIC:
-		pr_debug(KERN_INFO "%s: periodic\n", __func__);
-		BUG();
-		break;
-	case CLOCK_EVT_MODE_ONESHOT:
-		pr_debug(KERN_INFO "%s: oneshot\n", __func__);
-		break;
-	case CLOCK_EVT_MODE_UNUSED:
-		pr_debug(KERN_INFO "%s: unused\n", __func__);
-		break;
-	case CLOCK_EVT_MODE_SHUTDOWN:
-		pr_debug(KERN_INFO "%s: shutdown\n", __func__);
-		break;
-	case CLOCK_EVT_MODE_RESUME:
-		pr_debug(KERN_INFO "%s: resume\n", __func__);
-		break;
-	}
-=======
 }
 
 static int openrisc_timer_set_next_event(unsigned long delta,
@@ -103,7 +57,6 @@ static int openrisc_timer_set_next_event(unsigned long delta,
 {
 	openrisc_timer_set_next(delta);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is the clock event device based on the OR1K tick timer.
@@ -111,16 +64,6 @@ static int openrisc_timer_set_next_event(unsigned long delta,
  * timers) we cannot enable the PERIODIC feature.  The tick timer can run using
  * one-shot events, so no problem.
  */
-<<<<<<< HEAD
-
-static struct clock_event_device clockevent_openrisc_timer = {
-	.name = "openrisc_timer_clockevent",
-	.features = CLOCK_EVT_FEAT_ONESHOT,
-	.rating = 300,
-	.set_next_event = openrisc_timer_set_next_event,
-	.set_mode = openrisc_timer_set_mode,
-};
-=======
 static DEFINE_PER_CPU(struct clock_event_device, clockevent_openrisc_timer);
 
 void openrisc_clockevent_init(void)
@@ -147,7 +90,6 @@ void openrisc_clockevent_init(void)
 					100, 0x0fffffff);
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void timer_ack(void)
 {
@@ -171,13 +113,9 @@ static inline void timer_ack(void)
 irqreturn_t __irq_entry timer_interrupt(struct pt_regs *regs)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
-<<<<<<< HEAD
-	struct clock_event_device *evt = &clockevent_openrisc_timer;
-=======
 	unsigned int cpu = smp_processor_id();
 	struct clock_event_device *evt =
 		&per_cpu(clockevent_openrisc_timer, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timer_ack();
 
@@ -193,37 +131,15 @@ irqreturn_t __irq_entry timer_interrupt(struct pt_regs *regs)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static __init void openrisc_clockevent_init(void)
-{
-	clockevent_openrisc_timer.cpumask = cpumask_of(0);
-
-	/* We only have 28 bits */
-	clockevents_config_and_register(&clockevent_openrisc_timer,
-					cpuinfo.clock_frequency,
-					100, 0x0fffffff);
-
-}
-
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Clocksource: Based on OpenRISC timer/counter
  *
  * This sets up the OpenRISC Tick Timer as a clock source.  The tick timer
  * is 32 bits wide and runs at the CPU clock frequency.
  */
-<<<<<<< HEAD
-
-static cycle_t openrisc_timer_read(struct clocksource *cs)
-{
-	return (cycle_t) mfspr(SPR_TTCR);
-=======
 static u64 openrisc_timer_read(struct clocksource *cs)
 {
 	return (u64) mfspr(SPR_TTCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct clocksource openrisc_timer = {
@@ -236,13 +152,9 @@ static struct clocksource openrisc_timer = {
 
 static int __init openrisc_timer_init(void)
 {
-<<<<<<< HEAD
-	if (clocksource_register_hz(&openrisc_timer, cpuinfo.clock_frequency))
-=======
 	struct cpuinfo_or1k *cpuinfo = &cpuinfo_or1k[smp_processor_id()];
 
 	if (clocksource_register_hz(&openrisc_timer, cpuinfo->clock_frequency))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("failed to register clocksource");
 
 	/* Enable the incrementer: 'continuous' mode with interrupt disabled */
@@ -261,10 +173,7 @@ void __init time_init(void)
 
 	openrisc_timer_init();
 	openrisc_clockevent_init();
-<<<<<<< HEAD
-=======
 
 	of_clk_init(NULL);
 	timer_probe();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

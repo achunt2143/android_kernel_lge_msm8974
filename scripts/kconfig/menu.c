@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <ctype.h>
@@ -15,32 +9,19 @@
 #include <string.h>
 
 #include "lkc.h"
-<<<<<<< HEAD
-=======
 #include "internal.h"
 #include "list.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char nohelp_text[] = "There is no help available for this option.";
 
 struct menu rootmenu;
 static struct menu **last_entry_ptr;
 
-<<<<<<< HEAD
-struct file *file_list;
-struct file *current_file;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void menu_warn(struct menu *menu, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-<<<<<<< HEAD
-	fprintf(stderr, "%s:%d:warning: ", menu->file->name, menu->lineno);
-=======
 	fprintf(stderr, "%s:%d:warning: ", menu->filename, menu->lineno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfprintf(stderr, fmt, ap);
 	fprintf(stderr, "\n");
 	va_end(ap);
@@ -50,11 +31,7 @@ static void prop_warn(struct property *prop, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-<<<<<<< HEAD
-	fprintf(stderr, "%s:%d:warning: ", prop->file->name, prop->lineno);
-=======
 	fprintf(stderr, "%s:%d:warning: ", prop->filename, prop->lineno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfprintf(stderr, fmt, ap);
 	fprintf(stderr, "\n");
 	va_end(ap);
@@ -70,51 +47,27 @@ void menu_add_entry(struct symbol *sym)
 {
 	struct menu *menu;
 
-<<<<<<< HEAD
-	menu = malloc(sizeof(*menu));
-	memset(menu, 0, sizeof(*menu));
-	menu->sym = sym;
-	menu->parent = current_menu;
-	menu->file = current_file;
-	menu->lineno = zconf_lineno();
-=======
 	menu = xmalloc(sizeof(*menu));
 	memset(menu, 0, sizeof(*menu));
 	menu->sym = sym;
 	menu->parent = current_menu;
 	menu->filename = cur_filename;
 	menu->lineno = cur_lineno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*last_entry_ptr = menu;
 	last_entry_ptr = &menu->next;
 	current_entry = menu;
-<<<<<<< HEAD
-	if (sym)
-		menu_add_symbol(P_SYMBOL, sym, NULL);
-}
-
-void menu_end_entry(void)
-{
-=======
 	if (sym) {
 		menu_add_symbol(P_SYMBOL, sym, NULL);
 		list_add_tail(&menu->link, &sym->menus);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct menu *menu_add_menu(void)
 {
-<<<<<<< HEAD
-	menu_end_entry();
-	last_entry_ptr = &current_entry->list;
-	return current_menu = current_entry;
-=======
 	last_entry_ptr = &current_entry->list;
 	current_menu = current_entry;
 	return current_menu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void menu_end_menu(void)
@@ -123,36 +76,23 @@ void menu_end_menu(void)
 	current_menu = current_menu->parent;
 }
 
-<<<<<<< HEAD
-static struct expr *menu_check_dep(struct expr *e)
-=======
 /*
  * Rewrites 'm' to 'm' && MODULES, so that it evaluates to 'n' when running
  * without modules
  */
 static struct expr *rewrite_m(struct expr *e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!e)
 		return e;
 
 	switch (e->type) {
 	case E_NOT:
-<<<<<<< HEAD
-		e->left.expr = menu_check_dep(e->left.expr);
-		break;
-	case E_OR:
-	case E_AND:
-		e->left.expr = menu_check_dep(e->left.expr);
-		e->right.expr = menu_check_dep(e->right.expr);
-=======
 		e->left.expr = rewrite_m(e->left.expr);
 		break;
 	case E_OR:
 	case E_AND:
 		e->left.expr = rewrite_m(e->left.expr);
 		e->right.expr = rewrite_m(e->right.expr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case E_SYMBOL:
 		/* change 'm' into 'm' && MODULES */
@@ -167,11 +107,7 @@ static struct expr *rewrite_m(struct expr *e)
 
 void menu_add_dep(struct expr *dep)
 {
-<<<<<<< HEAD
-	current_entry->dep = expr_alloc_and(current_entry->dep, menu_check_dep(dep));
-=======
 	current_entry->dep = expr_alloc_and(current_entry->dep, dep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void menu_set_type(int type)
@@ -184,46 +120,6 @@ void menu_set_type(int type)
 		sym->type = type;
 		return;
 	}
-<<<<<<< HEAD
-	menu_warn(current_entry, "type of '%s' redefined from '%s' to '%s'",
-	    sym->name ? sym->name : "<choice>",
-	    sym_type_name(sym->type), sym_type_name(type));
-}
-
-struct property *menu_add_prop(enum prop_type type, char *prompt, struct expr *expr, struct expr *dep)
-{
-	struct property *prop = prop_alloc(type, current_entry->sym);
-
-	prop->menu = current_entry;
-	prop->expr = expr;
-	prop->visible.expr = menu_check_dep(dep);
-
-	if (prompt) {
-		if (isspace(*prompt)) {
-			prop_warn(prop, "leading whitespace ignored");
-			while (isspace(*prompt))
-				prompt++;
-		}
-		if (current_entry->prompt && current_entry != &rootmenu)
-			prop_warn(prop, "prompt redefined");
-
-		/* Apply all upper menus' visibilities to actual prompts. */
-		if(type == P_PROMPT) {
-			struct menu *menu = current_entry;
-
-			while ((menu = menu->parent) != NULL) {
-				if (!menu->visibility)
-					continue;
-				prop->visible.expr
-					= expr_alloc_and(prop->visible.expr,
-							 menu->visibility);
-			}
-		}
-
-		current_entry->prompt = prop;
-	}
-	prop->text = prompt;
-=======
 	menu_warn(current_entry,
 		"ignoring type redefinition of '%s' from '%s' to '%s'",
 		sym->name ? sym->name : "<choice>",
@@ -254,16 +150,10 @@ static struct property *menu_add_prop(enum prop_type type, struct expr *expr,
 			;
 		*propp = prop;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return prop;
 }
 
-<<<<<<< HEAD
-struct property *menu_add_prompt(enum prop_type type, char *prompt, struct expr *dep)
-{
-	return menu_add_prop(type, prompt, NULL, dep);
-=======
 struct property *menu_add_prompt(enum prop_type type, char *prompt,
 				 struct expr *dep)
 {
@@ -304,7 +194,6 @@ struct property *menu_add_prompt(enum prop_type type, char *prompt,
 	prop->text = prompt;
 
 	return prop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void menu_add_visibility(struct expr *expr)
@@ -315,41 +204,12 @@ void menu_add_visibility(struct expr *expr)
 
 void menu_add_expr(enum prop_type type, struct expr *expr, struct expr *dep)
 {
-<<<<<<< HEAD
-	menu_add_prop(type, NULL, expr, dep);
-=======
 	menu_add_prop(type, expr, dep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void menu_add_symbol(enum prop_type type, struct symbol *sym, struct expr *dep)
 {
-<<<<<<< HEAD
-	menu_add_prop(type, NULL, expr_alloc_symbol(sym), dep);
-}
-
-void menu_add_option(int token, char *arg)
-{
-	struct property *prop;
-
-	switch (token) {
-	case T_OPT_MODULES:
-		prop = prop_alloc(P_DEFAULT, modules_sym);
-		prop->expr = expr_alloc_symbol(current_entry->sym);
-		break;
-	case T_OPT_DEFCONFIG_LIST:
-		if (!sym_defconfig_list)
-			sym_defconfig_list = current_entry->sym;
-		else if (sym_defconfig_list != current_entry->sym)
-			zconf_error("trying to redefine defconfig symbol");
-		break;
-	case T_OPT_ENV:
-		prop_add_env(arg);
-		break;
-	}
-=======
 	menu_add_prop(type, expr_alloc_symbol(sym), dep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int menu_validate_number(struct symbol *sym, struct symbol *sym2)
@@ -362,11 +222,8 @@ static void sym_check_prop(struct symbol *sym)
 {
 	struct property *prop;
 	struct symbol *sym2;
-<<<<<<< HEAD
-=======
 	char *use;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (prop = sym->prop; prop; prop = prop->next) {
 		switch (prop->type) {
 		case P_DEFAULT:
@@ -384,22 +241,6 @@ static void sym_check_prop(struct symbol *sym)
 					    "'%s': number is invalid",
 					    sym->name);
 			}
-<<<<<<< HEAD
-			break;
-		case P_SELECT:
-			sym2 = prop_get_symbol(prop);
-			if (sym->type != S_BOOLEAN && sym->type != S_TRISTATE)
-				prop_warn(prop,
-				    "config symbol '%s' uses select, but is "
-				    "not boolean or tristate", sym->name);
-			else if (sym2->type != S_UNKNOWN &&
-			         sym2->type != S_BOOLEAN &&
-			         sym2->type != S_TRISTATE)
-				prop_warn(prop,
-				    "'%s' has wrong type. 'select' only "
-				    "accept arguments of boolean and "
-				    "tristate type", sym2->name);
-=======
 			if (sym_is_choice(sym)) {
 				struct property *choice_prop =
 					sym_get_choice_prop(sym2);
@@ -426,16 +267,11 @@ static void sym_check_prop(struct symbol *sym)
 				    "'%s' has wrong type. '%s' only "
 				    "accept arguments of bool and "
 				    "tristate type", sym2->name, use);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case P_RANGE:
 			if (sym->type != S_INT && sym->type != S_HEX)
 				prop_warn(prop, "range is only allowed "
-<<<<<<< HEAD
-				                "for int or hex symbols");
-=======
 						"for int or hex symbols");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!menu_validate_number(sym, prop->expr->left.sym) ||
 			    !menu_validate_number(sym, prop->expr->right.sym))
 				prop_warn(prop, "range is invalid");
@@ -446,11 +282,7 @@ static void sym_check_prop(struct symbol *sym)
 	}
 }
 
-<<<<<<< HEAD
-void menu_finalize(struct menu *parent)
-=======
 static void _menu_finalize(struct menu *parent, bool inside_choice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct menu *menu, *last_menu;
 	struct symbol *sym;
@@ -459,9 +291,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 
 	sym = parent->sym;
 	if (parent->list) {
-<<<<<<< HEAD
-		if (sym && sym_is_choice(sym)) {
-=======
 		/*
 		 * This menu node has children. We (recursively) process them
 		 * and propagate parent dependencies before moving on.
@@ -473,7 +302,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 			is_choice = true;
 
 		if (is_choice) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sym->type == S_UNKNOWN) {
 				/* find the first choice value to find out choice type */
 				current_entry = parent;
@@ -484,33 +312,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 					}
 				}
 			}
-<<<<<<< HEAD
-			/* set the type of the remaining choice values */
-			for (menu = parent->list; menu; menu = menu->next) {
-				current_entry = menu;
-				if (menu->sym && menu->sym->type == S_UNKNOWN)
-					menu_set_type(sym->type);
-			}
-			parentdep = expr_alloc_symbol(sym);
-		} else if (parent->prompt)
-			parentdep = parent->prompt->visible.expr;
-		else
-			parentdep = parent->dep;
-
-		for (menu = parent->list; menu; menu = menu->next) {
-			basedep = expr_transform(menu->dep);
-			basedep = expr_alloc_and(expr_copy(parentdep), basedep);
-			basedep = expr_eliminate_dups(basedep);
-			menu->dep = basedep;
-			if (menu->sym)
-				prop = menu->sym->prop;
-			else
-				prop = menu->prompt;
-			for (; prop; prop = prop->next) {
-				if (prop->menu != menu)
-					continue;
-				dep = expr_transform(prop->visible.expr);
-=======
 
 			/*
 			 * Use the choice itself as the parent dependency of
@@ -576,35 +377,20 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 				 */
 				dep = rewrite_m(prop->visible.expr);
 				dep = expr_transform(dep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dep = expr_alloc_and(expr_copy(basedep), dep);
 				dep = expr_eliminate_dups(dep);
 				if (menu->sym && menu->sym->type != S_TRISTATE)
 					dep = expr_trans_bool(dep);
 				prop->visible.expr = dep;
-<<<<<<< HEAD
-=======
 
 				/*
 				 * Handle selects and implies, which modify the
 				 * dependencies of the selected/implied symbol
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (prop->type == P_SELECT) {
 					struct symbol *es = prop_get_symbol(prop);
 					es->rev_dep.expr = expr_alloc_or(es->rev_dep.expr,
 							expr_alloc_and(expr_alloc_symbol(menu->sym), expr_copy(dep)));
-<<<<<<< HEAD
-				}
-			}
-		}
-		for (menu = parent->list; menu; menu = menu->next)
-			menu_finalize(menu);
-	} else if (sym) {
-		basedep = parent->prompt ? parent->prompt->visible.expr : NULL;
-		basedep = expr_trans_compare(basedep, E_UNEQUAL, &symbol_no);
-		basedep = expr_eliminate_dups(expr_transform(basedep));
-=======
 				} else if (prop->type == P_IMPLY) {
 					struct symbol *es = prop_get_symbol(prop);
 					es->implied.expr = expr_alloc_or(es->implied.expr,
@@ -650,16 +436,10 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 		basedep = expr_eliminate_dups(expr_transform(basedep));
 
 		/* Examine consecutive elements after sym */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		last_menu = NULL;
 		for (menu = parent->next; menu; menu = menu->next) {
 			dep = menu->prompt ? menu->prompt->visible.expr : menu->dep;
 			if (!expr_contains_symbol(dep, sym))
-<<<<<<< HEAD
-				break;
-			if (expr_depends_symbol(dep, sym))
-				goto next;
-=======
 				/* No dependency, quit */
 				break;
 			if (expr_depends_symbol(dep, sym))
@@ -675,24 +455,12 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 			 * Note that 'R' might be from an enclosing menu or if,
 			 * making this a more common case than it might seem.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dep = expr_trans_compare(dep, E_UNEQUAL, &symbol_no);
 			dep = expr_eliminate_dups(expr_transform(dep));
 			dep2 = expr_copy(basedep);
 			expr_eliminate_eq(&dep, &dep2);
 			expr_free(dep);
 			if (!expr_is_yes(dep2)) {
-<<<<<<< HEAD
-				expr_free(dep2);
-				break;
-			}
-			expr_free(dep2);
-		next:
-			menu_finalize(menu);
-			menu->parent = parent;
-			last_menu = menu;
-		}
-=======
 				/* Not superset, quit */
 				expr_free(dep2);
 				break;
@@ -705,7 +473,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 			last_menu = menu;
 		}
 		expr_free(basedep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (last_menu) {
 			parent->list = parent->next;
 			parent->next = last_menu->next;
@@ -754,8 +521,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 			*ep = expr_alloc_one(E_LIST, NULL);
 			(*ep)->right.sym = menu->sym;
 		}
-<<<<<<< HEAD
-=======
 
 		/*
 		 * This code serves two purposes:
@@ -785,7 +550,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 		 *	C
 		 *	D
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (menu->list && (!menu->prompt || !menu->prompt->text)) {
 			for (last_menu = menu->list; ; last_menu = last_menu->next) {
 				last_menu->parent = parent;
@@ -802,19 +566,11 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 		if (sym->type == S_UNKNOWN)
 			menu_warn(parent, "config symbol defined without type");
 
-<<<<<<< HEAD
-		if (sym_is_choice(sym) && !parent->prompt)
-			menu_warn(parent, "choice must have a prompt");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check properties connected to this symbol */
 		sym_check_prop(sym);
 		sym->flags |= SYMBOL_WARNED;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * For non-optional choices, add a reverse dependency (corresponding to
 	 * a select) of '<visibility> && m'. This prevents the user from
@@ -824,7 +580,6 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 	 * choices clear SYMBOL_OPTIONAL as of writing. Choices are implemented
 	 * as a type of symbol.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sym && !sym_is_optional(sym) && parent->prompt) {
 		sym->rev_dep.expr = expr_alloc_or(sym->rev_dep.expr,
 				expr_alloc_and(parent->prompt->visible.expr,
@@ -832,14 +587,11 @@ static void _menu_finalize(struct menu *parent, bool inside_choice)
 	}
 }
 
-<<<<<<< HEAD
-=======
 void menu_finalize(void)
 {
 	_menu_finalize(&rootmenu, false);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool menu_has_prompt(struct menu *menu)
 {
 	if (!menu->prompt)
@@ -847,8 +599,6 @@ bool menu_has_prompt(struct menu *menu)
 	return true;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Determine if a menu is empty.
  * A menu is considered empty if it contains no or only
@@ -865,7 +615,6 @@ bool menu_is_empty(struct menu *menu)
 	return(true);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool menu_is_visible(struct menu *menu)
 {
 	struct menu *child;
@@ -877,11 +626,7 @@ bool menu_is_visible(struct menu *menu)
 
 	if (menu->visibility) {
 		if (expr_calc_value(menu->visibility) == no)
-<<<<<<< HEAD
-			return no;
-=======
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sym = menu->sym;
@@ -917,14 +662,6 @@ const char *menu_get_prompt(struct menu *menu)
 	return NULL;
 }
 
-<<<<<<< HEAD
-struct menu *menu_get_root_menu(struct menu *menu)
-{
-	return &rootmenu;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct menu *menu_get_parent_menu(struct menu *menu)
 {
 	enum prop_type type;
@@ -937,57 +674,6 @@ struct menu *menu_get_parent_menu(struct menu *menu)
 	return menu;
 }
 
-<<<<<<< HEAD
-bool menu_has_help(struct menu *menu)
-{
-	return menu->help != NULL;
-}
-
-const char *menu_get_help(struct menu *menu)
-{
-	if (menu->help)
-		return menu->help;
-	else
-		return "";
-}
-
-static void get_prompt_str(struct gstr *r, struct property *prop)
-{
-	int i, j;
-	struct menu *submenu[8], *menu;
-
-	str_printf(r, _("Prompt: %s\n"), _(prop->text));
-	str_printf(r, _("  Defined at %s:%d\n"), prop->menu->file->name,
-		prop->menu->lineno);
-	if (!expr_is_yes(prop->visible.expr)) {
-		str_append(r, _("  Depends on: "));
-		expr_gstr_print(prop->visible.expr, r);
-		str_append(r, "\n");
-	}
-	menu = prop->menu->parent;
-	for (i = 0; menu != &rootmenu && i < 8; menu = menu->parent)
-		submenu[i++] = menu;
-	if (i > 0) {
-		str_printf(r, _("  Location:\n"));
-		for (j = 4; --i >= 0; j += 2) {
-			menu = submenu[i];
-			str_printf(r, "%*c-> %s", j, ' ', _(menu_get_prompt(menu)));
-			if (menu->sym) {
-				str_printf(r, " (%s [=%s])", menu->sym->name ?
-					menu->sym->name : _("<choice>"),
-					sym_get_string_value(menu->sym));
-			}
-			str_append(r, "\n");
-		}
-	}
-}
-
-void get_symbol_str(struct gstr *r, struct symbol *sym)
-{
-	bool hit;
-	struct property *prop;
-
-=======
 static void get_def_str(struct gstr *r, struct menu *menu)
 {
 	str_printf(r, "Defined at %s:%d\n",
@@ -1094,7 +780,6 @@ static void get_symbol_str(struct gstr *r, struct symbol *sym,
 	struct property *prop;
 	struct menu *menu;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sym && sym->name) {
 		str_printf(r, "Symbol: %s [=%s]\n", sym->name,
 			   sym_get_string_value(sym));
@@ -1108,30 +793,6 @@ static void get_symbol_str(struct gstr *r, struct symbol *sym,
 			}
 		}
 	}
-<<<<<<< HEAD
-	for_all_prompts(sym, prop)
-		get_prompt_str(r, prop);
-	hit = false;
-	for_all_properties(sym, prop, P_SELECT) {
-		if (!hit) {
-			str_append(r, "  Selects: ");
-			hit = true;
-		} else
-			str_printf(r, " && ");
-		expr_gstr_print(prop->expr, r);
-	}
-	if (hit)
-		str_append(r, "\n");
-	if (sym->rev_dep.expr) {
-		str_append(r, _("  Selected by: "));
-		expr_gstr_print(sym->rev_dep.expr, r);
-		str_append(r, "\n");
-	}
-	str_append(r, "\n\n");
-}
-
-struct gstr get_relations_str(struct symbol **sym_arr)
-=======
 
 	/* Print the definitions with prompts before the ones without */
 	list_for_each_entry(menu, &sym->menus, link) {
@@ -1166,22 +827,15 @@ struct gstr get_relations_str(struct symbol **sym_arr)
 }
 
 struct gstr get_relations_str(struct symbol **sym_arr, struct list_head *head)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct symbol *sym;
 	struct gstr res = str_new();
 	int i;
 
 	for (i = 0; sym_arr && (sym = sym_arr[i]); i++)
-<<<<<<< HEAD
-		get_symbol_str(&res, sym);
-	if (!i)
-		str_append(&res, _("No matches found.\n"));
-=======
 		get_symbol_str(&res, sym, head);
 	if (!i)
 		str_append(&res, "No matches found.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -1191,16 +845,6 @@ void menu_get_ext_help(struct menu *menu, struct gstr *help)
 	struct symbol *sym = menu->sym;
 	const char *help_text = nohelp_text;
 
-<<<<<<< HEAD
-	if (menu_has_help(menu)) {
-		if (sym->name)
-			str_printf(help, "%s%s:\n\n", CONFIG_, sym->name);
-		help_text = menu_get_help(menu);
-	}
-	str_printf(help, "%s\n", _(help_text));
-	if (sym)
-		get_symbol_str(help, sym);
-=======
 	if (menu->help) {
 		if (sym->name)
 			str_printf(help, "%s%s:\n\n", CONFIG_, sym->name);
@@ -1209,5 +853,4 @@ void menu_get_ext_help(struct menu *menu, struct gstr *help)
 	str_printf(help, "%s\n", help_text);
 	if (sym)
 		get_symbol_str(help, sym, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

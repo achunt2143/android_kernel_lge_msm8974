@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-/* Driver for SanDisk SDDR-55 SmartMedia reader
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Driver for SanDisk SDDR-55 SmartMedia reader
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * SDDR55 driver v0.1:
  *
@@ -12,23 +8,6 @@
  *
  * Current development and maintenance by:
  *   (c) 2002 Simon Munton
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/jiffies.h>
@@ -43,20 +22,14 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
-<<<<<<< HEAD
-=======
 #include "scsiglue.h"
 
 #define DRV_NAME "ums-sddr55"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Driver for SanDisk SDDR-55 SmartMedia reader");
 MODULE_AUTHOR("Simon Munton");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(USB_STORAGE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The table of devices
@@ -65,11 +38,7 @@ MODULE_IMPORT_NS(USB_STORAGE);
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
-<<<<<<< HEAD
-  .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
-=======
   .driver_info = (flags) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id sddr55_usb_ids[] = {
 #	include "unusual_sddr55.h"
@@ -150,12 +119,8 @@ sddr55_bulk_transport(struct us_data *us, int direction,
 	return usb_stor_bulk_transfer_buf(us, pipe, data, len, NULL);
 }
 
-<<<<<<< HEAD
-/* check if card inserted, if there is, update read_only status
-=======
 /*
  * check if card inserted, if there is, update read_only status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * return non zero if no card
  */
 
@@ -173,12 +138,7 @@ static int sddr55_status(struct us_data *us)
 	result = sddr55_bulk_transport(us,
 		DMA_TO_DEVICE, command, 8);
 
-<<<<<<< HEAD
-	US_DEBUGP("Result for send_command in status %d\n",
-		result);
-=======
 	usb_stor_dbg(us, "Result for send_command in status %d\n", result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result != USB_STOR_XFER_GOOD) {
 		set_sense_info (4, 0, 0);	/* hardware error */
@@ -236,11 +196,7 @@ static int sddr55_read_data(struct us_data *us,
 	unsigned char *buffer;
 
 	unsigned int pba;
-<<<<<<< HEAD
-	unsigned long address;
-=======
 	unsigned int address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned short pages;
 	unsigned int len, offset;
@@ -272,14 +228,8 @@ static int sddr55_read_data(struct us_data *us,
 				info->blocksize - page);
 		len = pages << info->pageshift;
 
-<<<<<<< HEAD
-		US_DEBUGP("Read %02X pages, from PBA %04X"
-			" (LBA %04X) page %02X\n",
-			pages, pba, lba, page);
-=======
 		usb_stor_dbg(us, "Read %02X pages, from PBA %04X (LBA %04X) page %02X\n",
 			     pages, pba, lba, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pba == NOT_ALLOCATED) {
 			/* no pba for this lba, fill with zeroes */
@@ -302,13 +252,8 @@ static int sddr55_read_data(struct us_data *us,
 			result = sddr55_bulk_transport(us,
 				DMA_TO_DEVICE, command, 8);
 
-<<<<<<< HEAD
-			US_DEBUGP("Result for send_command in read_data %d\n",
-				result);
-=======
 			usb_stor_dbg(us, "Result for send_command in read_data %d\n",
 				     result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (result != USB_STOR_XFER_GOOD) {
 				result = USB_STOR_TRANSPORT_ERROR;
@@ -371,11 +316,7 @@ static int sddr55_write_data(struct us_data *us,
 
 	unsigned int pba;
 	unsigned int new_pba;
-<<<<<<< HEAD
-	unsigned long address;
-=======
 	unsigned int address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned short pages;
 	int i;
@@ -418,14 +359,8 @@ static int sddr55_write_data(struct us_data *us,
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				&sg, &offset, FROM_XFER_BUF);
 
-<<<<<<< HEAD
-		US_DEBUGP("Write %02X pages, to PBA %04X"
-			" (LBA %04X) page %02X\n",
-			pages, pba, lba, page);
-=======
 		usb_stor_dbg(us, "Write %02X pages, to PBA %04X (LBA %04X) page %02X\n",
 			     pages, pba, lba, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			
 		command[4] = 0;
 
@@ -439,11 +374,7 @@ static int sddr55_write_data(struct us_data *us,
 			/* set pba to first block in zone lba is in */
 			pba = (lba / 1000) * 1024;
 
-<<<<<<< HEAD
-			US_DEBUGP("No PBA for LBA %04X\n",lba);
-=======
 			usb_stor_dbg(us, "No PBA for LBA %04X\n", lba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (max_pba > 1024)
 				max_pba = 1024;
@@ -466,23 +397,15 @@ static int sddr55_write_data(struct us_data *us,
 
 			if (pba == -1) {
 				/* oh dear */
-<<<<<<< HEAD
-				US_DEBUGP("Couldn't find unallocated block\n");
-=======
 				usb_stor_dbg(us, "Couldn't find unallocated block\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				set_sense_info (3, 0x31, 0);	/* medium error */
 				result = USB_STOR_TRANSPORT_FAILED;
 				goto leave;
 			}
 
-<<<<<<< HEAD
-			US_DEBUGP("Allocating PBA %04X for LBA %04X\n", pba, lba);
-=======
 			usb_stor_dbg(us, "Allocating PBA %04X for LBA %04X\n",
 				     pba, lba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* set writing to unallocated block flag */
 			command[4] = 0x40;
@@ -507,13 +430,8 @@ static int sddr55_write_data(struct us_data *us,
 			DMA_TO_DEVICE, command, 8);
 
 		if (result != USB_STOR_XFER_GOOD) {
-<<<<<<< HEAD
-			US_DEBUGP("Result for send_command in write_data %d\n",
-			result);
-=======
 			usb_stor_dbg(us, "Result for send_command in write_data %d\n",
 				     result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* set_sense_info is superfluous here? */
 			set_sense_info (3, 0x3, 0);/* peripheral write error */
@@ -526,13 +444,8 @@ static int sddr55_write_data(struct us_data *us,
 			DMA_TO_DEVICE, buffer, len);
 
 		if (result != USB_STOR_XFER_GOOD) {
-<<<<<<< HEAD
-			US_DEBUGP("Result for send_data in write_data %d\n",
-				  result);
-=======
 			usb_stor_dbg(us, "Result for send_data in write_data %d\n",
 				     result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* set_sense_info is superfluous here? */
 			set_sense_info (3, 0x3, 0);/* peripheral write error */
@@ -544,13 +457,8 @@ static int sddr55_write_data(struct us_data *us,
 		result = sddr55_bulk_transport(us, DMA_FROM_DEVICE, status, 6);
 
 		if (result != USB_STOR_XFER_GOOD) {
-<<<<<<< HEAD
-			US_DEBUGP("Result for get_status in write_data %d\n",
-				  result);
-=======
 			usb_stor_dbg(us, "Result for get_status in write_data %d\n",
 				     result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* set_sense_info is superfluous here? */
 			set_sense_info (3, 0x3, 0);/* peripheral write error */
@@ -570,13 +478,8 @@ static int sddr55_write_data(struct us_data *us,
 			goto leave;
 		}
 
-<<<<<<< HEAD
-		US_DEBUGP("Updating maps for LBA %04X: old PBA %04X, new PBA %04X\n",
-			lba, pba, new_pba);
-=======
 		usb_stor_dbg(us, "Updating maps for LBA %04X: old PBA %04X, new PBA %04X\n",
 			     lba, pba, new_pba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* update the lba<->pba maps, note new_pba might be the same as pba */
 		info->lba_to_pba[lba] = new_pba;
@@ -619,13 +522,8 @@ static int sddr55_read_deviceID(struct us_data *us,
 	command[7] = 0x84;
 	result = sddr55_bulk_transport(us, DMA_TO_DEVICE, command, 8);
 
-<<<<<<< HEAD
-	US_DEBUGP("Result of send_control for device ID is %d\n",
-		result);
-=======
 	usb_stor_dbg(us, "Result of send_control for device ID is %d\n",
 		     result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
@@ -656,43 +554,24 @@ static int sddr55_reset(struct us_data *us)
 
 static unsigned long sddr55_get_capacity(struct us_data *us) {
 
-<<<<<<< HEAD
-	unsigned char uninitialized_var(manufacturerID);
-	unsigned char uninitialized_var(deviceID);
-	int result;
-	struct sddr55_card_info *info = (struct sddr55_card_info *)us->extra;
-
-	US_DEBUGP("Reading capacity...\n");
-=======
 	unsigned char manufacturerID;
 	unsigned char deviceID;
 	int result;
 	struct sddr55_card_info *info = (struct sddr55_card_info *)us->extra;
 
 	usb_stor_dbg(us, "Reading capacity...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = sddr55_read_deviceID(us,
 		&manufacturerID,
 		&deviceID);
 
-<<<<<<< HEAD
-	US_DEBUGP("Result of read_deviceID is %d\n",
-		result);
-=======
 	usb_stor_dbg(us, "Result of read_deviceID is %d\n", result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result != USB_STOR_XFER_GOOD)
 		return 0;
 
-<<<<<<< HEAD
-	US_DEBUGP("Device ID = %02X\n", deviceID);
-	US_DEBUGP("Manuf  ID = %02X\n", manufacturerID);
-=======
 	usb_stor_dbg(us, "Device ID = %02X\n", deviceID);
 	usb_stor_dbg(us, "Manuf  ID = %02X\n", manufacturerID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->pageshift = 9;
 	info->smallpageshift = 0;
@@ -713,10 +592,7 @@ static unsigned long sddr55_get_capacity(struct us_data *us) {
 	case 0x64:
 		info->pageshift = 8;
 		info->smallpageshift = 1;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x5d: // 5d is a ROM card with pagesize 512.
 		return 0x00200000;
 
@@ -776,11 +652,7 @@ static int sddr55_read_map(struct us_data *us) {
 
 	numblocks = info->capacity >> (info->blockshift + info->pageshift);
 	
-<<<<<<< HEAD
-	buffer = kmalloc( numblocks * 2, GFP_NOIO );
-=======
 	buffer = kmalloc_array(numblocks, 2, GFP_NOIO );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (!buffer)
 		return -1;
@@ -813,13 +685,8 @@ static int sddr55_read_map(struct us_data *us) {
 
 	kfree(info->lba_to_pba);
 	kfree(info->pba_to_lba);
-<<<<<<< HEAD
-	info->lba_to_pba = kmalloc(numblocks*sizeof(int), GFP_NOIO);
-	info->pba_to_lba = kmalloc(numblocks*sizeof(int), GFP_NOIO);
-=======
 	info->lba_to_pba = kmalloc_array(numblocks, sizeof(int), GFP_NOIO);
 	info->pba_to_lba = kmalloc_array(numblocks, sizeof(int), GFP_NOIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->lba_to_pba == NULL || info->pba_to_lba == NULL) {
 		kfree(info->lba_to_pba);
@@ -838,27 +705,18 @@ static int sddr55_read_map(struct us_data *us) {
 	if (max_lba > 1000)
 		max_lba = 1000;
 
-<<<<<<< HEAD
-	// Each block is 64 bytes of control data, so block i is located in
-	// scatterlist block i*64/128k = i*(2^6)*(2^-17) = i*(2^-11)
-=======
 	/*
 	 * Each block is 64 bytes of control data, so block i is located in
 	 * scatterlist block i*64/128k = i*(2^6)*(2^-17) = i*(2^-11)
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i=0; i<numblocks; i++) {
 		int zone = i / 1024;
 
 		lba = short_pack(buffer[i * 2], buffer[i * 2 + 1]);
 
-<<<<<<< HEAD
-			/* Every 1024 physical blocks ("zone"), the LBA numbers
-=======
 			/*
 			 * Every 1024 physical blocks ("zone"), the LBA numbers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * go back to zero, but are within a higher
 			 * block of LBA's. Also, there is a maximum of
 			 * 1000 LBA's per zone. In other words, in PBA
@@ -869,12 +727,8 @@ static int sddr55_read_map(struct us_data *us) {
 			 * are 24 spare blocks to use when blocks do go bad.
 			 */
 
-<<<<<<< HEAD
-			/* SDDR55 returns 0xffff for a bad block, and 0x400 for the 
-=======
 			/*
 			 * SDDR55 returns 0xffff for a bad block, and 0x400 for the 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * CIS block. (Is this true for cards 8MB or less??)
 			 * Record these in the physical to logical map
 			 */ 
@@ -894,11 +748,7 @@ static int sddr55_read_map(struct us_data *us) {
 		}
 
 		if (lba<0x10 || (lba>=0x3E0 && lba<0x3EF))
-<<<<<<< HEAD
-			US_DEBUGP("LBA %04X <-> PBA %04X\n", lba, i);
-=======
 			usb_stor_dbg(us, "LBA %04X <-> PBA %04X\n", lba, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		info->lba_to_pba[lba + zone * 1000] = i;
 	}
@@ -953,14 +803,10 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 	info = (struct sddr55_card_info *)(us->extra);
 
 	if (srb->cmnd[0] == REQUEST_SENSE) {
-<<<<<<< HEAD
-		US_DEBUGP("SDDR55: request sense %02x/%02x/%02x\n", info->sense_data[2], info->sense_data[12], info->sense_data[13]);
-=======
 		usb_stor_dbg(us, "request sense %02x/%02x/%02x\n",
 			     info->sense_data[2],
 			     info->sense_data[12],
 			     info->sense_data[13]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memcpy (ptr, info->sense_data, sizeof info->sense_data);
 		ptr[0] = 0x70;
@@ -973,15 +819,10 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	memset (info->sense_data, 0, sizeof info->sense_data);
 
-<<<<<<< HEAD
-	/* Dummy up a response for INQUIRY since SDDR55 doesn't
-	   respond to INQUIRY commands */
-=======
 	/*
 	 * Dummy up a response for INQUIRY since SDDR55 doesn't
 	 * respond to INQUIRY commands
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (srb->cmnd[0] == INQUIRY) {
 		memcpy(ptr, inquiry_response, 8);
@@ -989,12 +830,8 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
-<<<<<<< HEAD
-	/* only check card status if the map isn't allocated, ie no card seen yet
-=======
 	/*
 	 * only check card status if the map isn't allocated, ie no card seen yet
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * or if it's been over half a second since we last accessed it
 	 */
 	if (info->lba_to_pba == NULL || time_after(jiffies, info->last_access + HZ/2)) {
@@ -1010,15 +847,10 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		}
 	}
 
-<<<<<<< HEAD
-	/* if we detected a problem with the map when writing,
-	   don't allow any more access */
-=======
 	/*
 	 * if we detected a problem with the map when writing,
 	 * don't allow any more access
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->fatal_error) {
 
 		set_sense_info (3, 0x31, 0);
@@ -1036,14 +868,6 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 		info->capacity = capacity;
 
-<<<<<<< HEAD
-		/* figure out the maximum logical block number, allowing for
-		 * the fact that only 250 out of every 256 are used */
-		info->max_log_blks = ((info->capacity >> (info->pageshift + info->blockshift)) / 256) * 250;
-
-		/* Last page in the card, adjust as we only use 250 out of
-		 * every 256 pages */
-=======
 		/*
 		 * figure out the maximum logical block number, allowing for
 		 * the fact that only 250 out of every 256 are used
@@ -1054,7 +878,6 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		 * Last page in the card, adjust as we only use 250 out of
 		 * every 256 pages
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		capacity = (capacity / 256) * 250;
 
 		capacity /= PAGESIZE;
@@ -1076,21 +899,11 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		usb_stor_set_xfer_buf(ptr, sizeof(mode_page_01), srb);
 
 		if ( (srb->cmnd[2] & 0x3F) == 0x01 ) {
-<<<<<<< HEAD
-			US_DEBUGP(
-			  "SDDR55: Dummy up request for mode page 1\n");
-			return USB_STOR_TRANSPORT_GOOD;
-
-		} else if ( (srb->cmnd[2] & 0x3F) == 0x3F ) {
-			US_DEBUGP(
-			  "SDDR55: Dummy up request for all mode pages\n");
-=======
 			usb_stor_dbg(us, "Dummy up request for mode page 1\n");
 			return USB_STOR_TRANSPORT_GOOD;
 
 		} else if ( (srb->cmnd[2] & 0x3F) == 0x3F ) {
 			usb_stor_dbg(us, "Dummy up request for all mode pages\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return USB_STOR_TRANSPORT_GOOD;
 		}
 
@@ -1100,15 +913,8 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	if (srb->cmnd[0] == ALLOW_MEDIUM_REMOVAL) {
 
-<<<<<<< HEAD
-		US_DEBUGP(
-		  "SDDR55: %s medium removal. Not that I can do"
-		  " anything about it...\n",
-		  (srb->cmnd[4]&0x03) ? "Prevent" : "Allow");
-=======
 		usb_stor_dbg(us, "%s medium removal. Not that I can do anything about it...\n",
 			     (srb->cmnd[4]&0x03) ? "Prevent" : "Allow");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return USB_STOR_TRANSPORT_GOOD;
 
@@ -1132,13 +938,8 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 		if (lba >= info->max_log_blks) {
 
-<<<<<<< HEAD
-			US_DEBUGP("Error: Requested LBA %04X exceeds maximum "
-			  "block %04X\n", lba, info->max_log_blks-1);
-=======
 			usb_stor_dbg(us, "Error: Requested LBA %04X exceeds maximum block %04X\n",
 				     lba, info->max_log_blks - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_sense_info (5, 0x24, 0);	/* invalid field in command */
 
@@ -1148,17 +949,6 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		pba = info->lba_to_pba[lba];
 
 		if (srb->cmnd[0] == WRITE_10) {
-<<<<<<< HEAD
-			US_DEBUGP("WRITE_10: write block %04X (LBA %04X) page %01X"
-				" pages %d\n",
-				pba, lba, page, pages);
-
-			return sddr55_write_data(us, lba, page, pages);
-		} else {
-			US_DEBUGP("READ_10: read block %04X (LBA %04X) page %01X"
-				" pages %d\n",
-				pba, lba, page, pages);
-=======
 			usb_stor_dbg(us, "WRITE_10: write block %04X (LBA %04X) page %01X pages %d\n",
 				     pba, lba, page, pages);
 
@@ -1166,7 +956,6 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 		} else {
 			usb_stor_dbg(us, "READ_10: read block %04X (LBA %04X) page %01X pages %d\n",
 				     pba, lba, page, pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return sddr55_read_data(us, lba, page, pages);
 		}
@@ -1186,10 +975,7 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 	return USB_STOR_TRANSPORT_FAILED; // FIXME: sense buffer?
 }
 
-<<<<<<< HEAD
-=======
 static struct scsi_host_template sddr55_host_template;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sddr55_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
@@ -1198,12 +984,8 @@ static int sddr55_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
-<<<<<<< HEAD
-			(id - sddr55_usb_ids) + sddr55_unusual_dev_list);
-=======
 			(id - sddr55_usb_ids) + sddr55_unusual_dev_list,
 			&sddr55_host_template);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		return result;
 
@@ -1217,11 +999,7 @@ static int sddr55_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver sddr55_driver = {
-<<<<<<< HEAD
-	.name =		"ums-sddr55",
-=======
 	.name =		DRV_NAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	sddr55_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1234,8 +1012,4 @@ static struct usb_driver sddr55_driver = {
 	.no_dynamic_id = 1,
 };
 
-<<<<<<< HEAD
-module_usb_driver(sddr55_driver);
-=======
 module_usb_stor_driver(sddr55_driver, sddr55_host_template, DRV_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

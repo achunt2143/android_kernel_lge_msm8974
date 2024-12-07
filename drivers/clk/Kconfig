@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-
-config CLKDEV_LOOKUP
-	bool
-	select HAVE_CLK
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 config HAVE_CLK
@@ -11,20 +5,10 @@ config HAVE_CLK
 	help
 	  The <linux/clk.h> calls support software clock gating and
 	  thus are a key power management tool on many systems.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_CLK_PREPARE
 	bool
 
-<<<<<<< HEAD
-config HAVE_MACH_CLKDEV
-	bool
-
-config COMMON_CLK
-	bool
-	select HAVE_CLK_PREPARE
-	---help---
-=======
 config HAVE_LEGACY_CLK # TODO: Remove once all legacy users are migrated
 	bool
 	select HAVE_CLK
@@ -41,41 +25,12 @@ menuconfig COMMON_CLK
 	select HAVE_CLK
 	select RATIONAL
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The common clock framework is a single definition of struct
 	  clk, useful across many platforms, as well as an
 	  implementation of the clock API in include/linux/clk.h.
 	  Architectures utilizing the common struct clk should select
 	  this option.
 
-<<<<<<< HEAD
-menu "Common Clock Framework"
-	depends on COMMON_CLK
-
-config COMMON_CLK_DISABLE_UNUSED
-	bool "Disabled unused clocks at boot"
-	depends on COMMON_CLK
-	---help---
-	  Traverses the entire clock tree and disables any clocks that are
-	  enabled in hardware but have not been enabled by any device drivers.
-	  This saves power and keeps the software model of the clock in line
-	  with reality.
-
-	  If in doubt, say "N".
-
-config COMMON_CLK_DEBUG
-	bool "DebugFS representation of clock tree"
-	depends on COMMON_CLK
-	select DEBUG_FS
-	---help---
-	  Creates a directory hierchy in debugfs for visualizing the clk
-	  tree structure.  Each directory contains read-only members
-	  that export information specific to that clk node: clk_rate,
-	  clk_flags, clk_prepare_count, clk_enable_count &
-	  clk_notifier_count.
-
-endmenu
-=======
 if COMMON_CLK
 
 config COMMON_CLK_WM831X
@@ -570,4 +525,3 @@ config CLK_FD_KUNIT_TEST
 	  Kunit test for the clk-fractional-divider type.
 
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

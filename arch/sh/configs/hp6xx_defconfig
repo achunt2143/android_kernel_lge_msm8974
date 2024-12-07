@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-CONFIG_EXPERIMENTAL=y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_BSD_PROCESS_ACCT=y
 CONFIG_IKCONFIG=y
 CONFIG_IKCONFIG_PROC=y
 CONFIG_LOG_BUF_SHIFT=14
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
-<<<<<<< HEAD
-# CONFIG_SYSCTL_SYSCALL is not set
-CONFIG_SLAB=y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_BLK_DEV_BSG is not set
 CONFIG_CPU_SUBTYPE_SH7709=y
 CONFIG_MEMORY_START=0x0d000000
@@ -25,10 +16,6 @@ CONFIG_HD64461_ENABLER=y
 CONFIG_PCCARD=y
 CONFIG_PM=y
 CONFIG_APM_EMULATION=y
-<<<<<<< HEAD
-CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_STANDALONE is not set
 CONFIG_BLK_DEV_SD=y
 CONFIG_ATA=y
@@ -46,25 +33,13 @@ CONFIG_SERIAL_SH_SCI_NR_UARTS=3
 CONFIG_SERIAL_SH_SCI_CONSOLE=y
 CONFIG_LEGACY_PTY_COUNT=64
 # CONFIG_HWMON is not set
-<<<<<<< HEAD
-CONFIG_VIDEO_OUTPUT_CONTROL=y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_FB=y
 CONFIG_FIRMWARE_EDID=y
 CONFIG_FB_HIT=y
 CONFIG_FB_SH_MOBILE_LCDC=y
-<<<<<<< HEAD
-CONFIG_BACKLIGHT_LCD_SUPPORT=y
 CONFIG_FRAMEBUFFER_CONSOLE=y
 CONFIG_FONTS=y
 CONFIG_FONT_PEARL_8x8=y
-# CONFIG_HID_SUPPORT is not set
-=======
-CONFIG_FRAMEBUFFER_CONSOLE=y
-CONFIG_FONTS=y
-CONFIG_FONT_PEARL_8x8=y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_USB_SUPPORT is not set
 CONFIG_RTC_CLASS=y
 CONFIG_RTC_DRV_SH=y
@@ -73,10 +48,6 @@ CONFIG_MSDOS_FS=y
 CONFIG_VFAT_FS=y
 CONFIG_PROC_KCORE=y
 CONFIG_NLS_CODEPAGE_850=y
-<<<<<<< HEAD
-# CONFIG_RCU_CPU_STALL_DETECTOR is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_CRYPTO=y
 CONFIG_CRYPTO_CBC=y
 CONFIG_CRYPTO_ECB=y

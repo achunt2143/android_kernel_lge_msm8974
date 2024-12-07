@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH-2007 board support.
  *
@@ -10,11 +7,8 @@
  */
 #include <linux/init.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
@@ -22,8 +16,6 @@
 #include <asm/machvec.h>
 #include <mach/sh2007.h>
 
-<<<<<<< HEAD
-=======
 /* Dummy supplies, where voltage doesn't matter */
 static struct regulator_consumer_supply dummy_supplies[] = {
 	REGULATOR_SUPPLY("vddvario", "smsc911x.0"),
@@ -32,7 +24,6 @@ static struct regulator_consumer_supply dummy_supplies[] = {
 	REGULATOR_SUPPLY("vdd33a", "smsc911x.1"),
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct smsc911x_platform_config smc911x_info = {
 	.flags		= SMSC911X_USE_32BIT,
 	.irq_polarity	= SMSC911X_IRQ_POLARITY_ACTIVE_LOW,
@@ -118,11 +109,8 @@ static struct platform_device *sh2007_devices[] __initdata = {
 
 static int __init sh2007_io_init(void)
 {
-<<<<<<< HEAD
-=======
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_add_devices(sh2007_devices, ARRAY_SIZE(sh2007_devices));
 	return 0;
 }
@@ -138,22 +126,14 @@ static void __init sh2007_init_irq(void)
  */
 static void __init sh2007_setup(char **cmdline_p)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "SH-2007 Setup...");
-=======
 	pr_info("SH-2007 Setup...");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup wait control registers for area 5 */
 	__raw_writel(CS5BCR_D, CS5BCR);
 	__raw_writel(CS5WCR_D, CS5WCR);
 	__raw_writel(CS5PCR_D, CS5PCR);
 
-<<<<<<< HEAD
-	printk(KERN_INFO " done.\n");
-=======
 	pr_cont(" done.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

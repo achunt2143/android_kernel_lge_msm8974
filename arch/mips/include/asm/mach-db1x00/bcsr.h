@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bcsr.h -- Db1xxx/Pb1xxx Devboard CPLD registers ("BCSR") abstraction.
  *
@@ -114,11 +111,7 @@ enum bcsr_whoami_boards {
 	BCSR_WHOAMI_DB1300,
 };
 
-<<<<<<< HEAD
-/* STATUS reg.  Unless otherwise noted, they're valid on all boards.
-=======
 /* STATUS reg.	Unless otherwise noted, they're valid on all boards.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PB1200 = DB1200.
  */
 #define BCSR_STATUS_PC0VS		0x0003
@@ -170,11 +163,8 @@ enum bcsr_whoami_boards {
 #define BCSR_BOARD_PCIEXTARB		0x0200
 #define BCSR_BOARD_GPIO200RST		0x0400
 #define BCSR_BOARD_PCICLKOUT		0x0800
-<<<<<<< HEAD
-=======
 #define BCSR_BOARD_PB1100_SD0PWR	0x0400
 #define BCSR_BOARD_PB1100_SD1PWR	0x0800
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCSR_BOARD_PCICFG		0x1000
 #define BCSR_BOARD_SPISEL		0x2000	/* PB/DB1550 */
 #define BCSR_BOARD_SD0WP		0x4000	/* DB1100 */
@@ -201,11 +191,7 @@ enum bcsr_whoami_boards {
 #define BCSR_RESETS_OTPWRPROT		0x1000	/* DB1300 */
 #define BCSR_RESETS_OTPCSB		0x2000	/* DB1300 */
 #define BCSR_RESETS_OTGPWR		0x4000	/* DB1300 */
-<<<<<<< HEAD
-#define BCSR_RESETS_USBHPWR		0x8000  /* DB1300 */
-=======
 #define BCSR_RESETS_USBHPWR		0x8000	/* DB1300 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BCSR_BOARD_LCDVEE		0x0001
 #define BCSR_BOARD_LCDVDD		0x0002

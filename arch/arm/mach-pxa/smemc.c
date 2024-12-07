@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Static Memory Controller
  */
@@ -11,16 +8,10 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/syscore_ops.h>
-<<<<<<< HEAD
-
-#include <mach/hardware.h>
-#include <mach/smemc.h>
-=======
 #include <linux/soc/pxa/cpu.h>
 
 #include "smemc.h"
 #include <linux/soc/pxa/smemc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 static unsigned long msc[2];
@@ -80,8 +71,6 @@ static int __init smemc_init(void)
 }
 subsys_initcall(smemc_init);
 #endif
-<<<<<<< HEAD
-=======
 
 static const unsigned int df_clkdiv[4] = { 1, 2, 4, 1 };
 unsigned int pxa3xx_smemc_get_memclkdiv(void)
@@ -90,4 +79,3 @@ unsigned int pxa3xx_smemc_get_memclkdiv(void)
 
 	return	df_clkdiv[(memclkcfg >> 16) & 0x3];
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

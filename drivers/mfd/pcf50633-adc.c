@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NXP PCF50633 ADC Driver
  *
  * (C) 2006-2008 by Openmoko, Inc.
@@ -11,14 +8,6 @@
  * Broken down from monstrous PCF50633 driver mainly by
  * Harald Welte, Andy Green and Werner Almesberger
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  NOTE: This driver does not yet support subtractive ADC mode, which means
  *  you can do only one measurement per read request.
  */
@@ -26,10 +15,6 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/completion.h>
@@ -151,10 +136,7 @@ int pcf50633_adc_async_read(struct pcf50633 *pcf, int mux, int avg,
 			     void *callback_param)
 {
 	struct pcf50633_adc_request *req;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* req is freed when the result is ready, in interrupt handler */
 	req = kmalloc(sizeof(*req), GFP_KERNEL);
@@ -166,15 +148,11 @@ int pcf50633_adc_async_read(struct pcf50633 *pcf, int mux, int avg,
 	req->callback = callback;
 	req->callback_param = callback_param;
 
-<<<<<<< HEAD
-	return adc_enqueue_request(pcf, req);
-=======
 	ret = adc_enqueue_request(pcf, req);
 	if (ret)
 		kfree(req);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pcf50633_adc_async_read);
 
@@ -221,19 +199,11 @@ static void pcf50633_adc_irq(int irq, void *data)
 	kfree(req);
 }
 
-<<<<<<< HEAD
-static int __devinit pcf50633_adc_probe(struct platform_device *pdev)
-{
-	struct pcf50633_adc *adc;
-
-	adc = kzalloc(sizeof(*adc), GFP_KERNEL);
-=======
 static int pcf50633_adc_probe(struct platform_device *pdev)
 {
 	struct pcf50633_adc *adc;
 
 	adc = devm_kzalloc(&pdev->dev, sizeof(*adc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adc)
 		return -ENOMEM;
 
@@ -248,11 +218,7 @@ static int pcf50633_adc_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit pcf50633_adc_remove(struct platform_device *pdev)
-=======
 static void pcf50633_adc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcf50633_adc *adc = platform_get_drvdata(pdev);
 	int i, head;
@@ -270,12 +236,6 @@ static void pcf50633_adc_remove(struct platform_device *pdev)
 		kfree(adc->queue[i]);
 
 	mutex_unlock(&adc->queue_mutex);
-<<<<<<< HEAD
-	kfree(adc);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pcf50633_adc_driver = {
@@ -283,11 +243,7 @@ static struct platform_driver pcf50633_adc_driver = {
 		.name = "pcf50633-adc",
 	},
 	.probe = pcf50633_adc_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(pcf50633_adc_remove),
-=======
 	.remove_new = pcf50633_adc_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pcf50633_adc_driver);

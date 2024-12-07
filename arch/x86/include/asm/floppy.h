@@ -31,13 +31,8 @@
 #define CSW fd_routine[can_use_virtual_dma & 1]
 
 
-<<<<<<< HEAD
-#define fd_inb(port)		inb_p(port)
-#define fd_outb(value, port)	outb_p(value, port)
-=======
 #define fd_inb(base, reg)		inb_p((base) + (reg))
 #define fd_outb(value, base, reg)	outb_p(value, (base) + (reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define fd_request_dma()	CSW._request_dma(FLOPPY_DMA, "floppy")
 #define fd_free_dma()		CSW._free_dma(FLOPPY_DMA)
@@ -79,22 +74,6 @@ static irqreturn_t floppy_hardint(int irq, void *dev_id)
 		int lcount;
 		char *lptr;
 
-<<<<<<< HEAD
-		st = 1;
-		for (lcount = virtual_dma_count, lptr = virtual_dma_addr;
-		     lcount; lcount--, lptr++) {
-			st = inb(virtual_dma_port + 4) & 0xa0;
-			if (st != 0xa0)
-				break;
-			if (virtual_dma_mode)
-				outb_p(*lptr, virtual_dma_port + 5);
-			else
-				*lptr = inb_p(virtual_dma_port + 5);
-		}
-		virtual_dma_count = lcount;
-		virtual_dma_addr = lptr;
-		st = inb(virtual_dma_port + 4);
-=======
 		for (lcount = virtual_dma_count, lptr = virtual_dma_addr;
 		     lcount; lcount--, lptr++) {
 			st = inb(virtual_dma_port + FD_STATUS);
@@ -109,21 +88,11 @@ static irqreturn_t floppy_hardint(int irq, void *dev_id)
 		virtual_dma_count = lcount;
 		virtual_dma_addr = lptr;
 		st = inb(virtual_dma_port + FD_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef TRACE_FLPY_INT
 	calls++;
 #endif
-<<<<<<< HEAD
-	if (st == 0x20)
-		return IRQ_HANDLED;
-	if (!(st & 0x20)) {
-		virtual_dma_residue += virtual_dma_count;
-		virtual_dma_count = 0;
-#ifdef TRACE_FLPY_INT
-		printk("count=%x, residue=%x calls=%d bytes=%d dma_wait=%d\n",
-=======
 	if (st == STATUS_DMA)
 		return IRQ_HANDLED;
 	if (!(st & STATUS_DMA)) {
@@ -131,7 +100,6 @@ static irqreturn_t floppy_hardint(int irq, void *dev_id)
 		virtual_dma_count = 0;
 #ifdef TRACE_FLPY_INT
 		printk(KERN_DEBUG "count=%x, residue=%x calls=%d bytes=%d dma_wait=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       virtual_dma_count, virtual_dma_residue, calls, bytes,
 		       dma_wait);
 		calls = 0;
@@ -177,17 +145,10 @@ static int fd_request_irq(void)
 {
 	if (can_use_virtual_dma)
 		return request_irq(FLOPPY_IRQ, floppy_hardint,
-<<<<<<< HEAD
-				   IRQF_DISABLED, "floppy", NULL);
-	else
-		return request_irq(FLOPPY_IRQ, floppy_interrupt,
-				   IRQF_DISABLED, "floppy", NULL);
-=======
 				   0, "floppy", NULL);
 	else
 		return request_irq(FLOPPY_IRQ, floppy_interrupt,
 				   0, "floppy", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long dma_mem_alloc(unsigned long size)
@@ -268,20 +229,6 @@ static struct fd_routine_l {
 	int (*_dma_setup)(char *addr, unsigned long size, int mode, int io);
 } fd_routine[] = {
 	{
-<<<<<<< HEAD
-		request_dma,
-		free_dma,
-		get_dma_residue,
-		dma_mem_alloc,
-		hard_dma_setup
-	},
-	{
-		vdma_request_dma,
-		vdma_nop,
-		vdma_get_dma_residue,
-		vdma_mem_alloc,
-		vdma_dma_setup
-=======
 		._request_dma		= request_dma,
 		._free_dma		= free_dma,
 		._get_dma_residue	= get_dma_residue,
@@ -294,7 +241,6 @@ static struct fd_routine_l {
 		._get_dma_residue	= vdma_get_dma_residue,
 		._dma_mem_alloc		= vdma_mem_alloc,
 		._dma_setup		= vdma_dma_setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 

@@ -1,44 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2004-2007 Intel Corporation.  All rights reserved.
  * Copyright (c) 2004 Topspin Corporation.  All rights reserved.
  * Copyright (c) 2004, 2005 Voltaire Corporation.  All rights reserved.
  * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
-<<<<<<< HEAD
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
  * Copyright (c) 2019, Mellanox Technologies inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/completion.h>
@@ -55,12 +21,6 @@
 #include <linux/sysfs.h>
 #include <linux/workqueue.h>
 #include <linux/kdev_t.h>
-<<<<<<< HEAD
-
-#include <rdma/ib_cache.h>
-#include <rdma/ib_cm.h>
-#include "cm_msgs.h"
-=======
 #include <linux/etherdevice.h>
 
 #include <rdma/ib_cache.h>
@@ -69,16 +29,11 @@
 #include "cm_msgs.h"
 #include "core_priv.h"
 #include "cm_trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Sean Hefty");
 MODULE_DESCRIPTION("InfiniBand CM");
 MODULE_LICENSE("Dual BSD/GPL");
 
-<<<<<<< HEAD
-static void cm_add_one(struct ib_device *device);
-static void cm_remove_one(struct ib_device *device);
-=======
 #define CM_DESTROY_ID_WAIT_TIMEOUT 10000 /* msecs */
 static const char * const ibcm_rej_reason_strs[] = {
 	[IB_CM_REJ_NO_QP]			= "no QP",
@@ -146,7 +101,6 @@ static int cm_send_rej_locked(struct cm_id_private *cm_id_priv,
 			      enum ib_cm_rej_reason reason, void *ari,
 			      u8 ari_length, const void *private_data,
 			      u8 private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ib_client cm_client = {
 	.name   = "cm",
@@ -164,12 +118,8 @@ static struct ib_cm {
 	struct rb_root remote_qp_table;
 	struct rb_root remote_id_table;
 	struct rb_root remote_sidr_table;
-<<<<<<< HEAD
-	struct idr local_id_table;
-=======
 	struct xarray local_id_table;
 	u32 local_id_next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 random_id_operand;
 	struct list_head timewait_list;
 	struct workqueue_struct *wq;
@@ -200,78 +150,15 @@ enum {
 	CM_COUNTER_GROUPS
 };
 
-<<<<<<< HEAD
-static char const counter_group_names[CM_COUNTER_GROUPS]
-				     [sizeof("cm_rx_duplicates")] = {
-	"cm_tx_msgs", "cm_tx_retries",
-	"cm_rx_msgs", "cm_rx_duplicates"
-};
-
-struct cm_counter_group {
-	struct kobject obj;
-	atomic_long_t counter[CM_ATTR_COUNT];
-};
-
-struct cm_counter_attribute {
-	struct attribute attr;
-	int index;
-};
-
-#define CM_COUNTER_ATTR(_name, _index) \
-struct cm_counter_attribute cm_##_name##_counter_attr = { \
-	.attr = { .name = __stringify(_name), .mode = 0444 }, \
-	.index = _index \
-}
-
-static CM_COUNTER_ATTR(req, CM_REQ_COUNTER);
-static CM_COUNTER_ATTR(mra, CM_MRA_COUNTER);
-static CM_COUNTER_ATTR(rej, CM_REJ_COUNTER);
-static CM_COUNTER_ATTR(rep, CM_REP_COUNTER);
-static CM_COUNTER_ATTR(rtu, CM_RTU_COUNTER);
-static CM_COUNTER_ATTR(dreq, CM_DREQ_COUNTER);
-static CM_COUNTER_ATTR(drep, CM_DREP_COUNTER);
-static CM_COUNTER_ATTR(sidr_req, CM_SIDR_REQ_COUNTER);
-static CM_COUNTER_ATTR(sidr_rep, CM_SIDR_REP_COUNTER);
-static CM_COUNTER_ATTR(lap, CM_LAP_COUNTER);
-static CM_COUNTER_ATTR(apr, CM_APR_COUNTER);
-
-static struct attribute *cm_counter_default_attrs[] = {
-	&cm_req_counter_attr.attr,
-	&cm_mra_counter_attr.attr,
-	&cm_rej_counter_attr.attr,
-	&cm_rep_counter_attr.attr,
-	&cm_rtu_counter_attr.attr,
-	&cm_dreq_counter_attr.attr,
-	&cm_drep_counter_attr.attr,
-	&cm_sidr_req_counter_attr.attr,
-	&cm_sidr_rep_counter_attr.attr,
-	&cm_lap_counter_attr.attr,
-	&cm_apr_counter_attr.attr,
-	NULL
-=======
 struct cm_counter_attribute {
 	struct ib_port_attribute attr;
 	unsigned short group;
 	unsigned short index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cm_port {
 	struct cm_device *cm_dev;
 	struct ib_mad_agent *mad_agent;
-<<<<<<< HEAD
-	struct kobject port_obj;
-	u8 port_num;
-	struct cm_counter_group counter_group[CM_COUNTER_GROUPS];
-};
-
-struct cm_device {
-	struct list_head list;
-	struct ib_device *ib_device;
-	struct device *device;
-	u8 ack_delay;
-	struct cm_port *port[0];
-=======
 	u32 port_num;
 	atomic_long_t counters[CM_COUNTER_GROUPS][CM_ATTR_COUNT];
 };
@@ -284,18 +171,12 @@ struct cm_device {
 	u8 ack_delay;
 	int going_down;
 	struct cm_port *port[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cm_av {
 	struct cm_port *port;
-<<<<<<< HEAD
-	union ib_gid dgid;
-	struct ib_ah_attr ah_attr;
-=======
 	struct rdma_ah_attr ah_attr;
 	u16 dlid_datapath;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 pkey_index;
 	u8 timeout;
 };
@@ -308,19 +189,11 @@ struct cm_work {
 	__be32 local_id;			/* Established / timewait */
 	__be32 remote_id;
 	struct ib_cm_event cm_event;
-<<<<<<< HEAD
-	struct ib_sa_path_rec path[0];
-};
-
-struct cm_timewait_info {
-	struct cm_work work;			/* Must be first. */
-=======
 	struct sa_path_rec path[];
 };
 
 struct cm_timewait_info {
 	struct cm_work work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;
 	struct rb_node remote_qp_node;
 	struct rb_node remote_id_node;
@@ -335,11 +208,6 @@ struct cm_id_private {
 
 	struct rb_node service_node;
 	struct rb_node sidr_id_node;
-<<<<<<< HEAD
-	spinlock_t lock;	/* Do not acquire inside cm.lock */
-	struct completion comp;
-	atomic_t refcount;
-=======
 	u32 sidr_slid;
 	spinlock_t lock;	/* Do not acquire inside cm.lock */
 	struct completion comp;
@@ -349,17 +217,12 @@ struct cm_id_private {
 	 */
 	int listen_sharecount;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ib_mad_send_buf *msg;
 	struct cm_timewait_info *timewait_info;
 	/* todo: use alternate port on send failure */
 	struct cm_av av;
 	struct cm_av alt_av;
-<<<<<<< HEAD
-	struct ib_cm_compare_data *compare_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void *private_data;
 	__be64 tid;
@@ -373,10 +236,6 @@ struct cm_id_private {
 	__be16 pkey;
 	u8 private_data_len;
 	u8 max_cm_retries;
-<<<<<<< HEAD
-	u8 peer_to_peer;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 responder_resources;
 	u8 initiator_depth;
 	u8 retry_count;
@@ -386,10 +245,6 @@ struct cm_id_private {
 
 	struct list_head work_list;
 	atomic_t work_count;
-<<<<<<< HEAD
-};
-
-=======
 
 	struct rdma_ucm_ece ece;
 };
@@ -410,36 +265,20 @@ static void cm_device_put(struct cm_device *cm_dev)
 	kref_put(&cm_dev->kref, cm_dev_release);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cm_work_handler(struct work_struct *work);
 
 static inline void cm_deref_id(struct cm_id_private *cm_id_priv)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&cm_id_priv->refcount))
-		complete(&cm_id_priv->comp);
-}
-
-static int cm_alloc_msg(struct cm_id_private *cm_id_priv,
-			struct ib_mad_send_buf **msg)
-=======
 	if (refcount_dec_and_test(&cm_id_priv->refcount))
 		complete(&cm_id_priv->comp);
 }
 
 static struct ib_mad_send_buf *cm_alloc_msg(struct cm_id_private *cm_id_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_agent *mad_agent;
 	struct ib_mad_send_buf *m;
 	struct ib_ah *ah;
 
-<<<<<<< HEAD
-	mad_agent = cm_id_priv->av.port->mad_agent;
-	ah = ib_create_ah(mad_agent->qp->pd, &cm_id_priv->av.ah_attr);
-	if (IS_ERR(ah))
-		return PTR_ERR(ah);
-=======
 	lockdep_assert_held(&cm_id_priv->lock);
 
 	if (!cm_id_priv->av.port)
@@ -457,34 +296,21 @@ static struct ib_mad_send_buf *cm_alloc_msg(struct cm_id_private *cm_id_priv)
 		m = ERR_CAST(ah);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	m = ib_create_send_mad(mad_agent, cm_id_priv->id.remote_cm_qpn,
 			       cm_id_priv->av.pkey_index,
 			       0, IB_MGMT_MAD_HDR, IB_MGMT_MAD_DATA,
-<<<<<<< HEAD
-			       GFP_ATOMIC);
-	if (IS_ERR(m)) {
-		ib_destroy_ah(ah);
-		return PTR_ERR(m);
-=======
 			       GFP_ATOMIC,
 			       IB_MGMT_BASE_VERSION);
 	if (IS_ERR(m)) {
 		rdma_destroy_ah(ah, 0);
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Timeout set by caller if response is expected. */
 	m->ah = ah;
 	m->retries = cm_id_priv->max_cm_retries;
 
-<<<<<<< HEAD
-	atomic_inc(&cm_id_priv->refcount);
-	m->context[0] = cm_id_priv;
-	*msg = m;
-=======
 	refcount_inc(&cm_id_priv->refcount);
 	m->context[0] = cm_id_priv;
 
@@ -553,7 +379,6 @@ static int cm_create_response_msg_ah(struct cm_port *port,
 		return PTR_ERR(ah);
 
 	msg->ah = ah;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -562,23 +387,6 @@ static int cm_alloc_response_msg(struct cm_port *port,
 				 struct ib_mad_send_buf **msg)
 {
 	struct ib_mad_send_buf *m;
-<<<<<<< HEAD
-	struct ib_ah *ah;
-
-	ah = ib_create_ah_from_wc(port->mad_agent->qp->pd, mad_recv_wc->wc,
-				  mad_recv_wc->recv_buf.grh, port->port_num);
-	if (IS_ERR(ah))
-		return PTR_ERR(ah);
-
-	m = ib_create_send_mad(port->mad_agent, 1, mad_recv_wc->wc->pkey_index,
-			       0, IB_MGMT_MAD_HDR, IB_MGMT_MAD_DATA,
-			       GFP_ATOMIC);
-	if (IS_ERR(m)) {
-		ib_destroy_ah(ah);
-		return PTR_ERR(m);
-	}
-	m->ah = ah;
-=======
 	int ret;
 
 	m = cm_alloc_response_msg_no_ah(port, mad_recv_wc);
@@ -591,23 +399,10 @@ static int cm_alloc_response_msg(struct cm_port *port,
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*msg = m;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void cm_free_msg(struct ib_mad_send_buf *msg)
-{
-	ib_destroy_ah(msg->ah);
-	if (msg->context[0])
-		cm_deref_id(msg->context[0]);
-	ib_free_send_mad(msg);
-}
-
-static void * cm_copy_private_data(const void *private_data,
-				   u8 private_data_len)
-=======
 static void cm_free_response_msg(struct ib_mad_send_buf *msg)
 {
 	if (msg->ah)
@@ -616,7 +411,6 @@ static void cm_free_response_msg(struct ib_mad_send_buf *msg)
 }
 
 static void *cm_copy_private_data(const void *private_data, u8 private_data_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *data;
 
@@ -640,18 +434,6 @@ static void cm_set_private_data(struct cm_id_private *cm_id_priv,
 	cm_id_priv->private_data_len = private_data_len;
 }
 
-<<<<<<< HEAD
-static void cm_init_av_for_response(struct cm_port *port, struct ib_wc *wc,
-				    struct ib_grh *grh, struct cm_av *av)
-{
-	av->port = port;
-	av->pkey_index = wc->pkey_index;
-	ib_init_ah_from_wc(port->cm_dev->ib_device, port->port_num, wc,
-			   grh, &av->ah_attr);
-}
-
-static int cm_init_av_by_path(struct ib_sa_path_rec *path, struct cm_av *av)
-=======
 static void cm_set_av_port(struct cm_av *av, struct cm_port *port)
 {
 	struct cm_port *old_port = av->port;
@@ -686,28 +468,10 @@ static int cm_init_av_for_response(struct cm_port *port, struct ib_wc *wc,
 
 static struct cm_port *
 get_cm_port_from_path(struct sa_path_rec *path, const struct ib_gid_attr *attr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_device *cm_dev;
 	struct cm_port *port = NULL;
 	unsigned long flags;
-<<<<<<< HEAD
-	int ret;
-	u8 p;
-
-	read_lock_irqsave(&cm.device_lock, flags);
-	list_for_each_entry(cm_dev, &cm.device_list, list) {
-		if (!ib_find_cached_gid(cm_dev->ib_device, &path->sgid,
-					&p, NULL)) {
-			port = cm_dev->port[p-1];
-			break;
-		}
-	}
-	read_unlock_irqrestore(&cm.device_lock, flags);
-
-	if (!port)
-		return -EINVAL;
-=======
 
 	if (attr) {
 		read_lock_irqsave(&cm.device_lock, flags);
@@ -756,61 +520,12 @@ static int cm_init_av_by_path(struct sa_path_rec *path,
 	if (!port)
 		return -EINVAL;
 	cm_dev = port->cm_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ib_find_cached_pkey(cm_dev->ib_device, port->port_num,
 				  be16_to_cpu(path->pkey), &av->pkey_index);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	av->port = port;
-	ib_init_ah_from_path(cm_dev->ib_device, port->port_num, path,
-			     &av->ah_attr);
-	av->timeout = path->packet_life_time + 1;
-	return 0;
-}
-
-static int cm_alloc_id(struct cm_id_private *cm_id_priv)
-{
-	unsigned long flags;
-	int ret, id;
-	static int next_id;
-
-	do {
-		spin_lock_irqsave(&cm.lock, flags);
-		ret = idr_get_new_above(&cm.local_id_table, cm_id_priv,
-					next_id, &id);
-		if (!ret)
-			next_id = ((unsigned) id + 1) & MAX_ID_MASK;
-		spin_unlock_irqrestore(&cm.lock, flags);
-	} while( (ret == -EAGAIN) && idr_pre_get(&cm.local_id_table, GFP_KERNEL) );
-
-	cm_id_priv->id.local_id = (__force __be32)id ^ cm.random_id_operand;
-	return ret;
-}
-
-static void cm_free_id(__be32 local_id)
-{
-	spin_lock_irq(&cm.lock);
-	idr_remove(&cm.local_id_table,
-		   (__force int) (local_id ^ cm.random_id_operand));
-	spin_unlock_irq(&cm.lock);
-}
-
-static struct cm_id_private * cm_get_id(__be32 local_id, __be32 remote_id)
-{
-	struct cm_id_private *cm_id_priv;
-
-	cm_id_priv = idr_find(&cm.local_id_table,
-			      (__force int) (local_id ^ cm.random_id_operand));
-	if (cm_id_priv) {
-		if (cm_id_priv->id.remote_id == remote_id)
-			atomic_inc(&cm_id_priv->refcount);
-		else
-			cm_id_priv = NULL;
-	}
-=======
 	cm_set_av_port(av, port);
 
 	/*
@@ -863,60 +578,10 @@ static struct cm_id_private *cm_acquire_id(__be32 local_id, __be32 remote_id)
 	    !refcount_inc_not_zero(&cm_id_priv->refcount))
 		cm_id_priv = NULL;
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cm_id_priv;
 }
 
-<<<<<<< HEAD
-static struct cm_id_private * cm_acquire_id(__be32 local_id, __be32 remote_id)
-{
-	struct cm_id_private *cm_id_priv;
-
-	spin_lock_irq(&cm.lock);
-	cm_id_priv = cm_get_id(local_id, remote_id);
-	spin_unlock_irq(&cm.lock);
-
-	return cm_id_priv;
-}
-
-static void cm_mask_copy(u8 *dst, u8 *src, u8 *mask)
-{
-	int i;
-
-	for (i = 0; i < IB_CM_COMPARE_SIZE / sizeof(unsigned long); i++)
-		((unsigned long *) dst)[i] = ((unsigned long *) src)[i] &
-					     ((unsigned long *) mask)[i];
-}
-
-static int cm_compare_data(struct ib_cm_compare_data *src_data,
-			   struct ib_cm_compare_data *dst_data)
-{
-	u8 src[IB_CM_COMPARE_SIZE];
-	u8 dst[IB_CM_COMPARE_SIZE];
-
-	if (!src_data || !dst_data)
-		return 0;
-
-	cm_mask_copy(src, src_data->data, dst_data->mask);
-	cm_mask_copy(dst, dst_data->data, src_data->mask);
-	return memcmp(src, dst, IB_CM_COMPARE_SIZE);
-}
-
-static int cm_compare_private_data(u8 *private_data,
-				   struct ib_cm_compare_data *dst_data)
-{
-	u8 src[IB_CM_COMPARE_SIZE];
-
-	if (!dst_data)
-		return 0;
-
-	cm_mask_copy(src, private_data, dst_data->mask);
-	return memcmp(src, dst_data->data, IB_CM_COMPARE_SIZE);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Trivial helpers to strip endian annotation and compare; the
  * endianness doesn't actually matter since we just need a stable
@@ -942,9 +607,6 @@ static int be64_gt(__be64 a, __be64 b)
 	return (__force u64) a > (__force u64) b;
 }
 
-<<<<<<< HEAD
-static struct cm_id_private * cm_insert_listen(struct cm_id_private *cm_id_priv)
-=======
 /*
  * Inserts a new cm_id_priv into the listen_service_table. Returns cm_id_priv
  * if the new ID was inserted, NULL if it could not be inserted due to a
@@ -952,35 +614,18 @@ static struct cm_id_private * cm_insert_listen(struct cm_id_private *cm_id_priv)
  */
 static struct cm_id_private *cm_insert_listen(struct cm_id_private *cm_id_priv,
 					      ib_cm_handler shared_handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **link = &cm.listen_service_table.rb_node;
 	struct rb_node *parent = NULL;
 	struct cm_id_private *cur_cm_id_priv;
 	__be64 service_id = cm_id_priv->id.service_id;
-<<<<<<< HEAD
-	__be64 service_mask = cm_id_priv->id.service_mask;
-	int data_cmp;
-
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&cm.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (*link) {
 		parent = *link;
 		cur_cm_id_priv = rb_entry(parent, struct cm_id_private,
 					  service_node);
-<<<<<<< HEAD
-		data_cmp = cm_compare_data(cm_id_priv->compare_data,
-					   cur_cm_id_priv->compare_data);
-		if ((cur_cm_id_priv->id.service_mask & service_id) ==
-		    (service_mask & cur_cm_id_priv->id.service_id) &&
-		    (cm_id_priv->id.device == cur_cm_id_priv->id.device) &&
-		    !data_cmp)
-			return cur_cm_id_priv;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (cm_id_priv->id.device < cur_cm_id_priv->id.device)
 			link = &(*link)->rb_left;
@@ -990,34 +635,6 @@ static struct cm_id_private *cm_insert_listen(struct cm_id_private *cm_id_priv,
 			link = &(*link)->rb_left;
 		else if (be64_gt(service_id, cur_cm_id_priv->id.service_id))
 			link = &(*link)->rb_right;
-<<<<<<< HEAD
-		else if (data_cmp < 0)
-			link = &(*link)->rb_left;
-		else
-			link = &(*link)->rb_right;
-	}
-	rb_link_node(&cm_id_priv->service_node, parent, link);
-	rb_insert_color(&cm_id_priv->service_node, &cm.listen_service_table);
-	return NULL;
-}
-
-static struct cm_id_private * cm_find_listen(struct ib_device *device,
-					     __be64 service_id,
-					     u8 *private_data)
-{
-	struct rb_node *node = cm.listen_service_table.rb_node;
-	struct cm_id_private *cm_id_priv;
-	int data_cmp;
-
-	while (node) {
-		cm_id_priv = rb_entry(node, struct cm_id_private, service_node);
-		data_cmp = cm_compare_private_data(private_data,
-						   cm_id_priv->compare_data);
-		if ((cm_id_priv->id.service_mask & service_id) ==
-		     cm_id_priv->id.service_id &&
-		    (cm_id_priv->id.device == device) && !data_cmp)
-			return cm_id_priv;
-=======
 		else {
 			/*
 			 * Sharing an ib_cm_id with different handlers is not
@@ -1050,7 +667,6 @@ static struct cm_id_private *cm_find_listen(struct ib_device *device,
 
 	while (node) {
 		cm_id_priv = rb_entry(node, struct cm_id_private, service_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (device < cm_id_priv->id.device)
 			node = node->rb_left;
@@ -1060,28 +676,16 @@ static struct cm_id_private *cm_find_listen(struct ib_device *device,
 			node = node->rb_left;
 		else if (be64_gt(service_id, cm_id_priv->id.service_id))
 			node = node->rb_right;
-<<<<<<< HEAD
-		else if (data_cmp < 0)
-			node = node->rb_left;
-		else
-			node = node->rb_right;
-=======
 		else {
 			refcount_inc(&cm_id_priv->refcount);
 			return cm_id_priv;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct cm_timewait_info * cm_insert_remote_id(struct cm_timewait_info
-						     *timewait_info)
-=======
 static struct cm_timewait_info *
 cm_insert_remote_id(struct cm_timewait_info *timewait_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **link = &cm.remote_id_table.rb_node;
 	struct rb_node *parent = NULL;
@@ -1110,14 +714,6 @@ cm_insert_remote_id(struct cm_timewait_info *timewait_info)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct cm_timewait_info * cm_find_remote_id(__be64 remote_ca_guid,
-						   __be32 remote_id)
-{
-	struct rb_node *node = cm.remote_id_table.rb_node;
-	struct cm_timewait_info *timewait_info;
-
-=======
 static struct cm_id_private *cm_find_remote_id(__be64 remote_ca_guid,
 					       __be32 remote_id)
 {
@@ -1126,7 +722,6 @@ static struct cm_id_private *cm_find_remote_id(__be64 remote_ca_guid,
 	struct cm_id_private *res = NULL;
 
 	spin_lock_irq(&cm.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (node) {
 		timewait_info = rb_entry(node, struct cm_timewait_info,
 					 remote_id_node);
@@ -1138,16 +733,6 @@ static struct cm_id_private *cm_find_remote_id(__be64 remote_ca_guid,
 			node = node->rb_left;
 		else if (be64_gt(remote_ca_guid, timewait_info->remote_ca_guid))
 			node = node->rb_right;
-<<<<<<< HEAD
-		else
-			return timewait_info;
-	}
-	return NULL;
-}
-
-static struct cm_timewait_info * cm_insert_remote_qpn(struct cm_timewait_info
-						      *timewait_info)
-=======
 		else {
 			res = cm_acquire_id(timewait_info->work.local_id,
 					     timewait_info->work.remote_id);
@@ -1160,7 +745,6 @@ static struct cm_timewait_info * cm_insert_remote_qpn(struct cm_timewait_info
 
 static struct cm_timewait_info *
 cm_insert_remote_qpn(struct cm_timewait_info *timewait_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **link = &cm.remote_qp_table.rb_node;
 	struct rb_node *parent = NULL;
@@ -1189,21 +773,12 @@ cm_insert_remote_qpn(struct cm_timewait_info *timewait_info)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct cm_id_private * cm_insert_remote_sidr(struct cm_id_private
-						    *cm_id_priv)
-=======
 static struct cm_id_private *
 cm_insert_remote_sidr(struct cm_id_private *cm_id_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **link = &cm.remote_sidr_table.rb_node;
 	struct rb_node *parent = NULL;
 	struct cm_id_private *cur_cm_id_priv;
-<<<<<<< HEAD
-	union ib_gid *port_gid = &cm_id_priv->av.dgid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 remote_id = cm_id_priv->id.remote_id;
 
 	while (*link) {
@@ -1215,18 +790,9 @@ cm_insert_remote_sidr(struct cm_id_private *cm_id_priv)
 		else if (be32_gt(remote_id, cur_cm_id_priv->id.remote_id))
 			link = &(*link)->rb_right;
 		else {
-<<<<<<< HEAD
-			int cmp;
-			cmp = memcmp(port_gid, &cur_cm_id_priv->av.dgid,
-				     sizeof *port_gid);
-			if (cmp < 0)
-				link = &(*link)->rb_left;
-			else if (cmp > 0)
-=======
 			if (cur_cm_id_priv->sidr_slid < cm_id_priv->sidr_slid)
 				link = &(*link)->rb_left;
 			else if (cur_cm_id_priv->sidr_slid > cm_id_priv->sidr_slid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				link = &(*link)->rb_right;
 			else
 				return cur_cm_id_priv;
@@ -1237,30 +803,12 @@ cm_insert_remote_sidr(struct cm_id_private *cm_id_priv)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void cm_reject_sidr_req(struct cm_id_private *cm_id_priv,
-			       enum ib_cm_sidr_status status)
-{
-	struct ib_cm_sidr_rep_param param;
-
-	memset(&param, 0, sizeof param);
-	param.status = status;
-	ib_send_cm_sidr_rep(&cm_id_priv->id, &param);
-}
-
-struct ib_cm_id *ib_create_cm_id(struct ib_device *device,
-				 ib_cm_handler cm_handler,
-				 void *context)
-{
-	struct cm_id_private *cm_id_priv;
-=======
 static struct cm_id_private *cm_alloc_id_priv(struct ib_device *device,
 					      ib_cm_handler cm_handler,
 					      void *context)
 {
 	struct cm_id_private *cm_id_priv;
 	u32 id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	cm_id_priv = kzalloc(sizeof *cm_id_priv, GFP_KERNEL);
@@ -1272,32 +820,13 @@ static struct cm_id_private *cm_alloc_id_priv(struct ib_device *device,
 	cm_id_priv->id.cm_handler = cm_handler;
 	cm_id_priv->id.context = context;
 	cm_id_priv->id.remote_cm_qpn = 1;
-<<<<<<< HEAD
-	ret = cm_alloc_id(cm_id_priv);
-	if (ret)
-		goto error;
-
-=======
 
 	RB_CLEAR_NODE(&cm_id_priv->service_node);
 	RB_CLEAR_NODE(&cm_id_priv->sidr_id_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&cm_id_priv->lock);
 	init_completion(&cm_id_priv->comp);
 	INIT_LIST_HEAD(&cm_id_priv->work_list);
 	atomic_set(&cm_id_priv->work_count, -1);
-<<<<<<< HEAD
-	atomic_set(&cm_id_priv->refcount, 1);
-	return &cm_id_priv->id;
-
-error:
-	kfree(cm_id_priv);
-	return ERR_PTR(-ENOMEM);
-}
-EXPORT_SYMBOL(ib_create_cm_id);
-
-static struct cm_work * cm_dequeue_work(struct cm_id_private *cm_id_priv)
-=======
 	refcount_set(&cm_id_priv->refcount, 1);
 
 	ret = xa_alloc_cyclic(&cm.local_id_table, &id, NULL, xa_limit_32b,
@@ -1339,7 +868,6 @@ struct ib_cm_id *ib_create_cm_id(struct ib_device *device,
 EXPORT_SYMBOL(ib_create_cm_id);
 
 static struct cm_work *cm_dequeue_work(struct cm_id_private *cm_id_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_work *work;
 
@@ -1358,8 +886,6 @@ static void cm_free_work(struct cm_work *work)
 	kfree(work);
 }
 
-<<<<<<< HEAD
-=======
 static void cm_queue_work_unlock(struct cm_id_private *cm_id_priv,
 				 struct cm_work *work)
 	__releases(&cm_id_priv->lock)
@@ -1390,7 +916,6 @@ static void cm_queue_work_unlock(struct cm_id_private *cm_id_priv,
 		cm_process_work(cm_id_priv, work);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int cm_convert_to_ms(int iba_time)
 {
 	/* approximate conversion to ms from 4.096us x 2^iba_time */
@@ -1416,15 +941,10 @@ static u8 cm_ack_timeout(u8 ca_ack_delay, u8 packet_life_time)
 	return min(31, ack_timeout);
 }
 
-<<<<<<< HEAD
-static void cm_cleanup_timewait(struct cm_timewait_info *timewait_info)
-{
-=======
 static void cm_remove_remote(struct cm_id_private *cm_id_priv)
 {
 	struct cm_timewait_info *timewait_info = cm_id_priv->timewait_info;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (timewait_info->inserted_remote_id) {
 		rb_erase(&timewait_info->remote_id_node, &cm.remote_id_table);
 		timewait_info->inserted_remote_id = 0;
@@ -1436,11 +956,7 @@ static void cm_remove_remote(struct cm_id_private *cm_id_priv)
 	}
 }
 
-<<<<<<< HEAD
-static struct cm_timewait_info * cm_create_timewait_info(__be32 local_id)
-=======
 static struct cm_timewait_info *cm_create_timewait_info(__be32 local_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_timewait_info *timewait_info;
 
@@ -1458,11 +974,6 @@ static void cm_enter_timewait(struct cm_id_private *cm_id_priv)
 {
 	int wait_time;
 	unsigned long flags;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&cm.lock, flags);
-	cm_cleanup_timewait(cm_id_priv->timewait_info);
-=======
 	struct cm_device *cm_dev;
 
 	lockdep_assert_held(&cm_id_priv->lock);
@@ -1473,7 +984,6 @@ static void cm_enter_timewait(struct cm_id_private *cm_id_priv)
 
 	spin_lock_irqsave(&cm.lock, flags);
 	cm_remove_remote(cm_id_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&cm_id_priv->timewait_info->list, &cm.timewait_list);
 	spin_unlock_irqrestore(&cm.lock, flags);
 
@@ -1484,10 +994,6 @@ static void cm_enter_timewait(struct cm_id_private *cm_id_priv)
 	 */
 	cm_id_priv->id.state = IB_CM_TIMEWAIT;
 	wait_time = cm_convert_to_ms(cm_id_priv->av.timeout);
-<<<<<<< HEAD
-	queue_delayed_work(cm.wq, &cm_id_priv->timewait_info->work.work,
-			   msecs_to_jiffies(wait_time));
-=======
 
 	/* Check if the device started its remove_one */
 	spin_lock_irqsave(&cm.lock, flags);
@@ -1501,7 +1007,6 @@ static void cm_enter_timewait(struct cm_id_private *cm_id_priv)
 	 * cm_free_work() in cm_timewait_handler().
 	 */
 	BUILD_BUG_ON(offsetof(struct cm_timewait_info, work) != 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->timewait_info = NULL;
 }
 
@@ -1509,64 +1014,18 @@ static void cm_reset_to_idle(struct cm_id_private *cm_id_priv)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	cm_id_priv->id.state = IB_CM_IDLE;
-	if (cm_id_priv->timewait_info) {
-		spin_lock_irqsave(&cm.lock, flags);
-		cm_cleanup_timewait(cm_id_priv->timewait_info);
-=======
 	lockdep_assert_held(&cm_id_priv->lock);
 
 	cm_id_priv->id.state = IB_CM_IDLE;
 	if (cm_id_priv->timewait_info) {
 		spin_lock_irqsave(&cm.lock, flags);
 		cm_remove_remote(cm_id_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&cm.lock, flags);
 		kfree(cm_id_priv->timewait_info);
 		cm_id_priv->timewait_info = NULL;
 	}
 }
 
-<<<<<<< HEAD
-static void cm_destroy_id(struct ib_cm_id *cm_id, int err)
-{
-	struct cm_id_private *cm_id_priv;
-	struct cm_work *work;
-
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-retest:
-	spin_lock_irq(&cm_id_priv->lock);
-	switch (cm_id->state) {
-	case IB_CM_LISTEN:
-		cm_id->state = IB_CM_IDLE;
-		spin_unlock_irq(&cm_id_priv->lock);
-		spin_lock_irq(&cm.lock);
-		rb_erase(&cm_id_priv->service_node, &cm.listen_service_table);
-		spin_unlock_irq(&cm.lock);
-		break;
-	case IB_CM_SIDR_REQ_SENT:
-		cm_id->state = IB_CM_IDLE;
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		spin_unlock_irq(&cm_id_priv->lock);
-		break;
-	case IB_CM_SIDR_REQ_RCVD:
-		spin_unlock_irq(&cm_id_priv->lock);
-		cm_reject_sidr_req(cm_id_priv, IB_SIDR_REJECT);
-		spin_lock_irq(&cm.lock);
-		if (!RB_EMPTY_NODE(&cm_id_priv->sidr_id_node))
-			rb_erase(&cm_id_priv->sidr_id_node,
-				 &cm.remote_sidr_table);
-		spin_unlock_irq(&cm.lock);
-		break;
-	case IB_CM_REQ_SENT:
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		spin_unlock_irq(&cm_id_priv->lock);
-		ib_send_cm_rej(cm_id, IB_CM_REJ_TIMEOUT,
-			       &cm_id_priv->id.device->node_guid,
-			       sizeof cm_id_priv->id.device->node_guid,
-			       NULL, 0);
-=======
 static noinline void cm_destroy_id_wait_timeout(struct ib_cm_id *cm_id,
 						enum ib_cm_state old_state)
 {
@@ -1622,61 +1081,11 @@ retest:
 				   &cm_id_priv->id.device->node_guid,
 				   sizeof(cm_id_priv->id.device->node_guid),
 				   NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IB_CM_REQ_RCVD:
 		if (err == -ENOMEM) {
 			/* Do not reject to allow future retries. */
 			cm_reset_to_idle(cm_id_priv);
-<<<<<<< HEAD
-			spin_unlock_irq(&cm_id_priv->lock);
-		} else {
-			spin_unlock_irq(&cm_id_priv->lock);
-			ib_send_cm_rej(cm_id, IB_CM_REJ_CONSUMER_DEFINED,
-				       NULL, 0, NULL, 0);
-		}
-		break;
-	case IB_CM_MRA_REQ_RCVD:
-	case IB_CM_REP_SENT:
-	case IB_CM_MRA_REP_RCVD:
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		/* Fall through */
-	case IB_CM_MRA_REQ_SENT:
-	case IB_CM_REP_RCVD:
-	case IB_CM_MRA_REP_SENT:
-		spin_unlock_irq(&cm_id_priv->lock);
-		ib_send_cm_rej(cm_id, IB_CM_REJ_CONSUMER_DEFINED,
-			       NULL, 0, NULL, 0);
-		break;
-	case IB_CM_ESTABLISHED:
-		spin_unlock_irq(&cm_id_priv->lock);
-		if (cm_id_priv->qp_type == IB_QPT_XRC_TGT)
-			break;
-		ib_send_cm_dreq(cm_id, NULL, 0);
-		goto retest;
-	case IB_CM_DREQ_SENT:
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		cm_enter_timewait(cm_id_priv);
-		spin_unlock_irq(&cm_id_priv->lock);
-		break;
-	case IB_CM_DREQ_RCVD:
-		spin_unlock_irq(&cm_id_priv->lock);
-		ib_send_cm_drep(cm_id, NULL, 0);
-		break;
-	default:
-		spin_unlock_irq(&cm_id_priv->lock);
-		break;
-	}
-
-	cm_free_id(cm_id->local_id);
-	cm_deref_id(cm_id_priv);
-	wait_for_completion(&cm_id_priv->comp);
-	while ((work = cm_dequeue_work(cm_id_priv)) != NULL)
-		cm_free_work(work);
-	kfree(cm_id_priv->compare_data);
-	kfree(cm_id_priv->private_data);
-	kfree(cm_id_priv);
-=======
 		} else {
 			cm_send_rej_locked(cm_id_priv,
 					   IB_CM_REJ_CONSUMER_DEFINED, NULL, 0,
@@ -1755,7 +1164,6 @@ retest:
 	cm_destroy_av(&cm_id_priv->alt_av);
 	kfree(cm_id_priv->private_data);
 	kfree_rcu(cm_id_priv, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ib_destroy_cm_id(struct ib_cm_id *cm_id)
@@ -1764,60 +1172,12 @@ void ib_destroy_cm_id(struct ib_cm_id *cm_id)
 }
 EXPORT_SYMBOL(ib_destroy_cm_id);
 
-<<<<<<< HEAD
-int ib_cm_listen(struct ib_cm_id *cm_id, __be64 service_id, __be64 service_mask,
-		 struct ib_cm_compare_data *compare_data)
-{
-	struct cm_id_private *cm_id_priv, *cur_cm_id_priv;
-	unsigned long flags;
-	int ret = 0;
-
-	service_mask = service_mask ? service_mask : ~cpu_to_be64(0);
-	service_id &= service_mask;
-=======
 static int cm_init_listen(struct cm_id_private *cm_id_priv, __be64 service_id)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((service_id & IB_SERVICE_ID_AGN_MASK) == IB_CM_ASSIGN_SERVICE_ID &&
 	    (service_id != IB_CM_ASSIGN_SERVICE_ID))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	if (cm_id->state != IB_CM_IDLE)
-		return -EINVAL;
-
-	if (compare_data) {
-		cm_id_priv->compare_data = kzalloc(sizeof *compare_data,
-						   GFP_KERNEL);
-		if (!cm_id_priv->compare_data)
-			return -ENOMEM;
-		cm_mask_copy(cm_id_priv->compare_data->data,
-			     compare_data->data, compare_data->mask);
-		memcpy(cm_id_priv->compare_data->mask, compare_data->mask,
-		       IB_CM_COMPARE_SIZE);
-	}
-
-	cm_id->state = IB_CM_LISTEN;
-
-	spin_lock_irqsave(&cm.lock, flags);
-	if (service_id == IB_CM_ASSIGN_SERVICE_ID) {
-		cm_id->service_id = cpu_to_be64(cm.listen_service_id++);
-		cm_id->service_mask = ~cpu_to_be64(0);
-	} else {
-		cm_id->service_id = service_id;
-		cm_id->service_mask = service_mask;
-	}
-	cur_cm_id_priv = cm_insert_listen(cm_id_priv);
-	spin_unlock_irqrestore(&cm.lock, flags);
-
-	if (cur_cm_id_priv) {
-		cm_id->state = IB_CM_IDLE;
-		kfree(cm_id_priv->compare_data);
-		cm_id_priv->compare_data = NULL;
-		ret = -EBUSY;
-	}
-=======
 	if (service_id == IB_CM_ASSIGN_SERVICE_ID)
 		cm_id_priv->id.service_id = cpu_to_be64(cm.listen_service_id++);
 	else
@@ -1862,21 +1222,10 @@ int ib_cm_listen(struct ib_cm_id *cm_id, __be64 service_id)
 
 out:
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_cm_listen);
 
-<<<<<<< HEAD
-static __be64 cm_form_tid(struct cm_id_private *cm_id_priv,
-			  enum cm_msg_sequence msg_seq)
-{
-	u64 hi_tid, low_tid;
-
-	hi_tid   = ((u64) cm_id_priv->av.port->mad_agent->hi_tid) << 32;
-	low_tid  = (u64) ((__force u32)cm_id_priv->id.local_id |
-			  (msg_seq << 30));
-=======
 /**
  * ib_cm_insert_listen - Create a new listening ib_cm_id and listen on
  *			 the given service ID.
@@ -1949,7 +1298,6 @@ static __be64 cm_form_tid(struct cm_id_private *cm_id_priv)
 	if (cm_id_priv->av.port->mad_agent)
 		hi_tid = ((u64)cm_id_priv->av.port->mad_agent->hi_tid) << 32;
 	spin_unlock(&cm_id_priv->av.port->cm_dev->mad_agent_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cpu_to_be64(hi_tid | low_tid);
 }
 
@@ -1964,8 +1312,6 @@ static void cm_format_mad_hdr(struct ib_mad_hdr *hdr,
 	hdr->tid	   = tid;
 }
 
-<<<<<<< HEAD
-=======
 static void cm_format_mad_ece_hdr(struct ib_mad_hdr *hdr, __be16 attr_id,
 				  __be64 tid, u32 attr_mod)
 {
@@ -1973,59 +1319,10 @@ static void cm_format_mad_ece_hdr(struct ib_mad_hdr *hdr, __be16 attr_id,
 	hdr->attr_mod = cpu_to_be32(attr_mod);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cm_format_req(struct cm_req_msg *req_msg,
 			  struct cm_id_private *cm_id_priv,
 			  struct ib_cm_req_param *param)
 {
-<<<<<<< HEAD
-	struct ib_sa_path_rec *pri_path = param->primary_path;
-	struct ib_sa_path_rec *alt_path = param->alternate_path;
-
-	cm_format_mad_hdr(&req_msg->hdr, CM_REQ_ATTR_ID,
-			  cm_form_tid(cm_id_priv, CM_MSG_SEQUENCE_REQ));
-
-	req_msg->local_comm_id = cm_id_priv->id.local_id;
-	req_msg->service_id = param->service_id;
-	req_msg->local_ca_guid = cm_id_priv->id.device->node_guid;
-	cm_req_set_local_qpn(req_msg, cpu_to_be32(param->qp_num));
-	cm_req_set_init_depth(req_msg, param->initiator_depth);
-	cm_req_set_remote_resp_timeout(req_msg,
-				       param->remote_cm_response_timeout);
-	cm_req_set_qp_type(req_msg, param->qp_type);
-	cm_req_set_flow_ctrl(req_msg, param->flow_control);
-	cm_req_set_starting_psn(req_msg, cpu_to_be32(param->starting_psn));
-	cm_req_set_local_resp_timeout(req_msg,
-				      param->local_cm_response_timeout);
-	req_msg->pkey = param->primary_path->pkey;
-	cm_req_set_path_mtu(req_msg, param->primary_path->mtu);
-	cm_req_set_max_cm_retries(req_msg, param->max_cm_retries);
-
-	if (param->qp_type != IB_QPT_XRC_INI) {
-		cm_req_set_resp_res(req_msg, param->responder_resources);
-		cm_req_set_retry_count(req_msg, param->retry_count);
-		cm_req_set_rnr_retry_count(req_msg, param->rnr_retry_count);
-		cm_req_set_srq(req_msg, param->srq);
-	}
-
-	if (pri_path->hop_limit <= 1) {
-		req_msg->primary_local_lid = pri_path->slid;
-		req_msg->primary_remote_lid = pri_path->dlid;
-	} else {
-		/* Work-around until there's a way to obtain remote LID info */
-		req_msg->primary_local_lid = IB_LID_PERMISSIVE;
-		req_msg->primary_remote_lid = IB_LID_PERMISSIVE;
-	}
-	req_msg->primary_local_gid = pri_path->sgid;
-	req_msg->primary_remote_gid = pri_path->dgid;
-	cm_req_set_primary_flow_label(req_msg, pri_path->flow_label);
-	cm_req_set_primary_packet_rate(req_msg, pri_path->rate);
-	req_msg->primary_traffic_class = pri_path->traffic_class;
-	req_msg->primary_hop_limit = pri_path->hop_limit;
-	cm_req_set_primary_sl(req_msg, pri_path->sl);
-	cm_req_set_primary_subnet_local(req_msg, (pri_path->hop_limit <= 1));
-	cm_req_set_primary_local_ack_timeout(req_msg,
-=======
 	struct sa_path_rec *pri_path = param->primary_path;
 	struct sa_path_rec *alt_path = param->alternate_path;
 	bool pri_ext = false;
@@ -2111,37 +1408,10 @@ static void cm_format_req(struct cm_req_msg *req_msg,
 	IBA_SET(CM_REQ_PRIMARY_SUBNET_LOCAL, req_msg,
 		(pri_path->hop_limit <= 1));
 	IBA_SET(CM_REQ_PRIMARY_LOCAL_ACK_TIMEOUT, req_msg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cm_ack_timeout(cm_id_priv->av.port->cm_dev->ack_delay,
 			       pri_path->packet_life_time));
 
 	if (alt_path) {
-<<<<<<< HEAD
-		if (alt_path->hop_limit <= 1) {
-			req_msg->alt_local_lid = alt_path->slid;
-			req_msg->alt_remote_lid = alt_path->dlid;
-		} else {
-			req_msg->alt_local_lid = IB_LID_PERMISSIVE;
-			req_msg->alt_remote_lid = IB_LID_PERMISSIVE;
-		}
-		req_msg->alt_local_gid = alt_path->sgid;
-		req_msg->alt_remote_gid = alt_path->dgid;
-		cm_req_set_alt_flow_label(req_msg,
-					  alt_path->flow_label);
-		cm_req_set_alt_packet_rate(req_msg, alt_path->rate);
-		req_msg->alt_traffic_class = alt_path->traffic_class;
-		req_msg->alt_hop_limit = alt_path->hop_limit;
-		cm_req_set_alt_sl(req_msg, alt_path->sl);
-		cm_req_set_alt_subnet_local(req_msg, (alt_path->hop_limit <= 1));
-		cm_req_set_alt_local_ack_timeout(req_msg,
-			cm_ack_timeout(cm_id_priv->av.port->cm_dev->ack_delay,
-				       alt_path->packet_life_time));
-	}
-
-	if (param->private_data && param->private_data_len)
-		memcpy(req_msg->private_data, param->private_data,
-		       param->private_data_len);
-=======
 		bool alt_ext = false;
 
 		if (alt_path->rec_type == SA_PATH_REC_TYPE_OPA)
@@ -2198,18 +1468,10 @@ static void cm_format_req(struct cm_req_msg *req_msg,
 	if (param->private_data && param->private_data_len)
 		IBA_SET_MEM(CM_REQ_PRIVATE_DATA, req_msg, param->private_data,
 			    param->private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_validate_req_param(struct ib_cm_req_param *param)
 {
-<<<<<<< HEAD
-	/* peer-to-peer not supported */
-	if (param->peer_to_peer)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!param->primary_path)
 		return -EINVAL;
 
@@ -2232,13 +1494,9 @@ static int cm_validate_req_param(struct ib_cm_req_param *param)
 int ib_send_cm_req(struct ib_cm_id *cm_id,
 		   struct ib_cm_req_param *param)
 {
-<<<<<<< HEAD
-	struct cm_id_private *cm_id_priv;
-=======
 	struct cm_av av = {}, alt_av = {};
 	struct cm_id_private *cm_id_priv;
 	struct ib_mad_send_buf *msg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cm_req_msg *req_msg;
 	unsigned long flags;
 	int ret;
@@ -2250,16 +1508,9 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 	/* Verify that we're not in timewait. */
 	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
-<<<<<<< HEAD
-	if (cm_id->state != IB_CM_IDLE) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		ret = -EINVAL;
-		goto out;
-=======
 	if (cm_id->state != IB_CM_IDLE || WARN_ON(cm_id_priv->timewait_info)) {
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
@@ -2267,22 +1518,6 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 							    id.local_id);
 	if (IS_ERR(cm_id_priv->timewait_info)) {
 		ret = PTR_ERR(cm_id_priv->timewait_info);
-<<<<<<< HEAD
-		goto out;
-	}
-
-	ret = cm_init_av_by_path(param->primary_path, &cm_id_priv->av);
-	if (ret)
-		goto error1;
-	if (param->alternate_path) {
-		ret = cm_init_av_by_path(param->alternate_path,
-					 &cm_id_priv->alt_av);
-		if (ret)
-			goto error1;
-	}
-	cm_id->service_id = param->service_id;
-	cm_id->service_mask = ~cpu_to_be64(0);
-=======
 		cm_id_priv->timewait_info = NULL;
 		return ret;
 	}
@@ -2300,7 +1535,6 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 		}
 	}
 	cm_id->service_id = param->service_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->timeout_ms = cm_convert_to_ms(
 				    param->primary_path->packet_life_time) * 2 +
 				 cm_convert_to_ms(
@@ -2313,27 +1547,6 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 	cm_id_priv->pkey = param->primary_path->pkey;
 	cm_id_priv->qp_type = param->qp_type;
 
-<<<<<<< HEAD
-	ret = cm_alloc_msg(cm_id_priv, &cm_id_priv->msg);
-	if (ret)
-		goto error1;
-
-	req_msg = (struct cm_req_msg *) cm_id_priv->msg->mad;
-	cm_format_req(req_msg, cm_id_priv, param);
-	cm_id_priv->tid = req_msg->hdr.tid;
-	cm_id_priv->msg->timeout_ms = cm_id_priv->timeout_ms;
-	cm_id_priv->msg->context[1] = (void *) (unsigned long) IB_CM_REQ_SENT;
-
-	cm_id_priv->local_qpn = cm_req_get_local_qpn(req_msg);
-	cm_id_priv->rq_psn = cm_req_get_starting_psn(req_msg);
-
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	ret = ib_post_send_mad(cm_id_priv->msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		goto error2;
-	}
-=======
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 
 	cm_move_av_from_path(&cm_id_priv->av, &av);
@@ -2363,23 +1576,15 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
 		goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(cm_id->state != IB_CM_IDLE);
 	cm_id->state = IB_CM_REQ_SENT;
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 	return 0;
-<<<<<<< HEAD
-
-error2:	cm_free_msg(cm_id_priv->msg);
-error1:	kfree(cm_id_priv->timewait_info);
-out:	return ret;
-=======
 out_free:
 	cm_free_priv_msg(msg);
 out_unlock:
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ib_send_cm_req);
 
@@ -2402,21 +1607,6 @@ static int cm_issue_rej(struct cm_port *port,
 	rej_msg = (struct cm_rej_msg *) msg->mad;
 
 	cm_format_mad_hdr(&rej_msg->hdr, CM_REJ_ATTR_ID, rcv_msg->hdr.tid);
-<<<<<<< HEAD
-	rej_msg->remote_comm_id = rcv_msg->local_comm_id;
-	rej_msg->local_comm_id = rcv_msg->remote_comm_id;
-	cm_rej_set_msg_rejected(rej_msg, msg_rejected);
-	rej_msg->reason = cpu_to_be16(reason);
-
-	if (ari && ari_length) {
-		cm_rej_set_reject_info_len(rej_msg, ari_length);
-		memcpy(rej_msg->ari, ari, ari_length);
-	}
-
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret)
-		cm_free_msg(msg);
-=======
 	IBA_SET(CM_REJ_REMOTE_COMM_ID, rej_msg,
 		IBA_GET(CM_REJ_LOCAL_COMM_ID, rcv_msg));
 	IBA_SET(CM_REJ_LOCAL_COMM_ID, rej_msg,
@@ -2435,65 +1625,10 @@ static int cm_issue_rej(struct cm_port *port,
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
 		cm_free_response_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int cm_is_active_peer(__be64 local_ca_guid, __be64 remote_ca_guid,
-				    __be32 local_qpn, __be32 remote_qpn)
-{
-	return (be64_to_cpu(local_ca_guid) > be64_to_cpu(remote_ca_guid) ||
-		((local_ca_guid == remote_ca_guid) &&
-		 (be32_to_cpu(local_qpn) > be32_to_cpu(remote_qpn))));
-}
-
-static void cm_format_paths_from_req(struct cm_req_msg *req_msg,
-					    struct ib_sa_path_rec *primary_path,
-					    struct ib_sa_path_rec *alt_path)
-{
-	memset(primary_path, 0, sizeof *primary_path);
-	primary_path->dgid = req_msg->primary_local_gid;
-	primary_path->sgid = req_msg->primary_remote_gid;
-	primary_path->dlid = req_msg->primary_local_lid;
-	primary_path->slid = req_msg->primary_remote_lid;
-	primary_path->flow_label = cm_req_get_primary_flow_label(req_msg);
-	primary_path->hop_limit = req_msg->primary_hop_limit;
-	primary_path->traffic_class = req_msg->primary_traffic_class;
-	primary_path->reversible = 1;
-	primary_path->pkey = req_msg->pkey;
-	primary_path->sl = cm_req_get_primary_sl(req_msg);
-	primary_path->mtu_selector = IB_SA_EQ;
-	primary_path->mtu = cm_req_get_path_mtu(req_msg);
-	primary_path->rate_selector = IB_SA_EQ;
-	primary_path->rate = cm_req_get_primary_packet_rate(req_msg);
-	primary_path->packet_life_time_selector = IB_SA_EQ;
-	primary_path->packet_life_time =
-		cm_req_get_primary_local_ack_timeout(req_msg);
-	primary_path->packet_life_time -= (primary_path->packet_life_time > 0);
-
-	if (req_msg->alt_local_lid) {
-		memset(alt_path, 0, sizeof *alt_path);
-		alt_path->dgid = req_msg->alt_local_gid;
-		alt_path->sgid = req_msg->alt_remote_gid;
-		alt_path->dlid = req_msg->alt_local_lid;
-		alt_path->slid = req_msg->alt_remote_lid;
-		alt_path->flow_label = cm_req_get_alt_flow_label(req_msg);
-		alt_path->hop_limit = req_msg->alt_hop_limit;
-		alt_path->traffic_class = req_msg->alt_traffic_class;
-		alt_path->reversible = 1;
-		alt_path->pkey = req_msg->pkey;
-		alt_path->sl = cm_req_get_alt_sl(req_msg);
-		alt_path->mtu_selector = IB_SA_EQ;
-		alt_path->mtu = cm_req_get_path_mtu(req_msg);
-		alt_path->rate_selector = IB_SA_EQ;
-		alt_path->rate = cm_req_get_alt_packet_rate(req_msg);
-		alt_path->packet_life_time_selector = IB_SA_EQ;
-		alt_path->packet_life_time =
-			cm_req_get_alt_local_ack_timeout(req_msg);
-		alt_path->packet_life_time -= (alt_path->packet_life_time > 0);
-=======
 static bool cm_req_has_alt_path(struct cm_req_msg *req_msg)
 {
 	return ((cpu_to_be16(
@@ -2662,7 +1797,6 @@ static void cm_opa_to_ib_sgid(struct cm_work *work,
 		}
 
 		path->sgid = sgid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2676,30 +1810,6 @@ static void cm_format_req_event(struct cm_work *work,
 	req_msg = (struct cm_req_msg *)work->mad_recv_wc->recv_buf.mad;
 	param = &work->cm_event.param.req_rcvd;
 	param->listen_id = listen_id;
-<<<<<<< HEAD
-	param->port = cm_id_priv->av.port->port_num;
-	param->primary_path = &work->path[0];
-	if (req_msg->alt_local_lid)
-		param->alternate_path = &work->path[1];
-	else
-		param->alternate_path = NULL;
-	param->remote_ca_guid = req_msg->local_ca_guid;
-	param->remote_qkey = be32_to_cpu(req_msg->local_qkey);
-	param->remote_qpn = be32_to_cpu(cm_req_get_local_qpn(req_msg));
-	param->qp_type = cm_req_get_qp_type(req_msg);
-	param->starting_psn = be32_to_cpu(cm_req_get_starting_psn(req_msg));
-	param->responder_resources = cm_req_get_init_depth(req_msg);
-	param->initiator_depth = cm_req_get_resp_res(req_msg);
-	param->local_cm_response_timeout =
-					cm_req_get_remote_resp_timeout(req_msg);
-	param->flow_control = cm_req_get_flow_ctrl(req_msg);
-	param->remote_cm_response_timeout =
-					cm_req_get_local_resp_timeout(req_msg);
-	param->retry_count = cm_req_get_retry_count(req_msg);
-	param->rnr_retry_count = cm_req_get_rnr_retry_count(req_msg);
-	param->srq = cm_req_get_srq(req_msg);
-	work->cm_event.private_data = &req_msg->private_data;
-=======
 	param->bth_pkey = cm_get_bth_pkey(work);
 	param->port = cm_id_priv->av.port->port_num;
 	param->primary_path = &work->path[0];
@@ -2732,7 +1842,6 @@ static void cm_format_req_event(struct cm_work *work,
 
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_REQ_PRIVATE_DATA, req_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_process_work(struct cm_id_private *cm_id_priv,
@@ -2748,13 +1857,9 @@ static void cm_process_work(struct cm_id_private *cm_id_priv,
 		spin_lock_irq(&cm_id_priv->lock);
 		work = cm_dequeue_work(cm_id_priv);
 		spin_unlock_irq(&cm_id_priv->lock);
-<<<<<<< HEAD
-		BUG_ON(!work);
-=======
 		if (!work)
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = cm_id_priv->id.cm_handler(&cm_id_priv->id,
 						&work->cm_event);
 		cm_free_work(work);
@@ -2770,15 +1875,6 @@ static void cm_format_mra(struct cm_mra_msg *mra_msg,
 			  const void *private_data, u8 private_data_len)
 {
 	cm_format_mad_hdr(&mra_msg->hdr, CM_MRA_ATTR_ID, cm_id_priv->tid);
-<<<<<<< HEAD
-	cm_mra_set_msg_mraed(mra_msg, msg_mraed);
-	mra_msg->local_comm_id = cm_id_priv->id.local_id;
-	mra_msg->remote_comm_id = cm_id_priv->id.remote_id;
-	cm_mra_set_service_timeout(mra_msg, service_timeout);
-
-	if (private_data && private_data_len)
-		memcpy(mra_msg->private_data, private_data, private_data_len);
-=======
 	IBA_SET(CM_MRA_MESSAGE_MRAED, mra_msg, msg_mraed);
 	IBA_SET(CM_MRA_LOCAL_COMM_ID, mra_msg,
 		be32_to_cpu(cm_id_priv->id.local_id));
@@ -2789,50 +1885,10 @@ static void cm_format_mra(struct cm_mra_msg *mra_msg,
 	if (private_data && private_data_len)
 		IBA_SET_MEM(CM_MRA_PRIVATE_DATA, mra_msg, private_data,
 			    private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_format_rej(struct cm_rej_msg *rej_msg,
 			  struct cm_id_private *cm_id_priv,
-<<<<<<< HEAD
-			  enum ib_cm_rej_reason reason,
-			  void *ari,
-			  u8 ari_length,
-			  const void *private_data,
-			  u8 private_data_len)
-{
-	cm_format_mad_hdr(&rej_msg->hdr, CM_REJ_ATTR_ID, cm_id_priv->tid);
-	rej_msg->remote_comm_id = cm_id_priv->id.remote_id;
-
-	switch(cm_id_priv->id.state) {
-	case IB_CM_REQ_RCVD:
-		rej_msg->local_comm_id = 0;
-		cm_rej_set_msg_rejected(rej_msg, CM_MSG_RESPONSE_REQ);
-		break;
-	case IB_CM_MRA_REQ_SENT:
-		rej_msg->local_comm_id = cm_id_priv->id.local_id;
-		cm_rej_set_msg_rejected(rej_msg, CM_MSG_RESPONSE_REQ);
-		break;
-	case IB_CM_REP_RCVD:
-	case IB_CM_MRA_REP_SENT:
-		rej_msg->local_comm_id = cm_id_priv->id.local_id;
-		cm_rej_set_msg_rejected(rej_msg, CM_MSG_RESPONSE_REP);
-		break;
-	default:
-		rej_msg->local_comm_id = cm_id_priv->id.local_id;
-		cm_rej_set_msg_rejected(rej_msg, CM_MSG_RESPONSE_OTHER);
-		break;
-	}
-
-	rej_msg->reason = cpu_to_be16(reason);
-	if (ari && ari_length) {
-		cm_rej_set_reject_info_len(rej_msg, ari_length);
-		memcpy(rej_msg->ari, ari, ari_length);
-	}
-
-	if (private_data && private_data_len)
-		memcpy(rej_msg->private_data, private_data, private_data_len);
-=======
 			  enum ib_cm_rej_reason reason, void *ari,
 			  u8 ari_length, const void *private_data,
 			  u8 private_data_len, enum ib_cm_state state)
@@ -2876,7 +1932,6 @@ static void cm_format_rej(struct cm_rej_msg *rej_msg,
 	if (private_data && private_data_len)
 		IBA_SET_MEM(CM_REJ_PRIVATE_DATA, rej_msg, private_data,
 			    private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_dup_req_handler(struct cm_work *work,
@@ -2885,14 +1940,6 @@ static void cm_dup_req_handler(struct cm_work *work,
 	struct ib_mad_send_buf *msg = NULL;
 	int ret;
 
-<<<<<<< HEAD
-	atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-			counter[CM_REQ_COUNTER]);
-
-	/* Quick state check to discard duplicate REQs. */
-	if (cm_id_priv->id.state == IB_CM_REQ_RCVD)
-		return;
-=======
 	atomic_long_inc(
 		&work->port->counters[CM_RECV_DUPLICATES][CM_REQ_COUNTER]);
 
@@ -2903,7 +1950,6 @@ static void cm_dup_req_handler(struct cm_work *work,
 		return;
 	}
 	spin_unlock_irq(&cm_id_priv->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg);
 	if (ret)
@@ -2918,43 +1964,27 @@ static void cm_dup_req_handler(struct cm_work *work,
 			      cm_id_priv->private_data_len);
 		break;
 	case IB_CM_TIMEWAIT:
-<<<<<<< HEAD
-		cm_format_rej((struct cm_rej_msg *) msg->mad, cm_id_priv,
-			      IB_CM_REJ_STALE_CONN, NULL, 0, NULL, 0);
-=======
 		cm_format_rej((struct cm_rej_msg *)msg->mad, cm_id_priv,
 			      IB_CM_REJ_STALE_CONN, NULL, 0, NULL, 0,
 			      IB_CM_TIMEWAIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		goto unlock;
 	}
 	spin_unlock_irq(&cm_id_priv->lock);
 
-<<<<<<< HEAD
-=======
 	trace_icm_send_dup_req(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
 		goto free;
 	return;
 
 unlock:	spin_unlock_irq(&cm_id_priv->lock);
-<<<<<<< HEAD
-free:	cm_free_msg(msg);
-}
-
-static struct cm_id_private * cm_match_req(struct cm_work *work,
-					   struct cm_id_private *cm_id_priv)
-=======
 free:	cm_free_response_msg(msg);
 }
 
 static struct cm_id_private *cm_match_req(struct cm_work *work,
 					  struct cm_id_private *cm_id_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_id_private *listen_cm_id_priv, *cur_cm_id_priv;
 	struct cm_timewait_info *timewait_info;
@@ -2966,11 +1996,7 @@ static struct cm_id_private *cm_match_req(struct cm_work *work,
 	spin_lock_irq(&cm.lock);
 	timewait_info = cm_insert_remote_id(cm_id_priv->timewait_info);
 	if (timewait_info) {
-<<<<<<< HEAD
-		cur_cm_id_priv = cm_get_id(timewait_info->work.local_id,
-=======
 		cur_cm_id_priv = cm_acquire_id(timewait_info->work.local_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   timewait_info->work.remote_id);
 		spin_unlock_irq(&cm.lock);
 		if (cur_cm_id_priv) {
@@ -2983,60 +2009,34 @@ static struct cm_id_private *cm_match_req(struct cm_work *work,
 	/* Check for stale connections. */
 	timewait_info = cm_insert_remote_qpn(cm_id_priv->timewait_info);
 	if (timewait_info) {
-<<<<<<< HEAD
-		cm_cleanup_timewait(cm_id_priv->timewait_info);
-=======
 		cm_remove_remote(cm_id_priv);
 		cur_cm_id_priv = cm_acquire_id(timewait_info->work.local_id,
 					   timewait_info->work.remote_id);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&cm.lock);
 		cm_issue_rej(work->port, work->mad_recv_wc,
 			     IB_CM_REJ_STALE_CONN, CM_MSG_RESPONSE_REQ,
 			     NULL, 0);
-<<<<<<< HEAD
-=======
 		if (cur_cm_id_priv) {
 			ib_send_cm_dreq(&cur_cm_id_priv->id, NULL, 0);
 			cm_deref_id(cur_cm_id_priv);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	/* Find matching listen request. */
-<<<<<<< HEAD
-	listen_cm_id_priv = cm_find_listen(cm_id_priv->id.device,
-					   req_msg->service_id,
-					   req_msg->private_data);
-	if (!listen_cm_id_priv) {
-		cm_cleanup_timewait(cm_id_priv->timewait_info);
-=======
 	listen_cm_id_priv = cm_find_listen(
 		cm_id_priv->id.device,
 		cpu_to_be64(IBA_GET(CM_REQ_SERVICE_ID, req_msg)));
 	if (!listen_cm_id_priv) {
 		cm_remove_remote(cm_id_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&cm.lock);
 		cm_issue_rej(work->port, work->mad_recv_wc,
 			     IB_CM_REJ_INVALID_SERVICE_ID, CM_MSG_RESPONSE_REQ,
 			     NULL, 0);
-<<<<<<< HEAD
-		goto out;
-	}
-	atomic_inc(&listen_cm_id_priv->refcount);
-	atomic_inc(&cm_id_priv->refcount);
-	cm_id_priv->id.state = IB_CM_REQ_RCVD;
-	atomic_inc(&cm_id_priv->work_count);
-	spin_unlock_irq(&cm.lock);
-out:
-=======
 		return NULL;
 	}
 	spin_unlock_irq(&cm.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return listen_cm_id_priv;
 }
 
@@ -3047,26 +2047,6 @@ out:
  */
 static void cm_process_routed_req(struct cm_req_msg *req_msg, struct ib_wc *wc)
 {
-<<<<<<< HEAD
-	if (!cm_req_get_primary_subnet_local(req_msg)) {
-		if (req_msg->primary_local_lid == IB_LID_PERMISSIVE) {
-			req_msg->primary_local_lid = cpu_to_be16(wc->slid);
-			cm_req_set_primary_sl(req_msg, wc->sl);
-		}
-
-		if (req_msg->primary_remote_lid == IB_LID_PERMISSIVE)
-			req_msg->primary_remote_lid = cpu_to_be16(wc->dlid_path_bits);
-	}
-
-	if (!cm_req_get_alt_subnet_local(req_msg)) {
-		if (req_msg->alt_local_lid == IB_LID_PERMISSIVE) {
-			req_msg->alt_local_lid = cpu_to_be16(wc->slid);
-			cm_req_set_alt_sl(req_msg, wc->sl);
-		}
-
-		if (req_msg->alt_remote_lid == IB_LID_PERMISSIVE)
-			req_msg->alt_remote_lid = cpu_to_be16(wc->dlid_path_bits);
-=======
 	if (!IBA_GET(CM_REQ_PRIMARY_SUBNET_LOCAL, req_msg)) {
 		if (cpu_to_be16(IBA_GET(CM_REQ_PRIMARY_LOCAL_PORT_LID,
 					req_msg)) == IB_LID_PERMISSIVE) {
@@ -3093,37 +2073,19 @@ static void cm_process_routed_req(struct cm_req_msg *req_msg, struct ib_wc *wc)
 					req_msg)) == IB_LID_PERMISSIVE)
 			IBA_SET(CM_REQ_ALTERNATE_REMOTE_PORT_LID, req_msg,
 				wc->dlid_path_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int cm_req_handler(struct cm_work *work)
 {
-<<<<<<< HEAD
-	struct ib_cm_id *cm_id;
-	struct cm_id_private *cm_id_priv, *listen_cm_id_priv;
-	struct cm_req_msg *req_msg;
-=======
 	struct cm_id_private *cm_id_priv, *listen_cm_id_priv;
 	struct cm_req_msg *req_msg;
 	const struct ib_global_route *grh;
 	const struct ib_gid_attr *gid_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	req_msg = (struct cm_req_msg *)work->mad_recv_wc->recv_buf.mad;
 
-<<<<<<< HEAD
-	cm_id = ib_create_cm_id(work->port->cm_dev->ib_device, NULL, NULL);
-	if (IS_ERR(cm_id))
-		return PTR_ERR(cm_id);
-
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	cm_id_priv->id.remote_id = req_msg->local_comm_id;
-	cm_init_av_for_response(work->port, work->mad_recv_wc->wc,
-				work->mad_recv_wc->recv_buf.grh,
-				&cm_id_priv->av);
-=======
 	cm_id_priv =
 		cm_alloc_id_priv(work->port->cm_dev->ib_device, NULL, NULL);
 	if (IS_ERR(cm_id_priv))
@@ -3155,67 +2117,10 @@ static int cm_req_handler(struct cm_work *work)
 				      &cm_id_priv->av);
 	if (ret)
 		goto destroy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->timewait_info = cm_create_timewait_info(cm_id_priv->
 							    id.local_id);
 	if (IS_ERR(cm_id_priv->timewait_info)) {
 		ret = PTR_ERR(cm_id_priv->timewait_info);
-<<<<<<< HEAD
-		goto destroy;
-	}
-	cm_id_priv->timewait_info->work.remote_id = req_msg->local_comm_id;
-	cm_id_priv->timewait_info->remote_ca_guid = req_msg->local_ca_guid;
-	cm_id_priv->timewait_info->remote_qpn = cm_req_get_local_qpn(req_msg);
-
-	listen_cm_id_priv = cm_match_req(work, cm_id_priv);
-	if (!listen_cm_id_priv) {
-		ret = -EINVAL;
-		kfree(cm_id_priv->timewait_info);
-		goto destroy;
-	}
-
-	cm_id_priv->id.cm_handler = listen_cm_id_priv->id.cm_handler;
-	cm_id_priv->id.context = listen_cm_id_priv->id.context;
-	cm_id_priv->id.service_id = req_msg->service_id;
-	cm_id_priv->id.service_mask = ~cpu_to_be64(0);
-
-	cm_process_routed_req(req_msg, work->mad_recv_wc->wc);
-	cm_format_paths_from_req(req_msg, &work->path[0], &work->path[1]);
-	ret = cm_init_av_by_path(&work->path[0], &cm_id_priv->av);
-	if (ret) {
-		ib_get_cached_gid(work->port->cm_dev->ib_device,
-				  work->port->port_num, 0, &work->path[0].sgid);
-		ib_send_cm_rej(cm_id, IB_CM_REJ_INVALID_GID,
-			       &work->path[0].sgid, sizeof work->path[0].sgid,
-			       NULL, 0);
-		goto rejected;
-	}
-	if (req_msg->alt_local_lid) {
-		ret = cm_init_av_by_path(&work->path[1], &cm_id_priv->alt_av);
-		if (ret) {
-			ib_send_cm_rej(cm_id, IB_CM_REJ_INVALID_ALT_GID,
-				       &work->path[0].sgid,
-				       sizeof work->path[0].sgid, NULL, 0);
-			goto rejected;
-		}
-	}
-	cm_id_priv->tid = req_msg->hdr.tid;
-	cm_id_priv->timeout_ms = cm_convert_to_ms(
-					cm_req_get_local_resp_timeout(req_msg));
-	cm_id_priv->max_cm_retries = cm_req_get_max_cm_retries(req_msg);
-	cm_id_priv->remote_qpn = cm_req_get_local_qpn(req_msg);
-	cm_id_priv->initiator_depth = cm_req_get_resp_res(req_msg);
-	cm_id_priv->responder_resources = cm_req_get_init_depth(req_msg);
-	cm_id_priv->path_mtu = cm_req_get_path_mtu(req_msg);
-	cm_id_priv->pkey = req_msg->pkey;
-	cm_id_priv->sq_psn = cm_req_get_starting_psn(req_msg);
-	cm_id_priv->retry_count = cm_req_get_retry_count(req_msg);
-	cm_id_priv->rnr_retry_count = cm_req_get_rnr_retry_count(req_msg);
-	cm_id_priv->qp_type = cm_req_get_qp_type(req_msg);
-
-	cm_format_req_event(work, cm_id_priv, &listen_cm_id_priv->id);
-	cm_process_work(cm_id_priv, work);
-=======
 		cm_id_priv->timewait_info = NULL;
 		goto destroy;
 	}
@@ -3316,21 +2221,13 @@ static int cm_req_handler(struct cm_work *work)
 	 * cm_process_work() will deliver the event and the listen_cm_id
 	 * embedded in the event can be derefed here.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_deref_id(listen_cm_id_priv);
 	return 0;
 
 rejected:
-<<<<<<< HEAD
-	atomic_dec(&cm_id_priv->refcount);
-	cm_deref_id(listen_cm_id_priv);
-destroy:
-	ib_destroy_cm_id(cm_id);
-=======
 	cm_deref_id(listen_cm_id_priv);
 destroy:
 	ib_destroy_cm_id(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3338,32 +2235,6 @@ static void cm_format_rep(struct cm_rep_msg *rep_msg,
 			  struct cm_id_private *cm_id_priv,
 			  struct ib_cm_rep_param *param)
 {
-<<<<<<< HEAD
-	cm_format_mad_hdr(&rep_msg->hdr, CM_REP_ATTR_ID, cm_id_priv->tid);
-	rep_msg->local_comm_id = cm_id_priv->id.local_id;
-	rep_msg->remote_comm_id = cm_id_priv->id.remote_id;
-	cm_rep_set_starting_psn(rep_msg, cpu_to_be32(param->starting_psn));
-	rep_msg->resp_resources = param->responder_resources;
-	cm_rep_set_target_ack_delay(rep_msg,
-				    cm_id_priv->av.port->cm_dev->ack_delay);
-	cm_rep_set_failover(rep_msg, param->failover_accepted);
-	cm_rep_set_rnr_retry_count(rep_msg, param->rnr_retry_count);
-	rep_msg->local_ca_guid = cm_id_priv->id.device->node_guid;
-
-	if (cm_id_priv->qp_type != IB_QPT_XRC_TGT) {
-		rep_msg->initiator_depth = param->initiator_depth;
-		cm_rep_set_flow_ctrl(rep_msg, param->flow_control);
-		cm_rep_set_srq(rep_msg, param->srq);
-		cm_rep_set_local_qpn(rep_msg, cpu_to_be32(param->qp_num));
-	} else {
-		cm_rep_set_srq(rep_msg, 1);
-		cm_rep_set_local_eecn(rep_msg, cpu_to_be32(param->qp_num));
-	}
-
-	if (param->private_data && param->private_data_len)
-		memcpy(rep_msg->private_data, param->private_data,
-		       param->private_data_len);
-=======
 	cm_format_mad_ece_hdr(&rep_msg->hdr, CM_REP_ATTR_ID, cm_id_priv->tid,
 			      param->ece.attr_mod);
 	IBA_SET(CM_REP_LOCAL_COMM_ID, rep_msg,
@@ -3399,7 +2270,6 @@ static void cm_format_rep(struct cm_rep_msg *rep_msg,
 	if (param->private_data && param->private_data_len)
 		IBA_SET_MEM(CM_REP_PRIVATE_DATA, rep_msg, param->private_data,
 			    param->private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ib_send_cm_rep(struct ib_cm_id *cm_id,
@@ -3419,48 +2289,22 @@ int ib_send_cm_rep(struct ib_cm_id *cm_id,
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	if (cm_id->state != IB_CM_REQ_RCVD &&
 	    cm_id->state != IB_CM_MRA_REQ_SENT) {
-<<<<<<< HEAD
-=======
 		trace_icm_send_rep_err(cm_id_priv->id.local_id, cm_id->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto out;
-=======
 	msg = cm_alloc_priv_msg(cm_id_priv);
 	if (IS_ERR(msg)) {
 		ret = PTR_ERR(msg);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rep_msg = (struct cm_rep_msg *) msg->mad;
 	cm_format_rep(rep_msg, cm_id_priv, param);
 	msg->timeout_ms = cm_id_priv->timeout_ms;
 	msg->context[1] = (void *) (unsigned long) IB_CM_REP_SENT;
 
-<<<<<<< HEAD
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-
-	cm_id->state = IB_CM_REP_SENT;
-	cm_id_priv->msg = msg;
-	cm_id_priv->initiator_depth = param->initiator_depth;
-	cm_id_priv->responder_resources = param->responder_resources;
-	cm_id_priv->rq_psn = cm_rep_get_starting_psn(rep_msg);
-	cm_id_priv->local_qpn = cpu_to_be32(param->qp_num & 0xFFFFFF);
-
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-=======
 	trace_icm_send_rep(cm_id);
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
@@ -3481,7 +2325,6 @@ out_free:
 	cm_free_priv_msg(msg);
 out:
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_rep);
@@ -3492,13 +2335,6 @@ static void cm_format_rtu(struct cm_rtu_msg *rtu_msg,
 			  u8 private_data_len)
 {
 	cm_format_mad_hdr(&rtu_msg->hdr, CM_RTU_ATTR_ID, cm_id_priv->tid);
-<<<<<<< HEAD
-	rtu_msg->local_comm_id = cm_id_priv->id.local_id;
-	rtu_msg->remote_comm_id = cm_id_priv->id.remote_id;
-
-	if (private_data && private_data_len)
-		memcpy(rtu_msg->private_data, private_data, private_data_len);
-=======
 	IBA_SET(CM_RTU_LOCAL_COMM_ID, rtu_msg,
 		be32_to_cpu(cm_id_priv->id.local_id));
 	IBA_SET(CM_RTU_REMOTE_COMM_ID, rtu_msg,
@@ -3507,7 +2343,6 @@ static void cm_format_rtu(struct cm_rtu_msg *rtu_msg,
 	if (private_data && private_data_len)
 		IBA_SET_MEM(CM_RTU_PRIVATE_DATA, rtu_msg, private_data,
 			    private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ib_send_cm_rtu(struct ib_cm_id *cm_id,
@@ -3531,33 +2366,21 @@ int ib_send_cm_rtu(struct ib_cm_id *cm_id,
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	if (cm_id->state != IB_CM_REP_RCVD &&
 	    cm_id->state != IB_CM_MRA_REP_SENT) {
-<<<<<<< HEAD
-=======
 		trace_icm_send_cm_rtu_err(cm_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto error;
 	}
 
-<<<<<<< HEAD
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto error;
-=======
 	msg = cm_alloc_msg(cm_id_priv);
 	if (IS_ERR(msg)) {
 		ret = PTR_ERR(msg);
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cm_format_rtu((struct cm_rtu_msg *) msg->mad, cm_id_priv,
 		      private_data, private_data_len);
 
-<<<<<<< HEAD
-=======
 	trace_icm_send_rtu(cm_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret) {
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
@@ -3584,20 +2407,6 @@ static void cm_format_rep_event(struct cm_work *work, enum ib_qp_type qp_type)
 
 	rep_msg = (struct cm_rep_msg *)work->mad_recv_wc->recv_buf.mad;
 	param = &work->cm_event.param.rep_rcvd;
-<<<<<<< HEAD
-	param->remote_ca_guid = rep_msg->local_ca_guid;
-	param->remote_qkey = be32_to_cpu(rep_msg->local_qkey);
-	param->remote_qpn = be32_to_cpu(cm_rep_get_qpn(rep_msg, qp_type));
-	param->starting_psn = be32_to_cpu(cm_rep_get_starting_psn(rep_msg));
-	param->responder_resources = rep_msg->initiator_depth;
-	param->initiator_depth = rep_msg->resp_resources;
-	param->target_ack_delay = cm_rep_get_target_ack_delay(rep_msg);
-	param->failover_accepted = cm_rep_get_failover(rep_msg);
-	param->flow_control = cm_rep_get_flow_ctrl(rep_msg);
-	param->rnr_retry_count = cm_rep_get_rnr_retry_count(rep_msg);
-	param->srq = cm_rep_get_srq(rep_msg);
-	work->cm_event.private_data = &rep_msg->private_data;
-=======
 	param->remote_ca_guid =
 		cpu_to_be64(IBA_GET(CM_REP_LOCAL_CA_GUID, rep_msg));
 	param->remote_qkey = IBA_GET(CM_REP_LOCAL_Q_KEY, rep_msg);
@@ -3617,7 +2426,6 @@ static void cm_format_rep_event(struct cm_work *work, enum ib_qp_type qp_type)
 
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_REP_PRIVATE_DATA, rep_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_dup_rep_handler(struct cm_work *work)
@@ -3628,15 +2436,6 @@ static void cm_dup_rep_handler(struct cm_work *work)
 	int ret;
 
 	rep_msg = (struct cm_rep_msg *) work->mad_recv_wc->recv_buf.mad;
-<<<<<<< HEAD
-	cm_id_priv = cm_acquire_id(rep_msg->remote_comm_id,
-				   rep_msg->local_comm_id);
-	if (!cm_id_priv)
-		return;
-
-	atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-			counter[CM_REP_COUNTER]);
-=======
 	cm_id_priv = cm_acquire_id(
 		cpu_to_be32(IBA_GET(CM_REP_REMOTE_COMM_ID, rep_msg)),
 		cpu_to_be32(IBA_GET(CM_REP_LOCAL_COMM_ID, rep_msg)));
@@ -3645,7 +2444,6 @@ static void cm_dup_rep_handler(struct cm_work *work)
 
 	atomic_long_inc(
 		&work->port->counters[CM_RECV_DUPLICATES][CM_REP_COUNTER]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg);
 	if (ret)
 		goto deref;
@@ -3664,21 +2462,14 @@ static void cm_dup_rep_handler(struct cm_work *work)
 		goto unlock;
 	spin_unlock_irq(&cm_id_priv->lock);
 
-<<<<<<< HEAD
-=======
 	trace_icm_send_dup_rep(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
 		goto free;
 	goto deref;
 
 unlock:	spin_unlock_irq(&cm_id_priv->lock);
-<<<<<<< HEAD
-free:	cm_free_msg(msg);
-=======
 free:	cm_free_response_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 deref:	cm_deref_id(cm_id_priv);
 }
 
@@ -3687,13 +2478,6 @@ static int cm_rep_handler(struct cm_work *work)
 	struct cm_id_private *cm_id_priv;
 	struct cm_rep_msg *rep_msg;
 	int ret;
-<<<<<<< HEAD
-
-	rep_msg = (struct cm_rep_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(rep_msg->remote_comm_id, 0);
-	if (!cm_id_priv) {
-		cm_dup_rep_handler(work);
-=======
 	struct cm_id_private *cur_cm_id_priv;
 	struct cm_timewait_info *timewait_info;
 
@@ -3704,7 +2488,6 @@ static int cm_rep_handler(struct cm_work *work)
 		cm_dup_rep_handler(work);
 		trace_icm_remote_no_priv_err(
 			 IBA_GET(CM_REP_REMOTE_COMM_ID, rep_msg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -3716,15 +2499,6 @@ static int cm_rep_handler(struct cm_work *work)
 	case IB_CM_MRA_REQ_RCVD:
 		break;
 	default:
-<<<<<<< HEAD
-		spin_unlock_irq(&cm_id_priv->lock);
-		ret = -EINVAL;
-		goto error;
-	}
-
-	cm_id_priv->timewait_info->work.remote_id = rep_msg->local_comm_id;
-	cm_id_priv->timewait_info->remote_ca_guid = rep_msg->local_ca_guid;
-=======
 		ret = -EINVAL;
 		trace_icm_rep_unknown_err(
 			IBA_GET(CM_REP_LOCAL_COMM_ID, rep_msg),
@@ -3738,7 +2512,6 @@ static int cm_rep_handler(struct cm_work *work)
 		cpu_to_be32(IBA_GET(CM_REP_LOCAL_COMM_ID, rep_msg));
 	cm_id_priv->timewait_info->remote_ca_guid =
 		cpu_to_be64(IBA_GET(CM_REP_LOCAL_CA_GUID, rep_msg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->timewait_info->remote_qpn = cm_rep_get_qpn(rep_msg, cm_id_priv->qp_type);
 
 	spin_lock(&cm.lock);
@@ -3747,15 +2520,6 @@ static int cm_rep_handler(struct cm_work *work)
 		spin_unlock(&cm.lock);
 		spin_unlock_irq(&cm_id_priv->lock);
 		ret = -EINVAL;
-<<<<<<< HEAD
-		goto error;
-	}
-	/* Check for a stale connection. */
-	if (cm_insert_remote_qpn(cm_id_priv->timewait_info)) {
-		rb_erase(&cm_id_priv->timewait_info->remote_id_node,
-			 &cm.remote_id_table);
-		cm_id_priv->timewait_info->inserted_remote_id = 0;
-=======
 		trace_icm_insert_failed_err(
 			 IBA_GET(CM_REP_REMOTE_COMM_ID, rep_msg));
 		goto error;
@@ -3767,15 +2531,12 @@ static int cm_rep_handler(struct cm_work *work)
 		cur_cm_id_priv = cm_acquire_id(timewait_info->work.local_id,
 					   timewait_info->work.remote_id);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&cm.lock);
 		spin_unlock_irq(&cm_id_priv->lock);
 		cm_issue_rej(work->port, work->mad_recv_wc,
 			     IB_CM_REJ_STALE_CONN, CM_MSG_RESPONSE_REP,
 			     NULL, 0);
 		ret = -EINVAL;
-<<<<<<< HEAD
-=======
 		trace_icm_staleconn_err(
 			IBA_GET(CM_REP_LOCAL_COMM_ID, rep_msg),
 			IBA_GET(CM_REP_REMOTE_COMM_ID, rep_msg));
@@ -3785,21 +2546,11 @@ static int cm_rep_handler(struct cm_work *work)
 			cm_deref_id(cur_cm_id_priv);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 	spin_unlock(&cm.lock);
 
 	cm_id_priv->id.state = IB_CM_REP_RCVD;
-<<<<<<< HEAD
-	cm_id_priv->id.remote_id = rep_msg->local_comm_id;
-	cm_id_priv->remote_qpn = cm_rep_get_qpn(rep_msg, cm_id_priv->qp_type);
-	cm_id_priv->initiator_depth = rep_msg->resp_resources;
-	cm_id_priv->responder_resources = rep_msg->initiator_depth;
-	cm_id_priv->sq_psn = cm_rep_get_starting_psn(rep_msg);
-	cm_id_priv->rnr_retry_count = cm_rep_get_rnr_retry_count(rep_msg);
-	cm_id_priv->target_ack_delay = cm_rep_get_target_ack_delay(rep_msg);
-=======
 	cm_id_priv->id.remote_id =
 		cpu_to_be32(IBA_GET(CM_REP_LOCAL_COMM_ID, rep_msg));
 	cm_id_priv->remote_qpn = cm_rep_get_qpn(rep_msg, cm_id_priv->qp_type);
@@ -3811,7 +2562,6 @@ static int cm_rep_handler(struct cm_work *work)
 	cm_id_priv->rnr_retry_count = IBA_GET(CM_REP_RNR_RETRY_COUNT, rep_msg);
 	cm_id_priv->target_ack_delay =
 		IBA_GET(CM_REP_TARGET_ACK_DELAY, rep_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->av.timeout =
 			cm_ack_timeout(cm_id_priv->target_ack_delay,
 				       cm_id_priv->av.timeout - 1);
@@ -3819,23 +2569,8 @@ static int cm_rep_handler(struct cm_work *work)
 			cm_ack_timeout(cm_id_priv->target_ack_delay,
 				       cm_id_priv->alt_av.timeout - 1);
 
-<<<<<<< HEAD
-	/* todo: handle peer_to_peer */
-
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 error:
@@ -3846,10 +2581,6 @@ error:
 static int cm_establish_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* See comment in cm_establish about lookup. */
 	cm_id_priv = cm_acquire_id(work->local_id, work->remote_id);
@@ -3862,21 +2593,8 @@ static int cm_establish_handler(struct cm_work *work)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
@@ -3887,17 +2605,6 @@ static int cm_rtu_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
 	struct cm_rtu_msg *rtu_msg;
-<<<<<<< HEAD
-	int ret;
-
-	rtu_msg = (struct cm_rtu_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(rtu_msg->remote_comm_id,
-				   rtu_msg->local_comm_id);
-	if (!cm_id_priv)
-		return -EINVAL;
-
-	work->cm_event.private_data = &rtu_msg->private_data;
-=======
 
 	rtu_msg = (struct cm_rtu_msg *)work->mad_recv_wc->recv_buf.mad;
 	cm_id_priv = cm_acquire_id(
@@ -3908,38 +2615,19 @@ static int cm_rtu_handler(struct cm_work *work)
 
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_RTU_PRIVATE_DATA, rtu_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&cm_id_priv->lock);
 	if (cm_id_priv->id.state != IB_CM_REP_SENT &&
 	    cm_id_priv->id.state != IB_CM_MRA_REP_RCVD) {
 		spin_unlock_irq(&cm_id_priv->lock);
-<<<<<<< HEAD
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_RTU_COUNTER]);
-=======
 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
 						     [CM_RTU_COUNTER]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	cm_id_priv->id.state = IB_CM_ESTABLISHED;
 
-<<<<<<< HEAD
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
@@ -3952,44 +2640,6 @@ static void cm_format_dreq(struct cm_dreq_msg *dreq_msg,
 			  u8 private_data_len)
 {
 	cm_format_mad_hdr(&dreq_msg->hdr, CM_DREQ_ATTR_ID,
-<<<<<<< HEAD
-			  cm_form_tid(cm_id_priv, CM_MSG_SEQUENCE_DREQ));
-	dreq_msg->local_comm_id = cm_id_priv->id.local_id;
-	dreq_msg->remote_comm_id = cm_id_priv->id.remote_id;
-	cm_dreq_set_remote_qpn(dreq_msg, cm_id_priv->remote_qpn);
-
-	if (private_data && private_data_len)
-		memcpy(dreq_msg->private_data, private_data, private_data_len);
-}
-
-int ib_send_cm_dreq(struct ib_cm_id *cm_id,
-		    const void *private_data,
-		    u8 private_data_len)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_mad_send_buf *msg;
-	unsigned long flags;
-	int ret;
-
-	if (private_data && private_data_len > IB_CM_DREQ_PRIVATE_DATA_SIZE)
-		return -EINVAL;
-
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state != IB_CM_ESTABLISHED) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	if (cm_id->lap_state == IB_CM_LAP_SENT ||
-	    cm_id->lap_state == IB_CM_MRA_LAP_RCVD)
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret) {
-		cm_enter_timewait(cm_id_priv);
-		goto out;
-=======
 			  cm_form_tid(cm_id_priv));
 	IBA_SET(CM_DREQ_LOCAL_COMM_ID, dreq_msg,
 		be32_to_cpu(cm_id_priv->id.local_id));
@@ -4027,7 +2677,6 @@ static int cm_send_dreq_locked(struct cm_id_private *cm_id_priv,
 	if (IS_ERR(msg)) {
 		cm_enter_timewait(cm_id_priv);
 		return PTR_ERR(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cm_format_dreq((struct cm_dreq_msg *) msg->mad, cm_id_priv,
@@ -4035,19 +2684,6 @@ static int cm_send_dreq_locked(struct cm_id_private *cm_id_priv,
 	msg->timeout_ms = cm_id_priv->timeout_ms;
 	msg->context[1] = (void *) (unsigned long) IB_CM_DREQ_SENT;
 
-<<<<<<< HEAD
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		cm_enter_timewait(cm_id_priv);
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-
-	cm_id->state = IB_CM_DREQ_SENT;
-	cm_id_priv->msg = msg;
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-=======
 	trace_icm_send_dreq(&cm_id_priv->id);
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret) {
@@ -4071,7 +2707,6 @@ int ib_send_cm_dreq(struct ib_cm_id *cm_id, const void *private_data,
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	ret = cm_send_dreq_locked(cm_id_priv, private_data, private_data_len);
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_dreq);
@@ -4082,28 +2717,6 @@ static void cm_format_drep(struct cm_drep_msg *drep_msg,
 			  u8 private_data_len)
 {
 	cm_format_mad_hdr(&drep_msg->hdr, CM_DREP_ATTR_ID, cm_id_priv->tid);
-<<<<<<< HEAD
-	drep_msg->local_comm_id = cm_id_priv->id.local_id;
-	drep_msg->remote_comm_id = cm_id_priv->id.remote_id;
-
-	if (private_data && private_data_len)
-		memcpy(drep_msg->private_data, private_data, private_data_len);
-}
-
-int ib_send_cm_drep(struct ib_cm_id *cm_id,
-		    const void *private_data,
-		    u8 private_data_len)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_mad_send_buf *msg;
-	unsigned long flags;
-	void *data;
-	int ret;
-
-	if (private_data && private_data_len > IB_CM_DREP_PRIVATE_DATA_SIZE)
-		return -EINVAL;
-
-=======
 	IBA_SET(CM_DREP_LOCAL_COMM_ID, drep_msg,
 		be32_to_cpu(cm_id_priv->id.local_id));
 	IBA_SET(CM_DREP_REMOTE_COMM_ID, drep_msg,
@@ -4159,43 +2772,13 @@ int ib_send_cm_drep(struct ib_cm_id *cm_id, const void *private_data,
 	void *data;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = cm_copy_private_data(private_data, private_data_len);
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
-<<<<<<< HEAD
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state != IB_CM_DREQ_RCVD) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		kfree(data);
-		return -EINVAL;
-	}
-
-	cm_set_private_data(cm_id_priv, data, private_data_len);
-	cm_enter_timewait(cm_id_priv);
-
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto out;
-
-	cm_format_drep((struct cm_drep_msg *) msg->mad, cm_id_priv,
-		       private_data, private_data_len);
-
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-=======
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	ret = cm_send_drep_locked(cm_id_priv, data, private_data_len);
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_drep);
@@ -4216,14 +2799,6 @@ static int cm_issue_drep(struct cm_port *port,
 	drep_msg = (struct cm_drep_msg *) msg->mad;
 
 	cm_format_mad_hdr(&drep_msg->hdr, CM_DREP_ATTR_ID, dreq_msg->hdr.tid);
-<<<<<<< HEAD
-	drep_msg->remote_comm_id = dreq_msg->local_comm_id;
-	drep_msg->local_comm_id = dreq_msg->remote_comm_id;
-
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret)
-		cm_free_msg(msg);
-=======
 	IBA_SET(CM_DREP_REMOTE_COMM_ID, drep_msg,
 		IBA_GET(CM_DREQ_LOCAL_COMM_ID, dreq_msg));
 	IBA_SET(CM_DREP_LOCAL_COMM_ID, drep_msg,
@@ -4235,7 +2810,6 @@ static int cm_issue_drep(struct cm_port *port,
 	ret = ib_post_send_mad(msg, NULL);
 	if (ret)
 		cm_free_response_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -4245,24 +2819,6 @@ static int cm_dreq_handler(struct cm_work *work)
 	struct cm_id_private *cm_id_priv;
 	struct cm_dreq_msg *dreq_msg;
 	struct ib_mad_send_buf *msg = NULL;
-<<<<<<< HEAD
-	int ret;
-
-	dreq_msg = (struct cm_dreq_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(dreq_msg->remote_comm_id,
-				   dreq_msg->local_comm_id);
-	if (!cm_id_priv) {
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_DREQ_COUNTER]);
-		cm_issue_drep(work->port, work->mad_recv_wc);
-		return -EINVAL;
-	}
-
-	work->cm_event.private_data = &dreq_msg->private_data;
-
-	spin_lock_irq(&cm_id_priv->lock);
-	if (cm_id_priv->local_qpn != cm_dreq_get_remote_qpn(dreq_msg))
-=======
 
 	dreq_msg = (struct cm_dreq_msg *)work->mad_recv_wc->recv_buf.mad;
 	cm_id_priv = cm_acquire_id(
@@ -4284,32 +2840,17 @@ static int cm_dreq_handler(struct cm_work *work)
 	spin_lock_irq(&cm_id_priv->lock);
 	if (cm_id_priv->local_qpn !=
 	    cpu_to_be32(IBA_GET(CM_DREQ_REMOTE_QPN_EECN, dreq_msg)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 
 	switch (cm_id_priv->id.state) {
 	case IB_CM_REP_SENT:
 	case IB_CM_DREQ_SENT:
-<<<<<<< HEAD
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-=======
 	case IB_CM_MRA_REP_RCVD:
 		ib_cancel_mad(cm_id_priv->msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IB_CM_ESTABLISHED:
 		if (cm_id_priv->id.lap_state == IB_CM_LAP_SENT ||
 		    cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
-<<<<<<< HEAD
-			ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		break;
-	case IB_CM_MRA_REP_RCVD:
-		break;
-	case IB_CM_TIMEWAIT:
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_DREQ_COUNTER]);
-		if (cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg))
-=======
 			ib_cancel_mad(cm_id_priv->msg);
 		break;
 	case IB_CM_TIMEWAIT:
@@ -4317,7 +2858,6 @@ static int cm_dreq_handler(struct cm_work *work)
 						     [CM_DREQ_COUNTER]);
 		msg = cm_alloc_response_msg_no_ah(work->port, work->mad_recv_wc);
 		if (IS_ERR(msg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto unlock;
 
 		cm_format_drep((struct cm_drep_msg *) msg->mad, cm_id_priv,
@@ -4325,16 +2865,6 @@ static int cm_dreq_handler(struct cm_work *work)
 			       cm_id_priv->private_data_len);
 		spin_unlock_irq(&cm_id_priv->lock);
 
-<<<<<<< HEAD
-		if (ib_post_send_mad(msg, NULL))
-			cm_free_msg(msg);
-		goto deref;
-	case IB_CM_DREQ_RCVD:
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_DREQ_COUNTER]);
-		goto unlock;
-	default:
-=======
 		if (cm_create_response_msg_ah(work->port, work->mad_recv_wc, msg) ||
 		    ib_post_send_mad(msg, NULL))
 			cm_free_response_msg(msg);
@@ -4345,24 +2875,11 @@ static int cm_dreq_handler(struct cm_work *work)
 		goto unlock;
 	default:
 		trace_icm_dreq_unknown_err(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 	cm_id_priv->id.state = IB_CM_DREQ_RCVD;
 	cm_id_priv->tid = dreq_msg->hdr.tid;
-<<<<<<< HEAD
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 unlock:	spin_unlock_irq(&cm_id_priv->lock);
@@ -4374,17 +2891,6 @@ static int cm_drep_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
 	struct cm_drep_msg *drep_msg;
-<<<<<<< HEAD
-	int ret;
-
-	drep_msg = (struct cm_drep_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(drep_msg->remote_comm_id,
-				   drep_msg->local_comm_id);
-	if (!cm_id_priv)
-		return -EINVAL;
-
-	work->cm_event.private_data = &drep_msg->private_data;
-=======
 
 	drep_msg = (struct cm_drep_msg *)work->mad_recv_wc->recv_buf.mad;
 	cm_id_priv = cm_acquire_id(
@@ -4395,7 +2901,6 @@ static int cm_drep_handler(struct cm_work *work)
 
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_DREP_PRIVATE_DATA, drep_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&cm_id_priv->lock);
 	if (cm_id_priv->id.state != IB_CM_DREQ_SENT &&
@@ -4405,41 +2910,14 @@ static int cm_drep_handler(struct cm_work *work)
 	}
 	cm_enter_timewait(cm_id_priv);
 
-<<<<<<< HEAD
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-int ib_send_cm_rej(struct ib_cm_id *cm_id,
-		   enum ib_cm_rej_reason reason,
-		   void *ari,
-		   u8 ari_length,
-		   const void *private_data,
-		   u8 private_data_len)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_mad_send_buf *msg;
-	unsigned long flags;
-	int ret;
-
-=======
 static int cm_send_rej_locked(struct cm_id_private *cm_id_priv,
 			      enum ib_cm_rej_reason reason, void *ari,
 			      u8 ari_length, const void *private_data,
@@ -4451,60 +2929,19 @@ static int cm_send_rej_locked(struct cm_id_private *cm_id_priv,
 
 	lockdep_assert_held(&cm_id_priv->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((private_data && private_data_len > IB_CM_REJ_PRIVATE_DATA_SIZE) ||
 	    (ari && ari_length > IB_CM_REJ_ARI_LENGTH))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	switch (cm_id->state) {
-=======
 	trace_icm_send_rej(&cm_id_priv->id, reason);
 
 	switch (state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_CM_REQ_SENT:
 	case IB_CM_MRA_REQ_RCVD:
 	case IB_CM_REQ_RCVD:
 	case IB_CM_MRA_REQ_SENT:
 	case IB_CM_REP_RCVD:
 	case IB_CM_MRA_REP_SENT:
-<<<<<<< HEAD
-		ret = cm_alloc_msg(cm_id_priv, &msg);
-		if (!ret)
-			cm_format_rej((struct cm_rej_msg *) msg->mad,
-				      cm_id_priv, reason, ari, ari_length,
-				      private_data, private_data_len);
-
-		cm_reset_to_idle(cm_id_priv);
-		break;
-	case IB_CM_REP_SENT:
-	case IB_CM_MRA_REP_RCVD:
-		ret = cm_alloc_msg(cm_id_priv, &msg);
-		if (!ret)
-			cm_format_rej((struct cm_rej_msg *) msg->mad,
-				      cm_id_priv, reason, ari, ari_length,
-				      private_data, private_data_len);
-
-		cm_enter_timewait(cm_id_priv);
-		break;
-	default:
-		ret = -EINVAL;
-		goto out;
-	}
-
-	if (ret)
-		goto out;
-
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret)
-		cm_free_msg(msg);
-
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-=======
 		cm_reset_to_idle(cm_id_priv);
 		msg = cm_alloc_msg(cm_id_priv);
 		if (IS_ERR(msg))
@@ -4550,7 +2987,6 @@ int ib_send_cm_rej(struct ib_cm_id *cm_id, enum ib_cm_rej_reason reason,
 	ret = cm_send_rej_locked(cm_id_priv, reason, ari, ari_length,
 				 private_data, private_data_len);
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_rej);
@@ -4562,44 +2998,6 @@ static void cm_format_rej_event(struct cm_work *work)
 
 	rej_msg = (struct cm_rej_msg *)work->mad_recv_wc->recv_buf.mad;
 	param = &work->cm_event.param.rej_rcvd;
-<<<<<<< HEAD
-	param->ari = rej_msg->ari;
-	param->ari_length = cm_rej_get_reject_info_len(rej_msg);
-	param->reason = __be16_to_cpu(rej_msg->reason);
-	work->cm_event.private_data = &rej_msg->private_data;
-}
-
-static struct cm_id_private * cm_acquire_rejected_id(struct cm_rej_msg *rej_msg)
-{
-	struct cm_timewait_info *timewait_info;
-	struct cm_id_private *cm_id_priv;
-	__be32 remote_id;
-
-	remote_id = rej_msg->local_comm_id;
-
-	if (__be16_to_cpu(rej_msg->reason) == IB_CM_REJ_TIMEOUT) {
-		spin_lock_irq(&cm.lock);
-		timewait_info = cm_find_remote_id( *((__be64 *) rej_msg->ari),
-						  remote_id);
-		if (!timewait_info) {
-			spin_unlock_irq(&cm.lock);
-			return NULL;
-		}
-		cm_id_priv = idr_find(&cm.local_id_table, (__force int)
-				      (timewait_info->work.local_id ^
-				       cm.random_id_operand));
-		if (cm_id_priv) {
-			if (cm_id_priv->id.remote_id == remote_id)
-				atomic_inc(&cm_id_priv->refcount);
-			else
-				cm_id_priv = NULL;
-		}
-		spin_unlock_irq(&cm.lock);
-	} else if (cm_rej_get_msg_rejected(rej_msg) == CM_MSG_RESPONSE_REQ)
-		cm_id_priv = cm_acquire_id(rej_msg->remote_comm_id, 0);
-	else
-		cm_id_priv = cm_acquire_id(rej_msg->remote_comm_id, remote_id);
-=======
 	param->ari = IBA_GET_MEM_PTR(CM_REJ_ARI, rej_msg);
 	param->ari_length = IBA_GET(CM_REJ_REJECTED_INFO_LENGTH, rej_msg);
 	param->reason = IBA_GET(CM_REJ_REASON, rej_msg);
@@ -4627,7 +3025,6 @@ static struct cm_id_private *cm_acquire_rejected_id(struct cm_rej_msg *rej_msg)
 		cm_id_priv = cm_acquire_id(
 			cpu_to_be32(IBA_GET(CM_REJ_REMOTE_COMM_ID, rej_msg)),
 			remote_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cm_id_priv;
 }
@@ -4636,10 +3033,6 @@ static int cm_rej_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
 	struct cm_rej_msg *rej_msg;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rej_msg = (struct cm_rej_msg *)work->mad_recv_wc->recv_buf.mad;
 	cm_id_priv = cm_acquire_rejected_id(rej_msg);
@@ -4654,31 +3047,18 @@ static int cm_rej_handler(struct cm_work *work)
 	case IB_CM_MRA_REQ_RCVD:
 	case IB_CM_REP_SENT:
 	case IB_CM_MRA_REP_RCVD:
-<<<<<<< HEAD
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		/* fall through */
-	case IB_CM_REQ_RCVD:
-	case IB_CM_MRA_REQ_SENT:
-		if (__be16_to_cpu(rej_msg->reason) == IB_CM_REJ_STALE_CONN)
-=======
 		ib_cancel_mad(cm_id_priv->msg);
 		fallthrough;
 	case IB_CM_REQ_RCVD:
 	case IB_CM_MRA_REQ_SENT:
 		if (IBA_GET(CM_REJ_REASON, rej_msg) == IB_CM_REJ_STALE_CONN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cm_enter_timewait(cm_id_priv);
 		else
 			cm_reset_to_idle(cm_id_priv);
 		break;
 	case IB_CM_DREQ_SENT:
-<<<<<<< HEAD
-		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-		/* fall through */
-=======
 		ib_cancel_mad(cm_id_priv->msg);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_CM_REP_RCVD:
 	case IB_CM_MRA_REP_SENT:
 		cm_enter_timewait(cm_id_priv);
@@ -4687,29 +3067,6 @@ static int cm_rej_handler(struct cm_work *work)
 		if (cm_id_priv->id.lap_state == IB_CM_LAP_UNINIT ||
 		    cm_id_priv->id.lap_state == IB_CM_LAP_SENT) {
 			if (cm_id_priv->id.lap_state == IB_CM_LAP_SENT)
-<<<<<<< HEAD
-				ib_cancel_mad(cm_id_priv->av.port->mad_agent,
-					      cm_id_priv->msg);
-			cm_enter_timewait(cm_id_priv);
-			break;
-		}
-		/* fall through */
-	default:
-		spin_unlock_irq(&cm_id_priv->lock);
-		ret = -EINVAL;
-		goto out;
-	}
-
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 				ib_cancel_mad(cm_id_priv->msg);
 			cm_enter_timewait(cm_id_priv);
 			break;
@@ -4722,7 +3079,6 @@ static int cm_rej_handler(struct cm_work *work)
 	}
 
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
@@ -4753,11 +3109,7 @@ int ib_send_cm_mra(struct ib_cm_id *cm_id,
 	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
 
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
-<<<<<<< HEAD
-	switch(cm_id_priv->id.state) {
-=======
 	switch (cm_id_priv->id.state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_CM_REQ_RCVD:
 		cm_state = IB_CM_MRA_REQ_SENT;
 		lap_state = cm_id->lap_state;
@@ -4775,17 +3127,6 @@ int ib_send_cm_mra(struct ib_cm_id *cm_id,
 			msg_response = CM_MSG_RESPONSE_OTHER;
 			break;
 		}
-<<<<<<< HEAD
-	default:
-		ret = -EINVAL;
-		goto error1;
-	}
-
-	if (!(service_timeout & IB_CM_MRA_FLAG_DELAY)) {
-		ret = cm_alloc_msg(cm_id_priv, &msg);
-		if (ret)
-			goto error1;
-=======
 		fallthrough;
 	default:
 		trace_icm_send_mra_unknown_err(&cm_id_priv->id);
@@ -4799,21 +3140,14 @@ int ib_send_cm_mra(struct ib_cm_id *cm_id,
 			ret = PTR_ERR(msg);
 			goto error_unlock;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cm_format_mra((struct cm_mra_msg *) msg->mad, cm_id_priv,
 			      msg_response, service_timeout,
 			      private_data, private_data_len);
-<<<<<<< HEAD
-		ret = ib_post_send_mad(msg, NULL);
-		if (ret)
-			goto error2;
-=======
 		trace_icm_send_mra(cm_id);
 		ret = ib_post_send_mad(msg, NULL);
 		if (ret)
 			goto error_free_msg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cm_id->state = cm_state;
@@ -4823,36 +3157,15 @@ int ib_send_cm_mra(struct ib_cm_id *cm_id,
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 	return 0;
 
-<<<<<<< HEAD
-error1:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-	kfree(data);
-	return ret;
-
-error2:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-	kfree(data);
-	cm_free_msg(msg);
-=======
 error_free_msg:
 	cm_free_msg(msg);
 error_unlock:
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 	kfree(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_mra);
 
-<<<<<<< HEAD
-static struct cm_id_private * cm_acquire_mraed_id(struct cm_mra_msg *mra_msg)
-{
-	switch (cm_mra_get_msg_mraed(mra_msg)) {
-	case CM_MSG_RESPONSE_REQ:
-		return cm_acquire_id(mra_msg->remote_comm_id, 0);
-	case CM_MSG_RESPONSE_REP:
-	case CM_MSG_RESPONSE_OTHER:
-		return cm_acquire_id(mra_msg->remote_comm_id,
-				     mra_msg->local_comm_id);
-=======
 static struct cm_id_private *cm_acquire_mraed_id(struct cm_mra_msg *mra_msg)
 {
 	switch (IBA_GET(CM_MRA_MESSAGE_MRAED, mra_msg)) {
@@ -4865,7 +3178,6 @@ static struct cm_id_private *cm_acquire_mraed_id(struct cm_mra_msg *mra_msg)
 		return cm_acquire_id(
 			cpu_to_be32(IBA_GET(CM_MRA_REMOTE_COMM_ID, mra_msg)),
 			cpu_to_be32(IBA_GET(CM_MRA_LOCAL_COMM_ID, mra_msg)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return NULL;
 	}
@@ -4875,70 +3187,37 @@ static int cm_mra_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
 	struct cm_mra_msg *mra_msg;
-<<<<<<< HEAD
-	int timeout, ret;
-=======
 	int timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mra_msg = (struct cm_mra_msg *)work->mad_recv_wc->recv_buf.mad;
 	cm_id_priv = cm_acquire_mraed_id(mra_msg);
 	if (!cm_id_priv)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	work->cm_event.private_data = &mra_msg->private_data;
-	work->cm_event.param.mra_rcvd.service_timeout =
-					cm_mra_get_service_timeout(mra_msg);
-	timeout = cm_convert_to_ms(cm_mra_get_service_timeout(mra_msg)) +
-=======
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_MRA_PRIVATE_DATA, mra_msg);
 	work->cm_event.param.mra_rcvd.service_timeout =
 		IBA_GET(CM_MRA_SERVICE_TIMEOUT, mra_msg);
 	timeout = cm_convert_to_ms(IBA_GET(CM_MRA_SERVICE_TIMEOUT, mra_msg)) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  cm_convert_to_ms(cm_id_priv->av.timeout);
 
 	spin_lock_irq(&cm_id_priv->lock);
 	switch (cm_id_priv->id.state) {
 	case IB_CM_REQ_SENT:
-<<<<<<< HEAD
-		if (cm_mra_get_msg_mraed(mra_msg) != CM_MSG_RESPONSE_REQ ||
-		    ib_modify_mad(cm_id_priv->av.port->mad_agent,
-				  cm_id_priv->msg, timeout))
-=======
 		if (IBA_GET(CM_MRA_MESSAGE_MRAED, mra_msg) !=
 			    CM_MSG_RESPONSE_REQ ||
 		    ib_modify_mad(cm_id_priv->msg, timeout))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		cm_id_priv->id.state = IB_CM_MRA_REQ_RCVD;
 		break;
 	case IB_CM_REP_SENT:
-<<<<<<< HEAD
-		if (cm_mra_get_msg_mraed(mra_msg) != CM_MSG_RESPONSE_REP ||
-		    ib_modify_mad(cm_id_priv->av.port->mad_agent,
-				  cm_id_priv->msg, timeout))
-=======
 		if (IBA_GET(CM_MRA_MESSAGE_MRAED, mra_msg) !=
 			    CM_MSG_RESPONSE_REP ||
 		    ib_modify_mad(cm_id_priv->msg, timeout))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		cm_id_priv->id.state = IB_CM_MRA_REP_RCVD;
 		break;
 	case IB_CM_ESTABLISHED:
-<<<<<<< HEAD
-		if (cm_mra_get_msg_mraed(mra_msg) != CM_MSG_RESPONSE_OTHER ||
-		    cm_id_priv->id.lap_state != IB_CM_LAP_SENT ||
-		    ib_modify_mad(cm_id_priv->av.port->mad_agent,
-				  cm_id_priv->msg, timeout)) {
-			if (cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
-				atomic_long_inc(&work->port->
-						counter_group[CM_RECV_DUPLICATES].
-						counter[CM_MRA_COUNTER]);
-=======
 		if (IBA_GET(CM_MRA_MESSAGE_MRAED, mra_msg) !=
 			    CM_MSG_RESPONSE_OTHER ||
 		    cm_id_priv->id.lap_state != IB_CM_LAP_SENT ||
@@ -4947,43 +3226,23 @@ static int cm_mra_handler(struct cm_work *work)
 				atomic_long_inc(
 					&work->port->counters[CM_RECV_DUPLICATES]
 							     [CM_MRA_COUNTER]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		cm_id_priv->id.lap_state = IB_CM_MRA_LAP_RCVD;
 		break;
 	case IB_CM_MRA_REQ_RCVD:
 	case IB_CM_MRA_REP_RCVD:
-<<<<<<< HEAD
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_MRA_COUNTER]);
-		/* fall through */
-	default:
-=======
 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
 						     [CM_MRA_COUNTER]);
 		fallthrough;
 	default:
 		trace_icm_mra_unknown_err(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	cm_id_priv->msg->context[1] = (void *) (unsigned long)
 				      cm_id_priv->id.state;
-<<<<<<< HEAD
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	spin_unlock_irq(&cm_id_priv->lock);
@@ -4991,114 +3250,6 @@ out:
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static void cm_format_lap(struct cm_lap_msg *lap_msg,
-			  struct cm_id_private *cm_id_priv,
-			  struct ib_sa_path_rec *alternate_path,
-			  const void *private_data,
-			  u8 private_data_len)
-{
-	cm_format_mad_hdr(&lap_msg->hdr, CM_LAP_ATTR_ID,
-			  cm_form_tid(cm_id_priv, CM_MSG_SEQUENCE_LAP));
-	lap_msg->local_comm_id = cm_id_priv->id.local_id;
-	lap_msg->remote_comm_id = cm_id_priv->id.remote_id;
-	cm_lap_set_remote_qpn(lap_msg, cm_id_priv->remote_qpn);
-	/* todo: need remote CM response timeout */
-	cm_lap_set_remote_resp_timeout(lap_msg, 0x1F);
-	lap_msg->alt_local_lid = alternate_path->slid;
-	lap_msg->alt_remote_lid = alternate_path->dlid;
-	lap_msg->alt_local_gid = alternate_path->sgid;
-	lap_msg->alt_remote_gid = alternate_path->dgid;
-	cm_lap_set_flow_label(lap_msg, alternate_path->flow_label);
-	cm_lap_set_traffic_class(lap_msg, alternate_path->traffic_class);
-	lap_msg->alt_hop_limit = alternate_path->hop_limit;
-	cm_lap_set_packet_rate(lap_msg, alternate_path->rate);
-	cm_lap_set_sl(lap_msg, alternate_path->sl);
-	cm_lap_set_subnet_local(lap_msg, 1); /* local only... */
-	cm_lap_set_local_ack_timeout(lap_msg,
-		cm_ack_timeout(cm_id_priv->av.port->cm_dev->ack_delay,
-			       alternate_path->packet_life_time));
-
-	if (private_data && private_data_len)
-		memcpy(lap_msg->private_data, private_data, private_data_len);
-}
-
-int ib_send_cm_lap(struct ib_cm_id *cm_id,
-		   struct ib_sa_path_rec *alternate_path,
-		   const void *private_data,
-		   u8 private_data_len)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_mad_send_buf *msg;
-	unsigned long flags;
-	int ret;
-
-	if (private_data && private_data_len > IB_CM_LAP_PRIVATE_DATA_SIZE)
-		return -EINVAL;
-
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state != IB_CM_ESTABLISHED ||
-	    (cm_id->lap_state != IB_CM_LAP_UNINIT &&
-	     cm_id->lap_state != IB_CM_LAP_IDLE)) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	ret = cm_init_av_by_path(alternate_path, &cm_id_priv->alt_av);
-	if (ret)
-		goto out;
-	cm_id_priv->alt_av.timeout =
-			cm_ack_timeout(cm_id_priv->target_ack_delay,
-				       cm_id_priv->alt_av.timeout - 1);
-
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto out;
-
-	cm_format_lap((struct cm_lap_msg *) msg->mad, cm_id_priv,
-		      alternate_path, private_data, private_data_len);
-	msg->timeout_ms = cm_id_priv->timeout_ms;
-	msg->context[1] = (void *) (unsigned long) IB_CM_ESTABLISHED;
-
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-
-	cm_id->lap_state = IB_CM_LAP_SENT;
-	cm_id_priv->msg = msg;
-
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-	return ret;
-}
-EXPORT_SYMBOL(ib_send_cm_lap);
-
-static void cm_format_path_from_lap(struct cm_id_private *cm_id_priv,
-				    struct ib_sa_path_rec *path,
-				    struct cm_lap_msg *lap_msg)
-{
-	memset(path, 0, sizeof *path);
-	path->dgid = lap_msg->alt_local_gid;
-	path->sgid = lap_msg->alt_remote_gid;
-	path->dlid = lap_msg->alt_local_lid;
-	path->slid = lap_msg->alt_remote_lid;
-	path->flow_label = cm_lap_get_flow_label(lap_msg);
-	path->hop_limit = lap_msg->alt_hop_limit;
-	path->traffic_class = cm_lap_get_traffic_class(lap_msg);
-	path->reversible = 1;
-	path->pkey = cm_id_priv->pkey;
-	path->sl = cm_lap_get_sl(lap_msg);
-	path->mtu_selector = IB_SA_EQ;
-	path->mtu = cm_id_priv->path_mtu;
-	path->rate_selector = IB_SA_EQ;
-	path->rate = cm_lap_get_packet_rate(lap_msg);
-	path->packet_life_time_selector = IB_SA_EQ;
-	path->packet_life_time = cm_lap_get_local_ack_timeout(lap_msg);
-	path->packet_life_time -= (path->packet_life_time > 0);
-=======
 static void cm_format_path_lid_from_lap(struct cm_lap_msg *lap_msg,
 					struct sa_path_rec *path)
 {
@@ -5143,7 +3294,6 @@ static void cm_format_path_from_lap(struct cm_id_private *cm_id_priv,
 		IBA_GET(CM_LAP_ALTERNATE_LOCAL_ACK_TIMEOUT, lap_msg);
 	path->packet_life_time -= (path->packet_life_time > 0);
 	cm_format_path_lid_from_lap(lap_msg, path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_lap_handler(struct cm_work *work)
@@ -5152,14 +3302,6 @@ static int cm_lap_handler(struct cm_work *work)
 	struct cm_lap_msg *lap_msg;
 	struct ib_cm_lap_event_param *param;
 	struct ib_mad_send_buf *msg = NULL;
-<<<<<<< HEAD
-	int ret;
-
-	/* todo: verify LAP request and send reject APR if invalid. */
-	lap_msg = (struct cm_lap_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(lap_msg->remote_comm_id,
-				   lap_msg->local_comm_id);
-=======
 	struct rdma_ah_attr ah_attr;
 	struct cm_av alt_av = {};
 	int ret;
@@ -5176,18 +3318,10 @@ static int cm_lap_handler(struct cm_work *work)
 	cm_id_priv = cm_acquire_id(
 		cpu_to_be32(IBA_GET(CM_LAP_REMOTE_COMM_ID, lap_msg)),
 		cpu_to_be32(IBA_GET(CM_LAP_LOCAL_COMM_ID, lap_msg)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cm_id_priv)
 		return -EINVAL;
 
 	param = &work->cm_event.param.lap_rcvd;
-<<<<<<< HEAD
-	param->alternate_path = &work->path[0];
-	cm_format_path_from_lap(cm_id_priv, param->alternate_path, lap_msg);
-	work->cm_event.private_data = &lap_msg->private_data;
-
-	spin_lock_irq(&cm_id_priv->lock);
-=======
 	memset(&work->path[0], 0, sizeof(work->path[1]));
 	cm_path_set_rec_type(work->port->cm_dev->ib_device,
 			     work->port->port_num, &work->path[0],
@@ -5217,7 +3351,6 @@ static int cm_lap_handler(struct cm_work *work)
 			   &ah_attr, &cm_id_priv->av);
 	cm_move_av_from_path(&cm_id_priv->alt_av, &alt_av);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cm_id_priv->id.state != IB_CM_ESTABLISHED)
 		goto unlock;
 
@@ -5226,16 +3359,10 @@ static int cm_lap_handler(struct cm_work *work)
 	case IB_CM_LAP_IDLE:
 		break;
 	case IB_CM_MRA_LAP_SENT:
-<<<<<<< HEAD
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_LAP_COUNTER]);
-		if (cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg))
-=======
 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
 						     [CM_LAP_COUNTER]);
 		msg = cm_alloc_response_msg_no_ah(work->port, work->mad_recv_wc);
 		if (IS_ERR(msg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto unlock;
 
 		cm_format_mra((struct cm_mra_msg *) msg->mad, cm_id_priv,
@@ -5245,14 +3372,6 @@ static int cm_lap_handler(struct cm_work *work)
 			      cm_id_priv->private_data_len);
 		spin_unlock_irq(&cm_id_priv->lock);
 
-<<<<<<< HEAD
-		if (ib_post_send_mad(msg, NULL))
-			cm_free_msg(msg);
-		goto deref;
-	case IB_CM_LAP_RCVD:
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_LAP_COUNTER]);
-=======
 		if (cm_create_response_msg_ah(work->port, work->mad_recv_wc, msg) ||
 		    ib_post_send_mad(msg, NULL))
 			cm_free_response_msg(msg);
@@ -5260,7 +3379,6 @@ static int cm_lap_handler(struct cm_work *work)
 	case IB_CM_LAP_RCVD:
 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
 						     [CM_LAP_COUNTER]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	default:
 		goto unlock;
@@ -5268,23 +3386,7 @@ static int cm_lap_handler(struct cm_work *work)
 
 	cm_id_priv->id.lap_state = IB_CM_LAP_RCVD;
 	cm_id_priv->tid = lap_msg->hdr.tid;
-<<<<<<< HEAD
-	cm_init_av_for_response(work->port, work->mad_recv_wc->wc,
-				work->mad_recv_wc->recv_buf.grh,
-				&cm_id_priv->av);
-	cm_init_av_by_path(param->alternate_path, &cm_id_priv->alt_av);
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 unlock:	spin_unlock_irq(&cm_id_priv->lock);
@@ -5292,93 +3394,10 @@ deref:	cm_deref_id(cm_id_priv);
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static void cm_format_apr(struct cm_apr_msg *apr_msg,
-			  struct cm_id_private *cm_id_priv,
-			  enum ib_cm_apr_status status,
-			  void *info,
-			  u8 info_length,
-			  const void *private_data,
-			  u8 private_data_len)
-{
-	cm_format_mad_hdr(&apr_msg->hdr, CM_APR_ATTR_ID, cm_id_priv->tid);
-	apr_msg->local_comm_id = cm_id_priv->id.local_id;
-	apr_msg->remote_comm_id = cm_id_priv->id.remote_id;
-	apr_msg->ap_status = (u8) status;
-
-	if (info && info_length) {
-		apr_msg->info_length = info_length;
-		memcpy(apr_msg->info, info, info_length);
-	}
-
-	if (private_data && private_data_len)
-		memcpy(apr_msg->private_data, private_data, private_data_len);
-}
-
-int ib_send_cm_apr(struct ib_cm_id *cm_id,
-		   enum ib_cm_apr_status status,
-		   void *info,
-		   u8 info_length,
-		   const void *private_data,
-		   u8 private_data_len)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_mad_send_buf *msg;
-	unsigned long flags;
-	int ret;
-
-	if ((private_data && private_data_len > IB_CM_APR_PRIVATE_DATA_SIZE) ||
-	    (info && info_length > IB_CM_APR_INFO_LENGTH))
-		return -EINVAL;
-
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state != IB_CM_ESTABLISHED ||
-	    (cm_id->lap_state != IB_CM_LAP_RCVD &&
-	     cm_id->lap_state != IB_CM_MRA_LAP_SENT)) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto out;
-
-	cm_format_apr((struct cm_apr_msg *) msg->mad, cm_id_priv, status,
-		      info, info_length, private_data, private_data_len);
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-
-	cm_id->lap_state = IB_CM_LAP_IDLE;
-out:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-	return ret;
-}
-EXPORT_SYMBOL(ib_send_cm_apr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cm_apr_handler(struct cm_work *work)
 {
 	struct cm_id_private *cm_id_priv;
 	struct cm_apr_msg *apr_msg;
-<<<<<<< HEAD
-	int ret;
-
-	apr_msg = (struct cm_apr_msg *)work->mad_recv_wc->recv_buf.mad;
-	cm_id_priv = cm_acquire_id(apr_msg->remote_comm_id,
-				   apr_msg->local_comm_id);
-	if (!cm_id_priv)
-		return -EINVAL; /* Unmatched reply. */
-
-	work->cm_event.param.apr_rcvd.ap_status = apr_msg->ap_status;
-	work->cm_event.param.apr_rcvd.apr_info = &apr_msg->info;
-	work->cm_event.param.apr_rcvd.info_len = apr_msg->info_length;
-	work->cm_event.private_data = &apr_msg->private_data;
-=======
 
 	/* Currently Alternate path messages are not supported for
 	 * RoCE link layer.
@@ -5402,7 +3421,6 @@ static int cm_apr_handler(struct cm_work *work)
 		IBA_GET(CM_APR_ADDITIONAL_INFORMATION_LENGTH, apr_msg);
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_APR_PRIVATE_DATA, apr_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&cm_id_priv->lock);
 	if (cm_id_priv->id.state != IB_CM_ESTABLISHED ||
@@ -5412,23 +3430,8 @@ static int cm_apr_handler(struct cm_work *work)
 		goto out;
 	}
 	cm_id_priv->id.lap_state = IB_CM_LAP_IDLE;
-<<<<<<< HEAD
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	cm_id_priv->msg = NULL;
-
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
@@ -5439,14 +3442,8 @@ static int cm_timewait_handler(struct cm_work *work)
 {
 	struct cm_timewait_info *timewait_info;
 	struct cm_id_private *cm_id_priv;
-<<<<<<< HEAD
-	int ret;
-
-	timewait_info = (struct cm_timewait_info *)work;
-=======
 
 	timewait_info = container_of(work, struct cm_timewait_info, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&cm.lock);
 	list_del(&timewait_info->list);
 	spin_unlock_irq(&cm.lock);
@@ -5463,19 +3460,7 @@ static int cm_timewait_handler(struct cm_work *work)
 		goto out;
 	}
 	cm_id_priv->id.state = IB_CM_IDLE;
-<<<<<<< HEAD
-	ret = atomic_inc_and_test(&cm_id_priv->work_count);
-	if (!ret)
-		list_add_tail(&work->list, &cm_id_priv->work_list);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	if (ret)
-		cm_process_work(cm_id_priv, work);
-	else
-		cm_deref_id(cm_id_priv);
-=======
 	cm_queue_work_unlock(cm_id_priv, work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	cm_deref_id(cm_id_priv);
@@ -5487,16 +3472,6 @@ static void cm_format_sidr_req(struct cm_sidr_req_msg *sidr_req_msg,
 			       struct ib_cm_sidr_req_param *param)
 {
 	cm_format_mad_hdr(&sidr_req_msg->hdr, CM_SIDR_REQ_ATTR_ID,
-<<<<<<< HEAD
-			  cm_form_tid(cm_id_priv, CM_MSG_SEQUENCE_SIDR));
-	sidr_req_msg->request_id = cm_id_priv->id.local_id;
-	sidr_req_msg->pkey = param->path->pkey;
-	sidr_req_msg->service_id = param->service_id;
-
-	if (param->private_data && param->private_data_len)
-		memcpy(sidr_req_msg->private_data, param->private_data,
-		       param->private_data_len);
-=======
 			  cm_form_tid(cm_id_priv));
 	IBA_SET(CM_SIDR_REQ_REQUESTID, sidr_req_msg,
 		be32_to_cpu(cm_id_priv->id.local_id));
@@ -5508,7 +3483,6 @@ static void cm_format_sidr_req(struct cm_sidr_req_msg *sidr_req_msg,
 	if (param->private_data && param->private_data_len)
 		IBA_SET_MEM(CM_SIDR_REQ_PRIVATE_DATA, sidr_req_msg,
 			    param->private_data, param->private_data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ib_send_cm_sidr_req(struct ib_cm_id *cm_id,
@@ -5516,10 +3490,7 @@ int ib_send_cm_sidr_req(struct ib_cm_id *cm_id,
 {
 	struct cm_id_private *cm_id_priv;
 	struct ib_mad_send_buf *msg;
-<<<<<<< HEAD
-=======
 	struct cm_av av = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ret;
 
@@ -5528,40 +3499,6 @@ int ib_send_cm_sidr_req(struct ib_cm_id *cm_id,
 		return -EINVAL;
 
 	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-<<<<<<< HEAD
-	ret = cm_init_av_by_path(param->path, &cm_id_priv->av);
-	if (ret)
-		goto out;
-
-	cm_id->service_id = param->service_id;
-	cm_id->service_mask = ~cpu_to_be64(0);
-	cm_id_priv->timeout_ms = param->timeout_ms;
-	cm_id_priv->max_cm_retries = param->max_cm_retries;
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto out;
-
-	cm_format_sidr_req((struct cm_sidr_req_msg *) msg->mad, cm_id_priv,
-			   param);
-	msg->timeout_ms = cm_id_priv->timeout_ms;
-	msg->context[1] = (void *) (unsigned long) IB_CM_SIDR_REQ_SENT;
-
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state == IB_CM_IDLE)
-		ret = ib_post_send_mad(msg, NULL);
-	else
-		ret = -EINVAL;
-
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		goto out;
-	}
-	cm_id->state = IB_CM_SIDR_REQ_SENT;
-	cm_id_priv->msg = msg;
-	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-out:
-=======
 	ret = cm_init_av_by_path(param->path, param->sgid_attr, &av);
 	if (ret)
 		return ret;
@@ -5598,16 +3535,12 @@ out_free:
 	cm_free_priv_msg(msg);
 out_unlock:
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_sidr_req);
 
 static void cm_format_sidr_req_event(struct cm_work *work,
-<<<<<<< HEAD
-=======
 				     const struct cm_id_private *rx_cm_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct ib_cm_id *listen_id)
 {
 	struct cm_sidr_req_msg *sidr_req_msg;
@@ -5616,12 +3549,6 @@ static void cm_format_sidr_req_event(struct cm_work *work,
 	sidr_req_msg = (struct cm_sidr_req_msg *)
 				work->mad_recv_wc->recv_buf.mad;
 	param = &work->cm_event.param.sidr_req_rcvd;
-<<<<<<< HEAD
-	param->pkey = __be16_to_cpu(sidr_req_msg->pkey);
-	param->listen_id = listen_id;
-	param->port = work->port->port_num;
-	work->cm_event.private_data = &sidr_req_msg->private_data;
-=======
 	param->pkey = IBA_GET(CM_SIDR_REQ_PARTITION_KEY, sidr_req_msg);
 	param->listen_id = listen_id;
 	param->service_id =
@@ -5631,22 +3558,10 @@ static void cm_format_sidr_req_event(struct cm_work *work,
 	param->sgid_attr = rx_cm_id->av.ah_attr.grh.sgid_attr;
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_SIDR_REQ_PRIVATE_DATA, sidr_req_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_sidr_req_handler(struct cm_work *work)
 {
-<<<<<<< HEAD
-	struct ib_cm_id *cm_id;
-	struct cm_id_private *cm_id_priv, *cur_cm_id_priv;
-	struct cm_sidr_req_msg *sidr_req_msg;
-	struct ib_wc *wc;
-
-	cm_id = ib_create_cm_id(work->port->cm_dev->ib_device, NULL, NULL);
-	if (IS_ERR(cm_id))
-		return PTR_ERR(cm_id);
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-=======
 	struct cm_id_private *cm_id_priv, *listen_cm_id_priv;
 	struct cm_sidr_req_msg *sidr_req_msg;
 	struct ib_wc *wc;
@@ -5656,52 +3571,10 @@ static int cm_sidr_req_handler(struct cm_work *work)
 		cm_alloc_id_priv(work->port->cm_dev->ib_device, NULL, NULL);
 	if (IS_ERR(cm_id_priv))
 		return PTR_ERR(cm_id_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Record SGID/SLID and request ID for lookup. */
 	sidr_req_msg = (struct cm_sidr_req_msg *)
 				work->mad_recv_wc->recv_buf.mad;
-<<<<<<< HEAD
-	wc = work->mad_recv_wc->wc;
-	cm_id_priv->av.dgid.global.subnet_prefix = cpu_to_be64(wc->slid);
-	cm_id_priv->av.dgid.global.interface_id = 0;
-	cm_init_av_for_response(work->port, work->mad_recv_wc->wc,
-				work->mad_recv_wc->recv_buf.grh,
-				&cm_id_priv->av);
-	cm_id_priv->id.remote_id = sidr_req_msg->request_id;
-	cm_id_priv->tid = sidr_req_msg->hdr.tid;
-	atomic_inc(&cm_id_priv->work_count);
-
-	spin_lock_irq(&cm.lock);
-	cur_cm_id_priv = cm_insert_remote_sidr(cm_id_priv);
-	if (cur_cm_id_priv) {
-		spin_unlock_irq(&cm.lock);
-		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
-				counter[CM_SIDR_REQ_COUNTER]);
-		goto out; /* Duplicate message. */
-	}
-	cm_id_priv->id.state = IB_CM_SIDR_REQ_RCVD;
-	cur_cm_id_priv = cm_find_listen(cm_id->device,
-					sidr_req_msg->service_id,
-					sidr_req_msg->private_data);
-	if (!cur_cm_id_priv) {
-		spin_unlock_irq(&cm.lock);
-		cm_reject_sidr_req(cm_id_priv, IB_SIDR_UNSUPPORTED);
-		goto out; /* No match. */
-	}
-	atomic_inc(&cur_cm_id_priv->refcount);
-	atomic_inc(&cm_id_priv->refcount);
-	spin_unlock_irq(&cm.lock);
-
-	cm_id_priv->id.cm_handler = cur_cm_id_priv->id.cm_handler;
-	cm_id_priv->id.context = cur_cm_id_priv->id.context;
-	cm_id_priv->id.service_id = sidr_req_msg->service_id;
-	cm_id_priv->id.service_mask = ~cpu_to_be64(0);
-
-	cm_format_sidr_req_event(work, &cur_cm_id_priv->id);
-	cm_process_work(cm_id_priv, work);
-	cm_deref_id(cur_cm_id_priv);
-=======
 
 	cm_id_priv->id.remote_id =
 		cpu_to_be32(IBA_GET(CM_SIDR_REQ_REQUESTID, sidr_req_msg));
@@ -5756,7 +3629,6 @@ static int cm_sidr_req_handler(struct cm_work *work)
 	cm_deref_id(listen_cm_id_priv);
 	if (ret)
 		cm_destroy_id(&cm_id_priv->id, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	ib_destroy_cm_id(&cm_id_priv->id);
@@ -5767,28 +3639,6 @@ static void cm_format_sidr_rep(struct cm_sidr_rep_msg *sidr_rep_msg,
 			       struct cm_id_private *cm_id_priv,
 			       struct ib_cm_sidr_rep_param *param)
 {
-<<<<<<< HEAD
-	cm_format_mad_hdr(&sidr_rep_msg->hdr, CM_SIDR_REP_ATTR_ID,
-			  cm_id_priv->tid);
-	sidr_rep_msg->request_id = cm_id_priv->id.remote_id;
-	sidr_rep_msg->status = param->status;
-	cm_sidr_rep_set_qpn(sidr_rep_msg, cpu_to_be32(param->qp_num));
-	sidr_rep_msg->service_id = cm_id_priv->id.service_id;
-	sidr_rep_msg->qkey = cpu_to_be32(param->qkey);
-
-	if (param->info && param->info_length)
-		memcpy(sidr_rep_msg->info, param->info, param->info_length);
-
-	if (param->private_data && param->private_data_len)
-		memcpy(sidr_rep_msg->private_data, param->private_data,
-		       param->private_data_len);
-}
-
-int ib_send_cm_sidr_rep(struct ib_cm_id *cm_id,
-			struct ib_cm_sidr_rep_param *param)
-{
-	struct cm_id_private *cm_id_priv;
-=======
 	cm_format_mad_ece_hdr(&sidr_rep_msg->hdr, CM_SIDR_REP_ATTR_ID,
 			      cm_id_priv->tid, param->ece.attr_mod);
 	IBA_SET(CM_SIDR_REP_REQUESTID, sidr_rep_msg,
@@ -5815,45 +3665,17 @@ int ib_send_cm_sidr_rep(struct ib_cm_id *cm_id,
 static int cm_send_sidr_rep_locked(struct cm_id_private *cm_id_priv,
 				   struct ib_cm_sidr_rep_param *param)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_mad_send_buf *msg;
 	unsigned long flags;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&cm_id_priv->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((param->info && param->info_length > IB_CM_SIDR_REP_INFO_LENGTH) ||
 	    (param->private_data &&
 	     param->private_data_len > IB_CM_SIDR_REP_PRIVATE_DATA_SIZE))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
-	spin_lock_irqsave(&cm_id_priv->lock, flags);
-	if (cm_id->state != IB_CM_SIDR_REQ_RCVD) {
-		ret = -EINVAL;
-		goto error;
-	}
-
-	ret = cm_alloc_msg(cm_id_priv, &msg);
-	if (ret)
-		goto error;
-
-	cm_format_sidr_rep((struct cm_sidr_rep_msg *) msg->mad, cm_id_priv,
-			   param);
-	ret = ib_post_send_mad(msg, NULL);
-	if (ret) {
-		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-		cm_free_msg(msg);
-		return ret;
-	}
-	cm_id->state = IB_CM_IDLE;
-	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-
-=======
 	if (cm_id_priv->id.state != IB_CM_SIDR_REQ_RCVD)
 		return -EINVAL;
 
@@ -5870,7 +3692,6 @@ static int cm_send_sidr_rep_locked(struct cm_id_private *cm_id_priv,
 		return ret;
 	}
 	cm_id_priv->id.state = IB_CM_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&cm.lock, flags);
 	if (!RB_EMPTY_NODE(&cm_id_priv->sidr_id_node)) {
 		rb_erase(&cm_id_priv->sidr_id_node, &cm.remote_sidr_table);
@@ -5878,10 +3699,6 @@ static int cm_send_sidr_rep_locked(struct cm_id_private *cm_id_priv,
 	}
 	spin_unlock_irqrestore(&cm.lock, flags);
 	return 0;
-<<<<<<< HEAD
-
-error:	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
-=======
 }
 
 int ib_send_cm_sidr_rep(struct ib_cm_id *cm_id,
@@ -5895,17 +3712,12 @@ int ib_send_cm_sidr_rep(struct ib_cm_id *cm_id,
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	ret = cm_send_sidr_rep_locked(cm_id_priv, param);
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(ib_send_cm_sidr_rep);
 
-<<<<<<< HEAD
-static void cm_format_sidr_rep_event(struct cm_work *work)
-=======
 static void cm_format_sidr_rep_event(struct cm_work *work,
 				     const struct cm_id_private *cm_id_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_sidr_rep_msg *sidr_rep_msg;
 	struct ib_cm_sidr_rep_event_param *param;
@@ -5913,14 +3725,6 @@ static void cm_format_sidr_rep_event(struct cm_work *work,
 	sidr_rep_msg = (struct cm_sidr_rep_msg *)
 				work->mad_recv_wc->recv_buf.mad;
 	param = &work->cm_event.param.sidr_rep_rcvd;
-<<<<<<< HEAD
-	param->status = sidr_rep_msg->status;
-	param->qkey = be32_to_cpu(sidr_rep_msg->qkey);
-	param->qpn = be32_to_cpu(cm_sidr_rep_get_qpn(sidr_rep_msg));
-	param->info = &sidr_rep_msg->info;
-	param->info_len = sidr_rep_msg->info_length;
-	work->cm_event.private_data = &sidr_rep_msg->private_data;
-=======
 	param->status = IBA_GET(CM_SIDR_REP_STATUS, sidr_rep_msg);
 	param->qkey = IBA_GET(CM_SIDR_REP_Q_KEY, sidr_rep_msg);
 	param->qpn = IBA_GET(CM_SIDR_REP_QPN, sidr_rep_msg);
@@ -5931,7 +3735,6 @@ static void cm_format_sidr_rep_event(struct cm_work *work,
 	param->sgid_attr = cm_id_priv->av.ah_attr.grh.sgid_attr;
 	work->cm_event.private_data =
 		IBA_GET_MEM_PTR(CM_SIDR_REP_PRIVATE_DATA, sidr_rep_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_sidr_rep_handler(struct cm_work *work)
@@ -5941,12 +3744,8 @@ static int cm_sidr_rep_handler(struct cm_work *work)
 
 	sidr_rep_msg = (struct cm_sidr_rep_msg *)
 				work->mad_recv_wc->recv_buf.mad;
-<<<<<<< HEAD
-	cm_id_priv = cm_acquire_id(sidr_rep_msg->request_id, 0);
-=======
 	cm_id_priv = cm_acquire_id(
 		cpu_to_be32(IBA_GET(CM_SIDR_REP_REQUESTID, sidr_rep_msg)), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cm_id_priv)
 		return -EINVAL; /* Unmatched reply. */
 
@@ -5956,17 +3755,10 @@ static int cm_sidr_rep_handler(struct cm_work *work)
 		goto out;
 	}
 	cm_id_priv->id.state = IB_CM_IDLE;
-<<<<<<< HEAD
-	ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
-	spin_unlock_irq(&cm_id_priv->lock);
-
-	cm_format_sidr_rep_event(work);
-=======
 	ib_cancel_mad(cm_id_priv->msg);
 	spin_unlock_irq(&cm_id_priv->lock);
 
 	cm_format_sidr_rep_event(work, cm_id_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_process_work(cm_id_priv, work);
 	return 0;
 out:
@@ -5974,25 +3766,6 @@ out:
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static void cm_process_send_error(struct ib_mad_send_buf *msg,
-				  enum ib_wc_status wc_status)
-{
-	struct cm_id_private *cm_id_priv;
-	struct ib_cm_event cm_event;
-	enum ib_cm_state state;
-	int ret;
-
-	memset(&cm_event, 0, sizeof cm_event);
-	cm_id_priv = msg->context[0];
-
-	/* Discard old sends or ones without a response. */
-	spin_lock_irq(&cm_id_priv->lock);
-	state = (enum ib_cm_state) (unsigned long) msg->context[1];
-	if (msg != cm_id_priv->msg || state != cm_id_priv->id.state)
-		goto discard;
-
-=======
 static void cm_process_send_error(struct cm_id_private *cm_id_priv,
 				  struct ib_mad_send_buf *msg,
 				  enum ib_cm_state state,
@@ -6015,7 +3788,6 @@ static void cm_process_send_error(struct cm_id_private *cm_id_priv,
 		goto out_unlock;
 
 	trace_icm_mad_send_err(state, wc_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (state) {
 	case IB_CM_REQ_SENT:
 	case IB_CM_MRA_REQ_RCVD:
@@ -6036,44 +3808,27 @@ static void cm_process_send_error(struct cm_id_private *cm_id_priv,
 		cm_event.event = IB_CM_SIDR_REQ_ERROR;
 		break;
 	default:
-<<<<<<< HEAD
-		goto discard;
-=======
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&cm_id_priv->lock);
 	cm_event.param.send_status = wc_status;
 
 	/* No other events can occur on the cm_id at this point. */
 	ret = cm_id_priv->id.cm_handler(&cm_id_priv->id, &cm_event);
-<<<<<<< HEAD
-	cm_free_msg(msg);
-	if (ret)
-		ib_destroy_cm_id(&cm_id_priv->id);
-	return;
-discard:
-	spin_unlock_irq(&cm_id_priv->lock);
-	cm_free_msg(msg);
-=======
 	if (ret)
 		ib_destroy_cm_id(&cm_id_priv->id);
 	return;
 out_unlock:
 	spin_unlock_irq(&cm_id_priv->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_send_handler(struct ib_mad_agent *mad_agent,
 			    struct ib_mad_send_wc *mad_send_wc)
 {
 	struct ib_mad_send_buf *msg = mad_send_wc->send_buf;
-<<<<<<< HEAD
-=======
 	struct cm_id_private *cm_id_priv = msg->context[0];
 	enum ib_cm_state state =
 		(enum ib_cm_state)(unsigned long)msg->context[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cm_port *port;
 	u16 attr_index;
 
@@ -6086,30 +3841,6 @@ static void cm_send_handler(struct ib_mad_agent *mad_agent,
 	 * set to a cm_id), and is not a REJ, then it is a send that was
 	 * manually retried.
 	 */
-<<<<<<< HEAD
-	if (!msg->context[0] && (attr_index != CM_REJ_COUNTER))
-		msg->retries = 1;
-
-	atomic_long_add(1 + msg->retries,
-			&port->counter_group[CM_XMIT].counter[attr_index]);
-	if (msg->retries)
-		atomic_long_add(msg->retries,
-				&port->counter_group[CM_XMIT_RETRIES].
-				counter[attr_index]);
-
-	switch (mad_send_wc->status) {
-	case IB_WC_SUCCESS:
-	case IB_WC_WR_FLUSH_ERR:
-		cm_free_msg(msg);
-		break;
-	default:
-		if (msg->context[0] && msg->context[1])
-			cm_process_send_error(msg, mad_send_wc->status);
-		else
-			cm_free_msg(msg);
-		break;
-	}
-=======
 	if (!cm_id_priv && (attr_index != CM_REJ_COUNTER))
 		msg->retries = 1;
 
@@ -6123,7 +3854,6 @@ static void cm_send_handler(struct ib_mad_agent *mad_agent,
 				      mad_send_wc->status);
 	else
 		cm_free_response_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm_work_handler(struct work_struct *_work)
@@ -6172,10 +3902,7 @@ static void cm_work_handler(struct work_struct *_work)
 		ret = cm_timewait_handler(work);
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		trace_icm_handler_err(work->cm_event.event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		break;
 	}
@@ -6189,14 +3916,11 @@ static int cm_establish(struct ib_cm_id *cm_id)
 	struct cm_work *work;
 	unsigned long flags;
 	int ret = 0;
-<<<<<<< HEAD
-=======
 	struct cm_device *cm_dev;
 
 	cm_dev = ib_get_client_data(cm_id->device, &cm_client);
 	if (!cm_dev)
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	work = kmalloc(sizeof *work, GFP_ATOMIC);
 	if (!work)
@@ -6204,12 +3928,7 @@ static int cm_establish(struct ib_cm_id *cm_id)
 
 	cm_id_priv = container_of(cm_id, struct cm_id_private, id);
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
-<<<<<<< HEAD
-	switch (cm_id->state)
-	{
-=======
 	switch (cm_id->state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_CM_REP_SENT:
 	case IB_CM_MRA_REP_RCVD:
 		cm_id->state = IB_CM_ESTABLISHED;
@@ -6218,10 +3937,7 @@ static int cm_establish(struct ib_cm_id *cm_id)
 		ret = -EISCONN;
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		trace_icm_establish_err(cm_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		break;
 	}
@@ -6243,9 +3959,6 @@ static int cm_establish(struct ib_cm_id *cm_id)
 	work->remote_id = cm_id->remote_id;
 	work->mad_recv_wc = NULL;
 	work->cm_event.event = IB_CM_USER_ESTABLISHED;
-<<<<<<< HEAD
-	queue_delayed_work(cm.wq, &work->work, 0);
-=======
 
 	/* Check if the device started its remove_one */
 	spin_lock_irqsave(&cm.lock, flags);
@@ -6257,7 +3970,6 @@ static int cm_establish(struct ib_cm_id *cm_id)
 	}
 	spin_unlock_irqrestore(&cm.lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -6301,24 +4013,12 @@ int ib_cm_notify(struct ib_cm_id *cm_id, enum ib_event_type event)
 EXPORT_SYMBOL(ib_cm_notify);
 
 static void cm_recv_handler(struct ib_mad_agent *mad_agent,
-<<<<<<< HEAD
-=======
 			    struct ib_mad_send_buf *send_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct ib_mad_recv_wc *mad_recv_wc)
 {
 	struct cm_port *port = mad_agent->context;
 	struct cm_work *work;
 	enum ib_cm_event_type event;
-<<<<<<< HEAD
-	u16 attr_id;
-	int paths = 0;
-
-	switch (mad_recv_wc->recv_buf.mad->mad_hdr.attr_id) {
-	case CM_REQ_ATTR_ID:
-		paths = 1 + (((struct cm_req_msg *) mad_recv_wc->recv_buf.mad)->
-						    alt_local_lid != 0);
-=======
 	bool alt_path = false;
 	u16 attr_id;
 	int paths = 0;
@@ -6329,7 +4029,6 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
 		alt_path = cm_req_has_alt_path((struct cm_req_msg *)
 						mad_recv_wc->recv_buf.mad);
 		paths = 1 + (alt_path != 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event = IB_CM_REQ_RECEIVED;
 		break;
 	case CM_MRA_ATTR_ID:
@@ -6369,17 +4068,9 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
 	}
 
 	attr_id = be16_to_cpu(mad_recv_wc->recv_buf.mad->mad_hdr.attr_id);
-<<<<<<< HEAD
-	atomic_long_inc(&port->counter_group[CM_RECV].
-			counter[attr_id - CM_ATTR_ID_OFFSET]);
-
-	work = kmalloc(sizeof *work + sizeof(struct ib_sa_path_rec) * paths,
-		       GFP_KERNEL);
-=======
 	atomic_long_inc(&port->counters[CM_RECV][attr_id - CM_ATTR_ID_OFFSET]);
 
 	work = kmalloc(struct_size(work, path, paths), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!work) {
 		ib_free_recv_mad(mad_recv_wc);
 		return;
@@ -6389,9 +4080,6 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
 	work->cm_event.event = event;
 	work->mad_recv_wc = mad_recv_wc;
 	work->port = port;
-<<<<<<< HEAD
-	queue_delayed_work(cm.wq, &work->work, 0);
-=======
 
 	/* Check if the device started its remove_one */
 	spin_lock_irq(&cm.lock);
@@ -6405,7 +4093,6 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
 		kfree(work);
 		ib_free_recv_mad(mad_recv_wc);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_init_qp_init_attr(struct cm_id_private *cm_id_priv,
@@ -6429,16 +4116,6 @@ static int cm_init_qp_init_attr(struct cm_id_private *cm_id_priv,
 		*qp_attr_mask = IB_QP_STATE | IB_QP_ACCESS_FLAGS |
 				IB_QP_PKEY_INDEX | IB_QP_PORT;
 		qp_attr->qp_access_flags = IB_ACCESS_REMOTE_WRITE;
-<<<<<<< HEAD
-		if (cm_id_priv->responder_resources)
-			qp_attr->qp_access_flags |= IB_ACCESS_REMOTE_READ |
-						    IB_ACCESS_REMOTE_ATOMIC;
-		qp_attr->pkey_index = cm_id_priv->av.pkey_index;
-		qp_attr->port_num = cm_id_priv->av.port->port_num;
-		ret = 0;
-		break;
-	default:
-=======
 		if (cm_id_priv->responder_resources) {
 			struct ib_device *ib_dev = cm_id_priv->id.device;
 			u64 support_flush = ib_dev->attrs.device_cap_flags &
@@ -6458,7 +4135,6 @@ static int cm_init_qp_init_attr(struct cm_id_private *cm_id_priv,
 		break;
 	default:
 		trace_icm_qp_init_err(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		break;
 	}
@@ -6485,13 +4161,10 @@ static int cm_init_qp_rtr_attr(struct cm_id_private *cm_id_priv,
 		*qp_attr_mask = IB_QP_STATE | IB_QP_AV | IB_QP_PATH_MTU |
 				IB_QP_DEST_QPN | IB_QP_RQ_PSN;
 		qp_attr->ah_attr = cm_id_priv->av.ah_attr;
-<<<<<<< HEAD
-=======
 		if ((qp_attr->ah_attr.type == RDMA_AH_ATTR_TYPE_IB) &&
 		    cm_id_priv->av.dlid_datapath &&
 		    (cm_id_priv->av.dlid_datapath != 0xffff))
 			qp_attr->ah_attr.ib.dlid = cm_id_priv->av.dlid_datapath;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qp_attr->path_mtu = cm_id_priv->path_mtu;
 		qp_attr->dest_qp_num = be32_to_cpu(cm_id_priv->remote_qpn);
 		qp_attr->rq_psn = be32_to_cpu(cm_id_priv->rq_psn);
@@ -6503,12 +4176,8 @@ static int cm_init_qp_rtr_attr(struct cm_id_private *cm_id_priv,
 					cm_id_priv->responder_resources;
 			qp_attr->min_rnr_timer = 0;
 		}
-<<<<<<< HEAD
-		if (cm_id_priv->alt_av.ah_attr.dlid) {
-=======
 		if (rdma_ah_get_dlid(&cm_id_priv->alt_av.ah_attr) &&
 		    cm_id_priv->alt_av.port) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*qp_attr_mask |= IB_QP_ALT_PATH;
 			qp_attr->alt_port_num = cm_id_priv->alt_av.port->port_num;
 			qp_attr->alt_pkey_index = cm_id_priv->alt_av.pkey_index;
@@ -6518,10 +4187,7 @@ static int cm_init_qp_rtr_attr(struct cm_id_private *cm_id_priv,
 		ret = 0;
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		trace_icm_qp_rtr_err(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		break;
 	}
@@ -6558,11 +4224,7 @@ static int cm_init_qp_rts_attr(struct cm_id_private *cm_id_priv,
 				qp_attr->retry_cnt = cm_id_priv->retry_count;
 				qp_attr->rnr_retry = cm_id_priv->rnr_retry_count;
 				qp_attr->max_rd_atomic = cm_id_priv->initiator_depth;
-<<<<<<< HEAD
-				/* fall through */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case IB_QPT_XRC_TGT:
 				*qp_attr_mask |= IB_QP_TIMEOUT;
 				qp_attr->timeout = cm_id_priv->av.timeout;
@@ -6570,23 +4232,15 @@ static int cm_init_qp_rts_attr(struct cm_id_private *cm_id_priv,
 			default:
 				break;
 			}
-<<<<<<< HEAD
-			if (cm_id_priv->alt_av.ah_attr.dlid) {
-=======
 			if (rdma_ah_get_dlid(&cm_id_priv->alt_av.ah_attr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*qp_attr_mask |= IB_QP_PATH_MIG_STATE;
 				qp_attr->path_mig_state = IB_MIG_REARM;
 			}
 		} else {
 			*qp_attr_mask = IB_QP_ALT_PATH | IB_QP_PATH_MIG_STATE;
-<<<<<<< HEAD
-			qp_attr->alt_port_num = cm_id_priv->alt_av.port->port_num;
-=======
 			if (cm_id_priv->alt_av.port)
 				qp_attr->alt_port_num =
 					cm_id_priv->alt_av.port->port_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qp_attr->alt_pkey_index = cm_id_priv->alt_av.pkey_index;
 			qp_attr->alt_timeout = cm_id_priv->alt_av.timeout;
 			qp_attr->alt_ah_attr = cm_id_priv->alt_av.ah_attr;
@@ -6595,10 +4249,7 @@ static int cm_init_qp_rts_attr(struct cm_id_private *cm_id_priv,
 		ret = 0;
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		trace_icm_qp_rts_err(&cm_id_priv->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		break;
 	}
@@ -6632,108 +4283,6 @@ int ib_cm_init_qp_attr(struct ib_cm_id *cm_id,
 }
 EXPORT_SYMBOL(ib_cm_init_qp_attr);
 
-<<<<<<< HEAD
-static void cm_get_ack_delay(struct cm_device *cm_dev)
-{
-	struct ib_device_attr attr;
-
-	if (ib_query_device(cm_dev->ib_device, &attr))
-		cm_dev->ack_delay = 0; /* acks will rely on packet life time */
-	else
-		cm_dev->ack_delay = attr.local_ca_ack_delay;
-}
-
-static ssize_t cm_show_counter(struct kobject *obj, struct attribute *attr,
-			       char *buf)
-{
-	struct cm_counter_group *group;
-	struct cm_counter_attribute *cm_attr;
-
-	group = container_of(obj, struct cm_counter_group, obj);
-	cm_attr = container_of(attr, struct cm_counter_attribute, attr);
-
-	return sprintf(buf, "%ld\n",
-		       atomic_long_read(&group->counter[cm_attr->index]));
-}
-
-static const struct sysfs_ops cm_counter_ops = {
-	.show = cm_show_counter
-};
-
-static struct kobj_type cm_counter_obj_type = {
-	.sysfs_ops = &cm_counter_ops,
-	.default_attrs = cm_counter_default_attrs
-};
-
-static void cm_release_port_obj(struct kobject *obj)
-{
-	struct cm_port *cm_port;
-
-	cm_port = container_of(obj, struct cm_port, port_obj);
-	kfree(cm_port);
-}
-
-static struct kobj_type cm_port_obj_type = {
-	.release = cm_release_port_obj
-};
-
-static char *cm_devnode(struct device *dev, umode_t *mode)
-{
-	if (mode)
-		*mode = 0666;
-	return kasprintf(GFP_KERNEL, "infiniband/%s", dev_name(dev));
-}
-
-struct class cm_class = {
-	.owner   = THIS_MODULE,
-	.name    = "infiniband_cm",
-	.devnode = cm_devnode,
-};
-EXPORT_SYMBOL(cm_class);
-
-static int cm_create_port_fs(struct cm_port *port)
-{
-	int i, ret;
-
-	ret = kobject_init_and_add(&port->port_obj, &cm_port_obj_type,
-				   &port->cm_dev->device->kobj,
-				   "%d", port->port_num);
-	if (ret) {
-		kfree(port);
-		return ret;
-	}
-
-	for (i = 0; i < CM_COUNTER_GROUPS; i++) {
-		ret = kobject_init_and_add(&port->counter_group[i].obj,
-					   &cm_counter_obj_type,
-					   &port->port_obj,
-					   "%s", counter_group_names[i]);
-		if (ret)
-			goto error;
-	}
-
-	return 0;
-
-error:
-	while (i--)
-		kobject_put(&port->counter_group[i].obj);
-	kobject_put(&port->port_obj);
-	return ret;
-
-}
-
-static void cm_remove_port_fs(struct cm_port *port)
-{
-	int i;
-
-	for (i = 0; i < CM_COUNTER_GROUPS; i++)
-		kobject_put(&port->counter_group[i].obj);
-
-	kobject_put(&port->port_obj);
-}
-
-static void cm_add_one(struct ib_device *ib_device)
-=======
 static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
 			       struct ib_port_attribute *attr, char *buf)
 {
@@ -6804,51 +4353,18 @@ static const struct attribute_group *cm_counter_groups[] = {
 };
 
 static int cm_add_one(struct ib_device *ib_device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cm_device *cm_dev;
 	struct cm_port *port;
 	struct ib_mad_reg_req reg_req = {
 		.mgmt_class = IB_MGMT_CLASS_CM,
-<<<<<<< HEAD
-		.mgmt_class_version = IB_CM_CLASS_VERSION
-=======
 		.mgmt_class_version = IB_CM_CLASS_VERSION,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct ib_port_modify port_modify = {
 		.set_port_cap_mask = IB_PORT_CM_SUP
 	};
 	unsigned long flags;
 	int ret;
-<<<<<<< HEAD
-	u8 i;
-
-	if (rdma_node_get_transport(ib_device->node_type) != RDMA_TRANSPORT_IB)
-		return;
-
-	cm_dev = kzalloc(sizeof(*cm_dev) + sizeof(*port) *
-			 ib_device->phys_port_cnt, GFP_KERNEL);
-	if (!cm_dev)
-		return;
-
-	cm_dev->ib_device = ib_device;
-	cm_get_ack_delay(cm_dev);
-
-	cm_dev->device = device_create(&cm_class, &ib_device->dev,
-				       MKDEV(0, 0), NULL,
-				       "%s", ib_device->name);
-	if (IS_ERR(cm_dev->device)) {
-		kfree(cm_dev);
-		return;
-	}
-
-	set_bit(IB_MGMT_METHOD_SEND, reg_req.method_mask);
-	for (i = 1; i <= ib_device->phys_port_cnt; i++) {
-		port = kzalloc(sizeof *port, GFP_KERNEL);
-		if (!port)
-			goto error1;
-=======
 	int count = 0;
 	u32 i;
 
@@ -6875,18 +4391,13 @@ static int cm_add_one(struct ib_device *ib_device)
 			ret = -ENOMEM;
 			goto error1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cm_dev->port[i-1] = port;
 		port->cm_dev = cm_dev;
 		port->port_num = i;
 
-<<<<<<< HEAD
-		ret = cm_create_port_fs(port);
-=======
 		ret = ib_port_register_client_groups(ib_device, i,
 						     cm_counter_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto error1;
 
@@ -6896,26 +4407,16 @@ static int cm_add_one(struct ib_device *ib_device)
 							0,
 							cm_send_handler,
 							cm_recv_handler,
-<<<<<<< HEAD
-							port);
-		if (IS_ERR(port->mad_agent))
-			goto error2;
-=======
 							port,
 							0);
 		if (IS_ERR(port->mad_agent)) {
 			ret = PTR_ERR(port->mad_agent);
 			goto error2;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = ib_modify_port(ib_device, i, 0, &port_modify);
 		if (ret)
 			goto error3;
-<<<<<<< HEAD
-	}
-	ib_set_client_data(ib_device, &cm_client, cm_dev);
-=======
 
 		count++;
 	}
@@ -6924,43 +4425,20 @@ static int cm_add_one(struct ib_device *ib_device)
 		ret = -EOPNOTSUPP;
 		goto free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irqsave(&cm.device_lock, flags);
 	list_add_tail(&cm_dev->list, &cm.device_list);
 	write_unlock_irqrestore(&cm.device_lock, flags);
-<<<<<<< HEAD
-	return;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error3:
 	ib_unregister_mad_agent(port->mad_agent);
 error2:
-<<<<<<< HEAD
-	cm_remove_port_fs(port);
-=======
 	ib_port_unregister_client_groups(ib_device, i, cm_counter_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error1:
 	port_modify.set_port_cap_mask = 0;
 	port_modify.clr_port_cap_mask = IB_PORT_CM_SUP;
 	while (--i) {
-<<<<<<< HEAD
-		port = cm_dev->port[i-1];
-		ib_modify_port(ib_device, port->port_num, 0, &port_modify);
-		ib_unregister_mad_agent(port->mad_agent);
-		cm_remove_port_fs(port);
-	}
-	device_unregister(cm_dev->device);
-	kfree(cm_dev);
-}
-
-static void cm_remove_one(struct ib_device *ib_device)
-{
-	struct cm_device *cm_dev;
-=======
 		if (!rdma_cap_ib_cm(ib_device, i))
 			continue;
 
@@ -6978,37 +4456,17 @@ free:
 static void cm_remove_one(struct ib_device *ib_device, void *client_data)
 {
 	struct cm_device *cm_dev = client_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cm_port *port;
 	struct ib_port_modify port_modify = {
 		.clr_port_cap_mask = IB_PORT_CM_SUP
 	};
 	unsigned long flags;
-<<<<<<< HEAD
-	int i;
-
-	cm_dev = ib_get_client_data(ib_device, &cm_client);
-	if (!cm_dev)
-		return;
-=======
 	u32 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irqsave(&cm.device_lock, flags);
 	list_del(&cm_dev->list);
 	write_unlock_irqrestore(&cm.device_lock, flags);
 
-<<<<<<< HEAD
-	for (i = 1; i <= ib_device->phys_port_cnt; i++) {
-		port = cm_dev->port[i-1];
-		ib_modify_port(ib_device, port->port_num, 0, &port_modify);
-		ib_unregister_mad_agent(port->mad_agent);
-		flush_workqueue(cm.wq);
-		cm_remove_port_fs(port);
-	}
-	device_unregister(cm_dev->device);
-	kfree(cm_dev);
-=======
 	spin_lock_irq(&cm.lock);
 	cm_dev->going_down = 1;
 	spin_unlock_irq(&cm.lock);
@@ -7041,17 +4499,12 @@ static void cm_remove_one(struct ib_device *ib_device, void *client_data)
 	}
 
 	cm_device_put(cm_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init ib_cm_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	memset(&cm, 0, sizeof cm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&cm.device_list);
 	rwlock_init(&cm.device_lock);
 	spin_lock_init(&cm.lock);
@@ -7060,21 +4513,6 @@ static int __init ib_cm_init(void)
 	cm.remote_id_table = RB_ROOT;
 	cm.remote_qp_table = RB_ROOT;
 	cm.remote_sidr_table = RB_ROOT;
-<<<<<<< HEAD
-	idr_init(&cm.local_id_table);
-	get_random_bytes(&cm.random_id_operand, sizeof cm.random_id_operand);
-	idr_pre_get(&cm.local_id_table, GFP_KERNEL);
-	INIT_LIST_HEAD(&cm.timewait_list);
-
-	ret = class_register(&cm_class);
-	if (ret)
-		return -ENOMEM;
-
-	cm.wq = create_workqueue("ib_cm");
-	if (!cm.wq) {
-		ret = -ENOMEM;
-		goto error1;
-=======
 	xa_init_flags(&cm.local_id_table, XA_FLAGS_ALLOC);
 	get_random_bytes(&cm.random_id_operand, sizeof cm.random_id_operand);
 	INIT_LIST_HEAD(&cm.timewait_list);
@@ -7083,27 +4521,16 @@ static int __init ib_cm_init(void)
 	if (!cm.wq) {
 		ret = -ENOMEM;
 		goto error2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = ib_register_client(&cm_client);
 	if (ret)
-<<<<<<< HEAD
-		goto error2;
-
-	return 0;
-error2:
-	destroy_workqueue(cm.wq);
-error1:
-	class_unregister(&cm_class);
-=======
 		goto error3;
 
 	return 0;
 error3:
 	destroy_workqueue(cm.wq);
 error2:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -7124,17 +4551,8 @@ static void __exit ib_cm_cleanup(void)
 		kfree(timewait_info);
 	}
 
-<<<<<<< HEAD
-	class_unregister(&cm_class);
-	idr_destroy(&cm.local_id_table);
-=======
 	WARN_ON(!xa_empty(&cm.local_id_table));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ib_cm_init);
 module_exit(ib_cm_cleanup);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

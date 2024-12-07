@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __LINUX_CACHE_H
-#define __LINUX_CACHE_H
-
-#include <linux/kernel.h>
-#include <asm/cache.h>
-
-#ifndef L1_CACHE_ALIGN
-#define L1_CACHE_ALIGN(x) ALIGN(x, L1_CACHE_BYTES)
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __LINUX_CACHE_H
 #define __LINUX_CACHE_H
@@ -17,15 +7,12 @@
 
 #ifndef L1_CACHE_ALIGN
 #define L1_CACHE_ALIGN(x) __ALIGN_KERNEL(x, L1_CACHE_BYTES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef SMP_CACHE_BYTES
 #define SMP_CACHE_BYTES L1_CACHE_BYTES
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * __read_mostly is used to keep rarely changing variables out of frequently
  * updated cachelines. Its use should be reserved for data that is used
@@ -37,13 +24,10 @@
  * ie: if you're going to use it please supply a *good* justification in your
  * commit log
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __read_mostly
 #define __read_mostly
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * __ro_after_init is used to mark things that are read-only after init (i.e.
  * after mark_rodata_ro() has been called). These are effectively read-only,
@@ -53,7 +37,6 @@
 #define __ro_after_init __section(".data..ro_after_init")
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ____cacheline_aligned
 #define ____cacheline_aligned __attribute__((__aligned__(SMP_CACHE_BYTES)))
 #endif
@@ -102,8 +85,6 @@
 #define cache_line_size()	L1_CACHE_BYTES
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef __cacheline_group_begin
 #define __cacheline_group_begin(GROUP) \
 	__u8 __cacheline_group_begin__##GROUP[0]
@@ -148,5 +129,4 @@ struct cacheline_padding {
 #define ARCH_DMA_MINALIGN __alignof__(unsigned long long)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_CACHE_H */

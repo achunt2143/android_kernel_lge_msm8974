@@ -11,36 +11,12 @@
 
 #include <spaces.h>
 #include <linux/const.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
 #include <asm/mipsregs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PAGE_SHIFT determines the page size
  */
-<<<<<<< HEAD
-#ifdef CONFIG_PAGE_SIZE_4KB
-#define PAGE_SHIFT	12
-#endif
-#ifdef CONFIG_PAGE_SIZE_8KB
-#define PAGE_SHIFT	13
-#endif
-#ifdef CONFIG_PAGE_SIZE_16KB
-#define PAGE_SHIFT	14
-#endif
-#ifdef CONFIG_PAGE_SIZE_32KB
-#define PAGE_SHIFT	15
-#endif
-#ifdef CONFIG_PAGE_SIZE_64KB
-#define PAGE_SHIFT	16
-#endif
-#define PAGE_SIZE	(_AC(1,UL) << PAGE_SHIFT)
-#define PAGE_MASK       (~((1 << PAGE_SHIFT) - 1))
-
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 #define PAGE_SHIFT	CONFIG_PAGE_SHIFT
 #define PAGE_SIZE	(_AC(1,UL) << PAGE_SHIFT)
 #define PAGE_MASK	(~((1 << PAGE_SHIFT) - 1))
@@ -69,32 +45,18 @@ static inline unsigned int page_size_ftlb(unsigned int mmuextdef)
 }
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPAGE_SHIFT	(PAGE_SHIFT + PAGE_SHIFT - 3)
 #define HPAGE_SIZE	(_AC(1,UL) << HPAGE_SHIFT)
 #define HPAGE_MASK	(~(HPAGE_SIZE - 1))
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
-<<<<<<< HEAD
-#else /* !CONFIG_HUGETLB_PAGE */
-=======
 #else /* !CONFIG_MIPS_HUGE_TLB_SUPPORT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPAGE_SHIFT	({BUILD_BUG(); 0; })
 #define HPAGE_SIZE	({BUILD_BUG(); 0; })
 #define HPAGE_MASK	({BUILD_BUG(); 0; })
 #define HUGETLB_PAGE_ORDER	({BUILD_BUG(); 0; })
-<<<<<<< HEAD
-#endif /* CONFIG_HUGETLB_PAGE */
-
-#ifndef __ASSEMBLY__
-
-#include <linux/pfn.h>
-#include <asm/io.h>
-=======
 #endif /* CONFIG_MIPS_HUGE_TLB_SUPPORT */
 
 #include <linux/pfn.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void build_clear_page(void);
 extern void build_copy_page(void);
@@ -104,16 +66,12 @@ extern void build_copy_page(void);
  * used in our early mem init code for all memory models.
  * So always define it.
  */
-<<<<<<< HEAD
-#define ARCH_PFN_OFFSET		PFN_UP(PHYS_OFFSET)
-=======
 #ifdef CONFIG_MIPS_AUTO_PFN_OFFSET
 extern unsigned long ARCH_PFN_OFFSET;
 # define ARCH_PFN_OFFSET	ARCH_PFN_OFFSET
 #else
 # define ARCH_PFN_OFFSET	PFN_UP(PHYS_OFFSET)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void clear_page(void * page);
 extern void copy_page(void * to, void * from);
@@ -138,11 +96,6 @@ static inline void clear_user_page(void *addr, unsigned long vaddr,
 		flush_data_cache_page((unsigned long)addr);
 }
 
-<<<<<<< HEAD
-extern void copy_user_page(void *vto, void *vfrom, unsigned long vaddr,
-	struct page *to);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vm_area_struct;
 extern void copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma);
@@ -152,16 +105,6 @@ extern void copy_user_highpage(struct page *to, struct page *from,
 /*
  * These are used to make use of C type-checking..
  */
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT_PHYS_ADDR
-  #ifdef CONFIG_CPU_MIPS32
-    typedef struct { unsigned long pte_low, pte_high; } pte_t;
-    #define pte_val(x)    ((x).pte_low | ((unsigned long long)(x).pte_high << 32))
-    #define __pte(x)      ({ pte_t __pte = {(x), ((unsigned long long)(x)) >> 32}; __pte; })
-  #else
-     typedef struct { unsigned long long pte; } pte_t;
-     #define pte_val(x)	((x).pte)
-=======
 #ifdef CONFIG_PHYS_ADDR_T_64BIT
   #ifdef CONFIG_CPU_MIPS32
     typedef struct { unsigned long pte_low, pte_high; } pte_t;
@@ -170,7 +113,6 @@ extern void copy_user_highpage(struct page *to, struct page *from,
   #else
      typedef struct { unsigned long long pte; } pte_t;
      #define pte_val(x) ((x).pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      #define __pte(x)	((pte_t) { (x) } )
   #endif
 #else
@@ -198,10 +140,7 @@ typedef struct { unsigned long pgd; } pgd_t;
 typedef struct { unsigned long pgprot; } pgprot_t;
 #define pgprot_val(x)	((x).pgprot)
 #define __pgprot(x)	((pgprot_t) { (x) } )
-<<<<<<< HEAD
-=======
 #define pte_pgprot(x)	__pgprot(pte_val(x) & ~_PFN_MASK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * On R4000-style MMUs where a TLB entry is mapping a adjacent even / odd
@@ -212,24 +151,6 @@ typedef struct { unsigned long pgprot; } pgprot_t;
  */
 #define ptep_buddy(x)	((pte_t *)((unsigned long)(x) ^ sizeof(pte_t)))
 
-<<<<<<< HEAD
-#endif /* !__ASSEMBLY__ */
-
-/*
- * __pa()/__va() should be used only during mem init.
- */
-#ifdef CONFIG_64BIT
-#define __pa(x)								\
-({									\
-    unsigned long __x = (unsigned long)(x);				\
-    __x < CKSEG0 ? XPHYSADDR(__x) : CPHYSADDR(__x);			\
-})
-#else
-#define __pa(x)								\
-    ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
-#endif
-#define __va(x)		((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
-=======
 /*
  * __pa()/__va() should be used only during mem init.
  */
@@ -263,66 +184,10 @@ static inline unsigned long ___pa(unsigned long x)
 #define __pa(x)		___pa((unsigned long)(x))
 #define __va(x)		((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * RELOC_HIDE was originally added by 6007b903dfe5f1d13e0c711ac2894bdd4a61b1ad
  * (lmo) rsp. 8431fd094d625b94d364fe393076ccef88e6ce18 (kernel.org).  The
-<<<<<<< HEAD
- * discussion can be found in lkml posting
- * <a2ebde260608230500o3407b108hc03debb9da6e62c@mail.gmail.com> which is
- * archived at http://lists.linuxcoding.com/kernel/2006-q3/msg17360.html
- *
- * It is unclear if the misscompilations mentioned in
- * http://lkml.org/lkml/2010/8/8/138 also affect MIPS so we keep this one
- * until GCC 3.x has been retired before we can apply
- * https://patchwork.linux-mips.org/patch/1541/
- */
-
-#define __pa_symbol(x)	__pa(RELOC_HIDE((unsigned long)(x), 0))
-
-#define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
-
-#ifdef CONFIG_FLATMEM
-
-#ifndef __ASSEMBLY__
-static inline int pfn_valid(unsigned long pfn)
-{
-	/* avoid <linux/mm.h> include hell */
-	extern unsigned long max_mapnr;
-
-	return pfn >= ARCH_PFN_OFFSET && pfn < max_mapnr;
-}
-#endif
-
-#elif defined(CONFIG_SPARSEMEM)
-
-/* pfn_valid is defined in linux/mmzone.h */
-
-#elif defined(CONFIG_NEED_MULTIPLE_NODES)
-
-#define pfn_valid(pfn)							\
-({									\
-	unsigned long __pfn = (pfn);					\
-	int __n = pfn_to_nid(__pfn);					\
-	((__n >= 0) ? (__pfn < NODE_DATA(__n)->node_start_pfn +		\
-	                       NODE_DATA(__n)->node_spanned_pages)	\
-	            : 0);						\
-})
-
-#endif
-
-#define virt_to_page(kaddr)	pfn_to_page(PFN_DOWN(virt_to_phys(kaddr)))
-#define virt_addr_valid(kaddr)	pfn_valid(PFN_DOWN(virt_to_phys(kaddr)))
-
-#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
-				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
-
-#define UNCAC_ADDR(addr)	((addr) - PAGE_OFFSET + UNCAC_BASE + 	\
-								PHYS_OFFSET)
-#define CAC_ADDR(addr)		((addr) - UNCAC_BASE + PAGE_OFFSET -	\
-								PHYS_OFFSET)
-=======
  * discussion can be found in
  * https://lore.kernel.org/lkml/a2ebde260608230500o3407b108hc03debb9da6e62c@mail.gmail.com
  *
@@ -359,7 +224,6 @@ static inline unsigned long kaslr_offset(void)
 {
 	return __kaslr_offset;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm-generic/memory_model.h>
 #include <asm-generic/getorder.h>

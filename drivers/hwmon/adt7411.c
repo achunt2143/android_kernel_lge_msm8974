@@ -1,32 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for the ADT7411 (I2C/SPI 8 channel 10 bit ADC & temperature-sensor)
  *
  *  Copyright (C) 2008, 2010 Pengutronix
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  TODO: SPI, support for external temperature sensor
- *	  use power-down mode for suspend?, interrupt handling?
-=======
  *  TODO: SPI, use power-down mode for suspend?, interrupt handling?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/jiffies.h>
 #include <linux/i2c.h>
@@ -34,8 +18,6 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-=======
 #define ADT7411_REG_STAT_1			0x00
 #define ADT7411_STAT_1_INT_TEMP_HIGH		BIT(0)
 #define ADT7411_STAT_1_INT_TEMP_LOW		BIT(1)
@@ -51,7 +33,6 @@
 #define ADT7411_STAT_2_AIN7			BIT(2)
 #define ADT7411_STAT_2_AIN8			BIT(3)
 #define ADT7411_STAT_2_VDD			BIT(4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADT7411_REG_INT_TEMP_VDD_LSB		0x03
 #define ADT7411_REG_EXT_TEMP_AIN14_LSB		0x04
 #define ADT7411_REG_VDD_MSB			0x06
@@ -59,16 +40,6 @@
 #define ADT7411_REG_EXT_TEMP_AIN1_MSB		0x08
 
 #define ADT7411_REG_CFG1			0x18
-<<<<<<< HEAD
-#define ADT7411_CFG1_START_MONITOR		(1 << 0)
-
-#define ADT7411_REG_CFG2			0x19
-#define ADT7411_CFG2_DISABLE_AVG		(1 << 5)
-
-#define ADT7411_REG_CFG3			0x1a
-#define ADT7411_CFG3_ADC_CLK_225		(1 << 0)
-#define ADT7411_CFG3_REF_VDD			(1 << 4)
-=======
 #define ADT7411_CFG1_START_MONITOR		BIT(0)
 #define ADT7411_CFG1_RESERVED_BIT1		BIT(1)
 #define ADT7411_CFG1_EXT_TDM			BIT(2)
@@ -94,7 +65,6 @@
 #define ADT7411_REG_IN_LOW(nr)			((nr) > 1 \
 						  ? 0x2c + 2 * ((nr)-2) \
 						  : 0x28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ADT7411_REG_DEVICE_ID			0x4d
 #define ADT7411_REG_MANUFACTURER_ID		0x4e
@@ -104,8 +74,6 @@
 
 static const unsigned short normal_i2c[] = { 0x48, 0x4a, 0x4b, I2C_CLIENT_END };
 
-<<<<<<< HEAD
-=======
 static const u8 adt7411_in_alarm_reg[] = {
 	ADT7411_REG_STAT_2,
 	ADT7411_REG_STAT_1,
@@ -130,19 +98,13 @@ static const u8 adt7411_in_alarm_bits[] = {
 	ADT7411_STAT_2_AIN8,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct adt7411_data {
 	struct mutex device_lock;	/* for "atomic" device accesses */
 	struct mutex update_lock;
 	unsigned long next_update;
-<<<<<<< HEAD
-	int vref_cached;
-	struct device *hwmon_dev;
-=======
 	long vref_cached;
 	struct i2c_client *client;
 	bool use_ext_temp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -199,87 +161,12 @@ static int adt7411_modify_bit(struct i2c_client *client, u8 reg, u8 bit,
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t adt7411_show_vdd(struct device *dev,
-				struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	int ret = adt7411_read_10_bit(client, ADT7411_REG_INT_TEMP_VDD_LSB,
-			ADT7411_REG_VDD_MSB, 2);
-
-	return ret < 0 ? ret : sprintf(buf, "%u\n", ret * 7000 / 1024);
-}
-
-static ssize_t adt7411_show_temp(struct device *dev,
-			struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	int val = adt7411_read_10_bit(client, ADT7411_REG_INT_TEMP_VDD_LSB,
-			ADT7411_REG_INT_TEMP_MSB, 0);
-
-	if (val < 0)
-		return val;
-
-	val = val & 0x200 ? val - 0x400 : val; /* 10 bit signed */
-
-	return sprintf(buf, "%d\n", val * 250);
-}
-
-static ssize_t adt7411_show_input(struct device *dev,
-				  struct device_attribute *attr, char *buf)
-{
-	int nr = to_sensor_dev_attr(attr)->index;
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7411_data *data = i2c_get_clientdata(client);
-	int val;
-	u8 lsb_reg, lsb_shift;
-
-	mutex_lock(&data->update_lock);
-	if (time_after_eq(jiffies, data->next_update)) {
-		val = i2c_smbus_read_byte_data(client, ADT7411_REG_CFG3);
-		if (val < 0)
-			goto exit_unlock;
-
-		if (val & ADT7411_CFG3_REF_VDD) {
-			val = adt7411_read_10_bit(client,
-					ADT7411_REG_INT_TEMP_VDD_LSB,
-					ADT7411_REG_VDD_MSB, 2);
-			if (val < 0)
-				goto exit_unlock;
-
-			data->vref_cached = val * 7000 / 1024;
-		} else {
-			data->vref_cached = 2250;
-		}
-
-		data->next_update = jiffies + HZ;
-	}
-
-	lsb_reg = ADT7411_REG_EXT_TEMP_AIN14_LSB + (nr >> 2);
-	lsb_shift = 2 * (nr & 0x03);
-	val = adt7411_read_10_bit(client, lsb_reg,
-			ADT7411_REG_EXT_TEMP_AIN1_MSB + nr, lsb_shift);
-	if (val < 0)
-		goto exit_unlock;
-
-	val = sprintf(buf, "%u\n", val * data->vref_cached / 1024);
- exit_unlock:
-	mutex_unlock(&data->update_lock);
-	return val;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t adt7411_show_bit(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	struct sensor_device_attribute_2 *attr2 = to_sensor_dev_attr_2(attr);
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-=======
 	struct adt7411_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = i2c_smbus_read_byte_data(client, attr2->index);
 
 	return ret < 0 ? ret : sprintf(buf, "%u\n", !!(ret & attr2->nr));
@@ -290,13 +177,8 @@ static ssize_t adt7411_set_bit(struct device *dev,
 			       size_t count)
 {
 	struct sensor_device_attribute_2 *s_attr2 = to_sensor_dev_attr_2(attr);
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7411_data *data = i2c_get_clientdata(client);
-=======
 	struct adt7411_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	unsigned long flag;
 
@@ -318,48 +200,16 @@ static ssize_t adt7411_set_bit(struct device *dev,
 	SENSOR_DEVICE_ATTR_2(__name, S_IRUGO | S_IWUSR, adt7411_show_bit, \
 	adt7411_set_bit, __bit, __reg)
 
-<<<<<<< HEAD
-static DEVICE_ATTR(temp1_input, S_IRUGO, adt7411_show_temp, NULL);
-static DEVICE_ATTR(in0_input, S_IRUGO, adt7411_show_vdd, NULL);
-static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, adt7411_show_input, NULL, 0);
-static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, adt7411_show_input, NULL, 1);
-static SENSOR_DEVICE_ATTR(in3_input, S_IRUGO, adt7411_show_input, NULL, 2);
-static SENSOR_DEVICE_ATTR(in4_input, S_IRUGO, adt7411_show_input, NULL, 3);
-static SENSOR_DEVICE_ATTR(in5_input, S_IRUGO, adt7411_show_input, NULL, 4);
-static SENSOR_DEVICE_ATTR(in6_input, S_IRUGO, adt7411_show_input, NULL, 5);
-static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, adt7411_show_input, NULL, 6);
-static SENSOR_DEVICE_ATTR(in8_input, S_IRUGO, adt7411_show_input, NULL, 7);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ADT7411_BIT_ATTR(no_average, ADT7411_REG_CFG2, ADT7411_CFG2_DISABLE_AVG);
 static ADT7411_BIT_ATTR(fast_sampling, ADT7411_REG_CFG3, ADT7411_CFG3_ADC_CLK_225);
 static ADT7411_BIT_ATTR(adc_ref_vdd, ADT7411_REG_CFG3, ADT7411_CFG3_REF_VDD);
 
 static struct attribute *adt7411_attrs[] = {
-<<<<<<< HEAD
-	&dev_attr_temp1_input.attr,
-	&dev_attr_in0_input.attr,
-	&sensor_dev_attr_in1_input.dev_attr.attr,
-	&sensor_dev_attr_in2_input.dev_attr.attr,
-	&sensor_dev_attr_in3_input.dev_attr.attr,
-	&sensor_dev_attr_in4_input.dev_attr.attr,
-	&sensor_dev_attr_in5_input.dev_attr.attr,
-	&sensor_dev_attr_in6_input.dev_attr.attr,
-	&sensor_dev_attr_in7_input.dev_attr.attr,
-	&sensor_dev_attr_in8_input.dev_attr.attr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_no_average.dev_attr.attr,
 	&sensor_dev_attr_fast_sampling.dev_attr.attr,
 	&sensor_dev_attr_adc_ref_vdd.dev_attr.attr,
 	NULL
 };
-<<<<<<< HEAD
-
-static const struct attribute_group adt7411_attr_grp = {
-	.attrs = adt7411_attrs,
-};
-=======
 ATTRIBUTE_GROUPS(adt7411);
 
 static int adt7411_read_in_alarm(struct device *dev, int channel, long *val)
@@ -715,7 +565,6 @@ static umode_t adt7411_is_visible(const void *_data,
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int adt7411_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
@@ -727,27 +576,14 @@ static int adt7411_detect(struct i2c_client *client,
 
 	val = i2c_smbus_read_byte_data(client, ADT7411_REG_MANUFACTURER_ID);
 	if (val < 0 || val != ADT7411_MANUFACTURER_ID) {
-<<<<<<< HEAD
-		dev_dbg(&client->dev, "Wrong manufacturer ID. Got %d, "
-			"expected %d\n", val, ADT7411_MANUFACTURER_ID);
-=======
 		dev_dbg(&client->dev,
 			"Wrong manufacturer ID. Got %d, expected %d\n",
 			val, ADT7411_MANUFACTURER_ID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	val = i2c_smbus_read_byte_data(client, ADT7411_REG_DEVICE_ID);
 	if (val < 0 || val != ADT7411_DEVICE_ID) {
-<<<<<<< HEAD
-		dev_dbg(&client->dev, "Wrong device ID. Got %d, "
-			"expected %d\n", val, ADT7411_DEVICE_ID);
-		return -ENODEV;
-	}
-
-	strlcpy(info->type, "adt7411", I2C_NAME_SIZE);
-=======
 		dev_dbg(&client->dev,
 			"Wrong device ID. Got %d, expected %d\n",
 			val, ADT7411_DEVICE_ID);
@@ -755,20 +591,10 @@ static int adt7411_detect(struct i2c_client *client,
 	}
 
 	strscpy(info->type, "adt7411", I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit adt7411_probe(struct i2c_client *client,
-				   const struct i2c_device_id *id)
-{
-	struct adt7411_data *data;
-	int ret;
-
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-=======
 static int adt7411_init_device(struct adt7411_data *data)
 {
 	int ret;
@@ -848,20 +674,10 @@ static int adt7411_probe(struct i2c_client *client)
 	int ret;
 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
-<<<<<<< HEAD
-	mutex_init(&data->device_lock);
-	mutex_init(&data->update_lock);
-
-	ret = adt7411_modify_bit(client, ADT7411_REG_CFG1,
-				 ADT7411_CFG1_START_MONITOR, 1);
-	if (ret < 0)
-		goto exit_free;
-=======
 	data->client = client;
 	mutex_init(&data->device_lock);
 	mutex_init(&data->update_lock);
@@ -869,48 +685,15 @@ static int adt7411_probe(struct i2c_client *client)
 	ret = adt7411_init_device(data);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* force update on first occasion */
 	data->next_update = jiffies;
 
-<<<<<<< HEAD
-	ret = sysfs_create_group(&client->dev.kobj, &adt7411_attr_grp);
-	if (ret)
-		goto exit_free;
-
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		ret = PTR_ERR(data->hwmon_dev);
-		goto exit_remove;
-	}
-
-	dev_info(&client->dev, "successfully registered\n");
-
-	return 0;
-
- exit_remove:
-	sysfs_remove_group(&client->dev.kobj, &adt7411_attr_grp);
- exit_free:
-	kfree(data);
-	return ret;
-}
-
-static int __devexit adt7411_remove(struct i2c_client *client)
-{
-	struct adt7411_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &adt7411_attr_grp);
-	kfree(data);
-	return 0;
-=======
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,
 							 data,
 							 &adt7411_chip_info,
 							 adt7411_groups);
 	return PTR_ERR_OR_ZERO(hwmon_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id adt7411_id[] = {
@@ -923,12 +706,7 @@ static struct i2c_driver adt7411_driver = {
 	.driver		= {
 		.name		= "adt7411",
 	},
-<<<<<<< HEAD
-	.probe  = adt7411_probe,
-	.remove	= __devexit_p(adt7411_remove),
-=======
 	.probe = adt7411_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adt7411_id,
 	.detect = adt7411_detect,
 	.address_list = normal_i2c,
@@ -937,11 +715,6 @@ static struct i2c_driver adt7411_driver = {
 
 module_i2c_driver(adt7411_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Sascha Hauer <s.hauer@pengutronix.de> and "
-	"Wolfram Sang <w.sang@pengutronix.de>");
-=======
 MODULE_AUTHOR("Sascha Hauer, Wolfram Sang <kernel@pengutronix.de>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ADT7411 driver");
 MODULE_LICENSE("GPL v2");

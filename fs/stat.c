@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/stat.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/blkdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/mm.h>
 #include <linux/errno.h>
@@ -20,16 +14,6 @@
 #include <linux/fs.h>
 #include <linux/namei.h>
 #include <linux/security.h>
-<<<<<<< HEAD
-#include <linux/syscalls.h>
-#include <linux/pagemap.h>
-
-#include <asm/uaccess.h>
-#include <asm/unistd.h>
-
-void generic_fillattr(struct inode *inode, struct kstat *stat)
-{
-=======
 #include <linux/cred.h>
 #include <linux/syscalls.h>
 #include <linux/pagemap.h>
@@ -65,97 +49,10 @@ void generic_fillattr(struct mnt_idmap *idmap, u32 request_mask,
 	vfsuid_t vfsuid = i_uid_into_vfsuid(idmap, inode);
 	vfsgid_t vfsgid = i_gid_into_vfsgid(idmap, inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stat->dev = inode->i_sb->s_dev;
 	stat->ino = inode->i_ino;
 	stat->mode = inode->i_mode;
 	stat->nlink = inode->i_nlink;
-<<<<<<< HEAD
-	stat->uid = inode->i_uid;
-	stat->gid = inode->i_gid;
-	stat->rdev = inode->i_rdev;
-	stat->size = i_size_read(inode);
-	stat->atime = inode->i_atime;
-	stat->mtime = inode->i_mtime;
-	stat->ctime = inode->i_ctime;
-	stat->blksize = (1 << inode->i_blkbits);
-	stat->blocks = inode->i_blocks;
-}
-
-EXPORT_SYMBOL(generic_fillattr);
-
-int vfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	int retval;
-
-	retval = security_inode_getattr(mnt, dentry);
-	if (retval)
-		return retval;
-
-	if (inode->i_op->getattr)
-		return inode->i_op->getattr(mnt, dentry, stat);
-
-	generic_fillattr(inode, stat);
-	return 0;
-}
-
-EXPORT_SYMBOL(vfs_getattr);
-
-int vfs_fstat(unsigned int fd, struct kstat *stat)
-{
-	int fput_needed;
-	struct file *f = fget_raw_light(fd, &fput_needed);
-	int error = -EBADF;
-
-	if (f) {
-		error = vfs_getattr(f->f_path.mnt, f->f_path.dentry, stat);
-		fput_light(f, fput_needed);
-	}
-	return error;
-}
-EXPORT_SYMBOL(vfs_fstat);
-
-int vfs_fstatat(int dfd, const char __user *filename, struct kstat *stat,
-		int flag)
-{
-	struct path path;
-	int error = -EINVAL;
-	int lookup_flags = 0;
-
-	if ((flag & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |
-		      AT_EMPTY_PATH)) != 0)
-		goto out;
-
-	if (!(flag & AT_SYMLINK_NOFOLLOW))
-		lookup_flags |= LOOKUP_FOLLOW;
-	if (flag & AT_EMPTY_PATH)
-		lookup_flags |= LOOKUP_EMPTY;
-
-	error = user_path_at(dfd, filename, lookup_flags, &path);
-	if (error)
-		goto out;
-
-	error = vfs_getattr(path.mnt, path.dentry, stat);
-	path_put(&path);
-out:
-	return error;
-}
-EXPORT_SYMBOL(vfs_fstatat);
-
-int vfs_stat(const char __user *name, struct kstat *stat)
-{
-	return vfs_fstatat(AT_FDCWD, name, stat, 0);
-}
-EXPORT_SYMBOL(vfs_stat);
-
-int vfs_lstat(const char __user *name, struct kstat *stat)
-{
-	return vfs_fstatat(AT_FDCWD, name, stat, AT_SYMLINK_NOFOLLOW);
-}
-EXPORT_SYMBOL(vfs_lstat);
-
-=======
 	stat->uid = vfsuid_into_kuid(vfsuid);
 	stat->gid = vfsgid_into_kgid(vfsgid);
 	stat->rdev = inode->i_rdev;
@@ -409,7 +306,6 @@ int vfs_fstatat(int dfd, const char __user *filename,
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARCH_WANT_OLD_STAT
 
@@ -421,11 +317,7 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
 {
 	static int warncount = 5;
 	struct __old_kernel_stat tmp;
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (warncount > 0) {
 		warncount--;
 		printk(KERN_WARNING "VFS: Warning: %s using old stat() call. Recompile your binary.\n",
@@ -444,22 +336,13 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
 	tmp.st_nlink = stat->nlink;
 	if (tmp.st_nlink != stat->nlink)
 		return -EOVERFLOW;
-<<<<<<< HEAD
-	SET_UID(tmp.st_uid, stat->uid);
-	SET_GID(tmp.st_gid, stat->gid);
-=======
 	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
 	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_rdev = old_encode_dev(stat->rdev);
 #if BITS_PER_LONG == 32
 	if (stat->size > MAX_NON_LFS)
 		return -EOVERFLOW;
-<<<<<<< HEAD
-#endif	
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_size = stat->size;
 	tmp.st_atime = stat->atime.tv_sec;
 	tmp.st_mtime = stat->mtime.tv_sec;
@@ -506,35 +389,16 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
 
 #endif /* __ARCH_WANT_OLD_STAT */
 
-<<<<<<< HEAD
-=======
 #ifdef __ARCH_WANT_NEW_STAT
 
 #ifndef INIT_STRUCT_STAT_PADDING
 #  define INIT_STRUCT_STAT_PADDING(st) memset(&st, 0, sizeof(st))
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 {
 	struct stat tmp;
 
-<<<<<<< HEAD
-#if BITS_PER_LONG == 32
-	if (!old_valid_dev(stat->dev) || !old_valid_dev(stat->rdev))
-		return -EOVERFLOW;
-#else
-	if (!new_valid_dev(stat->dev) || !new_valid_dev(stat->rdev))
-		return -EOVERFLOW;
-#endif
-
-	memset(&tmp, 0, sizeof(tmp));
-#if BITS_PER_LONG == 32
-	tmp.st_dev = old_encode_dev(stat->dev);
-#else
-	tmp.st_dev = new_encode_dev(stat->dev);
-#endif
-=======
 	if (sizeof(tmp.st_dev) < 4 && !old_valid_dev(stat->dev))
 		return -EOVERFLOW;
 	if (sizeof(tmp.st_rdev) < 4 && !old_valid_dev(stat->rdev))
@@ -546,7 +410,6 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 
 	INIT_STRUCT_STAT_PADDING(tmp);
 	tmp.st_dev = new_encode_dev(stat->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_ino = stat->ino;
 	if (sizeof(tmp.st_ino) < sizeof(stat->ino) && tmp.st_ino != stat->ino)
 		return -EOVERFLOW;
@@ -554,23 +417,9 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 	tmp.st_nlink = stat->nlink;
 	if (tmp.st_nlink != stat->nlink)
 		return -EOVERFLOW;
-<<<<<<< HEAD
-	SET_UID(tmp.st_uid, stat->uid);
-	SET_GID(tmp.st_gid, stat->gid);
-#if BITS_PER_LONG == 32
-	tmp.st_rdev = old_encode_dev(stat->rdev);
-#else
-	tmp.st_rdev = new_encode_dev(stat->rdev);
-#endif
-#if BITS_PER_LONG == 32
-	if (stat->size > MAX_NON_LFS)
-		return -EOVERFLOW;
-#endif	
-=======
 	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
 	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
 	tmp.st_rdev = new_encode_dev(stat->rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_size = stat->size;
 	tmp.st_atime = stat->atime.tv_sec;
 	tmp.st_mtime = stat->mtime.tv_sec;
@@ -633,44 +482,19 @@ SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct stat __user *, statbuf)
 
 	return error;
 }
-<<<<<<< HEAD
-
-SYSCALL_DEFINE4(readlinkat, int, dfd, const char __user *, pathname,
-		char __user *, buf, int, bufsiz)
-=======
 #endif
 
 static int do_readlinkat(int dfd, const char __user *pathname,
 			 char __user *buf, int bufsiz)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct path path;
 	int error;
 	int empty = 0;
-<<<<<<< HEAD
-=======
 	unsigned int lookup_flags = LOOKUP_EMPTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bufsiz <= 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	error = user_path_at_empty(dfd, pathname, LOOKUP_EMPTY, &path, &empty);
-	if (!error) {
-		struct inode *inode = path.dentry->d_inode;
-
-		error = empty ? -ENOENT : -EINVAL;
-		if (inode->i_op->readlink) {
-			error = security_inode_readlink(path.dentry);
-			if (!error) {
-				touch_atime(&path);
-				error = inode->i_op->readlink(path.dentry,
-							      buf, bufsiz);
-			}
-		}
-		path_put(&path);
-=======
 retry:
 	error = user_path_at_empty(dfd, pathname, lookup_flags, &path, &empty);
 	if (!error) {
@@ -692,17 +516,10 @@ retry:
 			lookup_flags |= LOOKUP_REVAL;
 			goto retry;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return error;
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE3(readlink, const char __user *, path, char __user *, buf,
-		int, bufsiz)
-{
-	return sys_readlinkat(AT_FDCWD, path, buf, bufsiz);
-=======
 SYSCALL_DEFINE4(readlinkat, int, dfd, const char __user *, pathname,
 		char __user *, buf, int, bufsiz)
 {
@@ -713,36 +530,23 @@ SYSCALL_DEFINE3(readlink, const char __user *, path, char __user *, buf,
 		int, bufsiz)
 {
 	return do_readlinkat(AT_FDCWD, path, buf, bufsiz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* ---------- LFS-64 ----------- */
-<<<<<<< HEAD
-#ifdef __ARCH_WANT_STAT64
-=======
 #if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
 
 #ifndef INIT_STRUCT_STAT64_PADDING
 #  define INIT_STRUCT_STAT64_PADDING(st) memset(&st, 0, sizeof(st))
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static long cp_new_stat64(struct kstat *stat, struct stat64 __user *statbuf)
 {
 	struct stat64 tmp;
 
-<<<<<<< HEAD
-	memset(&tmp, 0, sizeof(struct stat64));
-#ifdef CONFIG_MIPS
-	/* mips has weird padding, so we don't get 64 bits there */
-	if (!new_valid_dev(stat->dev) || !new_valid_dev(stat->rdev))
-		return -EOVERFLOW;
-=======
 	INIT_STRUCT_STAT64_PADDING(tmp);
 #ifdef CONFIG_MIPS
 	/* mips has weird padding, so we don't get 64 bits there */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_dev = new_encode_dev(stat->dev);
 	tmp.st_rdev = new_encode_dev(stat->rdev);
 #else
@@ -757,13 +561,8 @@ static long cp_new_stat64(struct kstat *stat, struct stat64 __user *statbuf)
 #endif
 	tmp.st_mode = stat->mode;
 	tmp.st_nlink = stat->nlink;
-<<<<<<< HEAD
-	tmp.st_uid = stat->uid;
-	tmp.st_gid = stat->gid;
-=======
 	tmp.st_uid = from_kuid_munged(current_user_ns(), stat->uid);
 	tmp.st_gid = from_kgid_munged(current_user_ns(), stat->gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_atime = stat->atime.tv_sec;
 	tmp.st_atime_nsec = stat->atime.tv_nsec;
 	tmp.st_mtime = stat->mtime.tv_sec;
@@ -822,9 +621,6 @@ SYSCALL_DEFINE4(fstatat64, int, dfd, const char __user *, filename,
 		return error;
 	return cp_new_stat64(&stat, statbuf);
 }
-<<<<<<< HEAD
-#endif /* __ARCH_WANT_STAT64 */
-=======
 #endif /* __ARCH_WANT_STAT64 || __ARCH_WANT_COMPAT_STAT64 */
 
 static noinline_for_stack int
@@ -1001,7 +797,6 @@ COMPAT_SYSCALL_DEFINE2(newfstat, unsigned int, fd,
 	return error;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Caller is here responsible for sufficient locking (ie. inode->i_lock) */
 void __inode_add_bytes(struct inode *inode, loff_t bytes)
@@ -1014,10 +809,7 @@ void __inode_add_bytes(struct inode *inode, loff_t bytes)
 		inode->i_bytes -= 512;
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__inode_add_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void inode_add_bytes(struct inode *inode, loff_t bytes)
 {
@@ -1028,14 +820,8 @@ void inode_add_bytes(struct inode *inode, loff_t bytes)
 
 EXPORT_SYMBOL(inode_add_bytes);
 
-<<<<<<< HEAD
-void inode_sub_bytes(struct inode *inode, loff_t bytes)
-{
-	spin_lock(&inode->i_lock);
-=======
 void __inode_sub_bytes(struct inode *inode, loff_t bytes)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks -= bytes >> 9;
 	bytes &= 511;
 	if (inode->i_bytes < bytes) {
@@ -1043,8 +829,6 @@ void __inode_sub_bytes(struct inode *inode, loff_t bytes)
 		inode->i_bytes += 512;
 	}
 	inode->i_bytes -= bytes;
-<<<<<<< HEAD
-=======
 }
 
 EXPORT_SYMBOL(__inode_sub_bytes);
@@ -1053,7 +837,6 @@ void inode_sub_bytes(struct inode *inode, loff_t bytes)
 {
 	spin_lock(&inode->i_lock);
 	__inode_sub_bytes(inode, bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&inode->i_lock);
 }
 
@@ -1064,11 +847,7 @@ loff_t inode_get_bytes(struct inode *inode)
 	loff_t ret;
 
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	ret = (((loff_t)inode->i_blocks) << 9) + inode->i_bytes;
-=======
 	ret = __inode_get_bytes(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&inode->i_lock);
 	return ret;
 }

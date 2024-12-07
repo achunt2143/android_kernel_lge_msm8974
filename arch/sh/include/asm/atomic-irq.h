@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_ATOMIC_IRQ_H
 #define __ASM_SH_ATOMIC_IRQ_H
 
@@ -12,69 +9,6 @@
  * forward to code at the end of this object's .text section, then
  * branch back to restart the operation.
  */
-<<<<<<< HEAD
-static inline void atomic_add(int i, atomic_t *v)
-{
-	unsigned long flags;
-
-	raw_local_irq_save(flags);
-	v->counter += i;
-	raw_local_irq_restore(flags);
-}
-
-static inline void atomic_sub(int i, atomic_t *v)
-{
-	unsigned long flags;
-
-	raw_local_irq_save(flags);
-	v->counter -= i;
-	raw_local_irq_restore(flags);
-}
-
-static inline int atomic_add_return(int i, atomic_t *v)
-{
-	unsigned long temp, flags;
-
-	raw_local_irq_save(flags);
-	temp = v->counter;
-	temp += i;
-	v->counter = temp;
-	raw_local_irq_restore(flags);
-
-	return temp;
-}
-
-static inline int atomic_sub_return(int i, atomic_t *v)
-{
-	unsigned long temp, flags;
-
-	raw_local_irq_save(flags);
-	temp = v->counter;
-	temp -= i;
-	v->counter = temp;
-	raw_local_irq_restore(flags);
-
-	return temp;
-}
-
-static inline void atomic_clear_mask(unsigned int mask, atomic_t *v)
-{
-	unsigned long flags;
-
-	raw_local_irq_save(flags);
-	v->counter &= ~mask;
-	raw_local_irq_restore(flags);
-}
-
-static inline void atomic_set_mask(unsigned int mask, atomic_t *v)
-{
-	unsigned long flags;
-
-	raw_local_irq_save(flags);
-	v->counter |= mask;
-	raw_local_irq_restore(flags);
-}
-=======
 
 #define ATOMIC_OP(op, c_op)						\
 static inline void arch_atomic_##op(int i, atomic_t *v)			\
@@ -143,6 +77,5 @@ ATOMIC_OPS(xor, ^=)
 #undef ATOMIC_FETCH_OP
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_ATOMIC_IRQ_H */

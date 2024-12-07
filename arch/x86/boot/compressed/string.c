@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#include "misc.h"
-
-int memcmp(const void *s1, const void *s2, size_t len)
-{
-	u8 diff;
-	asm("repe; cmpsb; setnz %0"
-	    : "=qm" (diff), "+D" (s1), "+S" (s2), "+c" (len));
-	return diff;
-}
-
-#include "../string.c"
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * This provides an optimized implementation of memcpy, and a simplified
@@ -92,4 +79,3 @@ extern void *__memset(void *s, int c, size_t n) __alias(memset);
 extern void *__memmove(void *dest, const void *src, size_t n) __alias(memmove);
 extern void *__memcpy(void *dest, const void *src, size_t n) __alias(memcpy);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

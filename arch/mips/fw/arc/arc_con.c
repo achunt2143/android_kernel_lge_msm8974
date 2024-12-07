@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Wrap-around code for a console using the
  * ARC io-routines.
@@ -15,10 +12,7 @@
 #include <linux/init.h>
 #include <linux/console.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sgialib.h>
 
 static void prom_console_write(struct console *co, const char *s,
@@ -34,13 +28,9 @@ static void prom_console_write(struct console *co, const char *s,
 
 static int prom_console_setup(struct console *co, char *options)
 {
-<<<<<<< HEAD
-	return !(prom_flags & PROM_FLAG_USE_AS_CONSOLE);
-=======
 	if (prom_flags & PROM_FLAG_USE_AS_CONSOLE)
 		return 0;
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct console arc_cons = {

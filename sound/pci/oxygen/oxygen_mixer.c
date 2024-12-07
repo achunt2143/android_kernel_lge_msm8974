@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * C-Media CMI8788 driver - mixer code
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, version 2.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this driver; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mutex.h>
@@ -95,11 +76,7 @@ static int dac_mute_put(struct snd_kcontrol *ctl,
 	int changed;
 
 	mutex_lock(&chip->mutex);
-<<<<<<< HEAD
-	changed = !value->value.integer.value[0] != chip->dac_mute;
-=======
 	changed = (!value->value.integer.value[0]) != chip->dac_mute;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (changed) {
 		chip->dac_mute = !value->value.integer.value[0];
 		chip->model.update_dac_mute(chip);
@@ -201,10 +178,7 @@ void oxygen_update_dac_routing(struct oxygen *chip)
 	if (chip->model.update_center_lfe_mix)
 		chip->model.update_center_lfe_mix(chip, chip->dac_routing > 2);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(oxygen_update_dac_routing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int upmix_put(struct snd_kcontrol *ctl, struct snd_ctl_elem_value *value)
 {
@@ -744,11 +718,7 @@ static int ac97_fp_rec_volume_put(struct snd_kcontrol *ctl,
 	oldreg = oxygen_read_ac97(chip, 1, AC97_REC_GAIN);
 	newreg = oldreg & ~0x0707;
 	newreg = newreg | (value->value.integer.value[0] & 7);
-<<<<<<< HEAD
-	newreg = newreg | ((value->value.integer.value[0] & 7) << 8);
-=======
 	newreg = newreg | ((value->value.integer.value[1] & 7) << 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	change = newreg != oldreg;
 	if (change)
 		oxygen_write_ac97(chip, 1, AC97_REC_GAIN, newreg);
@@ -804,12 +774,9 @@ static const struct snd_kcontrol_new controls[] = {
 		.get = upmix_get,
 		.put = upmix_put,
 	},
-<<<<<<< HEAD
-=======
 };
 
 static const struct snd_kcontrol_new spdif_output_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = SNDRV_CTL_NAME_IEC958("", PLAYBACK, SWITCH),
@@ -962,8 +929,6 @@ static const struct {
 		},
 	},
 	{
-<<<<<<< HEAD
-=======
 		.pcm_dev = CAPTURE_3_FROM_I2S_3,
 		.controls = {
 			{
@@ -991,7 +956,6 @@ static const struct {
 		},
 	},
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pcm_dev = CAPTURE_1_FROM_SPDIF,
 		.controls = {
 			{
@@ -1076,17 +1040,10 @@ static int add_controls(struct oxygen *chip,
 		[CONTROL_CD_CAPTURE_SWITCH] = "CD Capture Switch",
 		[CONTROL_AUX_CAPTURE_SWITCH] = "Aux Capture Switch",
 	};
-<<<<<<< HEAD
-	unsigned int i, j;
-	struct snd_kcontrol_new template;
-	struct snd_kcontrol *ctl;
-	int err;
-=======
 	unsigned int i;
 	struct snd_kcontrol_new template;
 	struct snd_kcontrol *ctl;
 	int j, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < count; ++i) {
 		template = controls[i];
@@ -1117,19 +1074,11 @@ static int add_controls(struct oxygen *chip,
 		err = snd_ctl_add(chip->card, ctl);
 		if (err < 0)
 			return err;
-<<<<<<< HEAD
-		for (j = 0; j < CONTROL_COUNT; ++j)
-			if (!strcmp(ctl->id.name, known_ctl_names[j])) {
-				chip->controls[j] = ctl;
-				ctl->private_free = oxygen_any_ctl_free;
-			}
-=======
 		j = match_string(known_ctl_names, CONTROL_COUNT, ctl->id.name);
 		if (j >= 0) {
 			chip->controls[j] = ctl;
 			ctl->private_free = oxygen_any_ctl_free;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1142,15 +1091,12 @@ int oxygen_mixer_init(struct oxygen *chip)
 	err = add_controls(chip, controls, ARRAY_SIZE(controls));
 	if (err < 0)
 		return err;
-<<<<<<< HEAD
-=======
 	if (chip->model.device_config & PLAYBACK_1_TO_SPDIF) {
 		err = add_controls(chip, spdif_output_controls,
 				   ARRAY_SIZE(spdif_output_controls));
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->model.device_config & CAPTURE_1_FROM_SPDIF) {
 		err = add_controls(chip, spdif_input_controls,
 				   ARRAY_SIZE(spdif_input_controls));

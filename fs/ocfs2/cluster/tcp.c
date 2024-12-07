@@ -1,32 +1,8 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- *
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----
  *
  * Callers for this were originally written against a very simple synchronus
@@ -62,10 +38,7 @@
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jiffies.h>
 #include <linux/slab.h>
 #include <linux/idr.h>
@@ -73,14 +46,9 @@
 #include <linux/net.h>
 #include <linux/export.h>
 #include <net/tcp.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <trace/events/sock.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "heartbeat.h"
 #include "tcp.h"
@@ -115,11 +83,7 @@
 	typeof(sc) __sc = (sc);						\
 	mlog(ML_SOCKET, "[sc %p refs %d sock %p node %u page %p "	\
 	     "pg_off %zu] " fmt, __sc,					\
-<<<<<<< HEAD
-	     atomic_read(&__sc->sc_kref.refcount), __sc->sc_sock,	\
-=======
 	     kref_read(&__sc->sc_kref), __sc->sc_sock,	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    __sc->sc_node->nd_num, __sc->sc_page, __sc->sc_page_off ,	\
 	    ##args);							\
 } while (0)
@@ -130,11 +94,7 @@ static struct rb_root o2net_handler_tree = RB_ROOT;
 static struct o2net_node o2net_nodes[O2NM_MAX_NODES];
 
 /* XXX someday we'll need better accounting */
-<<<<<<< HEAD
-static struct socket *o2net_listen_sock = NULL;
-=======
 static struct socket *o2net_listen_sock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * listen work is only queued by the listening socket callbacks on the
@@ -163,15 +123,9 @@ static int o2net_sys_err_translations[O2NET_ERR_MAX] =
 static void o2net_sc_connect_completed(struct work_struct *work);
 static void o2net_rx_until_empty(struct work_struct *work);
 static void o2net_shutdown_sc(struct work_struct *work);
-<<<<<<< HEAD
-static void o2net_listen_data_ready(struct sock *sk, int bytes);
-static void o2net_sc_send_keep_req(struct work_struct *work);
-static void o2net_idle_timer(unsigned long data);
-=======
 static void o2net_listen_data_ready(struct sock *sk);
 static void o2net_sc_send_keep_req(struct work_struct *work);
 static void o2net_idle_timer(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void o2net_sc_postpone_idle(struct o2net_sock_container *sc);
 static void o2net_sc_reset_idle_timer(struct o2net_sock_container *sc);
 
@@ -294,29 +248,17 @@ static void o2net_update_recv_stats(struct o2net_sock_container *sc)
 
 #endif /* CONFIG_OCFS2_FS_STATS */
 
-<<<<<<< HEAD
-static inline int o2net_reconnect_delay(void)
-=======
 static inline unsigned int o2net_reconnect_delay(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return o2nm_single_cluster->cl_reconnect_delay_ms;
 }
 
-<<<<<<< HEAD
-static inline int o2net_keepalive_delay(void)
-=======
 static inline unsigned int o2net_keepalive_delay(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return o2nm_single_cluster->cl_keepalive_delay_ms;
 }
 
-<<<<<<< HEAD
-static inline int o2net_idle_timeout(void)
-=======
 static inline unsigned int o2net_idle_timeout(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return o2nm_single_cluster->cl_idle_timeout_ms;
 }
@@ -348,30 +290,6 @@ static u8 o2net_num_from_nn(struct o2net_node *nn)
 
 static int o2net_prep_nsw(struct o2net_node *nn, struct o2net_status_wait *nsw)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-	do {
-		if (!idr_pre_get(&nn->nn_status_idr, GFP_ATOMIC)) {
-			ret = -EAGAIN;
-			break;
-		}
-		spin_lock(&nn->nn_lock);
-		ret = idr_get_new(&nn->nn_status_idr, nsw, &nsw->ns_id);
-		if (ret == 0)
-			list_add_tail(&nsw->ns_node_item,
-				      &nn->nn_status_list);
-		spin_unlock(&nn->nn_lock);
-	} while (ret == -EAGAIN);
-
-	if (ret == 0)  {
-		init_waitqueue_head(&nsw->ns_wq);
-		nsw->ns_sys_status = O2NET_ERR_NONE;
-		nsw->ns_status = 0;
-	}
-
-	return ret;
-=======
 	int ret;
 
 	spin_lock(&nn->nn_lock);
@@ -388,7 +306,6 @@ static int o2net_prep_nsw(struct o2net_node *nn, struct o2net_status_wait *nsw)
 	nsw->ns_sys_status = O2NET_ERR_NONE;
 	nsw->ns_status = 0;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void o2net_complete_nsw_locked(struct o2net_node *nn,
@@ -475,12 +392,9 @@ static void sc_kref_release(struct kref *kref)
 	sc->sc_node = NULL;
 
 	o2net_debug_del_sc(sc);
-<<<<<<< HEAD
-=======
 
 	if (sc->sc_page)
 		__free_page(sc->sc_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sc);
 }
 
@@ -521,13 +435,7 @@ static struct o2net_sock_container *sc_alloc(struct o2nm_node *node)
 	INIT_WORK(&sc->sc_shutdown_work, o2net_shutdown_sc);
 	INIT_DELAYED_WORK(&sc->sc_keepalive_work, o2net_sc_send_keep_req);
 
-<<<<<<< HEAD
-	init_timer(&sc->sc_idle_timeout);
-	sc->sc_idle_timeout.function = o2net_idle_timer;
-	sc->sc_idle_timeout.data = (unsigned long)sc;
-=======
 	timer_setup(&sc->sc_idle_timeout, o2net_idle_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sclog(sc, "alloced\n");
 
@@ -612,25 +520,16 @@ static void o2net_set_nn_state(struct o2net_node *nn,
 	if (nn->nn_persistent_error || nn->nn_sc_valid)
 		wake_up(&nn->nn_sc_wq);
 
-<<<<<<< HEAD
-	if (!was_err && nn->nn_persistent_error) {
-=======
 	if (was_valid && !was_err && nn->nn_persistent_error) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		o2quo_conn_err(o2net_num_from_nn(nn));
 		queue_delayed_work(o2net_wq, &nn->nn_still_up,
 				   msecs_to_jiffies(O2NET_QUORUM_DELAY_MS));
 	}
 
 	if (was_valid && !valid) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "o2net: No longer connected to "
-		       SC_NODEF_FMT "\n", SC_NODEF_ARGS(old_sc));
-=======
 		if (old_sc)
 			printk(KERN_NOTICE "o2net: No longer connected to "
 				SC_NODEF_FMT "\n", SC_NODEF_ARGS(old_sc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		o2net_complete_nodes_nsw(nn);
 	}
 
@@ -682,15 +581,6 @@ static void o2net_set_nn_state(struct o2net_node *nn,
 }
 
 /* see o2net_register_callbacks() */
-<<<<<<< HEAD
-static void o2net_data_ready(struct sock *sk, int bytes)
-{
-	void (*ready)(struct sock *sk, int bytes);
-
-	read_lock(&sk->sk_callback_lock);
-	if (sk->sk_user_data) {
-		struct o2net_sock_container *sc = sk->sk_user_data;
-=======
 static void o2net_data_ready(struct sock *sk)
 {
 	void (*ready)(struct sock *sk);
@@ -701,7 +591,6 @@ static void o2net_data_ready(struct sock *sk)
 	read_lock_bh(&sk->sk_callback_lock);
 	sc = sk->sk_user_data;
 	if (sc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sclog(sc, "data_ready hit\n");
 		o2net_set_data_ready_time(sc);
 		o2net_sc_queue_work(sc, &sc->sc_rx_work);
@@ -709,15 +598,9 @@ static void o2net_data_ready(struct sock *sk)
 	} else {
 		ready = sk->sk_data_ready;
 	}
-<<<<<<< HEAD
-	read_unlock(&sk->sk_callback_lock);
-
-	ready(sk, bytes);
-=======
 	read_unlock_bh(&sk->sk_callback_lock);
 
 	ready(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* see o2net_register_callbacks() */
@@ -726,11 +609,7 @@ static void o2net_state_change(struct sock *sk)
 	void (*state_change)(struct sock *sk);
 	struct o2net_sock_container *sc;
 
-<<<<<<< HEAD
-	read_lock(&sk->sk_callback_lock);
-=======
 	read_lock_bh(&sk->sk_callback_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sc = sk->sk_user_data;
 	if (sc == NULL) {
 		state_change = sk->sk_state_change;
@@ -742,24 +621,6 @@ static void o2net_state_change(struct sock *sk)
 	state_change = sc->sc_state_change;
 
 	switch(sk->sk_state) {
-<<<<<<< HEAD
-		/* ignore connecting sockets as they make progress */
-		case TCP_SYN_SENT:
-		case TCP_SYN_RECV:
-			break;
-		case TCP_ESTABLISHED:
-			o2net_sc_queue_work(sc, &sc->sc_connect_work);
-			break;
-		default:
-			printk(KERN_INFO "o2net: Connection to " SC_NODEF_FMT
-			      " shutdown, state %d\n",
-			      SC_NODEF_ARGS(sc), sk->sk_state);
-			o2net_sc_queue_work(sc, &sc->sc_shutdown_work);
-			break;
-	}
-out:
-	read_unlock(&sk->sk_callback_lock);
-=======
 	/* ignore connecting sockets as they make progress */
 	case TCP_SYN_SENT:
 	case TCP_SYN_RECV:
@@ -776,7 +637,6 @@ out:
 	}
 out:
 	read_unlock_bh(&sk->sk_callback_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state_change(sk);
 }
 
@@ -893,34 +753,6 @@ static struct o2net_msg_handler *
 o2net_handler_tree_lookup(u32 msg_type, u32 key, struct rb_node ***ret_p,
 			  struct rb_node **ret_parent)
 {
-<<<<<<< HEAD
-        struct rb_node **p = &o2net_handler_tree.rb_node;
-        struct rb_node *parent = NULL;
-	struct o2net_msg_handler *nmh, *ret = NULL;
-	int cmp;
-
-        while (*p) {
-                parent = *p;
-                nmh = rb_entry(parent, struct o2net_msg_handler, nh_node);
-		cmp = o2net_handler_cmp(nmh, msg_type, key);
-
-                if (cmp < 0)
-                        p = &(*p)->rb_left;
-                else if (cmp > 0)
-                        p = &(*p)->rb_right;
-                else {
-			ret = nmh;
-                        break;
-		}
-        }
-
-        if (ret_p != NULL)
-                *ret_p = p;
-        if (ret_parent != NULL)
-                *ret_parent = parent;
-
-        return ret;
-=======
 	struct rb_node **p = &o2net_handler_tree.rb_node;
 	struct rb_node *parent = NULL;
 	struct o2net_msg_handler *nmh, *ret = NULL;
@@ -947,7 +779,6 @@ o2net_handler_tree_lookup(u32 msg_type, u32 key, struct rb_node ***ret_p,
 		*ret_parent = parent;
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void o2net_handler_kref_release(struct kref *kref)
@@ -1024,19 +855,10 @@ int o2net_register_handler(u32 msg_type, u32 key, u32 max_len,
 		/* we've had some trouble with handlers seemingly vanishing. */
 		mlog_bug_on_msg(o2net_handler_tree_lookup(msg_type, key, &p,
 							  &parent) == NULL,
-<<<<<<< HEAD
-			        "couldn't find handler we *just* registerd "
-				"for type %u key %08x\n", msg_type, key);
-	}
-	write_unlock(&o2net_handler_lock);
-	if (ret)
-		goto out;
-=======
 			        "couldn't find handler we *just* registered "
 				"for type %u key %08x\n", msg_type, key);
 	}
 	write_unlock(&o2net_handler_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (ret)
@@ -1079,70 +901,23 @@ static struct o2net_msg_handler *o2net_handler_get(u32 msg_type, u32 key)
 
 static int o2net_recv_tcp_msg(struct socket *sock, void *data, size_t len)
 {
-<<<<<<< HEAD
-	int ret;
-	mm_segment_t oldfs;
-	struct kvec vec = {
-		.iov_len = len,
-		.iov_base = data,
-	};
-	struct msghdr msg = {
-		.msg_iovlen = 1,
-		.msg_iov = (struct iovec *)&vec,
-       		.msg_flags = MSG_DONTWAIT,
-	};
-
-	oldfs = get_fs();
-	set_fs(get_ds());
-	ret = sock_recvmsg(sock, &msg, len, msg.msg_flags);
-	set_fs(oldfs);
-
-	return ret;
-=======
 	struct kvec vec = { .iov_len = len, .iov_base = data, };
 	struct msghdr msg = { .msg_flags = MSG_DONTWAIT, };
 	iov_iter_kvec(&msg.msg_iter, ITER_DEST, &vec, 1, len);
 	return sock_recvmsg(sock, &msg, MSG_DONTWAIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int o2net_send_tcp_msg(struct socket *sock, struct kvec *vec,
 			      size_t veclen, size_t total)
 {
 	int ret;
-<<<<<<< HEAD
-	mm_segment_t oldfs;
-	struct msghdr msg = {
-		.msg_iov = (struct iovec *)vec,
-		.msg_iovlen = veclen,
-	};
-=======
 	struct msghdr msg = {.msg_flags = 0,};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sock == NULL) {
 		ret = -EINVAL;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	oldfs = get_fs();
-	set_fs(get_ds());
-	ret = sock_sendmsg(sock, &msg, total);
-	set_fs(oldfs);
-	if (ret != total) {
-		mlog(ML_ERROR, "sendmsg returned %d instead of %zu\n", ret,
-		     total);
-		if (ret >= 0)
-			ret = -EPIPE; /* should be smarter, I bet */
-		goto out;
-	}
-
-	ret = 0;
-out:
-	if (ret < 0)
-		mlog(0, "returning error: %d\n", ret);
-=======
 	ret = kernel_sendmsg(sock, &msg, vec, veclen, total);
 	if (likely(ret == total))
 		return 0;
@@ -1151,26 +926,10 @@ out:
 		ret = -EPIPE; /* should be smarter, I bet */
 out:
 	mlog(0, "returning error: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void o2net_sendpage(struct o2net_sock_container *sc,
-<<<<<<< HEAD
-			   void *kmalloced_virt,
-			   size_t size)
-{
-	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
-	ssize_t ret;
-
-	while (1) {
-		mutex_lock(&sc->sc_send_lock);
-		ret = sc->sc_sock->ops->sendpage(sc->sc_sock,
-						 virt_to_page(kmalloced_virt),
-						 (long)kmalloced_virt & ~PAGE_MASK,
-						 size, MSG_DONTWAIT);
-		mutex_unlock(&sc->sc_send_lock);
-=======
 			   void *virt, size_t size)
 {
 	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
@@ -1187,7 +946,6 @@ static void o2net_sendpage(struct o2net_sock_container *sc,
 		ret = sock_sendmsg(sc->sc_sock, &msg);
 		mutex_unlock(&sc->sc_send_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret == size)
 			break;
 		if (ret == (ssize_t)-EAGAIN) {
@@ -1238,27 +996,15 @@ static int o2net_tx_can_proceed(struct o2net_node *nn,
 }
 
 /* Get a map of all nodes to which this node is currently connected to */
-<<<<<<< HEAD
-void o2net_fill_node_map(unsigned long *map, unsigned bytes)
-=======
 void o2net_fill_node_map(unsigned long *map, unsigned int bits)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct o2net_sock_container *sc;
 	int node, ret;
 
-<<<<<<< HEAD
-	BUG_ON(bytes < (BITS_TO_LONGS(O2NM_MAX_NODES) * sizeof(unsigned long)));
-
-	memset(map, 0, bytes);
-	for (node = 0; node < O2NM_MAX_NODES; ++node) {
-		o2net_tx_can_proceed(o2net_nn_from_num(node), &sc, &ret);
-=======
 	bitmap_zero(map, bits);
 	for (node = 0; node < O2NM_MAX_NODES; ++node) {
 		if (!o2net_tx_can_proceed(o2net_nn_from_num(node), &sc, &ret))
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ret) {
 			set_bit(node, map);
 			sc_put(sc);
@@ -1318,11 +1064,7 @@ int o2net_send_message_vec(u32 msg_type, u32 key, struct kvec *caller_vec,
 	o2net_set_nst_sock_container(&nst, sc);
 
 	veclen = caller_veclen + 1;
-<<<<<<< HEAD
-	vec = kmalloc(sizeof(struct kvec) * veclen, GFP_ATOMIC);
-=======
 	vec = kmalloc_array(veclen, sizeof(struct kvec), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vec == NULL) {
 		mlog(0, "failed to %zu element kvec!\n", veclen);
 		ret = -ENOMEM;
@@ -1382,15 +1124,8 @@ out:
 	o2net_debug_del_nst(&nst); /* must be before dropping sc and node */
 	if (sc)
 		sc_put(sc);
-<<<<<<< HEAD
-	if (vec)
-		kfree(vec);
-	if (msg)
-		kfree(msg);
-=======
 	kfree(vec);
 	kfree(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	o2net_complete_nsw(nn, &nsw, 0, 0, 0);
 	return ret;
 }
@@ -1465,10 +1200,6 @@ static int o2net_process_message(struct o2net_sock_container *sc,
 			msglog(hdr, "bad magic\n");
 			ret = -EINVAL;
 			goto out;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* find a handler for it */
@@ -1711,34 +1442,6 @@ static void o2net_rx_until_empty(struct work_struct *work)
 	sc_put(sc);
 }
 
-<<<<<<< HEAD
-static int o2net_set_nodelay(struct socket *sock)
-{
-	int ret, val = 1;
-	mm_segment_t oldfs;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-
-	/*
-	 * Dear unsuspecting programmer,
-	 *
-	 * Don't use sock_setsockopt() for SOL_TCP.  It doesn't check its level
-	 * argument and assumes SOL_SOCKET so, say, your TCP_NODELAY will
-	 * silently turn into SO_DEBUG.
-	 *
-	 * Yours,
-	 * Keeper of hilariously fragile interfaces.
-	 */
-	ret = sock->ops->setsockopt(sock, SOL_TCP, TCP_NODELAY,
-				    (char __user *)&val, sizeof(val));
-
-	set_fs(oldfs);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void o2net_initialize_handshake(void)
 {
 	o2net_hand->o2hb_heartbeat_timeout_ms = cpu_to_be32(
@@ -1783,15 +1486,9 @@ static void o2net_sc_send_keep_req(struct work_struct *work)
 /* socket shutdown does a del_timer_sync against this as it tears down.
  * we can't start this timer until we've got to the point in sc buildup
  * where shutdown is going to be involved */
-<<<<<<< HEAD
-static void o2net_idle_timer(unsigned long data)
-{
-	struct o2net_sock_container *sc = (struct o2net_sock_container *)data;
-=======
 static void o2net_idle_timer(struct timer_list *t)
 {
 	struct o2net_sock_container *sc = from_timer(sc, t, sc_idle_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
 #ifdef CONFIG_DEBUG_FS
 	unsigned long msecs = ktime_to_ms(ktime_get()) -
@@ -1801,18 +1498,6 @@ static void o2net_idle_timer(struct timer_list *t)
 #endif
 
 	printk(KERN_NOTICE "o2net: Connection to " SC_NODEF_FMT " has been "
-<<<<<<< HEAD
-	       "idle for %lu.%lu secs, shutting it down.\n", SC_NODEF_ARGS(sc),
-	       msecs / 1000, msecs % 1000);
-
-	/*
-	 * Initialize the nn_timeout so that the next connection attempt
-	 * will continue in o2net_start_connect.
-	 */
-	atomic_set(&nn->nn_timeout, 1);
-
-	o2net_sc_queue_work(sc, &sc->sc_shutdown_work);
-=======
 	       "idle for %lu.%lu secs.\n",
 	       SC_NODEF_ARGS(sc), msecs / 1000, msecs % 1000);
 
@@ -1827,7 +1512,6 @@ static void o2net_idle_timer(struct timer_list *t)
 
 	o2net_sc_reset_idle_timer(sc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void o2net_sc_reset_idle_timer(struct o2net_sock_container *sc)
@@ -1842,8 +1526,6 @@ static void o2net_sc_reset_idle_timer(struct o2net_sock_container *sc)
 
 static void o2net_sc_postpone_idle(struct o2net_sock_container *sc)
 {
-<<<<<<< HEAD
-=======
 	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
 
 	/* clear fence decision since the connection recover from timeout*/
@@ -1853,7 +1535,6 @@ static void o2net_sc_postpone_idle(struct o2net_sock_container *sc)
 		atomic_set(&nn->nn_timeout, 0);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Only push out an existing timer */
 	if (timer_pending(&sc->sc_idle_timeout))
 		o2net_sc_reset_idle_timer(sc);
@@ -1874,9 +1555,6 @@ static void o2net_start_connect(struct work_struct *work)
 	struct sockaddr_in myaddr = {0, }, remoteaddr = {0, };
 	int ret = 0, stop;
 	unsigned int timeout;
-<<<<<<< HEAD
-
-=======
 	unsigned int nofs_flag;
 
 	/*
@@ -1884,32 +1562,18 @@ static void o2net_start_connect(struct work_struct *work)
 	 * prevent the filesystem from being reentered by memory reclaim.
 	 */
 	nofs_flag = memalloc_nofs_save();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if we're greater we initiate tx, otherwise we accept */
 	if (o2nm_this_node() <= o2net_num_from_nn(nn))
 		goto out;
 
 	/* watch for racing with tearing a node down */
 	node = o2nm_get_node_by_num(o2net_num_from_nn(nn));
-<<<<<<< HEAD
-	if (node == NULL) {
-		ret = 0;
-		goto out;
-	}
-
-	mynode = o2nm_get_node_by_num(o2nm_this_node());
-	if (mynode == NULL) {
-		ret = 0;
-		goto out;
-	}
-=======
 	if (node == NULL)
 		goto out;
 
 	mynode = o2nm_get_node_by_num(o2nm_this_node());
 	if (mynode == NULL)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&nn->nn_lock);
 	/*
@@ -1944,10 +1608,7 @@ static void o2net_start_connect(struct work_struct *work)
 	sc->sc_sock = sock; /* freed by sc_kref_release */
 
 	sock->sk->sk_allocation = GFP_ATOMIC;
-<<<<<<< HEAD
-=======
 	sock->sk->sk_use_task_frag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	myaddr.sin_family = AF_INET;
 	myaddr.sin_addr.s_addr = mynode->nd_ipv4_address;
@@ -1961,16 +1622,8 @@ static void o2net_start_connect(struct work_struct *work)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = o2net_set_nodelay(sc->sc_sock);
-	if (ret) {
-		mlog(ML_ERROR, "setting TCP_NODELAY failed with %d\n", ret);
-		goto out;
-	}
-=======
 	tcp_sock_set_nodelay(sc->sc_sock->sk);
 	tcp_sock_set_user_timeout(sock->sk, O2NET_TCP_USER_TIMEOUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	o2net_register_callbacks(sc->sc_sock->sk, sc);
 
@@ -1991,21 +1644,12 @@ static void o2net_start_connect(struct work_struct *work)
 		ret = 0;
 
 out:
-<<<<<<< HEAD
-	if (ret) {
-=======
 	if (ret && sc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_NOTICE "o2net: Connect attempt to " SC_NODEF_FMT
 		       " failed with errno %d\n", SC_NODEF_ARGS(sc), ret);
 		/* 0 err so that another will be queued and attempted
 		 * from set_nn_state */
-<<<<<<< HEAD
-		if (sc)
-			o2net_ensure_shutdown(nn, sc, 0);
-=======
 		o2net_ensure_shutdown(nn, sc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (sc)
 		sc_put(sc);
@@ -2014,10 +1658,7 @@ out:
 	if (mynode)
 		o2nm_node_put(mynode);
 
-<<<<<<< HEAD
-=======
 	memalloc_nofs_restore(nofs_flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -2029,21 +1670,13 @@ static void o2net_connect_expired(struct work_struct *work)
 	spin_lock(&nn->nn_lock);
 	if (!nn->nn_sc_valid) {
 		printk(KERN_NOTICE "o2net: No connection established with "
-<<<<<<< HEAD
-		       "node %u after %u.%u seconds, giving up.\n",
-=======
 		       "node %u after %u.%u seconds, check network and"
 		       " cluster configuration.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     o2net_num_from_nn(nn),
 		     o2net_idle_timeout() / 1000,
 		     o2net_idle_timeout() % 1000);
 
-<<<<<<< HEAD
-		o2net_set_nn_state(nn, NULL, 0, -ENOTCONN);
-=======
 		o2net_set_nn_state(nn, NULL, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&nn->nn_lock);
 }
@@ -2104,11 +1737,7 @@ static void o2net_hb_node_up_cb(struct o2nm_node *node, int node_num,
 		(msecs_to_jiffies(o2net_reconnect_delay()) + 1);
 
 	if (node_num != o2nm_this_node()) {
-<<<<<<< HEAD
-		/* believe it or not, accept and node hearbeating testing
-=======
 		/* believe it or not, accept and node heartbeating testing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * can succeed for this node before we got here.. so
 		 * only use set_nn_state to clear the persistent error
 		 * if that hasn't already happened */
@@ -2147,25 +1776,15 @@ int o2net_register_hb_callbacks(void)
 
 /* ------------------------------------------------------------ */
 
-<<<<<<< HEAD
-static int o2net_accept_one(struct socket *sock)
-{
-	int ret, slen;
-=======
 static int o2net_accept_one(struct socket *sock, int *more)
 {
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_in sin;
 	struct socket *new_sock = NULL;
 	struct o2nm_node *node = NULL;
 	struct o2nm_node *local_node = NULL;
 	struct o2net_sock_container *sc = NULL;
 	struct o2net_node *nn;
-<<<<<<< HEAD
-
-	BUG_ON(sock == NULL);
-=======
 	unsigned int nofs_flag;
 
 	/*
@@ -2176,7 +1795,6 @@ static int o2net_accept_one(struct socket *sock, int *more)
 
 	BUG_ON(sock == NULL);
 	*more = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sock_create_lite(sock->sk->sk_family, sock->sk->sk_type,
 			       sock->sk->sk_protocol, &new_sock);
 	if (ret)
@@ -2184,23 +1802,6 @@ static int o2net_accept_one(struct socket *sock, int *more)
 
 	new_sock->type = sock->type;
 	new_sock->ops = sock->ops;
-<<<<<<< HEAD
-	ret = sock->ops->accept(sock, new_sock, O_NONBLOCK);
-	if (ret < 0)
-		goto out;
-
-	new_sock->sk->sk_allocation = GFP_ATOMIC;
-
-	ret = o2net_set_nodelay(new_sock);
-	if (ret) {
-		mlog(ML_ERROR, "setting TCP_NODELAY failed with %d\n", ret);
-		goto out;
-	}
-
-	slen = sizeof(sin);
-	ret = new_sock->ops->getname(new_sock, (struct sockaddr *) &sin,
-				       &slen, 1);
-=======
 	ret = sock->ops->accept(sock, new_sock, O_NONBLOCK, false);
 	if (ret < 0)
 		goto out;
@@ -2212,7 +1813,6 @@ static int o2net_accept_one(struct socket *sock, int *more)
 	tcp_sock_set_user_timeout(new_sock->sk, O2NET_TCP_USER_TIMEOUT);
 
 	ret = new_sock->ops->getname(new_sock, (struct sockaddr *) &sin, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
@@ -2227,14 +1827,6 @@ static int o2net_accept_one(struct socket *sock, int *more)
 
 	if (o2nm_this_node() >= node->nd_num) {
 		local_node = o2nm_get_node_by_num(o2nm_this_node());
-<<<<<<< HEAD
-		printk(KERN_NOTICE "o2net: Unexpected connect attempt seen "
-		       "at node '%s' (%u, %pI4:%d) from node '%s' (%u, "
-		       "%pI4:%d)\n", local_node->nd_name, local_node->nd_num,
-		       &(local_node->nd_ipv4_address),
-		       ntohs(local_node->nd_ipv4_port), node->nd_name,
-		       node->nd_num, &sin.sin_addr.s_addr, ntohs(sin.sin_port));
-=======
 		if (local_node)
 			printk(KERN_NOTICE "o2net: Unexpected connect attempt "
 					"seen at node '%s' (%u, %pI4:%d) from "
@@ -2245,7 +1837,6 @@ static int o2net_accept_one(struct socket *sock, int *more)
 					node->nd_name,
 					node->nd_num, &sin.sin_addr.s_addr,
 					ntohs(sin.sin_port));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
@@ -2306,23 +1897,6 @@ out:
 		o2nm_node_put(local_node);
 	if (sc)
 		sc_put(sc);
-<<<<<<< HEAD
-	return ret;
-}
-
-static void o2net_accept_many(struct work_struct *work)
-{
-	struct socket *sock = o2net_listen_sock;
-	while (o2net_accept_one(sock) == 0)
-		cond_resched();
-}
-
-static void o2net_listen_data_ready(struct sock *sk, int bytes)
-{
-	void (*ready)(struct sock *sk, int bytes);
-
-	read_lock(&sk->sk_callback_lock);
-=======
 
 	memalloc_nofs_restore(nofs_flag);
 	return ret;
@@ -2366,27 +1940,12 @@ static void o2net_listen_data_ready(struct sock *sk)
 	trace_sk_data_ready(sk);
 
 	read_lock_bh(&sk->sk_callback_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ready = sk->sk_user_data;
 	if (ready == NULL) { /* check for teardown race */
 		ready = sk->sk_data_ready;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/* ->sk_data_ready is also called for a newly established child socket
-	 * before it has been accepted and the acceptor has set up their
-	 * data_ready.. we only want to queue listen work for our listening
-	 * socket */
-	if (sk->sk_state == TCP_LISTEN) {
-		mlog(ML_TCP, "bytes: %d\n", bytes);
-		queue_work(o2net_wq, &o2net_listen_work);
-	}
-
-out:
-	read_unlock(&sk->sk_callback_lock);
-	ready(sk, bytes);
-=======
 	/* This callback may called twice when a new connection
 	 * is  being established as a child socket inherits everything
 	 * from a parent LISTEN socket, including the data_ready cb of
@@ -2410,7 +1969,6 @@ out:
 	read_unlock_bh(&sk->sk_callback_lock);
 	if (ready != NULL)
 		ready(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int o2net_open_listening_sock(__be32 addr, __be16 port)
@@ -2439,11 +1997,7 @@ static int o2net_open_listening_sock(__be32 addr, __be16 port)
 	o2net_listen_sock = sock;
 	INIT_WORK(&o2net_listen_work, o2net_accept_many);
 
-<<<<<<< HEAD
-	sock->sk->sk_reuse = 1;
-=======
 	sock->sk->sk_reuse = SK_CAN_REUSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sock->ops->bind(sock, (struct sockaddr *)&sin, sizeof(sin));
 	if (ret < 0) {
 		printk(KERN_ERR "o2net: Error %d while binding socket at "
@@ -2480,11 +2034,7 @@ int o2net_start_listening(struct o2nm_node *node)
 	BUG_ON(o2net_listen_sock != NULL);
 
 	mlog(ML_KTHREAD, "starting o2net thread...\n");
-<<<<<<< HEAD
-	o2net_wq = create_singlethread_workqueue("o2net");
-=======
 	o2net_wq = alloc_ordered_workqueue("o2net", WQ_MEM_RECLAIM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (o2net_wq == NULL) {
 		mlog(ML_ERROR, "unable to launch o2net thread\n");
 		return -ENOMEM; /* ? */
@@ -2540,24 +2090,6 @@ void o2net_stop_listening(struct o2nm_node *node)
 
 int o2net_init(void)
 {
-<<<<<<< HEAD
-	unsigned long i;
-
-	o2quo_init();
-
-	if (o2net_debugfs_init())
-		return -ENOMEM;
-
-	o2net_hand = kzalloc(sizeof(struct o2net_handshake), GFP_KERNEL);
-	o2net_keep_req = kzalloc(sizeof(struct o2net_msg), GFP_KERNEL);
-	o2net_keep_resp = kzalloc(sizeof(struct o2net_msg), GFP_KERNEL);
-	if (!o2net_hand || !o2net_keep_req || !o2net_keep_resp) {
-		kfree(o2net_hand);
-		kfree(o2net_keep_req);
-		kfree(o2net_keep_resp);
-		return -ENOMEM;
-	}
-=======
 	struct folio *folio;
 	void *p;
 	unsigned long i;
@@ -2575,7 +2107,6 @@ int o2net_init(void)
 	o2net_keep_req = p;
 	p += sizeof(struct o2net_msg);
 	o2net_keep_resp = p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	o2net_hand->protocol_version = cpu_to_be64(O2NET_PROTOCOL_VERSION);
 	o2net_hand->connector_id = cpu_to_be64(1);
@@ -2600,26 +2131,16 @@ int o2net_init(void)
 	}
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 out:
 	o2net_debugfs_exit();
 	o2quo_exit();
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void o2net_exit(void)
 {
 	o2quo_exit();
-<<<<<<< HEAD
-	kfree(o2net_hand);
-	kfree(o2net_keep_req);
-	kfree(o2net_keep_resp);
-	o2net_debugfs_exit();
-=======
 	o2net_debugfs_exit();
 	folio_put(virt_to_folio(o2net_hand));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

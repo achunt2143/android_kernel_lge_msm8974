@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rtc-twl.c -- TWL Real Time Clock interface
  *
@@ -15,20 +12,10 @@
  *   Copyright (C) 2003 MontaVista Software, Inc.
  *   Author: George G. Davis <gdavis@mvista.com> or <source@mvista.com>
  *   Copyright (C) 2006 David Brownell
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -38,11 +25,6 @@
 #include <linux/bcd.h>
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-
-#include <linux/i2c/twl.h>
-
-=======
 #include <linux/of.h>
 
 #include <linux/mfd/twl.h>
@@ -51,7 +33,6 @@ enum twl_class {
 	TWL_4030 = 0,
 	TWL_6030,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * RTC block register offsets (use TWL_MODULE_RTC)
@@ -155,9 +136,6 @@ static const u8 twl6030_rtc_reg_map[] = {
 #define ALL_TIME_REGS		6
 
 /*----------------------------------------------------------------------*/
-<<<<<<< HEAD
-static u8  *rtc_reg_map;
-=======
 struct twl_rtc {
 	struct device *dev;
 	struct rtc_device *rtc;
@@ -173,21 +151,10 @@ struct twl_rtc {
 #endif
 	enum twl_class class;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Supports 1 byte read from TWL RTC register.
  */
-<<<<<<< HEAD
-static int twl_rtc_read_u8(u8 *data, u8 reg)
-{
-	int ret;
-
-	ret = twl_i2c_read_u8(TWL_MODULE_RTC, data, (rtc_reg_map[reg]));
-	if (ret < 0)
-		pr_err("twl_rtc: Could not read TWL"
-		       "register %X - error %d\n", reg, ret);
-=======
 static int twl_rtc_read_u8(struct twl_rtc *twl_rtc, u8 *data, u8 reg)
 {
 	int ret;
@@ -195,23 +162,12 @@ static int twl_rtc_read_u8(struct twl_rtc *twl_rtc, u8 *data, u8 reg)
 	ret = twl_i2c_read_u8(TWL_MODULE_RTC, data, (twl_rtc->reg_map[reg]));
 	if (ret < 0)
 		pr_err("Could not read TWL register %X - error %d\n", reg, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
  * Supports 1 byte write to TWL RTC registers.
  */
-<<<<<<< HEAD
-static int twl_rtc_write_u8(u8 data, u8 reg)
-{
-	int ret;
-
-	ret = twl_i2c_write_u8(TWL_MODULE_RTC, data, (rtc_reg_map[reg]));
-	if (ret < 0)
-		pr_err("twl_rtc: Could not write TWL"
-		       "register %X - error %d\n", reg, ret);
-=======
 static int twl_rtc_write_u8(struct twl_rtc *twl_rtc, u8 data, u8 reg)
 {
 	int ret;
@@ -220,41 +176,18 @@ static int twl_rtc_write_u8(struct twl_rtc *twl_rtc, u8 data, u8 reg)
 	if (ret < 0)
 		pr_err("Could not write TWL register %X - error %d\n",
 		       reg, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * Cache the value for timer/alarm interrupts register; this is
- * only changed by callers holding rtc ops lock (or resume).
- */
-static unsigned char rtc_irq_bits;
-
-/*
- * Enable 1/second update and/or alarm interrupts.
- */
-static int set_rtc_irq_bit(unsigned char bit)
-=======
  * Enable 1/second update and/or alarm interrupts.
  */
 static int set_rtc_irq_bit(struct twl_rtc *twl_rtc, unsigned char bit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val;
 	int ret;
 
 	/* if the bit is set, return from here */
-<<<<<<< HEAD
-	if (rtc_irq_bits & bit)
-		return 0;
-
-	val = rtc_irq_bits | bit;
-	val &= ~BIT_RTC_INTERRUPTS_REG_EVERY_M;
-	ret = twl_rtc_write_u8(val, REG_RTC_INTERRUPTS_REG);
-	if (ret == 0)
-		rtc_irq_bits = val;
-=======
 	if (twl_rtc->rtc_irq_bits & bit)
 		return 0;
 
@@ -263,7 +196,6 @@ static int set_rtc_irq_bit(struct twl_rtc *twl_rtc, unsigned char bit)
 	ret = twl_rtc_write_u8(twl_rtc, val, REG_RTC_INTERRUPTS_REG);
 	if (ret == 0)
 		twl_rtc->rtc_irq_bits = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -271,25 +203,12 @@ static int set_rtc_irq_bit(struct twl_rtc *twl_rtc, unsigned char bit)
 /*
  * Disable update and/or alarm interrupts.
  */
-<<<<<<< HEAD
-static int mask_rtc_irq_bit(unsigned char bit)
-=======
 static int mask_rtc_irq_bit(struct twl_rtc *twl_rtc, unsigned char bit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val;
 	int ret;
 
 	/* if the bit is clear, return from here */
-<<<<<<< HEAD
-	if (!(rtc_irq_bits & bit))
-		return 0;
-
-	val = rtc_irq_bits & ~bit;
-	ret = twl_rtc_write_u8(val, REG_RTC_INTERRUPTS_REG);
-	if (ret == 0)
-		rtc_irq_bits = val;
-=======
 	if (!(twl_rtc->rtc_irq_bits & bit))
 		return 0;
 
@@ -297,21 +216,12 @@ static int mask_rtc_irq_bit(struct twl_rtc *twl_rtc, unsigned char bit)
 	ret = twl_rtc_write_u8(twl_rtc, val, REG_RTC_INTERRUPTS_REG);
 	if (ret == 0)
 		twl_rtc->rtc_irq_bits = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static int twl_rtc_alarm_irq_enable(struct device *dev, unsigned enabled)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (enabled)
-		ret = set_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
-	else
-		ret = mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
-=======
 	struct platform_device *pdev = to_platform_device(dev);
 	struct twl_rtc *twl_rtc = dev_get_drvdata(dev);
 	int irq = platform_get_irq(pdev, 0);
@@ -332,7 +242,6 @@ static int twl_rtc_alarm_irq_enable(struct device *dev, unsigned enabled)
 			twl_rtc->wake_enabled = false;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -348,38 +257,23 @@ static int twl_rtc_alarm_irq_enable(struct device *dev, unsigned enabled)
  */
 static int twl_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	unsigned char rtc_data[ALL_TIME_REGS + 1];
-=======
 	struct twl_rtc *twl_rtc = dev_get_drvdata(dev);
 	unsigned char rtc_data[ALL_TIME_REGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	u8 save_control;
 	u8 rtc_control;
 
-<<<<<<< HEAD
-	ret = twl_rtc_read_u8(&save_control, REG_RTC_CTRL_REG);
-=======
 	ret = twl_rtc_read_u8(twl_rtc, &save_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "%s: reading CTRL_REG, error %d\n", __func__, ret);
 		return ret;
 	}
 	/* for twl6030/32 make sure BIT_RTC_CTRL_REG_GET_TIME_M is clear */
-<<<<<<< HEAD
-	if (twl_class_is_6030()) {
-		if (save_control & BIT_RTC_CTRL_REG_GET_TIME_M) {
-			save_control &= ~BIT_RTC_CTRL_REG_GET_TIME_M;
-			ret = twl_rtc_write_u8(save_control, REG_RTC_CTRL_REG);
-=======
 	if (twl_rtc->class == TWL_6030) {
 		if (save_control & BIT_RTC_CTRL_REG_GET_TIME_M) {
 			save_control &= ~BIT_RTC_CTRL_REG_GET_TIME_M;
 			ret = twl_rtc_write_u8(twl_rtc, save_control,
 					       REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0) {
 				dev_err(dev, "%s clr GET_TIME, error %d\n",
 					__func__, ret);
@@ -392,28 +286,17 @@ static int twl_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	rtc_control = save_control | BIT_RTC_CTRL_REG_GET_TIME_M;
 
 	/* for twl6030/32 enable read access to static shadowed registers */
-<<<<<<< HEAD
-	if (twl_class_is_6030())
-		rtc_control |= BIT_RTC_CTRL_REG_RTC_V_OPT;
-
-	ret = twl_rtc_write_u8(rtc_control, REG_RTC_CTRL_REG);
-=======
 	if (twl_rtc->class == TWL_6030)
 		rtc_control |= BIT_RTC_CTRL_REG_RTC_V_OPT;
 
 	ret = twl_rtc_write_u8(twl_rtc, rtc_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "%s: writing CTRL_REG, error %d\n", __func__, ret);
 		return ret;
 	}
 
 	ret = twl_i2c_read(TWL_MODULE_RTC, rtc_data,
-<<<<<<< HEAD
-			(rtc_reg_map[REG_SECONDS_REG]), ALL_TIME_REGS);
-=======
 			(twl_rtc->reg_map[REG_SECONDS_REG]), ALL_TIME_REGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret < 0) {
 		dev_err(dev, "%s: reading data, error %d\n", __func__, ret);
@@ -421,13 +304,8 @@ static int twl_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	/* for twl6030 restore original state of rtc control register */
-<<<<<<< HEAD
-	if (twl_class_is_6030()) {
-		ret = twl_rtc_write_u8(save_control, REG_RTC_CTRL_REG);
-=======
 	if (twl_rtc->class == TWL_6030) {
 		ret = twl_rtc_write_u8(twl_rtc, save_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0) {
 			dev_err(dev, "%s: restore CTRL_REG, error %d\n",
 				__func__, ret);
@@ -447,21 +325,6 @@ static int twl_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 static int twl_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	unsigned char save_control;
-	unsigned char rtc_data[ALL_TIME_REGS + 1];
-	int ret;
-
-	rtc_data[1] = bin2bcd(tm->tm_sec);
-	rtc_data[2] = bin2bcd(tm->tm_min);
-	rtc_data[3] = bin2bcd(tm->tm_hour);
-	rtc_data[4] = bin2bcd(tm->tm_mday);
-	rtc_data[5] = bin2bcd(tm->tm_mon + 1);
-	rtc_data[6] = bin2bcd(tm->tm_year - 100);
-
-	/* Stop RTC while updating the TC registers */
-	ret = twl_rtc_read_u8(&save_control, REG_RTC_CTRL_REG);
-=======
 	struct twl_rtc *twl_rtc = dev_get_drvdata(dev);
 	unsigned char save_control;
 	unsigned char rtc_data[ALL_TIME_REGS];
@@ -476,26 +339,17 @@ static int twl_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	/* Stop RTC while updating the TC registers */
 	ret = twl_rtc_read_u8(twl_rtc, &save_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
 	save_control &= ~BIT_RTC_CTRL_REG_STOP_RTC_M;
-<<<<<<< HEAD
-	ret = twl_rtc_write_u8(save_control, REG_RTC_CTRL_REG);
-=======
 	ret = twl_rtc_write_u8(twl_rtc, save_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
 	/* update all the time registers in one shot */
 	ret = twl_i2c_write(TWL_MODULE_RTC, rtc_data,
-<<<<<<< HEAD
-		(rtc_reg_map[REG_SECONDS_REG]), ALL_TIME_REGS);
-=======
 		(twl_rtc->reg_map[REG_SECONDS_REG]), ALL_TIME_REGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "rtc_set_time error %d\n", ret);
 		goto out;
@@ -503,11 +357,7 @@ static int twl_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	/* Start back RTC */
 	save_control |= BIT_RTC_CTRL_REG_STOP_RTC_M;
-<<<<<<< HEAD
-	ret = twl_rtc_write_u8(save_control, REG_RTC_CTRL_REG);
-=======
 	ret = twl_rtc_write_u8(twl_rtc, save_control, REG_RTC_CTRL_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret;
@@ -518,20 +368,12 @@ out:
  */
 static int twl_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
-<<<<<<< HEAD
-	unsigned char rtc_data[ALL_TIME_REGS + 1];
-	int ret;
-
-	ret = twl_i2c_read(TWL_MODULE_RTC, rtc_data,
-			(rtc_reg_map[REG_ALARM_SECONDS_REG]), ALL_TIME_REGS);
-=======
 	struct twl_rtc *twl_rtc = dev_get_drvdata(dev);
 	unsigned char rtc_data[ALL_TIME_REGS];
 	int ret;
 
 	ret = twl_i2c_read(TWL_MODULE_RTC, rtc_data,
 			twl_rtc->reg_map[REG_ALARM_SECONDS_REG], ALL_TIME_REGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "rtc_read_alarm error %d\n", ret);
 		return ret;
@@ -546,11 +388,7 @@ static int twl_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	alm->time.tm_year = bcd2bin(rtc_data[5]) + 100;
 
 	/* report cached alarm enable state */
-<<<<<<< HEAD
-	if (rtc_irq_bits & BIT_RTC_INTERRUPTS_REG_IT_ALARM_M)
-=======
 	if (twl_rtc->rtc_irq_bits & BIT_RTC_INTERRUPTS_REG_IT_ALARM_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		alm->enabled = 1;
 
 	return ret;
@@ -558,31 +396,15 @@ static int twl_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 static int twl_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
-<<<<<<< HEAD
-	unsigned char alarm_data[ALL_TIME_REGS + 1];
-=======
 	struct twl_rtc *twl_rtc = dev_get_drvdata(dev);
 
 	unsigned char alarm_data[ALL_TIME_REGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = twl_rtc_alarm_irq_enable(dev, 0);
 	if (ret)
 		goto out;
 
-<<<<<<< HEAD
-	alarm_data[1] = bin2bcd(alm->time.tm_sec);
-	alarm_data[2] = bin2bcd(alm->time.tm_min);
-	alarm_data[3] = bin2bcd(alm->time.tm_hour);
-	alarm_data[4] = bin2bcd(alm->time.tm_mday);
-	alarm_data[5] = bin2bcd(alm->time.tm_mon + 1);
-	alarm_data[6] = bin2bcd(alm->time.tm_year - 100);
-
-	/* update all the alarm registers in one shot */
-	ret = twl_i2c_write(TWL_MODULE_RTC, alarm_data,
-		(rtc_reg_map[REG_ALARM_SECONDS_REG]), ALL_TIME_REGS);
-=======
 	alarm_data[0] = bin2bcd(alm->time.tm_sec);
 	alarm_data[1] = bin2bcd(alm->time.tm_min);
 	alarm_data[2] = bin2bcd(alm->time.tm_hour);
@@ -593,7 +415,6 @@ static int twl_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	/* update all the alarm registers in one shot */
 	ret = twl_i2c_write(TWL_MODULE_RTC, alarm_data,
 			twl_rtc->reg_map[REG_ALARM_SECONDS_REG], ALL_TIME_REGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "rtc_set_alarm error %d\n", ret);
 		goto out;
@@ -605,24 +426,15 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static irqreturn_t twl_rtc_interrupt(int irq, void *rtc)
-{
-=======
 static irqreturn_t twl_rtc_interrupt(int irq, void *data)
 {
 	struct twl_rtc *twl_rtc = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long events;
 	int ret = IRQ_NONE;
 	int res;
 	u8 rd_reg;
 
-<<<<<<< HEAD
-	res = twl_rtc_read_u8(&rd_reg, REG_RTC_STATUS_REG);
-=======
 	res = twl_rtc_read_u8(twl_rtc, &rd_reg, REG_RTC_STATUS_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		goto out;
 	/*
@@ -636,21 +448,12 @@ static irqreturn_t twl_rtc_interrupt(int irq, void *data)
 	else
 		events = RTC_IRQF | RTC_PF;
 
-<<<<<<< HEAD
-	res = twl_rtc_write_u8(BIT_RTC_STATUS_REG_ALARM_M,
-				   REG_RTC_STATUS_REG);
-	if (res)
-		goto out;
-
-	if (twl_class_is_4030()) {
-=======
 	res = twl_rtc_write_u8(twl_rtc, BIT_RTC_STATUS_REG_ALARM_M,
 			       REG_RTC_STATUS_REG);
 	if (res)
 		goto out;
 
 	if (twl_rtc->class == TWL_4030) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear on Read enabled. RTC_IT bit of TWL4030_INT_PWR_ISR1
 		 * needs 2 reads to clear the interrupt. One read is done in
 		 * do_twl_pwrirq(). Doing the second read, to clear
@@ -669,22 +472,14 @@ static irqreturn_t twl_rtc_interrupt(int irq, void *data)
 	}
 
 	/* Notify RTC core on event */
-<<<<<<< HEAD
-	rtc_update_irq(rtc, 1, events);
-=======
 	rtc_update_irq(twl_rtc->rtc, 1, events);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = IRQ_HANDLED;
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct rtc_class_ops twl_rtc_ops = {
-=======
 static const struct rtc_class_ops twl_rtc_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_time	= twl_rtc_read_time,
 	.set_time	= twl_rtc_set_time,
 	.read_alarm	= twl_rtc_read_alarm,
@@ -692,13 +487,6 @@ static const struct rtc_class_ops twl_rtc_ops = {
 	.alarm_irq_enable = twl_rtc_alarm_irq_enable,
 };
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------------*/
-
-static int __devinit twl_rtc_probe(struct platform_device *pdev)
-{
-	struct rtc_device *rtc;
-=======
 static int twl_nvram_read(void *priv, unsigned int offset, void *val,
 			  size_t bytes)
 {
@@ -718,19 +506,10 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	struct twl_rtc *twl_rtc;
 	struct nvmem_config nvmem_cfg;
 	struct device_node *np = pdev->dev.of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -EINVAL;
 	int irq = platform_get_irq(pdev, 0);
 	u8 rd_reg;
 
-<<<<<<< HEAD
-	if (irq <= 0)
-		goto out1;
-
-	ret = twl_rtc_read_u8(&rd_reg, REG_RTC_STATUS_REG);
-	if (ret < 0)
-		goto out1;
-=======
 	if (!np) {
 		dev_err(&pdev->dev, "no DT info\n");
 		return -EINVAL;
@@ -757,7 +536,6 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	ret = twl_rtc_read_u8(twl_rtc, &rd_reg, REG_RTC_STATUS_REG);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rd_reg & BIT_RTC_STATUS_REG_POWER_UP_M)
 		dev_warn(&pdev->dev, "Power up reset detected.\n");
@@ -766,34 +544,17 @@ static int twl_rtc_probe(struct platform_device *pdev)
 		dev_warn(&pdev->dev, "Pending Alarm interrupt detected.\n");
 
 	/* Clear RTC Power up reset and pending alarm interrupts */
-<<<<<<< HEAD
-	ret = twl_rtc_write_u8(rd_reg, REG_RTC_STATUS_REG);
-	if (ret < 0)
-		goto out1;
-
-	if (twl_class_is_6030()) {
-=======
 	ret = twl_rtc_write_u8(twl_rtc, rd_reg, REG_RTC_STATUS_REG);
 	if (ret < 0)
 		return ret;
 
 	if (twl_rtc->class == TWL_6030) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		twl6030_interrupt_unmask(TWL6030_RTC_INT_MASK,
 			REG_INT_MSK_LINE_A);
 		twl6030_interrupt_unmask(TWL6030_RTC_INT_MASK,
 			REG_INT_MSK_STS_A);
 	}
 
-<<<<<<< HEAD
-	dev_info(&pdev->dev, "Enabling TWL-RTC\n");
-	ret = twl_rtc_write_u8(BIT_RTC_CTRL_REG_STOP_RTC_M, REG_RTC_CTRL_REG);
-	if (ret < 0)
-		goto out1;
-
-	/* ensure interrupts are disabled, bootloaders can be strange */
-	ret = twl_rtc_write_u8(0, REG_RTC_INTERRUPTS_REG);
-=======
 	ret = twl_rtc_write_u8(twl_rtc, BIT_RTC_CTRL_REG_STOP_RTC_M,
 			       REG_RTC_CTRL_REG);
 	if (ret < 0)
@@ -801,42 +562,10 @@ static int twl_rtc_probe(struct platform_device *pdev)
 
 	/* ensure interrupts are disabled, bootloaders can be strange */
 	ret = twl_rtc_write_u8(twl_rtc, 0, REG_RTC_INTERRUPTS_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_warn(&pdev->dev, "unable to disable interrupt\n");
 
 	/* init cached IRQ enable bits */
-<<<<<<< HEAD
-	ret = twl_rtc_read_u8(&rtc_irq_bits, REG_RTC_INTERRUPTS_REG);
-	if (ret < 0)
-		goto out1;
-
-	rtc = rtc_device_register(pdev->name,
-				  &pdev->dev, &twl_rtc_ops, THIS_MODULE);
-	if (IS_ERR(rtc)) {
-		ret = PTR_ERR(rtc);
-		dev_err(&pdev->dev, "can't register RTC device, err %ld\n",
-			PTR_ERR(rtc));
-		goto out1;
-	}
-
-	ret = request_threaded_irq(irq, NULL, twl_rtc_interrupt,
-				   IRQF_TRIGGER_RISING,
-				   dev_name(&rtc->dev), rtc);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "IRQ is not free.\n");
-		goto out2;
-	}
-
-	platform_set_drvdata(pdev, rtc);
-	device_init_wakeup(&pdev->dev, 1);
-	return 0;
-
-out2:
-	rtc_device_unregister(rtc);
-out1:
-	return ret;
-=======
 	ret = twl_rtc_read_u8(twl_rtc, &twl_rtc->rtc_irq_bits,
 			      REG_RTC_INTERRUPTS_REG);
 	if (ret < 0)
@@ -884,24 +613,12 @@ out1:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Disable all TWL RTC module interrupts.
  * Sets status flag to free.
  */
-<<<<<<< HEAD
-static int __devexit twl_rtc_remove(struct platform_device *pdev)
-{
-	/* leave rtc running, but disable irqs */
-	struct rtc_device *rtc = platform_get_drvdata(pdev);
-	int irq = platform_get_irq(pdev, 0);
-
-	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
-	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_TIMER_M);
-	if (twl_class_is_6030()) {
-=======
 static void twl_rtc_remove(struct platform_device *pdev)
 {
 	struct twl_rtc *twl_rtc = platform_get_drvdata(pdev);
@@ -910,56 +627,15 @@ static void twl_rtc_remove(struct platform_device *pdev)
 	mask_rtc_irq_bit(twl_rtc, BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
 	mask_rtc_irq_bit(twl_rtc, BIT_RTC_INTERRUPTS_REG_IT_TIMER_M);
 	if (twl_rtc->class == TWL_6030) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		twl6030_interrupt_mask(TWL6030_RTC_INT_MASK,
 			REG_INT_MSK_LINE_A);
 		twl6030_interrupt_mask(TWL6030_RTC_INT_MASK,
 			REG_INT_MSK_STS_A);
 	}
-<<<<<<< HEAD
-
-
-	free_irq(irq, rtc);
-
-	rtc_device_unregister(rtc);
-	platform_set_drvdata(pdev, NULL);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void twl_rtc_shutdown(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	/* mask timer interrupts, but leave alarm interrupts on to enable
-	   power-on when alarm is triggered */
-	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_TIMER_M);
-}
-
-#ifdef CONFIG_PM
-
-static unsigned char irqstat;
-
-static int twl_rtc_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	irqstat = rtc_irq_bits;
-
-	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_TIMER_M);
-	return 0;
-}
-
-static int twl_rtc_resume(struct platform_device *pdev)
-{
-	set_rtc_irq_bit(irqstat);
-	return 0;
-}
-
-#else
-#define twl_rtc_suspend NULL
-#define twl_rtc_resume  NULL
-#endif
-
-=======
 	struct twl_rtc *twl_rtc = platform_get_drvdata(pdev);
 
 	/* mask timer interrupts, but leave alarm interrupts on to enable
@@ -989,25 +665,11 @@ static int twl_rtc_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(twl_rtc_pm_ops, twl_rtc_suspend, twl_rtc_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id twl_rtc_of_match[] = {
 	{.compatible = "ti,twl4030-rtc", },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, twl_rtc_of_match);
-<<<<<<< HEAD
-MODULE_ALIAS("platform:twl_rtc");
-
-static struct platform_driver twl4030rtc_driver = {
-	.probe		= twl_rtc_probe,
-	.remove		= __devexit_p(twl_rtc_remove),
-	.shutdown	= twl_rtc_shutdown,
-	.suspend	= twl_rtc_suspend,
-	.resume		= twl_rtc_resume,
-	.driver		= {
-		.owner		= THIS_MODULE,
-		.name		= "twl_rtc",
-=======
 
 static struct platform_driver twl4030rtc_driver = {
 	.probe		= twl_rtc_probe,
@@ -1016,31 +678,11 @@ static struct platform_driver twl4030rtc_driver = {
 	.driver		= {
 		.name		= "twl_rtc",
 		.pm		= &twl_rtc_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = twl_rtc_of_match,
 	},
 };
 
-<<<<<<< HEAD
-static int __init twl_rtc_init(void)
-{
-	if (twl_class_is_4030())
-		rtc_reg_map = (u8 *) twl4030_rtc_reg_map;
-	else
-		rtc_reg_map = (u8 *) twl6030_rtc_reg_map;
-
-	return platform_driver_register(&twl4030rtc_driver);
-}
-module_init(twl_rtc_init);
-
-static void __exit twl_rtc_exit(void)
-{
-	platform_driver_unregister(&twl4030rtc_driver);
-}
-module_exit(twl_rtc_exit);
-=======
 module_platform_driver(twl4030rtc_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Texas Instruments, MontaVista Software");
 MODULE_LICENSE("GPL");

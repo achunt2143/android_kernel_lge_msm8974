@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ql4_def.h"
@@ -33,11 +25,7 @@ static void qla4xxx_copy_sense(struct scsi_qla_host *ha,
 	memset(cmd->sense_buffer, 0, SCSI_SENSE_BUFFERSIZE);
 	sense_len = le16_to_cpu(sts_entry->senseDataByteCnt);
 	if (sense_len == 0) {
-<<<<<<< HEAD
-		DEBUG2(ql4_printk(KERN_INFO, ha, "scsi%ld:%d:%d:%d: %s:"
-=======
 		DEBUG2(ql4_printk(KERN_INFO, ha, "scsi%ld:%d:%d:%llu: %s:"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  " sense len 0\n", ha->host_no,
 				  cmd->device->channel, cmd->device->id,
 				  cmd->device->lun, __func__));
@@ -54,11 +42,7 @@ static void qla4xxx_copy_sense(struct scsi_qla_host *ha,
 	sense_len = min_t(uint16_t, sense_len, IOCB_MAX_SENSEDATA_LEN);
 	memcpy(cmd->sense_buffer, sts_entry->senseData, sense_len);
 
-<<<<<<< HEAD
-	DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%d: %s: sense key = %x, "
-=======
 	DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%llu: %s: sense key = %x, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"ASL= %02x, ASC/ASCQ = %02x/%02x\n", ha->host_no,
 		cmd->device->channel, cmd->device->id,
 		cmd->device->lun, __func__,
@@ -141,11 +125,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 		ql4_printk(KERN_WARNING, ha, "%s invalid status entry: "
 			   "handle=0x%0x, srb=%p\n", __func__,
 			   sts_entry->handle, srb);
-<<<<<<< HEAD
-		if (is_qla8022(ha))
-=======
 		if (is_qla80XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(DPC_RESET_HA_FW_CONTEXT, &ha->dpc_flags);
 		else
 			set_bit(DPC_RESET_HA, &ha->dpc_flags);
@@ -188,11 +168,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 
 				cmd->result = DID_ERROR << 16;
 
-<<<<<<< HEAD
-				DEBUG2(printk("scsi%ld:%d:%d:%d: %s: "
-=======
 				DEBUG2(printk("scsi%ld:%d:%d:%llu: %s: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Mid-layer Data underrun0, "
 					"xferlen = 0x%x, "
 					"residual = 0x%x\n", ha->host_no,
@@ -206,11 +182,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 
 		cmd->result = DID_OK << 16 | scsi_status;
 
-<<<<<<< HEAD
-		if (scsi_status != SCSI_CHECK_CONDITION)
-=======
 		if (scsi_status != SAM_STAT_CHECK_CONDITION)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Copy Sense Data into sense buffer. */
@@ -224,11 +196,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 		break;
 
 	case SCS_RESET_OCCURRED:
-<<<<<<< HEAD
-		DEBUG2(printk("scsi%ld:%d:%d:%d: %s: Device RESET occurred\n",
-=======
 		DEBUG2(printk("scsi%ld:%d:%d:%llu: %s: Device RESET occurred\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ha->host_no, cmd->device->channel,
 			      cmd->device->id, cmd->device->lun, __func__));
 
@@ -236,11 +204,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 		break;
 
 	case SCS_ABORTED:
-<<<<<<< HEAD
-		DEBUG2(printk("scsi%ld:%d:%d:%d: %s: Abort occurred\n",
-=======
 		DEBUG2(printk("scsi%ld:%d:%d:%llu: %s: Abort occurred\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ha->host_no, cmd->device->channel,
 			      cmd->device->id, cmd->device->lun, __func__));
 
@@ -248,11 +212,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 		break;
 
 	case SCS_TIMEOUT:
-<<<<<<< HEAD
-		DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%d: Timeout\n",
-=======
 		DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%llu: Timeout\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ha->host_no, cmd->device->channel,
 			      cmd->device->id, cmd->device->lun));
 
@@ -271,11 +231,7 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 	case SCS_DATA_OVERRUN:
 		if ((sts_entry->iscsiFlags & ISCSI_FLAG_RESIDUAL_OVER) ||
 		     (sts_entry->completionStatus == SCS_DATA_OVERRUN)) {
-<<<<<<< HEAD
-			DEBUG2(printk("scsi%ld:%d:%d:%d: %s: " "Data overrun\n",
-=======
 			DEBUG2(printk("scsi%ld:%d:%d:%llu: %s: " "Data overrun\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      ha->host_no,
 				      cmd->device->channel, cmd->device->id,
 				      cmd->device->lun, __func__));
@@ -286,58 +242,6 @@ static void qla4xxx_status_entry(struct scsi_qla_host *ha,
 
 		scsi_set_resid(cmd, residual);
 
-<<<<<<< HEAD
-		/*
-		 * If there is scsi_status, it takes precedense over
-		 * underflow condition.
-		 */
-		if (scsi_status != 0) {
-			cmd->result = DID_OK << 16 | scsi_status;
-
-			if (scsi_status != SCSI_CHECK_CONDITION)
-				break;
-
-			/* Copy Sense Data into sense buffer. */
-			qla4xxx_copy_sense(ha, sts_entry, srb);
-		} else {
-			/*
-			 * If RISC reports underrun and target does not
-			 * report it then we must have a lost frame, so
-			 * tell upper layer to retry it by reporting a
-			 * bus busy.
-			 */
-			if ((sts_entry->iscsiFlags &
-			     ISCSI_FLAG_RESIDUAL_UNDER) == 0) {
-				cmd->result = DID_BUS_BUSY << 16;
-			} else if ((scsi_bufflen(cmd) - residual) <
-				   cmd->underflow) {
-				/*
-				 * Handle mid-layer underflow???
-				 *
-				 * For kernels less than 2.4, the driver must
-				 * return an error if an underflow is detected.
-				 * For kernels equal-to and above 2.4, the
-				 * mid-layer will appearantly handle the
-				 * underflow by detecting the residual count --
-				 * unfortunately, we do not see where this is
-				 * actually being done.	 In the interim, we
-				 * will return DID_ERROR.
-				 */
-				DEBUG2(printk("scsi%ld:%d:%d:%d: %s: "
-					"Mid-layer Data underrun1, "
-					"xferlen = 0x%x, "
-					"residual = 0x%x\n", ha->host_no,
-					cmd->device->channel,
-					cmd->device->id,
-					cmd->device->lun, __func__,
-					scsi_bufflen(cmd), residual));
-
-				cmd->result = DID_ERROR << 16;
-			} else {
-				cmd->result = DID_OK << 16;
-			}
-		}
-=======
 		if (sts_entry->iscsiFlags & ISCSI_FLAG_RESIDUAL_UNDER) {
 
 			/* Both the firmware and target reported UNDERRUN:
@@ -404,16 +308,11 @@ check_scsi_status:
 		if (scsi_status == SAM_STAT_CHECK_CONDITION)
 			qla4xxx_copy_sense(ha, sts_entry, srb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCS_DEVICE_LOGGED_OUT:
 	case SCS_DEVICE_UNAVAILABLE:
-<<<<<<< HEAD
-		DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%d: SCS_DEVICE "
-=======
 		DEBUG2(printk(KERN_INFO "scsi%ld:%d:%d:%llu: SCS_DEVICE "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "state: 0x%x\n", ha->host_no,
 		    cmd->device->channel, cmd->device->id,
 		    cmd->device->lun, sts_entry->completionStatus));
@@ -433,11 +332,7 @@ check_scsi_status:
 		 * SCSI Mid-Layer handles device queue full
 		 */
 		cmd->result = DID_OK << 16 | sts_entry->scsiStatus;
-<<<<<<< HEAD
-		DEBUG2(printk("scsi%ld:%d:%d: %s: QUEUE FULL detected "
-=======
 		DEBUG2(printk("scsi%ld:%d:%llu: %s: QUEUE FULL detected "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "compl=%02x, scsi=%02x, state=%02x, iFlags=%02x,"
 			      " iResp=%02x\n", ha->host_no, cmd->device->id,
 			      cmd->device->lun, __func__,
@@ -489,15 +384,9 @@ static void qla4xxx_passthru_status_entry(struct scsi_qla_host *ha,
 
 	cls_conn = ddb_entry->conn;
 	conn = cls_conn->dd_data;
-<<<<<<< HEAD
-	spin_lock(&conn->session->lock);
-	task = iscsi_itt_to_task(conn, itt);
-	spin_unlock(&conn->session->lock);
-=======
 	spin_lock(&conn->session->back_lock);
 	task = iscsi_itt_to_task(conn, itt);
 	spin_unlock(&conn->session->back_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (task == NULL) {
 		ql4_printk(KERN_ERR, ha, "%s: Task is NULL\n", __func__);
@@ -506,10 +395,6 @@ static void qla4xxx_passthru_status_entry(struct scsi_qla_host *ha,
 
 	task_data = task->dd_data;
 	memcpy(&task_data->sts, sts_entry, sizeof(struct passthru_status));
-<<<<<<< HEAD
-	ha->req_q_count += task_data->iocb_req_cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->iocb_cnt -= task_data->iocb_req_cnt;
 	queue_work(ha->task_wq, &task_data->task_work);
 }
@@ -529,10 +414,6 @@ static struct mrb *qla4xxx_del_mrb_from_active_array(struct scsi_qla_host *ha,
 		return mrb;
 
 	/* update counters */
-<<<<<<< HEAD
-	ha->req_q_count += mrb->iocb_cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->iocb_cnt -= mrb->iocb_cnt;
 
 	return mrb;
@@ -591,20 +472,12 @@ static void qla4xxx_mbox_status_entry(struct scsi_qla_host *ha,
  **/
 void qla4xxx_process_response_queue(struct scsi_qla_host *ha)
 {
-<<<<<<< HEAD
-	uint32_t count = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srb *srb = NULL;
 	struct status_entry *sts_entry;
 
 	/* Process all responses from response queue */
 	while ((ha->response_ptr->signature != RESPONSE_PROCESSED)) {
 		sts_entry = (struct status_entry *) ha->response_ptr;
-<<<<<<< HEAD
-		count++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Advance pointers for next entry */
 		if (ha->response_out == (RESPONSE_QUEUE_DEPTH - 1)) {
@@ -704,11 +577,6 @@ exit_prq_error:
 }
 
 /**
-<<<<<<< HEAD
- * qla4xxx_isr_decode_mailbox - decodes mailbox status
- * @ha: Pointer to host adapter structure.
- * @mailbox_status: Mailbox status.
-=======
  * qla4_83xx_loopback_in_progress: Is loopback in progress?
  * @ha: Pointer to host adapter structure.
  * returns: 1 = loopback in progress, 0 = loopback not in progress
@@ -781,7 +649,6 @@ static void qla4xxx_default_router_changed(struct scsi_qla_host *ha,
  * qla4xxx_isr_decode_mailbox - decodes mailbox status
  * @ha: Pointer to host adapter structure.
  * @mbox_status: Mailbox status.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine decodes the mailbox status during the ISR.
  * Hardware_lock locked upon entry. runs in interrupt context.
@@ -791,8 +658,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 {
 	int i;
 	uint32_t mbox_sts[MBOX_AEN_REG_COUNT];
-<<<<<<< HEAD
-=======
 	__le32 __iomem *mailbox_out;
 	uint32_t opcode = 0;
 
@@ -802,7 +667,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 		mailbox_out = &ha->qla4_82xx_reg->mailbox_out[0];
 	else
 		mailbox_out = &ha->reg->mailbox[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((mbox_status == MBOX_STS_BUSY) ||
 	    (mbox_status == MBOX_STS_INTERMEDIATE_COMPLETION) ||
@@ -815,13 +679,7 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			 * location and set mailbox command done flag
 			 */
 			for (i = 0; i < ha->mbox_status_count; i++)
-<<<<<<< HEAD
-				ha->mbox_status[i] = is_qla8022(ha)
-				    ? readl(&ha->qla4_8xxx_reg->mailbox_out[i])
-				    : readl(&ha->reg->mailbox[i]);
-=======
 				ha->mbox_status[i] = readl(&mailbox_out[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_bit(AF_MBOX_COMMAND_DONE, &ha->flags);
 
@@ -830,13 +688,7 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 		}
 	} else if (mbox_status >> 12 == MBOX_ASYNC_EVENT_STATUS) {
 		for (i = 0; i < MBOX_AEN_REG_COUNT; i++)
-<<<<<<< HEAD
-			mbox_sts[i] = is_qla8022(ha)
-			    ? readl(&ha->qla4_8xxx_reg->mailbox_out[i])
-			    : readl(&ha->reg->mailbox[i]);
-=======
 			mbox_sts[i] = readl(&mailbox_out[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Immediately process the AENs that don't require much work.
 		 * Only queue the database_changed AENs */
@@ -852,13 +704,9 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			ql4_printk(KERN_INFO, ha, "%s: System Err\n", __func__);
 			qla4xxx_dump_registers(ha);
 
-<<<<<<< HEAD
-			if (ql4xdontresethba) {
-=======
 			if ((is_qla8022(ha) && ql4xdontresethba) ||
 			    ((is_qla8032(ha) || is_qla8042(ha)) &&
 			     qla4_83xx_idc_dontreset(ha))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DEBUG2(printk("scsi%ld: %s:Don't Reset HBA\n",
 				    ha->host_no, __func__));
 			} else {
@@ -874,11 +722,7 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 		case MBOX_ASTS_DHCP_LEASE_EXPIRED:
 			DEBUG2(printk("scsi%ld: AEN %04x, ERROR Status, "
 				      "Reset HA\n", ha->host_no, mbox_status));
-<<<<<<< HEAD
-			if (is_qla8022(ha))
-=======
 			if (is_qla80XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_bit(DPC_RESET_HA_FW_CONTEXT,
 					&ha->dpc_flags);
 			else
@@ -894,27 +738,19 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			qla4xxx_post_aen_work(ha, ISCSI_EVENT_LINKUP,
 					      sizeof(mbox_sts),
 					      (uint8_t *) mbox_sts);
-<<<<<<< HEAD
-=======
 
 			if ((is_qla8032(ha) || is_qla8042(ha)) &&
 			    ha->notify_link_up_comp)
 				complete(&ha->link_up_comp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MBOX_ASTS_LINK_DOWN:
 			clear_bit(AF_LINK_UP, &ha->flags);
-<<<<<<< HEAD
-			if (test_bit(AF_INIT_DONE, &ha->flags))
-				set_bit(DPC_LINK_CHANGED, &ha->dpc_flags);
-=======
 			if (test_bit(AF_INIT_DONE, &ha->flags)) {
 				set_bit(DPC_LINK_CHANGED, &ha->dpc_flags);
 				qla4xxx_wake_dpc(ha);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ql4_printk(KERN_INFO, ha, "%s: LINK DOWN\n", __func__);
 			qla4xxx_post_aen_work(ha, ISCSI_EVENT_LINKDOWN,
@@ -950,17 +786,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			    "mbox_sts[3]=%04x\n", ha->host_no, mbox_sts[0],
 			    mbox_sts[2], mbox_sts[3]);
 
-<<<<<<< HEAD
-			/* mbox_sts[2] = Old ACB state
-			 * mbox_sts[3] = new ACB state */
-			if ((mbox_sts[3] == ACB_STATE_VALID) &&
-			    ((mbox_sts[2] == ACB_STATE_TENTATIVE) ||
-			    (mbox_sts[2] == ACB_STATE_ACQUIRING)))
-				set_bit(DPC_GET_DHCP_IP_ADDR, &ha->dpc_flags);
-			else if ((mbox_sts[3] == ACB_STATE_ACQUIRING) &&
-				 (mbox_sts[2] == ACB_STATE_VALID)) {
-				if (is_qla8022(ha))
-=======
 			qla4xxx_update_ipaddr_state(ha, mbox_sts[5],
 						    mbox_sts[3]);
 			/* mbox_sts[2] = Old ACB state
@@ -972,15 +797,10 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			} else if ((mbox_sts[3] == IP_ADDRSTATE_ACQUIRING) &&
 				   (mbox_sts[2] == IP_ADDRSTATE_PREFERRED)) {
 				if (is_qla80XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					set_bit(DPC_RESET_HA_FW_CONTEXT,
 						&ha->dpc_flags);
 				else
 					set_bit(DPC_RESET_HA, &ha->dpc_flags);
-<<<<<<< HEAD
-			} else if ((mbox_sts[3] == ACB_STATE_UNCONFIGURED))
-				complete(&ha->disable_acb_comp);
-=======
 			} else if (mbox_sts[3] == IP_ADDRSTATE_DISABLING) {
 				ql4_printk(KERN_INFO, ha, "scsi%ld: %s: ACB in disabling state\n",
 					   ha->host_no, __func__);
@@ -1006,7 +826,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 					  ha->host_no, mbox_sts[0], mbox_sts[1],
 					  mbox_sts[2], mbox_sts[3], mbox_sts[4],
 					  mbox_sts[5]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MBOX_ASTS_MAC_ADDRESS_CHANGED:
@@ -1085,8 +904,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 			    " removed\n",  ha->host_no, mbox_sts[0]));
 			break;
 
-<<<<<<< HEAD
-=======
 		case MBOX_ASTS_IDC_REQUEST_NOTIFICATION:
 			if (is_qla8032(ha) || is_qla8042(ha)) {
 				DEBUG2(ql4_printk(KERN_INFO, ha,
@@ -1190,7 +1007,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 					  ha->host_no, mbox_sts[0]));
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			DEBUG2(printk(KERN_WARNING
 				      "scsi%ld: AEN %04x UNKNOWN\n",
@@ -1205,11 +1021,6 @@ static void qla4xxx_isr_decode_mailbox(struct scsi_qla_host * ha,
 	}
 }
 
-<<<<<<< HEAD
-/**
- * qla4_8xxx_interrupt_service_routine - isr
- * @ha: pointer to host adapter structure.
-=======
 void qla4_83xx_interrupt_service_routine(struct scsi_qla_host *ha,
 					 uint32_t intr_status)
 {
@@ -1231,52 +1042,32 @@ void qla4_83xx_interrupt_service_routine(struct scsi_qla_host *ha,
  * qla4_82xx_interrupt_service_routine - isr
  * @ha: pointer to host adapter structure.
  * @intr_status: Local interrupt status/type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the main interrupt service routine.
  * hardware_lock locked upon entry. runs in interrupt context.
  **/
-<<<<<<< HEAD
-void qla4_8xxx_interrupt_service_routine(struct scsi_qla_host *ha,
-    uint32_t intr_status)
-{
-	/* Process response queue interrupt. */
-	if (intr_status & HSRX_RISC_IOCB_INT)
-=======
 void qla4_82xx_interrupt_service_routine(struct scsi_qla_host *ha,
     uint32_t intr_status)
 {
 	/* Process response queue interrupt. */
 	if ((intr_status & HSRX_RISC_IOCB_INT) &&
 	    test_bit(AF_INIT_DONE, &ha->flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qla4xxx_process_response_queue(ha);
 
 	/* Process mailbox/asynch event interrupt.*/
 	if (intr_status & HSRX_RISC_MB_INT)
 		qla4xxx_isr_decode_mailbox(ha,
-<<<<<<< HEAD
-		    readl(&ha->qla4_8xxx_reg->mailbox_out[0]));
-
-	/* clear the interrupt */
-	writel(0, &ha->qla4_8xxx_reg->host_int);
-	readl(&ha->qla4_8xxx_reg->host_int);
-=======
 		    readl(&ha->qla4_82xx_reg->mailbox_out[0]));
 
 	/* clear the interrupt */
 	writel(0, &ha->qla4_82xx_reg->host_int);
 	readl(&ha->qla4_82xx_reg->host_int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla4xxx_interrupt_service_routine - isr
  * @ha: pointer to host adapter structure.
-<<<<<<< HEAD
-=======
  * @intr_status: Local interrupt status/type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the main interrupt service routine.
  * hardware_lock locked upon entry. runs in interrupt context.
@@ -1301,20 +1092,12 @@ void qla4xxx_interrupt_service_routine(struct scsi_qla_host * ha,
 }
 
 /**
-<<<<<<< HEAD
- * qla4_8xxx_spurious_interrupt - processes spurious interrupt
-=======
  * qla4_82xx_spurious_interrupt - processes spurious interrupt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ha: pointer to host adapter structure.
  * @reqs_count: .
  *
  **/
-<<<<<<< HEAD
-static void qla4_8xxx_spurious_interrupt(struct scsi_qla_host *ha,
-=======
 static void qla4_82xx_spurious_interrupt(struct scsi_qla_host *ha,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint8_t reqs_count)
 {
 	if (reqs_count)
@@ -1322,15 +1105,9 @@ static void qla4_82xx_spurious_interrupt(struct scsi_qla_host *ha,
 
 	DEBUG2(ql4_printk(KERN_INFO, ha, "Spurious Interrupt\n"));
 	if (is_qla8022(ha)) {
-<<<<<<< HEAD
-		writel(0, &ha->qla4_8xxx_reg->host_int);
-		if (test_bit(AF_INTx_ENABLED, &ha->flags))
-			qla4_8xxx_wr_32(ha, ha->nx_legacy_intr.tgt_mask_reg,
-=======
 		writel(0, &ha->qla4_82xx_reg->host_int);
 		if (!ha->pdev->msi_enabled && !ha->pdev->msix_enabled)
 			qla4_82xx_wr_32(ha, ha->nx_legacy_intr.tgt_mask_reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    0xfbff);
 	}
 	ha->spurious_int_count++;
@@ -1433,19 +1210,11 @@ irqreturn_t qla4xxx_intr_handler(int irq, void *dev_id)
 }
 
 /**
-<<<<<<< HEAD
- * qla4_8xxx_intr_handler - hardware interrupt handler.
- * @irq: Unused
- * @dev_id: Pointer to host adapter structure
- **/
-irqreturn_t qla4_8xxx_intr_handler(int irq, void *dev_id)
-=======
  * qla4_82xx_intr_handler - hardware interrupt handler.
  * @irq: Unused
  * @dev_id: Pointer to host adapter structure
  **/
 irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_qla_host *ha = dev_id;
 	uint32_t intr_status;
@@ -1457,16 +1226,6 @@ irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id)
 		return IRQ_HANDLED;
 
 	ha->isr_count++;
-<<<<<<< HEAD
-	status = qla4_8xxx_rd_32(ha, ISR_INT_VECTOR);
-	if (!(status & ha->nx_legacy_intr.int_vec_bit))
-		return IRQ_NONE;
-
-	status = qla4_8xxx_rd_32(ha, ISR_INT_STATE_REG);
-	if (!ISR_IS_LEGACY_INTR_TRIGGERED(status)) {
-		DEBUG2(ql4_printk(KERN_INFO, ha,
-		    "%s legacy Int not triggered\n", __func__));
-=======
 	status = qla4_82xx_rd_32(ha, ISR_INT_VECTOR);
 	if (!(status & ha->nx_legacy_intr.int_vec_bit))
 		return IRQ_NONE;
@@ -1475,30 +1234,10 @@ irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id)
 	if (!ISR_IS_LEGACY_INTR_TRIGGERED(status)) {
 		DEBUG7(ql4_printk(KERN_INFO, ha,
 				  "%s legacy Int not triggered\n", __func__));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_NONE;
 	}
 
 	/* clear the interrupt */
-<<<<<<< HEAD
-	qla4_8xxx_wr_32(ha, ha->nx_legacy_intr.tgt_status_reg, 0xffffffff);
-
-	/* read twice to ensure write is flushed */
-	qla4_8xxx_rd_32(ha, ISR_INT_VECTOR);
-	qla4_8xxx_rd_32(ha, ISR_INT_VECTOR);
-
-	spin_lock_irqsave(&ha->hardware_lock, flags);
-	while (1) {
-		if (!(readl(&ha->qla4_8xxx_reg->host_int) &
-		    ISRX_82XX_RISC_INT)) {
-			qla4_8xxx_spurious_interrupt(ha, reqs_count);
-			break;
-		}
-		intr_status =  readl(&ha->qla4_8xxx_reg->host_status);
-		if ((intr_status &
-		    (HSRX_RISC_MB_INT | HSRX_RISC_IOCB_INT)) == 0)  {
-			qla4_8xxx_spurious_interrupt(ha, reqs_count);
-=======
 	qla4_82xx_wr_32(ha, ha->nx_legacy_intr.tgt_status_reg, 0xffffffff);
 
 	/* read twice to ensure write is flushed */
@@ -1516,18 +1255,13 @@ irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id)
 		if ((intr_status &
 		    (HSRX_RISC_MB_INT | HSRX_RISC_IOCB_INT)) == 0)  {
 			qla4_82xx_spurious_interrupt(ha, reqs_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		ha->isp_ops->interrupt_service_routine(ha, intr_status);
 
 		/* Enable Interrupt */
-<<<<<<< HEAD
-		qla4_8xxx_wr_32(ha, ha->nx_legacy_intr.tgt_mask_reg, 0xfbff);
-=======
 		qla4_82xx_wr_32(ha, ha->nx_legacy_intr.tgt_mask_reg, 0xfbff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (++reqs_count == MAX_REQS_SERVICED_PER_INTR)
 			break;
@@ -1537,8 +1271,6 @@ irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-=======
 #define LEG_INT_PTR_B31		(1 << 31)
 #define LEG_INT_PTR_B30		(1 << 30)
 #define PF_BITS_MASK		(0xF << 16)
@@ -1593,7 +1325,6 @@ irqreturn_t qla4_83xx_intr_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 irqreturn_t
 qla4_8xxx_msi_handler(int irq, void *dev_id)
 {
@@ -1608,25 +1339,15 @@ qla4_8xxx_msi_handler(int irq, void *dev_id)
 
 	ha->isr_count++;
 	/* clear the interrupt */
-<<<<<<< HEAD
-	qla4_8xxx_wr_32(ha, ha->nx_legacy_intr.tgt_status_reg, 0xffffffff);
-
-	/* read twice to ensure write is flushed */
-	qla4_8xxx_rd_32(ha, ISR_INT_VECTOR);
-	qla4_8xxx_rd_32(ha, ISR_INT_VECTOR);
-=======
 	qla4_82xx_wr_32(ha, ha->nx_legacy_intr.tgt_status_reg, 0xffffffff);
 
 	/* read twice to ensure write is flushed */
 	qla4_82xx_rd_32(ha, ISR_INT_VECTOR);
 	qla4_82xx_rd_32(ha, ISR_INT_VECTOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return qla4_8xxx_default_intr_handler(irq, dev_id);
 }
 
-<<<<<<< HEAD
-=======
 static irqreturn_t qla4_83xx_mailbox_intr_handler(int irq, void *dev_id)
 {
 	struct scsi_qla_host *ha = dev_id;
@@ -1658,7 +1379,6 @@ exit:
 	return IRQ_HANDLED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qla4_8xxx_default_intr_handler - hardware interrupt handler.
  * @irq: Unused
@@ -1675,31 +1395,6 @@ qla4_8xxx_default_intr_handler(int irq, void *dev_id)
 	uint32_t intr_status;
 	uint8_t reqs_count = 0;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&ha->hardware_lock, flags);
-	while (1) {
-		if (!(readl(&ha->qla4_8xxx_reg->host_int) &
-		    ISRX_82XX_RISC_INT)) {
-			qla4_8xxx_spurious_interrupt(ha, reqs_count);
-			break;
-		}
-
-		intr_status =  readl(&ha->qla4_8xxx_reg->host_status);
-		if ((intr_status &
-		    (HSRX_RISC_MB_INT | HSRX_RISC_IOCB_INT)) == 0) {
-			qla4_8xxx_spurious_interrupt(ha, reqs_count);
-			break;
-		}
-
-		ha->isp_ops->interrupt_service_routine(ha, intr_status);
-
-		if (++reqs_count == MAX_REQS_SERVICED_PER_INTR)
-			break;
-	}
-
-	ha->isr_count++;
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-=======
 	if (is_qla8032(ha) || is_qla8042(ha)) {
 		qla4_83xx_mailbox_intr_handler(irq, dev_id);
 	} else {
@@ -1726,7 +1421,6 @@ qla4_8xxx_default_intr_handler(int irq, void *dev_id)
 		ha->isr_count++;
 		spin_unlock_irqrestore(&ha->hardware_lock, flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -1735,15 +1429,6 @@ qla4_8xxx_msix_rsp_q(int irq, void *dev_id)
 {
 	struct scsi_qla_host *ha = dev_id;
 	unsigned long flags;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&ha->hardware_lock, flags);
-	qla4xxx_process_response_queue(ha);
-	writel(0, &ha->qla4_8xxx_reg->host_int);
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-
-	ha->isr_count++;
-=======
 	int intr_status;
 	uint32_t ival = 0;
 
@@ -1771,7 +1456,6 @@ qla4_8xxx_msix_rsp_q(int irq, void *dev_id)
 	ha->isr_count++;
 exit_msix_rsp_q:
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -1841,15 +1525,6 @@ void qla4xxx_process_aen(struct scsi_qla_host * ha, uint8_t process_aen)
 
 int qla4xxx_request_irqs(struct scsi_qla_host *ha)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (!is_qla8022(ha))
-		goto try_intx;
-
-	if (ql4xenablemsix == 2)
-		goto try_msi;
-=======
 	int ret = 0;
 	int rval = QLA_ERROR;
 
@@ -1865,7 +1540,6 @@ int qla4xxx_request_irqs(struct scsi_qla_host *ha)
 		}
 		goto try_msi;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ql4xenablemsix == 0 || ql4xenablemsix != 1)
 		goto try_intx;
@@ -1876,15 +1550,12 @@ int qla4xxx_request_irqs(struct scsi_qla_host *ha)
 		DEBUG2(ql4_printk(KERN_INFO, ha,
 		    "MSI-X: Enabled (0x%X).\n", ha->revision_id));
 		goto irq_attached;
-<<<<<<< HEAD
-=======
 	} else {
 		if (is_qla8032(ha) || is_qla8042(ha)) {
 			ql4_printk(KERN_INFO, ha, "%s: ISP%04x: MSI-X: Falling back-to INTx mode. ret = %d\n",
 				   __func__, ha->pdev->device, ret);
 			goto try_intx;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ql4_printk(KERN_WARNING, ha,
@@ -1892,35 +1563,17 @@ int qla4xxx_request_irqs(struct scsi_qla_host *ha)
 
 try_msi:
 	/* Trying MSI */
-<<<<<<< HEAD
-	ret = pci_enable_msi(ha->pdev);
-	if (!ret) {
-=======
 	ret = pci_alloc_irq_vectors(ha->pdev, 1, 1, PCI_IRQ_MSI);
 	if (ret > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = request_irq(ha->pdev->irq, qla4_8xxx_msi_handler,
 			0, DRIVER_NAME, ha);
 		if (!ret) {
 			DEBUG2(ql4_printk(KERN_INFO, ha, "MSI: Enabled.\n"));
-<<<<<<< HEAD
-			set_bit(AF_MSI_ENABLED, &ha->flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto irq_attached;
 		} else {
 			ql4_printk(KERN_WARNING, ha,
 			    "MSI: Failed to reserve interrupt %d "
 			    "already in use.\n", ha->pdev->irq);
-<<<<<<< HEAD
-			pci_disable_msi(ha->pdev);
-		}
-	}
-	ql4_printk(KERN_WARNING, ha,
-	    "MSI: Falling back-to INTx mode -- %d.\n", ret);
-
-try_intx:
-=======
 			pci_free_irq_vectors(ha->pdev);
 		}
 	}
@@ -1932,55 +1585,32 @@ try_intx:
 		goto irq_not_attached;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Trying INTx */
 	ret = request_irq(ha->pdev->irq, ha->isp_ops->intr_handler,
 	    IRQF_SHARED, DRIVER_NAME, ha);
 	if (!ret) {
 		DEBUG2(ql4_printk(KERN_INFO, ha, "INTx: Enabled.\n"));
-<<<<<<< HEAD
-		set_bit(AF_INTx_ENABLED, &ha->flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto irq_attached;
 
 	} else {
 		ql4_printk(KERN_WARNING, ha,
 		    "INTx: Failed to reserve interrupt %d already in"
 		    " use.\n", ha->pdev->irq);
-<<<<<<< HEAD
-		return ret;
-=======
 		goto irq_not_attached;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 irq_attached:
 	set_bit(AF_IRQ_ATTACHED, &ha->flags);
 	ha->host->irq = ha->pdev->irq;
 	ql4_printk(KERN_INFO, ha, "%s: irq %d attached\n",
-<<<<<<< HEAD
-	    __func__, ha->pdev->irq);
-	return ret;
-=======
 		   __func__, ha->pdev->irq);
 	rval = QLA_SUCCESS;
 irq_not_attached:
 	return rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void qla4xxx_free_irqs(struct scsi_qla_host *ha)
 {
-<<<<<<< HEAD
-	if (test_bit(AF_MSIX_ENABLED, &ha->flags))
-		qla4_8xxx_disable_msix(ha);
-	else if (test_and_clear_bit(AF_MSI_ENABLED, &ha->flags)) {
-		free_irq(ha->pdev->irq, ha);
-		pci_disable_msi(ha->pdev);
-	} else if (test_and_clear_bit(AF_INTx_ENABLED, &ha->flags))
-		free_irq(ha->pdev->irq, ha);
-=======
 	if (!test_and_clear_bit(AF_IRQ_ATTACHED, &ha->flags))
 		return;
 
@@ -1988,5 +1618,4 @@ void qla4xxx_free_irqs(struct scsi_qla_host *ha)
 		free_irq(pci_irq_vector(ha->pdev, 1), ha);
 	free_irq(pci_irq_vector(ha->pdev, 0), ha);
 	pci_free_irq_vectors(ha->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

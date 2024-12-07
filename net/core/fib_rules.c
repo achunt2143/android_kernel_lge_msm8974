@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * net/core/fib_rules.c		Generic Routing Rules
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation, version 2.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * net/core/fib_rules.c		Generic Routing Rules
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  */
 
@@ -23,8 +13,6 @@
 #include <net/net_namespace.h>
 #include <net/sock.h>
 #include <net/fib_rules.h>
-<<<<<<< HEAD
-=======
 #include <net/ip_tunnels.h>
 #include <linux/indirect_call_wrapper.h>
 
@@ -40,32 +28,12 @@
 #else
 #define INDIRECT_CALL_MT(f, f2, f1, ...) f(__VA_ARGS__)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct fib_kuid_range fib_kuid_range_unset = {
 	KUIDT_INIT(0),
 	KUIDT_INIT(~0),
 };
 
-<<<<<<< HEAD
-int fib_default_rule_add(struct fib_rules_ops *ops,
-			 u32 pref, u32 table, u32 flags)
-{
-	struct fib_rule *r;
-
-	r = kzalloc(ops->rule_size, GFP_KERNEL);
-	if (r == NULL)
-		return -ENOMEM;
-
-	atomic_set(&r->refcnt, 1);
-	r->action = FR_ACT_TO_TBL;
-	r->pref = pref;
-	r->table = table;
-	r->flags = flags;
-	r->fr_net = hold_net(ops->fro_net);
-	r->uid_range = fib_kuid_range_unset;
-
-=======
 bool fib_rule_matchall(const struct fib_rule *rule)
 {
 	if (rule->iifindex || rule->oifindex || rule->mark || rule->tun_id ||
@@ -104,7 +72,6 @@ int fib_default_rule_add(struct fib_rules_ops *ops,
 	r->suppress_prefixlen = -1;
 	r->suppress_ifgroup = -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The lock is not required here, the list in unreacheable
 	 * at the moment this function is called */
 	list_add_tail(&r->list, &ops->rules_list);
@@ -112,11 +79,7 @@ int fib_default_rule_add(struct fib_rules_ops *ops,
 }
 EXPORT_SYMBOL(fib_default_rule_add);
 
-<<<<<<< HEAD
-u32 fib_default_rule_pref(struct fib_rules_ops *ops)
-=======
 static u32 fib_default_rule_pref(struct fib_rules_ops *ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *pos;
 	struct fib_rule *rule;
@@ -132,10 +95,6 @@ static u32 fib_default_rule_pref(struct fib_rules_ops *ops)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(fib_default_rule_pref);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void notify_rule_change(int event, struct fib_rule *rule,
 			       struct fib_rules_ops *ops, struct nlmsghdr *nlh,
@@ -192,10 +151,6 @@ static int __fib_rules_register(struct fib_rules_ops *ops)
 		if (ops->family == o->family)
 			goto errout;
 
-<<<<<<< HEAD
-	hold_net(net);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail_rcu(&ops->list, &net->rules_ops);
 	err = 0;
 errout:
@@ -233,44 +188,22 @@ static void fib_rules_cleanup_ops(struct fib_rules_ops *ops)
 
 	list_for_each_entry_safe(rule, tmp, &ops->rules_list, list) {
 		list_del_rcu(&rule->list);
-<<<<<<< HEAD
-=======
 		if (ops->delete)
 			ops->delete(rule);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fib_rule_put(rule);
 	}
 }
 
-<<<<<<< HEAD
-static void fib_rules_put_rcu(struct rcu_head *head)
-{
-	struct fib_rules_ops *ops = container_of(head, struct fib_rules_ops, rcu);
-	struct net *net = ops->fro_net;
-
-	release_net(net);
-	kfree(ops);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fib_rules_unregister(struct fib_rules_ops *ops)
 {
 	struct net *net = ops->fro_net;
 
 	spin_lock(&net->rules_mod_lock);
 	list_del_rcu(&ops->list);
-<<<<<<< HEAD
-	fib_rules_cleanup_ops(ops);
-	spin_unlock(&net->rules_mod_lock);
-
-	call_rcu(&ops->rcu, fib_rules_put_rcu);
-=======
 	spin_unlock(&net->rules_mod_lock);
 
 	fib_rules_cleanup_ops(ops);
 	kfree_rcu(ops, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(fib_rules_unregister);
 
@@ -302,10 +235,6 @@ static int nla_put_uid_range(struct sk_buff *skb, struct fib_kuid_range *range)
 	return nla_put(skb, FRA_UID_RANGE, sizeof(out), &out);
 }
 
-<<<<<<< HEAD
-static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
-			  struct flowi *fl, int flags)
-=======
 static int nla_get_port_range(struct nlattr *pattr,
 			      struct fib_rule_port_range *port_range)
 {
@@ -329,7 +258,6 @@ static int nla_put_port_range(struct sk_buff *skb, int attrtype,
 static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
 			  struct flowi *fl, int flags,
 			  struct fib_lookup_arg *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
@@ -342,27 +270,20 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
 	if ((rule->mark ^ fl->flowi_mark) & rule->mark_mask)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	if (rule->tun_id && (rule->tun_id != fl->flowi_tun_key.tun_id))
 		goto out;
 
 	if (rule->l3mdev && !l3mdev_fib_rule_match(rule->fr_net, fl, arg))
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (uid_lt(fl->flowi_uid, rule->uid_range.start) ||
 	    uid_gt(fl->flowi_uid, rule->uid_range.end))
 		goto out;
 
-<<<<<<< HEAD
-	ret = ops->match(rule, fl, flags);
-=======
 	ret = INDIRECT_CALL_MT(ops->match,
 			       fib6_rule_match,
 			       fib4_rule_match,
 			       rule, fl, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return (rule->flags & FIB_RULE_INVERT) ? !ret : ret;
 }
@@ -377,11 +298,7 @@ int fib_rules_lookup(struct fib_rules_ops *ops, struct flowi *fl,
 
 	list_for_each_entry_rcu(rule, &ops->rules_list, list) {
 jumped:
-<<<<<<< HEAD
-		if (!fib_rule_match(rule, ops, fl, flags))
-=======
 		if (!fib_rule_match(rule, ops, fl, flags, arg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (rule->action == FR_ACT_GOTO) {
@@ -397,13 +314,6 @@ jumped:
 		} else if (rule->action == FR_ACT_NOP)
 			continue;
 		else
-<<<<<<< HEAD
-			err = ops->action(rule, fl, flags, arg);
-
-		if (err != -EAGAIN) {
-			if ((arg->flags & FIB_LOOKUP_NOREF) ||
-			    likely(atomic_inc_not_zero(&rule->refcnt))) {
-=======
 			err = INDIRECT_CALL_MT(ops->action,
 					       fib6_rule_action,
 					       fib4_rule_action,
@@ -418,7 +328,6 @@ jumped:
 		if (err != -EAGAIN) {
 			if ((arg->flags & FIB_LOOKUP_NOREF) ||
 			    likely(refcount_inc_not_zero(&rule->refcnt))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				arg->rule = rule;
 				goto out;
 			}
@@ -434,65 +343,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(fib_rules_lookup);
 
-<<<<<<< HEAD
-static int validate_rulemsg(struct fib_rule_hdr *frh, struct nlattr **tb,
-			    struct fib_rules_ops *ops)
-{
-	int err = -EINVAL;
-
-	if (frh->src_len)
-		if (tb[FRA_SRC] == NULL ||
-		    frh->src_len > (ops->addr_size * 8) ||
-		    nla_len(tb[FRA_SRC]) != ops->addr_size)
-			goto errout;
-
-	if (frh->dst_len)
-		if (tb[FRA_DST] == NULL ||
-		    frh->dst_len > (ops->addr_size * 8) ||
-		    nla_len(tb[FRA_DST]) != ops->addr_size)
-			goto errout;
-
-	err = 0;
-errout:
-	return err;
-}
-
-static int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr* nlh, void *arg)
-{
-	struct net *net = sock_net(skb->sk);
-	struct fib_rule_hdr *frh = nlmsg_data(nlh);
-	struct fib_rules_ops *ops = NULL;
-	struct fib_rule *rule, *r, *last = NULL;
-	struct nlattr *tb[FRA_MAX+1];
-	int err = -EINVAL, unresolved = 0;
-
-	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*frh)))
-		goto errout;
-
-	ops = lookup_rules_ops(net, frh->family);
-	if (ops == NULL) {
-		err = -EAFNOSUPPORT;
-		goto errout;
-	}
-
-	err = nlmsg_parse(nlh, sizeof(*frh), tb, FRA_MAX, ops->policy);
-	if (err < 0)
-		goto errout;
-
-	err = validate_rulemsg(frh, tb, ops);
-	if (err < 0)
-		goto errout;
-
-	rule = kzalloc(ops->rule_size, GFP_KERNEL);
-	if (rule == NULL) {
-		err = -ENOMEM;
-		goto errout;
-	}
-	rule->fr_net = hold_net(net);
-
-	if (tb[FRA_PRIORITY])
-		rule->pref = nla_get_u32(tb[FRA_PRIORITY]);
-=======
 static int call_fib_rule_notifier(struct notifier_block *nb,
 				  enum fib_event_type event_type,
 				  struct fib_rule *rule, int family,
@@ -707,78 +557,20 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	nlrule->proto = tb[FRA_PROTOCOL] ?
 		nla_get_u8(tb[FRA_PROTOCOL]) : RTPROT_UNSPEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tb[FRA_IIFNAME]) {
 		struct net_device *dev;
 
-<<<<<<< HEAD
-		rule->iifindex = -1;
-		nla_strlcpy(rule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
-		dev = __dev_get_by_name(net, rule->iifname);
-		if (dev)
-			rule->iifindex = dev->ifindex;
-=======
 		nlrule->iifindex = -1;
 		nla_strscpy(nlrule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
 		dev = __dev_get_by_name(net, nlrule->iifname);
 		if (dev)
 			nlrule->iifindex = dev->ifindex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (tb[FRA_OIFNAME]) {
 		struct net_device *dev;
 
-<<<<<<< HEAD
-		rule->oifindex = -1;
-		nla_strlcpy(rule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
-		dev = __dev_get_by_name(net, rule->oifname);
-		if (dev)
-			rule->oifindex = dev->ifindex;
-	}
-
-	if (tb[FRA_FWMARK]) {
-		rule->mark = nla_get_u32(tb[FRA_FWMARK]);
-		if (rule->mark)
-			/* compatibility: if the mark value is non-zero all bits
-			 * are compared unless a mask is explicitly specified.
-			 */
-			rule->mark_mask = 0xFFFFFFFF;
-	}
-
-	if (tb[FRA_FWMASK])
-		rule->mark_mask = nla_get_u32(tb[FRA_FWMASK]);
-
-	rule->action = frh->action;
-	rule->flags = frh->flags;
-	rule->table = frh_get_table(frh, tb);
-
-	if (!tb[FRA_PRIORITY] && ops->default_pref)
-		rule->pref = ops->default_pref(ops);
-
-	err = -EINVAL;
-	if (tb[FRA_GOTO]) {
-		if (rule->action != FR_ACT_GOTO)
-			goto errout_free;
-
-		rule->target = nla_get_u32(tb[FRA_GOTO]);
-		/* Backward jumps are prohibited to avoid endless loops */
-		if (rule->target <= rule->pref)
-			goto errout_free;
-
-		list_for_each_entry(r, &ops->rules_list, list) {
-			if (r->pref == rule->target) {
-				RCU_INIT_POINTER(rule->ctarget, r);
-				break;
-			}
-		}
-
-		if (rcu_dereference_protected(rule->ctarget, 1) == NULL)
-			unresolved = 1;
-	} else if (rule->action == FR_ACT_GOTO)
-		goto errout_free;
-=======
 		nlrule->oifindex = -1;
 		nla_strscpy(nlrule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
 		dev = __dev_get_by_name(net, nlrule->oifname);
@@ -839,29 +631,10 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
 		NL_SET_ERR_MSG(extack, "l3mdev and table are mutually exclusive");
 		goto errout_free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tb[FRA_UID_RANGE]) {
 		if (current_user_ns() != net->user_ns) {
 			err = -EPERM;
-<<<<<<< HEAD
-			goto errout_free;
-		}
-
-		rule->uid_range = nla_get_kuid_range(tb);
-
-		if (!uid_range_set(&rule->uid_range) ||
-		    !uid_lte(rule->uid_range.start, rule->uid_range.end))
-			goto errout_free;
-	} else {
-		rule->uid_range = fib_kuid_range_unset;
-	}
-
-	err = ops->configure(rule, skb, frh, tb);
-	if (err < 0)
-		goto errout_free;
-
-=======
 			NL_SET_ERR_MSG(extack, "No permission to set uid");
 			goto errout_free;
 		}
@@ -1055,18 +828,12 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (rcu_dereference_protected(rule->ctarget, 1) == NULL)
 		unresolved = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(r, &ops->rules_list, list) {
 		if (r->pref > rule->pref)
 			break;
 		last = r;
 	}
 
-<<<<<<< HEAD
-	fib_rule_get(rule);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (last)
 		list_add_rcu(&rule->list, &last->list);
 	else
@@ -1094,50 +861,28 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (unresolved)
 		ops->unresolved_rules++;
 
-<<<<<<< HEAD
-	notify_rule_change(RTM_NEWRULE, rule, ops, nlh, NETLINK_CB(skb).pid);
-=======
 	if (rule->tun_id)
 		ip_tunnel_need_metadata();
 
 	notify_rule_change(RTM_NEWRULE, rule, ops, nlh, NETLINK_CB(skb).portid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_route_cache(ops);
 	rules_ops_put(ops);
 	return 0;
 
 errout_free:
-<<<<<<< HEAD
-	release_net(rule->fr_net);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rule);
 errout:
 	rules_ops_put(ops);
 	return err;
 }
-<<<<<<< HEAD
-
-static int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr* nlh, void *arg)
-=======
 EXPORT_SYMBOL_GPL(fib_nl_newrule);
 
 int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 		   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct fib_rule_hdr *frh = nlmsg_data(nlh);
 	struct fib_rules_ops *ops = NULL;
-<<<<<<< HEAD
-	struct fib_rule *rule, *tmp;
-	struct nlattr *tb[FRA_MAX+1];
-	struct fib_kuid_range range;
-	int err = -EINVAL;
-
-	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*frh)))
-		goto errout;
-=======
 	struct fib_rule *rule = NULL, *r, *nlrule = NULL;
 	struct nlattr *tb[FRA_MAX+1];
 	int err = -EINVAL;
@@ -1147,109 +892,10 @@ int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 		NL_SET_ERR_MSG(extack, "Invalid msg length");
 		goto errout;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops = lookup_rules_ops(net, frh->family);
 	if (ops == NULL) {
 		err = -EAFNOSUPPORT;
-<<<<<<< HEAD
-		goto errout;
-	}
-
-	err = nlmsg_parse(nlh, sizeof(*frh), tb, FRA_MAX, ops->policy);
-	if (err < 0)
-		goto errout;
-
-	err = validate_rulemsg(frh, tb, ops);
-	if (err < 0)
-		goto errout;
-
-	if (tb[FRA_UID_RANGE]) {
-		range = nla_get_kuid_range(tb);
-		if (!uid_range_set(&range))
-			goto errout;
-	} else {
-		range = fib_kuid_range_unset;
-	}
-
-	list_for_each_entry(rule, &ops->rules_list, list) {
-		if (frh->action && (frh->action != rule->action))
-			continue;
-
-		if (frh_get_table(frh, tb) &&
-		    (frh_get_table(frh, tb) != rule->table))
-			continue;
-
-		if (tb[FRA_PRIORITY] &&
-		    (rule->pref != nla_get_u32(tb[FRA_PRIORITY])))
-			continue;
-
-		if (tb[FRA_IIFNAME] &&
-		    nla_strcmp(tb[FRA_IIFNAME], rule->iifname))
-			continue;
-
-		if (tb[FRA_OIFNAME] &&
-		    nla_strcmp(tb[FRA_OIFNAME], rule->oifname))
-			continue;
-
-		if (tb[FRA_FWMARK] &&
-		    (rule->mark != nla_get_u32(tb[FRA_FWMARK])))
-			continue;
-
-		if (tb[FRA_FWMASK] &&
-		    (rule->mark_mask != nla_get_u32(tb[FRA_FWMASK])))
-			continue;
-
-		if (uid_range_set(&range) &&
-		    (!uid_eq(rule->uid_range.start, range.start) ||
-		     !uid_eq(rule->uid_range.end, range.end)))
-			continue;
-
-		if (!ops->compare(rule, frh, tb))
-			continue;
-
-		if (rule->flags & FIB_RULE_PERMANENT) {
-			err = -EPERM;
-			goto errout;
-		}
-
-		list_del_rcu(&rule->list);
-
-		if (rule->action == FR_ACT_GOTO) {
-			ops->nr_goto_rules--;
-			if (rtnl_dereference(rule->ctarget) == NULL)
-				ops->unresolved_rules--;
-		}
-
-		/*
-		 * Check if this rule is a target to any of them. If so,
-		 * disable them. As this operation is eventually very
-		 * expensive, it is only performed if goto rules have
-		 * actually been added.
-		 */
-		if (ops->nr_goto_rules > 0) {
-			list_for_each_entry(tmp, &ops->rules_list, list) {
-				if (rtnl_dereference(tmp->ctarget) == rule) {
-					RCU_INIT_POINTER(tmp->ctarget, NULL);
-					ops->unresolved_rules++;
-				}
-			}
-		}
-
-		notify_rule_change(RTM_DELRULE, rule, ops, nlh,
-				   NETLINK_CB(skb).pid);
-		fib_rule_put(rule);
-		flush_route_cache(ops);
-		rules_ops_put(ops);
-		return 0;
-	}
-
-	err = -ENOENT;
-errout:
-	rules_ops_put(ops);
-	return err;
-}
-=======
 		NL_SET_ERR_MSG(extack, "Rule family not supported");
 		goto errout;
 	}
@@ -1331,7 +977,6 @@ errout:
 	return err;
 }
 EXPORT_SYMBOL_GPL(fib_nl_delrule);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline size_t fib_rule_nlmsg_size(struct fib_rules_ops *ops,
 					 struct fib_rule *rule)
@@ -1341,11 +986,6 @@ static inline size_t fib_rule_nlmsg_size(struct fib_rules_ops *ops,
 			 + nla_total_size(IFNAMSIZ) /* FRA_OIFNAME */
 			 + nla_total_size(4) /* FRA_PRIORITY */
 			 + nla_total_size(4) /* FRA_TABLE */
-<<<<<<< HEAD
-			 + nla_total_size(4) /* FRA_FWMARK */
-			 + nla_total_size(4) /* FRA_FWMASK */
-			 + nla_total_size(sizeof(struct fib_kuid_range));
-=======
 			 + nla_total_size(4) /* FRA_SUPPRESS_PREFIXLEN */
 			 + nla_total_size(4) /* FRA_SUPPRESS_IFGROUP */
 			 + nla_total_size(4) /* FRA_FWMARK */
@@ -1356,7 +996,6 @@ static inline size_t fib_rule_nlmsg_size(struct fib_rules_ops *ops,
 			 + nla_total_size(1) /* FRA_IP_PROTO */
 			 + nla_total_size(sizeof(struct fib_rule_port_range)) /* FRA_SPORT_RANGE */
 			 + nla_total_size(sizeof(struct fib_rule_port_range)); /* FRA_DPORT_RANGE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ops->nlmsg_payload)
 		payload += ops->nlmsg_payload(rule);
@@ -1377,71 +1016,37 @@ static int fib_nl_fill_rule(struct sk_buff *skb, struct fib_rule *rule,
 
 	frh = nlmsg_data(nlh);
 	frh->family = ops->family;
-<<<<<<< HEAD
-	frh->table = rule->table;
-	NLA_PUT_U32(skb, FRA_TABLE, rule->table);
-=======
 	frh->table = rule->table < 256 ? rule->table : RT_TABLE_COMPAT;
 	if (nla_put_u32(skb, FRA_TABLE, rule->table))
 		goto nla_put_failure;
 	if (nla_put_u32(skb, FRA_SUPPRESS_PREFIXLEN, rule->suppress_prefixlen))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	frh->res1 = 0;
 	frh->res2 = 0;
 	frh->action = rule->action;
 	frh->flags = rule->flags;
 
-<<<<<<< HEAD
-=======
 	if (nla_put_u8(skb, FRA_PROTOCOL, rule->proto))
 		goto nla_put_failure;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rule->action == FR_ACT_GOTO &&
 	    rcu_access_pointer(rule->ctarget) == NULL)
 		frh->flags |= FIB_RULE_UNRESOLVED;
 
 	if (rule->iifname[0]) {
-<<<<<<< HEAD
-		NLA_PUT_STRING(skb, FRA_IIFNAME, rule->iifname);
-
-=======
 		if (nla_put_string(skb, FRA_IIFNAME, rule->iifname))
 			goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rule->iifindex == -1)
 			frh->flags |= FIB_RULE_IIF_DETACHED;
 	}
 
 	if (rule->oifname[0]) {
-<<<<<<< HEAD
-		NLA_PUT_STRING(skb, FRA_OIFNAME, rule->oifname);
-
-=======
 		if (nla_put_string(skb, FRA_OIFNAME, rule->oifname))
 			goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rule->oifindex == -1)
 			frh->flags |= FIB_RULE_OIF_DETACHED;
 	}
 
-<<<<<<< HEAD
-	if (rule->pref)
-		NLA_PUT_U32(skb, FRA_PRIORITY, rule->pref);
-
-	if (rule->mark)
-		NLA_PUT_U32(skb, FRA_FWMARK, rule->mark);
-
-	if (rule->mark_mask || rule->mark)
-		NLA_PUT_U32(skb, FRA_FWMASK, rule->mark_mask);
-
-	if (rule->target)
-		NLA_PUT_U32(skb, FRA_GOTO, rule->target);
-
-	if (uid_range_set(&rule->uid_range))
-		nla_put_uid_range(skb, &rule->uid_range);
-=======
 	if ((rule->pref &&
 	     nla_put_u32(skb, FRA_PRIORITY, rule->pref)) ||
 	    (rule->mark &&
@@ -1467,17 +1072,12 @@ static int fib_nl_fill_rule(struct sk_buff *skb, struct fib_rule *rule,
 		if (nla_put_u32(skb, FRA_SUPPRESS_IFGROUP, rule->suppress_ifgroup))
 			goto nla_put_failure;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ops->fill(rule, skb, frh) < 0)
 		goto nla_put_failure;
 
-<<<<<<< HEAD
-	return nlmsg_end(skb, nlh);
-=======
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	nlmsg_cancel(skb, nlh);
@@ -1489,26 +1089,17 @@ static int dump_rules(struct sk_buff *skb, struct netlink_callback *cb,
 {
 	int idx = 0;
 	struct fib_rule *rule;
-<<<<<<< HEAD
-=======
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(rule, &ops->rules_list, list) {
 		if (idx < cb->args[1])
 			goto skip;
 
-<<<<<<< HEAD
-		if (fib_nl_fill_rule(skb, rule, NETLINK_CB(cb->skb).pid,
-				     cb->nlh->nlmsg_seq, RTM_NEWRULE,
-				     NLM_F_MULTI, ops) < 0)
-=======
 		err = fib_nl_fill_rule(skb, rule, NETLINK_CB(cb->skb).portid,
 				       cb->nlh->nlmsg_seq, RTM_NEWRULE,
 				       NLM_F_MULTI, ops);
 		if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 skip:
 		idx++;
@@ -1517,9 +1108,6 @@ skip:
 	cb->args[1] = idx;
 	rules_ops_put(ops);
 
-<<<<<<< HEAD
-	return skb->len;
-=======
 	return err;
 }
 
@@ -1547,22 +1135,15 @@ static int fib_valid_dumprule_req(const struct nlmsghdr *nlh,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fib_nl_dumprule(struct sk_buff *skb, struct netlink_callback *cb)
 {
-<<<<<<< HEAD
-=======
 	const struct nlmsghdr *nlh = cb->nlh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = sock_net(skb->sk);
 	struct fib_rules_ops *ops;
 	int idx = 0, family;
 
-<<<<<<< HEAD
-	family = rtnl_msg_family(cb->nlh);
-=======
 	if (cb->strict_check) {
 		int err = fib_valid_dumprule_req(nlh, cb->extack);
 
@@ -1571,20 +1152,15 @@ static int fib_nl_dumprule(struct sk_buff *skb, struct netlink_callback *cb)
 	}
 
 	family = rtnl_msg_family(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (family != AF_UNSPEC) {
 		/* Protocol specific dump request */
 		ops = lookup_rules_ops(net, family);
 		if (ops == NULL)
 			return -EAFNOSUPPORT;
 
-<<<<<<< HEAD
-		return dump_rules(skb, cb, ops);
-=======
 		dump_rules(skb, cb, ops);
 
 		return skb->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_lock();
@@ -1611,11 +1187,7 @@ static void notify_rule_change(int event, struct fib_rule *rule,
 {
 	struct net *net;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	int err = -ENOBUFS;
-=======
 	int err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	net = ops->fro_net;
 	skb = nlmsg_new(fib_rule_nlmsg_size(ops, rule), GFP_KERNEL);
@@ -1665,15 +1237,9 @@ static void detach_rules(struct list_head *rules, struct net_device *dev)
 
 
 static int fib_rules_event(struct notifier_block *this, unsigned long event,
-<<<<<<< HEAD
-			    void *ptr)
-{
-	struct net_device *dev = ptr;
-=======
 			   void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = dev_net(dev);
 	struct fib_rules_ops *ops;
 
@@ -1712,10 +1278,6 @@ static int __net_init fib_rules_net_init(struct net *net)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct pernet_operations fib_rules_net_ops = {
-	.init = fib_rules_net_init,
-=======
 static void __net_exit fib_rules_net_exit(struct net *net)
 {
 	WARN_ON_ONCE(!list_empty(&net->rules_ops));
@@ -1724,21 +1286,14 @@ static void __net_exit fib_rules_net_exit(struct net *net)
 static struct pernet_operations fib_rules_net_ops = {
 	.init = fib_rules_net_init,
 	.exit = fib_rules_net_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init fib_rules_init(void)
 {
 	int err;
-<<<<<<< HEAD
-	rtnl_register(PF_UNSPEC, RTM_NEWRULE, fib_nl_newrule, NULL, NULL);
-	rtnl_register(PF_UNSPEC, RTM_DELRULE, fib_nl_delrule, NULL, NULL);
-	rtnl_register(PF_UNSPEC, RTM_GETRULE, NULL, fib_nl_dumprule, NULL);
-=======
 	rtnl_register(PF_UNSPEC, RTM_NEWRULE, fib_nl_newrule, NULL, 0);
 	rtnl_register(PF_UNSPEC, RTM_DELRULE, fib_nl_delrule, NULL, 0);
 	rtnl_register(PF_UNSPEC, RTM_GETRULE, NULL, fib_nl_dumprule, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_pernet_subsys(&fib_rules_net_ops);
 	if (err < 0)

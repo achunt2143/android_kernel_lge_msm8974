@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/isofs/export.c
  *
@@ -13,11 +10,7 @@
  *
  * The following files are helpful:
  *
-<<<<<<< HEAD
- *     Documentation/filesystems/nfs/Exporting
-=======
  *     Documentation/filesystems/nfs/exporting.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     fs/exportfs/expfs.c.
  */
 
@@ -52,11 +45,7 @@ static struct dentry *isofs_export_get_parent(struct dentry *child)
 {
 	unsigned long parent_block = 0;
 	unsigned long parent_offset = 0;
-<<<<<<< HEAD
-	struct inode *child_inode = child->d_inode;
-=======
 	struct inode *child_inode = d_inode(child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iso_inode_info *e_child_inode = ISOFS_I(child_inode);
 	struct iso_directory_record *de = NULL;
 	struct buffer_head * bh = NULL;
@@ -119,20 +108,11 @@ static struct dentry *isofs_export_get_parent(struct dentry *child)
 }
 
 static int
-<<<<<<< HEAD
-isofs_export_encode_fh(struct dentry *dentry,
-		       __u32 *fh32,
-		       int *max_len,
-		       int connectable)
-{
-	struct inode * inode = dentry->d_inode;
-=======
 isofs_export_encode_fh(struct inode *inode,
 		       __u32 *fh32,
 		       int *max_len,
 		       struct inode *parent)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iso_inode_info * ei = ISOFS_I(inode);
 	int len = *max_len;
 	int type = 1;
@@ -144,21 +124,12 @@ isofs_export_encode_fh(struct inode *inode,
 	 * offset of the inode and the upper 16 bits of fh32[1] to
 	 * hold the offset of the parent.
 	 */
-<<<<<<< HEAD
-	if (connectable && (len < 5)) {
-		*max_len = 5;
-		return 255;
-	} else if (len < 3) {
-		*max_len = 3;
-		return 255;
-=======
 	if (parent && (len < 5)) {
 		*max_len = 5;
 		return FILEID_INVALID;
 	} else if (len < 3) {
 		*max_len = 3;
 		return FILEID_INVALID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	len = 3;
@@ -166,24 +137,12 @@ isofs_export_encode_fh(struct inode *inode,
  	fh16[2] = (__u16)ei->i_iget5_offset;  /* fh16 [sic] */
 	fh16[3] = 0;  /* avoid leaking uninitialized data */
 	fh32[2] = inode->i_generation;
-<<<<<<< HEAD
-	if (connectable && !S_ISDIR(inode->i_mode)) {
-		struct inode *parent;
-		struct iso_inode_info *eparent;
-		spin_lock(&dentry->d_lock);
-		parent = dentry->d_parent->d_inode;
-=======
 	if (parent) {
 		struct iso_inode_info *eparent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eparent = ISOFS_I(parent);
 		fh32[3] = eparent->i_iget5_block;
 		fh16[3] = (__u16)eparent->i_iget5_offset;  /* fh16 [sic] */
 		fh32[4] = parent->i_generation;
-<<<<<<< HEAD
-		spin_unlock(&dentry->d_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = 5;
 		type = 2;
 	}

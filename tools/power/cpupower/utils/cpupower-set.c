@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- *  (C) 2011 Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Licensed under the terms of the GNU GPL License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  (C) 2011 Thomas Renninger <trenn@suse.de>, Novell Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -17,28 +10,17 @@
 #include <errno.h>
 #include <string.h>
 #include <getopt.h>
-<<<<<<< HEAD
-
-#include <cpufreq.h>
-=======
 #include <sys/utsname.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "helpers/helpers.h"
 #include "helpers/sysfs.h"
 #include "helpers/bitmask.h"
 
 static struct option set_opts[] = {
-<<<<<<< HEAD
-	{ .name = "perf-bias",	.has_arg = required_argument,	.flag = NULL,	.val = 'b'},
-	{ .name = "sched-mc",	.has_arg = required_argument,	.flag = NULL,	.val = 'm'},
-	{ .name = "sched-smt",	.has_arg = required_argument,	.flag = NULL,	.val = 's'},
-=======
 	{"perf-bias", required_argument, NULL, 'b'},
 	{"epp", required_argument, NULL, 'e'},
 	{"amd-pstate-mode", required_argument, NULL, 'm'},
 	{"turbo-boost", required_argument, NULL, 't'},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 
@@ -53,19 +35,6 @@ int cmd_set(int argc, char **argv)
 	extern char *optarg;
 	extern int optind, opterr, optopt;
 	unsigned int cpu;
-<<<<<<< HEAD
-
-	union {
-		struct {
-			int sched_mc:1;
-			int sched_smt:1;
-			int perf_bias:1;
-		};
-		int params;
-	} params;
-	int sched_mc = 0, sched_smt = 0, perf_bias = 0;
-	int ret = 0;
-=======
 	struct utsname uts;
 
 	union {
@@ -87,18 +56,13 @@ int cmd_set(int argc, char **argv)
 		fprintf(stderr, _("Subcommand not supported on POWER.\n"));
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	setlocale(LC_ALL, "");
 	textdomain(PACKAGE);
 
 	params.params = 0;
 	/* parameter parsing */
-<<<<<<< HEAD
-	while ((ret = getopt_long(argc, argv, "m:s:b:",
-=======
 	while ((ret = getopt_long(argc, argv, "b:e:m:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						set_opts, NULL)) != -1) {
 		switch (ret) {
 		case 'b':
@@ -112,34 +76,6 @@ int cmd_set(int argc, char **argv)
 			}
 			params.perf_bias = 1;
 			break;
-<<<<<<< HEAD
-		case 'm':
-			if (params.sched_mc)
-				print_wrong_arg_exit();
-			sched_mc = atoi(optarg);
-			if (sched_mc < 0 || sched_mc > 2) {
-				printf(_("--sched-mc param out "
-					 "of range [0-%d]\n"), 2);
-				print_wrong_arg_exit();
-			}
-			params.sched_mc = 1;
-			break;
-		case 's':
-			if (params.sched_smt)
-				print_wrong_arg_exit();
-			sched_smt = atoi(optarg);
-			if (sched_smt < 0 || sched_smt > 2) {
-				printf(_("--sched-smt param out "
-					 "of range [0-%d]\n"), 2);
-				print_wrong_arg_exit();
-			}
-			params.sched_smt = 1;
-			break;
-		default:
-			print_wrong_arg_exit();
-		}
-	};
-=======
 		case 'e':
 			if (params.epp)
 				print_wrong_arg_exit();
@@ -176,24 +112,10 @@ int cmd_set(int argc, char **argv)
 			print_wrong_arg_exit();
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!params.params)
 		print_wrong_arg_exit();
 
-<<<<<<< HEAD
-	if (params.sched_mc) {
-		ret = sysfs_set_sched("mc", sched_mc);
-		if (ret)
-			fprintf(stderr, _("Error setting sched-mc %s\n"),
-				(ret == -ENODEV) ? "not supported" : "");
-	}
-	if (params.sched_smt) {
-		ret = sysfs_set_sched("smt", sched_smt);
-		if (ret)
-			fprintf(stderr, _("Error setting sched-smt %s\n"),
-				(ret == -ENODEV) ? "not supported" : "");
-=======
 	if (params.mode) {
 		ret = cpupower_set_amd_pstate_mode(mode);
 		if (ret)
@@ -204,7 +126,6 @@ int cmd_set(int argc, char **argv)
 		ret = cpupower_set_turbo_boost(turbo_boost);
 		if (ret)
 			fprintf(stderr, "Error setting turbo-boost\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Default is: set all CPUs */
@@ -215,14 +136,6 @@ int cmd_set(int argc, char **argv)
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 
-<<<<<<< HEAD
-		if (!bitmask_isbitset(cpus_chosen, cpu) ||
-		    cpufreq_cpu_exists(cpu))
-			continue;
-
-		if (params.perf_bias) {
-			ret = msr_intel_set_perf_bias(cpu, perf_bias);
-=======
 		if (!bitmask_isbitset(cpus_chosen, cpu))
 			continue;
 
@@ -234,15 +147,12 @@ int cmd_set(int argc, char **argv)
 
 		if (params.perf_bias) {
 			ret = cpupower_intel_set_perf_bias(cpu, perf_bias);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret) {
 				fprintf(stderr, _("Error setting perf-bias "
 						  "value on CPU %d\n"), cpu);
 				break;
 			}
 		}
-<<<<<<< HEAD
-=======
 
 		if (params.epp) {
 			ret = cpupower_set_epp(cpu, epp);
@@ -253,7 +163,6 @@ int cmd_set(int argc, char **argv)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }

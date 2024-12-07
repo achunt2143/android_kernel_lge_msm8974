@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_MMAN_H
-#define _ASM_X86_MMAN_H
-
-#define MAP_32BIT	0x40		/* only give out 32bit addresses */
-
-#include <asm-generic/mman.h>
-
-#endif /* _ASM_X86_MMAN_H */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_MMAN_H__
 #define __ASM_MMAN_H__
@@ -23,4 +13,3 @@
 #include <uapi/asm/mman.h>
 
 #endif /* __ASM_MMAN_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -39,31 +39,16 @@
 #include <linux/inetdevice.h>
 #include <linux/rtnetlink.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/mm.h>
 #include <linux/sched/task.h>
 
 #include <net/ipv6.h>
 #include <net/addrconf.h>
 #include <net/devlink.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <rdma/ib_smi.h>
 #include <rdma/ib_user_verbs.h>
 #include <rdma/ib_addr.h>
-<<<<<<< HEAD
-
-#include <linux/mlx4/driver.h>
-#include <linux/mlx4/cmd.h>
-
-#include "mlx4_ib.h"
-#include "user.h"
-
-#define DRV_NAME	"mlx4_ib"
-#define DRV_VERSION	"1.0"
-#define DRV_RELDATE	"April 4, 2008"
-=======
 #include <rdma/ib_cache.h>
 
 #include <net/bonding.h>
@@ -81,55 +66,10 @@
 #define MLX4_IB_FLOW_MAX_PRIO 0xFFF
 #define MLX4_IB_FLOW_QPN_MASK 0xFFFFFF
 #define MLX4_IB_CARD_REV_A0   0xA0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Roland Dreier");
 MODULE_DESCRIPTION("Mellanox ConnectX HCA InfiniBand driver");
 MODULE_LICENSE("Dual BSD/GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-
-static const char mlx4_ib_version[] =
-	DRV_NAME ": Mellanox ConnectX InfiniBand driver v"
-	DRV_VERSION " (" DRV_RELDATE ")\n";
-
-struct update_gid_work {
-	struct work_struct	work;
-	union ib_gid		gids[128];
-	struct mlx4_ib_dev     *dev;
-	int			port;
-};
-
-static struct workqueue_struct *wq;
-
-static void init_query_mad(struct ib_smp *mad)
-{
-	mad->base_version  = 1;
-	mad->mgmt_class    = IB_MGMT_CLASS_SUBN_LID_ROUTED;
-	mad->class_version = 1;
-	mad->method	   = IB_MGMT_METHOD_GET;
-}
-
-static union ib_gid zgid;
-
-static int mlx4_ib_query_device(struct ib_device *ibdev,
-				struct ib_device_attr *props)
-{
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-	struct ib_smp *in_mad  = NULL;
-	struct ib_smp *out_mad = NULL;
-	int err = -ENOMEM;
-
-	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
-	out_mad = kmalloc(sizeof *out_mad, GFP_KERNEL);
-	if (!in_mad || !out_mad)
-		goto out;
-
-	init_query_mad(in_mad);
-	in_mad->attr_id = IB_SMP_ATTR_NODE_INFO;
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, 1, NULL, NULL, in_mad, out_mad);
-=======
 
 int mlx4_ib_sm_guid_assign = 0;
 module_param_named(sm_guid_assign, mlx4_ib_sm_guid_assign, int, 0444);
@@ -533,67 +473,41 @@ static int mlx4_ib_query_device(struct ib_device *ibdev,
 
 	err = mlx4_MAD_IFC(to_mdev(ibdev), MLX4_MAD_IFC_IGNORE_KEYS,
 			   1, NULL, NULL, in_mad, out_mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	memset(props, 0, sizeof *props);
 
-<<<<<<< HEAD
-=======
 	have_ib_ports = num_ib_ports(dev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->fw_ver = dev->dev->caps.fw_ver;
 	props->device_cap_flags    = IB_DEVICE_CHANGE_PHY_PORT |
 		IB_DEVICE_PORT_ACTIVE_EVENT		|
 		IB_DEVICE_SYS_IMAGE_GUID		|
-<<<<<<< HEAD
-		IB_DEVICE_RC_RNR_NAK_GEN		|
-		IB_DEVICE_BLOCK_MULTICAST_LOOPBACK;
-=======
 		IB_DEVICE_RC_RNR_NAK_GEN;
 	props->kernel_cap_flags = IBK_BLOCK_MULTICAST_LOOPBACK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_BAD_PKEY_CNTR)
 		props->device_cap_flags |= IB_DEVICE_BAD_PKEY_CNTR;
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_BAD_QKEY_CNTR)
 		props->device_cap_flags |= IB_DEVICE_BAD_QKEY_CNTR;
-<<<<<<< HEAD
-	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_APM)
-=======
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_APM && have_ib_ports)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		props->device_cap_flags |= IB_DEVICE_AUTO_PATH_MIG;
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_UD_AV_PORT)
 		props->device_cap_flags |= IB_DEVICE_UD_AV_PORT_ENFORCE;
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_IPOIB_CSUM)
 		props->device_cap_flags |= IB_DEVICE_UD_IP_CSUM;
-<<<<<<< HEAD
-	if (dev->dev->caps.max_gso_sz && dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_BLH)
-		props->device_cap_flags |= IB_DEVICE_UD_TSO;
-	if (dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_RESERVED_LKEY)
-		props->device_cap_flags |= IB_DEVICE_LOCAL_DMA_LKEY;
-=======
 	if (dev->dev->caps.max_gso_sz &&
 	    (dev->dev->rev_id != MLX4_IB_CARD_REV_A0) &&
 	    (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_BLH))
 		props->kernel_cap_flags |= IBK_UD_TSO;
 	if (dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_RESERVED_LKEY)
 		props->kernel_cap_flags |= IBK_LOCAL_DMA_LKEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_LOCAL_INV) &&
 	    (dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_REMOTE_INV) &&
 	    (dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_FAST_REG_WR))
 		props->device_cap_flags |= IB_DEVICE_MEM_MGT_EXTENSIONS;
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_XRC)
 		props->device_cap_flags |= IB_DEVICE_XRC;
-<<<<<<< HEAD
-
-	props->vendor_id	   = be32_to_cpup((__be32 *) (out_mad->data + 36)) &
-		0xffffff;
-	props->vendor_part_id	   = be16_to_cpup((__be16 *) (out_mad->data + 30));
-=======
 	if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_MEM_WINDOW)
 		props->device_cap_flags |= IB_DEVICE_MEM_WINDOW;
 	if (dev->dev->caps.bmme_flags & MLX4_BMME_FLAG_TYPE_2_WIN) {
@@ -610,21 +524,11 @@ static int mlx4_ib_query_device(struct ib_device *ibdev,
 	props->vendor_id	   = be32_to_cpup((__be32 *) (out_mad->data + 36)) &
 		0xffffff;
 	props->vendor_part_id	   = dev->dev->persist->pdev->device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->hw_ver		   = be32_to_cpup((__be32 *) (out_mad->data + 32));
 	memcpy(&props->sys_image_guid, out_mad->data +	4, 8);
 
 	props->max_mr_size	   = ~0ull;
 	props->page_size_cap	   = dev->dev->caps.page_size_cap;
-<<<<<<< HEAD
-	props->max_qp		   = dev->dev->caps.num_qps - dev->dev->caps.reserved_qps;
-	props->max_qp_wr	   = dev->dev->caps.max_wqes;
-	props->max_sge		   = min(dev->dev->caps.max_sq_sg,
-					 dev->dev->caps.max_rq_sg);
-	props->max_cq		   = dev->dev->caps.num_cqs - dev->dev->caps.reserved_cqs;
-	props->max_cqe		   = dev->dev->caps.max_cqes;
-	props->max_mr		   = dev->dev->caps.num_mpts - dev->dev->caps.reserved_mrws;
-=======
 	props->max_qp		   = dev->dev->quotas.qp;
 	props->max_qp_wr	   = dev->dev->caps.max_wqes - MLX4_IB_SQ_MAX_SPARE;
 	props->max_send_sge =
@@ -635,36 +539,23 @@ static int mlx4_ib_query_device(struct ib_device *ibdev,
 	props->max_cq		   = dev->dev->quotas.cq;
 	props->max_cqe		   = dev->dev->caps.max_cqes;
 	props->max_mr		   = dev->dev->quotas.mpt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->max_pd		   = dev->dev->caps.num_pds - dev->dev->caps.reserved_pds;
 	props->max_qp_rd_atom	   = dev->dev->caps.max_qp_dest_rdma;
 	props->max_qp_init_rd_atom = dev->dev->caps.max_qp_init_rdma;
 	props->max_res_rd_atom	   = props->max_qp_rd_atom * props->max_qp;
-<<<<<<< HEAD
-	props->max_srq		   = dev->dev->caps.num_srqs - dev->dev->caps.reserved_srqs;
-=======
 	props->max_srq		   = dev->dev->quotas.srq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->max_srq_wr	   = dev->dev->caps.max_srq_wqes - 1;
 	props->max_srq_sge	   = dev->dev->caps.max_srq_sge;
 	props->max_fast_reg_page_list_len = MLX4_MAX_FAST_REG_PAGES;
 	props->local_ca_ack_delay  = dev->dev->caps.local_ca_ack_delay;
 	props->atomic_cap	   = dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_ATOMIC ?
 		IB_ATOMIC_HCA : IB_ATOMIC_NONE;
-<<<<<<< HEAD
-	props->masked_atomic_cap   = IB_ATOMIC_HCA;
-=======
 	props->masked_atomic_cap   = props->atomic_cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->max_pkeys	   = dev->dev->caps.pkey_table_len[1];
 	props->max_mcast_grp	   = dev->dev->caps.num_mgms + dev->dev->caps.num_amgms;
 	props->max_mcast_qp_attach = dev->dev->caps.num_qp_per_mgm;
 	props->max_total_mcast_qp_attach = props->max_mcast_qp_attach *
 					   props->max_mcast_grp;
-<<<<<<< HEAD
-	props->max_map_per_fmr = dev->dev->caps.max_fmr_maps;
-
-=======
 	props->hca_core_clock = dev->dev->caps.hca_core_clock * 1000UL;
 	props->timestamp_mask = 0xFFFFFFFFFFFFULL;
 	props->max_ah = INT_MAX;
@@ -745,7 +636,6 @@ static int mlx4_ib_query_device(struct ib_device *ibdev,
 		if (err)
 			goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	kfree(in_mad);
 	kfree(out_mad);
@@ -754,11 +644,7 @@ out:
 }
 
 static enum rdma_link_layer
-<<<<<<< HEAD
-mlx4_ib_port_link_layer(struct ib_device *device, u8 port_num)
-=======
 mlx4_ib_port_link_layer(struct ib_device *device, u32 port_num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_dev *dev = to_mdev(device)->dev;
 
@@ -766,14 +652,6 @@ mlx4_ib_port_link_layer(struct ib_device *device, u32 port_num)
 		IB_LINK_LAYER_INFINIBAND : IB_LINK_LAYER_ETHERNET;
 }
 
-<<<<<<< HEAD
-static int ib_link_query_port(struct ib_device *ibdev, u8 port,
-			      struct ib_port_attr *props)
-{
-	struct ib_smp *in_mad  = NULL;
-	struct ib_smp *out_mad = NULL;
-	int ext_active_speed;
-=======
 static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 			      struct ib_port_attr *props, int netw_view)
 {
@@ -781,7 +659,6 @@ static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 	struct ib_smp *out_mad;
 	int ext_active_speed;
 	int mad_ifc_flags = MLX4_MAD_IFC_IGNORE_KEYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 
 	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
@@ -789,13 +666,6 @@ static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 	if (!in_mad || !out_mad)
 		goto out;
 
-<<<<<<< HEAD
-	init_query_mad(in_mad);
-	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
-	in_mad->attr_mod = cpu_to_be32(port);
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, port, NULL, NULL,
-=======
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
 	in_mad->attr_mod = cpu_to_be32(port);
@@ -804,7 +674,6 @@ static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 		mad_ifc_flags |= MLX4_MAD_IFC_NET_VIEW;
 
 	err = mlx4_MAD_IFC(to_mdev(ibdev), mad_ifc_flags, port, NULL, NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				in_mad, out_mad);
 	if (err)
 		goto out;
@@ -817,14 +686,10 @@ static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 	props->state		= out_mad->data[32] & 0xf;
 	props->phys_state	= out_mad->data[33] >> 4;
 	props->port_cap_flags	= be32_to_cpup((__be32 *) (out_mad->data + 20));
-<<<<<<< HEAD
-	props->gid_tbl_len	= to_mdev(ibdev)->dev->caps.gid_table_len[port];
-=======
 	if (netw_view)
 		props->gid_tbl_len = out_mad->data[50];
 	else
 		props->gid_tbl_len = to_mdev(ibdev)->dev->caps.gid_table_len[port];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->max_msg_sz	= to_mdev(ibdev)->dev->caps.max_msg_sz;
 	props->pkey_tbl_len	= to_mdev(ibdev)->dev->caps.pkey_table_len[port];
 	props->bad_pkey_cntr	= be16_to_cpup((__be16 *) (out_mad->data + 46));
@@ -853,19 +718,11 @@ static int ib_link_query_port(struct ib_device *ibdev, u32 port,
 
 	/* If reported active speed is QDR, check if is FDR-10 */
 	if (props->active_speed == IB_SPEED_QDR) {
-<<<<<<< HEAD
-		init_query_mad(in_mad);
-		in_mad->attr_id = MLX4_ATTR_EXTENDED_PORT_INFO;
-		in_mad->attr_mod = cpu_to_be32(port);
-
-		err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, port,
-=======
 		ib_init_query_mad(in_mad);
 		in_mad->attr_id = MLX4_ATTR_EXTENDED_PORT_INFO;
 		in_mad->attr_mod = cpu_to_be32(port);
 
 		err = mlx4_MAD_IFC(to_mdev(ibdev), mad_ifc_flags, port,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   NULL, NULL, in_mad, out_mad);
 		if (err)
 			goto out;
@@ -887,18 +744,11 @@ out:
 
 static u8 state_to_phys_state(enum ib_port_state state)
 {
-<<<<<<< HEAD
-	return state == IB_PORT_ACTIVE ? 5 : 3;
-}
-
-static int eth_link_query_port(struct ib_device *ibdev, u8 port,
-=======
 	return state == IB_PORT_ACTIVE ?
 		IB_PORT_PHYS_STATE_LINK_UP : IB_PORT_PHYS_STATE_DISABLED;
 }
 
 static int eth_link_query_port(struct ib_device *ibdev, u32 port,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct ib_port_attr *props)
 {
 
@@ -908,10 +758,7 @@ static int eth_link_query_port(struct ib_device *ibdev, u32 port,
 	enum ib_mtu tmp;
 	struct mlx4_cmd_mailbox *mailbox;
 	int err = 0;
-<<<<<<< HEAD
-=======
 	int is_bonded = mlx4_is_bonded(mdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mailbox = mlx4_alloc_cmd_mailbox(mdev->dev);
 	if (IS_ERR(mailbox))
@@ -923,15 +770,6 @@ static int eth_link_query_port(struct ib_device *ibdev, u32 port,
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	props->active_width	=  (((u8 *)mailbox->buf)[5] == 0x40) ?
-						IB_WIDTH_4X : IB_WIDTH_1X;
-	props->active_speed	= IB_SPEED_QDR;
-	props->port_cap_flags	= IB_PORT_CM_SUP;
-	props->gid_tbl_len	= mdev->dev->caps.gid_table_len[port];
-	props->max_msg_sz	= mdev->dev->caps.max_msg_sz;
-	props->pkey_tbl_len	= 1;
-=======
 	props->active_width	=  (((u8 *)mailbox->buf)[5] == 0x40) ||
 				   (((u8 *)mailbox->buf)[5] == 0x20 /*56Gb*/) ?
 					   IB_WIDTH_4X : IB_WIDTH_1X;
@@ -943,16 +781,11 @@ static int eth_link_query_port(struct ib_device *ibdev, u32 port,
 	props->max_msg_sz	= mdev->dev->caps.max_msg_sz;
 	if (mdev->dev->caps.pkey_table_len[port])
 		props->pkey_tbl_len = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->max_mtu		= IB_MTU_4096;
 	props->max_vl_num	= 2;
 	props->state		= IB_PORT_DOWN;
 	props->phys_state	= state_to_phys_state(props->state);
 	props->active_mtu	= IB_MTU_256;
-<<<<<<< HEAD
-	spin_lock(&iboe->lock);
-	ndev = iboe->netdevs[port - 1];
-=======
 	spin_lock_bh(&iboe->lock);
 	ndev = iboe->netdevs[port - 1];
 	if (ndev && is_bonded) {
@@ -960,7 +793,6 @@ static int eth_link_query_port(struct ib_device *ibdev, u32 port,
 		ndev = netdev_master_upper_dev_get_rcu(ndev);
 		rcu_read_unlock();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ndev)
 		goto out_unlock;
 
@@ -971,27 +803,12 @@ static int eth_link_query_port(struct ib_device *ibdev, u32 port,
 					IB_PORT_ACTIVE : IB_PORT_DOWN;
 	props->phys_state	= state_to_phys_state(props->state);
 out_unlock:
-<<<<<<< HEAD
-	spin_unlock(&iboe->lock);
-=======
 	spin_unlock_bh(&iboe->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mlx4_free_cmd_mailbox(mdev->dev, mailbox);
 	return err;
 }
 
-<<<<<<< HEAD
-static int mlx4_ib_query_port(struct ib_device *ibdev, u8 port,
-			      struct ib_port_attr *props)
-{
-	int err;
-
-	memset(props, 0, sizeof *props);
-
-	err = mlx4_ib_port_link_layer(ibdev, port) == IB_LINK_LAYER_INFINIBAND ?
-		ib_link_query_port(ibdev, port, props) :
-=======
 int __mlx4_ib_query_port(struct ib_device *ibdev, u32 port,
 			 struct ib_port_attr *props, int netw_view)
 {
@@ -1001,20 +818,11 @@ int __mlx4_ib_query_port(struct ib_device *ibdev, u32 port,
 
 	err = mlx4_ib_port_link_layer(ibdev, port) == IB_LINK_LAYER_INFINIBAND ?
 		ib_link_query_port(ibdev, port, props, netw_view) :
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				eth_link_query_port(ibdev, port, props);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int __mlx4_ib_query_gid(struct ib_device *ibdev, u8 port, int index,
-			       union ib_gid *gid)
-{
-	struct ib_smp *in_mad  = NULL;
-	struct ib_smp *out_mad = NULL;
-	int err = -ENOMEM;
-=======
 static int mlx4_ib_query_port(struct ib_device *ibdev, u32 port,
 			      struct ib_port_attr *props)
 {
@@ -1031,20 +839,12 @@ int __mlx4_ib_query_gid(struct ib_device *ibdev, u32 port, int index,
 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
 	int clear = 0;
 	int mad_ifc_flags = MLX4_MAD_IFC_IGNORE_KEYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
 	out_mad = kmalloc(sizeof *out_mad, GFP_KERNEL);
 	if (!in_mad || !out_mad)
 		goto out;
 
-<<<<<<< HEAD
-	init_query_mad(in_mad);
-	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
-	in_mad->attr_mod = cpu_to_be32(port);
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, port, NULL, NULL, in_mad, out_mad);
-=======
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
 	in_mad->attr_mod = cpu_to_be32(port);
@@ -1053,19 +853,11 @@ int __mlx4_ib_query_gid(struct ib_device *ibdev, u32 port, int index,
 		mad_ifc_flags |= MLX4_MAD_IFC_NET_VIEW;
 
 	err = mlx4_MAD_IFC(dev, mad_ifc_flags, port, NULL, NULL, in_mad, out_mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	memcpy(gid->raw, out_mad->data + 8, 8);
 
-<<<<<<< HEAD
-	init_query_mad(in_mad);
-	in_mad->attr_id  = IB_SMP_ATTR_GUID_INFO;
-	in_mad->attr_mod = cpu_to_be32(index / 8);
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, port, NULL, NULL, in_mad, out_mad);
-=======
 	if (mlx4_is_mfunc(dev->dev) && !netw_view) {
 		if (index) {
 			/* For any index > 0, return the null guid */
@@ -1081,15 +873,12 @@ int __mlx4_ib_query_gid(struct ib_device *ibdev, u32 port, int index,
 
 	err = mlx4_MAD_IFC(dev, mad_ifc_flags, port,
 			   NULL, NULL, in_mad, out_mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	memcpy(gid->raw + 8, out_mad->data + (index % 8) * 8, 8);
 
 out:
-<<<<<<< HEAD
-=======
 	if (clear)
 		memset(gid->raw + 8, 0, 8);
 	kfree(in_mad);
@@ -1142,38 +931,11 @@ static int mlx4_ib_query_sl2vl(struct ib_device *ibdev, u32 port,
 	*sl2vl_tbl = sl2vl64.sl64;
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(in_mad);
 	kfree(out_mad);
 	return err;
 }
 
-<<<<<<< HEAD
-static int iboe_query_gid(struct ib_device *ibdev, u8 port, int index,
-			  union ib_gid *gid)
-{
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-
-	*gid = dev->iboe.gid_table[port - 1][index];
-
-	return 0;
-}
-
-static int mlx4_ib_query_gid(struct ib_device *ibdev, u8 port, int index,
-			     union ib_gid *gid)
-{
-	if (rdma_port_get_link_layer(ibdev, port) == IB_LINK_LAYER_INFINIBAND)
-		return __mlx4_ib_query_gid(ibdev, port, index, gid);
-	else
-		return iboe_query_gid(ibdev, port, index, gid);
-}
-
-static int mlx4_ib_query_pkey(struct ib_device *ibdev, u8 port, u16 index,
-			      u16 *pkey)
-{
-	struct ib_smp *in_mad  = NULL;
-	struct ib_smp *out_mad = NULL;
-=======
 static void mlx4_init_sl2vl_tbl(struct mlx4_ib_dev *mdev)
 {
 	u64 sl2vl;
@@ -1199,7 +961,6 @@ int __mlx4_ib_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 	struct ib_smp *in_mad;
 	struct ib_smp *out_mad;
 	int mad_ifc_flags = MLX4_MAD_IFC_IGNORE_KEYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 
 	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
@@ -1207,13 +968,6 @@ int __mlx4_ib_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 	if (!in_mad || !out_mad)
 		goto out;
 
-<<<<<<< HEAD
-	init_query_mad(in_mad);
-	in_mad->attr_id  = IB_SMP_ATTR_PKEY_TABLE;
-	in_mad->attr_mod = cpu_to_be32(index / 32);
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev), 1, 1, port, NULL, NULL, in_mad, out_mad);
-=======
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id  = IB_SMP_ATTR_PKEY_TABLE;
 	in_mad->attr_mod = cpu_to_be32(index / 32);
@@ -1223,7 +977,6 @@ int __mlx4_ib_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 
 	err = mlx4_MAD_IFC(to_mdev(ibdev), mad_ifc_flags, port, NULL, NULL,
 			   in_mad, out_mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -1235,23 +988,17 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_ib_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 			      u16 *pkey)
 {
 	return __mlx4_ib_query_pkey(ibdev, port, index, pkey, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_ib_modify_device(struct ib_device *ibdev, int mask,
 				 struct ib_device_modify *props)
 {
 	struct mlx4_cmd_mailbox *mailbox;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mask & ~IB_DEVICE_MODIFY_NODE_DESC)
 		return -EOPNOTSUPP;
@@ -1259,18 +1006,12 @@ static int mlx4_ib_modify_device(struct ib_device *ibdev, int mask,
 	if (!(mask & IB_DEVICE_MODIFY_NODE_DESC))
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock(&to_mdev(ibdev)->sm_lock);
-	memcpy(ibdev->node_desc, props->node_desc, 64);
-	spin_unlock(&to_mdev(ibdev)->sm_lock);
-=======
 	if (mlx4_is_slave(to_mdev(ibdev)->dev))
 		return -EOPNOTSUPP;
 
 	spin_lock_irqsave(&to_mdev(ibdev)->sm_lock, flags);
 	memcpy(ibdev->node_desc, props->node_desc, IB_DEVICE_NODE_DESC_MAX);
 	spin_unlock_irqrestore(&to_mdev(ibdev)->sm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If possible, pass node desc to FW, so it can generate
@@ -1280,46 +1021,25 @@ static int mlx4_ib_modify_device(struct ib_device *ibdev, int mask,
 	if (IS_ERR(mailbox))
 		return 0;
 
-<<<<<<< HEAD
-	memset(mailbox->buf, 0, 256);
-	memcpy(mailbox->buf, props->node_desc, 64);
-	mlx4_cmd(to_mdev(ibdev)->dev, mailbox->dma, 1, 0,
-		 MLX4_CMD_SET_NODE, MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
-=======
 	memcpy(mailbox->buf, props->node_desc, IB_DEVICE_NODE_DESC_MAX);
 	mlx4_cmd(to_mdev(ibdev)->dev, mailbox->dma, 1, 0,
 		 MLX4_CMD_SET_NODE, MLX4_CMD_TIME_CLASS_A, MLX4_CMD_NATIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(to_mdev(ibdev)->dev, mailbox);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mlx4_SET_PORT(struct mlx4_ib_dev *dev, u8 port, int reset_qkey_viols,
-			 u32 cap_mask)
-{
-	struct mlx4_cmd_mailbox *mailbox;
-	int err;
-	u8 is_eth = dev->dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH;
-=======
 static int mlx4_ib_SET_PORT(struct mlx4_ib_dev *dev, u32 port,
 			    int reset_qkey_viols, u32 cap_mask)
 {
 	struct mlx4_cmd_mailbox *mailbox;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mailbox = mlx4_alloc_cmd_mailbox(dev->dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 
-<<<<<<< HEAD
-	memset(mailbox->buf, 0, 256);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->dev->flags & MLX4_FLAG_OLD_PORT_CMDS) {
 		*(u8 *) mailbox->buf	     = !!reset_qkey_viols << 6;
 		((__be32 *) mailbox->buf)[2] = cpu_to_be32(cap_mask);
@@ -1328,39 +1048,23 @@ static int mlx4_ib_SET_PORT(struct mlx4_ib_dev *dev, u32 port,
 		((__be32 *) mailbox->buf)[1] = cpu_to_be32(cap_mask);
 	}
 
-<<<<<<< HEAD
-	err = mlx4_cmd(dev->dev, mailbox->dma, port, is_eth, MLX4_CMD_SET_PORT,
-		       MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
-=======
 	err = mlx4_cmd(dev->dev, mailbox->dma, port, MLX4_SET_PORT_IB_OPCODE,
 		       MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 		       MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev->dev, mailbox);
 	return err;
 }
 
-<<<<<<< HEAD
-static int mlx4_ib_modify_port(struct ib_device *ibdev, u8 port, int mask,
-			       struct ib_port_modify *props)
-{
-=======
 static int mlx4_ib_modify_port(struct ib_device *ibdev, u32 port, int mask,
 			       struct ib_port_modify *props)
 {
 	struct mlx4_ib_dev *mdev = to_mdev(ibdev);
 	u8 is_eth = mdev->dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_port_attr attr;
 	u32 cap_mask;
 	int err;
 
-<<<<<<< HEAD
-	mutex_lock(&to_mdev(ibdev)->cap_mask_mutex);
-
-	err = mlx4_ib_query_port(ibdev, port, &attr);
-=======
 	/* return OK if this is RoCE. CM calls ib_modify_port() regardless
 	 * of whether port link layer is ETH or IB. For ETH ports, qkey
 	 * violations and port capabilities are not meaningful.
@@ -1371,35 +1075,21 @@ static int mlx4_ib_modify_port(struct ib_device *ibdev, u32 port, int mask,
 	mutex_lock(&mdev->cap_mask_mutex);
 
 	err = ib_query_port(ibdev, port, &attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	cap_mask = (attr.port_cap_flags | props->set_port_cap_mask) &
 		~props->clr_port_cap_mask;
 
-<<<<<<< HEAD
-	err = mlx4_SET_PORT(to_mdev(ibdev), port,
-			    !!(mask & IB_PORT_RESET_QKEY_CNTR),
-			    cap_mask);
-=======
 	err = mlx4_ib_SET_PORT(mdev, port,
 			       !!(mask & IB_PORT_RESET_QKEY_CNTR),
 			       cap_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&to_mdev(ibdev)->cap_mask_mutex);
 	return err;
 }
 
-<<<<<<< HEAD
-static struct ib_ucontext *mlx4_ib_alloc_ucontext(struct ib_device *ibdev,
-						  struct ib_udata *udata)
-{
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-	struct mlx4_ib_ucontext *context;
-=======
 static int mlx4_ib_alloc_ucontext(struct ib_ucontext *uctx,
 				  struct ib_udata *udata)
 {
@@ -1407,28 +1097,10 @@ static int mlx4_ib_alloc_ucontext(struct ib_ucontext *uctx,
 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
 	struct mlx4_ib_ucontext *context = to_mucontext(uctx);
 	struct mlx4_ib_alloc_ucontext_resp_v3 resp_v3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_ib_alloc_ucontext_resp resp;
 	int err;
 
 	if (!dev->ib_active)
-<<<<<<< HEAD
-		return ERR_PTR(-EAGAIN);
-
-	resp.qp_tab_size      = dev->dev->caps.num_qps;
-	resp.bf_reg_size      = dev->dev->caps.bf_reg_size;
-	resp.bf_regs_per_page = dev->dev->caps.bf_regs_per_page;
-
-	context = kmalloc(sizeof *context, GFP_KERNEL);
-	if (!context)
-		return ERR_PTR(-ENOMEM);
-
-	err = mlx4_uar_alloc(to_mdev(ibdev)->dev, &context->uar);
-	if (err) {
-		kfree(context);
-		return ERR_PTR(err);
-	}
-=======
 		return -EAGAIN;
 
 	if (ibdev->ops.uverbs_abi_ver ==
@@ -1447,24 +1119,10 @@ static int mlx4_ib_alloc_ucontext(struct ib_ucontext *uctx,
 	err = mlx4_uar_alloc(to_mdev(ibdev)->dev, &context->uar);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&context->db_page_list);
 	mutex_init(&context->db_page_mutex);
 
-<<<<<<< HEAD
-	err = ib_copy_to_udata(udata, &resp, sizeof resp);
-	if (err) {
-		mlx4_uar_free(to_mdev(ibdev)->dev, &context->uar);
-		kfree(context);
-		return ERR_PTR(-EFAULT);
-	}
-
-	return &context->ibucontext;
-}
-
-static int mlx4_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
-=======
 	INIT_LIST_HEAD(&context->wqn_ranges_list);
 	mutex_init(&context->wqn_ranges_mutex);
 
@@ -1482,107 +1140,20 @@ static int mlx4_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
 }
 
 static void mlx4_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_ib_ucontext *context = to_mucontext(ibcontext);
 
 	mlx4_uar_free(to_mdev(ibcontext->device)->dev, &context->uar);
-<<<<<<< HEAD
-	kfree(context);
-
-	return 0;
-=======
 }
 
 static void mlx4_ib_disassociate_ucontext(struct ib_ucontext *ibcontext)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_ib_mmap(struct ib_ucontext *context, struct vm_area_struct *vma)
 {
 	struct mlx4_ib_dev *dev = to_mdev(context->device);
 
-<<<<<<< HEAD
-	if (vma->vm_end - vma->vm_start != PAGE_SIZE)
-		return -EINVAL;
-
-	if (vma->vm_pgoff == 0) {
-		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-
-		if (io_remap_pfn_range(vma, vma->vm_start,
-				       to_mucontext(context)->uar.pfn,
-				       PAGE_SIZE, vma->vm_page_prot))
-			return -EAGAIN;
-	} else if (vma->vm_pgoff == 1 && dev->dev->caps.bf_reg_size != 0) {
-		vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
-
-		if (io_remap_pfn_range(vma, vma->vm_start,
-				       to_mucontext(context)->uar.pfn +
-				       dev->dev->caps.num_uars,
-				       PAGE_SIZE, vma->vm_page_prot))
-			return -EAGAIN;
-	} else
-		return -EINVAL;
-
-	return 0;
-}
-
-static struct ib_pd *mlx4_ib_alloc_pd(struct ib_device *ibdev,
-				      struct ib_ucontext *context,
-				      struct ib_udata *udata)
-{
-	struct mlx4_ib_pd *pd;
-	int err;
-
-	pd = kmalloc(sizeof *pd, GFP_KERNEL);
-	if (!pd)
-		return ERR_PTR(-ENOMEM);
-
-	err = mlx4_pd_alloc(to_mdev(ibdev)->dev, &pd->pdn);
-	if (err) {
-		kfree(pd);
-		return ERR_PTR(err);
-	}
-
-	if (context)
-		if (ib_copy_to_udata(udata, &pd->pdn, sizeof (__u32))) {
-			mlx4_pd_free(to_mdev(ibdev)->dev, pd->pdn);
-			kfree(pd);
-			return ERR_PTR(-EFAULT);
-		}
-
-	return &pd->ibpd;
-}
-
-static int mlx4_ib_dealloc_pd(struct ib_pd *pd)
-{
-	mlx4_pd_free(to_mdev(pd->device)->dev, to_mpd(pd)->pdn);
-	kfree(pd);
-
-	return 0;
-}
-
-static struct ib_xrcd *mlx4_ib_alloc_xrcd(struct ib_device *ibdev,
-					  struct ib_ucontext *context,
-					  struct ib_udata *udata)
-{
-	struct mlx4_ib_xrcd *xrcd;
-	int err;
-
-	if (!(to_mdev(ibdev)->dev->caps.flags & MLX4_DEV_CAP_FLAG_XRC))
-		return ERR_PTR(-ENOSYS);
-
-	xrcd = kmalloc(sizeof *xrcd, GFP_KERNEL);
-	if (!xrcd)
-		return ERR_PTR(-ENOMEM);
-
-	err = mlx4_xrcd_alloc(to_mdev(ibdev)->dev, &xrcd->xrcdn);
-	if (err)
-		goto err1;
-
-	xrcd->pd = ib_alloc_pd(ibdev);
-=======
 	switch (vma->vm_pgoff) {
 	case 0:
 		return rdma_user_mmap_io(context, vma,
@@ -1662,56 +1233,32 @@ static int mlx4_ib_alloc_xrcd(struct ib_xrcd *ibxrcd, struct ib_udata *udata)
 		return err;
 
 	xrcd->pd = ib_alloc_pd(ibxrcd->device, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(xrcd->pd)) {
 		err = PTR_ERR(xrcd->pd);
 		goto err2;
 	}
 
-<<<<<<< HEAD
-	xrcd->cq = ib_create_cq(ibdev, NULL, NULL, xrcd, 1, 0);
-=======
 	cq_attr.cqe = 1;
 	xrcd->cq = ib_create_cq(ibxrcd->device, NULL, NULL, xrcd, &cq_attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(xrcd->cq)) {
 		err = PTR_ERR(xrcd->cq);
 		goto err3;
 	}
 
-<<<<<<< HEAD
-	return &xrcd->ibxrcd;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err3:
 	ib_dealloc_pd(xrcd->pd);
 err2:
-<<<<<<< HEAD
-	mlx4_xrcd_free(to_mdev(ibdev)->dev, xrcd->xrcdn);
-err1:
-	kfree(xrcd);
-	return ERR_PTR(err);
-}
-
-static int mlx4_ib_dealloc_xrcd(struct ib_xrcd *xrcd)
-=======
 	mlx4_xrcd_free(dev->dev, xrcd->xrcdn);
 	return err;
 }
 
 static int mlx4_ib_dealloc_xrcd(struct ib_xrcd *xrcd, struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ib_destroy_cq(to_mxrcd(xrcd)->cq);
 	ib_dealloc_pd(to_mxrcd(xrcd)->pd);
 	mlx4_xrcd_free(to_mdev(xrcd->device)->dev, to_mxrcd(xrcd)->xrcdn);
-<<<<<<< HEAD
-	kfree(xrcd);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1738,12 +1285,6 @@ static int add_gid_entry(struct ib_qp *ibqp, union ib_gid *gid)
 	return 0;
 }
 
-<<<<<<< HEAD
-int mlx4_ib_add_mc(struct mlx4_ib_dev *mdev, struct mlx4_ib_qp *mqp,
-		   union ib_gid *gid)
-{
-	u8 mac[6];
-=======
 static void mlx4_ib_delete_counters_table(struct mlx4_ib_dev *ibdev,
 					  struct mlx4_ib_counters *ctr_table)
 {
@@ -1763,27 +1304,12 @@ static void mlx4_ib_delete_counters_table(struct mlx4_ib_dev *ibdev,
 int mlx4_ib_add_mc(struct mlx4_ib_dev *mdev, struct mlx4_ib_qp *mqp,
 		   union ib_gid *gid)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *ndev;
 	int ret = 0;
 
 	if (!mqp->port)
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock(&mdev->iboe.lock);
-	ndev = mdev->iboe.netdevs[mqp->port - 1];
-	if (ndev)
-		dev_hold(ndev);
-	spin_unlock(&mdev->iboe.lock);
-
-	if (ndev) {
-		rdma_get_mcast_mac((struct in6_addr *)gid, mac);
-		rtnl_lock();
-		dev_mc_add(mdev->iboe.netdevs[mqp->port - 1], mac);
-		ret = 1;
-		rtnl_unlock();
-=======
 	spin_lock_bh(&mdev->iboe.lock);
 	ndev = mdev->iboe.netdevs[mqp->port - 1];
 	dev_hold(ndev);
@@ -1791,15 +1317,12 @@ int mlx4_ib_add_mc(struct mlx4_ib_dev *mdev, struct mlx4_ib_qp *mqp,
 
 	if (ndev) {
 		ret = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_put(ndev);
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 struct mlx4_ib_steering {
 	struct list_head list;
 	struct mlx4_flow_reg_id reg_id;
@@ -2310,20 +1833,10 @@ static int mlx4_ib_destroy_flow(struct ib_flow *flow_id)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_ib_mcg_attach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 {
 	int err;
 	struct mlx4_ib_dev *mdev = to_mdev(ibqp->device);
-<<<<<<< HEAD
-	struct mlx4_ib_qp *mqp = to_mqp(ibqp);
-
-	err = mlx4_multicast_attach(mdev->dev, &mqp->mqp, gid->raw,
-				    !!(mqp->flags & MLX4_IB_QP_BLOCK_MULTICAST_LOOPBACK),
-				    MLX4_PROT_IB_IPV6);
-	if (err)
-		return err;
-=======
 	struct mlx4_dev	*dev = mdev->dev;
 	struct mlx4_ib_qp *mqp = to_mqp(ibqp);
 	struct mlx4_ib_steering *ib_steering = NULL;
@@ -2356,18 +1869,11 @@ static int mlx4_ib_mcg_attach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 		if (err)
 			goto err_add;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = add_gid_entry(ibqp, gid);
 	if (err)
 		goto err_add;
 
-<<<<<<< HEAD
-	return 0;
-
-err_add:
-	mlx4_multicast_detach(mdev->dev, &mqp->mqp, gid->raw, MLX4_PROT_IB_IPV6);
-=======
 	if (ib_steering) {
 		memcpy(ib_steering->gid.raw, gid->raw, 16);
 		ib_steering->reg_id = reg_id;
@@ -2386,7 +1892,6 @@ err_add:
 err_malloc:
 	kfree(ib_steering);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -2410,37 +1915,6 @@ static int mlx4_ib_mcg_detach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 {
 	int err;
 	struct mlx4_ib_dev *mdev = to_mdev(ibqp->device);
-<<<<<<< HEAD
-	struct mlx4_ib_qp *mqp = to_mqp(ibqp);
-	u8 mac[6];
-	struct net_device *ndev;
-	struct mlx4_ib_gid_entry *ge;
-
-	err = mlx4_multicast_detach(mdev->dev,
-				    &mqp->mqp, gid->raw, MLX4_PROT_IB_IPV6);
-	if (err)
-		return err;
-
-	mutex_lock(&mqp->mutex);
-	ge = find_gid_entry(mqp, gid->raw);
-	if (ge) {
-		spin_lock(&mdev->iboe.lock);
-		ndev = ge->added ? mdev->iboe.netdevs[ge->port - 1] : NULL;
-		if (ndev)
-			dev_hold(ndev);
-		spin_unlock(&mdev->iboe.lock);
-		rdma_get_mcast_mac((struct in6_addr *)gid, mac);
-		if (ndev) {
-			rtnl_lock();
-			dev_mc_del(mdev->iboe.netdevs[ge->port - 1], mac);
-			rtnl_unlock();
-			dev_put(ndev);
-		}
-		list_del(&ge->list);
-		kfree(ge);
-	} else
-		printk(KERN_WARNING "could not find mgid entry\n");
-=======
 	struct mlx4_dev *dev = mdev->dev;
 	struct mlx4_ib_qp *mqp = to_mqp(ibqp);
 	struct net_device *ndev;
@@ -2492,7 +1966,6 @@ static int mlx4_ib_mcg_detach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 		kfree(ge);
 	} else
 		pr_warn("could not find mgid entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&mqp->mutex);
 
@@ -2501,14 +1974,9 @@ static int mlx4_ib_mcg_detach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 
 static int init_node_data(struct mlx4_ib_dev *dev)
 {
-<<<<<<< HEAD
-	struct ib_smp *in_mad  = NULL;
-	struct ib_smp *out_mad = NULL;
-=======
 	struct ib_smp *in_mad;
 	struct ib_smp *out_mad;
 	int mad_ifc_flags = MLX4_MAD_IFC_IGNORE_KEYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 
 	in_mad  = kzalloc(sizeof *in_mad, GFP_KERNEL);
@@ -2516,23 +1984,6 @@ static int init_node_data(struct mlx4_ib_dev *dev)
 	if (!in_mad || !out_mad)
 		goto out;
 
-<<<<<<< HEAD
-	init_query_mad(in_mad);
-	in_mad->attr_id = IB_SMP_ATTR_NODE_DESC;
-
-	err = mlx4_MAD_IFC(dev, 1, 1, 1, NULL, NULL, in_mad, out_mad);
-	if (err)
-		goto out;
-
-	memcpy(dev->ib_dev.node_desc, out_mad->data, 64);
-
-	in_mad->attr_id = IB_SMP_ATTR_NODE_INFO;
-
-	err = mlx4_MAD_IFC(dev, 1, 1, 1, NULL, NULL, in_mad, out_mad);
-	if (err)
-		goto out;
-
-=======
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id = IB_SMP_ATTR_NODE_DESC;
 	if (mlx4_is_master(dev->dev))
@@ -2551,7 +2002,6 @@ static int init_node_data(struct mlx4_ib_dev *dev)
 		goto out;
 
 	dev->dev->rev_id = be32_to_cpup((__be32 *) (out_mad->data + 32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&dev->ib_dev.node_guid, out_mad->data + 12, 8);
 
 out:
@@ -2560,222 +2010,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static ssize_t show_hca(struct device *device, struct device_attribute *attr,
-			char *buf)
-{
-	struct mlx4_ib_dev *dev =
-		container_of(device, struct mlx4_ib_dev, ib_dev.dev);
-	return sprintf(buf, "MT%d\n", dev->dev->pdev->device);
-}
-
-static ssize_t show_fw_ver(struct device *device, struct device_attribute *attr,
-			   char *buf)
-{
-	struct mlx4_ib_dev *dev =
-		container_of(device, struct mlx4_ib_dev, ib_dev.dev);
-	return sprintf(buf, "%d.%d.%d\n", (int) (dev->dev->caps.fw_ver >> 32),
-		       (int) (dev->dev->caps.fw_ver >> 16) & 0xffff,
-		       (int) dev->dev->caps.fw_ver & 0xffff);
-}
-
-static ssize_t show_rev(struct device *device, struct device_attribute *attr,
-			char *buf)
-{
-	struct mlx4_ib_dev *dev =
-		container_of(device, struct mlx4_ib_dev, ib_dev.dev);
-	return sprintf(buf, "%x\n", dev->dev->rev_id);
-}
-
-static ssize_t show_board(struct device *device, struct device_attribute *attr,
-			  char *buf)
-{
-	struct mlx4_ib_dev *dev =
-		container_of(device, struct mlx4_ib_dev, ib_dev.dev);
-	return sprintf(buf, "%.*s\n", MLX4_BOARD_ID_LEN,
-		       dev->dev->board_id);
-}
-
-static DEVICE_ATTR(hw_rev,   S_IRUGO, show_rev,    NULL);
-static DEVICE_ATTR(fw_ver,   S_IRUGO, show_fw_ver, NULL);
-static DEVICE_ATTR(hca_type, S_IRUGO, show_hca,    NULL);
-static DEVICE_ATTR(board_id, S_IRUGO, show_board,  NULL);
-
-static struct device_attribute *mlx4_class_attributes[] = {
-	&dev_attr_hw_rev,
-	&dev_attr_fw_ver,
-	&dev_attr_hca_type,
-	&dev_attr_board_id
-};
-
-static void mlx4_addrconf_ifid_eui48(u8 *eui, u16 vlan_id, struct net_device *dev)
-{
-	memcpy(eui, dev->dev_addr, 3);
-	memcpy(eui + 5, dev->dev_addr + 3, 3);
-	if (vlan_id < 0x1000) {
-		eui[3] = vlan_id >> 8;
-		eui[4] = vlan_id & 0xff;
-	} else {
-		eui[3] = 0xff;
-		eui[4] = 0xfe;
-	}
-	eui[0] ^= 2;
-}
-
-static void update_gids_task(struct work_struct *work)
-{
-	struct update_gid_work *gw = container_of(work, struct update_gid_work, work);
-	struct mlx4_cmd_mailbox *mailbox;
-	union ib_gid *gids;
-	int err;
-	struct mlx4_dev	*dev = gw->dev->dev;
-	struct ib_event event;
-
-	mailbox = mlx4_alloc_cmd_mailbox(dev);
-	if (IS_ERR(mailbox)) {
-		printk(KERN_WARNING "update gid table failed %ld\n", PTR_ERR(mailbox));
-		return;
-	}
-
-	gids = mailbox->buf;
-	memcpy(gids, gw->gids, sizeof gw->gids);
-
-	err = mlx4_cmd(dev, mailbox->dma, MLX4_SET_PORT_GID_TABLE << 8 | gw->port,
-		       1, MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
-		       MLX4_CMD_NATIVE);
-	if (err)
-		printk(KERN_WARNING "set port command failed\n");
-	else {
-		memcpy(gw->dev->iboe.gid_table[gw->port - 1], gw->gids, sizeof gw->gids);
-		event.device = &gw->dev->ib_dev;
-		event.element.port_num = gw->port;
-		event.event    = IB_EVENT_GID_CHANGE;
-		ib_dispatch_event(&event);
-	}
-
-	mlx4_free_cmd_mailbox(dev, mailbox);
-	kfree(gw);
-}
-
-static int update_ipv6_gids(struct mlx4_ib_dev *dev, int port, int clear)
-{
-	struct net_device *ndev = dev->iboe.netdevs[port - 1];
-	struct update_gid_work *work;
-	struct net_device *tmp;
-	int i;
-	u8 *hits;
-	int ret;
-	union ib_gid gid;
-	int free;
-	int found;
-	int need_update = 0;
-	u16 vid;
-
-	work = kzalloc(sizeof *work, GFP_ATOMIC);
-	if (!work)
-		return -ENOMEM;
-
-	hits = kzalloc(128, GFP_ATOMIC);
-	if (!hits) {
-		ret = -ENOMEM;
-		goto out;
-	}
-
-	rcu_read_lock();
-	for_each_netdev_rcu(&init_net, tmp) {
-		if (ndev && (tmp == ndev || rdma_vlan_dev_real_dev(tmp) == ndev)) {
-			gid.global.subnet_prefix = cpu_to_be64(0xfe80000000000000LL);
-			vid = rdma_vlan_dev_vlan_id(tmp);
-			mlx4_addrconf_ifid_eui48(&gid.raw[8], vid, ndev);
-			found = 0;
-			free = -1;
-			for (i = 0; i < 128; ++i) {
-				if (free < 0 &&
-				    !memcmp(&dev->iboe.gid_table[port - 1][i], &zgid, sizeof zgid))
-					free = i;
-				if (!memcmp(&dev->iboe.gid_table[port - 1][i], &gid, sizeof gid)) {
-					hits[i] = 1;
-					found = 1;
-					break;
-				}
-			}
-
-			if (!found) {
-				if (tmp == ndev &&
-				    (memcmp(&dev->iboe.gid_table[port - 1][0],
-					    &gid, sizeof gid) ||
-				     !memcmp(&dev->iboe.gid_table[port - 1][0],
-					     &zgid, sizeof gid))) {
-					dev->iboe.gid_table[port - 1][0] = gid;
-					++need_update;
-					hits[0] = 1;
-				} else if (free >= 0) {
-					dev->iboe.gid_table[port - 1][free] = gid;
-					hits[free] = 1;
-					++need_update;
-				}
-			}
-		}
-	}
-	rcu_read_unlock();
-
-	for (i = 0; i < 128; ++i)
-		if (!hits[i]) {
-			if (memcmp(&dev->iboe.gid_table[port - 1][i], &zgid, sizeof zgid))
-				++need_update;
-			dev->iboe.gid_table[port - 1][i] = zgid;
-		}
-
-	if (need_update) {
-		memcpy(work->gids, dev->iboe.gid_table[port - 1], sizeof work->gids);
-		INIT_WORK(&work->work, update_gids_task);
-		work->port = port;
-		work->dev = dev;
-		queue_work(wq, &work->work);
-	} else
-		kfree(work);
-
-	kfree(hits);
-	return 0;
-
-out:
-	kfree(work);
-	return ret;
-}
-
-static void handle_en_event(struct mlx4_ib_dev *dev, int port, unsigned long event)
-{
-	switch (event) {
-	case NETDEV_UP:
-	case NETDEV_CHANGEADDR:
-		update_ipv6_gids(dev, port, 0);
-		break;
-
-	case NETDEV_DOWN:
-		update_ipv6_gids(dev, port, 1);
-		dev->iboe.netdevs[port - 1] = NULL;
-	}
-}
-
-static void netdev_added(struct mlx4_ib_dev *dev, int port)
-{
-	update_ipv6_gids(dev, port, 0);
-}
-
-static void netdev_removed(struct mlx4_ib_dev *dev, int port)
-{
-	update_ipv6_gids(dev, port, 1);
-}
-
-static int mlx4_ib_netdev_event(struct notifier_block *this, unsigned long event,
-				void *ptr)
-{
-	struct net_device *dev = ptr;
-	struct mlx4_ib_dev *ibdev;
-	struct net_device *oldnd;
-	struct mlx4_ib_iboe *iboe;
-	int port;
-=======
 static ssize_t hca_type_show(struct device *device,
 			     struct device_attribute *attr, char *buf)
 {
@@ -3145,60 +2379,16 @@ static int mlx4_ib_netdev_event(struct notifier_block *this,
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 	struct mlx4_ib_dev *ibdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
 
 	ibdev = container_of(this, struct mlx4_ib_dev, iboe.nb);
-<<<<<<< HEAD
-	iboe = &ibdev->iboe;
-
-	spin_lock(&iboe->lock);
-	mlx4_foreach_ib_transport_port(port, ibdev->dev) {
-		oldnd = iboe->netdevs[port - 1];
-		iboe->netdevs[port - 1] =
-			mlx4_get_protocol_dev(ibdev->dev, MLX4_PROT_ETH, port);
-		if (oldnd != iboe->netdevs[port - 1]) {
-			if (iboe->netdevs[port - 1])
-				netdev_added(ibdev, port);
-			else
-				netdev_removed(ibdev, port);
-		}
-	}
-
-	if (dev == iboe->netdevs[0] ||
-	    (iboe->netdevs[0] && rdma_vlan_dev_real_dev(dev) == iboe->netdevs[0]))
-		handle_en_event(ibdev, 1, event);
-	else if (dev == iboe->netdevs[1]
-		 || (iboe->netdevs[1] && rdma_vlan_dev_real_dev(dev) == iboe->netdevs[1]))
-		handle_en_event(ibdev, 2, event);
-
-	spin_unlock(&iboe->lock);
-=======
 	mlx4_ib_scan_netdev(ibdev, dev, event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
 
-<<<<<<< HEAD
-static void *mlx4_ib_add(struct mlx4_dev *dev)
-{
-	struct mlx4_ib_dev *ibdev;
-	int num_ports = 0;
-	int i;
-	int err;
-	struct mlx4_ib_iboe *iboe;
-
-	printk_once(KERN_INFO "%s", mlx4_ib_version);
-
-	if (mlx4_is_mfunc(dev)) {
-		printk(KERN_WARNING "IB not yet supported in SRIOV\n");
-		return NULL;
-	}
-
-=======
 static void init_pkeys(struct mlx4_ib_dev *ibdev)
 {
 	int port;
@@ -3437,20 +2627,11 @@ static int mlx4_ib_probe(struct auxiliary_device *adev,
 	pr_info_once("%s", mlx4_ib_version);
 
 	num_ports = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_foreach_ib_transport_port(i, dev)
 		num_ports++;
 
 	/* No point in registering a device with no ports... */
 	if (num_ports == 0)
-<<<<<<< HEAD
-		return NULL;
-
-	ibdev = (struct mlx4_ib_dev *) ib_alloc_device(sizeof *ibdev);
-	if (!ibdev) {
-		dev_err(&dev->pdev->dev, "Device struct alloc failed\n");
-		return NULL;
-=======
 		return -ENODEV;
 
 	ibdev = ib_alloc_device(mlx4_ib_dev, ib_dev);
@@ -3458,160 +2639,20 @@ static int mlx4_ib_probe(struct auxiliary_device *adev,
 		dev_err(&dev->persist->pdev->dev,
 			"Device struct alloc failed\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	iboe = &ibdev->iboe;
 
-<<<<<<< HEAD
-	if (mlx4_pd_alloc(dev, &ibdev->priv_pdn))
-		goto err_dealloc;
-
-	if (mlx4_uar_alloc(dev, &ibdev->priv_uar))
-=======
 	err = mlx4_pd_alloc(dev, &ibdev->priv_pdn);
 	if (err)
 		goto err_dealloc;
 
 	err = mlx4_uar_alloc(dev, &ibdev->priv_uar);
 	if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_pd;
 
 	ibdev->uar_map = ioremap((phys_addr_t) ibdev->priv_uar.pfn << PAGE_SHIFT,
 				 PAGE_SIZE);
-<<<<<<< HEAD
-	if (!ibdev->uar_map)
-		goto err_uar;
-	MLX4_INIT_DOORBELL_LOCK(&ibdev->uar_lock);
-
-	ibdev->dev = dev;
-
-	strlcpy(ibdev->ib_dev.name, "mlx4_%d", IB_DEVICE_NAME_MAX);
-	ibdev->ib_dev.owner		= THIS_MODULE;
-	ibdev->ib_dev.node_type		= RDMA_NODE_IB_CA;
-	ibdev->ib_dev.local_dma_lkey	= dev->caps.reserved_lkey;
-	ibdev->num_ports		= num_ports;
-	ibdev->ib_dev.phys_port_cnt     = ibdev->num_ports;
-	ibdev->ib_dev.num_comp_vectors	= dev->caps.num_comp_vectors;
-	ibdev->ib_dev.dma_device	= &dev->pdev->dev;
-
-	ibdev->ib_dev.uverbs_abi_ver	= MLX4_IB_UVERBS_ABI_VERSION;
-	ibdev->ib_dev.uverbs_cmd_mask	=
-		(1ull << IB_USER_VERBS_CMD_GET_CONTEXT)		|
-		(1ull << IB_USER_VERBS_CMD_QUERY_DEVICE)	|
-		(1ull << IB_USER_VERBS_CMD_QUERY_PORT)		|
-		(1ull << IB_USER_VERBS_CMD_ALLOC_PD)		|
-		(1ull << IB_USER_VERBS_CMD_DEALLOC_PD)		|
-		(1ull << IB_USER_VERBS_CMD_REG_MR)		|
-		(1ull << IB_USER_VERBS_CMD_DEREG_MR)		|
-		(1ull << IB_USER_VERBS_CMD_CREATE_COMP_CHANNEL)	|
-		(1ull << IB_USER_VERBS_CMD_CREATE_CQ)		|
-		(1ull << IB_USER_VERBS_CMD_RESIZE_CQ)		|
-		(1ull << IB_USER_VERBS_CMD_DESTROY_CQ)		|
-		(1ull << IB_USER_VERBS_CMD_CREATE_QP)		|
-		(1ull << IB_USER_VERBS_CMD_MODIFY_QP)		|
-		(1ull << IB_USER_VERBS_CMD_QUERY_QP)		|
-		(1ull << IB_USER_VERBS_CMD_DESTROY_QP)		|
-		(1ull << IB_USER_VERBS_CMD_ATTACH_MCAST)	|
-		(1ull << IB_USER_VERBS_CMD_DETACH_MCAST)	|
-		(1ull << IB_USER_VERBS_CMD_CREATE_SRQ)		|
-		(1ull << IB_USER_VERBS_CMD_MODIFY_SRQ)		|
-		(1ull << IB_USER_VERBS_CMD_QUERY_SRQ)		|
-		(1ull << IB_USER_VERBS_CMD_DESTROY_SRQ)		|
-		(1ull << IB_USER_VERBS_CMD_CREATE_XSRQ)		|
-		(1ull << IB_USER_VERBS_CMD_OPEN_QP);
-
-	ibdev->ib_dev.query_device	= mlx4_ib_query_device;
-	ibdev->ib_dev.query_port	= mlx4_ib_query_port;
-	ibdev->ib_dev.get_link_layer	= mlx4_ib_port_link_layer;
-	ibdev->ib_dev.query_gid		= mlx4_ib_query_gid;
-	ibdev->ib_dev.query_pkey	= mlx4_ib_query_pkey;
-	ibdev->ib_dev.modify_device	= mlx4_ib_modify_device;
-	ibdev->ib_dev.modify_port	= mlx4_ib_modify_port;
-	ibdev->ib_dev.alloc_ucontext	= mlx4_ib_alloc_ucontext;
-	ibdev->ib_dev.dealloc_ucontext	= mlx4_ib_dealloc_ucontext;
-	ibdev->ib_dev.mmap		= mlx4_ib_mmap;
-	ibdev->ib_dev.alloc_pd		= mlx4_ib_alloc_pd;
-	ibdev->ib_dev.dealloc_pd	= mlx4_ib_dealloc_pd;
-	ibdev->ib_dev.create_ah		= mlx4_ib_create_ah;
-	ibdev->ib_dev.query_ah		= mlx4_ib_query_ah;
-	ibdev->ib_dev.destroy_ah	= mlx4_ib_destroy_ah;
-	ibdev->ib_dev.create_srq	= mlx4_ib_create_srq;
-	ibdev->ib_dev.modify_srq	= mlx4_ib_modify_srq;
-	ibdev->ib_dev.query_srq		= mlx4_ib_query_srq;
-	ibdev->ib_dev.destroy_srq	= mlx4_ib_destroy_srq;
-	ibdev->ib_dev.post_srq_recv	= mlx4_ib_post_srq_recv;
-	ibdev->ib_dev.create_qp		= mlx4_ib_create_qp;
-	ibdev->ib_dev.modify_qp		= mlx4_ib_modify_qp;
-	ibdev->ib_dev.query_qp		= mlx4_ib_query_qp;
-	ibdev->ib_dev.destroy_qp	= mlx4_ib_destroy_qp;
-	ibdev->ib_dev.post_send		= mlx4_ib_post_send;
-	ibdev->ib_dev.post_recv		= mlx4_ib_post_recv;
-	ibdev->ib_dev.create_cq		= mlx4_ib_create_cq;
-	ibdev->ib_dev.modify_cq		= mlx4_ib_modify_cq;
-	ibdev->ib_dev.resize_cq		= mlx4_ib_resize_cq;
-	ibdev->ib_dev.destroy_cq	= mlx4_ib_destroy_cq;
-	ibdev->ib_dev.poll_cq		= mlx4_ib_poll_cq;
-	ibdev->ib_dev.req_notify_cq	= mlx4_ib_arm_cq;
-	ibdev->ib_dev.get_dma_mr	= mlx4_ib_get_dma_mr;
-	ibdev->ib_dev.reg_user_mr	= mlx4_ib_reg_user_mr;
-	ibdev->ib_dev.dereg_mr		= mlx4_ib_dereg_mr;
-	ibdev->ib_dev.alloc_fast_reg_mr = mlx4_ib_alloc_fast_reg_mr;
-	ibdev->ib_dev.alloc_fast_reg_page_list = mlx4_ib_alloc_fast_reg_page_list;
-	ibdev->ib_dev.free_fast_reg_page_list  = mlx4_ib_free_fast_reg_page_list;
-	ibdev->ib_dev.attach_mcast	= mlx4_ib_mcg_attach;
-	ibdev->ib_dev.detach_mcast	= mlx4_ib_mcg_detach;
-	ibdev->ib_dev.process_mad	= mlx4_ib_process_mad;
-
-	ibdev->ib_dev.alloc_fmr		= mlx4_ib_fmr_alloc;
-	ibdev->ib_dev.map_phys_fmr	= mlx4_ib_map_phys_fmr;
-	ibdev->ib_dev.unmap_fmr		= mlx4_ib_unmap_fmr;
-	ibdev->ib_dev.dealloc_fmr	= mlx4_ib_fmr_dealloc;
-
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_XRC) {
-		ibdev->ib_dev.alloc_xrcd = mlx4_ib_alloc_xrcd;
-		ibdev->ib_dev.dealloc_xrcd = mlx4_ib_dealloc_xrcd;
-		ibdev->ib_dev.uverbs_cmd_mask |=
-			(1ull << IB_USER_VERBS_CMD_OPEN_XRCD) |
-			(1ull << IB_USER_VERBS_CMD_CLOSE_XRCD);
-	}
-
-	spin_lock_init(&iboe->lock);
-
-	if (init_node_data(ibdev))
-		goto err_map;
-
-	for (i = 0; i < ibdev->num_ports; ++i) {
-		if (mlx4_ib_port_link_layer(&ibdev->ib_dev, i + 1) ==
-						IB_LINK_LAYER_ETHERNET) {
-			err = mlx4_counter_alloc(ibdev->dev, &ibdev->counters[i]);
-			if (err)
-				ibdev->counters[i] = -1;
-		} else
-				ibdev->counters[i] = -1;
-	}
-
-	spin_lock_init(&ibdev->sm_lock);
-	mutex_init(&ibdev->cap_mask_mutex);
-
-	if (ib_register_device(&ibdev->ib_dev, NULL))
-		goto err_counter;
-
-	if (mlx4_ib_mad_init(ibdev))
-		goto err_reg;
-
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_IBOE && !iboe->nb.notifier_call) {
-		iboe->nb.notifier_call = mlx4_ib_netdev_event;
-		err = register_netdevice_notifier(&iboe->nb);
-		if (err)
-			goto err_reg;
-	}
-
-	for (i = 0; i < ARRAY_SIZE(mlx4_class_attributes); ++i) {
-		if (device_create_file(&ibdev->ib_dev.dev,
-				       mlx4_class_attributes[i]))
-=======
 	if (!ibdev->uar_map) {
 		err = -ENOMEM;
 		goto err_uar;
@@ -3793,30 +2834,10 @@ static int mlx4_ib_probe(struct auxiliary_device *adev,
 	if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_ROCE_V1_V2) {
 		err = mlx4_config_roce_v2_port(dev, ROCE_V2_UDP_DPORT);
 		if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_notif;
 	}
 
 	ibdev->ib_active = true;
-<<<<<<< HEAD
-
-	return ibdev;
-
-err_notif:
-	if (unregister_netdevice_notifier(&ibdev->iboe.nb))
-		printk(KERN_WARNING "failure unregistering notifier\n");
-	flush_workqueue(wq);
-
-err_reg:
-	ib_unregister_device(&ibdev->ib_dev);
-
-err_counter:
-	for (; i; --i)
-		if (ibdev->counters[i - 1] != -1)
-			mlx4_counter_free(ibdev->dev, ibdev->counters[i - 1]);
-
-err_map:
-=======
 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_IB)
 		devlink_port_type_ib_set(mlx4_get_devlink_port(dev, i),
 					 &ibdev->ib_dev);
@@ -3873,7 +2894,6 @@ err_counter:
 
 err_map:
 	mlx4_ib_free_eqs(dev, ibdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(ibdev->uar_map);
 
 err_uar:
@@ -3885,30 +2905,6 @@ err_pd:
 err_dealloc:
 	ib_dealloc_device(&ibdev->ib_dev);
 
-<<<<<<< HEAD
-	return NULL;
-}
-
-static void mlx4_ib_remove(struct mlx4_dev *dev, void *ibdev_ptr)
-{
-	struct mlx4_ib_dev *ibdev = ibdev_ptr;
-	int p;
-
-	mlx4_ib_mad_cleanup(ibdev);
-	ib_unregister_device(&ibdev->ib_dev);
-	if (ibdev->iboe.nb.notifier_call) {
-		if (unregister_netdevice_notifier(&ibdev->iboe.nb))
-			printk(KERN_WARNING "failure unregistering notifier\n");
-		ibdev->iboe.nb.notifier_call = NULL;
-	}
-	iounmap(ibdev->uar_map);
-	for (p = 0; p < ibdev->num_ports; ++p)
-		if (ibdev->counters[p] != -1)
-			mlx4_counter_free(ibdev->dev, ibdev->counters[p]);
-	mlx4_foreach_port(p, dev, MLX4_PORT_TYPE_IB)
-		mlx4_CLOSE_PORT(dev, p);
-
-=======
 	return err;
 }
 
@@ -4015,25 +3011,11 @@ static void mlx4_ib_remove(struct auxiliary_device *adev)
 
 	mlx4_ib_free_eqs(dev, ibdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_uar_free(dev, &ibdev->priv_uar);
 	mlx4_pd_free(dev, ibdev->priv_pdn);
 	ib_dealloc_device(&ibdev->ib_dev);
 }
 
-<<<<<<< HEAD
-static void mlx4_ib_event(struct mlx4_dev *dev, void *ibdev_ptr,
-			  enum mlx4_dev_event event, int port)
-{
-	struct ib_event ibev;
-	struct mlx4_ib_dev *ibdev = to_mdev((struct ib_device *) ibdev_ptr);
-
-	if (port > ibdev->num_ports)
-		return;
-
-	switch (event) {
-	case MLX4_DEV_EVENT_PORT_UP:
-=======
 static void do_slave_init(struct mlx4_ib_dev *ibdev, int slave, int do_init)
 {
 	struct mlx4_ib_demux_work **dm;
@@ -4267,41 +3249,18 @@ static int mlx4_ib_event(struct notifier_block *this, unsigned long event,
 			    !(ibdev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_SL_TO_VL_CHANGE_EVENT))
 				mlx4_sched_ib_sl2vl_update_work(ibdev, p);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ibev.event = IB_EVENT_PORT_ACTIVE;
 		break;
 
 	case MLX4_DEV_EVENT_PORT_DOWN:
-<<<<<<< HEAD
-=======
 		if (p > ibdev->num_ports)
 			return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ibev.event = IB_EVENT_PORT_ERR;
 		break;
 
 	case MLX4_DEV_EVENT_CATASTROPHIC_ERROR:
 		ibdev->ib_active = false;
 		ibev.event = IB_EVENT_DEVICE_FATAL;
-<<<<<<< HEAD
-		break;
-
-	default:
-		return;
-	}
-
-	ibev.device	      = ibdev_ptr;
-	ibev.element.port_num = port;
-
-	ib_dispatch_event(&ibev);
-}
-
-static struct mlx4_interface mlx4_ib_interface = {
-	.add		= mlx4_ib_add,
-	.remove		= mlx4_ib_remove,
-	.event		= mlx4_ib_event,
-	.protocol	= MLX4_PROT_IB_IPV6
-=======
 		mlx4_ib_handle_catas_error(ibdev);
 		break;
 
@@ -4379,26 +3338,12 @@ static struct mlx4_adrv mlx4_ib_adrv = {
 	},
 	.protocol	= MLX4_PROT_IB_IPV6,
 	.flags		= MLX4_INTFF_BONDING
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mlx4_ib_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	wq = create_singlethread_workqueue("mlx4_ib");
-	if (!wq)
-		return -ENOMEM;
-
-	err = mlx4_register_interface(&mlx4_ib_interface);
-	if (err) {
-		destroy_workqueue(wq);
-		return err;
-	}
-
-	return 0;
-=======
 	wq = alloc_ordered_workqueue("mlx4_ib", WQ_MEM_RECLAIM);
 	if (!wq)
 		return -ENOMEM;
@@ -4433,19 +3378,14 @@ clean_wq:
 clean_qp_event:
 	destroy_workqueue(wq);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit mlx4_ib_cleanup(void)
 {
-<<<<<<< HEAD
-	mlx4_unregister_interface(&mlx4_ib_interface);
-=======
 	mlx4_unregister_auxiliary_driver(&mlx4_ib_adrv);
 	mlx4_ib_mcg_destroy();
 	mlx4_ib_cm_destroy();
 	mlx4_ib_qp_event_cleanup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(wq);
 }
 

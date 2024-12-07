@@ -29,15 +29,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/moduleparam.h>
-=======
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/dma-mapping.h>
@@ -54,12 +49,8 @@
 #include <linux/stringify.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "common.h"
 #include "cxgb3_ioctl.h"
@@ -94,11 +85,7 @@ enum {
 #define CH_DEVICE(devid, idx) \
 	{ PCI_VENDOR_ID_CHELSIO, devid, PCI_ANY_ID, PCI_ANY_ID, 0, 0, idx }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(cxgb3_pci_tbl) = {
-=======
 static const struct pci_device_id cxgb3_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CH_DEVICE(0x20, 0),	/* PE9000 */
 	CH_DEVICE(0x21, 1),	/* T302E */
 	CH_DEVICE(0x22, 2),	/* T310E */
@@ -118,10 +105,6 @@ static const struct pci_device_id cxgb3_pci_tbl[] = {
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_AUTHOR("Chelsio Communications");
 MODULE_LICENSE("Dual BSD/GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, cxgb3_pci_tbl);
 
 static int dflt_msg_enable = DFLT_MSG_ENABLE;
@@ -165,22 +148,14 @@ struct workqueue_struct *cxgb3_wq;
 
 /**
  *	link_report - show link status and link speed/duplex
-<<<<<<< HEAD
- *	@p: the port whose settings are to be reported
-=======
  *	@dev: the port whose settings are to be reported
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Shows the link status, speed, and duplex of a port.
  */
 static void link_report(struct net_device *dev)
 {
 	if (!netif_carrier_ok(dev))
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: link down\n", dev->name);
-=======
 		netdev_info(dev, "link down\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		const char *s = "10Mbps";
 		const struct port_info *p = netdev_priv(dev);
@@ -197,14 +172,9 @@ static void link_report(struct net_device *dev)
 			break;
 		}
 
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: link up, %s, %s-duplex\n", dev->name, s,
-		       p->link_config.duplex == DUPLEX_FULL ? "full" : "half");
-=======
 		netdev_info(dev, "link up, %s, %s-duplex\n",
 			    s, p->link_config.duplex == DUPLEX_FULL
 			    ? "full" : "half");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -334,13 +304,8 @@ void t3_os_link_changed(struct adapter *adapter, int port_id, int link_stat,
 
 /**
  *	t3_os_phymod_changed - handle PHY module changes
-<<<<<<< HEAD
- *	@phy: the PHY reporting the module change
- *	@mod_type: new module type
-=======
  *	@adap: the adapter associated with the link change
  *	@port_id: the port index whose limk status has changed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This is the OS-dependent handler for PHY module changes.  It is
  *	invoked when a PHY module is removed or inserted for any OS-specific
@@ -356,17 +321,10 @@ void t3_os_phymod_changed(struct adapter *adap, int port_id)
 	const struct port_info *pi = netdev_priv(dev);
 
 	if (pi->phy.modtype == phy_modtype_none)
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: PHY module unplugged\n", dev->name);
-	else
-		printk(KERN_INFO "%s: %s PHY module inserted\n", dev->name,
-		       mod_str[pi->phy.modtype]);
-=======
 		netdev_info(dev, "PHY module unplugged\n");
 	else
 		netdev_info(dev, "%s PHY module inserted\n",
 			    mod_str[pi->phy.modtype]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cxgb_set_rxmode(struct net_device *dev)
@@ -422,31 +380,18 @@ static irqreturn_t t3_async_intr_handler(int irq, void *cookie)
  */
 static void name_msix_vecs(struct adapter *adap)
 {
-<<<<<<< HEAD
-	int i, j, msi_idx = 1, n = sizeof(adap->msix_info[0].desc) - 1;
-
-	snprintf(adap->msix_info[0].desc, n, "%s", adap->name);
-	adap->msix_info[0].desc[n] = 0;
-=======
 	int i, j, msi_idx = 1;
 
 	strscpy(adap->msix_info[0].desc, adap->name, sizeof(adap->msix_info[0].desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_port(adap, j) {
 		struct net_device *d = adap->port[j];
 		const struct port_info *pi = netdev_priv(d);
 
 		for (i = 0; i < pi->nqsets; i++, msi_idx++) {
-<<<<<<< HEAD
-			snprintf(adap->msix_info[msi_idx].desc, n,
-				 "%s-%d", d->name, pi->first_qset + i);
-			adap->msix_info[msi_idx].desc[n] = 0;
-=======
 			snprintf(adap->msix_info[msi_idx].desc,
 				 sizeof(adap->msix_info[0].desc),
 				 "%s-%d", d->name, pi->first_qset + i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -524,12 +469,7 @@ static int init_tp_parity(struct adapter *adap)
 		if (!skb)
 			goto alloc_skb_fail;
 
-<<<<<<< HEAD
-		req = (struct cpl_smt_write_req *)__skb_put(skb, sizeof(*req));
-		memset(req, 0, sizeof(*req));
-=======
 		req = __skb_put_zero(skb, sizeof(*req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 		OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SMT_WRITE_REQ, i));
 		req->mtu_idx = NMTUS - 1;
@@ -552,12 +492,7 @@ static int init_tp_parity(struct adapter *adap)
 		if (!skb)
 			goto alloc_skb_fail;
 
-<<<<<<< HEAD
-		req = (struct cpl_l2t_write_req *)__skb_put(skb, sizeof(*req));
-		memset(req, 0, sizeof(*req));
-=======
 		req = __skb_put_zero(skb, sizeof(*req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 		OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_L2T_WRITE_REQ, i));
 		req->params = htonl(V_L2T_W_IDX(i));
@@ -579,12 +514,7 @@ static int init_tp_parity(struct adapter *adap)
 		if (!skb)
 			goto alloc_skb_fail;
 
-<<<<<<< HEAD
-		req = (struct cpl_rte_write_req *)__skb_put(skb, sizeof(*req));
-		memset(req, 0, sizeof(*req));
-=======
 		req = __skb_put_zero(skb, sizeof(*req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 		OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_RTE_WRITE_REQ, i));
 		req->l2t_idx = htonl(V_L2T_W_IDX(i));
@@ -603,12 +533,7 @@ static int init_tp_parity(struct adapter *adap)
 	if (!skb)
 		goto alloc_skb_fail;
 
-<<<<<<< HEAD
-	greq = (struct cpl_set_tcb_field *)__skb_put(skb, sizeof(*greq));
-	memset(greq, 0, sizeof(*greq));
-=======
 	greq = __skb_put_zero(skb, sizeof(*greq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	greq->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 	OPCODE_TID(greq) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, 0));
 	greq->mask = cpu_to_be64(1);
@@ -645,11 +570,7 @@ static void setup_rss(struct adapter *adap)
 	unsigned int nq0 = adap2pinfo(adap, 0)->nqsets;
 	unsigned int nq1 = adap->port[1] ? adap2pinfo(adap, 1)->nqsets : 1;
 	u8 cpus[SGE_QSETS + 1];
-<<<<<<< HEAD
-	u16 rspq_map[RSS_TABLE_SIZE];
-=======
 	u16 rspq_map[RSS_TABLE_SIZE + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < SGE_QSETS; ++i)
 		cpus[i] = i;
@@ -659,10 +580,7 @@ static void setup_rss(struct adapter *adap)
 		rspq_map[i] = i % nq0;
 		rspq_map[i + RSS_TABLE_SIZE / 2] = (i % nq1) + nq0;
 	}
-<<<<<<< HEAD
-=======
 	rspq_map[RSS_TABLE_SIZE] = 0xffff; /* terminator */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t3_config_rss(adap, F_RQFEEDBACKENABLE | F_TNLLKPEN | F_TNLMAPEN |
 		      F_TNLPRTEN | F_TNL2TUPEN | F_TNL4TUPEN |
@@ -690,12 +608,7 @@ static void init_napi(struct adapter *adap)
 		struct sge_qset *qs = &adap->sge.qs[i];
 
 		if (qs->adap)
-<<<<<<< HEAD
-			netif_napi_add(qs->netdev, &qs->napi, qs->napi.poll,
-				       64);
-=======
 			netif_napi_add(qs->netdev, &qs->napi, qs->napi.poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -782,25 +695,16 @@ static ssize_t attr_store(struct device *d,
 			  ssize_t(*set) (struct net_device *, unsigned int),
 			  unsigned int min_val, unsigned int max_val)
 {
-<<<<<<< HEAD
-	char *endp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 	unsigned int val;
 
 	if (!capable(CAP_NET_ADMIN))
 		return -EPERM;
 
-<<<<<<< HEAD
-	val = simple_strtoul(buf, &endp, 0);
-	if (endp == buf || val < min_val || val > max_val)
-=======
 	ret = kstrtouint(buf, 0, &val);
 	if (ret)
 		return ret;
 	if (val < min_val || val > max_val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	rtnl_lock();
@@ -869,19 +773,11 @@ static ssize_t store_nservers(struct device *d, struct device_attribute *attr,
 
 #define CXGB3_ATTR_R(name, val_expr) \
 CXGB3_SHOW(name, val_expr) \
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO, show_##name, NULL)
-
-#define CXGB3_ATTR_RW(name, val_expr, store_method) \
-CXGB3_SHOW(name, val_expr) \
-static DEVICE_ATTR(name, S_IRUGO | S_IWUSR, show_##name, store_method)
-=======
 static DEVICE_ATTR(name, 0444, show_##name, NULL)
 
 #define CXGB3_ATTR_RW(name, val_expr, store_method) \
 CXGB3_SHOW(name, val_expr) \
 static DEVICE_ATTR(name, 0644, show_##name, store_method)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 CXGB3_ATTR_R(cam_size, t3_mc5_size(&adap->mc5));
 CXGB3_ATTR_RW(nfilters, adap->params.mc5.nfilters, store_nfilters);
@@ -894,13 +790,9 @@ static struct attribute *cxgb3_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group cxgb3_attr_group = {.attrs = cxgb3_attrs };
-=======
 static const struct attribute_group cxgb3_attr_group = {
 	.attrs = cxgb3_attrs,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t tm_attr_show(struct device *d,
 			    char *buf, int sched)
@@ -934,24 +826,15 @@ static ssize_t tm_attr_store(struct device *d,
 	struct port_info *pi = netdev_priv(to_net_dev(d));
 	struct adapter *adap = pi->adapter;
 	unsigned int val;
-<<<<<<< HEAD
-	char *endp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 
 	if (!capable(CAP_NET_ADMIN))
 		return -EPERM;
 
-<<<<<<< HEAD
-	val = simple_strtoul(buf, &endp, 0);
-	if (endp == buf || val > 10000000)
-=======
 	ret = kstrtouint(buf, 0, &val);
 	if (ret)
 		return ret;
 	if (val > 10000000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	rtnl_lock();
@@ -973,11 +856,7 @@ static ssize_t store_##name(struct device *d, struct device_attribute *attr, \
 { \
 	return tm_attr_store(d, buf, len, sched); \
 } \
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO | S_IWUSR, show_##name, store_##name)
-=======
 static DEVICE_ATTR(name, 0644, show_##name, store_##name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TM_ATTR(sched0, 0);
 TM_ATTR(sched1, 1);
@@ -1000,13 +879,9 @@ static struct attribute *offload_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group offload_attr_group = {.attrs = offload_attrs };
-=======
 static const struct attribute_group offload_attr_group = {
 	.attrs = offload_attrs,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Sends an sk_buff to an offload queue driver
@@ -1031,11 +906,7 @@ static int write_smt_entry(struct adapter *adapter, int idx)
 	if (!skb)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	req = (struct cpl_smt_write_req *)__skb_put(skb, sizeof(*req));
-=======
 	req = __skb_put(skb, sizeof(*req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SMT_WRITE_REQ, idx));
 	req->mtu_idx = NMTUS - 1;	/* should be 0 but there's a T3 bug */
@@ -1078,11 +949,7 @@ static int send_pktsched_cmd(struct adapter *adap, int sched, int qidx, int lo,
 	if (!skb)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	req = (struct mngt_pktsched_wr *)skb_put(skb, sizeof(*req));
-=======
 	req = skb_put(skb, sizeof(*req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->wr_hi = htonl(V_WR_OP(FW_WROPCODE_MNGT));
 	req->mngt_opcode = FW_MNGTOPCODE_PKTSCHED_SET;
 	req->sched = sched;
@@ -1158,21 +1025,6 @@ int t3_get_edc_fw(struct cphy *phy, int edc_idx, int size)
 {
 	struct adapter *adapter = phy->adapter;
 	const struct firmware *fw;
-<<<<<<< HEAD
-	char buf[64];
-	u32 csum;
-	const __be32 *p;
-	u16 *cache = phy->phy_cache;
-	int i, ret;
-
-	snprintf(buf, sizeof(buf), get_edc_fw_name(edc_idx));
-
-	ret = request_firmware(&fw, buf, &adapter->pdev->dev);
-	if (ret < 0) {
-		dev_err(&adapter->pdev->dev,
-			"could not upgrade firmware: unable to load %s\n",
-			buf);
-=======
 	const char *fw_name;
 	u32 csum;
 	const __be32 *p;
@@ -1186,7 +1038,6 @@ int t3_get_edc_fw(struct cphy *phy, int edc_idx, int size)
 		dev_err(&adapter->pdev->dev,
 			"could not upgrade firmware: unable to load %s\n",
 			fw_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -1330,16 +1181,6 @@ static void cxgb_vlan_mode(struct net_device *dev, netdev_features_t features)
 
 	if (adapter->params.rev > 0) {
 		t3_set_vlan_accel(adapter, 1 << pi->port_id,
-<<<<<<< HEAD
-				  features & NETIF_F_HW_VLAN_RX);
-	} else {
-		/* single control for all ports */
-		unsigned int i, have_vlans = features & NETIF_F_HW_VLAN_RX;
-
-		for_each_port(adapter, i)
-			have_vlans |=
-				adapter->port[i]->features & NETIF_F_HW_VLAN_RX;
-=======
 				  features & NETIF_F_HW_VLAN_CTAG_RX);
 	} else {
 		/* single control for all ports */
@@ -1349,7 +1190,6 @@ static void cxgb_vlan_mode(struct net_device *dev, netdev_features_t features)
 			have_vlans |=
 				adapter->port[i]->features &
 				NETIF_F_HW_VLAN_CTAG_RX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		t3_set_vlan_accel(adapter, 1, have_vlans);
 	}
@@ -1358,11 +1198,7 @@ static void cxgb_vlan_mode(struct net_device *dev, netdev_features_t features)
 
 /**
  *	cxgb_up - enable the adapter
-<<<<<<< HEAD
- *	@adapter: adapter being enabled
-=======
  *	@adap: adapter being enabled
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called when the first port is enabled, this function performs the
  *	actions necessary to make an adapter operational, such as completing
@@ -1435,16 +1271,6 @@ static int cxgb_up(struct adapter *adap)
 			free_irq(adap->msix_info[0].vec, adap);
 			goto irq_err;
 		}
-<<<<<<< HEAD
-	} else if ((err = request_irq(adap->pdev->irq,
-				      t3_intr_handler(adap,
-						      adap->sge.qs[0].rspq.
-						      polling),
-				      (adap->flags & USING_MSI) ?
-				       0 : IRQF_SHARED,
-				      adap->name, adap)))
-		goto irq_err;
-=======
 	} else {
 		err = request_irq(adap->pdev->irq,
 				  t3_intr_handler(adap, adap->sge.qs[0].rspq.polling),
@@ -1453,7 +1279,6 @@ static int cxgb_up(struct adapter *adap)
 		if (err)
 			goto irq_err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enable_all_napi(adap);
 	t3_sge_start(adap);
@@ -1475,10 +1300,7 @@ static int cxgb_up(struct adapter *adap)
 		if (ret < 0) {
 			CH_ERR(adap, "failed to bind qsets, err %d\n", ret);
 			t3_intr_disable(adap);
-<<<<<<< HEAD
-=======
 			quiesce_rx(adap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_irq_resources(adap);
 			err = ret;
 			goto out;
@@ -1578,11 +1400,7 @@ static int offload_close(struct t3cdev *tdev)
 	sysfs_remove_group(&tdev->lldev->dev.kobj, &offload_attr_group);
 
 	/* Flush work scheduled while releasing TIDs */
-<<<<<<< HEAD
-	flush_work_sync(&td->tid_release_task);
-=======
 	flush_work(&td->tid_release_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tdev->lldev = NULL;
 	cxgb3_set_dummy_ops(tdev);
@@ -1610,12 +1428,7 @@ static int cxgb_open(struct net_device *dev)
 	if (is_offload(adapter) && !ofld_disable) {
 		err = offload_open(dev);
 		if (err)
-<<<<<<< HEAD
-			printk(KERN_WARNING
-			       "Could not initialize offload capabilities\n");
-=======
 			pr_warn("Could not initialize offload capabilities\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netif_set_real_num_tx_queues(dev, pi->nqsets);
@@ -1674,11 +1487,7 @@ static struct net_device_stats *cxgb_get_stats(struct net_device *dev)
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
-<<<<<<< HEAD
-	struct net_device_stats *ns = &pi->netstats;
-=======
 	struct net_device_stats *ns = &dev->stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct mac_stats *pstats;
 
 	spin_lock(&adapter->stats_lock);
@@ -1729,11 +1538,7 @@ static void set_msglevel(struct net_device *dev, u32 val)
 	adapter->msg_enable = val;
 }
 
-<<<<<<< HEAD
-static char stats_strings[][ETH_GSTRING_LEN] = {
-=======
 static const char stats_strings[][ETH_GSTRING_LEN] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"TxOctetsOK         ",
 	"TxFramesOK         ",
 	"TxMulticastFramesOK",
@@ -1821,14 +1626,8 @@ static void get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 	t3_get_tp_version(adapter, &tp_vers);
 	spin_unlock(&adapter->stats_lock);
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(adapter->pdev),
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->bus_info, pci_name(adapter->pdev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(info->bus_info));
 	if (fw_vers)
 		snprintf(info->fw_version, sizeof(info->fw_version),
@@ -1999,29 +1798,6 @@ static int set_phys_id(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct port_info *p = netdev_priv(dev);
-
-	cmd->supported = p->link_config.supported;
-	cmd->advertising = p->link_config.advertising;
-
-	if (netif_carrier_ok(dev)) {
-		ethtool_cmd_speed_set(cmd, p->link_config.speed);
-		cmd->duplex = p->link_config.duplex;
-	} else {
-		ethtool_cmd_speed_set(cmd, -1);
-		cmd->duplex = -1;
-	}
-
-	cmd->port = (cmd->supported & SUPPORTED_TP) ? PORT_TP : PORT_FIBRE;
-	cmd->phy_address = p->phy.mdio.prtad;
-	cmd->transceiver = XCVR_EXTERNAL;
-	cmd->autoneg = p->link_config.autoneg;
-	cmd->maxtxpkt = 0;
-	cmd->maxrxpkt = 0;
-=======
 static int get_link_ksettings(struct net_device *dev,
 			      struct ethtool_link_ksettings *cmd)
 {
@@ -2047,7 +1823,6 @@ static int get_link_ksettings(struct net_device *dev,
 	cmd->base.port = (supported & SUPPORTED_TP) ? PORT_TP : PORT_FIBRE;
 	cmd->base.phy_address = p->phy.mdio.prtad;
 	cmd->base.autoneg = p->link_config.autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2086,12 +1861,6 @@ static int speed_duplex_to_caps(int speed, int duplex)
 		      ADVERTISED_1000baseT_Half | ADVERTISED_1000baseT_Full | \
 		      ADVERTISED_10000baseT_Full)
 
-<<<<<<< HEAD
-static int set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct port_info *p = netdev_priv(dev);
-	struct link_config *lc = &p->link_config;
-=======
 static int set_link_ksettings(struct net_device *dev,
 			      const struct ethtool_link_ksettings *cmd)
 {
@@ -2101,55 +1870,28 @@ static int set_link_ksettings(struct net_device *dev,
 
 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
 						cmd->link_modes.advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(lc->supported & SUPPORTED_Autoneg)) {
 		/*
 		 * PHY offers a single speed/duplex.  See if that's what's
 		 * being requested.
 		 */
-<<<<<<< HEAD
-		if (cmd->autoneg == AUTONEG_DISABLE) {
-			u32 speed = ethtool_cmd_speed(cmd);
-			int cap = speed_duplex_to_caps(speed, cmd->duplex);
-=======
 		if (cmd->base.autoneg == AUTONEG_DISABLE) {
 			u32 speed = cmd->base.speed;
 			int cap = speed_duplex_to_caps(speed, cmd->base.duplex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (lc->supported & cap)
 				return 0;
 		}
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (cmd->autoneg == AUTONEG_DISABLE) {
-		u32 speed = ethtool_cmd_speed(cmd);
-		int cap = speed_duplex_to_caps(speed, cmd->duplex);
-=======
 	if (cmd->base.autoneg == AUTONEG_DISABLE) {
 		u32 speed = cmd->base.speed;
 		int cap = speed_duplex_to_caps(speed, cmd->base.duplex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(lc->supported & cap) || (speed == SPEED_1000))
 			return -EINVAL;
 		lc->requested_speed = speed;
-<<<<<<< HEAD
-		lc->requested_duplex = cmd->duplex;
-		lc->advertising = 0;
-	} else {
-		cmd->advertising &= ADVERTISED_MASK;
-		cmd->advertising &= lc->supported;
-		if (!cmd->advertising)
-			return -EINVAL;
-		lc->requested_speed = SPEED_INVALID;
-		lc->requested_duplex = DUPLEX_INVALID;
-		lc->advertising = cmd->advertising | ADVERTISED_Autoneg;
-	}
-	lc->autoneg = cmd->autoneg;
-=======
 		lc->requested_duplex = cmd->base.duplex;
 		lc->advertising = 0;
 	} else {
@@ -2162,7 +1904,6 @@ static int set_link_ksettings(struct net_device *dev,
 		lc->advertising = advertising | ADVERTISED_Autoneg;
 	}
 	lc->autoneg = cmd->base.autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(dev))
 		t3_link_start(&p->phy, &p->mac, lc);
 	return 0;
@@ -2206,13 +1947,9 @@ static int set_pauseparam(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e)
-=======
 static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 			  struct kernel_ethtool_ringparam *kernel_e,
 			  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -2228,13 +1965,9 @@ static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 	e->tx_pending = q->txq_size[0];
 }
 
-<<<<<<< HEAD
-static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e)
-=======
 static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 			 struct kernel_ethtool_ringparam *kernel_e,
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -2266,13 +1999,9 @@ static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c)
-=======
 static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 			struct kernel_ethtool_coalesce *kernel_coal,
 			struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -2293,13 +2022,9 @@ static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_coalesce(struct net_device *dev, struct ethtool_coalesce *c)
-=======
 static int get_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 			struct kernel_ethtool_coalesce *kernel_coal,
 			struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -2314,22 +2039,6 @@ static int get_eeprom(struct net_device *dev, struct ethtool_eeprom *e,
 {
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
-<<<<<<< HEAD
-	int i, err = 0;
-
-	u8 *buf = kmalloc(EEPROMSIZE, GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-
-	e->magic = EEPROM_MAGIC;
-	for (i = e->offset & ~3; !err && i < e->offset + e->len; i += 4)
-		err = t3_seeprom_read(adapter, i, (__le32 *) & buf[i]);
-
-	if (!err)
-		memcpy(data, buf + e->offset, e->len);
-	kfree(buf);
-	return err;
-=======
 	int cnt;
 
 	e->magic = EEPROM_MAGIC;
@@ -2340,7 +2049,6 @@ static int get_eeprom(struct net_device *dev, struct ethtool_eeprom *e,
 	e->len = cnt;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
@@ -2349,10 +2057,6 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
 	u32 aligned_offset, aligned_len;
-<<<<<<< HEAD
-	__le32 *p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *buf;
 	int err;
 
@@ -2366,18 +2070,9 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 		buf = kmalloc(aligned_len, GFP_KERNEL);
 		if (!buf)
 			return -ENOMEM;
-<<<<<<< HEAD
-		err = t3_seeprom_read(adapter, aligned_offset, (__le32 *) buf);
-		if (!err && aligned_len > 4)
-			err = t3_seeprom_read(adapter,
-					      aligned_offset + aligned_len - 4,
-					      (__le32 *) & buf[aligned_len - 4]);
-		if (err)
-=======
 		err = pci_read_vpd(adapter->pdev, aligned_offset, aligned_len,
 				   buf);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		memcpy(buf + (eeprom->offset & 3), data, eeprom->len);
 	} else
@@ -2387,26 +2082,13 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	for (p = (__le32 *) buf; !err && aligned_len; aligned_len -= 4, p++) {
-		err = t3_seeprom_write(adapter, aligned_offset, *p);
-		aligned_offset += 4;
-	}
-
-	if (!err)
-=======
 	err = pci_write_vpd(adapter->pdev, aligned_offset, aligned_len, buf);
 	if (err >= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = t3_seeprom_wp(adapter, 1);
 out:
 	if (buf != data)
 		kfree(buf);
-<<<<<<< HEAD
-	return err;
-=======
 	return err < 0 ? err : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
@@ -2417,12 +2099,7 @@ static void get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 }
 
 static const struct ethtool_ops cxgb_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = get_settings,
-	.set_settings = set_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = get_drvinfo,
 	.get_msglevel = get_msglevel,
 	.set_msglevel = set_msglevel,
@@ -2444,30 +2121,15 @@ static const struct ethtool_ops cxgb_ethtool_ops = {
 	.get_regs_len = get_regs_len,
 	.get_regs = get_regs,
 	.get_wol = get_wol,
-<<<<<<< HEAD
-};
-
-static int in_range(int val, int lo, int hi)
-=======
 	.get_link_ksettings = get_link_ksettings,
 	.set_link_ksettings = set_link_ksettings,
 };
 
 static int cxgb_in_range(int val, int lo, int hi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return val < 0 || (val <= hi && val >= lo);
 }
 
-<<<<<<< HEAD
-static int cxgb_extension_ioctl(struct net_device *dev, void __user *useraddr)
-{
-	struct port_info *pi = netdev_priv(dev);
-	struct adapter *adapter = pi->adapter;
-	u32 cmd;
-	int ret;
-
-=======
 static int cxgb_siocdevprivate(struct net_device *dev,
 			       struct ifreq *ifreq,
 			       void __user *useraddr,
@@ -2480,7 +2142,6 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 	if (cmd != SIOCCHIOCTL)
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_from_user(&cmd, useraddr, sizeof(cmd)))
 		return -EFAULT;
 
@@ -2496,23 +2157,6 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EPERM;
 		if (copy_from_user(&t, useraddr, sizeof(t)))
 			return -EFAULT;
-<<<<<<< HEAD
-		if (t.qset_idx >= SGE_QSETS)
-			return -EINVAL;
-		if (!in_range(t.intr_lat, 0, M_NEWTIMER) ||
-		    !in_range(t.cong_thres, 0, 255) ||
-		    !in_range(t.txq_size[0], MIN_TXQ_ENTRIES,
-			      MAX_TXQ_ENTRIES) ||
-		    !in_range(t.txq_size[1], MIN_TXQ_ENTRIES,
-			      MAX_TXQ_ENTRIES) ||
-		    !in_range(t.txq_size[2], MIN_CTRL_TXQ_ENTRIES,
-			      MAX_CTRL_TXQ_ENTRIES) ||
-		    !in_range(t.fl_size[0], MIN_FL_ENTRIES,
-			      MAX_RX_BUFFERS) ||
-		    !in_range(t.fl_size[1], MIN_FL_ENTRIES,
-			      MAX_RX_JUMBO_BUFFERS) ||
-		    !in_range(t.rspq_size, MIN_RSPQ_ENTRIES,
-=======
 		if (t.cmd != CHELSIO_SET_QSET_PARAMS)
 			return -EINVAL;
 		if (t.qset_idx >= SGE_QSETS)
@@ -2530,7 +2174,6 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 		    !cxgb_in_range(t.fl_size[1], MIN_FL_ENTRIES,
 			      MAX_RX_JUMBO_BUFFERS) ||
 		    !cxgb_in_range(t.rspq_size, MIN_RSPQ_ENTRIES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      MAX_RSPQ_ENTRIES))
 			return -EINVAL;
 
@@ -2615,12 +2258,9 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 		if (copy_from_user(&t, useraddr, sizeof(t)))
 			return -EFAULT;
 
-<<<<<<< HEAD
-=======
 		if (t.cmd != CHELSIO_GET_QSET_PARAMS)
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Display qsets for all ports when offload enabled */
 		if (test_bit(OFFLOAD_DEVMAP_BIT, &adapter->open_device_map)) {
 			q1 = 0;
@@ -2632,10 +2272,7 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 
 		if (t.qset_idx >= nqsets)
 			return -EINVAL;
-<<<<<<< HEAD
-=======
 		t.qset_idx = array_index_nospec(t.qset_idx, nqsets);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		q = &adapter->params.sge.qset[q1 + t.qset_idx];
 		t.rspq_size = q->rspq_size;
@@ -2669,11 +2306,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EBUSY;
 		if (copy_from_user(&edata, useraddr, sizeof(edata)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (edata.cmd != CHELSIO_SET_QSET_NUM)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (edata.val < 1 ||
 			(edata.val > 1 && !(adapter->flags & USING_MSIX)))
 			return -EINVAL;
@@ -2714,11 +2348,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EPERM;
 		if (copy_from_user(&t, useraddr, sizeof(t)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (t.cmd != CHELSIO_LOAD_FW)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check t.len sanity ? */
 		fw_data = memdup_user(useraddr + sizeof(t), t.len);
 		if (IS_ERR(fw_data))
@@ -2742,11 +2373,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EBUSY;
 		if (copy_from_user(&m, useraddr, sizeof(m)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (m.cmd != CHELSIO_SETMTUTAB)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (m.nmtus != NMTUS)
 			return -EINVAL;
 		if (m.mtus[0] < 81)	/* accommodate SACK */
@@ -2788,11 +2416,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EBUSY;
 		if (copy_from_user(&m, useraddr, sizeof(m)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (m.cmd != CHELSIO_SET_PM)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_power_of_2(m.rx_pg_sz) ||
 			!is_power_of_2(m.tx_pg_sz))
 			return -EINVAL;	/* not power of 2 */
@@ -2822,20 +2447,14 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 
 		if (!is_offload(adapter))
 			return -EOPNOTSUPP;
-<<<<<<< HEAD
-=======
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(adapter->flags & FULL_INIT_DONE))
 			return -EIO;	/* need the memory controllers */
 		if (copy_from_user(&t, useraddr, sizeof(t)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (t.cmd != CHELSIO_GET_MEM)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((t.addr & 7) || (t.len & 7))
 			return -EINVAL;
 		if (t.mem_id == MEM_CM)
@@ -2888,11 +2507,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
 			return -EAGAIN;
 		if (copy_from_user(&t, useraddr, sizeof(t)))
 			return -EFAULT;
-<<<<<<< HEAD
-=======
 		if (t.cmd != CHELSIO_SET_TRACE_FILTER)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tp = (const struct trace_params *)&t.sip;
 		if (t.config_tx)
@@ -2927,17 +2543,9 @@ static int cxgb_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 		    !(data->phy_id & 0xe0e0))
 			data->phy_id = mdio_phy_id_c45(data->phy_id >> 8,
 						       data->phy_id & 0x1f);
-<<<<<<< HEAD
-		/* FALLTHRU */
-	case SIOCGMIIPHY:
-		return mdio_mii_ioctl(&pi->phy.mdio, data, cmd);
-	case SIOCCHIOCTL:
-		return cxgb_extension_ioctl(dev, req->ifr_data);
-=======
 		fallthrough;
 	case SIOCGMIIPHY:
 		return mdio_mii_ioctl(&pi->phy.mdio, data, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
@@ -2949,11 +2557,6 @@ static int cxgb_change_mtu(struct net_device *dev, int new_mtu)
 	struct adapter *adapter = pi->adapter;
 	int ret;
 
-<<<<<<< HEAD
-	if (new_mtu < 81)	/* accommodate SACK */
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ret = t3_mac_set_mtu(&pi->mac, new_mtu)))
 		return ret;
 	dev->mtu = new_mtu;
@@ -2974,11 +2577,7 @@ static int cxgb_set_mac_addr(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t3_mac_set_address(&pi->mac, LAN_MAC_IDX, dev->dev_addr);
 	if (offload_running(adapter))
 		write_smt_entry(adapter, pi->port_id);
@@ -2992,17 +2591,10 @@ static netdev_features_t cxgb_fix_features(struct net_device *dev,
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX)
-		features |= NETIF_F_HW_VLAN_TX;
-	else
-		features &= ~NETIF_F_HW_VLAN_TX;
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX)
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -3011,11 +2603,7 @@ static int cxgb_set_features(struct net_device *dev, netdev_features_t features)
 {
 	netdev_features_t changed = dev->features ^ features;
 
-<<<<<<< HEAD
-	if (changed & NETIF_F_HW_VLAN_RX)
-=======
 	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cxgb_vlan_mode(dev, features);
 
 	return 0;
@@ -3406,11 +2994,7 @@ void t3_fatal_err(struct adapter *adapter)
 	unsigned int fw_status[4];
 
 	if (adapter->flags & FULL_INIT_DONE) {
-<<<<<<< HEAD
-		t3_sge_stop(adapter);
-=======
 		t3_sge_stop_dma(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t3_write_reg(adapter, A_XGM_TX_CTRL, 0);
 		t3_write_reg(adapter, A_XGM_RX_CTRL, 0);
 		t3_write_reg(adapter, XGM_REG(A_XGM_TX_CTRL, 1), 0);
@@ -3480,19 +3064,12 @@ static void t3_io_resume(struct pci_dev *pdev)
 	CH_ALERT(adapter, "adapter recovering, PEX ERR 0x%x\n",
 		 t3_read_reg(adapter, A_PCIE_PEX_ERR));
 
-<<<<<<< HEAD
-	t3_resume_ports(adapter);
-}
-
-static struct pci_error_handlers t3_err_handler = {
-=======
 	rtnl_lock();
 	t3_resume_ports(adapter);
 	rtnl_unlock();
 }
 
 static const struct pci_error_handlers t3_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = t3_io_error_detected,
 	.slot_reset = t3_io_slot_reset,
 	.resume = t3_io_resume,
@@ -3506,11 +3083,7 @@ static const struct pci_error_handlers t3_err_handler = {
 static void set_nqsets(struct adapter *adap)
 {
 	int i, j = 0;
-<<<<<<< HEAD
-	int num_cpus = num_online_cpus();
-=======
 	int num_cpus = netif_get_num_default_rss_queues();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hwports = adap->params.nports;
 	int nqsets = adap->msix_nvectors - 1;
 
@@ -3523,14 +3096,9 @@ static void set_nqsets(struct adapter *adap)
 			nqsets = num_cpus;
 		if (nqsets < 1 || hwports == 4)
 			nqsets = 1;
-<<<<<<< HEAD
-	} else
-		nqsets = 1;
-=======
 	} else {
 		nqsets = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_port(adap, i) {
 		struct port_info *pi = adap2pinfo(adap, i);
@@ -3544,48 +3112,16 @@ static void set_nqsets(struct adapter *adap)
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit cxgb_enable_msix(struct adapter *adap)
-{
-	struct msix_entry entries[SGE_QSETS + 1];
-	int vectors;
-	int i, err;
-=======
 static int cxgb_enable_msix(struct adapter *adap)
 {
 	struct msix_entry entries[SGE_QSETS + 1];
 	int vectors;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vectors = ARRAY_SIZE(entries);
 	for (i = 0; i < vectors; ++i)
 		entries[i].entry = i;
 
-<<<<<<< HEAD
-	while ((err = pci_enable_msix(adap->pdev, entries, vectors)) > 0)
-		vectors = err;
-
-	if (err < 0)
-		pci_disable_msix(adap->pdev);
-
-	if (!err && vectors < (adap->params.nports + 1)) {
-		pci_disable_msix(adap->pdev);
-		err = -1;
-	}
-
-	if (!err) {
-		for (i = 0; i < vectors; ++i)
-			adap->msix_info[i].vec = entries[i].vector;
-		adap->msix_nvectors = vectors;
-	}
-
-	return err;
-}
-
-static void __devinit print_port_info(struct adapter *adap,
-				      const struct adapter_info *ai)
-=======
 	vectors = pci_enable_msix_range(adap->pdev, entries,
 					adap->params.nports + 1, vectors);
 	if (vectors < 0)
@@ -3599,7 +3135,6 @@ static void __devinit print_port_info(struct adapter *adap,
 }
 
 static void print_port_info(struct adapter *adap, const struct adapter_info *ai)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char *pci_variant[] = {
 		"PCI", "PCI-X", "PCI-X ECC", "PCI-X 266", "PCI Express"
@@ -3623,16 +3158,6 @@ static void print_port_info(struct adapter *adap, const struct adapter_info *ai)
 
 		if (!test_bit(i, &adap->registered_device_map))
 			continue;
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: %s %s %sNIC (rev %d) %s%s\n",
-		       dev->name, ai->desc, pi->phy.desc,
-		       is_offload(adap) ? "R" : "", adap->params.rev, buf,
-		       (adap->flags & USING_MSIX) ? " MSI-X" :
-		       (adap->flags & USING_MSI) ? " MSI" : "");
-		if (adap->name == dev->name && adap->params.vpd.mclk)
-			printk(KERN_INFO
-			       "%s: %uMB CM, %uMB PMTX, %uMB PMRX, S/N: %s\n",
-=======
 		netdev_info(dev, "%s %s %sNIC (rev %d) %s%s\n",
 			    ai->desc, pi->phy.desc,
 			    is_offload(adap) ? "R" : "", adap->params.rev, buf,
@@ -3640,7 +3165,6 @@ static void print_port_info(struct adapter *adap, const struct adapter_info *ai)
 			    (adap->flags & USING_MSI) ? " MSI" : "");
 		if (adap->name == dev->name && adap->params.vpd.mclk)
 			pr_info("%s: %uMB CM, %uMB PMTX, %uMB PMRX, S/N: %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       adap->name, t3_mc7_size(&adap->cm) >> 20,
 			       t3_mc7_size(&adap->pmtx) >> 20,
 			       t3_mc7_size(&adap->pmrx) >> 20,
@@ -3655,12 +3179,8 @@ static const struct net_device_ops cxgb_netdev_ops = {
 	.ndo_get_stats		= cxgb_get_stats,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_rx_mode	= cxgb_set_rxmode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= cxgb_ioctl,
-=======
 	.ndo_eth_ioctl		= cxgb_ioctl,
 	.ndo_siocdevprivate	= cxgb_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_change_mtu		= cxgb_change_mtu,
 	.ndo_set_mac_address	= cxgb_set_mac_addr,
 	.ndo_fix_features	= cxgb_fix_features,
@@ -3670,11 +3190,7 @@ static const struct net_device_ops cxgb_netdev_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static void __devinit cxgb3_init_iscsi_mac(struct net_device *dev)
-=======
 static void cxgb3_init_iscsi_mac(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port_info *pi = netdev_priv(dev);
 
@@ -3682,43 +3198,21 @@ static void cxgb3_init_iscsi_mac(struct net_device *dev)
 	pi->iscsic.mac_addr[3] |= 0x80;
 }
 
-<<<<<<< HEAD
-static int __devinit init_one(struct pci_dev *pdev,
-			      const struct pci_device_id *ent)
-{
-	static int version_printed;
-
-	int i, err, pci_using_dac = 0;
-=======
 #define TSO_FLAGS (NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN)
 #define VLAN_FEAT (NETIF_F_SG | NETIF_F_IP_CSUM | TSO_FLAGS | \
 			NETIF_F_IPV6_CSUM | NETIF_F_HIGHDMA)
 static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resource_size_t mmio_start, mmio_len;
 	const struct adapter_info *ai;
 	struct adapter *adapter = NULL;
 	struct port_info *pi;
 
-<<<<<<< HEAD
-	if (!version_printed) {
-		printk(KERN_INFO "%s - version %s\n", DRV_DESC, DRV_VERSION);
-		++version_printed;
-	}
-
-	if (!cxgb3_wq) {
-		cxgb3_wq = create_singlethread_workqueue(DRV_NAME);
-		if (!cxgb3_wq) {
-			printk(KERN_ERR DRV_NAME
-			       ": cannot initialize work queue\n");
-=======
 	if (!cxgb3_wq) {
 		cxgb3_wq = create_singlethread_workqueue(DRV_NAME);
 		if (!cxgb3_wq) {
 			pr_err("cannot initialize work queue\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 	}
@@ -3736,20 +3230,8 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_disable_device;
 	}
 
-<<<<<<< HEAD
-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		pci_using_dac = 1;
-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (err) {
-			dev_err(&pdev->dev, "unable to obtain 64-bit DMA for "
-			       "coherent allocations\n");
-			goto out_release_regions;
-		}
-	} else if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "no usable DMA configuration\n");
 		goto out_release_regions;
 	}
@@ -3775,19 +3257,11 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_free_adapter;
 	}
 
-<<<<<<< HEAD
-	adapter->regs = ioremap_nocache(mmio_start, mmio_len);
-	if (!adapter->regs) {
-		dev_err(&pdev->dev, "cannot map device registers\n");
-		err = -ENOMEM;
-		goto out_free_adapter;
-=======
 	adapter->regs = ioremap(mmio_start, mmio_len);
 	if (!adapter->regs) {
 		dev_err(&pdev->dev, "cannot map device registers\n");
 		err = -ENOMEM;
 		goto out_free_adapter_nofail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	adapter->pdev = pdev;
@@ -3829,15 +3303,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->mem_start = mmio_start;
 		netdev->mem_end = mmio_start + mmio_len - 1;
 		netdev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM |
-<<<<<<< HEAD
-			NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_HW_VLAN_RX;
-		netdev->features |= netdev->hw_features | NETIF_F_HW_VLAN_TX;
-		if (pci_using_dac)
-			netdev->features |= NETIF_F_HIGHDMA;
-
-		netdev->netdev_ops = &cxgb_netdev_ops;
-		SET_ETHTOOL_OPS(netdev, &cxgb_ethtool_ops);
-=======
 			NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_HW_VLAN_CTAG_RX;
 		netdev->features |= netdev->hw_features |
 				    NETIF_F_HW_VLAN_CTAG_TX;
@@ -3850,7 +3315,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->min_mtu = 81;
 		netdev->max_mtu = ETH_MAX_MTU;
 		netdev->dev_port = pi->port_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_set_drvdata(pdev, adapter);
@@ -3884,10 +3348,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 	if (!adapter->registered_device_map) {
 		dev_err(&pdev->dev, "could not register any net devices\n");
-<<<<<<< HEAD
-=======
 		err = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_dev;
 	}
 
@@ -3912,35 +3373,26 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	err = sysfs_create_group(&adapter->port[0]->dev.kobj,
 				 &cxgb3_attr_group);
-<<<<<<< HEAD
-=======
 	if (err) {
 		dev_err(&pdev->dev, "cannot create sysfs group\n");
 		goto out_close_led;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	print_port_info(adapter, ai);
 	return 0;
 
-<<<<<<< HEAD
-=======
 out_close_led:
 	t3_set_reg_field(adapter, A_T3DBG_GPIO_EN, F_GPIO0_OUT_VAL, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free_dev:
 	iounmap(adapter->regs);
 	for (i = ai->nports0 + ai->nports1 - 1; i >= 0; --i)
 		if (adapter->port[i])
 			free_netdev(adapter->port[i]);
 
-<<<<<<< HEAD
-=======
 out_free_adapter_nofail:
 	kfree_skb(adapter->nofail_skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free_adapter:
 	kfree(adapter);
 
@@ -3948,19 +3400,11 @@ out_release_regions:
 	pci_release_regions(pdev);
 out_disable_device:
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit remove_one(struct pci_dev *pdev)
-=======
 static void remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = pci_get_drvdata(pdev);
 
@@ -3991,19 +3435,10 @@ static void remove_one(struct pci_dev *pdev)
 				free_netdev(adapter->port[i]);
 
 		iounmap(adapter->regs);
-<<<<<<< HEAD
-		if (adapter->nofail_skb)
-			kfree_skb(adapter->nofail_skb);
-		kfree(adapter);
-		pci_release_regions(pdev);
-		pci_disable_device(pdev);
-		pci_set_drvdata(pdev, NULL);
-=======
 		kfree_skb(adapter->nofail_skb);
 		kfree(adapter);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4011,11 +3446,7 @@ static struct pci_driver driver = {
 	.name = DRV_NAME,
 	.id_table = cxgb3_pci_tbl,
 	.probe = init_one,
-<<<<<<< HEAD
-	.remove = __devexit_p(remove_one),
-=======
 	.remove = remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.err_handler = &t3_err_handler,
 };
 

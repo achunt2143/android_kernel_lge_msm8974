@@ -2,11 +2,7 @@
  *  linux/drivers/video/console/sticon.c - console driver using HP's STI firmware
  *
  *	Copyright (C) 2000 Philipp Rumpf <prumpf@tux.org>
-<<<<<<< HEAD
- *	Copyright (C) 2002 Helge Deller <deller@gmx.de>
-=======
  *	Copyright (C) 2002-2020 Helge Deller <deller@gmx.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Based on linux/drivers/video/vgacon.c and linux/drivers/video/fbcon.c,
  *  which were
@@ -47,12 +43,6 @@
 #include <linux/kd.h>
 #include <linux/selection.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-
-#include "../sticore.h"
-=======
 #include <linux/slab.h>
 #include <linux/font.h>
 #include <linux/crc32.h>
@@ -61,36 +51,11 @@
 #include <asm/io.h>
 
 #include <video/sticore.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* switching to graphics mode */
 #define BLANK 0
 static int vga_is_gfx;
 
-<<<<<<< HEAD
-/* this is the sti_struct used for this console */
-static struct sti_struct *sticon_sti;
-
-/* Software scrollback */
-static unsigned long softback_buf, softback_curr;
-static unsigned long softback_in;
-static unsigned long /* softback_top, */ softback_end;
-static int softback_lines;
-
-/* software cursor */
-static int cursor_drawn;
-#define CURSOR_DRAW_DELAY		(1)
-#define DEFAULT_CURSOR_BLINK_RATE	(20)
-
-static int vbl_cursor_cnt;
-
-static inline void cursor_undrawn(void)
-{
-    vbl_cursor_cnt = 0;
-    cursor_drawn = 0;
-}
-
-=======
 #define STI_DEF_FONT	sticon_sti->font
 
 /* borrowed from fbcon.c */
@@ -101,95 +66,19 @@ static struct sti_cooked_font *font_data[MAX_NR_CONSOLES];
 /* this is the sti_struct used for this console */
 static struct sti_struct *sticon_sti;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *sticon_startup(void)
 {
     return "STI console";
 }
 
-<<<<<<< HEAD
-static int sticon_set_palette(struct vc_data *c, unsigned char *table)
-{
-    return -EINVAL;
-}
-
-static void sticon_putc(struct vc_data *conp, int c, int ypos, int xpos)
-{
-    int redraw_cursor = 0;
-
-=======
 static void sticon_putcs(struct vc_data *conp, const u16 *s, unsigned int count,
 			 unsigned int ypos, unsigned int xpos)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (vga_is_gfx || console_blanked)
 	    return;
 
     if (conp->vc_mode != KD_TEXT)
     	    return;
-<<<<<<< HEAD
-#if 0
-    if ((p->cursor_x == xpos) && (p->cursor_y == ypos)) {
-	    cursor_undrawn();
-	    redraw_cursor = 1;
-    }
-#endif
-
-    sti_putc(sticon_sti, c, ypos, xpos);
-
-    if (redraw_cursor)
-	    vbl_cursor_cnt = CURSOR_DRAW_DELAY;
-}
-
-static void sticon_putcs(struct vc_data *conp, const unsigned short *s,
-			 int count, int ypos, int xpos)
-{
-    int redraw_cursor = 0;
-
-    if (vga_is_gfx || console_blanked)
-	    return;
-
-    if (conp->vc_mode != KD_TEXT)
-    	    return;
-
-#if 0
-    if ((p->cursor_y == ypos) && (xpos <= p->cursor_x) &&
-	(p->cursor_x < (xpos + count))) {
-	    cursor_undrawn();
-	    redraw_cursor = 1;
-    }
-#endif
-
-    while (count--) {
-	sti_putc(sticon_sti, scr_readw(s++), ypos, xpos++);
-    }
-
-    if (redraw_cursor)
-	    vbl_cursor_cnt = CURSOR_DRAW_DELAY;
-}
-
-static void sticon_cursor(struct vc_data *conp, int mode)
-{
-    unsigned short car1;
-
-    car1 = conp->vc_screenbuf[conp->vc_x + conp->vc_y * conp->vc_cols];
-    switch (mode) {
-    case CM_ERASE:
-	sti_putc(sticon_sti, car1, conp->vc_y, conp->vc_x);
-	break;
-    case CM_MOVE:
-    case CM_DRAW:
-	switch (conp->vc_cursor_type & 0x0f) {
-	case CUR_UNDERLINE:
-	case CUR_LOWER_THIRD:
-	case CUR_LOWER_HALF:
-	case CUR_TWO_THIRDS:
-	case CUR_BLOCK:
-	    sti_putc(sticon_sti, (car1 & 255) + (0 << 8) + (7 << 11),
-		     conp->vc_y, conp->vc_x);
-	    break;
-	}
-=======
 
     while (count--) {
 	sti_putc(sticon_sti, scr_readw(s++), ypos, xpos++,
@@ -220,59 +109,16 @@ static void sticon_cursor(struct vc_data *conp, bool enable)
     case CUR_BLOCK:
 	sti_putc(sticon_sti, (car1 & 255) + (0 << 8) + (7 << 11),
 		 conp->state.y, conp->state.x, font_data[conp->vc_num]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	break;
     }
 }
 
-<<<<<<< HEAD
-static int sticon_scroll(struct vc_data *conp, int t, int b, int dir, int count)
-=======
 static bool sticon_scroll(struct vc_data *conp, unsigned int t,
 		unsigned int b, enum con_scroll dir, unsigned int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct sti_struct *sti = sticon_sti;
 
     if (vga_is_gfx)
-<<<<<<< HEAD
-        return 0;
-
-    sticon_cursor(conp, CM_ERASE);
-
-    switch (dir) {
-    case SM_UP:
-	sti_bmove(sti, t + count, 0, t, 0, b - t - count, conp->vc_cols);
-	sti_clear(sti, b - count, 0, count, conp->vc_cols, conp->vc_video_erase_char);
-	break;
-
-    case SM_DOWN:
-	sti_bmove(sti, t, 0, t + count, 0, b - t - count, conp->vc_cols);
-	sti_clear(sti, t, 0, count, conp->vc_cols, conp->vc_video_erase_char);
-	break;
-    }
-
-    return 0;
-}
-
-static void sticon_bmove(struct vc_data *conp, int sy, int sx, 
-	int dy, int dx, int height, int width)
-{
-    if (!width || !height)
-	    return;
-#if 0
-    if (((sy <= p->cursor_y) && (p->cursor_y < sy+height) &&
-	(sx <= p->cursor_x) && (p->cursor_x < sx+width)) ||
-	((dy <= p->cursor_y) && (p->cursor_y < dy+height) &&
-	(dx <= p->cursor_x) && (p->cursor_x < dx+width)))
-		sticon_cursor(p, CM_ERASE /*|CM_SOFTBACK*/);
-#endif
-
-    sti_bmove(sticon_sti, sy, sx, dy, dx, height, width);
-}
-
-static void sticon_init(struct vc_data *c, int init)
-=======
         return false;
 
     sticon_cursor(conp, false);
@@ -415,144 +261,25 @@ static int sticon_font_set(struct vc_data *vc, const struct console_font *font,
 }
 
 static void sticon_init(struct vc_data *c, bool init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct sti_struct *sti = sticon_sti;
     int vc_cols, vc_rows;
 
     sti_set(sti, 0, 0, sti_onscreen_y(sti), sti_onscreen_x(sti), 0);
-<<<<<<< HEAD
-    vc_cols = sti_onscreen_x(sti) / sti->font_width;
-    vc_rows = sti_onscreen_y(sti) / sti->font_height;
-    c->vc_can_do_color = 1;
-    
-=======
     vc_cols = sti_onscreen_x(sti) / sti->font->width;
     vc_rows = sti_onscreen_y(sti) / sti->font->height;
     c->vc_can_do_color = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (init) {
 	c->vc_cols = vc_cols;
 	c->vc_rows = vc_rows;
     } else {
-<<<<<<< HEAD
-	/* vc_rows = (c->vc_rows > vc_rows) ? vc_rows : c->vc_rows; */
-	/* vc_cols = (c->vc_cols > vc_cols) ? vc_cols : c->vc_cols; */
 	vc_resize(c, vc_cols, vc_rows);
-/*	vc_resize_con(vc_rows, vc_cols, c->vc_num); */
-=======
-	vc_resize(c, vc_cols, vc_rows);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 }
 
 static void sticon_deinit(struct vc_data *c)
 {
-<<<<<<< HEAD
-}
-
-static void sticon_clear(struct vc_data *conp, int sy, int sx, int height,
-			 int width)
-{
-    if (!height || !width)
-	return;
-
-    sti_clear(sticon_sti, sy, sx, height, width, conp->vc_video_erase_char);
-}
-
-static int sticon_switch(struct vc_data *conp)
-{
-    return 1;	/* needs refreshing */
-}
-
-static int sticon_set_origin(struct vc_data *conp)
-{
-    return 0;
-}
-
-static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
-{
-    if (blank == 0) {
-	if (mode_switch)
-	    vga_is_gfx = 0;
-	return 1;
-    }
-    sticon_set_origin(c);
-    sti_clear(sticon_sti, 0,0, c->vc_rows, c->vc_cols, BLANK);
-    if (mode_switch)
-	vga_is_gfx = 1;
-    return 1;
-}
-
-static int sticon_scrolldelta(struct vc_data *conp, int lines)
-{
-    return 0;
-}
-
-static u16 *sticon_screen_pos(struct vc_data *conp, int offset)
-{
-    int line;
-    unsigned long p;
-
-    if (conp->vc_num != fg_console || !softback_lines)
-    	return (u16 *)(conp->vc_origin + offset);
-    line = offset / conp->vc_size_row;
-    if (line >= softback_lines)
-    	return (u16 *)(conp->vc_origin + offset - softback_lines * conp->vc_size_row);
-    p = softback_curr + offset;
-    if (p >= softback_end)
-    	p += softback_buf - softback_end;
-    return (u16 *)p;
-}
-
-static unsigned long sticon_getxy(struct vc_data *conp, unsigned long pos,
-				  int *px, int *py)
-{
-    int x, y;
-    unsigned long ret;
-    if (pos >= conp->vc_origin && pos < conp->vc_scr_end) {
-    	unsigned long offset = (pos - conp->vc_origin) / 2;
-    	
-    	x = offset % conp->vc_cols;
-    	y = offset / conp->vc_cols;
-    	if (conp->vc_num == fg_console)
-    	    y += softback_lines;
-    	ret = pos + (conp->vc_cols - x) * 2;
-    } else if (conp->vc_num == fg_console && softback_lines) {
-    	unsigned long offset = pos - softback_curr;
-    	
-    	if (pos < softback_curr)
-    	    offset += softback_end - softback_buf;
-    	offset /= 2;
-    	x = offset % conp->vc_cols;
-    	y = offset / conp->vc_cols;
-	ret = pos + (conp->vc_cols - x) * 2;
-	if (ret == softback_end)
-	    ret = softback_buf;
-	if (ret == softback_in)
-	    ret = conp->vc_origin;
-    } else {
-    	/* Should not happen */
-    	x = y = 0;
-    	ret = conp->vc_origin;
-    }
-    if (px) *px = x;
-    if (py) *py = y;
-    return ret;
-}
-
-static u8 sticon_build_attr(struct vc_data *conp, u8 color, u8 intens,
-			    u8 blink, u8 underline, u8 reverse, u8 italic)
-{
-    u8 attr = ((color & 0x70) >> 1) | ((color & 7));
-
-    if (reverse) {
-	color = ((color >> 3) & 0x7) | ((color & 0x7) << 3);
-    }
-
-    return attr;
-=======
     int i;
 
     /* free memory used by user font */
@@ -600,7 +327,6 @@ static u8 sticon_build_attr(struct vc_data *conp, u8 color,
 		return (fg << 3) | bg;
 	else
 		return (bg << 3) | fg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sticon_invert_region(struct vc_data *conp, u16 *p, int count)
@@ -619,36 +345,12 @@ static void sticon_invert_region(struct vc_data *conp, u16 *p, int count)
     }
 }
 
-<<<<<<< HEAD
-static void sticon_save_screen(struct vc_data *conp)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct consw sti_con = {
 	.owner			= THIS_MODULE,
 	.con_startup		= sticon_startup,
 	.con_init		= sticon_init,
 	.con_deinit		= sticon_deinit,
 	.con_clear		= sticon_clear,
-<<<<<<< HEAD
-	.con_putc		= sticon_putc,
-	.con_putcs		= sticon_putcs,
-	.con_cursor		= sticon_cursor,
-	.con_scroll		= sticon_scroll,
-	.con_bmove		= sticon_bmove,
-	.con_switch		= sticon_switch,
-	.con_blank		= sticon_blank,
-	.con_set_palette	= sticon_set_palette,
-	.con_scrolldelta	= sticon_scrolldelta,
-	.con_set_origin		= sticon_set_origin,
-	.con_save_screen	= sticon_save_screen, 
-	.con_build_attr		= sticon_build_attr,
-	.con_invert_region	= sticon_invert_region, 
-	.con_screen_pos		= sticon_screen_pos,
-	.con_getxy		= sticon_getxy,
-=======
 	.con_putcs		= sticon_putcs,
 	.con_cursor		= sticon_cursor,
 	.con_scroll		= sticon_scroll,
@@ -658,18 +360,14 @@ static const struct consw sti_con = {
 	.con_font_default	= sticon_font_default,
 	.con_build_attr		= sticon_build_attr,
 	.con_invert_region	= sticon_invert_region,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 
 static int __init sticonsole_init(void)
 {
-<<<<<<< HEAD
-=======
     int err, i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     /* already initialized ? */
     if (sticon_sti)
 	 return 0;
@@ -678,13 +376,6 @@ static int __init sticonsole_init(void)
     if (!sticon_sti)
 	return -ENODEV;
 
-<<<<<<< HEAD
-    if (conswitchp == &dummy_con) {
-	printk(KERN_INFO "sticon: Initializing STI text console.\n");
-	return take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1, 1);
-    }
-    return 0;
-=======
     for (i = 0; i < MAX_NR_CONSOLES; i++)
 	font_data[i] = STI_DEF_FONT;
 
@@ -697,7 +388,6 @@ static int __init sticonsole_init(void)
     console_unlock();
 
     return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(sticonsole_init);

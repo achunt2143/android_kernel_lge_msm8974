@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * usb_ops_linux.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -52,22 +33,12 @@ struct zero_bulkout_context {
 	void *padapter;
 };
 
-<<<<<<< HEAD
-#define usb_write_cmd r8712_usb_write_mem
-#define usb_write_cmd_complete usb_write_mem_complete
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uint r8712_usb_init_intf_priv(struct intf_priv *pintfpriv)
 {
 	pintfpriv->piorw_urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!pintfpriv->piorw_urb)
 		return _FAIL;
-<<<<<<< HEAD
-	sema_init(&(pintfpriv->io_retevt), 0);
-=======
 	init_completion(&pintfpriv->io_retevt_comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return _SUCCESS;
 }
 
@@ -161,14 +132,9 @@ static unsigned int ffaddr2pipehdl(struct dvobj_priv *pdvobj, u32 addr)
 			pipe = usb_sndbulkpipe(pusbd, 0x0d);
 			break;
 		}
-<<<<<<< HEAD
-	} else
-	   pipe = 0;
-=======
 	} else {
 		pipe = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pipe;
 }
 
@@ -181,43 +147,24 @@ static void usb_write_mem_complete(struct urb *purb)
 
 	if (purb->status != 0) {
 		if (purb->status == (-ESHUTDOWN))
-<<<<<<< HEAD
-			padapter->bDriverStopped = true;
-		else
-			padapter->bSurpriseRemoved = true;
-	}
-	up(&pintfpriv->io_retevt);
-=======
 			padapter->driver_stopped = true;
 		else
 			padapter->surprise_removed = true;
 	}
 	complete(&pintfpriv->io_retevt_comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 {
 	unsigned int pipe;
-<<<<<<< HEAD
-	int status;
-	struct _adapter *padapter = (struct _adapter *)pintfhdl->adapter;
-	struct intf_priv *pintfpriv = pintfhdl->pintfpriv;
-	struct io_queue *pio_queue = (struct io_queue *)padapter->pio_queue;
-=======
 	struct _adapter *padapter = (struct _adapter *)pintfhdl->adapter;
 	struct intf_priv *pintfpriv = pintfhdl->pintfpriv;
 	struct io_queue *pio_queue = padapter->pio_queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *)pintfpriv->intf_dev;
 	struct usb_device *pusbd = pdvobj->pusbdev;
 	struct urb *piorw_urb = pintfpriv->piorw_urb;
 
-<<<<<<< HEAD
-	if ((padapter->bDriverStopped) || (padapter->bSurpriseRemoved) ||
-=======
 	if ((padapter->driver_stopped) || (padapter->surprise_removed) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (padapter->pwrctrlpriv.pnp_bstop_trx))
 		return;
 	/* translate DMA FIFO addr to pipehandle */
@@ -227,57 +174,23 @@ void r8712_usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 	usb_fill_bulk_urb(piorw_urb, pusbd, pipe,
 			  wmem, cnt, usb_write_mem_complete,
 			  pio_queue);
-<<<<<<< HEAD
-	status = usb_submit_urb(piorw_urb, GFP_ATOMIC);
-	_down_sema(&pintfpriv->io_retevt);
-=======
 	usb_submit_urb(piorw_urb, GFP_ATOMIC);
 	wait_for_completion_interruptible(&pintfpriv->io_retevt_comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r8712_usb_read_port_complete(struct urb *purb)
 {
-<<<<<<< HEAD
-	uint isevt, *pbuf;
-=======
 	uint isevt;
 	__le32 *pbuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
 	struct _adapter *padapter = (struct _adapter *)precvbuf->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
-<<<<<<< HEAD
-	if (padapter->bSurpriseRemoved || padapter->bDriverStopped)
-=======
 	if (padapter->surprise_removed || padapter->driver_stopped)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (purb->status == 0) { /* SUCCESS */
 		if ((purb->actual_length > (MAX_RECVBUF_SZ)) ||
 		    (purb->actual_length < RXDESC_SIZE)) {
-<<<<<<< HEAD
-			precvbuf->reuse = true;
-			r8712_read_port(padapter, precvpriv->ff_hwaddr, 0,
-				  (unsigned char *)precvbuf);
-		} else {
-			precvbuf->transfer_len = purb->actual_length;
-			pbuf = (uint *)precvbuf->pbuf;
-			isevt = le32_to_cpu(*(pbuf + 1)) & 0x1ff;
-			if ((isevt & 0x1ff) == 0x1ff) {
-				r8712_rxcmd_event_hdl(padapter, pbuf);
-				precvbuf->reuse = true;
-				r8712_read_port(padapter, precvpriv->ff_hwaddr,
-						0, (unsigned char *)precvbuf);
-			} else {
-				_pkt *pskb = precvbuf->pskb;
-				skb_put(pskb, purb->actual_length);
-				skb_queue_tail(&precvpriv->rx_skb_queue, pskb);
-				tasklet_hi_schedule(&precvpriv->recv_tasklet);
-				precvbuf->pskb = NULL;
-				precvbuf->reuse = false;
-=======
 			r8712_read_port(padapter, precvpriv->ff_hwaddr, 0,
 				  (unsigned char *)precvbuf);
 		} else {
@@ -295,7 +208,6 @@ static void r8712_usb_read_port_complete(struct urb *purb)
 				skb_put(pskb, purb->actual_length);
 				skb_queue_tail(&precvpriv->rx_skb_queue, pskb);
 				tasklet_hi_schedule(&precvpriv->recv_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				r8712_read_port(padapter, precvpriv->ff_hwaddr,
 						0, (unsigned char *)precvbuf);
 			}
@@ -306,13 +218,6 @@ static void r8712_usb_read_port_complete(struct urb *purb)
 		case -EPIPE:
 		case -ENODEV:
 		case -ESHUTDOWN:
-<<<<<<< HEAD
-		case -ENOENT:
-			padapter->bDriverStopped = true;
-			break;
-		case -EPROTO:
-			precvbuf->reuse = true;
-=======
 			padapter->driver_stopped = true;
 			break;
 		case -ENOENT:
@@ -322,17 +227,11 @@ static void r8712_usb_read_port_complete(struct urb *purb)
 			}
 			fallthrough;
 		case -EPROTO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r8712_read_port(padapter, precvpriv->ff_hwaddr, 0,
 				  (unsigned char *)precvbuf);
 			break;
 		case -EINPROGRESS:
-<<<<<<< HEAD
-			printk(KERN_ERR "r8712u: ERROR: URB IS IN"
-			       " PROGRESS!/n");
-=======
 			netdev_err(padapter->pnetdev, "ERROR: URB IS IN PROGRESS!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
@@ -351,56 +250,6 @@ u32 r8712_usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
 	struct intf_priv *pintfpriv = pintfhdl->pintfpriv;
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *)pintfpriv->intf_dev;
-<<<<<<< HEAD
-	struct _adapter *adapter = (struct _adapter *)pdvobj->padapter;
-	struct recv_priv *precvpriv = &adapter->recvpriv;
-	struct usb_device *pusbd = pdvobj->pusbdev;
-
-	if (adapter->bDriverStopped || adapter->bSurpriseRemoved ||
-	    adapter->pwrctrlpriv.pnp_bstop_trx)
-		return _FAIL;
-	if ((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
-		precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue);
-		if (NULL != precvbuf->pskb)
-			precvbuf->reuse = true;
-	}
-	if (precvbuf != NULL) {
-		r8712_init_recvbuf(adapter, precvbuf);
-		/* re-assign for linux based on skb */
-		if ((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
-			precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev,
-					 MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
-			if (precvbuf->pskb == NULL)
-				return _FAIL;
-			tmpaddr = (addr_t)precvbuf->pskb->data;
-			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
-			skb_reserve(precvbuf->pskb,
-				    (RECVBUFF_ALIGN_SZ - alignment));
-			precvbuf->phead = precvbuf->pskb->head;
-			precvbuf->pdata = precvbuf->pskb->data;
-			precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
-			precvbuf->pend = skb_end_pointer(precvbuf->pskb);
-			precvbuf->pbuf = precvbuf->pskb->data;
-		} else { /* reuse skb */
-			precvbuf->phead = precvbuf->pskb->head;
-			precvbuf->pdata = precvbuf->pskb->data;
-			precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
-			precvbuf->pend = skb_end_pointer(precvbuf->pskb);
-			precvbuf->pbuf = precvbuf->pskb->data;
-			precvbuf->reuse = false;
-		}
-		purb = precvbuf->purb;
-		/* translate DMA FIFO addr to pipehandle */
-		pipe = ffaddr2pipehdl(pdvobj, addr);
-		usb_fill_bulk_urb(purb, pusbd, pipe,
-				  precvbuf->pbuf, MAX_RECVBUF_SZ,
-				  r8712_usb_read_port_complete,
-				  precvbuf);
-		err = usb_submit_urb(purb, GFP_ATOMIC);
-		if ((err) && (err != (-EPERM)))
-			ret = _FAIL;
-	} else
-=======
 	struct _adapter *adapter = pdvobj->padapter;
 	struct recv_priv *precvpriv = &adapter->recvpriv;
 	struct usb_device *pusbd = pdvobj->pusbdev;
@@ -442,7 +291,6 @@ u32 r8712_usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 			  precvbuf);
 	err = usb_submit_urb(purb, GFP_ATOMIC);
 	if ((err) && (err != (-EPERM)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = _FAIL;
 	return ret;
 }
@@ -460,22 +308,6 @@ void r8712_usb_read_port_cancel(struct _adapter *padapter)
 	}
 }
 
-<<<<<<< HEAD
-void r8712_xmit_bh(void *priv)
-{
-	int ret = false;
-	struct _adapter *padapter = (struct _adapter *)priv;
-	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-
-	if ((padapter->bDriverStopped == true) ||
-	    (padapter->bSurpriseRemoved == true)) {
-		printk(KERN_ERR "r8712u: xmit_bh => bDriverStopped"
-		       " or bSurpriseRemoved\n");
-		return;
-	}
-	ret = r8712_xmitframe_complete(padapter, pxmitpriv, NULL);
-	if (ret == false)
-=======
 void r8712_xmit_bh(struct tasklet_struct *t)
 {
 	int ret = false;
@@ -490,7 +322,6 @@ void r8712_xmit_bh(struct tasklet_struct *t)
 	}
 	ret = r8712_xmitframe_complete(padapter, pxmitpriv, NULL);
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 }
@@ -530,22 +361,14 @@ static void usb_write_port_complete(struct urb *purb)
 			break;
 		}
 	}
-<<<<<<< HEAD
-	if (padapter->bSurpriseRemoved)
-=======
 	if (padapter->surprise_removed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	switch (purb->status) {
 	case 0:
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "r8712u: pipe error: (%d)\n", purb->status);
-=======
 		netdev_warn(padapter->pnetdev,
 				"r8712u: pipe error: (%d)\n", purb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	/* not to consider tx fragment */
@@ -562,29 +385,17 @@ u32 r8712_usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 	u32 ret, bwritezero;
 	struct urb *purb = NULL;
 	struct _adapter *padapter = (struct _adapter *)pintfhdl->adapter;
-<<<<<<< HEAD
-	struct dvobj_priv *pdvobj = (struct dvobj_priv   *)&padapter->dvobjpriv;
-=======
 	struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct xmit_frame *pxmitframe = (struct xmit_frame *)wmem;
 	struct usb_device *pusbd = pdvobj->pusbdev;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 
-<<<<<<< HEAD
-	if ((padapter->bDriverStopped) || (padapter->bSurpriseRemoved) ||
-	    (padapter->pwrctrlpriv.pnp_bstop_trx))
-		return _FAIL;
-	for (i = 0; i < 8; i++) {
-		if (pxmitframe->bpending[i] == false) {
-=======
 	if ((padapter->driver_stopped) || (padapter->surprise_removed) ||
 	    (padapter->pwrctrlpriv.pnp_bstop_trx))
 		return _FAIL;
 	for (i = 0; i < 8; i++) {
 		if (!pxmitframe->bpending[i]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&pxmitpriv->lock, irqL);
 			pxmitpriv->txirp_cnt++;
 			pxmitframe->bpending[i]  = true;
@@ -623,11 +434,7 @@ u32 r8712_usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 	}
 	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
-<<<<<<< HEAD
-	if (pxmitpriv->free_xmitbuf_cnt%NR_XMITBUFF == 0)
-=======
 	if (pxmitpriv->free_xmitbuf_cnt % NR_XMITBUFF == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		purb->transfer_flags  &=  (~URB_NO_INTERRUPT);
 	else
 		purb->transfer_flags  |=  URB_NO_INTERRUPT;
@@ -674,18 +481,9 @@ int r8712_usbctrl_vendorreq(struct intf_priv *pintfpriv, u8 request, u16 value,
 	 */
 	u8 *palloc_buf, *pIo_buf;
 
-<<<<<<< HEAD
-	palloc_buf = _malloc((u32) len + 16);
-	if (palloc_buf == NULL) {
-		printk(KERN_ERR "r8712u: [%s] Can't alloc memory for vendor"
-		       " request\n", __func__);
-		return -1;
-	}
-=======
 	palloc_buf = kmalloc((u32)len + 16, GFP_ATOMIC);
 	if (!palloc_buf)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pIo_buf = palloc_buf + 16 - ((addr_t)(palloc_buf) & 0x0f);
 	if (requesttype == 0x01) {
 		pipe = usb_rcvctrlpipe(udev, 0); /* read_in */
@@ -696,17 +494,6 @@ int r8712_usbctrl_vendorreq(struct intf_priv *pintfpriv, u8 request, u16 value,
 		memcpy(pIo_buf, pdata, len);
 	}
 	status = usb_control_msg(udev, pipe, request, reqtype, value, index,
-<<<<<<< HEAD
-				 pIo_buf, len, HZ / 2);
-	if (status > 0) {  /* Success this control transfer. */
-		if (requesttype == 0x01) {
-			/* For Control read transfer, we have to copy the read
-			 * data from pIo_buf to pdata.
-			 */
-			memcpy(pdata, pIo_buf,  status);
-		}
-	}
-=======
 				 pIo_buf, len, 500);
 	if (status < 0)
 		goto free;
@@ -723,7 +510,6 @@ int r8712_usbctrl_vendorreq(struct intf_priv *pintfpriv, u8 request, u16 value,
 	}
 
 free:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(palloc_buf);
 	return status;
 }

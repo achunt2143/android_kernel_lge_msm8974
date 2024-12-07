@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/io.c
  *
@@ -15,13 +12,6 @@
  *	Syed Khasim <x0khasim@ti.com>
  *
  * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,30 +22,15 @@
 #include <asm/tlb.h>
 #include <asm/mach/map.h>
 
-<<<<<<< HEAD
-#include <plat/sram.h>
-#include <plat/sdrc.h>
-#include <plat/serial.h>
-#include <plat/omap-pm.h>
-#include <plat/omap_hwmod.h>
-#include <plat/multi.h>
-
-=======
 #include <linux/omap-dma.h>
 
 #include "omap_hwmod.h"
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 #include "voltage.h"
 #include "powerdomain.h"
 #include "clockdomain.h"
 #include "common.h"
-<<<<<<< HEAD
-#include "clock2xxx.h"
-#include "clock3xxx.h"
-#include "clock44xx.h"
-=======
 #include "clock.h"
 #include "sdrc.h"
 #include "control.h"
@@ -80,7 +55,6 @@
  * clock initializations
  */
 static int (*omap_clk_soc_init)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The machine specific code may provide the extra mapping besides the
@@ -201,26 +175,10 @@ static struct map_desc omap34xx_io_desc[] __initdata = {
 		.length		= L4_EMU_34XX_SIZE,
 		.type		= MT_DEVICE
 	},
-<<<<<<< HEAD
-#if defined(CONFIG_DEBUG_LL) &&							\
-	(defined(CONFIG_MACH_OMAP_ZOOM2) || defined(CONFIG_MACH_OMAP_ZOOM3))
-	{
-		.virtual	= ZOOM_UART_VIRT,
-		.pfn		= __phys_to_pfn(ZOOM_UART_BASE),
-		.length		= SZ_1M,
-		.type		= MT_DEVICE
-	},
-#endif
-};
-#endif
-
-#ifdef CONFIG_SOC_OMAPTI81XX
-=======
 };
 #endif
 
 #ifdef CONFIG_SOC_TI81XX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc omapti81xx_io_desc[] __initdata = {
 	{
 		.virtual	= L4_34XX_VIRT,
@@ -231,11 +189,7 @@ static struct map_desc omapti81xx_io_desc[] __initdata = {
 };
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAPAM33XX
-=======
 #if defined(CONFIG_SOC_AM33XX) || defined(CONFIG_SOC_AM43XX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc omapam33xx_io_desc[] __initdata = {
 	{
 		.virtual	= L4_34XX_VIRT,
@@ -267,55 +221,11 @@ static struct map_desc omap44xx_io_desc[] __initdata = {
 		.type		= MT_DEVICE,
 	},
 	{
-<<<<<<< HEAD
-		.virtual	= OMAP44XX_GPMC_VIRT,
-		.pfn		= __phys_to_pfn(OMAP44XX_GPMC_PHYS),
-		.length		= OMAP44XX_GPMC_SIZE,
-		.type		= MT_DEVICE,
-	},
-	{
-		.virtual	= OMAP44XX_EMIF1_VIRT,
-		.pfn		= __phys_to_pfn(OMAP44XX_EMIF1_PHYS),
-		.length		= OMAP44XX_EMIF1_SIZE,
-		.type		= MT_DEVICE,
-	},
-	{
-		.virtual	= OMAP44XX_EMIF2_VIRT,
-		.pfn		= __phys_to_pfn(OMAP44XX_EMIF2_PHYS),
-		.length		= OMAP44XX_EMIF2_SIZE,
-		.type		= MT_DEVICE,
-	},
-	{
-		.virtual	= OMAP44XX_DMM_VIRT,
-		.pfn		= __phys_to_pfn(OMAP44XX_DMM_PHYS),
-		.length		= OMAP44XX_DMM_SIZE,
-		.type		= MT_DEVICE,
-	},
-	{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.virtual	= L4_PER_44XX_VIRT,
 		.pfn		= __phys_to_pfn(L4_PER_44XX_PHYS),
 		.length		= L4_PER_44XX_SIZE,
 		.type		= MT_DEVICE,
 	},
-<<<<<<< HEAD
-	{
-		.virtual	= L4_EMU_44XX_VIRT,
-		.pfn		= __phys_to_pfn(L4_EMU_44XX_PHYS),
-		.length		= L4_EMU_44XX_SIZE,
-		.type		= MT_DEVICE,
-	},
-#ifdef CONFIG_OMAP4_ERRATA_I688
-	{
-		.virtual	= OMAP4_SRAM_VA,
-		.pfn		= __phys_to_pfn(OMAP4_SRAM_PA),
-		.length		= PAGE_SIZE,
-		.type		= MT_MEMORY_SO,
-	},
-#endif
-
-=======
 };
 #endif
 
@@ -392,16 +302,11 @@ static struct map_desc dra7xx_io_desc[] __initdata = {
 		.length		= L4_WKUP_DRA7XX_SIZE,
 		.type		= MT_DEVICE,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 
 #ifdef CONFIG_SOC_OMAP2420
-<<<<<<< HEAD
-void __init omap242x_map_common_io(void)
-=======
 void __init omap242x_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omap24xx_io_desc, ARRAY_SIZE(omap24xx_io_desc));
 	iotable_init(omap242x_io_desc, ARRAY_SIZE(omap242x_io_desc));
@@ -409,11 +314,7 @@ void __init omap242x_map_io(void)
 #endif
 
 #ifdef CONFIG_SOC_OMAP2430
-<<<<<<< HEAD
-void __init omap243x_map_common_io(void)
-=======
 void __init omap243x_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omap24xx_io_desc, ARRAY_SIZE(omap24xx_io_desc));
 	iotable_init(omap243x_io_desc, ARRAY_SIZE(omap243x_io_desc));
@@ -421,54 +322,34 @@ void __init omap243x_map_io(void)
 #endif
 
 #ifdef CONFIG_ARCH_OMAP3
-<<<<<<< HEAD
-void __init omap34xx_map_common_io(void)
-=======
 void __init omap3_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omap34xx_io_desc, ARRAY_SIZE(omap34xx_io_desc));
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAPTI81XX
-void __init omapti81xx_map_common_io(void)
-=======
 #ifdef CONFIG_SOC_TI81XX
 void __init ti81xx_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omapti81xx_io_desc, ARRAY_SIZE(omapti81xx_io_desc));
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAPAM33XX
-void __init omapam33xx_map_common_io(void)
-=======
 #if defined(CONFIG_SOC_AM33XX) || defined(CONFIG_SOC_AM43XX)
 void __init am33xx_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omapam33xx_io_desc, ARRAY_SIZE(omapam33xx_io_desc));
 }
 #endif
 
 #ifdef CONFIG_ARCH_OMAP4
-<<<<<<< HEAD
-void __init omap44xx_map_common_io(void)
-=======
 void __init omap4_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iotable_init(omap44xx_io_desc, ARRAY_SIZE(omap44xx_io_desc));
 	omap_barriers_init();
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SOC_OMAP5
 void __init omap5_map_io(void)
 {
@@ -484,7 +365,6 @@ void __init dra7xx_map_io(void)
 	omap_barriers_init();
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * omap2_init_reprogram_sdrc - reprogram SDRC timing parameters
  *
@@ -519,54 +399,12 @@ static int __init _omap2_init_reprogram_sdrc(void)
 	return v;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OMAP_HWMOD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int _set_hwmod_postsetup_state(struct omap_hwmod *oh, void *data)
 {
 	return omap_hwmod_set_postsetup_state(oh, *(u8 *)data);
 }
 
-<<<<<<< HEAD
-static void __init omap_common_init_early(void)
-{
-	omap_init_consistent_dma_size();
-}
-
-static void __init omap_hwmod_init_postsetup(void)
-{
-	u8 postsetup_state;
-
-	/* Set the default postsetup state for all hwmods */
-#ifdef CONFIG_PM_RUNTIME
-	postsetup_state = _HWMOD_STATE_IDLE;
-#else
-	postsetup_state = _HWMOD_STATE_ENABLED;
-#endif
-	omap_hwmod_for_each(_set_hwmod_postsetup_state, &postsetup_state);
-
-	/*
-	 * Set the default postsetup state for unusual modules (like
-	 * MPU WDT).
-	 *
-	 * The postsetup_state is not actually used until
-	 * omap_hwmod_late_init(), so boards that desire full watchdog
-	 * coverage of kernel initialization can reprogram the
-	 * postsetup_state between the calls to
-	 * omap2_init_common_infra() and omap_sdrc_init().
-	 *
-	 * XXX ideally we could detect whether the MPU WDT was currently
-	 * enabled here and make this conditional
-	 */
-	postsetup_state = _HWMOD_STATE_DISABLED;
-	omap_hwmod_for_each_by_class("wd_timer",
-				     _set_hwmod_postsetup_state,
-				     &postsetup_state);
-
-	omap_pm_if_early_init();
-}
-=======
 static void __init __maybe_unused omap_hwmod_init_postsetup(void)
 {
 	u8 postsetup_state = _HWMOD_STATE_DEFAULT;
@@ -579,63 +417,42 @@ static inline void omap_hwmod_init_postsetup(void)
 {
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SOC_OMAP2420
 void __init omap2420_init_early(void)
 {
-<<<<<<< HEAD
-	omap2_set_globals_242x();
-	omap2xxx_check_revision();
-	omap_common_init_early();
-=======
 	omap2_set_globals_tap(OMAP242X_CLASS, OMAP2_L4_IO_ADDRESS(0x48014000));
 	omap2_set_globals_sdrc(OMAP2_L3_IO_ADDRESS(OMAP2420_SDRC_BASE),
 			       OMAP2_L3_IO_ADDRESS(OMAP2420_SMS_BASE));
 	omap2_control_base_init();
 	omap2xxx_check_revision();
 	omap2_prcm_base_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap2xxx_voltagedomains_init();
 	omap242x_powerdomains_init();
 	omap242x_clockdomains_init();
 	omap2420_hwmod_init();
 	omap_hwmod_init_postsetup();
-<<<<<<< HEAD
-	omap2420_clk_init();
-=======
 	omap_clk_soc_init = omap2420_dt_clk_init;
 	rate_table = omap2420_rate_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 #ifdef CONFIG_SOC_OMAP2430
 void __init omap2430_init_early(void)
 {
-<<<<<<< HEAD
-	omap2_set_globals_243x();
-	omap2xxx_check_revision();
-	omap_common_init_early();
-=======
 	omap2_set_globals_tap(OMAP243X_CLASS, OMAP2_L4_IO_ADDRESS(0x4900a000));
 	omap2_set_globals_sdrc(OMAP2_L3_IO_ADDRESS(OMAP243X_SDRC_BASE),
 			       OMAP2_L3_IO_ADDRESS(OMAP243X_SMS_BASE));
 	omap2_control_base_init();
 	omap2xxx_check_revision();
 	omap2_prcm_base_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap2xxx_voltagedomains_init();
 	omap243x_powerdomains_init();
 	omap243x_clockdomains_init();
 	omap2430_hwmod_init();
 	omap_hwmod_init_postsetup();
-<<<<<<< HEAD
-	omap2430_clk_init();
-=======
 	omap_clk_soc_init = omap2430_dt_clk_init;
 	rate_table = omap2430_rate_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -644,14 +461,6 @@ void __init omap2430_init_early(void)
  * same machine_id for 34xx and 36xx beagle.. Will get fixed with DT.
  */
 #ifdef CONFIG_ARCH_OMAP3
-<<<<<<< HEAD
-void __init omap3_init_early(void)
-{
-	omap2_set_globals_3xxx();
-	omap3xxx_check_revision();
-	omap3xxx_check_features();
-	omap_common_init_early();
-=======
 static void __init omap3_init_early(void)
 {
 	omap2_set_globals_tap(OMAP343X_CLASS, OMAP2_L4_IO_ADDRESS(0x4830A000));
@@ -661,61 +470,29 @@ static void __init omap3_init_early(void)
 	omap3xxx_check_revision();
 	omap3xxx_check_features();
 	omap2_prcm_base_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap3xxx_voltagedomains_init();
 	omap3xxx_powerdomains_init();
 	omap3xxx_clockdomains_init();
 	omap3xxx_hwmod_init();
 	omap_hwmod_init_postsetup();
-<<<<<<< HEAD
-	omap3xxx_clk_init();
-=======
 	omap_secure_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init omap3430_init_early(void)
 {
 	omap3_init_early();
-<<<<<<< HEAD
-}
-
-void __init omap35xx_init_early(void)
-{
-	omap3_init_early();
-=======
 	omap_clk_soc_init = omap3430_dt_clk_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init omap3630_init_early(void)
 {
 	omap3_init_early();
-<<<<<<< HEAD
-=======
 	omap_clk_soc_init = omap3630_dt_clk_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init am35xx_init_early(void)
 {
 	omap3_init_early();
-<<<<<<< HEAD
-}
-
-void __init ti81xx_init_early(void)
-{
-	omap2_set_globals_ti81xx();
-	omap3xxx_check_revision();
-	ti81xx_check_features();
-	omap_common_init_early();
-	omap3xxx_voltagedomains_init();
-	omap3xxx_powerdomains_init();
-	omap3xxx_clockdomains_init();
-	omap3xxx_hwmod_init();
-	omap_hwmod_init_postsetup();
-	omap3xxx_clk_init();
-=======
 	omap_clk_soc_init = am35xx_dt_clk_init;
 }
 
@@ -806,28 +583,12 @@ void __init am43xx_init_early(void)
 void __init am43xx_init_late(void)
 {
 	omap_pm_soc_init = amx3_common_pm_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 #ifdef CONFIG_ARCH_OMAP4
 void __init omap4430_init_early(void)
 {
-<<<<<<< HEAD
-	omap2_set_globals_443x();
-	omap4xxx_check_revision();
-	omap4xxx_check_features();
-	omap_common_init_early();
-	omap44xx_voltagedomains_init();
-	omap44xx_powerdomains_init();
-	omap44xx_clockdomains_init();
-	omap44xx_hwmod_init();
-	omap_hwmod_init_postsetup();
-	omap4xxx_clk_init();
-}
-#endif
-
-=======
 	omap2_set_globals_tap(OMAP443X_CLASS,
 			      OMAP2_L4_IO_ADDRESS(OMAP443X_SCM_BASE));
 	omap2_set_globals_prcm_mpu(OMAP2_L4_IO_ADDRESS(OMAP4430_PRCM_MPU_BASE));
@@ -900,7 +661,6 @@ void __init dra7xx_init_late(void)
 #endif
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init omap_sdrc_init(struct omap_sdrc_params *sdrc_cs0,
 				      struct omap_sdrc_params *sdrc_cs1)
 {
@@ -911,8 +671,6 @@ void __init omap_sdrc_init(struct omap_sdrc_params *sdrc_cs0,
 		_omap2_init_reprogram_sdrc();
 	}
 }
-<<<<<<< HEAD
-=======
 
 int __init omap_clk_init(void)
 {
@@ -943,4 +701,3 @@ int __init omap_clk_init(void)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

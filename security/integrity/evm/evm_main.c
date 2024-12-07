@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005-2010 IBM Corporation
  *
@@ -9,23 +6,6 @@
  * Mimi Zohar <zohar@us.ibm.com>
  * Kylene Hall <kjhall@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
- * File: evm_main.c
- *	implements evm_inode_setxattr, evm_inode_post_setxattr,
- *	evm_inode_removexattr, and evm_verifyxattr
- */
-
-#include <linux/module.h>
-#include <linux/crypto.h>
-#include <linux/xattr.h>
-#include <linux/integrity.h>
-#include <linux/evm.h>
-#include <crypto/hash.h>
-=======
  * File: evm_main.c
  *	implements evm_inode_setxattr, evm_inode_post_setxattr,
  *	evm_inode_removexattr, evm_verifyxattr, and evm_inode_set_acl.
@@ -45,28 +25,10 @@
 #include <crypto/hash.h>
 #include <crypto/hash_info.h>
 #include <crypto/utils.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "evm.h"
 
 int evm_initialized;
 
-<<<<<<< HEAD
-char *evm_hmac = "hmac(sha1)";
-char *evm_hash = "sha1";
-
-char *evm_config_xattrnames[] = {
-#ifdef CONFIG_SECURITY_SELINUX
-	XATTR_NAME_SELINUX,
-#endif
-#ifdef CONFIG_SECURITY_SMACK
-	XATTR_NAME_SMACK,
-#endif
-	XATTR_NAME_CAPS,
-	NULL
-};
-
-static int evm_fixmode;
-=======
 static const char * const integrity_status_msg[] = {
 	"pass", "pass_immutable", "fail", "fail_immutable", "no_label",
 	"no_xattrs", "unknown"
@@ -111,29 +73,10 @@ static struct xattr_list evm_config_default_xattrnames[] = {
 LIST_HEAD(evm_config_xattrnames);
 
 static int evm_fixmode __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init evm_set_fixmode(char *str)
 {
 	if (strncmp(str, "fix", 3) == 0)
 		evm_fixmode = 1;
-<<<<<<< HEAD
-	return 0;
-}
-__setup("evm=", evm_set_fixmode);
-
-static int evm_find_protected_xattrs(struct dentry *dentry)
-{
-	struct inode *inode = dentry->d_inode;
-	char **xattr;
-	int error;
-	int count = 0;
-
-	if (!inode->i_op || !inode->i_op->getxattr)
-		return -EOPNOTSUPP;
-
-	for (xattr = evm_config_xattrnames; *xattr != NULL; xattr++) {
-		error = inode->i_op->getxattr(dentry, *xattr, NULL, 0);
-=======
 	else
 		pr_err("invalid \"%s\" mode", str);
 
@@ -197,7 +140,6 @@ static int evm_find_protected_xattrs(struct dentry *dentry)
 
 	list_for_each_entry_lockless(xattr, &evm_config_xattrnames, list) {
 		error = __vfs_getxattr(dentry, inode, xattr->name, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error < 0) {
 			if (error == -ENODATA)
 				continue;
@@ -209,8 +151,6 @@ static int evm_find_protected_xattrs(struct dentry *dentry)
 	return count;
 }
 
-<<<<<<< HEAD
-=======
 static int is_unsupported_fs(struct dentry *dentry)
 {
 	struct inode *inode = d_backing_inode(dentry);
@@ -222,7 +162,6 @@ static int is_unsupported_fs(struct dentry *dentry)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * evm_verify_hmac - calculate and compare the HMAC with the EVM xattr
  *
@@ -239,28 +178,6 @@ static int is_unsupported_fs(struct dentry *dentry)
 static enum integrity_status evm_verify_hmac(struct dentry *dentry,
 					     const char *xattr_name,
 					     char *xattr_value,
-<<<<<<< HEAD
-					     size_t xattr_value_len,
-					     struct integrity_iint_cache *iint)
-{
-	struct evm_ima_xattr_data *xattr_data = NULL;
-	struct evm_ima_xattr_data calc;
-	enum integrity_status evm_status = INTEGRITY_PASS;
-	int rc, xattr_len;
-
-	if (iint && iint->evm_status == INTEGRITY_PASS)
-		return iint->evm_status;
-
-	/* if status is not PASS, try to check again - against -ENOMEM */
-
-	/* first need to know the sig type */
-	rc = vfs_getxattr_alloc(dentry, XATTR_NAME_EVM, (char **)&xattr_data, 0,
-				GFP_NOFS);
-	if (rc <= 0) {
-		if (rc == 0)
-			evm_status = INTEGRITY_FAIL; /* empty */
-		else if (rc == -ENODATA) {
-=======
 					     size_t xattr_value_len)
 {
 	struct evm_ima_xattr_data *xattr_data = NULL;
@@ -286,53 +203,22 @@ static enum integrity_status evm_verify_hmac(struct dentry *dentry,
 	if (rc <= 0) {
 		evm_status = INTEGRITY_FAIL;
 		if (rc == -ENODATA) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = evm_find_protected_xattrs(dentry);
 			if (rc > 0)
 				evm_status = INTEGRITY_NOLABEL;
 			else if (rc == 0)
 				evm_status = INTEGRITY_NOXATTRS; /* new file */
-<<<<<<< HEAD
-=======
 		} else if (rc == -EOPNOTSUPP) {
 			evm_status = INTEGRITY_UNKNOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
 
-<<<<<<< HEAD
-	xattr_len = rc - 1;
-=======
 	xattr_len = rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check value type */
 	switch (xattr_data->type) {
 	case EVM_XATTR_HMAC:
-<<<<<<< HEAD
-		rc = evm_calc_hmac(dentry, xattr_name, xattr_value,
-				   xattr_value_len, calc.digest);
-		if (rc)
-			break;
-		rc = memcmp(xattr_data->digest, calc.digest,
-			    sizeof(calc.digest));
-		if (rc)
-			rc = -EINVAL;
-		break;
-	case EVM_IMA_XATTR_DIGSIG:
-		rc = evm_calc_hash(dentry, xattr_name, xattr_value,
-				xattr_value_len, calc.digest);
-		if (rc)
-			break;
-		rc = integrity_digsig_verify(INTEGRITY_KEYRING_EVM,
-					xattr_data->digest, xattr_len,
-					calc.digest, sizeof(calc.digest));
-		if (!rc) {
-			/* we probably want to replace rsa with hmac here */
-			evm_update_evmxattr(dentry, xattr_name, xattr_value,
-				   xattr_value_len);
-=======
 		if (xattr_len != sizeof(struct evm_xattr)) {
 			evm_status = INTEGRITY_FAIL;
 			goto out;
@@ -379,7 +265,6 @@ static enum integrity_status evm_verify_hmac(struct dentry *dentry,
 						    xattr_value,
 						    xattr_value_len);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -387,11 +272,6 @@ static enum integrity_status evm_verify_hmac(struct dentry *dentry,
 		break;
 	}
 
-<<<<<<< HEAD
-	if (rc)
-		evm_status = (rc == -ENODATA) ?
-				INTEGRITY_NOXATTRS : INTEGRITY_FAIL;
-=======
 	if (rc) {
 		if (rc == -ENODATA)
 			evm_status = INTEGRITY_NOXATTRS;
@@ -402,7 +282,6 @@ static enum integrity_status evm_verify_hmac(struct dentry *dentry,
 	}
 	pr_debug("digest: (%d) [%*phN]\n", digest.hdr.length, digest.hdr.length,
 		  digest.digest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (iint)
 		iint->evm_status = evm_status;
@@ -410,18 +289,6 @@ out:
 	return evm_status;
 }
 
-<<<<<<< HEAD
-static int evm_protected_xattr(const char *req_xattr_name)
-{
-	char **xattrname;
-	int namelen;
-	int found = 0;
-
-	namelen = strlen(req_xattr_name);
-	for (xattrname = evm_config_xattrnames; *xattrname != NULL; xattrname++) {
-		if ((strlen(*xattrname) == namelen)
-		    && (strncmp(req_xattr_name, *xattrname, namelen) == 0)) {
-=======
 static int evm_protected_xattr_common(const char *req_xattr_name,
 				      bool all_xattrs)
 {
@@ -436,26 +303,16 @@ static int evm_protected_xattr_common(const char *req_xattr_name,
 
 		if ((strlen(xattr->name) == namelen)
 		    && (strncmp(req_xattr_name, xattr->name, namelen) == 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			found = 1;
 			break;
 		}
 		if (strncmp(req_xattr_name,
-<<<<<<< HEAD
-			    *xattrname + XATTR_SECURITY_PREFIX_LEN,
-=======
 			    xattr->name + XATTR_SECURITY_PREFIX_LEN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    strlen(req_xattr_name)) == 0) {
 			found = 1;
 			break;
 		}
 	}
-<<<<<<< HEAD
-	return found;
-}
-
-=======
 
 	return found;
 }
@@ -538,7 +395,6 @@ int evm_read_protected_xattrs(struct dentry *dentry, u8 *buffer,
 	return total_size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * evm_verifyxattr - verify the integrity of the requested xattr
  * @dentry: object of the verify xattr
@@ -557,21 +413,6 @@ int evm_read_protected_xattrs(struct dentry *dentry, u8 *buffer,
  */
 enum integrity_status evm_verifyxattr(struct dentry *dentry,
 				      const char *xattr_name,
-<<<<<<< HEAD
-				      void *xattr_value, size_t xattr_value_len,
-				      struct integrity_iint_cache *iint)
-{
-	if (!evm_initialized || !evm_protected_xattr(xattr_name))
-		return INTEGRITY_UNKNOWN;
-
-	if (!iint) {
-		iint = integrity_iint_find(dentry->d_inode);
-		if (!iint)
-			return INTEGRITY_UNKNOWN;
-	}
-	return evm_verify_hmac(dentry, xattr_name, xattr_value,
-				 xattr_value_len, iint);
-=======
 				      void *xattr_value, size_t xattr_value_len)
 {
 	if (!evm_key_loaded() || !evm_protected_xattr(xattr_name))
@@ -582,7 +423,6 @@ enum integrity_status evm_verifyxattr(struct dentry *dentry,
 
 	return evm_verify_hmac(dentry, xattr_name, xattr_value,
 				 xattr_value_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(evm_verifyxattr);
 
@@ -595,13 +435,6 @@ EXPORT_SYMBOL_GPL(evm_verifyxattr);
  */
 static enum integrity_status evm_verify_current_integrity(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-
-	if (!evm_initialized || !S_ISREG(inode->i_mode) || evm_fixmode)
-		return 0;
-	return evm_verify_hmac(dentry, NULL, NULL, 0, NULL);
-=======
 	struct inode *inode = d_backing_inode(dentry);
 
 	if (!evm_key_loaded() || !S_ISREG(inode->i_mode) || evm_fixmode)
@@ -643,7 +476,6 @@ static int evm_xattr_change(struct mnt_idmap *idmap,
 out:
 	kfree(xattr_data);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -656,16 +488,10 @@ out:
  * affect security.evm.  An interesting side affect of writing posix xattr
  * acls is their modifying of the i_mode, which is included in security.evm.
  * For posix xattr acls only, permit security.evm, even if it currently
-<<<<<<< HEAD
- * doesn't exist, to be updated.
- */
-static int evm_protect_xattr(struct dentry *dentry, const char *xattr_name,
-=======
  * doesn't exist, to be updated unless the EVM signature is immutable.
  */
 static int evm_protect_xattr(struct mnt_idmap *idmap,
 			     struct dentry *dentry, const char *xattr_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     const void *xattr_value, size_t xattr_value_len)
 {
 	enum integrity_status evm_status;
@@ -673,11 +499,6 @@ static int evm_protect_xattr(struct mnt_idmap *idmap,
 	if (strcmp(xattr_name, XATTR_NAME_EVM) == 0) {
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
-<<<<<<< HEAD
-	} else if (!evm_protected_xattr(xattr_name)) {
-		if (!posix_xattr_acl(xattr_name))
-			return 0;
-=======
 		if (is_unsupported_fs(dentry))
 			return -EPERM;
 	} else if (!evm_protected_xattr(xattr_name)) {
@@ -686,16 +507,10 @@ static int evm_protect_xattr(struct mnt_idmap *idmap,
 		if (is_unsupported_fs(dentry))
 			return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		evm_status = evm_verify_current_integrity(dentry);
 		if ((evm_status == INTEGRITY_PASS) ||
 		    (evm_status == INTEGRITY_NOXATTRS))
 			return 0;
-<<<<<<< HEAD
-		return -EPERM;
-	}
-	evm_status = evm_verify_current_integrity(dentry);
-=======
 		goto out;
 	} else if (is_unsupported_fs(dentry))
 		return 0;
@@ -747,24 +562,17 @@ out:
 				    dentry->d_name.name, "appraise_metadata",
 				    integrity_status_msg[evm_status],
 				    -EPERM, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return evm_status == INTEGRITY_PASS ? 0 : -EPERM;
 }
 
 /**
  * evm_inode_setxattr - protect the EVM extended attribute
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dentry: pointer to the affected dentry
  * @xattr_name: pointer to the affected extended attribute name
  * @xattr_value: pointer to the new extended attribute value
  * @xattr_value_len: pointer to the new extended attribute value length
-<<<<<<< HEAD
-=======
  * @flags: flags to pass into filesystem operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Before allowing the 'security.evm' protected xattr to be updated,
  * verify the existing value is valid.  As only the kernel should have
@@ -772,20 +580,6 @@ out:
  * userspace from writing HMAC value.  Writing 'security.evm' requires
  * requires CAP_SYS_ADMIN privileges.
  */
-<<<<<<< HEAD
-int evm_inode_setxattr(struct dentry *dentry, const char *xattr_name,
-		       const void *xattr_value, size_t xattr_value_len)
-{
-	const struct evm_ima_xattr_data *xattr_data = xattr_value;
-
-	if (strcmp(xattr_name, XATTR_NAME_EVM) == 0) {
-		if (!xattr_value_len)
-			return -EINVAL;
-		if (xattr_data->type != EVM_IMA_XATTR_DIGSIG)
-			return -EPERM;
-	}
-	return evm_protect_xattr(dentry, xattr_name, xattr_value,
-=======
 static int evm_inode_setxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			      const char *xattr_name, const void *xattr_value,
 			      size_t xattr_value_len, int flags)
@@ -806,27 +600,18 @@ static int evm_inode_setxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			return -EPERM;
 	}
 	return evm_protect_xattr(idmap, dentry, xattr_name, xattr_value,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 xattr_value_len);
 }
 
 /**
  * evm_inode_removexattr - protect the EVM extended attribute
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dentry: pointer to the affected dentry
  * @xattr_name: pointer to the affected extended attribute name
  *
  * Removing 'security.evm' requires CAP_SYS_ADMIN privileges and that
  * the current value is valid.
  */
-<<<<<<< HEAD
-int evm_inode_removexattr(struct dentry *dentry, const char *xattr_name)
-{
-	return evm_protect_xattr(dentry, xattr_name, NULL, 0);
-=======
 static int evm_inode_removexattr(struct mnt_idmap *idmap, struct dentry *dentry,
 				 const char *xattr_name)
 {
@@ -971,7 +756,6 @@ bool evm_revalidate_status(const char *xattr_name)
 		return false;
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -980,10 +764,7 @@ bool evm_revalidate_status(const char *xattr_name)
  * @xattr_name: pointer to the affected extended attribute name
  * @xattr_value: pointer to the new extended attribute value
  * @xattr_value_len: pointer to the new extended attribute value length
-<<<<<<< HEAD
-=======
  * @flags: flags to pass into filesystem operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Update the HMAC stored in 'security.evm' to reflect the change.
  *
@@ -991,17 +772,6 @@ bool evm_revalidate_status(const char *xattr_name)
  * __vfs_setxattr_noperm().  The caller of which has taken the inode's
  * i_mutex lock.
  */
-<<<<<<< HEAD
-void evm_inode_post_setxattr(struct dentry *dentry, const char *xattr_name,
-			     const void *xattr_value, size_t xattr_value_len)
-{
-	if (!evm_initialized || (!evm_protected_xattr(xattr_name)
-				 && !posix_xattr_acl(xattr_name)))
-		return;
-
-	evm_update_evmxattr(dentry, xattr_name, xattr_value, xattr_value_len);
-	return;
-=======
 static void evm_inode_post_setxattr(struct dentry *dentry,
 				    const char *xattr_name,
 				    const void *xattr_value,
@@ -1038,7 +808,6 @@ static void evm_inode_post_set_acl(struct dentry *dentry, const char *acl_name,
 				   struct posix_acl *kacl)
 {
 	return evm_inode_post_setxattr(dentry, acl_name, NULL, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1047,20 +816,6 @@ static void evm_inode_post_set_acl(struct dentry *dentry, const char *acl_name,
  * @xattr_name: pointer to the affected extended attribute name
  *
  * Update the HMAC stored in 'security.evm' to reflect removal of the xattr.
-<<<<<<< HEAD
- */
-void evm_inode_post_removexattr(struct dentry *dentry, const char *xattr_name)
-{
-	struct inode *inode = dentry->d_inode;
-
-	if (!evm_initialized || !evm_protected_xattr(xattr_name))
-		return;
-
-	mutex_lock(&inode->i_mutex);
-	evm_update_evmxattr(dentry, xattr_name, NULL, 0);
-	mutex_unlock(&inode->i_mutex);
-	return;
-=======
  *
  * No need to take the i_mutex lock here, as this function is called from
  * vfs_removexattr() which takes the i_mutex.
@@ -1110,16 +865,10 @@ static int evm_attr_change(struct mnt_idmap *idmap,
 		return 0;
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * evm_inode_setattr - prevent updating an invalid EVM extended attribute
-<<<<<<< HEAD
- * @dentry: pointer to the affected dentry
- */
-int evm_inode_setattr(struct dentry *dentry, struct iattr *attr)
-=======
  * @idmap: idmap of the mount
  * @dentry: pointer to the affected dentry
  * @attr: iattr structure containing the new file attributes
@@ -1129,19 +878,10 @@ int evm_inode_setattr(struct dentry *dentry, struct iattr *attr)
  */
 static int evm_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			     struct iattr *attr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ia_valid = attr->ia_valid;
 	enum integrity_status evm_status;
 
-<<<<<<< HEAD
-	if (!(ia_valid & (ATTR_MODE | ATTR_UID | ATTR_GID)))
-		return 0;
-	evm_status = evm_verify_current_integrity(dentry);
-	if ((evm_status == INTEGRITY_PASS) ||
-	    (evm_status == INTEGRITY_NOXATTRS))
-		return 0;
-=======
 	/* Policy permits modification of the protected attrs even though
 	 * there's no HMAC key loaded
 	 */
@@ -1173,16 +913,12 @@ static int evm_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	integrity_audit_msg(AUDIT_INTEGRITY_METADATA, d_backing_inode(dentry),
 			    dentry->d_name.name, "appraise_metadata",
 			    integrity_status_msg[evm_status], -EPERM, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EPERM;
 }
 
 /**
  * evm_inode_post_setattr - update 'security.evm' after modifying metadata
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the idmapped mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dentry: pointer to the affected dentry
  * @ia_valid: for the UID and GID status
  *
@@ -1192,11 +928,6 @@ static int evm_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
  * This function is called from notify_change(), which expects the caller
  * to lock the inode's i_mutex.
  */
-<<<<<<< HEAD
-void evm_inode_post_setattr(struct dentry *dentry, int ia_valid)
-{
-	if (!evm_initialized)
-=======
 static void evm_inode_post_setattr(struct mnt_idmap *idmap,
 				   struct dentry *dentry, int ia_valid)
 {
@@ -1209,29 +940,10 @@ static void evm_inode_post_setattr(struct mnt_idmap *idmap,
 		return;
 
 	if (is_unsupported_fs(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (ia_valid & (ATTR_MODE | ATTR_UID | ATTR_GID))
 		evm_update_evmxattr(dentry, NULL, NULL, 0);
-<<<<<<< HEAD
-	return;
-}
-
-/*
- * evm_inode_init_security - initializes security.evm
- */
-int evm_inode_init_security(struct inode *inode,
-				 const struct xattr *lsm_xattr,
-				 struct xattr *evm_xattr)
-{
-	struct evm_ima_xattr_data *xattr_data;
-	int rc;
-
-	if (!evm_initialized || !evm_protected_xattr(lsm_xattr->name))
-		return 0;
-
-=======
 }
 
 static int evm_inode_copy_up_xattr(const char *name)
@@ -1279,28 +991,18 @@ int evm_inode_init_security(struct inode *inode, struct inode *dir,
 		  "%s: xattrs terminator is not the first non-filled slot\n",
 		  __func__);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xattr_data = kzalloc(sizeof(*xattr_data), GFP_NOFS);
 	if (!xattr_data)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	xattr_data->type = EVM_XATTR_HMAC;
-	rc = evm_init_hmac(inode, lsm_xattr, xattr_data->digest);
-=======
 	xattr_data->data.type = EVM_XATTR_HMAC;
 	rc = evm_init_hmac(inode, xattrs, xattr_data->digest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		goto out;
 
 	evm_xattr->value = xattr_data;
 	evm_xattr->value_len = sizeof(*xattr_data);
-<<<<<<< HEAD
-	evm_xattr->name = kstrdup(XATTR_EVM_SUFFIX, GFP_NOFS);
-=======
 	evm_xattr->name = XATTR_EVM_SUFFIX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	kfree(xattr_data);
@@ -1308,49 +1010,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(evm_inode_init_security);
 
-<<<<<<< HEAD
-static int __init init_evm(void)
-{
-	int error;
-
-	error = evm_init_secfs();
-	if (error < 0) {
-		printk(KERN_INFO "EVM: Error registering secfs\n");
-		goto err;
-	}
-
-	return 0;
-err:
-	return error;
-}
-
-static void __exit cleanup_evm(void)
-{
-	evm_cleanup_secfs();
-	if (hmac_tfm)
-		crypto_free_shash(hmac_tfm);
-	if (hash_tfm)
-		crypto_free_shash(hash_tfm);
-}
-
-/*
- * evm_display_config - list the EVM protected security extended attributes
- */
-static int __init evm_display_config(void)
-{
-	char **xattrname;
-
-	for (xattrname = evm_config_xattrnames; *xattrname != NULL; xattrname++)
-		printk(KERN_INFO "EVM: %s\n", *xattrname);
-	return 0;
-}
-
-pure_initcall(evm_display_config);
-late_initcall(init_evm);
-
-MODULE_DESCRIPTION("Extended Verification Module");
-MODULE_LICENSE("GPL");
-=======
 static int evm_inode_alloc_security(struct inode *inode)
 {
 	struct evm_iint_cache *iint = evm_iint_inode(inode);
@@ -1468,4 +1127,3 @@ DEFINE_LSM(evm) = {
 };
 
 late_initcall(init_evm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

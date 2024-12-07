@@ -1,26 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _AS5011_H
 #define _AS5011_H
 
 /*
  * Copyright (c) 2010, 2011 Fabien Marteau <fabien.marteau@armadeus.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
  */
 
 struct as5011_platform_data {
-	unsigned int button_gpio;
-=======
- */
-
-struct as5011_platform_data {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int axis_irq; /* irq number */
 	unsigned long axis_irqflags;
 	char xp, xn; /* threshold for x axis */

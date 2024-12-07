@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-#!/bin/sh
-
-SPATCH="`which ${SPATCH:=spatch}`"
-
-if [ "$C" = "1" -o "$C" = "2" ]; then
-    ONLINE=1
-
-# This requires Coccinelle >= 0.2.3
-#    FLAGS="-ignore_unknown_options -very_quiet"
-#    OPTIONS=$*
-
-# Workaround for Coccinelle < 0.2.3
-	FLAGS="-I $srctree/include -very_quiet"
-	shift $(( $# - 1 ))
-	OPTIONS=$1
-else
-    ONLINE=0
-    FLAGS="-very_quiet"
-    if [ "$KBUILD_EXTMOD" = "" ] ; then
-        OPTIONS="-dir $srctree"
-    else
-        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree -I $srctree/include -I $KBUILD_EXTMOD/include"
-    fi
-fi
-
-=======
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 # Linux kernel coccicheck
@@ -37,23 +10,11 @@ fi
 DIR="$(dirname $(readlink -f $0))/.."
 SPATCH="`which ${SPATCH:=spatch}`"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if [ ! -x "$SPATCH" ]; then
     echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
     exit 1
 fi
 
-<<<<<<< HEAD
-if [ "$MODE" = "" ] ; then
-    if [ "$ONLINE" = "0" ] ; then
-	echo 'You have not explicitly specified the mode to use. Using default "chain" mode.'
-	echo 'All available modes will be tried (in that order): patch, report, context, org'
-	echo 'You can specify the mode with "make coccicheck MODE=<mode>"'
-    fi
-    MODE="chain"
-elif [ "$MODE" = "report" -o "$MODE" = "org" ] ; then
-    FLAGS="$FLAGS -no_show_diff"
-=======
 SPATCH_VERSION=$($SPATCH --version | head -1 | awk '{print $3}')
 
 USE_JOBS="no"
@@ -168,7 +129,6 @@ if [ "$MODE" = "chain" ] ; then
     fi
 elif [ "$MODE" = "report" -o "$MODE" = "org" ] ; then
     FLAGS="--no-show-diff $FLAGS"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
 
 if [ "$ONLINE" = "0" ] ; then
@@ -178,20 +138,6 @@ if [ "$ONLINE" = "0" ] ; then
     echo ''
 fi
 
-<<<<<<< HEAD
-coccinelle () {
-    COCCI="$1"
-
-    OPT=`grep "Option" $COCCI | cut -d':' -f2`
-
-#   The option '-parse_cocci' can be used to syntactically check the SmPL files.
-#
-#    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
-
-    if [ "$ONLINE" = "0" ] ; then
-
-	FILE=`echo $COCCI | sed "s|$srctree/||"`
-=======
 run_cmd_parmap() {
 	if [ $VERBOSE -ne 0 ] ; then
 		echo "Running ($NPROC in parallel): $@"
@@ -265,7 +211,6 @@ coccinelle () {
     if [ $VERBOSE -ne 0 -a $ONLINE -eq 0 ] ; then
 
 	FILE=${COCCI#$srctree/}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	echo "Processing `basename $COCCI`"
 	echo "with option(s) \"$OPT\""
@@ -299,14 +244,6 @@ coccinelle () {
     fi
 
     if [ "$MODE" = "chain" ] ; then
-<<<<<<< HEAD
-	$SPATCH -D patch   $FLAGS -sp_file $COCCI $OPT $OPTIONS               || \
-	$SPATCH -D report  $FLAGS -sp_file $COCCI $OPT $OPTIONS -no_show_diff || \
-	$SPATCH -D context $FLAGS -sp_file $COCCI $OPT $OPTIONS               || \
-	$SPATCH -D org     $FLAGS -sp_file $COCCI $OPT $OPTIONS -no_show_diff || exit 1
-    else
-	$SPATCH -D $MODE   $FLAGS -sp_file $COCCI $OPT $OPTIONS || exit 1
-=======
 	run_cmd $SPATCH -D patch   \
 		$FLAGS --cocci-file $COCCI $OPT $OPTIONS               || \
 	run_cmd $SPATCH -D report  \
@@ -322,13 +259,10 @@ coccinelle () {
 		$FLAGS --cocci-file $COCCI $OPT $OPTIONS || exit 1
     else
 	run_cmd $SPATCH -D $MODE   $FLAGS --cocci-file $COCCI $OPT $OPTIONS || exit 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     fi
 
 }
 
-<<<<<<< HEAD
-=======
 if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
 	if [ -f $DEBUG_FILE ]; then
 		echo "Debug file $DEBUG_FILE exists, bailing"
@@ -338,7 +272,6 @@ else
 	DEBUG_FILE="/dev/null"
 fi
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if [ "$COCCI" = "" ] ; then
     for f in `find $srctree/scripts/coccinelle/ -name '*.cocci' -type f | sort`; do
 	coccinelle $f

@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-
-#include <asm/bootparam.h>
-
-
-/* ResetVector
- */
-	.section        .ResetVector.text, "ax"
-	.global         _ResetVector
-_ResetVector:
-	_j reset
-	.align 4
-RomInitAddr:
-	.word 0xd0001000
-RomBootParam:
-	.word _bootparam
-reset:
-	l32r    a0, RomInitAddr
-	l32r	a2, RomBootParam
-	movi	a3, 0
-	movi	a4, 0
-	jx      a0
-
-	.align 4
-	.section .bootstrap.data, "aw"
-
-	.globl _bootparam
-=======
 /*
  * arch/xtensa/boot/boot-elf/bootstrap.S
  *
@@ -59,7 +31,6 @@ _ResetVector:
 
 #ifdef CONFIG_PARSE_BOOTPARAM
 	.align 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _bootparam:
 	.short	BP_TAG_FIRST
 	.short	4
@@ -67,8 +38,6 @@ _bootparam:
 	.short	BP_TAG_LAST
 	.short	0
 	.long	0
-<<<<<<< HEAD
-=======
 #endif
 
 	.align  4
@@ -108,4 +77,3 @@ reset:
 	jx      a0
 
 	.end    no-absolute-literals
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

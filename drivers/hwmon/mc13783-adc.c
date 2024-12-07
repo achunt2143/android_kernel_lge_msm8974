@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the ADC on Freescale Semiconductor MC13783 and MC13892 PMICs.
  *
  * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
  * Copyright (C) 2009 Sascha Hauer, Pengutronix
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mfd/mc13xxx.h>
@@ -30,10 +11,7 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/mod_devicetable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hwmon.h>
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -48,19 +26,11 @@
 struct mc13783_adc_priv {
 	struct mc13xxx *mc13xxx;
 	struct device *hwmon_dev;
-<<<<<<< HEAD
-	char name[10];
-};
-
-static ssize_t mc13783_adc_show_name(struct device *dev, struct device_attribute
-			      *devattr, char *buf)
-=======
 	char name[PLATFORM_NAME_SIZE];
 };
 
 static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mc13783_adc_priv *priv = dev_get_drvdata(dev);
 
@@ -82,13 +52,10 @@ static int mc13783_adc_read(struct device *dev,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-=======
 	/* ADIN7 subchannels */
 	if (channel >= 16)
 		channel = 7;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	channel &= 0x7;
 
 	*val = (sample[channel % 4] >> (channel > 3 ? 14 : 2)) & 0x3ff;
@@ -96,14 +63,9 @@ static int mc13783_adc_read(struct device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t mc13783_adc_read_bp(struct device *dev,
-		struct device_attribute *devattr, char *buf)
-=======
 static ssize_t mc13783_adc_bp_show(struct device *dev,
 				   struct device_attribute *devattr,
 				   char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned val;
 	struct platform_device *pdev = to_platform_device(dev);
@@ -125,14 +87,9 @@ static ssize_t mc13783_adc_bp_show(struct device *dev,
 	return sprintf(buf, "%u\n", val);
 }
 
-<<<<<<< HEAD
-static ssize_t mc13783_adc_read_gp(struct device *dev,
-		struct device_attribute *devattr, char *buf)
-=======
 static ssize_t mc13783_adc_gp_show(struct device *dev,
 				   struct device_attribute *devattr,
 				   char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned val;
 	int ret = mc13783_adc_read(dev, devattr, &val);
@@ -149,21 +106,6 @@ static ssize_t mc13783_adc_gp_show(struct device *dev,
 	return sprintf(buf, "%u\n", val);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO, mc13783_adc_show_name, NULL);
-static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, mc13783_adc_read_bp, NULL, 2);
-static SENSOR_DEVICE_ATTR(in5_input, S_IRUGO, mc13783_adc_read_gp, NULL, 5);
-static SENSOR_DEVICE_ATTR(in6_input, S_IRUGO, mc13783_adc_read_gp, NULL, 6);
-static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, mc13783_adc_read_gp, NULL, 7);
-static SENSOR_DEVICE_ATTR(in8_input, S_IRUGO, mc13783_adc_read_gp, NULL, 8);
-static SENSOR_DEVICE_ATTR(in9_input, S_IRUGO, mc13783_adc_read_gp, NULL, 9);
-static SENSOR_DEVICE_ATTR(in10_input, S_IRUGO, mc13783_adc_read_gp, NULL, 10);
-static SENSOR_DEVICE_ATTR(in11_input, S_IRUGO, mc13783_adc_read_gp, NULL, 11);
-static SENSOR_DEVICE_ATTR(in12_input, S_IRUGO, mc13783_adc_read_gp, NULL, 12);
-static SENSOR_DEVICE_ATTR(in13_input, S_IRUGO, mc13783_adc_read_gp, NULL, 13);
-static SENSOR_DEVICE_ATTR(in14_input, S_IRUGO, mc13783_adc_read_gp, NULL, 14);
-static SENSOR_DEVICE_ATTR(in15_input, S_IRUGO, mc13783_adc_read_gp, NULL, 15);
-=======
 static ssize_t mc13783_adc_uid_show(struct device *dev,
 				    struct device_attribute *devattr,
 				    char *buf)
@@ -232,7 +174,6 @@ static SENSOR_DEVICE_ATTR_RO(in14_input, mc13783_adc_gp, 14);
 static SENSOR_DEVICE_ATTR_RO(in15_input, mc13783_adc_gp, 15);
 static SENSOR_DEVICE_ATTR_RO(in16_input, mc13783_adc_uid, 16);
 static SENSOR_DEVICE_ATTR_RO(temp1_input, mc13783_adc_temp, 17);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *mc13783_attr_base[] = {
 	&dev_attr_name.attr,
@@ -240,11 +181,8 @@ static struct attribute *mc13783_attr_base[] = {
 	&sensor_dev_attr_in5_input.dev_attr.attr,
 	&sensor_dev_attr_in6_input.dev_attr.attr,
 	&sensor_dev_attr_in7_input.dev_attr.attr,
-<<<<<<< HEAD
-=======
 	&sensor_dev_attr_in16_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -293,11 +231,7 @@ static int __init mc13783_adc_probe(struct platform_device *pdev)
 	const struct platform_device_id *id = platform_get_device_id(pdev);
 	char *dash;
 
-<<<<<<< HEAD
-	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-=======
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv)
 		return -ENOMEM;
 
@@ -312,11 +246,7 @@ static int __init mc13783_adc_probe(struct platform_device *pdev)
 	/* Register sysfs hooks */
 	ret = sysfs_create_group(&pdev->dev.kobj, &mc13783_group_base);
 	if (ret)
-<<<<<<< HEAD
-		goto out_err_create_base;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (id->driver_data & MC13783_ADC_16CHANS) {
 		ret = sysfs_create_group(&pdev->dev.kobj,
@@ -352,22 +282,10 @@ out_err_create_ts:
 out_err_create_16chans:
 
 	sysfs_remove_group(&pdev->dev.kobj, &mc13783_group_base);
-<<<<<<< HEAD
-out_err_create_base:
-
-	platform_set_drvdata(pdev, NULL);
-	kfree(priv);
-
-	return ret;
-}
-
-static int __devexit mc13783_adc_remove(struct platform_device *pdev)
-=======
 	return ret;
 }
 
 static void mc13783_adc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mc13783_adc_priv *priv = platform_get_drvdata(pdev);
 	kernel_ulong_t driver_data = platform_get_device_id(pdev)->driver_data;
@@ -381,14 +299,6 @@ static void mc13783_adc_remove(struct platform_device *pdev)
 		sysfs_remove_group(&pdev->dev.kobj, &mc13783_group_16chans);
 
 	sysfs_remove_group(&pdev->dev.kobj, &mc13783_group_base);
-<<<<<<< HEAD
-
-	platform_set_drvdata(pdev, NULL);
-	kfree(priv);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct platform_device_id mc13783_adc_idtable[] = {
@@ -405,35 +315,14 @@ static const struct platform_device_id mc13783_adc_idtable[] = {
 MODULE_DEVICE_TABLE(platform, mc13783_adc_idtable);
 
 static struct platform_driver mc13783_adc_driver = {
-<<<<<<< HEAD
-	.remove		= __devexit_p(mc13783_adc_remove),
-	.driver		= {
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= mc13783_adc_remove,
 	.driver		= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= DRIVER_NAME,
 	},
 	.id_table	= mc13783_adc_idtable,
 };
 
-<<<<<<< HEAD
-static int __init mc13783_adc_init(void)
-{
-	return platform_driver_probe(&mc13783_adc_driver, mc13783_adc_probe);
-}
-
-static void __exit mc13783_adc_exit(void)
-{
-	platform_driver_unregister(&mc13783_adc_driver);
-}
-
-module_init(mc13783_adc_init);
-module_exit(mc13783_adc_exit);
-=======
 module_platform_driver_probe(mc13783_adc_driver, mc13783_adc_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("MC13783 ADC driver");
 MODULE_AUTHOR("Luotao Fu <l.fu@pengutronix.de>");

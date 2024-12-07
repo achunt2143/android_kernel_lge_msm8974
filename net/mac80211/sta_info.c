@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2002-2005, Instant802 Networks, Inc.
@@ -14,7 +5,6 @@
  * Copyright 2013-2014  Intel Mobile Communications GmbH
  * Copyright (C) 2015 - 2017 Intel Deutschland GmbH
  * Copyright (C) 2018-2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -28,10 +18,7 @@
 #include <linux/timer.h>
 #include <linux/rtnetlink.h>
 
-<<<<<<< HEAD
-=======
 #include <net/codel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
 #include "driver-ops.h"
@@ -53,11 +40,7 @@
  * either sta_info_insert() or sta_info_insert_rcu(); only in the latter
  * case (which acquires an rcu read section but must not be called from
  * within one) will the pointer still be valid after the call. Note that
-<<<<<<< HEAD
- * the caller may not do much with the STA info before inserting it, in
-=======
  * the caller may not do much with the STA info before inserting it; in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * particular, it may not start any mesh peer link management or add
  * encryption keys.
  *
@@ -75,44 +58,12 @@
  * In order to remove a STA info structure, various sta_info_destroy_*()
  * calls are available.
  *
-<<<<<<< HEAD
- * There is no concept of ownership on a STA entry, each structure is
-=======
  * There is no concept of ownership on a STA entry; each structure is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * owned by the global hash table/list until it is removed. All users of
  * the structure need to be RCU protected so that the structure won't be
  * freed before they are done using it.
  */
 
-<<<<<<< HEAD
-/* Caller must hold local->sta_mtx */
-static int sta_info_hash_del(struct ieee80211_local *local,
-			     struct sta_info *sta)
-{
-	struct sta_info *s;
-
-	s = rcu_dereference_protected(local->sta_hash[STA_HASH(sta->sta.addr)],
-				      lockdep_is_held(&local->sta_mtx));
-	if (!s)
-		return -ENOENT;
-	if (s == sta) {
-		rcu_assign_pointer(local->sta_hash[STA_HASH(sta->sta.addr)],
-				   s->hnext);
-		return 0;
-	}
-
-	while (rcu_access_pointer(s->hnext) &&
-	       rcu_access_pointer(s->hnext) != sta)
-		s = rcu_dereference_protected(s->hnext,
-					lockdep_is_held(&local->sta_mtx));
-	if (rcu_access_pointer(s->hnext)) {
-		rcu_assign_pointer(s->hnext, sta->hnext);
-		return 0;
-	}
-
-	return -ENOENT;
-=======
 struct sta_link_alloc {
 	struct link_sta_info info;
 	struct ieee80211_link_sta sta;
@@ -247,7 +198,6 @@ struct rhlist_head *sta_info_hash_lookup(struct ieee80211_local *local,
 					 const u8 *addr)
 {
 	return rhltable_lookup(&local->sta_hash, addr, sta_rht_params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* protected by RCU */
@@ -255,20 +205,6 @@ struct sta_info *sta_info_get(struct ieee80211_sub_if_data *sdata,
 			      const u8 *addr)
 {
 	struct ieee80211_local *local = sdata->local;
-<<<<<<< HEAD
-	struct sta_info *sta;
-
-	sta = rcu_dereference_check(local->sta_hash[STA_HASH(addr)],
-				    lockdep_is_held(&local->sta_mtx));
-	while (sta) {
-		if (sta->sdata == sdata &&
-		    compare_ether_addr(sta->sta.addr, addr) == 0)
-			break;
-		sta = rcu_dereference_check(sta->hnext,
-					    lockdep_is_held(&local->sta_mtx));
-	}
-	return sta;
-=======
 	struct rhlist_head *tmp;
 	struct sta_info *sta;
 
@@ -284,7 +220,6 @@ struct sta_info *sta_info_get(struct ieee80211_sub_if_data *sdata,
 	}
 	rcu_read_unlock();
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -295,21 +230,6 @@ struct sta_info *sta_info_get_bss(struct ieee80211_sub_if_data *sdata,
 				  const u8 *addr)
 {
 	struct ieee80211_local *local = sdata->local;
-<<<<<<< HEAD
-	struct sta_info *sta;
-
-	sta = rcu_dereference_check(local->sta_hash[STA_HASH(addr)],
-				    lockdep_is_held(&local->sta_mtx));
-	while (sta) {
-		if ((sta->sdata == sdata ||
-		     (sta->sdata->bss && sta->sdata->bss == sdata->bss)) &&
-		    compare_ether_addr(sta->sta.addr, addr) == 0)
-			break;
-		sta = rcu_dereference_check(sta->hnext,
-					    lockdep_is_held(&local->sta_mtx));
-	}
-	return sta;
-=======
 	struct rhlist_head *tmp;
 	struct sta_info *sta;
 
@@ -408,7 +328,6 @@ struct sta_info *sta_info_get_by_addrs(struct ieee80211_local *local,
 	}
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sta_info *sta_info_get_by_idx(struct ieee80211_sub_if_data *sdata,
@@ -418,12 +337,8 @@ struct sta_info *sta_info_get_by_idx(struct ieee80211_sub_if_data *sdata,
 	struct sta_info *sta;
 	int i = 0;
 
-<<<<<<< HEAD
-	list_for_each_entry_rcu(sta, &local->sta_list, list) {
-=======
 	list_for_each_entry_rcu(sta, &local->sta_list, list,
 				lockdep_is_held(&local->hw.wiphy->mtx)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sdata != sta->sdata)
 			continue;
 		if (i < idx) {
@@ -436,8 +351,6 @@ struct sta_info *sta_info_get_by_idx(struct ieee80211_sub_if_data *sdata,
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void sta_info_free_link(struct link_sta_info *link_sta)
 {
 	free_percpu(link_sta->pcpu_rx_stats);
@@ -475,7 +388,6 @@ static void sta_remove_link(struct sta_info *sta, unsigned int link_id,
 	ieee80211_sta_recalc_aggregates(&sta->sta);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sta_info_free - free STA
  *
@@ -489,32 +401,6 @@ static void sta_remove_link(struct sta_info *sta, unsigned int link_id,
  */
 void sta_info_free(struct ieee80211_local *local, struct sta_info *sta)
 {
-<<<<<<< HEAD
-	if (sta->rate_ctrl)
-		rate_control_free_sta(sta);
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	wiphy_debug(local->hw.wiphy, "Destroyed STA %pM\n", sta->sta.addr);
-#endif /* CONFIG_MAC80211_VERBOSE_DEBUG */
-
-	kfree(sta);
-}
-
-/* Caller must hold local->sta_mtx */
-static void sta_info_hash_add(struct ieee80211_local *local,
-			      struct sta_info *sta)
-{
-	lockdep_assert_held(&local->sta_mtx);
-	sta->hnext = local->sta_hash[STA_HASH(sta->sta.addr)];
-	rcu_assign_pointer(local->sta_hash[STA_HASH(sta->sta.addr)], sta);
-}
-
-static void sta_unblock(struct work_struct *wk)
-{
-	struct sta_info *sta;
-
-	sta = container_of(wk, struct sta_info, drv_unblock_wk);
-=======
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(sta->link); i++) {
@@ -572,31 +458,10 @@ static void sta_deliver_ps_frames(struct work_struct *wk)
 	struct sta_info *sta;
 
 	sta = container_of(wk, struct sta_info, drv_deliver_wk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sta->dead)
 		return;
 
-<<<<<<< HEAD
-	if (!test_sta_flag(sta, WLAN_STA_PS_STA)) {
-		local_bh_disable();
-		ieee80211_sta_ps_deliver_wakeup(sta);
-		local_bh_enable();
-	} else if (test_and_clear_sta_flag(sta, WLAN_STA_PSPOLL)) {
-		clear_sta_flag(sta, WLAN_STA_PS_DRIVER);
-
-		local_bh_disable();
-		ieee80211_sta_ps_deliver_poll_response(sta);
-		local_bh_enable();
-	} else if (test_and_clear_sta_flag(sta, WLAN_STA_UAPSD)) {
-		clear_sta_flag(sta, WLAN_STA_PS_DRIVER);
-
-		local_bh_disable();
-		ieee80211_sta_ps_deliver_uapsd(sta);
-		local_bh_enable();
-	} else
-		clear_sta_flag(sta, WLAN_STA_PS_DRIVER);
-=======
 	local_bh_disable();
 	if (!test_sta_flag(sta, WLAN_STA_PS_STA))
 		ieee80211_sta_ps_deliver_wakeup(sta);
@@ -605,94 +470,23 @@ static void sta_deliver_ps_frames(struct work_struct *wk)
 	else if (test_and_clear_sta_flag(sta, WLAN_STA_UAPSD))
 		ieee80211_sta_ps_deliver_uapsd(sta);
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sta_prepare_rate_control(struct ieee80211_local *local,
 				    struct sta_info *sta, gfp_t gfp)
 {
-<<<<<<< HEAD
-	if (local->hw.flags & IEEE80211_HW_HAS_RATE_CONTROL)
-=======
 	if (ieee80211_hw_check(&local->hw, HAS_RATE_CONTROL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	sta->rate_ctrl = local->rate_ctrl;
 	sta->rate_ctrl_priv = rate_control_alloc_sta(sta->rate_ctrl,
-<<<<<<< HEAD
-						     &sta->sta, gfp);
-=======
 						     sta, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sta->rate_ctrl_priv)
 		return -ENOMEM;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
-				const u8 *addr, gfp_t gfp)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct sta_info *sta;
-	struct timespec uptime;
-	int i;
-
-	sta = kzalloc(sizeof(*sta) + local->hw.sta_data_size, gfp);
-	if (!sta)
-		return NULL;
-
-	spin_lock_init(&sta->lock);
-	spin_lock_init(&sta->ps_lock);
-	INIT_WORK(&sta->drv_unblock_wk, sta_unblock);
-	INIT_WORK(&sta->ampdu_mlme.work, ieee80211_ba_session_work);
-	mutex_init(&sta->ampdu_mlme.mtx);
-
-	memcpy(sta->sta.addr, addr, ETH_ALEN);
-	sta->local = local;
-	sta->sdata = sdata;
-	sta->last_rx = jiffies;
-
-	sta->sta_state = IEEE80211_STA_NONE;
-
-	do_posix_clock_monotonic_gettime(&uptime);
-	sta->last_connected = uptime.tv_sec;
-	ewma_init(&sta->avg_signal, 1024, 8);
-
-	if (sta_prepare_rate_control(local, sta, gfp)) {
-		kfree(sta);
-		return NULL;
-	}
-
-	for (i = 0; i < STA_TID_NUM; i++) {
-		/*
-		 * timer_to_tid must be initialized with identity mapping
-		 * to enable session_timer's data differentiation. See
-		 * sta_rx_agg_session_timer_expired for usage.
-		 */
-		sta->timer_to_tid[i] = i;
-	}
-	for (i = 0; i < IEEE80211_NUM_ACS; i++) {
-		skb_queue_head_init(&sta->ps_tx_buf[i]);
-		skb_queue_head_init(&sta->tx_filtered[i]);
-	}
-
-	for (i = 0; i < NUM_RX_DATA_QUEUES; i++)
-		sta->last_seq_ctrl[i] = cpu_to_le16(USHRT_MAX);
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	wiphy_debug(local->hw.wiphy, "Allocated STA %pM\n", sta->sta.addr);
-#endif /* CONFIG_MAC80211_VERBOSE_DEBUG */
-
-#ifdef CONFIG_MAC80211_MESH
-	sta->plink_state = NL80211_PLINK_LISTEN;
-	init_timer(&sta->plink_timer);
-#endif
-
-	return sta;
-=======
 static int sta_info_alloc_link(struct ieee80211_local *local,
 			       struct link_sta_info *link_info,
 			       gfp_t gfp)
@@ -924,18 +718,14 @@ struct sta_info *sta_info_alloc_with_link(struct ieee80211_sub_if_data *sdata,
 					  gfp_t gfp)
 {
 	return __sta_info_alloc(sdata, mld_addr, link_id, link_addr, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sta_info_insert_check(struct sta_info *sta)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Can't be a WARN_ON because it can be triggered through a race:
 	 * something inserts a STA (on one CPU) without holding the RTNL
@@ -944,12 +734,6 @@ static int sta_info_insert_check(struct sta_info *sta)
 	if (unlikely(!ieee80211_sdata_running(sdata)))
 		return -ENETDOWN;
 
-<<<<<<< HEAD
-	if (WARN_ON(compare_ether_addr(sta->sta.addr, sdata->vif.addr) == 0 ||
-		    is_multicast_ether_addr(sta->sta.addr)))
-		return -EINVAL;
-
-=======
 	if (WARN_ON(ether_addr_equal(sta->sta.addr, sdata->vif.addr) ||
 		    !is_valid_ether_addr(sta->sta.addr)))
 		return -EINVAL;
@@ -966,7 +750,6 @@ static int sta_info_insert_check(struct sta_info *sta)
 	}
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -994,15 +777,9 @@ static int sta_info_insert_drv_state(struct ieee80211_local *local,
 	}
 
 	if (sdata->vif.type == NL80211_IFTYPE_ADHOC) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG
-		       "%s: failed to move IBSS STA %pM to state %d (%d) - keeping it anyway.\n",
-		       sdata->name, sta->sta.addr, state + 1, err);
-=======
 		sdata_info(sdata,
 			   "failed to move IBSS STA %pM to state %d (%d) - keeping it anyway\n",
 			   sta->sta.addr, state + 1, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 	}
 
@@ -1013,13 +790,6 @@ static int sta_info_insert_drv_state(struct ieee80211_local *local,
 	return err;
 }
 
-<<<<<<< HEAD
-/*
- * should be called with sta_mtx locked
- * this function replaces the mutex lock
- * with a RCU lock
- */
-=======
 static void
 ieee80211_recalc_p2p_go_ps_allowed(struct ieee80211_sub_if_data *sdata)
 {
@@ -1046,35 +816,18 @@ ieee80211_recalc_p2p_go_ps_allowed(struct ieee80211_sub_if_data *sdata)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
 {
 	struct ieee80211_local *local = sta->local;
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
-<<<<<<< HEAD
-	struct station_info sinfo;
-	int err = 0;
-
-	lockdep_assert_held(&local->sta_mtx);
-=======
 	struct station_info *sinfo = NULL;
 	int err = 0;
 
 	lockdep_assert_wiphy(local->hw.wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check if STA exists already */
 	if (sta_info_get_bss(sdata, sta->sta.addr)) {
 		err = -EEXIST;
-<<<<<<< HEAD
-		goto out_err;
-	}
-
-	/* notify driver */
-	err = sta_info_insert_drv_state(local, sdata, sta);
-	if (err)
-		goto out_err;
-=======
 		goto out_cleanup;
 	}
 
@@ -1083,36 +836,11 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
 		err = -ENOMEM;
 		goto out_cleanup;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local->num_sta++;
 	local->sta_generation++;
 	smp_mb();
 
-<<<<<<< HEAD
-	/* make the station visible */
-	sta_info_hash_add(local, sta);
-
-	list_add_rcu(&sta->list, &local->sta_list);
-
-	set_sta_flag(sta, WLAN_STA_INSERTED);
-
-	ieee80211_sta_debugfs_add(sta);
-	rate_control_add_sta_debugfs(sta);
-
-	memset(&sinfo, 0, sizeof(sinfo));
-	sinfo.filled = 0;
-	sinfo.generation = local->sta_generation;
-	cfg80211_new_sta(sdata->dev, sta->sta.addr, &sinfo, GFP_KERNEL);
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	wiphy_debug(local->hw.wiphy, "Inserted STA %pM\n", sta->sta.addr);
-#endif /* CONFIG_MAC80211_VERBOSE_DEBUG */
-
-	/* move reference to rcu-protected */
-	rcu_read_lock();
-	mutex_unlock(&local->sta_mtx);
-=======
 	/* simplify things and don't accept BA sessions yet */
 	set_sta_flag(sta, WLAN_STA_BLOCK_BA);
 
@@ -1181,16 +909,10 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
 
 	/* move reference to rcu-protected */
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ieee80211_vif_is_mesh(&sdata->vif))
 		mesh_accept_plinks_update(sdata);
 
-<<<<<<< HEAD
-	return 0;
- out_err:
-	mutex_unlock(&local->sta_mtx);
-=======
 	ieee80211_check_fast_xmit(sta);
 
 	return 0;
@@ -1205,7 +927,6 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
  out_cleanup:
 	cleanup_single_sta(sta);
 	kfree(sinfo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	return err;
 }
@@ -1213,29 +934,6 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
 int sta_info_insert_rcu(struct sta_info *sta) __acquires(RCU)
 {
 	struct ieee80211_local *local = sta->local;
-<<<<<<< HEAD
-	int err = 0;
-
-	might_sleep();
-
-	err = sta_info_insert_check(sta);
-	if (err) {
-		rcu_read_lock();
-		goto out_free;
-	}
-
-	mutex_lock(&local->sta_mtx);
-
-	err = sta_info_insert_finish(sta);
-	if (err)
-		goto out_free;
-
-	return 0;
- out_free:
-	BUG_ON(!err);
-	sta_info_free(local, sta);
-	return err;
-=======
 	int err;
 
 	might_sleep();
@@ -1249,7 +947,6 @@ int sta_info_insert_rcu(struct sta_info *sta) __acquires(RCU)
 	}
 
 	return sta_info_insert_finish(sta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sta_info_insert(struct sta_info *sta)
@@ -1261,35 +958,21 @@ int sta_info_insert(struct sta_info *sta)
 	return err;
 }
 
-<<<<<<< HEAD
-static inline void __bss_tim_set(struct ieee80211_if_ap *bss, u16 aid)
-=======
 static inline void __bss_tim_set(u8 *tim, u16 id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * This format has been mandated by the IEEE specifications,
 	 * so this line may not be changed to use the __set_bit() format.
 	 */
-<<<<<<< HEAD
-	bss->tim[aid / 8] |= (1 << (aid % 8));
-}
-
-static inline void __bss_tim_clear(struct ieee80211_if_ap *bss, u16 aid)
-=======
 	tim[id / 8] |= (1 << (id % 8));
 }
 
 static inline void __bss_tim_clear(u8 *tim, u16 id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * This format has been mandated by the IEEE specifications,
 	 * so this line may not be changed to use the __clear_bit() format.
 	 */
-<<<<<<< HEAD
-	bss->tim[aid / 8] &= ~(1 << (aid % 8));
-=======
 	tim[id / 8] &= ~(1 << (id % 8));
 }
 
@@ -1300,7 +983,6 @@ static inline bool __bss_tim_get(u8 *tim, u16 id)
 	 * so this line may not be changed to use the test_bit() format.
 	 */
 	return tim[id / 8] & (1 << (id % 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long ieee80211_tids_for_ac(int ac)
@@ -1321,22 +1003,6 @@ static unsigned long ieee80211_tids_for_ac(int ac)
 	}
 }
 
-<<<<<<< HEAD
-void sta_info_recalc_tim(struct sta_info *sta)
-{
-	struct ieee80211_local *local = sta->local;
-	struct ieee80211_if_ap *bss = sta->sdata->bss;
-	unsigned long flags;
-	bool indicate_tim = false;
-	u8 ignore_for_tim = sta->sta.uapsd_queues;
-	int ac;
-
-	if (WARN_ON_ONCE(!sta->sdata->bss))
-		return;
-
-	/* No need to do anything if the driver does all */
-	if (local->hw.flags & IEEE80211_HW_AP_LINK_PS)
-=======
 static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 {
 	struct ieee80211_local *local = sta->local;
@@ -1362,7 +1028,6 @@ static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 
 	/* No need to do anything if the driver does all */
 	if (ieee80211_hw_check(&local->hw, AP_LINK_PS) && !local->ops->set_tim)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (sta->dead)
@@ -1377,12 +1042,6 @@ static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 	if (ignore_for_tim == BIT(IEEE80211_NUM_ACS) - 1)
 		ignore_for_tim = 0;
 
-<<<<<<< HEAD
-	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
-		unsigned long tids;
-
-		if (ignore_for_tim & BIT(ac))
-=======
 	if (ignore_pending)
 		ignore_for_tim = BIT(IEEE80211_NUM_ACS) - 1;
 
@@ -1390,7 +1049,6 @@ static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 		unsigned long tids;
 
 		if (ignore_for_tim & ieee80211_ac_to_qos_mask[ac])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		indicate_tim |= !skb_queue_empty(&sta->tx_filtered[ac]) ||
@@ -1402,19 +1060,6 @@ static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 
 		indicate_tim |=
 			sta->driver_buffered_tids & tids;
-<<<<<<< HEAD
-	}
-
- done:
-	spin_lock_irqsave(&local->tim_lock, flags);
-
-	if (indicate_tim)
-		__bss_tim_set(bss, sta->sta.aid);
-	else
-		__bss_tim_clear(bss, sta->sta.aid);
-
-	if (local->ops->set_tim) {
-=======
 		indicate_tim |=
 			sta->txq_buffered_tids & tids;
 	}
@@ -1431,15 +1076,11 @@ static void __sta_info_recalc_tim(struct sta_info *sta, bool ignore_pending)
 		__bss_tim_clear(ps->tim, id);
 
 	if (local->ops->set_tim && !WARN_ON(sta->dead)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local->tim_in_locked_section = true;
 		drv_set_tim(local, &sta->sta, indicate_tim);
 		local->tim_in_locked_section = false;
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&local->tim_lock, flags);
-=======
 out_unlock:
 	spin_unlock_bh(&local->tim_lock);
 }
@@ -1447,7 +1088,6 @@ out_unlock:
 void sta_info_recalc_tim(struct sta_info *sta)
 {
 	__sta_info_recalc_tim(sta, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool sta_info_buffer_expired(struct sta_info *sta, struct sk_buff *skb)
@@ -1500,11 +1140,7 @@ static bool sta_info_cleanup_expire_buffered_ac(struct ieee80211_local *local,
 		 */
 		if (!skb)
 			break;
-<<<<<<< HEAD
-		dev_kfree_skb(skb);
-=======
 		ieee80211_free_txskb(&local->hw, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1531,17 +1167,9 @@ static bool sta_info_cleanup_expire_buffered_ac(struct ieee80211_local *local,
 			break;
 
 		local->total_ps_buffered--;
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_VERBOSE_PS_DEBUG
-		printk(KERN_DEBUG "Buffered frame expired (STA %pM)\n",
-		       sta->sta.addr);
-#endif
-		dev_kfree_skb(skb);
-=======
 		ps_dbg(sta->sdata, "Buffered frame expired (STA %pM)\n",
 		       sta->sta.addr);
 		ieee80211_free_txskb(&local->hw, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1566,14 +1194,9 @@ static bool sta_info_cleanup_expire_buffered(struct ieee80211_local *local,
 	bool have_buffered = false;
 	int ac;
 
-<<<<<<< HEAD
-	/* This is only necessary for stations on BSS interfaces */
-	if (!sta->sdata->bss)
-=======
 	/* This is only necessary for stations on BSS/MBSS interfaces */
 	if (!sta->sdata->bss &&
 	    !ieee80211_vif_is_mesh(&sta->sdata->vif))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++)
@@ -1583,20 +1206,11 @@ static bool sta_info_cleanup_expire_buffered(struct ieee80211_local *local,
 	return have_buffered;
 }
 
-<<<<<<< HEAD
-int __must_check __sta_info_destroy(struct sta_info *sta)
-{
-	struct ieee80211_local *local;
-	struct ieee80211_sub_if_data *sdata;
-	int ret, i, ac;
-	struct tid_ampdu_tx *tid_tx;
-=======
 static int __must_check __sta_info_destroy_part1(struct sta_info *sta)
 {
 	struct ieee80211_local *local;
 	struct ieee80211_sub_if_data *sdata;
 	int ret, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	might_sleep();
 
@@ -1606,11 +1220,7 @@ static int __must_check __sta_info_destroy_part1(struct sta_info *sta)
 	local = sta->local;
 	sdata = sta->sdata;
 
-<<<<<<< HEAD
-	lockdep_assert_held(&local->sta_mtx);
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Before removing the station from the driver and
@@ -1619,22 +1229,6 @@ static int __must_check __sta_info_destroy_part1(struct sta_info *sta)
 	 * will be sufficient.
 	 */
 	set_sta_flag(sta, WLAN_STA_BLOCK_BA);
-<<<<<<< HEAD
-	ieee80211_sta_tear_down_BA_sessions(sta, true);
-
-	ret = sta_info_hash_del(local, sta);
-	if (ret)
-		return ret;
-
-	list_del_rcu(&sta->list);
-
-	mutex_lock(&local->key_mtx);
-	for (i = 0; i < NUM_DEFAULT_KEYS; i++)
-		__ieee80211_key_free(key_mtx_dereference(local, sta->gtk[i]));
-	if (sta->ptk)
-		__ieee80211_key_free(key_mtx_dereference(local, sta->ptk));
-	mutex_unlock(&local->key_mtx);
-=======
 	ieee80211_sta_tear_down_BA_sessions(sta, AGG_STOP_DESTROY_STA);
 
 	/*
@@ -1851,23 +1445,14 @@ static void __sta_info_destroy_part2(struct sta_info *sta, bool recalc)
 
 	/* disable TIM bit - last chance to tell driver */
 	__sta_info_recalc_tim(sta, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sta->dead = true;
 
 	local->num_sta--;
 	local->sta_generation++;
 
-<<<<<<< HEAD
-	if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
-		RCU_INIT_POINTER(sdata->u.vlan.sta, NULL);
-
-	while (sta->sta_state > IEEE80211_STA_NONE) {
-		ret = sta_info_move_state(sta, sta->sta_state - 1);
-=======
 	while (sta->sta_state > IEEE80211_STA_NONE) {
 		ret = _sta_info_move_state(sta, sta->sta_state - 1, recalc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			WARN_ON_ONCE(1);
 			break;
@@ -1880,68 +1465,6 @@ static void __sta_info_destroy_part2(struct sta_info *sta, bool recalc)
 		WARN_ON_ONCE(ret != 0);
 	}
 
-<<<<<<< HEAD
-	/*
-	 * At this point, after we wait for an RCU grace period,
-	 * neither mac80211 nor the driver can reference this
-	 * sta struct any more except by still existing timers
-	 * associated with this station that we clean up below.
-	 */
-	synchronize_rcu();
-
-	if (test_sta_flag(sta, WLAN_STA_PS_STA)) {
-		BUG_ON(!sdata->bss);
-
-		clear_sta_flag(sta, WLAN_STA_PS_STA);
-
-		atomic_dec(&sdata->bss->num_sta_ps);
-		sta_info_recalc_tim(sta);
-	}
-
-	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
-		local->total_ps_buffered -= skb_queue_len(&sta->ps_tx_buf[ac]);
-		ieee80211_purge_tx_queue(&local->hw, &sta->ps_tx_buf[ac]);
-		ieee80211_purge_tx_queue(&local->hw, &sta->tx_filtered[ac]);
-	}
-
-#ifdef CONFIG_MAC80211_MESH
-	if (ieee80211_vif_is_mesh(&sdata->vif))
-		mesh_accept_plinks_update(sdata);
-#endif
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	wiphy_debug(local->hw.wiphy, "Removed STA %pM\n", sta->sta.addr);
-#endif /* CONFIG_MAC80211_VERBOSE_DEBUG */
-	cancel_work_sync(&sta->drv_unblock_wk);
-
-	cfg80211_del_sta(sdata->dev, sta->sta.addr, GFP_KERNEL);
-
-	rate_control_remove_sta_debugfs(sta);
-	ieee80211_sta_debugfs_remove(sta);
-
-#ifdef CONFIG_MAC80211_MESH
-	if (ieee80211_vif_is_mesh(&sta->sdata->vif)) {
-		mesh_plink_deactivate(sta);
-		del_timer_sync(&sta->plink_timer);
-	}
-#endif
-
-	/*
-	 * Destroy aggregation state here. It would be nice to wait for the
-	 * driver to finish aggregation stop and then clean up, but for now
-	 * drivers have to handle aggregation stop being requested, followed
-	 * directly by station destruction.
-	 */
-	for (i = 0; i < STA_TID_NUM; i++) {
-		tid_tx = rcu_dereference_raw(sta->ampdu_mlme.tid_tx[i]);
-		if (!tid_tx)
-			continue;
-		ieee80211_purge_tx_queue(&local->hw, &tid_tx->pending);
-		kfree(tid_tx);
-	}
-
-	sta_info_free(local, sta);
-=======
 	sta_dbg(sdata, "Removed STA %pM\n", sta->sta.addr);
 
 	sinfo = kzalloc(sizeof(*sinfo), GFP_KERNEL);
@@ -1967,7 +1490,6 @@ int __must_check __sta_info_destroy(struct sta_info *sta)
 	synchronize_net();
 
 	__sta_info_destroy_part2(sta, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1975,43 +1497,17 @@ int __must_check __sta_info_destroy(struct sta_info *sta)
 int sta_info_destroy_addr(struct ieee80211_sub_if_data *sdata, const u8 *addr)
 {
 	struct sta_info *sta;
-<<<<<<< HEAD
-	int ret;
-
-	mutex_lock(&sdata->local->sta_mtx);
-	sta = sta_info_get(sdata, addr);
-	ret = __sta_info_destroy(sta);
-	mutex_unlock(&sdata->local->sta_mtx);
-
-	return ret;
-=======
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
 	sta = sta_info_get(sdata, addr);
 	return __sta_info_destroy(sta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sta_info_destroy_addr_bss(struct ieee80211_sub_if_data *sdata,
 			      const u8 *addr)
 {
 	struct sta_info *sta;
-<<<<<<< HEAD
-	int ret;
-
-	mutex_lock(&sdata->local->sta_mtx);
-	sta = sta_info_get_bss(sdata, addr);
-	ret = __sta_info_destroy(sta);
-	mutex_unlock(&sdata->local->sta_mtx);
-
-	return ret;
-}
-
-static void sta_info_cleanup(unsigned long data)
-{
-	struct ieee80211_local *local = (struct ieee80211_local *) data;
-=======
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
@@ -2022,7 +1518,6 @@ static void sta_info_cleanup(unsigned long data)
 static void sta_info_cleanup(struct timer_list *t)
 {
 	struct ieee80211_local *local = from_timer(local, t, sta_cleanup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sta_info *sta;
 	bool timer_needed = false;
 
@@ -2042,16 +1537,6 @@ static void sta_info_cleanup(struct timer_list *t)
 		  round_jiffies(jiffies + STA_INFO_CLEANUP_INTERVAL));
 }
 
-<<<<<<< HEAD
-void sta_info_init(struct ieee80211_local *local)
-{
-	spin_lock_init(&local->tim_lock);
-	mutex_init(&local->sta_mtx);
-	INIT_LIST_HEAD(&local->sta_list);
-
-	setup_timer(&local->sta_cleanup, sta_info_cleanup,
-		    (unsigned long)local);
-=======
 int sta_info_init(struct ieee80211_local *local)
 {
 	int err;
@@ -2071,41 +1556,11 @@ int sta_info_init(struct ieee80211_local *local)
 
 	timer_setup(&local->sta_cleanup, sta_info_cleanup, 0);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sta_info_stop(struct ieee80211_local *local)
 {
 	del_timer_sync(&local->sta_cleanup);
-<<<<<<< HEAD
-	sta_info_flush(local, NULL);
-}
-
-/**
- * sta_info_flush - flush matching STA entries from the STA table
- *
- * Returns the number of removed STA entries.
- *
- * @local: local interface data
- * @sdata: matching rule for the net device (sta->dev) or %NULL to match all STAs
- */
-int sta_info_flush(struct ieee80211_local *local,
-		   struct ieee80211_sub_if_data *sdata)
-{
-	struct sta_info *sta, *tmp;
-	int ret = 0;
-
-	might_sleep();
-
-	mutex_lock(&local->sta_mtx);
-	list_for_each_entry_safe(sta, tmp, &local->sta_list, list) {
-		if (!sdata || sdata == sta->sdata) {
-			WARN_ON(__sta_info_destroy(sta));
-			ret++;
-		}
-	}
-	mutex_unlock(&local->sta_mtx);
-=======
 	rhltable_destroy(&local->sta_hash);
 	rhltable_destroy(&local->link_sta_hash);
 }
@@ -2154,7 +1609,6 @@ int __sta_info_flush(struct ieee80211_sub_if_data *sdata, bool vlans,
 		if (!support_p2p_ps)
 			ieee80211_recalc_p2p_go_ps_allowed(sdata);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2165,31 +1619,6 @@ void ieee80211_sta_expire(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_local *local = sdata->local;
 	struct sta_info *sta, *tmp;
 
-<<<<<<< HEAD
-	mutex_lock(&local->sta_mtx);
-
-	list_for_each_entry_safe(sta, tmp, &local->sta_list, list) {
-		if (sdata != sta->sdata)
-			continue;
-
-		if (time_after(jiffies, sta->last_rx + exp_time)) {
-#ifdef CONFIG_MAC80211_IBSS_DEBUG
-			printk(KERN_DEBUG "%s: expiring inactive STA %pM\n",
-			       sdata->name, sta->sta.addr);
-#endif
-			WARN_ON(__sta_info_destroy(sta));
-		}
-	}
-
-	mutex_unlock(&local->sta_mtx);
-}
-
-struct ieee80211_sta *ieee80211_find_sta_by_ifaddr(struct ieee80211_hw *hw,
-					       const u8 *addr,
-					       const u8 *localaddr)
-{
-	struct sta_info *sta, *nxt;
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	list_for_each_entry_safe(sta, tmp, &local->sta_list, list) {
@@ -2218,21 +1647,14 @@ struct ieee80211_sta *ieee80211_find_sta_by_ifaddr(struct ieee80211_hw *hw,
 	struct ieee80211_local *local = hw_to_local(hw);
 	struct rhlist_head *tmp;
 	struct sta_info *sta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Just return a random station if localaddr is NULL
 	 * ... first in list.
 	 */
-<<<<<<< HEAD
-	for_each_sta_info(hw_to_local(hw), addr, sta, nxt) {
-		if (localaddr &&
-		    compare_ether_addr(sta->sdata->vif.addr, localaddr) != 0)
-=======
 	for_each_sta_info(local, addr, sta, tmp) {
 		if (localaddr &&
 		    !ether_addr_equal(sta->sdata->vif.addr, localaddr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (!sta->uploaded)
 			return NULL;
@@ -2262,38 +1684,12 @@ struct ieee80211_sta *ieee80211_find_sta(struct ieee80211_vif *vif,
 }
 EXPORT_SYMBOL(ieee80211_find_sta);
 
-<<<<<<< HEAD
-static void clear_sta_ps_flags(void *_sta)
-{
-	struct sta_info *sta = _sta;
-	struct ieee80211_sub_if_data *sdata = sta->sdata;
-
-	clear_sta_flag(sta, WLAN_STA_PS_DRIVER);
-	if (test_and_clear_sta_flag(sta, WLAN_STA_PS_STA))
-		atomic_dec(&sdata->bss->num_sta_ps);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* powersave support code */
 void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
 	struct ieee80211_local *local = sdata->local;
 	struct sk_buff_head pending;
-<<<<<<< HEAD
-	int filtered = 0, buffered = 0, ac;
-	unsigned long flags;
-
-	clear_sta_flag(sta, WLAN_STA_SP);
-
-	BUILD_BUG_ON(BITS_TO_LONGS(STA_TID_NUM) > 1);
-	sta->driver_buffered_tids = 0;
-
-	if (!(local->hw.flags & IEEE80211_HW_AP_LINK_PS))
-		drv_sta_notify(local, sdata, STA_NOTIFY_AWAKE, &sta->sta);
-
-=======
 	int filtered = 0, buffered = 0, ac, i;
 	unsigned long flags;
 	struct ps_data *ps;
@@ -2325,7 +1721,6 @@ void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 		schedule_and_wake_txq(local, to_txq_info(sta->sta.txq[i]));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init(&pending);
 
 	/* sync with ieee80211_tx_h_unicast_ps_buf */
@@ -2348,11 +1743,6 @@ void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 		buffered += tmp - count;
 	}
 
-<<<<<<< HEAD
-	ieee80211_add_pending_skbs_fn(local, &pending, clear_sta_ps_flags, sta);
-	spin_unlock(&sta->ps_lock);
-
-=======
 	ieee80211_add_pending_skbs(local, &pending);
 
 	/* now we're no longer in the deliver code */
@@ -2367,24 +1757,10 @@ void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 
 	atomic_dec(&ps->num_sta_ps);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local->total_ps_buffered -= buffered;
 
 	sta_info_recalc_tim(sta);
 
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_VERBOSE_PS_DEBUG
-	printk(KERN_DEBUG "%s: STA %pM aid %d sending %d filtered/%d PS frames "
-	       "since STA not sleeping anymore\n", sdata->name,
-	       sta->sta.addr, sta->sta.aid, filtered, buffered);
-#endif /* CONFIG_MAC80211_VERBOSE_PS_DEBUG */
-}
-
-static void ieee80211_send_null_response(struct ieee80211_sub_if_data *sdata,
-					 struct sta_info *sta, int tid,
-					 enum ieee80211_frame_release_type reason)
-{
-=======
 	ps_dbg(sdata,
 	       "STA %pM aid %d sending %d filtered/%d PS frames since STA woke up\n",
 	       sta->sta.addr, sta->sta.aid, filtered, buffered);
@@ -2397,20 +1773,14 @@ static void ieee80211_send_null_response(struct sta_info *sta, int tid,
 					 bool call_driver, bool more_data)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_qos_hdr *nullfunc;
 	struct sk_buff *skb;
 	int size = sizeof(*nullfunc);
 	__le16 fc;
-<<<<<<< HEAD
-	bool qos = test_sta_flag(sta, WLAN_STA_WME);
-	struct ieee80211_tx_info *info;
-=======
 	bool qos = sta->sta.wme;
 	struct ieee80211_tx_info *info;
 	struct ieee80211_chanctx_conf *chanctx_conf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qos) {
 		fc = cpu_to_le16(IEEE80211_FTYPE_DATA |
@@ -2429,31 +1799,19 @@ static void ieee80211_send_null_response(struct sta_info *sta, int tid,
 
 	skb_reserve(skb, local->hw.extra_tx_headroom);
 
-<<<<<<< HEAD
-	nullfunc = (void *) skb_put(skb, size);
-=======
 	nullfunc = skb_put(skb, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nullfunc->frame_control = fc;
 	nullfunc->duration_id = 0;
 	memcpy(nullfunc->addr1, sta->sta.addr, ETH_ALEN);
 	memcpy(nullfunc->addr2, sdata->vif.addr, ETH_ALEN);
 	memcpy(nullfunc->addr3, sdata->vif.addr, ETH_ALEN);
-<<<<<<< HEAD
-=======
 	nullfunc->seq_ctrl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->priority = tid;
 	skb_set_queue_mapping(skb, ieee802_1d_to_ac[tid]);
 	if (qos) {
 		nullfunc->qos_ctrl = cpu_to_le16(tid);
 
-<<<<<<< HEAD
-		if (reason == IEEE80211_FRAME_RELEASE_UAPSD)
-			nullfunc->qos_ctrl |=
-				cpu_to_le16(IEEE80211_QOS_CTL_EOSP);
-=======
 		if (reason == IEEE80211_FRAME_RELEASE_UAPSD) {
 			nullfunc->qos_ctrl |=
 				cpu_to_le16(IEEE80211_QOS_CTL_EOSP);
@@ -2461,7 +1819,6 @@ static void ieee80211_send_null_response(struct sta_info *sta, int tid,
 				nullfunc->frame_control |=
 					cpu_to_le16(IEEE80211_FCTL_MOREDATA);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	info = IEEE80211_SKB_CB(skb);
@@ -2476,11 +1833,6 @@ static void ieee80211_send_null_response(struct sta_info *sta, int tid,
 		       IEEE80211_TX_STATUS_EOSP |
 		       IEEE80211_TX_CTL_REQ_TX_STATUS;
 
-<<<<<<< HEAD
-	drv_allow_buffered_frames(local, sta, BIT(tid), 1, reason, false);
-
-	ieee80211_xmit(sdata, skb);
-=======
 	info->control.flags |= IEEE80211_TX_CTRL_PS_RESPONSE;
 
 	if (call_driver)
@@ -2600,7 +1952,6 @@ ieee80211_sta_ps_get_frames(struct sta_info *sta, int n_frames, u8 ignored_acs,
 		    !skb_queue_empty(&sta->ps_tx_buf[ac]))
 			break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2610,82 +1961,15 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
 	struct ieee80211_local *local = sdata->local;
-<<<<<<< HEAD
-	bool found = false;
-	bool more_data = false;
-	int ac;
-	unsigned long driver_release_tids = 0;
-	struct sk_buff_head frames;
-=======
 	unsigned long driver_release_tids = 0;
 	struct sk_buff_head frames;
 	bool more_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Service or PS-Poll period starts */
 	set_sta_flag(sta, WLAN_STA_SP);
 
 	__skb_queue_head_init(&frames);
 
-<<<<<<< HEAD
-	/*
-	 * Get response frame(s) and more data bit for it.
-	 */
-	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
-		unsigned long tids;
-
-		if (ignored_acs & BIT(ac))
-			continue;
-
-		tids = ieee80211_tids_for_ac(ac);
-
-		if (!found) {
-			driver_release_tids = sta->driver_buffered_tids & tids;
-			if (driver_release_tids) {
-				found = true;
-			} else {
-				struct sk_buff *skb;
-
-				while (n_frames > 0) {
-					skb = skb_dequeue(&sta->tx_filtered[ac]);
-					if (!skb) {
-						skb = skb_dequeue(
-							&sta->ps_tx_buf[ac]);
-						if (skb)
-							local->total_ps_buffered--;
-					}
-					if (!skb)
-						break;
-					n_frames--;
-					found = true;
-					__skb_queue_tail(&frames, skb);
-				}
-			}
-
-			/*
-			 * If the driver has data on more than one TID then
-			 * certainly there's more data if we release just a
-			 * single frame now (from a single TID).
-			 */
-			if (reason == IEEE80211_FRAME_RELEASE_PSPOLL &&
-			    hweight16(driver_release_tids) > 1) {
-				more_data = true;
-				driver_release_tids =
-					BIT(ffs(driver_release_tids) - 1);
-				break;
-			}
-		}
-
-		if (!skb_queue_empty(&sta->tx_filtered[ac]) ||
-		    !skb_queue_empty(&sta->ps_tx_buf[ac])) {
-			more_data = true;
-			break;
-		}
-	}
-
-	if (!found) {
-		int tid;
-=======
 	ieee80211_sta_ps_get_frames(sta, n_frames, ignored_acs, reason,
 				    &frames, &driver_release_tids);
 
@@ -2697,7 +1981,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 
 	if (skb_queue_empty(&frames) && !driver_release_tids) {
 		int tid, ac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * For PS-Poll, this can only happen due to a race condition
@@ -2715,15 +1998,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 		 */
 
 		/* This will evaluate to 1, 3, 5 or 7. */
-<<<<<<< HEAD
-		tid = 7 - ((ffs(~ignored_acs) - 1) << 1);
-
-		ieee80211_send_null_response(sdata, sta, tid, reason);
-		return;
-	}
-
-	if (!driver_release_tids) {
-=======
 		for (ac = IEEE80211_AC_VO; ac < IEEE80211_NUM_ACS; ac++)
 			if (!(ignored_acs & ieee80211_ac_to_qos_mask[ac]))
 				break;
@@ -2731,15 +2005,11 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 
 		ieee80211_send_null_response(sta, tid, reason, true, false);
 	} else if (!driver_release_tids) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sk_buff_head pending;
 		struct sk_buff *skb;
 		int num = 0;
 		u16 tids = 0;
-<<<<<<< HEAD
-=======
 		bool need_null = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb_queue_head_init(&pending);
 
@@ -2756,10 +2026,7 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 			 * exchange.
 			 */
 			info->flags |= IEEE80211_TX_CTL_NO_PS_BUFFER;
-<<<<<<< HEAD
-=======
 			info->control.flags |= IEEE80211_TX_CTRL_PS_RESPONSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Use MoreData flag to indicate whether there are
@@ -2776,22 +2043,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 			    ieee80211_is_qos_nullfunc(hdr->frame_control))
 				qoshdr = ieee80211_get_qos_ctl(hdr);
 
-<<<<<<< HEAD
-			/* set EOSP for the frame */
-			if (reason == IEEE80211_FRAME_RELEASE_UAPSD &&
-			    qoshdr && skb_queue_empty(&frames))
-				*qoshdr |= IEEE80211_QOS_CTL_EOSP;
-
-			info->flags |= IEEE80211_TX_STATUS_EOSP |
-				       IEEE80211_TX_CTL_REQ_TX_STATUS;
-
-			if (qoshdr)
-				tids |= BIT(*qoshdr & IEEE80211_QOS_CTL_TID_MASK);
-			else
-				tids |= BIT(0);
-
-			__skb_queue_tail(&pending, skb);
-=======
 			tids |= BIT(skb->priority);
 
 			__skb_queue_tail(&pending, skb);
@@ -2843,7 +2094,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 				num++;
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		drv_allow_buffered_frames(local, sta, tids, num,
@@ -2851,19 +2101,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 
 		ieee80211_add_pending_skbs(local, &pending);
 
-<<<<<<< HEAD
-		sta_info_recalc_tim(sta);
-	} else {
-		/*
-		 * We need to release a frame that is buffered somewhere in the
-		 * driver ... it'll have to handle that.
-		 * Note that, as per the comment above, it'll also have to see
-		 * if there is more than just one frame on the specific TID that
-		 * we're releasing from, and it needs to set the more-data bit
-		 * accordingly if we tell it that there's no more data. If we do
-		 * tell it there's more data, then of course the more-data bit
-		 * needs to be set anyway.
-=======
 		if (need_null)
 			ieee80211_send_null_response(
 				sta, find_highest_prio_tid(tids),
@@ -2882,7 +2119,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 		 * it to set it anyway due to other buffered frames); if there
 		 * are fewer than n_frames it has to make sure to adjust that
 		 * to allow the service period to end properly.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		drv_release_buffered_frames(local, sta, driver_release_tids,
 					    n_frames, reason, more_data);
@@ -2890,13 +2126,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 		/*
 		 * Note that we don't recalculate the TIM bit here as it would
 		 * most likely have no effect at all unless the driver told us
-<<<<<<< HEAD
-		 * that the TID became empty before returning here from the
-		 * release function.
-		 * Either way, however, when the driver tells us that the TID
-		 * became empty we'll do the TIM recalculation.
-		 */
-=======
 		 * that the TID(s) became empty before returning here from the
 		 * release function.
 		 * Either way, however, when the driver tells us that the TID(s)
@@ -2913,7 +2142,6 @@ ieee80211_sta_ps_deliver_response(struct sta_info *sta,
 			sta_info_recalc_tim(sta);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2959,11 +2187,7 @@ void ieee80211_sta_ps_deliver_uapsd(struct sta_info *sta)
 		break;
 	case 0:
 		/* XXX: what is a good value? */
-<<<<<<< HEAD
-		n_frames = 8;
-=======
 		n_frames = 128;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2978,39 +2202,6 @@ void ieee80211_sta_block_awake(struct ieee80211_hw *hw,
 
 	trace_api_sta_block_awake(sta->local, pubsta, block);
 
-<<<<<<< HEAD
-	if (block)
-		set_sta_flag(sta, WLAN_STA_PS_DRIVER);
-	else if (test_sta_flag(sta, WLAN_STA_PS_DRIVER))
-		ieee80211_queue_work(hw, &sta->drv_unblock_wk);
-}
-EXPORT_SYMBOL(ieee80211_sta_block_awake);
-
-void ieee80211_sta_eosp_irqsafe(struct ieee80211_sta *pubsta)
-{
-	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
-	struct ieee80211_local *local = sta->local;
-	struct sk_buff *skb;
-	struct skb_eosp_msg_data *data;
-
-	trace_api_eosp(local, pubsta);
-
-	skb = alloc_skb(0, GFP_ATOMIC);
-	if (!skb) {
-		/* too bad ... but race is better than loss */
-		clear_sta_flag(sta, WLAN_STA_SP);
-		return;
-	}
-
-	data = (void *)skb->cb;
-	memcpy(data->sta, pubsta->addr, ETH_ALEN);
-	memcpy(data->iface, sta->sdata->vif.addr, ETH_ALEN);
-	skb->pkt_type = IEEE80211_EOSP_MSG;
-	skb_queue_tail(&local->skb_queue, skb);
-	tasklet_schedule(&local->tasklet);
-}
-EXPORT_SYMBOL(ieee80211_sta_eosp_irqsafe);
-=======
 	if (block) {
 		set_sta_flag(sta, WLAN_STA_PS_DRIVER);
 		ieee80211_clear_fast_xmit(sta);
@@ -3062,24 +2253,17 @@ void ieee80211_send_eosp_nullfunc(struct ieee80211_sta *pubsta, int tid)
 	ieee80211_send_null_response(sta, tid, reason, false, more_data);
 }
 EXPORT_SYMBOL(ieee80211_send_eosp_nullfunc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ieee80211_sta_set_buffered(struct ieee80211_sta *pubsta,
 				u8 tid, bool buffered)
 {
 	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
 
-<<<<<<< HEAD
-	if (WARN_ON(tid >= STA_TID_NUM))
-		return;
-
-=======
 	if (WARN_ON(tid >= IEEE80211_NUM_TIDS))
 		return;
 
 	trace_api_sta_set_buffered(sta->local, pubsta, tid, buffered);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buffered)
 		set_bit(tid, &sta->driver_buffered_tids);
 	else
@@ -3089,95 +2273,6 @@ void ieee80211_sta_set_buffered(struct ieee80211_sta *pubsta,
 }
 EXPORT_SYMBOL(ieee80211_sta_set_buffered);
 
-<<<<<<< HEAD
-int sta_info_move_state(struct sta_info *sta,
-			enum ieee80211_sta_state new_state)
-{
-	might_sleep();
-
-	if (sta->sta_state == new_state)
-		return 0;
-
-	/* check allowed transitions first */
-
-	switch (new_state) {
-	case IEEE80211_STA_NONE:
-		if (sta->sta_state != IEEE80211_STA_AUTH)
-			return -EINVAL;
-		break;
-	case IEEE80211_STA_AUTH:
-		if (sta->sta_state != IEEE80211_STA_NONE &&
-		    sta->sta_state != IEEE80211_STA_ASSOC)
-			return -EINVAL;
-		break;
-	case IEEE80211_STA_ASSOC:
-		if (sta->sta_state != IEEE80211_STA_AUTH &&
-		    sta->sta_state != IEEE80211_STA_AUTHORIZED)
-			return -EINVAL;
-		break;
-	case IEEE80211_STA_AUTHORIZED:
-		if (sta->sta_state != IEEE80211_STA_ASSOC)
-			return -EINVAL;
-		break;
-	default:
-		WARN(1, "invalid state %d", new_state);
-		return -EINVAL;
-	}
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	printk(KERN_DEBUG "%s: moving STA %pM to state %d\n",
-		sta->sdata->name, sta->sta.addr, new_state);
-#endif
-
-	/*
-	 * notify the driver before the actual changes so it can
-	 * fail the transition
-	 */
-	if (test_sta_flag(sta, WLAN_STA_INSERTED)) {
-		int err = drv_sta_state(sta->local, sta->sdata, sta,
-					sta->sta_state, new_state);
-		if (err)
-			return err;
-	}
-
-	/* reflect the change in all state variables */
-
-	switch (new_state) {
-	case IEEE80211_STA_NONE:
-		if (sta->sta_state == IEEE80211_STA_AUTH)
-			clear_bit(WLAN_STA_AUTH, &sta->_flags);
-		break;
-	case IEEE80211_STA_AUTH:
-		if (sta->sta_state == IEEE80211_STA_NONE)
-			set_bit(WLAN_STA_AUTH, &sta->_flags);
-		else if (sta->sta_state == IEEE80211_STA_ASSOC)
-			clear_bit(WLAN_STA_ASSOC, &sta->_flags);
-		break;
-	case IEEE80211_STA_ASSOC:
-		if (sta->sta_state == IEEE80211_STA_AUTH) {
-			set_bit(WLAN_STA_ASSOC, &sta->_flags);
-		} else if (sta->sta_state == IEEE80211_STA_AUTHORIZED) {
-			if (sta->sdata->vif.type == NL80211_IFTYPE_AP)
-				atomic_dec(&sta->sdata->u.ap.num_sta_authorized);
-			clear_bit(WLAN_STA_AUTHORIZED, &sta->_flags);
-		}
-		break;
-	case IEEE80211_STA_AUTHORIZED:
-		if (sta->sta_state == IEEE80211_STA_ASSOC) {
-			if (sta->sdata->vif.type == NL80211_IFTYPE_AP)
-				atomic_inc(&sta->sdata->u.ap.num_sta_authorized);
-			set_bit(WLAN_STA_AUTHORIZED, &sta->_flags);
-		}
-		break;
-	default:
-		break;
-	}
-
-	sta->sta_state = new_state;
-
-	return 0;
-}
-=======
 void ieee80211_sta_register_airtime(struct ieee80211_sta *pubsta, u8 tid,
 				    u32 tx_airtime, u32 rx_airtime)
 {
@@ -3930,4 +3025,3 @@ bool lockdep_sta_mutex_held(struct ieee80211_sta *pubsta)
 }
 EXPORT_SYMBOL(lockdep_sta_mutex_held);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * APEI Error Record Serialization Table debug support
  *
@@ -12,22 +9,6 @@
  *
  * Copyright 2010 Intel Corp.
  *   Author: Huang Ying <ying.huang@intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -118,12 +99,6 @@ retry_next:
 	if (rc)
 		goto out;
 	/* no more record */
-<<<<<<< HEAD
-	if (id == APEI_ERST_INVALID_RECORD_ID)
-		goto out;
-retry:
-	rc = len = erst_read(id, erst_dbg_buf, erst_dbg_buf_len);
-=======
 	if (id == APEI_ERST_INVALID_RECORD_ID) {
 		/*
 		 * If the persistent store is empty initially, the function
@@ -138,21 +113,14 @@ retry:
 retry:
 	rc = len = erst_read_record(id, erst_dbg_buf, erst_dbg_buf_len,
 			erst_dbg_buf_len, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The record may be cleared by others, try read next record */
 	if (rc == -ENOENT)
 		goto retry_next;
 	if (rc < 0)
 		goto out;
 	if (len > ERST_DBG_RECORD_LEN_MAX) {
-<<<<<<< HEAD
-		pr_warning(ERST_DBG_PFX
-			   "Record (ID: 0x%llx) length is too long: %zd\n",
-			   id, len);
-=======
 		pr_warn(ERST_DBG_PFX
 			"Record (ID: 0x%llx) length is too long: %zd\n", id, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 		goto out;
 	}

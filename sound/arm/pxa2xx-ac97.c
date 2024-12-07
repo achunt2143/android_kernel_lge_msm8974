@@ -1,74 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/sound/pxa2xx-ac97.c -- AC97 support for the Intel PXA2xx chip.
  *
  * Author:	Nicolas Pitre
  * Created:	Dec 02, 2004
  * Copyright:	MontaVista Software Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/ac97_codec.h>
 #include <sound/initval.h>
 #include <sound/pxa2xx-lib.h>
-<<<<<<< HEAD
-
-#include <mach/regs-ac97.h>
-#include <mach/audio.h>
-
-#include "pxa2xx-pcm.h"
-
-static void pxa2xx_ac97_reset(struct snd_ac97 *ac97)
-{
-	if (!pxa2xx_ac97_try_cold_reset(ac97)) {
-		pxa2xx_ac97_try_warm_reset(ac97);
-	}
-
-	pxa2xx_ac97_finish_reset(ac97);
-}
-
-static struct snd_ac97_bus_ops pxa2xx_ac97_ops = {
-	.read	= pxa2xx_ac97_read,
-	.write	= pxa2xx_ac97_write,
-	.reset	= pxa2xx_ac97_reset,
-};
-
-static struct pxa2xx_pcm_dma_params pxa2xx_ac97_pcm_out = {
-	.name			= "AC97 PCM out",
-	.dev_addr		= __PREG(PCDR),
-	.drcmr			= &DRCMR(12),
-	.dcmd			= DCMD_INCSRCADDR | DCMD_FLOWTRG |
-				  DCMD_BURST32 | DCMD_WIDTH4,
-};
-
-static struct pxa2xx_pcm_dma_params pxa2xx_ac97_pcm_in = {
-	.name			= "AC97 PCM in",
-	.dev_addr		= __PREG(PCDR),
-	.drcmr			= &DRCMR(11),
-	.dcmd			= DCMD_INCTRGADDR | DCMD_FLOWSRC |
-				  DCMD_BURST32 | DCMD_WIDTH4,
-=======
 #include <sound/dmaengine_pcm.h>
 
 #include <linux/platform_data/asoc-pxa.h>
@@ -103,19 +53,11 @@ static const struct snd_ac97_bus_ops pxa2xx_ac97_ops = {
 	.read	= pxa2xx_ac97_legacy_read,
 	.write	= pxa2xx_ac97_legacy_write,
 	.reset	= pxa2xx_ac97_legacy_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_pcm *pxa2xx_ac97_pcm;
 static struct snd_ac97 *pxa2xx_ac97_ac97;
 
-<<<<<<< HEAD
-static int pxa2xx_ac97_pcm_startup(struct snd_pcm_substream *substream)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	pxa2xx_audio_ops_t *platform_ops;
-	int r;
-=======
 static int pxa2xx_ac97_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -125,32 +67,10 @@ static int pxa2xx_ac97_pcm_open(struct snd_pcm_substream *substream)
 	ret = pxa2xx_pcm_open(substream);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	runtime->hw.channels_min = 2;
 	runtime->hw.channels_max = 2;
 
-<<<<<<< HEAD
-	r = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
-	    AC97_RATES_FRONT_DAC : AC97_RATES_ADC;
-	runtime->hw.rates = pxa2xx_ac97_ac97->rates[r];
-	snd_pcm_limit_hw_rates(runtime);
-
-       	platform_ops = substream->pcm->card->dev->platform_data;
-	if (platform_ops && platform_ops->startup)
-		return platform_ops->startup(substream, platform_ops->priv);
-	else
-		return 0;
-}
-
-static void pxa2xx_ac97_pcm_shutdown(struct snd_pcm_substream *substream)
-{
-	pxa2xx_audio_ops_t *platform_ops;
-
-       	platform_ops = substream->pcm->card->dev->platform_data;
-	if (platform_ops && platform_ops->shutdown)
-		platform_ops->shutdown(substream, platform_ops->priv);
-=======
 	i = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
 		AC97_RATES_FRONT_DAC : AC97_RATES_ADC;
 	runtime->hw.rates = pxa2xx_ac97_ac97->rates[i];
@@ -175,7 +95,6 @@ static int pxa2xx_ac97_pcm_close(struct snd_pcm_substream *substream)
 		platform_ops->shutdown(substream, platform_ops->priv);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pxa2xx_ac97_pcm_prepare(struct snd_pcm_substream *substream)
@@ -183,22 +102,6 @@ static int pxa2xx_ac97_pcm_prepare(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int reg = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
 		  AC97_PCM_FRONT_DAC_RATE : AC97_PCM_LR_ADC_RATE;
-<<<<<<< HEAD
-	return snd_ac97_set_rate(pxa2xx_ac97_ac97, reg, runtime->rate);
-}
-
-static struct pxa2xx_pcm_client pxa2xx_ac97_pcm_client = {
-	.playback_params	= &pxa2xx_ac97_pcm_out,
-	.capture_params		= &pxa2xx_ac97_pcm_in,
-	.startup		= pxa2xx_ac97_pcm_startup,
-	.shutdown		= pxa2xx_ac97_pcm_shutdown,
-	.prepare		= pxa2xx_ac97_pcm_prepare,
-};
-
-#ifdef CONFIG_PM
-
-static int pxa2xx_ac97_do_suspend(struct snd_card *card, pm_message_t state)
-=======
 	int ret;
 
 	ret = pxa2xx_pcm_prepare(substream);
@@ -209,15 +112,10 @@ static int pxa2xx_ac97_do_suspend(struct snd_card *card, pm_message_t state)
 }
 
 static int pxa2xx_ac97_do_suspend(struct snd_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pxa2xx_audio_ops_t *platform_ops = card->dev->platform_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3cold);
-<<<<<<< HEAD
-	snd_pcm_suspend_all(pxa2xx_ac97_pcm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ac97_suspend(pxa2xx_ac97_ac97);
 	if (platform_ops && platform_ops->suspend)
 		platform_ops->suspend(platform_ops->priv);
@@ -248,11 +146,7 @@ static int pxa2xx_ac97_suspend(struct device *dev)
 	int ret = 0;
 
 	if (card)
-<<<<<<< HEAD
-		ret = pxa2xx_ac97_do_suspend(card, PMSG_SUSPEND);
-=======
 		ret = pxa2xx_ac97_do_suspend(card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -268,15 +162,6 @@ static int pxa2xx_ac97_resume(struct device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct dev_pm_ops pxa2xx_ac97_pm_ops = {
-	.suspend	= pxa2xx_ac97_suspend,
-	.resume		= pxa2xx_ac97_resume,
-};
-#endif
-
-static int __devinit pxa2xx_ac97_probe(struct platform_device *dev)
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(pxa2xx_ac97_pm_ops, pxa2xx_ac97_suspend, pxa2xx_ac97_resume);
 
 static const struct snd_pcm_ops pxa2xx_ac97_pcm_ops = {
@@ -316,7 +201,6 @@ static int pxa2xx_ac97_pcm_new(struct snd_card *card)
 }
 
 static int pxa2xx_ac97_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_ac97_bus *ac97_bus;
@@ -330,17 +214,6 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 		goto err_dev;
 	}
 
-<<<<<<< HEAD
-	ret = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
-			      THIS_MODULE, 0, &card);
-	if (ret < 0)
-		goto err;
-
-	card->dev = &dev->dev;
-	strncpy(card->driver, dev->dev.driver->name, sizeof(card->driver));
-
-	ret = pxa2xx_pcm_new(card, &pxa2xx_ac97_pcm_client, &pxa2xx_ac97_pcm);
-=======
 	ret = snd_card_new(&dev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			   THIS_MODULE, 0, &card);
 	if (ret < 0)
@@ -349,7 +222,6 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 	strscpy(card->driver, dev->dev.driver->name, sizeof(card->driver));
 
 	ret = pxa2xx_ac97_pcm_new(card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err;
 
@@ -372,10 +244,6 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 
 	if (pdata && pdata->codec_pdata[0])
 		snd_ac97_dev_add_pdata(ac97_bus->codec[0], pdata->codec_pdata[0]);
-<<<<<<< HEAD
-	snd_card_set_dev(card, &dev->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = snd_card_register(card);
 	if (ret == 0) {
 		platform_set_drvdata(dev, card);
@@ -391,44 +259,22 @@ err_dev:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit pxa2xx_ac97_remove(struct platform_device *dev)
-=======
 static void pxa2xx_ac97_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = platform_get_drvdata(dev);
 
 	if (card) {
 		snd_card_free(card);
-<<<<<<< HEAD
-		platform_set_drvdata(dev, NULL);
 		pxa2xx_ac97_hw_remove(dev);
 	}
-
-	return 0;
-=======
-		pxa2xx_ac97_hw_remove(dev);
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pxa2xx_ac97_driver = {
 	.probe		= pxa2xx_ac97_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pxa2xx_ac97_remove),
-	.driver		= {
-		.name	= "pxa2xx-ac97",
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &pxa2xx_ac97_pm_ops,
-#endif
-=======
 	.remove_new	= pxa2xx_ac97_remove,
 	.driver		= {
 		.name	= "pxa2xx-ac97",
 		.pm	= &pxa2xx_ac97_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

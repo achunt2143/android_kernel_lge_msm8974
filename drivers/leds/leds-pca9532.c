@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pca9532.c - 16-bit Led dimmer
  *
  * Copyright (C) 2011 Jan Weitzel
  * Copyright (C) 2008 Riku Voipio
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
  * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9532.pdf
- *
-=======
- * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9532.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -28,12 +16,8 @@
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
 #include <linux/leds-pca9532.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/driver.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* m =  num_leds*/
 #define PCA9532_REG_INPUT(i)	((i) >> 3)
@@ -42,11 +26,8 @@
 #define PCA9532_REG_PWM(m, i)	(PCA9532_REG_OFFSET(m) + 0x2 + (i) * 2)
 #define LED_REG(m, led)		(PCA9532_REG_OFFSET(m) + 0x5 + (led >> 2))
 #define LED_NUM(led)		(led & 0x3)
-<<<<<<< HEAD
-=======
 #define LED_SHIFT(led)		(LED_NUM(led) * 2)
 #define LED_MASK(led)		(0x3 << LED_SHIFT(led))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ldev_to_led(c)       container_of(c, struct pca9532_led, ldev)
 
@@ -68,14 +49,8 @@ struct pca9532_data {
 	u8 psc[2];
 };
 
-<<<<<<< HEAD
-static int pca9532_probe(struct i2c_client *client,
-	const struct i2c_device_id *id);
-static int pca9532_remove(struct i2c_client *client);
-=======
 static int pca9532_probe(struct i2c_client *client);
 static void pca9532_remove(struct i2c_client *client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	pca9530,
@@ -109,11 +84,6 @@ static const struct pca9532_chip_info pca9532_chip_info_tbl[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct i2c_driver pca9532_driver = {
-	.driver = {
-		.name = "leds-pca953x",
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id of_pca9532_leds_match[] = {
 	{ .compatible = "nxp,pca9530", .data = (void *)pca9530 },
@@ -130,7 +100,6 @@ static struct i2c_driver pca9532_driver = {
 	.driver = {
 		.name = "leds-pca953x",
 		.of_match_table = of_match_ptr(of_pca9532_leds_match),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe = pca9532_probe,
 	.remove = pca9532_remove,
@@ -193,24 +162,14 @@ static void pca9532_setled(struct pca9532_led *led)
 	mutex_lock(&data->update_lock);
 	reg = i2c_smbus_read_byte_data(client, LED_REG(maxleds, led->id));
 	/* zero led bits */
-<<<<<<< HEAD
-	reg = reg & ~(0x3<<LED_NUM(led->id)*2);
-	/* set the new value */
-	reg = reg | (led->state << LED_NUM(led->id)*2);
-=======
 	reg = reg & ~LED_MASK(led->id);
 	/* set the new value */
 	reg = reg | (led->state << LED_SHIFT(led->id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_smbus_write_byte_data(client, LED_REG(maxleds, led->id), reg);
 	mutex_unlock(&data->update_lock);
 }
 
-<<<<<<< HEAD
-static void pca9532_set_brightness(struct led_classdev *led_cdev,
-=======
 static int pca9532_set_brightness(struct led_classdev *led_cdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum led_brightness value)
 {
 	int err = 0;
@@ -224,18 +183,12 @@ static int pca9532_set_brightness(struct led_classdev *led_cdev,
 		led->state = PCA9532_PWM0; /* Thecus: hardcode one pwm */
 		err = pca9532_calcpwm(led->client, 0, 0, value);
 		if (err)
-<<<<<<< HEAD
-			return; /* XXX: led api doesn't allow error code? */
-	}
-	schedule_work(&led->work);
-=======
 			return err;
 	}
 	if (led->state == PCA9532_PWM0)
 		pca9532_setpwm(led->client, 0);
 	pca9532_setled(led);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pca9532_set_blink(struct led_classdev *led_cdev,
@@ -247,11 +200,7 @@ static int pca9532_set_blink(struct led_classdev *led_cdev,
 	int err = 0;
 
 	if (*delay_on == 0 && *delay_off == 0) {
-<<<<<<< HEAD
-	/* led subsystem ask us for a blink rate */
-=======
 		/* led subsystem ask us for a blink rate */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*delay_on = 1000;
 		*delay_off = 1000;
 	}
@@ -263,14 +212,10 @@ static int pca9532_set_blink(struct led_classdev *led_cdev,
 	err = pca9532_calcpwm(client, 0, psc, led_cdev->brightness);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	schedule_work(&led->work);
-=======
 	if (led->state == PCA9532_PWM0)
 		pca9532_setpwm(led->client, 0);
 	pca9532_setled(led);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -305,15 +250,6 @@ static void pca9532_input_work(struct work_struct *work)
 	mutex_unlock(&data->update_lock);
 }
 
-<<<<<<< HEAD
-static void pca9532_led_work(struct work_struct *work)
-{
-	struct pca9532_led *led;
-	led = container_of(work, struct pca9532_led, work);
-	if (led->state == PCA9532_PWM0)
-		pca9532_setpwm(led->client, 0);
-	pca9532_setled(led);
-=======
 static enum pca9532_state pca9532_getled(struct pca9532_led *led)
 {
 	struct i2c_client *client = led->client;
@@ -327,17 +263,12 @@ static enum pca9532_state pca9532_getled(struct pca9532_led *led)
 	ret = (reg & LED_MASK(led->id)) >> LED_SHIFT(led->id);
 	mutex_unlock(&data->update_lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_LEDS_PCA9532_GPIO
 static int pca9532_gpio_request_pin(struct gpio_chip *gc, unsigned offset)
 {
-<<<<<<< HEAD
-	struct pca9532_data *data = container_of(gc, struct pca9532_data, gpio);
-=======
 	struct pca9532_data *data = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pca9532_led *led = &data->leds[offset];
 
 	if (led->type == PCA9532_TYPE_GPIO)
@@ -348,11 +279,7 @@ static int pca9532_gpio_request_pin(struct gpio_chip *gc, unsigned offset)
 
 static void pca9532_gpio_set_value(struct gpio_chip *gc, unsigned offset, int val)
 {
-<<<<<<< HEAD
-	struct pca9532_data *data = container_of(gc, struct pca9532_data, gpio);
-=======
 	struct pca9532_data *data = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pca9532_led *led = &data->leds[offset];
 
 	if (val)
@@ -365,11 +292,7 @@ static void pca9532_gpio_set_value(struct gpio_chip *gc, unsigned offset, int va
 
 static int pca9532_gpio_get_value(struct gpio_chip *gc, unsigned offset)
 {
-<<<<<<< HEAD
-	struct pca9532_data *data = container_of(gc, struct pca9532_data, gpio);
-=======
 	struct pca9532_data *data = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char reg;
 
 	reg = i2c_smbus_read_byte_data(data->client, PCA9532_REG_INPUT(offset));
@@ -393,20 +316,10 @@ static int pca9532_gpio_direction_output(struct gpio_chip *gc, unsigned offset, 
 }
 #endif /* CONFIG_LEDS_PCA9532_GPIO */
 
-<<<<<<< HEAD
-static int pca9532_destroy_devices(struct pca9532_data *data, int n_devs)
-{
-	int i = n_devs;
-
-	if (!data)
-		return -EINVAL;
-
-=======
 static void pca9532_destroy_devices(struct pca9532_data *data, int n_devs)
 {
 	int i = n_devs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (--i >= 0) {
 		switch (data->leds[i].type) {
 		case PCA9532_TYPE_NONE:
@@ -414,17 +327,9 @@ static void pca9532_destroy_devices(struct pca9532_data *data, int n_devs)
 			break;
 		case PCA9532_TYPE_LED:
 			led_classdev_unregister(&data->leds[i].ldev);
-<<<<<<< HEAD
-			cancel_work_sync(&data->leds[i].work);
 			break;
 		case PCA9532_TYPE_N2100_BEEP:
 			if (data->idev != NULL) {
-				input_unregister_device(data->idev);
-=======
-			break;
-		case PCA9532_TYPE_N2100_BEEP:
-			if (data->idev != NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cancel_work_sync(&data->work);
 				data->idev = NULL;
 			}
@@ -433,23 +338,9 @@ static void pca9532_destroy_devices(struct pca9532_data *data, int n_devs)
 	}
 
 #ifdef CONFIG_LEDS_PCA9532_GPIO
-<<<<<<< HEAD
-	if (data->gpio.dev) {
-		int err = gpiochip_remove(&data->gpio);
-		if (err) {
-			dev_err(&data->client->dev, "%s failed, %d\n",
-						"gpiochip_remove()", err);
-			return err;
-		}
-	}
-#endif
-
-	return 0;
-=======
 	if (data->gpio.parent)
 		gpiochip_remove(&data->gpio);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pca9532_configure(struct i2c_client *client,
@@ -481,15 +372,6 @@ static int pca9532_configure(struct i2c_client *client,
 			gpios++;
 			break;
 		case PCA9532_TYPE_LED:
-<<<<<<< HEAD
-			led->state = pled->state;
-			led->name = pled->name;
-			led->ldev.name = led->name;
-			led->ldev.brightness = LED_OFF;
-			led->ldev.brightness_set = pca9532_set_brightness;
-			led->ldev.blink_set = pca9532_set_blink;
-			INIT_WORK(&led->work, pca9532_led_work);
-=======
 			if (pled->state == PCA9532_KEEP)
 				led->state = pca9532_getled(led);
 			else
@@ -501,7 +383,6 @@ static int pca9532_configure(struct i2c_client *client,
 			led->ldev.brightness_set_blocking =
 						pca9532_set_brightness;
 			led->ldev.blink_set = pca9532_set_blink;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = led_classdev_register(&client->dev, &led->ldev);
 			if (err < 0) {
 				dev_err(&client->dev,
@@ -515,11 +396,7 @@ static int pca9532_configure(struct i2c_client *client,
 			BUG_ON(data->idev);
 			led->state = PCA9532_PWM1;
 			pca9532_setled(led);
-<<<<<<< HEAD
-			data->idev = input_allocate_device();
-=======
 			data->idev = devm_input_allocate_device(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (data->idev == NULL) {
 				err = -ENOMEM;
 				goto exit;
@@ -538,10 +415,6 @@ static int pca9532_configure(struct i2c_client *client,
 			INIT_WORK(&data->work, pca9532_input_work);
 			err = input_register_device(data->idev);
 			if (err) {
-<<<<<<< HEAD
-				input_free_device(data->idev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cancel_work_sync(&data->work);
 				data->idev = NULL;
 				goto exit;
@@ -561,15 +434,6 @@ static int pca9532_configure(struct i2c_client *client,
 		data->gpio.can_sleep = 1;
 		data->gpio.base = pdata->gpio_base;
 		data->gpio.ngpio = data->chip_info->num_leds;
-<<<<<<< HEAD
-		data->gpio.dev = &client->dev;
-		data->gpio.owner = THIS_MODULE;
-
-		err = gpiochip_add(&data->gpio);
-		if (err) {
-			/* Use data->gpio.dev as a flag for freeing gpiochip */
-			data->gpio.dev = NULL;
-=======
 		data->gpio.parent = &client->dev;
 		data->gpio.owner = THIS_MODULE;
 
@@ -577,7 +441,6 @@ static int pca9532_configure(struct i2c_client *client,
 		if (err) {
 			/* Use data->gpio.dev as a flag for freeing gpiochip */
 			data->gpio.parent = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_warn(&client->dev, "could not add gpiochip\n");
 		} else {
 			dev_info(&client->dev, "gpios %i...%i\n",
@@ -594,17 +457,6 @@ exit:
 	return err;
 }
 
-<<<<<<< HEAD
-static int pca9532_probe(struct i2c_client *client,
-	const struct i2c_device_id *id)
-{
-	struct pca9532_data *data = i2c_get_clientdata(client);
-	struct pca9532_platform_data *pca9532_pdata = client->dev.platform_data;
-	int err;
-
-	if (!pca9532_pdata)
-		return -EIO;
-=======
 static struct pca9532_platform_data *
 pca9532_of_populate_pdata(struct device *dev, struct device_node *np)
 {
@@ -673,51 +525,22 @@ static int pca9532_probe(struct i2c_client *client)
 	} else {
 		devid = id->driver_data;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(client->adapter,
 		I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (!data)
-		return -ENOMEM;
-
-	data->chip_info = &pca9532_chip_info_tbl[id->driver_data];
-=======
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	data->chip_info = &pca9532_chip_info_tbl[devid];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&client->dev, "setting platform data\n");
 	i2c_set_clientdata(client, data);
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-<<<<<<< HEAD
-	err = pca9532_configure(client, data, pca9532_pdata);
-	if (err)
-		kfree(data);
-
-	return err;
-}
-
-static int pca9532_remove(struct i2c_client *client)
-{
-	struct pca9532_data *data = i2c_get_clientdata(client);
-	int err;
-
-	err = pca9532_destroy_devices(data, data->chip_info->num_leds);
-	if (err)
-		return err;
-
-	kfree(data);
-	return 0;
-=======
 	return pca9532_configure(client, data, pca9532_pdata);
 }
 
@@ -726,7 +549,6 @@ static void pca9532_remove(struct i2c_client *client)
 	struct pca9532_data *data = i2c_get_clientdata(client);
 
 	pca9532_destroy_devices(data, data->chip_info->num_leds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_i2c_driver(pca9532_driver);

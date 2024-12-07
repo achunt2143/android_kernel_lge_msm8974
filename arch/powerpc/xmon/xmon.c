@@ -1,56 +1,27 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Routines providing a simple monitor for use on the PowerMac.
  *
  * Copyright (C) 1996-2005 Paul Mackerras.
  * Copyright (C) 2001 PPC64 Team, IBM Corp
  * Copyrignt (C) 2006 Michael Ellerman, IBM Corp
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-#include <linux/errno.h>
-#include <linux/sched.h>
-=======
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <linux/mm.h>
 #include <linux/reboot.h>
 #include <linux/delay.h>
 #include <linux/kallsyms.h>
-<<<<<<< HEAD
-=======
 #include <linux/kmsg_dump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/export.h>
 #include <linux/sysrq.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/bug.h>
-<<<<<<< HEAD
-
-#include <asm/ptrace.h>
-#include <asm/string.h>
-#include <asm/prom.h>
-#include <asm/machdep.h>
-#include <asm/xmon.h>
-#include <asm/processor.h>
-#include <asm/pgtable.h>
-#include <asm/mmu.h>
-#include <asm/mmu_context.h>
-=======
 #include <linux/nmi.h>
 #include <linux/ctype.h>
 #include <linux/highmem.h>
@@ -66,7 +37,6 @@
 #include <asm/mmu.h>
 #include <asm/mmu_context.h>
 #include <asm/plpar_wrappers.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cputable.h>
 #include <asm/rtas.h>
 #include <asm/sstep.h>
@@ -76,8 +46,6 @@
 #include <asm/setjmp.h>
 #include <asm/reg.h>
 #include <asm/debug.h>
-<<<<<<< HEAD
-=======
 #include <asm/hw_breakpoint.h>
 #include <asm/xive.h>
 #include <asm/opal.h>
@@ -86,49 +54,22 @@
 #include <asm/sections.h>
 #include <asm/inst.h>
 #include <asm/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC64
 #include <asm/hvcall.h>
 #include <asm/paca.h>
-<<<<<<< HEAD
-=======
 #include <asm/lppaca.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #include "nonstdio.h"
 #include "dis-asm.h"
-<<<<<<< HEAD
-
-#define scanhex	xmon_scanhex
-#define skipbl	xmon_skipbl
-=======
 #include "xmon_bpts.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 static cpumask_t cpus_in_xmon = CPU_MASK_NONE;
 static unsigned long xmon_taken = 1;
 static int xmon_owner;
 static int xmon_gate;
-<<<<<<< HEAD
-#endif /* CONFIG_SMP */
-
-static unsigned long in_xmon __read_mostly = 0;
-
-static unsigned long adrs;
-static int size = 1;
-#define MAX_DUMP (128 * 1024)
-static unsigned long ndump = 64;
-static unsigned long nidump = 16;
-static unsigned long ncsum = 4096;
-static int termch;
-static char tmpstr[128];
-
-static long bus_error_jmp[JMP_BUF_LEN];
-static int catch_memory_errors;
-=======
 static int xmon_batch;
 static unsigned long xmon_batch_start_cpu;
 static cpumask_t xmon_batch_cpus = CPU_MASK_NONE;
@@ -154,35 +95,18 @@ static int tracing_enabled;
 static long bus_error_jmp[JMP_BUF_LEN];
 static int catch_memory_errors;
 static int catch_spr_faults;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long *xmon_fault_jmp[NR_CPUS];
 
 /* Breakpoint stuff */
 struct bpt {
 	unsigned long	address;
-<<<<<<< HEAD
-	unsigned int	instr[2];
-=======
 	u32		*instr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t	ref_count;
 	int		enabled;
 	unsigned long	pad;
 };
 
 /* Bits in bpt.enabled */
-<<<<<<< HEAD
-#define BP_IABR_TE	1		/* IABR translation enabled */
-#define BP_IABR		2
-#define BP_TRAP		8
-#define BP_DABR		0x10
-
-#define NBPTS	256
-static struct bpt bpts[NBPTS];
-static struct bpt dabr;
-static struct bpt *iabr;
-static unsigned bpinstr = 0x7fe00008;	/* trap */
-=======
 #define BP_CIABR	1
 #define BP_TRAP		2
 #define BP_DABR		4
@@ -191,7 +115,6 @@ static struct bpt bpts[NBPTS];
 static struct bpt dabr[HBP_NUM_MAX];
 static struct bpt *iabr;
 static unsigned int bpinstr = PPC_RAW_TRAP();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BP_NUM(bp)	((bp) - bpts + 1)
 
@@ -199,20 +122,12 @@ static unsigned int bpinstr = PPC_RAW_TRAP();
 static int cmds(struct pt_regs *);
 static int mread(unsigned long, void *, int);
 static int mwrite(unsigned long, void *, int);
-<<<<<<< HEAD
-=======
 static int mread_instr(unsigned long, ppc_inst_t *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int handle_fault(struct pt_regs *);
 static void byterev(unsigned char *, int);
 static void memex(void);
 static int bsesc(void);
 static void dump(void);
-<<<<<<< HEAD
-static void prdump(unsigned long, long);
-static int ppc_inst_dump(unsigned long, long, int);
-static void dump_log_buf(void);
-=======
 static void show_pte(unsigned long);
 static void prdump(unsigned long, long);
 static int ppc_inst_dump(unsigned long, long, int);
@@ -233,7 +148,6 @@ static inline void dump_opal_msglog(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void backtrace(struct pt_regs *);
 static void excprint(struct pt_regs *);
 static void prregs(struct pt_regs *);
@@ -249,11 +163,7 @@ void getstring(char *, int);
 static void flush_input(void);
 static int inchar(void);
 static void take_input(char *);
-<<<<<<< HEAD
-static unsigned long read_spr(int);
-=======
 static int  read_spr(int, unsigned long *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void write_spr(int, unsigned long);
 static void super_regs(void);
 static void remove_bpts(void);
@@ -269,10 +179,7 @@ static int  cpu_cmd(void);
 static void csum(void);
 static void bootcmds(void);
 static void proccall(void);
-<<<<<<< HEAD
-=======
 static void show_tasks(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dump_segments(void);
 static void symbol_lookup(void);
 static void xmon_show_stack(unsigned long sp, unsigned long lr,
@@ -286,36 +193,6 @@ static int do_spu_cmd(void);
 #ifdef CONFIG_44x
 static void dump_tlb_44x(void);
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_BOOK3E
-static void dump_tlb_book3e(void);
-#endif
-
-static int xmon_no_auto_backtrace;
-
-extern void xmon_enter(void);
-extern void xmon_leave(void);
-
-#ifdef CONFIG_PPC64
-#define REG		"%.16lx"
-#define REGS_PER_LINE	4
-#define LAST_VOLATILE	13
-#else
-#define REG		"%.8lx"
-#define REGS_PER_LINE	8
-#define LAST_VOLATILE	12
-#endif
-
-#define GETWORD(v)	(((v)[0] << 24) + ((v)[1] << 16) + ((v)[2] << 8) + (v)[3])
-
-#define isxdigit(c)	(('0' <= (c) && (c) <= '9') \
-			 || ('a' <= (c) && (c) <= 'f') \
-			 || ('A' <= (c) && (c) <= 'F'))
-#define isalnum(c)	(('0' <= (c) && (c) <= '9') \
-			 || ('a' <= (c) && (c) <= 'z') \
-			 || ('A' <= (c) && (c) <= 'Z'))
-#define isspace(c)	(c == ' ' || c == '\t' || c == 10 || c == 13 || c == 0)
-=======
 #ifdef CONFIG_PPC_BOOK3E_64
 static void dump_tlb_book3e(void);
 #endif
@@ -335,7 +212,6 @@ static void clear_all_bpt(void);
 #endif
 
 static const char *xmon_ro_msg = "Operation disabled: xmon in read-only mode\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *help_string = "\
 Commands:\n\
@@ -346,27 +222,12 @@ Commands:\n\
 #ifdef CONFIG_SMP
   "\
   c	print cpus stopped in xmon\n\
-<<<<<<< HEAD
-  c#	try to switch to cpu number h (in hex)\n"
-=======
   c#	try to switch to cpu number h (in hex)\n\
   c# $	run command '$' (one of 'r','S' or 't') on all cpus in xmon\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
   "\
   C	checksum\n\
   d	dump bytes\n\
-<<<<<<< HEAD
-  di	dump instructions\n\
-  df	dump float values\n\
-  dd	dump double values\n\
-  dl    dump the kernel log buffer\n\
-  dr	dump stream of raw bytes\n\
-  e	print exception information\n\
-  f	flush cache\n\
-  la	lookup symbol+offset of specified address\n\
-  ls	lookup address of specified symbol\n\
-=======
   d1	dump 1 byte values\n\
   d2	dump 2 byte values\n\
   d4	dump 4 byte values\n\
@@ -400,7 +261,6 @@ Commands:\n\
   la	lookup symbol+offset of specified address\n\
   ls	lookup address of specified symbol\n\
   lp s [#]	lookup address of percpu symbol s for current cpu, or cpu #\n\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   m	examine/change memory\n\
   mm	move a block of memory\n\
   ms	set a block of memory\n\
@@ -409,10 +269,7 @@ Commands:\n\
   mz	zero a block of memory\n\
   mi	show information about memory allocation\n\
   p 	call a procedure\n\
-<<<<<<< HEAD
-=======
   P 	list processes/tasks\n\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   r	print registers\n\
   s	single step\n"
 #ifdef CONFIG_SPU_BASE
@@ -423,23 +280,6 @@ Commands:\n\
   sdi #	disassemble spu local store for spu # (in hex)\n"
 #endif
 "  S	print special registers\n\
-<<<<<<< HEAD
-  t	print backtrace\n\
-  x	exit monitor and recover\n\
-  X	exit monitor and dont recover\n"
-#if defined(CONFIG_PPC64) && !defined(CONFIG_PPC_BOOK3E)
-"  u	dump segment table or SLB\n"
-#elif defined(CONFIG_PPC_STD_MMU_32)
-"  u	dump segment registers\n"
-#elif defined(CONFIG_44x) || defined(CONFIG_PPC_BOOK3E)
-"  u	dump TLB\n"
-#endif
-"  ?	help\n"
-"  zr	reboot\n\
-  zh	halt\n"
-;
-
-=======
   Sa    print all SPRs\n\
   Sr #	read SPR #\n\
   Sw #v write v to SPR #\n\
@@ -488,7 +328,6 @@ static inline bool xmon_is_locked_down(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pt_regs *xmon_regs;
 
 static inline void sync(void)
@@ -496,14 +335,6 @@ static inline void sync(void)
 	asm volatile("sync; isync");
 }
 
-<<<<<<< HEAD
-static inline void store_inst(void *p)
-{
-	asm volatile ("dcbst 0,%0; sync; icbi 0,%0; isync" : : "r" (p));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void cflush(void *p)
 {
 	asm volatile ("dcbf 0,%0; icbi 0,%0" : : "r" (p));
@@ -514,8 +345,6 @@ static inline void cinval(void *p)
 	asm volatile ("dcbi 0,%0; icbi 0,%0" : : "r" (p));
 }
 
-<<<<<<< HEAD
-=======
 /**
  * write_ciabr() - write the CIABR SPR
  * @ciabr:	The value to write.
@@ -555,7 +384,6 @@ static void set_ciabr(unsigned long addr)
 	write_ciabr(addr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Disable surveillance (the service processor watchdog function)
  * while we are in xmon.
@@ -568,10 +396,7 @@ static inline void disable_surveillance(void)
 #ifdef CONFIG_PPC_PSERIES
 	/* Since this can't be a module, args should end up below 4GB. */
 	static struct rtas_args args;
-<<<<<<< HEAD
-=======
 	const s32 token = rtas_function_token(RTAS_FN_SET_INDICATOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point we have got all the cpus we can into
@@ -580,26 +405,12 @@ static inline void disable_surveillance(void)
 	 * If we did try to take rtas.lock there would be a
 	 * real possibility of deadlock.
 	 */
-<<<<<<< HEAD
-	args.token = rtas_token("set-indicator");
-	if (args.token == RTAS_UNKNOWN_SERVICE)
-		return;
-	args.token = cpu_to_be32(args.token);
-	args.nargs = cpu_to_be32(3);
-	args.nret = cpu_to_be32(1);
-	args.rets = &args.args[3];
-	args.args[0] = cpu_to_be32(SURVEILLANCE_TOKEN);
-	args.args[1] = 0;
-	args.args[2] = 0;
-	enter_rtas(__pa(&args));
-=======
 	if (token == RTAS_UNKNOWN_SERVICE)
 		return;
 
 	rtas_call_unlocked(&args, token, 3, 1, NULL,
 			   SURVEILLANCE_TOKEN, 0, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PPC_PSERIES */
 }
 
@@ -614,18 +425,6 @@ static void get_output_lock(void)
 
 	if (xmon_speaker == me)
 		return;
-<<<<<<< HEAD
-	for (;;) {
-		if (xmon_speaker == 0) {
-			last_speaker = cmpxchg(&xmon_speaker, 0, me);
-			if (last_speaker == 0)
-				return;
-		}
-		timeout = 10000000;
-		while (xmon_speaker == last_speaker) {
-			if (--timeout > 0)
-				continue;
-=======
 
 	for (;;) {
 		last_speaker = cmpxchg(&xmon_speaker, 0, me);
@@ -643,7 +442,6 @@ static void get_output_lock(void)
 				continue;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* hostile takeover */
 			prev = cmpxchg(&xmon_speaker, last_speaker, me);
 			if (prev == last_speaker)
@@ -662,25 +460,6 @@ int cpus_are_in_xmon(void)
 {
 	return !cpumask_empty(&cpus_in_xmon);
 }
-<<<<<<< HEAD
-#endif
-
-static inline int unrecoverable_excp(struct pt_regs *regs)
-{
-#if defined(CONFIG_4xx) || defined(CONFIG_PPC_BOOK3E)
-	/* We have no MSR_RI bit on 4xx or Book3e, so we simply return false */
-	return 0;
-#else
-	return ((regs->msr & MSR_RI) == 0);
-#endif
-}
-
-static int xmon_core(struct pt_regs *regs, int fromipi)
-{
-	int cmd = 0;
-	struct bpt *bp;
-	long recurse_jmp[JMP_BUF_LEN];
-=======
 
 static bool wait_for_other_cpus(int ncpus)
 {
@@ -714,22 +493,11 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 	struct bpt *volatile bp;
 	long recurse_jmp[JMP_BUF_LEN];
 	bool locked_down;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset;
 	unsigned long flags;
 #ifdef CONFIG_SMP
 	int cpu;
 	int secondary;
-<<<<<<< HEAD
-	unsigned long timeout;
-#endif
-
-	local_irq_save(flags);
-
-	bp = in_breakpoint_table(regs->nip, &offset);
-	if (bp != NULL) {
-		regs->nip = bp->address + offset;
-=======
 #endif
 
 	local_irq_save(flags);
@@ -745,7 +513,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 	bp = in_breakpoint_table(regs->nip, &offset);
 	if (bp != NULL) {
 		regs_set_return_ip(regs, bp->address + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_dec(&bp->ref_count);
 	}
 
@@ -754,15 +521,12 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 #ifdef CONFIG_SMP
 	cpu = smp_processor_id();
 	if (cpumask_test_cpu(cpu, &cpus_in_xmon)) {
-<<<<<<< HEAD
-=======
 		/*
 		 * We catch SPR read/write faults here because the 0x700, 0xf60
 		 * etc. handlers don't call debugger_fault_handler().
 		 */
 		if (catch_spr_faults)
 			longjmp(bus_error_jmp, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_output_lock();
 		excprint(regs);
 		printf("cpu 0x%x: Exception %lx %s in xmon, "
@@ -785,32 +549,15 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 	}
 
 	xmon_fault_jmp[cpu] = recurse_jmp;
-<<<<<<< HEAD
-	cpumask_set_cpu(cpu, &cpus_in_xmon);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bp = NULL;
 	if ((regs->msr & (MSR_IR|MSR_PR|MSR_64BIT)) == (MSR_IR|MSR_64BIT))
 		bp = at_breakpoint(regs->nip);
-<<<<<<< HEAD
-	if (bp || unrecoverable_excp(regs))
-=======
 	if (bp || regs_is_unrecoverable(regs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fromipi = 0;
 
 	if (!fromipi) {
 		get_output_lock();
-<<<<<<< HEAD
-		excprint(regs);
-		if (bp) {
-			printf("cpu 0x%x stopped at breakpoint 0x%x (",
-			       cpu, BP_NUM(bp));
-			xmon_print_symbol(regs->nip, " ", ")\n");
-		}
-		if (unrecoverable_excp(regs))
-=======
 		if (!locked_down)
 			excprint(regs);
 		if (bp) {
@@ -819,24 +566,11 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 			xmon_print_symbol(regs->nip, " ", ")\n");
 		}
 		if (regs_is_unrecoverable(regs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("WARNING: exception is not recoverable, "
 			       "can't continue\n");
 		release_output_lock();
 	}
 
-<<<<<<< HEAD
- waiting:
-	secondary = 1;
-	while (secondary && !xmon_gate) {
-		if (in_xmon == 0) {
-			if (fromipi)
-				goto leave;
-			secondary = test_and_set_bit(0, &in_xmon);
-		}
-		barrier();
-	}
-=======
 	cpumask_set_cpu(cpu, &cpus_in_xmon);
 
  waiting:
@@ -854,7 +588,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 		touch_nmi_watchdog();
 	}
 	spin_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!secondary && !xmon_gate) {
 		/* we are the first cpu to come in */
@@ -864,25 +597,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 		xmon_owner = cpu;
 		mb();
 		if (ncpus > 1) {
-<<<<<<< HEAD
-			smp_send_debugger_break();
-			/* wait for other cpus to come in */
-			for (timeout = 100000000; timeout != 0; --timeout) {
-				if (cpumask_weight(&cpus_in_xmon) >= ncpus)
-					break;
-				barrier();
-			}
-		}
-		remove_bpts();
-		disable_surveillance();
-		/* for breakpoint or single step, print the current instr. */
-		if (bp || TRAP(regs) == 0xd00)
-			ppc_inst_dump(regs->nip, 1, 0);
-		printf("enter ? for help\n");
-		mb();
-		xmon_gate = 1;
-		barrier();
-=======
 			/*
 			 * A system reset (trap == 0x100) can be triggered on
 			 * all CPUs, so when we come in via 0x100 try waiting
@@ -909,35 +623,20 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 		xmon_gate = 1;
 		barrier();
 		touch_nmi_watchdog();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  cmdloop:
 	while (in_xmon) {
 		if (secondary) {
-<<<<<<< HEAD
-			if (cpu == xmon_owner) {
-				if (!test_and_set_bit(0, &xmon_taken)) {
-					secondary = 0;
-=======
 			spin_begin();
 			if (cpu == xmon_owner) {
 				if (!test_and_set_bit(0, &xmon_taken)) {
 					secondary = 0;
 					spin_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				}
 				/* missed it */
 				while (cpu == xmon_owner)
-<<<<<<< HEAD
-					barrier();
-			}
-			barrier();
-		} else {
-			cmd = cmds(regs);
-			if (cmd != 0) {
-=======
 					spin_cpu_relax();
 			}
 			spin_cpu_relax();
@@ -949,7 +648,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 			if (!locked_down && cmd)
 				cmd = cmds(regs);
 			if (locked_down || cmd != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* exiting xmon */
 				insert_bpts();
 				xmon_gate = 0;
@@ -978,30 +676,14 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 		excprint(regs);
 		bp = at_breakpoint(regs->nip);
 		if (bp) {
-<<<<<<< HEAD
-			printf("Stopped at breakpoint %x (", BP_NUM(bp));
-			xmon_print_symbol(regs->nip, " ", ")\n");
-		}
-		if (unrecoverable_excp(regs))
-=======
 			printf("Stopped at breakpoint %tx (", BP_NUM(bp));
 			xmon_print_symbol(regs->nip, " ", ")\n");
 		}
 		if (regs_is_unrecoverable(regs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("WARNING: exception is not recoverable, "
 			       "can't continue\n");
 		remove_bpts();
 		disable_surveillance();
-<<<<<<< HEAD
-		/* for breakpoint or single step, print the current instr. */
-		if (bp || TRAP(regs) == 0xd00)
-			ppc_inst_dump(regs->nip, 1, 0);
-		printf("enter ? for help\n");
-	}
-
-	cmd = cmds(regs);
-=======
 		if (!locked_down) {
 			/* for breakpoint or single step, print current insn */
 			if (bp || TRAP(regs) == INTERRUPT_TRACE)
@@ -1012,7 +694,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 
 	if (!locked_down)
 		cmd = cmds(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	insert_bpts();
 	in_xmon = 0;
@@ -1022,11 +703,7 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 	if (regs->msr & MSR_DE) {
 		bp = at_breakpoint(regs->nip);
 		if (bp != NULL) {
-<<<<<<< HEAD
-			regs->nip = (unsigned long) &bp->instr[0];
-=======
 			regs_set_return_ip(regs, (unsigned long) &bp->instr[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_inc(&bp->ref_count);
 		}
 	}
@@ -1034,15 +711,6 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 	if ((regs->msr & (MSR_IR|MSR_PR|MSR_64BIT)) == (MSR_IR|MSR_64BIT)) {
 		bp = at_breakpoint(regs->nip);
 		if (bp != NULL) {
-<<<<<<< HEAD
-			int stepped = emulate_step(regs, bp->instr[0]);
-			if (stepped == 0) {
-				regs->nip = (unsigned long) &bp->instr[0];
-				atomic_inc(&bp->ref_count);
-			} else if (stepped < 0) {
-				printf("Couldn't single-step %s instruction\n",
-				    (IS_RFID(bp->instr[0])? "rfid": "mtmsrd"));
-=======
 			int stepped = emulate_step(regs, ppc_inst_read(bp->instr));
 			if (stepped == 0) {
 				regs_set_return_ip(regs, (unsigned long) &bp->instr[0]);
@@ -1050,22 +718,16 @@ static int xmon_core(struct pt_regs *regs, volatile int fromipi)
 			} else if (stepped < 0) {
 				printf("Couldn't single-step %s instruction\n",
 				    IS_RFID(ppc_inst_read(bp->instr))? "rfid": "mtmsrd");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 #endif
-<<<<<<< HEAD
-	insert_cpu_bpts();
-
-=======
 	if (locked_down)
 		clear_all_bpt();
 	else
 		insert_cpu_bpts();
 
 	xmon_touch_watchdogs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	return cmd != 'X' && cmd != EOF;
@@ -1104,13 +766,8 @@ static int xmon_bpt(struct pt_regs *regs)
 
 	/* Are we at the trap at bp->instr[1] for some bp? */
 	bp = in_breakpoint_table(regs->nip, &offset);
-<<<<<<< HEAD
-	if (bp != NULL && offset == 4) {
-		regs->nip = bp->address + 4;
-=======
 	if (bp != NULL && (offset == 4 || offset == 8)) {
 		regs_set_return_ip(regs, bp->address + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_dec(&bp->ref_count);
 		return 1;
 	}
@@ -1133,14 +790,6 @@ static int xmon_sstep(struct pt_regs *regs)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int xmon_dabr_match(struct pt_regs *regs)
-{
-	if ((regs->msr & (MSR_IR|MSR_PR|MSR_64BIT)) != (MSR_IR|MSR_64BIT))
-		return 0;
-	if (dabr.enabled == 0)
-		return 0;
-=======
 static int xmon_break_match(struct pt_regs *regs)
 {
 	int i;
@@ -1154,7 +803,6 @@ static int xmon_break_match(struct pt_regs *regs)
 	return 0;
 
 found:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xmon_core(regs, 0);
 	return 1;
 }
@@ -1189,11 +837,7 @@ static int xmon_fault_handler(struct pt_regs *regs)
 	if ((regs->msr & (MSR_IR|MSR_PR|MSR_64BIT)) == (MSR_IR|MSR_64BIT)) {
 		bp = in_breakpoint_table(regs->nip, &offset);
 		if (bp != NULL) {
-<<<<<<< HEAD
-			regs->nip = bp->address + offset;
-=======
 			regs_set_return_ip(regs, bp->address + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_dec(&bp->ref_count);
 		}
 	}
@@ -1201,12 +845,6 @@ static int xmon_fault_handler(struct pt_regs *regs)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct bpt *at_breakpoint(unsigned long pc)
-{
-	int i;
-	struct bpt *bp;
-=======
 /* Force enable xmon if not already enabled */
 static inline void force_enable_xmon(void)
 {
@@ -1221,7 +859,6 @@ static struct bpt *at_breakpoint(unsigned long pc)
 {
 	int i;
 	struct bpt *volatile bp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bp = bpts;
 	for (i = 0; i < NBPTS; ++i, ++bp)
@@ -1234,17 +871,6 @@ static struct bpt *in_breakpoint_table(unsigned long nip, unsigned long *offp)
 {
 	unsigned long off;
 
-<<<<<<< HEAD
-	off = nip - (unsigned long) bpts;
-	if (off >= sizeof(bpts))
-		return NULL;
-	off %= sizeof(struct bpt);
-	if (off != offsetof(struct bpt, instr[0])
-	    && off != offsetof(struct bpt, instr[1]))
-		return NULL;
-	*offp = off - offsetof(struct bpt, instr[0]);
-	return (struct bpt *) (nip - off);
-=======
 	off = nip - (unsigned long)bpt_table;
 	if (off >= sizeof(bpt_table))
 		return NULL;
@@ -1252,7 +878,6 @@ static struct bpt *in_breakpoint_table(unsigned long nip, unsigned long *offp)
 	if (off & 3)
 		return NULL;
 	return bpts + (off / BPT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct bpt *new_breakpoint(unsigned long a)
@@ -1267,12 +892,7 @@ static struct bpt *new_breakpoint(unsigned long a)
 	for (bp = bpts; bp < &bpts[NBPTS]; ++bp) {
 		if (!bp->enabled && atomic_read(&bp->ref_count) == 0) {
 			bp->address = a;
-<<<<<<< HEAD
-			bp->instr[1] = bpinstr;
-			store_inst(&bp->instr[1]);
-=======
 			bp->instr = (void *)(bpt_table + ((bp - bpts) * BPT_WORDS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return bp;
 		}
 	}
@@ -1284,15 +904,6 @@ static struct bpt *new_breakpoint(unsigned long a)
 static void insert_bpts(void)
 {
 	int i;
-<<<<<<< HEAD
-	struct bpt *bp;
-
-	bp = bpts;
-	for (i = 0; i < NBPTS; ++i, ++bp) {
-		if ((bp->enabled & (BP_TRAP|BP_IABR)) == 0)
-			continue;
-		if (mread(bp->address, &bp->instr[0], 4) != 4) {
-=======
 	ppc_inst_t instr, instr2;
 	struct bpt *bp, *bp2;
 
@@ -1301,24 +912,11 @@ static void insert_bpts(void)
 		if ((bp->enabled & (BP_TRAP|BP_CIABR)) == 0)
 			continue;
 		if (!mread_instr(bp->address, &instr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("Couldn't read instruction at %lx, "
 			       "disabling breakpoint there\n", bp->address);
 			bp->enabled = 0;
 			continue;
 		}
-<<<<<<< HEAD
-		if (IS_MTMSRD(bp->instr[0]) || IS_RFID(bp->instr[0])) {
-			printf("Breakpoint at %lx is on an mtmsrd or rfid "
-			       "instruction, disabling it\n", bp->address);
-			bp->enabled = 0;
-			continue;
-		}
-		store_inst(&bp->instr[0]);
-		if (bp->enabled & BP_IABR)
-			continue;
-		if (mwrite(bp->address, &bpinstr, 4) != 4) {
-=======
 		if (!can_single_step(ppc_inst_val(instr))) {
 			printf("Breakpoint at %lx is on an instruction that can't be single stepped, disabling it\n",
 					bp->address);
@@ -1355,28 +953,16 @@ static void insert_bpts(void)
 			continue;
 		if (patch_instruction((u32 *)bp->address,
 				      ppc_inst(bpinstr)) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("Couldn't write instruction at %lx, "
 			       "disabling breakpoint there\n", bp->address);
 			bp->enabled &= ~BP_TRAP;
 			continue;
 		}
-<<<<<<< HEAD
-		store_inst((void *)bp->address);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void insert_cpu_bpts(void)
 {
-<<<<<<< HEAD
-	if (dabr.enabled)
-		set_dabr(dabr.address | (dabr.enabled & 7));
-	if (iabr && cpu_has_feature(CPU_FTR_IABR))
-		mtspr(SPRN_IABR, iabr->address
-			 | (iabr->enabled & (BP_IABR|BP_IABR_TE)));
-=======
 	int i;
 	struct arch_hw_breakpoint brk;
 
@@ -1392,28 +978,12 @@ static void insert_cpu_bpts(void)
 
 	if (iabr)
 		set_ciabr(iabr->address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remove_bpts(void)
 {
 	int i;
 	struct bpt *bp;
-<<<<<<< HEAD
-	unsigned instr;
-
-	bp = bpts;
-	for (i = 0; i < NBPTS; ++i, ++bp) {
-		if ((bp->enabled & (BP_TRAP|BP_IABR)) != BP_TRAP)
-			continue;
-		if (mread(bp->address, &instr, 4) == 4
-		    && instr == bpinstr
-		    && mwrite(bp->address, &bp->instr, 4) != 4)
-			printf("Couldn't remove breakpoint at %lx\n",
-			       bp->address);
-		else
-			store_inst((void *)bp->address);
-=======
 	ppc_inst_t instr;
 
 	bp = bpts;
@@ -1426,19 +996,11 @@ static void remove_bpts(void)
 			(u32 *)bp->address, ppc_inst_read(bp->instr)) != 0)
 			printf("Couldn't remove breakpoint at %lx\n",
 			       bp->address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void remove_cpu_bpts(void)
 {
-<<<<<<< HEAD
-	set_dabr(0);
-	if (cpu_has_feature(CPU_FTR_IABR))
-		mtspr(SPRN_IABR, 0);
-}
-
-=======
 	hw_breakpoint_disable();
 	write_ciabr(0);
 }
@@ -1473,7 +1035,6 @@ static void set_lpp_cmd(void)
 	}
 	xmon_set_pagination_lpp(lpp);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Command interpreting routine */
 static char *last_cmd;
 
@@ -1485,14 +1046,7 @@ cmds(struct pt_regs *excp)
 	last_cmd = NULL;
 	xmon_regs = excp;
 
-<<<<<<< HEAD
-	if (!xmon_no_auto_backtrace) {
-		xmon_no_auto_backtrace = 1;
-		xmon_show_stack(excp->gpr[1], excp->link, excp->nip);
-	}
-=======
 	xmon_show_stack(excp->gpr[1], excp->link, excp->nip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for(;;) {
 #ifdef CONFIG_SMP
@@ -1522,12 +1076,6 @@ cmds(struct pt_regs *excp)
 				memlocate();
 				break;
 			case 'z':
-<<<<<<< HEAD
-				memzcan();
-				break;
-			case 'i':
-				show_mem(0);
-=======
 				if (xmon_is_ro) {
 					printf(xmon_ro_msg);
 					break;
@@ -1536,7 +1084,6 @@ cmds(struct pt_regs *excp)
 				break;
 			case 'i':
 				show_mem();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			default:
 				termch = cmd;
@@ -1572,11 +1119,8 @@ cmds(struct pt_regs *excp)
 			break;
 		case 'x':
 		case 'X':
-<<<<<<< HEAD
-=======
 			if (tracing_enabled)
 				tracing_on();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return cmd;
 		case EOF:
 			printf(" <no input ...>\n");
@@ -1585,12 +1129,9 @@ cmds(struct pt_regs *excp)
 		case '?':
 			xmon_puts(help_string);
 			break;
-<<<<<<< HEAD
-=======
 		case '#':
 			set_lpp_cmd();
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'b':
 			bpt_cmds();
 			break;
@@ -1605,19 +1146,6 @@ cmds(struct pt_regs *excp)
 			bootcmds();
 			break;
 		case 'p':
-<<<<<<< HEAD
-			proccall();
-			break;
-#ifdef CONFIG_PPC_STD_MMU
-		case 'u':
-			dump_segments();
-			break;
-#elif defined(CONFIG_4xx)
-		case 'u':
-			dump_tlb_44x();
-			break;
-#elif defined(CONFIG_PPC_BOOK3E)
-=======
 			if (xmon_is_ro) {
 				printf(xmon_ro_msg);
 				break;
@@ -1636,33 +1164,22 @@ cmds(struct pt_regs *excp)
 			dump_tlb_44x();
 			break;
 #elif defined(CONFIG_PPC_BOOK3E_64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'u':
 			dump_tlb_book3e();
 			break;
 #endif
-<<<<<<< HEAD
-		default:
-			printf("Unrecognized command: ");
-		        do {
-=======
 		case 'U':
 			show_uptime();
 			break;
 		default:
 			printf("Unrecognized command: ");
 			do {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (' ' < cmd && cmd <= '~')
 					putchar(cmd);
 				else
 					printf("\\x%x", cmd);
 				cmd = inchar();
-<<<<<<< HEAD
-		        } while (cmd != '\n'); 
-=======
 			} while (cmd != '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf(" (type ? for help)\n");
 			break;
 		}
@@ -1672,11 +1189,7 @@ cmds(struct pt_regs *excp)
 #ifdef CONFIG_BOOKE
 static int do_step(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	regs->msr |= MSR_DE;
-=======
 	regs_set_return_msr(regs, regs->msr | MSR_DE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtspr(SPRN_DBCR0, mfspr(SPRN_DBCR0) | DBCR0_IC | DBCR0_IDM);
 	return 1;
 }
@@ -1687,14 +1200,6 @@ static int do_step(struct pt_regs *regs)
  */
 static int do_step(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned int instr;
-	int stepped;
-
-	/* check we are in 64-bit kernel mode, translation enabled */
-	if ((regs->msr & (MSR_64BIT|MSR_PR|MSR_IR)) == (MSR_64BIT|MSR_IR)) {
-		if (mread(regs->nip, &instr, 4) == 4) {
-=======
 	ppc_inst_t instr;
 	int stepped;
 
@@ -1702,7 +1207,6 @@ static int do_step(struct pt_regs *regs)
 	/* check we are in 64-bit kernel mode, translation enabled */
 	if ((regs->msr & (MSR_64BIT|MSR_PR|MSR_IR)) == (MSR_64BIT|MSR_IR)) {
 		if (mread_instr(regs->nip, &instr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			stepped = emulate_step(regs, instr);
 			if (stepped < 0) {
 				printf("Couldn't single-step %s instruction\n",
@@ -1710,11 +1214,7 @@ static int do_step(struct pt_regs *regs)
 				return 0;
 			}
 			if (stepped > 0) {
-<<<<<<< HEAD
-				regs->trap = 0xd00 | (regs->trap & 1);
-=======
 				set_trap(regs, 0xd00);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				printf("stepped to ");
 				xmon_print_symbol(regs->nip, " ", "\n");
 				ppc_inst_dump(regs->nip, 1, 0);
@@ -1722,62 +1222,13 @@ static int do_step(struct pt_regs *regs)
 			}
 		}
 	}
-<<<<<<< HEAD
-	regs->msr |= MSR_SE;
-=======
 	regs_set_return_msr(regs, regs->msr | MSR_SE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 #endif
 
 static void bootcmds(void)
 {
-<<<<<<< HEAD
-	int cmd;
-
-	cmd = inchar();
-	if (cmd == 'r')
-		ppc_md.restart(NULL);
-	else if (cmd == 'h')
-		ppc_md.halt();
-	else if (cmd == 'p')
-		ppc_md.power_off();
-}
-
-static int cpu_cmd(void)
-{
-#ifdef CONFIG_SMP
-	unsigned long cpu;
-	int timeout;
-	int count;
-
-	if (!scanhex(&cpu)) {
-		/* print cpus waiting or in xmon */
-		printf("cpus stopped:");
-		count = 0;
-		for_each_possible_cpu(cpu) {
-			if (cpumask_test_cpu(cpu, &cpus_in_xmon)) {
-				if (count == 0)
-					printf(" %x", cpu);
-				++count;
-			} else {
-				if (count > 1)
-					printf("-%x", cpu - 1);
-				count = 0;
-			}
-		}
-		if (count > 1)
-			printf("-%x", NR_CPUS - 1);
-		printf("\n");
-		return 0;
-	}
-	/* try to switch to cpu specified */
-	if (!cpumask_test_cpu(cpu, &cpus_in_xmon)) {
-		printf("cpu 0x%x isn't in xmon\n", cpu);
-		return 0;
-	}
-=======
 	char tmp[64];
 	int cmd;
 
@@ -1797,7 +1248,6 @@ static int xmon_switch_cpu(unsigned long cpu)
 {
 	int timeout;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xmon_taken = 0;
 	mb();
 	xmon_owner = cpu;
@@ -1809,23 +1259,12 @@ static int xmon_switch_cpu(unsigned long cpu)
 			/* take control back */
 			mb();
 			xmon_owner = smp_processor_id();
-<<<<<<< HEAD
-			printf("cpu %u didn't take control\n", cpu);
-=======
 			printf("cpu 0x%lx didn't take control\n", cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		barrier();
 	}
 	return 1;
-<<<<<<< HEAD
-#else
-	return 0;
-#endif /* CONFIG_SMP */
-}
-
-=======
 }
 
 static int xmon_batch_next_cpu(void)
@@ -1951,7 +1390,6 @@ static int cpu_cmd(void)
 }
 #endif /* CONFIG_SMP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short fcstab[256] = {
 	0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
 	0x8c48, 0x9dc1, 0xaf5a, 0xbed3, 0xca6c, 0xdbe5, 0xe97e, 0xf8f7,
@@ -2003,11 +1441,7 @@ csum(void)
 	fcs = 0xffff;
 	for (i = 0; i < ncsum; ++i) {
 		if (mread(adrs+i, &v, 1) == 0) {
-<<<<<<< HEAD
-			printf("csum stopped at %x\n", adrs+i);
-=======
 			printf("csum stopped at "REG"\n", adrs+i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		fcs = FCS(fcs, v);
@@ -2020,41 +1454,24 @@ csum(void)
  */
 static long check_bp_loc(unsigned long addr)
 {
-<<<<<<< HEAD
-	unsigned int instr;
-=======
 	ppc_inst_t instr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr &= ~3;
 	if (!is_kernel_addr(addr)) {
 		printf("Breakpoints may only be placed at kernel addresses\n");
 		return 0;
 	}
-<<<<<<< HEAD
-	if (!mread(addr, &instr, sizeof(instr))) {
-		printf("Can't read instruction at address %lx\n", addr);
-		return 0;
-	}
-	if (IS_MTMSRD(instr) || IS_RFID(instr)) {
-		printf("Breakpoints may not be placed on mtmsrd or rfid "
-		       "instructions\n");
-=======
 	if (!mread_instr(addr, &instr)) {
 		printf("Can't read instruction at address %lx\n", addr);
 		return 0;
 	}
 	if (!can_single_step(ppc_inst_val(instr))) {
 		printf("Breakpoints may not be placed on instructions that can't be single stepped\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-static char *breakpoint_help_string = 
-=======
 static int find_free_data_bpt(void)
 {
 	int i;
@@ -2085,17 +1502,12 @@ static void print_data_bpts(void)
 }
 
 static char *breakpoint_help_string =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "Breakpoint command usage:\n"
     "b                show breakpoints\n"
     "b <addr> [cnt]   set breakpoint at given instr addr\n"
     "bc               clear all breakpoints\n"
     "bc <n/addr>      clear breakpoint number n or at addr\n"
-<<<<<<< HEAD
-    "bi <addr> [cnt]  set hardware instr breakpoint (POWER3/RS64 only)\n"
-=======
     "bi <addr> [cnt]  set hardware instr breakpoint (POWER8 only)\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "bd <addr> [cnt]  set hardware data breakpoint\n"
     "";
 
@@ -2104,17 +1516,6 @@ bpt_cmds(void)
 {
 	int cmd;
 	unsigned long a;
-<<<<<<< HEAD
-	int mode, i;
-	struct bpt *bp;
-	const char badaddr[] = "Only kernel addresses are permitted "
-		"for breakpoints\n";
-
-	cmd = inchar();
-	switch (cmd) {
-#ifndef CONFIG_8xx
-	case 'd':	/* bd - hardware data breakpoint */
-=======
 	int i;
 	struct bpt *bp;
 
@@ -2135,7 +1536,6 @@ bpt_cmds(void)
 		i = find_free_data_bpt();
 		if (i < 0)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode = 7;
 		cmd = inchar();
 		if (cmd == 'r')
@@ -2144,22 +1544,6 @@ bpt_cmds(void)
 			mode = 6;
 		else
 			termch = cmd;
-<<<<<<< HEAD
-		dabr.address = 0;
-		dabr.enabled = 0;
-		if (scanhex(&dabr.address)) {
-			if (!is_kernel_addr(dabr.address)) {
-				printf(badaddr);
-				break;
-			}
-			dabr.address &= ~7;
-			dabr.enabled = mode | BP_DABR;
-		}
-		break;
-
-	case 'i':	/* bi - hardware instr breakpoint */
-		if (!cpu_has_feature(CPU_FTR_IABR)) {
-=======
 		dabr[i].address = 0;
 		dabr[i].enabled = 0;
 		if (scanhex(&dabr[i].address)) {
@@ -2181,17 +1565,12 @@ bpt_cmds(void)
 			break;
 		}
 		if (!cpu_has_feature(CPU_FTR_ARCH_207S)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("Hardware instruction breakpoint "
 			       "not supported on this cpu\n");
 			break;
 		}
 		if (iabr) {
-<<<<<<< HEAD
-			iabr->enabled &= ~(BP_IABR | BP_IABR_TE);
-=======
 			iabr->enabled &= ~BP_CIABR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iabr = NULL;
 		}
 		if (!scanhex(&a))
@@ -2200,19 +1579,11 @@ bpt_cmds(void)
 			break;
 		bp = new_breakpoint(a);
 		if (bp != NULL) {
-<<<<<<< HEAD
-			bp->enabled |= BP_IABR | BP_IABR_TE;
-			iabr = bp;
-		}
-		break;
-#endif
-=======
 			bp->enabled |= BP_CIABR;
 			iabr = bp;
 			force_enable_xmon();
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 'c':
 		if (!scanhex(&a)) {
@@ -2220,13 +1591,9 @@ bpt_cmds(void)
 			for (i = 0; i < NBPTS; ++i)
 				bpts[i].enabled = 0;
 			iabr = NULL;
-<<<<<<< HEAD
-			dabr.enabled = 0;
-=======
 			for (i = 0; i < nr_wp_slots(); i++)
 				dabr[i].enabled = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("All breakpoints cleared\n");
 			break;
 		}
@@ -2238,54 +1605,24 @@ bpt_cmds(void)
 			/* assume a breakpoint address */
 			bp = at_breakpoint(a);
 			if (bp == NULL) {
-<<<<<<< HEAD
-				printf("No breakpoint at %x\n", a);
-=======
 				printf("No breakpoint at %lx\n", a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 
-<<<<<<< HEAD
-		printf("Cleared breakpoint %x (", BP_NUM(bp));
-=======
 		printf("Cleared breakpoint %tx (", BP_NUM(bp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xmon_print_symbol(bp->address, " ", ")\n");
 		bp->enabled = 0;
 		break;
 
 	default:
 		termch = cmd;
-<<<<<<< HEAD
-	        cmd = skipbl();
-=======
 		cmd = skipbl();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd == '?') {
 			printf(breakpoint_help_string);
 			break;
 		}
 		termch = cmd;
-<<<<<<< HEAD
-		if (!scanhex(&a)) {
-			/* print all breakpoints */
-			printf("   type            address\n");
-			if (dabr.enabled) {
-				printf("   data   "REG"  [", dabr.address);
-				if (dabr.enabled & 1)
-					printf("r");
-				if (dabr.enabled & 2)
-					printf("w");
-				printf("]\n");
-			}
-			for (bp = bpts; bp < &bpts[NBPTS]; ++bp) {
-				if (!bp->enabled)
-					continue;
-				printf("%2x %s   ", BP_NUM(bp),
-				    (bp->enabled & BP_IABR)? "inst": "trap");
-=======
 
 		if (xmon_is_ro || !scanhex(&a)) {
 			/* print all breakpoints */
@@ -2296,7 +1633,6 @@ bpt_cmds(void)
 					continue;
 				printf("%tx %s   ", BP_NUM(bp),
 				    (bp->enabled & BP_CIABR) ? "inst": "trap");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				xmon_print_symbol(bp->address, "  ", "\n");
 			}
 			break;
@@ -2305,15 +1641,10 @@ bpt_cmds(void)
 		if (!check_bp_loc(a))
 			break;
 		bp = new_breakpoint(a);
-<<<<<<< HEAD
-		if (bp != NULL)
-			bp->enabled |= BP_TRAP;
-=======
 		if (bp != NULL) {
 			bp->enabled |= BP_TRAP;
 			force_enable_xmon();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -2328,11 +1659,6 @@ const char *getvecname(unsigned long vec)
 	case 0x100:	ret = "(System Reset)"; break;
 	case 0x200:	ret = "(Machine Check)"; break;
 	case 0x300:	ret = "(Data Access)"; break;
-<<<<<<< HEAD
-	case 0x380:	ret = "(Data SLB Access)"; break;
-	case 0x400:	ret = "(Instruction Access)"; break;
-	case 0x480:	ret = "(Instruction SLB Access)"; break;
-=======
 	case 0x380:
 		if (radix_enabled())
 			ret = "(Data Access Out of Range)";
@@ -2346,19 +1672,11 @@ const char *getvecname(unsigned long vec)
 		else
 			ret = "(Instruction SLB Access)";
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x500:	ret = "(Hardware Interrupt)"; break;
 	case 0x600:	ret = "(Alignment)"; break;
 	case 0x700:	ret = "(Program Check)"; break;
 	case 0x800:	ret = "(FPU Unavailable)"; break;
 	case 0x900:	ret = "(Decrementer)"; break;
-<<<<<<< HEAD
-	case 0xc00:	ret = "(System Call)"; break;
-	case 0xd00:	ret = "(Single Step)"; break;
-	case 0xf00:	ret = "(Performance Monitor)"; break;
-	case 0xf20:	ret = "(Altivec Unavailable)"; break;
-	case 0x1300:	ret = "(Instruction Breakpoint)"; break;
-=======
 	case 0x980:	ret = "(Hypervisor Decrementer)"; break;
 	case 0xa00:	ret = "(Doorbell)"; break;
 	case 0xc00:	ret = "(System Call)"; break;
@@ -2372,7 +1690,6 @@ const char *getvecname(unsigned long vec)
 	case 0x1500:	ret = "(Denormalisation)"; break;
 	case 0x1700:	ret = "(Altivec Assist)"; break;
 	case 0x3000:	ret = "(System Call Vectored)"; break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default: ret = "";
 	}
 	return ret;
@@ -2400,34 +1717,11 @@ static void get_function_bounds(unsigned long pc, unsigned long *startp,
 	catch_memory_errors = 0;
 }
 
-<<<<<<< HEAD
-static int xmon_depth_to_print = 64;
-
 #define LRSAVE_OFFSET		(STACK_FRAME_LR_SAVE * sizeof(unsigned long))
-#define MARKER_OFFSET		(STACK_FRAME_MARKER * sizeof(unsigned long))
-
-#ifdef __powerpc64__
-#define REGS_OFFSET		0x70
-#else
-#define REGS_OFFSET		16
-#endif
-=======
-#define LRSAVE_OFFSET		(STACK_FRAME_LR_SAVE * sizeof(unsigned long))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void xmon_show_stack(unsigned long sp, unsigned long lr,
 			    unsigned long pc)
 {
-<<<<<<< HEAD
-	unsigned long ip;
-	unsigned long newsp;
-	unsigned long marker;
-	int count = 0;
-	struct pt_regs regs;
-
-	do {
-		if (sp < PAGE_OFFSET) {
-=======
 	int max_to_print = 64;
 	unsigned long ip;
 	unsigned long newsp;
@@ -2436,7 +1730,6 @@ static void xmon_show_stack(unsigned long sp, unsigned long lr,
 
 	while (max_to_print--) {
 		if (!is_kernel_addr(sp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sp != 0)
 				printf("SP (%lx) is in userspace\n", sp);
 			break;
@@ -2464,20 +1757,12 @@ static void xmon_show_stack(unsigned long sp, unsigned long lr,
 				mread(newsp + LRSAVE_OFFSET, &nextip,
 				      sizeof(unsigned long));
 			if (lr == ip) {
-<<<<<<< HEAD
-				if (lr < PAGE_OFFSET
-=======
 				if (!is_kernel_addr(lr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    || (fnstart <= lr && lr < fnend))
 					printip = 0;
 			} else if (lr == nextip) {
 				printip = 0;
-<<<<<<< HEAD
-			} else if (lr >= PAGE_OFFSET
-=======
 			} else if (is_kernel_addr(lr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   && !(fnstart <= lr && lr < fnend)) {
 				printf("[link register   ] ");
 				xmon_print_symbol(lr, " ", "\n");
@@ -2493,19 +1778,6 @@ static void xmon_show_stack(unsigned long sp, unsigned long lr,
 			xmon_print_symbol(ip, " ", "\n");
 		}
 
-<<<<<<< HEAD
-		/* Look for "regshere" marker to see if this is
-		   an exception frame. */
-		if (mread(sp + MARKER_OFFSET, &marker, sizeof(unsigned long))
-		    && marker == STACK_FRAME_REGS_MARKER) {
-			if (mread(sp + REGS_OFFSET, &regs, sizeof(regs))
-			    != sizeof(regs)) {
-				printf("Couldn't read registers at %lx\n",
-				       sp + REGS_OFFSET);
-				break;
-			}
-                        printf("--- Exception: %lx %s at ", regs.trap,
-=======
 		/* Look for "regs" marker to see if this is
 		   an exception frame. */
 		if (mread(sp + STACK_INT_FRAME_MARKER, &marker, sizeof(unsigned long))
@@ -2516,7 +1788,6 @@ static void xmon_show_stack(unsigned long sp, unsigned long lr,
 				break;
 			}
 			printf("--- Exception: %lx %s at ", regs.trap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       getvecname(TRAP(&regs)));
 			pc = regs.nip;
 			lr = regs.link;
@@ -2527,11 +1798,7 @@ static void xmon_show_stack(unsigned long sp, unsigned long lr,
 			break;
 
 		sp = newsp;
-<<<<<<< HEAD
-	} while (count++ < xmon_depth_to_print);
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void backtrace(struct pt_regs *excp)
@@ -2551,17 +1818,10 @@ static void print_bug_trap(struct pt_regs *regs)
 	const struct bug_entry *bug;
 	unsigned long addr;
 
-<<<<<<< HEAD
-	if (regs->msr & MSR_PR)
-		return;		/* not in kernel */
-	addr = regs->nip;	/* address of trap instruction */
-	if (addr < PAGE_OFFSET)
-=======
 	if (user_mode(regs))
 		return;
 	addr = regs->nip;	/* address of trap instruction */
 	if (!is_kernel_addr(addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	bug = find_bug(regs->nip);
 	if (bug == NULL)
@@ -2571,15 +1831,9 @@ static void print_bug_trap(struct pt_regs *regs)
 
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	printf("kernel BUG at %s:%u!\n",
-<<<<<<< HEAD
-	       bug->file, bug->line);
-#else
-	printf("kernel BUG at %p!\n", (void *)bug->bug_addr);
-=======
 	       (char *)bug + bug->file_disp, bug->line);
 #else
 	printf("kernel BUG at %px!\n", (void *)bug + bug->bug_addr_disp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif /* CONFIG_BUG */
 }
@@ -2593,44 +1847,16 @@ static void excprint(struct pt_regs *fp)
 #endif /* CONFIG_SMP */
 
 	trap = TRAP(fp);
-<<<<<<< HEAD
-	printf("Vector: %lx %s at [%lx]\n", fp->trap, getvecname(trap), fp);
-	printf("    pc: ");
-	xmon_print_symbol(fp->nip, ": ", "\n");
-
-	printf("    lr: ", fp->link);
-=======
 	printf("Vector: %lx %s at [%px]\n", fp->trap, getvecname(trap), fp);
 	printf("    pc: ");
 	xmon_print_symbol(fp->nip, ": ", "\n");
 
 	printf("    lr: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xmon_print_symbol(fp->link, ": ", "\n");
 
 	printf("    sp: %lx\n", fp->gpr[1]);
 	printf("   msr: %lx\n", fp->msr);
 
-<<<<<<< HEAD
-	if (trap == 0x300 || trap == 0x380 || trap == 0x600) {
-		printf("   dar: %lx\n", fp->dar);
-		if (trap != 0x380)
-			printf(" dsisr: %lx\n", fp->dsisr);
-	}
-
-	printf("  current = 0x%lx\n", current);
-#ifdef CONFIG_PPC64
-	printf("  paca    = 0x%lx\t softe: %d\t irq_happened: 0x%02x\n",
-	       local_paca, local_paca->soft_enabled, local_paca->irq_happened);
-#endif
-	if (current) {
-		printf("    pid   = %ld, comm = %s\n",
-		       current->pid, current->comm);
-	}
-
-	if (trap == 0x700)
-		print_bug_trap(fp);
-=======
 	if (trap == INTERRUPT_DATA_STORAGE ||
 	    trap == INTERRUPT_DATA_SEGMENT ||
 	    trap == INTERRUPT_ALIGNMENT ||
@@ -2654,7 +1880,6 @@ static void excprint(struct pt_regs *fp)
 		print_bug_trap(fp);
 
 	printf(linux_banner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void prregs(struct pt_regs *fp)
@@ -2681,30 +1906,6 @@ static void prregs(struct pt_regs *fp)
 	}
 
 #ifdef CONFIG_PPC64
-<<<<<<< HEAD
-	if (FULL_REGS(fp)) {
-		for (n = 0; n < 16; ++n)
-			printf("R%.2ld = "REG"   R%.2ld = "REG"\n",
-			       n, fp->gpr[n], n+16, fp->gpr[n+16]);
-	} else {
-		for (n = 0; n < 7; ++n)
-			printf("R%.2ld = "REG"   R%.2ld = "REG"\n",
-			       n, fp->gpr[n], n+7, fp->gpr[n+7]);
-	}
-#else
-	for (n = 0; n < 32; ++n) {
-		printf("R%.2d = %.8x%s", n, fp->gpr[n],
-		       (n & 3) == 3? "\n": "   ");
-		if (n == 12 && !FULL_REGS(fp)) {
-			printf("\n");
-			break;
-		}
-	}
-#endif
-	printf("pc  = ");
-	xmon_print_symbol(fp->nip, " ", "\n");
-	if (TRAP(fp) != 0xc00 && cpu_has_feature(CPU_FTR_CFAR)) {
-=======
 #define R_PER_LINE 2
 #else
 #define R_PER_LINE 4
@@ -2718,7 +1919,6 @@ static void prregs(struct pt_regs *fp)
 	printf("pc  = ");
 	xmon_print_symbol(fp->nip, " ", "\n");
 	if (!trap_is_syscall(fp) && cpu_has_feature(CPU_FTR_CFAR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("cfar= ");
 		xmon_print_symbol(fp->orig_gpr3, " ", "\n");
 	}
@@ -2728,13 +1928,9 @@ static void prregs(struct pt_regs *fp)
 	printf("ctr = "REG"   xer = "REG"   trap = %4lx\n",
 	       fp->ctr, fp->xer, fp->trap);
 	trap = TRAP(fp);
-<<<<<<< HEAD
-	if (trap == 0x300 || trap == 0x380 || trap == 0x600)
-=======
 	if (trap == INTERRUPT_DATA_STORAGE ||
 	    trap == INTERRUPT_DATA_SEGMENT ||
 	    trap == INTERRUPT_ALIGNMENT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("dar = "REG"   dsisr = %.8lx\n", fp->dar, fp->dsisr);
 }
 
@@ -2756,11 +1952,7 @@ static void cacheflush(void)
 		catch_memory_errors = 1;
 		sync();
 
-<<<<<<< HEAD
-		if (cmd != 'i') {
-=======
 		if (cmd != 'i' || IS_ENABLED(CONFIG_PPC_BOOK3S_64)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (; nflush > 0; --nflush, adrs += L1_CACHE_BYTES)
 				cflush((void *) adrs);
 		} else {
@@ -2774,44 +1966,6 @@ static void cacheflush(void)
 	catch_memory_errors = 0;
 }
 
-<<<<<<< HEAD
-static unsigned long
-read_spr(int n)
-{
-	unsigned int instrs[2];
-	unsigned long (*code)(void);
-	unsigned long ret = -1UL;
-#ifdef CONFIG_PPC64
-	unsigned long opd[3];
-
-	opd[0] = (unsigned long)instrs;
-	opd[1] = 0;
-	opd[2] = 0;
-	code = (unsigned long (*)(void)) opd;
-#else
-	code = (unsigned long (*)(void)) instrs;
-#endif
-
-	/* mfspr r3,n; blr */
-	instrs[0] = 0x7c6002a6 + ((n & 0x1F) << 16) + ((n & 0x3e0) << 6);
-	instrs[1] = 0x4e800020;
-	store_inst(instrs);
-	store_inst(instrs+1);
-
-	if (setjmp(bus_error_jmp) == 0) {
-		catch_memory_errors = 1;
-		sync();
-
-		ret = code();
-
-		sync();
-		/* wait a little while to see if we get a machine check */
-		__delay(200);
-		n = size;
-	}
-
-	return ret;
-=======
 extern unsigned long xmon_mfspr(int spr, unsigned long default_value);
 extern void xmon_mtspr(int spr, unsigned long value);
 
@@ -2834,83 +1988,11 @@ read_spr(int n, unsigned long *vp)
 	catch_spr_faults = 0;
 
 	return ok;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 write_spr(int n, unsigned long val)
 {
-<<<<<<< HEAD
-	unsigned int instrs[2];
-	unsigned long (*code)(unsigned long);
-#ifdef CONFIG_PPC64
-	unsigned long opd[3];
-
-	opd[0] = (unsigned long)instrs;
-	opd[1] = 0;
-	opd[2] = 0;
-	code = (unsigned long (*)(unsigned long)) opd;
-#else
-	code = (unsigned long (*)(unsigned long)) instrs;
-#endif
-
-	instrs[0] = 0x7c6003a6 + ((n & 0x1F) << 16) + ((n & 0x3e0) << 6);
-	instrs[1] = 0x4e800020;
-	store_inst(instrs);
-	store_inst(instrs+1);
-
-	if (setjmp(bus_error_jmp) == 0) {
-		catch_memory_errors = 1;
-		sync();
-
-		code(val);
-
-		sync();
-		/* wait a little while to see if we get a machine check */
-		__delay(200);
-		n = size;
-	}
-}
-
-static unsigned long regno;
-extern char exc_prolog;
-extern char dec_exc;
-
-static void super_regs(void)
-{
-	int cmd;
-	unsigned long val;
-
-	cmd = skipbl();
-	if (cmd == '\n') {
-	        unsigned long sp, toc;
-		asm("mr %0,1" : "=r" (sp) :);
-		asm("mr %0,2" : "=r" (toc) :);
-
-		printf("msr  = "REG"  sprg0= "REG"\n",
-		       mfmsr(), mfspr(SPRN_SPRG0));
-		printf("pvr  = "REG"  sprg1= "REG"\n",
-		       mfspr(SPRN_PVR), mfspr(SPRN_SPRG1)); 
-		printf("dec  = "REG"  sprg2= "REG"\n",
-		       mfspr(SPRN_DEC), mfspr(SPRN_SPRG2));
-		printf("sp   = "REG"  sprg3= "REG"\n", sp, mfspr(SPRN_SPRG3));
-		printf("toc  = "REG"  dar  = "REG"\n", toc, mfspr(SPRN_DAR));
-
-		return;
-	}
-
-	scanhex(&regno);
-	switch (cmd) {
-	case 'w':
-		val = read_spr(regno);
-		scanhex(&val);
-		write_spr(regno, val);
-		/* fall through */
-	case 'r':
-		printf("spr %lx = %lx\n", regno, read_spr(regno));
-		break;
-	}
-=======
 	if (xmon_is_ro) {
 		printf(xmon_ro_msg);
 		return;
@@ -3128,7 +2210,6 @@ static void super_regs(void)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scannl();
 }
 
@@ -3179,15 +2260,12 @@ mwrite(unsigned long adrs, void *buf, int size)
 	char *p, *q;
 
 	n = 0;
-<<<<<<< HEAD
-=======
 
 	if (xmon_is_ro) {
 		printf(xmon_ro_msg);
 		return n;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (setjmp(bus_error_jmp) == 0) {
 		catch_memory_errors = 1;
 		sync();
@@ -3214,9 +2292,6 @@ mwrite(unsigned long adrs, void *buf, int size)
 		__delay(200);
 		n = size;
 	} else {
-<<<<<<< HEAD
-		printf("*** Error writing address %x\n", adrs + n);
-=======
 		printf("*** Error writing address "REG"\n", adrs + n);
 	}
 	catch_memory_errors = 0;
@@ -3237,7 +2312,6 @@ mread_instr(unsigned long adrs, ppc_inst_t *instr)
 		/* wait a little while to see if we get a machine check */
 		__delay(200);
 		n = ppc_inst_len(*instr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	catch_memory_errors = 0;
 	return n;
@@ -3294,11 +2368,7 @@ byterev(unsigned char *val, int size)
 static int brev;
 static int mnoread;
 
-<<<<<<< HEAD
-static char *memex_help_string = 
-=======
 static char *memex_help_string =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "Memory examine command usage:\n"
     "m [addr] [flags] examine/change memory\n"
     "  addr is optional.  will start where left off.\n"
@@ -3313,11 +2383,7 @@ static char *memex_help_string =
     "NOTE: flags are saved as defaults\n"
     "";
 
-<<<<<<< HEAD
-static char *memex_subcmd_help_string = 
-=======
 static char *memex_subcmd_help_string =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "Memory examine subcommands:\n"
     "  hexval   write this val to current location\n"
     "  'string' write chars from string to this location\n"
@@ -3445,10 +2511,6 @@ memex(void)
 			case '^':
 				adrs -= size;
 				break;
-<<<<<<< HEAD
-				break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case '/':
 				if (nslash > 0)
 					adrs -= 1 << nslash;
@@ -3530,23 +2592,11 @@ static void xmon_rawdump (unsigned long adrs, long ndump)
 	printf("\n");
 }
 
-<<<<<<< HEAD
-#define isxdigit(c)	(('0' <= (c) && (c) <= '9') \
-			 || ('a' <= (c) && (c) <= 'f') \
-			 || ('A' <= (c) && (c) <= 'F'))
-static void
-dump(void)
-=======
 static void dump_tracing(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int c;
 
 	c = inchar();
-<<<<<<< HEAD
-	if ((isxdigit(c) && c != 'f' && c != 'd') || c == '\n')
-		termch = c;
-=======
 	if (c == 'c')
 		ftrace_dump(DUMP_ORIG);
 	else
@@ -3872,7 +2922,6 @@ dump(void)
 	if (c == '\n')
 		termch = c;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scanhex((void *)&adrs);
 	if (termch != '\n')
 		termch = 0;
@@ -3880,25 +2929,17 @@ dump(void)
 		scanhex(&nidump);
 		if (nidump == 0)
 			nidump = 16;
-<<<<<<< HEAD
-		else if (nidump > MAX_DUMP)
-			nidump = MAX_DUMP;
-=======
 		else if (nidump > MAX_IDUMP)
 			nidump = MAX_IDUMP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adrs += ppc_inst_dump(adrs, nidump, 1);
 		last_cmd = "di\n";
 	} else if (c == 'l') {
 		dump_log_buf();
-<<<<<<< HEAD
-=======
 	} else if (c == 'o') {
 		dump_opal_msglog();
 	} else if (c == 'v') {
 		/* dump virtual to physical translation */
 		show_pte(adrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (c == 'r') {
 		scanhex(&ndump);
 		if (ndump == 0)
@@ -3912,11 +2953,6 @@ dump(void)
 			ndump = 64;
 		else if (ndump > MAX_DUMP)
 			ndump = MAX_DUMP;
-<<<<<<< HEAD
-		prdump(adrs, ndump);
-		adrs += ndump;
-		last_cmd = "d\n";
-=======
 
 		switch (c) {
 		case '8':
@@ -3934,7 +2970,6 @@ dump(void)
 		}
 
 		adrs += ndump;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3951,11 +2986,7 @@ prdump(unsigned long adrs, long ndump)
 		nr = mread(adrs, temp, r);
 		adrs += nr;
 		for (m = 0; m < r; ++m) {
-<<<<<<< HEAD
-		        if ((m & (sizeof(long) - 1)) == 0 && m > 0)
-=======
 			if ((m & (sizeof(long) - 1)) == 0 && m > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				putchar(' ');
 			if (m < nr)
 				printf("%.2x", temp[m]);
@@ -3963,11 +2994,7 @@ prdump(unsigned long adrs, long ndump)
 				printf("%s", fault_chars[fault_type]);
 		}
 		for (; m < 16; ++m) {
-<<<<<<< HEAD
-		        if ((m & (sizeof(long) - 1)) == 0)
-=======
 			if ((m & (sizeof(long) - 1)) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				putchar(' ');
 			printf("  ");
 		}
@@ -3996,20 +3023,11 @@ generic_inst_dump(unsigned long adr, long count, int praddr,
 {
 	int nr, dotted;
 	unsigned long first_adr;
-<<<<<<< HEAD
-	unsigned long inst, last_inst = 0;
-	unsigned char val[4];
-
-	dotted = 0;
-	for (first_adr = adr; count > 0; --count, adr += 4) {
-		nr = mread(adr, val, 4);
-=======
 	ppc_inst_t inst, last_inst = ppc_inst(0);
 
 	dotted = 0;
 	for (first_adr = adr; count > 0; --count, adr += ppc_inst_len(inst)) {
 		nr = mread_instr(adr, &inst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nr == 0) {
 			if (praddr) {
 				const char *x = fault_chars[fault_type];
@@ -4017,12 +3035,7 @@ generic_inst_dump(unsigned long adr, long count, int praddr,
 			}
 			break;
 		}
-<<<<<<< HEAD
-		inst = GETWORD(val);
-		if (adr > first_adr && inst == last_inst) {
-=======
 		if (adr > first_adr && ppc_inst_equal(inst, last_inst)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!dotted) {
 				printf(" ...\n");
 				dotted = 1;
@@ -4032,18 +3045,12 @@ generic_inst_dump(unsigned long adr, long count, int praddr,
 		dotted = 0;
 		last_inst = inst;
 		if (praddr)
-<<<<<<< HEAD
-			printf(REG"  %.8x", adr, inst);
-		printf("\t");
-		dump_func(inst, adr);
-=======
 			printf(REG"  %08lx", adr, ppc_inst_as_ulong(inst));
 		printf("\t");
 		if (!ppc_inst_prefixed(inst))
 			dump_func(ppc_inst_val(inst), adr);
 		else
 			dump_func(ppc_inst_as_ulong(inst), adr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("\n");
 	}
 	return adr - first_adr;
@@ -4061,52 +3068,6 @@ print_address(unsigned long addr)
 	xmon_print_symbol(addr, "\t# ", "");
 }
 
-<<<<<<< HEAD
-void
-dump_log_buf(void)
-{
-        const unsigned long size = 128;
-        unsigned long end, addr;
-        unsigned char buf[size + 1];
-
-        addr = 0;
-        buf[size] = '\0';
-
-        if (setjmp(bus_error_jmp) != 0) {
-                printf("Unable to lookup symbol __log_buf!\n");
-                return;
-        }
-
-        catch_memory_errors = 1;
-        sync();
-        addr = kallsyms_lookup_name("__log_buf");
-
-        if (! addr)
-                printf("Symbol __log_buf not found!\n");
-        else {
-                end = addr + (1 << CONFIG_LOG_BUF_SHIFT);
-                while (addr < end) {
-                        if (! mread(addr, buf, size)) {
-                                printf("Can't read memory at address 0x%lx\n", addr);
-                                break;
-                        }
-
-                        printf("%s", buf);
-
-                        if (strlen(buf) < size)
-                                break;
-
-                        addr += size;
-                }
-        }
-
-        sync();
-        /* wait a little while to see if we get a machine check */
-        __delay(200);
-        catch_memory_errors = 0;
-}
-
-=======
 static void
 dump_log_buf(void)
 {
@@ -4175,7 +3136,6 @@ static void dump_opal_msglog(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Memory operations - move, set, print differences
  */
@@ -4197,11 +3157,6 @@ memops(int cmd)
 	scanhex((void *)&mcount);
 	switch( cmd ){
 	case 'm':
-<<<<<<< HEAD
-		memmove((void *)mdest, (void *)msrc, mcount);
-		break;
-	case 's':
-=======
 		if (xmon_is_ro) {
 			printf(xmon_ro_msg);
 			break;
@@ -4213,7 +3168,6 @@ memops(int cmd)
 			printf(xmon_ro_msg);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset((void *)mdest, mval, mcount);
 		break;
 	case 'd':
@@ -4234,11 +3188,7 @@ memdiffs(unsigned char *p1, unsigned char *p2, unsigned nb, unsigned maxpr)
 	for( n = nb; n > 0; --n )
 		if( *p1++ != *p2++ )
 			if( ++prt <= maxpr )
-<<<<<<< HEAD
-				printf("%.16x %.2x # %.16x %.2x\n", p1 - 1,
-=======
 				printf("%px %.2x # %px %.2x\n", p1 - 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					p1[-1], p2 - 1, p2[-1]);
 	if( prt > maxpr )
 		printf("Total of %d differences\n", prt);
@@ -4298,19 +3248,12 @@ memzcan(void)
 		if (ok && !ook) {
 			printf("%.8x .. ", a);
 		} else if (!ok && ook)
-<<<<<<< HEAD
-			printf("%.8x\n", a - mskip);
-=======
 			printf("%.8lx\n", a - mskip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ook = ok;
 		if (a + mskip < a)
 			break;
 	}
 	if (ook)
-<<<<<<< HEAD
-		printf("%.8x\n", a - mskip);
-=======
 		printf("%.8lx\n", a - mskip);
 }
 
@@ -4481,7 +3424,6 @@ static void show_tasks(void)
 	sync();
 	__delay(200);
 	catch_memory_errors = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void proccall(void)
@@ -4513,11 +3455,7 @@ static void proccall(void)
 		ret = func(args[0], args[1], args[2], args[3],
 			   args[4], args[5], args[6], args[7]);
 		sync();
-<<<<<<< HEAD
-		printf("return value is %x\n", ret);
-=======
 		printf("return value is 0x%lx\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		printf("*** %x exception occurred\n", fault_except);
 	}
@@ -4541,11 +3479,7 @@ skipbl(void)
 }
 
 #define N_PTREGS	44
-<<<<<<< HEAD
-static char *regnames[N_PTREGS] = {
-=======
 static const char *regnames[N_PTREGS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
 	"r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
 	"r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23",
@@ -4580,20 +3514,6 @@ scanhex(unsigned long *vp)
 			regname[i] = c;
 		}
 		regname[i] = 0;
-<<<<<<< HEAD
-		for (i = 0; i < N_PTREGS; ++i) {
-			if (strcmp(regnames[i], regname) == 0) {
-				if (xmon_regs == NULL) {
-					printf("regs not available\n");
-					return 0;
-				}
-				*vp = ((unsigned long *)xmon_regs)[i];
-				return 1;
-			}
-		}
-		printf("invalid register name '%%%s'\n", regname);
-		return 0;
-=======
 		i = match_string(regnames, N_PTREGS, regname);
 		if (i < 0) {
 			printf("invalid register name '%%%s'\n", regname);
@@ -4605,7 +3525,6 @@ scanhex(unsigned long *vp)
 		}
 		*vp = ((unsigned long *)xmon_regs)[i];
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* skip leading "0x" if any */
@@ -4626,11 +3545,7 @@ scanhex(unsigned long *vp)
 		int i;
 		for (i=0; i<63; i++) {
 			c = inchar();
-<<<<<<< HEAD
-			if (isspace(c)) {
-=======
 			if (isspace(c) || c == '\0') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				termch = c;
 				break;
 			}
@@ -4696,14 +3611,11 @@ getstring(char *s, int size)
 	int c;
 
 	c = skipbl();
-<<<<<<< HEAD
-=======
 	if (c == '\n') {
 		*s = 0;
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		if( size > 1 ){
 			*s++ = c;
@@ -4748,12 +3660,8 @@ static void
 symbol_lookup(void)
 {
 	int type = inchar();
-<<<<<<< HEAD
-	unsigned long addr;
-=======
 	unsigned long addr, cpu;
 	void __percpu *ptr = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static char tmp[64];
 
 	switch (type) {
@@ -4777,8 +3685,6 @@ symbol_lookup(void)
 		catch_memory_errors = 0;
 		termch = 0;
 		break;
-<<<<<<< HEAD
-=======
 	case 'p':
 		getstring(tmp, 64);
 		if (setjmp(bus_error_jmp) == 0) {
@@ -4807,7 +3713,6 @@ symbol_lookup(void)
 		catch_memory_errors = 0;
 		termch = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4817,11 +3722,7 @@ static void xmon_print_symbol(unsigned long address, const char *mid,
 			      const char *after)
 {
 	char *modname;
-<<<<<<< HEAD
-	const char *name = NULL;
-=======
 	const char *volatile name = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset, size;
 
 	printf(REG, address);
@@ -4845,16 +3746,6 @@ static void xmon_print_symbol(unsigned long address, const char *mid,
 	printf("%s", after);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_BOOK3S_64
-static void dump_slb(void)
-{
-	int i;
-	unsigned long esid,vsid,valid;
-	unsigned long llp;
-
-	printf("SLB contents of cpu %x\n", smp_processor_id());
-=======
 #ifdef CONFIG_PPC_64S_HASH_MMU
 void dump_segments(void)
 {
@@ -4863,65 +3754,10 @@ void dump_segments(void)
 	unsigned long llp;
 
 	printf("SLB contents of cpu 0x%x\n", smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < mmu_slb_size; i++) {
 		asm volatile("slbmfee  %0,%1" : "=r" (esid) : "r" (i));
 		asm volatile("slbmfev  %0,%1" : "=r" (vsid) : "r" (i));
-<<<<<<< HEAD
-		valid = (esid & SLB_ESID_V);
-		if (valid | esid | vsid) {
-			printf("%02d %016lx %016lx", i, esid, vsid);
-			if (valid) {
-				llp = vsid & SLB_VSID_LLP;
-				if (vsid & SLB_VSID_B_1T) {
-					printf("  1T  ESID=%9lx  VSID=%13lx LLP:%3lx \n",
-						GET_ESID_1T(esid),
-						(vsid & ~SLB_VSID_B) >> SLB_VSID_SHIFT_1T,
-						llp);
-				} else {
-					printf(" 256M ESID=%9lx  VSID=%13lx LLP:%3lx \n",
-						GET_ESID(esid),
-						(vsid & ~SLB_VSID_B) >> SLB_VSID_SHIFT,
-						llp);
-				}
-			} else
-				printf("\n");
-		}
-	}
-}
-
-static void dump_stab(void)
-{
-	int i;
-	unsigned long *tmp = (unsigned long *)local_paca->stab_addr;
-
-	printf("Segment table contents of cpu %x\n", smp_processor_id());
-
-	for (i = 0; i < PAGE_SIZE/16; i++) {
-		unsigned long a, b;
-
-		a = *tmp++;
-		b = *tmp++;
-
-		if (a || b) {
-			printf("%03d %016lx ", i, a);
-			printf("%016lx\n", b);
-		}
-	}
-}
-
-void dump_segments(void)
-{
-	if (mmu_has_feature(MMU_FTR_SLB))
-		dump_slb();
-	else
-		dump_stab();
-}
-#endif
-
-#ifdef CONFIG_PPC_STD_MMU_32
-=======
 
 		if (!esid && !vsid)
 			continue;
@@ -4950,18 +3786,13 @@ void dump_segments(void)
 #endif
 
 #ifdef CONFIG_PPC_BOOK3S_32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dump_segments(void)
 {
 	int i;
 
 	printf("sr0-15 =");
 	for (i = 0; i < 16; ++i)
-<<<<<<< HEAD
-		printf(" %x", mfsrin(i));
-=======
 		printf(" %x", mfsr(i << 28));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("\n");
 }
 #endif
@@ -4976,15 +3807,9 @@ static void dump_tlb_44x(void)
 		asm volatile("tlbre  %0,%1,0" : "=r" (w0) : "r" (i));
 		asm volatile("tlbre  %0,%1,1" : "=r" (w1) : "r" (i));
 		asm volatile("tlbre  %0,%1,2" : "=r" (w2) : "r" (i));
-<<<<<<< HEAD
-		printf("[%02x] %08x %08x %08x ", i, w0, w1, w2);
-		if (w0 & PPC44x_TLB_VALID) {
-			printf("V %08x -> %01x%08x %c%c%c%c%c",
-=======
 		printf("[%02x] %08lx %08lx %08lx ", i, w0, w1, w2);
 		if (w0 & PPC44x_TLB_VALID) {
 			printf("V %08lx -> %01lx%08lx %c%c%c%c%c",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       w0 & PPC44x_TLB_EPN_MASK,
 			       w1 & PPC44x_TLB_ERPN_MASK,
 			       w1 & PPC44x_TLB_RPN_MASK,
@@ -4999,21 +3824,12 @@ static void dump_tlb_44x(void)
 }
 #endif /* CONFIG_44x */
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_BOOK3E
-static void dump_tlb_book3e(void)
-{
-	u32 mmucfg, pidmask, lpidmask;
-	u64 ramask;
-	int i, tlb, ntlbs, pidsz, lpidsz, rasz, lrat = 0;
-=======
 #ifdef CONFIG_PPC_BOOK3E_64
 static void dump_tlb_book3e(void)
 {
 	u32 mmucfg;
 	u64 ramask;
 	int i, tlb, ntlbs, pidsz, lpidsz, rasz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mmu_version;
 	static const char *pgsz_names[] = {
 		"  1K",
@@ -5057,17 +3873,8 @@ static void dump_tlb_book3e(void)
 	pidsz = ((mmucfg >> 6) & 0x1f) + 1;
 	lpidsz = (mmucfg >> 24) & 0xf;
 	rasz = (mmucfg >> 16) & 0x7f;
-<<<<<<< HEAD
-	if ((mmu_version > 1) && (mmucfg & 0x10000))
-		lrat = 1;
 	printf("Book3E MMU MAV=%d.0,%d TLBs,%d-bit PID,%d-bit LPID,%d-bit RA\n",
 	       mmu_version, ntlbs, pidsz, lpidsz, rasz);
-	pidmask = (1ul << pidsz) - 1;
-	lpidmask = (1ul << lpidsz) - 1;
-=======
-	printf("Book3E MMU MAV=%d.0,%d TLBs,%d-bit PID,%d-bit LPID,%d-bit RA\n",
-	       mmu_version, ntlbs, pidsz, lpidsz, rasz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ramask = (1ull << rasz) - 1;
 
 	for (tlb = 0; tlb < ntlbs; tlb++) {
@@ -5155,11 +3962,7 @@ static void dump_tlb_book3e(void)
 		}
 	}
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PPC_BOOK3E */
-=======
 #endif /* CONFIG_PPC_BOOK3E_64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void xmon_init(int enable)
 {
@@ -5169,11 +3972,7 @@ static void xmon_init(int enable)
 		__debugger_bpt = xmon_bpt;
 		__debugger_sstep = xmon_sstep;
 		__debugger_iabr_match = xmon_iabr_match;
-<<<<<<< HEAD
-		__debugger_dabr_match = xmon_dabr_match;
-=======
 		__debugger_break_match = xmon_break_match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__debugger_fault_handler = xmon_fault_handler;
 	} else {
 		__debugger = NULL;
@@ -5181,25 +3980,6 @@ static void xmon_init(int enable)
 		__debugger_bpt = NULL;
 		__debugger_sstep = NULL;
 		__debugger_iabr_match = NULL;
-<<<<<<< HEAD
-		__debugger_dabr_match = NULL;
-		__debugger_fault_handler = NULL;
-	}
-	xmon_map_scc();
-}
-
-#ifdef CONFIG_MAGIC_SYSRQ
-static void sysrq_handle_xmon(int key)
-{
-	/* ensure xmon is enabled */
-	xmon_init(1);
-	debugger(get_irq_regs());
-}
-
-static struct sysrq_key_op sysrq_xmon_op = {
-	.handler =	sysrq_handle_xmon,
-	.help_msg =	"Xmon",
-=======
 		__debugger_break_match = NULL;
 		__debugger_fault_handler = NULL;
 	}
@@ -5223,7 +4003,6 @@ static void sysrq_handle_xmon(u8 key)
 static const struct sysrq_key_op sysrq_xmon_op = {
 	.handler =	sysrq_handle_xmon,
 	.help_msg =	"xmon(x)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.action_msg =	"Entering xmon",
 };
 
@@ -5232,25 +4011,6 @@ static int __init setup_xmon_sysrq(void)
 	register_sysrq_key('x', &sysrq_xmon_op);
 	return 0;
 }
-<<<<<<< HEAD
-__initcall(setup_xmon_sysrq);
-#endif /* CONFIG_MAGIC_SYSRQ */
-
-static int __initdata xmon_early, xmon_off;
-
-static int __init early_parse_xmon(char *p)
-{
-	if (!p || strncmp(p, "early", 5) == 0) {
-		/* just "xmon" is equivalent to "xmon=early" */
-		xmon_init(1);
-		xmon_early = 1;
-	} else if (strncmp(p, "on", 2) == 0)
-		xmon_init(1);
-	else if (strncmp(p, "off", 3) == 0)
-		xmon_off = 1;
-	else if (strncmp(p, "nobt", 4) == 0)
-		xmon_no_auto_backtrace = 1;
-=======
 device_initcall(setup_xmon_sysrq);
 #endif /* CONFIG_MAGIC_SYSRQ */
 
@@ -5333,7 +4093,6 @@ static int __init early_parse_xmon(char *p)
 		xmon_is_ro = true;
 	} else if (strncmp(p, "off", 3) == 0)
 		xmon_on = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 1;
 
@@ -5343,15 +4102,8 @@ early_param("xmon", early_parse_xmon);
 
 void __init xmon_setup(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_XMON_DEFAULT
-	if (!xmon_off)
-		xmon_init(1);
-#endif
-=======
 	if (xmon_on)
 		xmon_init(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xmon_early)
 		debugger(NULL);
 }
@@ -5370,11 +4122,7 @@ struct spu_info {
 
 static struct spu_info spu_info[XMON_NUM_SPUS];
 
-<<<<<<< HEAD
-void xmon_register_spus(struct list_head *list)
-=======
 void __init xmon_register_spus(struct list_head *list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spu *spu;
 
@@ -5394,11 +4142,7 @@ void __init xmon_register_spus(struct list_head *list)
 static void stop_spus(void)
 {
 	struct spu *spu;
-<<<<<<< HEAD
-	int i;
-=======
 	volatile int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 tmp;
 
 	for (i = 0; i < XMON_NUM_SPUS; i++) {
@@ -5439,11 +4183,7 @@ static void stop_spus(void)
 static void restart_spus(void)
 {
 	struct spu *spu;
-<<<<<<< HEAD
-	int i;
-=======
 	volatile int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < XMON_NUM_SPUS; i++) {
 		if (!spu_info[i].spu)
@@ -5508,15 +4248,6 @@ static void dump_spu_fields(struct spu *spu)
 	DUMP_FIELD(spu, "0x%lx", ls_size);
 	DUMP_FIELD(spu, "0x%x", node);
 	DUMP_FIELD(spu, "0x%lx", flags);
-<<<<<<< HEAD
-	DUMP_FIELD(spu, "%d", class_0_pending);
-	DUMP_FIELD(spu, "0x%lx", class_0_dar);
-	DUMP_FIELD(spu, "0x%lx", class_1_dar);
-	DUMP_FIELD(spu, "0x%lx", class_1_dsisr);
-	DUMP_FIELD(spu, "0x%lx", irqs[0]);
-	DUMP_FIELD(spu, "0x%lx", irqs[1]);
-	DUMP_FIELD(spu, "0x%lx", irqs[2]);
-=======
 	DUMP_FIELD(spu, "%llu", class_0_pending);
 	DUMP_FIELD(spu, "0x%llx", class_0_dar);
 	DUMP_FIELD(spu, "0x%llx", class_1_dar);
@@ -5524,17 +4255,12 @@ static void dump_spu_fields(struct spu *spu)
 	DUMP_FIELD(spu, "0x%x", irqs[0]);
 	DUMP_FIELD(spu, "0x%x", irqs[1]);
 	DUMP_FIELD(spu, "0x%x", irqs[2]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DUMP_FIELD(spu, "0x%x", slb_replace);
 	DUMP_FIELD(spu, "%d", pid);
 	DUMP_FIELD(spu, "0x%p", mm);
 	DUMP_FIELD(spu, "0x%p", ctx);
 	DUMP_FIELD(spu, "0x%p", rq);
-<<<<<<< HEAD
-	DUMP_FIELD(spu, "0x%p", timestamp);
-=======
 	DUMP_FIELD(spu, "0x%llx", timestamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DUMP_FIELD(spu, "0x%lx", problem_phys);
 	DUMP_FIELD(spu, "0x%p", problem);
 	DUMP_VALUE("0x%x", problem->spu_runcntl_RW,
@@ -5547,12 +4273,7 @@ static void dump_spu_fields(struct spu *spu)
 	DUMP_FIELD(spu, "0x%p", pdata);
 }
 
-<<<<<<< HEAD
-int
-spu_inst_dump(unsigned long adr, long count, int praddr)
-=======
 static int spu_inst_dump(unsigned long adr, long count, int praddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return generic_inst_dump(adr, count, praddr, print_insn_spu);
 }
@@ -5569,11 +4290,7 @@ static void dump_spu_ls(unsigned long num, int subcmd)
 		__delay(200);
 	} else {
 		catch_memory_errors = 0;
-<<<<<<< HEAD
-		printf("*** Error: accessing spu info for spu %d\n", num);
-=======
 		printf("*** Error: accessing spu info for spu %ld\n", num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	catch_memory_errors = 0;
@@ -5620,10 +4337,7 @@ static int do_spu_cmd(void)
 		subcmd = inchar();
 		if (isxdigit(subcmd) || subcmd == '\n')
 			termch = subcmd;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 'f':
 		scanhex(&num);
 		if (num >= XMON_NUM_SPUS || !spu_info[num].spu) {

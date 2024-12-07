@@ -26,15 +26,10 @@
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/elf.h>
-<<<<<<< HEAD
-
-#include <asm/asm.h>
-=======
 #include <linux/sched/task_stack.h>
 
 #include <asm/asm.h>
 #include <asm/asm-eva.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/branch.h>
 #include <asm/cachectl.h>
 #include <asm/cacheflush.h>
@@ -42,39 +37,13 @@
 #include <asm/signal.h>
 #include <asm/sim.h>
 #include <asm/shmparam.h>
-<<<<<<< HEAD
-#include <asm/sysmips.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/sync.h>
 #include <asm/sysmips.h>
 #include <asm/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/switch_to.h>
 
 /*
  * For historic reasons the pipe(2) syscall on MIPS has an unusual calling
-<<<<<<< HEAD
- * convention.  It returns results in registers $v0 / $v1 which means there
- * is no need for it to do verify the validity of a userspace pointer
- * argument.  Historically that used to be expensive in Linux.  These days
- * the performance advantage is negligible.
- */
-asmlinkage int sysm_pipe(nabi_no_regargs volatile struct pt_regs regs)
-{
-	int fd[2];
-	int error, res;
-
-	error = do_pipe_flags(fd, 0);
-	if (error) {
-		res = error;
-		goto out;
-	}
-	regs.regs[3] = fd[1];
-	res = fd[0];
-out:
-	return res;
-=======
  * convention.	It returns results in registers $v0 / $v1 which means there
  * is no need for it to do verify the validity of a userspace pointer
  * argument.  Historically that used to be expensive in Linux.	These days
@@ -88,30 +57,16 @@ asmlinkage int sysm_pipe(void)
 		return error;
 	current_pt_regs()->regs[3] = fd[1];
 	return fd[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE6(mips_mmap, unsigned long, addr, unsigned long, len,
 	unsigned long, prot, unsigned long, flags, unsigned long,
 	fd, off_t, offset)
 {
-<<<<<<< HEAD
-	unsigned long result;
-
-	result = -EINVAL;
-	if (offset & ~PAGE_MASK)
-		goto out;
-
-	result = sys_mmap_pgoff(addr, len, prot, flags, fd, offset >> PAGE_SHIFT);
-
-out:
-	return result;
-=======
 	if (offset & ~PAGE_MASK)
 		return -EINVAL;
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd,
 			       offset >> PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE6(mips_mmap2, unsigned long, addr, unsigned long, len,
@@ -121,71 +76,6 @@ SYSCALL_DEFINE6(mips_mmap2, unsigned long, addr, unsigned long, len,
 	if (pgoff & (~PAGE_MASK >> 12))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return sys_mmap_pgoff(addr, len, prot, flags, fd, pgoff >> (PAGE_SHIFT-12));
-}
-
-save_static_function(sys_fork);
-static int __used noinline
-_sys_fork(nabi_no_regargs struct pt_regs regs)
-{
-	return do_fork(SIGCHLD, regs.regs[29], &regs, 0, NULL, NULL);
-}
-
-save_static_function(sys_clone);
-static int __used noinline
-_sys_clone(nabi_no_regargs struct pt_regs regs)
-{
-	unsigned long clone_flags;
-	unsigned long newsp;
-	int __user *parent_tidptr, *child_tidptr;
-
-	clone_flags = regs.regs[4];
-	newsp = regs.regs[5];
-	if (!newsp)
-		newsp = regs.regs[29];
-	parent_tidptr = (int __user *) regs.regs[6];
-#ifdef CONFIG_32BIT
-	/* We need to fetch the fifth argument off the stack.  */
-	child_tidptr = NULL;
-	if (clone_flags & (CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID)) {
-		int __user *__user *usp = (int __user *__user *) regs.regs[29];
-		if (regs.regs[2] == __NR_syscall) {
-			if (get_user (child_tidptr, &usp[5]))
-				return -EFAULT;
-		}
-		else if (get_user (child_tidptr, &usp[4]))
-			return -EFAULT;
-	}
-#else
-	child_tidptr = (int __user *) regs.regs[8];
-#endif
-	return do_fork(clone_flags, newsp, &regs, 0,
-	               parent_tidptr, child_tidptr);
-}
-
-/*
- * sys_execve() executes a new program.
- */
-asmlinkage int sys_execve(nabi_no_regargs struct pt_regs regs)
-{
-	int error;
-	struct filename *filename;
-
-	filename = getname((const char __user *) (long)regs.regs[4]);
-	error = PTR_ERR(filename);
-	if (IS_ERR(filename))
-		goto out;
-	error = do_execve(filename->name,
-			  (const char __user *const __user *) (long)regs.regs[5],
-	                  (const char __user *const __user *) (long)regs.regs[6],
-			  &regs);
-	putname(filename);
-
-out:
-	return error;
-}
-=======
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd,
 			       pgoff >> (PAGE_SHIFT - 12));
 }
@@ -193,7 +83,6 @@ out:
 save_static_function(sys_fork);
 save_static_function(sys_clone);
 save_static_function(sys_clone3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SYSCALL_DEFINE1(set_thread_area, unsigned long, addr)
 {
@@ -206,30 +95,15 @@ SYSCALL_DEFINE1(set_thread_area, unsigned long, addr)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int mips_atomic_set(struct pt_regs *regs,
-	unsigned long addr, unsigned long new)
-{
-	unsigned long old, tmp;
-=======
 static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 {
 	unsigned long old, tmp;
 	struct pt_regs *regs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int err;
 
 	if (unlikely(addr & 3))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (unlikely(!access_ok(VERIFY_WRITE, addr, 4)))
-		return -EINVAL;
-
-	if (cpu_has_llsc && R10000_LLSC_WAR) {
-		__asm__ __volatile__ (
-		"	.set	mips3					\n"
-=======
 	if (unlikely(!access_ok((const void __user *)addr, 4)))
 		return -EINVAL;
 
@@ -237,33 +111,22 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		__asm__ __volatile__ (
 		"	.set	push					\n"
 		"	.set	arch=r4000				\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	li	%[err], 0				\n"
 		"1:	ll	%[old], (%[addr])			\n"
 		"	move	%[tmp], %[new]				\n"
 		"2:	sc	%[tmp], (%[addr])			\n"
 		"	beqzl	%[tmp], 1b				\n"
 		"3:							\n"
-<<<<<<< HEAD
-=======
 		"	.insn						\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%[err], %[efault]			\n"
 		"	j	3b					\n"
 		"	.previous					\n"
 		"	.section __ex_table,\"a\"			\n"
-<<<<<<< HEAD
-		"	"STR(PTR)"	1b, 4b				\n"
-		"	"STR(PTR)"	2b, 4b				\n"
-		"	.previous					\n"
-		"	.set	mips0					\n"
-=======
 		"	"STR(PTR_WD)"	1b, 4b				\n"
 		"	"STR(PTR_WD)"	2b, 4b				\n"
 		"	.previous					\n"
 		"	.set	pop					\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: [old] "=&r" (old),
 		  [err] "=&r" (err),
 		  [tmp] "=&r" (tmp)
@@ -273,19 +136,6 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		: "memory");
 	} else if (cpu_has_llsc) {
 		__asm__ __volatile__ (
-<<<<<<< HEAD
-		"	.set	mips3					\n"
-		"	li	%[err], 0				\n"
-		"1:	ll	%[old], (%[addr])			\n"
-		"	move	%[tmp], %[new]				\n"
-		"2:	sc	%[tmp], (%[addr])			\n"
-		"	bnez	%[tmp], 4f				\n"
-		"3:							\n"
-		"	.subsection 2					\n"
-		"4:	b	1b					\n"
-		"	.previous					\n"
-		"							\n"
-=======
 		"	.set	push					\n"
 		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
 		"	li	%[err], 0				\n"
@@ -298,23 +148,15 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		"	beqz	%[tmp], 1b				\n"
 		"3:							\n"
 		"	.insn						\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.section .fixup,\"ax\"				\n"
 		"5:	li	%[err], %[efault]			\n"
 		"	j	3b					\n"
 		"	.previous					\n"
 		"	.section __ex_table,\"a\"			\n"
-<<<<<<< HEAD
-		"	"STR(PTR)"	1b, 5b				\n"
-		"	"STR(PTR)"	2b, 5b				\n"
-		"	.previous					\n"
-		"	.set	mips0					\n"
-=======
 		"	"STR(PTR_WD)"	1b, 5b				\n"
 		"	"STR(PTR_WD)"	2b, 5b				\n"
 		"	.previous					\n"
 		"	.set	pop					\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: [old] "=&r" (old),
 		  [err] "=&r" (err),
 		  [tmp] "=&r" (tmp)
@@ -340,10 +182,7 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 	if (unlikely(err))
 		return err;
 
-<<<<<<< HEAD
-=======
 	regs = current_pt_regs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->regs[2] = old;
 	regs->regs[7] = 0;	/* No error */
 
@@ -357,24 +196,6 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 	: "r" (regs));
 
 	/* unreached.  Honestly.  */
-<<<<<<< HEAD
-	while (1);
-}
-
-save_static_function(sys_sysmips);
-static int __used noinline
-_sys_sysmips(nabi_no_regargs struct pt_regs regs)
-{
-	long cmd, arg1, arg2;
-
-	cmd = regs.regs[4];
-	arg1 = regs.regs[5];
-	arg2 = regs.regs[6];
-
-	switch (cmd) {
-	case MIPS_ATOMIC_SET:
-		return mips_atomic_set(&regs, arg1, arg2);
-=======
 	unreachable();
 }
 
@@ -389,7 +210,6 @@ SYSCALL_DEFINE3(sysmips, long, cmd, long, arg1, long, arg2)
 	switch (cmd) {
 	case MIPS_ATOMIC_SET:
 		return mips_atomic_set(arg1, arg2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MIPS_FIXADE:
 		if (arg1 & ~3)
@@ -421,46 +241,3 @@ SYSCALL_DEFINE3(cachectl, char *, addr, int, nbytes, int, op)
 {
 	return -ENOSYS;
 }
-<<<<<<< HEAD
-
-/*
- * If we ever come here the user sp is bad.  Zap the process right away.
- * Due to the bad stack signaling wouldn't work.
- */
-asmlinkage void bad_stack(void)
-{
-	do_exit(SIGSEGV);
-}
-
-/*
- * Do a system call from kernel instead of calling sys_execve so we
- * end up with proper pt_regs.
- */
-int kernel_execve(const char *filename,
-		  const char *const argv[],
-		  const char *const envp[])
-{
-	register unsigned long __a0 asm("$4") = (unsigned long) filename;
-	register unsigned long __a1 asm("$5") = (unsigned long) argv;
-	register unsigned long __a2 asm("$6") = (unsigned long) envp;
-	register unsigned long __a3 asm("$7");
-	unsigned long __v0;
-
-	__asm__ volatile ("					\n"
-	"	.set	noreorder				\n"
-	"	li	$2, %5		# __NR_execve		\n"
-	"	syscall						\n"
-	"	move	%0, $2					\n"
-	"	.set	reorder					\n"
-	: "=&r" (__v0), "=r" (__a3)
-	: "r" (__a0), "r" (__a1), "r" (__a2), "i" (__NR_execve)
-	: "$2", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24",
-	  "memory");
-
-	if (__a3 == 0)
-		return __v0;
-
-	return -__v0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

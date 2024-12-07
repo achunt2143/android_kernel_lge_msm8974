@@ -15,24 +15,12 @@
 #include <linux/vmalloc.h>
 
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/io.h>
-#include <asm/sun3mmu.h>
-
-#undef SUN3_KMAP_DEBUG
-
-#ifdef SUN3_KMAP_DEBUG
-extern void print_pte_vaddr(unsigned long vaddr);
-#endif
-=======
 #include <asm/io.h>
 #include <asm/sun3mmu.h>
 
 #include "../sun3/sun3.h"
 
 #undef SUN3_KMAP_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void mmu_emu_map_pmeg (int context, int vaddr);
 
@@ -49,10 +37,7 @@ static inline void do_page_mapin(unsigned long phys, unsigned long virt,
 	sun3_put_pte(virt, pte);
 
 #ifdef SUN3_KMAP_DEBUG
-<<<<<<< HEAD
-=======
 	pr_info("mapin:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	print_pte_vaddr(virt);
 #endif
 
@@ -93,13 +78,8 @@ void __iomem *sun3_ioremap(unsigned long phys, unsigned long size,
 		return NULL;
 
 #ifdef SUN3_KMAP_DEBUG
-<<<<<<< HEAD
-	printk("ioremap: got virt %p size %lx(%lx)\n",
-	       area->addr, size, area->size);
-=======
 	pr_info("ioremap: got virt %p size %lx(%lx)\n", area->addr, size,
 		area->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	pages = size / PAGE_SIZE;

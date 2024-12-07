@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/* (C) 2001-2002 Magnus Boden <mb@ozaba.mine.nu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* (C) 2001-2002 Magnus Boden <mb@ozaba.mine.nu>
  * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
@@ -14,7 +5,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/in.h>
@@ -28,20 +18,13 @@
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <linux/netfilter/nf_conntrack_tftp.h>
 
-<<<<<<< HEAD
-=======
 #define HELPER_NAME "tftp"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Magnus Boden <mb@ozaba.mine.nu>");
 MODULE_DESCRIPTION("TFTP connection tracking helper");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip_conntrack_tftp");
-<<<<<<< HEAD
-MODULE_ALIAS_NFCT_HELPER("tftp");
-=======
 MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PORTS 8
 static unsigned short ports[MAX_PORTS];
@@ -79,15 +62,10 @@ static int tftp_help(struct sk_buff *skb,
 		nf_ct_dump_tuple(&ct->tuplehash[IP_CT_DIR_REPLY].tuple);
 
 		exp = nf_ct_expect_alloc(ct);
-<<<<<<< HEAD
-		if (exp == NULL)
-			return NF_DROP;
-=======
 		if (exp == NULL) {
 			nf_ct_helper_log(skb, ct, "cannot alloc expectation");
 			return NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tuple = &ct->tuplehash[IP_CT_DIR_REPLY].tuple;
 		nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT,
 				  nf_ct_l3num(ct),
@@ -100,15 +78,10 @@ static int tftp_help(struct sk_buff *skb,
 		nf_nat_tftp = rcu_dereference(nf_nat_tftp_hook);
 		if (nf_nat_tftp && ct->status & IPS_NAT_MASK)
 			ret = nf_nat_tftp(skb, ctinfo, exp);
-<<<<<<< HEAD
-		else if (nf_ct_expect_related(exp) != 0)
-			ret = NF_DROP;
-=======
 		else if (nf_ct_expect_related(exp, 0) != 0) {
 			nf_ct_helper_log(skb, ct, "cannot add expectation");
 			ret = NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nf_ct_expect_put(exp);
 		break;
 	case TFTP_OPCODE_DATA:
@@ -124,74 +97,28 @@ static int tftp_help(struct sk_buff *skb,
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct nf_conntrack_helper tftp[MAX_PORTS][2] __read_mostly;
-=======
 static struct nf_conntrack_helper tftp[MAX_PORTS * 2] __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct nf_conntrack_expect_policy tftp_exp_policy = {
 	.max_expected	= 1,
 	.timeout	= 5 * 60,
 };
 
-<<<<<<< HEAD
-static void nf_conntrack_tftp_fini(void)
-{
-	int i, j;
-
-	for (i = 0; i < ports_c; i++) {
-		for (j = 0; j < 2; j++)
-			nf_conntrack_helper_unregister(&tftp[i][j]);
-	}
-=======
 static void __exit nf_conntrack_tftp_fini(void)
 {
 	nf_conntrack_helpers_unregister(tftp, ports_c * 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nf_conntrack_tftp_init(void)
 {
-<<<<<<< HEAD
-	int i, j, ret;
-=======
 	int i, ret;
 
 	NF_CT_HELPER_BUILD_BUG_ON(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ports_c == 0)
 		ports[ports_c++] = TFTP_PORT;
 
 	for (i = 0; i < ports_c; i++) {
-<<<<<<< HEAD
-		memset(&tftp[i], 0, sizeof(tftp[i]));
-
-		tftp[i][0].tuple.src.l3num = AF_INET;
-		tftp[i][1].tuple.src.l3num = AF_INET6;
-		for (j = 0; j < 2; j++) {
-			tftp[i][j].tuple.dst.protonum = IPPROTO_UDP;
-			tftp[i][j].tuple.src.u.udp.port = htons(ports[i]);
-			tftp[i][j].expect_policy = &tftp_exp_policy;
-			tftp[i][j].me = THIS_MODULE;
-			tftp[i][j].help = tftp_help;
-
-			if (ports[i] == TFTP_PORT)
-				sprintf(tftp[i][j].name, "tftp");
-			else
-				sprintf(tftp[i][j].name, "tftp-%u", i);
-
-			ret = nf_conntrack_helper_register(&tftp[i][j]);
-			if (ret) {
-				printk(KERN_ERR "nf_ct_tftp: failed to register"
-				       " helper for pf: %u port: %u\n",
-					tftp[i][j].tuple.src.l3num, ports[i]);
-				nf_conntrack_tftp_fini();
-				return ret;
-			}
-		}
-=======
 		nf_ct_helper_init(&tftp[2 * i], AF_INET, IPPROTO_UDP,
 				  HELPER_NAME, TFTP_PORT, ports[i], i,
 				  &tftp_exp_policy, 0, tftp_help, NULL,
@@ -206,7 +133,6 @@ static int __init nf_conntrack_tftp_init(void)
 	if (ret < 0) {
 		pr_err("failed to register helpers\n");
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }

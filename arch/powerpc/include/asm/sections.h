@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_SECTIONS_H
 #define _ASM_POWERPC_SECTIONS_H
 #ifdef __KERNEL__
 
 #include <linux/elf.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-#include <asm-generic/sections.h>
-
-#ifdef __powerpc64__
-
-extern char __end_interrupts[];
-
-static inline int in_kernel_text(unsigned long addr)
-{
-	if (addr >= (unsigned long)_stext && addr < (unsigned long)__init_end)
-		return 1;
-
-	return 0;
-=======
 
 #ifdef CONFIG_HAVE_FUNCTION_DESCRIPTORS
 typedef struct func_desc func_desc_t;
@@ -84,7 +67,6 @@ static inline int overlaps_interrupt_vector_text(unsigned long start,
 
 	return start < (unsigned long)__va(real_end) &&
 		(unsigned long)__va(real_start) < end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int overlaps_kernel_text(unsigned long start, unsigned long end)
@@ -93,22 +75,8 @@ static inline int overlaps_kernel_text(unsigned long start, unsigned long end)
 		(unsigned long)_stext < end;
 }
 
-<<<<<<< HEAD
-#undef dereference_function_descriptor
-static inline void *dereference_function_descriptor(void *ptr)
-{
-	struct ppc64_opd_entry *desc = ptr;
-	void *p;
-
-	if (!probe_kernel_address(&desc->funcaddr, p))
-		ptr = p;
-	return ptr;
-}
-
-=======
 #else
 static inline unsigned long kernel_toc_addr(void) { BUILD_BUG(); return -1UL; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __KERNEL__ */

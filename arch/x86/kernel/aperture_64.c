@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Firmware replacement code.
  *
@@ -14,14 +11,10 @@
  *
  * Copyright 2002 Andi Kleen, SuSE Labs.
  */
-<<<<<<< HEAD
-#include <linux/kernel.h>
-=======
 #define pr_fmt(fmt) "AGP: " fmt
 
 #include <linux/kernel.h>
 #include <linux/kcore.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/memblock.h>
@@ -29,15 +22,8 @@
 #include <linux/pci_ids.h>
 #include <linux/pci.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <linux/ioport.h>
-#include <linux/suspend.h>
-#include <linux/kmemleak.h>
-#include <asm/e820.h>
-=======
 #include <linux/suspend.h>
 #include <asm/e820/api.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/iommu.h>
 #include <asm/gart.h>
@@ -45,19 +31,12 @@
 #include <asm/dma.h>
 #include <asm/amd_nb.h>
 #include <asm/x86_init.h>
-<<<<<<< HEAD
-=======
 #include <linux/crash_dump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Using 512M as goal, in case kexec will load kernel_big
  * that will do the on-position decompress, and could overlap with
-<<<<<<< HEAD
- * with the gart aperture that is used.
-=======
  * the gart aperture that is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sequence:
  * kernel_small
  * ==> kexec (with kdump trigger path or gart still enabled)
@@ -79,20 +58,6 @@ int fallback_aper_force __initdata;
 
 int fix_aperture __initdata = 1;
 
-<<<<<<< HEAD
-static struct resource gart_resource = {
-	.name	= "GART",
-	.flags	= IORESOURCE_MEM,
-};
-
-static void __init insert_aperture_resource(u32 aper_base, u32 aper_size)
-{
-	gart_resource.start = aper_base;
-	gart_resource.end = aper_base + aper_size - 1;
-	insert_resource(&iomem_resource, &gart_resource);
-}
-
-=======
 #if defined(CONFIG_PROC_VMCORE) || defined(CONFIG_PROC_KCORE)
 /*
  * If the first kernel maps the aperture over e820 RAM, the kdump kernel will
@@ -136,7 +101,6 @@ static void exclude_from_core(u64 aper_base, u32 aper_order)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This code runs before the PCI subsystem is initialized, so just
    access the northbridge directly. */
 
@@ -156,25 +120,6 @@ static u32 __init allocate_aperture(void)
 	 * memory. Unfortunately we cannot move it up because that would
 	 * make the IOMMU useless.
 	 */
-<<<<<<< HEAD
-	addr = memblock_find_in_range(GART_MIN_ADDR, GART_MAX_ADDR,
-				      aper_size, aper_size);
-	if (!addr || addr + aper_size > GART_MAX_ADDR) {
-		printk(KERN_ERR
-			"Cannot allocate aperture memory hole (%lx,%uK)\n",
-				addr, aper_size>>10);
-		return 0;
-	}
-	memblock_reserve(addr, aper_size);
-	/*
-	 * Kmemleak should not scan this block as it may not be mapped via the
-	 * kernel direct mapping.
-	 */
-	kmemleak_ignore(phys_to_virt(addr));
-	printk(KERN_INFO "Mapping aperture over %d KB of RAM @ %lx\n",
-			aper_size >> 10, addr);
-	insert_aperture_resource((u32)addr, aper_size);
-=======
 	addr = memblock_phys_alloc_range(aper_size, aper_size,
 					 GART_MIN_ADDR, GART_MAX_ADDR);
 	if (!addr) {
@@ -184,7 +129,6 @@ static u32 __init allocate_aperture(void)
 	}
 	pr_info("Mapping aperture over RAM [mem %#010lx-%#010lx] (%uKB)\n",
 		addr, addr + aper_size - 1, aper_size >> 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_nosave_region(addr >> PAGE_SHIFT,
 			       (addr+aper_size) >> PAGE_SHIFT);
 
@@ -228,18 +172,11 @@ static u32 __init read_agp(int bus, int slot, int func, int cap, u32 *order)
 	u64 aper;
 	u32 old_order;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "AGP bridge at %02x:%02x:%02x\n", bus, slot, func);
-	apsizereg = read_pci_config_16(bus, slot, func, cap + 0x14);
-	if (apsizereg == 0xffffffff) {
-		printk(KERN_ERR "APSIZE in AGP bridge unreadable\n");
-=======
 	pr_info("pci 0000:%02x:%02x:%02x: AGP bridge\n", bus, slot, func);
 	apsizereg = read_pci_config_16(bus, slot, func, cap + 0x14);
 	if (apsizereg == 0xffffffff) {
 		pr_err("pci 0000:%02x:%02x.%d: APSIZE unreadable\n",
 		       bus, slot, func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -263,18 +200,6 @@ static u32 __init read_agp(int bus, int slot, int func, int cap, u32 *order)
 	 * On some sick chips, APSIZE is 0. It means it wants 4G
 	 * so let double check that order, and lets trust AMD NB settings:
 	 */
-<<<<<<< HEAD
-	printk(KERN_INFO "Aperture from AGP @ %Lx old size %u MB\n",
-			aper, 32 << old_order);
-	if (aper + (32ULL<<(20 + *order)) > 0x100000000ULL) {
-		printk(KERN_INFO "Aperture size %u MB (APSIZE %x) is not right, using settings from NB\n",
-				32 << *order, apsizereg);
-		*order = old_order;
-	}
-
-	printk(KERN_INFO "Aperture from AGP @ %Lx size %u MB (APSIZE %x)\n",
-			aper, 32 << *order, apsizereg);
-=======
 	pr_info("pci 0000:%02x:%02x.%d: AGP aperture [bus addr %#010Lx-%#010Lx] (old size %uMB)\n",
 		bus, slot, func, aper, aper + (32ULL << (old_order + 20)) - 1,
 		32 << old_order);
@@ -287,7 +212,6 @@ static u32 __init read_agp(int bus, int slot, int func, int cap, u32 *order)
 	pr_info("pci 0000:%02x:%02x.%d: AGP aperture [bus addr %#010Lx-%#010Lx] (%uMB, APSIZE %#x)\n",
 		bus, slot, func, aper, aper + (32ULL << (*order + 20)) - 1,
 		32 << *order, apsizereg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!aperture_valid(aper, (32*1024*1024) << *order, 32<<20))
 		return 0;
@@ -335,59 +259,18 @@ static u32 __init search_agp_bridge(u32 *order, int *valid_agp)
 							order);
 				}
 
-<<<<<<< HEAD
-				/* No multi-function device? */
-				type = read_pci_config_byte(bus, slot, func,
-							       PCI_HEADER_TYPE);
-				if (!(type & 0x80))
-=======
 				type = read_pci_config_byte(bus, slot, func,
 							       PCI_HEADER_TYPE);
 				if (!(type & PCI_HEADER_TYPE_MFD))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 			}
 		}
 	}
-<<<<<<< HEAD
-	printk(KERN_INFO "No AGP bridge found\n");
-=======
 	pr_info("No AGP bridge found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int gart_fix_e820 __initdata = 1;
-
-static int __init parse_gart_mem(char *p)
-{
-	if (!p)
-		return -EINVAL;
-
-	if (!strncmp(p, "off", 3))
-		gart_fix_e820 = 0;
-	else if (!strncmp(p, "on", 2))
-		gart_fix_e820 = 1;
-
-	return 0;
-}
-early_param("gart_fix_e820", parse_gart_mem);
-
-void __init early_gart_iommu_check(void)
-{
-	/*
-	 * in case it is enabled before, esp for kexec/kdump,
-	 * previous kernel already enable that. memset called
-	 * by allocate_aperture/__alloc_bootmem_nopanic cause restart.
-	 * or second kernel have different position for GART hole. and new
-	 * kernel could use hole as RAM that is still used by GART set by
-	 * first kernel
-	 * or BIOS forget to put that in reserved.
-	 * try to update e820 to make that region as reserved.
-	 */
-=======
 static bool gart_fix_e820 __initdata = true;
 
 static int __init parse_gart_mem(char *p)
@@ -413,7 +296,6 @@ early_param("gart_fix_e820", parse_gart_mem);
  */
 void __init early_gart_iommu_check(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 agp_aper_order = 0;
 	int i, fix, slot, valid_agp = 0;
 	u32 ctl;
@@ -421,12 +303,9 @@ void __init early_gart_iommu_check(void)
 	u64 aper_base = 0, last_aper_base = 0;
 	int aper_enabled = 0, last_aper_enabled = 0, last_valid = 0;
 
-<<<<<<< HEAD
-=======
 	if (!amd_gart_present())
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!early_pci_allowed())
 		return;
 
@@ -476,14 +355,6 @@ void __init early_gart_iommu_check(void)
 		fix = 1;
 
 	if (gart_fix_e820 && !fix && aper_enabled) {
-<<<<<<< HEAD
-		if (e820_any_mapped(aper_base, aper_base + aper_size,
-				    E820_RAM)) {
-			/* reserve it, so we can reuse it in second kernel */
-			printk(KERN_INFO "update e820 for GART\n");
-			e820_add_region(aper_base, aper_size, E820_RESERVED);
-			update_e820();
-=======
 		if (e820__mapped_any(aper_base, aper_base + aper_size,
 				    E820_TYPE_RAM)) {
 			/* reserve it, so we can reuse it in second kernel */
@@ -491,7 +362,6 @@ void __init early_gart_iommu_check(void)
 				aper_base, aper_base + aper_size - 1);
 			e820__range_add(aper_base, aper_size, E820_TYPE_RESERVED);
 			e820__update_table_print();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -521,11 +391,7 @@ void __init early_gart_iommu_check(void)
 
 static int __initdata printed_gart_size_msg;
 
-<<<<<<< HEAD
-int __init gart_iommu_hole_init(void)
-=======
 void __init gart_iommu_hole_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 agp_aper_base = 0, agp_aper_order = 0;
 	u32 aper_size, aper_alloc = 0, aper_order = 0, last_aper_order = 0;
@@ -533,13 +399,6 @@ void __init gart_iommu_hole_init(void)
 	int fix, slot, valid_agp = 0;
 	int i, node;
 
-<<<<<<< HEAD
-	if (gart_iommu_aperture_disabled || !fix_aperture ||
-	    !early_pci_allowed())
-		return -ENODEV;
-
-	printk(KERN_INFO  "Checking aperture...\n");
-=======
 	if (!amd_gart_present())
 		return;
 
@@ -548,7 +407,6 @@ void __init gart_iommu_hole_init(void)
 		return;
 
 	pr_info("Checking aperture...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!fallback_aper_force)
 		agp_aper_base = search_agp_bridge(&agp_aper_order, &valid_agp);
@@ -589,14 +447,9 @@ void __init gart_iommu_hole_init(void)
 			aper_base = read_pci_config(bus, slot, 3, AMD64_GARTAPERTUREBASE) & 0x7fff;
 			aper_base <<= 25;
 
-<<<<<<< HEAD
-			printk(KERN_INFO "Node %d: aperture @ %Lx size %u MB\n",
-					node, aper_base, aper_size >> 20);
-=======
 			pr_info("Node %d: aperture [bus addr %#010Lx-%#010Lx] (%uMB)\n",
 				node, aper_base, aper_base + aper_size - 1,
 				aper_size >> 20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			node++;
 
 			if (!aperture_valid(aper_base, aper_size, 64<<20)) {
@@ -607,15 +460,9 @@ void __init gart_iommu_hole_init(void)
 					if (!no_iommu &&
 					    max_pfn > MAX_DMA32_PFN &&
 					    !printed_gart_size_msg) {
-<<<<<<< HEAD
-						printk(KERN_ERR "you are using iommu with agp, but GART size is less than 64M\n");
-						printk(KERN_ERR "please increase GART size in your BIOS setup\n");
-						printk(KERN_ERR "if BIOS doesn't have that option, contact your HW vendor!\n");
-=======
 						pr_err("you are using iommu with agp, but GART size is less than 64MB\n");
 						pr_err("please increase GART size in your BIOS setup\n");
 						pr_err("if BIOS doesn't have that option, contact your HW vendor!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						printed_gart_size_msg = 1;
 					}
 				} else {
@@ -637,14 +484,6 @@ void __init gart_iommu_hole_init(void)
 out:
 	if (!fix && !fallback_aper_force) {
 		if (last_aper_base) {
-<<<<<<< HEAD
-			unsigned long n = (32 * 1024 * 1024) << last_aper_order;
-
-			insert_aperture_resource((u32)last_aper_base, n);
-			return 1;
-		}
-		return 0;
-=======
 			/*
 			 * If this is the kdump kernel, the first kernel
 			 * may have allocated the range over its e820 RAM
@@ -653,7 +492,6 @@ out:
 			exclude_from_core(last_aper_base, last_aper_order);
 		}
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!fallback_aper_force) {
@@ -667,20 +505,10 @@ out:
 		   force_iommu ||
 		   valid_agp ||
 		   fallback_aper_force) {
-<<<<<<< HEAD
-		printk(KERN_INFO
-			"Your BIOS doesn't leave a aperture memory hole\n");
-		printk(KERN_INFO
-			"Please enable the IOMMU option in the BIOS setup\n");
-		printk(KERN_INFO
-			"This costs you %d MB of RAM\n",
-				32 << fallback_aper_order);
-=======
 		pr_info("Your BIOS doesn't leave an aperture memory hole\n");
 		pr_info("Please enable the IOMMU option in the BIOS setup\n");
 		pr_info("This costs you %dMB of RAM\n",
 			32 << fallback_aper_order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		aper_order = fallback_aper_order;
 		aper_alloc = allocate_aperture();
@@ -696,11 +524,6 @@ out:
 			panic("Not enough memory for aperture");
 		}
 	} else {
-<<<<<<< HEAD
-		return 0;
-	}
-
-=======
 		return;
 	}
 
@@ -712,7 +535,6 @@ out:
 	 */
 	exclude_from_core(aper_alloc, aper_order);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fix up the north bridges */
 	for (i = 0; i < amd_nb_bus_dev_ranges[i].dev_limit; i++) {
 		int bus, dev_base, dev_limit;
@@ -736,9 +558,4 @@ out:
 	}
 
 	set_up_gart_resume(aper_order, aper_alloc);
-<<<<<<< HEAD
-
-	return 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

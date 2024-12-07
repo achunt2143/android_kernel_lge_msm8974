@@ -1,24 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004 - 2006 rt2x00 SourceForge Project
  * <http://rt2x00.serialmonkey.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Module: eeprom_93cx6
  * Abstract: EEPROM reader routines for 93cx6 chipsets.
  * Supported chipsets: 93c46 & 93c66.
@@ -177,11 +161,7 @@ static void eeprom_93cx6_read_bits(struct eeprom_93cx6 *eeprom,
 }
 
 /**
-<<<<<<< HEAD
- * eeprom_93cx6_read - Read multiple words from eeprom
-=======
  * eeprom_93cx6_read - Read a word from eeprom
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @eeprom: Pointer to eeprom structure
  * @word: Word index from where we should start reading
  * @data: target pointer where the information will have to be stored
@@ -246,8 +226,6 @@ void eeprom_93cx6_multiread(struct eeprom_93cx6 *eeprom, const u8 word,
 EXPORT_SYMBOL_GPL(eeprom_93cx6_multiread);
 
 /**
-<<<<<<< HEAD
-=======
  * eeprom_93cx6_readb - Read a byte from eeprom
  * @eeprom: Pointer to eeprom structure
  * @byte: Byte index from where we should start reading
@@ -308,7 +286,6 @@ void eeprom_93cx6_multireadb(struct eeprom_93cx6 *eeprom, const u8 byte,
 EXPORT_SYMBOL_GPL(eeprom_93cx6_multireadb);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eeprom_93cx6_wren - set the write enable state
  * @eeprom: Pointer to eeprom structure
  * @enable: true to enable writes, otherwise disable writes

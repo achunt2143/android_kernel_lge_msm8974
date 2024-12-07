@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/cache-sh2a.c
  *
  * Copyright (C) 2008 Yoshinori Sato
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -141,12 +133,8 @@ static void sh2a__flush_invalidate_region(void *start, int size)
 
 	/* If there are too many pages then just blow the cache */
 	if (((end - begin) >> PAGE_SHIFT) >= MAX_OCACHE_PAGES) {
-<<<<<<< HEAD
-		__raw_writel(__raw_readl(CCR) | CCR_OCACHE_INVALIDATE, CCR);
-=======
 		__raw_writel(__raw_readl(SH_CCR) | CCR_OCACHE_INVALIDATE,
 			     SH_CCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		for (v = begin; v < end; v += L1_CACHE_BYTES)
 			sh2a_invalidate_line(CACHE_OC_ADDRESS_ARRAY, v);
@@ -179,12 +167,8 @@ static void sh2a_flush_icache_range(void *args)
 	/* I-Cache invalidate */
 	/* If there are too many pages then just blow the cache */
 	if (((end - start) >> PAGE_SHIFT) >= MAX_ICACHE_PAGES) {
-<<<<<<< HEAD
-		__raw_writel(__raw_readl(CCR) | CCR_ICACHE_INVALIDATE, CCR);
-=======
 		__raw_writel(__raw_readl(SH_CCR) | CCR_ICACHE_INVALIDATE,
 			     SH_CCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		for (v = start; v < end; v += L1_CACHE_BYTES)
 			sh2a_invalidate_line(CACHE_IC_ADDRESS_ARRAY, v);

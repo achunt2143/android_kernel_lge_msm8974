@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
@@ -26,14 +23,6 @@
  *		data-registers to hold input values and one tries to
  *		specify d0 and d1 as scratch registers. Letting gcc
  *		choose these registers itself solves the problem.
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Revised by Kenneth Albanowski for m68knommu. Basic problem: unaligned access
@@ -109,10 +98,7 @@ out:
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef ip_fast_csum
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
  *	which always checksum on 4 octet boundaries.
@@ -122,10 +108,7 @@ __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 	return (__force __sum16)~do_csum(iph, ihl*4);
 }
 EXPORT_SYMBOL(ip_fast_csum);
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -162,40 +145,6 @@ __sum16 ip_compute_csum(const void *buff, int len)
 }
 EXPORT_SYMBOL(ip_compute_csum);
 
-<<<<<<< HEAD
-/*
- * copy from fs while checksumming, otherwise like csum_partial
- */
-__wsum
-csum_partial_copy_from_user(const void __user *src, void *dst, int len,
-						__wsum sum, int *csum_err)
-{
-	int missing;
-
-	missing = __copy_from_user(dst, src, len);
-	if (missing) {
-		memset(dst + len - missing, 0, missing);
-		*csum_err = -EFAULT;
-	} else
-		*csum_err = 0;
-
-	return csum_partial(dst, len, sum);
-}
-EXPORT_SYMBOL(csum_partial_copy_from_user);
-
-/*
- * copy from ds while checksumming, otherwise like csum_partial
- */
-__wsum
-csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
-{
-	memcpy(dst, src, len);
-	return csum_partial(dst, len, sum);
-}
-EXPORT_SYMBOL(csum_partial_copy);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef csum_tcpudp_nofold
 static inline u32 from64to32(u64 x)
 {
@@ -207,13 +156,7 @@ static inline u32 from64to32(u64 x)
 }
 
 __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
-<<<<<<< HEAD
-			unsigned short len,
-			unsigned short proto,
-			__wsum sum)
-=======
 			  __u32 len, __u8 proto, __wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long long s = (__force u32)sum;
 

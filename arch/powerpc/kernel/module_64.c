@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/*  Kernel module help for PPC64.
-    Copyright (C) 2001, 2003 Rusty Russell IBM Corporation.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*  Kernel module help for PPC64.
     Copyright (C) 2001, 2003 Rusty Russell IBM Corporation.
@@ -25,7 +6,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/elf.h>
 #include <linux/moduleloader.h>
@@ -33,23 +13,15 @@
 #include <linux/vmalloc.h>
 #include <linux/ftrace.h>
 #include <linux/bug.h>
-<<<<<<< HEAD
-=======
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/module.h>
 #include <asm/firmware.h>
 #include <asm/code-patching.h>
 #include <linux/sort.h>
-<<<<<<< HEAD
-
-#include "setup.h"
-=======
 #include <asm/setup.h>
 #include <asm/sections.h>
 #include <asm/inst.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FIXME: We don't do .init separately.  To do this, we'd need to have
    a separate r2 value in the init and core section, and stub between
@@ -58,47 +30,6 @@
    Using a magic allocator which places modules within 32MB solves
    this, and makes other things simpler.  Anton?
    --RR.  */
-<<<<<<< HEAD
-#if 0
-#define DEBUGP printk
-#else
-#define DEBUGP(fmt , ...)
-#endif
-
-/* Like PPC32, we need little trampolines to do > 24-bit jumps (into
-   the kernel itself).  But on PPC64, these need to be used for every
-   jump, actually, to reset r2 (TOC+0x8000). */
-struct ppc64_stub_entry
-{
-	/* 28 byte jump instruction sequence (7 instructions) */
-	unsigned char jump[28];
-	unsigned char unused[4];
-	/* Data for the above code */
-	struct ppc64_opd_entry opd;
-};
-
-/* We use a stub to fix up r2 (TOC ptr) and to jump to the (external)
-   function which may be more than 24-bits away.  We could simply
-   patch the new r2 value and function pointer into the stub, but it's
-   significantly shorter to put these values at the end of the stub
-   code, and patch the stub address (32-bits relative to the TOC ptr,
-   r2) into the stub. */
-static struct ppc64_stub_entry ppc64_stub =
-{ .jump = {
-	0x3d, 0x82, 0x00, 0x00, /* addis   r12,r2, <high> */
-	0x39, 0x8c, 0x00, 0x00, /* addi    r12,r12, <low> */
-	/* Save current r2 value in magic place on the stack. */
-	0xf8, 0x41, 0x00, 0x28, /* std     r2,40(r1) */
-	0xe9, 0x6c, 0x00, 0x20, /* ld      r11,32(r12) */
-	0xe8, 0x4c, 0x00, 0x28, /* ld      r2,40(r12) */
-	0x7d, 0x69, 0x03, 0xa6, /* mtctr   r11 */
-	0x4e, 0x80, 0x04, 0x20  /* bctr */
-} };
-
-/* Count how many different 24-bit relocations (different symbol,
-   different addend) */
-static unsigned int count_relocs(const Elf64_Rela *rela, unsigned int num)
-=======
 
 bool module_elf_check_arch(Elf_Ehdr *hdr)
 {
@@ -229,7 +160,6 @@ static u32 ppc64_stub_insns[] = {
  */
 static unsigned int count_relocs(const Elf64_Rela *rela, unsigned int num,
 				 unsigned long r_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, r_info, r_addend, _count_relocs;
 
@@ -238,13 +168,8 @@ static unsigned int count_relocs(const Elf64_Rela *rela, unsigned int num,
 	r_info = 0;
 	r_addend = 0;
 	for (i = 0; i < num; i++)
-<<<<<<< HEAD
-		/* Only count 24-bit relocs, others don't need stubs */
-		if (ELF64_R_TYPE(rela[i].r_info) == R_PPC_REL24 &&
-=======
 		/* Only count r_type relocs, others don't need stubs */
 		if (ELF64_R_TYPE(rela[i].r_info) == r_type &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (r_info != ELF64_R_SYM(rela[i].r_info) ||
 		     r_addend != rela[i].r_addend)) {
 			_count_relocs++;
@@ -278,67 +203,29 @@ static int relacmp(const void *_x, const void *_y)
 		return 0;
 }
 
-<<<<<<< HEAD
-static void relaswap(void *_x, void *_y, int size)
-{
-	uint64_t *x, *y, tmp;
-	int i;
-
-	y = (uint64_t *)_x;
-	x = (uint64_t *)_y;
-
-	for (i = 0; i < sizeof(Elf64_Rela) / sizeof(uint64_t); i++) {
-		tmp = x[i];
-		x[i] = y[i];
-		y[i] = tmp;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Get size of potential trampolines required. */
 static unsigned long get_stubs_size(const Elf64_Ehdr *hdr,
 				    const Elf64_Shdr *sechdrs)
 {
-<<<<<<< HEAD
-	/* One extra reloc so it's always 0-funcaddr terminated */
-=======
 	/* One extra reloc so it's always 0-addr terminated */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long relocs = 1;
 	unsigned i;
 
 	/* Every relocated section... */
 	for (i = 1; i < hdr->e_shnum; i++) {
 		if (sechdrs[i].sh_type == SHT_RELA) {
-<<<<<<< HEAD
-			DEBUGP("Found relocations in section %u\n", i);
-			DEBUGP("Ptr: %p.  Number: %lu\n",
-=======
 			pr_debug("Found relocations in section %u\n", i);
 			pr_debug("Ptr: %p.  Number: %Lu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       (void *)sechdrs[i].sh_addr,
 			       sechdrs[i].sh_size / sizeof(Elf64_Rela));
 
 			/* Sort the relocation information based on a symbol and
 			 * addend key. This is a stable O(n*log n) complexity
-<<<<<<< HEAD
-			 * alogrithm but it will reduce the complexity of
-=======
 			 * algorithm but it will reduce the complexity of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * count_relocs() to linear complexity O(n)
 			 */
 			sort((void *)sechdrs[i].sh_addr,
 			     sechdrs[i].sh_size / sizeof(Elf64_Rela),
-<<<<<<< HEAD
-			     sizeof(Elf64_Rela), relacmp, relaswap);
-
-			relocs += count_relocs((void *)sechdrs[i].sh_addr,
-					       sechdrs[i].sh_size
-					       / sizeof(Elf64_Rela));
-=======
 			     sizeof(Elf64_Rela), relacmp, NULL);
 
 			relocs += count_relocs((void *)sechdrs[i].sh_addr,
@@ -351,21 +238,12 @@ static unsigned long get_stubs_size(const Elf64_Ehdr *hdr,
 					       / sizeof(Elf64_Rela),
 					       R_PPC64_REL24_NOTOC);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 #ifdef CONFIG_DYNAMIC_FTRACE
 	/* make the trampoline to the ftrace_caller */
 	relocs++;
-<<<<<<< HEAD
-#endif
-
-	DEBUGP("Looks like a total of %lu stubs, max\n", relocs);
-	return relocs * sizeof(struct ppc64_stub_entry);
-}
-
-=======
 #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
 	/* an additional one for ftrace_regs_caller */
 	relocs++;
@@ -466,20 +344,12 @@ static unsigned long get_got_size(const Elf64_Ehdr *hdr,
 #else /* CONFIG_PPC_KERNEL_PCREL */
 
 /* Still needed for ELFv2, for .TOC. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dedotify_versions(struct modversion_info *vers,
 			      unsigned long size)
 {
 	struct modversion_info *end;
 
 	for (end = (void *)vers + size; vers < end; vers++)
-<<<<<<< HEAD
-		if (vers->name[0] == '.')
-			memmove(vers->name, vers->name+1, strlen(vers->name));
-}
-
-/* Undefined symbols which refer to .funcname, hack to funcname */
-=======
 		if (vers->name[0] == '.') {
 			memmove(vers->name, vers->name+1, strlen(vers->name));
 		}
@@ -489,7 +359,6 @@ static void dedotify_versions(struct modversion_info *vers,
  * Undefined symbols which refer to .funcname, hack to funcname. Make .TOC.
  * seem to be defined (value set later).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dedotify(Elf64_Sym *syms, unsigned int numsyms, char *strtab)
 {
 	unsigned int i;
@@ -497,22 +366,15 @@ static void dedotify(Elf64_Sym *syms, unsigned int numsyms, char *strtab)
 	for (i = 1; i < numsyms; i++) {
 		if (syms[i].st_shndx == SHN_UNDEF) {
 			char *name = strtab + syms[i].st_name;
-<<<<<<< HEAD
-			if (name[0] == '.')
-				memmove(name, name+1, strlen(name));
-=======
 			if (name[0] == '.') {
 				if (strcmp(name+1, "TOC.") == 0)
 					syms[i].st_shndx = SHN_ABS;
 				syms[i].st_name++;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-=======
 static Elf64_Sym *find_dot_toc(Elf64_Shdr *sechdrs,
 			       const char *strtab,
 			       unsigned int symindex)
@@ -538,7 +400,6 @@ bool module_init_section(const char *name)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int module_frob_arch_sections(Elf64_Ehdr *hdr,
 			      Elf64_Shdr *sechdrs,
 			      char *secstrings,
@@ -548,13 +409,6 @@ int module_frob_arch_sections(Elf64_Ehdr *hdr,
 
 	/* Find .toc and .stubs sections, symtab and strtab */
 	for (i = 1; i < hdr->e_shnum; i++) {
-<<<<<<< HEAD
-		char *p;
-		if (strcmp(secstrings + sechdrs[i].sh_name, ".stubs") == 0)
-			me->arch.stubs_section = i;
-		else if (strcmp(secstrings + sechdrs[i].sh_name, ".toc") == 0)
-			me->arch.toc_section = i;
-=======
 		if (strcmp(secstrings + sechdrs[i].sh_name, ".stubs") == 0)
 			me->arch.stubs_section = i;
 #ifdef CONFIG_PPC_KERNEL_PCREL
@@ -571,32 +425,15 @@ int module_frob_arch_sections(Elf64_Ehdr *hdr,
 			if (sechdrs[i].sh_addralign < 8)
 				sechdrs[i].sh_addralign = 8;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (strcmp(secstrings+sechdrs[i].sh_name,"__versions")==0)
 			dedotify_versions((void *)hdr + sechdrs[i].sh_offset,
 					  sechdrs[i].sh_size);
 
-<<<<<<< HEAD
-		/* We don't handle .init for the moment: rename to _init */
-		while ((p = strstr(secstrings + sechdrs[i].sh_name, ".init")))
-			p[0] = '_';
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sechdrs[i].sh_type == SHT_SYMTAB)
 			dedotify((void *)hdr + sechdrs[i].sh_offset,
 				 sechdrs[i].sh_size / sizeof(Elf64_Sym),
 				 (void *)hdr
 				 + sechdrs[sechdrs[i].sh_link].sh_offset);
-<<<<<<< HEAD
-	}
-
-	if (!me->arch.stubs_section) {
-		printk("%s: doesn't contain .stubs.\n", me->name);
-		return -ENOEXEC;
-	}
-
-=======
 #endif
 	}
 
@@ -614,74 +451,12 @@ int module_frob_arch_sections(Elf64_Ehdr *hdr,
 	/* Override the got size */
 	sechdrs[me->arch.got_section].sh_size = get_got_size(hdr, sechdrs, me);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If we don't have a .toc, just use .stubs.  We need to set r2
 	   to some reasonable value in case the module calls out to
 	   other functions via a stub, or if a function pointer escapes
 	   the module by some means.  */
 	if (!me->arch.toc_section)
 		me->arch.toc_section = me->arch.stubs_section;
-<<<<<<< HEAD
-
-	/* Override the stubs size */
-	sechdrs[me->arch.stubs_section].sh_size = get_stubs_size(hdr, sechdrs);
-	return 0;
-}
-
-/* r2 is the TOC pointer: it actually points 0x8000 into the TOC (this
-   gives the value maximum span in an instruction which uses a signed
-   offset) */
-static inline unsigned long my_r2(Elf64_Shdr *sechdrs, struct module *me)
-{
-	return sechdrs[me->arch.toc_section].sh_addr + 0x8000;
-}
-
-/* Both low and high 16 bits are added as SIGNED additions, so if low
-   16 bits has high bit set, high 16 bits must be adjusted.  These
-   macros do that (stolen from binutils). */
-#define PPC_LO(v) ((v) & 0xffff)
-#define PPC_HI(v) (((v) >> 16) & 0xffff)
-#define PPC_HA(v) PPC_HI ((v) + 0x8000)
-
-/* Patch stub to reference function and correct r2 value. */
-static inline int create_stub(Elf64_Shdr *sechdrs,
-			      struct ppc64_stub_entry *entry,
-			      struct ppc64_opd_entry *opd,
-			      struct module *me)
-{
-	Elf64_Half *loc1, *loc2;
-	long reladdr;
-
-	*entry = ppc64_stub;
-
-	loc1 = (Elf64_Half *)&entry->jump[2];
-	loc2 = (Elf64_Half *)&entry->jump[6];
-
-	/* Stub uses address relative to r2. */
-	reladdr = (unsigned long)entry - my_r2(sechdrs, me);
-	if (reladdr > 0x7FFFFFFF || reladdr < -(0x80000000L)) {
-		printk("%s: Address %p of stub out of range of %p.\n",
-		       me->name, (void *)reladdr, (void *)my_r2);
-		return 0;
-	}
-	DEBUGP("Stub %p get data from reladdr %li\n", entry, reladdr);
-
-	*loc1 = PPC_HA(reladdr);
-	*loc2 = PPC_LO(reladdr);
-	entry->opd.funcaddr = opd->funcaddr;
-	entry->opd.r2 = opd->r2;
-	return 1;
-}
-
-/* Create stub to jump to function described in this OPD: we need the
-   stub to set up the TOC ptr (r2) for the function. */
-static unsigned long stub_for_addr(Elf64_Shdr *sechdrs,
-				   unsigned long opdaddr,
-				   struct module *me)
-{
-	struct ppc64_stub_entry *stubs;
-	struct ppc64_opd_entry *opd = (void *)opdaddr;
-=======
 #endif
 
 	/* Override the stubs size */
@@ -895,23 +670,12 @@ static unsigned long stub_for_addr(const Elf64_Shdr *sechdrs,
 				   const char *name)
 {
 	struct ppc64_stub_entry *stubs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i, num_stubs;
 
 	num_stubs = sechdrs[me->arch.stubs_section].sh_size / sizeof(*stubs);
 
 	/* Find this stub, or if that fails, the next avail. entry */
 	stubs = (void *)sechdrs[me->arch.stubs_section].sh_addr;
-<<<<<<< HEAD
-	for (i = 0; stubs[i].opd.funcaddr; i++) {
-		BUG_ON(i >= num_stubs);
-
-		if (stubs[i].opd.funcaddr == opd->funcaddr)
-			return (unsigned long)&stubs[i];
-	}
-
-	if (!create_stub(sechdrs, &stubs[i], opd, me))
-=======
 	for (i = 0; stub_func_addr(stubs[i].funcdata); i++) {
 		if (WARN_ON(i >= num_stubs))
 			return 0;
@@ -921,25 +685,11 @@ static unsigned long stub_for_addr(const Elf64_Shdr *sechdrs,
 	}
 
 	if (!create_stub(sechdrs, &stubs[i], addr, me, name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return (unsigned long)&stubs[i];
 }
 
-<<<<<<< HEAD
-/* We expect a noop next: if it is, replace it with instruction to
-   restore r2. */
-static int restore_r2(u32 *instruction, struct module *me)
-{
-	if (*instruction != PPC_INST_NOP) {
-		printk("%s: Expect noop after relocate, got %08x\n",
-		       me->name, *instruction);
-		return 0;
-	}
-	*instruction = 0xe8410028;	/* ld r2,40(r1) */
-	return 1;
-=======
 #ifdef CONFIG_PPC_KERNEL_PCREL
 /* Create GOT to load the location described in this ptr */
 static unsigned long got_for_addr(const Elf64_Shdr *sechdrs,
@@ -1009,7 +759,6 @@ static int restore_r2(const char *name, u32 *instruction, struct module *me)
 
 	/* ld r2,R2_STACK_OFFSET(r1) */
 	return patch_instruction(instruction, ppc_inst(PPC_INST_LD_TOC));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int apply_relocate_add(Elf64_Shdr *sechdrs,
@@ -1024,10 +773,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 	unsigned long *location;
 	unsigned long value;
 
-<<<<<<< HEAD
-	DEBUGP("Applying ADD relocate section %u to %u\n", relsec,
-	       sechdrs[relsec].sh_info);
-=======
 	pr_debug("Applying ADD relocate section %u to %u\n", relsec,
 	       sechdrs[relsec].sh_info);
 
@@ -1042,7 +787,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		me->arch.toc_fixed = true;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
 		/* This is where to make the change */
 		location = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
@@ -1051,11 +795,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		sym = (Elf64_Sym *)sechdrs[symindex].sh_addr
 			+ ELF64_R_SYM(rela[i].r_info);
 
-<<<<<<< HEAD
-		DEBUGP("RELOC at %p: %li-type as %s (%lu) + %li\n",
-=======
 		pr_debug("RELOC at %p: %li-type as %s (0x%lx) + %li\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       location, (long)ELF64_R_TYPE(rela[i].r_info),
 		       strtab + sym->st_name, (unsigned long)sym->st_value,
 		       (long)rela[i].r_addend);
@@ -1074,10 +814,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			*(unsigned long *)location = value;
 			break;
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PPC_KERNEL_PCREL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_PPC64_TOC:
 			*(unsigned long *)location = my_r2(sechdrs, me);
 			break;
@@ -1086,11 +823,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			/* Subtract TOC pointer */
 			value -= my_r2(sechdrs, me);
 			if (value + 0x8000 > 0xffff) {
-<<<<<<< HEAD
-				printk("%s: bad TOC16 relocation (%lu)\n",
-=======
 				pr_err("%s: bad TOC16 relocation (0x%lx)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       me->name, value);
 				return -ENOEXEC;
 			}
@@ -1099,8 +832,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 				| (value & 0xffff);
 			break;
 
-<<<<<<< HEAD
-=======
 		case R_PPC64_TOC16_LO:
 			/* Subtract TOC pointer */
 			value -= my_r2(sechdrs, me);
@@ -1109,16 +840,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 				| (value & 0xffff);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_PPC64_TOC16_DS:
 			/* Subtract TOC pointer */
 			value -= my_r2(sechdrs, me);
 			if ((value & 3) != 0 || value + 0x8000 > 0xffff) {
-<<<<<<< HEAD
-				printk("%s: bad TOC16_DS relocation (%lu)\n",
-=======
 				pr_err("%s: bad TOC16_DS relocation (0x%lx)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       me->name, value);
 				return -ENOEXEC;
 			}
@@ -1127,18 +853,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 				| (value & 0xfffc);
 			break;
 
-<<<<<<< HEAD
-		case R_PPC_REL24:
-			/* FIXME: Handle weak symbols here --RR */
-			if (sym->st_shndx == SHN_UNDEF) {
-				/* External: go via stub */
-				value = stub_for_addr(sechdrs, value, me);
-				if (!value)
-					return -ENOENT;
-				if (!restore_r2((u32 *)location + 1, me))
-					return -ENOEXEC;
-			}
-=======
 		case R_PPC64_TOC16_LO_DS:
 			/* Subtract TOC pointer */
 			value -= my_r2(sechdrs, me);
@@ -1180,32 +894,21 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 					return -ENOEXEC;
 			} else
 				value += local_entry_offset(sym);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Convert value to relative */
 			value -= (unsigned long)location;
 			if (value + 0x2000000 > 0x3ffffff || (value & 3) != 0){
-<<<<<<< HEAD
-				printk("%s: REL24 %li out of range!\n",
-=======
 				pr_err("%s: REL24 %li out of range!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       me->name, (long int)value);
 				return -ENOEXEC;
 			}
 
 			/* Only replace bits 2 through 26 */
-<<<<<<< HEAD
-			*(uint32_t *)location
-				= (*(uint32_t *)location & ~0x03fffffc)
-				| (value & 0x03fffffc);
-=======
 			value = (*(uint32_t *)location & ~PPC_LI_MASK) | PPC_LI(value);
 
 			if (patch_instruction((u32 *)location, ppc_inst(value)))
 				return -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case R_PPC64_REL64:
@@ -1213,10 +916,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			*location = value - (unsigned long)location;
 			break;
 
-<<<<<<< HEAD
-		default:
-			printk("%s: Unknown ADD relocation: %lu\n",
-=======
 		case R_PPC64_REL32:
 			/* 32 bits relative (used by relative exception tables) */
 			/* Convert value to relative */
@@ -1341,24 +1040,12 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 
 		default:
 			pr_err("%s: Unknown ADD relocation: %lu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       me->name,
 			       (unsigned long)ELF64_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;
 		}
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_DYNAMIC_FTRACE
-	me->arch.toc = my_r2(sechdrs, me);
-	me->arch.tramp = stub_for_addr(sechdrs,
-				       (unsigned long)ftrace_caller,
-				       me);
-#endif
-
-	return 0;
-}
-=======
 	return 0;
 }
 
@@ -1420,4 +1107,3 @@ int module_finalize_ftrace(struct module *mod, const Elf_Shdr *sechdrs)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

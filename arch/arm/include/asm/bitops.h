@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 1995, Russell King.
  * Various bits and pieces copyrights include:
@@ -29,13 +26,7 @@
 
 #include <linux/compiler.h>
 #include <linux/irqflags.h>
-<<<<<<< HEAD
-
-#define smp_mb__before_clear_bit()	smp_mb()
-#define smp_mb__after_clear_bit()	smp_mb()
-=======
 #include <asm/barrier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These functions are the basis of our bit ops.
@@ -45,15 +36,9 @@
 static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	*p |= mask;
@@ -63,15 +48,9 @@ static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *
 static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	*p &= ~mask;
@@ -81,15 +60,9 @@ static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long
 static inline void ____atomic_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	*p ^= mask;
@@ -101,15 +74,9 @@ ____atomic_test_and_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	res = *p;
@@ -124,15 +91,9 @@ ____atomic_test_and_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	res = *p;
@@ -147,15 +108,9 @@ ____atomic_test_and_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;
-<<<<<<< HEAD
-	unsigned long mask = 1UL << (bit & 31);
-
-	p += bit >> 5;
-=======
 	unsigned long mask = BIT_MASK(bit);
 
 	p += BIT_WORD(bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_local_irq_save(flags);
 	res = *p;
@@ -205,34 +160,20 @@ extern int _test_and_change_bit(int nr, volatile unsigned long * p);
 /*
  * Little endian assembly bitops.  nr = 0 -> byte 0 bit 0.
  */
-<<<<<<< HEAD
-extern int _find_first_zero_bit_le(const void * p, unsigned size);
-extern int _find_next_zero_bit_le(const void * p, int size, int offset);
-extern int _find_first_bit_le(const unsigned long *p, unsigned size);
-extern int _find_next_bit_le(const unsigned long *p, int size, int offset);
-=======
 unsigned long _find_first_zero_bit_le(const unsigned long *p, unsigned long size);
 unsigned long _find_next_zero_bit_le(const unsigned long *p,
 				     unsigned long size, unsigned long offset);
 unsigned long _find_first_bit_le(const unsigned long *p, unsigned long size);
 unsigned long _find_next_bit_le(const unsigned long *p, unsigned long size, unsigned long offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Big endian assembly bitops.  nr = 0 -> byte 3 bit 0.
  */
-<<<<<<< HEAD
-extern int _find_first_zero_bit_be(const void * p, unsigned size);
-extern int _find_next_zero_bit_be(const void * p, int size, int offset);
-extern int _find_first_bit_be(const unsigned long *p, unsigned size);
-extern int _find_next_bit_be(const unsigned long *p, int size, int offset);
-=======
 unsigned long _find_first_zero_bit_be(const unsigned long *p, unsigned long size);
 unsigned long _find_next_zero_bit_be(const unsigned long *p,
 				     unsigned long size, unsigned long offset);
 unsigned long _find_first_bit_be(const unsigned long *p, unsigned long size);
 unsigned long _find_next_bit_be(const unsigned long *p, unsigned long size, unsigned long offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_SMP
 /*
@@ -276,10 +217,6 @@ unsigned long _find_next_bit_be(const unsigned long *p, unsigned long size, unsi
 
 #if __LINUX_ARM_ARCH__ < 5
 
-<<<<<<< HEAD
-#include <asm-generic/bitops/ffz.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/__fls.h>
 #include <asm-generic/bitops/__ffs.h>
 #include <asm-generic/bitops/fls.h>
@@ -287,61 +224,6 @@ unsigned long _find_next_bit_be(const unsigned long *p, unsigned long size, unsi
 
 #else
 
-<<<<<<< HEAD
-static inline int constant_fls(int x)
-{
-	int r = 32;
-
-	if (!x)
-		return 0;
-	if (!(x & 0xffff0000u)) {
-		x <<= 16;
-		r -= 16;
-	}
-	if (!(x & 0xff000000u)) {
-		x <<= 8;
-		r -= 8;
-	}
-	if (!(x & 0xf0000000u)) {
-		x <<= 4;
-		r -= 4;
-	}
-	if (!(x & 0xc0000000u)) {
-		x <<= 2;
-		r -= 2;
-	}
-	if (!(x & 0x80000000u)) {
-		x <<= 1;
-		r -= 1;
-	}
-	return r;
-}
-
-/*
- * On ARMv5 and above those functions can be implemented around
- * the clz instruction for much better code efficiency.
- */
-
-static inline int fls(int x)
-{
-	int ret;
-
-	if (__builtin_constant_p(x))
-	       return constant_fls(x);
-
-	asm("clz\t%0, %1" : "=r" (ret) : "r" (x));
-       	ret = 32 - ret;
-	return ret;
-}
-
-#define __fls(x) (fls(x) - 1)
-#define ffs(x) ({ unsigned long __t = (x); fls(__t & -__t); })
-#define __ffs(x) (ffs(x) - 1)
-#define ffz(x) __ffs( ~(x) )
-
-#endif
-
-=======
 /*
  * On ARMv5 and above, the gcc built-ins may rely on the clz instruction
  * and produce optimal inlined code in all cases. On ARMv7 it is even
@@ -356,7 +238,6 @@ static inline int fls(int x)
 
 #include <asm-generic/bitops/ffz.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/fls64.h>
 
 #include <asm-generic/bitops/sched.h>

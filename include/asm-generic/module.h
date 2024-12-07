@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_MODULE_H
 #define __ASM_GENERIC_MODULE_H
 
@@ -9,20 +6,6 @@
  * Many architectures just need a simple module
  * loader without arch specific data.
  */
-<<<<<<< HEAD
-struct mod_arch_specific
-{
-};
-
-#ifdef CONFIG_64BIT
-#define Elf_Shdr Elf64_Shdr
-#define Elf_Sym Elf64_Sym
-#define Elf_Ehdr Elf64_Ehdr
-#else
-#define Elf_Shdr Elf32_Shdr
-#define Elf_Sym Elf32_Sym
-#define Elf_Ehdr Elf32_Ehdr
-=======
 #ifndef CONFIG_HAVE_MOD_ARCH_SPECIFIC
 struct mod_arch_specific
 {
@@ -61,7 +44,6 @@ struct mod_arch_specific
 #endif
 #define ELF_R_TYPE(X)	ELF32_R_TYPE(X)
 #define ELF_R_SYM(X)	ELF32_R_SYM(X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __ASM_GENERIC_MODULE_H */

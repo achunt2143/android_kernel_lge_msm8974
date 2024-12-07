@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _SPARC64_BACKOFF_H
-#define _SPARC64_BACKOFF_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SPARC64_BACKOFF_H
 #define _SPARC64_BACKOFF_H
@@ -47,7 +42,6 @@
  * loop writing 128 each time.
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BACKOFF_LIMIT	(4 * 1024)
 
 #ifdef CONFIG_SMP
@@ -58,18 +52,6 @@
 #define BACKOFF_LABEL(spin_label, continue_label) \
 	spin_label
 
-<<<<<<< HEAD
-#define BACKOFF_SPIN(reg, tmp, label)	\
-	mov	reg, tmp; \
-88:	brnz,pt	tmp, 88b; \
-	 sub	tmp, 1, tmp; \
-	set	BACKOFF_LIMIT, tmp; \
-	cmp	reg, tmp; \
-	bg,pn	%xcc, label; \
-	 nop; \
-	ba,pt	%xcc, label; \
-	 sllx	reg, 1, reg;
-=======
 #define BACKOFF_SPIN(reg, tmp, label)		\
 	mov		reg, tmp;		\
 88:	rd		%ccr, %g0;		\
@@ -89,7 +71,6 @@
 	 nop;					\
 	ba,pt		%xcc, label;		\
 	 sllx		reg, 1, reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * trace task wakeup timings
  *
@@ -11,18 +8,6 @@
  * Based on code from the latency_tracer, that is:
  *
  *  Copyright (C) 2004-2006 Ingo Molnar
-<<<<<<< HEAD
- *  Copyright (C) 2004 William Lee Irwin III
- */
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/debugfs.h>
-#include <linux/kallsyms.h>
-#include <linux/uaccess.h>
-#include <linux/ftrace.h>
-#include <trace/events/sched.h>
-
-=======
  *  Copyright (C) 2004 Nadia Yvette Chambers
  */
 #include <linux/module.h>
@@ -32,7 +17,6 @@
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
 #include <trace/events/sched.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "trace.h"
 
 static struct trace_array	*wakeup_trace;
@@ -42,45 +26,15 @@ static struct task_struct	*wakeup_task;
 static int			wakeup_cpu;
 static int			wakeup_current_cpu;
 static unsigned			wakeup_prio = -1;
-<<<<<<< HEAD
-static int			wakeup_rt;
-=======
 static bool			wakeup_rt;
 static bool			wakeup_dl;
 static bool			tracing_dl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static arch_spinlock_t wakeup_lock =
 	(arch_spinlock_t)__ARCH_SPIN_LOCK_UNLOCKED;
 
 static void wakeup_reset(struct trace_array *tr);
 static void __wakeup_reset(struct trace_array *tr);
-<<<<<<< HEAD
-static int wakeup_graph_entry(struct ftrace_graph_ent *trace);
-static void wakeup_graph_return(struct ftrace_graph_ret *trace);
-
-static int save_flags;
-
-#define TRACE_DISPLAY_GRAPH     1
-
-static struct tracer_opt trace_opts[] = {
-#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-	/* display latency trace as call graph */
-	{ TRACER_OPT(display-graph, TRACE_DISPLAY_GRAPH) },
-#endif
-	{ } /* Empty entry */
-};
-
-static struct tracer_flags tracer_flags = {
-	.val  = 0,
-	.opts = trace_opts,
-};
-
-#define is_graph() (tracer_flags.val & TRACE_DISPLAY_GRAPH)
-
-#ifdef CONFIG_FUNCTION_TRACER
-
-=======
 static int start_func_tracer(struct trace_array *tr, int graph);
 static void stop_func_tracer(struct trace_array *tr, int graph);
 
@@ -96,7 +50,6 @@ static int save_flags;
 
 static bool function_enabled;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Prologue for the wakeup function tracers.
  *
@@ -114,11 +67,7 @@ static bool function_enabled;
 static int
 func_prolog_preempt_disable(struct trace_array *tr,
 			    struct trace_array_cpu **data,
-<<<<<<< HEAD
-			    int *pc)
-=======
 			    unsigned int *trace_ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long disabled;
 	int cpu;
@@ -126,22 +75,14 @@ func_prolog_preempt_disable(struct trace_array *tr,
 	if (likely(!wakeup_task))
 		return 0;
 
-<<<<<<< HEAD
-	*pc = preempt_count();
-=======
 	*trace_ctx = tracing_gen_ctx();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable_notrace();
 
 	cpu = raw_smp_processor_id();
 	if (cpu != wakeup_current_cpu)
 		goto out_enable;
 
-<<<<<<< HEAD
-	*data = tr->data[cpu];
-=======
 	*data = per_cpu_ptr(tr->array_buffer.data, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	disabled = atomic_inc_return(&(*data)->disabled);
 	if (unlikely(disabled != 1))
 		goto out;
@@ -156,81 +97,6 @@ out_enable:
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * wakeup uses its own tracer function to keep the overhead down:
- */
-static void
-wakeup_tracer_call(unsigned long ip, unsigned long parent_ip)
-{
-	struct trace_array *tr = wakeup_trace;
-	struct trace_array_cpu *data;
-	unsigned long flags;
-	int pc;
-
-	if (!func_prolog_preempt_disable(tr, &data, &pc))
-		return;
-
-	local_irq_save(flags);
-	trace_function(tr, ip, parent_ip, flags, pc);
-	local_irq_restore(flags);
-
-	atomic_dec(&data->disabled);
-	preempt_enable_notrace();
-}
-
-static struct ftrace_ops trace_ops __read_mostly =
-{
-	.func = wakeup_tracer_call,
-	.flags = FTRACE_OPS_FL_GLOBAL,
-};
-#endif /* CONFIG_FUNCTION_TRACER */
-
-static int start_func_tracer(int graph)
-{
-	int ret;
-
-	if (!graph)
-		ret = register_ftrace_function(&trace_ops);
-	else
-		ret = register_ftrace_graph(&wakeup_graph_return,
-					    &wakeup_graph_entry);
-
-	if (!ret && tracing_is_enabled())
-		tracer_enabled = 1;
-	else
-		tracer_enabled = 0;
-
-	return ret;
-}
-
-static void stop_func_tracer(int graph)
-{
-	tracer_enabled = 0;
-
-	if (!graph)
-		unregister_ftrace_function(&trace_ops);
-	else
-		unregister_ftrace_graph();
-}
-
-#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-static int wakeup_set_flag(u32 old_flags, u32 bit, int set)
-{
-
-	if (!(bit & TRACE_DISPLAY_GRAPH))
-		return -EINVAL;
-
-	if (!(is_graph() ^ set))
-		return 0;
-
-	stop_func_tracer(!set);
-
-	wakeup_reset(wakeup_trace);
-	tracing_max_latency = 0;
-
-	return start_func_tracer(set);
-=======
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 
 static int wakeup_display_graph(struct trace_array *tr, int set)
@@ -244,23 +110,12 @@ static int wakeup_display_graph(struct trace_array *tr, int set)
 	tr->max_latency = 0;
 
 	return start_func_tracer(tr, set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wakeup_graph_entry(struct ftrace_graph_ent *trace)
 {
 	struct trace_array *tr = wakeup_trace;
 	struct trace_array_cpu *data;
-<<<<<<< HEAD
-	unsigned long flags;
-	int pc, ret = 0;
-
-	if (!func_prolog_preempt_disable(tr, &data, &pc))
-		return 0;
-
-	local_save_flags(flags);
-	ret = __trace_graph_entry(tr, trace, flags, pc);
-=======
 	unsigned int trace_ctx;
 	int ret = 0;
 
@@ -280,7 +135,6 @@ static int wakeup_graph_entry(struct ftrace_graph_ent *trace)
 		return 0;
 
 	ret = __trace_graph_entry(tr, trace, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&data->disabled);
 	preempt_enable_notrace();
 
@@ -291,16 +145,6 @@ static void wakeup_graph_return(struct ftrace_graph_ret *trace)
 {
 	struct trace_array *tr = wakeup_trace;
 	struct trace_array_cpu *data;
-<<<<<<< HEAD
-	unsigned long flags;
-	int pc;
-
-	if (!func_prolog_preempt_disable(tr, &data, &pc))
-		return;
-
-	local_save_flags(flags);
-	__trace_graph_return(tr, trace, flags, pc);
-=======
 	unsigned int trace_ctx;
 
 	ftrace_graph_addr_finish(trace);
@@ -309,19 +153,12 @@ static void wakeup_graph_return(struct ftrace_graph_ret *trace)
 		return;
 
 	__trace_graph_return(tr, trace, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&data->disabled);
 
 	preempt_enable_notrace();
 	return;
 }
 
-<<<<<<< HEAD
-static void wakeup_trace_open(struct trace_iterator *iter)
-{
-	if (is_graph())
-		graph_trace_open(iter);
-=======
 static struct fgraph_ops fgraph_wakeup_ops = {
 	.entryfunc = &wakeup_graph_entry,
 	.retfunc = &wakeup_graph_return,
@@ -333,7 +170,6 @@ static void wakeup_trace_open(struct trace_iterator *iter)
 		graph_trace_open(iter);
 	else
 		iter->private = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wakeup_trace_close(struct trace_iterator *iter)
@@ -343,16 +179,11 @@ static void wakeup_trace_close(struct trace_iterator *iter)
 }
 
 #define GRAPH_TRACER_FLAGS (TRACE_GRAPH_PRINT_PROC | \
-<<<<<<< HEAD
-			    TRACE_GRAPH_PRINT_ABS_TIME | \
-			    TRACE_GRAPH_PRINT_DURATION)
-=======
 			    TRACE_GRAPH_PRINT_CPU |  \
 			    TRACE_GRAPH_PRINT_REL_TIME | \
 			    TRACE_GRAPH_PRINT_DURATION | \
 			    TRACE_GRAPH_PRINT_OVERHEAD | \
 			    TRACE_GRAPH_PRINT_IRQS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static enum print_line_t wakeup_print_line(struct trace_iterator *iter)
 {
@@ -360,11 +191,7 @@ static enum print_line_t wakeup_print_line(struct trace_iterator *iter)
 	 * In graph mode call the graph tracer output function,
 	 * otherwise go with the TRACE_FN event handler
 	 */
-<<<<<<< HEAD
-	if (is_graph())
-=======
 	if (is_graph(iter->tr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return print_graph_function_flags(iter, GRAPH_TRACER_FLAGS);
 
 	return TRACE_TYPE_UNHANDLED;
@@ -372,41 +199,11 @@ static enum print_line_t wakeup_print_line(struct trace_iterator *iter)
 
 static void wakeup_print_header(struct seq_file *s)
 {
-<<<<<<< HEAD
-	if (is_graph())
-=======
 	if (is_graph(wakeup_trace))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		print_graph_headers_flags(s, GRAPH_TRACER_FLAGS);
 	else
 		trace_default_header(s);
 }
-<<<<<<< HEAD
-
-static void
-__trace_function(struct trace_array *tr,
-		 unsigned long ip, unsigned long parent_ip,
-		 unsigned long flags, int pc)
-{
-	if (is_graph())
-		trace_graph_function(tr, ip, parent_ip, flags, pc);
-	else
-		trace_function(tr, ip, parent_ip, flags, pc);
-}
-#else
-#define __trace_function trace_function
-
-static int wakeup_set_flag(u32 old_flags, u32 bit, int set)
-{
-	return -EINVAL;
-}
-
-static int wakeup_graph_entry(struct ftrace_graph_ent *trace)
-{
-	return -1;
-}
-
-=======
 #endif /* else CONFIG_FUNCTION_GRAPH_TRACER */
 
 /*
@@ -488,36 +285,18 @@ static int wakeup_function_set(struct trace_array *tr, u32 mask, int set)
 #endif /* else CONFIG_FUNCTION_TRACER */
 
 #ifndef CONFIG_FUNCTION_GRAPH_TRACER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum print_line_t wakeup_print_line(struct trace_iterator *iter)
 {
 	return TRACE_TYPE_UNHANDLED;
 }
 
-<<<<<<< HEAD
-static void wakeup_graph_return(struct ftrace_graph_ret *trace) { }
 static void wakeup_trace_open(struct trace_iterator *iter) { }
 static void wakeup_trace_close(struct trace_iterator *iter) { }
 
-#ifdef CONFIG_FUNCTION_TRACER
-=======
-static void wakeup_trace_open(struct trace_iterator *iter) { }
-static void wakeup_trace_close(struct trace_iterator *iter) { }
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void wakeup_print_header(struct seq_file *s)
 {
 	trace_default_header(s);
 }
-<<<<<<< HEAD
-#else
-static void wakeup_print_header(struct seq_file *s)
-{
-	trace_latency_header(s);
-}
-#endif /* CONFIG_FUNCTION_TRACER */
-#endif /* CONFIG_FUNCTION_GRAPH_TRACER */
-=======
 #endif /* !CONFIG_FUNCTION_GRAPH_TRACER */
 
 static void
@@ -566,23 +345,10 @@ static void stop_func_tracer(struct trace_array *tr, int graph)
 
 	unregister_wakeup_function(tr, graph);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Should this new latency be reported/recorded?
  */
-<<<<<<< HEAD
-static int report_latency(cycle_t delta)
-{
-	if (tracing_thresh) {
-		if (delta < tracing_thresh)
-			return 0;
-	} else {
-		if (delta <= tracing_max_latency)
-			return 0;
-	}
-	return 1;
-=======
 static bool report_latency(struct trace_array *tr, u64 delta)
 {
 	if (tracing_thresh) {
@@ -593,7 +359,6 @@ static bool report_latency(struct trace_array *tr, u64 delta)
 			return false;
 	}
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -605,18 +370,6 @@ probe_wakeup_migrate_task(void *ignore, struct task_struct *task, int cpu)
 	wakeup_current_cpu = cpu;
 }
 
-<<<<<<< HEAD
-static void notrace
-probe_wakeup_sched_switch(void *ignore,
-			  struct task_struct *prev, struct task_struct *next)
-{
-	struct trace_array_cpu *data;
-	cycle_t T0, T1, delta;
-	unsigned long flags;
-	long disabled;
-	int cpu;
-	int pc;
-=======
 static void
 tracing_sched_switch_trace(struct trace_array *tr,
 			   struct task_struct *prev,
@@ -684,7 +437,6 @@ probe_wakeup_sched_switch(void *ignore, bool preempt,
 	long disabled;
 	int cpu;
 	unsigned int trace_ctx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tracing_record_cmdline(prev);
 
@@ -703,26 +455,15 @@ probe_wakeup_sched_switch(void *ignore, bool preempt,
 	if (next != wakeup_task)
 		return;
 
-<<<<<<< HEAD
-	pc = preempt_count();
-
-	/* disable local data, not wakeup_cpu data */
-	cpu = raw_smp_processor_id();
-	disabled = atomic_inc_return(&wakeup_trace->data[cpu]->disabled);
-=======
 	/* disable local data, not wakeup_cpu data */
 	cpu = raw_smp_processor_id();
 	disabled = atomic_inc_return(&per_cpu_ptr(wakeup_trace->array_buffer.data, cpu)->disabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(disabled != 1))
 		goto out;
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-=======
 	trace_ctx = tracing_gen_ctx_flags(flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arch_spin_lock(&wakeup_lock);
 
 	/* We could race with grabbing wakeup_lock */
@@ -730,38 +471,22 @@ probe_wakeup_sched_switch(void *ignore, bool preempt,
 		goto out_unlock;
 
 	/* The task we are waiting for is waking up */
-<<<<<<< HEAD
-	data = wakeup_trace->data[wakeup_cpu];
-
-	__trace_function(wakeup_trace, CALLER_ADDR0, CALLER_ADDR1, flags, pc);
-	tracing_sched_switch_trace(wakeup_trace, prev, next, flags, pc);
-=======
 	data = per_cpu_ptr(wakeup_trace->array_buffer.data, wakeup_cpu);
 
 	__trace_function(wakeup_trace, CALLER_ADDR0, CALLER_ADDR1, trace_ctx);
 	tracing_sched_switch_trace(wakeup_trace, prev, next, trace_ctx);
 	__trace_stack(wakeup_trace, trace_ctx, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	T0 = data->preempt_timestamp;
 	T1 = ftrace_now(cpu);
 	delta = T1-T0;
 
-<<<<<<< HEAD
-	if (!report_latency(delta))
-		goto out_unlock;
-
-	if (likely(!is_tracing_stopped())) {
-		tracing_max_latency = delta;
-		update_max_tr(wakeup_trace, wakeup_task, wakeup_cpu);
-=======
 	if (!report_latency(wakeup_trace, delta))
 		goto out_unlock;
 
 	if (likely(!is_tracing_stopped())) {
 		wakeup_trace->max_latency = delta;
 		update_max_tr(wakeup_trace, wakeup_task, wakeup_cpu, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out_unlock:
@@ -769,21 +494,14 @@ out_unlock:
 	arch_spin_unlock(&wakeup_lock);
 	local_irq_restore(flags);
 out:
-<<<<<<< HEAD
-	atomic_dec(&wakeup_trace->data[cpu]->disabled);
-=======
 	atomic_dec(&per_cpu_ptr(wakeup_trace->array_buffer.data, cpu)->disabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __wakeup_reset(struct trace_array *tr)
 {
 	wakeup_cpu = -1;
 	wakeup_prio = -1;
-<<<<<<< HEAD
-=======
 	tracing_dl = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wakeup_task)
 		put_task_struct(wakeup_task);
@@ -795,11 +513,7 @@ static void wakeup_reset(struct trace_array *tr)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	tracing_reset_online_cpus(tr);
-=======
 	tracing_reset_online_cpus(&tr->array_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_save(flags);
 	arch_spin_lock(&wakeup_lock);
@@ -809,22 +523,12 @@ static void wakeup_reset(struct trace_array *tr)
 }
 
 static void
-<<<<<<< HEAD
-probe_wakeup(void *ignore, struct task_struct *p, int success)
-{
-	struct trace_array_cpu *data;
-	int cpu = smp_processor_id();
-	unsigned long flags;
-	long disabled;
-	int pc;
-=======
 probe_wakeup(void *ignore, struct task_struct *p)
 {
 	struct trace_array_cpu *data;
 	int cpu = smp_processor_id();
 	long disabled;
 	unsigned int trace_ctx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (likely(!tracer_enabled))
 		return;
@@ -832,18 +536,6 @@ probe_wakeup(void *ignore, struct task_struct *p)
 	tracing_record_cmdline(p);
 	tracing_record_cmdline(current);
 
-<<<<<<< HEAD
-	if ((wakeup_rt && !rt_task(p)) ||
-			p->prio >= wakeup_prio ||
-			p->prio >= current->prio)
-		return;
-
-	pc = preempt_count();
-	disabled = atomic_inc_return(&wakeup_trace->data[cpu]->disabled);
-	if (unlikely(disabled != 1))
-		goto out;
-
-=======
 	/*
 	 * Semantic is like this:
 	 *  - wakeup tracer handles all tasks in the system, independently
@@ -863,17 +555,12 @@ probe_wakeup(void *ignore, struct task_struct *p)
 
 	trace_ctx = tracing_gen_ctx();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* interrupts should be off from try_to_wake_up */
 	arch_spin_lock(&wakeup_lock);
 
 	/* check for races. */
-<<<<<<< HEAD
-	if (!tracer_enabled || p->prio >= wakeup_prio)
-=======
 	if (!tracer_enabled || tracing_dl ||
 	    (!dl_task(p) && p->prio >= wakeup_prio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_locked;
 
 	/* reset the trace */
@@ -883,16 +570,6 @@ probe_wakeup(void *ignore, struct task_struct *p)
 	wakeup_current_cpu = wakeup_cpu;
 	wakeup_prio = p->prio;
 
-<<<<<<< HEAD
-	wakeup_task = p;
-	get_task_struct(wakeup_task);
-
-	local_save_flags(flags);
-
-	data = wakeup_trace->data[wakeup_cpu];
-	data->preempt_timestamp = ftrace_now(cpu);
-	tracing_sched_wakeup_trace(wakeup_trace, p, current, flags, pc);
-=======
 	/*
 	 * Once you start tracing a -deadline task, don't bother tracing
 	 * another task until the first one wakes up.
@@ -908,27 +585,18 @@ probe_wakeup(void *ignore, struct task_struct *p)
 	data->preempt_timestamp = ftrace_now(cpu);
 	tracing_sched_wakeup_trace(wakeup_trace, p, current, trace_ctx);
 	__trace_stack(wakeup_trace, trace_ctx, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We must be careful in using CALLER_ADDR2. But since wake_up
 	 * is not called by an assembly function  (where as schedule is)
 	 * it should be safe to use it here.
 	 */
-<<<<<<< HEAD
-	__trace_function(wakeup_trace, CALLER_ADDR1, CALLER_ADDR2, flags, pc);
-=======
 	__trace_function(wakeup_trace, CALLER_ADDR1, CALLER_ADDR2, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_locked:
 	arch_spin_unlock(&wakeup_lock);
 out:
-<<<<<<< HEAD
-	atomic_dec(&wakeup_trace->data[cpu]->disabled);
-=======
 	atomic_dec(&per_cpu_ptr(wakeup_trace->array_buffer.data, cpu)->disabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void start_wakeup_tracer(struct trace_array *tr)
@@ -960,11 +628,7 @@ static void start_wakeup_tracer(struct trace_array *tr)
 	if (ret) {
 		pr_info("wakeup trace: Couldn't activate tracepoint"
 			" probe to kernel_sched_migrate_task\n");
-<<<<<<< HEAD
-		return;
-=======
 		goto fail_deprobe_sched_switch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wakeup_reset(tr);
@@ -978,19 +642,12 @@ static void start_wakeup_tracer(struct trace_array *tr)
 	 */
 	smp_wmb();
 
-<<<<<<< HEAD
-	if (start_func_tracer(is_graph()))
-		printk(KERN_ERR "failed to start wakeup tracer\n");
-
-	return;
-=======
 	if (start_func_tracer(tr, is_graph(tr)))
 		printk(KERN_ERR "failed to start wakeup tracer\n");
 
 	return;
 fail_deprobe_sched_switch:
 	unregister_trace_sched_switch(probe_wakeup_sched_switch, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_deprobe_wake_new:
 	unregister_trace_sched_wakeup_new(probe_wakeup, NULL);
 fail_deprobe:
@@ -1000,30 +657,13 @@ fail_deprobe:
 static void stop_wakeup_tracer(struct trace_array *tr)
 {
 	tracer_enabled = 0;
-<<<<<<< HEAD
-	stop_func_tracer(is_graph());
-=======
 	stop_func_tracer(tr, is_graph(tr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_trace_sched_switch(probe_wakeup_sched_switch, NULL);
 	unregister_trace_sched_wakeup_new(probe_wakeup, NULL);
 	unregister_trace_sched_wakeup(probe_wakeup, NULL);
 	unregister_trace_sched_migrate_task(probe_wakeup_migrate_task, NULL);
 }
 
-<<<<<<< HEAD
-static int __wakeup_tracer_init(struct trace_array *tr)
-{
-	save_flags = trace_flags;
-
-	/* non overwrite screws up the latency tracers */
-	set_tracer_flag(TRACE_ITER_OVERWRITE, 1);
-	set_tracer_flag(TRACE_ITER_LATENCY_FMT, 1);
-
-	tracing_max_latency = 0;
-	wakeup_trace = tr;
-	start_wakeup_tracer(tr);
-=======
 static bool wakeup_busy;
 
 static int __wakeup_tracer_init(struct trace_array *tr)
@@ -1040,29 +680,21 @@ static int __wakeup_tracer_init(struct trace_array *tr)
 	start_wakeup_tracer(tr);
 
 	wakeup_busy = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wakeup_tracer_init(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	wakeup_rt = 0;
-=======
 	if (wakeup_busy)
 		return -EBUSY;
 
 	wakeup_dl = false;
 	wakeup_rt = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return __wakeup_tracer_init(tr);
 }
 
 static int wakeup_rt_tracer_init(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	wakeup_rt = 1;
-=======
 	if (wakeup_busy)
 		return -EBUSY;
 
@@ -1078,7 +710,6 @@ static int wakeup_dl_tracer_init(struct trace_array *tr)
 
 	wakeup_dl = true;
 	wakeup_rt = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return __wakeup_tracer_init(tr);
 }
 
@@ -1091,15 +722,10 @@ static void wakeup_tracer_reset(struct trace_array *tr)
 	/* make sure we put back any tasks we are tracing */
 	wakeup_reset(tr);
 
-<<<<<<< HEAD
-	set_tracer_flag(TRACE_ITER_LATENCY_FMT, lat_flag);
-	set_tracer_flag(TRACE_ITER_OVERWRITE, overwrite_flag);
-=======
 	set_tracer_flag(tr, TRACE_ITER_LATENCY_FMT, lat_flag);
 	set_tracer_flag(tr, TRACE_ITER_OVERWRITE, overwrite_flag);
 	ftrace_reset_array_ops(tr);
 	wakeup_busy = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wakeup_tracer_start(struct trace_array *tr)
@@ -1120,30 +746,17 @@ static struct tracer wakeup_tracer __read_mostly =
 	.reset		= wakeup_tracer_reset,
 	.start		= wakeup_tracer_start,
 	.stop		= wakeup_tracer_stop,
-<<<<<<< HEAD
-	.print_max	= 1,
-	.print_header	= wakeup_print_header,
-	.print_line	= wakeup_print_line,
-	.flags		= &tracer_flags,
-	.set_flag	= wakeup_set_flag,
-	.flag_changed	= trace_keep_overwrite,
-=======
 	.print_max	= true,
 	.print_header	= wakeup_print_header,
 	.print_line	= wakeup_print_line,
 	.flag_changed	= wakeup_flag_changed,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FTRACE_SELFTEST
 	.selftest    = trace_selftest_startup_wakeup,
 #endif
 	.open		= wakeup_trace_open,
 	.close		= wakeup_trace_close,
-<<<<<<< HEAD
-	.use_max_tr	= 1,
-=======
 	.allow_instances = true,
 	.use_max_tr	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct tracer wakeup_rt_tracer __read_mostly =
@@ -1153,28 +766,15 @@ static struct tracer wakeup_rt_tracer __read_mostly =
 	.reset		= wakeup_tracer_reset,
 	.start		= wakeup_tracer_start,
 	.stop		= wakeup_tracer_stop,
-<<<<<<< HEAD
-	.wait_pipe	= poll_wait_pipe,
-	.print_max	= 1,
-	.print_header	= wakeup_print_header,
-	.print_line	= wakeup_print_line,
-	.flags		= &tracer_flags,
-	.set_flag	= wakeup_set_flag,
-	.flag_changed	= trace_keep_overwrite,
-=======
 	.print_max	= true,
 	.print_header	= wakeup_print_header,
 	.print_line	= wakeup_print_line,
 	.flag_changed	= wakeup_flag_changed,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FTRACE_SELFTEST
 	.selftest    = trace_selftest_startup_wakeup,
 #endif
 	.open		= wakeup_trace_open,
 	.close		= wakeup_trace_close,
-<<<<<<< HEAD
-	.use_max_tr	= 1,
-=======
 	.allow_instances = true,
 	.use_max_tr	= true,
 };
@@ -1197,7 +797,6 @@ static struct tracer wakeup_dl_tracer __read_mostly =
 	.close		= wakeup_trace_close,
 	.allow_instances = true,
 	.use_max_tr	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 __init static int init_wakeup_tracer(void)
@@ -1212,11 +811,6 @@ __init static int init_wakeup_tracer(void)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	return 0;
-}
-device_initcall(init_wakeup_tracer);
-=======
 	ret = register_tracer(&wakeup_dl_tracer);
 	if (ret)
 		return ret;
@@ -1224,4 +818,3 @@ device_initcall(init_wakeup_tracer);
 	return 0;
 }
 core_initcall(init_wakeup_tracer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

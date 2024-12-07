@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * move_extents.c
- *
- * Copyright (C) 2011 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * move_extents.c
  *
  * Copyright (C) 2011 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/fs.h>
 #include <linux/types.h>
@@ -33,10 +15,7 @@
 #include "ocfs2_ioctl.h"
 
 #include "alloc.h"
-<<<<<<< HEAD
-=======
 #include "localalloc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "aops.h"
 #include "dlmglue.h"
 #include "extent_map.h"
@@ -81,11 +60,7 @@ static int __ocfs2_move_extent(handle_t *handle,
 	u64 ino = ocfs2_metadata_cache_owner(context->et.et_ci);
 	u64 old_blkno = ocfs2_clusters_to_blocks(inode->i_sb, p_cpos);
 
-<<<<<<< HEAD
-	ret = ocfs2_duplicate_clusters_by_page(handle, context->file, cpos,
-=======
 	ret = ocfs2_duplicate_clusters_by_page(handle, inode, cpos,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       p_cpos, new_p_cpos, len);
 	if (ret) {
 		mlog_errno(ret);
@@ -114,19 +89,10 @@ static int __ocfs2_move_extent(handle_t *handle,
 	el = path_leaf_el(path);
 
 	index = ocfs2_search_extent_list(el, cpos);
-<<<<<<< HEAD
-	if (index == -1 || index >= le16_to_cpu(el->l_next_free_rec)) {
-		ocfs2_error(inode->i_sb,
-			    "Inode %llu has an extent at cpos %u which can no "
-			    "longer be found.\n",
-			    (unsigned long long)ino, cpos);
-		ret = -EROFS;
-=======
 	if (index == -1) {
 		ret = ocfs2_error(inode->i_sb,
 				  "Inode %llu has an extent at cpos %u which can no longer be found\n",
 				  (unsigned long long)ino, cpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -139,17 +105,6 @@ static int __ocfs2_move_extent(handle_t *handle,
 	 */
 	replace_rec.e_flags = ext_flags & ~OCFS2_EXT_REFCOUNTED;
 
-<<<<<<< HEAD
-	ret = ocfs2_journal_access_di(handle, INODE_CACHE(inode),
-				      context->et.et_root_bh,
-				      OCFS2_JOURNAL_ACCESS_WRITE);
-	if (ret) {
-		mlog_errno(ret);
-		goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_split_extent(handle, &context->et, path, index,
 				 &replace_rec, context->meta_ac,
 				 &context->dealloc);
@@ -158,11 +113,6 @@ static int __ocfs2_move_extent(handle_t *handle,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ocfs2_journal_dirty(handle, context->et.et_root_bh);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	context->new_phys_cpos = new_p_cpos;
 
 	/*
@@ -180,39 +130,21 @@ static int __ocfs2_move_extent(handle_t *handle,
 							old_blkno, len);
 	}
 
-<<<<<<< HEAD
-out:
-=======
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
 out:
 	ocfs2_free_path(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * lock allocators, and reserving appropriate number of bits for
- * meta blocks and data clusters.
- *
- * in some cases, we don't need to reserve clusters, just let data_ac
- * be NULL.
- */
-static int ocfs2_lock_allocators_move_extents(struct inode *inode,
-=======
  * lock allocator, and reserve appropriate number of bits for
  * meta blocks.
  */
 static int ocfs2_lock_meta_allocator_move_extents(struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct ocfs2_extent_tree *et,
 					u32 clusters_to_move,
 					u32 extents_to_split,
 					struct ocfs2_alloc_context **meta_ac,
-<<<<<<< HEAD
-					struct ocfs2_alloc_context **data_ac,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					int extra_blocks,
 					int *credits)
 {
@@ -220,11 +152,7 @@ static int ocfs2_lock_meta_allocator_move_extents(struct inode *inode,
 	unsigned int max_recs_needed = 2 * extents_to_split + clusters_to_move;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	num_free_extents = ocfs2_num_free_extents(osb, et);
-=======
 	num_free_extents = ocfs2_num_free_extents(et);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (num_free_extents < 0) {
 		ret = num_free_extents;
 		mlog_errno(ret);
@@ -241,21 +169,8 @@ static int ocfs2_lock_meta_allocator_move_extents(struct inode *inode,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (data_ac) {
-		ret = ocfs2_reserve_clusters(osb, clusters_to_move, data_ac);
-		if (ret) {
-			mlog_errno(ret);
-			goto out;
-		}
-	}
-
-	*credits += ocfs2_calc_extend_credits(osb->sb, et->et_root_el,
-					      clusters_to_move + 2);
-=======
 
 	*credits += ocfs2_calc_extend_credits(osb->sb, et->et_root_el);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "reserve metadata_blocks: %d, data_clusters: %u, credits: %d\n",
 	     extra_blocks, clusters_to_move, *credits);
@@ -288,19 +203,10 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 	struct ocfs2_refcount_tree *ref_tree = NULL;
 	u32 new_phys_cpos, new_len;
 	u64 phys_blkno = ocfs2_clusters_to_blocks(inode->i_sb, phys_cpos);
-<<<<<<< HEAD
-
-	if ((ext_flags & OCFS2_EXT_REFCOUNTED) && *len) {
-
-		BUG_ON(!(OCFS2_I(inode)->ip_dyn_features &
-			 OCFS2_HAS_REFCOUNT_FL));
-
-=======
 	int need_free = 0;
 
 	if ((ext_flags & OCFS2_EXT_REFCOUNTED) && *len) {
 		BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!context->refcount_loc);
 
 		ret = ocfs2_lock_refcount_tree(osb, context->refcount_loc, 1,
@@ -322,17 +228,10 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
-<<<<<<< HEAD
-	ret = ocfs2_lock_allocators_move_extents(inode, &context->et, *len, 1,
-						 &context->meta_ac,
-						 &context->data_ac,
-						 extra_blocks, &credits);
-=======
 	ret = ocfs2_lock_meta_allocator_move_extents(inode, &context->et,
 						*len, 1,
 						&context->meta_ac,
 						extra_blocks, &credits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		mlog_errno(ret);
 		goto out;
@@ -345,11 +244,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 	 *	context->data_ac->ac_resv = &OCFS2_I(inode)->ip_la_data_resv;
 	 */
 
-<<<<<<< HEAD
-	mutex_lock(&tl_inode->i_mutex);
-=======
 	inode_lock(tl_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ocfs2_truncate_log_needs_flush(osb)) {
 		ret = __ocfs2_flush_truncate_log(osb);
@@ -359,8 +254,6 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Make sure ocfs2_reserve_cluster is called after
 	 * __ocfs2_flush_truncate_log, otherwise, dead lock may happen.
@@ -376,7 +269,6 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		goto out_unlock_mutex;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle = ocfs2_start_trans(osb, credits);
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
@@ -402,10 +294,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		if (!partial) {
 			context->range->me_flags &= ~OCFS2_MOVE_EXT_FL_COMPLETE;
 			ret = -ENOSPC;
-<<<<<<< HEAD
-=======
 			need_free = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_commit;
 		}
 	}
@@ -430,12 +319,6 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		mlog_errno(ret);
 
 out_commit:
-<<<<<<< HEAD
-	ocfs2_commit_trans(osb, handle);
-
-out_unlock_mutex:
-	mutex_unlock(&tl_inode->i_mutex);
-=======
 	if (need_free && context->data_ac) {
 		struct ocfs2_alloc_context *data_ac = context->data_ac;
 
@@ -454,7 +337,6 @@ out_unlock_mutex:
 
 out_unlock_mutex:
 	inode_unlock(tl_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (context->data_ac) {
 		ocfs2_free_alloc_context(context->data_ac);
@@ -518,11 +400,7 @@ static int ocfs2_find_victim_alloc_group(struct inode *inode,
 	 * 'vict_blkno' was out of the valid range.
 	 */
 	if ((vict_blkno < le64_to_cpu(rec->c_blkno)) ||
-<<<<<<< HEAD
-	    (vict_blkno >= (le32_to_cpu(ac_dinode->id1.bitmap1.i_total) <<
-=======
 	    (vict_blkno >= ((u64)le32_to_cpu(ac_dinode->id1.bitmap1.i_total) <<
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bits_per_unit))) {
 		ret = -EINVAL;
 		goto out;
@@ -556,11 +434,7 @@ static int ocfs2_find_victim_alloc_group(struct inode *inode,
 			bg = (struct ocfs2_group_desc *)gd_bh->b_data;
 
 			if (vict_blkno < (le64_to_cpu(bg->bg_blkno) +
-<<<<<<< HEAD
-						le16_to_cpu(bg->bg_bits))) {
-=======
 						(le16_to_cpu(bg->bg_bits) << bits_per_unit))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				*ret_bh = gd_bh;
 				*vict_bit = (vict_blkno - blkno) >>
@@ -594,11 +468,7 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 	int ret, goal_bit = 0;
 
 	struct buffer_head *gd_bh = NULL;
-<<<<<<< HEAD
-	struct ocfs2_group_desc *bg = NULL;
-=======
 	struct ocfs2_group_desc *bg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	int c_to_b = 1 << (osb->s_clustersize_bits -
 					inode->i_sb->s_blocksize_bits);
@@ -609,16 +479,6 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 	range->me_goal = ocfs2_block_to_cluster_start(inode->i_sb,
 						      range->me_goal);
 	/*
-<<<<<<< HEAD
-	 * moving goal is not allowd to start with a group desc blok(#0 blk)
-	 * let's compromise to the latter cluster.
-	 */
-	if (range->me_goal == le64_to_cpu(bg->bg_blkno))
-		range->me_goal += c_to_b;
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * validate goal sits within global_bitmap, and return the victim
 	 * group desc
 	 */
@@ -632,8 +492,6 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 	bg = (struct ocfs2_group_desc *)gd_bh->b_data;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * moving goal is not allowd to start with a group desc blok(#0 blk)
 	 * let's compromise to the latter cluster.
 	 */
@@ -641,7 +499,6 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 		range->me_goal += c_to_b;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * movement is not gonna cross two groups.
 	 */
 	if ((le16_to_cpu(bg->bg_bits) - goal_bit) * osb->s_clustersize <
@@ -692,10 +549,7 @@ static void ocfs2_probe_alloc_group(struct inode *inode, struct buffer_head *bh,
 			last_free_bits++;
 
 		if (last_free_bits == move_len) {
-<<<<<<< HEAD
-=======
 			i -= move_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*goal_bit = i;
 			*phys_cpos = base_cpos + i;
 			break;
@@ -705,86 +559,6 @@ static void ocfs2_probe_alloc_group(struct inode *inode, struct buffer_head *bh,
 	mlog(0, "found phys_cpos: %u to fit the wanted moving.\n", *phys_cpos);
 }
 
-<<<<<<< HEAD
-static int ocfs2_alloc_dinode_update_counts(struct inode *inode,
-				       handle_t *handle,
-				       struct buffer_head *di_bh,
-				       u32 num_bits,
-				       u16 chain)
-{
-	int ret;
-	u32 tmp_used;
-	struct ocfs2_dinode *di = (struct ocfs2_dinode *) di_bh->b_data;
-	struct ocfs2_chain_list *cl =
-				(struct ocfs2_chain_list *) &di->id2.i_chain;
-
-	ret = ocfs2_journal_access_di(handle, INODE_CACHE(inode), di_bh,
-				      OCFS2_JOURNAL_ACCESS_WRITE);
-	if (ret < 0) {
-		mlog_errno(ret);
-		goto out;
-	}
-
-	tmp_used = le32_to_cpu(di->id1.bitmap1.i_used);
-	di->id1.bitmap1.i_used = cpu_to_le32(num_bits + tmp_used);
-	le32_add_cpu(&cl->cl_recs[chain].c_free, -num_bits);
-	ocfs2_journal_dirty(handle, di_bh);
-
-out:
-	return ret;
-}
-
-static inline int ocfs2_block_group_set_bits(handle_t *handle,
-					     struct inode *alloc_inode,
-					     struct ocfs2_group_desc *bg,
-					     struct buffer_head *group_bh,
-					     unsigned int bit_off,
-					     unsigned int num_bits)
-{
-	int status;
-	void *bitmap = bg->bg_bitmap;
-	int journal_type = OCFS2_JOURNAL_ACCESS_WRITE;
-
-	/* All callers get the descriptor via
-	 * ocfs2_read_group_descriptor().  Any corruption is a code bug. */
-	BUG_ON(!OCFS2_IS_VALID_GROUP_DESC(bg));
-	BUG_ON(le16_to_cpu(bg->bg_free_bits_count) < num_bits);
-
-	mlog(0, "block_group_set_bits: off = %u, num = %u\n", bit_off,
-	     num_bits);
-
-	if (ocfs2_is_cluster_bitmap(alloc_inode))
-		journal_type = OCFS2_JOURNAL_ACCESS_UNDO;
-
-	status = ocfs2_journal_access_gd(handle,
-					 INODE_CACHE(alloc_inode),
-					 group_bh,
-					 journal_type);
-	if (status < 0) {
-		mlog_errno(status);
-		goto bail;
-	}
-
-	le16_add_cpu(&bg->bg_free_bits_count, -num_bits);
-	if (le16_to_cpu(bg->bg_free_bits_count) > le16_to_cpu(bg->bg_bits)) {
-		ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit"
-			    " count %u but claims %u are freed. num_bits %d",
-			    (unsigned long long)le64_to_cpu(bg->bg_blkno),
-			    le16_to_cpu(bg->bg_bits),
-			    le16_to_cpu(bg->bg_free_bits_count), num_bits);
-		return -EROFS;
-	}
-	while (num_bits--)
-		ocfs2_set_bit(bit_off++, bitmap);
-
-	ocfs2_journal_dirty(handle, group_bh);
-
-bail:
-	return status;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 			     u32 cpos, u32 phys_cpos, u32 *new_phys_cpos,
 			     u32 len, int ext_flags)
@@ -806,14 +580,7 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 	phys_blkno = ocfs2_clusters_to_blocks(inode->i_sb, phys_cpos);
 
 	if ((ext_flags & OCFS2_EXT_REFCOUNTED) && len) {
-<<<<<<< HEAD
-
-		BUG_ON(!(OCFS2_I(inode)->ip_dyn_features &
-			 OCFS2_HAS_REFCOUNT_FL));
-
-=======
 		BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!context->refcount_loc);
 
 		ret = ocfs2_lock_refcount_tree(osb, context->refcount_loc, 1,
@@ -835,16 +602,10 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
-<<<<<<< HEAD
-	ret = ocfs2_lock_allocators_move_extents(inode, &context->et, len, 1,
-						 &context->meta_ac,
-						 NULL, extra_blocks, &credits);
-=======
 	ret = ocfs2_lock_meta_allocator_move_extents(inode, &context->et,
 						len, 1,
 						&context->meta_ac,
 						extra_blocks, &credits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		mlog_errno(ret);
 		goto out;
@@ -868,11 +629,7 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&gb_inode->i_mutex);
-=======
 	inode_lock(gb_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_inode_lock(gb_inode, &gb_bh, 1);
 	if (ret) {
@@ -880,11 +637,7 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		goto out_unlock_gb_mutex;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&tl_inode->i_mutex);
-=======
 	inode_lock(tl_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	handle = ocfs2_start_trans(osb, credits);
 	if (IS_ERR(handle)) {
@@ -933,16 +686,11 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 
 	ret = ocfs2_block_group_set_bits(handle, gb_inode, gd, gd_bh,
 					 goal_bit, len);
-<<<<<<< HEAD
-	if (ret)
-		mlog_errno(ret);
-=======
 	if (ret) {
 		ocfs2_rollback_alloc_dinode_counts(gb_inode, gb_bh, len,
 					       le16_to_cpu(gd->bg_chain));
 		mlog_errno(ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Here we should write the new page out first if we are
@@ -957,19 +705,11 @@ out_commit:
 	brelse(gd_bh);
 
 out_unlock_tl_inode:
-<<<<<<< HEAD
-	mutex_unlock(&tl_inode->i_mutex);
-
-	ocfs2_inode_unlock(gb_inode, 1);
-out_unlock_gb_mutex:
-	mutex_unlock(&gb_inode->i_mutex);
-=======
 	inode_unlock(tl_inode);
 
 	ocfs2_inode_unlock(gb_inode, 1);
 out_unlock_gb_mutex:
 	inode_unlock(gb_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(gb_bh);
 	iput(gb_inode);
 
@@ -1027,11 +767,7 @@ static int __ocfs2_move_extents_range(struct buffer_head *di_bh,
 	struct ocfs2_move_extents *range = context->range;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	if ((inode->i_size == 0) || (range->me_len == 0))
-=======
 	if ((i_size_read(inode) == 0) || (range->me_len == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL)
@@ -1163,20 +899,10 @@ static int ocfs2_move_extents(struct ocfs2_move_extents_context *context)
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	if (!inode)
-		return -ENOENT;
-
-	if (ocfs2_is_hard_readonly(osb) || ocfs2_is_soft_readonly(osb))
-		return -EROFS;
-
-	mutex_lock(&inode->i_mutex);
-=======
 	if (ocfs2_is_hard_readonly(osb) || ocfs2_is_soft_readonly(osb))
 		return -EROFS;
 
 	inode_lock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This prevents concurrent writes from other nodes
@@ -1224,16 +950,10 @@ static int ocfs2_move_extents(struct ocfs2_move_extents_context *context)
 	}
 
 	di = (struct ocfs2_dinode *)di_bh->b_data;
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME;
-	di->i_ctime = cpu_to_le64(inode->i_ctime.tv_sec);
-	di->i_ctime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
-=======
 	inode_set_ctime_current(inode);
 	di->i_ctime = cpu_to_le64(inode_get_ctime_sec(inode));
 	di->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, di_bh);
 
@@ -1246,11 +966,7 @@ out_inode_unlock:
 out_rw_unlock:
 	ocfs2_rw_unlock(inode, 1);
 out:
-<<<<<<< HEAD
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -1259,31 +975,17 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 {
 	int status;
 
-<<<<<<< HEAD
-	struct inode *inode = filp->f_path.dentry->d_inode;
-	struct ocfs2_move_extents range;
-	struct ocfs2_move_extents_context *context = NULL;
-=======
 	struct inode *inode = file_inode(filp);
 	struct ocfs2_move_extents range;
 	struct ocfs2_move_extents_context *context;
 
 	if (!argp)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = mnt_want_write_file(filp);
 	if (status)
 		return status;
 
-<<<<<<< HEAD
-	if ((!S_ISREG(inode->i_mode)) || !(filp->f_mode & FMODE_WRITE))
-		goto out;
-
-	if (inode->i_flags & (S_IMMUTABLE|S_APPEND)) {
-		status = -EPERM;
-		goto out;
-=======
 	if ((!S_ISREG(inode->i_mode)) || !(filp->f_mode & FMODE_WRITE)) {
 		status = -EPERM;
 		goto out_drop;
@@ -1292,38 +994,18 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 	if (inode->i_flags & (S_IMMUTABLE|S_APPEND)) {
 		status = -EPERM;
 		goto out_drop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	context = kzalloc(sizeof(struct ocfs2_move_extents_context), GFP_NOFS);
 	if (!context) {
 		status = -ENOMEM;
 		mlog_errno(status);
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_drop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	context->inode = inode;
 	context->file = filp;
 
-<<<<<<< HEAD
-	if (argp) {
-		if (copy_from_user(&range, (struct ocfs2_move_extents *)argp,
-				   sizeof(range))) {
-			status = -EFAULT;
-			goto out;
-		}
-	} else {
-		status = -EINVAL;
-		goto out;
-	}
-
-	if (range.me_start > i_size_read(inode))
-		goto out;
-=======
 	if (copy_from_user(&range, argp, sizeof(range))) {
 		status = -EFAULT;
 		goto out_free;
@@ -1333,27 +1015,12 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 		status = -EINVAL;
 		goto out_free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (range.me_start + range.me_len > i_size_read(inode))
 			range.me_len = i_size_read(inode) - range.me_start;
 
 	context->range = &range;
 
-<<<<<<< HEAD
-	if (range.me_flags & OCFS2_MOVE_EXT_FL_AUTO_DEFRAG) {
-		context->auto_defrag = 1;
-		/*
-		 * ok, the default theshold for the defragmentation
-		 * is 1M, since our maximum clustersize was 1M also.
-		 * any thought?
-		 */
-		if (!range.me_threshold)
-			range.me_threshold = 1024 * 1024;
-
-		if (range.me_threshold > i_size_read(inode))
-			range.me_threshold = i_size_read(inode);
-=======
 	/*
 	 * ok, the default theshold for the defragmentation
 	 * is 1M, since our maximum clustersize was 1M also.
@@ -1367,7 +1034,6 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 
 	if (range.me_flags & OCFS2_MOVE_EXT_FL_AUTO_DEFRAG) {
 		context->auto_defrag = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (range.me_flags & OCFS2_MOVE_EXT_FL_PART_DEFRAG)
 			context->partial = 1;
@@ -1381,43 +1047,24 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 
 		status = ocfs2_validate_and_adjust_move_goal(inode, &range);
 		if (status)
-<<<<<<< HEAD
-			goto out;
-=======
 			goto out_copy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	status = ocfs2_move_extents(context);
 	if (status)
 		mlog_errno(status);
-<<<<<<< HEAD
-out:
-=======
 out_copy:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * movement/defragmentation may end up being partially completed,
 	 * that's the reason why we need to return userspace the finished
 	 * length and new_offset even if failure happens somewhere.
 	 */
-<<<<<<< HEAD
-	if (argp) {
-		if (copy_to_user((struct ocfs2_move_extents *)argp, &range,
-				sizeof(range)))
-			status = -EFAULT;
-	}
-
-	kfree(context);
-
-=======
 	if (copy_to_user(argp, &range, sizeof(range)))
 		status = -EFAULT;
 
 out_free:
 	kfree(context);
 out_drop:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mnt_drop_write_file(filp);
 
 	return status;

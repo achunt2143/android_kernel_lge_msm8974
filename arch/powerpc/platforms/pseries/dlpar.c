@@ -1,42 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for dynamic reconfiguration for PCI, Memory, and CPU
  * Hotplug and Dynamic Logical Partitioning on RPA platforms.
  *
  * Copyright (C) 2009 Nathan Fontenot
  * Copyright (C) 2009 IBM Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- */
-
-#include <linux/kernel.h>
-#include <linux/kref.h>
-#include <linux/notifier.h>
-#include <linux/proc_fs.h>
-#include <linux/spinlock.h>
-#include <linux/cpu.h>
-#include <linux/slab.h>
-#include "offline_states.h"
-
-#include <asm/prom.h>
-#include <asm/machdep.h>
-#include <asm/uaccess.h>
-#include <asm/rtas.h>
-#include <asm/pSeries_reconfig.h>
-
-struct cc_workarea {
-	u32	drc_index;
-	u32	zero;
-	u32	name_offset;
-	u32	prop_length;
-	u32	prop_offset;
-=======
  */
 
 #define pr_fmt(fmt)	"dlpar: " fmt
@@ -69,7 +37,6 @@ struct cc_workarea {
 	__be32	name_offset;
 	__be32	prop_length;
 	__be32	prop_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void dlpar_free_cc_property(struct property *prop)
@@ -89,13 +56,6 @@ static struct property *dlpar_parse_cc_property(struct cc_workarea *ccwa)
 	if (!prop)
 		return NULL;
 
-<<<<<<< HEAD
-	name = (char *)ccwa + ccwa->name_offset;
-	prop->name = kstrdup(name, GFP_KERNEL);
-
-	prop->length = ccwa->prop_length;
-	value = (char *)ccwa + ccwa->prop_offset;
-=======
 	name = (char *)ccwa + be32_to_cpu(ccwa->name_offset);
 	prop->name = kstrdup(name, GFP_KERNEL);
 	if (!prop->name) {
@@ -105,7 +65,6 @@ static struct property *dlpar_parse_cc_property(struct cc_workarea *ccwa)
 
 	prop->length = be32_to_cpu(ccwa->prop_length);
 	value = (char *)ccwa + be32_to_cpu(ccwa->prop_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prop->value = kmemdup(value, prop->length, GFP_KERNEL);
 	if (!prop->value) {
 		dlpar_free_cc_property(prop);
@@ -118,38 +77,22 @@ static struct property *dlpar_parse_cc_property(struct cc_workarea *ccwa)
 static struct device_node *dlpar_parse_cc_node(struct cc_workarea *ccwa)
 {
 	struct device_node *dn;
-<<<<<<< HEAD
-	char *name;
-=======
 	const char *name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dn = kzalloc(sizeof(*dn), GFP_KERNEL);
 	if (!dn)
 		return NULL;
 
-<<<<<<< HEAD
-	/* The configure connector reported name does not contain a
-	 * preceding '/', so we allocate a buffer large enough to
-	 * prepend this to the full_name.
-	 */
-	name = (char *)ccwa + ccwa->name_offset;
-	dn->full_name = kasprintf(GFP_KERNEL, "/%s", name);
-=======
 	name = (const char *)ccwa + be32_to_cpu(ccwa->name_offset);
 	dn->full_name = kstrdup(name, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dn->full_name) {
 		kfree(dn);
 		return NULL;
 	}
 
-<<<<<<< HEAD
-=======
 	of_node_set_flag(dn, OF_DYNAMIC);
 	of_node_init(dn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dn;
 }
 
@@ -184,17 +127,10 @@ void dlpar_free_cc_nodes(struct device_node *dn)
 #define NEXT_PROPERTY   3
 #define PREV_PARENT     4
 #define MORE_MEMORY     5
-<<<<<<< HEAD
-#define CALL_AGAIN	-2
-#define ERR_CFG_USE     -9003
-
-struct device_node *dlpar_configure_connector(u32 drc_index)
-=======
 #define ERR_CFG_USE     -9003
 
 struct device_node *dlpar_configure_connector(__be32 drc_index,
 					      struct device_node *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn;
 	struct device_node *first_dn = NULL;
@@ -202,54 +138,27 @@ struct device_node *dlpar_configure_connector(__be32 drc_index,
 	struct property *property;
 	struct property *last_property = NULL;
 	struct cc_workarea *ccwa;
-<<<<<<< HEAD
-=======
 	struct rtas_work_area *work_area;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *data_buf;
 	int cc_token;
 	int rc = -1;
 
-<<<<<<< HEAD
-	cc_token = rtas_token("ibm,configure-connector");
-	if (cc_token == RTAS_UNKNOWN_SERVICE)
-		return NULL;
-
-	data_buf = kzalloc(RTAS_DATA_BUF_SIZE, GFP_KERNEL);
-	if (!data_buf)
-		return NULL;
-=======
 	cc_token = rtas_function_token(RTAS_FN_IBM_CONFIGURE_CONNECTOR);
 	if (cc_token == RTAS_UNKNOWN_SERVICE)
 		return NULL;
 
 	work_area = rtas_work_area_alloc(SZ_4K);
 	data_buf = rtas_work_area_raw_buf(work_area);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccwa = (struct cc_workarea *)&data_buf[0];
 	ccwa->drc_index = drc_index;
 	ccwa->zero = 0;
 
 	do {
-<<<<<<< HEAD
-		/* Since we release the rtas_data_buf lock between configure
-		 * connector calls we want to re-populate the rtas_data_buffer
-		 * with the contents of the previous call.
-		 */
-		spin_lock(&rtas_data_buf_lock);
-
-		memcpy(rtas_data_buf, data_buf, RTAS_DATA_BUF_SIZE);
-		rc = rtas_call(cc_token, 2, 1, NULL, rtas_data_buf, NULL);
-		memcpy(data_buf, rtas_data_buf, RTAS_DATA_BUF_SIZE);
-
-		spin_unlock(&rtas_data_buf_lock);
-=======
 		do {
 			rc = rtas_call(cc_token, 2, 1, NULL,
 				       rtas_work_area_phys(work_area), NULL);
 		} while (rtas_busy_delay(rc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (rc) {
 		case COMPLETE:
@@ -270,16 +179,10 @@ struct device_node *dlpar_configure_connector(__be32 drc_index,
 			if (!dn)
 				goto cc_error;
 
-<<<<<<< HEAD
-			if (!first_dn)
-				first_dn = dn;
-			else {
-=======
 			if (!first_dn) {
 				dn->parent = parent;
 				first_dn = dn;
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dn->parent = last_dn;
 				if (last_dn)
 					last_dn->child = dn;
@@ -305,12 +208,6 @@ struct device_node *dlpar_configure_connector(__be32 drc_index,
 			last_dn = last_dn->parent;
 			break;
 
-<<<<<<< HEAD
-		case CALL_AGAIN:
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MORE_MEMORY:
 		case ERR_CFG_USE:
 		default:
@@ -321,11 +218,7 @@ struct device_node *dlpar_configure_connector(__be32 drc_index,
 	} while (rc);
 
 cc_error:
-<<<<<<< HEAD
-	kfree(data_buf);
-=======
 	rtas_work_area_free(work_area);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc) {
 		if (first_dn)
@@ -337,60 +230,6 @@ cc_error:
 	return first_dn;
 }
 
-<<<<<<< HEAD
-static struct device_node *derive_parent(const char *path)
-{
-	struct device_node *parent;
-	char *last_slash;
-
-	last_slash = strrchr(path, '/');
-	if (last_slash == path) {
-		parent = of_find_node_by_path("/");
-	} else {
-		char *parent_path;
-		int parent_path_len = last_slash - path + 1;
-		parent_path = kmalloc(parent_path_len, GFP_KERNEL);
-		if (!parent_path)
-			return NULL;
-
-		strlcpy(parent_path, path, parent_path_len);
-		parent = of_find_node_by_path(parent_path);
-		kfree(parent_path);
-	}
-
-	return parent;
-}
-
-int dlpar_attach_node(struct device_node *dn)
-{
-#ifdef CONFIG_PROC_DEVICETREE
-	struct proc_dir_entry *ent;
-#endif
-	int rc;
-
-	of_node_set_flag(dn, OF_DYNAMIC);
-	kref_init(&dn->kref);
-	dn->parent = derive_parent(dn->full_name);
-	if (!dn->parent)
-		return -ENOMEM;
-
-	rc = pSeries_reconfig_notify(PSERIES_RECONFIG_ADD, dn);
-	if (rc) {
-		printk(KERN_ERR "Failed to add device node %s\n",
-		       dn->full_name);
-		return rc;
-	}
-
-	of_attach_node(dn);
-
-#ifdef CONFIG_PROC_DEVICETREE
-	ent = proc_mkdir(strrchr(dn->full_name, '/') + 1, dn->parent->pde);
-	if (ent)
-		proc_device_tree_add_node(dn, ent);
-#endif
-
-	of_node_put(dn->parent);
-=======
 int dlpar_attach_node(struct device_node *dn, struct device_node *parent)
 {
 	int rc;
@@ -403,30 +242,11 @@ int dlpar_attach_node(struct device_node *dn, struct device_node *parent)
 		return rc;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int dlpar_detach_node(struct device_node *dn)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_DEVICETREE
-	struct device_node *parent = dn->parent;
-	struct property *prop = dn->properties;
-
-	while (prop) {
-		remove_proc_entry(prop->name, dn->pde);
-		prop = prop->next;
-	}
-
-	if (dn->pde)
-		remove_proc_entry(dn->pde->name, parent->pde);
-#endif
-
-	pSeries_reconfig_notify(PSERIES_RECONFIG_REMOVE, dn);
-	of_detach_node(dn);
-	of_node_put(dn); /* Must decrement the refcount */
-=======
 	struct device_node *child;
 	int rc;
 
@@ -441,7 +261,6 @@ int dlpar_detach_node(struct device_node *dn)
 		return rc;
 
 	of_node_put(dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -460,12 +279,7 @@ int dlpar_acquire_drc(u32 drc_index)
 {
 	int dr_status, rc;
 
-<<<<<<< HEAD
-	rc = rtas_call(rtas_token("get-sensor-state"), 2, 2, &dr_status,
-		       DR_ENTITY_SENSE, drc_index);
-=======
 	rc = rtas_get_sensor(DR_ENTITY_SENSE, drc_index, &dr_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc || dr_status != DR_ENTITY_UNUSABLE)
 		return -1;
 
@@ -486,12 +300,7 @@ int dlpar_release_drc(u32 drc_index)
 {
 	int dr_status, rc;
 
-<<<<<<< HEAD
-	rc = rtas_call(rtas_token("get-sensor-state"), 2, 2, &dr_status,
-		       DR_ENTITY_SENSE, drc_index);
-=======
 	rc = rtas_get_sensor(DR_ENTITY_SENSE, drc_index, &dr_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc || dr_status != DR_ENTITY_PRESENT)
 		return -1;
 
@@ -508,209 +317,6 @@ int dlpar_release_drc(u32 drc_index)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_CPU_PROBE_RELEASE
-
-static int dlpar_online_cpu(struct device_node *dn)
-{
-	int rc = 0;
-	unsigned int cpu;
-	int len, nthreads, i;
-	const u32 *intserv;
-
-	intserv = of_get_property(dn, "ibm,ppc-interrupt-server#s", &len);
-	if (!intserv)
-		return -EINVAL;
-
-	nthreads = len / sizeof(u32);
-
-	cpu_maps_update_begin();
-	for (i = 0; i < nthreads; i++) {
-		for_each_present_cpu(cpu) {
-			if (get_hard_smp_processor_id(cpu) != intserv[i])
-				continue;
-			BUG_ON(get_cpu_current_state(cpu)
-					!= CPU_STATE_OFFLINE);
-			cpu_maps_update_done();
-			rc = cpu_up(cpu);
-			if (rc)
-				goto out;
-			cpu_maps_update_begin();
-
-			break;
-		}
-		if (cpu == num_possible_cpus())
-			printk(KERN_WARNING "Could not find cpu to online "
-			       "with physical id 0x%x\n", intserv[i]);
-	}
-	cpu_maps_update_done();
-
-out:
-	return rc;
-
-}
-
-static ssize_t dlpar_cpu_probe(const char *buf, size_t count)
-{
-	struct device_node *dn;
-	unsigned long drc_index;
-	char *cpu_name;
-	int rc;
-
-	cpu_hotplug_driver_lock();
-	rc = strict_strtoul(buf, 0, &drc_index);
-	if (rc) {
-		rc = -EINVAL;
-		goto out;
-	}
-
-	rc = dlpar_acquire_drc(drc_index);
-	if (rc) {
-		rc = -EINVAL;
-		goto out;
-	}
-
-	dn = dlpar_configure_connector(drc_index);
-	if (!dn) {
-		rc = -EINVAL;
-		goto out;
-	}
-
-	/* configure-connector reports cpus as living in the base
-	 * directory of the device tree.  CPUs actually live in the
-	 * cpus directory so we need to fixup the full_name.
-	 */
-	cpu_name = kasprintf(GFP_KERNEL, "/cpus%s", dn->full_name);
-	if (!cpu_name) {
-		dlpar_free_cc_nodes(dn);
-		rc = -ENOMEM;
-		goto out;
-	}
-
-	kfree(dn->full_name);
-	dn->full_name = cpu_name;
-
-	rc = dlpar_attach_node(dn);
-	if (rc) {
-		dlpar_release_drc(drc_index);
-		dlpar_free_cc_nodes(dn);
-		goto out;
-	}
-
-	rc = dlpar_online_cpu(dn);
-out:
-	cpu_hotplug_driver_unlock();
-
-	return rc ? rc : count;
-}
-
-static int dlpar_offline_cpu(struct device_node *dn)
-{
-	int rc = 0;
-	unsigned int cpu;
-	int len, nthreads, i;
-	const u32 *intserv;
-
-	intserv = of_get_property(dn, "ibm,ppc-interrupt-server#s", &len);
-	if (!intserv)
-		return -EINVAL;
-
-	nthreads = len / sizeof(u32);
-
-	cpu_maps_update_begin();
-	for (i = 0; i < nthreads; i++) {
-		for_each_present_cpu(cpu) {
-			if (get_hard_smp_processor_id(cpu) != intserv[i])
-				continue;
-
-			if (get_cpu_current_state(cpu) == CPU_STATE_OFFLINE)
-				break;
-
-			if (get_cpu_current_state(cpu) == CPU_STATE_ONLINE) {
-				set_preferred_offline_state(cpu, CPU_STATE_OFFLINE);
-				cpu_maps_update_done();
-				rc = cpu_down(cpu);
-				if (rc)
-					goto out;
-				cpu_maps_update_begin();
-				break;
-
-			}
-
-			/*
-			 * The cpu is in CPU_STATE_INACTIVE.
-			 * Upgrade it's state to CPU_STATE_OFFLINE.
-			 */
-			set_preferred_offline_state(cpu, CPU_STATE_OFFLINE);
-			BUG_ON(plpar_hcall_norets(H_PROD, intserv[i])
-								!= H_SUCCESS);
-			__cpu_die(cpu);
-			break;
-		}
-		if (cpu == num_possible_cpus())
-			printk(KERN_WARNING "Could not find cpu to offline "
-			       "with physical id 0x%x\n", intserv[i]);
-	}
-	cpu_maps_update_done();
-
-out:
-	return rc;
-
-}
-
-static ssize_t dlpar_cpu_release(const char *buf, size_t count)
-{
-	struct device_node *dn;
-	const u32 *drc_index;
-	int rc;
-
-	dn = of_find_node_by_path(buf);
-	if (!dn)
-		return -EINVAL;
-
-	drc_index = of_get_property(dn, "ibm,my-drc-index", NULL);
-	if (!drc_index) {
-		of_node_put(dn);
-		return -EINVAL;
-	}
-
-	cpu_hotplug_driver_lock();
-	rc = dlpar_offline_cpu(dn);
-	if (rc) {
-		of_node_put(dn);
-		rc = -EINVAL;
-		goto out;
-	}
-
-	rc = dlpar_release_drc(*drc_index);
-	if (rc) {
-		of_node_put(dn);
-		goto out;
-	}
-
-	rc = dlpar_detach_node(dn);
-	if (rc) {
-		dlpar_acquire_drc(*drc_index);
-		goto out;
-	}
-
-	of_node_put(dn);
-out:
-	cpu_hotplug_driver_unlock();
-	return rc ? rc : count;
-}
-
-static int __init pseries_dlpar_init(void)
-{
-	ppc_md.cpu_probe = dlpar_cpu_probe;
-	ppc_md.cpu_release = dlpar_cpu_release;
-
-	return 0;
-}
-machine_device_initcall(pseries, pseries_dlpar_init);
-
-#endif /* CONFIG_ARCH_CPU_PROBE_RELEASE */
-=======
 int dlpar_unisolate_drc(u32 drc_index)
 {
 	int dr_status, rc;
@@ -975,4 +581,3 @@ static int __init dlpar_sysfs_init(void)
 }
 machine_device_initcall(pseries, dlpar_sysfs_init);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC Linux
  *
@@ -13,60 +10,6 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  * et al.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
-#ifndef __ASM_OPENRISC_ELF_H
-#define __ASM_OPENRISC_ELF_H
-
-/*
- * ELF register definitions..
- */
-#include <linux/types.h>
-#include <linux/ptrace.h>
-
-
-/* The OR1K relocation types... not all relevant for module loader */
-#define R_OR32_NONE	0
-#define R_OR32_32	1
-#define R_OR32_16	2
-#define R_OR32_8	3
-#define R_OR32_CONST	4
-#define R_OR32_CONSTH	5
-#define R_OR32_JUMPTARG	6
-#define R_OR32_VTINHERIT 7
-#define R_OR32_VTENTRY	8
-
-typedef unsigned long elf_greg_t;
-
-/*
- * Note that NGREG is defined to ELF_NGREG in include/linux/elfcore.h, and is
- * thus exposed to user-space.
- */
-#define ELF_NGREG (sizeof(struct user_regs_struct) / sizeof(elf_greg_t))
-typedef elf_greg_t elf_gregset_t[ELF_NGREG];
-
-/* A placeholder; OR32 does not have fp support yes, so no fp regs for now.  */
-typedef unsigned long elf_fpregset_t;
-
-/* This should be moved to include/linux/elf.h */
-#define EM_OR32         0x8472
-#define EM_OPENRISC     92     /* OpenRISC 32-bit embedded processor */
-
-/*
- * These are used to set parameters in the core dumps.
- */
-#define ELF_ARCH	EM_OR32
-#define ELF_CLASS	ELFCLASS32
-#define ELF_DATA	ELFDATA2MSB
-
-#ifdef __KERNEL__
-=======
  */
 #ifndef __ASM_OPENRISC_ELF_H
 #define __ASM_OPENRISC_ELF_H
@@ -74,7 +17,6 @@ typedef unsigned long elf_fpregset_t;
 
 #include <linux/types.h>
 #include <uapi/asm/elf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is used to ensure we don't load something for the wrong architecture.
@@ -116,10 +58,4 @@ extern void dump_elf_thread(elf_greg_t *dest, struct pt_regs *pt);
 
 #define ELF_PLATFORM	(NULL)
 
-<<<<<<< HEAD
-#define SET_PERSONALITY(ex) set_personality(PER_LINUX)
-
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

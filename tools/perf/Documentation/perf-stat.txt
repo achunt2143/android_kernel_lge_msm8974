@@ -9,13 +9,9 @@ SYNOPSIS
 --------
 [verse]
 'perf stat' [-e <EVENT> | --event=EVENT] [-a] <command>
-<<<<<<< HEAD
-'perf stat' [-e <EVENT> | --event=EVENT] [-a] -- <command> [<options>]
-=======
 'perf stat' [-e <EVENT> | --event=EVENT] [-a] \-- <command> [<options>]
 'perf stat' [-e <EVENT> | --event=EVENT] [-a] record [-o file] \-- <command> [<options>]
 'perf stat' report [-i file]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
@@ -28,15 +24,6 @@ OPTIONS
 <command>...::
 	Any command you can specify in a shell.
 
-<<<<<<< HEAD
-
--e::
---event=::
-	Select the PMU event. Selection can be a symbolic event name
-	(use 'perf list' to list all events) or a raw PMU
-	event (eventsel+umask) in the form of rNNN where NNN is a
-	 hexadecimal event descriptor.
-=======
 record::
 	See STAT RECORD.
 
@@ -78,7 +65,6 @@ report::
 	Multiple PMU instances are typical for uncore PMUs, so the prefix
 	'uncore_' is also ignored when performing this match.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -i::
 --no-inherit::
@@ -91,24 +77,6 @@ report::
 --tid=<tid>::
         stat events on existing thread id (comma separated list)
 
-<<<<<<< HEAD
-
--a::
---all-cpus::
-        system-wide collection from all CPUs
-
--c::
---scale::
-	scale/normalize counter values
-
--r::
---repeat=<n>::
-	repeat command and print average + stddev (max: 100)
-
--B::
---big-num::
-        print large numbers with thousands' separators according to locale
-=======
 -b::
 --bpf-prog::
         stat events on existing bpf program id (comma separated list),
@@ -175,7 +143,6 @@ endif::HAVE_LIBPFM[]
         print large numbers with thousands' separators according to locale.
 	Enabled by default. Use "--no-big-num" to disable.
 	Default setting can be changed with "perf config stat.big-num=false".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -C::
 --cpu=::
@@ -186,14 +153,6 @@ to activate system-wide monitoring. Default is to count on all CPUs.
 
 -A::
 --no-aggr::
-<<<<<<< HEAD
-Do not aggregate counts across all monitored CPUs in system-wide mode (-a).
-This option is only valid in system-wide mode.
-
--n::
---null::
-        null run - don't start any counters
-=======
 Do not aggregate counts across all monitored CPUs.
 
 -n::
@@ -202,7 +161,6 @@ null run - Don't start any counters.
 
 This can be useful to measure just elapsed wall-clock time - or to assess the
 raw overhead of perf stat itself, without running any counters.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -v::
 --verbose::
@@ -213,8 +171,6 @@ raw overhead of perf stat itself, without running any counters.
 print counts using a CSV-style output to make it easy to import directly into
 spreadsheets. Columns are separated by the string specified in SEP.
 
-<<<<<<< HEAD
-=======
 --table:: Display time for each run (-r option), in a table format, e.g.:
 
   $ perf stat --null -r 5 --table perf bench sched pipe
@@ -231,7 +187,6 @@ spreadsheets. Columns are separated by the string specified in SEP.
              # Final result:
              5.483 +- 0.198 seconds time elapsed  ( +-  3.62% )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -G name::
 --cgroup name::
 monitor only in the container (cgroup) called "name". This option is available only
@@ -241,9 +196,6 @@ can be provided. Each cgroup is applied to the corresponding event, i.e., first 
 to first event, second cgroup to second event and so on. It is possible to provide
 an empty cgroup (monitor all the time) using, e.g., -G foo,,bar. Cgroups must have
 corresponding events, i.e., they always refer to events defined earlier on the command
-<<<<<<< HEAD
-line.
-=======
 line. If the user wants to track multiple events for a specific cgroup, the user can
 use '-e e1 -e e2 -G foo,foo' or just use '-e e1 -e e2 -G foo'.
 
@@ -255,7 +207,6 @@ Expand event list for each cgroup in "name" (allow multiple cgroups separated
 by comma).  It also support regex patterns to match multiple groups.  This has same
 effect that repeating -e option and -G option for each event x name.  This option
 cannot be used with -G/--cgroup option.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -o file::
 --output file::
@@ -268,12 +219,6 @@ Append to the output file designated with the -o option. Ignored if -o is not sp
 
 Log output to fd, instead of stderr.  Complementary to --output, and mutually exclusive
 with it.  --append may be used here.  Examples:
-<<<<<<< HEAD
-     3>results  perf stat --log-fd 3          -- $cmd
-     3>>results perf stat --log-fd 3 --append -- $cmd
-
-
-=======
      3>results  perf stat --log-fd 3          \-- $cmd
      3>>results perf stat --log-fd 3 --append \-- $cmd
 
@@ -612,27 +557,10 @@ $ perf config stat.no-csv-summary=true
 --cputype::
 Only enable events on applying cpu with this type for hybrid platform
 (e.g. core or atom)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXAMPLES
 --------
 
-<<<<<<< HEAD
-$ perf stat -- make -j
-
- Performance counter stats for 'make -j':
-
-    8117.370256  task clock ticks     #      11.281 CPU utilization factor
-            678  context switches     #       0.000 M/sec
-            133  CPU migrations       #       0.000 M/sec
-         235724  pagefaults           #       0.029 M/sec
-    24821162526  CPU cycles           #    3057.784 M/sec
-    18687303457  instructions         #    2302.138 M/sec
-      172158895  cache references     #      21.209 M/sec
-       27075259  cache misses         #       3.335 M/sec
-
- Wall-clock time elapsed:   719.554352 msecs
-=======
 $ perf stat \-- make
 
    Performance counter stats for 'make':
@@ -711,7 +639,6 @@ that can be used for parsing.
 - runtime : run time of counter
 - metric-value : optional metric value
 - metric-unit : optional unit of metric
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SEE ALSO
 --------

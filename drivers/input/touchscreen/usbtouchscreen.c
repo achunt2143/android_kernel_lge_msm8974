@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * usbtouchscreen.c
  * Driver for USB Touchscreens, supporting those devices:
@@ -26,23 +23,6 @@
  * Copyright (C) 2004-2007 by Daniel Ritz <daniel.ritz@gmx.ch>
  * Copyright (C) by Todd E. Johnson (mtouchusb.c)
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Driver is based on touchkitusb.c
  * - ITM parts are from itmtouch.c
  * - 3M parts are from mtouchusb.c
@@ -58,22 +38,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/usb.h>
-#include <linux/usb/input.h>
-#include <linux/hid.h>
-
-
-#define DRIVER_VERSION		"v0.6"
-#define DRIVER_AUTHOR		"Daniel Ritz <daniel.ritz@gmx.ch>"
-#define DRIVER_DESC		"USB Touchscreen Driver"
-=======
 #include <linux/usb.h>
 #include <linux/usb/input.h>
 #include <linux/hid.h>
 #include <linux/mutex.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool swap_xy;
 module_param(swap_xy, bool, 0644);
@@ -127,11 +95,8 @@ struct usbtouch_usb {
 	struct usb_interface *interface;
 	struct input_dev *input;
 	struct usbtouch_device_info *type;
-<<<<<<< HEAD
-=======
 	struct mutex pm_mutex;  /* serialize access to open/suspend */
 	bool is_open;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char name[128];
 	char phys[64];
 	void *priv;
@@ -152,10 +117,7 @@ enum {
 	DEVTYPE_GUNZE,
 	DEVTYPE_DMC_TSC10,
 	DEVTYPE_IRTOUCH,
-<<<<<<< HEAD
-=======
 	DEVTYPE_IRTOUCH_HIRES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEVTYPE_IDEALTEK,
 	DEVTYPE_GENERAL_TOUCH,
 	DEVTYPE_GOTOP,
@@ -170,19 +132,10 @@ enum {
 
 #define USB_DEVICE_HID_CLASS(vend, prod) \
 	.match_flags = USB_DEVICE_ID_MATCH_INT_CLASS \
-<<<<<<< HEAD
-		| USB_DEVICE_ID_MATCH_INT_PROTOCOL \
-		| USB_DEVICE_ID_MATCH_DEVICE, \
-	.idVendor = (vend), \
-	.idProduct = (prod), \
-	.bInterfaceClass = USB_INTERFACE_CLASS_HID, \
-	.bInterfaceProtocol = USB_INTERFACE_PROTOCOL_MOUSE
-=======
 		| USB_DEVICE_ID_MATCH_DEVICE, \
 	.idVendor = (vend), \
 	.idProduct = (prod), \
 	.bInterfaceClass = USB_INTERFACE_CLASS_HID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct usb_device_id usbtouch_devices[] = {
 #ifdef CONFIG_TOUCHSCREEN_USB_EGALAX
@@ -229,15 +182,10 @@ static const struct usb_device_id usbtouch_devices[] = {
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IRTOUCH
-<<<<<<< HEAD
-	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
-	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
-=======
 	{USB_DEVICE(0x255e, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x6615, 0x0012), .driver_info = DEVTYPE_IRTOUCH_HIRES},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK
@@ -303,14 +251,6 @@ static int e2i_init(struct usbtouch_usb *usbtouch)
 	int ret;
 	struct usb_device *udev = interface_to_usbdev(usbtouch->interface);
 
-<<<<<<< HEAD
-	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
-	                      0x01, 0x02, 0x0000, 0x0081,
-	                      NULL, 0, USB_CTRL_SET_TIMEOUT);
-
-	dbg("%s - usb_control_msg - E2I_RESET - bytes|err: %d",
-	    __func__, ret);
-=======
 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
 	                      0x01, 0x02, 0x0000, 0x0081,
 	                      NULL, 0, USB_CTRL_SET_TIMEOUT);
@@ -318,7 +258,6 @@ static int e2i_init(struct usbtouch_usb *usbtouch)
 	dev_dbg(&usbtouch->interface->dev,
 		"%s - usb_control_msg - E2I_RESET - bytes|err: %d\n",
 		__func__, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -351,8 +290,6 @@ static int e2i_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 #define EGALAX_PKT_TYPE_REPT		0x80
 #define EGALAX_PKT_TYPE_DIAG		0x0A
 
-<<<<<<< HEAD
-=======
 static int egalax_init(struct usbtouch_usb *usbtouch)
 {
 	int ret, i;
@@ -392,7 +329,6 @@ static int egalax_init(struct usbtouch_usb *usbtouch)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int egalax_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 {
 	if ((pkt[0] & EGALAX_PKT_TYPE_MASK) != EGALAX_PKT_TYPE_REPT)
@@ -492,11 +428,8 @@ static int panjit_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 #define MTOUCHUSB_RESET                 7
 #define MTOUCHUSB_REQ_CTRLLR_ID         10
 
-<<<<<<< HEAD
-=======
 #define MTOUCHUSB_REQ_CTRLLR_ID_LEN	16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mtouch_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 {
 	if (hwcalib_xy) {
@@ -511,8 +444,6 @@ static int mtouch_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 struct mtouch_priv {
 	u8 fw_rev_major;
 	u8 fw_rev_minor;
@@ -591,20 +522,11 @@ static int mtouch_alloc(struct usbtouch_usb *usbtouch)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mtouch_init(struct usbtouch_usb *usbtouch)
 {
 	int ret, i;
 	struct usb_device *udev = interface_to_usbdev(usbtouch->interface);
 
-<<<<<<< HEAD
-	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
-	                      MTOUCHUSB_RESET,
-	                      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-	                      1, 0, NULL, 0, USB_CTRL_SET_TIMEOUT);
-	dbg("%s - usb_control_msg - MTOUCHUSB_RESET - bytes|err: %d",
-	    __func__, ret);
-=======
 	ret = mtouch_get_fw_revision(usbtouch);
 	if (ret)
 		return ret;
@@ -616,20 +538,11 @@ static int mtouch_init(struct usbtouch_usb *usbtouch)
 	dev_dbg(&usbtouch->interface->dev,
 		"%s - usb_control_msg - MTOUCHUSB_RESET - bytes|err: %d\n",
 		__func__, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	msleep(150);
 
 	for (i = 0; i < 3; i++) {
-<<<<<<< HEAD
-		ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
-				      MTOUCHUSB_ASYNC_REPORT,
-				      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-				      1, 1, NULL, 0, USB_CTRL_SET_TIMEOUT);
-		dbg("%s - usb_control_msg - MTOUCHUSB_ASYNC_REPORT - bytes|err: %d",
-		    __func__, ret);
-=======
 		ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
 				      MTOUCHUSB_ASYNC_REPORT,
 				      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
@@ -637,7 +550,6 @@ static int mtouch_init(struct usbtouch_usb *usbtouch)
 		dev_dbg(&usbtouch->interface->dev,
 			"%s - usb_control_msg - MTOUCHUSB_ASYNC_REPORT - bytes|err: %d\n",
 			__func__, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret >= 0)
 			break;
 		if (ret != -EPIPE)
@@ -652,8 +564,6 @@ static int mtouch_init(struct usbtouch_usb *usbtouch)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 static void mtouch_exit(struct usbtouch_usb *usbtouch)
 {
@@ -662,7 +572,6 @@ static void mtouch_exit(struct usbtouch_usb *usbtouch)
 	sysfs_remove_group(&usbtouch->interface->dev.kobj, &mtouch_attr_group);
 	kfree(priv);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -813,11 +722,7 @@ static int dmc_tsc10_init(struct usbtouch_usb *usbtouch)
 	}
 
 	/* start sending data */
-<<<<<<< HEAD
-	ret = usb_control_msg(dev, usb_rcvctrlpipe (dev, 0),
-=======
 	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	                      TSC10_CMD_DATA1,
 	                      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 	                      0, 0, NULL, 0, USB_CTRL_SET_TIMEOUT);
@@ -955,47 +860,29 @@ static int jastec_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 #ifdef CONFIG_TOUCHSCREEN_USB_ZYTRONIC
 static int zytronic_read_data(struct usbtouch_usb *dev, unsigned char *pkt)
 {
-<<<<<<< HEAD
-	switch (pkt[0]) {
-	case 0x3A: /* command response */
-		dbg("%s: Command response %d", __func__, pkt[1]);
-=======
 	struct usb_interface *intf = dev->interface;
 
 	switch (pkt[0]) {
 	case 0x3A: /* command response */
 		dev_dbg(&intf->dev, "%s: Command response %d\n", __func__, pkt[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case 0xC0: /* down */
 		dev->x = (pkt[1] & 0x7f) | ((pkt[2] & 0x07) << 7);
 		dev->y = (pkt[3] & 0x7f) | ((pkt[4] & 0x07) << 7);
 		dev->touch = 1;
-<<<<<<< HEAD
-		dbg("%s: down %d,%d", __func__, dev->x, dev->y);
-=======
 		dev_dbg(&intf->dev, "%s: down %d,%d\n", __func__, dev->x, dev->y);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	case 0x80: /* up */
 		dev->x = (pkt[1] & 0x7f) | ((pkt[2] & 0x07) << 7);
 		dev->y = (pkt[3] & 0x7f) | ((pkt[4] & 0x07) << 7);
 		dev->touch = 0;
-<<<<<<< HEAD
-		dbg("%s: up %d,%d", __func__, dev->x, dev->y);
-		return 1;
-
-	default:
-		dbg("%s: Unknown return %d", __func__, pkt[0]);
-=======
 		dev_dbg(&intf->dev, "%s: up %d,%d\n", __func__, dev->x, dev->y);
 		return 1;
 
 	default:
 		dev_dbg(&intf->dev, "%s: Unknown return %d\n", __func__, pkt[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1050,12 +937,8 @@ static int nexio_alloc(struct usbtouch_usb *usbtouch)
 
 	priv->ack = usb_alloc_urb(0, GFP_KERNEL);
 	if (!priv->ack) {
-<<<<<<< HEAD
-		dbg("%s - usb_alloc_urb failed: usbtouch->ack", __func__);
-=======
 		dev_dbg(&usbtouch->interface->dev,
 			"%s - usb_alloc_urb failed: usbtouch->ack\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_ack_buf;
 	}
 
@@ -1161,10 +1044,7 @@ static void nexio_exit(struct usbtouch_usb *usbtouch)
 
 static int nexio_read_data(struct usbtouch_usb *usbtouch, unsigned char *pkt)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = &usbtouch->interface->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nexio_touch_packet *packet = (void *) pkt;
 	struct nexio_priv *priv = usbtouch->priv;
 	unsigned int data_len = be16_to_cpu(packet->data_len);
@@ -1183,11 +1063,8 @@ static int nexio_read_data(struct usbtouch_usb *usbtouch, unsigned char *pkt)
 
 	/* send ACK */
 	ret = usb_submit_urb(priv->ack, GFP_ATOMIC);
-<<<<<<< HEAD
-=======
 	if (ret)
 		dev_warn(dev, "Failed to submit ACK URB: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!usbtouch->type->max_xc) {
 		usbtouch->type->max_xc = 2 * x_len;
@@ -1302,10 +1179,7 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.process_pkt	= usbtouch_process_multi,
 		.get_pkt_len	= egalax_get_pkt_len,
 		.read_data	= egalax_read_data,
-<<<<<<< HEAD
-=======
 		.init		= egalax_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 
@@ -1328,13 +1202,9 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.max_yc		= 0x4000,
 		.rept_size	= 11,
 		.read_data	= mtouch_read_data,
-<<<<<<< HEAD
-		.init		= mtouch_init,
-=======
 		.alloc		= mtouch_alloc,
 		.init		= mtouch_init,
 		.exit		= mtouch_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 
@@ -1395,8 +1265,6 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.rept_size	= 8,
 		.read_data	= irtouch_read_data,
 	},
-<<<<<<< HEAD
-=======
 
 	[DEVTYPE_IRTOUCH_HIRES] = {
 		.min_xc		= 0x0,
@@ -1406,7 +1274,6 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.rept_size	= 8,
 		.read_data	= irtouch_read_data,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK
@@ -1623,10 +1490,7 @@ out_flush_buf:
 static void usbtouch_irq(struct urb *urb)
 {
 	struct usbtouch_usb *usbtouch = urb->context;
-<<<<<<< HEAD
-=======
 	struct device *dev = &usbtouch->interface->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	switch (urb->status) {
@@ -1635,35 +1499,21 @@ static void usbtouch_irq(struct urb *urb)
 		break;
 	case -ETIME:
 		/* this urb is timing out */
-<<<<<<< HEAD
-		dbg("%s - urb timed out - was the device unplugged?",
-		    __func__);
-=======
 		dev_dbg(dev,
 			"%s - urb timed out - was the device unplugged?\n",
 			__func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -EPIPE:
 		/* this urb is terminated, clean up */
-<<<<<<< HEAD
-		dbg("%s - urb shutting down with status: %d",
-		    __func__, urb->status);
-		return;
-	default:
-		dbg("%s - nonzero urb status received: %d",
-		    __func__, urb->status);
-=======
 		dev_dbg(dev, "%s - urb shutting down with status: %d\n",
 			__func__, urb->status);
 		return;
 	default:
 		dev_dbg(dev, "%s - nonzero urb status received: %d\n",
 			__func__, urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -1673,13 +1523,8 @@ exit:
 	usb_mark_last_busy(interface_to_usbdev(usbtouch->interface));
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
-<<<<<<< HEAD
-		err("%s - usb_submit_urb failed with result: %d",
-		    __func__, retval);
-=======
 		dev_err(dev, "%s - usb_submit_urb failed with result: %d\n",
 			__func__, retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usbtouch_open(struct input_dev *input)
@@ -1693,10 +1538,7 @@ static int usbtouch_open(struct input_dev *input)
 	if (r < 0)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&usbtouch->pm_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!usbtouch->type->irq_always) {
 		if (usb_submit_urb(usbtouch->irq, GFP_KERNEL)) {
 			r = -EIO;
@@ -1705,13 +1547,9 @@ static int usbtouch_open(struct input_dev *input)
 	}
 
 	usbtouch->interface->needs_remote_wakeup = 1;
-<<<<<<< HEAD
-out_put:
-=======
 	usbtouch->is_open = true;
 out_put:
 	mutex_unlock(&usbtouch->pm_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_autopm_put_interface(usbtouch->interface);
 out:
 	return r;
@@ -1722,17 +1560,12 @@ static void usbtouch_close(struct input_dev *input)
 	struct usbtouch_usb *usbtouch = input_get_drvdata(input);
 	int r;
 
-<<<<<<< HEAD
-	if (!usbtouch->type->irq_always)
-		usb_kill_urb(usbtouch->irq);
-=======
 	mutex_lock(&usbtouch->pm_mutex);
 	if (!usbtouch->type->irq_always)
 		usb_kill_urb(usbtouch->irq);
 	usbtouch->is_open = false;
 	mutex_unlock(&usbtouch->pm_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = usb_autopm_get_interface(usbtouch->interface);
 	usbtouch->interface->needs_remote_wakeup = 0;
 	if (!r)
@@ -1752,22 +1585,12 @@ static int usbtouch_suspend
 static int usbtouch_resume(struct usb_interface *intf)
 {
 	struct usbtouch_usb *usbtouch = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct input_dev *input = usbtouch->input;
-	int result = 0;
-
-	mutex_lock(&input->mutex);
-	if (input->users || usbtouch->type->irq_always)
-		result = usb_submit_urb(usbtouch->irq, GFP_NOIO);
-	mutex_unlock(&input->mutex);
-=======
 	int result = 0;
 
 	mutex_lock(&usbtouch->pm_mutex);
 	if (usbtouch->is_open || usbtouch->type->irq_always)
 		result = usb_submit_urb(usbtouch->irq, GFP_NOIO);
 	mutex_unlock(&usbtouch->pm_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -1775,40 +1598,24 @@ static int usbtouch_resume(struct usb_interface *intf)
 static int usbtouch_reset_resume(struct usb_interface *intf)
 {
 	struct usbtouch_usb *usbtouch = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct input_dev *input = usbtouch->input;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	/* reinit the device */
 	if (usbtouch->type->init) {
 		err = usbtouch->type->init(usbtouch);
 		if (err) {
-<<<<<<< HEAD
-			dbg("%s - type->init() failed, err: %d",
-			    __func__, err);
-=======
 			dev_dbg(&intf->dev,
 				"%s - type->init() failed, err: %d\n",
 				__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 
 	/* restart IO if needed */
-<<<<<<< HEAD
-	mutex_lock(&input->mutex);
-	if (input->users)
-		err = usb_submit_urb(usbtouch->irq, GFP_NOIO);
-	mutex_unlock(&input->mutex);
-=======
 	mutex_lock(&usbtouch->pm_mutex);
 	if (usbtouch->is_open)
 		err = usb_submit_urb(usbtouch->irq, GFP_NOIO);
 	mutex_unlock(&usbtouch->pm_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -1847,12 +1654,9 @@ static int usbtouch_probe(struct usb_interface *intf,
 	if (id->driver_info == DEVTYPE_IGNORE)
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	if (id->driver_info >= ARRAY_SIZE(usbtouch_dev_info))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	endpoint = usbtouch_get_input_endpoint(intf->cur_altsetting);
 	if (!endpoint)
 		return -ENXIO;
@@ -1862,11 +1666,8 @@ static int usbtouch_probe(struct usb_interface *intf,
 	if (!usbtouch || !input_dev)
 		goto out_free;
 
-<<<<<<< HEAD
-=======
 	mutex_init(&usbtouch->pm_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	type = &usbtouch_dev_info[id->driver_info];
 	usbtouch->type = type;
 	if (!type->process_pkt)
@@ -1898,12 +1699,8 @@ static int usbtouch_probe(struct usb_interface *intf,
 
 	usbtouch->irq = usb_alloc_urb(0, GFP_KERNEL);
 	if (!usbtouch->irq) {
-<<<<<<< HEAD
-		dbg("%s - usb_alloc_urb failed: usbtouch->irq", __func__);
-=======
 		dev_dbg(&intf->dev,
 			"%s - usb_alloc_urb failed: usbtouch->irq\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buffers;
 	}
 
@@ -1911,11 +1708,7 @@ static int usbtouch_probe(struct usb_interface *intf,
 	usbtouch->input = input_dev;
 
 	if (udev->manufacturer)
-<<<<<<< HEAD
-		strlcpy(usbtouch->name, udev->manufacturer, sizeof(usbtouch->name));
-=======
 		strscpy(usbtouch->name, udev->manufacturer, sizeof(usbtouch->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (udev->product) {
 		if (udev->manufacturer)
@@ -1969,13 +1762,9 @@ static int usbtouch_probe(struct usb_interface *intf,
 	if (type->alloc) {
 		err = type->alloc(usbtouch);
 		if (err) {
-<<<<<<< HEAD
-			dbg("%s - type->alloc() failed, err: %d", __func__, err);
-=======
 			dev_dbg(&intf->dev,
 				"%s - type->alloc() failed, err: %d\n",
 				__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free_urb;
 		}
 	}
@@ -1984,26 +1773,18 @@ static int usbtouch_probe(struct usb_interface *intf,
 	if (type->init) {
 		err = type->init(usbtouch);
 		if (err) {
-<<<<<<< HEAD
-			dbg("%s - type->init() failed, err: %d", __func__, err);
-=======
 			dev_dbg(&intf->dev,
 				"%s - type->init() failed, err: %d\n",
 				__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_do_exit;
 		}
 	}
 
 	err = input_register_device(usbtouch->input);
 	if (err) {
-<<<<<<< HEAD
-		dbg("%s - input_register_device failed, err: %d", __func__, err);
-=======
 		dev_dbg(&intf->dev,
 			"%s - input_register_device failed, err: %d\n",
 			__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_do_exit;
 	}
 
@@ -2015,14 +1796,9 @@ static int usbtouch_probe(struct usb_interface *intf,
 		err = usb_submit_urb(usbtouch->irq, GFP_KERNEL);
 		if (err) {
 			usb_autopm_put_interface(intf);
-<<<<<<< HEAD
-			err("%s - usb_submit_urb failed with result: %d",
-			    __func__, err);
-=======
 			dev_err(&intf->dev,
 				"%s - usb_submit_urb failed with result: %d\n",
 				__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_unregister_input;
 		}
 	}
@@ -2049,21 +1825,12 @@ static void usbtouch_disconnect(struct usb_interface *intf)
 {
 	struct usbtouch_usb *usbtouch = usb_get_intfdata(intf);
 
-<<<<<<< HEAD
-	dbg("%s - called", __func__);
-
-	if (!usbtouch)
-		return;
-
-	dbg("%s - usbtouch is initialized, cleaning up", __func__);
-=======
 	if (!usbtouch)
 		return;
 
 	dev_dbg(&intf->dev,
 		"%s - usbtouch is initialized, cleaning up\n", __func__);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(intf, NULL);
 	/* this will stop IO via close */
 	input_unregister_device(usbtouch->input);
@@ -2089,13 +1856,8 @@ static struct usb_driver usbtouch_driver = {
 
 module_usb_driver(usbtouch_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR(DRIVER_AUTHOR);
-MODULE_DESCRIPTION(DRIVER_DESC);
-=======
 MODULE_AUTHOR("Daniel Ritz <daniel.ritz@gmx.ch>");
 MODULE_DESCRIPTION("USB Touchscreen Driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 MODULE_ALIAS("touchkitusb");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generate definitions needed by the preprocessor.
  * This code generates raw asm output which is post-processed
@@ -13,24 +10,14 @@
 #include <linux/page-flags.h>
 #include <linux/mmzone.h>
 #include <linux/kbuild.h>
-<<<<<<< HEAD
-#include <linux/page_cgroup.h>
-
-void foo(void)
-=======
 #include <linux/log2.h>
 #include <linux/spinlock_types.h>
 
 int main(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* The enum constants to put into include/generated/bounds.h */
 	DEFINE(NR_PAGEFLAGS, __NR_PAGEFLAGS);
 	DEFINE(MAX_NR_ZONES, __MAX_NR_ZONES);
-<<<<<<< HEAD
-	DEFINE(NR_PCG_FLAGS, __NR_PCG_FLAGS);
-	/* End of constants */
-=======
 #ifdef CONFIG_SMP
 	DEFINE(NR_CPUS_BITS, order_base_2(CONFIG_NR_CPUS));
 #endif
@@ -45,5 +32,4 @@ int main(void)
 	/* End of constants */
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

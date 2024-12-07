@@ -13,27 +13,17 @@
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/phy.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/slab.h>
-#include <linux/of_mdio.h>
-=======
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_mdio.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/mpc52xx.h>
 #include "fec_mpc52xx.h"
 
 struct mpc52xx_fec_mdio_priv {
 	struct mpc52xx_fec __iomem *regs;
-<<<<<<< HEAD
-	int mdio_irqs[PHY_MAX_ADDR];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mpc52xx_fec_mdio_transfer(struct mii_bus *bus, int phy_id,
@@ -94,12 +84,6 @@ static int mpc52xx_fec_mdio_probe(struct platform_device *of)
 	bus->read = mpc52xx_fec_mdio_read;
 	bus->write = mpc52xx_fec_mdio_write;
 
-<<<<<<< HEAD
-	/* setup irqs */
-	bus->irq = priv->mdio_irqs;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setup registers */
 	err = of_address_to_resource(np, 0, &res);
 	if (err)
@@ -117,12 +101,7 @@ static int mpc52xx_fec_mdio_probe(struct platform_device *of)
 	dev_set_drvdata(dev, bus);
 
 	/* set MII speed */
-<<<<<<< HEAD
-	out_be32(&priv->regs->mii_speed,
-		((mpc5xxx_get_bus_frequency(of->dev.of_node) >> 20) / 5) << 1);
-=======
 	out_be32(&priv->regs->mii_speed, ((mpc5xxx_get_bus_frequency(dev) >> 20) / 5) << 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = of_mdiobus_register(bus, np);
 	if (err)
@@ -139,24 +118,6 @@ static int mpc52xx_fec_mdio_probe(struct platform_device *of)
 	return err;
 }
 
-<<<<<<< HEAD
-static int mpc52xx_fec_mdio_remove(struct platform_device *of)
-{
-	struct device *dev = &of->dev;
-	struct mii_bus *bus = dev_get_drvdata(dev);
-	struct mpc52xx_fec_mdio_priv *priv = bus->priv;
-
-	mdiobus_unregister(bus);
-	dev_set_drvdata(dev, NULL);
-	iounmap(priv->regs);
-	kfree(priv);
-	mdiobus_free(bus);
-
-	return 0;
-}
-
-static struct of_device_id mpc52xx_fec_mdio_match[] = {
-=======
 static void mpc52xx_fec_mdio_remove(struct platform_device *of)
 {
 	struct mii_bus *bus = platform_get_drvdata(of);
@@ -169,7 +130,6 @@ static void mpc52xx_fec_mdio_remove(struct platform_device *of)
 }
 
 static const struct of_device_id mpc52xx_fec_mdio_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200b-mdio", },
 	{ .compatible = "fsl,mpc5200-mdio", },
 	{ .compatible = "mpc5200b-fec-phy", },
@@ -184,11 +144,7 @@ struct platform_driver mpc52xx_fec_mdio_driver = {
 		.of_match_table = mpc52xx_fec_mdio_match,
 	},
 	.probe = mpc52xx_fec_mdio_probe,
-<<<<<<< HEAD
-	.remove = mpc52xx_fec_mdio_remove,
-=======
 	.remove_new = mpc52xx_fec_mdio_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* let fec driver call it, since this has to be registered before it */

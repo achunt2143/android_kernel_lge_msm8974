@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_KEXEC_H
 #define _ASM_POWERPC_KEXEC_H
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-#if defined(CONFIG_FSL_BOOKE) || defined(CONFIG_44x)
-=======
 #if defined(CONFIG_PPC_85xx) || defined(CONFIG_44x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * On FSL-BookE we setup a 1:1 mapping which covers the first 2GiB of memory
@@ -61,10 +54,6 @@
 
 typedef void (*crash_shutdown_t)(void);
 
-<<<<<<< HEAD
-#ifdef CONFIG_KEXEC
-
-=======
 #ifdef CONFIG_KEXEC_CORE
 struct kimage;
 struct pt_regs;
@@ -133,7 +122,6 @@ static inline int overlaps_crashkernel(unsigned long start, unsigned long size) 
 #endif
 
 #if defined(CONFIG_CRASH_DUMP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This function is responsible for capturing register states if coming
  * via panic or invoking dump using sysrq-trigger.
@@ -147,36 +135,6 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 		ppc_save_regs(newregs);
 }
 
-<<<<<<< HEAD
-extern void kexec_smp_wait(void);	/* get and clear naca physid, wait for
-					  master to copy new code to 0 */
-extern int crashing_cpu;
-extern void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *));
-
-struct kimage;
-struct pt_regs;
-extern void default_machine_kexec(struct kimage *image);
-extern int default_machine_kexec_prepare(struct kimage *image);
-extern void default_machine_crash_shutdown(struct pt_regs *regs);
-extern int crash_shutdown_register(crash_shutdown_t handler);
-extern int crash_shutdown_unregister(crash_shutdown_t handler);
-
-extern void machine_kexec_simple(struct kimage *image);
-extern void crash_kexec_secondary(struct pt_regs *regs);
-extern int overlaps_crashkernel(unsigned long start, unsigned long size);
-extern void reserve_crashkernel(void);
-extern void machine_kexec_mask_interrupts(void);
-
-#else /* !CONFIG_KEXEC */
-static inline void crash_kexec_secondary(struct pt_regs *regs) { }
-
-static inline int overlaps_crashkernel(unsigned long start, unsigned long size)
-{
-	return 0;
-}
-
-static inline void reserve_crashkernel(void) { ; }
-=======
 extern int crashing_cpu;
 extern void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *));
 extern void crash_ipi_callback(struct pt_regs *regs);
@@ -203,7 +161,6 @@ void crash_free_reserved_phys_range(unsigned long begin, unsigned long end);
 
 #else /* !CONFIG_CRASH_DUMP */
 static inline void crash_kexec_secondary(struct pt_regs *regs) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int crash_shutdown_register(crash_shutdown_t handler)
 {
@@ -215,9 +172,6 @@ static inline int crash_shutdown_unregister(crash_shutdown_t handler)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_KEXEC */
-=======
 static inline bool kdump_in_progress(void)
 {
 	return false;
@@ -242,7 +196,6 @@ static inline void reset_sprs(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ! __ASSEMBLY__ */
 #endif /* __KERNEL__ */
 #endif /* _ASM_POWERPC_KEXEC_H */

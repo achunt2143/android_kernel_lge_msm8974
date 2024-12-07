@@ -10,13 +10,9 @@
 #include <linux/errno.h>
 #define __FRAME_OFFSETS
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <registers.h>
 #include <asm/ptrace-abi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * determines which flags the user has access to.
@@ -57,17 +53,6 @@ static const int reg_offsets[] =
 
 int putreg(struct task_struct *child, int regno, unsigned long value)
 {
-<<<<<<< HEAD
-#ifdef TIF_IA32
-	/*
-	 * Some code in the 64bit emulation may not be 64bit clean.
-	 * Don't take any chances.
-	 */
-	if (test_tsk_thread_flag(child, TIF_IA32))
-		value &= 0xffffffff;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (regno) {
 	case R8:
 	case R9:
@@ -86,15 +71,11 @@ int putreg(struct task_struct *child, int regno, unsigned long value)
 	case RSI:
 	case RDI:
 	case RBP:
-<<<<<<< HEAD
-	case ORIG_RAX:
-=======
 		break;
 
 	case ORIG_RAX:
 		/* Update the syscall number. */
 		UPT_SYSCALL_NR(&child->thread.regs.regs) = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FS:
@@ -137,11 +118,7 @@ int poke_user(struct task_struct *child, long addr, long data)
 	else if ((addr >= offsetof(struct user, u_debugreg[0])) &&
 		(addr <= offsetof(struct user, u_debugreg[7]))) {
 		addr -= offsetof(struct user, u_debugreg[0]);
-<<<<<<< HEAD
-		addr = addr >> 2;
-=======
 		addr = addr >> 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((addr == 4) || (addr == 5))
 			return -EIO;
 		child->thread.arch.debugregs[addr] = data;
@@ -153,14 +130,7 @@ int poke_user(struct task_struct *child, long addr, long data)
 unsigned long getreg(struct task_struct *child, int regno)
 {
 	unsigned long mask = ~0UL;
-<<<<<<< HEAD
-#ifdef TIF_IA32
-	if (test_tsk_thread_flag(child, TIF_IA32))
-		mask = 0xffffffff;
-#endif
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (regno) {
 	case R8:
 	case R9:
@@ -218,44 +188,6 @@ int peek_user(struct task_struct *child, long addr, long data)
 	return put_user(tmp, (unsigned long *) data);
 }
 
-<<<<<<< HEAD
-/* XXX Mostly copied from sys-i386 */
-int is_syscall(unsigned long addr)
-{
-	unsigned short instr;
-	int n;
-
-	n = copy_from_user(&instr, (void __user *) addr, sizeof(instr));
-	if (n) {
-		/*
-		 * access_process_vm() grants access to vsyscall and stub,
-		 * while copy_from_user doesn't. Maybe access_process_vm is
-		 * slow, but that doesn't matter, since it will be called only
-		 * in case of singlestepping, if copy_from_user failed.
-		 */
-		n = access_process_vm(current, addr, &instr, sizeof(instr), 0);
-		if (n != sizeof(instr)) {
-			printk("is_syscall : failed to read instruction from "
-			       "0x%lx\n", addr);
-			return 1;
-		}
-	}
-	/* sysenter */
-	return instr == 0x050f;
-}
-
-static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
-{
-	int err, n, cpu = ((struct thread_info *) child->stack)->cpu;
-	long fpregs[HOST_FP_SIZE];
-
-	BUG_ON(sizeof(*buf) != sizeof(fpregs));
-	err = save_fp_registers(userspace_pid[cpu], fpregs);
-	if (err)
-		return err;
-
-	n = copy_to_user(buf, fpregs, sizeof(fpregs));
-=======
 static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
 	int err, n, cpu = ((struct thread_info *) child->stack)->cpu;
@@ -267,7 +199,6 @@ static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 		return err;
 
 	n = copy_to_user(buf, &fpregs, sizeof(fpregs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (n > 0)
 		return -EFAULT;
 
@@ -277,16 +208,6 @@ static int get_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 static int set_fpregs(struct user_i387_struct __user *buf, struct task_struct *child)
 {
 	int n, cpu = ((struct thread_info *) child->stack)->cpu;
-<<<<<<< HEAD
-	long fpregs[HOST_FP_SIZE];
-
-	BUG_ON(sizeof(*buf) != sizeof(fpregs));
-	n = copy_from_user(fpregs, buf, sizeof(fpregs));
-	if (n > 0)
-		return -EFAULT;
-
-	return restore_fp_registers(userspace_pid[cpu], fpregs);
-=======
 	struct user_i387_struct fpregs;
 
 	n = copy_from_user(&fpregs, buf, sizeof(fpregs));
@@ -295,7 +216,6 @@ static int set_fpregs(struct user_i387_struct __user *buf, struct task_struct *c
 
 	return restore_i387_registers(userspace_pid[cpu],
 				      (unsigned long *) &fpregs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 long subarch_ptrace(struct task_struct *child, long request,

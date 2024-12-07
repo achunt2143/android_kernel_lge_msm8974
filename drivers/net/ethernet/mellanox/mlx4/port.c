@@ -32,24 +32,15 @@
 
 #include <linux/errno.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_vlan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 
 #include <linux/mlx4/cmd.h>
 
 #include "mlx4.h"
-<<<<<<< HEAD
-
-#define MLX4_MAC_VALID		(1ull << 63)
-#define MLX4_MAC_MASK		0xffffffffffffULL
-=======
 #include "mlx4_stats.h"
 
 #define MLX4_MAC_VALID		(1ull << 63)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLX4_VLAN_VALID		(1u << 31)
 #define MLX4_VLAN_MASK		0xfff
@@ -59,8 +50,6 @@
 #define MLX4_STATS_ERROR_COUNTERS_MASK		0x1ffc30ULL
 #define MLX4_STATS_PORT_COUNTERS_MASK		0x1fe00000ULL
 
-<<<<<<< HEAD
-=======
 #define MLX4_FLAG2_V_IGNORE_FCS_MASK		BIT(1)
 #define MLX4_FLAG2_V_USER_MTU_MASK		BIT(5)
 #define MLX4_FLAG2_V_USER_MAC_MASK		BIT(6)
@@ -70,7 +59,6 @@
 #define MLX4_IGNORE_FCS_MASK			0x1
 #define MLX4_TC_MAX_NUMBER			8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_init_mac_table(struct mlx4_dev *dev, struct mlx4_mac_table *table)
 {
 	int i;
@@ -79,10 +67,7 @@ void mlx4_init_mac_table(struct mlx4_dev *dev, struct mlx4_mac_table *table)
 	for (i = 0; i < MLX4_MAX_MAC_NUM; i++) {
 		table->entries[i] = 0;
 		table->refs[i]	 = 0;
-<<<<<<< HEAD
-=======
 		table->is_dup[i] = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	table->max   = 1 << dev->caps.log_num_macs;
 	table->total = 0;
@@ -96,52 +81,12 @@ void mlx4_init_vlan_table(struct mlx4_dev *dev, struct mlx4_vlan_table *table)
 	for (i = 0; i < MLX4_MAX_VLAN_NUM; i++) {
 		table->entries[i] = 0;
 		table->refs[i]	 = 0;
-<<<<<<< HEAD
-=======
 		table->is_dup[i] = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	table->max   = (1 << dev->caps.log_num_vlans) - MLX4_VLAN_REGULAR;
 	table->total = 0;
 }
 
-<<<<<<< HEAD
-static int mlx4_uc_steer_add(struct mlx4_dev *dev, u8 port, u64 mac, int *qpn)
-{
-	struct mlx4_qp qp;
-	u8 gid[16] = {0};
-	__be64 be_mac;
-	int err;
-
-	qp.qpn = *qpn;
-
-	mac &= 0xffffffffffffULL;
-	be_mac = cpu_to_be64(mac << 16);
-	memcpy(&gid[10], &be_mac, ETH_ALEN);
-	gid[5] = port;
-
-	err = mlx4_unicast_attach(dev, &qp, gid, 0, MLX4_PROT_ETH);
-	if (err)
-		mlx4_warn(dev, "Failed Attaching Unicast\n");
-
-	return err;
-}
-
-static void mlx4_uc_steer_release(struct mlx4_dev *dev, u8 port,
-				  u64 mac, int qpn)
-{
-	struct mlx4_qp qp;
-	u8 gid[16] = {0};
-	__be64 be_mac;
-
-	qp.qpn = qpn;
-	mac &= 0xffffffffffffULL;
-	be_mac = cpu_to_be64(mac << 16);
-	memcpy(&gid[10], &be_mac, ETH_ALEN);
-	gid[5] = port;
-
-	mlx4_unicast_detach(dev, &qp, gid, MLX4_PROT_ETH);
-=======
 void mlx4_init_roce_gid_table(struct mlx4_dev *dev,
 			      struct mlx4_roce_gid_table *table)
 {
@@ -150,7 +95,6 @@ void mlx4_init_roce_gid_table(struct mlx4_dev *dev,
 	mutex_init(&table->mutex);
 	for (i = 0; i < MLX4_ROCE_MAX_GIDS; i++)
 		memset(table->roce_gids[i].raw, 0, MLX4_ROCE_GID_ENTRY_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int validate_index(struct mlx4_dev *dev,
@@ -171,12 +115,8 @@ static int find_index(struct mlx4_dev *dev,
 	int i;
 
 	for (i = 0; i < MLX4_MAX_MAC_NUM; i++) {
-<<<<<<< HEAD
-		if ((mac & MLX4_MAC_MASK) ==
-=======
 		if (table->refs[i] &&
 		    (MLX4_MAC_MASK & mac) ==
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (MLX4_MAC_MASK & be64_to_cpu(table->entries[i])))
 			return i;
 	}
@@ -184,92 +124,6 @@ static int find_index(struct mlx4_dev *dev,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-int mlx4_get_eth_qp(struct mlx4_dev *dev, u8 port, u64 mac, int *qpn)
-{
-	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
-	struct mlx4_mac_entry *entry;
-	int index = 0;
-	int err = 0;
-
-	mlx4_dbg(dev, "Registering MAC: 0x%llx for adding\n",
-			(unsigned long long) mac);
-	index = mlx4_register_mac(dev, port, mac);
-	if (index < 0) {
-		err = index;
-		mlx4_err(dev, "Failed adding MAC: 0x%llx\n",
-			 (unsigned long long) mac);
-		return err;
-	}
-
-	if (!(dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_UC_STEER)) {
-		*qpn = info->base_qpn + index;
-		return 0;
-	}
-
-	err = mlx4_qp_reserve_range(dev, 1, 1, qpn);
-	mlx4_dbg(dev, "Reserved qp %d\n", *qpn);
-	if (err) {
-		mlx4_err(dev, "Failed to reserve qp for mac registration\n");
-		goto qp_err;
-	}
-
-	err = mlx4_uc_steer_add(dev, port, mac, qpn);
-	if (err)
-		goto steer_err;
-
-	entry = kmalloc(sizeof *entry, GFP_KERNEL);
-	if (!entry) {
-		err = -ENOMEM;
-		goto alloc_err;
-	}
-	entry->mac = mac;
-	err = radix_tree_insert(&info->mac_tree, *qpn, entry);
-	if (err)
-		goto insert_err;
-	return 0;
-
-insert_err:
-	kfree(entry);
-
-alloc_err:
-	mlx4_uc_steer_release(dev, port, mac, *qpn);
-
-steer_err:
-	mlx4_qp_release_range(dev, *qpn, 1);
-
-qp_err:
-	mlx4_unregister_mac(dev, port, mac);
-	return err;
-}
-EXPORT_SYMBOL_GPL(mlx4_get_eth_qp);
-
-void mlx4_put_eth_qp(struct mlx4_dev *dev, u8 port, u64 mac, int qpn)
-{
-	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
-	struct mlx4_mac_entry *entry;
-
-	mlx4_dbg(dev, "Registering MAC: 0x%llx for deleting\n",
-		 (unsigned long long) mac);
-	mlx4_unregister_mac(dev, port, mac);
-
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_UC_STEER) {
-		entry = radix_tree_lookup(&info->mac_tree, qpn);
-		if (entry) {
-			mlx4_dbg(dev, "Releasing qp: port %d, mac 0x%llx,"
-				 " qpn %d\n", port,
-				 (unsigned long long) mac, qpn);
-			mlx4_uc_steer_release(dev, port, entry->mac, qpn);
-			mlx4_qp_release_range(dev, qpn, 1);
-			radix_tree_delete(&info->mac_tree, qpn);
-			kfree(entry);
-		}
-	}
-}
-EXPORT_SYMBOL_GPL(mlx4_put_eth_qp);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_set_port_mac_table(struct mlx4_dev *dev, u8 port,
 				   __be64 *entries)
 {
@@ -285,21 +139,14 @@ static int mlx4_set_port_mac_table(struct mlx4_dev *dev, u8 port,
 
 	in_mod = MLX4_SET_PORT_MAC_TABLE << 8 | port;
 
-<<<<<<< HEAD
-	err = mlx4_cmd(dev, mailbox->dma, in_mod, 1, MLX4_CMD_SET_PORT,
-		       MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
-=======
 	err = mlx4_cmd(dev, mailbox->dma, in_mod, MLX4_SET_PORT_ETH_OPCODE,
 		       MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 		       MLX4_CMD_NATIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_find_cached_mac(struct mlx4_dev *dev, u8 port, u64 mac, int *idx)
 {
 	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
@@ -332,29 +179,12 @@ static bool mlx4_need_mf_bond(struct mlx4_dev *dev)
 	return (num_eth_ports ==  2) ? true : false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 {
 	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
 	struct mlx4_mac_table *table = &info->mac_table;
 	int i, err = 0;
 	int free = -1;
-<<<<<<< HEAD
-
-	mlx4_dbg(dev, "Registering MAC: 0x%llx for port %d\n",
-		 (unsigned long long) mac, port);
-
-	mutex_lock(&table->mutex);
-	for (i = 0; i < MLX4_MAX_MAC_NUM; i++) {
-		if (free < 0 && !table->entries[i]) {
-			free = i;
-			continue;
-		}
-
-		if (mac == (MLX4_MAC_MASK & be64_to_cpu(table->entries[i]))) {
-			/* MAC already registered, Must not have duplicates */
-			err = -EEXIST;
-=======
 	int free_for_dup = -1;
 	bool dup = mlx4_is_mf_bonded(dev);
 	u8 dup_port = (port == 1) ? 2 : 1;
@@ -441,13 +271,10 @@ int __mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 						  mac, dup_port, i);
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if (need_mf_bond && (free_for_dup < 0)) {
 		if (dup) {
 			mlx4_warn(dev, "Fail to allocate duplicate MAC table entry\n");
@@ -460,7 +287,6 @@ int __mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 	if (need_mf_bond && can_mf_bond)
 		free = free_for_dup;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_dbg(dev, "Free MAC index is %d\n", free);
 
 	if (table->total == table->max) {
@@ -479,13 +305,6 @@ int __mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 		table->entries[free] = 0;
 		goto out;
 	}
-<<<<<<< HEAD
-
-	err = free;
-	++table->total;
-out:
-	mutex_unlock(&table->mutex);
-=======
 	table->refs[free] = 1;
 	table->is_dup[free] = false;
 	++table->total;
@@ -516,23 +335,12 @@ out:
 	} else {
 		mutex_unlock(&table->mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(__mlx4_register_mac);
 
 int mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 {
-<<<<<<< HEAD
-	u64 out_param;
-	int err;
-
-	if (mlx4_is_mfunc(dev)) {
-		set_param_l(&out_param, port);
-		err = mlx4_cmd_imm(dev, mac, &out_param, RES_MAC,
-				   RES_OP_RESERVE_AND_MAP, MLX4_CMD_ALLOC_RES,
-				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
-=======
 	u64 out_param = 0;
 	int err = -EINVAL;
 
@@ -552,7 +360,6 @@ int mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 			if (!err)
 				dev->flags |= MLX4_FLAG_OLD_REG_MAC;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -562,27 +369,6 @@ int mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 }
 EXPORT_SYMBOL_GPL(mlx4_register_mac);
 
-<<<<<<< HEAD
-
-void __mlx4_unregister_mac(struct mlx4_dev *dev, u8 port, u64 mac)
-{
-	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
-	struct mlx4_mac_table *table = &info->mac_table;
-	int index;
-
-	index = find_index(dev, table, mac);
-
-	mutex_lock(&table->mutex);
-
-	if (validate_index(dev, table, index))
-		goto out;
-
-	table->entries[index] = 0;
-	mlx4_set_port_mac_table(dev, port, table->entries);
-	--table->total;
-out:
-	mutex_unlock(&table->mutex);
-=======
 int mlx4_get_base_qpn(struct mlx4_dev *dev, u8 port)
 {
 	return dev->caps.reserved_qps_base[MLX4_QP_REGION_ETH_ADDR] +
@@ -658,22 +444,11 @@ out:
 	} else {
 		mutex_unlock(&table->mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__mlx4_unregister_mac);
 
 void mlx4_unregister_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 {
-<<<<<<< HEAD
-	u64 out_param;
-	int err;
-
-	if (mlx4_is_mfunc(dev)) {
-		set_param_l(&out_param, port);
-		err = mlx4_cmd_imm(dev, mac, &out_param, RES_MAC,
-				   RES_OP_RESERVE_AND_MAP, MLX4_CMD_FREE_RES,
-				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
-=======
 	u64 out_param = 0;
 
 	if (mlx4_is_mfunc(dev)) {
@@ -689,7 +464,6 @@ void mlx4_unregister_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 					    RES_OP_RESERVE_AND_MAP, MLX4_CMD_FREE_RES,
 					    MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	__mlx4_unregister_mac(dev, port, mac);
@@ -697,30 +471,6 @@ void mlx4_unregister_mac(struct mlx4_dev *dev, u8 port, u64 mac)
 }
 EXPORT_SYMBOL_GPL(mlx4_unregister_mac);
 
-<<<<<<< HEAD
-int mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac)
-{
-	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
-	struct mlx4_mac_table *table = &info->mac_table;
-	struct mlx4_mac_entry *entry;
-	int index = qpn - info->base_qpn;
-	int err = 0;
-
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_UC_STEER) {
-		entry = radix_tree_lookup(&info->mac_tree, qpn);
-		if (!entry)
-			return -EINVAL;
-		mlx4_uc_steer_release(dev, port, entry->mac, qpn);
-		mlx4_unregister_mac(dev, port, entry->mac);
-		entry->mac = new_mac;
-		mlx4_register_mac(dev, port, new_mac);
-		err = mlx4_uc_steer_add(dev, port, entry->mac, &qpn);
-		return err;
-	}
-
-	/* CX1 doesn't support multi-functions */
-	mutex_lock(&table->mutex);
-=======
 int __mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac)
 {
 	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
@@ -743,7 +493,6 @@ int __mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac)
 	} else {
 		mutex_lock(&table->mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = validate_index(dev, table, index);
 	if (err)
@@ -756,14 +505,6 @@ int __mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac)
 		mlx4_err(dev, "Failed adding MAC: 0x%llx\n",
 			 (unsigned long long) new_mac);
 		table->entries[index] = 0;
-<<<<<<< HEAD
-	}
-out:
-	mutex_unlock(&table->mutex);
-	return err;
-}
-EXPORT_SYMBOL_GPL(mlx4_replace_mac);
-=======
 	} else {
 		if (dup) {
 			dup_table->entries[index] = cpu_to_be64(new_mac | MLX4_MAC_VALID);
@@ -791,7 +532,6 @@ out:
 	return err;
 }
 EXPORT_SYMBOL_GPL(__mlx4_replace_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mlx4_set_port_vlan_table(struct mlx4_dev *dev, u8 port,
 				    __be32 *entries)
@@ -806,14 +546,9 @@ static int mlx4_set_port_vlan_table(struct mlx4_dev *dev, u8 port,
 
 	memcpy(mailbox->buf, entries, MLX4_VLAN_TABLE_SIZE);
 	in_mod = MLX4_SET_PORT_VLAN_TABLE << 8 | port;
-<<<<<<< HEAD
-	err = mlx4_cmd(dev, mailbox->dma, in_mod, 1, MLX4_CMD_SET_PORT,
-		       MLX4_CMD_TIME_CLASS_B, MLX4_CMD_WRAPPED);
-=======
 	err = mlx4_cmd(dev, mailbox->dma, in_mod, MLX4_SET_PORT_ETH_OPCODE,
 		       MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 		       MLX4_CMD_NATIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev, mailbox);
 
@@ -839,20 +574,12 @@ int mlx4_find_cached_vlan(struct mlx4_dev *dev, u8 port, u16 vid, int *idx)
 }
 EXPORT_SYMBOL_GPL(mlx4_find_cached_vlan);
 
-<<<<<<< HEAD
-static int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
-=======
 int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int *index)
 {
 	struct mlx4_vlan_table *table = &mlx4_priv(dev)->port[port].vlan_table;
 	int i, err = 0;
 	int free = -1;
-<<<<<<< HEAD
-
-	mutex_lock(&table->mutex);
-=======
 	int free_for_dup = -1;
 	bool dup = mlx4_is_mf_bonded(dev);
 	u8 dup_port = (port == 1) ? 2 : 1;
@@ -875,7 +602,6 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 	} else {
 		mutex_lock(&table->mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (table->total == table->max) {
 		/* No free vlan entries */
@@ -883,20 +609,6 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	for (i = MLX4_VLAN_REGULAR; i < MLX4_MAX_VLAN_NUM; i++) {
-		if (free < 0 && (table->refs[i] == 0)) {
-			free = i;
-			continue;
-		}
-
-		if (table->refs[i] &&
-		    (vlan == (MLX4_VLAN_MASK &
-			      be32_to_cpu(table->entries[i])))) {
-			/* Vlan already registered, increase references count */
-			*index = i;
-			++table->refs[i];
-=======
 	if (need_mf_bond) {
 		int index_at_port = -1;
 		int index_at_dup_port = -1;
@@ -960,13 +672,10 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 						  vlan, dup_port, i);
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if (need_mf_bond && (free_for_dup < 0)) {
 		if (dup) {
 			mlx4_warn(dev, "Fail to allocate duplicate VLAN table entry\n");
@@ -979,7 +688,6 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 	if (need_mf_bond && can_mf_bond)
 		free = free_for_dup;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (free < 0) {
 		err = -ENOMEM;
 		goto out;
@@ -987,10 +695,7 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 
 	/* Register new VLAN */
 	table->refs[free] = 1;
-<<<<<<< HEAD
-=======
 	table->is_dup[free] = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	table->entries[free] = cpu_to_be32(vlan | MLX4_VLAN_VALID);
 
 	err = mlx4_set_port_vlan_table(dev, port, table->entries);
@@ -1000,13 +705,6 @@ int __mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan,
 		table->entries[free] = 0;
 		goto out;
 	}
-<<<<<<< HEAD
-
-	*index = free;
-	++table->total;
-out:
-	mutex_unlock(&table->mutex);
-=======
 	++table->total;
 	if (dup) {
 		dup_table->refs[free] = 0;
@@ -1036,20 +734,11 @@ out:
 	} else {
 		mutex_unlock(&table->mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 int mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan, int *index)
 {
-<<<<<<< HEAD
-	u64 out_param;
-	int err;
-
-	if (mlx4_is_mfunc(dev)) {
-		set_param_l(&out_param, port);
-		err = mlx4_cmd_imm(dev, vlan, &out_param, RES_VLAN,
-=======
 	u64 out_param = 0;
 	int err;
 
@@ -1059,7 +748,6 @@ int mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan, int *index)
 	if (mlx4_is_mfunc(dev)) {
 		err = mlx4_cmd_imm(dev, vlan, &out_param,
 				   ((u32) port) << 8 | (u32) RES_VLAN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   RES_OP_RESERVE_AND_MAP, MLX4_CMD_ALLOC_RES,
 				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 		if (!err)
@@ -1071,54 +759,6 @@ int mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan, int *index)
 }
 EXPORT_SYMBOL_GPL(mlx4_register_vlan);
 
-<<<<<<< HEAD
-static void __mlx4_unregister_vlan(struct mlx4_dev *dev, u8 port, int index)
-{
-	struct mlx4_vlan_table *table = &mlx4_priv(dev)->port[port].vlan_table;
-
-	if (index < MLX4_VLAN_REGULAR) {
-		mlx4_warn(dev, "Trying to free special vlan index %d\n", index);
-		return;
-	}
-
-	mutex_lock(&table->mutex);
-	if (!table->refs[index]) {
-		mlx4_warn(dev, "No vlan entry for index %d\n", index);
-		goto out;
-	}
-	if (--table->refs[index]) {
-		mlx4_dbg(dev, "Have more references for index %d,"
-			 "no need to modify vlan table\n", index);
-		goto out;
-	}
-	table->entries[index] = 0;
-	mlx4_set_port_vlan_table(dev, port, table->entries);
-	--table->total;
-out:
-	mutex_unlock(&table->mutex);
-}
-
-void mlx4_unregister_vlan(struct mlx4_dev *dev, u8 port, int index)
-{
-	u64 in_param;
-	int err;
-
-	if (mlx4_is_mfunc(dev)) {
-		set_param_l(&in_param, port);
-		err = mlx4_cmd(dev, in_param, RES_VLAN, RES_OP_RESERVE_AND_MAP,
-			       MLX4_CMD_FREE_RES, MLX4_CMD_TIME_CLASS_A,
-			       MLX4_CMD_WRAPPED);
-		if (!err)
-			mlx4_warn(dev, "Failed freeing vlan at index:%d\n",
-					index);
-
-		return;
-	}
-	__mlx4_unregister_vlan(dev, port, index);
-}
-EXPORT_SYMBOL_GPL(mlx4_unregister_vlan);
-
-=======
 void __mlx4_unregister_vlan(struct mlx4_dev *dev, u8 port, u16 vlan)
 {
 	struct mlx4_vlan_table *table = &mlx4_priv(dev)->port[port].vlan_table;
@@ -1413,7 +1053,6 @@ unlock:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_get_port_ib_caps(struct mlx4_dev *dev, u8 port, __be32 *caps)
 {
 	struct mlx4_cmd_mailbox *inmailbox, *outmailbox;
@@ -1432,11 +1071,6 @@ int mlx4_get_port_ib_caps(struct mlx4_dev *dev, u8 port, __be32 *caps)
 
 	inbuf = inmailbox->buf;
 	outbuf = outmailbox->buf;
-<<<<<<< HEAD
-	memset(inbuf, 0, 256);
-	memset(outbuf, 0, 256);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inbuf[0] = 1;
 	inbuf[1] = 1;
 	inbuf[2] = 1;
@@ -1453,8 +1087,6 @@ int mlx4_get_port_ib_caps(struct mlx4_dev *dev, u8 port, __be32 *caps)
 	mlx4_free_cmd_mailbox(dev, outmailbox);
 	return err;
 }
-<<<<<<< HEAD
-=======
 static struct mlx4_roce_gid_entry zgid_entry;
 
 int mlx4_get_slave_num_gids(struct mlx4_dev *dev, int slave, int port)
@@ -1696,27 +1328,12 @@ mlx4_en_set_port_global_pause(struct mlx4_dev *dev, int slave,
 		master->pprx = gen_context->pprx;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 				u8 op_mod, struct mlx4_cmd_mailbox *inbox)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_port_info *port_info;
-<<<<<<< HEAD
-	struct mlx4_mfunc_master_ctx *master = &priv->mfunc.master;
-	struct mlx4_slave_state *slave_st = &master->slave_state[slave];
-	struct mlx4_set_port_rqp_calc_context *qpn_context;
-	struct mlx4_set_port_general_context *gen_context;
-	int reset_qkey_viols;
-	int port;
-	int is_eth;
-	u32 in_modifier;
-	u32 promisc;
-	u16 mtu, prev_mtu;
-	int err;
-	int i;
-=======
 	struct mlx4_set_port_rqp_calc_context *qpn_context;
 	struct mlx4_set_port_general_context *gen_context;
 	struct mlx4_roce_gid_entry *gid_entry_tbl, *gid_entry_mbox, *gid_entry_mb1;
@@ -1730,7 +1347,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 	int err;
 	int i, j;
 	int offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 agg_cap_mask;
 	__be32 slave_cap_mask;
 	__be32 new_cap_mask;
@@ -1740,12 +1356,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 	is_eth = op_mod;
 	port_info = &priv->port[port];
 
-<<<<<<< HEAD
-	/* Slaves cannot perform SET_PORT operations except changing MTU */
-	if (is_eth) {
-		if (slave != dev->caps.function &&
-		    in_modifier != MLX4_SET_PORT_GENERAL) {
-=======
 	/* Slaves cannot perform SET_PORT operations,
 	 * except for changing MTU and USER_MTU.
 	 */
@@ -1753,7 +1363,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 		if (slave != dev->caps.function &&
 		    in_modifier != MLX4_SET_PORT_GENERAL &&
 		    in_modifier != MLX4_SET_PORT_GID_TABLE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlx4_warn(dev, "denying SET_PORT for slave:%d\n",
 					slave);
 			return -EINVAL;
@@ -1777,31 +1386,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 			break;
 		case MLX4_SET_PORT_GENERAL:
 			gen_context = inbox->buf;
-<<<<<<< HEAD
-			/* Mtu is configured as the max MTU among all the
-			 * the functions on the port. */
-			mtu = be16_to_cpu(gen_context->mtu);
-			mtu = min_t(int, mtu, dev->caps.eth_mtu_cap[port]);
-			prev_mtu = slave_st->mtu[port];
-			slave_st->mtu[port] = mtu;
-			if (mtu > master->max_mtu[port])
-				master->max_mtu[port] = mtu;
-			if (mtu < prev_mtu && prev_mtu ==
-						master->max_mtu[port]) {
-				slave_st->mtu[port] = mtu;
-				master->max_mtu[port] = mtu;
-				for (i = 0; i < dev->num_slaves; i++) {
-					master->max_mtu[port] =
-					max(master->max_mtu[port],
-					    master->slave_state[i].mtu[port]);
-				}
-			}
-
-			gen_context->mtu = cpu_to_be16(master->max_mtu[port]);
-			break;
-		}
-		return mlx4_cmd(dev, inbox->dma, in_mod, op_mod,
-=======
 
 			if (gen_context->flags & MLX4_FLAG_V_MTU_MASK)
 				mlx4_en_set_port_mtu(dev, slave, port,
@@ -1890,20 +1474,16 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 		}
 
 		return mlx4_cmd(dev, inbox->dma, in_mod & 0xffff, op_mod,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 				MLX4_CMD_NATIVE);
 	}
 
-<<<<<<< HEAD
-=======
 	/* Slaves are not allowed to SET_PORT beacon (LED) blink */
 	if (op_mod == MLX4_SET_PORT_BEACON_OPCODE) {
 		mlx4_warn(dev, "denying SET_PORT Beacon slave:%d\n", slave);
 		return -EPERM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* For IB, we only consider:
 	 * - The capability mask, which is set to the aggregate of all
 	 *   slave function capabilities
@@ -1918,8 +1498,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 		new_cap_mask = ((__be32 *) inbox->buf)[1];
 	}
 
-<<<<<<< HEAD
-=======
 	/* slave may not set the IS_SM capability for the port */
 	if (slave != mlx4_master_func_num(dev) &&
 	    (be32_to_cpu(new_cap_mask) & MLX4_PORT_CAP_IS_SM))
@@ -1930,7 +1508,6 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 	    (be32_to_cpu(new_cap_mask) & MLX4_PORT_CAP_DEV_MGMT_SUP))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	agg_cap_mask = 0;
 	slave_cap_mask =
 		priv->mfunc.master.slave_state[slave].ib_cap_mask[port];
@@ -1945,17 +1522,10 @@ static int mlx4_common_set_port(struct mlx4_dev *dev, int slave, u32 in_mod,
 	if (slave != dev->caps.function)
 		memset(inbox->buf, 0, 256);
 	if (dev->flags & MLX4_FLAG_OLD_PORT_CMDS) {
-<<<<<<< HEAD
-		*(u8 *) inbox->buf	   = !!reset_qkey_viols << 6;
-		((__be32 *) inbox->buf)[2] = agg_cap_mask;
-	} else {
-		((u8 *) inbox->buf)[3]     = !!reset_qkey_viols;
-=======
 		*(u8 *) inbox->buf	   |= !!reset_qkey_viols << 6;
 		((__be32 *) inbox->buf)[2] = agg_cap_mask;
 	} else {
 		((u8 *) inbox->buf)[3]     |= !!reset_qkey_viols;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		((__be32 *) inbox->buf)[1] = agg_cap_mask;
 	}
 
@@ -1973,8 +1543,6 @@ int mlx4_SET_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			  struct mlx4_cmd_mailbox *outbox,
 			  struct mlx4_cmd_info *cmd)
 {
-<<<<<<< HEAD
-=======
 	int port = mlx4_slave_convert_port(
 			dev, slave, vhcr->in_modifier & 0xFF);
 
@@ -1984,7 +1552,6 @@ int mlx4_SET_PORT_wrapper(struct mlx4_dev *dev, int slave,
 	vhcr->in_modifier = (vhcr->in_modifier & ~0xFF) |
 			    (port & 0xFF);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mlx4_common_set_port(dev, slave, vhcr->in_modifier,
 				    vhcr->op_modifier, inbox);
 }
@@ -1993,25 +1560,15 @@ int mlx4_SET_PORT_wrapper(struct mlx4_dev *dev, int slave,
 enum {
 	MLX4_SET_PORT_VL_CAP	 = 4, /* bits 7:4 */
 	MLX4_SET_PORT_MTU_CAP	 = 12, /* bits 15:12 */
-<<<<<<< HEAD
-=======
 	MLX4_CHANGE_PORT_PKEY_TBL_SZ = 20,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_CHANGE_PORT_VL_CAP	 = 21,
 	MLX4_CHANGE_PORT_MTU_CAP = 22,
 };
 
-<<<<<<< HEAD
-int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port)
-{
-	struct mlx4_cmd_mailbox *mailbox;
-	int err, vl_cap;
-=======
 int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port, int pkey_tbl_sz)
 {
 	struct mlx4_cmd_mailbox *mailbox;
 	int err, vl_cap, pkey_tbl_flag = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
 		return 0;
@@ -2020,12 +1577,6 @@ int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port, int pkey_tbl_sz)
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 
-<<<<<<< HEAD
-	memset(mailbox->buf, 0, 256);
-
-	((__be32 *) mailbox->buf)[1] = dev->caps.ib_port_def_cap[port];
-
-=======
 	((__be32 *) mailbox->buf)[1] = dev->caps.ib_port_def_cap[port];
 
 	if (pkey_tbl_sz >= 0 && mlx4_is_master(dev)) {
@@ -2033,25 +1584,17 @@ int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port, int pkey_tbl_sz)
 		((__be16 *) mailbox->buf)[20] = cpu_to_be16(pkey_tbl_sz);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* IB VL CAP enum isn't used by the firmware, just numerical values */
 	for (vl_cap = 8; vl_cap >= 1; vl_cap >>= 1) {
 		((__be32 *) mailbox->buf)[0] = cpu_to_be32(
 			(1 << MLX4_CHANGE_PORT_MTU_CAP) |
 			(1 << MLX4_CHANGE_PORT_VL_CAP)  |
-<<<<<<< HEAD
-			(dev->caps.port_ib_mtu[port] << MLX4_SET_PORT_MTU_CAP) |
-			(vl_cap << MLX4_SET_PORT_VL_CAP));
-		err = mlx4_cmd(dev, mailbox->dma, port, 0, MLX4_CMD_SET_PORT,
-				MLX4_CMD_TIME_CLASS_B, MLX4_CMD_WRAPPED);
-=======
 			(pkey_tbl_flag << MLX4_CHANGE_PORT_PKEY_TBL_SZ) |
 			(dev->caps.port_ib_mtu[port] << MLX4_SET_PORT_MTU_CAP) |
 			(vl_cap << MLX4_SET_PORT_VL_CAP));
 		err = mlx4_cmd(dev, mailbox->dma, port,
 			       MLX4_SET_PORT_IB_OPCODE, MLX4_CMD_SET_PORT,
 			       MLX4_CMD_TIME_CLASS_B, MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err != -ENOMEM)
 			break;
 	}
@@ -2060,11 +1603,8 @@ int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port, int pkey_tbl_sz)
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 #define SET_PORT_ROCE_2_FLAGS          0x10
 #define MLX4_SET_PORT_ROCE_V1_V2       0x2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
 			  u8 pptx, u8 pfctx, u8 pprx, u8 pfcrx)
 {
@@ -2077,11 +1617,6 @@ int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 	context = mailbox->buf;
-<<<<<<< HEAD
-	memset(context, 0, sizeof *context);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	context->flags = SET_PORT_GEN_ALL_VALID;
 	context->mtu = cpu_to_be16(mtu);
 	context->pptx = (pptx * (!pfctx)) << 7;
@@ -2089,11 +1624,6 @@ int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
 	context->pprx = (pprx * (!pfcrx)) << 7;
 	context->pfcrx = pfcrx;
 
-<<<<<<< HEAD
-	in_mod = MLX4_SET_PORT_GENERAL << 8 | port;
-	err = mlx4_cmd(dev, mailbox->dma, in_mod, 1, MLX4_CMD_SET_PORT,
-		       MLX4_CMD_TIME_CLASS_B,  MLX4_CMD_WRAPPED);
-=======
 	if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_ROCE_V1_V2) {
 		context->flags |= SET_PORT_ROCE_2_FLAGS;
 		context->roce_mode |=
@@ -2103,7 +1633,6 @@ int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
 	err = mlx4_cmd(dev, mailbox->dma, in_mod, MLX4_SET_PORT_ETH_OPCODE,
 		       MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 		       MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return err;
@@ -2120,23 +1649,13 @@ int mlx4_SET_PORT_qpn_calc(struct mlx4_dev *dev, u8 port, u32 base_qpn,
 	u32 m_promisc = (dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_MC_STEER) ?
 		MCAST_DIRECT : MCAST_DEFAULT;
 
-<<<<<<< HEAD
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_MC_STEER  &&
-	    dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_UC_STEER)
-=======
 	if (dev->caps.steering_mode != MLX4_STEERING_MODE_A0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 	context = mailbox->buf;
-<<<<<<< HEAD
-	memset(context, 0, sizeof *context);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	context->base_qpn = cpu_to_be32(base_qpn);
 	context->n_mac = dev->caps.log_num_macs;
 	context->promisc = cpu_to_be32(promisc << SET_PORT_PROMISC_SHIFT |
@@ -2149,22 +1668,15 @@ int mlx4_SET_PORT_qpn_calc(struct mlx4_dev *dev, u8 port, u32 base_qpn,
 	context->vlan_miss = MLX4_VLAN_MISS_IDX;
 
 	in_mod = MLX4_SET_PORT_RQP_CALC << 8 | port;
-<<<<<<< HEAD
-	err = mlx4_cmd(dev, mailbox->dma, in_mod, 1, MLX4_CMD_SET_PORT,
-		       MLX4_CMD_TIME_CLASS_B,  MLX4_CMD_WRAPPED);
-=======
 	err = mlx4_cmd(dev, mailbox->dma, in_mod, MLX4_SET_PORT_ETH_OPCODE,
 		       MLX4_CMD_SET_PORT, MLX4_CMD_TIME_CLASS_B,
 		       MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return err;
 }
 EXPORT_SYMBOL(mlx4_SET_PORT_qpn_calc);
 
-<<<<<<< HEAD
-=======
 int mlx4_SET_PORT_user_mtu(struct mlx4_dev *dev, u8 port, u16 user_mtu)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -2302,7 +1814,6 @@ int mlx4_SET_PORT_BEACON(struct mlx4_dev *dev, u8 port, u16 time)
 }
 EXPORT_SYMBOL(mlx4_SET_PORT_BEACON);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_SET_MCAST_FLTR_wrapper(struct mlx4_dev *dev, int slave,
 				struct mlx4_vhcr *vhcr,
 				struct mlx4_cmd_mailbox *inbox,
@@ -2334,46 +1845,12 @@ int mlx4_SET_VLAN_FLTR_wrapper(struct mlx4_dev *dev, int slave,
 	return err;
 }
 
-<<<<<<< HEAD
-int mlx4_common_dump_eth_stats(struct mlx4_dev *dev, int slave,
-			       u32 in_mod, struct mlx4_cmd_mailbox *outbox)
-{
-	return mlx4_cmd_box(dev, 0, outbox->dma, in_mod, 0,
-			    MLX4_CMD_DUMP_ETH_STATS, MLX4_CMD_TIME_CLASS_B,
-			    MLX4_CMD_NATIVE);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_DUMP_ETH_STATS_wrapper(struct mlx4_dev *dev, int slave,
 				struct mlx4_vhcr *vhcr,
 				struct mlx4_cmd_mailbox *inbox,
 				struct mlx4_cmd_mailbox *outbox,
 				struct mlx4_cmd_info *cmd)
 {
-<<<<<<< HEAD
-	if (slave != dev->caps.function)
-		return 0;
-	return mlx4_common_dump_eth_stats(dev, slave,
-					  vhcr->in_modifier, outbox);
-}
-
-void mlx4_set_stats_bitmap(struct mlx4_dev *dev, u64 *stats_bitmap)
-{
-	if (!mlx4_is_mfunc(dev)) {
-		*stats_bitmap = 0;
-		return;
-	}
-
-	*stats_bitmap = (MLX4_STATS_TRAFFIC_COUNTERS_MASK |
-			 MLX4_STATS_TRAFFIC_DROPS_MASK |
-			 MLX4_STATS_PORT_COUNTERS_MASK);
-
-	if (mlx4_is_master(dev))
-		*stats_bitmap |= MLX4_STATS_ERROR_COUNTERS_MASK;
-}
-EXPORT_SYMBOL(mlx4_set_stats_bitmap);
-=======
 	return 0;
 }
 
@@ -2750,4 +2227,3 @@ int mlx4_max_tc(struct mlx4_dev *dev)
 	return num_tc;
 }
 EXPORT_SYMBOL(mlx4_max_tc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

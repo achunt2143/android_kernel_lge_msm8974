@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_BH_H
-#define _LINUX_BH_H
-
-extern void local_bh_disable(void);
-extern void _local_bh_enable(void);
-extern void local_bh_enable(void);
-extern void local_bh_enable_ip(unsigned long ip);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_BH_H
 #define _LINUX_BH_H
@@ -47,6 +38,5 @@ extern bool local_bh_blocked(void);
 #else
 static inline bool local_bh_blocked(void) { return false; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_BH_H */

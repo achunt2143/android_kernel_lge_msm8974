@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RapidIO interconnect services
  * (RapidIO Interconnect Specification, http://www.rapidio.org)
@@ -9,19 +6,8 @@
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
  *
-<<<<<<< HEAD
- * Copyright 2009 Integrated Device Technology, Inc.
- * Alex Bounine <alexandre.bounine@idt.com>
- * - Added Port-Write/Error Management initialization and handling
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
  * Copyright 2009 - 2013 Integrated Device Technology, Inc.
  * Alex Bounine <alexandre.bounine@idt.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -40,10 +26,6 @@
 
 #include "rio.h"
 
-<<<<<<< HEAD
-static LIST_HEAD(rio_mports);
-static unsigned char next_portid;
-=======
 /*
  * struct rio_pwrite - RIO portwrite event
  * @node:    Node in list of doorbell events
@@ -78,7 +60,6 @@ static LIST_HEAD(rio_scans);
 static DEFINE_MUTEX(rio_mport_list_lock);
 static unsigned char next_portid;
 static DEFINE_SPINLOCK(rio_mmap_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_local_get_device_id - Get the base/extended device id for a port
@@ -96,8 +77,6 @@ u16 rio_local_get_device_id(struct rio_mport *port)
 
 	return (RIO_GET_DID(port->sys_size, result));
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_local_get_device_id);
 
 /**
@@ -238,7 +217,6 @@ void rio_del_device(struct rio_dev *rdev, enum rio_device_state state)
 	device_unregister(&rdev->dev);
 }
 EXPORT_SYMBOL_GPL(rio_del_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_request_inb_mbox - request inbound mailbox service
@@ -261,31 +239,17 @@ int rio_request_inb_mbox(struct rio_mport *mport,
 	int rc = -ENOSYS;
 	struct resource *res;
 
-<<<<<<< HEAD
-	if (mport->ops->open_inb_mbox == NULL)
-		goto out;
-
-	res = kmalloc(sizeof(struct resource), GFP_KERNEL);
-
-=======
 	if (!mport->ops->open_inb_mbox)
 		goto out;
 
 	res = kzalloc(sizeof(*res), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		rio_init_mbox_res(res, mbox, mbox);
 
 		/* Make sure this mailbox isn't in use */
-<<<<<<< HEAD
-		if ((rc =
-		     request_resource(&mport->riores[RIO_INB_MBOX_RESOURCE],
-				      res)) < 0) {
-=======
 		rc = request_resource(&mport->riores[RIO_INB_MBOX_RESOURCE],
 				      res);
 		if (rc < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(res);
 			goto out;
 		}
@@ -296,25 +260,19 @@ int rio_request_inb_mbox(struct rio_mport *mport,
 		mport->inb_msg[mbox].mcback = minb;
 
 		rc = mport->ops->open_inb_mbox(mport, dev_id, mbox, entries);
-<<<<<<< HEAD
-=======
 		if (rc) {
 			mport->inb_msg[mbox].mcback = NULL;
 			mport->inb_msg[mbox].res = NULL;
 			release_resource(res);
 			kfree(res);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		rc = -ENOMEM;
 
       out:
 	return rc;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_request_inb_mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_release_inb_mbox - release inbound mailbox message service
@@ -326,16 +284,6 @@ EXPORT_SYMBOL_GPL(rio_request_inb_mbox);
  */
 int rio_release_inb_mbox(struct rio_mport *mport, int mbox)
 {
-<<<<<<< HEAD
-	if (mport->ops->close_inb_mbox) {
-		mport->ops->close_inb_mbox(mport, mbox);
-
-		/* Release the mailbox resource */
-		return release_resource(mport->inb_msg[mbox].res);
-	} else
-		return -ENOSYS;
-}
-=======
 	int rc;
 
 	if (!mport->ops->close_inb_mbox || !mport->inb_msg[mbox].res)
@@ -354,7 +302,6 @@ int rio_release_inb_mbox(struct rio_mport *mport, int mbox)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rio_release_inb_mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_request_outb_mbox - request outbound mailbox service
@@ -376,31 +323,17 @@ int rio_request_outb_mbox(struct rio_mport *mport,
 	int rc = -ENOSYS;
 	struct resource *res;
 
-<<<<<<< HEAD
-	if (mport->ops->open_outb_mbox == NULL)
-		goto out;
-
-	res = kmalloc(sizeof(struct resource), GFP_KERNEL);
-
-=======
 	if (!mport->ops->open_outb_mbox)
 		goto out;
 
 	res = kzalloc(sizeof(*res), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		rio_init_mbox_res(res, mbox, mbox);
 
 		/* Make sure this outbound mailbox isn't in use */
-<<<<<<< HEAD
-		if ((rc =
-		     request_resource(&mport->riores[RIO_OUTB_MBOX_RESOURCE],
-				      res)) < 0) {
-=======
 		rc = request_resource(&mport->riores[RIO_OUTB_MBOX_RESOURCE],
 				      res);
 		if (rc < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(res);
 			goto out;
 		}
@@ -411,25 +344,19 @@ int rio_request_outb_mbox(struct rio_mport *mport,
 		mport->outb_msg[mbox].mcback = moutb;
 
 		rc = mport->ops->open_outb_mbox(mport, dev_id, mbox, entries);
-<<<<<<< HEAD
-=======
 		if (rc) {
 			mport->outb_msg[mbox].mcback = NULL;
 			mport->outb_msg[mbox].res = NULL;
 			release_resource(res);
 			kfree(res);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		rc = -ENOMEM;
 
       out:
 	return rc;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_request_outb_mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_release_outb_mbox - release outbound mailbox message service
@@ -441,16 +368,6 @@ EXPORT_SYMBOL_GPL(rio_request_outb_mbox);
  */
 int rio_release_outb_mbox(struct rio_mport *mport, int mbox)
 {
-<<<<<<< HEAD
-	if (mport->ops->close_outb_mbox) {
-		mport->ops->close_outb_mbox(mport, mbox);
-
-		/* Release the mailbox resource */
-		return release_resource(mport->outb_msg[mbox].res);
-	} else
-		return -ENOSYS;
-}
-=======
 	int rc;
 
 	if (!mport->ops->close_outb_mbox || !mport->outb_msg[mbox].res)
@@ -469,7 +386,6 @@ int rio_release_outb_mbox(struct rio_mport *mport, int mbox)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rio_release_outb_mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_setup_inb_dbell - bind inbound doorbell callback
@@ -487,36 +403,19 @@ rio_setup_inb_dbell(struct rio_mport *mport, void *dev_id, struct resource *res,
 		    void (*dinb) (struct rio_mport * mport, void *dev_id, u16 src, u16 dst,
 				  u16 info))
 {
-<<<<<<< HEAD
-	int rc = 0;
-	struct rio_dbell *dbell;
-
-	if (!(dbell = kmalloc(sizeof(struct rio_dbell), GFP_KERNEL))) {
-		rc = -ENOMEM;
-		goto out;
-	}
-=======
 	struct rio_dbell *dbell = kmalloc(sizeof(*dbell), GFP_KERNEL);
 
 	if (!dbell)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbell->res = res;
 	dbell->dinb = dinb;
 	dbell->dev_id = dev_id;
 
-<<<<<<< HEAD
-	list_add_tail(&dbell->node, &mport->dbells);
-
-      out:
-	return rc;
-=======
 	mutex_lock(&mport->lock);
 	list_add_tail(&dbell->node, &mport->dbells);
 	mutex_unlock(&mport->lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -538,28 +437,16 @@ int rio_request_inb_dbell(struct rio_mport *mport,
 			  void (*dinb) (struct rio_mport * mport, void *dev_id, u16 src,
 					u16 dst, u16 info))
 {
-<<<<<<< HEAD
-	int rc = 0;
-
-	struct resource *res = kmalloc(sizeof(struct resource), GFP_KERNEL);
-=======
 	int rc;
 	struct resource *res = kzalloc(sizeof(*res), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (res) {
 		rio_init_dbell_res(res, start, end);
 
 		/* Make sure these doorbells aren't in use */
-<<<<<<< HEAD
-		if ((rc =
-		     request_resource(&mport->riores[RIO_DOORBELL_RESOURCE],
-				      res)) < 0) {
-=======
 		rc = request_resource(&mport->riores[RIO_DOORBELL_RESOURCE],
 				      res);
 		if (rc < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(res);
 			goto out;
 		}
@@ -572,10 +459,7 @@ int rio_request_inb_dbell(struct rio_mport *mport,
       out:
 	return rc;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_request_inb_dbell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_release_inb_dbell - release inbound doorbell message service
@@ -592,23 +476,15 @@ int rio_release_inb_dbell(struct rio_mport *mport, u16 start, u16 end)
 	int rc = 0, found = 0;
 	struct rio_dbell *dbell;
 
-<<<<<<< HEAD
-	list_for_each_entry(dbell, &mport->dbells, node) {
-		if ((dbell->res->start == start) && (dbell->res->end == end)) {
-=======
 	mutex_lock(&mport->lock);
 	list_for_each_entry(dbell, &mport->dbells, node) {
 		if ((dbell->res->start == start) && (dbell->res->end == end)) {
 			list_del(&dbell->node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			found = 1;
 			break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	mutex_unlock(&mport->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we can't find an exact match, fail */
 	if (!found) {
@@ -616,12 +492,6 @@ int rio_release_inb_dbell(struct rio_mport *mport, u16 start, u16 end)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/* Delete from list */
-	list_del(&dbell->node);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Release the doorbell resource */
 	rc = release_resource(dbell->res);
 
@@ -631,10 +501,7 @@ int rio_release_inb_dbell(struct rio_mport *mport, u16 start, u16 end)
       out:
 	return rc;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_release_inb_dbell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_request_outb_dbell - request outbound doorbell message range
@@ -648,11 +515,7 @@ EXPORT_SYMBOL_GPL(rio_release_inb_dbell);
 struct resource *rio_request_outb_dbell(struct rio_dev *rdev, u16 start,
 					u16 end)
 {
-<<<<<<< HEAD
-	struct resource *res = kmalloc(sizeof(struct resource), GFP_KERNEL);
-=======
 	struct resource *res = kzalloc(sizeof(struct resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (res) {
 		rio_init_dbell_res(res, start, end);
@@ -667,10 +530,7 @@ struct resource *rio_request_outb_dbell(struct rio_dev *rdev, u16 start,
 
 	return res;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_request_outb_dbell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_release_outb_dbell - release outbound doorbell message range
@@ -688,11 +548,6 @@ int rio_release_outb_dbell(struct rio_dev *rdev, struct resource *res)
 
 	return rc;
 }
-<<<<<<< HEAD
-
-/**
- * rio_request_inb_pwrite - request inbound port-write message service
-=======
 EXPORT_SYMBOL_GPL(rio_release_outb_dbell);
 
 /**
@@ -756,7 +611,6 @@ EXPORT_SYMBOL_GPL(rio_del_mport_pw_handler);
 /**
  * rio_request_inb_pwrite - request inbound port-write message service for
  *                          specific RapidIO device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rdev: RIO device to which register inbound port-write callback routine
  * @pwcback: Callback routine to execute when port-write is received
  *
@@ -769,11 +623,7 @@ int rio_request_inb_pwrite(struct rio_dev *rdev,
 	int rc = 0;
 
 	spin_lock(&rio_global_list_lock);
-<<<<<<< HEAD
-	if (rdev->pwcback != NULL)
-=======
 	if (rdev->pwcback)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 	else
 		rdev->pwcback = pwcback;
@@ -785,10 +635,7 @@ EXPORT_SYMBOL_GPL(rio_request_inb_pwrite);
 
 /**
  * rio_release_inb_pwrite - release inbound port-write message service
-<<<<<<< HEAD
-=======
  *                          associated with specific RapidIO device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rdev: RIO device which registered for inbound port-write callback
  *
  * Removes callback from the rio_dev structure. Returns 0 if the request
@@ -810,8 +657,6 @@ int rio_release_inb_pwrite(struct rio_dev *rdev)
 EXPORT_SYMBOL_GPL(rio_release_inb_pwrite);
 
 /**
-<<<<<<< HEAD
-=======
  * rio_pw_enable - Enables/disables port-write handling by a master port
  * @mport: Master port associated with port-write handling
  * @enable:  1=enable,  0=disable
@@ -923,25 +768,17 @@ void rio_unmap_outb_region(struct rio_mport *mport, u16 destid, u64 rstart)
 EXPORT_SYMBOL_GPL(rio_unmap_outb_region);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * rio_mport_get_physefb - Helper function that returns register offset
  *                      for Physical Layer Extended Features Block.
  * @port: Master port to issue transaction
  * @local: Indicate a local master port or remote device access
  * @destid: Destination ID of the device
  * @hopcount: Number of switch hops to the device
-<<<<<<< HEAD
- */
-u32
-rio_mport_get_physefb(struct rio_mport *port, int local,
-		      u16 destid, u8 hopcount)
-=======
  * @rmap: pointer to location to store register map type info
  */
 u32
 rio_mport_get_physefb(struct rio_mport *port, int local,
 		      u16 destid, u8 hopcount, u32 *rmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 ext_ftr_ptr;
 	u32 ftr_header;
@@ -959,16 +796,6 @@ rio_mport_get_physefb(struct rio_mport *port, int local,
 		ftr_header = RIO_GET_BLOCK_ID(ftr_header);
 		switch (ftr_header) {
 
-<<<<<<< HEAD
-		case RIO_EFB_SER_EP_ID_V13P:
-		case RIO_EFB_SER_EP_REC_ID_V13P:
-		case RIO_EFB_SER_EP_FREE_ID_V13P:
-		case RIO_EFB_SER_EP_ID:
-		case RIO_EFB_SER_EP_REC_ID:
-		case RIO_EFB_SER_EP_FREE_ID:
-		case RIO_EFB_SER_EP_FREC_ID:
-
-=======
 		case RIO_EFB_SER_EP_ID:
 		case RIO_EFB_SER_EP_REC_ID:
 		case RIO_EFB_SER_EP_FREE_ID:
@@ -984,7 +811,6 @@ rio_mport_get_physefb(struct rio_mport *port, int local,
 		case RIO_EFB_SER_EPF_M2_ID:
 		case RIO_EFB_SER_EPF_SW_M2_ID:
 			*rmap = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ext_ftr_ptr;
 
 		default:
@@ -997,10 +823,7 @@ rio_mport_get_physefb(struct rio_mport *port, int local,
 
 	return ext_ftr_ptr;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_mport_get_physefb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_get_comptag - Begin or continue searching for a RIO device by component tag
@@ -1033,10 +856,7 @@ exit:
 	spin_unlock(&rio_global_list_lock);
 	return rdev;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_get_comptag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_set_port_lockout - Sets/clears LOCKOUT bit (RIO EM 1.3) for a switch port.
@@ -1049,25 +869,14 @@ int rio_set_port_lockout(struct rio_dev *rdev, u32 pnum, int lock)
 	u32 regval;
 
 	rio_read_config_32(rdev,
-<<<<<<< HEAD
-				 rdev->phys_efptr + RIO_PORT_N_CTL_CSR(pnum),
-				 &regval);
-=======
 		RIO_DEV_PORT_N_CTL_CSR(rdev, pnum),
 		&regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lock)
 		regval |= RIO_PORT_N_CTL_LOCKOUT;
 	else
 		regval &= ~RIO_PORT_N_CTL_LOCKOUT;
 
 	rio_write_config_32(rdev,
-<<<<<<< HEAD
-				  rdev->phys_efptr + RIO_PORT_N_CTL_CSR(pnum),
-				  regval);
-	return 0;
-}
-=======
 		RIO_DEV_PORT_N_CTL_CSR(rdev, pnum),
 		regval);
 	return 0;
@@ -1131,7 +940,6 @@ int rio_enable_rx_tx_port(struct rio_mport *port,
 }
 EXPORT_SYMBOL_GPL(rio_enable_rx_tx_port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_chk_dev_route - Validate route to the specified device.
@@ -1158,11 +966,7 @@ rio_chk_dev_route(struct rio_dev *rdev, struct rio_dev **nrdev, int *npnum)
 		rdev = rdev->prev;
 	}
 
-<<<<<<< HEAD
-	if (prev == NULL)
-=======
 	if (!prev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 
 	p_port = prev->rswitch->route_table[rdev->destid];
@@ -1201,10 +1005,7 @@ rio_mport_chk_dev_access(struct rio_mport *mport, u16 destid, u8 hopcount)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_mport_chk_dev_access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_chk_dev_access - Validate access to the specified device.
@@ -1233,41 +1034,25 @@ rio_get_input_status(struct rio_dev *rdev, int pnum, u32 *lnkresp)
 		/* Read from link maintenance response register
 		 * to clear valid bit */
 		rio_read_config_32(rdev,
-<<<<<<< HEAD
-			rdev->phys_efptr + RIO_PORT_N_MNT_RSP_CSR(pnum),
-=======
 			RIO_DEV_PORT_N_MNT_RSP_CSR(rdev, pnum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&regval);
 		udelay(50);
 	}
 
 	/* Issue Input-status command */
 	rio_write_config_32(rdev,
-<<<<<<< HEAD
-		rdev->phys_efptr + RIO_PORT_N_MNT_REQ_CSR(pnum),
-		RIO_MNT_REQ_CMD_IS);
-
-	/* Exit if the response is not expected */
-	if (lnkresp == NULL)
-=======
 		RIO_DEV_PORT_N_MNT_REQ_CSR(rdev, pnum),
 		RIO_MNT_REQ_CMD_IS);
 
 	/* Exit if the response is not expected */
 	if (!lnkresp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	checkcount = 3;
 	while (checkcount--) {
 		udelay(50);
 		rio_read_config_32(rdev,
-<<<<<<< HEAD
-			rdev->phys_efptr + RIO_PORT_N_MNT_RSP_CSR(pnum),
-=======
 			RIO_DEV_PORT_N_MNT_RSP_CSR(rdev, pnum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&regval);
 		if (regval & RIO_PORT_N_MNT_RSP_RVAL) {
 			*lnkresp = regval;
@@ -1283,8 +1068,6 @@ rio_get_input_status(struct rio_dev *rdev, int pnum, u32 *lnkresp)
  * @rdev: Pointer to RIO device control structure
  * @pnum: Switch port number to clear errors
  * @err_status: port error status (if 0 reads register from device)
-<<<<<<< HEAD
-=======
  *
  * TODO: Currently this routine is not compatible with recovery process
  * specified for idt_gen3 RapidIO switch devices. It has to be reviewed
@@ -1292,7 +1075,6 @@ rio_get_input_status(struct rio_dev *rdev, int pnum, u32 *lnkresp)
  * off available devices.
  * IDT gen3 switch driver now implements HW-specific error handler that
  * issues soft port reset to the port to reset ERR_STOP bits and ackIDs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int rio_clr_err_stopped(struct rio_dev *rdev, u32 pnum, u32 err_status)
 {
@@ -1302,17 +1084,10 @@ static int rio_clr_err_stopped(struct rio_dev *rdev, u32 pnum, u32 err_status)
 
 	if (err_status == 0)
 		rio_read_config_32(rdev,
-<<<<<<< HEAD
-			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(pnum),
-			&err_status);
-
-	if (err_status & RIO_PORT_N_ERR_STS_PW_OUT_ES) {
-=======
 			RIO_DEV_PORT_N_ERR_STS_CSR(rdev, pnum),
 			&err_status);
 
 	if (err_status & RIO_PORT_N_ERR_STS_OUT_ES) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("RIO_EM: servicing Output Error-Stopped state\n");
 		/*
 		 * Send a Link-Request/Input-Status control symbol
@@ -1327,11 +1102,7 @@ static int rio_clr_err_stopped(struct rio_dev *rdev, u32 pnum, u32 err_status)
 		far_ackid = (regval & RIO_PORT_N_MNT_RSP_ASTAT) >> 5;
 		far_linkstat = regval & RIO_PORT_N_MNT_RSP_LSTAT;
 		rio_read_config_32(rdev,
-<<<<<<< HEAD
-			rdev->phys_efptr + RIO_PORT_N_ACK_STS_CSR(pnum),
-=======
 			RIO_DEV_PORT_N_ACK_STS_CSR(rdev, pnum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&regval);
 		pr_debug("RIO_EM: SP%d_ACK_STS_CSR=0x%08x\n", pnum, regval);
 		near_ackid = (regval & RIO_PORT_N_ACK_INBOUND) >> 24;
@@ -1349,36 +1120,13 @@ static int rio_clr_err_stopped(struct rio_dev *rdev, u32 pnum, u32 err_status)
 			 * far inbound.
 			 */
 			rio_write_config_32(rdev,
-<<<<<<< HEAD
-				rdev->phys_efptr + RIO_PORT_N_ACK_STS_CSR(pnum),
-=======
 				RIO_DEV_PORT_N_ACK_STS_CSR(rdev, pnum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(near_ackid << 24) |
 					(far_ackid << 8) | far_ackid);
 			/* Align far outstanding/outbound ackIDs with
 			 * near inbound.
 			 */
 			far_ackid++;
-<<<<<<< HEAD
-			if (nextdev)
-				rio_write_config_32(nextdev,
-					nextdev->phys_efptr +
-					RIO_PORT_N_ACK_STS_CSR(RIO_GET_PORT_NUM(nextdev->swpinfo)),
-					(far_ackid << 24) |
-					(near_ackid << 8) | near_ackid);
-			else
-				pr_debug("RIO_EM: Invalid nextdev pointer (NULL)\n");
-		}
-rd_err:
-		rio_read_config_32(rdev,
-			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(pnum),
-			&err_status);
-		pr_debug("RIO_EM: SP%d_ERR_STS_CSR=0x%08x\n", pnum, err_status);
-	}
-
-	if ((err_status & RIO_PORT_N_ERR_STS_PW_INP_ES) && nextdev) {
-=======
 			if (!nextdev) {
 				pr_debug("RIO_EM: nextdev pointer == NULL\n");
 				goto rd_err;
@@ -1397,26 +1145,11 @@ rd_err:
 	}
 
 	if ((err_status & RIO_PORT_N_ERR_STS_INP_ES) && nextdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("RIO_EM: servicing Input Error-Stopped state\n");
 		rio_get_input_status(nextdev,
 				     RIO_GET_PORT_NUM(nextdev->swpinfo), NULL);
 		udelay(50);
 
-<<<<<<< HEAD
-		rio_read_config_32(rdev,
-			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(pnum),
-			&err_status);
-		pr_debug("RIO_EM: SP%d_ERR_STS_CSR=0x%08x\n", pnum, err_status);
-	}
-
-	return (err_status & (RIO_PORT_N_ERR_STS_PW_OUT_ES |
-			      RIO_PORT_N_ERR_STS_PW_INP_ES)) ? 1 : 0;
-}
-
-/**
- * rio_inb_pwrite_handler - process inbound port-write message
-=======
 		rio_read_config_32(rdev, RIO_DEV_PORT_N_ERR_STS_CSR(rdev, pnum),
 				   &err_status);
 		pr_debug("RIO_EM: SP%d_ERR_STS_CSR=0x%08x\n", pnum, err_status);
@@ -1429,53 +1162,16 @@ rd_err:
 /**
  * rio_inb_pwrite_handler - inbound port-write message handler
  * @mport:  mport device associated with port-write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pw_msg: pointer to inbound port-write message
  *
  * Processes an inbound port-write message. Returns 0 if the request
  * has been satisfied.
  */
-<<<<<<< HEAD
-int rio_inb_pwrite_handler(union rio_pw_msg *pw_msg)
-=======
 int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rio_dev *rdev;
 	u32 err_status, em_perrdet, em_ltlerrdet;
 	int rc, portnum;
-<<<<<<< HEAD
-
-	rdev = rio_get_comptag((pw_msg->em.comptag & RIO_CTAG_UDEVID), NULL);
-	if (rdev == NULL) {
-		/* Device removed or enumeration error */
-		pr_debug("RIO: %s No matching device for CTag 0x%08x\n",
-			__func__, pw_msg->em.comptag);
-		return -EIO;
-	}
-
-	pr_debug("RIO: Port-Write message from %s\n", rio_name(rdev));
-
-#ifdef DEBUG_PW
-	{
-	u32 i;
-	for (i = 0; i < RIO_PW_MSG_SIZE/sizeof(u32);) {
-			pr_debug("0x%02x: %08x %08x %08x %08x\n",
-				 i*4, pw_msg->raw[i], pw_msg->raw[i + 1],
-				 pw_msg->raw[i + 2], pw_msg->raw[i + 3]);
-			i += 4;
-	}
-	}
-#endif
-
-	/* Call an external service function (if such is registered
-	 * for this device). This may be the service for endpoints that send
-	 * device-specific port-write messages. End-point messages expected
-	 * to be handled completely by EP specific device driver.
-	 * For switches rc==0 signals that no standard processing required.
-	 */
-	if (rdev->pwcback != NULL) {
-=======
 	struct rio_pwrite *pwrite;
 
 #ifdef DEBUG_PW
@@ -1506,14 +1202,11 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 	 * For switches rc==0 signals that no standard processing required.
 	 */
 	if (rdev && rdev->pwcback) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = rdev->pwcback(rdev, pw_msg, 0);
 		if (rc == 0)
 			return 0;
 	}
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&mport->lock);
 	list_for_each_entry(pwrite, &mport->pwrites, node)
 		pwrite->pwcback(mport, pwrite->context, pw_msg, 0);
@@ -1527,7 +1220,6 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 	 * how to do default PW handling in combination with per-mport callbacks
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	portnum = pw_msg->em.is_port & 0xFF;
 
 	/* Check if device and route to it are functional:
@@ -1561,20 +1253,11 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 	/*
 	 * Process the port-write notification from switch
 	 */
-<<<<<<< HEAD
-	if (rdev->rswitch->em_handle)
-		rdev->rswitch->em_handle(rdev, portnum);
-
-	rio_read_config_32(rdev,
-			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(portnum),
-			&err_status);
-=======
 	if (rdev->rswitch->ops && rdev->rswitch->ops->em_handle)
 		rdev->rswitch->ops->em_handle(rdev, portnum);
 
 	rio_read_config_32(rdev, RIO_DEV_PORT_N_ERR_STS_CSR(rdev, portnum),
 			   &err_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("RIO_PW: SP%d_ERR_STS_CSR=0x%08x\n", portnum, err_status);
 
 	if (err_status & RIO_PORT_N_ERR_STS_PORT_OK) {
@@ -1591,13 +1274,8 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 		 * Depending on the link partner state, two attempts
 		 * may be needed for successful recovery.
 		 */
-<<<<<<< HEAD
-		if (err_status & (RIO_PORT_N_ERR_STS_PW_OUT_ES |
-				  RIO_PORT_N_ERR_STS_PW_INP_ES)) {
-=======
 		if (err_status & (RIO_PORT_N_ERR_STS_OUT_ES |
 				  RIO_PORT_N_ERR_STS_INP_ES)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rio_clr_err_stopped(rdev, portnum, err_status))
 				rio_clr_err_stopped(rdev, portnum, 0);
 		}
@@ -1607,12 +1285,6 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 			rdev->rswitch->port_ok &= ~(1 << portnum);
 			rio_set_port_lockout(rdev, portnum, 1);
 
-<<<<<<< HEAD
-			rio_write_config_32(rdev,
-				rdev->phys_efptr +
-					RIO_PORT_N_ACK_STS_CSR(portnum),
-				RIO_PORT_N_ACK_CLEAR);
-=======
 			if (rdev->phys_rmap == 1) {
 			rio_write_config_32(rdev,
 				RIO_DEV_PORT_N_ACK_STS_CSR(rdev, portnum),
@@ -1625,7 +1297,6 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 					RIO_DEV_PORT_N_IB_ACK_CSR(rdev, portnum),
 					0);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Schedule Extraction Service */
 			pr_debug("RIO_PW: Device Extraction on [%s]-P%d\n",
@@ -1654,14 +1325,8 @@ int rio_inb_pwrite_handler(struct rio_mport *mport, union rio_pw_msg *pw_msg)
 	}
 
 	/* Clear remaining error bits and Port-Write Pending bit */
-<<<<<<< HEAD
-	rio_write_config_32(rdev,
-			rdev->phys_efptr + RIO_PORT_N_ERR_STS_CSR(portnum),
-			err_status);
-=======
 	rio_write_config_32(rdev, RIO_DEV_PORT_N_ERR_STS_CSR(rdev, portnum),
 			    err_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1699,10 +1364,7 @@ rio_mport_get_efb(struct rio_mport *port, int local, u16 destid,
 		return RIO_GET_BLOCK_ID(reg_val);
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rio_mport_get_efb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_mport_get_feature - query for devices' extended features
@@ -1715,24 +1377,7 @@ EXPORT_SYMBOL_GPL(rio_mport_get_efb);
  * Tell if a device supports a given RapidIO capability.
  * Returns the offset of the requested extended feature
  * block within the device's RIO configuration space or
-<<<<<<< HEAD
- * 0 in case the device does not support it.  Possible
- * values for @ftr:
- *
- * %RIO_EFB_PAR_EP_ID		LP/LVDS EP Devices
- *
- * %RIO_EFB_PAR_EP_REC_ID	LP/LVDS EP Recovery Devices
- *
- * %RIO_EFB_PAR_EP_FREE_ID	LP/LVDS EP Free Devices
- *
- * %RIO_EFB_SER_EP_ID		LP/Serial EP Devices
- *
- * %RIO_EFB_SER_EP_REC_ID	LP/Serial EP Recovery Devices
- *
- * %RIO_EFB_SER_EP_FREE_ID	LP/Serial EP Free Devices
-=======
  * 0 in case the device does not support it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 u32
 rio_mport_get_feature(struct rio_mport * port, int local, u16 destid,
@@ -1757,85 +1402,15 @@ rio_mport_get_feature(struct rio_mport * port, int local, u16 destid,
 						 ext_ftr_ptr, &ftr_header);
 		if (RIO_GET_BLOCK_ID(ftr_header) == ftr)
 			return ext_ftr_ptr;
-<<<<<<< HEAD
-		if (!(ext_ftr_ptr = RIO_GET_BLOCK_PTR(ftr_header)))
-=======
 
 		ext_ftr_ptr = RIO_GET_BLOCK_PTR(ftr_header);
 		if (!ext_ftr_ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-
-/**
- * rio_get_asm - Begin or continue searching for a RIO device by vid/did/asm_vid/asm_did
- * @vid: RIO vid to match or %RIO_ANY_ID to match all vids
- * @did: RIO did to match or %RIO_ANY_ID to match all dids
- * @asm_vid: RIO asm_vid to match or %RIO_ANY_ID to match all asm_vids
- * @asm_did: RIO asm_did to match or %RIO_ANY_ID to match all asm_dids
- * @from: Previous RIO device found in search, or %NULL for new search
- *
- * Iterates through the list of known RIO devices. If a RIO device is
- * found with a matching @vid, @did, @asm_vid, @asm_did, the reference
- * count to the device is incrememted and a pointer to its device
- * structure is returned. Otherwise, %NULL is returned. A new search
- * is initiated by passing %NULL to the @from argument. Otherwise, if
- * @from is not %NULL, searches continue from next device on the global
- * list. The reference count for @from is always decremented if it is
- * not %NULL.
- */
-struct rio_dev *rio_get_asm(u16 vid, u16 did,
-			    u16 asm_vid, u16 asm_did, struct rio_dev *from)
-{
-	struct list_head *n;
-	struct rio_dev *rdev;
-
-	WARN_ON(in_interrupt());
-	spin_lock(&rio_global_list_lock);
-	n = from ? from->global_list.next : rio_devices.next;
-
-	while (n && (n != &rio_devices)) {
-		rdev = rio_dev_g(n);
-		if ((vid == RIO_ANY_ID || rdev->vid == vid) &&
-		    (did == RIO_ANY_ID || rdev->did == did) &&
-		    (asm_vid == RIO_ANY_ID || rdev->asm_vid == asm_vid) &&
-		    (asm_did == RIO_ANY_ID || rdev->asm_did == asm_did))
-			goto exit;
-		n = n->next;
-	}
-	rdev = NULL;
-      exit:
-	rio_dev_put(from);
-	rdev = rio_dev_get(rdev);
-	spin_unlock(&rio_global_list_lock);
-	return rdev;
-}
-
-/**
- * rio_get_device - Begin or continue searching for a RIO device by vid/did
- * @vid: RIO vid to match or %RIO_ANY_ID to match all vids
- * @did: RIO did to match or %RIO_ANY_ID to match all dids
- * @from: Previous RIO device found in search, or %NULL for new search
- *
- * Iterates through the list of known RIO devices. If a RIO device is
- * found with a matching @vid and @did, the reference count to the
- * device is incrememted and a pointer to its device structure is returned.
- * Otherwise, %NULL is returned. A new search is initiated by passing %NULL
- * to the @from argument. Otherwise, if @from is not %NULL, searches
- * continue from next device on the global list. The reference count for
- * @from is always decremented if it is not %NULL.
- */
-struct rio_dev *rio_get_device(u16 vid, u16 did, struct rio_dev *from)
-{
-	return rio_get_asm(vid, did, RIO_ANY_ID, RIO_ANY_ID, from);
-}
-=======
 EXPORT_SYMBOL_GPL(rio_mport_get_feature);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rio_std_route_add_entry - Add switch route table entry using standard
@@ -1847,14 +1422,9 @@ EXPORT_SYMBOL_GPL(rio_mport_get_feature);
  * @route_destid: destID entry in the RT
  * @route_port: destination port for specified destID
  */
-<<<<<<< HEAD
-int rio_std_route_add_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
-		       u16 table, u16 route_destid, u8 route_port)
-=======
 static int
 rio_std_route_add_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
 			u16 table, u16 route_destid, u8 route_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (table == RIO_GLOBAL_TABLE) {
 		rio_mport_write_config_32(mport, destid, hopcount,
@@ -1880,14 +1450,9 @@ rio_std_route_add_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
  * @route_destid: destID entry in the RT
  * @route_port: returned destination port for specified destID
  */
-<<<<<<< HEAD
-int rio_std_route_get_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
-		       u16 table, u16 route_destid, u8 *route_port)
-=======
 static int
 rio_std_route_get_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
 			u16 table, u16 route_destid, u8 *route_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 result;
 
@@ -1911,14 +1476,9 @@ rio_std_route_get_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
  * @hopcount: Number of switch hops to the device
  * @table: routing table ID (global or port-specific)
  */
-<<<<<<< HEAD
-int rio_std_route_clr_table(struct rio_mport *mport, u16 destid, u8 hopcount,
-		       u16 table)
-=======
 static int
 rio_std_route_clr_table(struct rio_mport *mport, u16 destid, u8 hopcount,
 			u16 table)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 max_destid = 0xff;
 	u32 i, pef, id_inc = 1, ext_cfg = 0;
@@ -1959,82 +1519,6 @@ rio_std_route_clr_table(struct rio_mport *mport, u16 destid, u8 hopcount,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void rio_fixup_device(struct rio_dev *dev)
-{
-}
-
-static int __devinit rio_init(void)
-{
-	struct rio_dev *dev = NULL;
-
-	while ((dev = rio_get_device(RIO_ANY_ID, RIO_ANY_ID, dev)) != NULL) {
-		rio_fixup_device(dev);
-	}
-	return 0;
-}
-
-int __devinit rio_init_mports(void)
-{
-	struct rio_mport *port;
-
-	list_for_each_entry(port, &rio_mports, node) {
-		if (port->host_deviceid >= 0)
-			rio_enum_mport(port);
-		else
-			rio_disc_mport(port);
-	}
-
-	rio_init();
-
-	return 0;
-}
-
-device_initcall_sync(rio_init_mports);
-
-static int hdids[RIO_MAX_MPORTS + 1];
-
-static int rio_get_hdid(int index)
-{
-	if (!hdids[0] || hdids[0] <= index || index >= RIO_MAX_MPORTS)
-		return -1;
-
-	return hdids[index + 1];
-}
-
-static int rio_hdid_setup(char *str)
-{
-	(void)get_options(str, ARRAY_SIZE(hdids), hdids);
-	return 1;
-}
-
-__setup("riohdid=", rio_hdid_setup);
-
-int rio_register_mport(struct rio_mport *port)
-{
-	if (next_portid >= RIO_MAX_MPORTS) {
-		pr_err("RIO: reached specified max number of mports\n");
-		return 1;
-	}
-
-	port->id = next_portid++;
-	port->host_deviceid = rio_get_hdid(port->id);
-	list_add_tail(&port->node, &rio_mports);
-	return 0;
-}
-
-EXPORT_SYMBOL_GPL(rio_local_get_device_id);
-EXPORT_SYMBOL_GPL(rio_get_device);
-EXPORT_SYMBOL_GPL(rio_get_asm);
-EXPORT_SYMBOL_GPL(rio_request_inb_dbell);
-EXPORT_SYMBOL_GPL(rio_release_inb_dbell);
-EXPORT_SYMBOL_GPL(rio_request_outb_dbell);
-EXPORT_SYMBOL_GPL(rio_release_outb_dbell);
-EXPORT_SYMBOL_GPL(rio_request_inb_mbox);
-EXPORT_SYMBOL_GPL(rio_release_inb_mbox);
-EXPORT_SYMBOL_GPL(rio_request_outb_mbox);
-EXPORT_SYMBOL_GPL(rio_release_outb_mbox);
-=======
 /**
  * rio_lock_device - Acquires host device lock for specified device
  * @port: Master port to send transaction
@@ -2765,4 +2249,3 @@ int rio_unregister_mport(struct rio_mport *port)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rio_unregister_mport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

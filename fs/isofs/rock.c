@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/isofs/rock.c
  *
@@ -207,11 +204,8 @@ int get_rock_ridge_filename(struct iso_directory_record *de,
 	int retnamlen = 0;
 	int truncate = 0;
 	int ret = 0;
-<<<<<<< HEAD
-=======
 	char *p;
 	int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ISOFS_SB(inode->i_sb)->s_rock)
 		return 0;
@@ -276,14 +270,6 @@ repeat:
 					rr->u.NM.flags);
 				break;
 			}
-<<<<<<< HEAD
-			if ((strlen(retname) + rr->len - 5) >= 254) {
-				truncate = 1;
-				break;
-			}
-			strncat(retname, rr->u.NM.name, rr->len - 5);
-			retnamlen += rr->len - 5;
-=======
 			len = rr->len - 5;
 			if (retnamlen + len >= 254) {
 				truncate = 1;
@@ -295,7 +281,6 @@ repeat:
 			memcpy(retname + retnamlen, rr->u.NM.name, len);
 			retnamlen += len;
 			retname[retnamlen] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SIG('R', 'E'):
 			kfree(rs.buffer);
@@ -393,26 +378,15 @@ repeat:
 			{
 				int p;
 				for (p = 0; p < rr->u.ER.len_id; p++)
-<<<<<<< HEAD
-					printk("%c", rr->u.ER.data[p]);
-			}
-			printk("\n");
-=======
 					printk(KERN_CONT "%c", rr->u.ER.data[p]);
 			}
 			printk(KERN_CONT "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SIG('P', 'X'):
 			inode->i_mode = isonum_733(rr->u.PX.mode);
 			set_nlink(inode, isonum_733(rr->u.PX.n_links));
-<<<<<<< HEAD
-			inode->i_uid = isonum_733(rr->u.PX.uid);
-			inode->i_gid = isonum_733(rr->u.PX.gid);
-=======
 			i_uid_write(inode, isonum_733(rr->u.PX.uid));
 			i_gid_write(inode, isonum_733(rr->u.PX.gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SIG('P', 'N'):
 			{
@@ -447,30 +421,6 @@ repeat:
 			/* Rock ridge never appears on a High Sierra disk */
 			cnt = 0;
 			if (rr->u.TF.flags & TF_CREATE) {
-<<<<<<< HEAD
-				inode->i_ctime.tv_sec =
-				    iso_date(rr->u.TF.times[cnt++].time,
-					     0);
-				inode->i_ctime.tv_nsec = 0;
-			}
-			if (rr->u.TF.flags & TF_MODIFY) {
-				inode->i_mtime.tv_sec =
-				    iso_date(rr->u.TF.times[cnt++].time,
-					     0);
-				inode->i_mtime.tv_nsec = 0;
-			}
-			if (rr->u.TF.flags & TF_ACCESS) {
-				inode->i_atime.tv_sec =
-				    iso_date(rr->u.TF.times[cnt++].time,
-					     0);
-				inode->i_atime.tv_nsec = 0;
-			}
-			if (rr->u.TF.flags & TF_ATTRIBUTES) {
-				inode->i_ctime.tv_sec =
-				    iso_date(rr->u.TF.times[cnt++].time,
-					     0);
-				inode->i_ctime.tv_nsec = 0;
-=======
 				inode_set_ctime(inode,
 						iso_date(rr->u.TF.times[cnt++].time, 0),
 						0);
@@ -489,7 +439,6 @@ repeat:
 				inode_set_ctime(inode,
 						iso_date(rr->u.TF.times[cnt++].time, 0),
 						0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case SIG('S', 'L'):
@@ -580,15 +529,9 @@ repeat:
 			inode->i_rdev = reloc->i_rdev;
 			inode->i_size = reloc->i_size;
 			inode->i_blocks = reloc->i_blocks;
-<<<<<<< HEAD
-			inode->i_atime = reloc->i_atime;
-			inode->i_ctime = reloc->i_ctime;
-			inode->i_mtime = reloc->i_mtime;
-=======
 			inode_set_atime_to_ts(inode, inode_get_atime(reloc));
 			inode_set_ctime_to_ts(inode, inode_get_ctime(reloc));
 			inode_set_mtime_to_ts(inode, inode_get_mtime(reloc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iput(reloc);
 			break;
 #ifdef CONFIG_ZISOFS
@@ -740,17 +683,6 @@ int parse_rock_ridge_inode(struct iso_directory_record *de, struct inode *inode,
 }
 
 /*
-<<<<<<< HEAD
- * readpage() for symlinks: reads symlink contents into the page and either
- * makes it uptodate and returns 0 or returns error (-EIO)
- */
-static int rock_ridge_symlink_readpage(struct file *file, struct page *page)
-{
-	struct inode *inode = page->mapping->host;
-	struct iso_inode_info *ei = ISOFS_I(inode);
-	struct isofs_sb_info *sbi = ISOFS_SB(inode->i_sb);
-	char *link = kmap(page);
-=======
  * read_folio() for symlinks: reads symlink contents into the folio and either
  * makes it uptodate and returns 0 or returns error (-EIO)
  */
@@ -761,7 +693,6 @@ static int rock_ridge_symlink_read_folio(struct file *file, struct folio *folio)
 	struct iso_inode_info *ei = ISOFS_I(inode);
 	struct isofs_sb_info *sbi = ISOFS_SB(inode->i_sb);
 	char *link = page_address(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bufsize = ISOFS_BUFFER_SIZE(inode);
 	struct buffer_head *bh;
 	char *rpnt = link;
@@ -833,10 +764,7 @@ repeat:
 			rs.cont_extent = isonum_733(rr->u.CE.extent);
 			rs.cont_offset = isonum_733(rr->u.CE.offset);
 			rs.cont_size = isonum_733(rr->u.CE.size);
-<<<<<<< HEAD
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -852,10 +780,6 @@ repeat:
 	brelse(bh);
 	*rpnt = '\0';
 	SetPageUptodate(page);
-<<<<<<< HEAD
-	kunmap(page);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return 0;
 
@@ -872,18 +796,10 @@ fail:
 	brelse(bh);
 error:
 	SetPageError(page);
-<<<<<<< HEAD
-	kunmap(page);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return -EIO;
 }
 
 const struct address_space_operations isofs_symlink_aops = {
-<<<<<<< HEAD
-	.readpage = rock_ridge_symlink_readpage
-=======
 	.read_folio = rock_ridge_symlink_read_folio
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

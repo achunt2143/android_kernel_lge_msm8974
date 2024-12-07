@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 Sistina Software.
  * Copyright (C) 2004 Red Hat, Inc. All rights reserved.
@@ -118,10 +115,7 @@ int dm_register_path_selector(struct path_selector_type *pst)
 
 	return r;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(dm_register_path_selector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dm_unregister_path_selector(struct path_selector_type *pst)
 {
@@ -143,9 +137,4 @@ int dm_unregister_path_selector(struct path_selector_type *pst)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL_GPL(dm_register_path_selector);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(dm_unregister_path_selector);

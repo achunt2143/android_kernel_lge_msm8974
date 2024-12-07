@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale QUICC Engine USB Host Controller Driver
  *
@@ -12,14 +9,6 @@
  *               Peter Barada <peterb@logicpd.com>
  * Copyright (c) MontaVista Software, Inc. 2008.
  *               Anton Vorontsov <avorontsov@ru.mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -33,12 +22,6 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/of_gpio.h>
-#include <linux/slab.h>
-#include <asm/qe.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -46,7 +29,6 @@
 #include <linux/slab.h>
 #include <linux/gpio/consumer.h>
 #include <soc/fsl/qe/qe.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fsl_gtm.h>
 #include "fhci.h"
 
@@ -57,13 +39,8 @@ void fhci_start_sof_timer(struct fhci_hcd *fhci)
 	/* clear frame_n */
 	out_be16(&fhci->pram->frame_num, 0);
 
-<<<<<<< HEAD
-	out_be16(&fhci->regs->usb_sof_tmr, 0);
-	setbits8(&fhci->regs->usb_mod, USB_MODE_SFTE);
-=======
 	out_be16(&fhci->regs->usb_ussft, 0);
 	setbits8(&fhci->regs->usb_usmod, USB_MODE_SFTE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fhci_dbg(fhci, "<- %s\n", __func__);
 }
@@ -72,11 +49,7 @@ void fhci_stop_sof_timer(struct fhci_hcd *fhci)
 {
 	fhci_dbg(fhci, "-> %s\n", __func__);
 
-<<<<<<< HEAD
-	clrbits8(&fhci->regs->usb_mod, USB_MODE_SFTE);
-=======
 	clrbits8(&fhci->regs->usb_usmod, USB_MODE_SFTE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gtm_stop_timer16(fhci->timer);
 
 	fhci_dbg(fhci, "<- %s\n", __func__);
@@ -84,11 +57,7 @@ void fhci_stop_sof_timer(struct fhci_hcd *fhci)
 
 u16 fhci_get_sof_timer_count(struct fhci_usb *usb)
 {
-<<<<<<< HEAD
-	return be16_to_cpu(in_be16(&usb->fhci->regs->usb_sof_tmr) / 12);
-=======
 	return be16_to_cpu(in_be16(&usb->fhci->regs->usb_ussft) / 12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* initialize the endpoint zero */
@@ -118,13 +87,8 @@ void fhci_usb_enable_interrupt(struct fhci_usb *usb)
 		enable_irq(fhci_to_hcd(fhci)->irq);
 
 		/* initialize the event register and mask register */
-<<<<<<< HEAD
-		out_be16(&usb->fhci->regs->usb_event, 0xffff);
-		out_be16(&usb->fhci->regs->usb_mask, usb->saved_msk);
-=======
 		out_be16(&usb->fhci->regs->usb_usber, 0xffff);
 		out_be16(&usb->fhci->regs->usb_usbmr, usb->saved_msk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* enable the timer interrupts */
 		enable_irq(fhci->timer->irq);
@@ -144,11 +108,7 @@ void fhci_usb_disable_interrupt(struct fhci_usb *usb)
 
 		/* disable the usb interrupt */
 		disable_irq_nosync(fhci_to_hcd(fhci)->irq);
-<<<<<<< HEAD
-		out_be16(&usb->fhci->regs->usb_mask, 0);
-=======
 		out_be16(&usb->fhci->regs->usb_usbmr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	usb->intr_nesting_cnt++;
 }
@@ -158,15 +118,9 @@ static u32 fhci_usb_enable(struct fhci_hcd *fhci)
 {
 	struct fhci_usb *usb = fhci->usb_lld;
 
-<<<<<<< HEAD
-	out_be16(&usb->fhci->regs->usb_event, 0xffff);
-	out_be16(&usb->fhci->regs->usb_mask, usb->saved_msk);
-	setbits8(&usb->fhci->regs->usb_mod, USB_MODE_EN);
-=======
 	out_be16(&usb->fhci->regs->usb_usber, 0xffff);
 	out_be16(&usb->fhci->regs->usb_usbmr, usb->saved_msk);
 	setbits8(&usb->fhci->regs->usb_usmod, USB_MODE_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mdelay(100);
 
@@ -186,11 +140,7 @@ static u32 fhci_usb_disable(struct fhci_hcd *fhci)
 			usb->port_status == FHCI_PORT_LOW)
 		fhci_device_disconnected_interrupt(fhci);
 
-<<<<<<< HEAD
-	clrbits8(&usb->fhci->regs->usb_mod, USB_MODE_EN);
-=======
 	clrbits8(&usb->fhci->regs->usb_usmod, USB_MODE_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -201,17 +151,6 @@ int fhci_ioports_check_bus_state(struct fhci_hcd *fhci)
 	u8 bits = 0;
 
 	/* check USBOE,if transmitting,exit */
-<<<<<<< HEAD
-	if (!gpio_get_value(fhci->gpios[GPIO_USBOE]))
-		return -1;
-
-	/* check USBRP */
-	if (gpio_get_value(fhci->gpios[GPIO_USBRP]))
-		bits |= 0x2;
-
-	/* check USBRN */
-	if (gpio_get_value(fhci->gpios[GPIO_USBRN]))
-=======
 	if (!gpiod_get_value(fhci->gpiods[GPIO_USBOE]))
 		return -1;
 
@@ -221,7 +160,6 @@ int fhci_ioports_check_bus_state(struct fhci_hcd *fhci)
 
 	/* check USBRN */
 	if (gpiod_get_value(fhci->gpiods[GPIO_USBRN]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bits |= 0x1;
 
 	return bits;
@@ -346,15 +284,6 @@ static int fhci_usb_init(struct fhci_hcd *fhci)
 			  USB_E_IDLE_MASK |
 			  USB_E_RESET_MASK | USB_E_SFT_MASK | USB_E_MSF_MASK);
 
-<<<<<<< HEAD
-	out_8(&usb->fhci->regs->usb_mod, USB_MODE_HOST | USB_MODE_EN);
-
-	/* clearing the mask register */
-	out_be16(&usb->fhci->regs->usb_mask, 0);
-
-	/* initialing the event register */
-	out_be16(&usb->fhci->regs->usb_event, 0xffff);
-=======
 	out_8(&usb->fhci->regs->usb_usmod, USB_MODE_HOST | USB_MODE_EN);
 
 	/* clearing the mask register */
@@ -362,7 +291,6 @@ static int fhci_usb_init(struct fhci_hcd *fhci)
 
 	/* initialing the event register */
 	out_be16(&usb->fhci->regs->usb_usber, 0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (endpoint_zero_init(usb, DEFAULT_DATA_MEM, DEFAULT_RING_LEN) != 0) {
 		fhci_usb_free(usb);
@@ -379,15 +307,8 @@ static struct fhci_usb *fhci_create_lld(struct fhci_hcd *fhci)
 
 	/* allocate memory for SCC data structure */
 	usb = kzalloc(sizeof(*usb), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!usb) {
-		fhci_err(fhci, "no memory for SCC data struct\n");
-		return NULL;
-	}
-=======
 	if (!usb)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb->fhci = fhci;
 	usb->hc_list = fhci->hc_list;
@@ -434,21 +355,12 @@ static int fhci_start(struct usb_hcd *hcd)
 	hcd->state = HC_STATE_RUNNING;
 
 	/*
-<<<<<<< HEAD
-	 * From here on, khubd concurrently accesses the root
-	 * hub; drivers will be talking to enumerated devices.
-	 * (On restart paths, khubd already knows about the root
-	 * hub and could find work as soon as we wrote FLAG_CF.)
-	 *
-	 * Before this point the HC was idle/ready.  After, khubd
-=======
 	 * From here on, hub_wq concurrently accesses the root
 	 * hub; drivers will be talking to enumerated devices.
 	 * (On restart paths, hub_wq already knows about the root
 	 * hub and could find work as soon as we wrote FLAG_CF.)
 	 *
 	 * Before this point the HC was idle/ready.  After, hub_wq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and device drivers may start it running.
 	 */
 	fhci_usb_enable(fhci);
@@ -485,10 +397,7 @@ static int fhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 	case PIPE_CONTROL:
 		/* 1 td fro setup,1 for ack */
 		size = 2;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PIPE_BULK:
 		/* one td for every 4096 bytes(can be up to 8k) */
 		size += urb->transfer_buffer_length / 4096;
@@ -500,12 +409,7 @@ static int fhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 			size++;
 		else if ((urb->transfer_flags & URB_ZERO_PACKET) != 0
 			 && (urb->transfer_buffer_length
-<<<<<<< HEAD
-			     % usb_maxpacket(urb->dev, pipe,
-					     usb_pipeout(pipe))) != 0)
-=======
 			     % usb_maxpacket(urb->dev, pipe)) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			size++;
 		break;
 	case PIPE_ISOCHRONOUS:
@@ -635,11 +539,7 @@ static const struct hc_driver fhci_driver = {
 
 	/* generic hardware linkage */
 	.irq = fhci_irq,
-<<<<<<< HEAD
-	.flags = HCD_USB11 | HCD_MEMORY,
-=======
 	.flags = HCD_DMA | HCD_USB11 | HCD_MEMORY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* basic lifecycle operation */
 	.start = fhci_start,
@@ -658,11 +558,7 @@ static const struct hc_driver fhci_driver = {
 	.hub_control = fhci_hub_control,
 };
 
-<<<<<<< HEAD
-static int __devinit of_fhci_probe(struct platform_device *ofdev)
-=======
 static int of_fhci_probe(struct platform_device *ofdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &ofdev->dev;
 	struct device_node *node = dev->of_node;
@@ -735,42 +631,6 @@ static int of_fhci_probe(struct platform_device *ofdev)
 
 	/* GPIOs and pins */
 	for (i = 0; i < NUM_GPIOS; i++) {
-<<<<<<< HEAD
-		int gpio;
-		enum of_gpio_flags flags;
-
-		gpio = of_get_gpio_flags(node, i, &flags);
-		fhci->gpios[i] = gpio;
-		fhci->alow_gpios[i] = flags & OF_GPIO_ACTIVE_LOW;
-
-		if (!gpio_is_valid(gpio)) {
-			if (i < GPIO_SPEED) {
-				dev_err(dev, "incorrect GPIO%d: %d\n",
-					i, gpio);
-				goto err_gpios;
-			} else {
-				dev_info(dev, "assuming board doesn't have "
-					"%s gpio\n", i == GPIO_SPEED ?
-					"speed" : "power");
-				continue;
-			}
-		}
-
-		ret = gpio_request(gpio, dev_name(dev));
-		if (ret) {
-			dev_err(dev, "failed to request gpio %d", i);
-			goto err_gpios;
-		}
-
-		if (i >= GPIO_SPEED) {
-			ret = gpio_direction_output(gpio, 0);
-			if (ret) {
-				dev_err(dev, "failed to set gpio %d as "
-					"an output\n", i);
-				i++;
-				goto err_gpios;
-			}
-=======
 		if (i < GPIO_SPEED)
 			fhci->gpiods[i] = devm_gpiod_get_index(dev,
 					NULL, i, GPIOD_IN);
@@ -788,16 +648,11 @@ static int of_fhci_probe(struct platform_device *ofdev)
 			dev_info(dev, "assuming board doesn't have "
 				 "%s gpio\n", i == GPIO_SPEED ?
 				 "speed" : "power");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	for (j = 0; j < NUM_PINS; j++) {
-<<<<<<< HEAD
-		fhci->pins[j] = qe_pin_request(node, j);
-=======
 		fhci->pins[j] = qe_pin_request(dev, j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(fhci->pins[j])) {
 			ret = PTR_ERR(fhci->pins[j]);
 			dev_err(dev, "can't get pin %d: %d\n", j, ret);
@@ -822,11 +677,7 @@ static int of_fhci_probe(struct platform_device *ofdev)
 
 	/* USB Host interrupt. */
 	usb_irq = irq_of_parse_and_map(node, 0);
-<<<<<<< HEAD
-	if (usb_irq == NO_IRQ) {
-=======
 	if (!usb_irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "could not get usb irq\n");
 		ret = -EINVAL;
 		goto err_usb_irq;
@@ -874,23 +725,15 @@ static int of_fhci_probe(struct platform_device *ofdev)
 	}
 
 	/* Clear and disable any pending interrupts. */
-<<<<<<< HEAD
-	out_be16(&fhci->regs->usb_event, 0xffff);
-	out_be16(&fhci->regs->usb_mask, 0);
-=======
 	out_be16(&fhci->regs->usb_usber, 0xffff);
 	out_be16(&fhci->regs->usb_usbmr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = usb_add_hcd(hcd, usb_irq, 0);
 	if (ret < 0)
 		goto err_add_hcd;
 
-<<<<<<< HEAD
-=======
 	device_wakeup_enable(hcd->self.controller);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fhci_dfs_create(fhci);
 
 	return 0;
@@ -907,13 +750,6 @@ err_pins:
 	while (--j >= 0)
 		qe_pin_free(fhci->pins[j]);
 err_gpios:
-<<<<<<< HEAD
-	while (--i >= 0) {
-		if (gpio_is_valid(fhci->gpios[i]))
-			gpio_free(fhci->gpios[i]);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpm_muram_free(pram_addr);
 err_pram:
 	iounmap(hcd->regs);
@@ -922,50 +758,25 @@ err_regs:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit fhci_remove(struct device *dev)
-{
-	struct usb_hcd *hcd = dev_get_drvdata(dev);
-	struct fhci_hcd *fhci = hcd_to_fhci(hcd);
-	int i;
-=======
 static void fhci_remove(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
 	struct fhci_hcd *fhci = hcd_to_fhci(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int j;
 
 	usb_remove_hcd(hcd);
 	free_irq(fhci->timer->irq, hcd);
 	gtm_put_timer16(fhci->timer);
 	cpm_muram_free(cpm_muram_offset(fhci->pram));
-<<<<<<< HEAD
-	for (i = 0; i < NUM_GPIOS; i++) {
-		if (!gpio_is_valid(fhci->gpios[i]))
-			continue;
-		gpio_free(fhci->gpios[i]);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (j = 0; j < NUM_PINS; j++)
 		qe_pin_free(fhci->pins[j]);
 	fhci_dfs_destroy(fhci);
 	usb_put_hcd(hcd);
-<<<<<<< HEAD
-	return 0;
-}
-
-static int __devexit of_fhci_remove(struct platform_device *ofdev)
-{
-	return fhci_remove(&ofdev->dev);
-=======
 }
 
 static void of_fhci_remove(struct platform_device *ofdev)
 {
 	fhci_remove(&ofdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id of_fhci_match[] = {
@@ -977,18 +788,10 @@ MODULE_DEVICE_TABLE(of, of_fhci_match);
 static struct platform_driver of_fhci_driver = {
 	.driver = {
 		.name = "fsl,usb-fhci",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = of_fhci_match,
-	},
-	.probe		= of_fhci_probe,
-	.remove		= __devexit_p(of_fhci_remove),
-=======
 		.of_match_table = of_fhci_match,
 	},
 	.probe		= of_fhci_probe,
 	.remove_new	= of_fhci_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(of_fhci_driver);

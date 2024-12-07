@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/char_dev.c
  *
@@ -28,40 +25,12 @@
 
 #include "internal.h"
 
-<<<<<<< HEAD
-/*
- * capabilities for /dev/mem, /dev/kmem and similar directly mappable character
- * devices
- * - permits shared-mmap for read, write and/or exec
- * - does not permit private mmap in NOMMU mode (can't do COW)
- * - no readahead or I/O queue unplugging required
- */
-struct backing_dev_info directly_mappable_cdev_bdi = {
-	.name = "char",
-	.capabilities	= (
-#ifdef CONFIG_MMU
-		/* permit private copies of the data to be taken */
-		BDI_CAP_MAP_COPY |
-#endif
-		/* permit direct mmap, for read, write or exec */
-		BDI_CAP_MAP_DIRECT |
-		BDI_CAP_READ_MAP | BDI_CAP_WRITE_MAP | BDI_CAP_EXEC_MAP |
-		/* no writeback happens */
-		BDI_CAP_NO_ACCT_AND_WRITEBACK),
-};
-
-static struct kobj_map *cdev_map;
-
-static DEFINE_MUTEX(chrdevs_lock);
-
-=======
 static struct kobj_map *cdev_map __ro_after_init;
 
 static DEFINE_MUTEX(chrdevs_lock);
 
 #define CHRDEV_MAJOR_HASH_SIZE 255
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct char_device_struct {
 	struct char_device_struct *next;
 	unsigned int major;
@@ -83,37 +52,16 @@ void chrdev_show(struct seq_file *f, off_t offset)
 {
 	struct char_device_struct *cd;
 
-<<<<<<< HEAD
-	if (offset < CHRDEV_MAJOR_HASH_SIZE) {
-		mutex_lock(&chrdevs_lock);
-		for (cd = chrdevs[offset]; cd; cd = cd->next)
-			seq_printf(f, "%3d %s\n", cd->major, cd->name);
-		mutex_unlock(&chrdevs_lock);
-	}
-=======
 	mutex_lock(&chrdevs_lock);
 	for (cd = chrdevs[major_to_index(offset)]; cd; cd = cd->next) {
 		if (cd->major == offset)
 			seq_printf(f, "%3d %s\n", cd->major, cd->name);
 	}
 	mutex_unlock(&chrdevs_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_PROC_FS */
 
-<<<<<<< HEAD
-/*
- * Register a single major with a specified minor range.
- *
- * If major == 0 this functions will dynamically allocate a major and return
- * its number.
- *
- * If major > 0 this function will attempt to reserve the passed range of
- * minors and will return zero on success.
- *
- * Returns a -ve errno on failure.
-=======
 static int find_dynamic_major(void)
 {
 	int i;
@@ -144,18 +92,11 @@ static int find_dynamic_major(void)
  * If major > 0 this function will attempt to reserve the range of minors
  * with given major.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct char_device_struct *
 __register_chrdev_region(unsigned int major, unsigned int baseminor,
 			   int minorct, const char *name)
 {
-<<<<<<< HEAD
-	struct char_device_struct *cd, **cp;
-	int ret = 0;
-	int i;
-
-=======
 	struct char_device_struct *cd, *curr, *prev = NULL;
 	int ret;
 	int i;
@@ -172,28 +113,12 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 		return ERR_PTR(-EINVAL);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd = kzalloc(sizeof(struct char_device_struct), GFP_KERNEL);
 	if (cd == NULL)
 		return ERR_PTR(-ENOMEM);
 
 	mutex_lock(&chrdevs_lock);
 
-<<<<<<< HEAD
-	/* temporary */
-	if (major == 0) {
-		for (i = ARRAY_SIZE(chrdevs)-1; i > 0; i--) {
-			if (chrdevs[i] == NULL)
-				break;
-		}
-
-		if (i == 0) {
-			ret = -EBUSY;
-			goto out;
-		}
-		major = i;
-		ret = major;
-=======
 	if (major == 0) {
 		ret = find_dynamic_major();
 		if (ret < 0) {
@@ -220,47 +145,11 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 			break;
 
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cd->major = major;
 	cd->baseminor = baseminor;
 	cd->minorct = minorct;
-<<<<<<< HEAD
-	strlcpy(cd->name, name, sizeof(cd->name));
-
-	i = major_to_index(major);
-
-	for (cp = &chrdevs[i]; *cp; cp = &(*cp)->next)
-		if ((*cp)->major > major ||
-		    ((*cp)->major == major &&
-		     (((*cp)->baseminor >= baseminor) ||
-		      ((*cp)->baseminor + (*cp)->minorct > baseminor))))
-			break;
-
-	/* Check for overlapping minor ranges.  */
-	if (*cp && (*cp)->major == major) {
-		int old_min = (*cp)->baseminor;
-		int old_max = (*cp)->baseminor + (*cp)->minorct - 1;
-		int new_min = baseminor;
-		int new_max = baseminor + minorct - 1;
-
-		/* New driver overlaps from the left.  */
-		if (new_max >= old_min && new_max <= old_max) {
-			ret = -EBUSY;
-			goto out;
-		}
-
-		/* New driver overlaps from the right.  */
-		if (new_min <= old_max && new_min >= old_min) {
-			ret = -EBUSY;
-			goto out;
-		}
-	}
-
-	cd->next = *cp;
-	*cp = cd;
-=======
 	strscpy(cd->name, name, sizeof(cd->name));
 
 	if (!prev) {
@@ -271,7 +160,6 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 		prev->next = cd;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&chrdevs_lock);
 	return cd;
 out:
@@ -412,11 +300,7 @@ out2:
 }
 
 /**
-<<<<<<< HEAD
- * unregister_chrdev_region() - return a range of device numbers
-=======
  * unregister_chrdev_region() - unregister a range of device numbers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @from: the first in the range of numbers to unregister
  * @count: the number of device numbers to unregister
  *
@@ -466,15 +350,9 @@ static struct kobject *cdev_get(struct cdev *p)
 	struct module *owner = p->owner;
 	struct kobject *kobj;
 
-<<<<<<< HEAD
-	if (owner && !try_module_get(owner))
-		return NULL;
-	kobj = kobject_get(&p->kobj);
-=======
 	if (!try_module_get(owner))
 		return NULL;
 	kobj = kobject_get_unless_zero(&p->kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kobj)
 		module_put(owner);
 	return kobj;
@@ -494,10 +372,7 @@ void cdev_put(struct cdev *p)
  */
 static int chrdev_open(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-=======
 	const struct file_operations *fops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cdev *p;
 	struct cdev *new = NULL;
 	int ret = 0;
@@ -530,18 +405,11 @@ static int chrdev_open(struct inode *inode, struct file *filp)
 		return ret;
 
 	ret = -ENXIO;
-<<<<<<< HEAD
-	filp->f_op = fops_get(p->ops);
-	if (!filp->f_op)
-		goto out_cdev_put;
-
-=======
 	fops = fops_get(p->ops);
 	if (!fops)
 		goto out_cdev_put;
 
 	replace_fops(filp, fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (filp->f_op->open) {
 		ret = filp->f_op->open(inode, filp);
 		if (ret)
@@ -560,10 +428,7 @@ void cd_forget(struct inode *inode)
 	spin_lock(&cdev_lock);
 	list_del_init(&inode->i_devices);
 	inode->i_cdev = NULL;
-<<<<<<< HEAD
-=======
 	inode->i_mapping = &inode->i_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&cdev_lock);
 }
 
@@ -613,11 +478,6 @@ static int exact_lock(dev_t dev, void *data)
  */
 int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 {
-<<<<<<< HEAD
-	p->dev = dev;
-	p->count = count;
-	return kobj_map(cdev_map, dev, count, NULL, exact_match, exact_lock, p);
-=======
 	int error;
 
 	p->dev = dev;
@@ -720,7 +580,6 @@ void cdev_device_del(struct cdev *cdev, struct device *dev)
 	device_del(dev);
 	if (dev->devt)
 		cdev_del(cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cdev_unmap(dev_t dev, unsigned count)
@@ -734,13 +593,10 @@ static void cdev_unmap(dev_t dev, unsigned count)
  *
  * cdev_del() removes @p from the system, possibly freeing the structure
  * itself.
-<<<<<<< HEAD
-=======
  *
  * NOTE: This guarantees that cdev device will no longer be able to be
  * opened, however any cdevs already open will remain and their fops will
  * still be callable even after cdev_del returns.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void cdev_del(struct cdev *p)
 {
@@ -752,29 +608,20 @@ void cdev_del(struct cdev *p)
 static void cdev_default_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
-<<<<<<< HEAD
-	cdev_purge(p);
-=======
 	struct kobject *parent = kobj->parent;
 
 	cdev_purge(p);
 	kobject_put(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cdev_dynamic_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
-<<<<<<< HEAD
-	cdev_purge(p);
-	kfree(p);
-=======
 	struct kobject *parent = kobj->parent;
 
 	cdev_purge(p);
 	kfree(p);
 	kobject_put(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kobj_type ktype_cdev_default = {
@@ -827,10 +674,6 @@ static struct kobject *base_probe(dev_t dev, int *part, void *data)
 void __init chrdev_init(void)
 {
 	cdev_map = kobj_map_init(base_probe, &chrdevs_lock);
-<<<<<<< HEAD
-	bdi_init(&directly_mappable_cdev_bdi);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -842,14 +685,8 @@ EXPORT_SYMBOL(cdev_init);
 EXPORT_SYMBOL(cdev_alloc);
 EXPORT_SYMBOL(cdev_del);
 EXPORT_SYMBOL(cdev_add);
-<<<<<<< HEAD
-EXPORT_SYMBOL(__register_chrdev);
-EXPORT_SYMBOL(__unregister_chrdev);
-EXPORT_SYMBOL(directly_mappable_cdev_bdi);
-=======
 EXPORT_SYMBOL(cdev_set_parent);
 EXPORT_SYMBOL(cdev_device_add);
 EXPORT_SYMBOL(cdev_device_del);
 EXPORT_SYMBOL(__register_chrdev);
 EXPORT_SYMBOL(__unregister_chrdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

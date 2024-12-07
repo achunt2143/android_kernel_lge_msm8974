@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/*
- * wm8960.h  --  WM8960 Soc Audio driver platform data
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * wm8960.h  --  WM8960 Soc Audio driver platform data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8960_PDATA_H
@@ -24,9 +15,6 @@
 struct wm8960_data {
 	bool capless;  /* Headphone outputs configured in capless mode */
 
-<<<<<<< HEAD
-	int dres;  /* Discharge resistance for headphone outputs */
-=======
 	bool shared_lrclk;  /* DAC and ADC LRCLKs are wired together */
 
 	/*
@@ -45,7 +33,6 @@ struct wm8960_data {
 	 * gpio_cfg[1]: {GPIOPOL:GPIOSEL[2:0]} of R48 (Additional Control 4).
 	 */
 	u32 gpio_cfg[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

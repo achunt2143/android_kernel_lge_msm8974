@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c) 2011 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c) 2011-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ql4_def.h"
@@ -453,11 +445,6 @@ leave:
 	return rval;
 }
 
-<<<<<<< HEAD
-/**
- * qla4xxx_process_vendor_specific - handle vendor specific bsg request
- * @job: iscsi_bsg_job to handle
-=======
 static void ql4xxx_execute_diag_cmd(struct bsg_job *bsg_job)
 {
 	struct Scsi_Host *host = iscsi_job_to_shost(bsg_job);
@@ -818,7 +805,6 @@ static int qla4xxx_execute_diag_test(struct bsg_job *bsg_job)
 /**
  * qla4xxx_process_vendor_specific - handle vendor specific bsg request
  * @bsg_job: iscsi_bsg_job to handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job)
 {
@@ -849,12 +835,9 @@ int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job)
 	case QLISCSI_VND_GET_ACB:
 		return qla4xxx_bsg_get_acb(bsg_job);
 
-<<<<<<< HEAD
-=======
 	case QLISCSI_VND_DIAG_TEST:
 		return qla4xxx_execute_diag_test(bsg_job);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ql4_printk(KERN_ERR, ha, "%s: invalid BSG vendor command: "
 			   "0x%x\n", __func__, bsg_req->msgcode);
@@ -868,11 +851,7 @@ int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job)
 
 /**
  * qla4xxx_bsg_request - handle bsg request from ISCSI transport
-<<<<<<< HEAD
- * @job: iscsi_bsg_job to handle
-=======
  * @bsg_job: iscsi_bsg_job to handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int qla4xxx_bsg_request(struct bsg_job *bsg_job)
 {

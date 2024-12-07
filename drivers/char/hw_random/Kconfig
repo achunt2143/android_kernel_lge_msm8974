@@ -1,42 +1,16 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Hardware Random Number Generator (RNG) configuration
 #
 
-<<<<<<< HEAD
-config HW_RANDOM
-	tristate "Hardware Random Number Generator Core support"
-	default m
-	---help---
-=======
 menuconfig HW_RANDOM
 	tristate "Hardware Random Number Generator Core support"
 	default m
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Hardware Random Number Generator Core infrastructure.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called rng-core.  This provides a device
-<<<<<<< HEAD
-	  that's usually called /dev/hw_random, and which exposes one
-	  of possibly several hardware random number generators.
-
-	  These hardware random number generators do not feed directly
-	  into the kernel's random number generator.  That is usually
-	  handled by the "rngd" daemon.  Documentation/hw_random.txt
-	  has more information.
-
-	  If unsure, say Y.
-
-config HW_RANDOM_TIMERIOMEM
-	tristate "Timer IOMEM HW Random Number Generator support"
-	depends on HW_RANDOM && HAS_IOMEM
-	---help---
-=======
 	  that's usually called /dev/hwrng, and which exposes one
 	  of possibly several hardware random number generators.
 
@@ -51,7 +25,6 @@ config HW_RANDOM_TIMERIOMEM
 	tristate "Timer IOMEM HW Random Number Generator support"
 	depends on HAS_IOMEM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for a generic Random
 	  Number Generator used by reading a 'dumb' iomem address that
 	  is to be read no faster than, for example, once a second;
@@ -64,15 +37,9 @@ config HW_RANDOM_TIMERIOMEM
 
 config HW_RANDOM_INTEL
 	tristate "Intel HW Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && (X86 || IA64) && PCI
-	default HW_RANDOM
-	---help---
-=======
 	depends on (X86 || COMPILE_TEST) && PCI
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on Intel i8xx-based motherboards.
 
@@ -83,16 +50,10 @@ config HW_RANDOM_INTEL
 
 config HW_RANDOM_AMD
 	tristate "AMD HW Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && (X86 || PPC_MAPLE) && PCI
-	default HW_RANDOM
-	---help---
-=======
 	depends on (X86 || PPC_MAPLE || COMPILE_TEST)
 	depends on PCI && HAS_IOPORT_MAP
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on AMD 76x-based motherboards.
 
@@ -103,15 +64,9 @@ config HW_RANDOM_AMD
 
 config HW_RANDOM_ATMEL
 	tristate "Atmel Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && ARCH_AT91SAM9G45
-	default HW_RANDOM
-	---help---
-=======
 	depends on (ARCH_AT91 || COMPILE_TEST)
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on Atmel AT91 devices.
 
@@ -120,13 +75,6 @@ config HW_RANDOM_ATMEL
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config HW_RANDOM_GEODE
-	tristate "AMD Geode HW Random Number Generator support"
-	depends on HW_RANDOM && X86_32 && PCI
-	default HW_RANDOM
-	---help---
-=======
 config HW_RANDOM_BA431
 	tristate "Silex Insight BA431 Random Number Generator support"
 	depends on HAS_IOMEM
@@ -170,7 +118,6 @@ config HW_RANDOM_GEODE
 	depends on PCI
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on the AMD Geode LX.
 
@@ -181,15 +128,9 @@ config HW_RANDOM_GEODE
 
 config HW_RANDOM_N2RNG
 	tristate "Niagara2 Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && SPARC64
-	default HW_RANDOM
-	---help---
-=======
 	depends on SPARC64
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on Niagara2 cpus.
 
@@ -200,15 +141,9 @@ config HW_RANDOM_N2RNG
 
 config HW_RANDOM_VIA
 	tristate "VIA HW Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && X86
-	default HW_RANDOM
-	---help---
-=======
 	depends on X86
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on VIA based motherboards.
 
@@ -218,21 +153,12 @@ config HW_RANDOM_VIA
 	  If unsure, say Y.
 
 config HW_RANDOM_IXP4XX
-<<<<<<< HEAD
-	tristate "Intel IXP4xx NPU HW Random Number Generator support"
-	depends on HW_RANDOM && ARCH_IXP4XX
-	default HW_RANDOM
-	---help---
-	  This driver provides kernel-side support for the Random
-	  Number Generator hardware found on the Intel IXP4xx NPU.
-=======
 	tristate "Intel IXP4xx NPU HW Pseudo-Random Number Generator support"
 	depends on ARCH_IXP4XX || COMPILE_TEST
 	default HW_RANDOM
 	help
 	  This driver provides kernel-side support for the Pseudo-Random
 	  Number Generator hardware found on the Intel IXP45x/46x NPU.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called ixp4xx-rng.
@@ -241,34 +167,16 @@ config HW_RANDOM_IXP4XX
 
 config HW_RANDOM_OMAP
 	tristate "OMAP Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && (ARCH_OMAP16XX || ARCH_OMAP2)
-	default HW_RANDOM
- 	---help---
- 	  This driver provides kernel-side support for the Random Number
-	  Generator hardware found on OMAP16xx and OMAP24xx multimedia
-	  processors.
-=======
 	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS || ARCH_MVEBU || ARCH_K3 || COMPILE_TEST
 	default HW_RANDOM
 	help
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on OMAP16xx, OMAP2/3/4/5, AM33xx/AM43xx
 	  multimedia processors, and Marvell Armada 7k/8k SoCs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called omap-rng.
 
-<<<<<<< HEAD
- 	  If unsure, say Y.
-
-config HW_RANDOM_OCTEON
-	tristate "Octeon Random Number Generator support"
-	depends on HW_RANDOM && CPU_CAVIUM_OCTEON
-	default HW_RANDOM
-	---help---
-=======
 	  If unsure, say Y.
 
 config HW_RANDOM_OMAP3_ROM
@@ -289,7 +197,6 @@ config HW_RANDOM_OCTEON
 	depends on CAVIUM_OCTEON_SOC
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on Octeon processors.
 
@@ -300,15 +207,9 @@ config HW_RANDOM_OCTEON
 
 config HW_RANDOM_PASEMI
 	tristate "PA Semi HW Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && PPC_PASEMI
-	default HW_RANDOM
-	---help---
-=======
 	depends on PPC_PASEMI || (PPC && COMPILE_TEST)
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on PA Semi PWRficient SoCs.
 
@@ -319,44 +220,19 @@ config HW_RANDOM_PASEMI
 
 config HW_RANDOM_VIRTIO
 	tristate "VirtIO Random Number Generator support"
-<<<<<<< HEAD
-	depends on HW_RANDOM && VIRTIO
-	---help---
-=======
 	depends on VIRTIO
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the virtual Random Number
 	  Generator hardware.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called virtio-rng.  If unsure, say N.
 
-<<<<<<< HEAD
-config HW_RANDOM_TX4939
-	tristate "TX4939 Random Number Generator support"
-	depends on HW_RANDOM && SOC_TX4939
-	default HW_RANDOM
-	---help---
-	  This driver provides kernel-side support for the Random Number
-	  Generator hardware found on TX4939 SoC.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called tx4939-rng.
-
-	  If unsure, say Y.
-
-config HW_RANDOM_MXC_RNGA
-	tristate "Freescale i.MX RNGA Random Number Generator"
-	depends on HW_RANDOM && ARCH_HAS_RNGA
-	---help---
-=======
 config HW_RANDOM_MXC_RNGA
 	tristate "Freescale i.MX RNGA Random Number Generator"
 	depends on SOC_IMX31 || COMPILE_TEST
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on Freescale i.MX processors.
 
@@ -365,12 +241,6 @@ config HW_RANDOM_MXC_RNGA
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config HW_RANDOM_NOMADIK
-	tristate "ST-Ericsson Nomadik Random Number Generator support"
-	depends on HW_RANDOM && PLAT_NOMADIK
-	---help---
-=======
 config HW_RANDOM_IMX_RNGC
 	tristate "Freescale i.MX RNGC Random Number Generator"
 	depends on HAS_IOMEM
@@ -418,7 +288,6 @@ config HW_RANDOM_NOMADIK
 	depends on ARCH_NOMADIK || COMPILE_TEST
 	default HW_RANDOM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides kernel-side support for the Random Number
 	  Generator hardware found on ST-Ericsson SoCs (8815 and 8500).
 
@@ -427,35 +296,6 @@ config HW_RANDOM_NOMADIK
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config HW_RANDOM_PICOXCELL
-	tristate "Picochip picoXcell true random number generator support"
-	depends on HW_RANDOM && ARCH_PICOXCELL && PICOXCELL_PC3X3
-	---help---
-	  This driver provides kernel-side support for the Random Number
-	  Generator hardware found on Picochip PC3x3 and later devices.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called picoxcell-rng.
-
-	  If unsure, say Y.
-
-config HW_RANDOM_PPC4XX
-	tristate "PowerPC 4xx generic true random number generator support"
-	depends on HW_RANDOM && PPC && 4xx
-	---help---
-	 This driver provides the kernel-side support for the TRNG hardware
-	 found in the security function of some PowerPC 4xx SoCs.
-
-	 To compile this driver as a module, choose M here: the
-	 module will be called ppc4xx-rng.
-
-	 If unsure, say N.
-
-config UML_RANDOM
-	depends on UML
-	tristate "Hardware random number generator"
-=======
 config HW_RANDOM_PSERIES
 	tristate "pSeries HW Random Number Generator support"
 	depends on PPC64 && IBMVIO
@@ -739,37 +579,13 @@ config UML_RANDOM
 	depends on UML
 	select HW_RANDOM
 	tristate "UML Random Number Generator support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables UML's "hardware" random number generator.  It
 	  attaches itself to the host's /dev/random, supplying as much entropy
 	  as the host has, rather than the small amount the UML gets from its
-<<<<<<< HEAD
-	  own drivers.  It registers itself as a standard hardware random number
-	  generator, major 10, minor 183, and the canonical device name is
-	  /dev/hwrng.
-	  The way to make use of this is to install the rng-tools package
-	  (check your distro, or download from
-	  http://sourceforge.net/projects/gkernel/).  rngd periodically reads
-	  /dev/hwrng and injects the entropy into /dev/random.
-
-config HW_RANDOM_MSM
-	tristate "Qualcomm MSM Random Number Generator support"
-	depends on HW_RANDOM && ARCH_MSM
-	select CRYPTO_AES
-	select CRYPTO_ECB
-	default n
-	---help---
-	  This driver provides kernel-side support for the Random Number
-	  Generator hardware found on Qualcomm MSM SoCs.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called msm_rng.
-=======
 	  own drivers. It registers itself as a rng-core driver thus providing
 	  a device which is usually called /dev/hwrng. This hardware random
 	  number generator does feed into the kernel's random number generator
 	  entropy pool.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say Y.

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* reboot.c: reboot/shutdown/halt/poweroff handling
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
@@ -10,10 +7,7 @@
 #include <linux/reboot.h>
 #include <linux/export.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/oplib.h>
 #include <asm/prom.h>
@@ -32,11 +26,7 @@ EXPORT_SYMBOL(pm_power_off);
 
 void machine_power_off(void)
 {
-<<<<<<< HEAD
-	if (strcmp(of_console_device->type, "serial") || scons_pwroff)
-=======
 	if (!of_node_is_type(of_console_device, "serial") || scons_pwroff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prom_halt_power_off();
 
 	prom_halt();

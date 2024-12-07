@@ -1,50 +1,26 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-orion5x/ts78xx-setup.c
  *
  * Maintainer: Alexander Clouter <alex@digriz.org.uk>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/sysfs.h>
 #include <linux/platform_device.h>
 #include <linux/mv643xx_eth.h>
 #include <linux/ata_platform.h>
-<<<<<<< HEAD
-#include <linux/m48t86.h>
-#include <linux/mtd/nand.h>
-#include <linux/mtd/partitions.h>
-=======
 #include <linux/mtd/platnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timeriomem-rng.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
-<<<<<<< HEAD
-#include <mach/orion5x.h>
-#include "common.h"
-#include "mpp.h"
-=======
 #include "common.h"
 #include "mpp.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ts78xx-fpga.h"
 
 /*****************************************************************************
@@ -55,11 +31,7 @@
  * FPGA - lives where the PCI bus would be at ORION5X_PCI_MEM_PHYS_BASE
  */
 #define TS78XX_FPGA_REGS_PHYS_BASE	0xe8000000
-<<<<<<< HEAD
-#define TS78XX_FPGA_REGS_VIRT_BASE	0xff900000
-=======
 #define TS78XX_FPGA_REGS_VIRT_BASE	IOMEM(0xff900000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TS78XX_FPGA_REGS_SIZE		SZ_1M
 
 static struct ts78xx_fpga_data ts78xx_fpga = {
@@ -73,22 +45,14 @@ static struct ts78xx_fpga_data ts78xx_fpga = {
  ****************************************************************************/
 static struct map_desc ts78xx_io_desc[] __initdata = {
 	{
-<<<<<<< HEAD
-		.virtual	= TS78XX_FPGA_REGS_VIRT_BASE,
-=======
 		.virtual	= (unsigned long)TS78XX_FPGA_REGS_VIRT_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(TS78XX_FPGA_REGS_PHYS_BASE),
 		.length		= TS78XX_FPGA_REGS_SIZE,
 		.type		= MT_DEVICE,
 	},
 };
 
-<<<<<<< HEAD
-void __init ts78xx_map_io(void)
-=======
 static void __init ts78xx_map_io(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	orion5x_map_io();
 	iotable_init(ts78xx_io_desc, ARRAY_SIZE(ts78xx_io_desc));
@@ -111,86 +75,17 @@ static struct mv_sata_platform_data ts78xx_sata_data = {
 /*****************************************************************************
  * RTC M48T86 - nicked^Wborrowed from arch/arm/mach-ep93xx/ts72xx.c
  ****************************************************************************/
-<<<<<<< HEAD
-#define TS_RTC_CTRL	(TS78XX_FPGA_REGS_VIRT_BASE | 0x808)
-#define TS_RTC_DATA	(TS78XX_FPGA_REGS_VIRT_BASE | 0x80c)
-
-static unsigned char ts78xx_ts_rtc_readbyte(unsigned long addr)
-{
-	writeb(addr, TS_RTC_CTRL);
-	return readb(TS_RTC_DATA);
-}
-
-static void ts78xx_ts_rtc_writebyte(unsigned char value, unsigned long addr)
-{
-	writeb(addr, TS_RTC_CTRL);
-	writeb(value, TS_RTC_DATA);
-}
-
-static struct m48t86_ops ts78xx_ts_rtc_ops = {
-	.readbyte	= ts78xx_ts_rtc_readbyte,
-	.writebyte	= ts78xx_ts_rtc_writebyte,
-=======
 #define TS_RTC_CTRL	(TS78XX_FPGA_REGS_PHYS_BASE + 0x808)
 #define TS_RTC_DATA	(TS78XX_FPGA_REGS_PHYS_BASE + 0x80c)
 
 static struct resource ts78xx_ts_rtc_resources[] = {
 	DEFINE_RES_MEM(TS_RTC_CTRL, 0x01),
 	DEFINE_RES_MEM(TS_RTC_DATA, 0x01),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ts78xx_ts_rtc_device = {
 	.name		= "rtc-m48t86",
 	.id		= -1,
-<<<<<<< HEAD
-	.dev		= {
-		.platform_data	= &ts78xx_ts_rtc_ops,
-	},
-	.num_resources	= 0,
-};
-
-/*
- * TS uses some of the user storage space on the RTC chip so see if it is
- * present; as it's an optional feature at purchase time and not all boards
- * will have it present
- *
- * I've used the method TS use in their rtc7800.c example for the detection
- *
- * TODO: track down a guinea pig without an RTC to see if we can work out a
- * 		better RTC detection routine
- */
-static int ts78xx_ts_rtc_load(void)
-{
-	int rc;
-	unsigned char tmp_rtc0, tmp_rtc1;
-
-	tmp_rtc0 = ts78xx_ts_rtc_readbyte(126);
-	tmp_rtc1 = ts78xx_ts_rtc_readbyte(127);
-
-	ts78xx_ts_rtc_writebyte(0x00, 126);
-	ts78xx_ts_rtc_writebyte(0x55, 127);
-	if (ts78xx_ts_rtc_readbyte(127) == 0x55) {
-		ts78xx_ts_rtc_writebyte(0xaa, 127);
-		if (ts78xx_ts_rtc_readbyte(127) == 0xaa
-				&& ts78xx_ts_rtc_readbyte(126) == 0x00) {
-			ts78xx_ts_rtc_writebyte(tmp_rtc0, 126);
-			ts78xx_ts_rtc_writebyte(tmp_rtc1, 127);
-
-			if (ts78xx_fpga.supports.ts_rtc.init == 0) {
-				rc = platform_device_register(&ts78xx_ts_rtc_device);
-				if (!rc)
-					ts78xx_fpga.supports.ts_rtc.init = 1;
-			} else
-				rc = platform_device_add(&ts78xx_ts_rtc_device);
-
-			return rc;
-		}
-	}
-
-	return -ENODEV;
-};
-=======
 	.resource	= ts78xx_ts_rtc_resources,
 	.num_resources 	= ARRAY_SIZE(ts78xx_ts_rtc_resources),
 };
@@ -212,7 +107,6 @@ static int ts78xx_ts_rtc_load(void)
 
 	return rc;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ts78xx_ts_rtc_unload(void)
 {
@@ -222,13 +116,8 @@ static void ts78xx_ts_rtc_unload(void)
 /*****************************************************************************
  * NAND Flash
  ****************************************************************************/
-<<<<<<< HEAD
-#define TS_NAND_CTRL	(TS78XX_FPGA_REGS_VIRT_BASE | 0x800)	/* VIRT */
-#define TS_NAND_DATA	(TS78XX_FPGA_REGS_PHYS_BASE | 0x804)	/* PHYS */
-=======
 #define TS_NAND_CTRL	(TS78XX_FPGA_REGS_VIRT_BASE + 0x800)	/* VIRT */
 #define TS_NAND_DATA	(TS78XX_FPGA_REGS_PHYS_BASE + 0x804)	/* PHYS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * hardware specific access to control-lines
@@ -238,17 +127,9 @@ static void ts78xx_ts_rtc_unload(void)
  * NAND_CLE: bit 1 -> bit 1
  * NAND_ALE: bit 2 -> bit 0
  */
-<<<<<<< HEAD
-static void ts78xx_ts_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
-			unsigned int ctrl)
-{
-	struct nand_chip *this = mtd->priv;
-
-=======
 static void ts78xx_ts_nand_cmd_ctrl(struct nand_chip *this, int cmd,
 				    unsigned int ctrl)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ctrl & NAND_CTRL_CHANGE) {
 		unsigned char bits;
 
@@ -260,33 +141,18 @@ static void ts78xx_ts_nand_cmd_ctrl(struct nand_chip *this, int cmd,
 	}
 
 	if (cmd != NAND_CMD_NONE)
-<<<<<<< HEAD
-		writeb(cmd, this->IO_ADDR_W);
-}
-
-static int ts78xx_ts_nand_dev_ready(struct mtd_info *mtd)
-=======
 		writeb(cmd, this->legacy.IO_ADDR_W);
 }
 
 static int ts78xx_ts_nand_dev_ready(struct nand_chip *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readb(TS_NAND_CTRL) & 0x20;
 }
 
-<<<<<<< HEAD
-static void ts78xx_ts_nand_write_buf(struct mtd_info *mtd,
-			const uint8_t *buf, int len)
-{
-	struct nand_chip *chip = mtd->priv;
-	void __iomem *io_base = chip->IO_ADDR_W;
-=======
 static void ts78xx_ts_nand_write_buf(struct nand_chip *chip,
 				     const uint8_t *buf, int len)
 {
 	void __iomem *io_base = chip->legacy.IO_ADDR_W;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long off = ((unsigned long)buf & 3);
 	int sz;
 
@@ -309,18 +175,10 @@ static void ts78xx_ts_nand_write_buf(struct nand_chip *chip,
 		writesb(io_base, buf, len);
 }
 
-<<<<<<< HEAD
-static void ts78xx_ts_nand_read_buf(struct mtd_info *mtd,
-			uint8_t *buf, int len)
-{
-	struct nand_chip *chip = mtd->priv;
-	void __iomem *io_base = chip->IO_ADDR_R;
-=======
 static void ts78xx_ts_nand_read_buf(struct nand_chip *chip,
 				    uint8_t *buf, int len)
 {
 	void __iomem *io_base = chip->legacy.IO_ADDR_R;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long off = ((unsigned long)buf & 3);
 	int sz;
 
@@ -343,11 +201,6 @@ static void ts78xx_ts_nand_read_buf(struct nand_chip *chip,
 		readsb(io_base, buf, len);
 }
 
-<<<<<<< HEAD
-const char *ts_nand_part_probes[] = { "cmdlinepart", NULL };
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mtd_partition ts78xx_ts_nand_parts[] = {
 	{
 		.name		= "mbr",
@@ -372,10 +225,6 @@ static struct mtd_partition ts78xx_ts_nand_parts[] = {
 static struct platform_nand_data ts78xx_ts_nand_data = {
 	.chip	= {
 		.nr_chips		= 1,
-<<<<<<< HEAD
-		.part_probe_types	= ts_nand_part_probes,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.partitions		= ts78xx_ts_nand_parts,
 		.nr_partitions		= ARRAY_SIZE(ts78xx_ts_nand_parts),
 		.chip_delay		= 15,
@@ -396,16 +245,8 @@ static struct platform_nand_data ts78xx_ts_nand_data = {
 	},
 };
 
-<<<<<<< HEAD
-static struct resource ts78xx_ts_nand_resources = {
-	.start		= TS_NAND_DATA,
-	.end		= TS_NAND_DATA + 4,
-	.flags		= IORESOURCE_MEM,
-};
-=======
 static struct resource ts78xx_ts_nand_resources
 			= DEFINE_RES_MEM(TS_NAND_DATA, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device ts78xx_ts_nand_device = {
 	.name		= "gen_nand",
@@ -428,11 +269,8 @@ static int ts78xx_ts_nand_load(void)
 	} else
 		rc = platform_device_add(&ts78xx_ts_nand_device);
 
-<<<<<<< HEAD
-=======
 	if (rc)
 		pr_info("NAND could not be registered: %d\n", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 };
 
@@ -446,16 +284,8 @@ static void ts78xx_ts_nand_unload(void)
  ****************************************************************************/
 #define TS_RNG_DATA	(TS78XX_FPGA_REGS_PHYS_BASE | 0x044)
 
-<<<<<<< HEAD
-static struct resource ts78xx_ts_rng_resource = {
-	.flags		= IORESOURCE_MEM,
-	.start		= TS_RNG_DATA,
-	.end		= TS_RNG_DATA + 4 - 1,
-};
-=======
 static struct resource ts78xx_ts_rng_resource
 			= DEFINE_RES_MEM(TS_RNG_DATA, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct timeriomem_rng_data ts78xx_ts_rng_data = {
 	.period		= 1000000, /* one second */
@@ -482,11 +312,8 @@ static int ts78xx_ts_rng_load(void)
 	} else
 		rc = platform_device_add(&ts78xx_ts_rng_device);
 
-<<<<<<< HEAD
-=======
 	if (rc)
 		pr_info("RNG could not be registered: %d\n", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 };
 
@@ -526,13 +353,8 @@ static void ts78xx_fpga_supports(void)
 		/* enable devices if magic matches */
 		switch ((ts78xx_fpga.id >> 8) & 0xffffff) {
 		case TS7800_FPGA_MAGIC:
-<<<<<<< HEAD
-			pr_warning("TS-7800 FPGA: unrecognized revision 0x%.2x\n",
-					ts78xx_fpga.id & 0xff);
-=======
 			pr_warn("unrecognised FPGA revision 0x%.2x\n",
 				ts78xx_fpga.id & 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ts78xx_fpga.supports.ts_rtc.present = 1;
 			ts78xx_fpga.supports.ts_nand.present = 1;
 			ts78xx_fpga.supports.ts_rng.present = 1;
@@ -551,41 +373,20 @@ static int ts78xx_fpga_load_devices(void)
 
 	if (ts78xx_fpga.supports.ts_rtc.present == 1) {
 		tmp = ts78xx_ts_rtc_load();
-<<<<<<< HEAD
-		if (tmp) {
-			pr_info("TS-78xx: RTC not registered\n");
-			ts78xx_fpga.supports.ts_rtc.present = 0;
-		}
-=======
 		if (tmp)
 			ts78xx_fpga.supports.ts_rtc.present = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret |= tmp;
 	}
 	if (ts78xx_fpga.supports.ts_nand.present == 1) {
 		tmp = ts78xx_ts_nand_load();
-<<<<<<< HEAD
-		if (tmp) {
-			pr_info("TS-78xx: NAND not registered\n");
-			ts78xx_fpga.supports.ts_nand.present = 0;
-		}
-=======
 		if (tmp)
 			ts78xx_fpga.supports.ts_nand.present = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret |= tmp;
 	}
 	if (ts78xx_fpga.supports.ts_rng.present == 1) {
 		tmp = ts78xx_ts_rng_load();
-<<<<<<< HEAD
-		if (tmp) {
-			pr_info("TS-78xx: RNG not registered\n");
-			ts78xx_fpga.supports.ts_rng.present = 0;
-		}
-=======
 		if (tmp)
 			ts78xx_fpga.supports.ts_rng.present = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret |= tmp;
 	}
 
@@ -594,10 +395,6 @@ static int ts78xx_fpga_load_devices(void)
 
 static int ts78xx_fpga_unload_devices(void)
 {
-<<<<<<< HEAD
-	int ret = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ts78xx_fpga.supports.ts_rtc.present == 1)
 		ts78xx_ts_rtc_unload();
@@ -606,22 +403,14 @@ static int ts78xx_fpga_unload_devices(void)
 	if (ts78xx_fpga.supports.ts_rng.present == 1)
 		ts78xx_ts_rng_unload();
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ts78xx_fpga_load(void)
 {
 	ts78xx_fpga.id = readl(TS78XX_FPGA_REGS_VIRT_BASE);
 
-<<<<<<< HEAD
-	pr_info("TS-78xx FPGA: magic=0x%.6x, rev=0x%.2x\n",
-=======
 	pr_info("FPGA magic=0x%.6x, rev=0x%.2x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(ts78xx_fpga.id >> 8) & 0xffffff,
 			ts78xx_fpga.id & 0xff);
 
@@ -649,11 +438,7 @@ static int ts78xx_fpga_unload(void)
 	 * UrJTAG SVN since r1381 can be used to reprogram the FPGA
 	 */
 	if (ts78xx_fpga.id != fpga_id) {
-<<<<<<< HEAD
-		pr_err("TS-78xx FPGA: magic/rev mismatch\n"
-=======
 		pr_err("FPGA magic/rev mismatch\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"TS-78xx FPGA: was 0x%.6x/%.2x but now 0x%.6x/%.2x\n",
 			(ts78xx_fpga.id >> 8) & 0xffffff, ts78xx_fpga.id & 0xff,
 			(fpga_id >> 8) & 0xffffff, fpga_id & 0xff);
@@ -684,11 +469,7 @@ static ssize_t ts78xx_fpga_store(struct kobject *kobj,
 	int value, ret;
 
 	if (ts78xx_fpga.state < 0) {
-<<<<<<< HEAD
-		pr_err("TS-78xx FPGA: borked, you must powercycle asap\n");
-=======
 		pr_err("FPGA borked, you must powercycle ASAP\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -696,15 +477,8 @@ static ssize_t ts78xx_fpga_store(struct kobject *kobj,
 		value = 1;
 	else if (strncmp(buf, "offline", sizeof("offline") - 1) == 0)
 		value = 0;
-<<<<<<< HEAD
-	else {
-		pr_err("ts78xx_fpga_store: Invalid value\n");
-		return -EINVAL;
-	}
-=======
 	else
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ts78xx_fpga.state == value)
 		return n;
@@ -782,11 +556,7 @@ static void __init ts78xx_init(void)
 	/* FPGA init */
 	ts78xx_fpga_devices_zero_init();
 	ret = ts78xx_fpga_load();
-<<<<<<< HEAD
-	ret = sysfs_create_file(power_kobj, &ts78xx_fpga_attr.attr);
-=======
 	ret = sysfs_create_file(firmware_kobj, &ts78xx_fpga_attr.attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		pr_err("sysfs_create_file failed: %d\n", ret);
 }
@@ -794,18 +564,11 @@ static void __init ts78xx_init(void)
 MACHINE_START(TS78XX, "Technologic Systems TS-78xx SBC")
 	/* Maintainer: Alexander Clouter <alex@digriz.org.uk> */
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= ORION5X_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= ts78xx_init,
 	.map_io		= ts78xx_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
-<<<<<<< HEAD
-	.timer		= &orion5x_timer,
-=======
 	.init_time	= orion5x_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= orion5x_restart,
 MACHINE_END

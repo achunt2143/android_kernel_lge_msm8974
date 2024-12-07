@@ -1,27 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Function to determine if a thread group is single threaded or not
  *
  * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
  * - Derived from security/selinux/hooks.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
- */
-
-#include <linux/sched.h>
-=======
  */
 #include <linux/sched/signal.h>
 #include <linux/sched/task.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns true if the task does not share ->mm with another thread/process.
@@ -47,12 +33,7 @@ bool current_is_single_threaded(void)
 		if (unlikely(p == task->group_leader))
 			continue;
 
-<<<<<<< HEAD
-		t = p;
-		do {
-=======
 		for_each_thread(p, t) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(t->mm == mm))
 				goto found;
 			if (likely(t->mm))
@@ -63,11 +44,7 @@ bool current_is_single_threaded(void)
 			 * forked before exiting.
 			 */
 			smp_rmb();
-<<<<<<< HEAD
-		} while_each_thread(p, t);
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ret = true;
 found:

@@ -1,50 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  /***************************************************************************
  *
  * Copyright (C) 2007-2008 SMSC
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *****************************************************************************/
 
 #include <linux/module.h>
 #include <linux/kmod.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
 #include <linux/mii.h>
 #include <linux/usb.h>
-<<<<<<< HEAD
-#include <linux/crc32.h>
-#include <linux/usb/usbnet.h>
-#include <linux/slab.h>
-#include "smsc95xx.h"
-
-#define SMSC_CHIPNAME			"smsc95xx"
-#define SMSC_DRIVER_VERSION		"1.0.4"
-=======
 #include <linux/bitrev.h>
 #include <linux/crc16.h>
 #include <linux/crc32.h>
@@ -61,7 +28,6 @@
 
 #define SMSC_CHIPNAME			"smsc95xx"
 #define SMSC_DRIVER_VERSION		"2.0.0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HS_USB_PKT_SIZE			(512)
 #define FS_USB_PKT_SIZE			(64)
 #define DEFAULT_HS_BURST_CAP_SIZE	(16 * 1024 + 5 * HS_USB_PKT_SIZE)
@@ -75,8 +41,6 @@
 #define SMSC95XX_INTERNAL_PHY_ID	(1)
 #define SMSC95XX_TX_OVERHEAD		(8)
 #define SMSC95XX_TX_OVERHEAD_CSUM	(12)
-<<<<<<< HEAD
-=======
 #define SUPPORTED_WAKE			(WAKE_PHY | WAKE_UCAST | WAKE_BCAST | \
 					 WAKE_MCAST | WAKE_ARP | WAKE_MAGIC)
 
@@ -93,20 +57,11 @@
 
 #define SMSC95XX_NR_IRQS		(1) /* raise to 12 for GPIOs */
 #define PHY_HWIRQ			(SMSC95XX_NR_IRQS - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct smsc95xx_priv {
 	u32 mac_cr;
 	u32 hash_hi;
 	u32 hash_lo;
-<<<<<<< HEAD
-	spinlock_t mac_cr_lock;
-};
-
-struct usb_context {
-	struct usb_ctrlrequest req;
-	struct usbnet *dev;
-=======
 	u32 wolopts;
 	spinlock_t mac_cr_lock;
 	u8 features;
@@ -118,36 +73,12 @@ struct usb_context {
 	struct mii_bus *mdiobus;
 	struct phy_device *phydev;
 	struct task_struct *pm_task;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static bool turbo_mode = true;
 module_param(turbo_mode, bool, 0644);
 MODULE_PARM_DESC(turbo_mode, "Enable multiple frames per Rx transaction");
 
-<<<<<<< HEAD
-static int smsc95xx_read_reg(struct usbnet *dev, u32 index, u32 *data)
-{
-	u32 *buf = kmalloc(4, GFP_KERNEL);
-	int ret;
-
-	BUG_ON(!dev);
-
-	if (!buf)
-		return -ENOMEM;
-
-	ret = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
-		USB_VENDOR_REQUEST_READ_REGISTER,
-		USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		00, index, buf, 4, USB_CTRL_GET_TIMEOUT);
-
-	if (unlikely(ret < 0))
-		netdev_warn(dev->net, "Failed to read register index 0x%08x\n", index);
-
-	le32_to_cpus(buf);
-	*data = *buf;
-	kfree(buf);
-=======
 static int __must_check smsc95xx_read_reg(struct usbnet *dev, u32 index,
 					  u32 *data)
 {
@@ -175,35 +106,10 @@ static int __must_check smsc95xx_read_reg(struct usbnet *dev, u32 index,
 
 	le32_to_cpus(&buf);
 	*data = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int smsc95xx_write_reg(struct usbnet *dev, u32 index, u32 data)
-{
-	u32 *buf = kmalloc(4, GFP_KERNEL);
-	int ret;
-
-	BUG_ON(!dev);
-
-	if (!buf)
-		return -ENOMEM;
-
-	*buf = data;
-	cpu_to_le32s(buf);
-
-	ret = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
-		USB_VENDOR_REQUEST_WRITE_REGISTER,
-		USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		00, index, buf, 4, USB_CTRL_SET_TIMEOUT);
-
-	if (unlikely(ret < 0))
-		netdev_warn(dev->net, "Failed to write register index 0x%08x\n", index);
-
-	kfree(buf);
-=======
 static int __must_check smsc95xx_write_reg(struct usbnet *dev, u32 index,
 					   u32 data)
 {
@@ -226,22 +132,12 @@ static int __must_check smsc95xx_write_reg(struct usbnet *dev, u32 index,
 	if (ret < 0 && ret != -ENODEV)
 		netdev_warn(dev->net, "Failed to write reg index 0x%08x: %d\n",
 			    index, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /* Loop until the read is completed with timeout
  * called with phy_mutex held */
-<<<<<<< HEAD
-static int smsc95xx_phy_wait_not_busy(struct usbnet *dev)
-{
-	unsigned long start_time = jiffies;
-	u32 val;
-
-	do {
-		smsc95xx_read_reg(dev, MII_ADDR, &val);
-=======
 static int __must_check smsc95xx_phy_wait_not_busy(struct usbnet *dev)
 {
 	unsigned long start_time = jiffies;
@@ -258,7 +154,6 @@ static int __must_check smsc95xx_phy_wait_not_busy(struct usbnet *dev)
 			return ret;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(val & MII_BUSY_))
 			return 0;
 	} while (!time_after(jiffies, start_time + HZ));
@@ -266,12 +161,6 @@ static int __must_check smsc95xx_phy_wait_not_busy(struct usbnet *dev)
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static int smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
-{
-	struct usbnet *dev = netdev_priv(netdev);
-	u32 val, addr;
-=======
 static u32 mii_address_cmd(int phy_id, int idx, u16 op)
 {
 	return (phy_id & 0x1f) << 11 | (idx & 0x1f) << 6 | op;
@@ -281,43 +170,10 @@ static int smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx)
 {
 	u32 val, addr;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&dev->phy_mutex);
 
 	/* confirm MII not busy */
-<<<<<<< HEAD
-	if (smsc95xx_phy_wait_not_busy(dev)) {
-		netdev_warn(dev->net, "MII is busy in smsc95xx_mdio_read\n");
-		mutex_unlock(&dev->phy_mutex);
-		return -EIO;
-	}
-
-	/* set the address, index & direction (read from PHY) */
-	phy_id &= dev->mii.phy_id_mask;
-	idx &= dev->mii.reg_num_mask;
-	addr = (phy_id << 11) | (idx << 6) | MII_READ_;
-	smsc95xx_write_reg(dev, MII_ADDR, addr);
-
-	if (smsc95xx_phy_wait_not_busy(dev)) {
-		netdev_warn(dev->net, "Timed out reading MII reg %02X\n", idx);
-		mutex_unlock(&dev->phy_mutex);
-		return -EIO;
-	}
-
-	smsc95xx_read_reg(dev, MII_DATA, &val);
-
-	mutex_unlock(&dev->phy_mutex);
-
-	return (u16)(val & 0xFFFF);
-}
-
-static void smsc95xx_mdio_write(struct net_device *netdev, int phy_id, int idx,
-				int regval)
-{
-	struct usbnet *dev = netdev_priv(netdev);
-	u32 val, addr;
-=======
 	ret = smsc95xx_phy_wait_not_busy(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
@@ -362,41 +218,10 @@ static void smsc95xx_mdio_write(struct usbnet *dev, int phy_id, int idx,
 {
 	u32 val, addr;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&dev->phy_mutex);
 
 	/* confirm MII not busy */
-<<<<<<< HEAD
-	if (smsc95xx_phy_wait_not_busy(dev)) {
-		netdev_warn(dev->net, "MII is busy in smsc95xx_mdio_write\n");
-		mutex_unlock(&dev->phy_mutex);
-		return;
-	}
-
-	val = regval;
-	smsc95xx_write_reg(dev, MII_DATA, val);
-
-	/* set the address, index & direction (write to PHY) */
-	phy_id &= dev->mii.phy_id_mask;
-	idx &= dev->mii.reg_num_mask;
-	addr = (phy_id << 11) | (idx << 6) | MII_WRITE_;
-	smsc95xx_write_reg(dev, MII_ADDR, addr);
-
-	if (smsc95xx_phy_wait_not_busy(dev))
-		netdev_warn(dev->net, "Timed out writing MII reg %02X\n", idx);
-
-	mutex_unlock(&dev->phy_mutex);
-}
-
-static int smsc95xx_wait_eeprom(struct usbnet *dev)
-{
-	unsigned long start_time = jiffies;
-	u32 val;
-
-	do {
-		smsc95xx_read_reg(dev, E2P_CMD, &val);
-=======
 	ret = smsc95xx_phy_wait_not_busy(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
@@ -496,7 +321,6 @@ static int __must_check smsc95xx_wait_eeprom(struct usbnet *dev)
 			return ret;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(val & E2P_CMD_BUSY_) || (val & E2P_CMD_TIMEOUT_))
 			break;
 		udelay(40);
@@ -510,15 +334,6 @@ static int __must_check smsc95xx_wait_eeprom(struct usbnet *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int smsc95xx_eeprom_confirm_not_busy(struct usbnet *dev)
-{
-	unsigned long start_time = jiffies;
-	u32 val;
-
-	do {
-		smsc95xx_read_reg(dev, E2P_CMD, &val);
-=======
 static int __must_check smsc95xx_eeprom_confirm_not_busy(struct usbnet *dev)
 {
 	unsigned long start_time = jiffies;
@@ -531,7 +346,6 @@ static int __must_check smsc95xx_eeprom_confirm_not_busy(struct usbnet *dev)
 			netdev_warn(dev->net, "Error reading E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(val & E2P_CMD_BUSY_))
 			return 0;
@@ -558,29 +372,21 @@ static int smsc95xx_read_eeprom(struct usbnet *dev, u32 offset, u32 length,
 
 	for (i = 0; i < length; i++) {
 		val = E2P_CMD_BUSY_ | E2P_CMD_READ_ | (offset & E2P_CMD_ADDR_);
-<<<<<<< HEAD
-		smsc95xx_write_reg(dev, E2P_CMD, val);
-=======
 		ret = smsc95xx_write_reg(dev, E2P_CMD, val);
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error writing E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = smsc95xx_wait_eeprom(dev);
 		if (ret < 0)
 			return ret;
 
-<<<<<<< HEAD
-		smsc95xx_read_reg(dev, E2P_DATA, &val);
-=======
 		ret = smsc95xx_read_reg(dev, E2P_DATA, &val);
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading E2P_DATA\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		data[i] = val & 0xFF;
 		offset++;
@@ -604,15 +410,11 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 
 	/* Issue write/erase enable command */
 	val = E2P_CMD_BUSY_ | E2P_CMD_EWEN_;
-<<<<<<< HEAD
-	smsc95xx_write_reg(dev, E2P_CMD, val);
-=======
 	ret = smsc95xx_write_reg(dev, E2P_CMD, val);
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing E2P_DATA\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = smsc95xx_wait_eeprom(dev);
 	if (ret < 0)
@@ -622,13 +424,6 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 
 		/* Fill data register */
 		val = data[i];
-<<<<<<< HEAD
-		smsc95xx_write_reg(dev, E2P_DATA, val);
-
-		/* Send "write" command */
-		val = E2P_CMD_BUSY_ | E2P_CMD_WRITE_ | (offset & E2P_CMD_ADDR_);
-		smsc95xx_write_reg(dev, E2P_CMD, val);
-=======
 		ret = smsc95xx_write_reg(dev, E2P_DATA, val);
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error writing E2P_DATA\n");
@@ -642,7 +437,6 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 			netdev_warn(dev->net, "Error writing E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = smsc95xx_wait_eeprom(dev);
 		if (ret < 0)
@@ -654,62 +448,6 @@ static int smsc95xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void smsc95xx_async_cmd_callback(struct urb *urb)
-{
-	struct usb_context *usb_context = urb->context;
-	struct usbnet *dev = usb_context->dev;
-	int status = urb->status;
-
-	if (status < 0)
-		netdev_warn(dev->net, "async callback failed with %d\n", status);
-
-	kfree(usb_context);
-	usb_free_urb(urb);
-}
-
-static int smsc95xx_write_reg_async(struct usbnet *dev, u16 index, u32 *data)
-{
-	struct usb_context *usb_context;
-	int status;
-	struct urb *urb;
-	const u16 size = 4;
-
-	urb = usb_alloc_urb(0, GFP_ATOMIC);
-	if (!urb) {
-		netdev_warn(dev->net, "Error allocating URB\n");
-		return -ENOMEM;
-	}
-
-	usb_context = kmalloc(sizeof(struct usb_context), GFP_ATOMIC);
-	if (usb_context == NULL) {
-		netdev_warn(dev->net, "Error allocating control msg\n");
-		usb_free_urb(urb);
-		return -ENOMEM;
-	}
-
-	usb_context->req.bRequestType =
-		USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE;
-	usb_context->req.bRequest = USB_VENDOR_REQUEST_WRITE_REGISTER;
-	usb_context->req.wValue = 00;
-	usb_context->req.wIndex = cpu_to_le16(index);
-	usb_context->req.wLength = cpu_to_le16(size);
-
-	usb_fill_control_urb(urb, dev->udev, usb_sndctrlpipe(dev->udev, 0),
-		(void *)&usb_context->req, data, size,
-		smsc95xx_async_cmd_callback,
-		(void *)usb_context);
-
-	status = usb_submit_urb(urb, GFP_ATOMIC);
-	if (status < 0) {
-		netdev_warn(dev->net, "Error submitting control msg, sts=%d\n",
-			    status);
-		kfree(usb_context);
-		usb_free_urb(urb);
-	}
-
-	return status;
-=======
 static int __must_check smsc95xx_write_reg_async(struct usbnet *dev, u16 index,
 						 u32 data)
 {
@@ -728,7 +466,6 @@ static int __must_check smsc95xx_write_reg_async(struct usbnet *dev, u16 index,
 		netdev_warn(dev->net, "Error write async cmd, sts=%d\n",
 			    ret);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* returns hash bit number for given MAC address
@@ -742,14 +479,9 @@ static unsigned int smsc95xx_hash(char addr[ETH_ALEN])
 static void smsc95xx_set_multicast(struct net_device *netdev)
 {
 	struct usbnet *dev = netdev_priv(netdev);
-<<<<<<< HEAD
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-	unsigned long flags;
-=======
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 	unsigned long flags;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->hash_hi = 0;
 	pdata->hash_lo = 0;
@@ -790,75 +522,6 @@ static void smsc95xx_set_multicast(struct net_device *netdev)
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
 
 	/* Initiate async writes, as we can't wait for completion here */
-<<<<<<< HEAD
-	smsc95xx_write_reg_async(dev, HASHH, &pdata->hash_hi);
-	smsc95xx_write_reg_async(dev, HASHL, &pdata->hash_lo);
-	smsc95xx_write_reg_async(dev, MAC_CR, &pdata->mac_cr);
-}
-
-static void smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
-					    u16 lcladv, u16 rmtadv)
-{
-	u32 flow, afc_cfg = 0;
-
-	int ret = smsc95xx_read_reg(dev, AFC_CFG, &afc_cfg);
-	if (ret < 0) {
-		netdev_warn(dev->net, "error reading AFC_CFG\n");
-		return;
-	}
-
-	if (duplex == DUPLEX_FULL) {
-		u8 cap = mii_resolve_flowctrl_fdx(lcladv, rmtadv);
-
-		if (cap & FLOW_CTRL_RX)
-			flow = 0xFFFF0002;
-		else
-			flow = 0;
-
-		if (cap & FLOW_CTRL_TX)
-			afc_cfg |= 0xF;
-		else
-			afc_cfg &= ~0xF;
-
-		netif_dbg(dev, link, dev->net, "rx pause %s, tx pause %s\n",
-				   cap & FLOW_CTRL_RX ? "enabled" : "disabled",
-				   cap & FLOW_CTRL_TX ? "enabled" : "disabled");
-	} else {
-		netif_dbg(dev, link, dev->net, "half duplex\n");
-		flow = 0;
-		afc_cfg |= 0xF;
-	}
-
-	smsc95xx_write_reg(dev, FLOW, flow);
-	smsc95xx_write_reg(dev,	AFC_CFG, afc_cfg);
-}
-
-static int smsc95xx_link_reset(struct usbnet *dev)
-{
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-	struct mii_if_info *mii = &dev->mii;
-	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
-	unsigned long flags;
-	u16 lcladv, rmtadv;
-	u32 intdata;
-
-	/* clear interrupt status */
-	smsc95xx_mdio_read(dev->net, mii->phy_id, PHY_INT_SRC);
-	intdata = 0xFFFFFFFF;
-	smsc95xx_write_reg(dev, INT_STS, intdata);
-
-	mii_check_media(mii, 1, 1);
-	mii_ethtool_gset(&dev->mii, &ecmd);
-	lcladv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_ADVERTISE);
-	rmtadv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_LPA);
-
-	netif_dbg(dev, link, dev->net,
-		  "speed: %u duplex: %d lcladv: %04x rmtadv: %04x\n",
-		  ethtool_cmd_speed(&ecmd), ecmd.duplex, lcladv, rmtadv);
-
-	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
-	if (ecmd.duplex != DUPLEX_FULL) {
-=======
 	ret = smsc95xx_write_reg_async(dev, HASHH, pdata->hash_hi);
 	if (ret < 0)
 		netdev_warn(dev->net, "failed to initiate async write to HASHH\n");
@@ -918,7 +581,6 @@ static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
 
 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
 	if (pdata->phydev->duplex != DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->mac_cr &= ~MAC_CR_FDPX_;
 		pdata->mac_cr |= MAC_CR_RCVOWN_;
 	} else {
@@ -927,13 +589,6 @@ static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
 	}
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
 
-<<<<<<< HEAD
-	smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
-
-	smsc95xx_phy_update_flowcontrol(dev, ecmd.duplex, lcladv, rmtadv);
-
-	return 0;
-=======
 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
 	if (ret < 0) {
 		if (ret != -ENODEV)
@@ -945,16 +600,12 @@ static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
 	ret = smsc95xx_phy_update_flowcontrol(dev);
 	if (ret < 0)
 		netdev_warn(dev->net, "Error updating PHY flow control\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
 {
-<<<<<<< HEAD
-=======
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 intdata;
 
 	if (urb->actual_length != 4) {
@@ -963,18 +614,6 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
 		return;
 	}
 
-<<<<<<< HEAD
-	memcpy(&intdata, urb->transfer_buffer, 4);
-	le32_to_cpus(&intdata);
-
-	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
-
-	if (intdata & INT_ENP_PHY_INT_)
-		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
-	else
-		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
-			    intdata);
-=======
 	intdata = get_unaligned_le32(urb->transfer_buffer);
 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
 
@@ -987,7 +626,6 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
 			    intdata);
 
 	local_irq_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Enable or disable Tx & Rx checksum offload engines */
@@ -999,19 +637,10 @@ static int smsc95xx_set_features(struct net_device *netdev,
 	int ret;
 
 	ret = smsc95xx_read_reg(dev, COE_CR, &read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read COE_CR: %d\n", ret);
-		return ret;
-	}
-
-	if (features & NETIF_F_HW_CSUM)
-=======
 	if (ret < 0)
 		return ret;
 
 	if (features & NETIF_F_IP_CSUM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read_buf |= Tx_COE_EN_;
 	else
 		read_buf &= ~Tx_COE_EN_;
@@ -1022,15 +651,8 @@ static int smsc95xx_set_features(struct net_device *netdev,
 		read_buf &= ~Rx_COE_EN_;
 
 	ret = smsc95xx_write_reg(dev, COE_CR, read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write COE_CR: %d\n", ret);
-		return ret;
-	}
-=======
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_dbg(dev, hw, dev->net, "COE_CR = 0x%08x\n", read_buf);
 	return 0;
@@ -1065,19 +687,6 @@ static int smsc95xx_ethtool_set_eeprom(struct net_device *netdev,
 	return smsc95xx_write_eeprom(dev, ee->offset, ee->len, data);
 }
 
-<<<<<<< HEAD
-static const struct ethtool_ops smsc95xx_ethtool_ops = {
-	.get_link	= usbnet_get_link,
-	.nway_reset	= usbnet_nway_reset,
-	.get_drvinfo	= usbnet_get_drvinfo,
-	.get_msglevel	= usbnet_get_msglevel,
-	.set_msglevel	= usbnet_set_msglevel,
-	.get_settings	= usbnet_get_settings,
-	.set_settings	= usbnet_set_settings,
-	.get_eeprom_len	= smsc95xx_ethtool_get_eeprom_len,
-	.get_eeprom	= smsc95xx_ethtool_get_eeprom,
-	.set_eeprom	= smsc95xx_ethtool_set_eeprom,
-=======
 static int smsc95xx_ethtool_getregslen(struct net_device *netdev)
 {
 	/* all smsc95xx registers */
@@ -1182,33 +791,18 @@ static const struct ethtool_ops smsc95xx_ethtool_ops = {
 	.self_test	= net_selftest,
 	.get_strings	= smsc95xx_ethtool_get_strings,
 	.get_sset_count	= smsc95xx_ethtool_get_sset_count,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 {
-<<<<<<< HEAD
-	struct usbnet *dev = netdev_priv(netdev);
-
-	if (!netif_running(netdev))
-		return -EINVAL;
-
-	return generic_mii_ioctl(&dev->mii, if_mii(rq), cmd, NULL);
-=======
 	if (!netif_running(netdev))
 		return -EINVAL;
 
 	return phy_mii_ioctl(netdev->phydev, rq, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc95xx_init_mac_address(struct usbnet *dev)
 {
-<<<<<<< HEAD
-	/* try reading mac address from EEPROM */
-	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
-			dev->net->dev_addr) == 0) {
-=======
 	u8 addr[ETH_ALEN];
 
 	/* maybe the boot loader passed the MAC address in devicetree */
@@ -1223,7 +817,6 @@ static void smsc95xx_init_mac_address(struct usbnet *dev)
 	/* try reading mac address from EEPROM */
 	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN, addr) == 0) {
 		eth_hw_addr_set(dev->net, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_valid_ether_addr(dev->net->dev_addr)) {
 			/* eeprom values are valid so use them */
 			netif_dbg(dev, ifup, dev->net, "MAC address read from EEPROM\n");
@@ -1231,15 +824,9 @@ static void smsc95xx_init_mac_address(struct usbnet *dev)
 		}
 	}
 
-<<<<<<< HEAD
-	/* no eeprom, or eeprom values are invalid. generate random MAC */
-	eth_hw_addr_random(dev->net);
-	netif_dbg(dev, ifup, dev->net, "MAC address set to random_ether_addr\n");
-=======
 	/* no useful static MAC address found. generate a random one */
 	eth_hw_addr_random(dev->net);
 	netif_dbg(dev, ifup, dev->net, "MAC address set to eth_random_addr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc95xx_set_mac_address(struct usbnet *dev)
@@ -1250,28 +837,6 @@ static int smsc95xx_set_mac_address(struct usbnet *dev)
 	int ret;
 
 	ret = smsc95xx_write_reg(dev, ADDRL, addr_lo);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write ADDRL: %d\n", ret);
-		return ret;
-	}
-
-	ret = smsc95xx_write_reg(dev, ADDRH, addr_hi);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write ADDRH: %d\n", ret);
-		return ret;
-	}
-
-	return 0;
-}
-
-/* starts the TX path */
-static void smsc95xx_start_tx_path(struct usbnet *dev)
-{
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-	unsigned long flags;
-	u32 reg_val;
-=======
 	if (ret < 0)
 		return ret;
 
@@ -1284,26 +849,12 @@ static int smsc95xx_start_tx_path(struct usbnet *dev)
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 	unsigned long flags;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable Tx at MAC */
 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
 	pdata->mac_cr |= MAC_CR_TXEN_;
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
 
-<<<<<<< HEAD
-	smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
-
-	/* Enable Tx at SCSRs */
-	reg_val = TX_CFG_ON_;
-	smsc95xx_write_reg(dev, TX_CFG, reg_val);
-}
-
-/* Starts the Receive path */
-static void smsc95xx_start_rx_path(struct usbnet *dev)
-{
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-=======
 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
 	if (ret < 0)
 		return ret;
@@ -1316,91 +867,23 @@ static void smsc95xx_start_rx_path(struct usbnet *dev)
 static int smsc95xx_start_rx_path(struct usbnet *dev)
 {
 	struct smsc95xx_priv *pdata = dev->driver_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
 	pdata->mac_cr |= MAC_CR_RXEN_;
 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
 
-<<<<<<< HEAD
-	smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
-}
-
-static int smsc95xx_phy_initialize(struct usbnet *dev)
-{
-	int bmcr, timeout = 0;
-
-	/* Initialize MII structure */
-	dev->mii.dev = dev->net;
-	dev->mii.mdio_read = smsc95xx_mdio_read;
-	dev->mii.mdio_write = smsc95xx_mdio_write;
-	dev->mii.phy_id_mask = 0x1f;
-	dev->mii.reg_num_mask = 0x1f;
-	dev->mii.phy_id = SMSC95XX_INTERNAL_PHY_ID;
-
-	/* reset phy and wait for reset to complete */
-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, MII_BMCR, BMCR_RESET);
-
-	do {
-		msleep(10);
-		bmcr = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, MII_BMCR);
-		timeout++;
-	} while ((bmcr & BMCR_RESET) && (timeout < 100));
-
-	if (timeout >= 100) {
-		netdev_warn(dev->net, "timeout on PHY Reset");
-		return -EIO;
-	}
-
-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, MII_ADVERTISE,
-		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
-		ADVERTISE_PAUSE_ASYM);
-
-	/* read to clear */
-	smsc95xx_mdio_read(dev->net, dev->mii.phy_id, PHY_INT_SRC);
-
-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, PHY_INT_MASK,
-		PHY_INT_MASK_DEFAULT_);
-	mii_nway_restart(&dev->mii);
-
-	netif_dbg(dev, ifup, dev->net, "phy initialised successfully\n");
-	return 0;
-=======
 	return smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc95xx_reset(struct usbnet *dev)
 {
-<<<<<<< HEAD
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-=======
 	struct smsc95xx_priv *pdata = dev->driver_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 read_buf, write_buf, burst_cap;
 	int ret = 0, timeout;
 
 	netif_dbg(dev, ifup, dev->net, "entering smsc95xx_reset\n");
 
-<<<<<<< HEAD
-	write_buf = HW_CFG_LRST_;
-	ret = smsc95xx_write_reg(dev, HW_CFG, write_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write HW_CFG_LRST_ bit in HW_CFG register, ret = %d\n",
-			    ret);
-		return ret;
-	}
-
-	timeout = 0;
-	do {
-		ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
-		if (ret < 0) {
-			netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
-			return ret;
-		}
-		msleep(10);
-=======
 	ret = smsc95xx_write_reg(dev, HW_CFG, HW_CFG_LRST_);
 	if (ret < 0)
 		return ret;
@@ -1411,59 +894,18 @@ static int smsc95xx_reset(struct usbnet *dev)
 		ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
 		if (ret < 0)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout++;
 	} while ((read_buf & HW_CFG_LRST_) && (timeout < 100));
 
 	if (timeout >= 100) {
 		netdev_warn(dev->net, "timeout waiting for completion of Lite Reset\n");
-<<<<<<< HEAD
-		return ret;
-	}
-
-	write_buf = PM_CTL_PHY_RST_;
-	ret = smsc95xx_write_reg(dev, PM_CTRL, write_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write PM_CTRL: %d\n", ret);
-		return ret;
-	}
-
-	timeout = 0;
-	do {
-		ret = smsc95xx_read_reg(dev, PM_CTRL, &read_buf);
-		if (ret < 0) {
-			netdev_warn(dev->net, "Failed to read PM_CTRL: %d\n", ret);
-			return ret;
-		}
-		msleep(10);
-		timeout++;
-	} while ((read_buf & PM_CTL_PHY_RST_) && (timeout < 100));
-
-	if (timeout >= 100) {
-		netdev_warn(dev->net, "timeout waiting for PHY Reset\n");
-		return ret;
-=======
 		return -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = smsc95xx_set_mac_address(dev);
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	netif_dbg(dev, ifup, dev->net,
-		  "MAC Address: %pM\n", dev->net->dev_addr);
-
-	ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
-		return ret;
-	}
-
-	netif_dbg(dev, ifup, dev->net,
-		  "Read Value from HW_CFG : 0x%08x\n", read_buf);
-=======
 	netif_dbg(dev, ifup, dev->net, "MAC Address: %pM\n",
 		  dev->net->dev_addr);
 
@@ -1473,24 +915,10 @@ static int smsc95xx_reset(struct usbnet *dev)
 
 	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG : 0x%08x\n",
 		  read_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_buf |= HW_CFG_BIR_;
 
 	ret = smsc95xx_write_reg(dev, HW_CFG, read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write HW_CFG_BIR_ bit in HW_CFG register, ret = %d\n",
-			    ret);
-		return ret;
-	}
-
-	ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
-		return ret;
-	}
-=======
 	if (ret < 0)
 		return ret;
 
@@ -1498,7 +926,6 @@ static int smsc95xx_reset(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_dbg(dev, ifup, dev->net,
 		  "Read Value from HW_CFG after writing HW_CFG_BIR_: 0x%08x\n",
 		  read_buf);
@@ -1514,22 +941,6 @@ static int smsc95xx_reset(struct usbnet *dev)
 		dev->rx_urb_size = DEFAULT_FS_BURST_CAP_SIZE;
 	}
 
-<<<<<<< HEAD
-	netif_dbg(dev, ifup, dev->net,
-		  "rx_urb_size=%ld\n", (ulong)dev->rx_urb_size);
-
-	ret = smsc95xx_write_reg(dev, BURST_CAP, burst_cap);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write BURST_CAP: %d\n", ret);
-		return ret;
-	}
-
-	ret = smsc95xx_read_reg(dev, BURST_CAP, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read BURST_CAP: %d\n", ret);
-		return ret;
-	}
-=======
 	netif_dbg(dev, ifup, dev->net, "rx_urb_size=%ld\n",
 		  (ulong)dev->rx_urb_size);
 
@@ -1541,25 +952,10 @@ static int smsc95xx_reset(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_dbg(dev, ifup, dev->net,
 		  "Read Value from BURST_CAP after writing: 0x%08x\n",
 		  read_buf);
 
-<<<<<<< HEAD
-	read_buf = DEFAULT_BULK_IN_DELAY;
-	ret = smsc95xx_write_reg(dev, BULK_IN_DLY, read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "ret = %d\n", ret);
-		return ret;
-	}
-
-	ret = smsc95xx_read_reg(dev, BULK_IN_DLY, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read BULK_IN_DLY: %d\n", ret);
-		return ret;
-	}
-=======
 	ret = smsc95xx_write_reg(dev, BULK_IN_DLY, DEFAULT_BULK_IN_DELAY);
 	if (ret < 0)
 		return ret;
@@ -1568,26 +964,16 @@ static int smsc95xx_reset(struct usbnet *dev)
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_dbg(dev, ifup, dev->net,
 		  "Read Value from BULK_IN_DLY after writing: 0x%08x\n",
 		  read_buf);
 
 	ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
-		return ret;
-	}
-	netif_dbg(dev, ifup, dev->net,
-		  "Read Value from HW_CFG: 0x%08x\n", read_buf);
-=======
 	if (ret < 0)
 		return ret;
 
 	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG: 0x%08x\n",
 		  read_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (turbo_mode)
 		read_buf |= (HW_CFG_MEF_ | HW_CFG_BCE_);
@@ -1598,35 +984,6 @@ static int smsc95xx_reset(struct usbnet *dev)
 	read_buf |= NET_IP_ALIGN << 9;
 
 	ret = smsc95xx_write_reg(dev, HW_CFG, read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write HW_CFG register, ret=%d\n",
-			    ret);
-		return ret;
-	}
-
-	ret = smsc95xx_read_reg(dev, HW_CFG, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
-		return ret;
-	}
-	netif_dbg(dev, ifup, dev->net,
-		  "Read Value from HW_CFG after writing: 0x%08x\n", read_buf);
-
-	write_buf = 0xFFFFFFFF;
-	ret = smsc95xx_write_reg(dev, INT_STS, write_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write INT_STS register, ret=%d\n",
-			    ret);
-		return ret;
-	}
-
-	ret = smsc95xx_read_reg(dev, ID_REV, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read ID_REV: %d\n", ret);
-		return ret;
-	}
-=======
 	if (ret < 0)
 		return ret;
 
@@ -1644,65 +1001,12 @@ static int smsc95xx_reset(struct usbnet *dev)
 	ret = smsc95xx_read_reg(dev, ID_REV, &read_buf);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_dbg(dev, ifup, dev->net, "ID_REV = 0x%08x\n", read_buf);
 
 	/* Configure GPIO pins as LED outputs */
 	write_buf = LED_GPIO_CFG_SPD_LED | LED_GPIO_CFG_LNK_LED |
 		LED_GPIO_CFG_FDX_LED;
 	ret = smsc95xx_write_reg(dev, LED_GPIO_CFG, write_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write LED_GPIO_CFG register, ret=%d\n",
-			    ret);
-		return ret;
-	}
-
-	/* Init Tx */
-	write_buf = 0;
-	ret = smsc95xx_write_reg(dev, FLOW, write_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write FLOW: %d\n", ret);
-		return ret;
-	}
-
-	read_buf = AFC_CFG_DEFAULT;
-	ret = smsc95xx_write_reg(dev, AFC_CFG, read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write AFC_CFG: %d\n", ret);
-		return ret;
-	}
-
-	/* Don't need mac_cr_lock during initialisation */
-	ret = smsc95xx_read_reg(dev, MAC_CR, &pdata->mac_cr);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read MAC_CR: %d\n", ret);
-		return ret;
-	}
-
-	/* Init Rx */
-	/* Set Vlan */
-	write_buf = (u32)ETH_P_8021Q;
-	ret = smsc95xx_write_reg(dev, VLAN1, write_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write VAN1: %d\n", ret);
-		return ret;
-	}
-
-	/* Enable or disable checksum offload engines */
-	smsc95xx_set_features(dev->net, dev->net->features);
-
-	smsc95xx_set_multicast(dev->net);
-
-	if (smsc95xx_phy_initialize(dev) < 0)
-		return -EIO;
-
-	ret = smsc95xx_read_reg(dev, INT_EP_CTL, &read_buf);
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to read INT_EP_CTL: %d\n", ret);
-		return ret;
-	}
-=======
 	if (ret < 0)
 		return ret;
 
@@ -1738,21 +1042,11 @@ static int smsc95xx_reset(struct usbnet *dev)
 	ret = smsc95xx_read_reg(dev, INT_EP_CTL, &read_buf);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable PHY interrupts */
 	read_buf |= INT_EP_CTL_PHY_INT_;
 
 	ret = smsc95xx_write_reg(dev, INT_EP_CTL, read_buf);
-<<<<<<< HEAD
-	if (ret < 0) {
-		netdev_warn(dev->net, "Failed to write INT_EP_CTL: %d\n", ret);
-		return ret;
-	}
-
-	smsc95xx_start_tx_path(dev);
-	smsc95xx_start_rx_path(dev);
-=======
 	if (ret < 0)
 		return ret;
 
@@ -1767,7 +1061,6 @@ static int smsc95xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to start RX path\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_dbg(dev, ifup, dev->net, "smsc95xx_reset, return 0\n");
 	return 0;
@@ -1779,26 +1072,14 @@ static const struct net_device_ops smsc95xx_netdev_ops = {
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
 	.ndo_change_mtu		= usbnet_change_mtu,
-<<<<<<< HEAD
-	.ndo_set_mac_address 	= eth_mac_addr,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_do_ioctl 		= smsc95xx_ioctl,
-=======
 	.ndo_get_stats64	= dev_get_tstats64,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_eth_ioctl		= smsc95xx_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= smsc95xx_set_multicast,
 	.ndo_set_features	= smsc95xx_set_features,
 };
 
-<<<<<<< HEAD
-static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
-{
-	struct smsc95xx_priv *pdata = NULL;
-	int ret;
-=======
 static void smsc95xx_handle_link_change(struct net_device *net)
 {
 	struct usbnet *dev = netdev_priv(net);
@@ -1814,7 +1095,6 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	char usb_path[64];
 	int ret, phy_irq;
 	u32 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO SMSC_CHIPNAME " v" SMSC_DRIVER_VERSION "\n");
 
@@ -1824,25 +1104,6 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	dev->data[0] = (unsigned long)kzalloc(sizeof(struct smsc95xx_priv),
-		GFP_KERNEL);
-
-	pdata = (struct smsc95xx_priv *)(dev->data[0]);
-	if (!pdata) {
-		netdev_warn(dev->net, "Unable to allocate struct smsc95xx_priv\n");
-		return -ENOMEM;
-	}
-
-	spin_lock_init(&pdata->mac_cr_lock);
-
-	if (DEFAULT_TX_CSUM_ENABLE)
-		dev->net->features |= NETIF_F_HW_CSUM;
-	if (DEFAULT_RX_CSUM_ENABLE)
-		dev->net->features |= NETIF_F_RXCSUM;
-
-	dev->net->hw_features = NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
-=======
 	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
@@ -1865,14 +1126,11 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	dev->net->hw_features = NETIF_F_IP_CSUM | NETIF_F_RXCSUM;
 	set_bit(EVENT_NO_IP_ALIGN, &dev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smsc95xx_init_mac_address(dev);
 
 	/* Init all registers */
 	ret = smsc95xx_reset(dev);
-<<<<<<< HEAD
-=======
 	if (ret)
 		goto free_pdata;
 
@@ -1957,16 +1215,11 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
 			FEATURE_REMOTE_WAKEUP);
 	else if (val == ID_REV_CHIP_ID_9512_)
 		pdata->features = FEATURE_8_WAKEUP_FILTERS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->net->netdev_ops = &smsc95xx_netdev_ops;
 	dev->net->ethtool_ops = &smsc95xx_ethtool_ops;
 	dev->net->flags |= IFF_MULTICAST;
 	dev->net->hard_header_len += SMSC95XX_TX_OVERHEAD_CSUM;
-<<<<<<< HEAD
-	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
-	return 0;
-=======
 	dev->net->min_mtu = ETH_MIN_MTU;
 	dev->net->max_mtu = ETH_DATA_LEN;
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
@@ -2001,20 +1254,10 @@ free_irqfwnode:
 free_pdata:
 	kfree(pdata);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
-<<<<<<< HEAD
-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-	if (pdata) {
-		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
-		kfree(pdata);
-		pdata = NULL;
-		dev->data[0] = 0;
-	}
-=======
 	struct smsc95xx_priv *pdata = dev->driver_priv;
 
 	phy_disconnect(dev->net->phydev);
@@ -2563,7 +1806,6 @@ static int smsc95xx_reset_resume(struct usb_interface *intf)
 		return ret;
 
 	return smsc95xx_resume(intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc95xx_rx_csum_offload(struct sk_buff *skb)
@@ -2585,12 +1827,7 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		unsigned char *packet;
 		u16 size;
 
-<<<<<<< HEAD
-		memcpy(&header, skb->data, sizeof(header));
-		le32_to_cpus(&header);
-=======
 		header = get_unaligned_le32(skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_pull(skb, 4 + NET_IP_ALIGN);
 		packet = skb->data;
 
@@ -2598,15 +1835,12 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		size = (u16)((header & RX_STS_FL_) >> 16);
 		align_count = (4 - ((size + NET_IP_ALIGN) % 4)) % 4;
 
-<<<<<<< HEAD
-=======
 		if (unlikely(size > skb->len)) {
 			netif_dbg(dev, rx_err, dev->net,
 				  "size err header=0x%08x\n", header);
 			return 0;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(header & RX_STS_ES_)) {
 			netif_dbg(dev, rx_err, dev->net,
 				  "Error header=0x%08x\n", header);
@@ -2666,14 +1900,6 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			skb_pull(skb, align_count);
 	}
 
-<<<<<<< HEAD
-	if (unlikely(skb->len < 0)) {
-		netdev_warn(dev->net, "invalid rx length<0 %d\n", skb->len);
-		return 0;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -2684,8 +1910,6 @@ static u32 smsc95xx_calc_csum_preamble(struct sk_buff *skb)
 	return (high_16 << 16) | low_16;
 }
 
-<<<<<<< HEAD
-=======
 /* The TX CSUM won't work if the checksum lies in the last 4 bytes of the
  * transmission. This is fairly unlikely, only seems to trigger with some
  * short TCP ACK packets sent.
@@ -2703,34 +1927,17 @@ static bool smsc95xx_can_tx_checksum(struct sk_buff *skb)
        return skb->csum_offset < (len - (4 + 1));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 					 struct sk_buff *skb, gfp_t flags)
 {
 	bool csum = skb->ip_summed == CHECKSUM_PARTIAL;
 	int overhead = csum ? SMSC95XX_TX_OVERHEAD_CSUM : SMSC95XX_TX_OVERHEAD;
 	u32 tx_cmd_a, tx_cmd_b;
-<<<<<<< HEAD
-=======
 	void *ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We do not advertise SG, so skbs should be already linearized */
 	BUG_ON(skb_shinfo(skb)->nr_frags);
 
-<<<<<<< HEAD
-	if (skb_headroom(skb) < overhead) {
-		struct sk_buff *skb2 = skb_copy_expand(skb,
-			overhead, 0, flags);
-		dev_kfree_skb_any(skb);
-		skb = skb2;
-		if (!skb)
-			return NULL;
-	}
-
-	if (csum) {
-		if (skb->len <= 45) {
-=======
 	/* Make writable and expand header space by overhead if required */
 	if (skb_cow_head(skb, overhead)) {
 		/* Must deallocate here as returning NULL to indicate error
@@ -2745,7 +1952,6 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 
 	if (csum) {
 		if (!smsc95xx_can_tx_checksum(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* workaround - hardware tx checksum does not work
 			 * properly with extremely small packets */
 			long csstart = skb_checksum_start_offset(skb);
@@ -2757,25 +1963,6 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 			csum = false;
 		} else {
 			u32 csum_preamble = smsc95xx_calc_csum_preamble(skb);
-<<<<<<< HEAD
-			skb_push(skb, 4);
-			memcpy(skb->data, &csum_preamble, 4);
-		}
-	}
-
-	skb_push(skb, 4);
-	tx_cmd_b = (u32)(skb->len - 4);
-	if (csum)
-		tx_cmd_b |= TX_CMD_B_CSUM_ENABLE;
-	cpu_to_le32s(&tx_cmd_b);
-	memcpy(skb->data, &tx_cmd_b, 4);
-
-	skb_push(skb, 4);
-	tx_cmd_a = (u32)(skb->len - 8) | TX_CMD_A_FIRST_SEG_ |
-		TX_CMD_A_LAST_SEG_;
-	cpu_to_le32s(&tx_cmd_a);
-	memcpy(skb->data, &tx_cmd_a, 4);
-=======
 			ptr = skb_push(skb, 4);
 			put_unaligned_le32(csum_preamble, ptr);
 
@@ -2788,13 +1975,10 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 	ptr = skb_push(skb, 8);
 	put_unaligned_le32(tx_cmd_a, ptr);
 	put_unaligned_le32(tx_cmd_b, ptr+4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb;
 }
 
-<<<<<<< HEAD
-=======
 static int smsc95xx_manage_power(struct usbnet *dev, int on)
 {
 	struct smsc95xx_priv *pdata = dev->driver_priv;
@@ -2815,18 +1999,10 @@ static int smsc95xx_manage_power(struct usbnet *dev, int on)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct driver_info smsc95xx_info = {
 	.description	= "smsc95xx USB 2.0 Ethernet",
 	.bind		= smsc95xx_bind,
 	.unbind		= smsc95xx_unbind,
-<<<<<<< HEAD
-	.link_reset	= smsc95xx_link_reset,
-	.reset		= smsc95xx_reset,
-	.rx_fixup	= smsc95xx_rx_fixup,
-	.tx_fixup	= smsc95xx_tx_fixup,
-	.status		= smsc95xx_status,
-=======
 	.reset		= smsc95xx_reset,
 	.check_connect	= smsc95xx_start_phy,
 	.stop		= smsc95xx_stop,
@@ -2834,7 +2010,6 @@ static const struct driver_info smsc95xx_info = {
 	.tx_fixup	= smsc95xx_tx_fixup,
 	.status		= smsc95xx_status,
 	.manage_power	= smsc95xx_manage_power,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= FLAG_ETHER | FLAG_SEND_ZLP | FLAG_LINK_INTR,
 };
 
@@ -2929,8 +2104,6 @@ static const struct usb_device_id products[] = {
 		USB_DEVICE(0x0424, 0x9E08),
 		.driver_info = (unsigned long) &smsc95xx_info,
 	},
-<<<<<<< HEAD
-=======
 	{
 		/* SYSTEC USB-SPEmodule1 10BASE-T1L Ethernet Device */
 		USB_DEVICE(0x0878, 0x1400),
@@ -2941,7 +2114,6 @@ static const struct usb_device_id products[] = {
 		USB_DEVICE(0x184F, 0x0051),
 		.driver_info = (unsigned long)&smsc95xx_info,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },		/* END */
 };
 MODULE_DEVICE_TABLE(usb, products);
@@ -2950,27 +2122,17 @@ static struct usb_driver smsc95xx_driver = {
 	.name		= "smsc95xx",
 	.id_table	= products,
 	.probe		= usbnet_probe,
-<<<<<<< HEAD
-	.suspend	= usbnet_suspend,
-	.resume		= usbnet_resume,
-	.disconnect	= usbnet_disconnect,
-=======
 	.suspend	= smsc95xx_suspend,
 	.resume		= smsc95xx_resume,
 	.reset_resume	= smsc95xx_reset_resume,
 	.disconnect	= usbnet_disconnect,
 	.disable_hub_initiated_lpm = 1,
 	.supports_autosuspend = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(smsc95xx_driver);
 
 MODULE_AUTHOR("Nancy Lin");
-<<<<<<< HEAD
-MODULE_AUTHOR("Steve Glendinning <steve.glendinning@smsc.com>");
-=======
 MODULE_AUTHOR("Steve Glendinning <steve.glendinning@shawell.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SMSC95XX USB 2.0 Ethernet Devices");
 MODULE_LICENSE("GPL");

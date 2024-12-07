@@ -1,27 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Intel Corporation
  *
  * Author:
  * Dmitry Kasatkin <dmitry.kasatkin@intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
- */
-
-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-
-#include <linux/err.h>
-#include <linux/rbtree.h>
-#include <linux/key-type.h>
-#include <linux/digsig.h>
-=======
  */
 
 #include <linux/err.h>
@@ -34,25 +16,11 @@
 #include <linux/vmalloc.h>
 #include <crypto/public_key.h>
 #include <keys/system_keyring.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "integrity.h"
 
 static struct key *keyring[INTEGRITY_KEYRING_MAX];
 
-<<<<<<< HEAD
-static const char *keyring_name[INTEGRITY_KEYRING_MAX] = {
-	"_evm",
-	"_module",
-	"_ima",
-};
-
-int integrity_digsig_verify(const unsigned int id, const char *sig, int siglen,
-					const char *digest, int digestlen)
-{
-	if (id >= INTEGRITY_KEYRING_MAX)
-		return -EINVAL;
-=======
 static const char * const keyring_name[INTEGRITY_KEYRING_MAX] = {
 #ifndef CONFIG_INTEGRITY_TRUSTED_KEYRING
 	"_evm",
@@ -75,7 +43,6 @@ static struct key *integrity_keyring_from_id(const unsigned int id)
 {
 	if (id >= INTEGRITY_KEYRING_MAX)
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!keyring[id]) {
 		keyring[id] =
@@ -84,13 +51,6 @@ static struct key *integrity_keyring_from_id(const unsigned int id)
 			int err = PTR_ERR(keyring[id]);
 			pr_err("no %s keyring: %d\n", keyring_name[id], err);
 			keyring[id] = NULL;
-<<<<<<< HEAD
-			return err;
-		}
-	}
-
-	return digsig_verify(keyring[id], sig, siglen, digest, digestlen);
-=======
 			return ERR_PTR(err);
 		}
 	}
@@ -263,5 +223,4 @@ int __init integrity_load_cert(const unsigned int id, const char *source,
 
 	pr_info("Loading X.509 certificate: %s\n", source);
 	return integrity_add_key(id, data, len, perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

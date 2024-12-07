@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
@@ -9,20 +6,9 @@
  *
  * Copyright (C) 1998-2008 Novell/SUSE
  * Copyright 2009-2010 Canonical Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- */
-
-#include <linux/security.h>
-=======
  */
 
 #include <linux/lsm_hooks.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/moduleparam.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
@@ -33,32 +19,17 @@
 #include <linux/sysctl.h>
 #include <linux/audit.h>
 #include <linux/user_namespace.h>
-<<<<<<< HEAD
-#include <net/sock.h>
-=======
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/zstd.h>
 #include <net/sock.h>
 #include <uapi/linux/mount.h>
 #include <uapi/linux/lsm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "include/apparmor.h"
 #include "include/apparmorfs.h"
 #include "include/audit.h"
 #include "include/capability.h"
-<<<<<<< HEAD
-#include "include/context.h"
-#include "include/file.h"
-#include "include/ipc.h"
-#include "include/path.h"
-#include "include/policy.h"
-#include "include/procattr.h"
-
-/* Flag indicating whether initialization completed */
-int apparmor_initialized __initdata;
-=======
 #include "include/cred.h"
 #include "include/file.h"
 #include "include/ipc.h"
@@ -92,28 +63,18 @@ static int buffer_count;
 static LIST_HEAD(aa_global_buffers);
 static DEFINE_SPINLOCK(aa_buffers_lock);
 static DEFINE_PER_CPU(struct aa_local_cache, aa_local_buffers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LSM hook functions
  */
 
 /*
-<<<<<<< HEAD
- * free the associated aa_task_cxt and put its profiles
- */
-static void apparmor_cred_free(struct cred *cred)
-{
-	aa_free_task_context(cred->security);
-	cred->security = NULL;
-=======
  * put the associated labels
  */
 static void apparmor_cred_free(struct cred *cred)
 {
 	aa_put_label(cred_label(cred));
 	set_cred_label(cred, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -121,40 +82,17 @@ static void apparmor_cred_free(struct cred *cred)
  */
 static int apparmor_cred_alloc_blank(struct cred *cred, gfp_t gfp)
 {
-<<<<<<< HEAD
-	/* freed by apparmor_cred_free */
-	struct aa_task_cxt *cxt = aa_alloc_task_context(gfp);
-	if (!cxt)
-		return -ENOMEM;
-
-	cred->security = cxt;
-=======
 	set_cred_label(cred, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * prepare new aa_task_cxt for modification by prepare_cred block
-=======
  * prepare new cred label for modification by prepare_cred block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int apparmor_cred_prepare(struct cred *new, const struct cred *old,
 				 gfp_t gfp)
 {
-<<<<<<< HEAD
-	/* freed by apparmor_cred_free */
-	struct aa_task_cxt *cxt = aa_alloc_task_context(gfp);
-	if (!cxt)
-		return -ENOMEM;
-
-	aa_dup_task_context(cxt, old->security);
-	new->security = cxt;
-=======
 	set_cred_label(new, aa_get_newest_label(cred_label(old)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -163,12 +101,6 @@ static int apparmor_cred_prepare(struct cred *new, const struct cred *old,
  */
 static void apparmor_cred_transfer(struct cred *new, const struct cred *old)
 {
-<<<<<<< HEAD
-	const struct aa_task_cxt *old_cxt = old->security;
-	struct aa_task_cxt *new_cxt = new->security;
-
-	aa_dup_task_context(new_cxt, old_cxt);
-=======
 	set_cred_label(new, aa_get_newest_label(cred_label(old)));
 }
 
@@ -186,19 +118,11 @@ static int apparmor_task_alloc(struct task_struct *task,
 	aa_dup_task_ctx(new, task_ctx(current));
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apparmor_ptrace_access_check(struct task_struct *child,
 					unsigned int mode)
 {
-<<<<<<< HEAD
-	int error = cap_ptrace_access_check(child, mode);
-	if (error)
-		return error;
-
-	return aa_ptrace(current, child, mode);
-=======
 	struct aa_label *tracer, *tracee;
 	const struct cred *cred;
 	int error;
@@ -213,25 +137,10 @@ static int apparmor_ptrace_access_check(struct task_struct *child,
 	put_cred(cred);
 
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apparmor_ptrace_traceme(struct task_struct *parent)
 {
-<<<<<<< HEAD
-	int error = cap_ptrace_traceme(parent);
-	if (error)
-		return error;
-
-	return aa_ptrace(parent, current, PTRACE_MODE_ATTACH);
-}
-
-/* Derived from security/commoncap.c:cap_capget */
-static int apparmor_capget(struct task_struct *target, kernel_cap_t *effective,
-			   kernel_cap_t *inheritable, kernel_cap_t *permitted)
-{
-	struct aa_profile *profile;
-=======
 	struct aa_label *tracer, *tracee;
 	const struct cred *cred;
 	int error;
@@ -252,24 +161,10 @@ static int apparmor_capget(const struct task_struct *target, kernel_cap_t *effec
 			   kernel_cap_t *inheritable, kernel_cap_t *permitted)
 {
 	struct aa_label *label;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct cred *cred;
 
 	rcu_read_lock();
 	cred = __task_cred(target);
-<<<<<<< HEAD
-	profile = aa_cred_profile(cred);
-
-	*effective = cred->cap_effective;
-	*inheritable = cred->cap_inheritable;
-	*permitted = cred->cap_permitted;
-
-	if (!unconfined(profile) && !COMPLAIN_MODE(profile)) {
-		*effective = cap_intersect(*effective, profile->caps.allow);
-		*permitted = cap_intersect(*permitted, profile->caps.allow);
-	}
-	rcu_read_unlock();
-=======
 	label = aa_get_newest_cred_label(cred);
 
 	/*
@@ -294,24 +189,11 @@ static int apparmor_capget(const struct task_struct *target, kernel_cap_t *effec
 	}
 	rcu_read_unlock();
 	aa_put_label(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int apparmor_capable(const struct cred *cred, struct user_namespace *ns,
-<<<<<<< HEAD
-			    int cap, int audit)
-{
-	struct aa_profile *profile;
-	/* cap_capable returns 0 on success, else -EPERM */
-	int error = cap_capable(cred, ns, cap, audit);
-	if (!error) {
-		profile = aa_cred_profile(cred);
-		if (!unconfined(profile))
-			error = aa_capable(current, profile, cap, audit);
-	}
-=======
 			    int cap, unsigned int opts)
 {
 	struct aa_label *label;
@@ -322,7 +204,6 @@ static int apparmor_capable(const struct cred *cred, struct user_namespace *ns,
 		error = aa_capable(cred, label, cap, opts);
 	aa_put_label(label);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -335,17 +216,6 @@ static int apparmor_capable(const struct cred *cred, struct user_namespace *ns,
  *
  * Returns: %0 else error code if error or permission denied
  */
-<<<<<<< HEAD
-static int common_perm(int op, struct path *path, u32 mask,
-		       struct path_cond *cond)
-{
-	struct aa_profile *profile;
-	int error = 0;
-
-	profile = __aa_current_profile();
-	if (!unconfined(profile))
-		error = aa_path_perm(op, profile, path, 0, mask, cond);
-=======
 static int common_perm(const char *op, const struct path *path, u32 mask,
 		       struct path_cond *cond)
 {
@@ -357,14 +227,11 @@ static int common_perm(const char *op, const struct path *path, u32 mask,
 		error = aa_path_perm(op, current_cred(), label, path, 0, mask,
 				     cond);
 	__end_current_label_crit_section(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * common_perm_cond - common permission wrapper around inode cond
  * @op: operation being checked
  * @path: location to check (NOT NULL)
@@ -388,7 +255,6 @@ static int common_perm_cond(const char *op, const struct path *path, u32 mask)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * common_perm_dir_dentry - common permission wrapper when path is dir, dentry
  * @op: operation being checked
  * @dir: directory of the dentry  (NOT NULL)
@@ -398,47 +264,16 @@ static int common_perm_cond(const char *op, const struct path *path, u32 mask)
  *
  * Returns: %0 else error code if error or permission denied
  */
-<<<<<<< HEAD
-static int common_perm_dir_dentry(int op, struct path *dir,
-				  struct dentry *dentry, u32 mask,
-				  struct path_cond *cond)
-{
-	struct path path = { dir->mnt, dentry };
-=======
 static int common_perm_dir_dentry(const char *op, const struct path *dir,
 				  struct dentry *dentry, u32 mask,
 				  struct path_cond *cond)
 {
 	struct path path = { .mnt = dir->mnt, .dentry = dentry };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return common_perm(op, &path, mask, cond);
 }
 
 /**
-<<<<<<< HEAD
- * common_perm_mnt_dentry - common permission wrapper when mnt, dentry
- * @op: operation being checked
- * @mnt: mount point of dentry (NOT NULL)
- * @dentry: dentry to check  (NOT NULL)
- * @mask: requested permissions mask
- *
- * Returns: %0 else error code if error or permission denied
- */
-static int common_perm_mnt_dentry(int op, struct vfsmount *mnt,
-				  struct dentry *dentry, u32 mask)
-{
-	struct path path = { mnt, dentry };
-	struct path_cond cond = { dentry->d_inode->i_uid,
-				  dentry->d_inode->i_mode
-	};
-
-	return common_perm(op, &path, mask, &cond);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * common_perm_rm - common permission wrapper for operations doing rm
  * @op: operation being checked
  * @dir: directory that the dentry is in  (NOT NULL)
@@ -447,18 +282,6 @@ static int common_perm_mnt_dentry(int op, struct vfsmount *mnt,
  *
  * Returns: %0 else error code if error or permission denied
  */
-<<<<<<< HEAD
-static int common_perm_rm(int op, struct path *dir,
-			  struct dentry *dentry, u32 mask)
-{
-	struct inode *inode = dentry->d_inode;
-	struct path_cond cond = { };
-
-	if (!inode || !dir->mnt || !mediated_filesystem(inode))
-		return 0;
-
-	cond.uid = inode->i_uid;
-=======
 static int common_perm_rm(const char *op, const struct path *dir,
 			  struct dentry *dentry, u32 mask)
 {
@@ -471,7 +294,6 @@ static int common_perm_rm(const char *op, const struct path *dir,
 
 	vfsuid = i_uid_into_vfsuid(mnt_idmap(dir->mnt), inode);
 	cond.uid = vfsuid_into_kuid(vfsuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cond.mode = inode->i_mode;
 
 	return common_perm_dir_dentry(op, dir, dentry, mask, &cond);
@@ -487,81 +309,40 @@ static int common_perm_rm(const char *op, const struct path *dir,
  *
  * Returns: %0 else error code if error or permission denied
  */
-<<<<<<< HEAD
-static int common_perm_create(int op, struct path *dir, struct dentry *dentry,
-			      u32 mask, umode_t mode)
-{
-	struct path_cond cond = { current_fsuid(), mode };
-
-	if (!dir->mnt || !mediated_filesystem(dir->dentry->d_inode))
-=======
 static int common_perm_create(const char *op, const struct path *dir,
 			      struct dentry *dentry, u32 mask, umode_t mode)
 {
 	struct path_cond cond = { current_fsuid(), mode };
 
 	if (!path_mediated_fs(dir->dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return common_perm_dir_dentry(op, dir, dentry, mask, &cond);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_unlink(struct path *dir, struct dentry *dentry)
-=======
 static int apparmor_path_unlink(const struct path *dir, struct dentry *dentry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return common_perm_rm(OP_UNLINK, dir, dentry, AA_MAY_DELETE);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_mkdir(struct path *dir, struct dentry *dentry,
-=======
 static int apparmor_path_mkdir(const struct path *dir, struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       umode_t mode)
 {
 	return common_perm_create(OP_MKDIR, dir, dentry, AA_MAY_CREATE,
 				  S_IFDIR);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_rmdir(struct path *dir, struct dentry *dentry)
-=======
 static int apparmor_path_rmdir(const struct path *dir, struct dentry *dentry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return common_perm_rm(OP_RMDIR, dir, dentry, AA_MAY_DELETE);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_mknod(struct path *dir, struct dentry *dentry,
-=======
 static int apparmor_path_mknod(const struct path *dir, struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       umode_t mode, unsigned int dev)
 {
 	return common_perm_create(OP_MKNOD, dir, dentry, AA_MAY_CREATE, mode);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_truncate(struct path *path)
-{
-	struct path_cond cond = { path->dentry->d_inode->i_uid,
-				  path->dentry->d_inode->i_mode
-	};
-
-	if (!path->mnt || !mediated_filesystem(path->dentry->d_inode))
-		return 0;
-
-	return common_perm(OP_TRUNC, path, MAY_WRITE | AA_MAY_META_WRITE,
-			   &cond);
-}
-
-static int apparmor_path_symlink(struct path *dir, struct dentry *dentry,
-=======
 static int apparmor_path_truncate(const struct path *path)
 {
 	return common_perm_cond(OP_TRUNC, path, MAY_WRITE | AA_MAY_SETATTR);
@@ -573,96 +354,12 @@ static int apparmor_file_truncate(struct file *file)
 }
 
 static int apparmor_path_symlink(const struct path *dir, struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 const char *old_name)
 {
 	return common_perm_create(OP_SYMLINK, dir, dentry, AA_MAY_CREATE,
 				  S_IFLNK);
 }
 
-<<<<<<< HEAD
-static int apparmor_path_link(struct dentry *old_dentry, struct path *new_dir,
-			      struct dentry *new_dentry)
-{
-	struct aa_profile *profile;
-	int error = 0;
-
-	if (!mediated_filesystem(old_dentry->d_inode))
-		return 0;
-
-	profile = aa_current_profile();
-	if (!unconfined(profile))
-		error = aa_path_link(profile, old_dentry, new_dir, new_dentry);
-	return error;
-}
-
-static int apparmor_path_rename(struct path *old_dir, struct dentry *old_dentry,
-				struct path *new_dir, struct dentry *new_dentry)
-{
-	struct aa_profile *profile;
-	int error = 0;
-
-	if (!mediated_filesystem(old_dentry->d_inode))
-		return 0;
-
-	profile = aa_current_profile();
-	if (!unconfined(profile)) {
-		struct path old_path = { old_dir->mnt, old_dentry };
-		struct path new_path = { new_dir->mnt, new_dentry };
-		struct path_cond cond = { old_dentry->d_inode->i_uid,
-					  old_dentry->d_inode->i_mode
-		};
-
-		error = aa_path_perm(OP_RENAME_SRC, profile, &old_path, 0,
-				     MAY_READ | AA_MAY_META_READ | MAY_WRITE |
-				     AA_MAY_META_WRITE | AA_MAY_DELETE,
-				     &cond);
-		if (!error)
-			error = aa_path_perm(OP_RENAME_DEST, profile, &new_path,
-					     0, MAY_WRITE | AA_MAY_META_WRITE |
-					     AA_MAY_CREATE, &cond);
-
-	}
-	return error;
-}
-
-static int apparmor_path_chmod(struct path *path, umode_t mode)
-{
-	if (!mediated_filesystem(path->dentry->d_inode))
-		return 0;
-
-	return common_perm_mnt_dentry(OP_CHMOD, path->mnt, path->dentry, AA_MAY_CHMOD);
-}
-
-static int apparmor_path_chown(struct path *path, uid_t uid, gid_t gid)
-{
-	struct path_cond cond =  { path->dentry->d_inode->i_uid,
-				   path->dentry->d_inode->i_mode
-	};
-
-	if (!mediated_filesystem(path->dentry->d_inode))
-		return 0;
-
-	return common_perm(OP_CHOWN, path, AA_MAY_CHOWN, &cond);
-}
-
-static int apparmor_inode_getattr(struct vfsmount *mnt, struct dentry *dentry)
-{
-	if (!mediated_filesystem(dentry->d_inode))
-		return 0;
-
-	return common_perm_mnt_dentry(OP_GETATTR, mnt, dentry,
-				      AA_MAY_META_READ);
-}
-
-static int apparmor_dentry_open(struct file *file, const struct cred *cred)
-{
-	struct aa_file_cxt *fcxt = file->f_security;
-	struct aa_profile *profile;
-	int error = 0;
-
-	if (!mediated_filesystem(file->f_path.dentry->d_inode))
-=======
 static int apparmor_path_link(struct dentry *old_dentry, const struct path *new_dir,
 			      struct dentry *new_dentry)
 {
@@ -766,31 +463,12 @@ static int apparmor_file_open(struct file *file)
 	int error = 0;
 
 	if (!path_mediated_fs(file->f_path.dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* If in exec, permission is handled by bprm hooks.
 	 * Cache permissions granted by the previous exec check, with
 	 * implicit read and executable mmap which are required to
 	 * actually execute the image.
-<<<<<<< HEAD
-	 */
-	if (current->in_execve) {
-		fcxt->allow = MAY_EXEC | MAY_READ | AA_EXEC_MMAP;
-		return 0;
-	}
-
-	profile = aa_cred_profile(cred);
-	if (!unconfined(profile)) {
-		struct inode *inode = file->f_path.dentry->d_inode;
-		struct path_cond cond = { inode->i_uid, inode->i_mode };
-
-		error = aa_path_perm(OP_OPEN, profile, &file->f_path, 0,
-				     aa_map_file_to_perms(file), &cond);
-		/* todo cache full allowed permissions set and state */
-		fcxt->allow = aa_map_file_to_perms(file);
-	}
-=======
 	 *
 	 * Illogically, FMODE_EXEC is in f_flags, not f_mode.
 	 */
@@ -817,21 +495,12 @@ static int apparmor_file_open(struct file *file)
 		fctx->allow = aa_map_file_to_perms(file);
 	}
 	aa_put_label(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
 static int apparmor_file_alloc_security(struct file *file)
 {
-<<<<<<< HEAD
-	/* freed by apparmor_file_free_security */
-	file->f_security = aa_alloc_file_context(GFP_KERNEL);
-	if (!file->f_security)
-		return -ENOMEM;
-	return 0;
-
-=======
 	struct aa_file_ctx *ctx = file_ctx(file);
 	struct aa_label *label = begin_current_label_crit_section();
 
@@ -839,42 +508,10 @@ static int apparmor_file_alloc_security(struct file *file)
 	rcu_assign_pointer(ctx->label, aa_get_label(label));
 	end_current_label_crit_section(label);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void apparmor_file_free_security(struct file *file)
 {
-<<<<<<< HEAD
-	struct aa_file_cxt *cxt = file->f_security;
-
-	aa_free_file_context(cxt);
-}
-
-static int common_file_perm(int op, struct file *file, u32 mask)
-{
-	struct aa_file_cxt *fcxt = file->f_security;
-	struct aa_profile *profile, *fprofile = aa_cred_profile(file->f_cred);
-	int error = 0;
-
-	BUG_ON(!fprofile);
-
-	if (!file->f_path.mnt ||
-	    !mediated_filesystem(file->f_path.dentry->d_inode))
-		return 0;
-
-	profile = __aa_current_profile();
-
-	/* revalidate access, if task is unconfined, or the cached cred
-	 * doesn't match or if the request is for more permissions than
-	 * was granted.
-	 *
-	 * Note: the test for !unconfined(fprofile) is to handle file
-	 *       delegation from unconfined tasks
-	 */
-	if (!unconfined(profile) && !unconfined(fprofile) &&
-	    ((fprofile != profile) || (mask & ~fcxt->allow)))
-		error = aa_file_perm(op, profile, file, mask);
-=======
 	struct aa_file_ctx *ctx = file_ctx(file);
 
 	if (ctx)
@@ -894,16 +531,10 @@ static int common_file_perm(const char *op, struct file *file, u32 mask,
 	label = __begin_current_label_crit_section();
 	error = aa_file_perm(op, current_cred(), label, file, mask, in_atomic);
 	__end_current_label_crit_section(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-static int apparmor_file_permission(struct file *file, int mask)
-{
-	return common_file_perm(OP_FPERM, file, mask);
-=======
 static int apparmor_file_receive(struct file *file)
 {
 	return common_file_perm(OP_FRECEIVE, file, aa_map_file_to_perms(file),
@@ -913,7 +544,6 @@ static int apparmor_file_receive(struct file *file)
 static int apparmor_file_permission(struct file *file, int mask)
 {
 	return common_file_perm(OP_FPERM, file, mask, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apparmor_file_lock(struct file *file, unsigned int cmd)
@@ -923,18 +553,6 @@ static int apparmor_file_lock(struct file *file, unsigned int cmd)
 	if (cmd == F_WRLCK)
 		mask |= MAY_WRITE;
 
-<<<<<<< HEAD
-	return common_file_perm(OP_FLOCK, file, mask);
-}
-
-static int common_mmap(int op, struct file *file, unsigned long prot,
-		       unsigned long flags)
-{
-	struct dentry *dentry;
-	int mask = 0;
-
-	if (!file || !file->f_security)
-=======
 	return common_file_perm(OP_FLOCK, file, mask, false);
 }
 
@@ -944,7 +562,6 @@ static int common_mmap(const char *op, struct file *file, unsigned long prot,
 	int mask = 0;
 
 	if (!file || !file_ctx(file))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (prot & PROT_READ)
@@ -958,24 +575,6 @@ static int common_mmap(const char *op, struct file *file, unsigned long prot,
 	if (prot & PROT_EXEC)
 		mask |= AA_EXEC_MMAP;
 
-<<<<<<< HEAD
-	dentry = file->f_path.dentry;
-	return common_file_perm(op, file, mask);
-}
-
-static int apparmor_file_mmap(struct file *file, unsigned long reqprot,
-			      unsigned long prot, unsigned long flags,
-			      unsigned long addr, unsigned long addr_only)
-{
-	int rc = 0;
-
-	/* do DAC check */
-	rc = cap_file_mmap(file, reqprot, prot, flags, addr, addr_only);
-	if (rc || addr_only)
-		return rc;
-
-	return common_mmap(OP_FMMAP, file, prot, flags);
-=======
 	return common_file_perm(op, file, mask, in_atomic);
 }
 
@@ -983,40 +582,12 @@ static int apparmor_mmap_file(struct file *file, unsigned long reqprot,
 			      unsigned long prot, unsigned long flags)
 {
 	return common_mmap(OP_FMMAP, file, prot, flags, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apparmor_file_mprotect(struct vm_area_struct *vma,
 				  unsigned long reqprot, unsigned long prot)
 {
 	return common_mmap(OP_FMPROT, vma->vm_file, prot,
-<<<<<<< HEAD
-			   !(vma->vm_flags & VM_SHARED) ? MAP_PRIVATE : 0);
-}
-
-static int apparmor_getprocattr(struct task_struct *task, char *name,
-				char **value)
-{
-	int error = -ENOENT;
-	struct aa_profile *profile;
-	/* released below */
-	const struct cred *cred = get_task_cred(task);
-	struct aa_task_cxt *cxt = cred->security;
-	profile = aa_cred_profile(cred);
-
-	if (strcmp(name, "current") == 0)
-		error = aa_getprocattr(aa_newest_version(cxt->profile),
-				       value);
-	else if (strcmp(name, "prev") == 0  && cxt->previous)
-		error = aa_getprocattr(aa_newest_version(cxt->previous),
-				       value);
-	else if (strcmp(name, "exec") == 0 && cxt->onexec)
-		error = aa_getprocattr(aa_newest_version(cxt->onexec),
-				       value);
-	else
-		error = -EINVAL;
-
-=======
 			   !(vma->vm_flags & VM_SHARED) ? MAP_PRIVATE : 0,
 			   false);
 }
@@ -1269,84 +840,11 @@ static int apparmor_getprocattr(struct task_struct *task, const char *name,
 		error = aa_getprocattr(label, value, true);
 
 	aa_put_label(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cred(cred);
 
 	return error;
 }
 
-<<<<<<< HEAD
-static int apparmor_setprocattr(struct task_struct *task, char *name,
-				void *value, size_t size)
-{
-	char *command, *args = value;
-	size_t arg_size;
-	int error;
-
-	if (size == 0)
-		return -EINVAL;
-	/* args points to a PAGE_SIZE buffer, AppArmor requires that
-	 * the buffer must be null terminated or have size <= PAGE_SIZE -1
-	 * so that AppArmor can null terminate them
-	 */
-	if (args[size - 1] != '\0') {
-		if (size == PAGE_SIZE)
-			return -EINVAL;
-		args[size] = '\0';
-	}
-
-	/* task can only write its own attributes */
-	if (current != task)
-		return -EACCES;
-
-	args = value;
-	args = strim(args);
-	command = strsep(&args, " ");
-	if (!args)
-		return -EINVAL;
-	args = skip_spaces(args);
-	if (!*args)
-		return -EINVAL;
-
-	arg_size = size - (args - (char *) value);
-	if (strcmp(name, "current") == 0) {
-		if (strcmp(command, "changehat") == 0) {
-			error = aa_setprocattr_changehat(args, arg_size,
-							 !AA_DO_TEST);
-		} else if (strcmp(command, "permhat") == 0) {
-			error = aa_setprocattr_changehat(args, arg_size,
-							 AA_DO_TEST);
-		} else if (strcmp(command, "changeprofile") == 0) {
-			error = aa_setprocattr_changeprofile(args, !AA_ONEXEC,
-							     !AA_DO_TEST);
-		} else if (strcmp(command, "permprofile") == 0) {
-			error = aa_setprocattr_changeprofile(args, !AA_ONEXEC,
-							     AA_DO_TEST);
-		} else if (strcmp(command, "permipc") == 0) {
-			error = aa_setprocattr_permipc(args);
-		} else {
-			struct common_audit_data sa;
-			struct apparmor_audit_data aad = {0,};
-			COMMON_AUDIT_DATA_INIT(&sa, NONE);
-			sa.aad = &aad;
-			aad.op = OP_SETPROCATTR;
-			aad.info = name;
-			aad.error = -EINVAL;
-			return aa_audit(AUDIT_APPARMOR_DENIED,
-					__aa_current_profile(), GFP_KERNEL,
-					&sa, NULL);
-		}
-	} else if (strcmp(name, "exec") == 0) {
-		error = aa_setprocattr_changeprofile(args, AA_ONEXEC,
-						     !AA_DO_TEST);
-	} else {
-		/* only support the "current" and "exec" process attributes */
-		return -EINVAL;
-	}
-	if (!error)
-		error = size;
-	return error;
-=======
 static int do_setattr(u64 attr, void *value, size_t size)
 {
 	char *command, *largs = NULL, *args = value;
@@ -1495,19 +993,11 @@ static void apparmor_task_getsecid_obj(struct task_struct *p, u32 *secid)
 	struct aa_label *label = aa_get_task_label(p);
 	*secid = label->secid;
 	aa_put_label(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apparmor_task_setrlimit(struct task_struct *task,
 		unsigned int resource, struct rlimit *new_rlim)
 {
-<<<<<<< HEAD
-	struct aa_profile *profile = __aa_current_profile();
-	int error = 0;
-
-	if (!unconfined(profile))
-		error = aa_task_setrlimit(profile, task, resource, new_rlim);
-=======
 	struct aa_label *label = __begin_current_label_crit_section();
 	int error = 0;
 
@@ -1515,55 +1005,10 @@ static int apparmor_task_setrlimit(struct task_struct *task,
 		error = aa_task_setrlimit(current_cred(), label, task,
 					  resource, new_rlim);
 	__end_current_label_crit_section(label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-static struct security_operations apparmor_ops = {
-	.name =				"apparmor",
-
-	.ptrace_access_check =		apparmor_ptrace_access_check,
-	.ptrace_traceme =		apparmor_ptrace_traceme,
-	.capget =			apparmor_capget,
-	.capable =			apparmor_capable,
-
-	.path_link =			apparmor_path_link,
-	.path_unlink =			apparmor_path_unlink,
-	.path_symlink =			apparmor_path_symlink,
-	.path_mkdir =			apparmor_path_mkdir,
-	.path_rmdir =			apparmor_path_rmdir,
-	.path_mknod =			apparmor_path_mknod,
-	.path_rename =			apparmor_path_rename,
-	.path_chmod =			apparmor_path_chmod,
-	.path_chown =			apparmor_path_chown,
-	.path_truncate =		apparmor_path_truncate,
-	.dentry_open =			apparmor_dentry_open,
-	.inode_getattr =                apparmor_inode_getattr,
-
-	.file_permission =		apparmor_file_permission,
-	.file_alloc_security =		apparmor_file_alloc_security,
-	.file_free_security =		apparmor_file_free_security,
-	.file_mmap =			apparmor_file_mmap,
-	.file_mprotect =		apparmor_file_mprotect,
-	.file_lock =			apparmor_file_lock,
-
-	.getprocattr =			apparmor_getprocattr,
-	.setprocattr =			apparmor_setprocattr,
-
-	.cred_alloc_blank =		apparmor_cred_alloc_blank,
-	.cred_free =			apparmor_cred_free,
-	.cred_prepare =			apparmor_cred_prepare,
-	.cred_transfer =		apparmor_cred_transfer,
-
-	.bprm_set_creds =		apparmor_bprm_set_creds,
-	.bprm_committing_creds =	apparmor_bprm_committing_creds,
-	.bprm_committed_creds =		apparmor_bprm_committed_creds,
-	.bprm_secureexec =		apparmor_bprm_secureexec,
-
-	.task_setrlimit =		apparmor_task_setrlimit,
-=======
 static int apparmor_task_kill(struct task_struct *target, struct kernel_siginfo *info,
 			      int sig, const struct cred *cred)
 {
@@ -2086,7 +1531,6 @@ static struct security_hook_list apparmor_hooks[] __ro_after_init = {
 	LSM_HOOK_INIT(uring_override_creds, apparmor_uring_override_creds),
 	LSM_HOOK_INIT(uring_sqpoll, apparmor_uring_sqpoll),
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2096,12 +1540,8 @@ static struct security_hook_list apparmor_hooks[] __ro_after_init = {
 static int param_set_aabool(const char *val, const struct kernel_param *kp);
 static int param_get_aabool(char *buffer, const struct kernel_param *kp);
 #define param_check_aabool param_check_bool
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_aabool = {
-=======
 static const struct kernel_param_ops param_ops_aabool = {
 	.flags = KERNEL_PARAM_OPS_FL_NOARG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_aabool,
 	.get = param_get_aabool
 };
@@ -2109,21 +1549,11 @@ static const struct kernel_param_ops param_ops_aabool = {
 static int param_set_aauint(const char *val, const struct kernel_param *kp);
 static int param_get_aauint(char *buffer, const struct kernel_param *kp);
 #define param_check_aauint param_check_uint
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_aauint = {
-=======
 static const struct kernel_param_ops param_ops_aauint = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_aauint,
 	.get = param_get_aauint
 };
 
-<<<<<<< HEAD
-static int param_set_aalockpolicy(const char *val, const struct kernel_param *kp);
-static int param_get_aalockpolicy(char *buffer, const struct kernel_param *kp);
-#define param_check_aalockpolicy param_check_bool
-static struct kernel_param_ops param_ops_aalockpolicy = {
-=======
 static int param_set_aacompressionlevel(const char *val,
 					const struct kernel_param *kp);
 static int param_get_aacompressionlevel(char *buffer,
@@ -2139,24 +1569,15 @@ static int param_get_aalockpolicy(char *buffer, const struct kernel_param *kp);
 #define param_check_aalockpolicy param_check_bool
 static const struct kernel_param_ops param_ops_aalockpolicy = {
 	.flags = KERNEL_PARAM_OPS_FL_NOARG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_aalockpolicy,
 	.get = param_get_aalockpolicy
 };
 
-<<<<<<< HEAD
-static int param_set_audit(const char *val, struct kernel_param *kp);
-static int param_get_audit(char *buffer, struct kernel_param *kp);
-
-static int param_set_mode(const char *val, struct kernel_param *kp);
-static int param_get_mode(char *buffer, struct kernel_param *kp);
-=======
 static int param_set_audit(const char *val, const struct kernel_param *kp);
 static int param_get_audit(char *buffer, const struct kernel_param *kp);
 
 static int param_set_mode(const char *val, const struct kernel_param *kp);
 static int param_get_mode(char *buffer, const struct kernel_param *kp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flag values, also controllable via /sys/module/apparmor/parameters
  * We define special types as we want to do additional mediation.
@@ -2167,10 +1588,6 @@ enum profile_mode aa_g_profile_mode = APPARMOR_ENFORCE;
 module_param_call(mode, param_set_mode, param_get_mode,
 		  &aa_g_profile_mode, S_IRUSR | S_IWUSR);
 
-<<<<<<< HEAD
-/* Debug mode */
-bool aa_g_debug;
-=======
 /* whether policy verification hashing is enabled */
 bool aa_g_hash_policy = IS_ENABLED(CONFIG_SECURITY_APPARMOR_HASH_DEFAULT);
 #ifdef CONFIG_SECURITY_APPARMOR_HASH
@@ -2190,7 +1607,6 @@ module_param_named(rawdata_compression_level, aa_g_rawdata_compression_level,
 
 /* Debug mode */
 bool aa_g_debug = IS_ENABLED(CONFIG_SECURITY_APPARMOR_DEBUG_MESSAGES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(debug, aa_g_debug, aabool, S_IRUSR | S_IWUSR);
 
 /* Audit mode */
@@ -2201,11 +1617,7 @@ module_param_call(audit, param_set_audit, param_get_audit,
 /* Determines if audit header is included in audited messages.  This
  * provides more context if the audit daemon is not running
  */
-<<<<<<< HEAD
-bool aa_g_audit_header = 1;
-=======
 bool aa_g_audit_header = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(audit_header, aa_g_audit_header, aabool,
 		   S_IRUSR | S_IWUSR);
 
@@ -2223,20 +1635,6 @@ module_param_named(logsyscall, aa_g_logsyscall, aabool, S_IRUSR | S_IWUSR);
 
 /* Maximum pathname length before accesses will start getting rejected */
 unsigned int aa_g_path_max = 2 * PATH_MAX;
-<<<<<<< HEAD
-module_param_named(path_max, aa_g_path_max, aauint, S_IRUSR | S_IWUSR);
-
-/* Determines how paranoid loading of policy is and how much verification
- * on the loaded policy is done.
- */
-bool aa_g_paranoid_load = 1;
-module_param_named(paranoid_load, aa_g_paranoid_load, aabool,
-		   S_IRUSR | S_IWUSR);
-
-/* Boot time disable flag */
-static bool apparmor_enabled = CONFIG_SECURITY_APPARMOR_BOOTPARAM_VALUE;
-module_param_named(enabled, apparmor_enabled, aabool, S_IRUSR);
-=======
 module_param_named(path_max, aa_g_path_max, aauint, S_IRUSR);
 
 /* Determines how paranoid loading of policy is and how much verification
@@ -2257,16 +1655,11 @@ static const struct kernel_param_ops param_ops_aaintbool = {
 /* Boot time disable flag */
 static int apparmor_enabled __ro_after_init = 1;
 module_param_named(enabled, apparmor_enabled, aaintbool, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init apparmor_enabled_setup(char *str)
 {
 	unsigned long enabled;
-<<<<<<< HEAD
-	int error = strict_strtoul(str, 0, &enabled);
-=======
 	int error = kstrtoul(str, 0, &enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!error)
 		apparmor_enabled = enabled ? 1 : 0;
 	return 1;
@@ -2277,66 +1670,42 @@ __setup("apparmor=", apparmor_enabled_setup);
 /* set global flag turning off the ability to load policy */
 static int param_set_aalockpolicy(const char *val, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-	if (aa_g_lock_policy)
-		return -EACCES;
-=======
 	if (!apparmor_enabled)
 		return -EINVAL;
 	if (apparmor_initialized && !aa_current_policy_admin_capable(NULL))
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return param_set_bool(val, kp);
 }
 
 static int param_get_aalockpolicy(char *buffer, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-=======
 	if (!apparmor_enabled)
 		return -EINVAL;
 	if (apparmor_initialized && !aa_current_policy_view_capable(NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	return param_get_bool(buffer, kp);
 }
 
 static int param_set_aabool(const char *val, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-=======
 	if (!apparmor_enabled)
 		return -EINVAL;
 	if (apparmor_initialized && !aa_current_policy_admin_capable(NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	return param_set_bool(val, kp);
 }
 
 static int param_get_aabool(char *buffer, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-=======
 	if (!apparmor_enabled)
 		return -EINVAL;
 	if (apparmor_initialized && !aa_current_policy_view_capable(NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	return param_get_bool(buffer, kp);
 }
 
 static int param_set_aauint(const char *val, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-	return param_set_uint(val, kp);
-=======
 	int error;
 
 	if (!apparmor_enabled)
@@ -2350,88 +1719,17 @@ static int param_set_aauint(const char *val, const struct kernel_param *kp)
 	pr_info("AppArmor: buffer size set to %d bytes\n", aa_g_path_max);
 
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int param_get_aauint(char *buffer, const struct kernel_param *kp)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_MAC_ADMIN))
-=======
 	if (!apparmor_enabled)
 		return -EINVAL;
 	if (apparmor_initialized && !aa_current_policy_view_capable(NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	return param_get_uint(buffer, kp);
 }
 
-<<<<<<< HEAD
-static int param_get_audit(char *buffer, struct kernel_param *kp)
-{
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-
-	if (!apparmor_enabled)
-		return -EINVAL;
-
-	return sprintf(buffer, "%s", audit_mode_names[aa_g_audit]);
-}
-
-static int param_set_audit(const char *val, struct kernel_param *kp)
-{
-	int i;
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-
-	if (!apparmor_enabled)
-		return -EINVAL;
-
-	if (!val)
-		return -EINVAL;
-
-	for (i = 0; i < AUDIT_MAX_INDEX; i++) {
-		if (strcmp(val, audit_mode_names[i]) == 0) {
-			aa_g_audit = i;
-			return 0;
-		}
-	}
-
-	return -EINVAL;
-}
-
-static int param_get_mode(char *buffer, struct kernel_param *kp)
-{
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-
-	if (!apparmor_enabled)
-		return -EINVAL;
-
-	return sprintf(buffer, "%s", profile_mode_names[aa_g_profile_mode]);
-}
-
-static int param_set_mode(const char *val, struct kernel_param *kp)
-{
-	int i;
-	if (!capable(CAP_MAC_ADMIN))
-		return -EPERM;
-
-	if (!apparmor_enabled)
-		return -EINVAL;
-
-	if (!val)
-		return -EINVAL;
-
-	for (i = 0; i < APPARMOR_NAMES_MAX_INDEX; i++) {
-		if (strcmp(val, profile_mode_names[i]) == 0) {
-			aa_g_profile_mode = i;
-			return 0;
-		}
-	}
-
-	return -EINVAL;
-=======
 /* Can only be set before AppArmor is initialized (i.e. on boot cmdline). */
 static int param_set_aaintbool(const char *val, const struct kernel_param *kp)
 {
@@ -2654,7 +1952,6 @@ void aa_put_buffer(char *buf)
 	list_add(&aa_buf->list, &cache->head);
 	cache->count++;
 	put_cpu_ptr(&aa_local_buffers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2662,23 +1959,6 @@ void aa_put_buffer(char *buf)
  */
 
 /**
-<<<<<<< HEAD
- * set_init_cxt - set a task context and profile on the first task.
- *
- * TODO: allow setting an alternate profile than unconfined
- */
-static int __init set_init_cxt(void)
-{
-	struct cred *cred = (struct cred *)current->real_cred;
-	struct aa_task_cxt *cxt;
-
-	cxt = aa_alloc_task_context(GFP_KERNEL);
-	if (!cxt)
-		return -ENOMEM;
-
-	cxt->profile = aa_get_profile(root_ns->unconfined);
-	cred->security = cxt;
-=======
  * set_init_ctx - set a task context and profile on the first task.
  *
  * TODO: allow setting an alternate profile than unconfined
@@ -2688,13 +1968,10 @@ static int __init set_init_ctx(void)
 	struct cred *cred = (__force struct cred *)current->real_cred;
 
 	set_cred_label(cred, aa_get_label(ns_unconfined(root_ns)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void destroy_buffers(void)
 {
 	union aa_buffer *aa_buf;
@@ -2938,22 +2215,14 @@ static void __init aa_teardown_dfa_engine(void)
 	nulldfa = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init apparmor_init(void)
 {
 	int error;
 
-<<<<<<< HEAD
-	if (!apparmor_enabled || !security_module_enable(&apparmor_ops)) {
-		aa_info_message("AppArmor disabled by boot time parameter");
-		apparmor_enabled = 0;
-		return 0;
-=======
 	error = aa_setup_dfa_engine();
 	if (error) {
 		AA_ERROR("Unable to setup dfa engine\n");
 		goto alloc_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = aa_alloc_root_ns();
@@ -2962,20 +2231,6 @@ static int __init apparmor_init(void)
 		goto alloc_out;
 	}
 
-<<<<<<< HEAD
-	error = set_init_cxt();
-	if (error) {
-		AA_ERROR("Failed to set context on init task\n");
-		goto register_security_out;
-	}
-
-	error = register_security(&apparmor_ops);
-	if (error) {
-		AA_ERROR("Unable to register AppArmor\n");
-		goto set_init_cxt_out;
-	}
-
-=======
 	error = apparmor_init_sysctl();
 	if (error) {
 		AA_ERROR("Unable to register sysctls\n");
@@ -2998,7 +2253,6 @@ static int __init apparmor_init(void)
 	security_add_hooks(apparmor_hooks, ARRAY_SIZE(apparmor_hooks),
 				&apparmor_lsmid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Report that AppArmor successfully initialized */
 	apparmor_initialized = 1;
 	if (aa_g_profile_mode == APPARMOR_COMPLAIN)
@@ -3010,22 +2264,6 @@ static int __init apparmor_init(void)
 
 	return error;
 
-<<<<<<< HEAD
-set_init_cxt_out:
-	aa_free_task_context(current->real_cred->security);
-
-register_security_out:
-	aa_free_root_ns();
-
-alloc_out:
-	aa_destroy_aafs();
-
-	apparmor_enabled = 0;
-	return error;
-}
-
-security_initcall(apparmor_init);
-=======
 buffers_out:
 	destroy_buffers();
 alloc_out:
@@ -3043,4 +2281,3 @@ DEFINE_LSM(apparmor) = {
 	.blobs = &apparmor_blob_sizes,
 	.init = apparmor_init,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

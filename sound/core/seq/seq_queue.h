@@ -1,28 +1,7 @@
-<<<<<<< HEAD
-/*
- *   ALSA sequencer Queue handling
- *   Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *   ALSA sequencer Queue handling
  *   Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_QUEUE_H
 #define __SND_SEQ_QUEUE_H
@@ -47,17 +26,10 @@ struct snd_seq_queue {
 	
 	struct snd_seq_timer *timer;	/* time keeper for this queue */
 	int	owner;		/* client that 'owns' the timer */
-<<<<<<< HEAD
-	unsigned int	locked:1,	/* timer is only accesibble by owner if set */
-		klocked:1,	/* kernel lock (after START) */	
-		check_again:1,
-		check_blocked:1;
-=======
 	bool	locked;		/* timer is only accesibble by owner if set */
 	bool	klocked;	/* kernel lock (after START) */
 	bool	check_again;	/* concurrent access happened during check */
 	bool	check_blocked;	/* queue being checked */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int flags;		/* status flags */
 	unsigned int info_flags;	/* info for sync */
@@ -77,32 +49,16 @@ struct snd_seq_queue {
 /* get the number of current queues */
 int snd_seq_queue_get_cur_queues(void);
 
-<<<<<<< HEAD
-/* init queues structure */
-int snd_seq_queues_init(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* delete queues */ 
 void snd_seq_queues_delete(void);
 
 
 /* create new queue (constructor) */
-<<<<<<< HEAD
-int snd_seq_queue_alloc(int client, int locked, unsigned int flags);
-=======
 struct snd_seq_queue *snd_seq_queue_alloc(int client, int locked, unsigned int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* delete queue (destructor) */
 int snd_seq_queue_delete(int client, int queueid);
 
-<<<<<<< HEAD
-/* notification that client has left the system */
-void snd_seq_queue_client_termination(int client);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* final stage */
 void snd_seq_queue_client_leave(int client);
 
@@ -136,31 +92,4 @@ int snd_seq_queue_is_used(int queueid, int client);
 
 int snd_seq_control_queue(struct snd_seq_event *ev, int atomic, int hop);
 
-<<<<<<< HEAD
-/*
- * 64bit division - for sync stuff..
- */
-#if defined(i386) || defined(i486)
-
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  __asm__ ("divl %4"		\
-	   : "=a" ((u32)(q)),	\
-	     "=d" ((u32)(r))	\
-	   : "0" ((u32)(n0)),	\
-	     "1" ((u32)(n1)),	\
-	     "rm" ((u32)(d)))
-
-#define u64_div(x,y,q) do {u32 __tmp; udiv_qrnnd(q, __tmp, (x)>>32, x, y);} while (0)
-#define u64_mod(x,y,r) do {u32 __tmp; udiv_qrnnd(__tmp, q, (x)>>32, x, y);} while (0)
-#define u64_divmod(x,y,q,r) udiv_qrnnd(q, r, (x)>>32, x, y)
-
-#else
-#define u64_div(x,y,q)	((q) = (u32)((u64)(x) / (u64)(y)))
-#define u64_mod(x,y,r)	((r) = (u32)((u64)(x) % (u64)(y)))
-#define u64_divmod(x,y,q,r) (u64_div(x,y,q), u64_mod(x,y,r))
-#endif
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

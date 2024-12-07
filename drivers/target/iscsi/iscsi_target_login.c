@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
- * This file contains the login functions used by the iSCSI Target driver.
- *
- * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
- *
- * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- ******************************************************************************/
-
-#include <linux/string.h>
-#include <linux/kthread.h>
-#include <linux/crypto.h>
-#include <linux/idr.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*******************************************************************************
  * This file contains the login functions used by the iSCSI Target driver.
@@ -43,65 +17,22 @@
 #include <linux/tcp.h>        /* TCP_NODELAY */
 #include <net/ip.h>
 #include <net/ipv6.h>         /* ipv6_addr_v4mapped() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
-<<<<<<< HEAD
-#include "iscsi_target_core.h"
-#include "iscsi_target_tq.h"
-=======
 #include <target/iscsi/iscsi_target_core.h>
 #include <target/iscsi/iscsi_target_stat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_device.h"
 #include "iscsi_target_nego.h"
 #include "iscsi_target_erl0.h"
 #include "iscsi_target_erl2.h"
 #include "iscsi_target_login.h"
-<<<<<<< HEAD
-#include "iscsi_target_stat.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_tpg.h"
 #include "iscsi_target_util.h"
 #include "iscsi_target.h"
 #include "iscsi_target_parameters.h"
 
-<<<<<<< HEAD
-extern struct idr sess_idr;
-extern struct mutex auth_id_lock;
-extern spinlock_t sess_idr_lock;
-
-static int iscsi_login_init_conn(struct iscsi_conn *conn)
-{
-	init_waitqueue_head(&conn->queues_wq);
-	INIT_LIST_HEAD(&conn->conn_list);
-	INIT_LIST_HEAD(&conn->conn_cmd_list);
-	INIT_LIST_HEAD(&conn->immed_queue_list);
-	INIT_LIST_HEAD(&conn->response_queue_list);
-	init_completion(&conn->conn_post_wait_comp);
-	init_completion(&conn->conn_wait_comp);
-	init_completion(&conn->conn_wait_rcfr_comp);
-	init_completion(&conn->conn_waiting_on_uc_comp);
-	init_completion(&conn->conn_logout_comp);
-	init_completion(&conn->rx_half_close_comp);
-	init_completion(&conn->tx_half_close_comp);
-	spin_lock_init(&conn->cmd_lock);
-	spin_lock_init(&conn->conn_usage_lock);
-	spin_lock_init(&conn->immed_queue_lock);
-	spin_lock_init(&conn->nopin_timer_lock);
-	spin_lock_init(&conn->response_queue_lock);
-	spin_lock_init(&conn->state_lock);
-
-	if (!zalloc_cpumask_var(&conn->conn_cpumask, GFP_KERNEL)) {
-		pr_err("Unable to allocate conn->conn_cpumask\n");
-		return -ENOMEM;
-	}
-
-	return 0;
-=======
 #include <target/iscsi/iscsi_transport.h>
 
 static struct iscsi_login *iscsi_login_init_conn(struct iscsit_conn *conn)
@@ -138,47 +69,21 @@ out_req_buf:
 out_login:
 	kfree(login);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Used by iscsi_target_nego.c:iscsi_target_locate_portal() to setup
-<<<<<<< HEAD
- * per struct iscsi_conn libcrypto contexts for crc32c and crc32-intel
- */
-int iscsi_login_setup_crypto(struct iscsi_conn *conn)
-{
-=======
  * per struct iscsit_conn libcrypto contexts for crc32c and crc32-intel
  */
 int iscsi_login_setup_crypto(struct iscsit_conn *conn)
 {
 	struct crypto_ahash *tfm;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Setup slicing by CRC32C algorithm for RX and TX libcrypto contexts
 	 * which will default to crc32c_intel.ko for cpu_has_xmm4_2, or fallback
 	 * to software 1x8 byte slicing from crc32c.ko
 	 */
-<<<<<<< HEAD
-	conn->conn_rx_hash.flags = 0;
-	conn->conn_rx_hash.tfm = crypto_alloc_hash("crc32c", 0,
-						CRYPTO_ALG_ASYNC);
-	if (IS_ERR(conn->conn_rx_hash.tfm)) {
-		pr_err("crypto_alloc_hash() failed for conn_rx_tfm\n");
-		return -ENOMEM;
-	}
-
-	conn->conn_tx_hash.flags = 0;
-	conn->conn_tx_hash.tfm = crypto_alloc_hash("crc32c", 0,
-						CRYPTO_ALG_ASYNC);
-	if (IS_ERR(conn->conn_tx_hash.tfm)) {
-		pr_err("crypto_alloc_hash() failed for conn_tx_tfm\n");
-		crypto_free_hash(conn->conn_rx_hash.tfm);
-		return -ENOMEM;
-	}
-=======
 	tfm = crypto_alloc_ahash("crc32c", 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(tfm)) {
 		pr_err("crypto_alloc_ahash() failed\n");
@@ -202,17 +107,12 @@ int iscsi_login_setup_crypto(struct iscsit_conn *conn)
 		return -ENOMEM;
 	}
 	ahash_request_set_callback(conn->conn_tx_hash, 0, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int iscsi_login_check_initiator_version(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-=======
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 version_max,
 	u8 version_min)
 {
@@ -228,20 +128,12 @@ static int iscsi_login_check_initiator_version(
 	return 0;
 }
 
-<<<<<<< HEAD
-int iscsi_check_for_session_reinstatement(struct iscsi_conn *conn)
-=======
 int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int sessiontype;
 	struct iscsi_param *initiatorname_param = NULL, *sessiontype_param = NULL;
 	struct iscsi_portal_group *tpg = conn->tpg;
-<<<<<<< HEAD
-	struct iscsi_session *sess = NULL, *sess_p = NULL;
-=======
 	struct iscsit_session *sess = NULL, *sess_p = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
 	struct se_session *se_sess, *se_sess_tmp;
 
@@ -265,10 +157,7 @@ int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
 		spin_lock(&sess_p->conn_lock);
 		if (atomic_read(&sess_p->session_fall_back_to_erl0) ||
 		    atomic_read(&sess_p->session_logout) ||
-<<<<<<< HEAD
-=======
 		    atomic_read(&sess_p->session_close) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (sess_p->time2retain_timer_flags & ISCSI_TF_EXPIRED)) {
 			spin_unlock(&sess_p->conn_lock);
 			continue;
@@ -278,11 +167,8 @@ int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
 			    initiatorname_param->value) &&
 		   (sess_p->sess_ops->SessionType == sessiontype))) {
 			atomic_set(&sess_p->session_reinstatement, 1);
-<<<<<<< HEAD
-=======
 			atomic_set(&sess_p->session_fall_back_to_erl0, 1);
 			atomic_set(&sess_p->session_close, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&sess_p->conn_lock);
 			iscsit_inc_session_usage_count(sess_p);
 			iscsit_stop_time2retain_timer(sess_p);
@@ -299,11 +185,7 @@ int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
 		return 0;
 
 	pr_debug("%s iSCSI Session SID %u is still active for %s,"
-<<<<<<< HEAD
-		" preforming session reinstatement.\n", (sessiontype) ?
-=======
 		" performing session reinstatement.\n", (sessiontype) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Discovery" : "Normal", sess->sid,
 		sess->sess_ops->InitiatorName);
 
@@ -311,10 +193,6 @@ int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
 	if (sess->session_state == TARG_SESS_STATE_FAILED) {
 		spin_unlock_bh(&sess->conn_lock);
 		iscsit_dec_session_usage_count(sess);
-<<<<<<< HEAD
-		target_put_session(sess->se_sess);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	spin_unlock_bh(&sess->conn_lock);
@@ -322,19 +200,6 @@ int iscsi_check_for_session_reinstatement(struct iscsit_conn *conn)
 	iscsit_stop_session(sess, 1, 1);
 	iscsit_dec_session_usage_count(sess);
 
-<<<<<<< HEAD
-	target_put_session(sess->se_sess);
-	return 0;
-}
-
-static void iscsi_login_set_conn_values(
-	struct iscsi_session *sess,
-	struct iscsi_conn *conn,
-	u16 cid)
-{
-	conn->sess		= sess;
-	conn->cid		= cid;
-=======
 	return 0;
 }
 
@@ -346,26 +211,17 @@ static int iscsi_login_set_conn_values(
 	int ret;
 	conn->sess		= sess;
 	conn->cid		= be16_to_cpu(cid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Generate a random Status sequence number (statsn) for the new
 	 * iSCSI connection.
 	 */
-<<<<<<< HEAD
-	get_random_bytes(&conn->stat_sn, sizeof(u32));
-=======
 	ret = get_random_bytes_wait(&conn->stat_sn, sizeof(u32));
 	if (unlikely(ret))
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&auth_id_lock);
 	conn->auth_id		= iscsit_global->auth_id++;
 	mutex_unlock(&auth_id_lock);
-<<<<<<< HEAD
-}
-
-=======
 	return 0;
 }
 
@@ -392,21 +248,11 @@ __printf(2, 3) int iscsi_change_param_sprintf(
 }
 EXPORT_SYMBOL(iscsi_change_param_sprintf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	This is the leading connection of a new session,
  *	or session reinstatement.
  */
 static int iscsi_login_zero_tsih_s1(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	unsigned char *buf)
-{
-	struct iscsi_session *sess = NULL;
-	struct iscsi_login_req *pdu = (struct iscsi_login_req *)buf;
-
-	sess = kzalloc(sizeof(struct iscsi_session), GFP_KERNEL);
-=======
 	struct iscsit_conn *conn,
 	unsigned char *buf)
 {
@@ -415,7 +261,6 @@ static int iscsi_login_zero_tsih_s1(
 	int ret;
 
 	sess = kzalloc(sizeof(struct iscsit_session), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sess) {
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_NO_RESOURCES);
@@ -423,19 +268,12 @@ static int iscsi_login_zero_tsih_s1(
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	iscsi_login_set_conn_values(sess, conn, pdu->cid);
-	sess->init_task_tag	= pdu->itt;
-	memcpy(&sess->isid, pdu->isid, 6);
-	sess->exp_cmd_sn	= pdu->cmdsn;
-=======
 	if (iscsi_login_set_conn_values(sess, conn, pdu->cid))
 		goto free_sess;
 
 	sess->init_task_tag	= pdu->itt;
 	memcpy(&sess->isid, pdu->isid, 6);
 	sess->exp_cmd_sn	= be32_to_cpu(pdu->cmdsn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&sess->sess_conn_list);
 	INIT_LIST_HEAD(&sess->sess_ooo_cmdsn_list);
 	INIT_LIST_HEAD(&sess->cr_active_list);
@@ -451,21 +289,6 @@ static int iscsi_login_zero_tsih_s1(
 	spin_lock_init(&sess->session_usage_lock);
 	spin_lock_init(&sess->ttt_lock);
 
-<<<<<<< HEAD
-	if (!idr_pre_get(&sess_idr, GFP_KERNEL)) {
-		pr_err("idr_pre_get() for sess_idr failed\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		kfree(sess);
-		return -ENOMEM;
-	}
-	spin_lock(&sess_idr_lock);
-	idr_get_new(&sess_idr, NULL, &sess->session_index);
-	spin_unlock(&sess_idr_lock);
-
-	sess->creation_time = get_jiffies_64();
-	spin_lock_init(&sess->session_stats_lock);
-=======
 	timer_setup(&sess->time2retain_timer,
 		    iscsit_handle_time2retain_timeout, 0);
 
@@ -479,16 +302,11 @@ static int iscsi_login_zero_tsih_s1(
 
 	sess->session_index = ret;
 	sess->creation_time = get_jiffies_64();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The FFP CmdSN window values will be allocated from the TPG's
 	 * Initiator Node's ACL once the login has been successfully completed.
 	 */
-<<<<<<< HEAD
-	sess->max_cmd_sn	= pdu->cmdsn;
-=======
 	atomic_set(&sess->max_cmd_sn, be32_to_cpu(pdu->cmdsn));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sess->sess_ops = kzalloc(sizeof(struct iscsi_sess_ops), GFP_KERNEL);
 	if (!sess->sess_ops) {
@@ -496,29 +314,6 @@ static int iscsi_login_zero_tsih_s1(
 				ISCSI_LOGIN_STATUS_NO_RESOURCES);
 		pr_err("Unable to allocate memory for"
 				" struct iscsi_sess_ops.\n");
-<<<<<<< HEAD
-		kfree(sess);
-		return -ENOMEM;
-	}
-
-	sess->se_sess = transport_init_session();
-	if (IS_ERR(sess->se_sess)) {
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		kfree(sess);
-		return -ENOMEM;
-	}
-
-	return 0;
-}
-
-static int iscsi_login_zero_tsih_s2(
-	struct iscsi_conn *conn)
-{
-	struct iscsi_node_attrib *na;
-	struct iscsi_session *sess = conn->sess;
-	unsigned char buf[32];
-=======
 		goto free_id;
 	}
 
@@ -548,7 +343,6 @@ static int iscsi_login_zero_tsih_s2(
 	struct iscsit_session *sess = conn->sess;
 	struct iscsi_param *param;
 	bool iser = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sess->tpg = conn->tpg;
 
@@ -556,38 +350,24 @@ static int iscsi_login_zero_tsih_s2(
 	 * Assign a new TPG Session Handle.  Note this is protected with
 	 * struct iscsi_portal_group->np_login_sem from iscsit_access_np().
 	 */
-<<<<<<< HEAD
-	sess->tsih = ++ISCSI_TPG_S(sess)->ntsih;
-	if (!sess->tsih)
-		sess->tsih = ++ISCSI_TPG_S(sess)->ntsih;
-=======
 	sess->tsih = ++sess->tpg->ntsih;
 	if (!sess->tsih)
 		sess->tsih = ++sess->tpg->ntsih;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Create the default params from user defined values..
 	 */
 	if (iscsi_copy_param_list(&conn->param_list,
-<<<<<<< HEAD
-				ISCSI_TPG_C(conn)->param_list, 1) < 0) {
-=======
 				conn->tpg->param_list, 1) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_NO_RESOURCES);
 		return -1;
 	}
 
-<<<<<<< HEAD
-	iscsi_set_keys_to_negotiate(0, conn->param_list);
-=======
 	if (conn->conn_transport->transport_type == ISCSI_INFINIBAND)
 		iser = true;
 
 	iscsi_set_keys_to_negotiate(conn->param_list, iser);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sess->sess_ops->SessionType)
 		return iscsi_set_keys_irrelevant_for_discovery(
@@ -596,8 +376,6 @@ static int iscsi_login_zero_tsih_s2(
 	na = iscsit_tpg_get_node_attrib(sess);
 
 	/*
-<<<<<<< HEAD
-=======
 	 * If ACL allows non-authorized access in TPG with CHAP,
 	 * then set None to AuthMethod.
 	 */
@@ -610,96 +388,20 @@ static int iscsi_login_zero_tsih_s2(
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Need to send TargetPortalGroupTag back in first login response
 	 * on any iSCSI connection where the Initiator provides TargetName.
 	 * See 5.3.1.  Login Phase Start
 	 *
 	 * In our case, we have already located the struct iscsi_tiqn at this point.
 	 */
-<<<<<<< HEAD
-	memset(buf, 0, 32);
-	sprintf(buf, "TargetPortalGroupTag=%hu", ISCSI_TPG_S(sess)->tpgt);
-	if (iscsi_change_param_value(buf, conn->param_list, 0) < 0) {
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-=======
 	if (iscsi_change_param_sprintf(conn, "TargetPortalGroupTag=%hu", sess->tpg->tpgt))
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Workaround for Initiators that have broken connection recovery logic.
 	 *
 	 * "We would really like to get rid of this." Linux-iSCSI.org team
 	 */
-<<<<<<< HEAD
-	memset(buf, 0, 32);
-	sprintf(buf, "ErrorRecoveryLevel=%d", na->default_erl);
-	if (iscsi_change_param_value(buf, conn->param_list, 0) < 0) {
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-
-	if (iscsi_login_disable_FIM_keys(conn->param_list, conn) < 0)
-		return -1;
-
-	return 0;
-}
-
-/*
- * Remove PSTATE_NEGOTIATE for the four FIM related keys.
- * The Initiator node will be able to enable FIM by proposing them itself.
- */
-int iscsi_login_disable_FIM_keys(
-	struct iscsi_param_list *param_list,
-	struct iscsi_conn *conn)
-{
-	struct iscsi_param *param;
-
-	param = iscsi_find_param_from_key("OFMarker", param_list);
-	if (!param) {
-		pr_err("iscsi_find_param_from_key() for"
-				" OFMarker failed\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-	param->state &= ~PSTATE_NEGOTIATE;
-
-	param = iscsi_find_param_from_key("OFMarkInt", param_list);
-	if (!param) {
-		pr_err("iscsi_find_param_from_key() for"
-				" IFMarker failed\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-	param->state &= ~PSTATE_NEGOTIATE;
-
-	param = iscsi_find_param_from_key("IFMarker", param_list);
-	if (!param) {
-		pr_err("iscsi_find_param_from_key() for"
-				" IFMarker failed\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-	param->state &= ~PSTATE_NEGOTIATE;
-
-	param = iscsi_find_param_from_key("IFMarkInt", param_list);
-	if (!param) {
-		pr_err("iscsi_find_param_from_key() for"
-				" IFMarker failed\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-	param->state &= ~PSTATE_NEGOTIATE;
-=======
 	if (iscsi_change_param_sprintf(conn, "ErrorRecoveryLevel=%d", na->default_erl))
 		return -1;
 
@@ -764,43 +466,23 @@ check_prot:
 				 " T10-PI enabled ISER session\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int iscsi_login_non_zero_tsih_s1(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-=======
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *buf)
 {
 	struct iscsi_login_req *pdu = (struct iscsi_login_req *)buf;
 
-<<<<<<< HEAD
-	iscsi_login_set_conn_values(NULL, conn, pdu->cid);
-	return 0;
-=======
 	return iscsi_login_set_conn_values(NULL, conn, pdu->cid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	Add a new connection to an existing session.
  */
 static int iscsi_login_non_zero_tsih_s2(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	unsigned char *buf)
-{
-	struct iscsi_portal_group *tpg = conn->tpg;
-	struct iscsi_session *sess = NULL, *sess_p = NULL;
-	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
-	struct se_session *se_sess, *se_sess_tmp;
-	struct iscsi_login_req *pdu = (struct iscsi_login_req *)buf;
-=======
 	struct iscsit_conn *conn,
 	unsigned char *buf)
 {
@@ -810,21 +492,11 @@ static int iscsi_login_non_zero_tsih_s2(
 	struct se_session *se_sess, *se_sess_tmp;
 	struct iscsi_login_req *pdu = (struct iscsi_login_req *)buf;
 	bool iser = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&se_tpg->session_lock);
 	list_for_each_entry_safe(se_sess, se_sess_tmp, &se_tpg->tpg_sess_list,
 			sess_list) {
 
-<<<<<<< HEAD
-		sess_p = (struct iscsi_session *)se_sess->fabric_sess_ptr;
-		if (atomic_read(&sess_p->session_fall_back_to_erl0) ||
-		    atomic_read(&sess_p->session_logout) ||
-		   (sess_p->time2retain_timer_flags & ISCSI_TF_EXPIRED))
-			continue;
-		if (!memcmp(sess_p->isid, pdu->isid, 6) &&
-		     (sess_p->tsih == pdu->tsih)) {
-=======
 		sess_p = (struct iscsit_session *)se_sess->fabric_sess_ptr;
 		if (atomic_read(&sess_p->session_fall_back_to_erl0) ||
 		    atomic_read(&sess_p->session_logout) ||
@@ -833,7 +505,6 @@ static int iscsi_login_non_zero_tsih_s2(
 			continue;
 		if (!memcmp(sess_p->isid, pdu->isid, 6) &&
 		     (sess_p->tsih == be16_to_cpu(pdu->tsih))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iscsit_inc_session_usage_count(sess_p);
 			iscsit_stop_time2retain_timer(sess_p);
 			sess = sess_p;
@@ -862,29 +533,18 @@ static int iscsi_login_non_zero_tsih_s2(
 		atomic_set(&sess->session_continuation, 1);
 	spin_unlock_bh(&sess->conn_lock);
 
-<<<<<<< HEAD
-	iscsi_login_set_conn_values(sess, conn, pdu->cid);
-
-	if (iscsi_copy_param_list(&conn->param_list,
-			ISCSI_TPG_C(conn)->param_list, 0) < 0) {
-=======
 	if (iscsi_login_set_conn_values(sess, conn, pdu->cid) < 0 ||
 	    iscsi_copy_param_list(&conn->param_list,
 			conn->tpg->param_list, 0) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_NO_RESOURCES);
 		return -1;
 	}
 
-<<<<<<< HEAD
-	iscsi_set_keys_to_negotiate(0, conn->param_list);
-=======
 	if (conn->conn_transport->transport_type == ISCSI_INFINIBAND)
 		iser = true;
 
 	iscsi_set_keys_to_negotiate(conn->param_list, iser);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Need to send TargetPortalGroupTag back in first login response
 	 * on any iSCSI connection where the Initiator provides TargetName.
@@ -892,27 +552,6 @@ static int iscsi_login_non_zero_tsih_s2(
 	 *
 	 * In our case, we have already located the struct iscsi_tiqn at this point.
 	 */
-<<<<<<< HEAD
-	memset(buf, 0, 32);
-	sprintf(buf, "TargetPortalGroupTag=%hu", ISCSI_TPG_S(sess)->tpgt);
-	if (iscsi_change_param_value(buf, conn->param_list, 0) < 0) {
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return -1;
-	}
-
-	return iscsi_login_disable_FIM_keys(conn->param_list, conn);
-}
-
-int iscsi_login_post_auth_non_zero_tsih(
-	struct iscsi_conn *conn,
-	u16 cid,
-	u32 exp_statsn)
-{
-	struct iscsi_conn *conn_ptr = NULL;
-	struct iscsi_conn_recovery *cr = NULL;
-	struct iscsi_session *sess = conn->sess;
-=======
 	if (iscsi_change_param_sprintf(conn, "TargetPortalGroupTag=%hu", sess->tpg->tpgt))
 		return -1;
 
@@ -927,7 +566,6 @@ int iscsi_login_post_auth_non_zero_tsih(
 	struct iscsit_conn *conn_ptr = NULL;
 	struct iscsi_conn_recovery *cr = NULL;
 	struct iscsit_session *sess = conn->sess;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * By following item 5 in the login table,  if we have found
@@ -937,11 +575,7 @@ int iscsi_login_post_auth_non_zero_tsih(
 	 * initiator and release the new connection.
 	 */
 	conn_ptr = iscsit_get_conn_from_cid_rcfr(sess, cid);
-<<<<<<< HEAD
-	if ((conn_ptr)) {
-=======
 	if (conn_ptr) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Connection exists with CID %hu for %s,"
 			" performing connection reinstatement.\n",
 			conn_ptr->cid, sess->sess_ops->InitiatorName);
@@ -951,11 +585,7 @@ int iscsi_login_post_auth_non_zero_tsih(
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Check for any connection recovery entires containing CID.
-=======
 	 * Check for any connection recovery entries containing CID.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We use the original ExpStatSN sent in the first login request
 	 * to acknowledge commands for the failed connection.
 	 *
@@ -966,11 +596,7 @@ int iscsi_login_post_auth_non_zero_tsih(
 	if (sess->sess_ops->ErrorRecoveryLevel == 2) {
 		cr = iscsit_get_inactive_connection_recovery_entry(
 				sess, cid);
-<<<<<<< HEAD
-		if ((cr)) {
-=======
 		if (cr) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("Performing implicit logout"
 				" for connection recovery on CID: %hu\n",
 					conn->cid);
@@ -999,11 +625,6 @@ int iscsi_login_post_auth_non_zero_tsih(
 	return 0;
 }
 
-<<<<<<< HEAD
-static void iscsi_post_login_start_timers(struct iscsi_conn *conn)
-{
-	struct iscsi_session *sess = conn->sess;
-=======
 static void iscsi_post_login_start_timers(struct iscsit_conn *conn)
 {
 	struct iscsit_session *sess = conn->sess;
@@ -1012,25 +633,11 @@ static void iscsi_post_login_start_timers(struct iscsit_conn *conn)
 	 */
 	if (conn->conn_transport->transport_type == ISCSI_INFINIBAND)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sess->sess_ops->SessionType)
 		iscsit_start_nopin_timer(conn);
 }
 
-<<<<<<< HEAD
-static int iscsi_post_login_handler(
-	struct iscsi_np *np,
-	struct iscsi_conn *conn,
-	u8 zero_tsih)
-{
-	int stop_timer = 0;
-	struct iscsi_session *sess = conn->sess;
-	struct se_session *se_sess = sess->se_sess;
-	struct iscsi_portal_group *tpg = ISCSI_TPG_S(sess);
-	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
-	struct iscsi_thread_set *ts;
-=======
 int iscsit_start_kthreads(struct iscsit_conn *conn)
 {
 	int ret = 0;
@@ -1087,7 +694,6 @@ void iscsi_post_login_handler(
 	struct se_session *se_sess = sess->se_sess;
 	struct iscsi_portal_group *tpg = sess->tpg;
 	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iscsit_inc_conn_usage_count(conn);
 
@@ -1098,17 +704,9 @@ void iscsi_post_login_handler(
 	conn->conn_state = TARG_CONN_STATE_LOGGED_IN;
 
 	iscsi_set_connection_parameters(conn->conn_ops, conn->param_list);
-<<<<<<< HEAD
-	iscsit_set_sync_and_steering_values(conn);
 	/*
 	 * SCSI Initiator -> SCSI Target Port Mapping
 	 */
-	ts = iscsi_get_thread_set();
-=======
-	/*
-	 * SCSI Initiator -> SCSI Target Port Mapping
-	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!zero_tsih) {
 		iscsi_set_session_parameters(sess->sess_ops,
 				conn->param_list, 0);
@@ -1124,15 +722,6 @@ void iscsi_post_login_handler(
 			stop_timer = 1;
 		}
 
-<<<<<<< HEAD
-		pr_debug("iSCSI Login successful on CID: %hu from %s to"
-			" %s:%hu,%hu\n", conn->cid, conn->login_ip,
-			conn->local_ip, conn->local_port, tpg->tpgt);
-
-		list_add_tail(&conn->conn_list, &sess->sess_conn_list);
-		atomic_inc(&sess->nconn);
-		pr_debug("Incremented iSCSI Connection count to %hu"
-=======
 		pr_debug("iSCSI Login successful on CID: %hu from %pISpc to"
 			" %pISpc,%hu\n", conn->cid, &conn->login_sockaddr,
 			&conn->local_sockaddr, tpg->tpgt);
@@ -1140,16 +729,11 @@ void iscsi_post_login_handler(
 		list_add_tail(&conn->conn_list, &sess->sess_conn_list);
 		atomic_inc(&sess->nconn);
 		pr_debug("Incremented iSCSI Connection count to %d"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			" from node: %s\n", atomic_read(&sess->nconn),
 			sess->sess_ops->InitiatorName);
 		spin_unlock_bh(&sess->conn_lock);
 
 		iscsi_post_login_start_timers(conn);
-<<<<<<< HEAD
-		iscsi_activate_thread_set(conn, ts);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Determine CPU mask to ensure connection's RX and TX kthreads
 		 * are scheduled on the same CPU.
@@ -1157,10 +741,6 @@ void iscsi_post_login_handler(
 		iscsit_thread_get_cpumask(conn);
 		conn->conn_rx_reset_cpumask = 1;
 		conn->conn_tx_reset_cpumask = 1;
-<<<<<<< HEAD
-
-		iscsit_dec_conn_usage_count(conn);
-=======
 		/*
 		 * Wakeup the sleeping iscsi_target_rx_thread() now that
 		 * iscsit_conn is in TARG_CONN_STATE_LOGGED_IN state.
@@ -1168,18 +748,13 @@ void iscsi_post_login_handler(
 		complete(&conn->rx_login_comp);
 		iscsit_dec_conn_usage_count(conn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stop_timer) {
 			spin_lock_bh(&se_tpg->session_lock);
 			iscsit_stop_time2retain_timer(sess);
 			spin_unlock_bh(&se_tpg->session_lock);
 		}
 		iscsit_dec_session_usage_count(sess);
-<<<<<<< HEAD
-		return 0;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	iscsi_set_session_parameters(sess->sess_ops, conn->param_list, 1);
@@ -1194,23 +769,14 @@ void iscsi_post_login_handler(
 	pr_debug("Moving to TARG_SESS_STATE_LOGGED_IN.\n");
 	sess->session_state = TARG_SESS_STATE_LOGGED_IN;
 
-<<<<<<< HEAD
-	pr_debug("iSCSI Login successful on CID: %hu from %s to %s:%hu,%hu\n",
-		conn->cid, conn->login_ip, conn->local_ip, conn->local_port,
-=======
 	pr_debug("iSCSI Login successful on CID: %hu from %pISpc to %pISpc,%hu\n",
 		conn->cid, &conn->login_sockaddr, &conn->local_sockaddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tpg->tpgt);
 
 	spin_lock_bh(&sess->conn_lock);
 	list_add_tail(&conn->conn_list, &sess->sess_conn_list);
 	atomic_inc(&sess->nconn);
-<<<<<<< HEAD
-	pr_debug("Incremented iSCSI Connection count to %hu from node:"
-=======
 	pr_debug("Incremented iSCSI Connection count to %d from node:"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		" %s\n", atomic_read(&sess->nconn),
 		sess->sess_ops->InitiatorName);
 	spin_unlock_bh(&sess->conn_lock);
@@ -1230,10 +796,6 @@ void iscsi_post_login_handler(
 	spin_unlock_bh(&se_tpg->session_lock);
 
 	iscsi_post_login_start_timers(conn);
-<<<<<<< HEAD
-	iscsi_activate_thread_set(conn, ts);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Determine CPU mask to ensure connection's RX and TX kthreads
 	 * are scheduled on the same CPU.
@@ -1241,77 +803,6 @@ void iscsi_post_login_handler(
 	iscsit_thread_get_cpumask(conn);
 	conn->conn_rx_reset_cpumask = 1;
 	conn->conn_tx_reset_cpumask = 1;
-<<<<<<< HEAD
-
-	iscsit_dec_conn_usage_count(conn);
-
-	return 0;
-}
-
-static void iscsi_handle_login_thread_timeout(unsigned long data)
-{
-	struct iscsi_np *np = (struct iscsi_np *) data;
-
-	spin_lock_bh(&np->np_thread_lock);
-	pr_err("iSCSI Login timeout on Network Portal %s:%hu\n",
-			np->np_ip, np->np_port);
-
-	if (np->np_login_timer_flags & ISCSI_TF_STOP) {
-		spin_unlock_bh(&np->np_thread_lock);
-		return;
-	}
-
-	if (np->np_thread)
-		send_sig(SIGINT, np->np_thread, 1);
-
-	np->np_login_timer_flags &= ~ISCSI_TF_RUNNING;
-	spin_unlock_bh(&np->np_thread_lock);
-}
-
-static void iscsi_start_login_thread_timer(struct iscsi_np *np)
-{
-	/*
-	 * This used the TA_LOGIN_TIMEOUT constant because at this
-	 * point we do not have access to ISCSI_TPG_ATTRIB(tpg)->login_timeout
-	 */
-	spin_lock_bh(&np->np_thread_lock);
-	init_timer(&np->np_login_timer);
-	np->np_login_timer.expires = (get_jiffies_64() + TA_LOGIN_TIMEOUT * HZ);
-	np->np_login_timer.data = (unsigned long)np;
-	np->np_login_timer.function = iscsi_handle_login_thread_timeout;
-	np->np_login_timer_flags &= ~ISCSI_TF_STOP;
-	np->np_login_timer_flags |= ISCSI_TF_RUNNING;
-	add_timer(&np->np_login_timer);
-
-	pr_debug("Added timeout timer to iSCSI login request for"
-			" %u seconds.\n", TA_LOGIN_TIMEOUT);
-	spin_unlock_bh(&np->np_thread_lock);
-}
-
-static void iscsi_stop_login_thread_timer(struct iscsi_np *np)
-{
-	spin_lock_bh(&np->np_thread_lock);
-	if (!(np->np_login_timer_flags & ISCSI_TF_RUNNING)) {
-		spin_unlock_bh(&np->np_thread_lock);
-		return;
-	}
-	np->np_login_timer_flags |= ISCSI_TF_STOP;
-	spin_unlock_bh(&np->np_thread_lock);
-
-	del_timer_sync(&np->np_login_timer);
-
-	spin_lock_bh(&np->np_thread_lock);
-	np->np_login_timer_flags &= ~ISCSI_TF_RUNNING;
-	spin_unlock_bh(&np->np_thread_lock);
-}
-
-int iscsi_target_setup_login_socket(
-	struct iscsi_np *np,
-	struct __kernel_sockaddr_storage *sockaddr)
-{
-	struct socket *sock;
-	int backlog = 5, ret, opt = 0, len;
-=======
 	/*
 	 * Wakeup the sleeping iscsi_target_rx_thread() now that
 	 * iscsit_conn is in TARG_CONN_STATE_LOGGED_IN state.
@@ -1326,7 +817,6 @@ int iscsit_setup_np(
 {
 	struct socket *sock = NULL;
 	int backlog = ISCSIT_TCP_BACKLOG, ret, len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (np->np_network_transport) {
 	case ISCSI_TCP:
@@ -1341,12 +831,6 @@ int iscsit_setup_np(
 		np->np_ip_proto = IPPROTO_SCTP;
 		np->np_sock_type = SOCK_SEQPACKET;
 		break;
-<<<<<<< HEAD
-	case ISCSI_IWARP_TCP:
-	case ISCSI_IWARP_SCTP:
-	case ISCSI_INFINIBAND:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_err("Unsupported network_transport: %d\n",
 				np->np_network_transport);
@@ -1365,56 +849,19 @@ int iscsit_setup_np(
 	 * in iscsi_target_configfs.c code..
 	 */
 	memcpy(&np->np_sockaddr, sockaddr,
-<<<<<<< HEAD
-			sizeof(struct __kernel_sockaddr_storage));
-=======
 			sizeof(struct sockaddr_storage));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sockaddr->ss_family == AF_INET6)
 		len = sizeof(struct sockaddr_in6);
 	else
 		len = sizeof(struct sockaddr_in);
 	/*
-<<<<<<< HEAD
-	 * Set SO_REUSEADDR, and disable Nagel Algorithm with TCP_NODELAY.
-	 */
-	/* FIXME: Someone please explain why this is endian-safe */
-	opt = 1;
-	if (np->np_network_transport == ISCSI_TCP) {
-		ret = kernel_setsockopt(sock, IPPROTO_TCP, TCP_NODELAY,
-				(char *)&opt, sizeof(opt));
-		if (ret < 0) {
-			pr_err("kernel_setsockopt() for TCP_NODELAY"
-				" failed: %d\n", ret);
-			goto fail;
-		}
-	}
-
-	/* FIXME: Someone please explain why this is endian-safe */
-	ret = kernel_setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
-			(char *)&opt, sizeof(opt));
-	if (ret < 0) {
-		pr_err("kernel_setsockopt() for SO_REUSEADDR"
-			" failed\n");
-		goto fail;
-	}
-
-	ret = kernel_setsockopt(sock, IPPROTO_IP, IP_FREEBIND,
-			(char *)&opt, sizeof(opt));
-	if (ret < 0) {
-		pr_err("kernel_setsockopt() for IP_FREEBIND"
-			" failed\n");
-		goto fail;
-	}
-=======
 	 * Set SO_REUSEADDR, and disable Nagle Algorithm with TCP_NODELAY.
 	 */
 	if (np->np_network_transport == ISCSI_TCP)
 		tcp_sock_set_nodelay(sock->sk);
 	sock_set_reuseaddr(sock->sk);
 	ip_sock_set_freebind(sock->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = kernel_bind(sock, (struct sockaddr *)&np->np_sockaddr, len);
 	if (ret < 0) {
@@ -1429,36 +876,6 @@ int iscsit_setup_np(
 	}
 
 	return 0;
-<<<<<<< HEAD
-
-fail:
-	np->np_socket = NULL;
-	if (sock)
-		sock_release(sock);
-	return ret;
-}
-
-static int __iscsi_target_login_thread(struct iscsi_np *np)
-{
-	u8 buffer[ISCSI_HDR_LEN], iscsi_opcode, zero_tsih = 0;
-	int err, ret = 0, stop;
-	struct iscsi_conn *conn = NULL;
-	struct iscsi_login *login;
-	struct iscsi_portal_group *tpg = NULL;
-	struct socket *new_sock, *sock;
-	struct kvec iov;
-	struct iscsi_login_req *pdu;
-	struct sockaddr_in sock_in;
-	struct sockaddr_in6 sock_in6;
-
-	flush_signals(current);
-	sock = np->np_socket;
-
-	spin_lock_bh(&np->np_thread_lock);
-	if (np->np_thread_state == ISCSI_NP_THREAD_RESET) {
-		np->np_thread_state = ISCSI_NP_THREAD_ACTIVE;
-		complete(&np->np_restart_comp);
-=======
 fail:
 	np->np_socket = NULL;
 	sock_release(sock);
@@ -1799,57 +1216,17 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 	} else if (np->np_thread_state == ISCSI_NP_THREAD_SHUTDOWN) {
 		spin_unlock_bh(&np->np_thread_lock);
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		np->np_thread_state = ISCSI_NP_THREAD_ACTIVE;
 	}
 	spin_unlock_bh(&np->np_thread_lock);
 
-<<<<<<< HEAD
-	if (kernel_accept(sock, &new_sock, 0) < 0) {
-		spin_lock_bh(&np->np_thread_lock);
-		if (np->np_thread_state == ISCSI_NP_THREAD_RESET) {
-			spin_unlock_bh(&np->np_thread_lock);
-			complete(&np->np_restart_comp);
-			/* Get another socket */
-			return 1;
-		}
-		spin_unlock_bh(&np->np_thread_lock);
-		goto out;
-	}
-	iscsi_start_login_thread_timer(np);
-
-	conn = kzalloc(sizeof(struct iscsi_conn), GFP_KERNEL);
-	if (!conn) {
-		pr_err("Could not allocate memory for"
-			" new connection\n");
-		sock_release(new_sock);
-=======
 	conn = iscsit_alloc_conn(np);
 	if (!conn) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Get another socket */
 		return 1;
 	}
 
-<<<<<<< HEAD
-	pr_debug("Moving to TARG_CONN_STATE_FREE.\n");
-	conn->conn_state = TARG_CONN_STATE_FREE;
-	conn->sock = new_sock;
-
-	pr_debug("Moving to TARG_CONN_STATE_XPT_UP.\n");
-	conn->conn_state = TARG_CONN_STATE_XPT_UP;
-
-	/*
-	 * Allocate conn->conn_ops early as a failure calling
-	 * iscsit_tx_login_rsp() below will call tx_data().
-	 */
-	conn->conn_ops = kzalloc(sizeof(struct iscsi_conn_ops), GFP_KERNEL);
-	if (!conn->conn_ops) {
-		pr_err("Unable to allocate memory for"
-			" struct iscsi_conn_ops.\n");
-		goto new_sess_out;
-=======
 	rc = np->np_transport->iscsit_accept_np(np, conn);
 	if (rc == -ENOSYS) {
 		complete(&np->np_restart_comp);
@@ -1868,39 +1245,10 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 		spin_unlock_bh(&np->np_thread_lock);
 		iscsit_free_conn(conn);
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Perform the remaining iSCSI connection initialization items..
 	 */
-<<<<<<< HEAD
-	if (iscsi_login_init_conn(conn) < 0)
-		goto new_sess_out;
-
-	memset(buffer, 0, ISCSI_HDR_LEN);
-	memset(&iov, 0, sizeof(struct kvec));
-	iov.iov_base	= buffer;
-	iov.iov_len	= ISCSI_HDR_LEN;
-
-	if (rx_data(conn, &iov, 1, ISCSI_HDR_LEN) <= 0) {
-		pr_err("rx_data() returned an error.\n");
-		goto new_sess_out;
-	}
-
-	iscsi_opcode = (buffer[0] & ISCSI_OPCODE_MASK);
-	if (!(iscsi_opcode & ISCSI_OP_LOGIN)) {
-		pr_err("First opcode is not login request,"
-			" failing login request.\n");
-		goto new_sess_out;
-	}
-
-	pdu			= (struct iscsi_login_req *) buffer;
-	pdu->cid		= be16_to_cpu(pdu->cid);
-	pdu->tsih		= be16_to_cpu(pdu->tsih);
-	pdu->itt		= be32_to_cpu(pdu->itt);
-	pdu->cmdsn		= be32_to_cpu(pdu->cmdsn);
-	pdu->exp_statsn		= be32_to_cpu(pdu->exp_statsn);
-=======
 	login = iscsi_login_init_conn(conn);
 	if (!login) {
 		goto new_sess_out;
@@ -1921,96 +1269,28 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 
 	buffer = &login->req[0];
 	pdu = (struct iscsi_login_req *)buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Used by iscsit_tx_login_rsp() for Login Resonses PDUs
 	 * when Status-Class != 0.
 	*/
-<<<<<<< HEAD
-	conn->login_itt		= pdu->itt;
-=======
 	conn->login_itt	= pdu->itt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&np->np_thread_lock);
 	if (np->np_thread_state != ISCSI_NP_THREAD_ACTIVE) {
 		spin_unlock_bh(&np->np_thread_lock);
-<<<<<<< HEAD
-		pr_err("iSCSI Network Portal on %s:%hu currently not"
-			" active.\n", np->np_ip, np->np_port);
-=======
 		pr_err("iSCSI Network Portal on %pISpc currently not"
 			" active.\n", &np->np_sockaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_SVC_UNAVAILABLE);
 		goto new_sess_out;
 	}
 	spin_unlock_bh(&np->np_thread_lock);
 
-<<<<<<< HEAD
-	if (np->np_sockaddr.ss_family == AF_INET6) {
-		memset(&sock_in6, 0, sizeof(struct sockaddr_in6));
-
-		if (conn->sock->ops->getname(conn->sock,
-				(struct sockaddr *)&sock_in6, &err, 1) < 0) {
-			pr_err("sock_ops->getname() failed.\n");
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-					ISCSI_LOGIN_STATUS_TARGET_ERROR);
-			goto new_sess_out;
-		}
-		snprintf(conn->login_ip, sizeof(conn->login_ip), "%pI6c",
-				&sock_in6.sin6_addr.in6_u);
-		conn->login_port = ntohs(sock_in6.sin6_port);
-
-		if (conn->sock->ops->getname(conn->sock,
-				(struct sockaddr *)&sock_in6, &err, 0) < 0) {
-			pr_err("sock_ops->getname() failed.\n");
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-					ISCSI_LOGIN_STATUS_TARGET_ERROR);
-			goto new_sess_out;
-		}
-		snprintf(conn->local_ip, sizeof(conn->local_ip), "%pI6c",
-				&sock_in6.sin6_addr.in6_u);
-		conn->local_port = ntohs(sock_in6.sin6_port);
-
-	} else {
-		memset(&sock_in, 0, sizeof(struct sockaddr_in));
-
-		if (conn->sock->ops->getname(conn->sock,
-				(struct sockaddr *)&sock_in, &err, 1) < 0) {
-			pr_err("sock_ops->getname() failed.\n");
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-					ISCSI_LOGIN_STATUS_TARGET_ERROR);
-			goto new_sess_out;
-		}
-		sprintf(conn->login_ip, "%pI4", &sock_in.sin_addr.s_addr);
-		conn->login_port = ntohs(sock_in.sin_port);
-
-		if (conn->sock->ops->getname(conn->sock,
-				(struct sockaddr *)&sock_in, &err, 0) < 0) {
-			pr_err("sock_ops->getname() failed.\n");
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-					ISCSI_LOGIN_STATUS_TARGET_ERROR);
-			goto new_sess_out;
-		}
-		sprintf(conn->local_ip, "%pI4", &sock_in.sin_addr.s_addr);
-		conn->local_port = ntohs(sock_in.sin_port);
-	}
-
-	conn->network_transport = np->np_network_transport;
-
-	pr_debug("Received iSCSI login request from %s on %s Network"
-			" Portal %s:%hu\n", conn->login_ip,
-		(conn->network_transport == ISCSI_TCP) ? "TCP" : "SCTP",
-			conn->local_ip, conn->local_port);
-=======
 	conn->network_transport = np->np_network_transport;
 
 	pr_debug("Received iSCSI login request from %pISpc on %s Network"
 		" Portal %pISpc\n", &conn->login_sockaddr, np->np_transport->name,
 		&conn->local_sockaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Moving to TARG_CONN_STATE_IN_LOGIN.\n");
 	conn->conn_state	= TARG_CONN_STATE_IN_LOGIN;
@@ -2020,11 +1300,7 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 		goto new_sess_out;
 
 	zero_tsih = (pdu->tsih == 0x0000);
-<<<<<<< HEAD
-	if ((zero_tsih)) {
-=======
 	if (zero_tsih) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This is the leading connection of a new session.
 		 * We wait until after authentication to check for
@@ -2043,22 +1319,6 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 		if (iscsi_login_non_zero_tsih_s1(conn, buffer) < 0)
 			goto new_sess_out;
 	}
-<<<<<<< HEAD
-
-	/*
-	 * This will process the first login request, and call
-	 * iscsi_target_locate_portal(), and return a valid struct iscsi_login.
-	 */
-	login = iscsi_target_init_negotiation(np, conn, buffer);
-	if (!login) {
-		tpg = conn->tpg;
-		goto new_sess_out;
-	}
-
-	tpg = conn->tpg;
-	if (!tpg) {
-		pr_err("Unable to locate struct iscsi_conn->tpg\n");
-=======
 	/*
 	 * SessionType: Discovery
 	 *
@@ -2082,44 +1342,10 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 	tpg = conn->tpg;
 	if (!tpg) {
 		pr_err("Unable to locate struct iscsit_conn->tpg\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto new_sess_out;
 	}
 
 	if (zero_tsih) {
-<<<<<<< HEAD
-		if (iscsi_login_zero_tsih_s2(conn) < 0) {
-			iscsi_target_nego_release(login, conn);
-			goto new_sess_out;
-		}
-	} else {
-		if (iscsi_login_non_zero_tsih_s2(conn, buffer) < 0) {
-			iscsi_target_nego_release(login, conn);
-			goto old_sess_out;
-		}
-	}
-
-	if (iscsi_target_start_negotiation(login, conn) < 0)
-		goto new_sess_out;
-
-	if (!conn->sess) {
-		pr_err("struct iscsi_conn session pointer is NULL!\n");
-		goto new_sess_out;
-	}
-
-	iscsi_stop_login_thread_timer(np);
-
-	if (signal_pending(current))
-		goto new_sess_out;
-
-	ret = iscsi_post_login_handler(np, conn, zero_tsih);
-
-	if (ret < 0)
-		goto new_sess_out;
-
-	iscsit_deaccess_np(np, tpg);
-	tpg = NULL;
-=======
 		if (iscsi_login_zero_tsih_s2(conn) < 0)
 			goto new_sess_out;
 	} else {
@@ -2150,89 +1376,10 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 
 	tpg = NULL;
 	tpg_np = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get another socket */
 	return 1;
 
 new_sess_out:
-<<<<<<< HEAD
-	pr_err("iSCSI Login negotiation failed.\n");
-	iscsit_collect_login_stats(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
-				  ISCSI_LOGIN_STATUS_INIT_ERR);
-	if (!zero_tsih || !conn->sess)
-		goto old_sess_out;
-	if (conn->sess->se_sess)
-		transport_free_session(conn->sess->se_sess);
-	if (conn->sess->session_index != 0) {
-		spin_lock_bh(&sess_idr_lock);
-		idr_remove(&sess_idr, conn->sess->session_index);
-		spin_unlock_bh(&sess_idr_lock);
-	}
-	if (conn->sess->sess_ops)
-		kfree(conn->sess->sess_ops);
-	if (conn->sess)
-		kfree(conn->sess);
-old_sess_out:
-	iscsi_stop_login_thread_timer(np);
-	/*
-	 * If login negotiation fails check if the Time2Retain timer
-	 * needs to be restarted.
-	 */
-	if (!zero_tsih && conn->sess) {
-		spin_lock_bh(&conn->sess->conn_lock);
-		if (conn->sess->session_state == TARG_SESS_STATE_FAILED) {
-			struct se_portal_group *se_tpg =
-					&ISCSI_TPG_C(conn)->tpg_se_tpg;
-
-			atomic_set(&conn->sess->session_continuation, 0);
-			spin_unlock_bh(&conn->sess->conn_lock);
-			spin_lock_bh(&se_tpg->session_lock);
-			iscsit_start_time2retain_handler(conn->sess);
-			spin_unlock_bh(&se_tpg->session_lock);
-		} else
-			spin_unlock_bh(&conn->sess->conn_lock);
-		iscsit_dec_session_usage_count(conn->sess);
-	}
-
-	if (!IS_ERR(conn->conn_rx_hash.tfm))
-		crypto_free_hash(conn->conn_rx_hash.tfm);
-	if (!IS_ERR(conn->conn_tx_hash.tfm))
-		crypto_free_hash(conn->conn_tx_hash.tfm);
-
-	if (conn->conn_cpumask)
-		free_cpumask_var(conn->conn_cpumask);
-
-	kfree(conn->conn_ops);
-
-	if (conn->param_list) {
-		iscsi_release_param_list(conn->param_list);
-		conn->param_list = NULL;
-	}
-	if (conn->sock)
-		sock_release(conn->sock);
-	kfree(conn);
-
-	if (tpg) {
-		iscsit_deaccess_np(np, tpg);
-		tpg = NULL;
-	}
-
-out:
-	stop = kthread_should_stop();
-	if (!stop && signal_pending(current)) {
-		spin_lock_bh(&np->np_thread_lock);
-		stop = (np->np_thread_state == ISCSI_NP_THREAD_SHUTDOWN);
-		spin_unlock_bh(&np->np_thread_lock);
-	}
-	/* Wait for another socket.. */
-	if (!stop)
-		return 1;
-
-	iscsi_stop_login_thread_timer(np);
-	spin_lock_bh(&np->np_thread_lock);
-	np->np_thread_state = ISCSI_NP_THREAD_EXIT;
-	spin_unlock_bh(&np->np_thread_lock);
-=======
 	new_sess = true;
 old_sess_out:
 	iscsit_stop_login_timer(conn);
@@ -2253,7 +1400,6 @@ exit:
 	np->np_thread_state = ISCSI_NP_THREAD_EXIT;
 	spin_unlock_bh(&np->np_thread_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2264,11 +1410,7 @@ int iscsi_target_login_thread(void *arg)
 
 	allow_signal(SIGINT);
 
-<<<<<<< HEAD
-	while (!kthread_should_stop()) {
-=======
 	while (1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = __iscsi_target_login_thread(np);
 		/*
 		 * We break and exit here unless another sock_accept() call
@@ -2278,12 +1420,9 @@ int iscsi_target_login_thread(void *arg)
 			break;
 	}
 
-<<<<<<< HEAD
-=======
 	while (!kthread_should_stop()) {
 		msleep(100);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

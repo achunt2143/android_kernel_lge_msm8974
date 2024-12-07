@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 ** hppb.c:
 **      HP-PB bus driver for the NOVA and K-Class systems.
@@ -9,13 +6,6 @@
 **      (c) Copyright 2002 Ryan Bradetich
 **      (c) Copyright 2002 Hewlett-Packard Company
 **
-<<<<<<< HEAD
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 */
 
@@ -30,11 +20,8 @@
 #include <asm/hardware.h>
 #include <asm/parisc-device.h>
 
-<<<<<<< HEAD
-=======
 #include "iommu.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hppb_card {
 	unsigned long hpa;
 	struct resource mmio_region;
@@ -57,11 +44,7 @@ static struct hppb_card hppb_card_head = {
  * (return 1). If so, initialize the chip and tell other partners in crime 
  * they have work to do.
  */
-<<<<<<< HEAD
-static int hppb_probe(struct parisc_device *dev)
-=======
 static int __init hppb_probe(struct parisc_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 	struct hppb_card *card = &hppb_card_head;
@@ -78,11 +61,6 @@ static int __init hppb_probe(struct parisc_device *dev)
 		}
 		card = card->next;
 	}
-<<<<<<< HEAD
-	printk(KERN_INFO "Found GeckoBoa at 0x%llx\n",
-			(unsigned long long) dev->hpa.start);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card->hpa = dev->hpa.start;
 	card->mmio_region.name = "HP-PB Bus";
@@ -92,29 +70,16 @@ static int __init hppb_probe(struct parisc_device *dev)
 	card->mmio_region.end = gsc_readl(dev->hpa.start + IO_IO_HIGH) - 1;
 
 	status = ccio_request_resource(dev, &card->mmio_region);
-<<<<<<< HEAD
-	if(status < 0) {
-		printk(KERN_ERR "%s: failed to claim HP-PB "
-			"bus space (0x%08llx, 0x%08llx)\n",
-			__FILE__, (unsigned long long) card->mmio_region.start,
-			(unsigned long long) card->mmio_region.end);
-	}
-=======
 
 	pr_info("Found GeckoBoa at %pap, bus space %pR,%s claimed.\n",
 			&dev->hpa.start,
 			&card->mmio_region,
 			(status < 0) ? " not":"" );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         return 0;
 }
 
-<<<<<<< HEAD
-static struct parisc_device_id hppb_tbl[] = {
-=======
 static const struct parisc_device_id hppb_tbl[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         { HPHW_BCPORT, HVERSION_REV_ANY_ID, 0x500, 0xc }, /* E25 and K */
         { HPHW_BCPORT, 0x0, 0x501, 0xc }, /* E35 */
         { HPHW_BCPORT, 0x0, 0x502, 0xc }, /* E45 */
@@ -122,11 +87,7 @@ static const struct parisc_device_id hppb_tbl[] __initconst = {
         { 0, }
 };
 
-<<<<<<< HEAD
-static struct parisc_driver hppb_driver = {
-=======
 static struct parisc_driver hppb_driver __refdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .name =         "gecko_boa",
         .id_table =     hppb_tbl,
 	.probe =        hppb_probe,
@@ -135,14 +96,6 @@ static struct parisc_driver hppb_driver __refdata = {
 /**
  * hppb_init - HP-PB bus initialization procedure.
  *
-<<<<<<< HEAD
- * Register this driver.   
- */
-void __init hppb_init(void)
-{
-        register_parisc_driver(&hppb_driver);
-}
-=======
  * Register this driver.
  */
 static int __init hppb_init(void)
@@ -150,4 +103,3 @@ static int __init hppb_init(void)
         return register_parisc_driver(&hppb_driver);
 }
 arch_initcall(hppb_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

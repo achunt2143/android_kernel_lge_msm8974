@@ -24,21 +24,11 @@
 #ifndef SI_H
 #define SI_H
 
-<<<<<<< HEAD
-#define	CG_MULT_THERMAL_STATUS					0x714
-#define		ASIC_MAX_TEMP(x)				((x) << 0)
-#define		ASIC_MAX_TEMP_MASK				0x000001ff
-#define		ASIC_MAX_TEMP_SHIFT				0
-#define		CTF_TEMP(x)					((x) << 9)
-#define		CTF_TEMP_MASK					0x0003fe00
-#define		CTF_TEMP_SHIFT					9
-=======
 #define TAHITI_RB_BITMAP_WIDTH_PER_SH  2
 
 #define TAHITI_GB_ADDR_CONFIG_GOLDEN        0x12011003
 #define VERDE_GB_ADDR_CONFIG_GOLDEN         0x12010002
 #define HAINAN_GB_ADDR_CONFIG_GOLDEN        0x02010001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SI_MAX_SH_GPRS           256
 #define SI_MAX_TEMP_GPRS         16
@@ -58,11 +48,6 @@
 #define SI_MAX_TCC               16
 #define SI_MAX_TCC_MASK          0xFFFF
 
-<<<<<<< HEAD
-#define VGA_HDP_CONTROL  				0x328
-#define		VGA_MEMORY_DISABLE				(1 << 4)
-
-=======
 /* SMC IND accessor regs */
 #define SMC_IND_INDEX_0                              0x200
 #define SMC_IND_DATA_0                               0x204
@@ -336,7 +321,6 @@
 #	define CAC_WINDOW(x)				((x) << 0)
 #	define CAC_WINDOW_MASK				0x00ffffff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMIF_ADDR_CONFIG  				0xBD4
 
 #define DMIF_ADDR_CALC  				0xC00
@@ -346,8 +330,6 @@
 #       define DMIF_BUFFERS_ALLOCATED_COMPLETED           (1 << 4)
 
 #define	SRBM_STATUS				        0xE50
-<<<<<<< HEAD
-=======
 #define		GRBM_RQ_PENDING 			(1 << 5)
 #define		VMC_BUSY 				(1 << 8)
 #define		MCB_BUSY 				(1 << 9)
@@ -372,13 +354,10 @@
 #define		SOFT_RESET_TST				(1 << 21)
 #define		SOFT_RESET_REGBB			(1 << 22)
 #define		SOFT_RESET_ORB				(1 << 23)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	CC_SYS_RB_BACKEND_DISABLE			0xe80
 #define	GC_USER_SYS_RB_BACKEND_DISABLE			0xe84
 
-<<<<<<< HEAD
-=======
 #define SRBM_READ_ERROR					0xE98
 #define SRBM_INT_CNTL					0xEA0
 #define SRBM_INT_ACK					0xEA8
@@ -387,7 +366,6 @@
 #define		DMA_BUSY 				(1 << 5)
 #define		DMA1_BUSY 				(1 << 6)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VM_L2_CNTL					0x1400
 #define		ENABLE_L2_CACHE					(1 << 0)
 #define		ENABLE_L2_FRAGMENT_PROCESSING			(1 << 1)
@@ -414,9 +392,6 @@
 #define VM_CONTEXT0_CNTL				0x1410
 #define		ENABLE_CONTEXT					(1 << 0)
 #define		PAGE_TABLE_DEPTH(x)				(((x) & 3) << 1)
-<<<<<<< HEAD
-#define		RANGE_PROTECTION_FAULT_ENABLE_DEFAULT		(1 << 4)
-=======
 #define		RANGE_PROTECTION_FAULT_ENABLE_INTERRUPT		(1 << 3)
 #define		RANGE_PROTECTION_FAULT_ENABLE_DEFAULT		(1 << 4)
 #define		DUMMY_PAGE_PROTECTION_FAULT_ENABLE_INTERRUPT	(1 << 6)
@@ -430,7 +405,6 @@
 #define		WRITE_PROTECTION_FAULT_ENABLE_INTERRUPT		(1 << 18)
 #define		WRITE_PROTECTION_FAULT_ENABLE_DEFAULT		(1 << 19)
 #define		PAGE_TABLE_BLOCK_SIZE(x)			(((x) & 0xF) << 24)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VM_CONTEXT1_CNTL				0x1414
 #define VM_CONTEXT0_CNTL2				0x1430
 #define VM_CONTEXT1_CNTL2				0x1434
@@ -443,8 +417,6 @@
 #define	VM_CONTEXT14_PAGE_TABLE_BASE_ADDR		0x1450
 #define	VM_CONTEXT15_PAGE_TABLE_BASE_ADDR		0x1454
 
-<<<<<<< HEAD
-=======
 #define	VM_CONTEXT1_PROTECTION_FAULT_ADDR		0x14FC
 #define	VM_CONTEXT1_PROTECTION_FAULT_STATUS		0x14DC
 #define		PROTECTIONS_MASK			(0xf << 0)
@@ -462,7 +434,6 @@
 #define		FAULT_VMID_MASK				(0xf << 25)
 #define		FAULT_VMID_SHIFT			25
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VM_INVALIDATE_REQUEST				0x1478
 #define VM_INVALIDATE_RESPONSE				0x147c
 
@@ -483,13 +454,10 @@
 #define	VM_CONTEXT0_PAGE_TABLE_END_ADDR			0x157C
 #define	VM_CONTEXT1_PAGE_TABLE_END_ADDR			0x1580
 
-<<<<<<< HEAD
-=======
 #define VM_L2_CG           				0x15c0
 #define		MC_CG_ENABLE				(1 << 18)
 #define		MC_LS_ENABLE				(1 << 19)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MC_SHARED_CHMAP						0x2004
 #define		NOOFCHAN_SHIFT					12
 #define		NOOFCHAN_MASK					0x0000f000
@@ -515,8 +483,6 @@
 
 #define MC_SHARED_BLACKOUT_CNTL           		0x20ac
 
-<<<<<<< HEAD
-=======
 #define MC_HUB_MISC_HUB_CG           			0x20b8
 #define MC_HUB_MISC_VM_CG           			0x20bc
 
@@ -528,7 +494,6 @@
 #define MC_CITF_MISC_WR_CG           			0x264c
 #define MC_CITF_MISC_VM_CG           			0x2650
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MC_ARB_RAMCFG					0x2760
 #define		NOOFBANK_SHIFT					0
 #define		NOOFBANK_MASK					0x00000003
@@ -544,8 +509,6 @@
 #define		NOOFGROUPS_SHIFT				12
 #define		NOOFGROUPS_MASK					0x00001000
 
-<<<<<<< HEAD
-=======
 #define	MC_ARB_DRAM_TIMING				0x2774
 #define	MC_ARB_DRAM_TIMING2				0x2778
 
@@ -563,7 +526,6 @@
 #define		STATE3_MASK				(0x1f << 15)
 #define		STATE3_SHIFT				15
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MC_SEQ_TRAIN_WAKEUP_CNTL			0x28e8
 #define		TRAIN_DONE_D0      			(1 << 30)
 #define		TRAIN_DONE_D1      			(1 << 31)
@@ -571,20 +533,11 @@
 #define MC_SEQ_SUP_CNTL           			0x28c8
 #define		RUN_MASK      				(1 << 0)
 #define MC_SEQ_SUP_PGM           			0x28cc
-<<<<<<< HEAD
-=======
 #define MC_PMG_AUTO_CMD           			0x28d0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MC_IO_PAD_CNTL_D0           			0x29d0
 #define		MEM_FALL_OUT_CMD      			(1 << 8)
 
-<<<<<<< HEAD
-#define MC_SEQ_IO_DEBUG_INDEX           		0x2a44
-#define MC_SEQ_IO_DEBUG_DATA           			0x2a48
-
-#define	HDP_HOST_PATH_CNTL				0x2C00
-=======
 #define MC_SEQ_RAS_TIMING                               0x28a0
 #define MC_SEQ_CAS_TIMING                               0x28a4
 #define MC_SEQ_MISC_TIMING                              0x28a8
@@ -683,7 +636,6 @@
 
 #define	HDP_HOST_PATH_CNTL				0x2C00
 #define 	CLOCK_GATING_DIS			(1 << 23)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	HDP_NONSURFACE_BASE				0x2C04
 #define	HDP_NONSURFACE_INFO				0x2C08
 #define	HDP_NONSURFACE_SIZE				0x2C0C
@@ -691,13 +643,10 @@
 #define HDP_ADDR_CONFIG  				0x2F48
 #define HDP_MISC_CNTL					0x2F4C
 #define 	HDP_FLUSH_INVALIDATE_CACHE			(1 << 0)
-<<<<<<< HEAD
-=======
 #define HDP_MEM_POWER_LS				0x2F50
 #define 	HDP_LS_ENABLE				(1 << 0)
 
 #define ATC_MISC_CG           				0x3350
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IH_RB_CNTL                                        0x3e00
 #       define IH_RB_ENABLE                               (1 << 0)
@@ -743,8 +692,6 @@
 
 #define HDP_REG_COHERENCY_FLUSH_CNTL			0x54A0
 
-<<<<<<< HEAD
-=======
 /* DCE6 ELD audio interface */
 #define AZ_F0_CODEC_ENDPOINT_INDEX                       0x5E00
 #       define AZ_ENDPOINT_REG_INDEX(x)                  (((x) & 0xff) << 0)
@@ -838,7 +785,6 @@
 #define		PORT_CONNECTIVITY_MASK				(3 << 30)
 #define		PORT_CONNECTIVITY_SHIFT				30
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	DC_LB_MEMORY_SPLIT					0x6b0c
 #define		DC_LB_MEMORY_CONFIG(x)				((x) << 20)
 
@@ -919,11 +865,7 @@
 #       define GRPH_PFLIP_INT_MASK                      (1 << 0)
 #       define GRPH_PFLIP_INT_TYPE                      (1 << 8)
 
-<<<<<<< HEAD
-#define	DACA_AUTODETECT_INT_CONTROL			0x66c8
-=======
 #define	DAC_AUTODETECT_INT_CONTROL			0x67c8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DC_HPD1_INT_STATUS                              0x601c
 #define DC_HPD2_INT_STATUS                              0x6028
@@ -957,11 +899,6 @@
 #       define DC_HPDx_RX_INT_TIMER(x)                    ((x) << 16)
 #       define DC_HPDx_EN                                 (1 << 28)
 
-<<<<<<< HEAD
-/* 0x6e98, 0x7a98, 0x10698, 0x11298, 0x11e98, 0x12a98 */
-#define CRTC_STATUS_FRAME_COUNT                         0x6e98
-
-=======
 #define DPG_PIPE_STUTTER_CONTROL                          0x6cd4
 #       define STUTTER_ENABLE                             (1 << 0)
 
@@ -994,7 +931,6 @@
  * 5 = stream5
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	GRBM_CNTL					0x8000
 #define		GRBM_READ_TIMEOUT(x)				((x) << 0)
 
@@ -1060,15 +996,12 @@
 #define		SOFT_RESET_IA					(1 << 15)
 
 #define GRBM_GFX_INDEX          			0x802C
-<<<<<<< HEAD
-=======
 #define		INSTANCE_INDEX(x)			((x) << 0)
 #define		SH_INDEX(x)     			((x) << 8)
 #define		SE_INDEX(x)     			((x) << 16)
 #define		SH_BROADCAST_WRITES      		(1 << 29)
 #define		INSTANCE_BROADCAST_WRITES      		(1 << 30)
 #define		SE_BROADCAST_WRITES      		(1 << 31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GRBM_INT_CNTL                                   0x8060
 #       define RDERR_INT_ENABLE                         (1 << 0)
@@ -1142,11 +1075,8 @@
 #define	VGT_TF_MEMORY_BASE				0x89B8
 
 #define CC_GC_SHADER_ARRAY_CONFIG			0x89bc
-<<<<<<< HEAD
-=======
 #define		INACTIVE_CUS_MASK			0xFFFF0000
 #define		INACTIVE_CUS_SHIFT			16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GC_USER_SHADER_ARRAY_CONFIG			0x89c0
 
 #define	PA_CL_ENHANCE					0x8A14
@@ -1173,8 +1103,6 @@
 
 #define	SQC_CACHES					0x8C08
 
-<<<<<<< HEAD
-=======
 #define SQ_POWER_THROTTLE                               0x8e58
 #define		MIN_POWER(x)				((x) << 0)
 #define		MIN_POWER_MASK				(0x3fff << 0)
@@ -1193,7 +1121,6 @@
 #define		LTI_RATIO_MASK				(0xf << 27)
 #define		LTI_RATIO_SHIFT				27
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	SX_DEBUG_1					0x9060
 
 #define	SPI_STATIC_THREAD_MGMT_1			0x90E0
@@ -1211,10 +1138,6 @@
 #define	CGTS_USER_TCC_DISABLE				0x914C
 #define		TCC_DISABLE_MASK				0xFFFF0000
 #define		TCC_DISABLE_SHIFT				16
-<<<<<<< HEAD
-
-#define	TA_CNTL_AUX					0x9508
-=======
 #define	CGTS_SM_CTRL_REG				0x9150
 #define		OVERRIDE				(1 << 21)
 #define		LS_OVERRIDE				(1 << 22)
@@ -1223,7 +1146,6 @@
 
 #define	TA_CNTL_AUX					0x9508
 #define	TA_CS_BC_BASE_ADDR				0x950C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CC_RB_BACKEND_DISABLE				0x98F4
 #define		BACKEND_DISABLE(x)     			((x) << 16)
@@ -1311,11 +1233,8 @@
 #define	CB_PERFCOUNTER3_SELECT0				0x9a38
 #define	CB_PERFCOUNTER3_SELECT1				0x9a3c
 
-<<<<<<< HEAD
-=======
 #define	CB_CGTT_SCLK_CTRL				0x9a60
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	GC_USER_RB_BACKEND_DISABLE			0x9B7C
 #define		BACKEND_DISABLE_MASK			0x00FF0000
 #define		BACKEND_DISABLE_SHIFT			16
@@ -1373,12 +1292,9 @@
 #       define CP_RINGID1_INT_STAT                      (1 << 30)
 #       define CP_RINGID0_INT_STAT                      (1 << 31)
 
-<<<<<<< HEAD
-=======
 #define	CP_MEM_SLP_CNTL					0xC1E4
 #       define CP_MEM_LS_EN                             (1 << 0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	CP_DEBUG					0xC1FC
 
 #define RLC_CNTL                                          0xC300
@@ -1386,10 +1302,7 @@
 #define RLC_RL_BASE                                       0xC304
 #define RLC_RL_SIZE                                       0xC308
 #define RLC_LB_CNTL                                       0xC30C
-<<<<<<< HEAD
-=======
 #       define LOAD_BALANCE_ENABLE                        (1 << 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RLC_SAVE_AND_RESTORE_BASE                         0xC310
 #define RLC_LB_CNTR_MAX                                   0xC314
 #define RLC_LB_CNTR_INIT                                  0xC318
@@ -1399,10 +1312,6 @@
 #define RLC_UCODE_ADDR                                    0xC32C
 #define RLC_UCODE_DATA                                    0xC330
 
-<<<<<<< HEAD
-#define RLC_MC_CNTL                                       0xC344
-#define RLC_UCODE_CNTL                                    0xC348
-=======
 #define RLC_GPU_CLOCK_COUNT_LSB                           0xC338
 #define RLC_GPU_CLOCK_COUNT_MSB                           0xC33C
 #define RLC_CAPTURE_GPU_CLOCK_COUNT                       0xC340
@@ -1464,7 +1373,6 @@
 #       define RASTER_CONFIG_RB_MAP_1                   1
 #       define RASTER_CONFIG_RB_MAP_2                   2
 #       define RASTER_CONFIG_RB_MAP_3                   3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VGT_EVENT_INITIATOR                             0x28a90
 #       define SAMPLE_STREAMOUTSTATS1                   (1 << 0)
@@ -1505,21 +1413,6 @@
 #       define THREAD_TRACE_FLUSH                       (54 << 0)
 #       define THREAD_TRACE_FINISH                      (55 << 0)
 
-<<<<<<< HEAD
-/*
- * PM4
- */
-#define	PACKET_TYPE0	0
-#define	PACKET_TYPE1	1
-#define	PACKET_TYPE2	2
-#define	PACKET_TYPE3	3
-
-#define CP_PACKET_GET_TYPE(h) (((h) >> 30) & 3)
-#define CP_PACKET_GET_COUNT(h) (((h) >> 16) & 0x3FFF)
-#define CP_PACKET0_GET_REG(h) (((h) & 0xFFFF) << 2)
-#define CP_PACKET3_GET_OPCODE(h) (((h) >> 8) & 0xFF)
-#define PACKET0(reg, n)	((PACKET_TYPE0 << 30) |				\
-=======
 /* PIF PHY0 registers idx/data 0x8/0xc */
 #define PB0_PIF_CNTL                                      0x10
 #       define LS2_EXIT_TIME(x)                           ((x) << 17)
@@ -1691,7 +1584,6 @@
  * PM4
  */
 #define PACKET0(reg, n)	((RADEON_PACKET_TYPE0 << 30) |			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (((reg) >> 2) & 0xFFFF) |			\
 			 ((n) & 0x3FFF) << 16)
 #define CP_PACKET2			0x80000000
@@ -1700,11 +1592,7 @@
 
 #define PACKET2(v)	(CP_PACKET2 | REG_SET(PACKET2_PAD, (v)))
 
-<<<<<<< HEAD
-#define PACKET3(op, n)	((PACKET_TYPE3 << 30) |				\
-=======
 #define PACKET3(op, n)	((RADEON_PACKET_TYPE3 << 30) |			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (((op) & 0xFF) << 8) |				\
 			 ((n) & 0x3FFF) << 16)
 
@@ -1746,8 +1634,6 @@
 #define	PACKET3_DRAW_INDEX_OFFSET_2			0x35
 #define	PACKET3_DRAW_INDEX_MULTI_ELEMENT		0x36
 #define	PACKET3_WRITE_DATA				0x37
-<<<<<<< HEAD
-=======
 #define		WRITE_DATA_DST_SEL(x)                   ((x) << 8)
                 /* 0 - register
 		 * 1 - memory (sync - via GRBM)
@@ -1763,16 +1649,11 @@
 		 * 1 - pfp
 		 * 2 - ce
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	PACKET3_DRAW_INDEX_INDIRECT_MULTI		0x38
 #define	PACKET3_MEM_SEMAPHORE				0x39
 #define	PACKET3_MPEG_INDEX				0x3A
 #define	PACKET3_COPY_DW					0x3B
 #define	PACKET3_WAIT_REG_MEM				0x3C
-<<<<<<< HEAD
-#define	PACKET3_MEM_WRITE				0x3D
-#define	PACKET3_COPY_DATA				0x40
-=======
 #define		WAIT_REG_MEM_FUNCTION(x)                ((x) << 0)
                 /* 0 - always
 		 * 1 - <
@@ -1840,7 +1721,6 @@
 #              define PACKET3_CP_DMA_CMD_SAIC      (1 << 28)
 #              define PACKET3_CP_DMA_CMD_DAIC      (1 << 29)
 #              define PACKET3_CP_DMA_CMD_RAW_WAIT  (1 << 30)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	PACKET3_PFP_SYNC_ME				0x42
 #define	PACKET3_SURFACE_SYNC				0x43
 #              define PACKET3_DEST_BASE_0_ENA      (1 << 0)
@@ -1926,8 +1806,6 @@
 #define	PACKET3_WAIT_ON_DE_COUNTER_DIFF			0x88
 #define	PACKET3_SET_CE_DE_COUNTERS			0x89
 #define	PACKET3_WAIT_ON_AVAIL_BUFFER			0x8A
-<<<<<<< HEAD
-=======
 #define	PACKET3_SWITCH_BUFFER				0x8B
 
 /* ASYNC DMA - first instance at 0xd000, second at 0xd800 */
@@ -2074,6 +1952,5 @@
 #define	CG_VCEPLL_FUNC_CNTL_5				0xc0030604
 #define	CG_VCEPLL_SPREAD_SPECTRUM			0xc0030606
 #	define VCEPLL_SSEN_MASK				0x00000001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

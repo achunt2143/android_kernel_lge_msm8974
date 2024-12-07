@@ -95,25 +95,15 @@ __jffs2_dbg_fragtree_paranoia_check_nolock(struct jffs2_inode_info *f)
 			   rather than mucking around with actually reading the node
 			   and checking the compression type, which is the real way
 			   to tell a hole node. */
-<<<<<<< HEAD
-			if (frag->ofs & (PAGE_CACHE_SIZE-1) && frag_prev(frag)
-					&& frag_prev(frag)->size < PAGE_CACHE_SIZE && frag_prev(frag)->node) {
-=======
 			if (frag->ofs & (PAGE_SIZE-1) && frag_prev(frag)
 					&& frag_prev(frag)->size < PAGE_SIZE && frag_prev(frag)->node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				JFFS2_ERROR("REF_PRISTINE node at 0x%08x had a previous non-hole frag in the same page. Tell dwmw2.\n",
 					ref_offset(fn->raw));
 				bitched = 1;
 			}
 
-<<<<<<< HEAD
-			if ((frag->ofs+frag->size) & (PAGE_CACHE_SIZE-1) && frag_next(frag)
-					&& frag_next(frag)->size < PAGE_CACHE_SIZE && frag_next(frag)->node) {
-=======
 			if ((frag->ofs+frag->size) & (PAGE_SIZE-1) && frag_next(frag)
 					&& frag_next(frag)->size < PAGE_SIZE && frag_next(frag)->node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				JFFS2_ERROR("REF_PRISTINE node at 0x%08x (%08x-%08x) had a following non-hole frag in the same page. Tell dwmw2.\n",
 				       ref_offset(fn->raw), frag->ofs, frag->ofs+frag->size);
 				bitched = 1;
@@ -167,11 +157,7 @@ __jffs2_dbg_prewrite_paranoia_check(struct jffs2_sb_info *c,
 	kfree(buf);
 }
 
-<<<<<<< HEAD
-void __jffs2_dbg_superblock_counts(struct jffs2_sb_info *c)
-=======
 static void __jffs2_dbg_superblock_counts(struct jffs2_sb_info *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jffs2_eraseblock *jeb;
 	uint32_t free = 0, dirty = 0, used = 0, wasted = 0,

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_APECS__H__
 #define __ALPHA_APECS__H__
 
@@ -387,11 +384,7 @@ struct el_apecs_procdata
 		}						\
 	} while (0)
 
-<<<<<<< HEAD
-__EXTERN_INLINE unsigned int apecs_ioread8(void __iomem *xaddr)
-=======
 __EXTERN_INLINE u8 apecs_ioread8(const void __iomem *xaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr = (unsigned long) xaddr;
 	unsigned long result, base_and_type;
@@ -427,11 +420,7 @@ __EXTERN_INLINE void apecs_iowrite8(u8 b, void __iomem *xaddr)
 	*(vuip) ((addr << 5) + base_and_type) = w;
 }
 
-<<<<<<< HEAD
-__EXTERN_INLINE unsigned int apecs_ioread16(void __iomem *xaddr)
-=======
 __EXTERN_INLINE u16 apecs_ioread16(const void __iomem *xaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr = (unsigned long) xaddr;
 	unsigned long result, base_and_type;
@@ -467,11 +456,7 @@ __EXTERN_INLINE void apecs_iowrite16(u16 b, void __iomem *xaddr)
 	*(vuip) ((addr << 5) + base_and_type) = w;
 }
 
-<<<<<<< HEAD
-__EXTERN_INLINE unsigned int apecs_ioread32(void __iomem *xaddr)
-=======
 __EXTERN_INLINE u32 apecs_ioread32(const void __iomem *xaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr = (unsigned long) xaddr;
 	if (addr < APECS_DENSE_MEM)
@@ -487,8 +472,6 @@ __EXTERN_INLINE void apecs_iowrite32(u32 b, void __iomem *xaddr)
 	*(vuip)addr = b;
 }
 
-<<<<<<< HEAD
-=======
 __EXTERN_INLINE u64 apecs_ioread64(const void __iomem *xaddr)
 {
 	unsigned long addr = (unsigned long) xaddr;
@@ -505,7 +488,6 @@ __EXTERN_INLINE void apecs_iowrite64(u64 b, void __iomem *xaddr)
 	*(vulp)addr = b;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __EXTERN_INLINE void __iomem *apecs_ioportmap(unsigned long addr)
 {
 	return (void __iomem *)(addr + APECS_IO);

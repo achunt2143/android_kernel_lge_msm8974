@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # S/390 crypto devices
 #
 
-<<<<<<< HEAD
-ap-objs := ap_bus.o
-obj-$(CONFIG_ZCRYPT) += ap.o zcrypt_api.o zcrypt_pcicc.o zcrypt_pcixcc.o
-obj-$(CONFIG_ZCRYPT) += zcrypt_pcica.o zcrypt_cex2a.o
-=======
 ap-objs := ap_bus.o ap_card.o ap_queue.o
 obj-$(subst m,y,$(CONFIG_ZCRYPT)) += ap.o
 # zcrypt_api.o and zcrypt_msgtype*.o depend on ap.o
@@ -28,4 +20,3 @@ obj-$(CONFIG_PKEY) += pkey.o
 # adjunct processor matrix
 vfio_ap-objs := vfio_ap_drv.o vfio_ap_ops.o
 obj-$(CONFIG_VFIO_AP) += vfio_ap.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

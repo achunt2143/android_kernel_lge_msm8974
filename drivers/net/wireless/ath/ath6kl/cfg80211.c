@@ -15,18 +15,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/moduleparam.h>
-#include <linux/inetdevice.h>
-#include <linux/export.h>
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/moduleparam.h>
 #include <linux/inetdevice.h>
 #include <linux/export.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "core.h"
 #include "cfg80211.h"
@@ -41,11 +35,7 @@
 }
 
 #define CHAN2G(_channel, _freq, _flags) {   \
-<<<<<<< HEAD
-	.band           = IEEE80211_BAND_2GHZ,  \
-=======
 	.band           = NL80211_BAND_2GHZ,  \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_value       = (_channel),           \
 	.center_freq    = (_freq),              \
 	.flags          = (_flags),             \
@@ -54,11 +44,7 @@
 }
 
 #define CHAN5G(_channel, _flags) {		    \
-<<<<<<< HEAD
-	.band           = IEEE80211_BAND_5GHZ,      \
-=======
 	.band           = NL80211_BAND_5GHZ,      \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_value       = (_channel),               \
 	.center_freq    = 5000 + (5 * (_channel)),  \
 	.flags          = (_flags),                 \
@@ -66,8 +52,6 @@
 	.max_power      = 30,                       \
 }
 
-<<<<<<< HEAD
-=======
 #define DEFAULT_BG_SCAN_PERIOD 60
 
 struct ath6kl_cfg80211_match_probe_ssid {
@@ -75,7 +59,6 @@ struct ath6kl_cfg80211_match_probe_ssid {
 	u8 flag;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ieee80211_rate ath6kl_rates[] = {
 	RATETAB_ENT(10, 0x1, 0),
 	RATETAB_ENT(20, 0x2, 0),
@@ -96,12 +79,8 @@ static struct ieee80211_rate ath6kl_rates[] = {
 #define ath6kl_g_rates     (ath6kl_rates + 0)
 #define ath6kl_g_rates_size    12
 
-<<<<<<< HEAD
-#define ath6kl_g_htcap (IEEE80211_HT_CAP_SUP_WIDTH_20_40 | \
-=======
 #define ath6kl_g_htcap IEEE80211_HT_CAP_SGI_20
 #define ath6kl_a_htcap (IEEE80211_HT_CAP_SUP_WIDTH_20_40 | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IEEE80211_HT_CAP_SGI_20		 | \
 			IEEE80211_HT_CAP_SGI_40)
 
@@ -123,15 +102,8 @@ static struct ieee80211_channel ath6kl_2ghz_channels[] = {
 };
 
 static struct ieee80211_channel ath6kl_5ghz_a_channels[] = {
-<<<<<<< HEAD
-	CHAN5G(34, 0), CHAN5G(36, 0),
-	CHAN5G(38, 0), CHAN5G(40, 0),
-	CHAN5G(42, 0), CHAN5G(44, 0),
-	CHAN5G(46, 0), CHAN5G(48, 0),
-=======
 	CHAN5G(36, 0), CHAN5G(40, 0),
 	CHAN5G(44, 0), CHAN5G(48, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CHAN5G(52, 0), CHAN5G(56, 0),
 	CHAN5G(60, 0), CHAN5G(64, 0),
 	CHAN5G(100, 0), CHAN5G(104, 0),
@@ -163,11 +135,7 @@ static struct ieee80211_supported_band ath6kl_band_5ghz = {
 	.channels = ath6kl_5ghz_a_channels,
 	.n_bitrates = ath6kl_a_rates_size,
 	.bitrates = ath6kl_a_rates,
-<<<<<<< HEAD
-	.ht_cap.cap = ath6kl_g_htcap,
-=======
 	.ht_cap.cap = ath6kl_a_htcap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ht_cap.ht_supported = true,
 };
 
@@ -178,26 +146,15 @@ static bool __ath6kl_cfg80211_sscan_stop(struct ath6kl_vif *vif)
 {
 	struct ath6kl *ar = vif->ar;
 
-<<<<<<< HEAD
-	if (ar->state != ATH6KL_STATE_SCHED_SCAN)
-=======
 	if (!test_and_clear_bit(SCHED_SCANNING, &vif->flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	del_timer_sync(&vif->sched_scan_timer);
 
-<<<<<<< HEAD
-	ath6kl_wmi_set_host_sleep_mode_cmd(ar->wmi, vif->fw_vif_idx,
-					   ATH6KL_HOST_MODE_AWAKE);
-
-	ar->state = ATH6KL_STATE_ON;
-=======
 	if (ar->state == ATH6KL_STATE_RECOVERY)
 		return true;
 
 	ath6kl_wmi_enable_sched_scan_cmd(ar->wmi, vif->fw_vif_idx, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -212,11 +169,7 @@ static void ath6kl_cfg80211_sscan_disable(struct ath6kl_vif *vif)
 	if (!stopped)
 		return;
 
-<<<<<<< HEAD
-	cfg80211_sched_scan_stopped(ar->wiphy);
-=======
 	cfg80211_sched_scan_stopped(ar->wiphy, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_set_wpa_version(struct ath6kl_vif *vif,
@@ -338,11 +291,7 @@ static bool ath6kl_cfg80211_ready(struct ath6kl_vif *vif)
 	}
 
 	if (!test_bit(WLAN_ENABLED, &vif->flags)) {
-<<<<<<< HEAD
-		ath6kl_err("wlan disabled\n");
-=======
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "wlan disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -351,11 +300,7 @@ static bool ath6kl_cfg80211_ready(struct ath6kl_vif *vif)
 
 static bool ath6kl_is_wpa_ie(const u8 *pos)
 {
-<<<<<<< HEAD
-	return pos[0] == WLAN_EID_WPA && pos[1] >= 4 &&
-=======
 	return pos[0] == WLAN_EID_VENDOR_SPECIFIC && pos[1] >= 4 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos[2] == 0x00 && pos[3] == 0x50 &&
 		pos[4] == 0xf2 && pos[5] == 0x01;
 }
@@ -423,24 +368,13 @@ static int ath6kl_nliftype_to_drv_iftype(enum nl80211_iftype type, u8 *nw_type)
 {
 	switch (type) {
 	case NL80211_IFTYPE_STATION:
-<<<<<<< HEAD
-=======
 	case NL80211_IFTYPE_P2P_CLIENT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*nw_type = INFRA_NETWORK;
 		break;
 	case NL80211_IFTYPE_ADHOC:
 		*nw_type = ADHOC_NETWORK;
 		break;
 	case NL80211_IFTYPE_AP:
-<<<<<<< HEAD
-		*nw_type = AP_NETWORK;
-		break;
-	case NL80211_IFTYPE_P2P_CLIENT:
-		*nw_type = INFRA_NETWORK;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_P2P_GO:
 		*nw_type = AP_NETWORK;
 		break;
@@ -467,11 +401,7 @@ static bool ath6kl_is_valid_iftype(struct ath6kl *ar, enum nl80211_iftype type,
 	if (type == NL80211_IFTYPE_STATION ||
 	    type == NL80211_IFTYPE_AP || type == NL80211_IFTYPE_ADHOC) {
 		for (i = 0; i < ar->vif_max; i++) {
-<<<<<<< HEAD
-			if ((ar->avail_idx_map >> i) & BIT(0)) {
-=======
 			if ((ar->avail_idx_map) & BIT(i)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*if_idx = i;
 				return true;
 			}
@@ -481,11 +411,7 @@ static bool ath6kl_is_valid_iftype(struct ath6kl *ar, enum nl80211_iftype type,
 	if (type == NL80211_IFTYPE_P2P_CLIENT ||
 	    type == NL80211_IFTYPE_P2P_GO) {
 		for (i = ar->max_norm_iface; i < ar->vif_max; i++) {
-<<<<<<< HEAD
-			if ((ar->avail_idx_map >> i) & BIT(0)) {
-=======
 			if ((ar->avail_idx_map) & BIT(i)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*if_idx = i;
 				return true;
 			}
@@ -500,8 +426,6 @@ static bool ath6kl_is_tx_pending(struct ath6kl *ar)
 	return ar->tx_pending[ath6kl_wmi_get_control_ep(ar->wmi)] == 0;
 }
 
-<<<<<<< HEAD
-=======
 static void ath6kl_cfg80211_sta_bmiss_enhance(struct ath6kl_vif *vif,
 					      bool enable)
 {
@@ -526,7 +450,6 @@ static void ath6kl_cfg80211_sta_bmiss_enhance(struct ath6kl_vif *vif,
 		ath6kl_err("failed to %s enhanced bmiss detection: %d\n",
 			   enable ? "enable" : "disable", err);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 				   struct cfg80211_connect_params *sme)
@@ -677,12 +600,9 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 
 	vif->nw_type = vif->next_mode;
 
-<<<<<<< HEAD
-=======
 	/* enable enhanced bmiss detection if applicable */
 	ath6kl_cfg80211_sta_bmiss_enhance(vif, true);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vif->wdev.iftype == NL80211_IFTYPE_P2P_CLIENT)
 		nw_subtype = SUBTYPE_P2PCLIENT;
 
@@ -719,8 +639,6 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 					vif->req_bssid, vif->ch_hint,
 					ar->connect_ctrl_flags, nw_subtype);
 
-<<<<<<< HEAD
-=======
 	if (sme->bg_scan_period == 0) {
 		/* disable background scan if period is 0 */
 		sme->bg_scan_period = 0xffff;
@@ -732,7 +650,6 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 	ath6kl_wmi_scanparams_cmd(ar->wmi, vif->fw_vif_idx, 0, 0,
 				  sme->bg_scan_period, 0, 0, 0, 3, 0, 0, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up(&ar->sem);
 
 	if (status == -EINVAL) {
@@ -768,17 +685,6 @@ ath6kl_add_bss_if_needed(struct ath6kl_vif *vif,
 {
 	struct ath6kl *ar = vif->ar;
 	struct cfg80211_bss *bss;
-<<<<<<< HEAD
-	u16 cap_mask, cap_val;
-	u8 *ie;
-
-	if (nw_type & ADHOC_NETWORK) {
-		cap_mask = WLAN_CAPABILITY_IBSS;
-		cap_val = WLAN_CAPABILITY_IBSS;
-	} else {
-		cap_mask = WLAN_CAPABILITY_ESS;
-		cap_val = WLAN_CAPABILITY_ESS;
-=======
 	u16 cap_val;
 	enum ieee80211_bss_type bss_type;
 	u8 *ie;
@@ -789,16 +695,11 @@ ath6kl_add_bss_if_needed(struct ath6kl_vif *vif,
 	} else {
 		cap_val = WLAN_CAPABILITY_ESS;
 		bss_type = IEEE80211_BSS_TYPE_ESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bss = cfg80211_get_bss(ar->wiphy, chan, bssid,
 			       vif->ssid, vif->ssid_len,
-<<<<<<< HEAD
-			       cap_mask, cap_val);
-=======
 			       bss_type, IEEE80211_PRIVACY_ANY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bss == NULL) {
 		/*
 		 * Since cfg80211 may not yet know about the BSS,
@@ -816,28 +717,17 @@ ath6kl_add_bss_if_needed(struct ath6kl_vif *vif,
 		memcpy(ie + 2, vif->ssid, vif->ssid_len);
 		memcpy(ie + 2 + vif->ssid_len, beacon_ie, beacon_ie_len);
 		bss = cfg80211_inform_bss(ar->wiphy, chan,
-<<<<<<< HEAD
-=======
 					  CFG80211_BSS_FTYPE_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  bssid, 0, cap_val, 100,
 					  ie, 2 + vif->ssid_len + beacon_ie_len,
 					  0, GFP_KERNEL);
 		if (bss)
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "added bss %pM to "
-				   "cfg80211\n", bssid);
-		kfree(ie);
-	} else
-		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "cfg80211 already has a bss\n");
-=======
 			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
 				   "added bss %pM to cfg80211\n", bssid);
 		kfree(ie);
 	} else {
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "cfg80211 already has a bss\n");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bss;
 }
@@ -902,13 +792,8 @@ void ath6kl_cfg80211_connect_event(struct ath6kl_vif *vif, u16 channel,
 	if (nw_type & ADHOC_NETWORK) {
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "ad-hoc %s selected\n",
 			   nw_type & ADHOC_CREATOR ? "creator" : "joiner");
-<<<<<<< HEAD
-		cfg80211_ibss_joined(vif->ndev, bssid, GFP_KERNEL);
-		cfg80211_put_bss(bss);
-=======
 		cfg80211_ibss_joined(vif->ndev, bssid, chan, GFP_KERNEL);
 		cfg80211_put_bss(ar->wiphy, bss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -919,13 +804,6 @@ void ath6kl_cfg80211_connect_event(struct ath6kl_vif *vif, u16 channel,
 					assoc_req_ie, assoc_req_len,
 					assoc_resp_ie, assoc_resp_len,
 					WLAN_STATUS_SUCCESS, GFP_KERNEL);
-<<<<<<< HEAD
-		cfg80211_put_bss(bss);
-	} else if (vif->sme_state == SME_CONNECTED) {
-		/* inform roam event to cfg80211 */
-		cfg80211_roamed_bss(vif->ndev, bss, assoc_req_ie, assoc_req_len,
-				    assoc_resp_ie, assoc_resp_len, GFP_KERNEL);
-=======
 		cfg80211_put_bss(ar->wiphy, bss);
 	} else if (vif->sme_state == SME_CONNECTED) {
 		struct cfg80211_roam_info roam_info = {
@@ -937,7 +815,6 @@ void ath6kl_cfg80211_connect_event(struct ath6kl_vif *vif, u16 channel,
 		};
 		/* inform roam event to cfg80211 */
 		cfg80211_roamed(vif->ndev, &roam_info, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -975,11 +852,6 @@ static int ath6kl_cfg80211_disconnect(struct wiphy *wiphy,
 
 	up(&ar->sem);
 
-<<<<<<< HEAD
-	vif->sme_state = SME_DISCONNECTED;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -990,32 +862,18 @@ void ath6kl_cfg80211_disconnect_event(struct ath6kl_vif *vif, u8 reason,
 	struct ath6kl *ar = vif->ar;
 
 	if (vif->scan_req) {
-<<<<<<< HEAD
-		cfg80211_scan_done(vif->scan_req, true);
-=======
 		struct cfg80211_scan_info info = {
 			.aborted = true,
 		};
 
 		cfg80211_scan_done(vif->scan_req, &info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vif->scan_req = NULL;
 	}
 
 	if (vif->nw_type & ADHOC_NETWORK) {
-<<<<<<< HEAD
-		if (vif->wdev.iftype != NL80211_IFTYPE_ADHOC) {
-			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
-				   "%s: ath6k not in ibss mode\n", __func__);
-			return;
-		}
-		memset(bssid, 0, ETH_ALEN);
-		cfg80211_ibss_joined(vif->ndev, bssid, GFP_KERNEL);
-=======
 		if (vif->wdev.iftype != NL80211_IFTYPE_ADHOC)
 			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
 				   "%s: ath6k not in ibss mode\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1028,23 +886,6 @@ void ath6kl_cfg80211_disconnect_event(struct ath6kl_vif *vif, u8 reason,
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Send a disconnect command to target when a disconnect event is
-	 * received with reason code other than 3 (DISCONNECT_CMD - disconnect
-	 * request from host) to make the firmware stop trying to connect even
-	 * after giving disconnect event. There will be one more disconnect
-	 * event for this disconnect command with reason code DISCONNECT_CMD
-	 * which will be notified to cfg80211.
-	 */
-
-	if (reason != DISCONNECT_CMD) {
-		ath6kl_wmi_disconnect_cmd(ar->wmi, vif->fw_vif_idx);
-		return;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(CONNECT_PEND, &vif->flags);
 
 	if (vif->sme_state == SME_CONNECTING) {
@@ -1054,20 +895,6 @@ void ath6kl_cfg80211_disconnect_event(struct ath6kl_vif *vif, u8 reason,
 					WLAN_STATUS_UNSPECIFIED_FAILURE,
 					GFP_KERNEL);
 	} else if (vif->sme_state == SME_CONNECTED) {
-<<<<<<< HEAD
-		cfg80211_disconnected(vif->ndev, reason,
-				      NULL, 0, GFP_KERNEL);
-	}
-
-	vif->sme_state = SME_DISCONNECTED;
-}
-
-static int ath6kl_cfg80211_scan(struct wiphy *wiphy, struct net_device *ndev,
-				struct cfg80211_scan_request *request)
-{
-	struct ath6kl *ar = ath6kl_priv(ndev);
-	struct ath6kl_vif *vif = netdev_priv(ndev);
-=======
 		cfg80211_disconnected(vif->ndev, proto_reason,
 				      NULL, 0, false, GFP_KERNEL);
 	}
@@ -1169,7 +996,6 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 {
 	struct ath6kl_vif *vif = ath6kl_vif_from_wdev(request->wdev);
 	struct ath6kl *ar = ath6kl_priv(vif->ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s8 n_channels = 0;
 	u16 *channels = NULL;
 	int ret = 0;
@@ -1182,52 +1008,25 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 
 	if (!ar->usr_bss_filter) {
 		clear_bit(CLEAR_BSSFILTER_ON_BEACON, &vif->flags);
-<<<<<<< HEAD
-		ret = ath6kl_wmi_bssfilter_cmd(
-			ar->wmi, vif->fw_vif_idx,
-			(test_bit(CONNECTED, &vif->flags) ?
-			 ALL_BUT_BSS_FILTER : ALL_BSS_FILTER), 0);
-=======
 		ret = ath6kl_wmi_bssfilter_cmd(ar->wmi, vif->fw_vif_idx,
 					       ALL_BSS_FILTER, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			ath6kl_err("couldn't set bss filtering\n");
 			return ret;
 		}
 	}
 
-<<<<<<< HEAD
-	if (request->n_ssids && request->ssids[0].ssid_len) {
-		u8 i;
-
-		if (request->n_ssids > (MAX_PROBED_SSID_INDEX - 1))
-			request->n_ssids = MAX_PROBED_SSID_INDEX - 1;
-
-		for (i = 0; i < request->n_ssids; i++)
-			ath6kl_wmi_probedssid_cmd(ar->wmi, vif->fw_vif_idx,
-						  i + 1, SPECIFIC_SSID_FLAG,
-						  request->ssids[i].ssid_len,
-						  request->ssids[i].ssid);
-	}
-=======
 	ret = ath6kl_set_probed_ssids(ar, vif, request->ssids,
 				      request->n_ssids, NULL, 0);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this also clears IE in fw if it's not set */
 	ret = ath6kl_wmi_set_appie_cmd(ar->wmi, vif->fw_vif_idx,
 				       WMI_FRAME_PROBE_REQ,
 				       request->ie, request->ie_len);
 	if (ret) {
-<<<<<<< HEAD
-		ath6kl_err("failed to set Probe Request appie for "
-			   "scan");
-=======
 		ath6kl_err("failed to set Probe Request appie for scan\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -1242,16 +1041,9 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 
 		n_channels = request->n_channels;
 
-<<<<<<< HEAD
-		channels = kzalloc(n_channels * sizeof(u16), GFP_KERNEL);
-		if (channels == NULL) {
-			ath6kl_warn("failed to set scan channels, "
-				    "scan all channels");
-=======
 		channels = kcalloc(n_channels, sizeof(u16), GFP_KERNEL);
 		if (channels == NULL) {
 			ath6kl_warn("failed to set scan channels, scan all channels");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			n_channels = 0;
 		}
 
@@ -1262,34 +1054,6 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 	if (test_bit(CONNECTED, &vif->flags))
 		force_fg_scan = 1;
 
-<<<<<<< HEAD
-	if (test_bit(ATH6KL_FW_CAPABILITY_STA_P2PDEV_DUPLEX,
-		     ar->fw_capabilities)) {
-		/*
-		 * If capable of doing P2P mgmt operations using
-		 * station interface, send additional information like
-		 * supported rates to advertise and xmit rates for
-		 * probe requests
-		 */
-		ret = ath6kl_wmi_beginscan_cmd(ar->wmi, vif->fw_vif_idx,
-						WMI_LONG_SCAN, force_fg_scan,
-						false, 0,
-						ATH6KL_FG_SCAN_INTERVAL,
-						n_channels, channels,
-						request->no_cck,
-						request->rates);
-	} else {
-		ret = ath6kl_wmi_startscan_cmd(ar->wmi, vif->fw_vif_idx,
-						WMI_LONG_SCAN, force_fg_scan,
-						false, 0,
-						ATH6KL_FG_SCAN_INTERVAL,
-						n_channels, channels);
-	}
-	if (ret)
-		ath6kl_err("wmi_startscan_cmd failed\n");
-	else
-		vif->scan_req = request;
-=======
 	vif->scan_req = request;
 
 	ret = ath6kl_wmi_beginscan_cmd(ar->wmi, vif->fw_vif_idx,
@@ -1303,7 +1067,6 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 		ath6kl_err("failed to start scan: %d\n", ret);
 		vif->scan_req = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(channels);
 
@@ -1313,12 +1076,9 @@ static int ath6kl_cfg80211_scan(struct wiphy *wiphy,
 void ath6kl_cfg80211_scan_complete_event(struct ath6kl_vif *vif, bool aborted)
 {
 	struct ath6kl *ar = vif->ar;
-<<<<<<< HEAD
-=======
 	struct cfg80211_scan_info info = {
 		.aborted = aborted,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: status%s\n", __func__,
@@ -1333,24 +1093,12 @@ void ath6kl_cfg80211_scan_complete_event(struct ath6kl_vif *vif, bool aborted)
 	if (vif->scan_req->n_ssids && vif->scan_req->ssids[0].ssid_len) {
 		for (i = 0; i < vif->scan_req->n_ssids; i++) {
 			ath6kl_wmi_probedssid_cmd(ar->wmi, vif->fw_vif_idx,
-<<<<<<< HEAD
-						  i + 1, DISABLE_SSID_FLAG,
-=======
 						  i, DISABLE_SSID_FLAG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  0, NULL);
 		}
 	}
 
 out:
-<<<<<<< HEAD
-	cfg80211_scan_done(vif->scan_req, aborted);
-	vif->scan_req = NULL;
-}
-
-static int ath6kl_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
-				   u8 key_index, bool pairwise,
-=======
 	cfg80211_scan_done(vif->scan_req, &info);
 	vif->scan_req = NULL;
 }
@@ -1377,7 +1125,6 @@ void ath6kl_cfg80211_ch_switch_notify(struct ath6kl_vif *vif, int freq,
 
 static int ath6kl_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
 				   int link_id, u8 key_index, bool pairwise,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const u8 *mac_addr,
 				   struct key_params *params)
 {
@@ -1469,14 +1216,8 @@ static int ath6kl_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
 		ar->ap_mode_bkey.key_len = key->key_len;
 		memcpy(ar->ap_mode_bkey.key, key->key, key->key_len);
 		if (!test_bit(CONNECTED, &vif->flags)) {
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "Delay initial group "
-				   "key configuration until AP mode has been "
-				   "started\n");
-=======
 			ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
 				   "Delay initial group key configuration until AP mode has been started\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The key will be set in ath6kl_connect_ap_mode() once
 			 * the connected event is received from the target.
@@ -1492,13 +1233,8 @@ static int ath6kl_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
 		 * the AP mode has properly started
 		 * (ath6kl_install_statioc_wep_keys).
 		 */
-<<<<<<< HEAD
-		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "Delay WEP key configuration "
-			   "until AP mode has been started\n");
-=======
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
 			   "Delay WEP key configuration until AP mode has been started\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vif->wep_key_list[key_index].key_len = key->key_len;
 		memcpy(vif->wep_key_list[key_index].key, key->key,
 		       key->key_len);
@@ -1513,11 +1249,7 @@ static int ath6kl_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
 }
 
 static int ath6kl_cfg80211_del_key(struct wiphy *wiphy, struct net_device *ndev,
-<<<<<<< HEAD
-				   u8 key_index, bool pairwise,
-=======
 				   int link_id, u8 key_index, bool pairwise,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const u8 *mac_addr)
 {
 	struct ath6kl *ar = ath6kl_priv(ndev);
@@ -1547,11 +1279,7 @@ static int ath6kl_cfg80211_del_key(struct wiphy *wiphy, struct net_device *ndev,
 }
 
 static int ath6kl_cfg80211_get_key(struct wiphy *wiphy, struct net_device *ndev,
-<<<<<<< HEAD
-				   u8 key_index, bool pairwise,
-=======
 				   int link_id, u8 key_index, bool pairwise,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const u8 *mac_addr, void *cookie,
 				   void (*callback) (void *cookie,
 						     struct key_params *))
@@ -1586,11 +1314,7 @@ static int ath6kl_cfg80211_get_key(struct wiphy *wiphy, struct net_device *ndev,
 }
 
 static int ath6kl_cfg80211_set_default_key(struct wiphy *wiphy,
-<<<<<<< HEAD
-					   struct net_device *ndev,
-=======
 					   struct net_device *ndev, int link_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   u8 key_index, bool unicast,
 					   bool multicast)
 {
@@ -1598,11 +1322,7 @@ static int ath6kl_cfg80211_set_default_key(struct wiphy *wiphy,
 	struct ath6kl_vif *vif = netdev_priv(ndev);
 	struct ath6kl_key *key = NULL;
 	u8 key_usage;
-<<<<<<< HEAD
-	enum crypto_type key_type = NONE_CRYPT;
-=======
 	enum ath6kl_crypto_type key_type = NONE_CRYPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: index %d\n", __func__, key_index);
 
@@ -1683,16 +1403,8 @@ static int ath6kl_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * The type nl80211_tx_power_setting replaces the following
- * data type from 2.6.36 onwards
-*/
-static int ath6kl_cfg80211_set_txpower(struct wiphy *wiphy,
-=======
 static int ath6kl_cfg80211_set_txpower(struct wiphy *wiphy,
 				       struct wireless_dev *wdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       enum nl80211_tx_power_setting type,
 				       int mbm)
 {
@@ -1727,13 +1439,9 @@ static int ath6kl_cfg80211_set_txpower(struct wiphy *wiphy,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ath6kl_cfg80211_get_txpower(struct wiphy *wiphy, int *dbm)
-=======
 static int ath6kl_cfg80211_get_txpower(struct wiphy *wiphy,
 				       struct wireless_dev *wdev,
 				       int *dbm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl *ar = (struct ath6kl *)wiphy_priv(wiphy);
 	struct ath6kl_vif *vif;
@@ -1746,22 +1454,14 @@ static int ath6kl_cfg80211_get_txpower(struct wiphy *wiphy,
 		return -EIO;
 
 	if (test_bit(CONNECTED, &vif->flags)) {
-<<<<<<< HEAD
-		ar->tx_pwr = 0;
-=======
 		ar->tx_pwr = 255;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ath6kl_wmi_get_tx_pwr_cmd(ar->wmi, vif->fw_vif_idx) != 0) {
 			ath6kl_err("ath6kl_wmi_get_tx_pwr_cmd failed\n");
 			return -EIO;
 		}
 
-<<<<<<< HEAD
-		wait_event_interruptible_timeout(ar->event_wq, ar->tx_pwr != 0,
-=======
 		wait_event_interruptible_timeout(ar->event_wq, ar->tx_pwr != 255,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 5 * HZ);
 
 		if (signal_pending(current)) {
@@ -1789,17 +1489,10 @@ static int ath6kl_cfg80211_set_power_mgmt(struct wiphy *wiphy,
 		return -EIO;
 
 	if (pmgmt) {
-<<<<<<< HEAD
-		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: max perf\n", __func__);
-		mode.pwr_mode = REC_POWER;
-	} else {
-		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: rec power\n", __func__);
-=======
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: rec power\n", __func__);
 		mode.pwr_mode = REC_POWER;
 	} else {
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: max perf\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode.pwr_mode = MAX_PERF_POWER;
 	}
 
@@ -1812,16 +1505,6 @@ static int ath6kl_cfg80211_set_power_mgmt(struct wiphy *wiphy,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct net_device *ath6kl_cfg80211_add_iface(struct wiphy *wiphy,
-						    char *name,
-						    enum nl80211_iftype type,
-						    u32 *flags,
-						    struct vif_params *params)
-{
-	struct ath6kl *ar = wiphy_priv(wiphy);
-	struct net_device *ndev;
-=======
 static struct wireless_dev *ath6kl_cfg80211_add_iface(struct wiphy *wiphy,
 						      const char *name,
 						      unsigned char name_assign_type,
@@ -1830,7 +1513,6 @@ static struct wireless_dev *ath6kl_cfg80211_add_iface(struct wiphy *wiphy,
 {
 	struct ath6kl *ar = wiphy_priv(wiphy);
 	struct wireless_dev *wdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 if_idx, nw_type;
 
 	if (ar->num_vif == ar->vif_max) {
@@ -1843,27 +1525,12 @@ static struct wireless_dev *ath6kl_cfg80211_add_iface(struct wiphy *wiphy,
 		return ERR_PTR(-EINVAL);
 	}
 
-<<<<<<< HEAD
-	ndev = ath6kl_interface_add(ar, name, type, if_idx, nw_type);
-	if (!ndev)
-=======
 	wdev = ath6kl_interface_add(ar, name, name_assign_type, type, if_idx, nw_type);
 	if (!wdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ENOMEM);
 
 	ar->num_vif++;
 
-<<<<<<< HEAD
-	return ndev;
-}
-
-static int ath6kl_cfg80211_del_iface(struct wiphy *wiphy,
-				     struct net_device *ndev)
-{
-	struct ath6kl *ar = wiphy_priv(wiphy);
-	struct ath6kl_vif *vif = netdev_priv(ndev);
-=======
 	return wdev;
 }
 
@@ -1872,40 +1539,22 @@ static int ath6kl_cfg80211_del_iface(struct wiphy *wiphy,
 {
 	struct ath6kl *ar = wiphy_priv(wiphy);
 	struct ath6kl_vif *vif = netdev_priv(wdev->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ar->list_lock);
 	list_del(&vif->list);
 	spin_unlock_bh(&ar->list_lock);
 
-<<<<<<< HEAD
-	ath6kl_cleanup_vif(vif, test_bit(WMI_READY, &ar->flag));
-
-	ath6kl_cfg80211_vif_cleanup(vif);
-=======
 	ath6kl_cfg80211_vif_stop(vif, test_bit(WMI_READY, &ar->flag));
 
 	rtnl_lock();
 	ath6kl_cfg80211_vif_cleanup(vif);
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int ath6kl_cfg80211_change_iface(struct wiphy *wiphy,
 					struct net_device *ndev,
-<<<<<<< HEAD
-					enum nl80211_iftype type, u32 *flags,
-					struct vif_params *params)
-{
-	struct ath6kl_vif *vif = netdev_priv(ndev);
-
-	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: type %u\n", __func__, type);
-
-	switch (type) {
-	case NL80211_IFTYPE_STATION:
-=======
 					enum nl80211_iftype type,
 					struct vif_params *params)
 {
@@ -1948,21 +1597,12 @@ set_iface_type:
 	switch (type) {
 	case NL80211_IFTYPE_STATION:
 	case NL80211_IFTYPE_P2P_CLIENT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vif->next_mode = INFRA_NETWORK;
 		break;
 	case NL80211_IFTYPE_ADHOC:
 		vif->next_mode = ADHOC_NETWORK;
 		break;
 	case NL80211_IFTYPE_AP:
-<<<<<<< HEAD
-		vif->next_mode = AP_NETWORK;
-		break;
-	case NL80211_IFTYPE_P2P_CLIENT:
-		vif->next_mode = INFRA_NETWORK;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_P2P_GO:
 		vif->next_mode = AP_NETWORK;
 		break;
@@ -1990,13 +1630,8 @@ static int ath6kl_cfg80211_join_ibss(struct wiphy *wiphy,
 	vif->ssid_len = ibss_param->ssid_len;
 	memcpy(vif->ssid, ibss_param->ssid, vif->ssid_len);
 
-<<<<<<< HEAD
-	if (ibss_param->channel)
-		vif->ch_hint = ibss_param->channel->center_freq;
-=======
 	if (ibss_param->chandef.chan)
 		vif->ch_hint = ibss_param->chandef.chan->center_freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ibss_param->channel_fixed) {
 		/*
@@ -2137,11 +1772,7 @@ static bool is_rate_ht40(s32 rate, u8 *mcs, bool *sgi)
 }
 
 static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
-<<<<<<< HEAD
-			      u8 *mac, struct station_info *sinfo)
-=======
 			      const u8 *mac, struct station_info *sinfo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_vif *vif = netdev_priv(dev);
@@ -2180,28 +1811,13 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 
 	if (vif->target_stats.rx_byte) {
 		sinfo->rx_bytes = vif->target_stats.rx_byte;
-<<<<<<< HEAD
-		sinfo->filled |= STATION_INFO_RX_BYTES;
-		sinfo->rx_packets = vif->target_stats.rx_pkt;
-		sinfo->filled |= STATION_INFO_RX_PACKETS;
-=======
 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_RX_BYTES64);
 		sinfo->rx_packets = vif->target_stats.rx_pkt;
 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_RX_PACKETS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vif->target_stats.tx_byte) {
 		sinfo->tx_bytes = vif->target_stats.tx_byte;
-<<<<<<< HEAD
-		sinfo->filled |= STATION_INFO_TX_BYTES;
-		sinfo->tx_packets = vif->target_stats.tx_pkt;
-		sinfo->filled |= STATION_INFO_TX_PACKETS;
-	}
-
-	sinfo->signal = vif->target_stats.cs_rssi;
-	sinfo->filled |= STATION_INFO_SIGNAL;
-=======
 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BYTES64);
 		sinfo->tx_packets = vif->target_stats.tx_pkt;
 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_PACKETS);
@@ -2209,7 +1825,6 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 
 	sinfo->signal = vif->target_stats.cs_rssi;
 	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_SIGNAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rate = vif->target_stats.tx_ucast_rate;
 
@@ -2224,10 +1839,7 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 		}
 
 		sinfo->txrate.flags |= RATE_INFO_FLAGS_MCS;
-<<<<<<< HEAD
-=======
 		sinfo->txrate.bw = RATE_INFO_BW_20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (is_rate_ht40(rate, &mcs, &sgi)) {
 		if (sgi) {
 			sinfo->txrate.flags |= RATE_INFO_FLAGS_SHORT_GI;
@@ -2236,11 +1848,7 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 			sinfo->txrate.mcs = mcs;
 		}
 
-<<<<<<< HEAD
-		sinfo->txrate.flags |= RATE_INFO_FLAGS_40_MHZ_WIDTH;
-=======
 		sinfo->txrate.bw = RATE_INFO_BW_40;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sinfo->txrate.flags |= RATE_INFO_FLAGS_MCS;
 	} else {
 		ath6kl_dbg(ATH6KL_DBG_WLAN_CFG,
@@ -2249,20 +1857,12 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	sinfo->filled |= STATION_INFO_TX_BITRATE;
-=======
 	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(CONNECTED, &vif->flags) &&
 	    test_bit(DTIM_PERIOD_AVAIL, &vif->flags) &&
 	    vif->nw_type == INFRA_NETWORK) {
-<<<<<<< HEAD
-		sinfo->filled |= STATION_INFO_BSS_PARAM;
-=======
 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_BSS_PARAM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sinfo->bss_param.flags = 0;
 		sinfo->bss_param.dtim_period = vif->assoc_bss_dtim_period;
 		sinfo->bss_param.beacon_interval = vif->assoc_bss_beacon_int;
@@ -2306,19 +1906,11 @@ static int ath6kl_wow_usr(struct ath6kl *ar, struct ath6kl_vif *vif,
 			  struct cfg80211_wowlan *wow, u32 *filter)
 {
 	int ret, pos;
-<<<<<<< HEAD
-	u8 mask[WOW_MASK_SIZE];
-=======
 	u8 mask[WOW_PATTERN_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 i;
 
 	/* Configure the patterns that we received from the user. */
 	for (i = 0; i < wow->n_patterns; i++) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Convert given nl80211 specific mask value to equivalent
 		 * driver specific mask value and send it to the chip along
@@ -2453,11 +2045,7 @@ static int ath6kl_wow_sta(struct ath6kl *ar, struct ath6kl_vif *vif)
 	int ret;
 
 	/* Setup unicast pkt pattern */
-<<<<<<< HEAD
-	memset(mac_mask, 0xff, ETH_ALEN);
-=======
 	eth_broadcast_addr(mac_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ath6kl_wmi_add_wow_pattern_cmd(ar->wmi,
 				vif->fw_vif_idx, WOW_LIST_ID,
 				ETH_ALEN, 0, ndev->dev_addr,
@@ -2478,12 +2066,7 @@ static int ath6kl_wow_sta(struct ath6kl *ar, struct ath6kl_vif *vif)
 				sizeof(discvr_pattern), discvr_offset,
 				discvr_pattern, discvr_mask);
 		if (ret) {
-<<<<<<< HEAD
-			ath6kl_err("failed to add WOW mDNS/SSDP/LLMNR "
-				   "pattern\n");
-=======
 			ath6kl_err("failed to add WOW mDNS/SSDP/LLMNR pattern\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 	}
@@ -2491,31 +2074,6 @@ static int ath6kl_wow_sta(struct ath6kl *ar, struct ath6kl_vif *vif)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ath6kl_wow_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
-{
-	struct in_device *in_dev;
-	struct in_ifaddr *ifa;
-	struct ath6kl_vif *vif;
-	int ret, left;
-	u32 filter = 0;
-	u16 i, bmiss_time;
-	u8 index = 0;
-	__be32 ips[MAX_IP_ADDRS];
-
-	vif = ath6kl_vif_first(ar);
-	if (!vif)
-		return -EIO;
-
-	if (!ath6kl_cfg80211_ready(vif))
-		return -EIO;
-
-	if (!test_bit(CONNECTED, &vif->flags))
-		return -ENOTCONN;
-
-	if (wow && (wow->n_patterns > WOW_MAX_FILTERS_PER_LIST))
-		return -EINVAL;
-=======
 static int is_hsleep_mode_procsed(struct ath6kl_vif *vif)
 {
 	return test_bit(HOST_SLEEP_MODE_CMD_PROCESSED, &vif->flags);
@@ -2584,7 +2142,6 @@ static int ath6kl_wow_suspend_vif(struct ath6kl_vif *vif,
 		if (ret)
 			return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear existing WOW patterns */
 	for (i = 0; i < WOW_MAX_FILTERS_PER_LIST; i++)
@@ -2597,11 +2154,7 @@ static int ath6kl_wow_suspend_vif(struct ath6kl_vif *vif,
 	 * the user.
 	 */
 	if (wow)
-<<<<<<< HEAD
-		ret = ath6kl_wow_usr(ar, vif, wow, &filter);
-=======
 		ret = ath6kl_wow_usr(ar, vif, wow, filter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (vif->nw_type == AP_NETWORK)
 		ret = ath6kl_wow_ap(ar, vif);
 	else
@@ -2636,33 +2189,18 @@ static int ath6kl_wow_suspend_vif(struct ath6kl_vif *vif,
 			return ret;
 	}
 
-<<<<<<< HEAD
-	ar->state = ATH6KL_STATE_SUSPENDING;
-
-	/* Setup own IP addr for ARP agent. */
-	in_dev = __in_dev_get_rtnl(vif->ndev);
-	if (!in_dev)
-		goto skip_arp;
-
-	ifa = in_dev->ifa_list;
-=======
 	/* Setup own IP addr for ARP agent. */
 	in_dev = __in_dev_get_rtnl(vif->ndev);
 	if (!in_dev)
 		return 0;
 
 	ifa = rtnl_dereference(in_dev->ifa_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&ips, 0, sizeof(ips));
 
 	/* Configure IP addr only if IP address count < MAX_IP_ADDRS */
 	while (index < MAX_IP_ADDRS && ifa) {
 		ips[index] = ifa->ifa_local;
-<<<<<<< HEAD
-		ifa = ifa->ifa_next;
-=======
 		ifa = rtnl_dereference(ifa->ifa_next);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		index++;
 	}
 
@@ -2677,10 +2215,6 @@ static int ath6kl_wow_suspend_vif(struct ath6kl_vif *vif,
 		return ret;
 	}
 
-<<<<<<< HEAD
-skip_arp:
-	ret = ath6kl_wmi_set_wow_mode_cmd(ar->wmi, vif->fw_vif_idx,
-=======
 	return ret;
 }
 
@@ -2722,70 +2256,12 @@ static int ath6kl_wow_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 	ar->state = ATH6KL_STATE_SUSPENDING;
 
 	ret = ath6kl_wmi_set_wow_mode_cmd(ar->wmi, first_vif->fw_vif_idx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  ATH6KL_WOW_MODE_ENABLE,
 					  filter,
 					  WOW_HOST_REQ_DELAY);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	clear_bit(HOST_SLEEP_MODE_CMD_PROCESSED, &vif->flags);
-
-	ret = ath6kl_wmi_set_host_sleep_mode_cmd(ar->wmi, vif->fw_vif_idx,
-						 ATH6KL_HOST_MODE_ASLEEP);
-	if (ret)
-		return ret;
-
-	left = wait_event_interruptible_timeout(ar->event_wq,
-			test_bit(HOST_SLEEP_MODE_CMD_PROCESSED, &vif->flags),
-			WMI_TIMEOUT);
-	if (left == 0) {
-		ath6kl_warn("timeout, didn't get host sleep cmd "
-			    "processed event\n");
-		ret = -ETIMEDOUT;
-	} else if (left < 0) {
-		ath6kl_warn("error while waiting for host sleep cmd "
-			    "processed event %d\n", left);
-		ret = left;
-	}
-
-	if (ar->tx_pending[ar->ctrl_ep]) {
-		left = wait_event_interruptible_timeout(ar->event_wq,
-				ar->tx_pending[ar->ctrl_ep] == 0, WMI_TIMEOUT);
-		if (left == 0) {
-			ath6kl_warn("clear wmi ctrl data timeout\n");
-			ret = -ETIMEDOUT;
-		} else if (left < 0) {
-			ath6kl_warn("clear wmi ctrl data failed: %d\n", left);
-			ret = left;
-		}
-	}
-
-	return ret;
-}
-
-static int ath6kl_wow_resume(struct ath6kl *ar)
-{
-	struct ath6kl_vif *vif;
-	int ret;
-
-	vif = ath6kl_vif_first(ar);
-	if (!vif)
-		return -EIO;
-
-	ar->state = ATH6KL_STATE_RESUMING;
-
-	ret = ath6kl_wmi_set_host_sleep_mode_cmd(ar->wmi, vif->fw_vif_idx,
-						 ATH6KL_HOST_MODE_AWAKE);
-	if (ret) {
-		ath6kl_warn("Failed to configure host sleep mode for "
-			    "wow resume: %d\n", ret);
-		ar->state = ATH6KL_STATE_WOW;
-		return ret;
-	}
-
-=======
 	return ath6kl_cfg80211_host_sleep(ar, first_vif);
 }
 
@@ -2794,7 +2270,6 @@ static int ath6kl_wow_resume_vif(struct ath6kl_vif *vif)
 	struct ath6kl *ar = vif->ar;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vif->nw_type != AP_NETWORK) {
 		ret = ath6kl_wmi_scanparams_cmd(ar->wmi, vif->fw_vif_idx,
 						0, 0, 0, 0, 0, 0, 3, 0, 0, 0);
@@ -2812,9 +2287,6 @@ static int ath6kl_wow_resume_vif(struct ath6kl_vif *vif)
 			return ret;
 	}
 
-<<<<<<< HEAD
-	ar->state = ATH6KL_STATE_ON;
-=======
 	if (!test_bit(NETDEV_MCAST_ALL_OFF, &vif->flags) &&
 	    test_bit(ATH6KL_FW_CAPABILITY_WOW_MULTICAST_FILTER,
 		     ar->fw_capabilities)) {
@@ -2823,15 +2295,12 @@ static int ath6kl_wow_resume_vif(struct ath6kl_vif *vif)
 		if (ret)
 			return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_wake_queue(vif->ndev);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ath6kl_wow_resume(struct ath6kl *ar)
 {
 	struct ath6kl_vif *vif;
@@ -2947,15 +2416,11 @@ static int ath6kl_cfg80211_deepsleep_resume(struct ath6kl *ar)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_cfg80211_suspend(struct ath6kl *ar,
 			    enum ath6kl_cfg_suspend_mode mode,
 			    struct cfg80211_wowlan *wow)
 {
-<<<<<<< HEAD
-=======
 	struct ath6kl_vif *vif;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum ath6kl_state prev_state;
 	int ret;
 
@@ -2980,24 +2445,12 @@ int ath6kl_cfg80211_suspend(struct ath6kl *ar,
 
 	case ATH6KL_CFG_SUSPEND_DEEPSLEEP:
 
-<<<<<<< HEAD
-		ath6kl_cfg80211_stop_all(ar);
-
-		/* save the current power mode before enabling power save */
-		ar->wmi->saved_pwr_mode = ar->wmi->pwr_mode;
-
-		ret = ath6kl_wmi_powermode_cmd(ar->wmi, 0, REC_POWER);
-		if (ret) {
-			ath6kl_warn("wmi powermode command failed during suspend: %d\n",
-				    ret);
-=======
 		ath6kl_dbg(ATH6KL_DBG_SUSPEND, "deep sleep suspend\n");
 
 		ret = ath6kl_cfg80211_deepsleep_suspend(ar);
 		if (ret) {
 			ath6kl_err("deepsleep suspend failed: %d\n", ret);
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ar->state = ATH6KL_STATE_DEEPSLEEP;
@@ -3026,26 +2479,13 @@ int ath6kl_cfg80211_suspend(struct ath6kl *ar,
 
 		break;
 
-<<<<<<< HEAD
-	case ATH6KL_CFG_SUSPEND_SCHED_SCAN:
-		/*
-		 * Nothing needed for schedule scan, firmware is already in
-		 * wow mode and sleeping most of the time.
-		 */
-		break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	list_for_each_entry(vif, &ar->vif_list, list)
 		ath6kl_cfg80211_scan_complete_event(vif, true);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(ath6kl_cfg80211_suspend);
@@ -3067,19 +2507,6 @@ int ath6kl_cfg80211_resume(struct ath6kl *ar)
 		break;
 
 	case ATH6KL_STATE_DEEPSLEEP:
-<<<<<<< HEAD
-		if (ar->wmi->pwr_mode != ar->wmi->saved_pwr_mode) {
-			ret = ath6kl_wmi_powermode_cmd(ar->wmi, 0,
-						       ar->wmi->saved_pwr_mode);
-			if (ret) {
-				ath6kl_warn("wmi powermode command failed during resume: %d\n",
-					    ret);
-			}
-		}
-
-		ar->state = ATH6KL_STATE_ON;
-
-=======
 		ath6kl_dbg(ATH6KL_DBG_SUSPEND, "deep sleep resume\n");
 
 		ret = ath6kl_cfg80211_deepsleep_resume(ar);
@@ -3087,7 +2514,6 @@ int ath6kl_cfg80211_resume(struct ath6kl *ar)
 			ath6kl_warn("deep sleep resume failed: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ATH6KL_STATE_CUTPOWER:
@@ -3100,12 +2526,6 @@ int ath6kl_cfg80211_resume(struct ath6kl *ar)
 		}
 		break;
 
-<<<<<<< HEAD
-	case ATH6KL_STATE_SCHED_SCAN:
-		break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -3122,21 +2542,14 @@ static int __ath6kl_cfg80211_suspend(struct wiphy *wiphy,
 {
 	struct ath6kl *ar = wiphy_priv(wiphy);
 
-<<<<<<< HEAD
-=======
 	ath6kl_recovery_suspend(ar);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ath6kl_hif_suspend(ar, wow);
 }
 
 static int __ath6kl_cfg80211_resume(struct wiphy *wiphy)
 {
 	struct ath6kl *ar = wiphy_priv(wiphy);
-<<<<<<< HEAD
-
-	return ath6kl_hif_resume(ar);
-=======
 	int err;
 
 	err = ath6kl_hif_resume(ar);
@@ -3146,7 +2559,6 @@ static int __ath6kl_cfg80211_resume(struct wiphy *wiphy)
 	ath6kl_recovery_resume(ar);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3181,33 +2593,6 @@ void ath6kl_check_wow_status(struct ath6kl *ar)
 }
 #endif
 
-<<<<<<< HEAD
-static int ath6kl_set_channel(struct wiphy *wiphy, struct net_device *dev,
-			      struct ieee80211_channel *chan,
-			      enum nl80211_channel_type channel_type)
-{
-	struct ath6kl_vif *vif;
-
-	/*
-	 * 'dev' could be NULL if a channel change is required for the hardware
-	 * device itself, instead of a particular VIF.
-	 *
-	 * FIXME: To be handled properly when monitor mode is supported.
-	 */
-	if (!dev)
-		return -EBUSY;
-
-	vif = netdev_priv(dev);
-
-	if (!ath6kl_cfg80211_ready(vif))
-		return -EIO;
-
-	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: center_freq=%u hw_value=%u\n",
-		   __func__, chan->center_freq, chan->hw_value);
-	vif->next_chan = chan->center_freq;
-
-	return 0;
-=======
 static int ath6kl_set_htcap(struct ath6kl_vif *vif, enum nl80211_band band,
 			    bool ht_enable)
 {
@@ -3245,7 +2630,6 @@ static int ath6kl_restore_htcap(struct ath6kl_vif *vif)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool ath6kl_is_p2p_ie(const u8 *pos)
@@ -3322,8 +2706,6 @@ static int ath6kl_set_ies(struct ath6kl_vif *vif,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ath6kl_get_rsn_capab(struct cfg80211_beacon_data *beacon,
 				u8 *rsn_capab)
 {
@@ -3376,7 +2758,6 @@ static int ath6kl_get_rsn_capab(struct cfg80211_beacon_data *beacon,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 			   struct cfg80211_ap_settings *info)
 {
@@ -3385,18 +2766,11 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	struct ieee80211_mgmt *mgmt;
 	bool hidden = false;
 	u8 *ies;
-<<<<<<< HEAD
-	int ies_len;
-	struct wmi_connect_cmd p;
-	int res;
-	int i, ret;
-=======
 	struct wmi_connect_cmd p;
 	int res;
 	int i, ret;
 	u16 rsn_capab = 0;
 	int inactivity_timeout = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s:\n", __func__);
 
@@ -3410,12 +2784,6 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 
 	ar->ap_mode_bkey.valid = false;
 
-<<<<<<< HEAD
-	/* TODO:
-	 * info->interval
-	 * info->dtim_period
-	 */
-=======
 	ret = ath6kl_wmi_ap_set_beacon_intvl_cmd(ar->wmi, vif->fw_vif_idx,
 						 info->beacon_interval);
 
@@ -3428,7 +2796,6 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	/* ignore error, just print a warning and continue normally */
 	if (ret)
 		ath6kl_warn("Failed to set dtim_period in beacon: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->beacon.head == NULL)
 		return -EINVAL;
@@ -3436,10 +2803,6 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	ies = mgmt->u.beacon.variable;
 	if (ies > info->beacon.head + info->beacon.head_len)
 		return -EINVAL;
-<<<<<<< HEAD
-	ies_len = info->beacon.head + info->beacon.head_len - ies;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->ssid == NULL)
 		return -EINVAL;
@@ -3498,14 +2861,9 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	if (p.prwise_crypto_type == 0) {
 		p.prwise_crypto_type = NONE_CRYPT;
 		ath6kl_set_cipher(vif, 0, true);
-<<<<<<< HEAD
-	} else if (info->crypto.n_ciphers_pairwise == 1)
-		ath6kl_set_cipher(vif, info->crypto.ciphers_pairwise[0], true);
-=======
 	} else if (info->crypto.n_ciphers_pairwise == 1) {
 		ath6kl_set_cipher(vif, info->crypto.ciphers_pairwise[0], true);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (info->crypto.cipher_group) {
 	case WLAN_CIPHER_SUITE_WEP40:
@@ -3533,11 +2891,7 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	p.ssid_len = vif->ssid_len;
 	memcpy(p.ssid, vif->ssid, vif->ssid_len);
 	p.dot11_auth_mode = vif->dot11_auth_mode;
-<<<<<<< HEAD
-	p.ch = cpu_to_le16(vif->next_chan);
-=======
 	p.ch = cpu_to_le16(info->chandef.chan->center_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable uAPSD support by default */
 	res = ath6kl_wmi_ap_set_apsd(ar->wmi, vif->fw_vif_idx, true);
@@ -3554,8 +2908,6 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 		p.nw_subtype = SUBTYPE_NONE;
 	}
 
-<<<<<<< HEAD
-=======
 	if (info->inactivity_timeout) {
 		inactivity_timeout = info->inactivity_timeout;
 
@@ -3594,7 +2946,6 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 	}
 
 	memcpy(&vif->profile, &p, sizeof(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = ath6kl_wmi_ap_profile_commit(ar->wmi, vif->fw_vif_idx, &p);
 	if (res < 0)
 		return res;
@@ -3603,11 +2954,7 @@ static int ath6kl_start_ap(struct wiphy *wiphy, struct net_device *dev,
 }
 
 static int ath6kl_change_beacon(struct wiphy *wiphy, struct net_device *dev,
-<<<<<<< HEAD
-				struct cfg80211_beacon_data *beacon)
-=======
 				struct cfg80211_ap_update *params)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl_vif *vif = netdev_priv(dev);
 
@@ -3617,18 +2964,11 @@ static int ath6kl_change_beacon(struct wiphy *wiphy, struct net_device *dev,
 	if (vif->next_mode != AP_NETWORK)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	return ath6kl_set_ies(vif, beacon);
-}
-
-static int ath6kl_stop_ap(struct wiphy *wiphy, struct net_device *dev)
-=======
 	return ath6kl_set_ies(vif, &params->beacon);
 }
 
 static int ath6kl_stop_ap(struct wiphy *wiphy, struct net_device *dev,
 			  unsigned int link_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_vif *vif = netdev_priv(dev);
@@ -3640,66 +2980,40 @@ static int ath6kl_stop_ap(struct wiphy *wiphy, struct net_device *dev,
 
 	ath6kl_wmi_disconnect_cmd(ar->wmi, vif->fw_vif_idx);
 	clear_bit(CONNECTED, &vif->flags);
-<<<<<<< HEAD
-
-	return 0;
-=======
 	netif_carrier_off(vif->ndev);
 
 	/* Restore ht setting in firmware */
 	return ath6kl_restore_htcap(vif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const u8 bcast_addr[ETH_ALEN] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
 static int ath6kl_del_station(struct wiphy *wiphy, struct net_device *dev,
-<<<<<<< HEAD
-			      u8 *mac)
-{
-	struct ath6kl *ar = ath6kl_priv(dev);
-	struct ath6kl_vif *vif = netdev_priv(dev);
-	const u8 *addr = mac ? mac : bcast_addr;
-=======
 			      struct station_del_parameters *params)
 {
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_vif *vif = netdev_priv(dev);
 	const u8 *addr = params->mac ? params->mac : bcast_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ath6kl_wmi_ap_set_mlme(ar->wmi, vif->fw_vif_idx, WMI_AP_DEAUTH,
 				      addr, WLAN_REASON_PREV_AUTH_NOT_VALID);
 }
 
 static int ath6kl_change_station(struct wiphy *wiphy, struct net_device *dev,
-<<<<<<< HEAD
-				 u8 *mac, struct station_parameters *params)
-{
-	struct ath6kl *ar = ath6kl_priv(dev);
-	struct ath6kl_vif *vif = netdev_priv(dev);
-=======
 				 const u8 *mac,
 				 struct station_parameters *params)
 {
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_vif *vif = netdev_priv(dev);
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vif->nw_type != AP_NETWORK)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	/* Use this only for authorizing/unauthorizing a station */
-	if (!(params->sta_flags_mask & BIT(NL80211_STA_FLAG_AUTHORIZED)))
-		return -EOPNOTSUPP;
-=======
 	err = cfg80211_check_station_change(wiphy, params,
 					    CFG80211_STA_AP_MLME_CLIENT);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_AUTHORIZED))
 		return ath6kl_wmi_ap_set_mlme(ar->wmi, vif->fw_vif_idx,
@@ -3709,16 +3023,6 @@ static int ath6kl_change_station(struct wiphy *wiphy, struct net_device *dev,
 }
 
 static int ath6kl_remain_on_channel(struct wiphy *wiphy,
-<<<<<<< HEAD
-				    struct net_device *dev,
-				    struct ieee80211_channel *chan,
-				    enum nl80211_channel_type channel_type,
-				    unsigned int duration,
-				    u64 *cookie)
-{
-	struct ath6kl *ar = ath6kl_priv(dev);
-	struct ath6kl_vif *vif = netdev_priv(dev);
-=======
 				    struct wireless_dev *wdev,
 				    struct ieee80211_channel *chan,
 				    unsigned int duration,
@@ -3726,7 +3030,6 @@ static int ath6kl_remain_on_channel(struct wiphy *wiphy,
 {
 	struct ath6kl_vif *vif = ath6kl_vif_from_wdev(wdev);
 	struct ath6kl *ar = ath6kl_priv(vif->ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 id;
 
 	/* TODO: if already pending or ongoing remain-on-channel,
@@ -3743,19 +3046,11 @@ static int ath6kl_remain_on_channel(struct wiphy *wiphy,
 }
 
 static int ath6kl_cancel_remain_on_channel(struct wiphy *wiphy,
-<<<<<<< HEAD
-					   struct net_device *dev,
-					   u64 cookie)
-{
-	struct ath6kl *ar = ath6kl_priv(dev);
-	struct ath6kl_vif *vif = netdev_priv(dev);
-=======
 					   struct wireless_dev *wdev,
 					   u64 cookie)
 {
 	struct ath6kl_vif *vif = ath6kl_vif_from_wdev(wdev);
 	struct ath6kl *ar = ath6kl_priv(vif->ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cookie != vif->last_roc_id)
 		return -ENOENT;
@@ -3871,32 +3166,6 @@ static bool ath6kl_mgmt_powersave_ap(struct ath6kl_vif *vif,
 	return false;
 }
 
-<<<<<<< HEAD
-static int ath6kl_mgmt_tx(struct wiphy *wiphy, struct net_device *dev,
-			  struct ieee80211_channel *chan, bool offchan,
-			  enum nl80211_channel_type channel_type,
-			  bool channel_type_valid, unsigned int wait,
-			  const u8 *buf, size_t len, bool no_cck,
-			  bool dont_wait_for_ack, u64 *cookie)
-{
-	struct ath6kl *ar = ath6kl_priv(dev);
-	struct ath6kl_vif *vif = netdev_priv(dev);
-	u32 id;
-	const struct ieee80211_mgmt *mgmt;
-	bool more_data, queued;
-
-	mgmt = (const struct ieee80211_mgmt *) buf;
-	if (buf + len >= mgmt->u.probe_resp.variable &&
-	    vif->nw_type == AP_NETWORK && test_bit(CONNECTED, &vif->flags) &&
-	    ieee80211_is_probe_resp(mgmt->frame_control)) {
-		/*
-		 * Send Probe Response frame in AP mode using a separate WMI
-		 * command to allow the target to fill in the generic IEs.
-		 */
-		*cookie = 0; /* TX status not supported */
-		return ath6kl_send_go_probe_resp(vif, buf, len,
-						 chan->center_freq);
-=======
 /* Check if SSID length is greater than DIRECT- */
 static bool ath6kl_is_p2p_go_ssid(const u8 *buf, size_t len)
 {
@@ -3947,7 +3216,6 @@ static int ath6kl_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 		 */
 		*cookie = 0; /* TX status not supported */
 		return ath6kl_send_go_probe_resp(vif, buf, len, freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	id = vif->send_action_id++;
@@ -3963,42 +3231,12 @@ static int ath6kl_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 
 	/* AP mode Power saving processing */
 	if (vif->nw_type == AP_NETWORK) {
-<<<<<<< HEAD
-		queued = ath6kl_mgmt_powersave_ap(vif,
-					id, chan->center_freq,
-					wait, buf,
-					len, &more_data, no_cck);
-=======
 		queued = ath6kl_mgmt_powersave_ap(vif, id, freq, wait, buf, len,
 						  &more_data, no_cck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (queued)
 			return 0;
 	}
 
-<<<<<<< HEAD
-	return ath6kl_wmi_send_mgmt_cmd(ar->wmi, vif->fw_vif_idx, id,
-					chan->center_freq, wait,
-					buf, len, no_cck);
-}
-
-static void ath6kl_mgmt_frame_register(struct wiphy *wiphy,
-				       struct net_device *dev,
-				       u16 frame_type, bool reg)
-{
-	struct ath6kl_vif *vif = netdev_priv(dev);
-
-	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: frame_type=0x%x reg=%d\n",
-		   __func__, frame_type, reg);
-	if (frame_type == IEEE80211_STYPE_PROBE_REQ) {
-		/*
-		 * Note: This notification callback is not allowed to sleep, so
-		 * we cannot send WMI_PROBE_REQ_REPORT_CMD here. Instead, we
-		 * hardcode target to report Probe Request frames all the time.
-		 */
-		vif->probe_req_report = reg;
-	}
-=======
 	return ath6kl_wmi_send_mgmt_cmd(ar->wmi, vif->fw_vif_idx, id, freq,
 					wait, buf, len, no_cck);
 }
@@ -4025,7 +3263,6 @@ static void ath6kl_update_mgmt_frame_registrations(struct wiphy *wiphy,
 	 */
 	vif->probe_req_report =
 		upd->interface_stypes & BIT(IEEE80211_STYPE_PROBE_REQ >> 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_cfg80211_sscan_start(struct wiphy *wiphy,
@@ -4035,10 +3272,6 @@ static int ath6kl_cfg80211_sscan_start(struct wiphy *wiphy,
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_vif *vif = netdev_priv(dev);
 	u16 interval;
-<<<<<<< HEAD
-	int ret;
-	u8 i;
-=======
 	int ret, rssi_thold;
 	int n_match_sets = request->n_match_sets;
 
@@ -4049,7 +3282,6 @@ static int ath6kl_cfg80211_sscan_start(struct wiphy *wiphy,
 	 */
 	if (n_match_sets == 1 && !request->match_sets[0].ssid.ssid_len)
 		n_match_sets = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ar->state != ATH6KL_STATE_ON)
 		return -EIO;
@@ -4057,38 +3289,6 @@ static int ath6kl_cfg80211_sscan_start(struct wiphy *wiphy,
 	if (vif->sme_state != SME_DISCONNECTED)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	for (i = 0; i < ar->wiphy->max_sched_scan_ssids; i++) {
-		ath6kl_wmi_probedssid_cmd(ar->wmi, vif->fw_vif_idx,
-					  i, DISABLE_SSID_FLAG,
-					  0, NULL);
-	}
-
-	/* fw uses seconds, also make sure that it's >0 */
-	interval = max_t(u16, 1, request->interval / 1000);
-
-	ath6kl_wmi_scanparams_cmd(ar->wmi, vif->fw_vif_idx,
-				  interval, interval,
-				  10, 0, 0, 0, 3, 0, 0, 0);
-
-	if (request->n_ssids && request->ssids[0].ssid_len) {
-		for (i = 0; i < request->n_ssids; i++) {
-			ath6kl_wmi_probedssid_cmd(ar->wmi, vif->fw_vif_idx,
-						  i, SPECIFIC_SSID_FLAG,
-						  request->ssids[i].ssid_len,
-						  request->ssids[i].ssid);
-		}
-	}
-
-	ret = ath6kl_wmi_set_wow_mode_cmd(ar->wmi, vif->fw_vif_idx,
-					  ATH6KL_WOW_MODE_ENABLE,
-					  WOW_FILTER_SSID,
-					  WOW_HOST_REQ_DELAY);
-	if (ret) {
-		ath6kl_warn("Failed to enable wow with ssid filter: %d\n", ret);
-		return ret;
-	}
-=======
 	ath6kl_cfg80211_scan_complete_event(vif, true);
 
 	ret = ath6kl_set_probed_ssids(ar, vif, request->ssids,
@@ -4133,39 +3333,17 @@ static int ath6kl_cfg80211_sscan_start(struct wiphy *wiphy,
 	ath6kl_wmi_scanparams_cmd(ar->wmi, vif->fw_vif_idx,
 				  interval, interval,
 				  vif->bg_scan_period, 0, 0, 0, 3, 0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this also clears IE in fw if it's not set */
 	ret = ath6kl_wmi_set_appie_cmd(ar->wmi, vif->fw_vif_idx,
 				       WMI_FRAME_PROBE_REQ,
 				       request->ie, request->ie_len);
 	if (ret) {
-<<<<<<< HEAD
-		ath6kl_warn("Failed to set probe request IE for scheduled scan: %d",
-=======
 		ath6kl_warn("Failed to set probe request IE for scheduled scan: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ret = ath6kl_wmi_set_host_sleep_mode_cmd(ar->wmi, vif->fw_vif_idx,
-						 ATH6KL_HOST_MODE_ASLEEP);
-	if (ret) {
-		ath6kl_warn("Failed to enable host sleep mode for sched scan: %d\n",
-			    ret);
-		return ret;
-	}
-
-	ar->state = ATH6KL_STATE_SCHED_SCAN;
-
-	return ret;
-}
-
-static int ath6kl_cfg80211_sscan_stop(struct wiphy *wiphy,
-				      struct net_device *dev)
-=======
 	ret = ath6kl_wmi_enable_sched_scan_cmd(ar->wmi, vif->fw_vif_idx, true);
 	if (ret)
 		return ret;
@@ -4177,7 +3355,6 @@ static int ath6kl_cfg80211_sscan_stop(struct wiphy *wiphy,
 
 static int ath6kl_cfg80211_sscan_stop(struct wiphy *wiphy,
 				      struct net_device *dev, u64 reqid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl_vif *vif = netdev_priv(dev);
 	bool stopped;
@@ -4190,8 +3367,6 @@ static int ath6kl_cfg80211_sscan_stop(struct wiphy *wiphy,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ath6kl_cfg80211_set_bitrate(struct wiphy *wiphy,
 				       struct net_device *dev,
 				       unsigned int link_id,
@@ -4226,7 +3401,6 @@ static int ath6kl_cfg80211_set_txe_config(struct wiphy *wiphy,
 					 rate, pkts, intvl);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ieee80211_txrx_stypes
 ath6kl_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	[NL80211_IFTYPE_STATION] = {
@@ -4281,10 +3455,6 @@ static struct cfg80211_ops ath6kl_cfg80211_ops = {
 	.suspend = __ath6kl_cfg80211_suspend,
 	.resume = __ath6kl_cfg80211_resume,
 #endif
-<<<<<<< HEAD
-	.set_channel = ath6kl_set_channel,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start_ap = ath6kl_start_ap,
 	.change_beacon = ath6kl_change_beacon,
 	.stop_ap = ath6kl_stop_ap,
@@ -4293,11 +3463,6 @@ static struct cfg80211_ops ath6kl_cfg80211_ops = {
 	.remain_on_channel = ath6kl_remain_on_channel,
 	.cancel_remain_on_channel = ath6kl_cancel_remain_on_channel,
 	.mgmt_tx = ath6kl_mgmt_tx,
-<<<<<<< HEAD
-	.mgmt_frame_register = ath6kl_mgmt_frame_register,
-	.sched_scan_start = ath6kl_cfg80211_sscan_start,
-	.sched_scan_stop = ath6kl_cfg80211_sscan_stop,
-=======
 	.update_mgmt_frame_registrations =
 		ath6kl_update_mgmt_frame_registrations,
 	.get_antenna = ath6kl_get_antenna,
@@ -4305,7 +3470,6 @@ static struct cfg80211_ops ath6kl_cfg80211_ops = {
 	.sched_scan_stop = ath6kl_cfg80211_sscan_stop,
 	.set_bitrate_mask = ath6kl_cfg80211_set_bitrate,
 	.set_cqm_txe_config = ath6kl_cfg80211_set_txe_config,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void ath6kl_cfg80211_stop(struct ath6kl_vif *vif)
@@ -4322,14 +3486,6 @@ void ath6kl_cfg80211_stop(struct ath6kl_vif *vif)
 					GFP_KERNEL);
 		break;
 	case SME_CONNECTED:
-<<<<<<< HEAD
-		cfg80211_disconnected(vif->ndev, 0, NULL, 0, GFP_KERNEL);
-		break;
-	}
-
-	if (test_bit(CONNECTED, &vif->flags) ||
-	    test_bit(CONNECT_PEND, &vif->flags))
-=======
 		cfg80211_disconnected(vif->ndev, 0, NULL, 0, true, GFP_KERNEL);
 		break;
 	}
@@ -4337,17 +3493,12 @@ void ath6kl_cfg80211_stop(struct ath6kl_vif *vif)
 	if (vif->ar->state != ATH6KL_STATE_RECOVERY &&
 	    (test_bit(CONNECTED, &vif->flags) ||
 	    test_bit(CONNECT_PEND, &vif->flags)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_wmi_disconnect_cmd(vif->ar->wmi, vif->fw_vif_idx);
 
 	vif->sme_state = SME_DISCONNECTED;
 	clear_bit(CONNECTED, &vif->flags);
 	clear_bit(CONNECT_PEND, &vif->flags);
 
-<<<<<<< HEAD
-	/* disable scanning */
-	if (ath6kl_wmi_scanparams_cmd(vif->ar->wmi, vif->fw_vif_idx, 0xFFFF,
-=======
 	/* Stop netdev queues, needed during recovery */
 	netif_stop_queue(vif->ndev);
 	netif_carrier_off(vif->ndev);
@@ -4355,7 +3506,6 @@ void ath6kl_cfg80211_stop(struct ath6kl_vif *vif)
 	/* disable scanning */
 	if (vif->ar->state != ATH6KL_STATE_RECOVERY &&
 	    ath6kl_wmi_scanparams_cmd(vif->ar->wmi, vif->fw_vif_idx, 0xFFFF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      0, 0, 0, 0, 0, 0, 0, 0, 0) != 0)
 		ath6kl_warn("failed to disable scan during stop\n");
 
@@ -4367,21 +3517,12 @@ void ath6kl_cfg80211_stop_all(struct ath6kl *ar)
 	struct ath6kl_vif *vif;
 
 	vif = ath6kl_vif_first(ar);
-<<<<<<< HEAD
-	if (!vif) {
-=======
 	if (!vif && ar->state != ATH6KL_STATE_RECOVERY) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* save the current power mode before enabling power save */
 		ar->wmi->saved_pwr_mode = ar->wmi->pwr_mode;
 
 		if (ath6kl_wmi_powermode_cmd(ar->wmi, 0, REC_POWER) != 0)
-<<<<<<< HEAD
-			ath6kl_warn("ath6kl_deep_sleep_enable: "
-				    "wmi_powermode_cmd failed\n");
-=======
 			ath6kl_warn("ath6kl_deep_sleep_enable: wmi_powermode_cmd failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -4394,8 +3535,6 @@ void ath6kl_cfg80211_stop_all(struct ath6kl *ar)
 		ath6kl_cfg80211_stop(vif);
 }
 
-<<<<<<< HEAD
-=======
 static void ath6kl_cfg80211_reg_notify(struct wiphy *wiphy,
 				       struct regulatory_request *request)
 {
@@ -4440,7 +3579,6 @@ static void ath6kl_cfg80211_reg_notify(struct wiphy *wiphy,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath6kl_cfg80211_vif_init(struct ath6kl_vif *vif)
 {
 	vif->aggr_cntxt = aggr_init(vif);
@@ -4449,15 +3587,8 @@ static int ath6kl_cfg80211_vif_init(struct ath6kl_vif *vif)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	setup_timer(&vif->disconnect_timer, disconnect_timer_handler,
-		    (unsigned long) vif->ndev);
-	setup_timer(&vif->sched_scan_timer, ath6kl_wmi_sscan_timer,
-		    (unsigned long) vif);
-=======
 	timer_setup(&vif->disconnect_timer, disconnect_timer_handler, 0);
 	timer_setup(&vif->sched_scan_timer, ath6kl_wmi_sscan_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(WMM_ENABLED, &vif->flags);
 	spin_lock_init(&vif->if_lock);
@@ -4467,8 +3598,6 @@ static int ath6kl_cfg80211_vif_init(struct ath6kl_vif *vif)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 void ath6kl_cfg80211_vif_stop(struct ath6kl_vif *vif, bool wmi_ready)
 {
 	static u8 bcast_mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -4504,7 +3633,6 @@ void ath6kl_cfg80211_vif_stop(struct ath6kl_vif *vif, bool wmi_ready)
 	ath6kl_cfg80211_sta_bmiss_enhance(vif, false);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath6kl_cfg80211_vif_cleanup(struct ath6kl_vif *vif)
 {
 	struct ath6kl *ar = vif->ar;
@@ -4522,25 +3650,11 @@ void ath6kl_cfg80211_vif_cleanup(struct ath6kl_vif *vif)
 		kfree(mc_filter);
 	}
 
-<<<<<<< HEAD
-	unregister_netdevice(vif->ndev);
-=======
 	cfg80211_unregister_netdevice(vif->ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar->num_vif--;
 }
 
-<<<<<<< HEAD
-struct net_device *ath6kl_interface_add(struct ath6kl *ar, char *name,
-					enum nl80211_iftype type, u8 fw_vif_idx,
-					u8 nw_type)
-{
-	struct net_device *ndev;
-	struct ath6kl_vif *vif;
-
-	ndev = alloc_netdev(sizeof(*vif), name, ether_setup);
-=======
 static const char ath6kl_gstrings_sta_stats[][ETH_GSTRING_LEN] = {
 	/* Common stats names used by many drivers. */
 	"tx_pkts_nic", "tx_bytes_nic", "rx_pkts_nic", "rx_bytes_nic",
@@ -4672,7 +3786,6 @@ struct wireless_dev *ath6kl_interface_add(struct ath6kl *ar, const char *name,
 	u8 addr[ETH_ALEN];
 
 	ndev = alloc_netdev(sizeof(*vif), name, name_assign_type, ether_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ndev)
 		return NULL;
 
@@ -4689,13 +3802,6 @@ struct wireless_dev *ath6kl_interface_add(struct ath6kl *ar, const char *name,
 	vif->next_mode = nw_type;
 	vif->listen_intvl_t = ATH6KL_DEFAULT_LISTEN_INTVAL;
 	vif->bmiss_time_t = ATH6KL_DEFAULT_BMISS_TIME;
-<<<<<<< HEAD
-
-	memcpy(ndev->dev_addr, ar->mac_addr, ETH_ALEN);
-	if (fw_vif_idx != 0)
-		ndev->dev_addr[0] = (ndev->dev_addr[0] ^ (1 << fw_vif_idx)) |
-				     0x2;
-=======
 	vif->bg_scan_period = 0;
 	vif->htcap[NL80211_BAND_2GHZ].ht_enable = true;
 	vif->htcap[NL80211_BAND_5GHZ].ht_enable = true;
@@ -4708,7 +3814,6 @@ struct wireless_dev *ath6kl_interface_add(struct ath6kl *ar, const char *name,
 			addr[4] ^= 0x80;
 	}
 	eth_hw_addr_set(ndev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_netdev(ndev);
 
@@ -4717,23 +3822,15 @@ struct wireless_dev *ath6kl_interface_add(struct ath6kl *ar, const char *name,
 	if (ath6kl_cfg80211_vif_init(vif))
 		goto err;
 
-<<<<<<< HEAD
-	if (register_netdevice(ndev))
-=======
 	netdev_set_default_ethtool_ops(ndev, &ath6kl_ethtool_ops);
 
 	if (cfg80211_register_netdevice(ndev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	ar->avail_idx_map &= ~BIT(fw_vif_idx);
 	vif->sme_state = SME_DISCONNECTED;
 	set_bit(WLAN_ENABLED, &vif->flags);
 	ar->wlan_pwr_state = WLAN_POWER_STATE_ON;
-<<<<<<< HEAD
-	set_bit(NETDEV_REGISTERED, &vif->flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type == NL80211_IFTYPE_ADHOC)
 		ar->ibss_if_active = true;
@@ -4742,11 +3839,7 @@ struct wireless_dev *ath6kl_interface_add(struct ath6kl *ar, const char *name,
 	list_add_tail(&vif->list, &ar->vif_list);
 	spin_unlock_bh(&ar->list_lock);
 
-<<<<<<< HEAD
-	return ndev;
-=======
 	return &vif->wdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err:
 	aggr_module_destroy(vif->aggr_cntxt);
@@ -4754,11 +3847,6 @@ err:
 	return NULL;
 }
 
-<<<<<<< HEAD
-int ath6kl_cfg80211_init(struct ath6kl *ar)
-{
-	struct wiphy *wiphy = ar->wiphy;
-=======
 #ifdef CONFIG_PM
 static const struct wiphy_wowlan_support ath6kl_wowlan_support = {
 	.flags = WIPHY_WOWLAN_MAGIC_PKT |
@@ -4777,7 +3865,6 @@ int ath6kl_cfg80211_init(struct ath6kl *ar)
 {
 	struct wiphy *wiphy = ar->wiphy;
 	bool band_2gig = false, band_5gig = false, ht = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	wiphy->mgmt_stypes = ath6kl_mgmt_stypes;
@@ -4795,13 +3882,6 @@ int ath6kl_cfg80211_init(struct ath6kl *ar)
 					  BIT(NL80211_IFTYPE_P2P_CLIENT);
 	}
 
-<<<<<<< HEAD
-	/* max num of ssids that can be probed during scanning */
-	wiphy->max_scan_ssids = MAX_PROBED_SSID_INDEX;
-	wiphy->max_scan_ie_len = 1000; /* FIX: what is correct limit? */
-	wiphy->bands[IEEE80211_BAND_2GHZ] = &ath6kl_band_2ghz;
-	wiphy->bands[IEEE80211_BAND_5GHZ] = &ath6kl_band_5ghz;
-=======
 	if (IS_ENABLED(CONFIG_ATH6KL_REGDOMAIN) &&
 	    test_bit(ATH6KL_FW_CAPABILITY_REGDOMAIN, ar->fw_capabilities)) {
 		wiphy->reg_notifier = ath6kl_cfg80211_reg_notify;
@@ -4882,58 +3962,33 @@ int ath6kl_cfg80211_init(struct ath6kl *ar)
 	if (band_5gig)
 		wiphy->bands[NL80211_BAND_5GHZ] = &ath6kl_band_5ghz;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
 
 	wiphy->cipher_suites = cipher_suites;
 	wiphy->n_cipher_suites = ARRAY_SIZE(cipher_suites);
 
-<<<<<<< HEAD
-	wiphy->wowlan.flags = WIPHY_WOWLAN_MAGIC_PKT |
-			      WIPHY_WOWLAN_DISCONNECT |
-			      WIPHY_WOWLAN_GTK_REKEY_FAILURE  |
-			      WIPHY_WOWLAN_SUPPORTS_GTK_REKEY |
-			      WIPHY_WOWLAN_EAP_IDENTITY_REQ   |
-			      WIPHY_WOWLAN_4WAY_HANDSHAKE;
-	wiphy->wowlan.n_patterns = WOW_MAX_FILTERS_PER_LIST;
-	wiphy->wowlan.pattern_min_len = 1;
-	wiphy->wowlan.pattern_max_len = WOW_PATTERN_SIZE;
-
-	wiphy->max_sched_scan_ssids = 10;
-=======
 #ifdef CONFIG_PM
 	wiphy->wowlan = &ath6kl_wowlan_support;
 #endif
 
 	wiphy->max_sched_scan_ssids = MAX_PROBED_SSIDS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar->wiphy->flags |= WIPHY_FLAG_SUPPORTS_FW_ROAM |
 			    WIPHY_FLAG_HAVE_AP_SME |
 			    WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
 			    WIPHY_FLAG_AP_PROBE_RESP_OFFLOAD;
 
-<<<<<<< HEAD
-	if (test_bit(ATH6KL_FW_CAPABILITY_SCHED_SCAN, ar->fw_capabilities))
-		ar->wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
-=======
 	if (test_bit(ATH6KL_FW_CAPABILITY_SCHED_SCAN_V2, ar->fw_capabilities))
 		ar->wiphy->max_sched_scan_reqs = 1;
 
 	if (test_bit(ATH6KL_FW_CAPABILITY_INACTIVITY_TIMEOUT,
 		     ar->fw_capabilities))
 		ar->wiphy->features |= NL80211_FEATURE_INACTIVITY_TIMER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar->wiphy->probe_resp_offload =
 		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_WPS |
 		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_WPS2 |
-<<<<<<< HEAD
-		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_P2P |
-		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_80211U;
-=======
 		NL80211_PROBE_RESP_OFFLOAD_SUPPORT_P2P;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = wiphy_register(wiphy);
 	if (ret < 0) {

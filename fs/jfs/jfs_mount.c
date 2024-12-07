@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -55,11 +36,8 @@
 
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
-<<<<<<< HEAD
-=======
 #include <linux/blkdev.h>
 #include <linux/log2.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "jfs_incore.h"
 #include "jfs_filsys.h"
@@ -103,22 +81,14 @@ int jfs_mount(struct super_block *sb)
 	 * (initialize mount inode from the superblock)
 	 */
 	if ((rc = chkSuper(sb))) {
-<<<<<<< HEAD
-		goto errout20;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ipaimap = diReadSpecial(sb, AGGREGATE_I, 0);
 	if (ipaimap == NULL) {
 		jfs_err("jfs_mount: Failed to read AGGREGATE_I");
 		rc = -EIO;
-<<<<<<< HEAD
-		goto errout20;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sbi->ipaimap = ipaimap;
 
@@ -129,11 +99,7 @@ int jfs_mount(struct super_block *sb)
 	 */
 	if ((rc = diMount(ipaimap))) {
 		jfs_err("jfs_mount: diMount(ipaimap) failed w/rc = %d", rc);
-<<<<<<< HEAD
-		goto errout21;
-=======
 		goto err_ipaimap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -142,11 +108,7 @@ int jfs_mount(struct super_block *sb)
 	ipbmap = diReadSpecial(sb, BMAP_I, 0);
 	if (ipbmap == NULL) {
 		rc = -EIO;
-<<<<<<< HEAD
-		goto errout22;
-=======
 		goto err_umount_ipaimap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	jfs_info("jfs_mount: ipbmap:0x%p", ipbmap);
@@ -158,11 +120,7 @@ int jfs_mount(struct super_block *sb)
 	 */
 	if ((rc = dbMount(ipbmap))) {
 		jfs_err("jfs_mount: dbMount failed w/rc = %d", rc);
-<<<<<<< HEAD
-		goto errout22;
-=======
 		goto err_ipbmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -181,11 +139,7 @@ int jfs_mount(struct super_block *sb)
 		if (!ipaimap2) {
 			jfs_err("jfs_mount: Failed to read AGGREGATE_I");
 			rc = -EIO;
-<<<<<<< HEAD
-			goto errout35;
-=======
 			goto err_umount_ipbmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		sbi->ipaimap2 = ipaimap2;
 
@@ -197,11 +151,7 @@ int jfs_mount(struct super_block *sb)
 		if ((rc = diMount(ipaimap2))) {
 			jfs_err("jfs_mount: diMount(ipaimap2) failed, rc = %d",
 				rc);
-<<<<<<< HEAD
-			goto errout35;
-=======
 			goto err_ipaimap2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		/* Secondary aggregate inode table is not valid */
@@ -218,22 +168,6 @@ int jfs_mount(struct super_block *sb)
 		jfs_err("jfs_mount: Failed to read FILESYSTEM_I");
 		/* open fileset secondary inode allocation map */
 		rc = -EIO;
-<<<<<<< HEAD
-		goto errout40;
-	}
-	jfs_info("jfs_mount: ipimap:0x%p", ipimap);
-
-	/* map further access of per fileset inodes by the fileset inode */
-	sbi->ipimap = ipimap;
-
-	/* initialize fileset inode allocation map */
-	if ((rc = diMount(ipimap))) {
-		jfs_err("jfs_mount: diMount failed w/rc = %d", rc);
-		goto errout41;
-	}
-
-	goto out;
-=======
 		goto err_umount_ipaimap2;
 	}
 	jfs_info("jfs_mount: ipimap:0x%p", ipimap);
@@ -248,40 +182,10 @@ int jfs_mount(struct super_block *sb)
 	sbi->ipimap = ipimap;
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	unwind on error
 	 */
-<<<<<<< HEAD
-      errout41:		/* close fileset inode allocation map inode */
-	diFreeSpecial(ipimap);
-
-      errout40:		/* fileset closed */
-
-	/* close secondary aggregate inode allocation map */
-	if (ipaimap2) {
-		diUnmount(ipaimap2, 1);
-		diFreeSpecial(ipaimap2);
-	}
-
-      errout35:
-
-	/* close aggregate block allocation map */
-	dbUnmount(ipbmap, 1);
-	diFreeSpecial(ipbmap);
-
-      errout22:		/* close aggregate inode allocation map */
-
-	diUnmount(ipaimap, 1);
-
-      errout21:		/* close aggregate inodes */
-	diFreeSpecial(ipaimap);
-      errout20:		/* aggregate closed */
-
-      out:
-
-=======
 err_ipimap:
 	/* close fileset inode allocation map inode */
 	diFreeSpecial(ipimap);
@@ -302,7 +206,6 @@ err_umount_ipaimap:	/* close aggregate inode allocation map */
 err_ipaimap:		/* close aggregate inodes */
 	diFreeSpecial(ipaimap);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		jfs_err("Mount JFS Failure: %d", rc);
 
@@ -331,13 +234,6 @@ int jfs_mount_rw(struct super_block *sb, int remount)
 
 		truncate_inode_pages(sbi->ipimap->i_mapping, 0);
 		truncate_inode_pages(sbi->ipbmap->i_mapping, 0);
-<<<<<<< HEAD
-		diUnmount(sbi->ipimap, 1);
-		if ((rc = diMount(sbi->ipimap))) {
-			jfs_err("jfs_mount_rw: diMount failed!");
-			return rc;
-		}
-=======
 
 		IWRITE_LOCK(sbi->ipimap, RDWRLOCK_IMAP);
 		diUnmount(sbi->ipimap, 1);
@@ -347,7 +243,6 @@ int jfs_mount_rw(struct super_block *sb, int remount)
 			return rc;
 		}
 		IWRITE_UNLOCK(sbi->ipimap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dbUnmount(sbi->ipbmap, 1);
 		if ((rc = dbMount(sbi->ipbmap))) {
@@ -416,21 +311,11 @@ static int chkSuper(struct super_block *sb)
 	}
 
 	bsize = le32_to_cpu(j_sb->s_bsize);
-<<<<<<< HEAD
-#ifdef _JFS_4K
-	if (bsize != PSIZE) {
-		jfs_err("Currently only 4K block size supported!");
-		rc = -EINVAL;
-		goto out;
-	}
-#endif				/* _JFS_4K */
-=======
 	if (bsize != PSIZE) {
 		jfs_err("Only 4K block size supported!");
 		rc = -EINVAL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jfs_info("superblock: flag:0x%08x state:0x%08x size:0x%Lx",
 		 le32_to_cpu(j_sb->s_flag), le32_to_cpu(j_sb->s_state),
@@ -461,11 +346,7 @@ static int chkSuper(struct super_block *sb)
 
 	/* validate fs state */
 	if (j_sb->s_state != cpu_to_le32(FM_CLEAN) &&
-<<<<<<< HEAD
-	    !(sb->s_flags & MS_RDONLY)) {
-=======
 	    !sb_rdonly(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jfs_err("jfs_mount: Mount Failure: File System Dirty.");
 		rc = -EINVAL;
 		goto out;
@@ -481,8 +362,6 @@ static int chkSuper(struct super_block *sb)
 	sbi->bsize = bsize;
 	sbi->l2bsize = le16_to_cpu(j_sb->s_l2bsize);
 
-<<<<<<< HEAD
-=======
 	/* check some fields for possible corruption */
 	if (sbi->l2bsize != ilog2((u32)bsize) ||
 	    j_sb->pad != 0 ||
@@ -492,7 +371,6 @@ static int chkSuper(struct super_block *sb)
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For now, ignore s_pbsize, l2bfactor.  All I/O going through buffer
 	 * cache.
@@ -504,13 +382,8 @@ static int chkSuper(struct super_block *sb)
 		sbi->logpxd = j_sb->s_logpxd;
 	else {
 		sbi->logdev = new_decode_dev(le32_to_cpu(j_sb->s_logdev));
-<<<<<<< HEAD
-		memcpy(sbi->uuid, j_sb->s_uuid, sizeof(sbi->uuid));
-		memcpy(sbi->loguuid, j_sb->s_loguuid, sizeof(sbi->uuid));
-=======
 		uuid_copy(&sbi->uuid, &j_sb->s_uuid);
 		uuid_copy(&sbi->loguuid, &j_sb->s_loguuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sbi->fsckpxd = j_sb->s_fsckpxd;
 	sbi->ait2 = j_sb->s_ait2;
@@ -557,12 +430,8 @@ int updateSuper(struct super_block *sb, uint state)
 
 	if (state == FM_MOUNT) {
 		/* record log's dev_t and mount serial number */
-<<<<<<< HEAD
-		j_sb->s_logdev = cpu_to_le32(new_encode_dev(sbi->log->bdev->bd_dev));
-=======
 		j_sb->s_logdev = cpu_to_le32(
 			new_encode_dev(file_bdev(sbi->log->bdev_file)->bd_dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j_sb->s_logserial = cpu_to_le32(sbi->log->serial);
 	} else if (state == FM_CLEAN) {
 		/*

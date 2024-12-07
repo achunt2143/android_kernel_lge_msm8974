@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __DIR_DOT_H__
@@ -23,28 +13,6 @@
 struct inode;
 struct gfs2_inode;
 struct gfs2_inum;
-<<<<<<< HEAD
-
-extern struct inode *gfs2_dir_search(struct inode *dir,
-				     const struct qstr *filename);
-extern int gfs2_dir_check(struct inode *dir, const struct qstr *filename,
-			  const struct gfs2_inode *ip);
-extern int gfs2_dir_add(struct inode *inode, const struct qstr *filename,
-			const struct gfs2_inode *ip);
-extern int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry);
-extern int gfs2_dir_read(struct inode *inode, u64 *offset, void *opaque,
-			 filldir_t filldir, struct file_ra_state *f_ra);
-extern int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
-			  const struct gfs2_inode *nip, unsigned int new_type);
-
-extern int gfs2_dir_exhash_dealloc(struct gfs2_inode *dip);
-
-extern int gfs2_diradd_alloc_required(struct inode *dir,
-				      const struct qstr *filename);
-extern int gfs2_dir_get_new_buffer(struct gfs2_inode *ip, u64 block,
-				   struct buffer_head **bhp);
-extern void gfs2_dir_hash_inval(struct gfs2_inode *ip);
-=======
 struct buffer_head;
 struct gfs2_dirent;
 
@@ -81,7 +49,6 @@ int gfs2_diradd_alloc_required(struct inode *dir,
 int gfs2_dir_get_new_buffer(struct gfs2_inode *ip, u64 block,
 			    struct buffer_head **bhp);
 void gfs2_dir_hash_inval(struct gfs2_inode *ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 gfs2_disk_hash(const char *data, int len)
 {

@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -20,11 +10,8 @@
 #include <linux/blkdev.h>
 #include <linux/gfs2_ondisk.h>
 #include <linux/crc32.h>
-<<<<<<< HEAD
-=======
 #include <linux/iomap.h>
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -34,18 +21,12 @@
 #include "meta_io.h"
 #include "quota.h"
 #include "rgrp.h"
-<<<<<<< HEAD
-=======
 #include "log.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "super.h"
 #include "trans.h"
 #include "dir.h"
 #include "util.h"
-<<<<<<< HEAD
-=======
 #include "aops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "trace_gfs2.h"
 
 /* This doesn't need to be that large as max 64 bit pointers in a 4k
@@ -55,71 +36,6 @@
 struct metapath {
 	struct buffer_head *mp_bh[GFS2_MAX_META_HEIGHT];
 	__u16 mp_list[GFS2_MAX_META_HEIGHT];
-<<<<<<< HEAD
-};
-
-struct strip_mine {
-	int sm_first;
-	unsigned int sm_height;
-};
-
-/**
- * gfs2_unstuffer_page - unstuff a stuffed inode into a block cached by a page
- * @ip: the inode
- * @dibh: the dinode buffer
- * @block: the block number that was allocated
- * @page: The (optional) page. This is looked up if @page is NULL
- *
- * Returns: errno
- */
-
-static int gfs2_unstuffer_page(struct gfs2_inode *ip, struct buffer_head *dibh,
-			       u64 block, struct page *page)
-{
-	struct inode *inode = &ip->i_inode;
-	struct buffer_head *bh;
-	int release = 0;
-
-	if (!page || page->index) {
-		page = find_or_create_page(inode->i_mapping, 0, GFP_NOFS);
-		if (!page)
-			return -ENOMEM;
-		release = 1;
-	}
-
-	if (!PageUptodate(page)) {
-		void *kaddr = kmap(page);
-		u64 dsize = i_size_read(inode);
- 
-		if (dsize > (dibh->b_size - sizeof(struct gfs2_dinode)))
-			dsize = dibh->b_size - sizeof(struct gfs2_dinode);
-
-		memcpy(kaddr, dibh->b_data + sizeof(struct gfs2_dinode), dsize);
-		memset(kaddr + dsize, 0, PAGE_CACHE_SIZE - dsize);
-		kunmap(page);
-
-		SetPageUptodate(page);
-	}
-
-	if (!page_has_buffers(page))
-		create_empty_buffers(page, 1 << inode->i_blkbits,
-				     (1 << BH_Uptodate));
-
-	bh = page_buffers(page);
-
-	if (!buffer_mapped(bh))
-		map_bh(bh, inode->i_sb, block);
-
-	set_buffer_uptodate(bh);
-	if (!gfs2_is_jdata(ip))
-		mark_buffer_dirty(bh);
-	if (!gfs2_is_writeback(ip))
-		gfs2_trans_add_bh(ip->i_gl, bh, 0);
-
-	if (release) {
-		unlock_page(page);
-		page_cache_release(page);
-=======
 	int mp_fheight; /* find_metapath height */
 	int mp_aheight; /* actual height (lookup height) */
 };
@@ -166,28 +82,12 @@ static int gfs2_unstuffer_folio(struct gfs2_inode *ip, struct buffer_head *dibh,
 	} else {
 		folio_mark_dirty(folio);
 		gfs2_ordered_add_inode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * gfs2_unstuff_dinode - Unstuff a dinode when the data has grown too big
- * @ip: The GFS2 inode to unstuff
- * @page: The (optional) page. This is looked up if the @page is NULL
- *
- * This routine unstuffs a dinode and returns it to a "normal" state such
- * that the height can be grown in the traditional way.
- *
- * Returns: errno
- */
-
-int gfs2_unstuff_dinode(struct gfs2_inode *ip, struct page *page)
-=======
 static int __gfs2_unstuff_inode(struct gfs2_inode *ip, struct folio *folio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct buffer_head *bh, *dibh;
 	struct gfs2_dinode *di;
@@ -195,36 +95,20 @@ static int __gfs2_unstuff_inode(struct gfs2_inode *ip, struct folio *folio)
 	int isdir = gfs2_is_dir(ip);
 	int error;
 
-<<<<<<< HEAD
-	down_write(&ip->i_rw_mutex);
-
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (error)
-		goto out;
-=======
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i_size_read(&ip->i_inode)) {
 		/* Get a free block, fill it with the stuffed data,
 		   and write it out to disk */
 
 		unsigned int n = 1;
-<<<<<<< HEAD
-		error = gfs2_alloc_blocks(ip, &block, &n, 0, NULL);
-		if (error)
-			goto out_brelse;
-		if (isdir) {
-			gfs2_trans_add_unrevoke(GFS2_SB(&ip->i_inode), block, 1);
-=======
 		error = gfs2_alloc_blocks(ip, &block, &n, 0);
 		if (error)
 			goto out_brelse;
 		if (isdir) {
 			gfs2_trans_remove_revoke(GFS2_SB(&ip->i_inode), block, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = gfs2_dir_get_new_buffer(ip, block, &bh);
 			if (error)
 				goto out_brelse;
@@ -232,11 +116,7 @@ static int __gfs2_unstuff_inode(struct gfs2_inode *ip, struct folio *folio)
 					      dibh, sizeof(struct gfs2_dinode));
 			brelse(bh);
 		} else {
-<<<<<<< HEAD
-			error = gfs2_unstuffer_page(ip, dibh, block, page);
-=======
 			error = gfs2_unstuffer_folio(ip, dibh, block, folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error)
 				goto out_brelse;
 		}
@@ -244,11 +124,7 @@ static int __gfs2_unstuff_inode(struct gfs2_inode *ip, struct folio *folio)
 
 	/*  Set up the pointer to the new block  */
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	di = (struct gfs2_dinode *)dibh->b_data;
 	gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode));
 
@@ -263,8 +139,6 @@ static int __gfs2_unstuff_inode(struct gfs2_inode *ip, struct folio *folio)
 
 out_brelse:
 	brelse(dibh);
-<<<<<<< HEAD
-=======
 	return error;
 }
 
@@ -292,26 +166,16 @@ int gfs2_unstuff_dinode(struct gfs2_inode *ip)
 	error = __gfs2_unstuff_inode(ip, folio);
 	folio_unlock(folio);
 	folio_put(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	up_write(&ip->i_rw_mutex);
 	return error;
 }
 
-<<<<<<< HEAD
-
-/**
- * find_metapath - Find path through the metadata tree
- * @sdp: The superblock
- * @mp: The metapath to return the result in
- * @block: The disk block to look up
-=======
 /**
  * find_metapath - Find path through the metadata tree
  * @sdp: The superblock
  * @block: The disk block to look up
  * @mp: The metapath to return the result in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @height: The pre-calculated height of the metadata tree
  *
  *   This routine returns a struct metapath structure that defines a path
@@ -322,12 +186,7 @@ out:
  *   filesystem with a blocksize of 4096.
  *
  *   find_metapath() would return a struct metapath structure set to:
-<<<<<<< HEAD
- *   mp_offset = 101342453, mp_height = 3, mp_list[0] = 0, mp_list[1] = 48,
- *   and mp_list[2] = 165.
-=======
  *   mp_fheight = 3, mp_list[0] = 0, mp_list[1] = 48, and mp_list[2] = 165.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   That means that in order to get to the block containing the byte at
  *   offset 101342453, we would load the indirect block pointed to by pointer
@@ -376,15 +235,9 @@ static void find_metapath(const struct gfs2_sbd *sdp, u64 block,
 {
 	unsigned int i;
 
-<<<<<<< HEAD
-	for (i = height; i--;)
-		mp->mp_list[i] = do_div(block, sdp->sd_inptrs);
-
-=======
 	mp->mp_fheight = height;
 	for (i = height; i--;)
 		mp->mp_list[i] = do_div(block, sdp->sd_inptrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int metapath_branch_start(const struct metapath *mp)
@@ -395,8 +248,6 @@ static inline unsigned int metapath_branch_start(const struct metapath *mp)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * metaptr1 - Return the first possible metadata pointer in a metapath buffer
  * @height: The metadata height (0 = dinode)
  * @mp: The metapath
@@ -410,7 +261,6 @@ static inline __be64 *metaptr1(unsigned int height, const struct metapath *mp)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * metapointer - Return pointer to start of metadata in a buffer
  * @height: The metadata height (0 = dinode)
  * @mp: The metapath
@@ -422,22 +272,6 @@ static inline __be64 *metaptr1(unsigned int height, const struct metapath *mp)
 
 static inline __be64 *metapointer(unsigned int height, const struct metapath *mp)
 {
-<<<<<<< HEAD
-	struct buffer_head *bh = mp->mp_bh[height];
-	unsigned int head_size = (height > 0) ?
-		sizeof(struct gfs2_meta_header) : sizeof(struct gfs2_dinode);
-	return ((__be64 *)(bh->b_data + head_size)) + mp->mp_list[height];
-}
-
-static void gfs2_metapath_ra(struct gfs2_glock *gl,
-			     const struct buffer_head *bh, const __be64 *pos)
-{
-	struct buffer_head *rabh;
-	const __be64 *endp = (const __be64 *)(bh->b_data + bh->b_size);
-	const __be64 *t;
-
-	for (t = pos; t < endp; t++) {
-=======
 	__be64 *p = metaptr1(height, mp);
 	return p + mp->mp_list[height];
 }
@@ -464,7 +298,6 @@ static void gfs2_metapath_ra(struct gfs2_glock *gl, __be64 *start, __be64 *end)
 	for (t = start; t < end; t++) {
 		struct buffer_head *rabh;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*t)
 			continue;
 
@@ -472,12 +305,8 @@ static void gfs2_metapath_ra(struct gfs2_glock *gl, __be64 *start, __be64 *end)
 		if (trylock_buffer(rabh)) {
 			if (!buffer_uptodate(rabh)) {
 				rabh->b_end_io = end_buffer_read_sync;
-<<<<<<< HEAD
-				submit_bh(READA | REQ_META, rabh);
-=======
 				submit_bh(REQ_OP_READ | REQ_RAHEAD | REQ_META |
 					  REQ_PRIO, rabh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			unlock_buffer(rabh);
@@ -486,8 +315,6 @@ static void gfs2_metapath_ra(struct gfs2_glock *gl, __be64 *start, __be64 *end)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static inline struct buffer_head *
 metapath_dibh(struct metapath *mp)
 {
@@ -512,7 +339,6 @@ static int __fillup_metapath(struct gfs2_inode *ip, struct metapath *mp,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lookup_metapath - Walk the metadata tree to a specific point
  * @ip: The inode
@@ -527,38 +353,11 @@ static int __fillup_metapath(struct gfs2_inode *ip, struct metapath *mp,
  * at which it found the unallocated block. Blocks which are found are
  * added to the mp->mp_bh[] list.
  *
-<<<<<<< HEAD
- * Returns: error or height of metadata tree
-=======
  * Returns: error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static int lookup_metapath(struct gfs2_inode *ip, struct metapath *mp)
 {
-<<<<<<< HEAD
-	unsigned int end_of_metadata = ip->i_height - 1;
-	unsigned int x;
-	__be64 *ptr;
-	u64 dblock;
-	int ret;
-
-	for (x = 0; x < end_of_metadata; x++) {
-		ptr = metapointer(x, mp);
-		dblock = be64_to_cpu(*ptr);
-		if (!dblock)
-			return x + 1;
-
-		ret = gfs2_meta_indirect_buffer(ip, x+1, dblock, 0, &mp->mp_bh[x+1]);
-		if (ret)
-			return ret;
-	}
-
-	return ip->i_height;
-}
-
-static inline void release_metapath(struct metapath *mp)
-=======
 	return __fillup_metapath(ip, mp, 0, ip->i_height - 1);
 }
 
@@ -605,7 +404,6 @@ static sector_t metapath_to_block(struct gfs2_sbd *sdp, struct metapath *mp)
 }
 
 static void release_metapath(struct metapath *mp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -613,33 +411,12 @@ static void release_metapath(struct metapath *mp)
 		if (mp->mp_bh[i] == NULL)
 			break;
 		brelse(mp->mp_bh[i]);
-<<<<<<< HEAD
-=======
 		mp->mp_bh[i] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
  * gfs2_extent_length - Returns length of an extent of blocks
-<<<<<<< HEAD
- * @start: Start of the buffer
- * @len: Length of the buffer in bytes
- * @ptr: Current position in the buffer
- * @limit: Max extent length to return (0 = unlimited)
- * @eob: Set to 1 if we hit "end of block"
- *
- * If the first block is zero (unallocated) it will return the number of
- * unallocated blocks in the extent, otherwise it will return the number
- * of contiguous blocks in the extent.
- *
- * Returns: The length of the extent (minimum of one block)
- */
-
-static inline unsigned int gfs2_extent_length(void *start, unsigned int len, __be64 *ptr, unsigned limit, int *eob)
-{
-	const __be64 *end = (start + len);
-=======
  * @bh: The metadata block
  * @ptr: Current position in @bh
  * @eob: Set to 1 if we hit "end of block"
@@ -650,7 +427,6 @@ static inline unsigned int gfs2_extent_length(void *start, unsigned int len, __b
 static inline unsigned int gfs2_extent_length(struct buffer_head *bh, __be64 *ptr, int *eob)
 {
 	const __be64 *end = (__be64 *)(bh->b_data + bh->b_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const __be64 *first = ptr;
 	u64 d = be64_to_cpu(*ptr);
 
@@ -659,37 +435,6 @@ static inline unsigned int gfs2_extent_length(struct buffer_head *bh, __be64 *pt
 		ptr++;
 		if (ptr >= end)
 			break;
-<<<<<<< HEAD
-		if (limit && --limit == 0)
-			break;
-		if (d)
-			d++;
-	} while(be64_to_cpu(*ptr) == d);
-	if (ptr >= end)
-		*eob = 1;
-	return (ptr - first);
-}
-
-static inline void bmap_lock(struct gfs2_inode *ip, int create)
-{
-	if (create)
-		down_write(&ip->i_rw_mutex);
-	else
-		down_read(&ip->i_rw_mutex);
-}
-
-static inline void bmap_unlock(struct gfs2_inode *ip, int create)
-{
-	if (create)
-		up_write(&ip->i_rw_mutex);
-	else
-		up_read(&ip->i_rw_mutex);
-}
-
-static inline __be64 *gfs2_indirect_init(struct metapath *mp,
-					 struct gfs2_glock *gl, unsigned int i,
-					 unsigned offset, u64 bn)
-=======
 		d++;
 	} while(be64_to_cpu(*ptr) == d);
 	if (ptr >= end)
@@ -863,7 +608,6 @@ out:
 static inline void gfs2_indirect_init(struct metapath *mp,
 				      struct gfs2_glock *gl, unsigned int i,
 				      unsigned offset, u64 bn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be64 *ptr = (__be64 *)(mp->mp_bh[i - 1]->b_data +
 		       ((i > 1) ? sizeof(struct gfs2_meta_header) :
@@ -871,19 +615,11 @@ static inline void gfs2_indirect_init(struct metapath *mp,
 	BUG_ON(i < 1);
 	BUG_ON(mp->mp_bh[i] != NULL);
 	mp->mp_bh[i] = gfs2_meta_new(gl, bn);
-<<<<<<< HEAD
-	gfs2_trans_add_bh(gl, mp->mp_bh[i], 1);
-=======
 	gfs2_trans_add_meta(gl, mp->mp_bh[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_metatype_set(mp->mp_bh[i], GFS2_METATYPE_IN, GFS2_FORMAT_IN);
 	gfs2_buffer_clear_tail(mp->mp_bh[i], sizeof(struct gfs2_meta_header));
 	ptr += offset;
 	*ptr = cpu_to_be64(bn);
-<<<<<<< HEAD
-	return ptr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum alloc_state {
@@ -894,34 +630,16 @@ enum alloc_state {
 };
 
 /**
-<<<<<<< HEAD
- * gfs2_bmap_alloc - Build a metadata tree of the requested height
- * @inode: The GFS2 inode
- * @lblock: The logical starting block of the extent
- * @bh_map: This is used to return the mapping details
- * @mp: The metapath
- * @sheight: The starting height (i.e. whats already mapped)
- * @height: The height to build to
- * @maxlen: The max number of data blocks to alloc
-=======
  * __gfs2_iomap_alloc - Build a metadata tree of the requested height
  * @inode: The GFS2 inode
  * @iomap: The iomap structure
  * @mp: The metapath, with proper height information calculated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * In this routine we may have to alloc:
  *   i) Indirect blocks to grow the metadata tree height
  *  ii) Indirect blocks to fill in lower part of the metadata tree
  * iii) Data blocks
  *
-<<<<<<< HEAD
- * The function is in two parts. The first part works out the total
- * number of blocks which we need. The second part does the actual
- * allocation asking for an extent at a time (if enough contiguous free
- * blocks are available, there will only be one request per bmap call)
- * and uses the state machine to initialise the blocks in order.
-=======
  * This function is called after __gfs2_iomap_get, which works out the
  * total number of blocks which we need via gfs2_alloc_size.
  *
@@ -936,30 +654,10 @@ enum alloc_state {
  * allocations, we would probably still want to limit the iomap size we
  * return to avoid stalling other tasks during huge writes; the next
  * iomap iteration would then find the blocks already allocated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno on error
  */
 
-<<<<<<< HEAD
-static int gfs2_bmap_alloc(struct inode *inode, const sector_t lblock,
-			   struct buffer_head *bh_map, struct metapath *mp,
-			   const unsigned int sheight,
-			   const unsigned int height,
-			   const unsigned int maxlen)
-{
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	struct super_block *sb = sdp->sd_vfs;
-	struct buffer_head *dibh = mp->mp_bh[0];
-	u64 bn, dblock = 0;
-	unsigned n, i, blks, alloced = 0, iblks = 0, branch_start = 0;
-	unsigned dblks = 0;
-	unsigned ptrs_per_blk;
-	const unsigned end_of_metadata = height - 1;
-	int ret;
-	int eob = 0;
-=======
 static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 			      struct metapath *mp)
 {
@@ -971,34 +669,10 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 	size_t dblks = iomap->length >> inode->i_blkbits;
 	const unsigned end_of_metadata = mp->mp_fheight - 1;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum alloc_state state;
 	__be64 *ptr;
 	__be64 zero_bn = 0;
 
-<<<<<<< HEAD
-	BUG_ON(sheight < 1);
-	BUG_ON(dibh == NULL);
-
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-
-	if (height == sheight) {
-		struct buffer_head *bh;
-		/* Bottom indirect block exists, find unalloced extent size */
-		ptr = metapointer(end_of_metadata, mp);
-		bh = mp->mp_bh[end_of_metadata];
-		dblks = gfs2_extent_length(bh->b_data, bh->b_size, ptr, maxlen,
-					   &eob);
-		BUG_ON(dblks < 1);
-		state = ALLOC_DATA;
-	} else {
-		/* Need to allocate indirect blocks */
-		ptrs_per_blk = height > 1 ? sdp->sd_inptrs : sdp->sd_diptrs;
-		dblks = min(maxlen, ptrs_per_blk - mp->mp_list[end_of_metadata]);
-		if (height == ip->i_height) {
-			/* Writing into existing tree, extend tree down */
-			iblks = height - sheight;
-=======
 	BUG_ON(mp->mp_aheight < 1);
 	BUG_ON(dibh == NULL);
 	BUG_ON(dblks < 1);
@@ -1015,38 +689,19 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 		if (mp->mp_fheight == ip->i_height) {
 			/* Writing into existing tree, extend tree down */
 			iblks = mp->mp_fheight - mp->mp_aheight;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			state = ALLOC_GROW_DEPTH;
 		} else {
 			/* Building up tree height */
 			state = ALLOC_GROW_HEIGHT;
-<<<<<<< HEAD
-			iblks = height - ip->i_height;
-			branch_start = metapath_branch_start(mp);
-			iblks += (height - branch_start);
-=======
 			iblks = mp->mp_fheight - ip->i_height;
 			branch_start = metapath_branch_start(mp);
 			iblks += (mp->mp_fheight - branch_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* start of the second part of the function (state machine) */
 
 	blks = dblks + iblks;
-<<<<<<< HEAD
-	i = sheight;
-	do {
-		int error;
-		n = blks - alloced;
-		error = gfs2_alloc_blocks(ip, &bn, &n, 0, NULL);
-		if (error)
-			return error;
-		alloced += n;
-		if (state != ALLOC_DATA || gfs2_is_jdata(ip))
-			gfs2_trans_add_unrevoke(sdp, bn, n);
-=======
 	i = mp->mp_aheight;
 	do {
 		n = blks - alloced;
@@ -1056,7 +711,6 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 		alloced += n;
 		if (state != ALLOC_DATA || gfs2_is_jdata(ip))
 			gfs2_trans_remove_revoke(sdp, bn, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (state) {
 		/* Growing height of tree */
 		case ALLOC_GROW_HEIGHT:
@@ -1065,16 +719,10 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 						 sizeof(struct gfs2_dinode));
 				zero_bn = *ptr;
 			}
-<<<<<<< HEAD
-			for (; i - 1 < height - ip->i_height && n > 0; i++, n--)
-				gfs2_indirect_init(mp, ip->i_gl, i, 0, bn++);
-			if (i - 1 == height - ip->i_height) {
-=======
 			for (; i - 1 < mp->mp_fheight - ip->i_height && n > 0;
 			     i++, n--)
 				gfs2_indirect_init(mp, ip->i_gl, i, 0, bn++);
 			if (i - 1 == mp->mp_fheight - ip->i_height) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				i--;
 				gfs2_buffer_copy_tail(mp->mp_bh[i],
 						sizeof(struct gfs2_meta_header),
@@ -1086,11 +734,7 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 					sizeof(struct gfs2_meta_header));
 				*ptr = zero_bn;
 				state = ALLOC_GROW_DEPTH;
-<<<<<<< HEAD
-				for(i = branch_start; i < height; i++) {
-=======
 				for(i = branch_start; i < mp->mp_fheight; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (mp->mp_bh[i] == NULL)
 						break;
 					brelse(mp->mp_bh[i]);
@@ -1100,53 +744,6 @@ static int __gfs2_iomap_alloc(struct inode *inode, struct iomap *iomap,
 			}
 			if (n == 0)
 				break;
-<<<<<<< HEAD
-		/* Branching from existing tree */
-		case ALLOC_GROW_DEPTH:
-			if (i > 1 && i < height)
-				gfs2_trans_add_bh(ip->i_gl, mp->mp_bh[i-1], 1);
-			for (; i < height && n > 0; i++, n--)
-				gfs2_indirect_init(mp, ip->i_gl, i,
-						   mp->mp_list[i-1], bn++);
-			if (i == height)
-				state = ALLOC_DATA;
-			if (n == 0)
-				break;
-		/* Tree complete, adding data blocks */
-		case ALLOC_DATA:
-			BUG_ON(n > dblks);
-			BUG_ON(mp->mp_bh[end_of_metadata] == NULL);
-			gfs2_trans_add_bh(ip->i_gl, mp->mp_bh[end_of_metadata], 1);
-			dblks = n;
-			ptr = metapointer(end_of_metadata, mp);
-			dblock = bn;
-			while (n-- > 0)
-				*ptr++ = cpu_to_be64(bn++);
-			if (buffer_zeronew(bh_map)) {
-				ret = sb_issue_zeroout(sb, dblock, dblks,
-						       GFP_NOFS);
-				if (ret) {
-					fs_err(sdp,
-					       "Failed to zero data buffers\n");
-					clear_buffer_zeronew(bh_map);
-				}
-			}
-			break;
-		}
-	} while ((state != ALLOC_DATA) || !dblock);
-
-	ip->i_height = height;
-	gfs2_add_inode_blocks(&ip->i_inode, alloced);
-	gfs2_dinode_out(ip, mp->mp_bh[0]->b_data);
-	map_bh(bh_map, inode->i_sb, dblock);
-	bh_map->b_size = dblks << inode->i_blkbits;
-	set_buffer_new(bh_map);
-	return 0;
-}
-
-/**
- * gfs2_block_map - Map a block from an inode to a disk block
-=======
 			fallthrough;	/* To branching from existing tree */
 		case ALLOC_GROW_DEPTH:
 			if (i > 1 && i < mp->mp_fheight)
@@ -1594,17 +1191,11 @@ const struct iomap_ops gfs2_iomap_ops = {
 
 /**
  * gfs2_block_map - Map one or more blocks of an inode to a disk block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inode: The inode
  * @lblock: The logical block number
  * @bh_map: The bh to be mapped
  * @create: True if its ok to alloc blocks to satify the request
  *
-<<<<<<< HEAD
- * Sets buffer_mapped() if successful, sets buffer_boundary() if a
- * read of metadata will be required before the next block can be
- * mapped. Sets buffer_new() if new blocks were allocated.
-=======
  * The size of the requested mapping is defined in bh_map->b_size.
  *
  * Clears buffer_mapped(bh_map) and leaves bh_map->b_size unchanged
@@ -1615,7 +1206,6 @@ const struct iomap_ops gfs2_iomap_ops = {
  * Sets buffer_boundary() if a read of metadata will be required
  * before the next block can be mapped. Sets buffer_new() if new
  * blocks were allocated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
@@ -1624,413 +1214,15 @@ int gfs2_block_map(struct inode *inode, sector_t lblock,
 		   struct buffer_head *bh_map, int create)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
-<<<<<<< HEAD
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	unsigned int bsize = sdp->sd_sb.sb_bsize;
-	const unsigned int maxlen = bh_map->b_size >> inode->i_blkbits;
-	const u64 *arr = sdp->sd_heightsize;
-	__be64 *ptr;
-	u64 size;
-	struct metapath mp;
-	int ret;
-	int eob;
-	unsigned int len;
-	struct buffer_head *bh;
-	u8 height;
-
-	BUG_ON(maxlen == 0);
-
-	memset(mp.mp_bh, 0, sizeof(mp.mp_bh));
-	bmap_lock(ip, create);
-=======
 	loff_t pos = (loff_t)lblock << inode->i_blkbits;
 	loff_t length = bh_map->b_size;
 	struct iomap iomap = { };
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_buffer_mapped(bh_map);
 	clear_buffer_new(bh_map);
 	clear_buffer_boundary(bh_map);
 	trace_gfs2_bmap(ip, bh_map, lblock, create, 1);
-<<<<<<< HEAD
-	if (gfs2_is_dir(ip)) {
-		bsize = sdp->sd_jbsize;
-		arr = sdp->sd_jheightsize;
-	}
-
-	ret = gfs2_meta_inode_buffer(ip, &mp.mp_bh[0]);
-	if (ret)
-		goto out;
-
-	height = ip->i_height;
-	size = (lblock + 1) * bsize;
-	while (size > arr[height])
-		height++;
-	find_metapath(sdp, lblock, &mp, height);
-	ret = 1;
-	if (height > ip->i_height || gfs2_is_stuffed(ip))
-		goto do_alloc;
-	ret = lookup_metapath(ip, &mp);
-	if (ret < 0)
-		goto out;
-	if (ret != ip->i_height)
-		goto do_alloc;
-	ptr = metapointer(ip->i_height - 1, &mp);
-	if (*ptr == 0)
-		goto do_alloc;
-	map_bh(bh_map, inode->i_sb, be64_to_cpu(*ptr));
-	bh = mp.mp_bh[ip->i_height - 1];
-	len = gfs2_extent_length(bh->b_data, bh->b_size, ptr, maxlen, &eob);
-	bh_map->b_size = (len << inode->i_blkbits);
-	if (eob)
-		set_buffer_boundary(bh_map);
-	ret = 0;
-out:
-	release_metapath(&mp);
-	trace_gfs2_bmap(ip, bh_map, lblock, create, ret);
-	bmap_unlock(ip, create);
-	return ret;
-
-do_alloc:
-	/* All allocations are done here, firstly check create flag */
-	if (!create) {
-		BUG_ON(gfs2_is_stuffed(ip));
-		ret = 0;
-		goto out;
-	}
-
-	/* At this point ret is the tree depth of already allocated blocks */
-	ret = gfs2_bmap_alloc(inode, lblock, bh_map, &mp, ret, height, maxlen);
-	goto out;
-}
-
-/*
- * Deprecated: do not use in new code
- */
-int gfs2_extent_map(struct inode *inode, u64 lblock, int *new, u64 *dblock, unsigned *extlen)
-{
-	struct buffer_head bh = { .b_state = 0, .b_blocknr = 0 };
-	int ret;
-	int create = *new;
-
-	BUG_ON(!extlen);
-	BUG_ON(!dblock);
-	BUG_ON(!new);
-
-	bh.b_size = 1 << (inode->i_blkbits + (create ? 0 : 5));
-	ret = gfs2_block_map(inode, lblock, &bh, create);
-	*extlen = bh.b_size >> inode->i_blkbits;
-	*dblock = bh.b_blocknr;
-	if (buffer_new(&bh))
-		*new = 1;
-	else
-		*new = 0;
-	return ret;
-}
-
-/**
- * do_strip - Look for a layer a particular layer of the file and strip it off
- * @ip: the inode
- * @dibh: the dinode buffer
- * @bh: A buffer of pointers
- * @top: The first pointer in the buffer
- * @bottom: One more than the last pointer
- * @height: the height this buffer is at
- * @data: a pointer to a struct strip_mine
- *
- * Returns: errno
- */
-
-static int do_strip(struct gfs2_inode *ip, struct buffer_head *dibh,
-		    struct buffer_head *bh, __be64 *top, __be64 *bottom,
-		    unsigned int height, struct strip_mine *sm)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct gfs2_rgrp_list rlist;
-	u64 bn, bstart;
-	u32 blen, btotal;
-	__be64 *p;
-	unsigned int rg_blocks = 0;
-	int metadata;
-	unsigned int revokes = 0;
-	int x;
-	int error;
-
-	error = gfs2_rindex_update(sdp);
-	if (error)
-		return error;
-
-	if (!*top)
-		sm->sm_first = 0;
-
-	if (height != sm->sm_height)
-		return 0;
-
-	if (sm->sm_first) {
-		top++;
-		sm->sm_first = 0;
-	}
-
-	metadata = (height != ip->i_height - 1);
-	if (metadata)
-		revokes = (height) ? sdp->sd_inptrs : sdp->sd_diptrs;
-	else if (ip->i_depth)
-		revokes = sdp->sd_inptrs;
-
-	memset(&rlist, 0, sizeof(struct gfs2_rgrp_list));
-	bstart = 0;
-	blen = 0;
-
-	for (p = top; p < bottom; p++) {
-		if (!*p)
-			continue;
-
-		bn = be64_to_cpu(*p);
-
-		if (bstart + blen == bn)
-			blen++;
-		else {
-			if (bstart)
-				gfs2_rlist_add(ip, &rlist, bstart);
-
-			bstart = bn;
-			blen = 1;
-		}
-	}
-
-	if (bstart)
-		gfs2_rlist_add(ip, &rlist, bstart);
-	else
-		goto out; /* Nothing to do */
-
-	gfs2_rlist_alloc(&rlist, LM_ST_EXCLUSIVE);
-
-	for (x = 0; x < rlist.rl_rgrps; x++) {
-		struct gfs2_rgrpd *rgd;
-		rgd = rlist.rl_ghs[x].gh_gl->gl_object;
-		rg_blocks += rgd->rd_length;
-	}
-
-	error = gfs2_glock_nq_m(rlist.rl_rgrps, rlist.rl_ghs);
-	if (error)
-		goto out_rlist;
-
-	error = gfs2_trans_begin(sdp, rg_blocks + RES_DINODE +
-				 RES_INDIRECT + RES_STATFS + RES_QUOTA,
-				 revokes);
-	if (error)
-		goto out_rg_gunlock;
-
-	down_write(&ip->i_rw_mutex);
-
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-
-	bstart = 0;
-	blen = 0;
-	btotal = 0;
-
-	for (p = top; p < bottom; p++) {
-		if (!*p)
-			continue;
-
-		bn = be64_to_cpu(*p);
-
-		if (bstart + blen == bn)
-			blen++;
-		else {
-			if (bstart) {
-				__gfs2_free_blocks(ip, bstart, blen, metadata);
-				btotal += blen;
-			}
-
-			bstart = bn;
-			blen = 1;
-		}
-
-		*p = 0;
-		gfs2_add_inode_blocks(&ip->i_inode, -1);
-	}
-	if (bstart) {
-		__gfs2_free_blocks(ip, bstart, blen, metadata);
-		btotal += blen;
-	}
-
-	gfs2_statfs_change(sdp, 0, +btotal, 0);
-	gfs2_quota_change(ip, -(s64)btotal, ip->i_inode.i_uid,
-			  ip->i_inode.i_gid);
-
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-
-	gfs2_dinode_out(ip, dibh->b_data);
-
-	up_write(&ip->i_rw_mutex);
-
-	gfs2_trans_end(sdp);
-
-out_rg_gunlock:
-	gfs2_glock_dq_m(rlist.rl_rgrps, rlist.rl_ghs);
-out_rlist:
-	gfs2_rlist_free(&rlist);
-out:
-	return error;
-}
-
-/**
- * recursive_scan - recursively scan through the end of a file
- * @ip: the inode
- * @dibh: the dinode buffer
- * @mp: the path through the metadata to the point to start
- * @height: the height the recursion is at
- * @block: the indirect block to look at
- * @first: 1 if this is the first block
- * @sm: data opaque to this function to pass to @bc
- *
- * When this is first called @height and @block should be zero and
- * @first should be 1.
- *
- * Returns: errno
- */
-
-static int recursive_scan(struct gfs2_inode *ip, struct buffer_head *dibh,
-			  struct metapath *mp, unsigned int height,
-			  u64 block, int first, struct strip_mine *sm)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct buffer_head *bh = NULL;
-	__be64 *top, *bottom;
-	u64 bn;
-	int error;
-	int mh_size = sizeof(struct gfs2_meta_header);
-
-	if (!height) {
-		error = gfs2_meta_inode_buffer(ip, &bh);
-		if (error)
-			return error;
-		dibh = bh;
-
-		top = (__be64 *)(bh->b_data + sizeof(struct gfs2_dinode)) + mp->mp_list[0];
-		bottom = (__be64 *)(bh->b_data + sizeof(struct gfs2_dinode)) + sdp->sd_diptrs;
-	} else {
-		error = gfs2_meta_indirect_buffer(ip, height, block, 0, &bh);
-		if (error)
-			return error;
-
-		top = (__be64 *)(bh->b_data + mh_size) +
-				  (first ? mp->mp_list[height] : 0);
-
-		bottom = (__be64 *)(bh->b_data + mh_size) + sdp->sd_inptrs;
-	}
-
-	error = do_strip(ip, dibh, bh, top, bottom, height, sm);
-	if (error)
-		goto out;
-
-	if (height < ip->i_height - 1) {
-
-		gfs2_metapath_ra(ip->i_gl, bh, top);
-
-		for (; top < bottom; top++, first = 0) {
-			if (!*top)
-				continue;
-
-			bn = be64_to_cpu(*top);
-
-			error = recursive_scan(ip, dibh, mp, height + 1, bn,
-					       first, sm);
-			if (error)
-				break;
-		}
-	}
-out:
-	brelse(bh);
-	return error;
-}
-
-
-/**
- * gfs2_block_truncate_page - Deal with zeroing out data for truncate
- *
- * This is partly borrowed from ext3.
- */
-static int gfs2_block_truncate_page(struct address_space *mapping, loff_t from)
-{
-	struct inode *inode = mapping->host;
-	struct gfs2_inode *ip = GFS2_I(inode);
-	unsigned long index = from >> PAGE_CACHE_SHIFT;
-	unsigned offset = from & (PAGE_CACHE_SIZE-1);
-	unsigned blocksize, iblock, length, pos;
-	struct buffer_head *bh;
-	struct page *page;
-	int err;
-
-	page = find_or_create_page(mapping, index, GFP_NOFS);
-	if (!page)
-		return 0;
-
-	blocksize = inode->i_sb->s_blocksize;
-	length = blocksize - (offset & (blocksize - 1));
-	iblock = index << (PAGE_CACHE_SHIFT - inode->i_sb->s_blocksize_bits);
-
-	if (!page_has_buffers(page))
-		create_empty_buffers(page, blocksize, 0);
-
-	/* Find the buffer that contains "offset" */
-	bh = page_buffers(page);
-	pos = blocksize;
-	while (offset >= pos) {
-		bh = bh->b_this_page;
-		iblock++;
-		pos += blocksize;
-	}
-
-	err = 0;
-
-	if (!buffer_mapped(bh)) {
-		gfs2_block_map(inode, iblock, bh, 0);
-		/* unmapped? It's a hole - nothing to do */
-		if (!buffer_mapped(bh))
-			goto unlock;
-	}
-
-	/* Ok, it's mapped. Make sure it's up-to-date */
-	if (PageUptodate(page))
-		set_buffer_uptodate(bh);
-
-	if (!buffer_uptodate(bh)) {
-		err = -EIO;
-		ll_rw_block(READ, 1, &bh);
-		wait_on_buffer(bh);
-		/* Uhhuh. Read error. Complain and punt. */
-		if (!buffer_uptodate(bh))
-			goto unlock;
-		err = 0;
-	}
-
-	if (!gfs2_is_writeback(ip))
-		gfs2_trans_add_bh(ip->i_gl, bh, 0);
-
-	zero_user(page, offset, length);
-	mark_buffer_dirty(bh);
-unlock:
-	unlock_page(page);
-	page_cache_release(page);
-	return err;
-}
-
-static int trunc_start(struct inode *inode, u64 oldsize, u64 newsize)
-{
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	struct address_space *mapping = inode->i_mapping;
-	struct buffer_head *dibh;
-	int journaled = gfs2_is_jdata(ip);
-	int error;
-
-	error = gfs2_trans_begin(sdp,
-				 RES_DINODE + (journaled ? RES_JDATA : 0), 0);
-=======
 
 	if (!create)
 		ret = gfs2_iomap_get(inode, pos, length, &iomap);
@@ -2182,7 +1374,6 @@ static int trunc_start(struct inode *inode, u64 newsize)
 		error = gfs2_trans_begin(sdp, RES_DINODE + RES_JDATA, GFS2_JTRUNC_REVOKES);
 	else
 		error = gfs2_trans_begin(sdp, RES_DINODE, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -2190,69 +1381,6 @@ static int trunc_start(struct inode *inode, u64 newsize)
 	if (error)
 		goto out;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-
-	if (gfs2_is_stuffed(ip)) {
-		gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode) + newsize);
-	} else {
-		if (newsize & (u64)(sdp->sd_sb.sb_bsize - 1)) {
-			error = gfs2_block_truncate_page(mapping, newsize);
-			if (error)
-				goto out_brelse;
-		}
-		ip->i_diskflags |= GFS2_DIF_TRUNC_IN_PROG;
-	}
-
-	i_size_write(inode, newsize);
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-	gfs2_dinode_out(ip, dibh->b_data);
-
-	truncate_pagecache(inode, oldsize, newsize);
-out_brelse:
-	brelse(dibh);
-out:
-	gfs2_trans_end(sdp);
-	return error;
-}
-
-static int trunc_dealloc(struct gfs2_inode *ip, u64 size)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	unsigned int height = ip->i_height;
-	u64 lblock;
-	struct metapath mp;
-	int error;
-
-	if (!size)
-		lblock = 0;
-	else
-		lblock = (size - 1) >> sdp->sd_sb.sb_bsize_shift;
-
-	find_metapath(sdp, lblock, &mp, ip->i_height);
-	if (!gfs2_qadata_get(ip))
-		return -ENOMEM;
-
-	error = gfs2_quota_hold(ip, NO_QUOTA_CHANGE, NO_QUOTA_CHANGE);
-	if (error)
-		goto out;
-
-	while (height--) {
-		struct strip_mine sm;
-		sm.sm_first = !!size;
-		sm.sm_height = height;
-
-		error = recursive_scan(ip, NULL, &mp, 0, 0, 1, &sm);
-		if (error)
-			break;
-	}
-
-	gfs2_quota_unhold(ip);
-
-out:
-	gfs2_qadata_put(ip);
-	return error;
-=======
 	gfs2_trans_add_meta(ip->i_gl, dibh);
 
 	if (gfs2_is_stuffed(ip))
@@ -2844,7 +1972,6 @@ out:
 out_metapath:
 	release_metapath(&mp);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int trunc_end(struct gfs2_inode *ip)
@@ -2867,20 +1994,12 @@ static int trunc_end(struct gfs2_inode *ip)
 		ip->i_height = 0;
 		ip->i_goal = ip->i_no_addr;
 		gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode));
-<<<<<<< HEAD
-	}
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-	ip->i_diskflags &= ~GFS2_DIF_TRUNC_IN_PROG;
-
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 		gfs2_ordered_del_inode(ip);
 	}
 	inode_set_mtime_to_ts(&ip->i_inode, inode_set_ctime_current(&ip->i_inode));
 	ip->i_diskflags &= ~GFS2_DIF_TRUNC_IN_PROG;
 
 	gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_dinode_out(ip, dibh->b_data);
 	brelse(dibh);
 
@@ -2893,10 +2012,6 @@ out:
 /**
  * do_shrink - make a file smaller
  * @inode: the inode
-<<<<<<< HEAD
- * @oldsize: the current inode size
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @newsize: the size to make the file
  *
  * Called with an exclusive lock on @inode. The @size must
@@ -2905,48 +2020,24 @@ out:
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int do_shrink(struct inode *inode, u64 oldsize, u64 newsize)
-=======
 static int do_shrink(struct inode *inode, u64 newsize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
 	int error;
 
-<<<<<<< HEAD
-	error = trunc_start(inode, oldsize, newsize);
-=======
 	error = trunc_start(inode, newsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 	if (gfs2_is_stuffed(ip))
 		return 0;
 
-<<<<<<< HEAD
-	error = trunc_dealloc(ip, newsize);
-=======
 	error = punch_hole(ip, newsize, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error == 0)
 		error = trunc_end(ip);
 
 	return error;
 }
 
-<<<<<<< HEAD
-void gfs2_trim_blocks(struct inode *inode)
-{
-	u64 size = inode->i_size;
-	int ret;
-
-	ret = do_shrink(inode, size, size);
-	WARN_ON(ret != 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * do_grow - Touch and update inode size
  * @inode: The inode
@@ -2971,33 +2062,6 @@ static int do_grow(struct inode *inode, u64 size)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct gfs2_sbd *sdp = GFS2_SB(inode);
-<<<<<<< HEAD
-	struct buffer_head *dibh;
-	struct gfs2_qadata *qa = NULL;
-	int error;
-
-	if (gfs2_is_stuffed(ip) &&
-	    (size > (sdp->sd_sb.sb_bsize - sizeof(struct gfs2_dinode)))) {
-		qa = gfs2_qadata_get(ip);
-		if (qa == NULL)
-			return -ENOMEM;
-
-		error = gfs2_quota_lock_check(ip);
-		if (error)
-			goto do_grow_alloc_put;
-
-		error = gfs2_inplace_reserve(ip, 1);
-		if (error)
-			goto do_grow_qunlock;
-	}
-
-	error = gfs2_trans_begin(sdp, RES_DINODE + RES_STATFS + RES_RG_BIT, 0);
-	if (error)
-		goto do_grow_release;
-
-	if (qa) {
-		error = gfs2_unstuff_dinode(ip, NULL);
-=======
 	struct gfs2_alloc_parms ap = { .target = 1, };
 	struct buffer_head *dibh;
 	int error;
@@ -3024,7 +2088,6 @@ static int do_grow(struct inode *inode, u64 size)
 
 	if (unstuff) {
 		error = gfs2_unstuff_dinode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto do_end_trans;
 	}
@@ -3033,34 +2096,19 @@ static int do_grow(struct inode *inode, u64 size)
 	if (error)
 		goto do_end_trans;
 
-<<<<<<< HEAD
-	i_size_write(inode, size);
-	ip->i_inode.i_mtime = ip->i_inode.i_ctime = CURRENT_TIME;
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 	truncate_setsize(inode, size);
 	inode_set_mtime_to_ts(&ip->i_inode, inode_set_ctime_current(&ip->i_inode));
 	gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_dinode_out(ip, dibh->b_data);
 	brelse(dibh);
 
 do_end_trans:
 	gfs2_trans_end(sdp);
 do_grow_release:
-<<<<<<< HEAD
-	if (qa) {
-		gfs2_inplace_release(ip);
-do_grow_qunlock:
-		gfs2_quota_unlock(ip);
-do_grow_alloc_put:
-		gfs2_qadata_put(ip);
-=======
 	if (unstuff) {
 		gfs2_inplace_release(ip);
 do_grow_qunlock:
 		gfs2_quota_unlock(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return error;
 }
@@ -3071,11 +2119,7 @@ do_grow_qunlock:
  * @newsize: the size to make the file
  *
  * The file size can grow, shrink, or stay the same size. This
-<<<<<<< HEAD
- * is called holding i_mutex and an exclusive glock on the inode
-=======
  * is called holding i_rwsem and an exclusive glock on the inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in question.
  *
  * Returns: errno
@@ -3083,13 +2127,8 @@ do_grow_qunlock:
 
 int gfs2_setattr_size(struct inode *inode, u64 newsize)
 {
-<<<<<<< HEAD
-	int ret;
-	u64 oldsize;
-=======
 	struct gfs2_inode *ip = GFS2_I(inode);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!S_ISREG(inode->i_mode));
 
@@ -3099,13 +2138,6 @@ int gfs2_setattr_size(struct inode *inode, u64 newsize)
 
 	inode_dio_wait(inode);
 
-<<<<<<< HEAD
-	oldsize = inode->i_size;
-	if (newsize >= oldsize)
-		return do_grow(inode, newsize);
-
-	return do_shrink(inode, oldsize, newsize);
-=======
 	ret = gfs2_qa_get(ip);
 	if (ret)
 		goto out;
@@ -3120,17 +2152,12 @@ out:
 	gfs2_rs_delete(ip);
 	gfs2_qa_put(ip);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int gfs2_truncatei_resume(struct gfs2_inode *ip)
 {
 	int error;
-<<<<<<< HEAD
-	error = trunc_dealloc(ip, i_size_read(&ip->i_inode));
-=======
 	error = punch_hole(ip, i_size_read(&ip->i_inode), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!error)
 		error = trunc_end(ip);
 	return error;
@@ -3138,9 +2165,6 @@ int gfs2_truncatei_resume(struct gfs2_inode *ip)
 
 int gfs2_file_dealloc(struct gfs2_inode *ip)
 {
-<<<<<<< HEAD
-	return trunc_dealloc(ip, 0);
-=======
 	return punch_hole(ip, 0, 0);
 }
 
@@ -3260,7 +2284,6 @@ fail:
 		bh.b_state, (unsigned long long)bh.b_size);
 	gfs2_free_journal_extents(jd);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3285,12 +2308,7 @@ int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
 		return 0;
 
 	if (gfs2_is_stuffed(ip)) {
-<<<<<<< HEAD
-		if (offset + len >
-		    sdp->sd_sb.sb_bsize - sizeof(struct gfs2_dinode))
-=======
 		if (offset + len > gfs2_max_stuffed_size(ip))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		return 0;
 	}
@@ -3300,11 +2318,7 @@ int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
 	end_of_file = (i_size_read(&ip->i_inode) + sdp->sd_sb.sb_bsize - 1) >> shift;
 	lblock = offset >> shift;
 	lblock_stop = (offset + len + sdp->sd_sb.sb_bsize - 1) >> shift;
-<<<<<<< HEAD
-	if (lblock_stop > end_of_file)
-=======
 	if (lblock_stop > end_of_file && ip != GFS2_I(sdp->sd_rindex))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	size = (lblock_stop - lblock) << shift;
@@ -3321,8 +2335,6 @@ int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int stuffed_zero_range(struct inode *inode, loff_t offset, loff_t length)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
@@ -3473,4 +2485,3 @@ static int gfs2_map_blocks(struct iomap_writepage_ctx *wpc, struct inode *inode,
 const struct iomap_writeback_ops gfs2_writeback_ops = {
 	.map_blocks		= gfs2_map_blocks,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

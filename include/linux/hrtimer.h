@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- *  include/linux/hrtimer.h
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  hrtimers - High-resolution kernel timers
  *
  *   Copyright(C) 2005, Thomas Gleixner <tglx@linutronix.de>
@@ -14,46 +8,10 @@
  *  data type definitions, declarations, prototypes
  *
  *  Started by: Thomas Gleixner and Ingo Molnar
-<<<<<<< HEAD
- *
- *  For licencing details see kernel-base/COPYING
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_HRTIMER_H
 #define _LINUX_HRTIMER_H
 
-<<<<<<< HEAD
-#include <linux/rbtree.h>
-#include <linux/ktime.h>
-#include <linux/init.h>
-#include <linux/list.h>
-#include <linux/wait.h>
-#include <linux/percpu.h>
-#include <linux/timer.h>
-#include <linux/timerqueue.h>
-
-struct hrtimer_clock_base;
-struct hrtimer_cpu_base;
-
-/*
- * Mode arguments of xxx_hrtimer functions:
- */
-enum hrtimer_mode {
-	HRTIMER_MODE_ABS = 0x0,		/* Time value is absolute */
-	HRTIMER_MODE_REL = 0x1,		/* Time value is relative to now */
-	HRTIMER_MODE_PINNED = 0x02,	/* Timer is bound to CPU */
-	HRTIMER_MODE_ABS_PINNED = 0x02,
-	HRTIMER_MODE_REL_PINNED = 0x03,
-};
-
-/*
- * Return values for the callback function
- */
-enum hrtimer_restart {
-	HRTIMER_NORESTART,	/* Timer is not restarted */
-	HRTIMER_RESTART,	/* Timer must be restarted */
-=======
 #include <linux/hrtimer_defs.h>
 #include <linux/hrtimer_types.h>
 #include <linux/init.h>
@@ -95,7 +53,6 @@ enum hrtimer_mode {
 
 	HRTIMER_MODE_ABS_PINNED_HARD = HRTIMER_MODE_ABS_PINNED | HRTIMER_MODE_HARD,
 	HRTIMER_MODE_REL_PINNED_HARD = HRTIMER_MODE_REL_PINNED | HRTIMER_MODE_HARD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -105,29 +62,6 @@ enum hrtimer_mode {
  *
  * 0x00		inactive
  * 0x01		enqueued into rbtree
-<<<<<<< HEAD
- * 0x02		callback function running
- * 0x04		timer is migrated to another cpu
- *
- * Special cases:
- * 0x03		callback function running and enqueued
- *		(was requeued on another CPU)
- * 0x05		timer was migrated on CPU hotunplug
- *
- * The "callback function running and enqueued" status is only possible on
- * SMP. It happens for example when a posix timer expired and the callback
- * queued a signal. Between dropping the lock which protects the posix timer
- * and reacquiring the base lock of the hrtimer, another CPU can deliver the
- * signal and rearm the timer. We have to preserve the callback running state,
- * as otherwise the timer could be removed before the softirq code finishes the
- * the handling of the timer.
- *
- * The HRTIMER_STATE_ENQUEUED bit is always or'ed to the current state
- * to preserve the HRTIMER_STATE_CALLBACK in the above scenario. This
- * also affects HRTIMER_STATE_MIGRATE where the preservation is not
- * necessary. HRTIMER_STATE_MIGRATE is cleared after the timer is
- * enqueued on the new cpu.
-=======
  *
  * The callback state is not part of the timer->state because clearing it would
  * mean touching the timer after the callback, this makes it impossible to free
@@ -142,42 +76,11 @@ enum hrtimer_mode {
  * queued a signal. Between dropping the lock which protects the posix timer
  * and reacquiring the base lock of the hrtimer, another CPU can deliver the
  * signal and rearm the timer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * All state transitions are protected by cpu_base->lock.
  */
 #define HRTIMER_STATE_INACTIVE	0x00
 #define HRTIMER_STATE_ENQUEUED	0x01
-<<<<<<< HEAD
-#define HRTIMER_STATE_CALLBACK	0x02
-#define HRTIMER_STATE_MIGRATE	0x04
-
-/**
- * struct hrtimer - the basic hrtimer structure
- * @node:	timerqueue node, which also manages node.expires,
- *		the absolute expiry time in the hrtimers internal
- *		representation. The time is related to the clock on
- *		which the timer is based. Is setup by adding
- *		slack to the _softexpires value. For non range timers
- *		identical to _softexpires.
- * @_softexpires: the absolute earliest expiry time of the hrtimer.
- *		The time which was given as expiry time when the timer
- *		was armed.
- * @function:	timer expiry callback function
- * @base:	pointer to the timer base (per cpu and per clock)
- * @state:	state information (See bit values above)
- *
- * The hrtimer structure must be initialized by hrtimer_init()
- */
-struct hrtimer {
-	struct timerqueue_node		node;
-	ktime_t				_softexpires;
-	enum hrtimer_restart		(*function)(struct hrtimer *);
-	struct hrtimer_clock_base	*base;
-	unsigned long			state;
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct hrtimer_sleeper - simple sleeper structure
@@ -191,71 +94,6 @@ struct hrtimer_sleeper {
 	struct task_struct *task;
 };
 
-<<<<<<< HEAD
-/**
- * struct hrtimer_clock_base - the timer base for a specific clock
- * @cpu_base:		per cpu clock base
- * @index:		clock type index for per_cpu support when moving a
- *			timer to a base on another cpu.
- * @clockid:		clock id for per_cpu support
- * @active:		red black tree root node for the active timers
- * @resolution:		the resolution of the clock, in nanoseconds
- * @get_time:		function to retrieve the current time of the clock
- * @softirq_time:	the time when running the hrtimer queue in the softirq
- * @offset:		offset of this clock to the monotonic base
- */
-struct hrtimer_clock_base {
-	struct hrtimer_cpu_base	*cpu_base;
-	int			index;
-	clockid_t		clockid;
-	struct timerqueue_head	active;
-	ktime_t			resolution;
-	ktime_t			(*get_time)(void);
-	ktime_t			softirq_time;
-	ktime_t			offset;
-};
-
-enum  hrtimer_base_type {
-	HRTIMER_BASE_MONOTONIC,
-	HRTIMER_BASE_REALTIME,
-	HRTIMER_BASE_BOOTTIME,
-	HRTIMER_MAX_CLOCK_BASES,
-};
-
-/*
- * struct hrtimer_cpu_base - the per cpu clock bases
- * @lock:		lock protecting the base and associated clock bases
- *			and timers
- * @active_bases:	Bitfield to mark bases with active timers
- * @clock_was_set:	Indicates that clock was set from irq context.
- * @expires_next:	absolute time of the next event which was scheduled
- *			via clock_set_next_event()
- * @hres_active:	State of high resolution mode
- * @hang_detected:	The last hrtimer interrupt detected a hang
- * @nr_events:		Total number of hrtimer interrupt events
- * @nr_retries:		Total number of hrtimer interrupt retries
- * @nr_hangs:		Total number of hrtimer interrupt hangs
- * @max_hang_time:	Maximum time spent in hrtimer_interrupt
- * @clock_base:		array of clock bases for this cpu
- */
-struct hrtimer_cpu_base {
-	raw_spinlock_t			lock;
-	unsigned int			active_bases;
-	unsigned int			clock_was_set;
-#ifdef CONFIG_HIGH_RES_TIMERS
-	ktime_t				expires_next;
-	int				hres_active;
-	int				hang_detected;
-	unsigned long			nr_events;
-	unsigned long			nr_retries;
-	unsigned long			nr_hangs;
-	ktime_t				max_hang_time;
-#endif
-	struct hrtimer_clock_base	clock_base[HRTIMER_MAX_CLOCK_BASES];
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void hrtimer_set_expires(struct hrtimer *timer, ktime_t time)
 {
 	timer->node.expires = time;
@@ -268,11 +106,7 @@ static inline void hrtimer_set_expires_range(struct hrtimer *timer, ktime_t time
 	timer->node.expires = ktime_add_safe(time, delta);
 }
 
-<<<<<<< HEAD
-static inline void hrtimer_set_expires_range_ns(struct hrtimer *timer, ktime_t time, unsigned long delta)
-=======
 static inline void hrtimer_set_expires_range_ns(struct hrtimer *timer, ktime_t time, u64 delta)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	timer->_softexpires = time;
 	timer->node.expires = ktime_add_safe(time, ns_to_ktime(delta));
@@ -280,13 +114,8 @@ static inline void hrtimer_set_expires_range_ns(struct hrtimer *timer, ktime_t t
 
 static inline void hrtimer_set_expires_tv64(struct hrtimer *timer, s64 tv64)
 {
-<<<<<<< HEAD
-	timer->node.expires.tv64 = tv64;
-	timer->_softexpires.tv64 = tv64;
-=======
 	timer->node.expires = tv64;
 	timer->_softexpires = tv64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hrtimer_add_expires(struct hrtimer *timer, ktime_t time)
@@ -313,19 +142,11 @@ static inline ktime_t hrtimer_get_softexpires(const struct hrtimer *timer)
 
 static inline s64 hrtimer_get_expires_tv64(const struct hrtimer *timer)
 {
-<<<<<<< HEAD
-	return timer->node.expires.tv64;
-}
-static inline s64 hrtimer_get_softexpires_tv64(const struct hrtimer *timer)
-{
-	return timer->_softexpires.tv64;
-=======
 	return timer->node.expires;
 }
 static inline s64 hrtimer_get_softexpires_tv64(const struct hrtimer *timer)
 {
 	return timer->_softexpires;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline s64 hrtimer_get_expires_ns(const struct hrtimer *timer)
@@ -338,17 +159,6 @@ static inline ktime_t hrtimer_expires_remaining(const struct hrtimer *timer)
 	return ktime_sub(timer->node.expires, timer->base->get_time());
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_HIGH_RES_TIMERS
-struct clock_event_device;
-
-extern void hrtimer_interrupt(struct clock_event_device *dev);
-
-/*
- * In high resolution mode the time reference must be read accurate
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ktime_t hrtimer_cb_get_time(struct hrtimer *timer)
 {
 	return timer->base->get_time();
@@ -356,67 +166,6 @@ static inline ktime_t hrtimer_cb_get_time(struct hrtimer *timer)
 
 static inline int hrtimer_is_hres_active(struct hrtimer *timer)
 {
-<<<<<<< HEAD
-	return timer->base->cpu_base->hres_active;
-}
-
-extern void hrtimer_peek_ahead_timers(void);
-
-/*
- * The resolution of the clocks. The resolution value is returned in
- * the clock_getres() system call to give application programmers an
- * idea of the (in)accuracy of timers. Timer values are rounded up to
- * this resolution values.
- */
-# define HIGH_RES_NSEC		1
-# define KTIME_HIGH_RES		(ktime_t) { .tv64 = HIGH_RES_NSEC }
-# define MONOTONIC_RES_NSEC	HIGH_RES_NSEC
-# define KTIME_MONOTONIC_RES	KTIME_HIGH_RES
-
-extern void clock_was_set_delayed(void);
-
-#else
-
-# define MONOTONIC_RES_NSEC	LOW_RES_NSEC
-# define KTIME_MONOTONIC_RES	KTIME_LOW_RES
-
-static inline void hrtimer_peek_ahead_timers(void) { }
-
-/*
- * In non high resolution mode the time reference is taken from
- * the base softirq time variable.
- */
-static inline ktime_t hrtimer_cb_get_time(struct hrtimer *timer)
-{
-	return timer->base->softirq_time;
-}
-
-static inline int hrtimer_is_hres_active(struct hrtimer *timer)
-{
-	return 0;
-}
-
-static inline void clock_was_set_delayed(void) { }
-
-#endif
-
-extern void clock_was_set(void);
-#ifdef CONFIG_TIMERFD
-extern void timerfd_clock_was_set(void);
-#else
-static inline void timerfd_clock_was_set(void) { }
-#endif
-extern void hrtimers_resume(void);
-
-extern ktime_t ktime_get(void);
-extern ktime_t ktime_get_real(void);
-extern ktime_t ktime_get_boottime(void);
-extern ktime_t ktime_get_monotonic_offset(void);
-extern ktime_t ktime_get_update_offsets(ktime_t *offs_real, ktime_t *offs_boot);
-
-DECLARE_PER_CPU(struct tick_device, tick_cpu_device);
-
-=======
 	return IS_ENABLED(CONFIG_HIGH_RES_TIMERS) ?
 		timer->base->cpu_base->hres_active : 0;
 }
@@ -473,28 +222,21 @@ static inline void hrtimer_cancel_wait_running(struct hrtimer *timer)
 	cpu_relax();
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Exported timer functions: */
 
 /* Initialize timers: */
 extern void hrtimer_init(struct hrtimer *timer, clockid_t which_clock,
 			 enum hrtimer_mode mode);
-<<<<<<< HEAD
-=======
 extern void hrtimer_init_sleeper(struct hrtimer_sleeper *sl, clockid_t clock_id,
 				 enum hrtimer_mode mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_OBJECTS_TIMERS
 extern void hrtimer_init_on_stack(struct hrtimer *timer, clockid_t which_clock,
 				  enum hrtimer_mode mode);
-<<<<<<< HEAD
-=======
 extern void hrtimer_init_sleeper_on_stack(struct hrtimer_sleeper *sl,
 					  clockid_t clock_id,
 					  enum hrtimer_mode mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void destroy_hrtimer_on_stack(struct hrtimer *timer);
 #else
@@ -504,8 +246,6 @@ static inline void hrtimer_init_on_stack(struct hrtimer *timer,
 {
 	hrtimer_init(timer, which_clock, mode);
 }
-<<<<<<< HEAD
-=======
 
 static inline void hrtimer_init_sleeper_on_stack(struct hrtimer_sleeper *sl,
 						 clockid_t clock_id,
@@ -514,21 +254,10 @@ static inline void hrtimer_init_sleeper_on_stack(struct hrtimer_sleeper *sl,
 	hrtimer_init_sleeper(sl, clock_id, mode);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void destroy_hrtimer_on_stack(struct hrtimer *timer) { }
 #endif
 
 /* Basic timer operations: */
-<<<<<<< HEAD
-extern int hrtimer_start(struct hrtimer *timer, ktime_t tim,
-			 const enum hrtimer_mode mode);
-extern int hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
-			unsigned long range_ns, const enum hrtimer_mode mode);
-extern int
-__hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
-			 unsigned long delta_ns,
-			 const enum hrtimer_mode mode, int wakeup);
-=======
 extern void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
 				   u64 range_ns, const enum hrtimer_mode mode);
 
@@ -545,58 +274,18 @@ static inline void hrtimer_start(struct hrtimer *timer, ktime_t tim,
 {
 	hrtimer_start_range_ns(timer, tim, 0, mode);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int hrtimer_cancel(struct hrtimer *timer);
 extern int hrtimer_try_to_cancel(struct hrtimer *timer);
 
-<<<<<<< HEAD
-static inline int hrtimer_start_expires(struct hrtimer *timer,
-						enum hrtimer_mode mode)
-{
-	unsigned long delta;
-=======
 static inline void hrtimer_start_expires(struct hrtimer *timer,
 					 enum hrtimer_mode mode)
 {
 	u64 delta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktime_t soft, hard;
 	soft = hrtimer_get_softexpires(timer);
 	hard = hrtimer_get_expires(timer);
 	delta = ktime_to_ns(ktime_sub(hard, soft));
-<<<<<<< HEAD
-	return hrtimer_start_range_ns(timer, soft, delta, mode);
-}
-
-static inline int hrtimer_restart(struct hrtimer *timer)
-{
-	return hrtimer_start_expires(timer, HRTIMER_MODE_ABS);
-}
-
-/* Query timers: */
-extern ktime_t hrtimer_get_remaining(const struct hrtimer *timer);
-extern int hrtimer_get_res(const clockid_t which_clock, struct timespec *tp);
-
-extern ktime_t hrtimer_get_next_event(void);
-
-/*
- * A timer is active, when it is enqueued into the rbtree or the
- * callback function is running or it's in the state of being migrated
- * to another cpu.
- */
-static inline int hrtimer_active(const struct hrtimer *timer)
-{
-	return timer->state != HRTIMER_STATE_INACTIVE;
-}
-
-/*
- * Helper function to check, whether the timer is on one of the queues
- */
-static inline int hrtimer_is_queued(struct hrtimer *timer)
-{
-	return timer->state & HRTIMER_STATE_ENQUEUED;
-=======
 	hrtimer_start_range_ns(timer, soft, delta, mode);
 }
 
@@ -637,7 +326,6 @@ static inline bool hrtimer_is_queued(struct hrtimer *timer)
 {
 	/* The READ_ONCE pairs with the update functions of timer->state */
 	return !!(READ_ONCE(timer->state) & HRTIMER_STATE_ENQUEUED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -646,20 +334,13 @@ static inline bool hrtimer_is_queued(struct hrtimer *timer)
  */
 static inline int hrtimer_callback_running(struct hrtimer *timer)
 {
-<<<<<<< HEAD
-	return timer->state & HRTIMER_STATE_CALLBACK;
-=======
 	return timer->base->running == timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Forward a hrtimer so it expires after now: */
 extern u64
 hrtimer_forward(struct hrtimer *timer, ktime_t now, ktime_t interval);
 
-<<<<<<< HEAD
-/* Forward a hrtimer so it expires after the hrtimer's current now */
-=======
 /**
  * hrtimer_forward_now() - forward the timer expiry so it expires after now
  * @timer:	hrtimer to forward
@@ -668,7 +349,6 @@ hrtimer_forward(struct hrtimer *timer, ktime_t now, ktime_t interval);
  * It is a variant of hrtimer_forward(). The timer will expire after the current
  * time of the hrtimer clock base. See hrtimer_forward() for details.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u64 hrtimer_forward_now(struct hrtimer *timer,
 				      ktime_t interval)
 {
@@ -676,21 +356,6 @@ static inline u64 hrtimer_forward_now(struct hrtimer *timer,
 }
 
 /* Precise sleep: */
-<<<<<<< HEAD
-extern long hrtimer_nanosleep(struct timespec *rqtp,
-			      struct timespec __user *rmtp,
-			      const enum hrtimer_mode mode,
-			      const clockid_t clockid);
-extern long hrtimer_nanosleep_restart(struct restart_block *restart_block);
-
-extern void hrtimer_init_sleeper(struct hrtimer_sleeper *sl,
-				 struct task_struct *tsk);
-
-extern int schedule_hrtimeout_range(ktime_t *expires, unsigned long delta,
-						const enum hrtimer_mode mode);
-extern int schedule_hrtimeout_range_clock(ktime_t *expires,
-		unsigned long delta, const enum hrtimer_mode mode, int clock);
-=======
 
 extern int nanosleep_copyout(struct restart_block *, struct timespec64 *);
 extern long hrtimer_nanosleep(ktime_t rqtp, const enum hrtimer_mode mode,
@@ -702,30 +367,14 @@ extern int schedule_hrtimeout_range_clock(ktime_t *expires,
 					  u64 delta,
 					  const enum hrtimer_mode mode,
 					  clockid_t clock_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int schedule_hrtimeout(ktime_t *expires, const enum hrtimer_mode mode);
 
 /* Soft interrupt function to run the hrtimer queues: */
 extern void hrtimer_run_queues(void);
-<<<<<<< HEAD
-extern void hrtimer_run_pending(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bootup initialization: */
 extern void __init hrtimers_init(void);
 
-<<<<<<< HEAD
-#if BITS_PER_LONG < 64
-extern u64 ktime_divns(const ktime_t kt, s64 div);
-#else /* BITS_PER_LONG < 64 */
-# define ktime_divns(kt, div)		(u64)((kt).tv64 / (div))
-#endif
-
-/* Show pending timers: */
-extern void sysrq_timer_list_show(void);
-
-=======
 /* Show pending timers: */
 extern void sysrq_timer_list_show(void);
 
@@ -736,5 +385,4 @@ int hrtimers_cpu_dying(unsigned int cpu);
 #define hrtimers_cpu_dying	NULL
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

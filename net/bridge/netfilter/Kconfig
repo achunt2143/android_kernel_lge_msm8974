@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#
-# Bridge netfilter configuration
-#
-
-menuconfig BRIDGE_NF_EBTABLES
-	tristate "Ethernet Bridge tables (ebtables) support"
-	depends on BRIDGE && NETFILTER
-	select NETFILTER_XTABLES
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # Bridge netfilter configuration
@@ -57,7 +47,6 @@ menuconfig BRIDGE_NF_EBTABLES
 	tristate "Ethernet Bridge tables (ebtables) support"
 	depends on BRIDGE && NETFILTER && NETFILTER_XTABLES
 	select NETFILTER_FAMILY_BRIDGE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  ebtables is a general, extensible frame/packet identification
 	  framework. Say 'Y' or 'M' here if you want to do Ethernet
@@ -70,10 +59,7 @@ if BRIDGE_NF_EBTABLES
 #
 config BRIDGE_EBT_BROUTE
 	tristate "ebt: broute table support"
-<<<<<<< HEAD
-=======
 	select BRIDGE_NF_EBTABLES_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The ebtables broute table is used to define rules that decide between
 	  bridging and routing frames, giving Linux the functionality of a
@@ -84,10 +70,7 @@ config BRIDGE_EBT_BROUTE
 
 config BRIDGE_EBT_T_FILTER
 	tristate "ebt: filter table support"
-<<<<<<< HEAD
-=======
 	select BRIDGE_NF_EBTABLES_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The ebtables filter table is used to define frame filtering rules at
 	  local input, forwarding and local output. See the man page for
@@ -97,10 +80,7 @@ config BRIDGE_EBT_T_FILTER
 
 config BRIDGE_EBT_T_NAT
 	tristate "ebt: nat table support"
-<<<<<<< HEAD
-=======
 	select BRIDGE_NF_EBTABLES_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The ebtables nat table is used to define rules that alter the MAC
 	  source address (MAC SNAT) or the MAC destination address (MAC DNAT).
@@ -159,11 +139,7 @@ config BRIDGE_EBT_LIMIT
 	  equivalent of the iptables limit match.
 
 	  If you want to compile it as a module, say M here and read
-<<<<<<< HEAD
-	  <file:Documentation/kbuild/modules.txt>.  If unsure, say `N'.
-=======
 	  <file:Documentation/kbuild/modules.rst>.  If unsure, say `N'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config BRIDGE_EBT_MARK
 	tristate "ebt: mark filter support"
@@ -257,25 +233,6 @@ config BRIDGE_EBT_LOG
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-config BRIDGE_EBT_ULOG
-	tristate "ebt: ulog support (OBSOLETE)"
-	help
-	  This option enables the old bridge-specific "ebt_ulog" implementation
-	  which has been obsoleted by the new "nfnetlink_log" code (see
-	  CONFIG_NETFILTER_NETLINK_LOG).
-
-	  This option adds the ulog watcher, that you can use in any rule
-	  in any ebtables table. The packet is passed to a userspace
-	  logging daemon using netlink multicast sockets. This differs
-	  from the log watcher in the sense that the complete packet is
-	  sent to userspace instead of a descriptive text and that
-	  netlink multicast sockets are used instead of the syslog.
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config BRIDGE_EBT_NFLOG
 	tristate "ebt: nflog support"
 	help

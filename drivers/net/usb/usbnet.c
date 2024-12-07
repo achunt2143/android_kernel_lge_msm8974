@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB Network driver infrastructure
  * Copyright (C) 2000-2005 by David Brownell
  * Copyright (C) 2003-2005 David Hollis <dhollis@davehollis.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -37,12 +17,6 @@
  * issues can usefully be addressed by this framework.
  */
 
-<<<<<<< HEAD
-// #define	DEBUG			// error path messages, extra info
-// #define	VERBOSE			// more; success messages
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/netdevice.h>
@@ -57,12 +31,6 @@
 #include <linux/kernel.h>
 #include <linux/pm_runtime.h>
 
-<<<<<<< HEAD
-#define DRIVER_VERSION		"22-Aug-2005"
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 /*
@@ -72,17 +40,6 @@
  * For high speed, each frame comfortably fits almost 36 max size
  * Ethernet packets (so queues should be bigger).
  *
-<<<<<<< HEAD
- * REVISIT qlens should be members of 'struct usbnet'; the goal is to
- * let the USB host controller be busy for 5msec or more before an irq
- * is required, under load.  Jumbograms change the equation.
- */
-#define RX_MAX_QUEUE_MEMORY (60 * 1518)
-#define	RX_QLEN(dev) (((dev)->udev->speed == USB_SPEED_HIGH) ? \
-			(RX_MAX_QUEUE_MEMORY/(dev)->rx_urb_size) : 4)
-#define	TX_QLEN(dev) (((dev)->udev->speed == USB_SPEED_HIGH) ? \
-			(RX_MAX_QUEUE_MEMORY/(dev)->hard_mtu) : 4)
-=======
  * The goal is to let the USB host controller be busy for 5msec or
  * more before an irq is required, under load.  Jumbograms change
  * the equation.
@@ -90,19 +47,13 @@
 #define	MAX_QUEUE_MEMORY	(60 * 1518)
 #define	RX_QLEN(dev)		((dev)->rx_qlen)
 #define	TX_QLEN(dev)		((dev)->tx_qlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // reawaken network queue this soon after stopping; else watchdog barks
 #define TX_TIMEOUT_JIFFIES	(5*HZ)
 
-<<<<<<< HEAD
-// throttle rx/tx briefly after some faults, so khubd might disconnect()
-// us (it polls at HZ/4 usually) before we report too many false errors.
-=======
 /* throttle rx/tx briefly after some faults, so hub_wq might disconnect()
  * us (it polls at HZ/4 usually) before we report too many false errors.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define THROTTLE_JIFFIES	(HZ/8)
 
 // between wakeups
@@ -113,15 +64,6 @@
 // randomly generated ethernet address
 static u8	node_id [ETH_ALEN];
 
-<<<<<<< HEAD
-static const char driver_name [] = "usbnet";
-
-struct workqueue_struct	*usbnet_wq;
-
-static DECLARE_WAIT_QUEUE_HEAD(unlink_wakeup);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* use ethtool to change the level for any given device */
 static int msg_level = -1;
 module_param (msg_level, int, 0);
@@ -129,8 +71,6 @@ MODULE_PARM_DESC (msg_level, "Override default message level");
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static const char * const usbnet_event_names[] = {
 	[EVENT_TX_HALT]		   = "EVENT_TX_HALT",
 	[EVENT_RX_HALT]		   = "EVENT_RX_HALT",
@@ -148,7 +88,6 @@ static const char * const usbnet_event_names[] = {
 	[EVENT_NO_IP_ALIGN]	   = "EVENT_NO_IP_ALIGN",
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* handles CDC Ethernet and many other network "bulk data" interfaces */
 int usbnet_get_endpoints(struct usbnet *dev, struct usb_interface *intf)
 {
@@ -172,24 +111,17 @@ int usbnet_get_endpoints(struct usbnet *dev, struct usb_interface *intf)
 			int				intr = 0;
 
 			e = alt->endpoint + ep;
-<<<<<<< HEAD
-=======
 
 			/* ignore endpoints which cannot transfer data */
 			if (!usb_endpoint_maxp(&e->desc))
 				continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (e->desc.bmAttributes) {
 			case USB_ENDPOINT_XFER_INT:
 				if (!usb_endpoint_dir_in(&e->desc))
 					continue;
 				intr = 1;
-<<<<<<< HEAD
-				/* FALLTHROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case USB_ENDPOINT_XFER_BULK:
 				break;
 			default:
@@ -230,22 +162,6 @@ EXPORT_SYMBOL_GPL(usbnet_get_endpoints);
 
 int usbnet_get_ethernet_addr(struct usbnet *dev, int iMACAddress)
 {
-<<<<<<< HEAD
-	int 		tmp, i;
-	unsigned char	buf [13];
-
-	tmp = usb_string(dev->udev, iMACAddress, buf, sizeof buf);
-	if (tmp != 12) {
-		dev_dbg(&dev->udev->dev,
-			"bad MAC string %d fetch, %d\n", iMACAddress, tmp);
-		if (tmp >= 0)
-			tmp = -EINVAL;
-		return tmp;
-	}
-	for (i = tmp = 0; i < 6; i++, tmp += 2)
-		dev->net->dev_addr [i] =
-			(hex_to_bin(buf[tmp]) << 4) + hex_to_bin(buf[tmp + 1]);
-=======
 	u8		addr[ETH_ALEN];
 	int 		tmp = -1, ret;
 	unsigned char	buf [13];
@@ -261,14 +177,10 @@ int usbnet_get_ethernet_addr(struct usbnet *dev, int iMACAddress)
 		return ret;
 	}
 	eth_hw_addr_set(dev->net, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usbnet_get_ethernet_addr);
 
-<<<<<<< HEAD
-static void intr_complete (struct urb *urb);
-=======
 static void intr_complete (struct urb *urb)
 {
 	struct usbnet	*dev = urb->context;
@@ -300,7 +212,6 @@ static void intr_complete (struct urb *urb)
 		netif_err(dev, timer, dev->net,
 			  "intr resubmit --> %d\n", status);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int init_status (struct usbnet *dev, struct usb_interface *intf)
 {
@@ -315,11 +226,7 @@ static int init_status (struct usbnet *dev, struct usb_interface *intf)
 	pipe = usb_rcvintpipe (dev->udev,
 			dev->status->desc.bEndpointAddress
 				& USB_ENDPOINT_NUMBER_MASK);
-<<<<<<< HEAD
-	maxp = usb_maxpacket (dev->udev, pipe, 0);
-=======
 	maxp = usb_maxpacket(dev->udev, pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* avoid 1 msec chatter:  min 8 msec poll rate */
 	period = max ((int) dev->status->desc.bInterval,
@@ -343,8 +250,6 @@ static int init_status (struct usbnet *dev, struct usb_interface *intf)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* Submit the interrupt URB if not previously submitted, increasing refcount */
 int usbnet_status_start(struct usbnet *dev, gfp_t mem_flags)
 {
@@ -409,18 +314,14 @@ static void __usbnet_status_stop_force(struct usbnet *dev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Passes this packet up the stack, updating its accounting.
  * Some link protocols batch packets, so their rx_fixup paths
  * can return clones as well as just modify the original skb.
  */
 void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-=======
 	struct pcpu_sw_netstats *stats64 = this_cpu_ptr(dev->net->tstats);
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	status;
 
 	if (test_bit(EVENT_RX_PAUSED, &dev->flags)) {
@@ -428,13 +329,6 @@ void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 		return;
 	}
 
-<<<<<<< HEAD
-	if (!skb->protocol)
-		skb->protocol = eth_type_trans(skb, dev->net);
-
-	dev->net->stats.rx_packets++;
-	dev->net->stats.rx_bytes += skb->len;
-=======
 	/* only update if unset to allow minidriver rx_fixup override */
 	if (skb->protocol == 0)
 		skb->protocol = eth_type_trans (skb, dev->net);
@@ -443,7 +337,6 @@ void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 	u64_stats_inc(&stats64->rx_packets);
 	u64_stats_add(&stats64->rx_bytes, skb->len);
 	u64_stats_update_end_irqrestore(&stats64->syncp, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_dbg(dev, rx_status, dev->net, "< rx, len %zu, type 0x%x\n",
 		  skb->len + sizeof (struct ethhdr), skb->protocol);
@@ -452,20 +345,13 @@ void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 	if (skb_defer_rx_timestamp(skb))
 		return;
 
-<<<<<<< HEAD
-	status = netif_rx_ni(skb);
-=======
 	status = netif_rx (skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != NET_RX_SUCCESS)
 		netif_dbg(dev, rx_err, dev->net,
 			  "netif_rx status %d\n", status);
 }
 EXPORT_SYMBOL_GPL(usbnet_skb_return);
 
-<<<<<<< HEAD
-
-=======
 /* must be called if hard_mtu or rx_urb_size changed */
 void usbnet_update_max_qlen(struct usbnet *dev)
 {
@@ -496,7 +382,6 @@ insanity:
 EXPORT_SYMBOL_GPL(usbnet_update_max_qlen);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------
  *
  * Network Device Driver (peer link to "Host Device", from USB host)
@@ -510,11 +395,6 @@ int usbnet_change_mtu (struct net_device *net, int new_mtu)
 	int		old_hard_mtu = dev->hard_mtu;
 	int		old_rx_urb_size = dev->rx_urb_size;
 
-<<<<<<< HEAD
-	if (new_mtu <= 0)
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// no second zero-length packet read wanted after mtu-sized packets
 	if ((ll_mtu % dev->maxpacket) == 0)
 		return -EDOM;
@@ -523,12 +403,6 @@ int usbnet_change_mtu (struct net_device *net, int new_mtu)
 	dev->hard_mtu = net->mtu + net->hard_header_len;
 	if (dev->rx_urb_size == old_hard_mtu) {
 		dev->rx_urb_size = dev->hard_mtu;
-<<<<<<< HEAD
-		if (dev->rx_urb_size > old_rx_urb_size)
-			usbnet_unlink_rx_urbs(dev);
-	}
-
-=======
 		if (dev->rx_urb_size > old_rx_urb_size) {
 			usbnet_pause_rx(dev);
 			usbnet_unlink_rx_urbs(dev);
@@ -539,7 +413,6 @@ int usbnet_change_mtu (struct net_device *net, int new_mtu)
 	/* max qlen depend on hard_mtu and rx_urb_size */
 	usbnet_update_max_qlen(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usbnet_change_mtu);
@@ -571,14 +444,6 @@ static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
 	old_state = entry->state;
 	entry->state = state;
 	__skb_unlink(skb, list);
-<<<<<<< HEAD
-	spin_unlock(&list->lock);
-	spin_lock(&dev->done.lock);
-	__skb_queue_tail(&dev->done, skb);
-	if (dev->done.qlen == 1)
-		queue_work(usbnet_wq, &dev->bh_w);
-	spin_unlock_irqrestore(&dev->done.lock, flags);
-=======
 
 	/* defer_bh() is never called with list == &dev->done.
 	 * spin_lock_nested() tells lockdep that it is OK to take
@@ -591,7 +456,6 @@ static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
 		tasklet_schedule(&dev->bh);
 	spin_unlock(&dev->done.lock);
 	spin_unlock_irqrestore(&list->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return old_state;
 }
 
@@ -603,44 +467,25 @@ static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
 void usbnet_defer_kevent (struct usbnet *dev, int work)
 {
 	set_bit (work, &dev->flags);
-<<<<<<< HEAD
-	if (!schedule_work (&dev->kevent)) {
-		if (net_ratelimit())
-			netdev_err(dev->net, "kevent %d may have been dropped\n", work);
-	} else {
-		netdev_dbg(dev->net, "kevent %d scheduled\n", work);
-	}
-=======
 	if (!schedule_work (&dev->kevent))
 		netdev_dbg(dev->net, "kevent %s may have been dropped\n", usbnet_event_names[work]);
 	else
 		netdev_dbg(dev->net, "kevent %s scheduled\n", usbnet_event_names[work]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usbnet_defer_kevent);
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static void rx_complete (struct urb *urb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 {
 	struct sk_buff		*skb;
 	struct skb_data		*entry;
-<<<<<<< HEAD
-	usb_complete_t		complete_fn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			retval = 0;
 	unsigned long		lockflags;
 	size_t			size = dev->rx_urb_size;
 
-<<<<<<< HEAD
-	skb = __netdev_alloc_skb_ip_align(dev->net, size, flags);
-=======
 	/* prevent rx skb allocation when error ratio is high */
 	if (test_bit(EVENT_RX_KILL, &dev->flags)) {
 		usb_free_urb(urb);
@@ -651,7 +496,6 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 		skb = __netdev_alloc_skb(dev->net, size, flags);
 	else
 		skb = __netdev_alloc_skb_ip_align(dev->net, size, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		netif_dbg(dev, rx_err, dev->net, "no rx skb\n");
 		usbnet_defer_kevent (dev, EVENT_RX_MEMORY);
@@ -664,27 +508,14 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 	entry->dev = dev;
 	entry->length = 0;
 
-<<<<<<< HEAD
-	if (dev->driver_info->rx_complete)
-		complete_fn = dev->driver_info->rx_complete;
-	else
-		complete_fn = rx_complete;
-
-	usb_fill_bulk_urb (urb, dev->udev, dev->in,
-		skb->data, size, complete_fn, skb);
-=======
 	usb_fill_bulk_urb (urb, dev->udev, dev->in,
 		skb->data, size, rx_complete, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave (&dev->rxq.lock, lockflags);
 
 	if (netif_running (dev->net) &&
 	    netif_device_present (dev->net) &&
-<<<<<<< HEAD
-=======
 	    test_bit(EVENT_DEV_OPEN, &dev->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !test_bit (EVENT_RX_HALT, &dev->flags) &&
 	    !test_bit (EVENT_DEV_ASLEEP, &dev->flags)) {
 		switch (retval = usb_submit_urb (urb, GFP_ATOMIC)) {
@@ -704,16 +535,9 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 		default:
 			netif_dbg(dev, rx_err, dev->net,
 				  "rx submit, %d\n", retval);
-<<<<<<< HEAD
-			queue_work(usbnet_wq, &dev->bh_w);
-			break;
-		case 0:
-			usb_mark_last_busy(dev->udev);
-=======
 			tasklet_schedule (&dev->bh);
 			break;
 		case 0:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__usbnet_queue_skb(&dev->rxq, skb, rx_start);
 		}
 	} else {
@@ -731,61 +555,35 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
-=======
 static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (dev->driver_info->rx_fixup &&
 	    !dev->driver_info->rx_fixup (dev, skb)) {
 		/* With RX_ASSEMBLE, rx_fixup() must update counters */
 		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
 			dev->net->stats.rx_errors++;
-<<<<<<< HEAD
-		goto done;
-=======
 		return -EPROTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	// else network stack removes extra byte if we forced a short packet
 
 	/* all data was already cloned from skb inside the driver */
 	if (dev->driver_info->flags & FLAG_MULTI_PACKET)
-<<<<<<< HEAD
-		goto done;
-=======
 		return -EALREADY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->len < ETH_HLEN) {
 		dev->net->stats.rx_errors++;
 		dev->net->stats.rx_length_errors++;
 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
-<<<<<<< HEAD
-	} else {
-		usbnet_skb_return(dev, skb);
-		return;
-	}
-
-done:
-	skb_queue_tail(&dev->done, skb);
-=======
 		return -EPROTO;
 	}
 
 	usbnet_skb_return(dev, skb);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-void rx_complete(struct urb *urb)
-=======
 static void rx_complete (struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff		*skb = (struct sk_buff *) urb->context;
 	struct skb_data		*entry = (struct skb_data *) skb->cb;
@@ -810,11 +608,7 @@ static void rx_complete (struct urb *urb)
 	case -EPIPE:
 		dev->net->stats.rx_errors++;
 		usbnet_defer_kevent (dev, EVENT_RX_HALT);
-<<<<<<< HEAD
-		// FALLTHROUGH
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* software-driven interface shutdown */
 	case -ECONNRESET:		/* async unlink */
@@ -823,15 +617,9 @@ static void rx_complete (struct urb *urb)
 			  "rx shutdown, code %d\n", urb_status);
 		goto block;
 
-<<<<<<< HEAD
-	/* we get controller i/o faults during khubd disconnect() delays.
-	 * throttle down resubmits, to avoid log floods; just temporarily,
-	 * so we still recover when the fault isn't a khubd delay.
-=======
 	/* we get controller i/o faults during hub_wq disconnect() delays.
 	 * throttle down resubmits, to avoid log floods; just temporarily,
 	 * so we still recover when the fault isn't a hub_wq delay.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	case -EPROTO:
 	case -ETIME:
@@ -851,11 +639,7 @@ block:
 	/* data overrun ... flush fifo? */
 	case -EOVERFLOW:
 		dev->net->stats.rx_over_errors++;
-<<<<<<< HEAD
-		// FALLTHROUGH
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		state = rx_cleanup;
@@ -864,8 +648,6 @@ block:
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	/* stop rx if packet error rate is high */
 	if (++dev->pkt_cnt > 30) {
 		dev->pkt_cnt = 0;
@@ -877,7 +659,6 @@ block:
 			set_bit(EVENT_RX_KILL, &dev->flags);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state = defer_bh(dev, skb, &dev->rxq, state);
 
 	if (urb) {
@@ -892,46 +673,6 @@ block:
 	}
 	netif_dbg(dev, rx_err, dev->net, "no read resubmitted\n");
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(rx_complete);
-
-static void intr_complete (struct urb *urb)
-{
-	struct usbnet	*dev = urb->context;
-	int		status = urb->status;
-
-	switch (status) {
-	/* success */
-	case 0:
-		dev->driver_info->status(dev, urb);
-		break;
-
-	/* software-driven interface shutdown */
-	case -ENOENT:		/* urb killed */
-	case -ESHUTDOWN:	/* hardware gone */
-		netif_dbg(dev, ifdown, dev->net,
-			  "intr shutdown, code %d\n", status);
-		return;
-
-	/* NOTE:  not throttling like RX/TX, since this endpoint
-	 * already polls infrequently
-	 */
-	default:
-		netdev_dbg(dev->net, "intr status %d\n", status);
-		break;
-	}
-
-	if (!netif_running (dev->net))
-		return;
-
-	memset(urb->transfer_buffer, 0, urb->transfer_buffer_length);
-	status = usb_submit_urb (urb, GFP_ATOMIC);
-	if (status != 0)
-		netif_err(dev, timer, dev->net,
-			  "intr resubmit --> %d\n", status);
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 void usbnet_pause_rx(struct usbnet *dev)
@@ -954,11 +695,7 @@ void usbnet_resume_rx(struct usbnet *dev)
 		num++;
 	}
 
-<<<<<<< HEAD
-	queue_work(usbnet_wq, &dev->bh_w);
-=======
 	tasklet_schedule(&dev->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_dbg(dev, rx_status, dev->net,
 		  "paused rx queue disabled, %d skbs requeued\n", num);
@@ -1027,21 +764,13 @@ void usbnet_unlink_rx_urbs(struct usbnet *dev)
 {
 	if (netif_running(dev->net)) {
 		(void) unlink_urbs (dev, &dev->rxq);
-<<<<<<< HEAD
-		queue_work(usbnet_wq, &dev->bh_w);
-=======
 		tasklet_schedule(&dev->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(usbnet_unlink_rx_urbs);
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-// precondition: never called in_interrupt
-void usbnet_terminate_urbs(struct usbnet *dev)
-=======
 static void wait_skb_queue_empty(struct sk_buff_head *q)
 {
 	unsigned long flags;
@@ -1058,39 +787,17 @@ static void wait_skb_queue_empty(struct sk_buff_head *q)
 
 // precondition: never called in_interrupt
 static void usbnet_terminate_urbs(struct usbnet *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DECLARE_WAITQUEUE(wait, current);
 	int temp;
 
 	/* ensure there are no more active urbs */
-<<<<<<< HEAD
-	add_wait_queue(&unlink_wakeup, &wait);
-	set_current_state(TASK_UNINTERRUPTIBLE);
-	dev->wait = &unlink_wakeup;
-=======
 	add_wait_queue(&dev->wait, &wait);
 	set_current_state(TASK_UNINTERRUPTIBLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	temp = unlink_urbs(dev, &dev->txq) +
 		unlink_urbs(dev, &dev->rxq);
 
 	/* maybe wait for deletions to finish. */
-<<<<<<< HEAD
-	while (!skb_queue_empty(&dev->rxq)
-		&& !skb_queue_empty(&dev->txq)
-		&& !skb_queue_empty(&dev->done)) {
-			schedule_timeout(msecs_to_jiffies(UNLINK_TIMEOUT_MS));
-			set_current_state(TASK_UNINTERRUPTIBLE);
-			netif_dbg(dev, ifdown, dev->net,
-				  "waited for %d urb completions\n", temp);
-	}
-	set_current_state(TASK_RUNNING);
-	dev->wait = NULL;
-	remove_wait_queue(&unlink_wakeup, &wait);
-}
-EXPORT_SYMBOL_GPL(usbnet_terminate_urbs);
-=======
 	wait_skb_queue_empty(&dev->rxq);
 	wait_skb_queue_empty(&dev->txq);
 	wait_skb_queue_empty(&dev->done);
@@ -1099,18 +806,12 @@ EXPORT_SYMBOL_GPL(usbnet_terminate_urbs);
 	set_current_state(TASK_RUNNING);
 	remove_wait_queue(&dev->wait, &wait);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int usbnet_stop (struct net_device *net)
 {
 	struct usbnet		*dev = netdev_priv(net);
-<<<<<<< HEAD
-	struct driver_info	*info = dev->driver_info;
-	int			retval;
-=======
 	const struct driver_info *info = dev->driver_info;
 	int			retval, pm, mpn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(EVENT_DEV_OPEN, &dev->flags);
 	netif_stop_queue (net);
@@ -1120,11 +821,8 @@ int usbnet_stop (struct net_device *net)
 		   net->stats.rx_packets, net->stats.tx_packets,
 		   net->stats.rx_errors, net->stats.tx_errors);
 
-<<<<<<< HEAD
-=======
 	/* to not race resume */
 	pm = usb_autopm_get_interface(dev->intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allow minidriver to stop correctly (wireless devices to turn off
 	 * radio etc) */
 	if (info->stop) {
@@ -1140,20 +838,6 @@ int usbnet_stop (struct net_device *net)
 	if (!(info->flags & FLAG_AVOID_UNLINK_URBS))
 		usbnet_terminate_urbs(dev);
 
-<<<<<<< HEAD
-	usb_kill_urb(dev->interrupt);
-
-	usbnet_purge_paused_rxq(dev);
-
-	/* deferred work (task, timer, softirq) must also stop.
-	 * can't flush_scheduled_work() until we drop rtnl (later),
-	 * else workers could deadlock; so make workers a NOP.
-	 */
-	dev->flags = 0;
-	del_timer_sync (&dev->delay);
-	cancel_work_sync(&dev->bh_w);
-	if (info->manage_power)
-=======
 	usbnet_status_stop(dev);
 
 	usbnet_purge_paused_rxq(dev);
@@ -1169,7 +853,6 @@ int usbnet_stop (struct net_device *net)
 		usb_autopm_put_interface(dev->intf);
 
 	if (info->manage_power && mpn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->manage_power(dev, 0);
 	else
 		usb_autopm_put_interface(dev->intf);
@@ -1188,11 +871,7 @@ int usbnet_open (struct net_device *net)
 {
 	struct usbnet		*dev = netdev_priv(net);
 	int			retval;
-<<<<<<< HEAD
-	struct driver_info	*info = dev->driver_info;
-=======
 	const struct driver_info *info = dev->driver_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((retval = usb_autopm_get_interface(dev->intf)) < 0) {
 		netif_info(dev, ifup, dev->net,
@@ -1215,28 +894,18 @@ int usbnet_open (struct net_device *net)
 		goto done;
 	}
 
-<<<<<<< HEAD
-	// insist peer be connected
-	if (info->check_connect && (retval = info->check_connect (dev)) < 0) {
-		netif_dbg(dev, ifup, dev->net, "can't open; %d\n", retval);
-=======
 	/* hard_mtu or rx_urb_size may change in reset() */
 	usbnet_update_max_qlen(dev);
 
 	// insist peer be connected
 	if (info->check_connect && (retval = info->check_connect (dev)) < 0) {
 		netif_err(dev, ifup, dev->net, "can't open; %d\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
 	/* start any status interrupt transfer */
 	if (dev->interrupt) {
-<<<<<<< HEAD
-		retval = usb_submit_urb (dev->interrupt, GFP_KERNEL);
-=======
 		retval = usbnet_status_start(dev, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval < 0) {
 			netif_err(dev, ifup, dev->net,
 				  "intr submit %d\n", retval);
@@ -1257,18 +926,6 @@ int usbnet_open (struct net_device *net)
 		   (dev->driver_info->flags & FLAG_FRAMING_AX) ? "ASIX" :
 		   "simple");
 
-<<<<<<< HEAD
-	// delay posting reads until we're fully open
-	queue_work(usbnet_wq, &dev->bh_w);
-	if (info->manage_power) {
-		retval = info->manage_power(dev, 1);
-		if (retval < 0)
-			goto done;
-		usb_autopm_put_interface(dev->intf);
-	}
-	return retval;
-
-=======
 	/* reset rx error state */
 	dev->pkt_cnt = 0;
 	dev->pkt_err = 0;
@@ -1286,7 +943,6 @@ int usbnet_open (struct net_device *net)
 		}
 	}
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	usb_autopm_put_interface(dev->intf);
 done_nopm:
@@ -1300,28 +956,17 @@ EXPORT_SYMBOL_GPL(usbnet_open);
  * they'll probably want to use this base set.
  */
 
-<<<<<<< HEAD
-int usbnet_get_settings (struct net_device *net, struct ethtool_cmd *cmd)
-=======
 /* These methods are written on the assumption that the device
  * uses MII
  */
 int usbnet_get_link_ksettings_mii(struct net_device *net,
 			      struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet *dev = netdev_priv(net);
 
 	if (!dev->mii.mdio_read)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	return mii_ethtool_gset(&dev->mii, cmd);
-}
-EXPORT_SYMBOL_GPL(usbnet_get_settings);
-
-int usbnet_set_settings (struct net_device *net, struct ethtool_cmd *cmd)
-=======
 	mii_ethtool_get_link_ksettings(&dev->mii, cmd);
 
 	return 0;
@@ -1351,7 +996,6 @@ EXPORT_SYMBOL_GPL(usbnet_get_link_ksettings_internal);
 
 int usbnet_set_link_ksettings_mii(struct net_device *net,
 			      const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet *dev = netdev_priv(net);
 	int retval;
@@ -1359,29 +1003,18 @@ int usbnet_set_link_ksettings_mii(struct net_device *net,
 	if (!dev->mii.mdio_write)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	retval = mii_ethtool_sset(&dev->mii, cmd);
-=======
 	retval = mii_ethtool_set_link_ksettings(&dev->mii, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* link speed/duplex might have changed */
 	if (dev->driver_info->link_reset)
 		dev->driver_info->link_reset(dev);
 
-<<<<<<< HEAD
-	return retval;
-
-}
-EXPORT_SYMBOL_GPL(usbnet_set_settings);
-=======
 	/* hard_mtu or rx_urb_size may change in link_reset() */
 	usbnet_update_max_qlen(dev);
 
 	return retval;
 }
 EXPORT_SYMBOL_GPL(usbnet_set_link_ksettings_mii);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u32 usbnet_get_link (struct net_device *net)
 {
@@ -1415,16 +1048,9 @@ void usbnet_get_drvinfo (struct net_device *net, struct ethtool_drvinfo *info)
 {
 	struct usbnet *dev = netdev_priv(net);
 
-<<<<<<< HEAD
-	strncpy (info->driver, dev->driver_name, sizeof info->driver);
-	strncpy (info->version, DRIVER_VERSION, sizeof info->version);
-	strncpy (info->fw_version, dev->driver_info->description,
-		sizeof info->fw_version);
-=======
 	strscpy(info->driver, dev->driver_name, sizeof(info->driver));
 	strscpy(info->fw_version, dev->driver_info->description,
 		sizeof(info->fw_version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_make_path (dev->udev, info->bus_info, sizeof info->bus_info);
 }
 EXPORT_SYMBOL_GPL(usbnet_get_drvinfo);
@@ -1447,28 +1073,18 @@ EXPORT_SYMBOL_GPL(usbnet_set_msglevel);
 
 /* drivers may override default ethtool_ops in their bind() routine */
 static const struct ethtool_ops usbnet_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings		= usbnet_get_settings,
-	.set_settings		= usbnet_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link		= usbnet_get_link,
 	.nway_reset		= usbnet_nway_reset,
 	.get_drvinfo		= usbnet_get_drvinfo,
 	.get_msglevel		= usbnet_get_msglevel,
 	.set_msglevel		= usbnet_set_msglevel,
-<<<<<<< HEAD
-=======
 	.get_ts_info		= ethtool_op_get_ts_info,
 	.get_link_ksettings	= usbnet_get_link_ksettings_mii,
 	.set_link_ksettings	= usbnet_set_link_ksettings_mii,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static void __handle_link_change(struct usbnet *dev)
 {
 	if (!test_bit(EVENT_DEV_OPEN, &dev->flags))
@@ -1509,18 +1125,13 @@ static void __handle_set_rx_mode(struct usbnet *dev)
 	clear_bit(EVENT_SET_RX_MODE, &dev->flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* work that cannot be done in interrupt context uses keventd.
  *
  * NOTE:  with 2.5 we could do more of this using completion callbacks,
  * especially now that control transfers can be queued.
  */
 static void
-<<<<<<< HEAD
-kevent (struct work_struct *work)
-=======
 usbnet_deferred_kevent (struct work_struct *work)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet		*dev =
 		container_of(work, struct usbnet, kevent);
@@ -1563,11 +1174,7 @@ fail_halt:
 					   status);
 		} else {
 			clear_bit (EVENT_RX_HALT, &dev->flags);
-<<<<<<< HEAD
-			queue_work(usbnet_wq, &dev->bh_w);
-=======
 			tasklet_schedule (&dev->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1592,20 +1199,12 @@ fail_halt:
 			usb_autopm_put_interface(dev->intf);
 fail_lowmem:
 			if (resched)
-<<<<<<< HEAD
-				queue_work(usbnet_wq, &dev->bh_w);
-=======
 				tasklet_schedule (&dev->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (test_bit (EVENT_LINK_RESET, &dev->flags)) {
-<<<<<<< HEAD
-		struct driver_info	*info = dev->driver_info;
-=======
 		const struct driver_info *info = dev->driver_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int			retval = 0;
 
 		clear_bit (EVENT_LINK_RESET, &dev->flags);
@@ -1623,10 +1222,6 @@ skip_reset:
 		} else {
 			usb_autopm_put_interface(dev->intf);
 		}
-<<<<<<< HEAD
-	}
-
-=======
 
 		/* handle link change from link resetting */
 		__handle_link_change(dev);
@@ -1639,7 +1234,6 @@ skip_reset:
 		__handle_set_rx_mode(dev);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->flags)
 		netdev_dbg(dev->net, "kevent done, flags = 0x%lx\n", dev->flags);
 }
@@ -1653,11 +1247,6 @@ static void tx_complete (struct urb *urb)
 	struct usbnet		*dev = entry->dev;
 
 	if (urb->status == 0) {
-<<<<<<< HEAD
-		if (!(dev->driver_info->flags & FLAG_MULTI_PACKET))
-			dev->net->stats.tx_packets++;
-		dev->net->stats.tx_bytes += entry->length;
-=======
 		struct pcpu_sw_netstats *stats64 = this_cpu_ptr(dev->net->tstats);
 		unsigned long flags;
 
@@ -1665,7 +1254,6 @@ static void tx_complete (struct urb *urb)
 		u64_stats_add(&stats64->tx_packets, entry->packets);
 		u64_stats_add(&stats64->tx_bytes, entry->length);
 		u64_stats_update_end_irqrestore(&stats64->syncp, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dev->net->stats.tx_errors++;
 
@@ -1679,14 +1267,9 @@ static void tx_complete (struct urb *urb)
 		case -ESHUTDOWN:		// hardware gone
 			break;
 
-<<<<<<< HEAD
-		// like rx, tx gets controller i/o faults during khubd delays
-		// and so it uses the same throttling mechanism.
-=======
 		/* like rx, tx gets controller i/o faults during hub_wq
 		 * delays and so it uses the same throttling mechanism.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -EPROTO:
 		case -ETIME:
 		case -EILSEQ:
@@ -1712,20 +1295,11 @@ static void tx_complete (struct urb *urb)
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-void usbnet_tx_timeout (struct net_device *net)
-=======
 void usbnet_tx_timeout (struct net_device *net, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet		*dev = netdev_priv(net);
 
 	unlink_urbs (dev, &dev->txq);
-<<<<<<< HEAD
-	queue_work(usbnet_wq, &dev->bh_w);
-
-	// FIXME: device recovery -- reset?
-=======
 	tasklet_schedule (&dev->bh);
 	/* this needs to be handled individually because the generic layer
 	 * doesn't know what is sufficient and could not restore private
@@ -1733,14 +1307,11 @@ void usbnet_tx_timeout (struct net_device *net, unsigned int txqueue)
 	 */
 	if (dev->driver_info->recover)
 		(dev->driver_info->recover)(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usbnet_tx_timeout);
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static int build_dma_sg(const struct sk_buff *skb, struct urb *urb)
 {
 	unsigned num_sgs, total_len = 0;
@@ -1774,22 +1345,14 @@ static int build_dma_sg(const struct sk_buff *skb, struct urb *urb)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 				     struct net_device *net)
 {
 	struct usbnet		*dev = netdev_priv(net);
-<<<<<<< HEAD
-	int			length;
-	struct urb		*urb = NULL;
-	struct skb_data		*entry;
-	struct driver_info	*info = dev->driver_info;
-=======
 	unsigned int			length;
 	struct urb		*urb = NULL;
 	struct skb_data		*entry;
 	const struct driver_info *info = dev->driver_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		flags;
 	int retval;
 
@@ -1801,18 +1364,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 	if (info->tx_fixup) {
 		skb = info->tx_fixup (dev, skb, GFP_ATOMIC);
 		if (!skb) {
-<<<<<<< HEAD
-			if (netif_msg_tx_err(dev)) {
-				netif_dbg(dev, tx_err, dev->net, "can't tx_fixup skb\n");
-				goto drop;
-			} else {
-				/* cdc_ncm collected packet; waits for more */
-				goto not_drop;
-			}
-		}
-	}
-	length = skb->len;
-=======
 			/* packet collected; minidriver waiting for more */
 			if (info->flags & FLAG_MULTI_PACKET)
 				goto not_drop;
@@ -1820,7 +1371,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 			goto drop;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(urb = usb_alloc_urb (0, GFP_ATOMIC))) {
 		netif_dbg(dev, tx_err, dev->net, "no urb\n");
@@ -1830,12 +1380,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 	entry = (struct skb_data *) skb->cb;
 	entry->urb = urb;
 	entry->dev = dev;
-<<<<<<< HEAD
-	entry->length = length;
-
-	usb_fill_bulk_urb (urb, dev->udev, dev->out,
-			skb->data, skb->len, tx_complete, skb);
-=======
 
 	usb_fill_bulk_urb (urb, dev->udev, dev->out,
 			skb->data, skb->len, tx_complete, skb);
@@ -1844,7 +1388,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 			goto drop;
 	}
 	length = urb->transfer_buffer_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* don't assume the hardware handles USB_ZERO_PACKET
 	 * NOTE:  strictly conforming cdc-ether devices should expect
@@ -1856,13 +1399,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 	if (length % dev->maxpacket == 0) {
 		if (!(info->flags & FLAG_SEND_ZLP)) {
 			if (!(info->flags & FLAG_MULTI_PACKET)) {
-<<<<<<< HEAD
-				urb->transfer_buffer_length++;
-				if (skb_tailroom(skb)) {
-					skb->data[skb->len] = 0;
-					__skb_put(skb, 1);
-				}
-=======
 				length++;
 				if (skb_tailroom(skb) && !urb->num_sgs) {
 					skb->data[skb->len] = 0;
@@ -1870,13 +1406,10 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 				} else if (urb->num_sgs)
 					sg_set_buf(&urb->sg[urb->num_sgs++],
 							dev->padding_pkt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else
 			urb->transfer_flags |= URB_ZERO_PACKET;
 	}
-<<<<<<< HEAD
-=======
 	urb->transfer_buffer_length = length;
 
 	if (info->flags & FLAG_MULTI_PACKET) {
@@ -1890,7 +1423,6 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 	} else {
 		usbnet_set_skb_tx_stats(skb, 1, length);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&dev->txq.lock, flags);
 	retval = usb_autopm_get_interface_async(dev->intf);
@@ -1898,14 +1430,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 		spin_unlock_irqrestore(&dev->txq.lock, flags);
 		goto drop;
 	}
-<<<<<<< HEAD
-=======
 	if (netif_queue_stopped(net)) {
 		usb_autopm_put_interface_async(dev->intf);
 		spin_unlock_irqrestore(&dev->txq.lock, flags);
 		goto drop;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 	/* if this triggers the device is still a sleep */
@@ -1933,11 +1462,7 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 			  "tx: submit urb err %d\n", retval);
 		break;
 	case 0:
-<<<<<<< HEAD
-		net->trans_start = jiffies;
-=======
 		netif_trans_update(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__usbnet_queue_skb(&dev->txq, skb, tx_start);
 		if (dev->txq.qlen >= TX_QLEN (dev))
 			netif_stop_queue (net);
@@ -1951,12 +1476,6 @@ drop:
 not_drop:
 		if (skb)
 			dev_kfree_skb_any (skb);
-<<<<<<< HEAD
-		usb_free_urb (urb);
-	} else
-		netif_dbg(dev, tx_queued, dev->net,
-			  "> tx, len %d, type 0x%x\n", length, skb->protocol);
-=======
 		if (urb) {
 			kfree(urb->sg);
 			usb_free_urb(urb);
@@ -1964,7 +1483,6 @@ not_drop:
 	} else
 		netif_dbg(dev, tx_queued, dev->net,
 			  "> tx, len %u, type 0x%x\n", length, skb->protocol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 deferred:
 #endif
@@ -1972,8 +1490,6 @@ deferred:
 }
 EXPORT_SYMBOL_GPL(usbnet_start_xmit);
 
-<<<<<<< HEAD
-=======
 static int rx_alloc_submit(struct usbnet *dev, gfp_t flags)
 {
 	struct urb	*urb;
@@ -2004,20 +1520,13 @@ static inline void usb_free_skb(struct sk_buff *skb)
 	dev_kfree_skb(skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 // tasklet (work deferred from completions, in_irq) or timer
 
-<<<<<<< HEAD
-static void usbnet_bh (unsigned long param)
-{
-	struct usbnet		*dev = (struct usbnet *) param;
-=======
 static void usbnet_bh (struct timer_list *t)
 {
 	struct usbnet		*dev = from_timer(dev, t, delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff		*skb;
 	struct skb_data		*entry;
 
@@ -2025,15 +1534,6 @@ static void usbnet_bh (struct timer_list *t)
 		entry = (struct skb_data *) skb->cb;
 		switch (entry->state) {
 		case rx_done:
-<<<<<<< HEAD
-			entry->state = rx_cleanup;
-			rx_process (dev, skb);
-			continue;
-		case tx_done:
-		case rx_cleanup:
-			usb_free_urb (entry->urb);
-			dev_kfree_skb (skb);
-=======
 			if (rx_process(dev, skb))
 				usb_free_skb(skb);
 			continue;
@@ -2042,20 +1542,12 @@ static void usbnet_bh (struct timer_list *t)
 			fallthrough;
 		case rx_cleanup:
 			usb_free_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		default:
 			netdev_dbg(dev->net, "bogus skb state %d\n", entry->state);
 		}
 	}
 
-<<<<<<< HEAD
-	// waiting for all pending urbs to complete?
-	if (dev->wait) {
-		if ((dev->txq.qlen + dev->rxq.qlen + dev->done.qlen) == 0) {
-			wake_up(&unlink_wakeup);
-		}
-=======
 	/* restart RX again after disabling due to high error rate */
 	clear_bit(EVENT_RX_KILL, &dev->flags);
 
@@ -2065,31 +1557,10 @@ static void usbnet_bh (struct timer_list *t)
 	if (waitqueue_active(&dev->wait)) {
 		if (dev->txq.qlen + dev->rxq.qlen + dev->done.qlen == 0)
 			wake_up_all(&dev->wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// or are we maybe short a few urbs?
 	} else if (netif_running (dev->net) &&
 		   netif_device_present (dev->net) &&
-<<<<<<< HEAD
-		   !timer_pending (&dev->delay) &&
-		   !test_bit (EVENT_RX_HALT, &dev->flags)) {
-		int	temp = dev->rxq.qlen;
-		int	qlen = RX_QLEN (dev);
-
-		if (temp < qlen) {
-			struct urb	*urb;
-			int		i;
-
-			// don't refill the queue all at once
-			for (i = 0; i < 10 && dev->rxq.qlen < qlen; i++) {
-				urb = usb_alloc_urb (0, GFP_ATOMIC);
-				if (urb != NULL) {
-					if (rx_submit (dev, urb, GFP_ATOMIC) ==
-					    -ENOLINK)
-						return;
-				}
-			}
-=======
 		   netif_carrier_ok(dev->net) &&
 		   !timer_pending(&dev->delay) &&
 		   !test_bit(EVENT_RX_PAUSED, &dev->flags) &&
@@ -2099,35 +1570,18 @@ static void usbnet_bh (struct timer_list *t)
 		if (temp < RX_QLEN(dev)) {
 			if (rx_alloc_submit(dev, GFP_ATOMIC) == -ENOLINK)
 				return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (temp != dev->rxq.qlen)
 				netif_dbg(dev, link, dev->net,
 					  "rxqlen %d --> %d\n",
 					  temp, dev->rxq.qlen);
-<<<<<<< HEAD
-			if (dev->rxq.qlen < qlen)
-				queue_work(usbnet_wq, &dev->bh_w);
-=======
 			if (dev->rxq.qlen < RX_QLEN(dev))
 				tasklet_schedule (&dev->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (dev->txq.qlen < TX_QLEN (dev))
 			netif_wake_queue (dev->net);
 	}
 }
 
-<<<<<<< HEAD
-static void usbnet_bh_w(struct work_struct *work)
-{
-	struct usbnet		*dev =
-		container_of(work, struct usbnet, bh_w);
-	unsigned long param = (unsigned long)dev;
-
-	usbnet_bh(param);
-}
-
-=======
 static void usbnet_bh_tasklet(struct tasklet_struct *t)
 {
 	struct usbnet *dev = from_tasklet(dev, t, bh);
@@ -2136,7 +1590,6 @@ static void usbnet_bh_tasklet(struct tasklet_struct *t)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------
  *
  * USB Device Driver support
@@ -2150,10 +1603,7 @@ void usbnet_disconnect (struct usb_interface *intf)
 	struct usbnet		*dev;
 	struct usb_device	*xdev;
 	struct net_device	*net;
-<<<<<<< HEAD
-=======
 	struct urb		*urb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = usb_get_intfdata(intf);
 	usb_set_intfdata(intf, NULL);
@@ -2170,20 +1620,6 @@ void usbnet_disconnect (struct usb_interface *intf)
 	net = dev->net;
 	unregister_netdev (net);
 
-<<<<<<< HEAD
-	cancel_work_sync(&dev->kevent);
-
-	usb_scuttle_anchored_urbs(&dev->deferred);
-
-	if (dev->driver_info->unbind)
-		dev->driver_info->unbind (dev, intf);
-
-	usb_kill_urb(dev->interrupt);
-	usb_free_urb(dev->interrupt);
-
-	free_netdev(net);
-	usb_put_dev (xdev);
-=======
 	while ((urb = usb_get_from_anchor(&dev->deferred))) {
 		dev_kfree_skb(urb->context);
 		kfree(urb->sg);
@@ -2198,7 +1634,6 @@ void usbnet_disconnect (struct usb_interface *intf)
 	kfree(dev->padding_pkt);
 
 	free_netdev(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usbnet_disconnect);
 
@@ -2207,10 +1642,7 @@ static const struct net_device_ops usbnet_netdev_ops = {
 	.ndo_stop		= usbnet_stop,
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
-<<<<<<< HEAD
-=======
 	.ndo_set_rx_mode	= usbnet_set_rx_mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_change_mtu		= usbnet_change_mtu,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
@@ -2220,19 +1652,11 @@ static const struct net_device_ops usbnet_netdev_ops = {
 
 // precondition: never called in_interrupt
 
-<<<<<<< HEAD
-static struct device_type wlan_type = {
-	.name	= "wlan",
-};
-
-static struct device_type wwan_type = {
-=======
 static const struct device_type wlan_type = {
 	.name	= "wlan",
 };
 
 static const struct device_type wwan_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "wwan",
 };
 
@@ -2242,11 +1666,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	struct usbnet			*dev;
 	struct net_device		*net;
 	struct usb_host_interface	*interface;
-<<<<<<< HEAD
-	struct driver_info		*info;
-=======
 	const struct driver_info	*info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_device		*xdev;
 	int				status;
 	const char			*name;
@@ -2254,11 +1674,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	/* usbnet already took usb runtime pm, so have to enable the feature
 	 * for usb interface, otherwise usb_autopm_get_interface may return
-<<<<<<< HEAD
-	 * failure if USB_SUSPEND(RUNTIME_PM) is enabled.
-=======
 	 * failure if RUNTIME_PM is enabled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!driver->supports_autosuspend) {
 		driver->supports_autosuspend = 1;
@@ -2266,11 +1682,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	}
 
 	name = udev->dev.driver->name;
-<<<<<<< HEAD
-	info = (struct driver_info *) prod->driver_info;
-=======
 	info = (const struct driver_info *) prod->driver_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info) {
 		dev_dbg (&udev->dev, "blacklisted by %s\n", name);
 		return -ENODEV;
@@ -2278,11 +1690,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	xdev = interface_to_usbdev (udev);
 	interface = udev->cur_altsetting;
 
-<<<<<<< HEAD
-	usb_get_dev (xdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = -ENOMEM;
 
 	// set up our own records
@@ -2298,34 +1705,16 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	dev->intf = udev;
 	dev->driver_info = info;
 	dev->driver_name = name;
-<<<<<<< HEAD
-	dev->msg_enable = netif_msg_init (msg_level, NETIF_MSG_DRV
-				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
-=======
 	dev->rx_speed = SPEED_UNSET;
 	dev->tx_speed = SPEED_UNSET;
 
 	dev->msg_enable = netif_msg_init (msg_level, NETIF_MSG_DRV
 				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
 	init_waitqueue_head(&dev->wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init (&dev->rxq);
 	skb_queue_head_init (&dev->txq);
 	skb_queue_head_init (&dev->done);
 	skb_queue_head_init(&dev->rxq_pause);
-<<<<<<< HEAD
-	INIT_WORK(&dev->bh_w, usbnet_bh_w);
-	INIT_WORK (&dev->kevent, kevent);
-	init_usb_anchor(&dev->deferred);
-	dev->delay.function = usbnet_bh;
-	dev->delay.data = (unsigned long) dev;
-	init_timer (&dev->delay);
-	mutex_init (&dev->phy_mutex);
-
-	dev->net = net;
-	strcpy (net->name, "usb%d");
-	memcpy (net->dev_addr, node_id, sizeof node_id);
-=======
 	tasklet_setup(&dev->bh, usbnet_bh_tasklet);
 	INIT_WORK (&dev->kevent, usbnet_deferred_kevent);
 	init_usb_anchor(&dev->deferred);
@@ -2337,31 +1726,18 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	dev->net = net;
 	strscpy(net->name, "usb%d", sizeof(net->name));
 	eth_hw_addr_set(net, node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* rx and tx sides can use different message sizes;
 	 * bind() should set rx_urb_size in that case.
 	 */
 	dev->hard_mtu = net->mtu + net->hard_header_len;
-<<<<<<< HEAD
-#if 0
-// dma_supported() is deeply broken on almost all architectures
-	// possible with some EHCI controllers
-	if (dma_supported (&udev->dev, DMA_BIT_MASK(64)))
-		net->features |= NETIF_F_HIGHDMA;
-#endif
-=======
 	net->min_mtu = 0;
 	net->max_mtu = ETH_MAX_MTU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	net->netdev_ops = &usbnet_netdev_ops;
 	net->watchdog_timeo = TX_TIMEOUT_JIFFIES;
 	net->ethtool_ops = &usbnet_ethtool_ops;
-<<<<<<< HEAD
-=======
 	net->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// allow device-specific bind/init procedures
 	// NOTE net->name still not usable ...
@@ -2376,15 +1752,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		if ((dev->driver_info->flags & FLAG_ETHER) != 0 &&
 		    ((dev->driver_info->flags & FLAG_POINTTOPOINT) == 0 ||
 		     (net->dev_addr [0] & 0x02) == 0))
-<<<<<<< HEAD
-			strcpy (net->name, "eth%d");
-		/* WLAN devices should always be named "wlan%d" */
-		if ((dev->driver_info->flags & FLAG_WLAN) != 0)
-			strcpy(net->name, "wlan%d");
-		/* WWAN devices should always be named "wwan%d" */
-		if ((dev->driver_info->flags & FLAG_WWAN) != 0)
-			strcpy(net->name, "wwan%d");
-=======
 			strscpy(net->name, "eth%d", sizeof(net->name));
 		/* WLAN devices should always be named "wlan%d" */
 		if ((dev->driver_info->flags & FLAG_WLAN) != 0)
@@ -2396,7 +1763,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		/* devices that cannot do ARP */
 		if ((dev->driver_info->flags & FLAG_NOARP) != 0)
 			net->flags |= IFF_NOARP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* maybe the remote can't receive an Ethernet MTU */
 		if (net->mtu > (dev->hard_mtu - net->hard_header_len))
@@ -2404,13 +1770,10 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	} else if (!info->in || !info->out)
 		status = usbnet_get_endpoints (dev, udev);
 	else {
-<<<<<<< HEAD
-=======
 		u8 ep_addrs[3] = {
 			info->in + USB_DIR_IN, info->out + USB_DIR_OUT, 0
 		};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->in = usb_rcvbulkpipe (xdev, info->in);
 		dev->out = usb_sndbulkpipe (xdev, info->out);
 		if (!(info->flags & FLAG_NO_SETINT))
@@ -2420,11 +1783,8 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		else
 			status = 0;
 
-<<<<<<< HEAD
-=======
 		if (status == 0 && !usb_check_bulk_endpoints(udev, ep_addrs))
 			status = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (status >= 0 && dev->status)
 		status = init_status (dev, udev);
@@ -2433,9 +1793,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	if (!dev->rx_urb_size)
 		dev->rx_urb_size = dev->hard_mtu;
-<<<<<<< HEAD
-	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
-=======
 	dev->maxpacket = usb_maxpacket(dev->udev, dev->out);
 	if (dev->maxpacket == 0) {
 		/* that is a broken device */
@@ -2446,18 +1803,12 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	/* let userspace know we have a random address */
 	if (ether_addr_equal(net->dev_addr, node_id))
 		net->addr_assign_type = NET_ADDR_RANDOM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((dev->driver_info->flags & FLAG_WLAN) != 0)
 		SET_NETDEV_DEVTYPE(net, &wlan_type);
 	if ((dev->driver_info->flags & FLAG_WWAN) != 0)
 		SET_NETDEV_DEVTYPE(net, &wwan_type);
 
-<<<<<<< HEAD
-	status = register_netdev (net);
-	if (status)
-		goto out4;
-=======
 	/* initialize max rx_qlen and tx_qlen */
 	usbnet_update_max_qlen(dev);
 
@@ -2473,7 +1824,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	status = register_netdev (net);
 	if (status)
 		goto out5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_info(dev, probe, dev->net,
 		   "register '%s' at usb-%s-%s, %s, %pM\n",
 		   udev->dev.driver->name,
@@ -2487,19 +1837,12 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	netif_device_attach (net);
 
 	if (dev->driver_info->flags & FLAG_LINK_INTR)
-<<<<<<< HEAD
-		netif_carrier_off(net);
-
-	return 0;
-
-=======
 		usbnet_link_change(dev, 0, 0);
 
 	return 0;
 
 out5:
 	kfree(dev->padding_pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out4:
 	usb_free_urb(dev->interrupt);
 out3:
@@ -2515,10 +1858,6 @@ out1:
 	del_timer_sync(&dev->delay);
 	free_netdev(net);
 out:
-<<<<<<< HEAD
-	usb_put_dev(xdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 EXPORT_SYMBOL_GPL(usbnet_probe);
@@ -2551,11 +1890,7 @@ int usbnet_suspend (struct usb_interface *intf, pm_message_t message)
 		 */
 		netif_device_detach (dev->net);
 		usbnet_terminate_urbs(dev);
-<<<<<<< HEAD
-		usb_kill_urb(dev->interrupt);
-=======
 		__usbnet_status_stop_force(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * reattach so runtime management can use and
@@ -2575,14 +1910,8 @@ int usbnet_resume (struct usb_interface *intf)
 	int                     retval;
 
 	if (!--dev->suspend_count) {
-<<<<<<< HEAD
-		/* resume interrupt URBs */
-		if (dev->interrupt && test_bit(EVENT_DEV_OPEN, &dev->flags))
-			usb_submit_urb(dev->interrupt, GFP_NOIO);
-=======
 		/* resume interrupt URB if it was previously submitted */
 		__usbnet_status_start_force(dev, GFP_NOIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irq(&dev->txq.lock);
 		while ((res = usb_get_from_anchor(&dev->deferred))) {
@@ -2591,18 +1920,11 @@ int usbnet_resume (struct usb_interface *intf)
 			retval = usb_submit_urb(res, GFP_ATOMIC);
 			if (retval < 0) {
 				dev_kfree_skb_any(skb);
-<<<<<<< HEAD
-				usb_free_urb(res);
-				usb_autopm_put_interface_async(dev->intf);
-			} else {
-				dev->net->trans_start = jiffies;
-=======
 				kfree(res->sg);
 				usb_free_urb(res);
 				usb_autopm_put_interface_async(dev->intf);
 			} else {
 				netif_trans_update(dev->net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__skb_queue_tail(&dev->txq, skb);
 			}
 		}
@@ -2612,13 +1934,6 @@ int usbnet_resume (struct usb_interface *intf)
 		spin_unlock_irq(&dev->txq.lock);
 
 		if (test_bit(EVENT_DEV_OPEN, &dev->flags)) {
-<<<<<<< HEAD
-			if (!(dev->txq.qlen >= TX_QLEN(dev)))
-				netif_tx_wake_all_queues(dev->net);
-			queue_work(usbnet_wq, &dev->bh_w);
-		}
-	}
-=======
 			/* handle remote wakeup ASAP
 			 * we cannot race against stop
 			 */
@@ -2636,14 +1951,10 @@ int usbnet_resume (struct usb_interface *intf)
 	if (test_and_clear_bit(EVENT_DEVICE_REPORT_IDLE, &dev->flags))
 		usb_autopm_get_interface_no_resume(intf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usbnet_resume);
 
-<<<<<<< HEAD
-
-=======
 /*
  * Either a subdriver implements manage_power, then it is assumed to always
  * be ready to be suspended or it reports the readiness to be suspended
@@ -2891,39 +2202,21 @@ fail:
 
 }
 EXPORT_SYMBOL_GPL(usbnet_write_cmd_async);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 static int __init usbnet_init(void)
 {
 	/* Compiler should optimize this out. */
 	BUILD_BUG_ON(
-<<<<<<< HEAD
-		FIELD_SIZEOF(struct sk_buff, cb) < sizeof(struct skb_data));
-
-	random_ether_addr(node_id);
-
-	usbnet_wq  = create_singlethread_workqueue("usbnet");
-	if (!usbnet_wq) {
-		pr_err("%s: Unable to create workqueue:usbnet\n", __func__);
-		return -ENOMEM;
-	}
-
-=======
 		sizeof_field(struct sk_buff, cb) < sizeof(struct skb_data));
 
 	eth_random_addr(node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 module_init(usbnet_init);
 
 static void __exit usbnet_exit(void)
 {
-<<<<<<< HEAD
-	destroy_workqueue(usbnet_wq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(usbnet_exit);
 

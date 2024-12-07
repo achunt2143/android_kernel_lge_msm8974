@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/kernel/capability.c
  *
@@ -11,11 +8,8 @@
  * 30 May 2002:	Cleanup, Robert M. Love <rml@tech9.net>
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/audit.h>
 #include <linux/capability.h>
 #include <linux/mm.h>
@@ -24,19 +18,7 @@
 #include <linux/syscalls.h>
 #include <linux/pid_namespace.h>
 #include <linux/user_namespace.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-/*
- * Leveraged for setting/resetting capabilities
- */
-
-const kernel_cap_t __cap_empty_set = CAP_EMPTY_SET;
-
-EXPORT_SYMBOL(__cap_empty_set);
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int file_caps_enabled = 1;
 
@@ -47,10 +29,7 @@ static int __init file_caps_disable(char *str)
 }
 __setup("no_file_caps", file_caps_disable);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MULTIUSER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * More recent versions of libcap are available from:
  *
@@ -59,22 +38,10 @@ __setup("no_file_caps", file_caps_disable);
 
 static void warn_legacy_capability_use(void)
 {
-<<<<<<< HEAD
-	static int warned;
-	if (!warned) {
-		char name[sizeof(current->comm)];
-
-		printk(KERN_INFO "warning: `%s' uses 32-bit capabilities"
-		       " (legacy support in use)\n",
-		       get_task_comm(name, current));
-		warned = 1;
-	}
-=======
 	char name[sizeof(current->comm)];
 
 	pr_info_once("warning: `%s' uses 32-bit capabilities (legacy support in use)\n",
 		     get_task_comm(name, current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -95,23 +62,10 @@ static void warn_legacy_capability_use(void)
 
 static void warn_deprecated_v2(void)
 {
-<<<<<<< HEAD
-	static int warned;
-
-	if (!warned) {
-		char name[sizeof(current->comm)];
-
-		printk(KERN_INFO "warning: `%s' uses deprecated v2"
-		       " capabilities in a way that may be insecure.\n",
-		       get_task_comm(name, current));
-		warned = 1;
-	}
-=======
 	char name[sizeof(current->comm)];
 
 	pr_info_once("warning: `%s' uses deprecated v2 capabilities in a way that may be insecure\n",
 		     get_task_comm(name, current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -132,13 +86,7 @@ static int cap_validate_magic(cap_user_header_t header, unsigned *tocopy)
 		break;
 	case _LINUX_CAPABILITY_VERSION_2:
 		warn_deprecated_v2();
-<<<<<<< HEAD
-		/*
-		 * fall through - v3 is otherwise equivalent to v2.
-		 */
-=======
 		fallthrough;	/* v3 is otherwise equivalent to v2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case _LINUX_CAPABILITY_VERSION_3:
 		*tocopy = _LINUX_CAPABILITY_U32S_3;
 		break;
@@ -164,11 +112,7 @@ static inline int cap_get_target_pid(pid_t pid, kernel_cap_t *pEp,
 	int ret;
 
 	if (pid && (pid != task_pid_vnr(current))) {
-<<<<<<< HEAD
-		struct task_struct *target;
-=======
 		const struct task_struct *target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rcu_read_lock();
 
@@ -200,10 +144,7 @@ SYSCALL_DEFINE2(capget, cap_user_header_t, header, cap_user_data_t, dataptr)
 	pid_t pid;
 	unsigned tocopy;
 	kernel_cap_t pE, pI, pP;
-<<<<<<< HEAD
-=======
 	struct __user_cap_data_struct kdata[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = cap_validate_magic(header, &tocopy);
 	if ((dataptr == NULL) || (ret != 0))
@@ -216,44 +157,6 @@ SYSCALL_DEFINE2(capget, cap_user_header_t, header, cap_user_data_t, dataptr)
 		return -EINVAL;
 
 	ret = cap_get_target_pid(pid, &pE, &pI, &pP);
-<<<<<<< HEAD
-	if (!ret) {
-		struct __user_cap_data_struct kdata[_KERNEL_CAPABILITY_U32S];
-		unsigned i;
-
-		for (i = 0; i < tocopy; i++) {
-			kdata[i].effective = pE.cap[i];
-			kdata[i].permitted = pP.cap[i];
-			kdata[i].inheritable = pI.cap[i];
-		}
-
-		/*
-		 * Note, in the case, tocopy < _KERNEL_CAPABILITY_U32S,
-		 * we silently drop the upper capabilities here. This
-		 * has the effect of making older libcap
-		 * implementations implicitly drop upper capability
-		 * bits when they perform a: capget/modify/capset
-		 * sequence.
-		 *
-		 * This behavior is considered fail-safe
-		 * behavior. Upgrading the application to a newer
-		 * version of libcap will enable access to the newer
-		 * capabilities.
-		 *
-		 * An alternative would be to return an error here
-		 * (-ERANGE), but that causes legacy applications to
-		 * unexpectidly fail; the capget/modify/capset aborts
-		 * before modification is attempted and the application
-		 * fails.
-		 */
-		if (copy_to_user(dataptr, kdata, tocopy
-				 * sizeof(struct __user_cap_data_struct))) {
-			return -EFAULT;
-		}
-	}
-
-	return ret;
-=======
 	if (ret)
 		return ret;
 
@@ -294,7 +197,6 @@ SYSCALL_DEFINE2(capget, cap_user_header_t, header, cap_user_data_t, dataptr)
 static kernel_cap_t mk_kernel_cap(u32 low, u32 high)
 {
 	return (kernel_cap_t) { (low | ((u64)high << 32)) & CAP_VALID_MASK };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -317,13 +219,8 @@ static kernel_cap_t mk_kernel_cap(u32 low, u32 high)
  */
 SYSCALL_DEFINE2(capset, cap_user_header_t, header, const cap_user_data_t, data)
 {
-<<<<<<< HEAD
-	struct __user_cap_data_struct kdata[_KERNEL_CAPABILITY_U32S];
-	unsigned i, tocopy, copybytes;
-=======
 	struct __user_cap_data_struct kdata[2] = { { 0, }, };
 	unsigned tocopy, copybytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kernel_cap_t inheritable, permitted, effective;
 	struct cred *new;
 	int ret;
@@ -347,23 +244,9 @@ SYSCALL_DEFINE2(capset, cap_user_header_t, header, const cap_user_data_t, data)
 	if (copy_from_user(&kdata, data, copybytes))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	for (i = 0; i < tocopy; i++) {
-		effective.cap[i] = kdata[i].effective;
-		permitted.cap[i] = kdata[i].permitted;
-		inheritable.cap[i] = kdata[i].inheritable;
-	}
-	while (i < _KERNEL_CAPABILITY_U32S) {
-		effective.cap[i] = 0;
-		permitted.cap[i] = 0;
-		inheritable.cap[i] = 0;
-		i++;
-	}
-=======
 	effective   = mk_kernel_cap(kdata[0].effective,   kdata[1].effective);
 	permitted   = mk_kernel_cap(kdata[0].permitted,   kdata[1].permitted);
 	inheritable = mk_kernel_cap(kdata[0].inheritable, kdata[1].inheritable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new = prepare_creds();
 	if (!new)
@@ -374,11 +257,7 @@ SYSCALL_DEFINE2(capset, cap_user_header_t, header, const cap_user_data_t, data)
 	if (ret < 0)
 		goto error;
 
-<<<<<<< HEAD
-	audit_log_capset(pid, new, current_cred());
-=======
 	audit_log_capset(new, current_cred());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return commit_creds(new);
 
@@ -404,11 +283,7 @@ bool has_ns_capability(struct task_struct *t,
 	int ret;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	ret = security_capable(__task_cred(t), ns, cap);
-=======
 	ret = security_capable(__task_cred(t), ns, cap, CAP_OPT_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	return (ret == 0);
@@ -428,10 +303,7 @@ bool has_capability(struct task_struct *t, int cap)
 {
 	return has_ns_capability(t, &init_user_ns, cap);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(has_capability);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * has_ns_capability_noaudit - Does a task have a capability (unaudited)
@@ -452,11 +324,7 @@ bool has_ns_capability_noaudit(struct task_struct *t,
 	int ret;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	ret = security_capable_noaudit(__task_cred(t), ns, cap);
-=======
 	ret = security_capable(__task_cred(t), ns, cap, CAP_OPT_NOAUDIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	return (ret == 0);
@@ -478,8 +346,6 @@ bool has_capability_noaudit(struct task_struct *t, int cap)
 {
 	return has_ns_capability_noaudit(t, &init_user_ns, cap);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(has_capability_noaudit);
 
 static bool ns_capable_common(struct user_namespace *ns,
@@ -500,7 +366,6 @@ static bool ns_capable_common(struct user_namespace *ns,
 	}
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ns_capable - Determine if the current task has a superior capability in effect
@@ -515,26 +380,11 @@ static bool ns_capable_common(struct user_namespace *ns,
  */
 bool ns_capable(struct user_namespace *ns, int cap)
 {
-<<<<<<< HEAD
-	if (unlikely(!cap_valid(cap))) {
-		printk(KERN_CRIT "capable() called with invalid cap=%u\n", cap);
-		BUG();
-	}
-
-	if (security_capable(current_cred(), ns, cap) == 0) {
-		current->flags |= PF_SUPERPRIV;
-		return true;
-	}
-	return false;
-=======
 	return ns_capable_common(ns, cap, CAP_OPT_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ns_capable);
 
 /**
-<<<<<<< HEAD
-=======
  * ns_capable_noaudit - Determine if the current task has a superior capability
  * (unaudited) in effect
  * @ns:  The usernamespace we want the capability in
@@ -572,7 +422,6 @@ bool ns_capable_setid(struct user_namespace *ns, int cap)
 EXPORT_SYMBOL(ns_capable_setid);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * capable - Determine if the current task has a superior capability in effect
  * @cap: The capability to be tested for
  *
@@ -587,19 +436,6 @@ bool capable(int cap)
 	return ns_capable(&init_user_ns, cap);
 }
 EXPORT_SYMBOL(capable);
-<<<<<<< HEAD
-
-/**
- * nsown_capable - Check superior capability to one's own user_ns
- * @cap: The capability in question
- *
- * Return true if the current task has the given superior capability
- * targeted at its own user namespace.
- */
-bool nsown_capable(int cap)
-{
-	return ns_capable(current_user_ns(), cap);
-=======
 #endif /* CONFIG_MULTIUSER */
 
 /**
@@ -684,5 +520,4 @@ bool ptracer_capable(struct task_struct *tsk, struct user_namespace *ns)
 				       CAP_OPT_NOAUDIT);
 	rcu_read_unlock();
 	return (ret == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

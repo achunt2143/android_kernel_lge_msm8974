@@ -1,28 +1,18 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAAM hardware register-level view
  *
  * Copyright 2008-2011 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
-=======
  * Copyright 2018, 2023 NXP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef REGS_H
 #define REGS_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-=======
 #include <linux/bitops.h>
 #include <linux/io.h>
 #include <linux/io-64-nonatomic-hi-lo.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Architecture-specific register access methods
@@ -79,39 +69,6 @@
  *
  */
 
-<<<<<<< HEAD
-#ifdef __BIG_ENDIAN
-#define wr_reg32(reg, data) out_be32(reg, data)
-#define rd_reg32(reg) in_be32(reg)
-#ifdef CONFIG_64BIT
-#define wr_reg64(reg, data) out_be64(reg, data)
-#define rd_reg64(reg) in_be64(reg)
-#endif
-#else
-#ifdef __LITTLE_ENDIAN
-#define wr_reg32(reg, data) __raw_writel(reg, data)
-#define rd_reg32(reg) __raw_readl(reg)
-#ifdef CONFIG_64BIT
-#define wr_reg64(reg, data) __raw_writeq(reg, data)
-#define rd_reg64(reg) __raw_readq(reg)
-#endif
-#endif
-#endif
-
-#ifndef CONFIG_64BIT
-static inline void wr_reg64(u64 __iomem *reg, u64 data)
-{
-	wr_reg32((u32 __iomem *)reg, (data & 0xffffffff00000000ull) >> 32);
-	wr_reg32((u32 __iomem *)reg + 1, data & 0x00000000ffffffffull);
-}
-
-static inline u64 rd_reg64(u64 __iomem *reg)
-{
-	return (((u64)rd_reg32((u32 __iomem *)reg)) << 32) |
-		((u64)rd_reg32((u32 __iomem *)reg + 1));
-}
-#endif
-=======
 extern bool caam_little_end;
 extern bool caam_imx;
 extern size_t caam_ptr_sz;
@@ -254,18 +211,11 @@ static inline u64 caam_dma_to_cpu(u64 value)
 	else
 		return caam32_to_cpu(value);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * jr_outentry
  * Represents each entry in a JobR output ring
  */
-<<<<<<< HEAD
-struct jr_outentry {
-	dma_addr_t desc;/* Pointer to completed descriptor */
-	u32 jrstatus;	/* Status for completed descriptor */
-} __packed;
-=======
 
 static inline void jr_outentry_get(void *outring, int hw_idx, dma_addr_t *desc,
 				   u32 *jrstatus)
@@ -375,7 +325,6 @@ struct version_regs {
 
 /* CHA Miscellaneous Information - PKHA_MISC specific */
 #define CHA_VER_MISC_PKHA_NO_CRYPT	BIT(7 + CHA_VER_MISC_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * caam_perfmon - Performance Monitor/Secure Memory Status/
@@ -385,10 +334,6 @@ struct version_regs {
  */
 
 /* Number of DECOs */
-<<<<<<< HEAD
-#define CHA_NUM_DECONUM_SHIFT	56
-#define CHA_NUM_DECONUM_MASK	(0xfull << CHA_NUM_DECONUM_SHIFT)
-=======
 #define CHA_NUM_MS_DECONUM_SHIFT	24
 #define CHA_NUM_MS_DECONUM_MASK	(0xfull << CHA_NUM_MS_DECONUM_SHIFT)
 
@@ -446,7 +391,6 @@ struct sec_vid {
 	u8 maj_rev;
 	u8 min_rev;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct caam_perfmon {
 	/* Performance Monitor Registers			f00-f9f */
@@ -460,12 +404,6 @@ struct caam_perfmon {
 	u64 rsvd[13];
 
 	/* CAAM Hardware Instantiation Parameters		fa0-fbf */
-<<<<<<< HEAD
-	u64 cha_rev;		/* CRNR - CHA Revision Number		*/
-#define CTPR_QI_SHIFT		57
-#define CTPR_QI_MASK		(0x1ull << CTPR_QI_SHIFT)
-	u64 comp_parms;	/* CTPR - Compile Parameters Register	*/
-=======
 	u32 cha_rev_ms;		/* CRNR - CHA Rev No. Most significant half*/
 	u32 cha_rev_ls;		/* CRNR - CHA Rev No. Least significant half*/
 #define CTPR_MS_QI_SHIFT	25
@@ -479,7 +417,6 @@ struct caam_perfmon {
 	u32 comp_parms_ms;	/* CTPR - Compile Parameters Register	*/
 #define CTPR_LS_BLOB           BIT(1)
 	u32 comp_parms_ls;	/* CTPR - Compile Parameters Register	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 rsvd1[2];
 
 	/* CAAM Global Status					fc0-fdf */
@@ -487,25 +424,16 @@ struct caam_perfmon {
 	u32 faultliodn;	/* FALR - Fault Address LIODN	*/
 	u32 faultdetail;	/* FADR - Fault Addr Detail	*/
 	u32 rsvd2;
-<<<<<<< HEAD
-=======
 #define CSTA_PLEND		BIT(10)
 #define CSTA_ALT_PLEND		BIT(18)
 #define CSTA_MOO		GENMASK(9, 8)
 #define CSTA_MOO_SECURE	1
 #define CSTA_MOO_TRUSTED	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 status;		/* CSTA - CAAM Status */
 	u64 rsvd3;
 
 	/* Component Instantiation Parameters			fe0-fff */
 	u32 rtic_id;		/* RVID - RTIC Version ID	*/
-<<<<<<< HEAD
-	u32 ccb_id;		/* CCBVID - CCB Version ID	*/
-	u64 cha_id;		/* CHAVID - CHA Version ID	*/
-	u64 cha_num;		/* CHANUM - CHA Number		*/
-	u64 caam_id;		/* CAAMVID - CAAM Version ID	*/
-=======
 #define CCBVID_ERA_MASK		0xff000000
 #define CCBVID_ERA_SHIFT	24
 	u32 ccb_id;		/* CCBVID - CCB Version ID	*/
@@ -519,7 +447,6 @@ struct caam_perfmon {
 #define SECVID_MS_MAJ_REV_SHIFT	8
 	u32 caam_id_ms;		/* CAAMVID - CAAM Version ID MS	*/
 	u32 caam_id_ls;		/* CAAMVID - CAAM Version ID LS	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* LIODN programming for DMA configuration */
@@ -532,17 +459,7 @@ struct masterid {
 	u32 liodn_ls;	/* LIODN for non-sequence and seq access */
 };
 
-<<<<<<< HEAD
-/* Partition ID for DMA configuration */
-struct partid {
-	u32 rsvd1;
-	u32 pidr;	/* partition ID, DECO */
-};
-
-/* RNG test mode (replicated twice in some configurations) */
-=======
 /* RNGB test mode (replicated twice in some configurations) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Padded out to 0x100 */
 struct rngtst {
 	u32 mode;		/* RTSTMODEx - Test mode */
@@ -575,8 +492,6 @@ struct rngtst {
 	u32 rsvd14[15];
 };
 
-<<<<<<< HEAD
-=======
 /* RNG4 TRNG test registers */
 struct rng4tst {
 #define RTMCTL_ACC  BIT(5)  /* TRNG access mode */
@@ -635,7 +550,6 @@ struct rng4tst {
 	u32 rsvd2[15];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * caam_ctrl - basic core configuration
  * starts base + 0x0000 padded out to 0x1000
@@ -657,24 +571,12 @@ struct caam_ctrl {
 	/* Read/Writable					        */
 	u32 rsvd1;
 	u32 mcr;		/* MCFG      Master Config Register  */
-<<<<<<< HEAD
-	u32 rsvd2[2];
-=======
 	u32 rsvd2;
 	u32 scfgr;		/* SCFGR, Security Config Register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bus Access Configuration Section			010-11f */
 	/* Read/Writable                                                */
 	struct masterid jr_mid[4];	/* JRxLIODNR - JobR LIODN setup */
-<<<<<<< HEAD
-	u32 rsvd3[12];
-	struct masterid rtic_mid[4];	/* RTICxLIODNR - RTIC LIODN setup */
-	u32 rsvd4[7];
-	u32 deco_rq;			/* DECORR - DECO Request */
-	struct partid deco_mid[5];	/* DECOxLIODNR - 1 per DECO */
-	u32 rsvd5[22];
-=======
 	u32 rsvd3[11];
 	u32 jrstart;			/* JRSTART - Job Ring Start Register */
 	struct masterid rtic_mid[4];	/* RTICxLIODNR - RTIC LIODN setup */
@@ -683,7 +585,6 @@ struct caam_ctrl {
 	u32 rsvd11;
 	u32 deco_rq;			/* DECORR - DECO Request */
 	struct masterid deco_mid[16];	/* DECOxLIODNR - 1 per DECO */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DECO Availability/Reset Section			120-3ff */
 	u32 deco_avail;		/* DAR - DECO availability */
@@ -701,12 +602,6 @@ struct caam_ctrl {
 
 	/* RNG Test/Verification/Debug Access                   600-7ff */
 	/* (Useful in Test/Debug modes only...)                         */
-<<<<<<< HEAD
-	struct rngtst rtst[2];
-
-	u32 rsvd9[448];
-
-=======
 	union {
 		struct rngtst rtst[2];
 		struct rng4tst r4tst[2];
@@ -716,7 +611,6 @@ struct caam_ctrl {
 
 	/* Version registers - introduced with era 10		e80-eff */
 	struct version_regs vreg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Performance Monitor                                  f00-fff */
 	struct caam_perfmon perfmon;
 };
@@ -729,44 +623,32 @@ struct caam_ctrl {
 #define MCFGR_WDFAIL		0x20000000 /* DECO watchdog force-fail */
 #define MCFGR_DMA_RESET		0x10000000
 #define MCFGR_LONG_PTR		0x00010000 /* Use >32-bit desc addressing */
-<<<<<<< HEAD
-=======
 #define SCFGR_RDBENABLE		0x00000400
 #define SCFGR_VIRT_EN		0x00008000
 #define DECORR_RQD0ENABLE	0x00000001 /* Enable DECO0 for direct access */
 #define DECORSR_JR0		0x00000001 /* JR to supply TZ, SDID, ICID */
 #define DECORSR_VALID		0x80000000
 #define DECORR_DEN0		0x00010000 /* DECO0 available for access*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AXI read cache control */
 #define MCFGR_ARCACHE_SHIFT	12
 #define MCFGR_ARCACHE_MASK	(0xf << MCFGR_ARCACHE_SHIFT)
-<<<<<<< HEAD
-=======
 #define MCFGR_ARCACHE_BUFF	(0x1 << MCFGR_ARCACHE_SHIFT)
 #define MCFGR_ARCACHE_CACH	(0x2 << MCFGR_ARCACHE_SHIFT)
 #define MCFGR_ARCACHE_RALL	(0x4 << MCFGR_ARCACHE_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AXI write cache control */
 #define MCFGR_AWCACHE_SHIFT	8
 #define MCFGR_AWCACHE_MASK	(0xf << MCFGR_AWCACHE_SHIFT)
-<<<<<<< HEAD
-=======
 #define MCFGR_AWCACHE_BUFF	(0x1 << MCFGR_AWCACHE_SHIFT)
 #define MCFGR_AWCACHE_CACH	(0x2 << MCFGR_AWCACHE_SHIFT)
 #define MCFGR_AWCACHE_WALL	(0x8 << MCFGR_AWCACHE_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AXI pipeline depth */
 #define MCFGR_AXIPIPE_SHIFT	4
 #define MCFGR_AXIPIPE_MASK	(0xf << MCFGR_AXIPIPE_SHIFT)
 
 #define MCFGR_AXIPRI		0x00000008 /* Assert AXI priority sideband */
-<<<<<<< HEAD
-#define MCFGR_BURST_64		0x00000001 /* Max burst size */
-=======
 #define MCFGR_LARGE_BURST	0x00000004 /* 128/256-byte burst size */
 #define MCFGR_BURST_64		0x00000001 /* 64-byte burst size */
 
@@ -775,7 +657,6 @@ struct caam_ctrl {
 #define JRSTART_JR1_START       0x00000002 /* Start Job ring 1 */
 #define JRSTART_JR2_START       0x00000004 /* Start Job ring 2 */
 #define JRSTART_JR3_START       0x00000008 /* Start Job ring 3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * caam_job_ring - direct job ring setup
@@ -819,15 +700,10 @@ struct caam_job_ring {
 	u32 rsvd11;
 	u32 jrcommand;	/* JRCRx - JobR command */
 
-<<<<<<< HEAD
-	u32 rsvd12[932];
-
-=======
 	u32 rsvd12[900];
 
 	/* Version registers - introduced with era 10           e80-eff */
 	struct version_regs vreg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Performance Monitor                                  f00-fff */
 	struct caam_perfmon perfmon;
 };
@@ -846,10 +722,7 @@ struct caam_job_ring {
 #define JRSTA_SSRC_CCB_ERROR        0x20000000
 #define JRSTA_SSRC_JUMP_HALT_USER   0x30000000
 #define JRSTA_SSRC_DECO             0x40000000
-<<<<<<< HEAD
-=======
 #define JRSTA_SSRC_QI               0x50000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JRSTA_SSRC_JRERROR          0x60000000
 #define JRSTA_SSRC_JUMP_HALT_CC     0x70000000
 
@@ -893,11 +766,8 @@ struct caam_job_ring {
 #define JRSTA_DECOERR_INVSIGN       0x86
 #define JRSTA_DECOERR_DSASIGN       0x87
 
-<<<<<<< HEAD
-=======
 #define JRSTA_QIERR_ERROR_MASK      0x00ff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JRSTA_CCBERR_JUMP           0x08000000
 #define JRSTA_CCBERR_INDEX_MASK     0xff00
 #define JRSTA_CCBERR_INDEX_SHIFT    8
@@ -1126,10 +996,7 @@ struct caam_deco {
 	u32 jr_ctl_hi;	/* CxJRR - JobR Control Register      @800 */
 	u32 jr_ctl_lo;
 	u64 jr_descaddr;	/* CxDADR - JobR Descriptor Address */
-<<<<<<< HEAD
-=======
 #define DECO_OP_STATUS_HI_ERR_MASK 0xF00000FF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 op_status_hi;	/* DxOPSTA - DECO Operation Status */
 	u32 op_status_lo;
 	u32 rsvd24[2];
@@ -1143,40 +1010,6 @@ struct caam_deco {
 	struct deco_sg_table sctr_tbl[4];	/* DxSTR - Scatter Tables */
 	u32 rsvd29[48];
 	u32 descbuf[64];	/* DxDESB - Descriptor buffer */
-<<<<<<< HEAD
-	u32 rsvd30[320];
-};
-
-/*
- * Current top-level view of memory map is:
- *
- * 0x0000 - 0x0fff - CAAM Top-Level Control
- * 0x1000 - 0x1fff - Job Ring 0
- * 0x2000 - 0x2fff - Job Ring 1
- * 0x3000 - 0x3fff - Job Ring 2
- * 0x4000 - 0x4fff - Job Ring 3
- * 0x5000 - 0x5fff - (unused)
- * 0x6000 - 0x6fff - Assurance Controller
- * 0x7000 - 0x7fff - Queue Interface
- * 0x8000 - 0x8fff - DECO-CCB 0
- * 0x9000 - 0x9fff - DECO-CCB 1
- * 0xa000 - 0xafff - DECO-CCB 2
- * 0xb000 - 0xbfff - DECO-CCB 3
- * 0xc000 - 0xcfff - DECO-CCB 4
- *
- * caam_full describes the full register view of CAAM if useful,
- * although many configurations may choose to implement parts of
- * the register map separately, in differing privilege regions
- */
-struct caam_full {
-	struct caam_ctrl __iomem ctrl;
-	struct caam_job_ring jr[4];
-	u64 rsvd[512];
-	struct caam_assurance assure;
-	struct caam_queue_if qi;
-};
-
-=======
 	u32 rscvd30[193];
 #define DESC_DBG_DECO_STAT_VALID	0x80000000
 #define DESC_DBG_DECO_STAT_MASK		0x00F00000
@@ -1200,5 +1033,4 @@ struct caam_full {
 #define DECO_BLOCK_NUMBER	8
 #define PG_SIZE_4K		0x1000
 #define PG_SIZE_64K		0x10000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* REGS_H */

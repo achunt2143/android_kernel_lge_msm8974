@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NF_CONNTRACK_TSTAMP_H
 #define _NF_CONNTRACK_TSTAMP_H
 
@@ -41,36 +38,10 @@ struct nf_conn_tstamp *nf_ct_tstamp_ext_add(struct nf_conn *ct, gfp_t gfp)
 #endif
 };
 
-<<<<<<< HEAD
-static inline bool nf_ct_tstamp_enabled(struct net *net)
-{
-	return net->ct.sysctl_tstamp != 0;
-}
-
-static inline void nf_ct_set_tstamp(struct net *net, bool enable)
-{
-	net->ct.sysctl_tstamp = enable;
-}
-
-#ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
-extern int nf_conntrack_tstamp_init(struct net *net);
-extern void nf_conntrack_tstamp_fini(struct net *net);
-#else
-static inline int nf_conntrack_tstamp_init(struct net *net)
-{
-	return 0;
-}
-
-static inline void nf_conntrack_tstamp_fini(struct net *net)
-{
-	return;
-}
-=======
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
 void nf_conntrack_tstamp_pernet_init(struct net *net);
 #else
 static inline void nf_conntrack_tstamp_pernet_init(struct net *net) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NF_CONNTRACK_TIMESTAMP */
 
 #endif /* _NF_CONNTRACK_TSTAMP_H */

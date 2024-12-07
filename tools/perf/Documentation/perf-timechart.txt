@@ -8,26 +8,13 @@ perf-timechart - Tool to visualize total system behavior during a workload
 SYNOPSIS
 --------
 [verse]
-<<<<<<< HEAD
-'perf timechart' {record}
-=======
 'perf timechart' [<timechart options>] {record} [<record options>]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
 There are two variants of perf timechart:
 
   'perf timechart record <command>' to record the system level events
-<<<<<<< HEAD
-  of an arbitrary workload.
-
-  'perf timechart' to turn a trace into a Scalable Vector Graphics file,
-  that can be viewed with popular SVG viewers such as 'Inkscape'.
-
-OPTIONS
--------
-=======
   of an arbitrary workload. By default timechart records only scheduler
   and CPU events (task switches, running times, CPU power states, etc),
   but it's possible to record IO (disk, network) activity using -I argument.
@@ -45,7 +32,6 @@ OPTIONS
 
 TIMECHART OPTIONS
 -----------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -o::
 --output=::
         Select the output file (default: output.svg)
@@ -58,14 +44,6 @@ TIMECHART OPTIONS
 -P::
 --power-only::
         Only output the CPU power section of the diagram
-<<<<<<< HEAD
--p::
---process::
-        Select the processes to display, by name or PID
-
---symfs=<directory>::
-        Look for files with symbols relative to this directory.
-=======
 -T::
 --tasks-only::
         Don't output processor state transitions
@@ -144,7 +122,6 @@ Record system-wide IO events:
   then generate timechart:
 
   $ perf timechart
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SEE ALSO
 --------

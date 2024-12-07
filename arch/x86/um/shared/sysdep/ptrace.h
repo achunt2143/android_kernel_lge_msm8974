@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef __SYSDEP_X86_PTRACE_H
-#define __SYSDEP_X86_PTRACE_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SYSDEP_X86_PTRACE_H
 #define __SYSDEP_X86_PTRACE_H
@@ -43,19 +38,12 @@
 #define UPT_DS(r) REGS_DS((r)->gp)
 #define UPT_ES(r) REGS_ES((r)->gp)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __i386__
 #include "ptrace_32.h"
 #else
 #include "ptrace_64.h"
 #endif
 
-<<<<<<< HEAD
-static inline long regs_return_value(struct uml_pt_regs *regs)
-{
-	return UPT_SYSCALL_RET(regs);
-}
-=======
 struct syscall_args {
 	unsigned long args[6];
 };
@@ -83,6 +71,5 @@ struct uml_pt_regs {
 #define UPT_IS_USER(r) ((r)->is_user)
 
 extern int user_context(unsigned long sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SYSDEP_X86_PTRACE_H */

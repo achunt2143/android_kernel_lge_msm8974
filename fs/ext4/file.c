@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/file.c
  *
@@ -24,12 +21,6 @@
 
 #include <linux/time.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/jbd2.h>
-#include <linux/mount.h>
-#include <linux/path.h>
-#include <linux/quotaops.h>
-=======
 #include <linux/iomap.h>
 #include <linux/mount.h>
 #include <linux/path.h>
@@ -39,13 +30,10 @@
 #include <linux/uio.h>
 #include <linux/mman.h>
 #include <linux/backing-dev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ext4.h"
 #include "ext4_jbd2.h"
 #include "xattr.h"
 #include "acl.h"
-<<<<<<< HEAD
-=======
 #include "truncate.h"
 
 /*
@@ -169,7 +157,6 @@ static ssize_t ext4_file_splice_read(struct file *in, loff_t *ppos,
 		return -EIO;
 	return filemap_splice_read(in, ppos, pipe, len, flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called when an inode is released. Note that this is different
@@ -185,12 +172,7 @@ static int ext4_release_file(struct inode *inode, struct file *filp)
 	/* if we are the last writer on the inode, drop the block reservation */
 	if ((filp->f_mode & FMODE_WRITE) &&
 			(atomic_read(&inode->i_writecount) == 1) &&
-<<<<<<< HEAD
-		        !EXT4_I(inode)->i_reserved_data_blocks)
-	{
-=======
 			!EXT4_I(inode)->i_reserved_data_blocks) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		down_write(&EXT4_I(inode)->i_data_sem);
 		ext4_discard_preallocations(inode);
 		up_write(&EXT4_I(inode)->i_data_sem);
@@ -201,16 +183,6 @@ static int ext4_release_file(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void ext4_aiodio_wait(struct inode *inode)
-{
-	wait_queue_head_t *wq = ext4_ioend_wq(inode);
-
-	wait_event(*wq, (atomic_read(&EXT4_I(inode)->i_aiodio_unwritten) == 0));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This tests whether the IO in question is block-aligned or not.
  * Ext4 utilizes unwritten extents when hole-filling during direct IO, and they
@@ -220,33 +192,6 @@ static void ext4_aiodio_wait(struct inode *inode)
  * threads are at work on the same unwritten block, they must be synchronized
  * or one thread will zero the other's data, causing corruption.
  */
-<<<<<<< HEAD
-static int
-ext4_unaligned_aio(struct inode *inode, const struct iovec *iov,
-		   unsigned long nr_segs, loff_t pos)
-{
-	struct super_block *sb = inode->i_sb;
-	int blockmask = sb->s_blocksize - 1;
-	size_t count = iov_length(iov, nr_segs);
-	loff_t final_size = pos + count;
-
-	if (pos >= i_size_read(inode))
-		return 0;
-
-	if ((pos & blockmask) || (final_size & blockmask))
-		return 1;
-
-	return 0;
-}
-
-static ssize_t
-ext4_file_write(struct kiocb *iocb, const struct iovec *iov,
-		unsigned long nr_segs, loff_t pos)
-{
-	struct inode *inode = iocb->ki_filp->f_path.dentry->d_inode;
-	int unaligned_aio = 0;
-	int ret;
-=======
 static bool
 ext4_unaligned_io(struct inode *inode, struct iov_iter *from, loff_t pos)
 {
@@ -307,50 +252,11 @@ static ssize_t ext4_generic_write_checks(struct kiocb *iocb,
 	ret = generic_write_checks(iocb, from);
 	if (ret <= 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we have encountered a bitmap-format file, the size limit
 	 * is smaller than s_maxbytes, which is for extent-mapped files.
 	 */
-<<<<<<< HEAD
-
-	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
-		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
-		size_t length = iov_length(iov, nr_segs);
-
-		if ((pos > sbi->s_bitmap_maxbytes ||
-		    (pos == sbi->s_bitmap_maxbytes && length > 0)))
-			return -EFBIG;
-
-		if (pos + length > sbi->s_bitmap_maxbytes) {
-			nr_segs = iov_shorten((struct iovec *)iov, nr_segs,
-					      sbi->s_bitmap_maxbytes - pos);
-		}
-	} else if (unlikely((iocb->ki_filp->f_flags & O_DIRECT) &&
-		   !is_sync_kiocb(iocb))) {
-		unaligned_aio = ext4_unaligned_aio(inode, iov, nr_segs, pos);
-	}
-
-	/* Unaligned direct AIO must be serialized; see comment above */
-	if (unaligned_aio) {
-		static unsigned long unaligned_warn_time;
-
-		/* Warn about this once per day */
-		if (printk_timed_ratelimit(&unaligned_warn_time, 60*60*24*HZ))
-			ext4_msg(inode->i_sb, KERN_WARNING,
-				 "Unaligned AIO/DIO on inode %ld by %s; "
-				 "performance will be poor.",
-				 inode->i_ino, current->comm);
-		mutex_lock(ext4_aio_mutex(inode));
-		ext4_aiodio_wait(inode);
-	}
-
-	ret = generic_file_aio_write(iocb, iov, nr_segs, pos);
-
-	if (unaligned_aio)
-		mutex_unlock(ext4_aio_mutex(inode));
-=======
 	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
 		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
 
@@ -714,15 +620,10 @@ out:
 						 offset >> PAGE_SHIFT,
 						 endbyte >> PAGE_SHIFT);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct vm_operations_struct ext4_file_vm_ops = {
-	.fault		= filemap_fault,
-=======
 #ifdef CONFIG_FS_DAX
 static ssize_t
 ext4_dax_write_iter(struct kiocb *iocb, struct iov_iter *from)
@@ -875,52 +776,11 @@ static const struct vm_operations_struct ext4_dax_vm_ops = {
 static const struct vm_operations_struct ext4_file_vm_ops = {
 	.fault		= filemap_fault,
 	.map_pages	= filemap_map_pages,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.page_mkwrite   = ext4_page_mkwrite,
 };
 
 static int ext4_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-	struct address_space *mapping = file->f_mapping;
-
-	if (!mapping->a_ops->readpage)
-		return -ENOEXEC;
-	file_accessed(file);
-	vma->vm_ops = &ext4_file_vm_ops;
-	vma->vm_flags |= VM_CAN_NONLINEAR;
-	return 0;
-}
-
-static int ext4_file_open(struct inode * inode, struct file * filp)
-{
-	struct super_block *sb = inode->i_sb;
-	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
-	struct ext4_inode_info *ei = EXT4_I(inode);
-	struct vfsmount *mnt = filp->f_path.mnt;
-	struct path path;
-	char buf[64], *cp;
-
-	if (unlikely(!(sbi->s_mount_flags & EXT4_MF_MNTDIR_SAMPLED) &&
-		     !(sb->s_flags & MS_RDONLY))) {
-		sbi->s_mount_flags |= EXT4_MF_MNTDIR_SAMPLED;
-		/*
-		 * Sample where the filesystem has been mounted and
-		 * store it in the superblock for sysadmin convenience
-		 * when trying to sort through large numbers of block
-		 * devices or filesystem images.
-		 */
-		memset(buf, 0, sizeof(buf));
-		path.mnt = mnt;
-		path.dentry = mnt->mnt_root;
-		cp = d_path(&path, buf, sizeof(buf));
-		if (!IS_ERR(cp)) {
-			strlcpy(sbi->s_es->s_last_mounted, cp,
-				sizeof(sbi->s_es->s_last_mounted));
-			ext4_mark_super_dirty(sb);
-		}
-	}
-=======
 	struct inode *inode = file->f_mapping->host;
 	struct dax_device *dax_dev = EXT4_SB(inode->i_sb)->s_daxdev;
 
@@ -1015,30 +875,10 @@ static int ext4_file_open(struct inode *inode, struct file *filp)
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set up the jbd2_inode if we are opening the inode for
 	 * writing and the journal is present
 	 */
-<<<<<<< HEAD
-	if (sbi->s_journal && !ei->jinode && (filp->f_mode & FMODE_WRITE)) {
-		struct jbd2_inode *jinode = jbd2_alloc_inode(GFP_KERNEL);
-
-		spin_lock(&inode->i_lock);
-		if (!ei->jinode) {
-			if (!jinode) {
-				spin_unlock(&inode->i_lock);
-				return -ENOMEM;
-			}
-			ei->jinode = jinode;
-			jbd2_journal_init_jbd_inode(ei->jinode, inode);
-			jinode = NULL;
-		}
-		spin_unlock(&inode->i_lock);
-		if (unlikely(jinode != NULL))
-			jbd2_free_inode(jinode);
-	}
-=======
 	if (filp->f_mode & FMODE_WRITE) {
 		ret = ext4_inode_attach_jinode(inode);
 		if (ret < 0)
@@ -1047,24 +887,15 @@ static int ext4_file_open(struct inode *inode, struct file *filp)
 
 	filp->f_mode |= FMODE_NOWAIT | FMODE_BUF_RASYNC |
 			FMODE_DIO_PARALLEL_WRITE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dquot_file_open(inode, filp);
 }
 
 /*
-<<<<<<< HEAD
- * ext4_llseek() copied from generic_file_llseek() to handle both
- * block-mapped and extent-mapped maxbytes values. This should
- * otherwise be identical with generic_file_llseek().
- */
-loff_t ext4_llseek(struct file *file, loff_t offset, int origin)
-=======
  * ext4_llseek() handles both block-mapped and extent-mapped maxbytes values
  * by calling generic_file_llseek_size() with the appropriate maxbytes
  * value for each.
  */
 loff_t ext4_llseek(struct file *file, loff_t offset, int whence)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = file->f_mapping->host;
 	loff_t maxbytes;
@@ -1074,9 +905,6 @@ loff_t ext4_llseek(struct file *file, loff_t offset, int whence)
 	else
 		maxbytes = inode->i_sb->s_maxbytes;
 
-<<<<<<< HEAD
-	return generic_file_llseek_size(file, offset, origin, maxbytes);
-=======
 	switch (whence) {
 	default:
 		return generic_file_llseek_size(file, offset, whence,
@@ -1098,33 +926,18 @@ loff_t ext4_llseek(struct file *file, loff_t offset, int whence)
 	if (offset < 0)
 		return offset;
 	return vfs_setpos(file, offset, maxbytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct file_operations ext4_file_operations = {
 	.llseek		= ext4_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-	.aio_read	= generic_file_aio_read,
-	.aio_write	= ext4_file_write,
-=======
 	.read_iter	= ext4_file_read_iter,
 	.write_iter	= ext4_file_write_iter,
 	.iopoll		= iocb_bio_iopoll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl = ext4_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= ext4_compat_ioctl,
 #endif
 	.mmap		= ext4_file_mmap,
-<<<<<<< HEAD
-	.open		= ext4_file_open,
-	.release	= ext4_release_file,
-	.fsync		= ext4_sync_file,
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
-=======
 	.mmap_supported_flags = MAP_SYNC,
 	.open		= ext4_file_open,
 	.release	= ext4_release_file,
@@ -1132,23 +945,11 @@ const struct file_operations ext4_file_operations = {
 	.get_unmapped_area = thp_get_unmapped_area,
 	.splice_read	= ext4_file_splice_read,
 	.splice_write	= iter_file_splice_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fallocate	= ext4_fallocate,
 };
 
 const struct inode_operations ext4_file_inode_operations = {
 	.setattr	= ext4_setattr,
-<<<<<<< HEAD
-	.getattr	= ext4_getattr,
-#ifdef CONFIG_EXT4_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ext4_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-	.get_acl	= ext4_get_acl,
-	.fiemap		= ext4_fiemap,
-=======
 	.getattr	= ext4_file_getattr,
 	.listxattr	= ext4_listxattr,
 	.get_inode_acl	= ext4_get_acl,
@@ -1156,6 +957,5 @@ const struct inode_operations ext4_file_inode_operations = {
 	.fiemap		= ext4_fiemap,
 	.fileattr_get	= ext4_fileattr_get,
 	.fileattr_set	= ext4_fileattr_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 

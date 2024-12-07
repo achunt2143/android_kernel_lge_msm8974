@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_MSGQ_H__
@@ -74,15 +55,10 @@ enum bfa_msgq_cmdq_flags {
 	BFA_MSGQ_CMDQ_F_DB_UPDATE	= 1,
 };
 
-<<<<<<< HEAD
-struct bfa_msgq_cmdq {
-	bfa_fsm_t			fsm;
-=======
 enum cmdq_event;
 
 struct bfa_msgq_cmdq {
 	void (*fsm)(struct bfa_msgq_cmdq *s, enum cmdq_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bfa_msgq_cmdq_flags flags;
 
 	u16			producer_index;
@@ -107,15 +83,10 @@ enum bfa_msgq_rspq_flags {
 
 typedef void (*bfa_msgq_mcfunc_t)(void *cbarg, struct bfi_msgq_mhdr *mhdr);
 
-<<<<<<< HEAD
-struct bfa_msgq_rspq {
-	bfa_fsm_t			fsm;
-=======
 enum rspq_event;
 
 struct bfa_msgq_rspq {
 	void (*fsm)(struct bfa_msgq_rspq *s, enum rspq_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bfa_msgq_rspq_flags flags;
 
 	u16			producer_index;

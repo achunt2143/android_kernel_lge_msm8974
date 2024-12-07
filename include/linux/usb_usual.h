@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interface to the libusual.
  *
@@ -69,10 +66,6 @@
 		/* cannot handle READ_CAPACITY_16 */		\
 	US_FLAG(INITIAL_READ10,	0x00100000)			\
 		/* Initial READ(10) (and others) must be retried */	\
-<<<<<<< HEAD
-	US_FLAG(BROKEN_FUA,	0x01000000)			\
-		/* Cannot handle FUA in WRITE or READ CDBs */	\
-=======
 	US_FLAG(WRITE_CACHE,	0x00200000)			\
 		/* Write Cache status is not available */	\
 	US_FLAG(NEEDS_CAP16,	0x00400000)			\
@@ -95,46 +88,14 @@
 		/* Cannot handle WRITE_SAME */			\
 	US_FLAG(SENSE_AFTER_SYNC, 0x80000000)			\
 		/* Do REQUEST_SENSE after SYNCHRONIZE_CACHE */	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define US_FLAG(name, value)	US_FL_##name = value ,
 enum { US_DO_ALL_FLAGS };
 #undef US_FLAG
 
-<<<<<<< HEAD
-/*
- * The bias field for libusual and friends.
- */
-#define USB_US_TYPE_NONE   0
-#define USB_US_TYPE_STOR   1		/* usb-storage */
-#define USB_US_TYPE_UB     2		/* ub */
-
-#define USB_US_TYPE(flags) 		(((flags) >> 24) & 0xFF)
-#define USB_US_ORIG_FLAGS(flags)	((flags) & 0x00FFFFFF)
-
-#include <linux/usb/storage.h>
-
-/*
- */
-extern int usb_usual_ignore_device(struct usb_interface *intf);
-extern struct usb_device_id usb_storage_usb_ids[];
-
-#ifdef CONFIG_USB_LIBUSUAL
-
-extern void usb_usual_set_present(int type);
-extern void usb_usual_clear_present(int type);
-extern int usb_usual_check_type(const struct usb_device_id *, int type);
-#else
-
-#define usb_usual_set_present(t)	do { } while(0)
-#define usb_usual_clear_present(t)	do { } while(0)
-#define usb_usual_check_type(id, t)	(0)
-#endif /* CONFIG_USB_LIBUSUAL */
-=======
 #include <linux/usb/storage.h>
 
 extern int usb_usual_ignore_device(struct usb_interface *intf);
 extern const struct usb_device_id usb_storage_usb_ids[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_USB_USUAL_H */

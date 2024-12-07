@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Alchemy Development Board example suspend userspace interface.
  *
@@ -13,22 +10,14 @@
 #include <linux/suspend.h>
 #include <linux/sysfs.h>
 #include <asm/mach-au1x00/au1000.h>
-<<<<<<< HEAD
-#include <asm/mach-au1x00/gpio.h>
-=======
 #include <asm/mach-au1x00/gpio-au1000.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-db1x00/bcsr.h>
 
 /*
  * Generic suspend userspace interface for Alchemy development boards.
  * This code exports a few sysfs nodes under /sys/power/db1x/ which
  * can be used by userspace to en/disable all au1x-provided wakeup
-<<<<<<< HEAD
- * sources and configure the timeout after which the the TOYMATCH2 irq
-=======
  * sources and configure the timeout after which the TOYMATCH2 irq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is to trigger a wakeup.
  */
 
@@ -57,25 +46,6 @@ static int db1x_pm_enter(suspend_state_t state)
 	alchemy_gpio1_input_enable();
 
 	/* clear and setup wake cause and source */
-<<<<<<< HEAD
-	au_writel(0, SYS_WAKEMSK);
-	au_sync();
-	au_writel(0, SYS_WAKESRC);
-	au_sync();
-
-	au_writel(db1x_pm_wakemsk, SYS_WAKEMSK);
-	au_sync();
-
-	/* setup 1Hz-timer-based wakeup: wait for reg access */
-	while (au_readl(SYS_COUNTER_CNTRL) & SYS_CNTRL_M20)
-		asm volatile ("nop");
-
-	au_writel(au_readl(SYS_TOYREAD) + db1x_pm_sleep_secs, SYS_TOYMATCH2);
-	au_sync();
-
-	/* wait for value to really hit the register */
-	while (au_readl(SYS_COUNTER_CNTRL) & SYS_CNTRL_M20)
-=======
 	alchemy_wrsys(0, AU1000_SYS_WAKEMSK);
 	alchemy_wrsys(0, AU1000_SYS_WAKESRC);
 
@@ -90,7 +60,6 @@ static int db1x_pm_enter(suspend_state_t state)
 
 	/* wait for value to really hit the register */
 	while (alchemy_rdsys(AU1000_SYS_CNTRCTRL) & SYS_CNTRL_M20)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asm volatile ("nop");
 
 	/* ...and now the sandman can come! */
@@ -131,19 +100,10 @@ static void db1x_pm_end(void)
 	/* read and store wakeup source, the clear the register. To
 	 * be able to clear it, WAKEMSK must be cleared first.
 	 */
-<<<<<<< HEAD
-	db1x_pm_last_wakesrc = au_readl(SYS_WAKESRC);
-
-	au_writel(0, SYS_WAKEMSK);
-	au_writel(0, SYS_WAKESRC);
-	au_sync();
-
-=======
 	db1x_pm_last_wakesrc = alchemy_rdsys(AU1000_SYS_WAKESRC);
 
 	alchemy_wrsys(0, AU1000_SYS_WAKEMSK);
 	alchemy_wrsys(0, AU1000_SYS_WAKESRC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct platform_suspend_ops db1x_pm_ops = {
@@ -194,11 +154,7 @@ static ssize_t db1x_pmattr_store(struct kobject *kobj,
 	int tmp;
 
 	if (ATTRCMP(timer_timeout)) {
-<<<<<<< HEAD
-		tmp = strict_strtoul(instr, 0, &l);
-=======
 		tmp = kstrtoul(instr, 0, &l);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp)
 			return tmp;
 
@@ -221,11 +177,7 @@ static ssize_t db1x_pmattr_store(struct kobject *kobj,
 		}
 
 	} else if (ATTRCMP(wakemsk)) {
-<<<<<<< HEAD
-		tmp = strict_strtoul(instr, 0, &l);
-=======
 		tmp = kstrtoul(instr, 0, &l);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp)
 			return tmp;
 
@@ -238,11 +190,7 @@ static ssize_t db1x_pmattr_store(struct kobject *kobj,
 }
 
 #define ATTR(x)							\
-<<<<<<< HEAD
-	static struct kobj_attribute x##_attribute = 		\
-=======
 	static struct kobj_attribute x##_attribute =		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__ATTR(x, 0664, db1x_pmattr_show,		\
 				db1x_pmattr_store);
 
@@ -290,19 +238,6 @@ static int __init pm_init(void)
 	 * for confirmation since there's plenty of time from here to
 	 * the next suspend cycle.
 	 */
-<<<<<<< HEAD
-	if (au_readl(SYS_TOYTRIM) != 32767) {
-		au_writel(32767, SYS_TOYTRIM);
-		au_sync();
-	}
-
-	db1x_pm_last_wakesrc = au_readl(SYS_WAKESRC);
-
-	au_writel(0, SYS_WAKESRC);
-	au_sync();
-	au_writel(0, SYS_WAKEMSK);
-	au_sync();
-=======
 	if (alchemy_rdsys(AU1000_SYS_TOYTRIM) != 32767)
 		alchemy_wrsys(32767, AU1000_SYS_TOYTRIM);
 
@@ -310,7 +245,6 @@ static int __init pm_init(void)
 
 	alchemy_wrsys(0, AU1000_SYS_WAKESRC);
 	alchemy_wrsys(0, AU1000_SYS_WAKEMSK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	suspend_set_ops(&db1x_pm_ops);
 

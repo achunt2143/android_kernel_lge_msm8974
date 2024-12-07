@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 Anton Blanchard <anton@au.ibm.com>, IBM
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2001 Anton Blanchard <anton@au.ibm.com>, IBM
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Communication to userspace based on kernel/printk.c
  */
 
@@ -20,10 +9,7 @@
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/proc_fs.h>
 #include <linux/init.h>
@@ -32,16 +18,6 @@
 #include <linux/cpu.h>
 #include <linux/workqueue.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-#include <asm/io.h>
-#include <asm/rtas.h>
-#include <asm/prom.h>
-#include <asm/nvram.h>
-#include <linux/atomic.h>
-#include <asm/machdep.h>
-=======
 #include <linux/topology.h>
 
 #include <linux/uaccess.h>
@@ -51,7 +27,6 @@
 #include <linux/atomic.h>
 #include <asm/machdep.h>
 #include <asm/topology.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static DEFINE_SPINLOCK(rtasd_log_lock);
@@ -71,11 +46,7 @@ static unsigned int rtas_error_log_buffer_max;
 static unsigned int event_scan;
 static unsigned int rtas_event_scan_rate;
 
-<<<<<<< HEAD
-static int full_rtas_msgs = 0;
-=======
 static bool full_rtas_msgs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Stop logging to nvram after first fatal error */
 static int logging_enabled; /* Until we initialize everything,
@@ -114,13 +85,10 @@ static char *rtas_event_type(int type)
 			return "Resource Deallocation Event";
 		case RTAS_TYPE_DUMP:
 			return "Dump Notification Event";
-<<<<<<< HEAD
-=======
 		case RTAS_TYPE_PRRN:
 			return "Platform Resource Reassignment Event";
 		case RTAS_TYPE_HOTPLUG:
 			return "Hotplug Event";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rtas_type[0];
@@ -180,17 +148,11 @@ static void printk_log_rtas(char *buf, int len)
 	} else {
 		struct rtas_error_log *errlog = (struct rtas_error_log *)buf;
 
-<<<<<<< HEAD
-		printk(RTAS_DEBUG "event: %d, Type: %s, Severity: %d\n",
-		       error_log_cnt, rtas_event_type(errlog->type),
-		       errlog->severity);
-=======
 		printk(RTAS_DEBUG "event: %d, Type: %s (%d), Severity: %d\n",
 		       error_log_cnt,
 		       rtas_event_type(rtas_error_type(errlog)),
 		       rtas_error_type(errlog),
 		       rtas_error_severity(errlog));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -198,26 +160,16 @@ static int log_rtas_len(char * buf)
 {
 	int len;
 	struct rtas_error_log *err;
-<<<<<<< HEAD
-=======
 	uint32_t extended_log_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* rtas fixed header */
 	len = 8;
 	err = (struct rtas_error_log *)buf;
-<<<<<<< HEAD
-	if (err->extended && err->extended_log_length) {
-
-		/* extended header */
-		len += err->extended_log_length;
-=======
 	extended_log_length = rtas_error_extended_log_length(err);
 	if (rtas_error_extended(err) && extended_log_length) {
 
 		/* extended header */
 		len += extended_log_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rtas_error_log_max == 0)
@@ -319,9 +271,6 @@ void pSeries_log_error(char *buf, unsigned int err_type, int fatal)
 		spin_unlock_irqrestore(&rtasd_log_lock, s);
 		return;
 	}
-<<<<<<< HEAD
-
-=======
 }
 
 static void handle_rtas_event(const struct rtas_error_log *log)
@@ -331,7 +280,6 @@ static void handle_rtas_event(const struct rtas_error_log *log)
 
 	if (rtas_error_type(log) == RTAS_TYPE_PRRN)
 		pr_info_ratelimited("Platform resource reassignment ignored.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rtas_log_open(struct inode * inode, struct file * file)
@@ -361,11 +309,7 @@ static ssize_t rtas_log_read(struct file * file, char __user * buf,
 
 	count = rtas_error_log_buffer_max;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, buf, count))
-=======
 	if (!access_ok(buf, count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	tmp = kmalloc(count, GFP_KERNEL);
@@ -411,22 +355,6 @@ out:
 	return error;
 }
 
-<<<<<<< HEAD
-static unsigned int rtas_log_poll(struct file *file, poll_table * wait)
-{
-	poll_wait(file, &rtas_log_wait, wait);
-	if (rtas_log_size)
-		return POLLIN | POLLRDNORM;
-	return 0;
-}
-
-static const struct file_operations proc_rtas_log_operations = {
-	.read =		rtas_log_read,
-	.poll =		rtas_log_poll,
-	.open =		rtas_log_open,
-	.release =	rtas_log_release,
-	.llseek =	noop_llseek,
-=======
 static __poll_t rtas_log_poll(struct file *file, poll_table * wait)
 {
 	poll_wait(file, &rtas_log_wait, wait);
@@ -441,7 +369,6 @@ static const struct proc_ops rtas_log_proc_ops = {
 	.proc_open	= rtas_log_open,
 	.proc_release	= rtas_log_release,
 	.proc_lseek	= noop_llseek,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int enable_surveillance(int timeout)
@@ -475,10 +402,6 @@ static void do_event_scan(void)
 			break;
 		}
 
-<<<<<<< HEAD
-		if (error == 0)
-			pSeries_log_error(logdata, ERR_TYPE_RTAS_LOG, 0);
-=======
 		if (error == 0) {
 			if (rtas_error_type((struct rtas_error_log *)logdata) !=
 			    RTAS_TYPE_PRRN)
@@ -486,17 +409,12 @@ static void do_event_scan(void)
 						  0);
 			handle_rtas_event((struct rtas_error_log *)logdata);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} while(error == 0);
 }
 
 static void rtas_event_scan(struct work_struct *w);
-<<<<<<< HEAD
-DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
-=======
 static DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Delay should be at least one second since some machines have problems if
@@ -511,11 +429,7 @@ static void rtas_event_scan(struct work_struct *w)
 
 	do_event_scan();
 
-<<<<<<< HEAD
-	get_online_cpus();
-=======
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* raw_ OK because just using CPU as starting point. */
 	cpu = cpumask_next(raw_smp_processor_id(), cpu_online_mask);
@@ -537,19 +451,11 @@ static void rtas_event_scan(struct work_struct *w)
 	schedule_delayed_work_on(cpu, &event_scan_work,
 		__round_jiffies_relative(event_scan_delay, cpu));
 
-<<<<<<< HEAD
-	put_online_cpus();
-}
-
-#ifdef CONFIG_PPC64
-static void retreive_nvram_error_log(void)
-=======
 	cpus_read_unlock();
 }
 
 #ifdef CONFIG_PPC64
 static void __init retrieve_nvram_error_log(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int err_type ;
 	int rc ;
@@ -567,31 +473,19 @@ static void __init retrieve_nvram_error_log(void)
 	}
 }
 #else /* CONFIG_PPC64 */
-<<<<<<< HEAD
-static void retreive_nvram_error_log(void)
-=======
 static void __init retrieve_nvram_error_log(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif /* CONFIG_PPC64 */
 
-<<<<<<< HEAD
-static void start_event_scan(void)
-=======
 static void __init start_event_scan(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_DEBUG "RTAS daemon started\n");
 	pr_debug("rtasd: will sleep for %d milliseconds\n",
 		 (30000 / rtas_event_scan_rate));
 
 	/* Retrieve errors from nvram if any */
-<<<<<<< HEAD
-	retreive_nvram_error_log();
-=======
 	retrieve_nvram_error_log();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_delayed_work_on(cpumask_first(cpu_online_mask),
 				 &event_scan_work, event_scan_delay);
@@ -604,37 +498,22 @@ void rtas_cancel_event_scan(void)
 }
 EXPORT_SYMBOL_GPL(rtas_cancel_event_scan);
 
-<<<<<<< HEAD
-static int __init rtas_init(void)
-{
-	struct proc_dir_entry *entry;
-=======
 static int __init rtas_event_scan_init(void)
 {
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!machine_is(pseries) && !machine_is(chrp))
 		return 0;
 
 	/* No RTAS */
-<<<<<<< HEAD
-	event_scan = rtas_token("event-scan");
-=======
 	event_scan = rtas_function_token(RTAS_FN_EVENT_SCAN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (event_scan == RTAS_UNKNOWN_SERVICE) {
 		printk(KERN_INFO "rtasd: No event-scan on system\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	rtas_event_scan_rate = rtas_token("rtas-event-scan-rate");
-	if (rtas_event_scan_rate == RTAS_UNKNOWN_SERVICE) {
-=======
 	err = of_property_read_u32(rtas.dev, "rtas-event-scan-rate", &rtas_event_scan_rate);
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "rtasd: no rtas-event-scan-rate on system\n");
 		return -ENODEV;
 	}
@@ -649,26 +528,13 @@ static int __init rtas_event_scan_init(void)
 	rtas_error_log_max = rtas_get_error_log_max();
 	rtas_error_log_buffer_max = rtas_error_log_max + sizeof(int);
 
-<<<<<<< HEAD
-	rtas_log_buf = vmalloc(rtas_error_log_buffer_max*LOG_NUMBER);
-=======
 	rtas_log_buf = vmalloc(array_size(LOG_NUMBER,
 					  rtas_error_log_buffer_max));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rtas_log_buf) {
 		printk(KERN_ERR "rtasd: no memory\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	entry = proc_create("powerpc/rtas/error_log", S_IRUSR, NULL,
-			    &proc_rtas_log_operations);
-	if (!entry)
-		printk(KERN_ERR "Failed to create error_log proc entry\n");
-
-	start_event_scan();
-
-=======
 	start_event_scan();
 
 	return 0;
@@ -690,7 +556,6 @@ static int __init rtas_init(void)
 	if (!entry)
 		printk(KERN_ERR "Failed to create error_log proc entry\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 __initcall(rtas_init);
@@ -714,15 +579,6 @@ __setup("surveillance=", surveillance_setup);
 
 static int __init rtasmsgs_setup(char *str)
 {
-<<<<<<< HEAD
-	if (strcmp(str, "on") == 0)
-		full_rtas_msgs = 1;
-	else if (strcmp(str, "off") == 0)
-		full_rtas_msgs = 0;
-
-	return 1;
-=======
 	return (kstrtobool(str, &full_rtas_msgs) == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 __setup("rtasmsgs=", rtasmsgs_setup);

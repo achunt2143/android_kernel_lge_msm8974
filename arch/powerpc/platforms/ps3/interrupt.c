@@ -1,37 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 interrupt routines.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/machdep.h>
 #include <asm/udbg.h>
@@ -68,11 +46,7 @@
  * implementation equates HV plug value to Linux virq value, constrains each
  * interrupt to have a system wide unique plug number, and limits the range
  * of the plug values to map into the first dword of the bitmaps.  This
-<<<<<<< HEAD
- * gives a usable range of plug values of  {NUM_ISA_INTERRUPTS..63}.  Note
-=======
  * gives a usable range of plug values of  {NR_IRQS_LEGACY..63}.  Note
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that there is no constraint on how many in this set an individual thread
  * can acquire.
  *
@@ -93,11 +67,7 @@ struct ps3_bmp {
 /**
  * struct ps3_private - a per cpu data structure
  * @bmp: ps3_bmp structure
-<<<<<<< HEAD
- * @bmp_lock: Syncronize access to bmp.
-=======
  * @bmp_lock: Synchronize access to bmp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ipi_debug_brk_mask: Mask for debug break IPIs
  * @ppe_id: HV logical_ppe_id
  * @thread_id: HV thread_id
@@ -211,11 +181,7 @@ static int ps3_virq_setup(enum ps3_cpu_binding cpu, unsigned long outlet,
 
 	*virq = irq_create_mapping(NULL, outlet);
 
-<<<<<<< HEAD
-	if (*virq == NO_IRQ) {
-=======
 	if (!*virq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		FAIL("%s:%d: irq_create_mapping failed: outlet %lu\n",
 			__func__, __LINE__, outlet);
 		result = -ENOMEM;
@@ -362,11 +328,7 @@ int ps3_event_receive_port_setup(enum ps3_cpu_binding cpu, unsigned int *virq)
 	if (result) {
 		FAIL("%s:%d: lv1_construct_event_receive_port failed: %s\n",
 			__func__, __LINE__, ps3_result(result));
-<<<<<<< HEAD
-		*virq = NO_IRQ;
-=======
 		*virq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -445,11 +407,7 @@ int ps3_sb_event_receive_port_setup(struct ps3_system_bus_device *dev,
 			" failed: %s\n", __func__, __LINE__,
 			ps3_result(result));
 		ps3_event_receive_port_destroy(*virq);
-<<<<<<< HEAD
-		*virq = NO_IRQ;
-=======
 		*virq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -709,12 +667,8 @@ static int ps3_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ps3_host_match(struct irq_domain *h, struct device_node *np)
-=======
 static int ps3_host_match(struct irq_domain *h, struct device_node *np,
 			  enum irq_domain_bus_token bus_token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Match all */
 	return 1;
@@ -747,11 +701,7 @@ void __init ps3_register_ipi_irq(unsigned int cpu, unsigned int virq)
 
 static unsigned int ps3_get_irq(void)
 {
-<<<<<<< HEAD
-	struct ps3_private *pd = &__get_cpu_var(ps3_private);
-=======
 	struct ps3_private *pd = this_cpu_ptr(&ps3_private);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 x = (pd->bmp.status & pd->bmp.mask);
 	unsigned int plug;
 
@@ -763,28 +713,16 @@ static unsigned int ps3_get_irq(void)
 	asm volatile("cntlzd %0,%1" : "=r" (plug) : "r" (x));
 	plug &= 0x3f;
 
-<<<<<<< HEAD
-	if (unlikely(plug == NO_IRQ)) {
-=======
 	if (unlikely(!plug)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DBG("%s:%d: no plug found: thread_id %llu\n", __func__,
 			__LINE__, pd->thread_id);
 		dump_bmp(&per_cpu(ps3_private, 0));
 		dump_bmp(&per_cpu(ps3_private, 1));
-<<<<<<< HEAD
-		return NO_IRQ;
-	}
-
-#if defined(DEBUG)
-	if (unlikely(plug < NUM_ISA_INTERRUPTS || plug > PS3_PLUG_MAX)) {
-=======
 		return 0;
 	}
 
 #if defined(DEBUG)
 	if (unlikely(plug < NR_IRQS_LEGACY || plug > PS3_PLUG_MAX)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_bmp(&per_cpu(ps3_private, 0));
 		dump_bmp(&per_cpu(ps3_private, 1));
 		BUG();

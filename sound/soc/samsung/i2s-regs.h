@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/*
- * linux/sound/soc/samsung/i2s-regs.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2011 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com
  *
  * Samsung I2S driver's register header
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SND_SOC_SAMSUNG_I2S_REGS_H
@@ -39,14 +25,11 @@
 #define I2SLVL1ADDR	0x34
 #define I2SLVL2ADDR	0x38
 #define I2SLVL3ADDR	0x3c
-<<<<<<< HEAD
-=======
 #define I2SSTR1		0x40
 #define I2SVER		0x44
 #define I2SFIC1		0x48
 #define I2STDM		0x4c
 #define I2SFSTA		0x50
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CON_RSTCLR		(1 << 31)
 #define CON_FRXOFSTATUS		(1 << 26)
@@ -76,20 +59,12 @@
 #define CON_RXDMA_ACTIVE	(1 << 1)
 #define CON_ACTIVE		(1 << 0)
 
-<<<<<<< HEAD
-#define MOD_OPCLK_CDCLK_OUT	(0 << 30)
-#define MOD_OPCLK_CDCLK_IN	(1 << 30)
-#define MOD_OPCLK_BCLK_OUT	(2 << 30)
-#define MOD_OPCLK_PCLK		(3 << 30)
-#define MOD_OPCLK_MASK		(3 << 30)
-=======
 #define MOD_OPCLK_SHIFT		30
 #define MOD_OPCLK_CDCLK_OUT	(0 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_CDCLK_IN	(1 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_BCLK_OUT	(2 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_PCLK		(3 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_MASK		(3 << MOD_OPCLK_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MOD_TXS_IDMA		(1 << 28) /* Sec_TXFIFO use I-DMA */
 
 #define MOD_BLCS_SHIFT		26
@@ -114,38 +89,10 @@
 #define MOD_BLC_24BIT		(2 << 13)
 #define MOD_BLC_MASK		(3 << 13)
 
-<<<<<<< HEAD
-#define MOD_IMS_SYSMUX		(1 << 10)
-#define MOD_SLAVE		(1 << 11)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MOD_TXONLY		(0 << 8)
 #define MOD_RXONLY		(1 << 8)
 #define MOD_TXRX		(2 << 8)
 #define MOD_MASK		(3 << 8)
-<<<<<<< HEAD
-#define MOD_LR_LLOW		(0 << 7)
-#define MOD_LR_RLOW		(1 << 7)
-#define MOD_SDF_IIS		(0 << 5)
-#define MOD_SDF_MSB		(1 << 5)
-#define MOD_SDF_LSB		(2 << 5)
-#define MOD_SDF_MASK		(3 << 5)
-#define MOD_RCLK_256FS		(0 << 3)
-#define MOD_RCLK_512FS		(1 << 3)
-#define MOD_RCLK_384FS		(2 << 3)
-#define MOD_RCLK_768FS		(3 << 3)
-#define MOD_RCLK_MASK		(3 << 3)
-#define MOD_BCLK_32FS		(0 << 1)
-#define MOD_BCLK_48FS		(1 << 1)
-#define MOD_BCLK_16FS		(2 << 1)
-#define MOD_BCLK_24FS		(3 << 1)
-#define MOD_BCLK_MASK		(3 << 1)
-#define MOD_8BIT		(1 << 0)
-
-#define MOD_CDCLKCON		(1 << 12)
-
-#define PSR_PSREN		(1 << 15)
-=======
 #define MOD_LRP_SHIFT		7
 #define MOD_LR_LLOW		0
 #define MOD_LR_RLOW		1
@@ -186,7 +133,6 @@
 
 #define PSR_PSREN		(1 << 15)
 #define PSR_PSVAL(x)		((((x) - 1) << 8) & 0x3f00)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FIC_TX2COUNT(x)		(((x) >>  24) & 0xf)
 #define FIC_TX1COUNT(x)		(((x) >>  16) & 0xf)
@@ -210,8 +156,3 @@
 #define I2SSIZE_SHIFT		(16)
 
 #endif /* __SND_SOC_SAMSUNG_I2S_REGS_H */
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

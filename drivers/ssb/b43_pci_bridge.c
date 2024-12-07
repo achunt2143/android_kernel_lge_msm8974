@@ -10,20 +10,12 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/module.h>
 #include <linux/ssb/ssb.h>
 
-<<<<<<< HEAD
-#include "ssb_private.h"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct pci_device_id b43_pci_bridge_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4301) },
@@ -37,22 +29,16 @@ static const struct pci_device_id b43_pci_bridge_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4319) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4320) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4321) },
-<<<<<<< HEAD
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4322) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43222) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4324) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4325) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4328) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4329) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x432b) },
-<<<<<<< HEAD
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x432c) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4350) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4351) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, },
 };
 MODULE_DEVICE_TABLE(pci, b43_pci_bridge_tbl);

@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-/*
- * include/asm-sh/cpu-sh2a/cache.h
- *
- * Copyright (C) 2004 Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
  * include/asm-sh/cpu-sh2a/cache.h
  *
  * Copyright (C) 2004 Paul Mundt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_CPU_SH2A_CACHE_H
 #define __ASM_CPU_SH2A_CACHE_H
@@ -25,13 +14,8 @@
 #define SH_CACHE_COMBINED	4
 #define SH_CACHE_ASSOC		8
 
-<<<<<<< HEAD
-#define CCR		0xfffc1000 /* CCR1 */
-#define CCR2		0xfffc1004
-=======
 #define SH_CCR		0xfffc1000 /* CCR1 */
 #define SH_CCR2		0xfffc1004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Most of the SH-2A CCR1 definitions resemble the SH-4 ones. All others not

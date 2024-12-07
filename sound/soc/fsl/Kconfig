@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-config SND_MPC52xx_DMA
-	tristate
-
-# ASoC platform support for the Freescale PowerPC SOCs that have an SSI and
-# an Elo DMA controller, such as the MPC8610 and P1022.  You will still need to
-# select a platform driver and a codec driver.
-config SND_SOC_POWERPC_SSI
-	tristate
-	depends on FSL_SOC
-
-config SND_SOC_MPC8610_HPCD
-	tristate "ALSA SoC support for the Freescale MPC8610 HPCD board"
-	# I2C is necessary for the CS4270 driver
-	depends on MPC8610_HPCD && I2C
-	select SND_SOC_POWERPC_SSI
-	select SND_SOC_CS4270
-	select SND_SOC_CS4270_VD33_ERRATA
-	default y if MPC8610_HPCD
-	help
-	  Say Y if you want to enable audio on the Freescale MPC8610 HPCD.
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "SoC Audio for Freescale CPUs"
 
@@ -205,19 +183,14 @@ config SND_SOC_POWERPC_QMC_AUDIO
 	  QMC.
 
 comment "SoC Audio support for Freescale PPC boards:"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SND_SOC_P1022_DS
 	tristate "ALSA SoC support for the Freescale P1022 DS board"
 	# I2C is necessary for the WM8776 driver
 	depends on P1022_DS && I2C
-<<<<<<< HEAD
-	select SND_SOC_POWERPC_SSI
-=======
 	select SND_SOC_FSL_SSI
 	select SND_SOC_FSL_UTILS
 	select SND_SOC_POWERPC_DMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_SOC_WM8776
 	default y if P1022_DS
 	help
@@ -225,8 +198,6 @@ config SND_SOC_P1022_DS
 	  This will also include the Wolfson Microelectronics WM8776 codec
 	  driver.
 
-<<<<<<< HEAD
-=======
 config SND_SOC_P1022_RDK
 	tristate "ALSA SoC support for the Freescale / iVeia P1022 RDK board"
 	# I2C is necessary for the WM8960 driver
@@ -241,7 +212,6 @@ config SND_SOC_P1022_RDK
 	  P1022 RDK board.  This will also include the Wolfson
 	  Microelectronics WM8960 codec driver.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_SOC_MPC5200_I2S
 	tristate "Freescale MPC5200 PSC in I2S mode driver"
 	depends on PPC_MPC52xx && PPC_BESTCOMM
@@ -276,8 +246,6 @@ config SND_MPC52xx_SOC_EFIKA
 	help
 	  Say Y if you want to add support for sound on the Efika.
 
-<<<<<<< HEAD
-=======
 endif # SND_POWERPC_SOC
 
 config SND_SOC_IMX_PCM_FIQ
@@ -405,4 +373,3 @@ config SND_SOC_IMX_CARD
 endif # SND_IMX_SOC
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

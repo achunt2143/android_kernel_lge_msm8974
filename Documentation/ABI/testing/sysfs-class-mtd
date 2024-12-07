@@ -14,12 +14,7 @@ Description:
 		The /sys/class/mtd/mtd{0,1,2,3,...} directories correspond
 		to each /dev/mtdX character device.  These may represent
 		physical/simulated flash devices, partitions on a flash
-<<<<<<< HEAD
-		device, or concatenated flash devices.  They exist regardless
-		of whether CONFIG_MTD_CHAR is actually enabled.
-=======
 		device, or concatenated flash devices.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/class/mtd/mtdXro/
 Date:		April 2009
@@ -27,12 +22,7 @@ KernelVersion:	2.6.29
 Contact:	linux-mtd@lists.infradead.org
 Description:
 		These directories provide the corresponding read-only device
-<<<<<<< HEAD
-		nodes for /sys/class/mtd/mtdX/ .  They are only created
-		(for the benefit of udev) if CONFIG_MTD_CHAR is enabled.
-=======
 		nodes for /sys/class/mtd/mtdX/ .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/class/mtd/mtdX/dev
 Date:		April 2009
@@ -49,11 +39,7 @@ KernelVersion:	2.6.29
 Contact:	linux-mtd@lists.infradead.org
 Description:
 		Major and minor numbers of the character device corresponding
-<<<<<<< HEAD
-		to the read-only variant of thie MTD device (in
-=======
 		to the read-only variant of the MTD device (in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		<major>:<minor> format).  In this case <minor> will be odd.
 
 What:		/sys/class/mtd/mtdX/erasesize
@@ -118,11 +104,7 @@ Description:
 		One of the following ASCII strings, representing the device
 		type:
 
-<<<<<<< HEAD
-		absent, ram, rom, nor, nand, dataflash, ubi, unknown
-=======
 		absent, ram, rom, nor, nand, mlc-nand, dataflash, ubi, unknown
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/class/mtd/mtdX/writesize
 Date:		April 2009
@@ -139,8 +121,6 @@ Description:
 		half page, or a quarter page).
 
 		In the case of ECC NOR, it is the ECC block size.
-<<<<<<< HEAD
-=======
 
 What:		/sys/class/mtd/mtdX/ecc_strength
 Date:		April 2012
@@ -260,4 +240,3 @@ Contact:	linux-mtd@lists.infradead.org
 Description:
 		Number of bytes available for a client to place data into
 		the out of band area.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

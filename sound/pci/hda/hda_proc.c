@@ -1,55 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Universal Interface for Intel High Definition Audio Codec
  * 
  * Generic proc interface
  *
  * Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-#include <linux/init.h>
-#include <sound/core.h>
-#include "hda_codec.h"
-#include "hda_local.h"
-
-static char *bits_names(unsigned int bits, char *names[], int size)
-{
-	int i, n;
-	static char buf[128];
-
-	for (i = 0, n = 0; i < size; i++) {
-		if (bits & (1U<<i) && names[i])
-			n += snprintf(buf + n, sizeof(buf) - n, " %s",
-				      names[i]);
-	}
-	buf[n] = '\0';
-
-	return buf;
-}
-
-static const char *get_wid_type_name(unsigned int wid_value)
-{
-	static char *names[16] = {
-=======
  */
 
 #include <linux/init.h>
@@ -70,7 +25,6 @@ MODULE_PARM_DESC(dump_coef, "Dump processing coefficients in codec proc file (-1
 static const char *get_wid_type_name(unsigned int wid_value)
 {
 	static const char * const names[16] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[AC_WID_AUD_OUT] = "Audio Output",
 		[AC_WID_AUD_IN] = "Audio Input",
 		[AC_WID_AUD_MIX] = "Audio Mixer",
@@ -120,17 +74,10 @@ static void print_nid_array(struct snd_info_buffer *buffer,
 static void print_nid_pcms(struct snd_info_buffer *buffer,
 			   struct hda_codec *codec, hda_nid_t nid)
 {
-<<<<<<< HEAD
-	int pcm, type;
-	struct hda_pcm *cpcm;
-	for (pcm = 0; pcm < codec->num_pcms; pcm++) {
-		cpcm = &codec->pcm_info[pcm];
-=======
 	int type;
 	struct hda_pcm *cpcm;
 
 	list_for_each_entry(cpcm, &codec->pcm_list_head, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (type = 0; type < 2; type++) {
 			if (cpcm->stream[type].nid != nid || cpcm->pcm == NULL)
 				continue;
@@ -147,14 +94,8 @@ static void print_amp_caps(struct snd_info_buffer *buffer,
 			   struct hda_codec *codec, hda_nid_t nid, int dir)
 {
 	unsigned int caps;
-<<<<<<< HEAD
-	caps = snd_hda_param_read(codec, nid,
-				  dir == HDA_OUTPUT ?
-				    AC_PAR_AMP_OUT_CAP : AC_PAR_AMP_IN_CAP);
-=======
 	caps = param_read(codec, nid, dir == HDA_OUTPUT ?
 			  AC_PAR_AMP_OUT_CAP : AC_PAR_AMP_IN_CAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (caps == -1 || caps == 0) {
 		snd_iprintf(buffer, "N/A\n");
 		return;
@@ -167,28 +108,6 @@ static void print_amp_caps(struct snd_info_buffer *buffer,
 		    (caps & AC_AMPCAP_MUTE) >> AC_AMPCAP_MUTE_SHIFT);
 }
 
-<<<<<<< HEAD
-static void print_amp_vals(struct snd_info_buffer *buffer,
-			   struct hda_codec *codec, hda_nid_t nid,
-			   int dir, int stereo, int indices)
-{
-	unsigned int val;
-	int i;
-
-	dir = dir == HDA_OUTPUT ? AC_AMP_GET_OUTPUT : AC_AMP_GET_INPUT;
-	for (i = 0; i < indices; i++) {
-		snd_iprintf(buffer, " [");
-		if (stereo) {
-			val = snd_hda_codec_read(codec, nid, 0,
-						 AC_VERB_GET_AMP_GAIN_MUTE,
-						 AC_AMP_GET_LEFT | dir | i);
-			snd_iprintf(buffer, "0x%02x ", val);
-		}
-		val = snd_hda_codec_read(codec, nid, 0,
-					 AC_VERB_GET_AMP_GAIN_MUTE,
-					 AC_AMP_GET_RIGHT | dir | i);
-		snd_iprintf(buffer, "0x%02x]", val);
-=======
 /* is this a stereo widget or a stereo-to-mono mix? */
 static bool is_stereo_amps(struct hda_codec *codec, hda_nid_t nid,
 			   int dir, unsigned int wcaps, int indices)
@@ -235,18 +154,13 @@ static void print_amp_vals(struct snd_info_buffer *buffer,
 			snd_iprintf(buffer, " 0x%02x", val);
 		}
 		snd_iprintf(buffer, "]");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	snd_iprintf(buffer, "\n");
 }
 
 static void print_pcm_rates(struct snd_info_buffer *buffer, unsigned int pcm)
 {
-<<<<<<< HEAD
-	static unsigned int rates[] = {
-=======
 	static const unsigned int rates[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		8000, 11025, 16000, 22050, 32000, 44100, 48000, 88200,
 		96000, 176400, 192000, 384000
 	};
@@ -285,13 +199,8 @@ static void print_pcm_formats(struct snd_info_buffer *buffer,
 static void print_pcm_caps(struct snd_info_buffer *buffer,
 			   struct hda_codec *codec, hda_nid_t nid)
 {
-<<<<<<< HEAD
-	unsigned int pcm = snd_hda_param_read(codec, nid, AC_PAR_PCM);
-	unsigned int stream = snd_hda_param_read(codec, nid, AC_PAR_STREAM);
-=======
 	unsigned int pcm = param_read(codec, nid, AC_PAR_PCM);
 	unsigned int stream = param_read(codec, nid, AC_PAR_STREAM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcm == -1 || stream == -1) {
 		snd_iprintf(buffer, "N/A\n");
 		return;
@@ -303,11 +212,7 @@ static void print_pcm_caps(struct snd_info_buffer *buffer,
 
 static const char *get_jack_connection(u32 cfg)
 {
-<<<<<<< HEAD
-	static char *names[16] = {
-=======
 	static const char * const names[16] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Unknown", "1/8", "1/4", "ATAPI",
 		"RCA", "Optical","Digital", "Analog",
 		"DIN", "XLR", "RJ11", "Comb",
@@ -322,11 +227,7 @@ static const char *get_jack_connection(u32 cfg)
 
 static const char *get_jack_color(u32 cfg)
 {
-<<<<<<< HEAD
-	static char *names[16] = {
-=======
 	static const char * const names[16] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Unknown", "Black", "Grey", "Blue",
 		"Green", "Red", "Orange", "Yellow",
 		"Purple", "Pink", NULL, NULL,
@@ -339,8 +240,6 @@ static const char *get_jack_color(u32 cfg)
 		return "UNKNOWN";
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Parse the pin default config value and returns the string of the
  * jack location, e.g. "Rear", "Front", etc.
@@ -402,24 +301,16 @@ static const char *get_jack_type(u32 cfg)
 				>> AC_DEFCFG_DEVICE_SHIFT];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_pin_caps(struct snd_info_buffer *buffer,
 			   struct hda_codec *codec, hda_nid_t nid,
 			   int *supports_vref)
 {
-<<<<<<< HEAD
-	static char *jack_conns[4] = { "Jack", "N/A", "Fixed", "Both" };
-	unsigned int caps, val;
-
-	caps = snd_hda_param_read(codec, nid, AC_PAR_PIN_CAP);
-=======
 	static const char * const jack_conns[4] = {
 		"Jack", "N/A", "Fixed", "Both"
 	};
 	unsigned int caps, val;
 
 	caps = param_read(codec, nid, AC_PAR_PIN_CAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "  Pincap 0x%08x:", caps);
 	if (caps & AC_PINCAP_IN)
 		snd_iprintf(buffer, " IN");
@@ -435,11 +326,7 @@ static void print_pin_caps(struct snd_info_buffer *buffer,
 		snd_iprintf(buffer, " Balanced");
 	if (caps & AC_PINCAP_HDMI) {
 		/* Realtek uses this bit as a different meaning */
-<<<<<<< HEAD
-		if ((codec->vendor_id >> 16) == 0x10ec)
-=======
 		if ((codec->core.vendor_id >> 16) == 0x10ec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_iprintf(buffer, " R/L");
 		else {
 			if (caps & AC_PINCAP_HBR)
@@ -487,15 +374,9 @@ static void print_pin_caps(struct snd_info_buffer *buffer,
 	caps = snd_hda_codec_read(codec, nid, 0, AC_VERB_GET_CONFIG_DEFAULT, 0);
 	snd_iprintf(buffer, "  Pin Default 0x%08x: [%s] %s at %s %s\n", caps,
 		    jack_conns[(caps & AC_DEFCFG_PORT_CONN) >> AC_DEFCFG_PORT_CONN_SHIFT],
-<<<<<<< HEAD
-		    snd_hda_get_jack_type(caps),
-		    snd_hda_get_jack_connectivity(caps),
-		    snd_hda_get_jack_location(caps));
-=======
 		    get_jack_type(caps),
 		    get_jack_connectivity(caps),
 		    get_jack_location(caps));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "    Conn = %s, Color = %s\n",
 		    get_jack_connection(caps),
 		    get_jack_color(caps));
@@ -557,12 +438,7 @@ static void print_pin_ctls(struct snd_info_buffer *buffer,
 static void print_vol_knob(struct snd_info_buffer *buffer,
 			   struct hda_codec *codec, hda_nid_t nid)
 {
-<<<<<<< HEAD
-	unsigned int cap = snd_hda_param_read(codec, nid,
-					      AC_PAR_VOL_KNB_CAP);
-=======
 	unsigned int cap = param_read(codec, nid, AC_PAR_VOL_KNB_CAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "  Volume-Knob: delta=%d, steps=%d, ",
 		    (cap >> 7) & 1, cap & 0x7f);
 	cap = snd_hda_codec_read(codec, nid, 0,
@@ -594,12 +470,9 @@ static void print_digital_conv(struct snd_info_buffer *buffer,
 {
 	unsigned int digi1 = snd_hda_codec_read(codec, nid, 0,
 						AC_VERB_GET_DIGI_CONVERT_1, 0);
-<<<<<<< HEAD
-=======
 	unsigned char digi2 = digi1 >> 8;
 	unsigned char digi3 = digi1 >> 16;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "  Digital:");
 	if (digi1 & AC_DIG1_ENABLE)
 		snd_iprintf(buffer, " Enabled");
@@ -617,11 +490,6 @@ static void print_digital_conv(struct snd_info_buffer *buffer,
 		snd_iprintf(buffer, " Pro");
 	if (digi1 & AC_DIG1_LEVEL)
 		snd_iprintf(buffer, " GenLevel");
-<<<<<<< HEAD
-	snd_iprintf(buffer, "\n");
-	snd_iprintf(buffer, "  Digital category: 0x%x\n",
-		    (digi1 >> 8) & AC_DIG2_CC);
-=======
 	if (digi3 & AC_DIG3_KAE)
 		snd_iprintf(buffer, " KAE");
 	snd_iprintf(buffer, "\n");
@@ -629,22 +497,14 @@ static void print_digital_conv(struct snd_info_buffer *buffer,
 		    digi2 & AC_DIG2_CC);
 	snd_iprintf(buffer, "  IEC Coding Type: 0x%x\n",
 			digi3 & AC_DIG3_ICT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *get_pwr_state(u32 state)
 {
-<<<<<<< HEAD
-	static const char * const buf[4] = {
-		"D0", "D1", "D2", "D3"
-	};
-	if (state < 4)
-=======
 	static const char * const buf[] = {
 		"D0", "D1", "D2", "D3", "D3cold"
 	};
 	if (state < ARRAY_SIZE(buf))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return buf[state];
 	return "UNKNOWN";
 }
@@ -652,11 +512,7 @@ static const char *get_pwr_state(u32 state)
 static void print_power_state(struct snd_info_buffer *buffer,
 			      struct hda_codec *codec, hda_nid_t nid)
 {
-<<<<<<< HEAD
-	static char *names[] = {
-=======
 	static const char * const names[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[ilog2(AC_PWRST_D0SUP)]		= "D0",
 		[ilog2(AC_PWRST_D1SUP)]		= "D1",
 		[ilog2(AC_PWRST_D2SUP)]		= "D2",
@@ -667,19 +523,6 @@ static void print_power_state(struct snd_info_buffer *buffer,
 		[ilog2(AC_PWRST_EPSS)]		= "EPSS",
 	};
 
-<<<<<<< HEAD
-	int sup = snd_hda_param_read(codec, nid, AC_PAR_POWER_STATE);
-	int pwr = snd_hda_codec_read(codec, nid, 0,
-				     AC_VERB_GET_POWER_STATE, 0);
-	if (sup)
-		snd_iprintf(buffer, "  Power states: %s\n",
-			    bits_names(sup, names, ARRAY_SIZE(names)));
-
-	snd_iprintf(buffer, "  Power: setting=%s, actual=%s\n",
-		    get_pwr_state(pwr & AC_PWRST_SETTING),
-		    get_pwr_state((pwr & AC_PWRST_ACTUAL) >>
-				  AC_PWRST_ACTUAL_SHIFT));
-=======
 	int sup = param_read(codec, nid, AC_PAR_POWER_STATE);
 	int pwr = snd_hda_codec_read(codec, nid, 0,
 				     AC_VERB_GET_POWER_STATE, 0);
@@ -705,7 +548,6 @@ static void print_power_state(struct snd_info_buffer *buffer,
 	if (pwr & AC_PWRST_SETTING_RESET)
 		snd_iprintf(buffer, ", Setting-reset");
 	snd_iprintf(buffer, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_unsol_cap(struct snd_info_buffer *buffer,
@@ -719,16 +561,6 @@ static void print_unsol_cap(struct snd_info_buffer *buffer,
 		    (unsol & AC_UNSOL_ENABLED) ? 1 : 0);
 }
 
-<<<<<<< HEAD
-static void print_proc_caps(struct snd_info_buffer *buffer,
-			    struct hda_codec *codec, hda_nid_t nid)
-{
-	unsigned int proc_caps = snd_hda_param_read(codec, nid,
-						    AC_PAR_PROC_CAP);
-	snd_iprintf(buffer, "  Processing caps: benign=%d, ncoeff=%d\n",
-		    proc_caps & AC_PCAP_BENIGN,
-		    (proc_caps & AC_PCAP_NUM_COEF) >> AC_PCAP_NUM_COEF_SHIFT);
-=======
 static inline bool can_dump_coef(struct hda_codec *codec)
 {
 	switch (dump_coef) {
@@ -761,7 +593,6 @@ static void print_proc_caps(struct snd_info_buffer *buffer,
 		snd_iprintf(buffer, "    Coeff 0x%02x: 0x%04x\n", i, val);
 	}
 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_COEF_INDEX, oldindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_conn_list(struct snd_info_buffer *buffer,
@@ -770,11 +601,8 @@ static void print_conn_list(struct snd_info_buffer *buffer,
 			    int conn_len)
 {
 	int c, curr = -1;
-<<<<<<< HEAD
-=======
 	const hda_nid_t *list;
 	int cache_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (conn_len > 1 &&
 	    wid_type != AC_WID_AUD_MIX &&
@@ -792,8 +620,6 @@ static void print_conn_list(struct snd_info_buffer *buffer,
 		}
 		snd_iprintf(buffer, "\n");
 	}
-<<<<<<< HEAD
-=======
 
 	/* Get Cache connections info */
 	cache_len = snd_hda_get_conn_list(codec, nid, &list);
@@ -807,18 +633,13 @@ static void print_conn_list(struct snd_info_buffer *buffer,
 			snd_iprintf(buffer, "\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_gpio(struct snd_info_buffer *buffer,
 		       struct hda_codec *codec, hda_nid_t nid)
 {
 	unsigned int gpio =
-<<<<<<< HEAD
-		snd_hda_param_read(codec, codec->afg, AC_PAR_GPIO_CAP);
-=======
 		param_read(codec, codec->core.afg, AC_PAR_GPIO_CAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int enable, direction, wake, unsol, sticky, data;
 	int i, max;
 	snd_iprintf(buffer, "GPIO: io=%d, o=%d, i=%d, "
@@ -858,15 +679,6 @@ static void print_gpio(struct snd_info_buffer *buffer,
 	print_nid_array(buffer, codec, nid, &codec->nids);
 }
 
-<<<<<<< HEAD
-static void print_codec_info(struct snd_info_entry *entry,
-			     struct snd_info_buffer *buffer)
-{
-	struct hda_codec *codec = entry->private_data;
-	hda_nid_t nid;
-	int i, nodes;
-
-=======
 static void print_dpmst_connections(struct snd_info_buffer *buffer, struct hda_codec *codec,
 				    hda_nid_t nid, int dev_num)
 {
@@ -936,7 +748,6 @@ static void print_device_list(struct snd_info_buffer *buffer,
 static void print_codec_core_info(struct hdac_device *codec,
 				  struct snd_info_buffer *buffer)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "Codec: ");
 	if (codec->vendor_name && codec->chip_name)
 		snd_iprintf(buffer, "%s %s\n",
@@ -958,20 +769,6 @@ static void print_codec_core_info(struct hdac_device *codec,
 		snd_iprintf(buffer, "Modem Function Group: 0x%x\n", codec->mfg);
 	else
 		snd_iprintf(buffer, "No Modem Function Group found\n");
-<<<<<<< HEAD
-
-	if (! codec->afg)
-		return;
-	snd_hda_power_up(codec);
-	snd_iprintf(buffer, "Default PCM:\n");
-	print_pcm_caps(buffer, codec, codec->afg);
-	snd_iprintf(buffer, "Default Amp-In caps: ");
-	print_amp_caps(buffer, codec, codec->afg, HDA_INPUT);
-	snd_iprintf(buffer, "Default Amp-Out caps: ");
-	print_amp_caps(buffer, codec, codec->afg, HDA_OUTPUT);
-
-	nodes = snd_hda_get_sub_nodes(codec, codec->afg, &nid);
-=======
 }
 
 static void print_codec_info(struct snd_info_entry *entry,
@@ -996,25 +793,12 @@ static void print_codec_info(struct snd_info_entry *entry,
 	print_power_state(buffer, codec, fg);
 
 	nodes = snd_hda_get_sub_nodes(codec, fg, &nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! nid || nodes < 0) {
 		snd_iprintf(buffer, "Invalid AFG subtree\n");
 		snd_hda_power_down(codec);
 		return;
 	}
 
-<<<<<<< HEAD
-	print_gpio(buffer, codec, codec->afg);
-	if (codec->proc_widget_hook)
-		codec->proc_widget_hook(buffer, codec, codec->afg);
-
-	for (i = 0; i < nodes; i++, nid++) {
-		unsigned int wid_caps =
-			snd_hda_param_read(codec, nid,
-					   AC_PAR_AUDIO_WIDGET_CAP);
-		unsigned int wid_type = get_wcaps_type(wid_caps);
-		hda_nid_t conn[HDA_MAX_CONNECTIONS];
-=======
 	print_gpio(buffer, codec, fg);
 	if (codec->proc_widget_hook)
 		codec->proc_widget_hook(buffer, codec, fg);
@@ -1024,7 +808,6 @@ static void print_codec_info(struct snd_info_entry *entry,
 			param_read(codec, nid, AC_PAR_AUDIO_WIDGET_CAP);
 		unsigned int wid_type = get_wcaps_type(wid_caps);
 		hda_nid_t *conn = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int conn_len = 0;
 
 		snd_iprintf(buffer, "Node 0x%02x [%s] wcaps 0x%x:", nid,
@@ -1061,11 +844,6 @@ static void print_codec_info(struct snd_info_entry *entry,
 		if (wid_type == AC_WID_VOL_KNB)
 			wid_caps |= AC_WCAP_CONN_LIST;
 
-<<<<<<< HEAD
-		if (wid_caps & AC_WCAP_CONN_LIST)
-			conn_len = snd_hda_get_raw_connections(codec, nid, conn,
-							   HDA_MAX_CONNECTIONS);
-=======
 		if (wid_caps & AC_WCAP_CONN_LIST) {
 			conn_len = snd_hda_get_num_raw_conns(codec, nid);
 			if (conn_len > 0) {
@@ -1079,7 +857,6 @@ static void print_codec_info(struct snd_info_entry *entry,
 					conn_len = 0;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (wid_caps & AC_WCAP_IN_AMP) {
 			snd_iprintf(buffer, "  Amp-In caps: ");
@@ -1089,19 +866,10 @@ static void print_codec_info(struct snd_info_entry *entry,
 			    (codec->single_adc_amp &&
 			     wid_type == AC_WID_AUD_IN))
 				print_amp_vals(buffer, codec, nid, HDA_INPUT,
-<<<<<<< HEAD
-					       wid_caps & AC_WCAP_STEREO,
-					       1);
-			else
-				print_amp_vals(buffer, codec, nid, HDA_INPUT,
-					       wid_caps & AC_WCAP_STEREO,
-					       conn_len);
-=======
 					       wid_caps, 1);
 			else
 				print_amp_vals(buffer, codec, nid, HDA_INPUT,
 					       wid_caps, conn_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (wid_caps & AC_WCAP_OUT_AMP) {
 			snd_iprintf(buffer, "  Amp-Out caps: ");
@@ -1110,18 +878,10 @@ static void print_codec_info(struct snd_info_entry *entry,
 			if (wid_type == AC_WID_PIN &&
 			    codec->pin_amp_workaround)
 				print_amp_vals(buffer, codec, nid, HDA_OUTPUT,
-<<<<<<< HEAD
-					       wid_caps & AC_WCAP_STEREO,
-					       conn_len);
-			else
-				print_amp_vals(buffer, codec, nid, HDA_OUTPUT,
-					       wid_caps & AC_WCAP_STEREO, 1);
-=======
 					       wid_caps, conn_len);
 			else
 				print_amp_vals(buffer, codec, nid, HDA_OUTPUT,
 					       wid_caps, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		switch (wid_type) {
@@ -1157,12 +917,9 @@ static void print_codec_info(struct snd_info_entry *entry,
 				    (wid_caps & AC_WCAP_DELAY) >>
 				    AC_WCAP_DELAY_SHIFT);
 
-<<<<<<< HEAD
-=======
 		if (wid_type == AC_WID_PIN && codec->dp_mst)
 			print_device_list(buffer, codec, nid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (wid_caps & AC_WCAP_CONN_LIST)
 			print_conn_list(buffer, codec, nid, wid_type,
 					conn, conn_len);
@@ -1172,11 +929,8 @@ static void print_codec_info(struct snd_info_entry *entry,
 
 		if (codec->proc_widget_hook)
 			codec->proc_widget_hook(buffer, codec, nid);
-<<<<<<< HEAD
-=======
 
 		kfree(conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	snd_hda_power_down(codec);
 }
@@ -1187,21 +941,8 @@ static void print_codec_info(struct snd_info_entry *entry,
 int snd_hda_codec_proc_new(struct hda_codec *codec)
 {
 	char name[32];
-<<<<<<< HEAD
-	struct snd_info_entry *entry;
-	int err;
-
-	snprintf(name, sizeof(name), "codec#%d", codec->addr);
-	err = snd_card_proc_new(codec->bus->card, name, &entry);
-	if (err < 0)
-		return err;
-
-	snd_info_set_text_ops(entry, codec, print_codec_info);
-	return 0;
-=======
 
 	snprintf(name, sizeof(name), "codec#%d", codec->core.addr);
 	return snd_card_ro_proc_new(codec->card, name, codec, print_codec_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

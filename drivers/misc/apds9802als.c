@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * apds9802als.c - apds9802  ALS Driver
  *
@@ -9,31 +6,10 @@
  *
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -79,11 +55,7 @@ static int als_wait_for_data_ready(struct device *dev)
 		ret = i2c_smbus_read_byte_data(client, 0x86);
 	} while (!(ret & 0x80) && retry--);
 
-<<<<<<< HEAD
-	if (!retry) {
-=======
 	if (retry < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(dev, "timeout waiting for data ready\n");
 		return -ETIMEDOUT;
 	}
@@ -141,14 +113,9 @@ static ssize_t als_sensing_range_store(struct device *dev,
 	int ret_val;
 	unsigned long val;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 10, &val))
-		return -EINVAL;
-=======
 	ret_val = kstrtoul(buf, 10, &val);
 	if (ret_val)
 		return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val < 4096)
 		val = 1;
@@ -218,11 +185,7 @@ static struct attribute *mid_att_als[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group m_als_gr = {
-=======
 static const struct attribute_group m_als_gr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "apds9802als",
 	.attrs = mid_att_als
 };
@@ -249,12 +212,7 @@ static int als_set_default_config(struct i2c_client *client)
 	return ret_val;
 }
 
-<<<<<<< HEAD
-static int apds9802als_probe(struct i2c_client *client,
-			     const struct i2c_device_id *id)
-=======
 static int apds9802als_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 	struct als_data *data;
@@ -283,11 +241,7 @@ als_error1:
 	return res;
 }
 
-<<<<<<< HEAD
-static int __devexit apds9802als_remove(struct i2c_client *client)
-=======
 static void apds9802als_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct als_data *data = i2c_get_clientdata(client);
 
@@ -301,31 +255,11 @@ static void apds9802als_remove(struct i2c_client *client)
 	pm_runtime_put_noidle(&client->dev);
 
 	kfree(data);
-<<<<<<< HEAD
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int apds9802als_suspend(struct i2c_client *client, pm_message_t mesg)
-{
-	als_set_power_state(client, false);
-	return 0;
-}
-
-static int apds9802als_resume(struct i2c_client *client)
-{
-	als_set_default_config(client);
-	return 0;
-}
-
-static int apds9802als_runtime_suspend(struct device *dev)
-=======
 }
 
 #ifdef CONFIG_PM
 
 static int apds9802als_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -333,11 +267,7 @@ static int apds9802als_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int apds9802als_runtime_resume(struct device *dev)
-=======
 static int apds9802als_resume(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -345,32 +275,16 @@ static int apds9802als_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct dev_pm_ops apds9802als_pm_ops = {
-	.runtime_suspend = apds9802als_runtime_suspend,
-	.runtime_resume = apds9802als_runtime_resume,
-};
-=======
 static UNIVERSAL_DEV_PM_OPS(apds9802als_pm_ops, apds9802als_suspend,
 	apds9802als_resume, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define APDS9802ALS_PM_OPS (&apds9802als_pm_ops)
 
 #else	/* CONFIG_PM */
-<<<<<<< HEAD
-#define apds9802als_suspend NULL
-#define apds9802als_resume NULL
-#define APDS9802ALS_PM_OPS NULL
-#endif	/* CONFIG_PM */
-
-static struct i2c_device_id apds9802als_id[] = {
-=======
 #define APDS9802ALS_PM_OPS NULL
 #endif	/* CONFIG_PM */
 
 static const struct i2c_device_id apds9802als_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ DRIVER_NAME, 0 },
 	{ }
 };
@@ -383,13 +297,7 @@ static struct i2c_driver apds9802als_driver = {
 		.pm = APDS9802ALS_PM_OPS,
 	},
 	.probe = apds9802als_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(apds9802als_remove),
-	.suspend = apds9802als_suspend,
-	.resume = apds9802als_resume,
-=======
 	.remove = apds9802als_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = apds9802als_id,
 };
 

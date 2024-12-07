@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *  cxacru.c  -  driver for USB ADSL modems based on
  *               Conexant AccessRunner chipset
@@ -10,24 +7,6 @@
  *  Copyright (C) 2005 Duncan Sands, Roman Kagan (rkagan % mail ! ru)
  *  Copyright (C) 2007 Simon Arlott
  *  Copyright (C) 2009 Simon Arlott
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the Free
- *  Software Foundation; either version 2 of the License, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- *  more details.
- *
- *  You should have received a copy of the GNU General Public License along with
- *  this program; if not, write to the Free Software Foundation, Inc., 59
- *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 
 /*
@@ -42,10 +21,6 @@
 #include <linux/timer.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/firmware.h>
 #include <linux/mutex.h>
@@ -54,10 +29,6 @@
 #include "usbatm.h"
 
 #define DRIVER_AUTHOR	"Roman Kagan, David Woodhouse, Duncan Sands, Simon Arlott"
-<<<<<<< HEAD
-#define DRIVER_VERSION	"0.4"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_DESC	"Conexant AccessRunner ADSL USB modem driver"
 
 static const char cxacru_driver_name[] = "cxacru";
@@ -209,11 +180,7 @@ struct cxacru_data {
 	struct mutex poll_state_serialize;
 	enum cxacru_poll_state poll_state;
 
-<<<<<<< HEAD
-	/* contol handles */
-=======
 	/* control handles */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex cm_serialize;
 	u8 *rcv_buf;
 	u8 *snd_buf;
@@ -229,20 +196,6 @@ static void cxacru_poll_status(struct work_struct *work);
 
 /* Card info exported through sysfs */
 #define CXACRU__ATTR_INIT(_name) \
-<<<<<<< HEAD
-static DEVICE_ATTR(_name, S_IRUGO, cxacru_sysfs_show_##_name, NULL)
-
-#define CXACRU_CMD_INIT(_name) \
-static DEVICE_ATTR(_name, S_IWUSR | S_IRUGO, \
-	cxacru_sysfs_show_##_name, cxacru_sysfs_store_##_name)
-
-#define CXACRU_SET_INIT(_name) \
-static DEVICE_ATTR(_name, S_IWUSR, \
-	NULL, cxacru_sysfs_store_##_name)
-
-#define CXACRU_ATTR_INIT(_value, _type, _name) \
-static ssize_t cxacru_sysfs_show_##_name(struct device *dev, \
-=======
 static DEVICE_ATTR_RO(_name)
 
 #define CXACRU_CMD_INIT(_name) \
@@ -253,7 +206,6 @@ static DEVICE_ATTR_WO(_name)
 
 #define CXACRU_ATTR_INIT(_value, _type, _name) \
 static ssize_t _name##_show(struct device *dev, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, char *buf) \
 { \
 	struct cxacru_data *instance = to_usbatm_driver_data(\
@@ -278,20 +230,12 @@ CXACRU__ATTR_INIT(_name)
 
 static ssize_t cxacru_sysfs_showattr_u32(u32 value, char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", value);
-=======
 	return sprintf(buf, "%u\n", value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cxacru_sysfs_showattr_s8(s8 value, char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", value);
-=======
 	return sprintf(buf, "%d\n", value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cxacru_sysfs_showattr_dB(s16 value, char *buf)
@@ -309,31 +253,19 @@ static ssize_t cxacru_sysfs_showattr_dB(s16 value, char *buf)
 static ssize_t cxacru_sysfs_showattr_bool(u32 value, char *buf)
 {
 	static char *str[] = { "no", "yes" };
-<<<<<<< HEAD
-	if (unlikely(value >= ARRAY_SIZE(str)))
-		return snprintf(buf, PAGE_SIZE, "%u\n", value);
-	return snprintf(buf, PAGE_SIZE, "%s\n", str[value]);
-=======
 
 	if (unlikely(value >= ARRAY_SIZE(str)))
 		return sprintf(buf, "%u\n", value);
 	return sprintf(buf, "%s\n", str[value]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cxacru_sysfs_showattr_LINK(u32 value, char *buf)
 {
 	static char *str[] = { NULL, "not connected", "connected", "lost" };
-<<<<<<< HEAD
-	if (unlikely(value >= ARRAY_SIZE(str) || str[value] == NULL))
-		return snprintf(buf, PAGE_SIZE, "%u\n", value);
-	return snprintf(buf, PAGE_SIZE, "%s\n", str[value]);
-=======
 
 	if (unlikely(value >= ARRAY_SIZE(str) || str[value] == NULL))
 		return sprintf(buf, "%u\n", value);
 	return sprintf(buf, "%s\n", str[value]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cxacru_sysfs_showattr_LINE(u32 value, char *buf)
@@ -343,13 +275,8 @@ static ssize_t cxacru_sysfs_showattr_LINE(u32 value, char *buf)
 		"waiting", "initialising"
 	};
 	if (unlikely(value >= ARRAY_SIZE(str)))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%u\n", value);
-	return snprintf(buf, PAGE_SIZE, "%s\n", str[value]);
-=======
 		return sprintf(buf, "%u\n", value);
 	return sprintf(buf, "%s\n", str[value]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cxacru_sysfs_showattr_MODU(u32 value, char *buf)
@@ -361,13 +288,8 @@ static ssize_t cxacru_sysfs_showattr_MODU(u32 value, char *buf)
 			"ITU-T G.992.2 (G.LITE)"
 	};
 	if (unlikely(value >= ARRAY_SIZE(str)))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%u\n", value);
-	return snprintf(buf, PAGE_SIZE, "%s\n", str[value]);
-=======
 		return sprintf(buf, "%u\n", value);
 	return sprintf(buf, "%s\n", str[value]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -378,11 +300,7 @@ static ssize_t cxacru_sysfs_showattr_MODU(u32 value, char *buf)
  * MAC_ADDRESS_LOW  = 0x33221100
  * Where 00-55 are bytes 0-5 of the MAC.
  */
-<<<<<<< HEAD
-static ssize_t cxacru_sysfs_show_mac_address(struct device *dev,
-=======
 static ssize_t mac_address_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, char *buf)
 {
 	struct cxacru_data *instance = to_usbatm_driver_data(
@@ -391,18 +309,10 @@ static ssize_t mac_address_show(struct device *dev,
 	if (instance == NULL || instance->usbatm->atm_dev == NULL)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%pM\n",
-		instance->usbatm->atm_dev->esi);
-}
-
-static ssize_t cxacru_sysfs_show_adsl_state(struct device *dev,
-=======
 	return sprintf(buf, "%pM\n", instance->usbatm->atm_dev->esi);
 }
 
 static ssize_t adsl_state_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, char *buf)
 {
 	static char *str[] = { "running", "stopped" };
@@ -415,19 +325,11 @@ static ssize_t adsl_state_show(struct device *dev,
 
 	value = instance->card_info[CXINF_LINE_STARTABLE];
 	if (unlikely(value >= ARRAY_SIZE(str)))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%u\n", value);
-	return snprintf(buf, PAGE_SIZE, "%s\n", str[value]);
-}
-
-static ssize_t cxacru_sysfs_store_adsl_state(struct device *dev,
-=======
 		return sprintf(buf, "%u\n", value);
 	return sprintf(buf, "%s\n", str[value]);
 }
 
 static ssize_t adsl_state_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct cxacru_data *instance = to_usbatm_driver_data(
@@ -505,10 +407,7 @@ static ssize_t adsl_state_store(struct device *dev,
 		case CXPOLL_STOPPING:
 			/* abort stop request */
 			instance->poll_state = CXPOLL_POLLING;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CXPOLL_POLLING:
 		case CXPOLL_SHUTDOWN:
 			/* don't start polling */
@@ -533,11 +432,7 @@ static ssize_t adsl_state_store(struct device *dev,
 
 /* CM_REQUEST_CARD_DATA_GET times out, so no show attribute */
 
-<<<<<<< HEAD
-static ssize_t cxacru_sysfs_store_adsl_config(struct device *dev,
-=======
 static ssize_t adsl_config_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct cxacru_data *instance = to_usbatm_driver_data(
@@ -562,13 +457,9 @@ static ssize_t adsl_config_store(struct device *dev,
 		ret = sscanf(buf + pos, "%x=%x%n", &index, &value, &tmp);
 		if (ret < 2)
 			return -EINVAL;
-<<<<<<< HEAD
-		if (index < 0 || index > 0x7f)
-=======
 		if (index > 0x7f)
 			return -EINVAL;
 		if (tmp < 0 || tmp > len - pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		pos += tmp;
 
@@ -647,8 +538,6 @@ CXACRU_SET_##_action(                                        adsl_config);
 
 CXACRU_ALL_FILES(INIT);
 
-<<<<<<< HEAD
-=======
 static struct attribute *cxacru_attrs[] = {
 	&dev_attr_adsl_config.attr,
 	&dev_attr_adsl_state.attr,
@@ -680,18 +569,12 @@ static struct attribute *cxacru_attrs[] = {
 };
 ATTRIBUTE_GROUPS(cxacru);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* the following three functions are stolen from drivers/usb/core/message.c */
 static void cxacru_blocking_completion(struct urb *urb)
 {
 	complete(urb->context);
 }
 
-<<<<<<< HEAD
-static void cxacru_timeout_kill(unsigned long data)
-{
-	usb_unlink_urb((struct urb *) data);
-=======
 struct cxacru_timer {
 	struct timer_list timer;
 	struct urb *urb;
@@ -702,23 +585,11 @@ static void cxacru_timeout_kill(struct timer_list *t)
 	struct cxacru_timer *timer = from_timer(timer, t, timer);
 
 	usb_unlink_urb(timer->urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cxacru_start_wait_urb(struct urb *urb, struct completion *done,
 				 int *actual_length)
 {
-<<<<<<< HEAD
-	struct timer_list timer;
-
-	init_timer(&timer);
-	timer.expires = jiffies + msecs_to_jiffies(CMD_TIMEOUT);
-	timer.data = (unsigned long) urb;
-	timer.function = cxacru_timeout_kill;
-	add_timer(&timer);
-	wait_for_completion(done);
-	del_timer_sync(&timer);
-=======
 	struct cxacru_timer timer = {
 		.urb = urb,
 	};
@@ -728,7 +599,6 @@ static int cxacru_start_wait_urb(struct urb *urb, struct completion *done,
 	wait_for_completion(done);
 	del_timer_sync(&timer.timer);
 	destroy_timer_on_stack(&timer.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (actual_length)
 		*actual_length = urb->actual_length;
@@ -828,11 +698,7 @@ static int cxacru_cm(struct cxacru_data *instance, enum cxacru_cm_request cm,
 	}
 
 	ret = offd;
-<<<<<<< HEAD
-	dbg("cm %#x", cm);
-=======
 	usb_dbg(instance->usbatm, "cm %#x\n", cm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 	mutex_unlock(&instance->cm_serialize);
 err:
@@ -861,10 +727,7 @@ static int cxacru_cm_get_array(struct cxacru_data *instance, enum cxacru_cm_requ
 	len = ret / 4;
 	for (offb = 0; offb < len; ) {
 		int l = le32_to_cpu(buf[offb++]);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (l < 0 || l > stride || l > (len - offb) / 2) {
 			if (printk_ratelimit())
 				usb_err(instance->usbatm, "invalid data length from cm %#x: %d\n",
@@ -895,33 +758,14 @@ cleanup:
 static int cxacru_card_status(struct cxacru_data *instance)
 {
 	int ret = cxacru_cm(instance, CM_REQUEST_CARD_GET_STATUS, NULL, 0, NULL, 0);
-<<<<<<< HEAD
-	if (ret < 0) {		/* firmware not loaded */
-		dbg("cxacru_adsl_start: CARD_GET_STATUS returned %d", ret);
-=======
 
 	if (ret < 0) {		/* firmware not loaded */
 		usb_dbg(instance->usbatm, "cxacru_adsl_start: CARD_GET_STATUS returned %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static void cxacru_remove_device_files(struct usbatm_data *usbatm_instance,
-		struct atm_dev *atm_dev)
-{
-	struct usb_interface *intf = usbatm_instance->usb_intf;
-
-	#define CXACRU_DEVICE_REMOVE_FILE(_name) \
-		device_remove_file(&intf->dev, &dev_attr_##_name);
-	CXACRU_ALL_FILES(REMOVE);
-	#undef CXACRU_DEVICE_REMOVE_FILE
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cxacru_atm_start(struct usbatm_data *usbatm_instance,
 		struct atm_dev *atm_dev)
 {
@@ -930,11 +774,7 @@ static int cxacru_atm_start(struct usbatm_data *usbatm_instance,
 	int ret;
 	int start_polling = 1;
 
-<<<<<<< HEAD
-	dbg("cxacru_atm_start");
-=======
 	dev_dbg(&intf->dev, "%s\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read MAC address */
 	ret = cxacru_cm(instance, CM_REQUEST_CARD_GET_MAC_ADDRESS, NULL, 0,
@@ -944,16 +784,6 @@ static int cxacru_atm_start(struct usbatm_data *usbatm_instance,
 		return ret;
 	}
 
-<<<<<<< HEAD
-	#define CXACRU_DEVICE_CREATE_FILE(_name) \
-		ret = device_create_file(&intf->dev, &dev_attr_##_name); \
-		if (unlikely(ret)) \
-			goto fail_sysfs;
-	CXACRU_ALL_FILES(CREATE);
-	#undef CXACRU_DEVICE_CREATE_FILE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* start ADSL */
 	mutex_lock(&instance->adsl_state_serialize);
 	ret = cxacru_cm(instance, CM_REQUEST_CHIP_ADSL_LINE_START, NULL, 0, NULL, 0);
@@ -971,10 +801,7 @@ static int cxacru_atm_start(struct usbatm_data *usbatm_instance,
 	case CXPOLL_STOPPING:
 		/* abort stop request */
 		instance->poll_state = CXPOLL_POLLING;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CXPOLL_POLLING:
 	case CXPOLL_SHUTDOWN:
 		/* don't start polling */
@@ -983,23 +810,9 @@ static int cxacru_atm_start(struct usbatm_data *usbatm_instance,
 	mutex_unlock(&instance->poll_state_serialize);
 	mutex_unlock(&instance->adsl_state_serialize);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s%d: %s %pM\n", atm_dev->type, atm_dev->number,
-			usbatm_instance->description, atm_dev->esi);
-
 	if (start_polling)
 		cxacru_poll_status(&instance->poll_work.work);
 	return 0;
-
-fail_sysfs:
-	usb_err(usbatm_instance, "cxacru_atm_start: device_create_file failed (%d)\n", ret);
-	cxacru_remove_device_files(usbatm_instance, atm_dev);
-	return ret;
-=======
-	if (start_polling)
-		cxacru_poll_status(&instance->poll_work.work);
-	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cxacru_poll_status(struct work_struct *work)
@@ -1036,17 +849,6 @@ static void cxacru_poll_status(struct work_struct *work)
 
 		switch (instance->adsl_status) {
 		case 0:
-<<<<<<< HEAD
-			atm_printk(KERN_INFO, usbatm, "ADSL state: running\n");
-			break;
-
-		case 1:
-			atm_printk(KERN_INFO, usbatm, "ADSL state: stopped\n");
-			break;
-
-		default:
-			atm_printk(KERN_INFO, usbatm, "Unknown adsl status %02x\n", instance->adsl_status);
-=======
 			atm_info(usbatm, "ADSL state: running\n");
 			break;
 
@@ -1056,7 +858,6 @@ static void cxacru_poll_status(struct work_struct *work)
 
 		default:
 			atm_info(usbatm, "Unknown adsl status %02x\n", instance->adsl_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1146,10 +947,7 @@ static int cxacru_fw(struct usb_device *usb_dev, enum cxacru_fw_request fw,
 	offb = offd = 0;
 	do {
 		int l = min_t(int, stride, size - offd);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf[offb++] = fw;
 		buf[offb++] = l;
 		buf[offb++] = code1;
@@ -1167,21 +965,13 @@ static int cxacru_fw(struct usb_device *usb_dev, enum cxacru_fw_request fw,
 			ret = usb_bulk_msg(usb_dev, usb_sndbulkpipe(usb_dev, CXACRU_EP_CMD),
 					   buf, offb, NULL, CMD_TIMEOUT);
 			if (ret < 0) {
-<<<<<<< HEAD
-				dbg("sending fw %#x failed", fw);
-=======
 				dev_dbg(&usb_dev->dev, "sending fw %#x failed\n", fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto cleanup;
 			}
 			offb = 0;
 		}
 	} while (offd < size);
-<<<<<<< HEAD
-	dbg("sent fw %#x", fw);
-=======
 	dev_dbg(&usb_dev->dev, "sent fw %#x\n", fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 
@@ -1201,11 +991,7 @@ static void cxacru_upload_firmware(struct cxacru_data *instance,
 			       usb_dev->descriptor.idProduct };
 	__le32 val;
 
-<<<<<<< HEAD
-	dbg("cxacru_upload_firmware");
-=======
 	usb_dbg(usbatm, "%s\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FirmwarePllFClkValue */
 	val = cpu_to_le32(instance->modem_type->pll_f_clk);
@@ -1291,11 +1077,7 @@ static int cxacru_find_firmware(struct cxacru_data *instance,
 	char buf[16];
 
 	sprintf(buf, "cxacru-%s.bin", phase);
-<<<<<<< HEAD
-	dbg("cxacru_find_firmware: looking for %s", buf);
-=======
 	usb_dbg(usbatm, "cxacru_find_firmware: looking for %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (request_firmware(fw_p, buf, dev)) {
 		usb_dbg(usbatm, "no stage %s firmware found\n", phase);
@@ -1312,13 +1094,8 @@ static int cxacru_heavy_init(struct usbatm_data *usbatm_instance,
 {
 	const struct firmware *fw, *bp;
 	struct cxacru_data *instance = usbatm_instance->driver_data;
-<<<<<<< HEAD
-
-	int ret = cxacru_find_firmware(instance, "fw", &fw);
-=======
 	int ret = cxacru_find_firmware(instance, "fw", &fw);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		usb_warn(usbatm_instance, "firmware (cxacru-fw.bin) unavailable (system misconfigured?)\n");
 		return ret;
@@ -1341,15 +1118,9 @@ static int cxacru_heavy_init(struct usbatm_data *usbatm_instance,
 
 	ret = cxacru_card_status(instance);
 	if (ret)
-<<<<<<< HEAD
-		dbg("modem initialisation failed");
-	else
-		dbg("done setting up the modem");
-=======
 		usb_dbg(usbatm_instance, "modem initialisation failed\n");
 	else
 		usb_dbg(usbatm_instance, "done setting up the modem\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1364,15 +1135,8 @@ static int cxacru_bind(struct usbatm_data *usbatm_instance,
 
 	/* instance init */
 	instance = kzalloc(sizeof(*instance), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!instance) {
-		dbg("cxacru_bind: no memory for instance data");
-		return -ENOMEM;
-	}
-=======
 	if (!instance)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance->usbatm = usbatm_instance;
 	instance->modem_type = (struct cxacru_modem_type *) id->driver_info;
@@ -1386,49 +1150,29 @@ static int cxacru_bind(struct usbatm_data *usbatm_instance,
 
 	instance->rcv_buf = (u8 *) __get_free_page(GFP_KERNEL);
 	if (!instance->rcv_buf) {
-<<<<<<< HEAD
-		dbg("cxacru_bind: no memory for rcv_buf");
-=======
 		usb_dbg(usbatm_instance, "cxacru_bind: no memory for rcv_buf\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto fail;
 	}
 	instance->snd_buf = (u8 *) __get_free_page(GFP_KERNEL);
 	if (!instance->snd_buf) {
-<<<<<<< HEAD
-		dbg("cxacru_bind: no memory for snd_buf");
-=======
 		usb_dbg(usbatm_instance, "cxacru_bind: no memory for snd_buf\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto fail;
 	}
 	instance->rcv_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!instance->rcv_urb) {
-<<<<<<< HEAD
-		dbg("cxacru_bind: no memory for rcv_urb");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto fail;
 	}
 	instance->snd_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!instance->snd_urb) {
-<<<<<<< HEAD
-		dbg("cxacru_bind: no memory for snd_urb");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto fail;
 	}
 
 	if (!cmd_ep) {
-<<<<<<< HEAD
-		dbg("cxacru_bind: no command endpoint");
-=======
 		usb_dbg(usbatm_instance, "cxacru_bind: no command endpoint\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto fail;
 	}
@@ -1482,17 +1226,10 @@ static void cxacru_unbind(struct usbatm_data *usbatm_instance,
 	struct cxacru_data *instance = usbatm_instance->driver_data;
 	int is_polling = 1;
 
-<<<<<<< HEAD
-	dbg("cxacru_unbind entered");
-
-	if (!instance) {
-		dbg("cxacru_unbind: NULL instance!");
-=======
 	usb_dbg(usbatm_instance, "cxacru_unbind entered\n");
 
 	if (!instance) {
 		usb_dbg(usbatm_instance, "cxacru_unbind: NULL instance!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1599,10 +1336,6 @@ static struct usbatm_driver cxacru_driver = {
 	.heavy_init	= cxacru_heavy_init,
 	.unbind		= cxacru_unbind,
 	.atm_start	= cxacru_atm_start,
-<<<<<<< HEAD
-	.atm_stop	= cxacru_remove_device_files,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bulk_in	= CXACRU_EP_DATA,
 	.bulk_out	= CXACRU_EP_DATA,
 	.rx_padding	= 3,
@@ -1634,12 +1367,8 @@ static struct usb_driver cxacru_usb_driver = {
 	.name		= cxacru_driver_name,
 	.probe		= cxacru_usb_probe,
 	.disconnect	= usbatm_usb_disconnect,
-<<<<<<< HEAD
-	.id_table	= cxacru_usb_ids
-=======
 	.id_table	= cxacru_usb_ids,
 	.dev_groups	= cxacru_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(cxacru_usb_driver);
@@ -1647,7 +1376,3 @@ module_usb_driver(cxacru_usb_driver);
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRIVER_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

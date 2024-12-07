@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Intel network device drivers.
 #
@@ -10,12 +7,6 @@ obj-$(CONFIG_E100) += e100.o
 obj-$(CONFIG_E1000) += e1000/
 obj-$(CONFIG_E1000E) += e1000e/
 obj-$(CONFIG_IGB) += igb/
-<<<<<<< HEAD
-obj-$(CONFIG_IGBVF) += igbvf/
-obj-$(CONFIG_IXGBE) += ixgbe/
-obj-$(CONFIG_IXGBEVF) += ixgbevf/
-obj-$(CONFIG_IXGB) += ixgb/
-=======
 obj-$(CONFIG_IGC) += igc/
 obj-$(CONFIG_IGBVF) += igbvf/
 obj-$(CONFIG_IXGBE) += ixgbe/
@@ -25,4 +16,3 @@ obj-$(CONFIG_IAVF) += iavf/
 obj-$(CONFIG_FM10K) += fm10k/
 obj-$(CONFIG_ICE) += ice/
 obj-$(CONFIG_IDPF) += idpf/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

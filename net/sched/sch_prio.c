@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * net/sched/sch_prio.c	Simple 3-band priority "scheduler".
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/sch_prio.c	Simple 3-band priority "scheduler".
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  * Fixes:       19990609: J Hadi Salim <hadi@nortelnetworks.com>:
  *              Init --  EINVAL when opt undefined
@@ -25,19 +14,6 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/netdevice.h>
-#include <net/netlink.h>
-#include <net/pkt_sched.h>
-
-
-struct prio_sched_data {
-	int bands;
-	struct tcf_proto *filter_list;
-	u8  prio2band[TC_PRIO_MAX+1];
-	struct Qdisc *queues[TCQ_PRIO_BANDS];
-	u8 enable_flow;
-=======
 #include <net/netlink.h>
 #include <net/pkt_sched.h>
 #include <net/pkt_cls.h>
@@ -48,7 +24,6 @@ struct prio_sched_data {
 	struct tcf_block *block;
 	u8  prio2band[TC_PRIO_MAX+1];
 	struct Qdisc *queues[TCQ_PRIO_BANDS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -58,40 +33,25 @@ prio_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
 	struct prio_sched_data *q = qdisc_priv(sch);
 	u32 band = skb->priority;
 	struct tcf_result res;
-<<<<<<< HEAD
-=======
 	struct tcf_proto *fl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 	if (TC_H_MAJ(skb->priority) != sch->handle) {
-<<<<<<< HEAD
-		err = tc_classify(skb, q->filter_list, &res);
-=======
 		fl = rcu_dereference_bh(q->filter_list);
 		err = tcf_classify(skb, NULL, fl, &res, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_CLS_ACT
 		switch (err) {
 		case TC_ACT_STOLEN:
 		case TC_ACT_QUEUED:
-<<<<<<< HEAD
-			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
-=======
 		case TC_ACT_TRAP:
 			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TC_ACT_SHOT:
 			return NULL;
 		}
 #endif
-<<<<<<< HEAD
-		if (!q->filter_list || err < 0) {
-=======
 		if (!fl || err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (TC_H_MAJ(band))
 				band = 0;
 			return q->queues[q->prio2band[band & TC_PRIO_MAX]];
@@ -106,14 +66,9 @@ prio_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
 }
 
 static int
-<<<<<<< HEAD
-prio_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-{
-=======
 prio_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 {
 	unsigned int len = qdisc_pkt_len(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Qdisc *qdisc;
 	int ret;
 
@@ -122,34 +77,20 @@ prio_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 	if (qdisc == NULL) {
 
 		if (ret & __NET_XMIT_BYPASS)
-<<<<<<< HEAD
-			sch->qstats.drops++;
-		kfree_skb(skb);
-=======
 			qdisc_qstats_drop(sch);
 		__qdisc_drop(skb, to_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 #endif
 
-<<<<<<< HEAD
-	ret = qdisc_enqueue(skb, qdisc);
-	if (ret == NET_XMIT_SUCCESS) {
-=======
 	ret = qdisc_enqueue(skb, qdisc, to_free);
 	if (ret == NET_XMIT_SUCCESS) {
 		sch->qstats.backlog += len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sch->q.qlen++;
 		return NET_XMIT_SUCCESS;
 	}
 	if (net_xmit_drop_count(ret))
-<<<<<<< HEAD
-		sch->qstats.drops++;
-=======
 		qdisc_qstats_drop(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -158,12 +99,6 @@ static struct sk_buff *prio_peek(struct Qdisc *sch)
 	struct prio_sched_data *q = qdisc_priv(sch);
 	int prio;
 
-<<<<<<< HEAD
-	if (!q->enable_flow)
-		return NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (prio = 0; prio < q->bands; prio++) {
 		struct Qdisc *qdisc = q->queues[prio];
 		struct sk_buff *skb = qdisc->ops->peek(qdisc);
@@ -178,21 +113,12 @@ static struct sk_buff *prio_dequeue(struct Qdisc *sch)
 	struct prio_sched_data *q = qdisc_priv(sch);
 	int prio;
 
-<<<<<<< HEAD
-	if (!q->enable_flow)
-		return NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (prio = 0; prio < q->bands; prio++) {
 		struct Qdisc *qdisc = q->queues[prio];
 		struct sk_buff *skb = qdisc_dequeue_peeked(qdisc);
 		if (skb) {
 			qdisc_bstats_update(sch, skb);
-<<<<<<< HEAD
-=======
 			qdisc_qstats_backlog_dec(sch, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sch->q.qlen--;
 			return skb;
 		}
@@ -201,27 +127,6 @@ static struct sk_buff *prio_dequeue(struct Qdisc *sch)
 
 }
 
-<<<<<<< HEAD
-static unsigned int prio_drop(struct Qdisc *sch)
-{
-	struct prio_sched_data *q = qdisc_priv(sch);
-	int prio;
-	unsigned int len;
-	struct Qdisc *qdisc;
-
-	for (prio = q->bands-1; prio >= 0; prio--) {
-		qdisc = q->queues[prio];
-		if (qdisc->ops->drop && (len = qdisc->ops->drop(qdisc)) != 0) {
-			sch->q.qlen--;
-			return len;
-		}
-	}
-	return 0;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 prio_reset(struct Qdisc *sch)
 {
@@ -230,10 +135,6 @@ prio_reset(struct Qdisc *sch)
 
 	for (prio = 0; prio < q->bands; prio++)
 		qdisc_reset(q->queues[prio]);
-<<<<<<< HEAD
-	sch->q.qlen = 0;
-	q->enable_flow = 1;
-=======
 }
 
 static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
@@ -258,7 +159,6 @@ static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
 	}
 
 	return dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_PRIO, &opt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -267,19 +167,6 @@ prio_destroy(struct Qdisc *sch)
 	int prio;
 	struct prio_sched_data *q = qdisc_priv(sch);
 
-<<<<<<< HEAD
-	tcf_destroy_chain(&q->filter_list);
-	for (prio = 0; prio < q->bands; prio++)
-		qdisc_destroy(q->queues[prio]);
-}
-
-static int prio_tune(struct Qdisc *sch, struct nlattr *opt)
-{
-	struct prio_sched_data *q = qdisc_priv(sch);
-	struct tc_prio_qopt *qopt;
-	int i;
-	int flow_change = 0;
-=======
 	tcf_block_put(q->block);
 	prio_offload(sch, NULL);
 	for (prio = 0; prio < q->bands; prio++)
@@ -293,17 +180,12 @@ static int prio_tune(struct Qdisc *sch, struct nlattr *opt,
 	struct Qdisc *queues[TCQ_PRIO_BANDS];
 	int oldbands = q->bands, i;
 	struct tc_prio_qopt *qopt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nla_len(opt) < sizeof(*qopt))
 		return -EINVAL;
 	qopt = nla_data(opt);
 
-<<<<<<< HEAD
-	if (qopt->bands > TCQ_PRIO_BANDS || qopt->bands < 2)
-=======
 	if (qopt->bands > TCQ_PRIO_BANDS || qopt->bands < TCQ_MIN_PRIO_BANDS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	for (i = 0; i <= TC_PRIO_MAX; i++) {
@@ -311,74 +193,6 @@ static int prio_tune(struct Qdisc *sch, struct nlattr *opt,
 			return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	sch_tree_lock(sch);
-	if (q->enable_flow != qopt->enable_flow) {
-		q->enable_flow = qopt->enable_flow;
-		flow_change = 1;
-	}
-	q->bands = qopt->bands;
-	memcpy(q->prio2band, qopt->priomap, TC_PRIO_MAX+1);
-
-	for (i = q->bands; i < TCQ_PRIO_BANDS; i++) {
-		struct Qdisc *child = q->queues[i];
-		q->queues[i] = &noop_qdisc;
-		if (child != &noop_qdisc) {
-			qdisc_tree_decrease_qlen(child, child->q.qlen);
-			qdisc_destroy(child);
-		}
-	}
-	sch_tree_unlock(sch);
-
-	for (i = 0; i < q->bands; i++) {
-		if (q->queues[i] == &noop_qdisc) {
-			struct Qdisc *child, *old;
-
-			child = qdisc_create_dflt(sch->dev_queue,
-						  &pfifo_qdisc_ops,
-						  TC_H_MAKE(sch->handle, i + 1));
-			if (child) {
-				sch_tree_lock(sch);
-				old = q->queues[i];
-				q->queues[i] = child;
-
-				if (old != &noop_qdisc) {
-					qdisc_tree_decrease_qlen(old,
-								 old->q.qlen);
-					qdisc_destroy(old);
-				}
-				sch_tree_unlock(sch);
-			}
-		}
-	}
-
-	/* Schedule qdisc when flow re-enabled */
-	if (flow_change && q->enable_flow) {
-		if (!test_bit(__QDISC_STATE_DEACTIVATED,
-			      &sch->state))
-			__netif_schedule(qdisc_root(sch));
-	}
-	return 0;
-}
-
-static int prio_init(struct Qdisc *sch, struct nlattr *opt)
-{
-	struct prio_sched_data *q = qdisc_priv(sch);
-	int i;
-
-	for (i = 0; i < TCQ_PRIO_BANDS; i++)
-		q->queues[i] = &noop_qdisc;
-
-	if (opt == NULL) {
-		return -EINVAL;
-	} else {
-		int err;
-
-		if ((err = prio_tune(sch, opt)) != 0)
-			return err;
-	}
-	return 0;
-=======
 	/* Before commit, make sure we can allocate all new qdiscs */
 	for (i = oldbands; i < qopt->bands; i++) {
 		queues[i] = qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops,
@@ -443,7 +257,6 @@ static int prio_dump_offload(struct Qdisc *sch)
 	};
 
 	return qdisc_offload_dump_helper(sch, TC_SETUP_QDISC_PRIO, &hw_stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int prio_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -451,14 +264,6 @@ static int prio_dump(struct Qdisc *sch, struct sk_buff *skb)
 	struct prio_sched_data *q = qdisc_priv(sch);
 	unsigned char *b = skb_tail_pointer(skb);
 	struct tc_prio_qopt opt;
-<<<<<<< HEAD
-
-	opt.bands = q->bands;
-	opt.enable_flow = q->enable_flow;
-	memcpy(&opt.priomap, q->prio2band, TC_PRIO_MAX + 1);
-
-	NLA_PUT(skb, TCA_OPTIONS, sizeof(opt), &opt);
-=======
 	int err;
 
 	opt.bands = q->bands;
@@ -470,7 +275,6 @@ static int prio_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 	if (nla_put(skb, TCA_OPTIONS, sizeof(opt), &opt))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb->len;
 
@@ -480,23 +284,6 @@ nla_put_failure:
 }
 
 static int prio_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
-<<<<<<< HEAD
-		      struct Qdisc **old)
-{
-	struct prio_sched_data *q = qdisc_priv(sch);
-	unsigned long band = arg - 1;
-
-	if (new == NULL)
-		new = &noop_qdisc;
-
-	sch_tree_lock(sch);
-	*old = q->queues[band];
-	q->queues[band] = new;
-	qdisc_tree_decrease_qlen(*old, (*old)->q.qlen);
-	qdisc_reset(*old);
-	sch_tree_unlock(sch);
-
-=======
 		      struct Qdisc **old, struct netlink_ext_ack *extack)
 {
 	struct prio_sched_data *q = qdisc_priv(sch);
@@ -523,7 +310,6 @@ static int prio_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	qdisc_offload_graft_helper(qdisc_dev(sch), sch, new, *old,
 				   TC_SETUP_QDISC_PRIO, &graft_offload,
 				   extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -536,11 +322,7 @@ prio_leaf(struct Qdisc *sch, unsigned long arg)
 	return q->queues[band];
 }
 
-<<<<<<< HEAD
-static unsigned long prio_get(struct Qdisc *sch, u32 classid)
-=======
 static unsigned long prio_find(struct Qdisc *sch, u32 classid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct prio_sched_data *q = qdisc_priv(sch);
 	unsigned long band = TC_H_MIN(classid);
@@ -552,19 +334,11 @@ static unsigned long prio_find(struct Qdisc *sch, u32 classid)
 
 static unsigned long prio_bind(struct Qdisc *sch, unsigned long parent, u32 classid)
 {
-<<<<<<< HEAD
-	return prio_get(sch, classid);
-}
-
-
-static void prio_put(struct Qdisc *q, unsigned long cl)
-=======
 	return prio_find(sch, classid);
 }
 
 
 static void prio_unbind(struct Qdisc *q, unsigned long cl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -585,15 +359,9 @@ static int prio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 	struct Qdisc *cl_q;
 
 	cl_q = q->queues[cl - 1];
-<<<<<<< HEAD
-	cl_q->qstats.qlen = cl_q->q.qlen;
-	if (gnet_stats_copy_basic(d, &cl_q->bstats) < 0 ||
-	    gnet_stats_copy_queue(d, &cl_q->qstats) < 0)
-=======
 	if (gnet_stats_copy_basic(d, cl_q->cpu_bstats,
 				  &cl_q->bstats, true) < 0 ||
 	    qdisc_qstats_copy(d, cl_q) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	return 0;
@@ -608,21 +376,6 @@ static void prio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
 		return;
 
 	for (prio = 0; prio < q->bands; prio++) {
-<<<<<<< HEAD
-		if (arg->count < arg->skip) {
-			arg->count++;
-			continue;
-		}
-		if (arg->fn(sch, prio + 1, arg) < 0) {
-			arg->stop = 1;
-			break;
-		}
-		arg->count++;
-	}
-}
-
-static struct tcf_proto **prio_find_tcf(struct Qdisc *sch, unsigned long cl)
-=======
 		if (!tc_qdisc_stats_dump(sch, prio + 1, arg))
 			break;
 	}
@@ -630,36 +383,22 @@ static struct tcf_proto **prio_find_tcf(struct Qdisc *sch, unsigned long cl)
 
 static struct tcf_block *prio_tcf_block(struct Qdisc *sch, unsigned long cl,
 					struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct prio_sched_data *q = qdisc_priv(sch);
 
 	if (cl)
 		return NULL;
-<<<<<<< HEAD
-	return &q->filter_list;
-=======
 	return q->block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct Qdisc_class_ops prio_class_ops = {
 	.graft		=	prio_graft,
 	.leaf		=	prio_leaf,
-<<<<<<< HEAD
-	.get		=	prio_get,
-	.put		=	prio_put,
-	.walk		=	prio_walk,
-	.tcf_chain	=	prio_find_tcf,
-	.bind_tcf	=	prio_bind,
-	.unbind_tcf	=	prio_put,
-=======
 	.find		=	prio_find,
 	.walk		=	prio_walk,
 	.tcf_block	=	prio_tcf_block,
 	.bind_tcf	=	prio_bind,
 	.unbind_tcf	=	prio_unbind,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dump		=	prio_dump_class,
 	.dump_stats	=	prio_dump_class_stats,
 };
@@ -672,10 +411,6 @@ static struct Qdisc_ops prio_qdisc_ops __read_mostly = {
 	.enqueue	=	prio_enqueue,
 	.dequeue	=	prio_dequeue,
 	.peek		=	prio_peek,
-<<<<<<< HEAD
-	.drop		=	prio_drop,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		=	prio_init,
 	.reset		=	prio_reset,
 	.destroy	=	prio_destroy,
@@ -683,10 +418,7 @@ static struct Qdisc_ops prio_qdisc_ops __read_mostly = {
 	.dump		=	prio_dump,
 	.owner		=	THIS_MODULE,
 };
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_NET_SCH("prio");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init prio_module_init(void)
 {
@@ -702,7 +434,4 @@ module_init(prio_module_init)
 module_exit(prio_module_exit)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Simple 3-band priority qdisc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

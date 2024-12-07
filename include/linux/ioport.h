@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ioport.h	Definitions of routines for detecting, reserving and
  *		allocating system resources.
@@ -13,13 +10,9 @@
 #define _LINUX_IOPORT_H
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-#include <linux/compiler.h>
-=======
 #include <linux/bits.h>
 #include <linux/compiler.h>
 #include <linux/minmax.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 /*
  * Resources are tree-like, allowing
@@ -30,33 +23,22 @@ struct resource {
 	resource_size_t end;
 	const char *name;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	unsigned long desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *parent, *sibling, *child;
 };
 
 /*
  * IO resources have these defined flags.
-<<<<<<< HEAD
-=======
  *
  * PCI devices expose these flags to userspace in the "resource" sysfs file,
  * so don't move them.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
 
 #define IORESOURCE_TYPE_BITS	0x00001f00	/* Resource type */
-<<<<<<< HEAD
-#define IORESOURCE_IO		0x00000100
-#define IORESOURCE_MEM		0x00000200
-=======
 #define IORESOURCE_IO		0x00000100	/* PCI/ISA I/O ports */
 #define IORESOURCE_MEM		0x00000200
 #define IORESOURCE_REG		0x00000300	/* Register offsets */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IORESOURCE_IRQ		0x00000400
 #define IORESOURCE_DMA		0x00000800
 #define IORESOURCE_BUS		0x00001000
@@ -74,14 +56,6 @@ struct resource {
 #define IORESOURCE_WINDOW	0x00200000	/* forwarded by bridge */
 #define IORESOURCE_MUXED	0x00400000	/* Resource is software muxed */
 
-<<<<<<< HEAD
-#define IORESOURCE_EXCLUSIVE	0x08000000	/* Userland may not map this resource */
-#define IORESOURCE_DISABLED	0x10000000
-#define IORESOURCE_UNSET	0x20000000
-#define IORESOURCE_AUTO		0x40000000
-#define IORESOURCE_BUSY		0x80000000	/* Driver has marked this resource busy */
-
-=======
 #define IORESOURCE_EXT_TYPE_BITS 0x01000000	/* Resource extended types */
 #define IORESOURCE_SYSRAM	0x01000000	/* System RAM (modifier) */
 
@@ -99,19 +73,14 @@ struct resource {
 /* I/O resource extended types */
 #define IORESOURCE_SYSTEM_RAM		(IORESOURCE_MEM|IORESOURCE_SYSRAM)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PnP IRQ specific bits (IORESOURCE_BITS) */
 #define IORESOURCE_IRQ_HIGHEDGE		(1<<0)
 #define IORESOURCE_IRQ_LOWEDGE		(1<<1)
 #define IORESOURCE_IRQ_HIGHLEVEL	(1<<2)
 #define IORESOURCE_IRQ_LOWLEVEL		(1<<3)
 #define IORESOURCE_IRQ_SHAREABLE	(1<<4)
-<<<<<<< HEAD
-#define IORESOURCE_IRQ_OPTIONAL 	(1<<5)
-=======
 #define IORESOURCE_IRQ_OPTIONAL		(1<<5)
 #define IORESOURCE_IRQ_WAKECAPABLE	(1<<6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PnP DMA specific bits (IORESOURCE_BITS) */
 #define IORESOURCE_DMA_TYPE_MASK	(3<<0)
@@ -140,30 +109,11 @@ struct resource {
 #define IORESOURCE_MEM_32BIT		(3<<3)
 #define IORESOURCE_MEM_SHADOWABLE	(1<<5)	/* dup: IORESOURCE_SHADOWABLE */
 #define IORESOURCE_MEM_EXPANSIONROM	(1<<6)
-<<<<<<< HEAD
-=======
 #define IORESOURCE_MEM_NONPOSTED	(1<<7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PnP I/O specific bits (IORESOURCE_BITS) */
 #define IORESOURCE_IO_16BIT_ADDR	(1<<0)
 #define IORESOURCE_IO_FIXED		(1<<1)
-<<<<<<< HEAD
-
-/* PCI ROM control bits (IORESOURCE_BITS) */
-#define IORESOURCE_ROM_ENABLE		(1<<0)	/* ROM is enabled, same as PCI_ROM_ADDRESS_ENABLE */
-#define IORESOURCE_ROM_SHADOW		(1<<1)	/* ROM is copy at C000:0 */
-#define IORESOURCE_ROM_COPY		(1<<2)	/* ROM is alloc'd copy, resource field overlaid */
-#define IORESOURCE_ROM_BIOS_COPY	(1<<3)	/* ROM is BIOS copy, resource field overlaid */
-
-/* PCI control bits.  Shares IORESOURCE_BITS with above PCI ROM.  */
-#define IORESOURCE_PCI_FIXED		(1<<4)	/* Do not move resource */
-
-
-/* helpers to define resources */
-#define DEFINE_RES_NAMED(_start, _size, _name, _flags)			\
-	{								\
-=======
 #define IORESOURCE_IO_SPARSE		(1<<2)
 
 /* PCI ROM control bits (IORESOURCE_BITS) */
@@ -206,15 +156,11 @@ enum {
 /* helpers to define resources */
 #define DEFINE_RES_NAMED(_start, _size, _name, _flags)			\
 (struct resource) {							\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.start = (_start),					\
 		.end = (_start) + (_size) - 1,				\
 		.name = (_name),					\
 		.flags = (_flags),					\
-<<<<<<< HEAD
-=======
 		.desc = IORES_DESC_NONE,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #define DEFINE_RES_IO_NAMED(_start, _size, _name)			\
@@ -227,14 +173,11 @@ enum {
 #define DEFINE_RES_MEM(_start, _size)					\
 	DEFINE_RES_MEM_NAMED((_start), (_size), NULL)
 
-<<<<<<< HEAD
-=======
 #define DEFINE_RES_REG_NAMED(_start, _size, _name)			\
 	DEFINE_RES_NAMED((_start), (_size), (_name), IORESOURCE_REG)
 #define DEFINE_RES_REG(_start, _size)					\
 	DEFINE_RES_REG_NAMED((_start), (_size), NULL)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFINE_RES_IRQ_NAMED(_irq, _name)				\
 	DEFINE_RES_NAMED((_irq), 1, (_name), IORESOURCE_IRQ)
 #define DEFINE_RES_IRQ(_irq)						\
@@ -251,11 +194,6 @@ extern struct resource iomem_resource;
 
 extern struct resource *request_resource_conflict(struct resource *root, struct resource *new);
 extern int request_resource(struct resource *root, struct resource *new);
-<<<<<<< HEAD
-extern struct resource *locate_resource(struct resource *root,
-	struct resource *search);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int release_resource(struct resource *new);
 void release_child_resources(struct resource *new);
 extern void reserve_region_with_split(struct resource *root,
@@ -264,10 +202,7 @@ extern void reserve_region_with_split(struct resource *root,
 extern struct resource *insert_resource_conflict(struct resource *parent, struct resource *new);
 extern int insert_resource(struct resource *parent, struct resource *new);
 extern void insert_resource_expand_to_fit(struct resource *root, struct resource *new);
-<<<<<<< HEAD
-=======
 extern int remove_resource(struct resource *old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void arch_remove_reservations(struct resource *avail);
 extern int allocate_resource(struct resource *root, struct resource *new,
 			     resource_size_t size, resource_size_t min,
@@ -289,8 +224,6 @@ static inline unsigned long resource_type(const struct resource *res)
 {
 	return res->flags & IORESOURCE_TYPE_BITS;
 }
-<<<<<<< HEAD
-=======
 static inline unsigned long resource_ext_type(const struct resource *res)
 {
 	return res->flags & IORESOURCE_EXT_TYPE_BITS;
@@ -330,18 +263,14 @@ static inline bool resource_union(const struct resource *r1, const struct resour
 	r->end = max(r1->end, r2->end);
 	return true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Convenience shorthand with allocation */
 #define request_region(start,n,name)		__request_region(&ioport_resource, (start), (n), (name), 0)
 #define request_muxed_region(start,n,name)	__request_region(&ioport_resource, (start), (n), (name), IORESOURCE_MUXED)
 #define __request_mem_region(start,n,name, excl) __request_region(&iomem_resource, (start), (n), (name), excl)
 #define request_mem_region(start,n,name) __request_region(&iomem_resource, (start), (n), (name), 0)
-<<<<<<< HEAD
-=======
 #define request_mem_region_muxed(start, n, name) \
 	__request_region(&iomem_resource, (start), (n), (name), IORESOURCE_MUXED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define request_mem_region_exclusive(start,n,name) \
 	__request_region(&iomem_resource, (start), (n), (name), IORESOURCE_EXCLUSIVE)
 #define rename_region(region, newname) do { (region)->name = (newname); } while (0)
@@ -353,23 +282,6 @@ extern struct resource * __request_region(struct resource *,
 
 /* Compatibility cruft */
 #define release_region(start,n)	__release_region(&ioport_resource, (start), (n))
-<<<<<<< HEAD
-#define check_mem_region(start,n)	__check_region(&iomem_resource, (start), (n))
-#define release_mem_region(start,n)	__release_region(&iomem_resource, (start), (n))
-
-extern int __check_region(struct resource *, resource_size_t, resource_size_t);
-extern void __release_region(struct resource *, resource_size_t,
-				resource_size_t);
-
-static inline int __deprecated check_region(resource_size_t s,
-						resource_size_t n)
-{
-	return __check_region(&ioport_resource, s, n);
-}
-
-/* Wrappers for managed devices */
-struct device;
-=======
 #define release_mem_region(start,n)	__release_region(&iomem_resource, (start), (n))
 
 extern void __release_region(struct resource *, resource_size_t,
@@ -388,7 +300,6 @@ extern int devm_request_resource(struct device *dev, struct resource *root,
 				 struct resource *new);
 extern void devm_release_resource(struct device *dev, struct resource *new);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define devm_request_region(dev,start,n,name) \
 	__devm_request_region(dev, &ioport_resource, (start), (n), (name))
 #define devm_request_mem_region(dev,start,n,name) \
@@ -406,19 +317,13 @@ extern struct resource * __devm_request_region(struct device *dev,
 extern void __devm_release_region(struct device *dev, struct resource *parent,
 				  resource_size_t start, resource_size_t n);
 extern int iomem_map_sanity_check(resource_size_t addr, unsigned long size);
-<<<<<<< HEAD
-extern int iomem_is_exclusive(u64 addr);
-=======
 extern bool iomem_is_exclusive(u64 addr);
 extern bool resource_is_exclusive(struct resource *resource, u64 addr,
 				  resource_size_t size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int
 walk_system_ram_range(unsigned long start_pfn, unsigned long nr_pages,
 		void *arg, int (*func)(unsigned long, unsigned long, void *));
-<<<<<<< HEAD
-=======
 extern int
 walk_mem_res(u64 start, u64 end, void *arg,
 	     int (*func)(struct resource *, void *));
@@ -447,7 +352,6 @@ static inline void irqresource_disabled(struct resource *res, u32 irq)
 }
 
 extern struct address_space *iomem_get_mapping(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASSEMBLY__ */
 #endif	/* _LINUX_IOPORT_H */

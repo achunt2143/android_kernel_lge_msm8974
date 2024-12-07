@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ACPI Hardware Error Device (PNP0C33) Driver
  *
@@ -10,39 +7,15 @@
  *
  * ACPI Hardware Error Device is used to report some hardware errors
  * notified via SCI, mainly the corrected errors.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/acpi.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-#include <acpi/hed.h>
-
-static struct acpi_device_id acpi_hed_ids[] = {
-=======
 #include <acpi/hed.h>
 
 static const struct acpi_device_id acpi_hed_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"PNP0C33", 0},
 	{"", 0},
 };
@@ -69,37 +42,19 @@ EXPORT_SYMBOL_GPL(unregister_acpi_hed_notifier);
  * it is used by HEST Generic Hardware Error Source with notify type
  * SCI.
  */
-<<<<<<< HEAD
-static void acpi_hed_notify(struct acpi_device *device, u32 event)
-=======
 static void acpi_hed_notify(acpi_handle handle, u32 event, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	blocking_notifier_call_chain(&acpi_hed_notify_list, 0, NULL);
 }
 
-<<<<<<< HEAD
-static int __devinit acpi_hed_add(struct acpi_device *device)
-{
-=======
 static int acpi_hed_add(struct acpi_device *device)
 {
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Only one hardware error device */
 	if (hed_handle)
 		return -EINVAL;
 	hed_handle = device->handle;
-<<<<<<< HEAD
-	return 0;
-}
-
-static int __devexit acpi_hed_remove(struct acpi_device *device, int type)
-{
-	hed_handle = NULL;
-	return 0;
-=======
 
 	err = acpi_dev_install_notify_handler(device, ACPI_DEVICE_NOTIFY,
 					      acpi_hed_notify, device);
@@ -114,7 +69,6 @@ static void acpi_hed_remove(struct acpi_device *device)
 	acpi_dev_remove_notify_handler(device, ACPI_DEVICE_NOTIFY,
 				       acpi_hed_notify);
 	hed_handle = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct acpi_driver acpi_hed_driver = {
@@ -124,37 +78,10 @@ static struct acpi_driver acpi_hed_driver = {
 	.ops = {
 		.add = acpi_hed_add,
 		.remove = acpi_hed_remove,
-<<<<<<< HEAD
-		.notify = acpi_hed_notify,
-	},
-};
-
-static int __init acpi_hed_init(void)
-{
-	if (acpi_disabled)
-		return -ENODEV;
-
-	if (acpi_bus_register_driver(&acpi_hed_driver) < 0)
-		return -ENODEV;
-
-	return 0;
-}
-
-static void __exit acpi_hed_exit(void)
-{
-	acpi_bus_unregister_driver(&acpi_hed_driver);
-}
-
-module_init(acpi_hed_init);
-module_exit(acpi_hed_exit);
-
-ACPI_MODULE_NAME("hed");
-=======
 	},
 };
 module_acpi_driver(acpi_hed_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Huang Ying");
 MODULE_DESCRIPTION("ACPI Hardware Error Device Driver");
 MODULE_LICENSE("GPL");

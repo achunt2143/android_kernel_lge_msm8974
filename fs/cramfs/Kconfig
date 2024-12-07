@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-config CRAMFS
-	tristate "Compressed ROM file system support (cramfs)"
-	depends on BLOCK
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config CRAMFS
 	tristate "Compressed ROM file system support (cramfs)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ZLIB_INFLATE
 	help
 	  Saying Y here includes support for CramFs (Compressed ROM File
@@ -15,19 +9,13 @@ config CRAMFS
 	  limited to 256MB file systems (with 16MB files), and doesn't support
 	  16/32 bits uid/gid, hard links and timestamps.
 
-<<<<<<< HEAD
-	  See <file:Documentation/filesystems/cramfs.txt> and
-=======
 	  See <file:Documentation/filesystems/cramfs.rst> and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  <file:fs/cramfs/README> for further information.
 
 	  To compile this as a module, choose M here: the module will be called
 	  cramfs.  Note that the root file system (the one containing the
 	  directory /) cannot be compiled as a module.
 
-<<<<<<< HEAD
-=======
 	  This filesystem is limited in capabilities and performance on
 	  purpose to remain small and low on RAM usage. It is most suitable
 	  for small embedded systems. If you have ample RAM to spare, you may
@@ -63,5 +51,4 @@ config CRAMFS_MTD
 
 	  mount -t cramfs mtd:xip_fs /mnt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If unsure, say N.

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Architectures that offer an FUNCTION_TRACER implementation should
 #  select HAVE_FUNCTION_TRACER:
@@ -13,12 +10,6 @@ config USER_STACKTRACE_SUPPORT
 config NOP_TRACER
 	bool
 
-<<<<<<< HEAD
-config HAVE_FTRACE_NMI_ENTER
-	bool
-	help
-	  See Documentation/trace/ftrace-design.txt
-=======
 config HAVE_RETHOOK
 	bool
 
@@ -29,45 +20,23 @@ config RETHOOK
 	  Enable generic return hooking feature. This is an internal
 	  API, which will be used by other function-entry hooking
 	  features like fprobe and kprobes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_FUNCTION_TRACER
 	bool
 	help
-<<<<<<< HEAD
-	  See Documentation/trace/ftrace-design.txt
-=======
 	  See Documentation/trace/ftrace-design.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_FUNCTION_GRAPH_TRACER
 	bool
 	help
-<<<<<<< HEAD
-	  See Documentation/trace/ftrace-design.txt
-
-config HAVE_FUNCTION_GRAPH_FP_TEST
-	bool
-	help
-	  See Documentation/trace/ftrace-design.txt
-
-config HAVE_FUNCTION_TRACE_MCOUNT_TEST
-	bool
-	help
-	  See Documentation/trace/ftrace-design.txt
-=======
 	  See Documentation/trace/ftrace-design.rst
 
 config HAVE_FUNCTION_GRAPH_RETVAL
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_DYNAMIC_FTRACE
 	bool
 	help
-<<<<<<< HEAD
-	  See Documentation/trace/ftrace-design.txt
-=======
 	  See Documentation/trace/ftrace-design.rst
 
 config HAVE_DYNAMIC_FTRACE_WITH_REGS
@@ -93,23 +62,15 @@ config HAVE_DYNAMIC_FTRACE_NO_PATCHABLE
 	help
 	  If the architecture generates __patchable_function_entries sections
 	  but does not want them included in the ftrace locations.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_FTRACE_MCOUNT_RECORD
 	bool
 	help
-<<<<<<< HEAD
-	  See Documentation/trace/ftrace-design.txt
-=======
 	  See Documentation/trace/ftrace-design.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_SYSCALL_TRACEPOINTS
 	bool
 	help
-<<<<<<< HEAD
-	  See Documentation/trace/ftrace-design.txt
-=======
 	  See Documentation/trace/ftrace-design.rst
 
 config HAVE_FENTRY
@@ -133,45 +94,12 @@ config HAVE_OBJTOOL_NOP_MCOUNT
 	  Arch supports the objtool options --mcount with --mnop.
 	  An architecture can select this if it wants to enable nop'ing
 	  of ftrace locations.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_C_RECORDMCOUNT
 	bool
 	help
 	  C version of recordmcount available?
 
-<<<<<<< HEAD
-config TRACER_MAX_TRACE
-	bool
-
-config RING_BUFFER
-	bool
-
-config FTRACE_NMI_ENTER
-       bool
-       depends on HAVE_FTRACE_NMI_ENTER
-       default y
-
-config EVENT_TRACING
-	select CONTEXT_SWITCH_TRACER
-	bool
-
-config EVENT_POWER_TRACING_DEPRECATED
-	depends on EVENT_TRACING
-	bool "Deprecated power event trace API, to be removed"
-	default y
-	help
-	  Provides old power event types:
-	  C-state/idle accounting events:
-	  power:power_start
-	  power:power_end
-	  and old cpufreq accounting event:
-	  power:power_frequency
-	  This is for userspace compatibility
-	  and will vanish after 5 kernel iterations,
-	  namely 3.1.
-
-=======
 config HAVE_BUILDTIME_MCOUNT_SORT
        bool
        help
@@ -201,7 +129,6 @@ config EVENT_TRACING
 	select GLOB
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CONTEXT_SWITCH_TRACER
 	bool
 
@@ -211,8 +138,6 @@ config RING_BUFFER_ALLOW_SWAP
 	 Allow the use of ring_buffer_swap_cpu.
 	 Adds a very slight overhead to tracing when enabled.
 
-<<<<<<< HEAD
-=======
 config PREEMPTIRQ_TRACEPOINTS
 	bool
 	depends on TRACE_PREEMPT_TOGGLE || TRACE_IRQFLAGS
@@ -222,7 +147,6 @@ config PREEMPTIRQ_TRACEPOINTS
 	  Create preempt/irq toggle tracepoints if needed, so that other parts
 	  of the kernel can use them to generate or add hooks to them.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # All tracer options should select GENERIC_TRACER. For those options that are
 # enabled by all tracers (context switch and event tracer) they select TRACING.
 # This allows those options to appear when no other tracer is selected. But the
@@ -232,21 +156,14 @@ config PREEMPTIRQ_TRACEPOINTS
 
 config TRACING
 	bool
-<<<<<<< HEAD
-	select DEBUG_FS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select RING_BUFFER
 	select STACKTRACE if STACKTRACE_SUPPORT
 	select TRACEPOINTS
 	select NOP_TRACER
 	select BINARY_PRINTF
 	select EVENT_TRACING
-<<<<<<< HEAD
-=======
 	select TRACE_CLOCK
 	select TASKS_RCU if PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GENERIC_TRACER
 	bool
@@ -258,20 +175,6 @@ config GENERIC_TRACER
 #
 config TRACING_SUPPORT
 	bool
-<<<<<<< HEAD
-	# PPC32 has no irqflags tracing support, but it can use most of the
-	# tracers anyway, they were tested to build and work. Note that new
-	# exceptions to this list aren't welcomed, better implement the
-	# irqflags tracing for your architecture.
-	depends on TRACE_IRQFLAGS_SUPPORT || PPC32
-	depends on STACKTRACE_SUPPORT
-	default y
-
-if TRACING_SUPPORT
-
-menuconfig FTRACE
-	bool "Tracers"
-=======
 	depends on TRACE_IRQFLAGS_SUPPORT
 	depends on STACKTRACE_SUPPORT
 	default y
@@ -279,22 +182,12 @@ menuconfig FTRACE
 menuconfig FTRACE
 	bool "Tracers"
 	depends on TRACING_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y if DEBUG_KERNEL
 	help
 	  Enable the kernel tracing infrastructure.
 
 if FTRACE
 
-<<<<<<< HEAD
-config FUNCTION_TRACER
-	bool "Kernel Function Tracer"
-	depends on HAVE_FUNCTION_TRACER
-	select FRAME_POINTER if !ARM_UNWIND && !PPC && !S390 && !MICROBLAZE
-	select KALLSYMS
-	select GENERIC_TRACER
-	select CONTEXT_SWITCH_TRACER
-=======
 config BOOTTIME_TRACING
 	bool "Boot-time Tracing support"
 	depends on TRACING
@@ -313,7 +206,6 @@ config FUNCTION_TRACER
 	select GLOB
 	select TASKS_RCU if PREEMPTION
 	select TASKS_RUDE_RCU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enable the kernel to trace every kernel function. This is done
 	  by using a compiler feature to insert a small, 5-byte No-Operation
@@ -321,12 +213,8 @@ config FUNCTION_TRACER
 	  sequence is then dynamically patched into a tracer call when
 	  tracing is enabled by the administrator. If it's runtime disabled
 	  (the bootup default), then the overhead of the instructions is very
-<<<<<<< HEAD
-	  small and not measurable even in micro-benchmarks.
-=======
 	  small and not measurable even in micro-benchmarks (at least on
 	  x86, but may have impact on other architectures).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config FUNCTION_GRAPH_TRACER
 	bool "Kernel Function Graph Tracer"
@@ -342,8 +230,6 @@ config FUNCTION_GRAPH_TRACER
 	  the return value. This is done by setting the current return
 	  address on the current task structure into a stack of calls.
 
-<<<<<<< HEAD
-=======
 config FUNCTION_GRAPH_RETVAL
 	bool "Kernel Function Graph Return Value"
 	depends on HAVE_FUNCTION_GRAPH_RETVAL
@@ -456,25 +342,17 @@ config TRACE_PREEMPT_TOGGLE
 	help
 	  Enables hooks which will be called when preemption is first disabled,
 	  and last enabled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config IRQSOFF_TRACER
 	bool "Interrupts-off Latency Tracer"
 	default n
 	depends on TRACE_IRQFLAGS_SUPPORT
-<<<<<<< HEAD
-	depends on !ARCH_USES_GETTIMEOFFSET
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select TRACE_IRQFLAGS
 	select GENERIC_TRACER
 	select TRACER_MAX_TRACE
 	select RING_BUFFER_ALLOW_SWAP
-<<<<<<< HEAD
-=======
 	select TRACER_SNAPSHOT
 	select TRACER_SNAPSHOT_PER_CPU_SWAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option measures the time spent in irqs-off critical
 	  sections, with microsecond accuracy.
@@ -483,11 +361,7 @@ config IRQSOFF_TRACER
 	  disabled by default and can be runtime (re-)started
 	  via:
 
-<<<<<<< HEAD
-	      echo 0 > /sys/kernel/debug/tracing/tracing_max_latency
-=======
 	      echo 0 > /sys/kernel/tracing/tracing_max_latency
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  (Note that kernel size and overhead increase with this option
 	  enabled. This option and the preempt-off timing option can be
@@ -496,13 +370,6 @@ config IRQSOFF_TRACER
 config PREEMPT_TRACER
 	bool "Preemption-off Latency Tracer"
 	default n
-<<<<<<< HEAD
-	depends on !ARCH_USES_GETTIMEOFFSET
-	depends on PREEMPT
-	select GENERIC_TRACER
-	select TRACER_MAX_TRACE
-	select RING_BUFFER_ALLOW_SWAP
-=======
 	depends on PREEMPTION
 	select GENERIC_TRACER
 	select TRACER_MAX_TRACE
@@ -510,7 +377,6 @@ config PREEMPT_TRACER
 	select TRACER_SNAPSHOT
 	select TRACER_SNAPSHOT_PER_CPU_SWAP
 	select TRACE_PREEMPT_TOGGLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option measures the time spent in preemption-off critical
 	  sections, with microsecond accuracy.
@@ -519,11 +385,7 @@ config PREEMPT_TRACER
 	  disabled by default and can be runtime (re-)started
 	  via:
 
-<<<<<<< HEAD
-	      echo 0 > /sys/kernel/debug/tracing/tracing_max_latency
-=======
 	      echo 0 > /sys/kernel/tracing/tracing_max_latency
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  (Note that kernel size and overhead increase with this option
 	  enabled. This option and the irqs-off timing option can be
@@ -534,16 +396,11 @@ config SCHED_TRACER
 	select GENERIC_TRACER
 	select CONTEXT_SWITCH_TRACER
 	select TRACER_MAX_TRACE
-<<<<<<< HEAD
-=======
 	select TRACER_SNAPSHOT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This tracer tracks the latency of the highest priority task
 	  to be scheduled in, starting from the point it has woken up.
 
-<<<<<<< HEAD
-=======
 config HWLAT_TRACER
 	bool "Tracer to detect hardware latencies (like SMIs)"
 	select GENERIC_TRACER
@@ -656,7 +513,6 @@ config MMIOTRACE
 	  See Documentation/trace/mmiotrace.rst.
 	  If you are not helping to develop drivers, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ENABLE_DEFAULT_TRACERS
 	bool "Trace process context switches and events"
 	depends on !GENERIC_TRACER
@@ -674,8 +530,6 @@ config FTRACE_SYSCALLS
 	help
 	  Basic tracer to catch the syscall entry and exit events.
 
-<<<<<<< HEAD
-=======
 config TRACER_SNAPSHOT
 	bool "Create a snapshot trace buffer"
 	select TRACER_MAX_TRACE
@@ -707,7 +561,6 @@ config TRACER_SNAPSHOT_PER_CPU_SWAP
 	  or irq latency tracers are enabled, as those need to swap as well
 	  and already adds the overhead (plus a lot more).
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config TRACE_BRANCH_PROFILING
 	bool
 	select GENERIC_TRACER
@@ -740,38 +593,23 @@ config PROFILE_ANNOTATED_BRANCHES
 	bool "Trace likely/unlikely profiler"
 	select TRACE_BRANCH_PROFILING
 	help
-<<<<<<< HEAD
-	  This tracer profiles all the the likely and unlikely macros
-	  in the kernel. It will display the results in:
-
-	  /sys/kernel/debug/tracing/trace_stat/branch_annotated
-=======
 	  This tracer profiles all likely and unlikely macros
 	  in the kernel. It will display the results in:
 
 	  /sys/kernel/tracing/trace_stat/branch_annotated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note: this will add a significant overhead; only turn this
 	  on if you need to profile the system's use of these macros.
 
 config PROFILE_ALL_BRANCHES
-<<<<<<< HEAD
-	bool "Profile all if conditionals"
-=======
 	bool "Profile all if conditionals" if !FORTIFY_SOURCE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select TRACE_BRANCH_PROFILING
 	help
 	  This tracer profiles all branch conditions. Every if ()
 	  taken in the kernel is recorded whether it hit or miss.
 	  The results will be displayed in:
 
-<<<<<<< HEAD
-	  /sys/kernel/debug/tracing/trace_stat/branch_all
-=======
 	  /sys/kernel/tracing/trace_stat/branch_all
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This option also enables the likely/unlikely profiler.
 
@@ -802,33 +640,6 @@ config BRANCH_TRACER
 
 	  Say N if unsure.
 
-<<<<<<< HEAD
-config STACK_TRACER
-	bool "Trace max stack"
-	depends on HAVE_FUNCTION_TRACER
-	select FUNCTION_TRACER
-	select STACKTRACE
-	select KALLSYMS
-	help
-	  This special tracer records the maximum stack footprint of the
-	  kernel and displays it in /sys/kernel/debug/tracing/stack_trace.
-
-	  This tracer works by hooking into every function call that the
-	  kernel executes, and keeping a maximum stack depth value and
-	  stack-trace saved.  If this is configured with DYNAMIC_FTRACE
-	  then it will not have any overhead while the stack tracer
-	  is disabled.
-
-	  To enable the stack tracer on bootup, pass in 'stacktrace'
-	  on the kernel command line.
-
-	  The stack tracer can also be enabled or disabled via the
-	  sysctl kernel.stack_tracer_enabled
-
-	  Say N if unsure.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config BLK_DEV_IO_TRACE
 	bool "Support for tracing block IO actions"
 	depends on SYSFS
@@ -849,14 +660,6 @@ config BLK_DEV_IO_TRACE
 	  Tracing also is possible using the ftrace interface, e.g.:
 
 	    echo 1 > /sys/block/sda/sda1/trace/enable
-<<<<<<< HEAD
-	    echo blk > /sys/kernel/debug/tracing/current_tracer
-	    cat /sys/kernel/debug/tracing/trace_pipe
-
-	  If unsure, say N.
-
-config KPROBE_EVENT
-=======
 	    echo blk > /sys/kernel/tracing/current_tracer
 	    cat /sys/kernel/tracing/trace_pipe
 
@@ -889,25 +692,17 @@ config PROBE_EVENTS_BTF_ARGS
 	  This is available only if BTF (BPF Type Format) support is enabled.
 
 config KPROBE_EVENTS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on KPROBES
 	depends on HAVE_REGS_AND_STACK_ACCESS_API
 	bool "Enable kprobes-based dynamic events"
 	select TRACING
-<<<<<<< HEAD
-=======
 	select PROBE_EVENTS
 	select DYNAMIC_EVENTS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  This allows the user to add tracing events (similar to tracepoints)
 	  on the fly via the ftrace interface. See
-<<<<<<< HEAD
-	  Documentation/trace/kprobetrace.txt for more details.
-=======
 	  Documentation/trace/kprobetrace.rst for more details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Those events can be inserted wherever kprobes can probe, and record
 	  various register and memory values.
@@ -915,57 +710,6 @@ config KPROBE_EVENTS
 	  This option is also required by perf-probe subcommand of perf tools.
 	  If you want to use perf tools, this option is strongly recommended.
 
-<<<<<<< HEAD
-config DYNAMIC_FTRACE
-	bool "enable/disable function tracing dynamically"
-	depends on FUNCTION_TRACER
-	depends on HAVE_DYNAMIC_FTRACE
-	default y
-	help
-	  This option will modify all the calls to function tracing
-	  dynamically (will patch them out of the binary image and
-	  replace them with a No-Op instruction) on boot up. During
-	  compile time, a table is made of all the locations that ftrace
-	  can function trace, and this table is linked into the kernel
-	  image. When this is enabled, functions can be individually
-	  enabled, and the functions not enabled will not affect
-	  performance of the system.
-
-	  See the files in /sys/kernel/debug/tracing:
-	    available_filter_functions
-	    set_ftrace_filter
-	    set_ftrace_notrace
-
-	  This way a CONFIG_FUNCTION_TRACER kernel is slightly larger, but
-	  otherwise has native performance as long as no tracing is active.
-
-config FUNCTION_PROFILER
-	bool "Kernel function profiler"
-	depends on FUNCTION_TRACER
-	default n
-	help
-	  This option enables the kernel function profiler. A file is created
-	  in debugfs called function_profile_enabled which defaults to zero.
-	  When a 1 is echoed into this file profiling begins, and when a
-	  zero is entered, profiling stops. A "functions" file is created in
-	  the trace_stats directory; this file shows the list of functions that
-	  have been hit and their counters.
-
-	  If in doubt, say N.
-
-config CPU_FREQ_SWITCH_PROFILER
-	bool "CPU frequency switch time profiler"
-	select GENERIC_TRACER
-	help
-	  This option enables the CPU frequency switch profiler. A file is
-	  created in debugfs called "cpu_freq_switch_profile_enabled", which
-	  defaults to zero. When a 1 is echoed into this file, profiling begins.
-	  When a zero is echoed, profiling stops. A "cpu_freq_switch" file is
-	  also created in the trace_stats directory; this file shows the
-	  switches that have occurred and duration statistics.
-
-	  If in doubt, say N.
-=======
 config KPROBE_EVENTS_ON_NOTRACE
 	bool "Do NOT protect notrace function from kprobe events"
 	depends on KPROBE_EVENTS
@@ -1027,62 +771,12 @@ config BPF_KPROBE_OVERRIDE
 	help
 	 Allows BPF to override the execution of a probed function and
 	 set a different return value.  This is used for error injection.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config FTRACE_MCOUNT_RECORD
 	def_bool y
 	depends on DYNAMIC_FTRACE
 	depends on HAVE_FTRACE_MCOUNT_RECORD
 
-<<<<<<< HEAD
-config FTRACE_SELFTEST
-	bool
-
-config FTRACE_STARTUP_TEST
-	bool "Perform a startup test on ftrace"
-	depends on GENERIC_TRACER
-	select FTRACE_SELFTEST
-	help
-	  This option performs a series of startup tests on ftrace. On bootup
-	  a series of tests are made to verify that the tracer is
-	  functioning properly. It will do tests on all the configured
-	  tracers of ftrace.
-
-config EVENT_TRACE_TEST_SYSCALLS
-	bool "Run selftest on syscall events"
-	depends on FTRACE_STARTUP_TEST
-	help
-	 This option will also enable testing every syscall event.
-	 It only enables the event and disables it and runs various loads
-	 with the event enabled. This adds a bit more time for kernel boot
-	 up since it runs this on every system call defined.
-
-	 TBD - enable a way to actually call the syscalls as we test their
-	       events
-
-config MMIOTRACE
-	bool "Memory mapped IO tracing"
-	depends on HAVE_MMIOTRACE_SUPPORT && PCI
-	select GENERIC_TRACER
-	help
-	  Mmiotrace traces Memory Mapped I/O access and is meant for
-	  debugging and reverse engineering. It is called from the ioremap
-	  implementation and works via page faults. Tracing is disabled by
-	  default and can be enabled at run-time.
-
-	  See Documentation/trace/mmiotrace.txt.
-	  If you are not helping to develop drivers, say N.
-
-config MMIOTRACE_TEST
-	tristate "Test module for mmiotrace"
-	depends on MMIOTRACE && m
-	help
-	  This is a dumb module for testing mmiotrace. It is very dangerous
-	  as it will write garbage to IO memory starting at a given address.
-	  However, it should be safe to use on e.g. unused portion of VRAM.
-
-	  Say N, unless you absolutely know what you are doing.
-=======
 config FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY
 	bool
 	depends on FTRACE_MCOUNT_RECORD
@@ -1210,7 +904,6 @@ config TRACEPOINT_BENCHMARK
 	      last=273 first=3672 max=632 min=273 avg=288 std=200 std^2=40389
 	      last=281 first=3672 max=632 min=273 avg=287 std=183 std^2=33666
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config RING_BUFFER_BENCHMARK
 	tristate "Ring buffer benchmark stress tester"
@@ -1228,12 +921,6 @@ config RING_BUFFER_BENCHMARK
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-endif # FTRACE
-
-endif # TRACING_SUPPORT
-
-=======
 config TRACE_EVAL_MAP_FILE
        bool "Show eval mappings for trace events"
        depends on TRACING
@@ -1485,4 +1172,3 @@ config HIST_TRIGGERS_DEBUG
 source "kernel/trace/rv/Kconfig"
 
 endif # FTRACE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,48 +1,12 @@
-<<<<<<< HEAD
-/*
- * SuperH Mobile I2C Controller
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * SuperH Mobile I2C Controller
  *
  * Copyright (C) 2014-19 Wolfram Sang <wsa@sang-engineering.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2008 Magnus Damm
  *
  * Portions of the code based on out-of-tree driver i2c-sh7343.c
  * Copyright (c) 2006 Carlos Munoz <carlos@kenati.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/delay.h>
-#include <linux/platform_device.h>
-#include <linux/interrupt.h>
-#include <linux/i2c.h>
-#include <linux/err.h>
-#include <linux/pm_runtime.h>
-#include <linux/clk.h>
-#include <linux/io.h>
-#include <linux/slab.h>
-#include <linux/i2c/i2c-sh_mobile.h>
-=======
  */
 
 #include <linux/clk.h>
@@ -60,31 +24,10 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Transmit operation:                                                      */
 /*                                                                          */
 /* 0 byte transmit                                                          */
-<<<<<<< HEAD
-/* BUS:     S     A8     ACK   P                                            */
-/* IRQ:       DTE   WAIT                                                    */
-/* ICIC:                                                                    */
-/* ICCR: 0x94 0x90                                                          */
-/* ICDR:      A8                                                            */
-/*                                                                          */
-/* 1 byte transmit                                                          */
-/* BUS:     S     A8     ACK   D8(1)   ACK   P                              */
-/* IRQ:       DTE   WAIT         WAIT                                       */
-/* ICIC:      -DTE                                                          */
-/* ICCR: 0x94       0x90                                                    */
-/* ICDR:      A8    D8(1)                                                   */
-/*                                                                          */
-/* 2 byte transmit                                                          */
-/* BUS:     S     A8     ACK   D8(1)   ACK   D8(2)   ACK   P                */
-/* IRQ:       DTE   WAIT         WAIT          WAIT                         */
-/* ICIC:      -DTE                                                          */
-/* ICCR: 0x94                    0x90                                       */
-=======
 /* BUS:     S     A8     ACK   P(*)                                         */
 /* IRQ:       DTE   WAIT                                                    */
 /* ICIC:                                                                    */
@@ -103,7 +46,6 @@
 /* IRQ:       DTE   WAIT         WAIT          WAIT                         */
 /* ICIC:      -DTE                                                          */
 /* ICCR: 0x94                                  0x90                         */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ICDR:      A8    D8(1)        D8(2)                                      */
 /*                                                                          */
 /* 3 bytes or more, +---------+ gets repeated                               */
@@ -114,32 +56,20 @@
 /* 0 byte receive - not supported since slave may hold SDA low              */
 /*                                                                          */
 /* 1 byte receive       [TX] | [RX]                                         */
-<<<<<<< HEAD
-/* BUS:     S     A8     ACK | D8(1)   ACK   P                              */
-=======
 /* BUS:     S     A8     ACK | D8(1)   ACK   P(*)                           */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IRQ:       DTE   WAIT     |   WAIT     DTE                               */
 /* ICIC:      -DTE           |   +DTE                                       */
 /* ICCR: 0x94       0x81     |   0xc0                                       */
 /* ICDR:      A8             |            D8(1)                             */
 /*                                                                          */
 /* 2 byte receive        [TX]| [RX]                                         */
-<<<<<<< HEAD
-/* BUS:     S     A8     ACK | D8(1)   ACK   D8(2)   ACK   P                */
-=======
 /* BUS:     S     A8     ACK | D8(1)   ACK   D8(2)   ACK   P(*)             */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IRQ:       DTE   WAIT     |   WAIT          WAIT     DTE                 */
 /* ICIC:      -DTE           |                 +DTE                         */
 /* ICCR: 0x94       0x81     |                 0xc0                         */
 /* ICDR:      A8             |                 D8(1)    D8(2)               */
 /*                                                                          */
-<<<<<<< HEAD
-/* 3 byte receive       [TX] | [RX]                                         */
-=======
 /* 3 byte receive       [TX] | [RX]                                     (*) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* BUS:     S     A8     ACK | D8(1)   ACK   D8(2)   ACK   D8(3)   ACK    P */
 /* IRQ:       DTE   WAIT     |   WAIT          WAIT         WAIT      DTE   */
 /* ICIC:      -DTE           |                              +DTE            */
@@ -154,11 +84,7 @@
 /* SDA ___\___XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXAAAAAAAAA___/                 */
 /* SCL      \_/1\_/2\_/3\_/4\_/5\_/6\_/7\_/8\___/9\_____/                   */
 /*                                                                          */
-<<<<<<< HEAD
-/*        S   D7  D6  D5  D4  D3  D2  D1  D0              P                 */
-=======
 /*        S   D7  D6  D5  D4  D3  D2  D1  D0              P(*)              */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*                                           ___                            */
 /* WAIT IRQ ________________________________/   \___________                */
 /* TACK IRQ ____________________________________/   \_______                */
@@ -167,14 +93,11 @@
 /*         _______________________________________________                  */
 /* BUSY __/                                               \_                */
 /*                                                                          */
-<<<<<<< HEAD
-=======
 /* (*) The STOP condition is only sent by the master at the end of the last */
 /* I2C message or if the I2C_M_STOP flag is set. Similarly, the BUSY bit is */
 /* only cleared after the STOP condition, so, between messages we have to   */
 /* poll for the DTE bit.                                                    */
 /*                                                                          */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum sh_mobile_i2c_op {
 	OP_START = 0,
@@ -192,28 +115,18 @@ struct sh_mobile_i2c_data {
 	void __iomem *reg;
 	struct i2c_adapter adap;
 	unsigned long bus_speed;
-<<<<<<< HEAD
-	struct clk *clk;
-	u_int8_t icic;
-	u_int8_t iccl;
-	u_int8_t icch;
-	u_int8_t flags;
-=======
 	unsigned int clks_per_count;
 	struct clk *clk;
 	u_int8_t icic;
 	u_int8_t flags;
 	u_int16_t iccl;
 	u_int16_t icch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;
 	wait_queue_head_t wait;
 	struct i2c_msg *msg;
 	int pos;
 	int sr;
-<<<<<<< HEAD
-=======
 	bool send_stop;
 	bool stop_after_dma;
 	bool atomic_xfer;
@@ -229,16 +142,10 @@ struct sh_mobile_i2c_data {
 struct sh_mobile_dt_config {
 	int clks_per_count;
 	int (*setup)(struct sh_mobile_i2c_data *pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define IIC_FLAG_HAS_ICIC67	(1 << 0)
 
-<<<<<<< HEAD
-#define NORMAL_SPEED		100000 /* FAST_SPEED 400000 */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Register offsets */
 #define ICDR			0x00
 #define ICCR			0x04
@@ -246,10 +153,7 @@ struct sh_mobile_dt_config {
 #define ICIC			0x0c
 #define ICCL			0x10
 #define ICCH			0x14
-<<<<<<< HEAD
-=======
 #define ICSTART			0x70
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Register bits */
 #define ICCR_ICE		0x80
@@ -269,21 +173,15 @@ struct sh_mobile_dt_config {
 
 #define ICIC_ICCLB8		0x80
 #define ICIC_ICCHB8		0x40
-<<<<<<< HEAD
-=======
 #define ICIC_TDMAE		0x20
 #define ICIC_RDMAE		0x10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ICIC_ALE		0x08
 #define ICIC_TACKE		0x04
 #define ICIC_WAITE		0x02
 #define ICIC_DTEE		0x01
 
-<<<<<<< HEAD
-=======
 #define ICSTART_ICSTART		0x10
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iic_wr(struct sh_mobile_i2c_data *pd, int offs, unsigned char data)
 {
 	if (offs == ICIC)
@@ -303,87 +201,6 @@ static void iic_set_clr(struct sh_mobile_i2c_data *pd, int offs,
 	iic_wr(pd, offs, (iic_rd(pd, offs) | set) & ~clr);
 }
 
-<<<<<<< HEAD
-static void activate_ch(struct sh_mobile_i2c_data *pd)
-{
-	unsigned long i2c_clk;
-	u_int32_t num;
-	u_int32_t denom;
-	u_int32_t tmp;
-
-	/* Wake up device and enable clock */
-	pm_runtime_get_sync(pd->dev);
-	clk_enable(pd->clk);
-
-	/* Get clock rate after clock is enabled */
-	i2c_clk = clk_get_rate(pd->clk);
-
-	/* Calculate the value for iccl. From the data sheet:
-	 * iccl = (p clock / transfer rate) * (L / (L + H))
-	 * where L and H are the SCL low/high ratio (5/4 in this case).
-	 * We also round off the result.
-	 */
-	num = i2c_clk * 5;
-	denom = pd->bus_speed * 9;
-	tmp = num * 10 / denom;
-	if (tmp % 10 >= 5)
-		pd->iccl = (u_int8_t)((num/denom) + 1);
-	else
-		pd->iccl = (u_int8_t)(num/denom);
-
-	/* one more bit of ICCL in ICIC */
-	if (pd->flags & IIC_FLAG_HAS_ICIC67) {
-		if ((num/denom) > 0xff)
-			pd->icic |= ICIC_ICCLB8;
-		else
-			pd->icic &= ~ICIC_ICCLB8;
-	}
-
-	/* Calculate the value for icch. From the data sheet:
-	   icch = (p clock / transfer rate) * (H / (L + H)) */
-	num = i2c_clk * 4;
-	tmp = num * 10 / denom;
-	if (tmp % 10 >= 5)
-		pd->icch = (u_int8_t)((num/denom) + 1);
-	else
-		pd->icch = (u_int8_t)(num/denom);
-
-	/* one more bit of ICCH in ICIC */
-	if (pd->flags & IIC_FLAG_HAS_ICIC67) {
-		if ((num/denom) > 0xff)
-			pd->icic |= ICIC_ICCHB8;
-		else
-			pd->icic &= ~ICIC_ICCHB8;
-	}
-
-	/* Enable channel and configure rx ack */
-	iic_set_clr(pd, ICCR, ICCR_ICE, 0);
-
-	/* Mask all interrupts */
-	iic_wr(pd, ICIC, 0);
-
-	/* Set the clock */
-	iic_wr(pd, ICCL, pd->iccl);
-	iic_wr(pd, ICCH, pd->icch);
-}
-
-static void deactivate_ch(struct sh_mobile_i2c_data *pd)
-{
-	/* Clear/disable interrupts */
-	iic_wr(pd, ICSR, 0);
-	iic_wr(pd, ICIC, 0);
-
-	/* Disable channel */
-	iic_set_clr(pd, ICCR, 0, ICCR_ICE);
-
-	/* Disable clock and mark device as idle */
-	clk_disable(pd->clk);
-	pm_runtime_put_sync(pd->dev);
-}
-
-static unsigned char i2c_op(struct sh_mobile_i2c_data *pd,
-			    enum sh_mobile_i2c_op op, unsigned char data)
-=======
 static u32 sh_mobile_i2c_iccl(unsigned long count_khz, u32 tLOW, u32 tf)
 {
 	/*
@@ -484,38 +301,16 @@ static int sh_mobile_i2c_v2_init(struct sh_mobile_i2c_data *pd)
 }
 
 static unsigned char i2c_op(struct sh_mobile_i2c_data *pd, enum sh_mobile_i2c_op op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char ret = 0;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	dev_dbg(pd->dev, "op %d, data in 0x%02x\n", op, data);
-=======
 	dev_dbg(pd->dev, "op %d\n", op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pd->lock, flags);
 
 	switch (op) {
 	case OP_START: /* issue start and trigger DTE interrupt */
-<<<<<<< HEAD
-		iic_wr(pd, ICCR, 0x94);
-		break;
-	case OP_TX_FIRST: /* disable DTE interrupt and write data */
-		iic_wr(pd, ICIC, ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
-		iic_wr(pd, ICDR, data);
-		break;
-	case OP_TX: /* write data */
-		iic_wr(pd, ICDR, data);
-		break;
-	case OP_TX_STOP: /* write data and issue a stop afterwards */
-		iic_wr(pd, ICDR, data);
-		iic_wr(pd, ICCR, 0x90);
-		break;
-	case OP_TX_TO_RX: /* select read mode */
-		iic_wr(pd, ICCR, 0x81);
-=======
 		iic_wr(pd, ICCR, ICCR_ICE | ICCR_TRS | ICCR_BBSY);
 		break;
 	case OP_TX_FIRST: /* disable DTE interrupt and write client address */
@@ -531,23 +326,11 @@ static unsigned char i2c_op(struct sh_mobile_i2c_data *pd, enum sh_mobile_i2c_op
 		break;
 	case OP_TX_TO_RX: /* select read mode */
 		iic_wr(pd, ICCR, ICCR_ICE | ICCR_SCP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case OP_RX: /* just read data */
 		ret = iic_rd(pd, ICDR);
 		break;
 	case OP_RX_STOP: /* enable DTE interrupt, issue stop */
-<<<<<<< HEAD
-		iic_wr(pd, ICIC,
-		       ICIC_DTEE | ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
-		iic_wr(pd, ICCR, 0xc0);
-		break;
-	case OP_RX_STOP_DATA: /* enable DTE interrupt, read data, issue stop */
-		iic_wr(pd, ICIC,
-		       ICIC_DTEE | ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
-		ret = iic_rd(pd, ICDR);
-		iic_wr(pd, ICCR, 0xc0);
-=======
 		if (!pd->atomic_xfer)
 			iic_wr(pd, ICIC,
 			       ICIC_DTEE | ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
@@ -559,7 +342,6 @@ static unsigned char i2c_op(struct sh_mobile_i2c_data *pd, enum sh_mobile_i2c_op
 			       ICIC_DTEE | ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
 		ret = iic_rd(pd, ICDR);
 		iic_wr(pd, ICCR, ICCR_ICE | ICCR_RACK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -569,52 +351,6 @@ static unsigned char i2c_op(struct sh_mobile_i2c_data *pd, enum sh_mobile_i2c_op
 	return ret;
 }
 
-<<<<<<< HEAD
-static int sh_mobile_i2c_is_first_byte(struct sh_mobile_i2c_data *pd)
-{
-	if (pd->pos == -1)
-		return 1;
-
-	return 0;
-}
-
-static int sh_mobile_i2c_is_last_byte(struct sh_mobile_i2c_data *pd)
-{
-	if (pd->pos == (pd->msg->len - 1))
-		return 1;
-
-	return 0;
-}
-
-static void sh_mobile_i2c_get_data(struct sh_mobile_i2c_data *pd,
-				   unsigned char *buf)
-{
-	switch (pd->pos) {
-	case -1:
-		*buf = (pd->msg->addr & 0x7f) << 1;
-		*buf |= (pd->msg->flags & I2C_M_RD) ? 1 : 0;
-		break;
-	default:
-		*buf = pd->msg->buf[pd->pos];
-	}
-}
-
-static int sh_mobile_i2c_isr_tx(struct sh_mobile_i2c_data *pd)
-{
-	unsigned char data;
-
-	if (pd->pos == pd->msg->len)
-		return 1;
-
-	sh_mobile_i2c_get_data(pd, &data);
-
-	if (sh_mobile_i2c_is_last_byte(pd))
-		i2c_op(pd, OP_TX_STOP, data);
-	else if (sh_mobile_i2c_is_first_byte(pd))
-		i2c_op(pd, OP_TX_FIRST, data);
-	else
-		i2c_op(pd, OP_TX, data);
-=======
 static int sh_mobile_i2c_isr_tx(struct sh_mobile_i2c_data *pd)
 {
 	if (pd->pos == pd->msg->len) {
@@ -626,7 +362,6 @@ static int sh_mobile_i2c_isr_tx(struct sh_mobile_i2c_data *pd)
 		i2c_op(pd, OP_TX_FIRST);
 	else
 		i2c_op(pd, OP_TX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd->pos++;
 	return 0;
@@ -634,42 +369,6 @@ static int sh_mobile_i2c_isr_tx(struct sh_mobile_i2c_data *pd)
 
 static int sh_mobile_i2c_isr_rx(struct sh_mobile_i2c_data *pd)
 {
-<<<<<<< HEAD
-	unsigned char data;
-	int real_pos;
-
-	do {
-		if (pd->pos <= -1) {
-			sh_mobile_i2c_get_data(pd, &data);
-
-			if (sh_mobile_i2c_is_first_byte(pd))
-				i2c_op(pd, OP_TX_FIRST, data);
-			else
-				i2c_op(pd, OP_TX, data);
-			break;
-		}
-
-		if (pd->pos == 0) {
-			i2c_op(pd, OP_TX_TO_RX, 0);
-			break;
-		}
-
-		real_pos = pd->pos - 2;
-
-		if (pd->pos == pd->msg->len) {
-			if (real_pos < 0) {
-				i2c_op(pd, OP_RX_STOP, 0);
-				break;
-			}
-			data = i2c_op(pd, OP_RX_STOP_DATA, 0);
-		} else
-			data = i2c_op(pd, OP_RX, 0);
-
-		if (real_pos >= 0)
-			pd->msg->buf[real_pos] = data;
-	} while (0);
-
-=======
 	int real_pos;
 
 	/* switch from TX (address) to RX (data) adds two interrupts */
@@ -696,23 +395,15 @@ static int sh_mobile_i2c_isr_rx(struct sh_mobile_i2c_data *pd)
 	}
 
  done:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->pos++;
 	return pd->pos == (pd->msg->len + 2);
 }
 
 static irqreturn_t sh_mobile_i2c_isr(int irq, void *dev_id)
 {
-<<<<<<< HEAD
-	struct platform_device *dev = dev_id;
-	struct sh_mobile_i2c_data *pd = platform_get_drvdata(dev);
-	unsigned char sr;
-	int wakeup;
-=======
 	struct sh_mobile_i2c_data *pd = dev_id;
 	unsigned char sr;
 	int wakeup = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sr = iic_rd(pd, ICSR);
 	pd->sr |= sr; /* remember state */
@@ -721,13 +412,6 @@ static irqreturn_t sh_mobile_i2c_isr(int irq, void *dev_id)
 	       (pd->msg->flags & I2C_M_RD) ? "read" : "write",
 	       pd->pos, pd->msg->len);
 
-<<<<<<< HEAD
-	if (sr & (ICSR_AL | ICSR_TACK)) {
-		/* don't interrupt transaction - continue to issue stop */
-		iic_wr(pd, ICSR, sr & ~(ICSR_AL | ICSR_TACK));
-		wakeup = 0;
-	} else if (pd->msg->flags & I2C_M_RD)
-=======
 	/* Kick off TxDMA after preface was done */
 	if (pd->dma_direction == DMA_TO_DEVICE && pd->pos == 0)
 		iic_set_clr(pd, ICIC, ICIC_TDMAE, 0);
@@ -735,47 +419,19 @@ static irqreturn_t sh_mobile_i2c_isr(int irq, void *dev_id)
 		/* don't interrupt transaction - continue to issue stop */
 		iic_wr(pd, ICSR, sr & ~(ICSR_AL | ICSR_TACK));
 	else if (pd->msg->flags & I2C_M_RD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wakeup = sh_mobile_i2c_isr_rx(pd);
 	else
 		wakeup = sh_mobile_i2c_isr_tx(pd);
 
-<<<<<<< HEAD
-=======
 	/* Kick off RxDMA after preface was done */
 	if (pd->dma_direction == DMA_FROM_DEVICE && pd->pos == 1)
 		iic_set_clr(pd, ICIC, ICIC_RDMAE, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sr & ICSR_WAIT) /* TODO: add delay here to support slow acks */
 		iic_wr(pd, ICSR, sr & ~ICSR_WAIT);
 
 	if (wakeup) {
 		pd->sr |= SW_DONE;
-<<<<<<< HEAD
-		wake_up(&pd->wait);
-	}
-
-	return IRQ_HANDLED;
-}
-
-static int start_ch(struct sh_mobile_i2c_data *pd, struct i2c_msg *usr_msg)
-{
-	if (usr_msg->len == 0 && (usr_msg->flags & I2C_M_RD)) {
-		dev_err(pd->dev, "Unsupported zero length i2c read\n");
-		return -EIO;
-	}
-
-	/* Initialize channel registers */
-	iic_set_clr(pd, ICCR, 0, ICCR_ICE);
-
-	/* Enable channel and configure rx ack */
-	iic_set_clr(pd, ICCR, ICCR_ICE, 0);
-
-	/* Set the clock */
-	iic_wr(pd, ICCL, pd->iccl);
-	iic_wr(pd, ICCH, pd->icch);
-=======
 		if (!pd->atomic_xfer)
 			wake_up(&pd->wait);
 	}
@@ -916,51 +572,11 @@ static void start_ch(struct sh_mobile_i2c_data *pd, struct i2c_msg *usr_msg,
 		iic_wr(pd, ICCL, pd->iccl & 0xff);
 		iic_wr(pd, ICCH, pd->icch & 0xff);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd->msg = usr_msg;
 	pd->pos = -1;
 	pd->sr = 0;
 
-<<<<<<< HEAD
-	/* Enable all interrupts to begin with */
-	iic_wr(pd, ICIC, ICIC_DTEE | ICIC_WAITE | ICIC_ALE | ICIC_TACKE);
-	return 0;
-}
-
-static int sh_mobile_i2c_xfer(struct i2c_adapter *adapter,
-			      struct i2c_msg *msgs,
-			      int num)
-{
-	struct sh_mobile_i2c_data *pd = i2c_get_adapdata(adapter);
-	struct i2c_msg	*msg;
-	int err = 0;
-	u_int8_t val;
-	int i, k, retry_count;
-
-	activate_ch(pd);
-
-	/* Process all messages */
-	for (i = 0; i < num; i++) {
-		msg = &msgs[i];
-
-		err = start_ch(pd, msg);
-		if (err)
-			break;
-
-		i2c_op(pd, OP_START, 0);
-
-		/* The interrupt handler takes care of the rest... */
-		k = wait_event_timeout(pd->wait,
-				       pd->sr & (ICSR_TACK | SW_DONE),
-				       5 * HZ);
-		if (!k)
-			dev_err(pd->dev, "Transfer request timed out\n");
-
-		retry_count = 1000;
-again:
-		val = iic_rd(pd, ICSR);
-=======
 	if (pd->atomic_xfer)
 		return;
 
@@ -997,7 +613,6 @@ static int poll_busy(struct sh_mobile_i2c_data *pd)
 
 	for (i = 1000; i; i--) {
 		u_int8_t val = iic_rd(pd, ICSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_dbg(pd->dev, "val 0x%02x pd->sr 0x%02x\n", val, pd->sr);
 
@@ -1005,30 +620,6 @@ static int poll_busy(struct sh_mobile_i2c_data *pd)
 		 * transfer is finished, so poll the hardware
 		 * until we're done.
 		 */
-<<<<<<< HEAD
-		if (val & ICSR_BUSY) {
-			udelay(10);
-			if (retry_count--)
-				goto again;
-
-			err = -EIO;
-			dev_err(pd->dev, "Polling timed out\n");
-			break;
-		}
-
-		/* handle missing acknowledge and arbitration lost */
-		if ((val | pd->sr) & (ICSR_TACK | ICSR_AL)) {
-			err = -EIO;
-			break;
-		}
-	}
-
-	deactivate_ch(pd);
-
-	if (!err)
-		err = num;
-	return err;
-=======
 		if (!(val & ICSR_BUSY)) {
 			/* handle missing acknowledge and arbitration lost */
 			val |= pd->sr;
@@ -1140,57 +731,10 @@ static int sh_mobile_i2c_xfer_atomic(struct i2c_adapter *adapter,
 
 	pd->atomic_xfer = true;
 	return sh_mobile_xfer(pd, msgs, num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 sh_mobile_i2c_func(struct i2c_adapter *adapter)
 {
-<<<<<<< HEAD
-	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
-}
-
-static struct i2c_algorithm sh_mobile_i2c_algorithm = {
-	.functionality	= sh_mobile_i2c_func,
-	.master_xfer	= sh_mobile_i2c_xfer,
-};
-
-static int sh_mobile_i2c_hook_irqs(struct platform_device *dev, int hook)
-{
-	struct resource *res;
-	int ret = -ENXIO;
-	int n, k = 0;
-
-	while ((res = platform_get_resource(dev, IORESOURCE_IRQ, k))) {
-		for (n = res->start; hook && n <= res->end; n++) {
-			if (request_irq(n, sh_mobile_i2c_isr, 0,
-					dev_name(&dev->dev), dev)) {
-				for (n--; n >= res->start; n--)
-					free_irq(n, dev);
-
-				goto rollback;
-			}
-		}
-		k++;
-	}
-
-	if (hook)
-		return k > 0 ? 0 : -ENOENT;
-
-	ret = 0;
-
- rollback:
-	k--;
-
-	while (k >= 0) {
-		res = platform_get_resource(dev, IORESOURCE_IRQ, k);
-		for (n = res->start; n <= res->end; n++)
-			free_irq(n, dev);
-
-		k--;
-	}
-
-	return ret;
-=======
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL | I2C_FUNC_PROTOCOL_MANGLING;
 }
 
@@ -1316,38 +860,10 @@ static int sh_mobile_i2c_hook_irqs(struct platform_device *dev, struct sh_mobile
 	}
 
 	return k > 0 ? 0 : -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sh_mobile_i2c_probe(struct platform_device *dev)
 {
-<<<<<<< HEAD
-	struct i2c_sh_mobile_platform_data *pdata = dev->dev.platform_data;
-	struct sh_mobile_i2c_data *pd;
-	struct i2c_adapter *adap;
-	struct resource *res;
-	int size;
-	int ret;
-
-	pd = kzalloc(sizeof(struct sh_mobile_i2c_data), GFP_KERNEL);
-	if (pd == NULL) {
-		dev_err(&dev->dev, "cannot allocate private data\n");
-		return -ENOMEM;
-	}
-
-	pd->clk = clk_get(&dev->dev, NULL);
-	if (IS_ERR(pd->clk)) {
-		dev_err(&dev->dev, "cannot get clock\n");
-		ret = PTR_ERR(pd->clk);
-		goto err;
-	}
-
-	ret = sh_mobile_i2c_hook_irqs(dev, 1);
-	if (ret) {
-		dev_err(&dev->dev, "cannot request IRQ\n");
-		goto err_clk;
-	}
-=======
 	struct sh_mobile_i2c_data *pd;
 	struct i2c_adapter *adap;
 	const struct sh_mobile_dt_config *config;
@@ -1367,52 +883,10 @@ static int sh_mobile_i2c_probe(struct platform_device *dev)
 	ret = sh_mobile_i2c_hook_irqs(dev, pd);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd->dev = &dev->dev;
 	platform_set_drvdata(dev, pd);
 
-<<<<<<< HEAD
-	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-	if (res == NULL) {
-		dev_err(&dev->dev, "cannot find IO resource\n");
-		ret = -ENOENT;
-		goto err_irq;
-	}
-
-	size = resource_size(res);
-
-	pd->reg = ioremap(res->start, size);
-	if (pd->reg == NULL) {
-		dev_err(&dev->dev, "cannot map IO\n");
-		ret = -ENXIO;
-		goto err_irq;
-	}
-
-	/* Use platformd data bus speed or NORMAL_SPEED */
-	pd->bus_speed = NORMAL_SPEED;
-	if (pdata && pdata->bus_speed)
-		pd->bus_speed = pdata->bus_speed;
-
-	/* The IIC blocks on SH-Mobile ARM processors
-	 * come with two new bits in ICIC.
-	 */
-	if (size > 0x17)
-		pd->flags |= IIC_FLAG_HAS_ICIC67;
-
-	/* Enable Runtime PM for this device.
-	 *
-	 * Also tell the Runtime PM core to ignore children
-	 * for this device since it is valid for us to suspend
-	 * this I2C master driver even though the slave devices
-	 * on the I2C bus may not be suspended.
-	 *
-	 * The state of the I2C hardware bus is unaffected by
-	 * the Runtime PM state.
-	 */
-	pm_suspend_ignore_children(&dev->dev, true);
-	pm_runtime_enable(&dev->dev);
-=======
 	pd->reg = devm_platform_get_and_ioremap_resource(dev, 0, &pd->res);
 	if (IS_ERR(pd->reg))
 		return PTR_ERR(pd->reg);
@@ -1444,7 +918,6 @@ static int sh_mobile_i2c_probe(struct platform_device *dev)
 	sg_init_table(&pd->sg, 1);
 	pd->dma_direction = DMA_NONE;
 	pd->dma_rx = pd->dma_tx = ERR_PTR(-EPROBE_DEFER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup the private data */
 	adap = &pd->adap;
@@ -1452,13 +925,6 @@ static int sh_mobile_i2c_probe(struct platform_device *dev)
 
 	adap->owner = THIS_MODULE;
 	adap->algo = &sh_mobile_i2c_algorithm;
-<<<<<<< HEAD
-	adap->dev.parent = &dev->dev;
-	adap->retries = 5;
-	adap->nr = dev->id;
-
-	strlcpy(adap->name, dev->name, sizeof(adap->name));
-=======
 	adap->quirks = &sh_mobile_i2c_quirks;
 	adap->dev.parent = &dev->dev;
 	adap->retries = 5;
@@ -1466,35 +932,12 @@ static int sh_mobile_i2c_probe(struct platform_device *dev)
 	adap->dev.of_node = dev->dev.of_node;
 
 	strscpy(adap->name, dev->name, sizeof(adap->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&pd->lock);
 	init_waitqueue_head(&pd->wait);
 
 	ret = i2c_add_numbered_adapter(adap);
 	if (ret < 0) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "cannot add numbered adapter\n");
-		goto err_all;
-	}
-
-	dev_info(&dev->dev, "I2C adapter %d with bus speed %lu Hz\n",
-		 adap->nr, pd->bus_speed);
-	return 0;
-
- err_all:
-	iounmap(pd->reg);
- err_irq:
-	sh_mobile_i2c_hook_irqs(dev, 0);
- err_clk:
-	clk_put(pd->clk);
- err:
-	kfree(pd);
-	return ret;
-}
-
-static int sh_mobile_i2c_remove(struct platform_device *dev)
-=======
 		sh_mobile_i2c_release_dma(pd);
 		return ret;
 	}
@@ -1505,36 +948,10 @@ static int sh_mobile_i2c_remove(struct platform_device *dev)
 }
 
 static void sh_mobile_i2c_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sh_mobile_i2c_data *pd = platform_get_drvdata(dev);
 
 	i2c_del_adapter(&pd->adap);
-<<<<<<< HEAD
-	iounmap(pd->reg);
-	sh_mobile_i2c_hook_irqs(dev, 0);
-	clk_put(pd->clk);
-	pm_runtime_disable(&dev->dev);
-	kfree(pd);
-	return 0;
-}
-
-static int sh_mobile_i2c_runtime_nop(struct device *dev)
-{
-	/* Runtime PM callback shared between ->runtime_suspend()
-	 * and ->runtime_resume(). Simply returns success.
-	 *
-	 * This driver re-initializes all registers after
-	 * pm_runtime_get_sync() anyway so there is no need
-	 * to save and restore registers here.
-	 */
-	return 0;
-}
-
-static const struct dev_pm_ops sh_mobile_i2c_dev_pm_ops = {
-	.runtime_suspend = sh_mobile_i2c_runtime_nop,
-	.runtime_resume = sh_mobile_i2c_runtime_nop,
-=======
 	sh_mobile_i2c_release_dma(pd);
 	pm_runtime_disable(&dev->dev);
 }
@@ -1558,52 +975,32 @@ static int sh_mobile_i2c_resume(struct device *dev)
 static const struct dev_pm_ops sh_mobile_i2c_pm_ops = {
 	NOIRQ_SYSTEM_SLEEP_PM_OPS(sh_mobile_i2c_suspend,
 				  sh_mobile_i2c_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver sh_mobile_i2c_driver = {
 	.driver		= {
 		.name		= "i2c-sh_mobile",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-		.pm		= &sh_mobile_i2c_dev_pm_ops,
-	},
-	.probe		= sh_mobile_i2c_probe,
-	.remove		= sh_mobile_i2c_remove,
-=======
 		.of_match_table = sh_mobile_i2c_dt_ids,
 		.pm	= pm_sleep_ptr(&sh_mobile_i2c_pm_ops),
 	},
 	.probe		= sh_mobile_i2c_probe,
 	.remove_new	= sh_mobile_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sh_mobile_i2c_adap_init(void)
 {
 	return platform_driver_register(&sh_mobile_i2c_driver);
 }
-<<<<<<< HEAD
-=======
 subsys_initcall(sh_mobile_i2c_adap_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __exit sh_mobile_i2c_adap_exit(void)
 {
 	platform_driver_unregister(&sh_mobile_i2c_driver);
 }
-<<<<<<< HEAD
-
-subsys_initcall(sh_mobile_i2c_adap_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(sh_mobile_i2c_adap_exit);
 
 MODULE_DESCRIPTION("SuperH Mobile I2C Bus Controller driver");
 MODULE_AUTHOR("Magnus Damm");
-<<<<<<< HEAD
-=======
 MODULE_AUTHOR("Wolfram Sang");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:i2c-sh_mobile");

@@ -1,34 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * probe-finder.c : C expression to kprobe event converter
  *
  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- */
-
-=======
  */
 
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,23 +13,12 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
-<<<<<<< HEAD
-#include <getopt.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <dwarf-regs.h>
 
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include "event.h"
-#include "debug.h"
-#include "util.h"
-#include "symbol.h"
-#include "probe-finder.h"
-=======
 #include <linux/zalloc.h>
 #include "event.h"
 #include "dso.h"
@@ -65,230 +31,10 @@
 #include "probe-finder.h"
 #include "probe-file.h"
 #include "string2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Kprobe tracer basic type is up to u64 */
 #define MAX_BASIC_TYPE_BITS	64
 
-<<<<<<< HEAD
-/* Line number list operations */
-
-/* Add a line to line number list */
-static int line_list__add_line(struct list_head *head, int line)
-{
-	struct line_node *ln;
-	struct list_head *p;
-
-	/* Reverse search, because new line will be the last one */
-	list_for_each_entry_reverse(ln, head, list) {
-		if (ln->line < line) {
-			p = &ln->list;
-			goto found;
-		} else if (ln->line == line)	/* Already exist */
-			return 1;
-	}
-	/* List is empty, or the smallest entry */
-	p = head;
-found:
-	pr_debug("line list: add a line %u\n", line);
-	ln = zalloc(sizeof(struct line_node));
-	if (ln == NULL)
-		return -ENOMEM;
-	ln->line = line;
-	INIT_LIST_HEAD(&ln->list);
-	list_add(&ln->list, p);
-	return 0;
-}
-
-/* Check if the line in line number list */
-static int line_list__has_line(struct list_head *head, int line)
-{
-	struct line_node *ln;
-
-	/* Reverse search, because new line will be the last one */
-	list_for_each_entry(ln, head, list)
-		if (ln->line == line)
-			return 1;
-
-	return 0;
-}
-
-/* Init line number list */
-static void line_list__init(struct list_head *head)
-{
-	INIT_LIST_HEAD(head);
-}
-
-/* Free line number list */
-static void line_list__free(struct list_head *head)
-{
-	struct line_node *ln;
-	while (!list_empty(head)) {
-		ln = list_first_entry(head, struct line_node, list);
-		list_del(&ln->list);
-		free(ln);
-	}
-}
-
-/* Dwarf FL wrappers */
-static char *debuginfo_path;	/* Currently dummy */
-
-static const Dwfl_Callbacks offline_callbacks = {
-	.find_debuginfo = dwfl_standard_find_debuginfo,
-	.debuginfo_path = &debuginfo_path,
-
-	.section_address = dwfl_offline_section_address,
-
-	/* We use this table for core files too.  */
-	.find_elf = dwfl_build_id_find_elf,
-};
-
-/* Get a Dwarf from offline image */
-static int debuginfo__init_offline_dwarf(struct debuginfo *self,
-					 const char *path)
-{
-	Dwfl_Module *mod;
-	int fd;
-
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-		return fd;
-
-	self->dwfl = dwfl_begin(&offline_callbacks);
-	if (!self->dwfl)
-		goto error;
-
-	mod = dwfl_report_offline(self->dwfl, "", "", fd);
-	if (!mod)
-		goto error;
-
-	self->dbg = dwfl_module_getdwarf(mod, &self->bias);
-	if (!self->dbg)
-		goto error;
-
-	return 0;
-error:
-	if (self->dwfl)
-		dwfl_end(self->dwfl);
-	else
-		close(fd);
-	memset(self, 0, sizeof(*self));
-
-	return -ENOENT;
-}
-
-#if _ELFUTILS_PREREQ(0, 148)
-/* This method is buggy if elfutils is older than 0.148 */
-static int __linux_kernel_find_elf(Dwfl_Module *mod,
-				   void **userdata,
-				   const char *module_name,
-				   Dwarf_Addr base,
-				   char **file_name, Elf **elfp)
-{
-	int fd;
-	const char *path = kernel_get_module_path(module_name);
-
-	pr_debug2("Use file %s for %s\n", path, module_name);
-	if (path) {
-		fd = open(path, O_RDONLY);
-		if (fd >= 0) {
-			*file_name = strdup(path);
-			return fd;
-		}
-	}
-	/* If failed, try to call standard method */
-	return dwfl_linux_kernel_find_elf(mod, userdata, module_name, base,
-					  file_name, elfp);
-}
-
-static const Dwfl_Callbacks kernel_callbacks = {
-	.find_debuginfo = dwfl_standard_find_debuginfo,
-	.debuginfo_path = &debuginfo_path,
-
-	.find_elf = __linux_kernel_find_elf,
-	.section_address = dwfl_linux_kernel_module_section_address,
-};
-
-/* Get a Dwarf from live kernel image */
-static int debuginfo__init_online_kernel_dwarf(struct debuginfo *self,
-					       Dwarf_Addr addr)
-{
-	self->dwfl = dwfl_begin(&kernel_callbacks);
-	if (!self->dwfl)
-		return -EINVAL;
-
-	/* Load the kernel dwarves: Don't care the result here */
-	dwfl_linux_kernel_report_kernel(self->dwfl);
-	dwfl_linux_kernel_report_modules(self->dwfl);
-
-	self->dbg = dwfl_addrdwarf(self->dwfl, addr, &self->bias);
-	/* Here, check whether we could get a real dwarf */
-	if (!self->dbg) {
-		pr_debug("Failed to find kernel dwarf at %lx\n",
-			 (unsigned long)addr);
-		dwfl_end(self->dwfl);
-		memset(self, 0, sizeof(*self));
-		return -ENOENT;
-	}
-
-	return 0;
-}
-#else
-/* With older elfutils, this just support kernel module... */
-static int debuginfo__init_online_kernel_dwarf(struct debuginfo *self,
-					       Dwarf_Addr addr __used)
-{
-	const char *path = kernel_get_module_path("kernel");
-
-	if (!path) {
-		pr_err("Failed to find vmlinux path\n");
-		return -ENOENT;
-	}
-
-	pr_debug2("Use file %s for debuginfo\n", path);
-	return debuginfo__init_offline_dwarf(self, path);
-}
-#endif
-
-struct debuginfo *debuginfo__new(const char *path)
-{
-	struct debuginfo *self = zalloc(sizeof(struct debuginfo));
-	if (!self)
-		return NULL;
-
-	if (debuginfo__init_offline_dwarf(self, path) < 0) {
-		free(self);
-		self = NULL;
-	}
-
-	return self;
-}
-
-struct debuginfo *debuginfo__new_online_kernel(unsigned long addr)
-{
-	struct debuginfo *self = zalloc(sizeof(struct debuginfo));
-	if (!self)
-		return NULL;
-
-	if (debuginfo__init_online_kernel_dwarf(self, (Dwarf_Addr)addr) < 0) {
-		free(self);
-		self = NULL;
-	}
-
-	return self;
-}
-
-void debuginfo__delete(struct debuginfo *self)
-{
-	if (self) {
-		if (self->dwfl)
-			dwfl_end(self->dwfl);
-		free(self);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Probe finder related functions
  */
@@ -305,14 +51,6 @@ static struct probe_trace_arg_ref *alloc_trace_arg_ref(long offs)
 /*
  * Convert a location into trace_arg.
  * If tvar == NULL, this just checks variable can be converted.
-<<<<<<< HEAD
- */
-static int convert_variable_location(Dwarf_Die *vr_die, Dwarf_Addr addr,
-				     Dwarf_Op *fb_ops,
-				     struct probe_trace_arg *tvar)
-{
-	Dwarf_Attribute attr;
-=======
  * If fentry == true and vr_die is a parameter, do heuristic search
  * for the location fuzzed by function entry mcount.
  */
@@ -323,31 +61,17 @@ static int convert_variable_location(Dwarf_Die *vr_die, Dwarf_Addr addr,
 {
 	Dwarf_Attribute attr;
 	Dwarf_Addr tmp = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Dwarf_Op *op;
 	size_t nops;
 	unsigned int regn;
 	Dwarf_Word offs = 0;
 	bool ref = false;
 	const char *regs;
-<<<<<<< HEAD
-	int ret;
-=======
 	int ret, ret2 = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dwarf_attr(vr_die, DW_AT_external, &attr) != NULL)
 		goto static_var;
 
-<<<<<<< HEAD
-	/* TODO: handle more than 1 exprs */
-	if (dwarf_attr(vr_die, DW_AT_location, &attr) == NULL ||
-	    dwarf_getlocation_addr(&attr, addr, &op, &nops, 1) <= 0 ||
-	    nops == 0) {
-		/* TODO: Support const_value */
-		return -ENOENT;
-	}
-=======
 	/* Constant value */
 	if (dwarf_attr(vr_die, DW_AT_const_value, &attr) &&
 	    immediate_value_is_supported()) {
@@ -396,16 +120,11 @@ found:
 	if (nops == 0)
 		/* TODO: Support const_value */
 		return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (op->atom == DW_OP_addr) {
 static_var:
 		if (!tvar)
-<<<<<<< HEAD
-			return 0;
-=======
 			return ret2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Static variables on memory (not stack), make @varname */
 		ret = strlen(dwarf_diename(vr_die));
 		tvar->value = zalloc(ret + 2);
@@ -415,11 +134,7 @@ static_var:
 		tvar->ref = alloc_trace_arg_ref((long)offs);
 		if (tvar->ref == NULL)
 			return -ENOMEM;
-<<<<<<< HEAD
-		return 0;
-=======
 		return ret2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If this is based on frame buffer, set the offset */
@@ -449,24 +164,14 @@ static_var:
 	}
 
 	if (!tvar)
-<<<<<<< HEAD
-		return 0;
-
-	regs = get_arch_regstr(regn);
-=======
 		return ret2;
 
 	regs = get_dwarf_regstr(regn, machine);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!regs) {
 		/* This should be a bug in DWARF or this tool */
 		pr_warning("Mapping for the register number %u "
 			   "missing on this architecture.\n", regn);
-<<<<<<< HEAD
-		return -ERANGE;
-=======
 		return -ENOTSUP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tvar->value = strdup(regs);
@@ -478,34 +183,18 @@ static_var:
 		if (tvar->ref == NULL)
 			return -ENOMEM;
 	}
-<<<<<<< HEAD
-	return 0;
-=======
 	return ret2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define BYTES_TO_BITS(nb)	((nb) * BITS_PER_LONG / sizeof(long))
 
 static int convert_variable_type(Dwarf_Die *vr_die,
 				 struct probe_trace_arg *tvar,
-<<<<<<< HEAD
-				 const char *cast)
-=======
 				 const char *cast, bool user_access)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct probe_trace_arg_ref **ref_ptr = &tvar->ref;
 	Dwarf_Die type;
 	char buf[16];
-<<<<<<< HEAD
-	int bsize, boffs, total;
-	int ret;
-
-	/* TODO: check all types */
-	if (cast && strcmp(cast, "string") != 0) {
-		/* Non string type is OK */
-=======
 	char sbuf[STRERR_BUFSIZE];
 	int bsize, boffs, total;
 	int ret;
@@ -517,7 +206,6 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 	    strcmp(cast, "s") != 0 && strcmp(cast, "u") != 0) {
 		/* Non string type is OK */
 		/* and respect signedness/hexadecimal cast */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tvar->type = strdup(cast);
 		return (tvar->type == NULL) ? -ENOMEM : 0;
 	}
@@ -543,12 +231,8 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 	pr_debug("%s type is %s.\n",
 		 dwarf_diename(vr_die), dwarf_diename(&type));
 
-<<<<<<< HEAD
-	if (cast && strcmp(cast, "string") == 0) {	/* String type */
-=======
 	if (cast && (!strcmp(cast, "string") || !strcmp(cast, "ustring"))) {
 		/* String type */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = dwarf_tag(&type);
 		if (ret != DW_TAG_pointer_type &&
 		    ret != DW_TAG_array_type) {
@@ -557,21 +241,12 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 				   dwarf_diename(vr_die), dwarf_diename(&type));
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		if (ret == DW_TAG_pointer_type) {
-			if (die_get_real_type(&type, &type) == NULL) {
-				pr_warning("Failed to get a type"
-					   " information.\n");
-				return -ENOENT;
-			}
-=======
 		if (die_get_real_type(&type, &type) == NULL) {
 			pr_warning("Failed to get a type"
 				   " information.\n");
 			return -ENOENT;
 		}
 		if (ret == DW_TAG_pointer_type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while (*ref_ptr)
 				ref_ptr = &(*ref_ptr)->next;
 			/* Add new reference with offset +0 */
@@ -580,10 +255,7 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 				pr_warning("Out of memory error\n");
 				return -ENOMEM;
 			}
-<<<<<<< HEAD
-=======
 			(*ref_ptr)->user_access = user_access;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!die_compare_name(&type, "char") &&
 		    !die_compare_name(&type, "unsigned char")) {
@@ -596,8 +268,6 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 		return (tvar->type == NULL) ? -ENOMEM : 0;
 	}
 
-<<<<<<< HEAD
-=======
 	if (cast && (strcmp(cast, "u") == 0))
 		prefix = 'u';
 	else if (cast && (strcmp(cast, "s") == 0))
@@ -609,7 +279,6 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 		prefix = die_is_signed_type(&type) ? 's' :
 			 probe_type_is_available(PROBE_TYPE_X) ? 'x' : 'u';
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = dwarf_bytesize(&type);
 	if (ret <= 0)
 		/* No size ... try to use default type */
@@ -622,23 +291,14 @@ static int convert_variable_type(Dwarf_Die *vr_die,
 			dwarf_diename(&type), MAX_BASIC_TYPE_BITS);
 		ret = MAX_BASIC_TYPE_BITS;
 	}
-<<<<<<< HEAD
-	ret = snprintf(buf, 16, "%c%d",
-		       die_is_signed_type(&type) ? 's' : 'u', ret);
-=======
 	ret = snprintf(buf, 16, "%c%d", prefix, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 formatted:
 	if (ret < 0 || ret >= 16) {
 		if (ret >= 16)
 			ret = -E2BIG;
 		pr_warning("Failed to convert variable type: %s\n",
-<<<<<<< HEAD
-			   strerror(-ret));
-=======
 			   str_error_r(-ret, sbuf, sizeof(sbuf)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	tvar->type = strdup(buf);
@@ -650,11 +310,7 @@ formatted:
 static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 				    struct perf_probe_arg_field *field,
 				    struct probe_trace_arg_ref **ref_ptr,
-<<<<<<< HEAD
-				    Dwarf_Die *die_mem)
-=======
 				    Dwarf_Die *die_mem, bool user_access)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct probe_trace_arg_ref *ref = *ref_ptr;
 	Dwarf_Die type;
@@ -666,34 +322,20 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 		pr_warning("Failed to get the type of %s.\n", varname);
 		return -ENOENT;
 	}
-<<<<<<< HEAD
-	pr_debug2("Var real type: (%x)\n", (unsigned)dwarf_dieoffset(&type));
-=======
 	pr_debug2("Var real type: %s (%x)\n", dwarf_diename(&type),
 		  (unsigned)dwarf_dieoffset(&type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tag = dwarf_tag(&type);
 
 	if (field->name[0] == '[' &&
 	    (tag == DW_TAG_array_type || tag == DW_TAG_pointer_type)) {
-<<<<<<< HEAD
-		if (field->next)
-			/* Save original type for next field */
-			memcpy(die_mem, &type, sizeof(*die_mem));
-=======
 		/* Save original type for next field or type */
 		memcpy(die_mem, &type, sizeof(*die_mem));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Get the type of this array */
 		if (die_get_real_type(&type, &type) == NULL) {
 			pr_warning("Failed to get the type of %s.\n", varname);
 			return -ENOENT;
 		}
-<<<<<<< HEAD
-		pr_debug2("Array real type: (%x)\n",
-=======
 		pr_debug2("Array real type: %s (%x)\n", dwarf_diename(&type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (unsigned)dwarf_dieoffset(&type));
 		if (tag == DW_TAG_pointer_type) {
 			ref = zalloc(sizeof(struct probe_trace_arg_ref));
@@ -705,13 +347,7 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 				*ref_ptr = ref;
 		}
 		ref->offset += dwarf_bytesize(&type) * field->index;
-<<<<<<< HEAD
-		if (!field->next)
-			/* Save vr_die for converting types */
-			memcpy(die_mem, vr_die, sizeof(*die_mem));
-=======
 		ref->user_access = user_access;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto next;
 	} else if (tag == DW_TAG_pointer_type) {
 		/* Check the pointer and dereference */
@@ -726,15 +362,10 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 			return -ENOENT;
 		}
 		/* Verify it is a data structure  */
-<<<<<<< HEAD
-		if (dwarf_tag(&type) != DW_TAG_structure_type) {
-			pr_warning("%s is not a data structure.\n", varname);
-=======
 		tag = dwarf_tag(&type);
 		if (tag != DW_TAG_structure_type && tag != DW_TAG_union_type) {
 			pr_warning("%s is not a data structure nor a union.\n",
 				   varname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -747,18 +378,6 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 			*ref_ptr = ref;
 	} else {
 		/* Verify it is a data structure  */
-<<<<<<< HEAD
-		if (tag != DW_TAG_structure_type) {
-			pr_warning("%s is not a data structure.\n", varname);
-			return -EINVAL;
-		}
-		if (field->name[0] == '[') {
-			pr_err("Semantic error: %s is not a pointor"
-			       " nor array.\n", varname);
-			return -EINVAL;
-		}
-		if (field->ref) {
-=======
 		if (tag != DW_TAG_structure_type && tag != DW_TAG_union_type) {
 			pr_warning("%s is not a data structure nor a union.\n",
 				   varname);
@@ -771,7 +390,6 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 		}
 		/* While processing unnamed field, we don't care about this */
 		if (field->ref && dwarf_diename(vr_die)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err("Semantic error: %s must be referred by '.'\n",
 			       field->name);
 			return -EINVAL;
@@ -784,24 +402,12 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 	}
 
 	if (die_find_member(&type, field->name, die_mem) == NULL) {
-<<<<<<< HEAD
-		pr_warning("%s(tyep:%s) has no member %s.\n", varname,
-=======
 		pr_warning("%s(type:%s) has no member %s.\n", varname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   dwarf_diename(&type), field->name);
 		return -EINVAL;
 	}
 
 	/* Get the offset of the field */
-<<<<<<< HEAD
-	ret = die_get_data_member_location(die_mem, &offs);
-	if (ret < 0) {
-		pr_warning("Failed to get the offset of %s.\n", field->name);
-		return ret;
-	}
-	ref->offset += (long)offs;
-=======
 	if (tag == DW_TAG_union_type) {
 		offs = 0;
 	} else {
@@ -819,23 +425,16 @@ static int convert_variable_fields(Dwarf_Die *vr_die, const char *varname,
 	if (!dwarf_diename(die_mem))
 		return convert_variable_fields(die_mem, varname, field,
 						&ref, die_mem, user_access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 next:
 	/* Converting next field */
 	if (field->next)
 		return convert_variable_fields(die_mem, field->name,
-<<<<<<< HEAD
-					field->next, &ref, die_mem);
-=======
 				field->next, &ref, die_mem, user_access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void print_var_not_found(const char *varname)
 {
 	pr_err("Failed to find the location of the '%s' variable at this address.\n"
@@ -844,7 +443,6 @@ static void print_var_not_found(const char *varname)
 		varname, varname);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Show a variables in kprobe event format */
 static int convert_variable(Dwarf_Die *vr_die, struct probe_finder *pf)
 {
@@ -855,22 +453,6 @@ static int convert_variable(Dwarf_Die *vr_die, struct probe_finder *pf)
 		 dwarf_diename(vr_die));
 
 	ret = convert_variable_location(vr_die, pf->addr, pf->fb_ops,
-<<<<<<< HEAD
-					pf->tvar);
-	if (ret == -ENOENT)
-		pr_err("Failed to find the location of %s at this address.\n"
-		       " Perhaps, it has been optimized out.\n", pf->pvar->var);
-	else if (ret == -ENOTSUP)
-		pr_err("Sorry, we don't support this variable location yet.\n");
-	else if (pf->pvar->field) {
-		ret = convert_variable_fields(vr_die, pf->pvar->var,
-					      pf->pvar->field, &pf->tvar->ref,
-					      &die_mem);
-		vr_die = &die_mem;
-	}
-	if (ret == 0)
-		ret = convert_variable_type(vr_die, pf->tvar, pf->pvar->type);
-=======
 					&pf->sp_die, pf->machine, pf->tvar);
 	if (ret == -ENOENT && pf->skip_empty_arg)
 		/* This can be found in other place. skip it */
@@ -888,7 +470,6 @@ static int convert_variable(Dwarf_Die *vr_die, struct probe_finder *pf)
 	if (ret == 0)
 		ret = convert_variable_type(vr_die, pf->tvar, pf->pvar->type,
 					    pf->pvar->user_access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* *expr will be cached in libdw. Don't free it. */
 	return ret;
 }
@@ -897,49 +478,16 @@ static int convert_variable(Dwarf_Die *vr_die, struct probe_finder *pf)
 static int find_variable(Dwarf_Die *sc_die, struct probe_finder *pf)
 {
 	Dwarf_Die vr_die;
-<<<<<<< HEAD
-	char buf[32], *ptr;
-	int ret = 0;
-
-	if (!is_c_varname(pf->pvar->var)) {
-		/* Copy raw parameters */
-		pf->tvar->value = strdup(pf->pvar->var);
-		if (pf->tvar->value == NULL)
-			return -ENOMEM;
-		if (pf->pvar->type) {
-			pf->tvar->type = strdup(pf->pvar->type);
-			if (pf->tvar->type == NULL)
-				return -ENOMEM;
-		}
-		if (pf->pvar->name) {
-			pf->tvar->name = strdup(pf->pvar->name);
-			if (pf->tvar->name == NULL)
-				return -ENOMEM;
-		} else
-			pf->tvar->name = NULL;
-		return 0;
-	}
-=======
 	char *buf, *ptr;
 	int ret = 0;
 
 	/* Copy raw parameters */
 	if (!is_c_varname(pf->pvar->var))
 		return copy_to_probe_trace_arg(pf->tvar, pf->pvar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pf->pvar->name)
 		pf->tvar->name = strdup(pf->pvar->name);
 	else {
-<<<<<<< HEAD
-		ret = synthesize_perf_probe_arg(pf->pvar, buf, 32);
-		if (ret < 0)
-			return ret;
-		ptr = strchr(buf, ':');	/* Change type separator to _ */
-		if (ptr)
-			*ptr = '_';
-		pf->tvar->name = strdup(buf);
-=======
 		buf = synthesize_perf_probe_arg(pf->pvar);
 		if (!buf)
 			return -ENOMEM;
@@ -947,7 +495,6 @@ static int find_variable(Dwarf_Die *sc_die, struct probe_finder *pf)
 		if (ptr)
 			*ptr = '_';
 		pf->tvar->name = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (pf->tvar->name == NULL)
 		return -ENOMEM;
@@ -956,10 +503,6 @@ static int find_variable(Dwarf_Die *sc_die, struct probe_finder *pf)
 	/* Search child die for local variables and parameters. */
 	if (!die_find_variable_at(sc_die, pf->pvar->var, pf->addr, &vr_die)) {
 		/* Search again in global variables */
-<<<<<<< HEAD
-		if (!die_find_variable_at(&pf->cu_die, pf->pvar->var, 0, &vr_die))
-			ret = -ENOENT;
-=======
 		if (!die_find_variable_at(&pf->cu_die, pf->pvar->var,
 						0, &vr_die)) {
 			if (pf->skip_empty_arg)
@@ -968,54 +511,14 @@ static int find_variable(Dwarf_Die *sc_die, struct probe_finder *pf)
 				   pf->pvar->var);
 			ret = -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ret >= 0)
 		ret = convert_variable(&vr_die, pf);
 
-<<<<<<< HEAD
-	if (ret < 0)
-		pr_warning("Failed to find '%s' in this function.\n",
-			   pf->pvar->var);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* Convert subprogram DIE to trace point */
-<<<<<<< HEAD
-static int convert_to_trace_point(Dwarf_Die *sp_die, Dwarf_Addr paddr,
-				  bool retprobe, struct probe_trace_point *tp)
-{
-	Dwarf_Addr eaddr, highaddr;
-	const char *name;
-
-	/* Copy the name of probe point */
-	name = dwarf_diename(sp_die);
-	if (name) {
-		if (dwarf_entrypc(sp_die, &eaddr) != 0) {
-			pr_warning("Failed to get entry address of %s\n",
-				   dwarf_diename(sp_die));
-			return -ENOENT;
-		}
-		if (dwarf_highpc(sp_die, &highaddr) != 0) {
-			pr_warning("Failed to get end address of %s\n",
-				   dwarf_diename(sp_die));
-			return -ENOENT;
-		}
-		if (paddr > highaddr) {
-			pr_warning("Offset specified is greater than size of %s\n",
-				   dwarf_diename(sp_die));
-			return -EINVAL;
-		}
-		tp->symbol = strdup(name);
-		if (tp->symbol == NULL)
-			return -ENOMEM;
-		tp->offset = (unsigned long)(paddr - eaddr);
-	} else
-		/* This function has no name. */
-		tp->offset = (unsigned long)paddr;
-=======
 static int convert_to_trace_point(Dwarf_Die *sp_die, Dwfl_Module *mod,
 				  Dwarf_Addr paddr, bool retprobe,
 				  const char *function,
@@ -1051,20 +554,14 @@ static int convert_to_trace_point(Dwarf_Die *sp_die, Dwfl_Module *mod,
 	tp->symbol = strdup(symbol);
 	if (!tp->symbol)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return probe must be on the head of a subprogram */
 	if (retprobe) {
 		if (eaddr != paddr) {
-<<<<<<< HEAD
-			pr_warning("Return probe must be on the head of"
-				   " a real function.\n");
-=======
 			pr_warning("Failed to find \"%s%%return\",\n"
 				   " because %s is an inlined function and"
 				   " has no return point.\n", function,
 				   function);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		tp->retprobe = true;
@@ -1077,10 +574,7 @@ static int convert_to_trace_point(Dwarf_Die *sp_die, Dwfl_Module *mod,
 static int call_probe_finder(Dwarf_Die *sc_die, struct probe_finder *pf)
 {
 	Dwarf_Attribute fb_attr;
-<<<<<<< HEAD
-=======
 	Dwarf_Frame *frame = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t nops;
 	int ret;
 
@@ -1090,13 +584,6 @@ static int call_probe_finder(Dwarf_Die *sc_die, struct probe_finder *pf)
 	}
 
 	/* If not a real subprogram, find a real one */
-<<<<<<< HEAD
-	if (dwarf_tag(sc_die) != DW_TAG_subprogram) {
-		if (!die_find_realfunc(&pf->cu_die, pf->addr, &pf->sp_die)) {
-			pr_warning("Failed to find probe point in any "
-				   "functions.\n");
-			return -ENOENT;
-=======
 	if (!die_is_func_def(sc_die)) {
 		if (!die_find_realfunc(&pf->cu_die, pf->addr, &pf->sp_die)) {
 			if (die_find_tailfunc(&pf->cu_die, pf->addr, &pf->sp_die)) {
@@ -1108,7 +595,6 @@ static int call_probe_finder(Dwarf_Die *sc_die, struct probe_finder *pf)
 					   "functions.\n");
 				return -ENOENT;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		memcpy(&pf->sp_die, sc_die, sizeof(Dwarf_Die));
@@ -1118,19 +604,6 @@ static int call_probe_finder(Dwarf_Die *sc_die, struct probe_finder *pf)
 	ret = dwarf_getlocation_addr(&fb_attr, pf->addr, &pf->fb_ops, &nops, 1);
 	if (ret <= 0 || nops == 0) {
 		pf->fb_ops = NULL;
-<<<<<<< HEAD
-#if _ELFUTILS_PREREQ(0, 142)
-	} else if (nops == 1 && pf->fb_ops[0].atom == DW_OP_call_frame_cfa &&
-		   pf->cfi != NULL) {
-		Dwarf_Frame *frame;
-		if (dwarf_cfi_addrframe(pf->cfi, pf->addr, &frame) != 0 ||
-		    dwarf_frame_cfa(frame, &pf->fb_ops, &nops) != 0) {
-			pr_warning("Failed to get call frame on 0x%jx\n",
-				   (uintmax_t)pf->addr);
-			return -ENOENT;
-		}
-#endif
-=======
 #ifdef HAVE_DWARF_CFI_SUPPORT
 	} else if (nops == 1 && pf->fb_ops[0].atom == DW_OP_call_frame_cfa &&
 		   (pf->cfi_eh != NULL || pf->cfi_dbg != NULL)) {
@@ -1143,18 +616,13 @@ static int call_probe_finder(Dwarf_Die *sc_die, struct probe_finder *pf)
 			return -ENOENT;
 		}
 #endif /* HAVE_DWARF_CFI_SUPPORT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Call finder's callback handler */
 	ret = pf->callback(sc_die, pf);
 
-<<<<<<< HEAD
-	/* *pf->fb_ops will be cached in libdw. Don't free it. */
-=======
 	/* Since *pf->fb_ops can be a part of frame. we should free it here. */
 	free(frame);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pf->fb_ops = NULL;
 
 	return ret;
@@ -1177,21 +645,13 @@ static int find_best_scope_cb(Dwarf_Die *fn_die, void *data)
 
 	/* Skip if declared file name does not match */
 	if (fsp->file) {
-<<<<<<< HEAD
-		file = dwarf_decl_file(fn_die);
-=======
 		file = die_get_decl_file(fn_die);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!file || strcmp(fsp->file, file) != 0)
 			return 0;
 	}
 	/* If the function name is given, that's what user expects */
 	if (fsp->function) {
-<<<<<<< HEAD
-		if (die_compare_name(fn_die, fsp->function)) {
-=======
 		if (die_match_name(fn_die, fsp->function)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(fsp->die_mem, fn_die, sizeof(Dwarf_Die));
 			fsp->found = true;
 			return 1;
@@ -1209,8 +669,6 @@ static int find_best_scope_cb(Dwarf_Die *fn_die, void *data)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* Return innermost DIE */
 static int find_inner_scope_cb(Dwarf_Die *fn_die, void *data)
 {
@@ -1221,7 +679,6 @@ static int find_inner_scope_cb(Dwarf_Die *fn_die, void *data)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Find an appropriate scope fits to given conditions */
 static Dwarf_Die *find_best_scope(struct probe_finder *pf, Dwarf_Die *die_mem)
 {
@@ -1233,10 +690,6 @@ static Dwarf_Die *find_best_scope(struct probe_finder *pf, Dwarf_Die *die_mem)
 		.die_mem = die_mem,
 		.found = false,
 	};
-<<<<<<< HEAD
-
-	cu_walk_functions_at(&pf->cu_die, pf->addr, find_best_scope_cb, &fsp);
-=======
 	int ret;
 
 	ret = cu_walk_functions_at(&pf->cu_die, pf->addr, find_best_scope_cb,
@@ -1244,13 +697,10 @@ static Dwarf_Die *find_best_scope(struct probe_finder *pf, Dwarf_Die *die_mem)
 	if (!ret && !fsp.found)
 		cu_walk_functions_at(&pf->cu_die, pf->addr,
 				     find_inner_scope_cb, &fsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fsp.found ? die_mem : NULL;
 }
 
-<<<<<<< HEAD
-=======
 static int verify_representive_line(struct probe_finder *pf, const char *fname,
 				int lineno, Dwarf_Addr addr)
 {
@@ -1284,7 +734,6 @@ static int verify_representive_line(struct probe_finder *pf, const char *fname,
 	return -ENOENT;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int probe_point_line_walker(const char *fname, int lineno,
 				   Dwarf_Addr addr, void *data)
 {
@@ -1295,12 +744,9 @@ static int probe_point_line_walker(const char *fname, int lineno,
 	if (lineno != pf->lno || strtailcmp(fname, pf->fname) != 0)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (verify_representive_line(pf, fname, lineno, addr))
 		return -ENOENT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pf->addr = addr;
 	sc_die = find_best_scope(pf, &die_mem);
 	if (!sc_die) {
@@ -1321,11 +767,7 @@ static int find_probe_point_by_line(struct probe_finder *pf)
 }
 
 /* Find lines which match lazy pattern */
-<<<<<<< HEAD
-static int find_lazy_match_lines(struct list_head *head,
-=======
 static int find_lazy_match_lines(struct intlist *list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 const char *fname, const char *pat)
 {
 	FILE *fp;
@@ -1333,19 +775,12 @@ static int find_lazy_match_lines(struct intlist *list,
 	size_t line_len;
 	ssize_t len;
 	int count = 0, linenum = 1;
-<<<<<<< HEAD
-
-	fp = fopen(fname, "r");
-	if (!fp) {
-		pr_warning("Failed to open %s: %s\n", fname, strerror(errno));
-=======
 	char sbuf[STRERR_BUFSIZE];
 
 	fp = fopen(fname, "r");
 	if (!fp) {
 		pr_warning("Failed to open %s: %s\n", fname,
 			   str_error_r(errno, sbuf, sizeof(sbuf)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -errno;
 	}
 
@@ -1355,11 +790,7 @@ static int find_lazy_match_lines(struct intlist *list,
 			line[len - 1] = '\0';
 
 		if (strlazymatch(line, pat)) {
-<<<<<<< HEAD
-			line_list__add_line(head, linenum);
-=======
 			intlist__add(list, linenum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count++;
 		}
 		linenum++;
@@ -1382,11 +813,7 @@ static int probe_point_lazy_walker(const char *fname, int lineno,
 	Dwarf_Die *sc_die, die_mem;
 	int ret;
 
-<<<<<<< HEAD
-	if (!line_list__has_line(&pf->lcache, lineno) ||
-=======
 	if (!intlist__has_entry(pf->lcache, lineno) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    strtailcmp(fname, pf->fname) != 0)
 		return 0;
 
@@ -1412,14 +839,6 @@ static int probe_point_lazy_walker(const char *fname, int lineno,
 /* Find probe points from lazy pattern  */
 static int find_probe_point_lazy(Dwarf_Die *sp_die, struct probe_finder *pf)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-	if (list_empty(&pf->lcache)) {
-		/* Matching lazy line pattern */
-		ret = find_lazy_match_lines(&pf->lcache, pf->fname,
-					    pf->pev->point.lazy_line);
-=======
 	struct build_id bid;
 	char sbuild_id[SBUILD_ID_SIZE] = "";
 	int ret = 0;
@@ -1443,7 +862,6 @@ static int find_probe_point_lazy(Dwarf_Die *sp_die, struct probe_finder *pf)
 		ret = find_lazy_match_lines(pf->lcache, fpath,
 					    pf->pev->point.lazy_line);
 		free(fpath);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret <= 0)
 			return ret;
 	}
@@ -1451,8 +869,6 @@ static int find_probe_point_lazy(Dwarf_Die *sp_die, struct probe_finder *pf)
 	return die_walk_lines(sp_die, probe_point_lazy_walker, pf);
 }
 
-<<<<<<< HEAD
-=======
 static void skip_prologue(Dwarf_Die *sp_die, struct probe_finder *pf)
 {
 	struct perf_probe_point *pp = &pf->pev->point;
@@ -1485,7 +901,6 @@ static void skip_prologue(Dwarf_Die *sp_die, struct probe_finder *pf)
 	die_skip_prologue(sp_die, &pf->cu_die, &pf->addr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int probe_point_inline_cb(Dwarf_Die *in_die, void *data)
 {
 	struct probe_finder *pf = data;
@@ -1497,23 +912,16 @@ static int probe_point_inline_cb(Dwarf_Die *in_die, void *data)
 		ret = find_probe_point_lazy(in_die, pf);
 	else {
 		/* Get probe address */
-<<<<<<< HEAD
-		if (dwarf_entrypc(in_die, &addr) != 0) {
-=======
 		if (die_entrypc(in_die, &addr) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_warning("Failed to get entry address of %s.\n",
 				   dwarf_diename(in_die));
 			return -ENOENT;
 		}
-<<<<<<< HEAD
-=======
 		if (addr == 0) {
 			pr_debug("%s has no valid entry address. skipped.\n",
 				 dwarf_diename(in_die));
 			return -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pf->addr = addr;
 		pf->addr += pp->offset;
 		pr_debug("found inline addr: 0x%jx\n",
@@ -1537,21 +945,6 @@ static int probe_point_search_cb(Dwarf_Die *sp_die, void *data)
 	struct dwarf_callback_param *param = data;
 	struct probe_finder *pf = param->data;
 	struct perf_probe_point *pp = &pf->pev->point;
-<<<<<<< HEAD
-	Dwarf_Attribute attr;
-
-	/* Check tag and diename */
-	if (dwarf_tag(sp_die) != DW_TAG_subprogram ||
-	    !die_compare_name(sp_die, pp->function) ||
-	    dwarf_attr(sp_die, DW_AT_declaration, &attr))
-		return DWARF_CB_OK;
-
-	/* Check declared file */
-	if (pp->file && strtailcmp(pp->file, dwarf_decl_file(sp_die)))
-		return DWARF_CB_OK;
-
-	pf->fname = dwarf_decl_file(sp_die);
-=======
 	const char *fname;
 
 	/* Check tag and diename */
@@ -1571,24 +964,10 @@ static int probe_point_search_cb(Dwarf_Die *sp_die, void *data)
 	pr_debug("Matched function: %s [%lx]\n", dwarf_diename(sp_die),
 		 (unsigned long)dwarf_dieoffset(sp_die));
 	pf->fname = fname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pp->line) { /* Function relative line */
 		dwarf_decl_line(sp_die, &pf->lno);
 		pf->lno += pp->line;
 		param->retval = find_probe_point_by_line(pf);
-<<<<<<< HEAD
-	} else if (!dwarf_func_inline(sp_die)) {
-		/* Real function */
-		if (pp->lazy_line)
-			param->retval = find_probe_point_lazy(sp_die, pf);
-		else {
-			if (dwarf_entrypc(sp_die, &pf->addr) != 0) {
-				pr_warning("Failed to get entry address of "
-					   "%s.\n", dwarf_diename(sp_die));
-				param->retval = -ENOENT;
-				return DWARF_CB_ABORT;
-			}
-=======
 	} else if (die_is_func_instance(sp_die)) {
 		/* Instances always have the entry address */
 		die_entrypc(sp_die, &pf->addr);
@@ -1602,17 +981,10 @@ static int probe_point_search_cb(Dwarf_Die *sp_die, void *data)
 			param->retval = find_probe_point_lazy(sp_die, pf);
 		else {
 			skip_prologue(sp_die, pf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pf->addr += pp->offset;
 			/* TODO: Check the address in this function */
 			param->retval = call_probe_finder(sp_die, pf);
 		}
-<<<<<<< HEAD
-	} else
-		/* Inlined function: search instances */
-		param->retval = die_walk_instances(sp_die,
-					probe_point_inline_cb, (void *)pf);
-=======
 	} else if (!probe_conf.no_inlines) {
 		/* Inlined function: search instances */
 		param->retval = die_walk_instances(sp_die,
@@ -1627,7 +999,6 @@ static int probe_point_search_cb(Dwarf_Die *sp_die, void *data)
 		param->retval = 0;	/* We have to clear the result */
 		return DWARF_CB_OK;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return DWARF_CB_ABORT; /* Exit; no same symbol in this CU. */
 }
@@ -1651,24 +1022,12 @@ struct pubname_callback_param {
 static int pubname_search_cb(Dwarf *dbg, Dwarf_Global *gl, void *data)
 {
 	struct pubname_callback_param *param = data;
-<<<<<<< HEAD
-=======
 	const char *fname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dwarf_offdie(dbg, gl->die_offset, param->sp_die)) {
 		if (dwarf_tag(param->sp_die) != DW_TAG_subprogram)
 			return DWARF_CB_OK;
 
-<<<<<<< HEAD
-		if (die_compare_name(param->sp_die, param->function)) {
-			if (!dwarf_offdie(dbg, gl->cu_offset, param->cu_die))
-				return DWARF_CB_OK;
-
-			if (param->file &&
-			    strtailcmp(param->file, dwarf_decl_file(param->sp_die)))
-				return DWARF_CB_OK;
-=======
 		if (die_match_name(param->sp_die, param->function)) {
 			if (!dwarf_offdie(dbg, gl->cu_offset, param->cu_die))
 				return DWARF_CB_OK;
@@ -1678,7 +1037,6 @@ static int pubname_search_cb(Dwarf *dbg, Dwarf_Global *gl, void *data)
 				if (!fname || strtailcmp(param->file, fname))
 					return DWARF_CB_OK;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			param->found = 1;
 			return DWARF_CB_ABORT;
@@ -1688,12 +1046,7 @@ static int pubname_search_cb(Dwarf *dbg, Dwarf_Global *gl, void *data)
 	return DWARF_CB_OK;
 }
 
-<<<<<<< HEAD
-/* Find probe points from debuginfo */
-static int debuginfo__find_probes(struct debuginfo *self,
-=======
 static int debuginfo__find_probe_location(struct debuginfo *dbg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct probe_finder *pf)
 {
 	struct perf_probe_point *pp = &pf->pev->point;
@@ -1702,18 +1055,6 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 	Dwarf_Die *diep;
 	int ret = 0;
 
-<<<<<<< HEAD
-#if _ELFUTILS_PREREQ(0, 142)
-	/* Get the call frame information from this dwarf */
-	pf->cfi = dwarf_getcfi(self->dbg);
-#endif
-
-	off = 0;
-	line_list__init(&pf->lcache);
-
-	/* Fastpath: lookup by function name from .debug_pubnames section */
-	if (pp->function) {
-=======
 	off = 0;
 	pf->lcache = intlist__new(NULL);
 	if (!pf->lcache)
@@ -1721,7 +1062,6 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 
 	/* Fastpath: lookup by function name from .debug_pubnames section */
 	if (pp->function && !strisglob(pp->function)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pubname_callback_param pubname_param = {
 			.function = pp->function,
 			.file	  = pp->file,
@@ -1733,11 +1073,7 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 			.data = pf,
 		};
 
-<<<<<<< HEAD
-		dwarf_getpubnames(self->dbg, pubname_search_cb,
-=======
 		dwarf_getpubnames(dbg->dbg, pubname_search_cb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  &pubname_param, 0);
 		if (pubname_param.found) {
 			ret = probe_point_search_cb(&pf->sp_die, &probe_param);
@@ -1747,13 +1083,6 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 	}
 
 	/* Loop on CUs (Compilation Unit) */
-<<<<<<< HEAD
-	while (!dwarf_nextcu(self->dbg, off, &noff, &cuhl, NULL, NULL, NULL)) {
-		/* Get the DIE(Debugging Information Entry) of this CU */
-		diep = dwarf_offdie(self->dbg, off + cuhl, &pf->cu_die);
-		if (!diep)
-			continue;
-=======
 	while (!dwarf_nextcu(dbg->dbg, off, &noff, &cuhl, NULL, NULL, NULL)) {
 		/* Get the DIE(Debugging Information Entry) of this CU */
 		diep = dwarf_offdie(dbg->dbg, off + cuhl, &pf->cu_die);
@@ -1761,7 +1090,6 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 			off = noff;
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check if target file is included. */
 		if (pp->file)
@@ -1773,11 +1101,7 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 			if (pp->function)
 				ret = find_probe_point_by_func(pf);
 			else if (pp->lazy_line)
-<<<<<<< HEAD
-				ret = find_probe_point_lazy(NULL, pf);
-=======
 				ret = find_probe_point_lazy(&pf->cu_die, pf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else {
 				pf->lno = pp->line;
 				ret = find_probe_point_by_line(pf);
@@ -1789,18 +1113,12 @@ static int debuginfo__find_probe_location(struct debuginfo *dbg,
 	}
 
 found:
-<<<<<<< HEAD
-	line_list__free(&pf->lcache);
-=======
 	intlist__delete(pf->lcache);
 	pf->lcache = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /* Find probe points from debuginfo */
 static int debuginfo__find_probes(struct debuginfo *dbg,
 				  struct probe_finder *pf)
@@ -1919,17 +1237,11 @@ static bool trace_event_finder_overlap(struct trace_event_finder *tf)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Add a found probe point into trace event list */
 static int add_probe_trace_event(Dwarf_Die *sc_die, struct probe_finder *pf)
 {
 	struct trace_event_finder *tf =
 			container_of(pf, struct trace_event_finder, pf);
-<<<<<<< HEAD
-	struct probe_trace_event *tev;
-	int ret, i;
-
-=======
 	struct perf_probe_point *pp = &pf->pev->point;
 	struct probe_trace_event *tev;
 	struct perf_probe_arg *args = NULL;
@@ -1943,7 +1255,6 @@ static int add_probe_trace_event(Dwarf_Die *sc_die, struct probe_finder *pf)
 	if (trace_event_finder_overlap(tf))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check number of tevs */
 	if (tf->ntevs == tf->max_tevs) {
 		pr_warning("Too many( > %d) probe point found.\n",
@@ -1953,12 +1264,6 @@ static int add_probe_trace_event(Dwarf_Die *sc_die, struct probe_finder *pf)
 	tev = &tf->tevs[tf->ntevs++];
 
 	/* Trace point should be converted from subprogram DIE */
-<<<<<<< HEAD
-	ret = convert_to_trace_point(&pf->sp_die, pf->addr,
-				     pf->pev->point.retprobe, &tev->point);
-	if (ret < 0)
-		return ret;
-=======
 	ret = convert_to_trace_point(&pf->sp_die, tf->mod, pf->addr,
 				     pp->retprobe, pp->function, &tev->point);
 	if (ret < 0)
@@ -1969,20 +1274,10 @@ static int add_probe_trace_event(Dwarf_Die *sc_die, struct probe_finder *pf)
 		ret = -ENOMEM;
 		goto end;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Probe point found: %s+%lu\n", tev->point.symbol,
 		 tev->point.offset);
 
-<<<<<<< HEAD
-	/* Find each argument */
-	tev->nargs = pf->pev->nargs;
-	tev->args = zalloc(sizeof(struct probe_trace_arg) * tev->nargs);
-	if (tev->args == NULL)
-		return -ENOMEM;
-	for (i = 0; i < pf->pev->nargs; i++) {
-		pf->pvar = &pf->pev->args[i];
-=======
 	/* Expand special probe argument if exist */
 	args = zalloc(sizeof(struct perf_probe_arg) * MAX_PROBE_ARGS);
 	if (args == NULL) {
@@ -2004,16 +1299,10 @@ static int add_probe_trace_event(Dwarf_Die *sc_die, struct probe_finder *pf)
 	/* Find each argument */
 	for (i = 0; i < tev->nargs; i++) {
 		pf->pvar = &args[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pf->tvar = &tev->args[i];
 		/* Variable should be found from scope DIE */
 		ret = find_variable(sc_die, pf);
 		if (ret != 0)
-<<<<<<< HEAD
-			return ret;
-	}
-
-=======
 			break;
 	}
 
@@ -2064,24 +1353,10 @@ static int fill_empty_trace_arg(struct perf_probe_event *pev,
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* Find probe_trace_events specified by perf_probe_event from debuginfo */
-<<<<<<< HEAD
-int debuginfo__find_trace_events(struct debuginfo *self,
-				 struct perf_probe_event *pev,
-				 struct probe_trace_event **tevs, int max_tevs)
-{
-	struct trace_event_finder tf = {
-			.pf = {.pev = pev, .callback = add_probe_trace_event},
-			.max_tevs = max_tevs};
-	int ret;
-
-	/* Allocate result tevs array */
-	*tevs = zalloc(sizeof(struct probe_trace_event) * max_tevs);
-=======
 int debuginfo__find_trace_events(struct debuginfo *dbg,
 				 struct perf_probe_event *pev,
 				 struct probe_trace_event **tevs)
@@ -2093,19 +1368,12 @@ int debuginfo__find_trace_events(struct debuginfo *dbg,
 
 	/* Allocate result tevs array */
 	*tevs = zalloc(sizeof(struct probe_trace_event) * tf.max_tevs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*tevs == NULL)
 		return -ENOMEM;
 
 	tf.tevs = *tevs;
 	tf.ntevs = 0;
 
-<<<<<<< HEAD
-	ret = debuginfo__find_probes(self, &tf.pf);
-	if (ret < 0) {
-		free(*tevs);
-		*tevs = NULL;
-=======
 	if (pev->nargs != 0 && immediate_value_is_supported())
 		tf.pf.skip_empty_arg = true;
 
@@ -2117,28 +1385,18 @@ int debuginfo__find_trace_events(struct debuginfo *dbg,
 		for (i = 0; i < tf.ntevs; i++)
 			clear_probe_trace_event(&tf.tevs[i]);
 		zfree(tevs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	return (ret < 0) ? ret : tf.ntevs;
 }
 
-<<<<<<< HEAD
-#define MAX_VAR_LEN 64
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Collect available variables in this scope */
 static int collect_variables_cb(Dwarf_Die *die_mem, void *data)
 {
 	struct available_var_finder *af = data;
 	struct variable_list *vl;
-<<<<<<< HEAD
-	char buf[MAX_VAR_LEN];
-=======
 	struct strbuf buf = STRBUF_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tag, ret;
 
 	vl = &af->vls[af->nvls - 1];
@@ -2147,14 +1405,6 @@ static int collect_variables_cb(Dwarf_Die *die_mem, void *data)
 	if (tag == DW_TAG_formal_parameter ||
 	    tag == DW_TAG_variable) {
 		ret = convert_variable_location(die_mem, af->pf.addr,
-<<<<<<< HEAD
-						af->pf.fb_ops, NULL);
-		if (ret == 0) {
-			ret = die_get_varname(die_mem, buf, MAX_VAR_LEN);
-			pr_debug2("Add new var: %s\n", buf);
-			if (ret > 0)
-				strlist__add(vl->vars, buf);
-=======
 						af->pf.fb_ops, &af->pf.sp_die,
 						af->pf.machine, NULL);
 		if (ret == 0 || ret == -ERANGE) {
@@ -2190,7 +1440,6 @@ static int collect_variables_cb(Dwarf_Die *die_mem, void *data)
 					strbuf_detach(&buf, NULL));
 			}
 			strbuf_release(&buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2198,8 +1447,6 @@ static int collect_variables_cb(Dwarf_Die *die_mem, void *data)
 		return DIE_FIND_CB_CONTINUE;
 	else
 		return DIE_FIND_CB_SIBLING;
-<<<<<<< HEAD
-=======
 error:
 	strbuf_release(&buf);
 	pr_debug("Error in strbuf\n");
@@ -2216,7 +1463,6 @@ static bool available_var_finder_overlap(struct available_var_finder *af)
 	}
 	return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Add a found vars into available variables list */
@@ -2224,16 +1470,11 @@ static int add_available_vars(Dwarf_Die *sc_die, struct probe_finder *pf)
 {
 	struct available_var_finder *af =
 			container_of(pf, struct available_var_finder, pf);
-<<<<<<< HEAD
-=======
 	struct perf_probe_point *pp = &pf->pev->point;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct variable_list *vl;
 	Dwarf_Die die_mem;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * For some reason (e.g. different column assigned to same address),
 	 * this callback can be called with the address which already passed.
@@ -2242,7 +1483,6 @@ static int add_available_vars(Dwarf_Die *sc_die, struct probe_finder *pf)
 	if (available_var_finder_overlap(af))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check number of tevs */
 	if (af->nvls == af->max_vls) {
 		pr_warning("Too many( > %d) probe point found.\n", af->max_vls);
@@ -2251,13 +1491,8 @@ static int add_available_vars(Dwarf_Die *sc_die, struct probe_finder *pf)
 	vl = &af->vls[af->nvls++];
 
 	/* Trace point should be converted from subprogram DIE */
-<<<<<<< HEAD
-	ret = convert_to_trace_point(&pf->sp_die, pf->addr,
-				     pf->pev->point.retprobe, &vl->point);
-=======
 	ret = convert_to_trace_point(&pf->sp_die, af->mod, pf->addr,
 				     pp->retprobe, pp->function, &vl->point);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -2265,26 +1500,16 @@ static int add_available_vars(Dwarf_Die *sc_die, struct probe_finder *pf)
 		 vl->point.offset);
 
 	/* Find local variables */
-<<<<<<< HEAD
-	vl->vars = strlist__new(true, NULL);
-=======
 	vl->vars = strlist__new(NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vl->vars == NULL)
 		return -ENOMEM;
 	af->child = true;
 	die_find_child(sc_die, collect_variables_cb, (void *)af, &die_mem);
 
 	/* Find external variables */
-<<<<<<< HEAD
-	if (!af->externs)
-		goto out;
-	/* Don't need to search child DIE for externs. */
-=======
 	if (!probe_conf.show_ext_vars)
 		goto out;
 	/* Don't need to search child DIE for external vars. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	af->child = false;
 	die_find_child(&pf->cu_die, collect_variables_cb, (void *)af, &die_mem);
 
@@ -2297,21 +1522,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Find available variables at given probe point */
-int debuginfo__find_available_vars_at(struct debuginfo *self,
-				      struct perf_probe_event *pev,
-				      struct variable_list **vls,
-				      int max_vls, bool externs)
-{
-	struct available_var_finder af = {
-			.pf = {.pev = pev, .callback = add_available_vars},
-			.max_vls = max_vls, .externs = externs};
-	int ret;
-
-	/* Allocate result vls array */
-	*vls = zalloc(sizeof(struct variable_list) * max_vls);
-=======
 /*
  * Find available variables at given probe point
  * Return the number of found probe points. Return 0 if there is no
@@ -2329,26 +1539,12 @@ int debuginfo__find_available_vars_at(struct debuginfo *dbg,
 
 	/* Allocate result vls array */
 	*vls = zalloc(sizeof(struct variable_list) * af.max_vls);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*vls == NULL)
 		return -ENOMEM;
 
 	af.vls = *vls;
 	af.nvls = 0;
 
-<<<<<<< HEAD
-	ret = debuginfo__find_probes(self, &af.pf);
-	if (ret < 0) {
-		/* Free vlist for error */
-		while (af.nvls--) {
-			if (af.vls[af.nvls].point.symbol)
-				free(af.vls[af.nvls].point.symbol);
-			if (af.vls[af.nvls].vars)
-				strlist__delete(af.vls[af.nvls].vars);
-		}
-		free(af.vls);
-		*vls = NULL;
-=======
 	ret = debuginfo__find_probes(dbg, &af.pf);
 	if (ret < 0) {
 		/* Free vlist for error */
@@ -2357,7 +1553,6 @@ int debuginfo__find_available_vars_at(struct debuginfo *dbg,
 			strlist__delete(af.vls[af.nvls].vars);
 		}
 		zfree(vls);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -2365,22 +1560,6 @@ int debuginfo__find_available_vars_at(struct debuginfo *dbg,
 }
 
 /* Reverse search */
-<<<<<<< HEAD
-int debuginfo__find_probe_point(struct debuginfo *self, unsigned long addr,
-				struct perf_probe_point *ppt)
-{
-	Dwarf_Die cudie, spdie, indie;
-	Dwarf_Addr _addr, baseaddr;
-	const char *fname = NULL, *func = NULL, *tmp;
-	int baseline = 0, lineno = 0, ret = 0;
-
-	/* Adjust address with bias */
-	addr += self->bias;
-
-	/* Find cu die */
-	if (!dwarf_addrdie(self->dbg, (Dwarf_Addr)addr - self->bias, &cudie)) {
-		pr_warning("Failed to find debug information for address %lx\n",
-=======
 int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 				struct perf_probe_point *ppt)
 {
@@ -2395,46 +1574,18 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 	/* Find cu die */
 	if (!dwarf_addrdie(dbg->dbg, (Dwarf_Addr)addr, &cudie)) {
 		pr_warning("Failed to find debug information for address %#" PRIx64 "\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   addr);
 		ret = -EINVAL;
 		goto end;
 	}
 
 	/* Find a corresponding line (filename and lineno) */
-<<<<<<< HEAD
-	cu_find_lineinfo(&cudie, addr, &fname, &lineno);
-=======
 	cu_find_lineinfo(&cudie, (Dwarf_Addr)addr, &fname, &lineno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Don't care whether it failed or not */
 
 	/* Find a corresponding function (name, baseline and baseaddr) */
 	if (die_find_realfunc(&cudie, (Dwarf_Addr)addr, &spdie)) {
 		/* Get function entry information */
-<<<<<<< HEAD
-		tmp = dwarf_diename(&spdie);
-		if (!tmp ||
-		    dwarf_entrypc(&spdie, &baseaddr) != 0 ||
-		    dwarf_decl_line(&spdie, &baseline) != 0)
-			goto post;
-		func = tmp;
-
-		if (addr == (unsigned long)baseaddr)
-			/* Function entry - Relative line number is 0 */
-			lineno = baseline;
-		else if (die_find_inlinefunc(&spdie, (Dwarf_Addr)addr,
-					     &indie)) {
-			if (dwarf_entrypc(&indie, &_addr) == 0 &&
-			    _addr == addr)
-				/*
-				 * addr is at an inline function entry.
-				 * In this case, lineno should be the call-site
-				 * line number.
-				 */
-				lineno = die_get_call_lineno(&indie);
-			else {
-=======
 		func = basefunc = dwarf_diename(&spdie);
 		if (!func ||
 		    die_entrypc(&spdie, &baseaddr) != 0 ||
@@ -2465,7 +1616,6 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 				fname = die_get_call_file(&indie);
 				break;
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * addr is in an inline function body.
 				 * Since lineno points one of the lines
@@ -2473,13 +1623,6 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 				 * be the entry line of the inline function.
 				 */
 				tmp = dwarf_diename(&indie);
-<<<<<<< HEAD
-				if (tmp &&
-				    dwarf_decl_line(&spdie, &baseline) == 0)
-					func = tmp;
-			}
-		}
-=======
 				if (!tmp ||
 				    dwarf_decl_line(&indie, &baseline) != 0)
 					break;
@@ -2491,22 +1634,16 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 		tmp = die_get_decl_file(&spdie);
 		if (!tmp || (fname && strcmp(tmp, fname) != 0))
 			lineno = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 post:
 	/* Make a relative line number or an offset */
 	if (lineno)
 		ppt->line = lineno - baseline;
-<<<<<<< HEAD
-	else if (func)
-		ppt->offset = addr - (unsigned long)baseaddr;
-=======
 	else if (basefunc) {
 		ppt->offset = addr - baseaddr;
 		func = basefunc;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Duplicate strings */
 	if (func) {
@@ -2519,14 +1656,7 @@ post:
 	if (fname) {
 		ppt->file = strdup(fname);
 		if (ppt->file == NULL) {
-<<<<<<< HEAD
-			if (ppt->function) {
-				free(ppt->function);
-				ppt->function = NULL;
-			}
-=======
 			zfree(&ppt->function);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto end;
 		}
@@ -2547,16 +1677,6 @@ static int line_range_add_line(const char *src, unsigned int lineno,
 		if (lr->path == NULL)
 			return -ENOMEM;
 	}
-<<<<<<< HEAD
-	return line_list__add_line(&lr->line_list, lineno);
-}
-
-static int line_range_walk_cb(const char *fname, int lineno,
-			      Dwarf_Addr addr __used,
-			      void *data)
-{
-	struct line_finder *lf = data;
-=======
 	return intlist__add(lr->line_list, lineno);
 }
 
@@ -2567,16 +1687,11 @@ static int line_range_walk_cb(const char *fname, int lineno,
 	const char *__fname;
 	int __lineno;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((strtailcmp(fname, lf->fname) != 0) ||
 	    (lf->lno_s > lineno || lf->lno_e < lineno))
 		return 0;
 
-<<<<<<< HEAD
-	if (line_range_add_line(fname, lineno, lf->lr) < 0)
-		return -EINVAL;
-=======
 	/* Make sure this line can be reversible */
 	if (cu_find_lineinfo(&lf->cu_die, addr, &__fname, &__lineno) > 0
 	    && (lineno != __lineno || strcmp(fname, __fname)))
@@ -2585,7 +1700,6 @@ static int line_range_walk_cb(const char *fname, int lineno,
 	err = line_range_add_line(fname, lineno, lf->lr);
 	if (err < 0 && err != -EEXIST)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2599,44 +1713,23 @@ static int find_line_range_by_line(Dwarf_Die *sp_die, struct line_finder *lf)
 
 	/* Update status */
 	if (ret >= 0)
-<<<<<<< HEAD
-		if (!list_empty(&lf->lr->line_list))
-=======
 		if (!intlist__empty(lf->lr->line_list))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = lf->found = 1;
 		else
 			ret = 0;	/* Lines are not found */
 	else {
-<<<<<<< HEAD
-		free(lf->lr->path);
-		lf->lr->path = NULL;
-=======
 		zfree(&lf->lr->path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
 static int line_range_inline_cb(Dwarf_Die *in_die, void *data)
 {
-<<<<<<< HEAD
-	find_line_range_by_line(in_die, data);
-=======
 	int ret = find_line_range_by_line(in_die, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We have to check all instances of inlined function, because
 	 * some execution paths can be optimized out depends on the
-<<<<<<< HEAD
-	 * function argument of instances
-	 */
-	return 0;
-}
-
-/* Search function from function name */
-=======
 	 * function argument of instances. However, if an error occurs,
 	 * it should be handled by the caller.
 	 */
@@ -2644,22 +1737,11 @@ static int line_range_inline_cb(Dwarf_Die *in_die, void *data)
 }
 
 /* Search function definition from function name */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int line_range_search_cb(Dwarf_Die *sp_die, void *data)
 {
 	struct dwarf_callback_param *param = data;
 	struct line_finder *lf = param->data;
 	struct line_range *lr = lf->lr;
-<<<<<<< HEAD
-
-	/* Check declared file */
-	if (lr->file && strtailcmp(lr->file, dwarf_decl_file(sp_die)))
-		return DWARF_CB_OK;
-
-	if (dwarf_tag(sp_die) == DW_TAG_subprogram &&
-	    die_compare_name(sp_die, lr->function)) {
-		lf->fname = dwarf_decl_file(sp_die);
-=======
 	const char *fname;
 
 	/* Check declared file */
@@ -2671,7 +1753,6 @@ static int line_range_search_cb(Dwarf_Die *sp_die, void *data)
 
 	if (die_match_name(sp_die, lr->function) && die_is_func_def(sp_die)) {
 		lf->fname = die_get_decl_file(sp_die);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dwarf_decl_line(sp_die, &lr->offset);
 		pr_debug("fname: %s, lineno:%d\n", lf->fname, lr->offset);
 		lf->lno_s = lr->offset + lr->start;
@@ -2683,11 +1764,7 @@ static int line_range_search_cb(Dwarf_Die *sp_die, void *data)
 		pr_debug("New line range: %d to %d\n", lf->lno_s, lf->lno_e);
 		lr->start = lf->lno_s;
 		lr->end = lf->lno_e;
-<<<<<<< HEAD
-		if (dwarf_func_inline(sp_die))
-=======
 		if (!die_is_func_instance(sp_die))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			param->retval = die_walk_instances(sp_die,
 						line_range_inline_cb, lf);
 		else
@@ -2704,11 +1781,7 @@ static int find_line_range_by_func(struct line_finder *lf)
 	return param.retval;
 }
 
-<<<<<<< HEAD
-int debuginfo__find_line_range(struct debuginfo *self, struct line_range *lr)
-=======
 int debuginfo__find_line_range(struct debuginfo *dbg, struct line_range *lr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct line_finder lf = {.lr = lr, .found = 0};
 	int ret = 0;
@@ -2725,11 +1798,7 @@ int debuginfo__find_line_range(struct debuginfo *dbg, struct line_range *lr)
 		struct dwarf_callback_param line_range_param = {
 			.data = (void *)&lf, .retval = 0};
 
-<<<<<<< HEAD
-		dwarf_getpubnames(self->dbg, pubname_search_cb,
-=======
 		dwarf_getpubnames(dbg->dbg, pubname_search_cb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  &pubname_param, 0);
 		if (pubname_param.found) {
 			line_range_search_cb(&lf.sp_die, &line_range_param);
@@ -2740,26 +1809,16 @@ int debuginfo__find_line_range(struct debuginfo *dbg, struct line_range *lr)
 
 	/* Loop on CUs (Compilation Unit) */
 	while (!lf.found && ret >= 0) {
-<<<<<<< HEAD
-		if (dwarf_nextcu(self->dbg, off, &noff, &cuhl,
-=======
 		if (dwarf_nextcu(dbg->dbg, off, &noff, &cuhl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 NULL, NULL, NULL) != 0)
 			break;
 
 		/* Get the DIE(Debugging Information Entry) of this CU */
-<<<<<<< HEAD
-		diep = dwarf_offdie(self->dbg, off + cuhl, &lf.cu_die);
-		if (!diep)
-			continue;
-=======
 		diep = dwarf_offdie(dbg->dbg, off + cuhl, &lf.cu_die);
 		if (!diep) {
 			off = noff;
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check if target file is included. */
 		if (lr->file)
@@ -2794,8 +1853,6 @@ found:
 	return (ret < 0) ? ret : lf.found;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Find a src file from a DWARF tag path. Prepend optional source path prefix
  * and chop off leading directories that do not exist. Result is passed back as
@@ -2859,4 +1916,3 @@ int find_source_path(const char *raw_path, const char *sbuild_id,
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for the new Marvell Yukon 2 driver.
  */
@@ -27,10 +24,7 @@ enum {
 	PSM_CONFIG_REG3  = 0x164,
 	PSM_CONFIG_REG4  = 0x168,
 
-<<<<<<< HEAD
-=======
 	PCI_LDO_CTRL    = 0xbc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Yukon-2 */
@@ -258,15 +252,6 @@ enum {
 };
 
 
-<<<<<<< HEAD
-#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
-			       PCI_STATUS_SIG_SYSTEM_ERROR | \
-			       PCI_STATUS_REC_MASTER_ABORT | \
-			       PCI_STATUS_REC_TARGET_ABORT | \
-			       PCI_STATUS_PARITY)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum csr_regs {
 	B0_RAP		= 0x0000,
 	B0_CTST		= 0x0004,
@@ -553,13 +538,8 @@ enum {
 	CHIP_ID_YUKON_EC_U = 0xb4, /* YUKON-2 EC Ultra */
 	CHIP_ID_YUKON_EX   = 0xb5, /* YUKON-2 Extreme */
 	CHIP_ID_YUKON_EC   = 0xb6, /* YUKON-2 EC */
-<<<<<<< HEAD
- 	CHIP_ID_YUKON_FE   = 0xb7, /* YUKON-2 FE */
- 	CHIP_ID_YUKON_FE_P = 0xb8, /* YUKON-2 FE+ */
-=======
 	CHIP_ID_YUKON_FE   = 0xb7, /* YUKON-2 FE */
 	CHIP_ID_YUKON_FE_P = 0xb8, /* YUKON-2 FE+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CHIP_ID_YUKON_SUPR = 0xb9, /* YUKON-2 Supreme */
 	CHIP_ID_YUKON_UL_2 = 0xba, /* YUKON-2 Ultra 2 */
 	CHIP_ID_YUKON_OPT  = 0xbc, /* YUKON-2 Optima */
@@ -602,13 +582,10 @@ enum yukon_supr_rev {
 	CHIP_REV_YU_SU_B1    = 3,
 };
 
-<<<<<<< HEAD
-=======
 enum yukon_prm_rev {
 	CHIP_REV_YU_PRM_Z1   = 1,
 	CHIP_REV_YU_PRM_A0   = 2,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*	B2_Y2_CLK_GATE	 8 bit	Clock Gating (Yukon-2 only) */
 enum {
@@ -2218,11 +2195,7 @@ struct rx_ring_info {
 	struct sk_buff	*skb;
 	dma_addr_t	data_addr;
 	DEFINE_DMA_UNMAP_LEN(data_size);
-<<<<<<< HEAD
-	dma_addr_t	frag_addr[ETH_JUMBO_MTU >> PAGE_SHIFT];
-=======
 	dma_addr_t	frag_addr[ETH_JUMBO_MTU >> PAGE_SHIFT ?: 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum flow_control {
@@ -2269,10 +2242,7 @@ struct sky2_port {
 	u16		     rx_data_size;
 	u16		     rx_nfrags;
 
-<<<<<<< HEAD
-=======
 	unsigned long	     last_rx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		unsigned long last;
 		u32	mac_rp;
@@ -2292,13 +2262,8 @@ struct sky2_port {
 #define SKY2_FLAG_AUTO_SPEED		0x0002
 #define SKY2_FLAG_AUTO_PAUSE		0x0004
 
-<<<<<<< HEAD
- 	enum flow_control    flow_mode;
- 	enum flow_control    flow_status;
-=======
 	enum flow_control    flow_mode;
 	enum flow_control    flow_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SKY2_DEBUG
 	struct dentry	     *debugfs;
@@ -2338,11 +2303,7 @@ struct sky2_hw {
 	struct work_struct   restart_work;
 	wait_queue_head_t    msi_wait;
 
-<<<<<<< HEAD
-	char		     irq_name[0];
-=======
 	char		     irq_name[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int sky2_is_copper(const struct sky2_hw *hw)

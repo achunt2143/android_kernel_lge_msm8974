@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ads117x.c  --  Driver for ads1174/8 ADC chips
  *
  * Copyright 2009 ShotSpotter Inc.
  * Author: Graeme Gregory <gg@slimlogic.co.uk>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,11 +16,6 @@
 #include <sound/initval.h>
 #include <sound/soc.h>
 
-<<<<<<< HEAD
-#define ADS117X_RATES (SNDRV_PCM_RATE_8000_48000)
-#define ADS117X_FORMATS (SNDRV_PCM_FMTBIT_S16_LE)
-
-=======
 #include <linux/of.h>
 
 #define ADS117X_RATES (SNDRV_PCM_RATE_8000_48000)
@@ -59,7 +43,6 @@ static const struct snd_soc_dapm_route ads117x_dapm_routes[] = {
 	{ "Capture", NULL, "Input8" },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_driver ads117x_dai = {
 /* ADC */
 	.name = "ads117x-hifi",
@@ -71,21 +54,6 @@ static struct snd_soc_dai_driver ads117x_dai = {
 		.formats = ADS117X_FORMATS,},
 };
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver soc_codec_dev_ads117x;
-
-static __devinit int ads117x_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_codec(&pdev->dev,
-			&soc_codec_dev_ads117x, &ads117x_dai, 1);
-}
-
-static int __devexit ads117x_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_codec(&pdev->dev);
-	return 0;
-}
-=======
 static const struct snd_soc_component_driver soc_component_dev_ads117x = {
 	.dapm_widgets		= ads117x_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(ads117x_dapm_widgets),
@@ -110,23 +78,14 @@ static const struct of_device_id ads117x_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, ads117x_dt_ids);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver ads117x_codec_driver = {
 	.driver = {
 			.name = "ads117x-codec",
-<<<<<<< HEAD
-			.owner = THIS_MODULE,
-	},
-
-	.probe = ads117x_probe,
-	.remove = __devexit_p(ads117x_remove),
-=======
 			.of_match_table = of_match_ptr(ads117x_dt_ids),
 	},
 
 	.probe = ads117x_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(ads117x_codec_driver);

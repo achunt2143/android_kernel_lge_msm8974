@@ -15,47 +15,23 @@
 #include <linux/tty.h>
 #include <linux/console.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
 #include <linux/platform_device.h>
 #include <linux/linkage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/oplib.h>
 #include <asm/setup.h>
 #include <asm/contregs.h>
 #include <asm/movs.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/pgalloc.h>
-#include <asm/sun3-head.h>
-#include <asm/sun3mmu.h>
-#include <asm/rtc.h>
-#include <asm/machdep.h>
-=======
 #include <asm/pgalloc.h>
 #include <asm/sun3-head.h>
 #include <asm/sun3mmu.h>
 #include <asm/machdep.h>
 #include <asm/machines.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/idprom.h>
 #include <asm/intersil.h>
 #include <asm/irq.h>
 #include <asm/sections.h>
-<<<<<<< HEAD
-#include <asm/segment.h>
-#include <asm/sun3ints.h>
-
-char sun3_reserved_pmeg[SUN3_PMEGS_NUM];
-
-extern unsigned long sun3_gettimeoffset(void);
-static void sun3_sched_init(irq_handler_t handler);
-extern void sun3_get_model (char* model);
-extern int sun3_hwclk(int set, struct rtc_time *t);
-=======
 #include <asm/sun3ints.h>
 #include <asm/config.h>
 
@@ -64,7 +40,6 @@ extern int sun3_hwclk(int set, struct rtc_time *t);
 char sun3_reserved_pmeg[SUN3_PMEGS_NUM];
 
 static void sun3_sched_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 volatile char* clock_va;
 extern unsigned long availmem;
@@ -75,11 +50,7 @@ static void sun3_get_hardware_list(struct seq_file *m)
 	seq_printf(m, "PROM Revision:\t%s\n", romvec->pv_monid);
 }
 
-<<<<<<< HEAD
-void __init sun3_init(void)
-=======
 asmlinkage void __init sun3_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char enable_register;
 	int i;
@@ -119,11 +90,7 @@ asmlinkage void __init sun3_init(void)
 	sun3_reserved_pmeg[249] = 1;
 	sun3_reserved_pmeg[252] = 1;
 	sun3_reserved_pmeg[253] = 1;
-<<<<<<< HEAD
-	set_fs(KERNEL_DS);
-=======
 	set_fc(USER_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Without this, Bad Things happen when something calls arch_reset. */
@@ -142,33 +109,16 @@ static void sun3_halt (void)
 static void __init sun3_bootmem_alloc(unsigned long memory_start,
 				      unsigned long memory_end)
 {
-<<<<<<< HEAD
-	unsigned long start_page;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* align start/end to page boundaries */
 	memory_start = ((memory_start + (PAGE_SIZE-1)) & PAGE_MASK);
 	memory_end = memory_end & PAGE_MASK;
 
-<<<<<<< HEAD
-	start_page = __pa(memory_start) >> PAGE_SHIFT;
-	num_pages = __pa(memory_end) >> PAGE_SHIFT;
-=======
 	max_pfn = num_pages = __pa(memory_end) >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	high_memory = (void *)memory_end;
 	availmem = memory_start;
 
 	m68k_setup_node(0);
-<<<<<<< HEAD
-	availmem += init_bootmem_node(NODE_DATA(0), start_page, 0, num_pages);
-	availmem = (availmem + (PAGE_SIZE-1)) & PAGE_MASK;
-
-	free_bootmem(__pa(availmem), memory_end - (availmem));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -176,11 +126,7 @@ void __init config_sun3(void)
 {
 	unsigned long memory_start, memory_end;
 
-<<<<<<< HEAD
-	printk("ARCH: SUN3\n");
-=======
 	pr_info("ARCH: SUN3\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idprom_init();
 
 	/* Subtract kernel memory from available memory */
@@ -188,10 +134,6 @@ void __init config_sun3(void)
         mach_sched_init      =  sun3_sched_init;
         mach_init_IRQ        =  sun3_init_IRQ;
         mach_reset           =  sun3_reboot;
-<<<<<<< HEAD
-	mach_gettimeoffset   =  sun3_gettimeoffset;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_get_model	     =  sun3_get_model;
 	mach_hwclk           =  sun3_hwclk;
 	mach_halt	     =  sun3_halt;
@@ -207,11 +149,7 @@ void __init config_sun3(void)
 	sun3_bootmem_alloc(memory_start, memory_end);
 }
 
-<<<<<<< HEAD
-static void __init sun3_sched_init(irq_handler_t timer_routine)
-=======
 static void __init sun3_sched_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sun3_disable_interrupts();
         intersil_clock->cmd_reg=(INTERSIL_RUN|INTERSIL_INT_DISABLE|INTERSIL_24H_MODE);
@@ -223,8 +161,6 @@ static void __init sun3_sched_init(void)
         intersil_clear();
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_SUN3_SCSI)
 
 static const struct resource sun3_scsi_vme_rsrc[] __initconst = {
@@ -283,4 +219,3 @@ static int __init sun3_platform_init(void)
 arch_initcall(sun3_platform_init);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

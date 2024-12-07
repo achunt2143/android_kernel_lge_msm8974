@@ -7,12 +7,6 @@ The MPU contain CPUs, GIC, L2 cache and a local PRCM.
 Required properties:
 - compatible : Should be "ti,omap3-mpu" for OMAP3
                Should be "ti,omap4-mpu" for OMAP4
-<<<<<<< HEAD
-- ti,hwmods: "mpu"
-
-Examples:
-
-=======
 	       Should be "ti,omap5-mpu" for OMAP5
 - ti,hwmods: "mpu"
 
@@ -35,7 +29,6 @@ mpu {
     ti,hwmods = "mpu"
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 - For an OMAP4 SMP system:
 
 mpu {
@@ -50,8 +43,6 @@ mpu {
     compatible = "ti,omap3-mpu";
     ti,hwmods = "mpu";
 };
-<<<<<<< HEAD
-=======
 
 - For an AM335x system:
 
@@ -61,4 +52,3 @@ mpu {
 	pm-sram = <&pm_sram_code
 		   &pm_sram_data>;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

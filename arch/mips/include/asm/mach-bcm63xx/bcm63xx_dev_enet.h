@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCM63XX_DEV_ENET_H_
 #define BCM63XX_DEV_ENET_H_
 
 #include <linux/if_ether.h>
 #include <linux/init.h>
 
-<<<<<<< HEAD
-=======
 #include <bcm63xx_regs.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * on board ethernet platform data
  */
@@ -29,11 +23,7 @@ struct bcm63xx_enet_platform_data {
 	int has_phy_interrupt;
 	int phy_interrupt;
 
-<<<<<<< HEAD
-	/* if has_phy, use autonegociated pause parameters or force
-=======
 	/* if has_phy, use autonegotiated pause parameters or force
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * them */
 	int pause_auto;
 	int pause_rx;
@@ -50,8 +40,6 @@ struct bcm63xx_enet_platform_data {
 					  int phy_id, int reg),
 			  void (*mii_write)(struct net_device *dev,
 					    int phy_id, int reg, int val));
-<<<<<<< HEAD
-=======
 
 	/* DMA channel enable mask */
 	u32 dma_chan_en_mask;
@@ -109,14 +97,11 @@ struct bcm63xx_enetsw_platform_data {
 
 	/* DMA engine has internal SRAM */
 	bool dma_has_sram;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init bcm63xx_enet_register(int unit,
 				 const struct bcm63xx_enet_platform_data *pd);
 
-<<<<<<< HEAD
-=======
 int bcm63xx_enetsw_register(const struct bcm63xx_enetsw_platform_data *pd);
 
 enum bcm63xx_regs_enetdmac {
@@ -138,5 +123,4 @@ static inline unsigned long bcm63xx_enetdmacreg(enum bcm63xx_regs_enetdmac reg)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ! BCM63XX_DEV_ENET_H_ */

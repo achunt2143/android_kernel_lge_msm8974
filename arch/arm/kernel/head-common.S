@@ -1,24 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/head-common.S
  *
  *  Copyright (C) 1994-2002 Russell King
  *  Copyright (c) 2003 ARM Limited
  *  All Rights Reserved
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- */
-=======
  */
 #include <asm/assembler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ATAG_CORE 0x54410001
 #define ATAG_CORE_SIZE ((2*4 + 3*4) >> 2)
@@ -70,58 +58,23 @@ __vet_atags:
 	cmp	r5, r6
 	bne	1f
 
-<<<<<<< HEAD
-2:	mov	pc, lr				@ atag/dtb pointer is ok
-
-1:	mov	r2, #0
-	mov	pc, lr
-=======
 2:	ret	lr				@ atag/dtb pointer is ok
 
 1:	mov	r2, #0
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__vet_atags)
 
 /*
  * The following fragment of code is executed with the MMU on in MMU mode,
  * and uses absolute addresses; this is not position independent.
  *
-<<<<<<< HEAD
- *  r0  = cp#15 control register
-=======
  *  r0  = cp#15 control register (exc_ret for M-class)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  r1  = machine ID
  *  r2  = atags/dtb pointer
  *  r9  = processor ID
  */
 	__INIT
 __mmap_switched:
-<<<<<<< HEAD
-	adr	r3, __mmap_switched_data
-
-	ldmia	r3!, {r4, r5, r6, r7}
-	cmp	r4, r5				@ Copy data segment if needed
-1:	cmpne	r5, r6
-	ldrne	fp, [r4], #4
-	strne	fp, [r5], #4
-	bne	1b
-
-	mov	fp, #0				@ Clear BSS (and zero fp)
-1:	cmp	r6, r7
-	strcc	fp, [r6],#4
-	bcc	1b
-
- ARM(	ldmia	r3, {r4, r5, r6, r7, sp})
- THUMB(	ldmia	r3, {r4, r5, r6, r7}	)
- THUMB(	ldr	sp, [r3, #16]		)
-	str	r9, [r4]			@ Save processor ID
-	str	r1, [r5]			@ Save machine type
-	str	r2, [r6]			@ Save atags pointer
-	bic	r4, r0, #CR_A			@ Clear 'A' bit
-	stmia	r7, {r0, r4}			@ Save control register values
-=======
 
 	mov	r7, r1
 	mov	r8, r2
@@ -165,26 +118,12 @@ __mmap_switched:
 	bl	kasan_early_init
 #endif
 	mov	lr, #0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	start_kernel
 ENDPROC(__mmap_switched)
 
 	.align	2
 	.type	__mmap_switched_data, %object
 __mmap_switched_data:
-<<<<<<< HEAD
-	.long	__data_loc			@ r4
-	.long	_sdata				@ r5
-	.long	__bss_start			@ r6
-	.long	_end				@ r7
-	.long	processor_id			@ r4
-	.long	__machine_arch_type		@ r5
-	.long	__atags_pointer			@ r6
-	.long	cr_alignment			@ r7
-	.long	init_thread_union + THREAD_START_SP @ sp
-	.size	__mmap_switched_data, . - __mmap_switched_data
-
-=======
 #ifdef CONFIG_XIP_KERNEL
 #ifndef CONFIG_XIP_DEFLATED_DATA
 	.long	_sdata				@ r0
@@ -212,7 +151,6 @@ AR_CLASS(.long	0)				@ r3
 	__FINIT
 	.text
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This provides a C-API version of __lookup_processor_type
  */
@@ -237,15 +175,6 @@ ENDPROC(lookup_processor_type)
  *	r5 = proc_info pointer in physical address space
  *	r9 = cpuid (preserved)
  */
-<<<<<<< HEAD
-	__CPUINIT
-__lookup_processor_type:
-	adr	r3, __lookup_processor_type_data
-	ldmia	r3, {r4 - r6}
-	sub	r3, r3, r4			@ get offset between virt&phys
-	add	r5, r5, r3			@ convert virt addresses to
-	add	r6, r6, r3			@ physical address space
-=======
 __lookup_processor_type:
 	/*
 	 * Look in <asm/procinfo.h> for information about the __proc_info
@@ -253,7 +182,6 @@ __lookup_processor_type:
 	 */
 	adr_l	r5, __proc_info_begin
 	adr_l	r6, __proc_info_end
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	ldmia	r5, {r3, r4}			@ value, mask
 	and	r4, r4, r9			@ mask wanted bits
 	teq	r3, r4
@@ -262,21 +190,6 @@ __lookup_processor_type:
 	cmp	r5, r6
 	blo	1b
 	mov	r5, #0				@ unknown processor
-<<<<<<< HEAD
-2:	mov	pc, lr
-ENDPROC(__lookup_processor_type)
-
-/*
- * Look in <asm/procinfo.h> for information about the __proc_info structure.
- */
-	.align	2
-	.type	__lookup_processor_type_data, %object
-__lookup_processor_type_data:
-	.long	.
-	.long	__proc_info_begin
-	.long	__proc_info_end
-	.size	__lookup_processor_type_data, . - __lookup_processor_type_data
-=======
 2:	ret	lr
 ENDPROC(__lookup_processor_type)
 
@@ -291,7 +204,6 @@ str_lpae: .asciz "\nError: Kernel with LPAE support, but CPU does not support LP
 #endif
 	.align
 ENDPROC(__error_lpae)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __error_p:
 #ifdef CONFIG_DEBUG_LL

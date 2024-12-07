@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/pcmcia/sa1100_h3600.c
  *
@@ -27,15 +24,6 @@ static int h3600_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 {
 	int err;
 
-<<<<<<< HEAD
-	switch (skt->nr) {
-	case 0:
-		skt->stat[SOC_STAT_CD].gpio = H3XXX_GPIO_PCMCIA_CD0;
-		skt->stat[SOC_STAT_CD].name = "PCMCIA CD0";
-		skt->stat[SOC_STAT_RDY].gpio = H3XXX_GPIO_PCMCIA_IRQ0;
-		skt->stat[SOC_STAT_RDY].name = "PCMCIA IRQ0";
-
-=======
 	skt->stat[SOC_STAT_CD].name = skt->nr ? "pcmcia1-detect" : "pcmcia0-detect";
 	skt->stat[SOC_STAT_RDY].name = skt->nr ? "pcmcia1-ready" : "pcmcia0-ready";
 
@@ -45,7 +33,6 @@ static int h3600_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 
 	switch (skt->nr) {
 	case 0:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = gpio_request(H3XXX_EGPIO_OPT_NVRAM_ON, "OPT NVRAM ON");
 		if (err)
 			goto err01;
@@ -72,13 +59,6 @@ static int h3600_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 			goto err06;
 		break;
 	case 1:
-<<<<<<< HEAD
-		skt->stat[SOC_STAT_CD].gpio = H3XXX_GPIO_PCMCIA_CD1;
-		skt->stat[SOC_STAT_CD].name = "PCMCIA CD1";
-		skt->stat[SOC_STAT_RDY].gpio = H3XXX_GPIO_PCMCIA_IRQ1;
-		skt->stat[SOC_STAT_RDY].name = "PCMCIA IRQ1";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -172,19 +152,11 @@ struct pcmcia_low_level h3600_pcmcia_ops = {
 	.socket_suspend		= h3600_pcmcia_socket_suspend,
 };
 
-<<<<<<< HEAD
-int __devinit pcmcia_h3600_init(struct device *dev)
-{
-	int ret = -ENODEV;
-
-	if (machine_is_h3600() || machine_is_h3100())
-=======
 int pcmcia_h3600_init(struct device *dev)
 {
 	int ret = -ENODEV;
 
 	if (machine_is_h3600())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = sa11xx_drv_pcmcia_probe(dev, &h3600_pcmcia_ops, 0, 2);
 
 	return ret;

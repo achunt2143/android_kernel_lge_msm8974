@@ -21,17 +21,6 @@
 #include "debug.h"
 #include "core.h"
 
-<<<<<<< HEAD
-/* usb device object */
-struct ath6kl_usb {
-	struct usb_device *udev;
-	struct usb_interface *interface;
-	u8 *diag_cmd_buffer;
-	u8 *diag_resp_buffer;
-	struct ath6kl *ar;
-};
-
-=======
 /* constants */
 #define TX_URB_COUNT            32
 #define RX_URB_COUNT            32
@@ -104,7 +93,6 @@ struct ath6kl_urb_context {
 #define ATH6KL_USB_EP_ADDR_APP_DATA_MP_OUT      0x03
 #define ATH6KL_USB_EP_ADDR_APP_DATA_HP_OUT      0x04
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* diagnostic command defnitions */
 #define ATH6KL_USB_CONTROL_REQ_SEND_BMI_CMD        1
 #define ATH6KL_USB_CONTROL_REQ_RECV_BMI_RESP       2
@@ -130,8 +118,6 @@ struct ath6kl_usb_ctrl_diag_resp_read {
 	__le32 value;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* function declarations */
 static void ath6kl_usb_recv_complete(struct urb *urb);
 
@@ -621,48 +607,26 @@ static void ath6kl_usb_io_comp_work(struct work_struct *work)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATH6KL_USB_MAX_DIAG_CMD (sizeof(struct ath6kl_usb_ctrl_diag_cmd_write))
 #define ATH6KL_USB_MAX_DIAG_RESP (sizeof(struct ath6kl_usb_ctrl_diag_resp_read))
 
 static void ath6kl_usb_destroy(struct ath6kl_usb *ar_usb)
 {
-<<<<<<< HEAD
-=======
 	ath6kl_usb_flush_all(ar_usb);
 
 	ath6kl_usb_cleanup_pipe_resources(ar_usb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(ar_usb->interface, NULL);
 
 	kfree(ar_usb->diag_cmd_buffer);
 	kfree(ar_usb->diag_resp_buffer);
-<<<<<<< HEAD
-=======
 	destroy_workqueue(ar_usb->wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(ar_usb);
 }
 
 static struct ath6kl_usb *ath6kl_usb_create(struct usb_interface *interface)
 {
-<<<<<<< HEAD
-	struct ath6kl_usb *ar_usb = NULL;
-	struct usb_device *dev = interface_to_usbdev(interface);
-	int status = 0;
-
-	ar_usb = kzalloc(sizeof(struct ath6kl_usb), GFP_KERNEL);
-	if (ar_usb == NULL)
-		goto fail_ath6kl_usb_create;
-
-	memset(ar_usb, 0, sizeof(struct ath6kl_usb));
-	usb_set_intfdata(interface, ar_usb);
-	ar_usb->udev = dev;
-	ar_usb->interface = interface;
-
-=======
 	struct usb_device *dev = interface_to_usbdev(interface);
 	struct ath6kl_usb *ar_usb;
 	struct ath6kl_usb_pipe *pipe;
@@ -691,7 +655,6 @@ static struct ath6kl_usb *ath6kl_usb_create(struct usb_interface *interface)
 		skb_queue_head_init(&pipe->io_comp_queue);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ar_usb->diag_cmd_buffer = kzalloc(ATH6KL_USB_MAX_DIAG_CMD, GFP_KERNEL);
 	if (ar_usb->diag_cmd_buffer == NULL) {
 		status = -ENOMEM;
@@ -705,11 +668,8 @@ static struct ath6kl_usb *ath6kl_usb_create(struct usb_interface *interface)
 		goto fail_ath6kl_usb_create;
 	}
 
-<<<<<<< HEAD
-=======
 	status = ath6kl_usb_setup_pipe_resources(ar_usb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_ath6kl_usb_create:
 	if (status != 0) {
 		ath6kl_usb_destroy(ar_usb);
@@ -728,13 +688,6 @@ static void ath6kl_usb_device_detached(struct usb_interface *interface)
 
 	ath6kl_stop_txrx(ar_usb->ar);
 
-<<<<<<< HEAD
-	ath6kl_core_cleanup(ar_usb->ar);
-
-	ath6kl_usb_destroy(ar_usb);
-}
-
-=======
 	/* Delay to wait for the target to reboot */
 	mdelay(20);
 	ath6kl_core_cleanup(ar_usb->ar);
@@ -916,7 +869,6 @@ static void hif_detach_htc(struct ath6kl *ar)
 	ath6kl_usb_flush_all(device);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath6kl_usb_submit_ctrl_out(struct ath6kl_usb *ar_usb,
 				   u8 req, u16 value, u16 index, void *data,
 				   u32 size)
@@ -925,17 +877,9 @@ static int ath6kl_usb_submit_ctrl_out(struct ath6kl_usb *ar_usb,
 	int ret;
 
 	if (size > 0) {
-<<<<<<< HEAD
-		buf = kmalloc(size, GFP_KERNEL);
-		if (buf == NULL)
-			return -ENOMEM;
-
-		memcpy(buf, data, size);
-=======
 		buf = kmemdup(data, size, GFP_KERNEL);
 		if (buf == NULL)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* note: if successful returns number of bytes transfered */
@@ -947,14 +891,9 @@ static int ath6kl_usb_submit_ctrl_out(struct ath6kl_usb *ar_usb,
 			      size, 1000);
 
 	if (ret < 0) {
-<<<<<<< HEAD
-		ath6kl_dbg(ATH6KL_DBG_USB, "%s failed,result = %d\n",
-			   __func__, ret);
-=======
 		ath6kl_warn("Failed to submit usb control message: %d\n", ret);
 		kfree(buf);
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(buf);
@@ -981,20 +920,12 @@ static int ath6kl_usb_submit_ctrl_in(struct ath6kl_usb *ar_usb,
 				 req,
 				 USB_DIR_IN | USB_TYPE_VENDOR |
 				 USB_RECIP_DEVICE, value, index, buf,
-<<<<<<< HEAD
-				 size, 2 * HZ);
-
-	if (ret < 0) {
-		ath6kl_dbg(ATH6KL_DBG_USB, "%s failed,result = %d\n",
-			   __func__, ret);
-=======
 				 size, 2000);
 
 	if (ret < 0) {
 		ath6kl_warn("Failed to read usb control message: %d\n", ret);
 		kfree(buf);
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memcpy((u8 *) data, buf, size);
@@ -1051,15 +982,10 @@ static int ath6kl_usb_diag_read32(struct ath6kl *ar, u32 address, u32 *data)
 				ATH6KL_USB_CONTROL_REQ_DIAG_RESP,
 				ar_usb->diag_resp_buffer, &resp_len);
 
-<<<<<<< HEAD
-	if (ret)
-		return ret;
-=======
 	if (ret) {
 		ath6kl_warn("diag read32 failed: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	resp = (struct ath6kl_usb_ctrl_diag_resp_read *)
 		ar_usb->diag_resp_buffer;
@@ -1073,10 +999,7 @@ static int ath6kl_usb_diag_write32(struct ath6kl *ar, u32 address, __le32 data)
 {
 	struct ath6kl_usb *ar_usb = ar->hif_priv;
 	struct ath6kl_usb_ctrl_diag_cmd_write *cmd;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = (struct ath6kl_usb_ctrl_diag_cmd_write *) ar_usb->diag_cmd_buffer;
 
@@ -1085,14 +1008,6 @@ static int ath6kl_usb_diag_write32(struct ath6kl *ar, u32 address, __le32 data)
 	cmd->address = cpu_to_le32(address);
 	cmd->value = data;
 
-<<<<<<< HEAD
-	return ath6kl_usb_ctrl_msg_exchange(ar_usb,
-					    ATH6KL_USB_CONTROL_REQ_DIAG_CMD,
-					    (u8 *) cmd,
-					    sizeof(*cmd),
-					    0, NULL, NULL);
-
-=======
 	ret = ath6kl_usb_ctrl_msg_exchange(ar_usb,
 					   ATH6KL_USB_CONTROL_REQ_DIAG_CMD,
 					   (u8 *) cmd,
@@ -1104,7 +1019,6 @@ static int ath6kl_usb_diag_write32(struct ath6kl *ar, u32 address, __le32 data)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_usb_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
@@ -1116,11 +1030,7 @@ static int ath6kl_usb_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
 	ret = ath6kl_usb_submit_ctrl_in(ar_usb,
 					ATH6KL_USB_CONTROL_REQ_RECV_BMI_RESP,
 					0, 0, buf, len);
-<<<<<<< HEAD
-	if (ret != 0) {
-=======
 	if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_err("Unable to read the bmi data from the device: %d\n",
 			   ret);
 		return ret;
@@ -1138,11 +1048,7 @@ static int ath6kl_usb_bmi_write(struct ath6kl *ar, u8 *buf, u32 len)
 	ret = ath6kl_usb_submit_ctrl_out(ar_usb,
 					 ATH6KL_USB_CONTROL_REQ_SEND_BMI_CMD,
 					 0, 0, buf, len);
-<<<<<<< HEAD
-	if (ret != 0) {
-=======
 	if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_err("unable to send the bmi data to the device: %d\n",
 			   ret);
 		return ret;
@@ -1153,17 +1059,12 @@ static int ath6kl_usb_bmi_write(struct ath6kl *ar, u8 *buf, u32 len)
 
 static int ath6kl_usb_power_on(struct ath6kl *ar)
 {
-<<<<<<< HEAD
-=======
 	hif_start(ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int ath6kl_usb_power_off(struct ath6kl *ar)
 {
-<<<<<<< HEAD
-=======
 	hif_detach_htc(ar);
 	return 0;
 }
@@ -1194,7 +1095,6 @@ static int ath6kl_usb_resume(struct ath6kl *ar)
 	/*
 	 * cfg80211 resume currently not supported for USB.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1205,8 +1105,6 @@ static const struct ath6kl_hif_ops ath6kl_usb_ops = {
 	.bmi_write = ath6kl_usb_bmi_write,
 	.power_on = ath6kl_usb_power_on,
 	.power_off = ath6kl_usb_power_off,
-<<<<<<< HEAD
-=======
 	.stop = ath6kl_usb_stop,
 	.pipe_send = ath6kl_usb_send,
 	.pipe_get_default = ath6kl_usb_get_default_pipe,
@@ -1215,7 +1113,6 @@ static const struct ath6kl_hif_ops ath6kl_usb_ops = {
 	.cleanup_scatter = ath6kl_usb_cleanup_scatter,
 	.suspend = ath6kl_usb_suspend,
 	.resume = ath6kl_usb_resume,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* ath6kl usb driver registered functions */
@@ -1268,11 +1165,7 @@ static int ath6kl_usb_probe(struct usb_interface *interface,
 
 	ar_usb->ar = ar;
 
-<<<<<<< HEAD
-	ret = ath6kl_core_init(ar);
-=======
 	ret = ath6kl_core_init(ar, ATH6KL_HTC_TYPE_PIPE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		ath6kl_err("Failed to init ath6kl core: %d\n", ret);
 		goto err_core_free;
@@ -1296,11 +1189,6 @@ static void ath6kl_usb_remove(struct usb_interface *interface)
 	ath6kl_usb_device_detached(interface);
 }
 
-<<<<<<< HEAD
-/* table of devices that work with this driver */
-static struct usb_device_id ath6kl_usb_ids[] = {
-	{USB_DEVICE(0x0cf3, 0x9374)},
-=======
 #ifdef CONFIG_PM
 
 static int ath6kl_usb_pm_suspend(struct usb_interface *interface,
@@ -1338,7 +1226,6 @@ static const struct usb_device_id ath6kl_usb_ids[] = {
 	{USB_DEVICE(0x0cf3, 0x9375)},
 	{USB_DEVICE(0x0cf3, 0x9374)},
 	{USB_DEVICE(0x04da, 0x390d)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ /* Terminating entry */ },
 };
 
@@ -1347,25 +1234,6 @@ MODULE_DEVICE_TABLE(usb, ath6kl_usb_ids);
 static struct usb_driver ath6kl_usb_driver = {
 	.name = "ath6kl_usb",
 	.probe = ath6kl_usb_probe,
-<<<<<<< HEAD
-	.disconnect = ath6kl_usb_remove,
-	.id_table = ath6kl_usb_ids,
-};
-
-static int ath6kl_usb_init(void)
-{
-	usb_register(&ath6kl_usb_driver);
-	return 0;
-}
-
-static void ath6kl_usb_exit(void)
-{
-	usb_deregister(&ath6kl_usb_driver);
-}
-
-module_init(ath6kl_usb_init);
-module_exit(ath6kl_usb_exit);
-=======
 	.suspend = ath6kl_usb_pm_suspend,
 	.resume = ath6kl_usb_pm_resume,
 	.disconnect = ath6kl_usb_remove,
@@ -1375,7 +1243,6 @@ module_exit(ath6kl_usb_exit);
 };
 
 module_usb_driver(ath6kl_usb_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Atheros Communications, Inc.");
 MODULE_DESCRIPTION("Driver support for Atheros AR600x USB devices");
@@ -1386,12 +1253,9 @@ MODULE_FIRMWARE(AR6004_HW_1_0_DEFAULT_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_FIRMWARE_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE);
-<<<<<<< HEAD
-=======
 MODULE_FIRMWARE(AR6004_HW_1_2_FIRMWARE_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_2_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_2_DEFAULT_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_3_FW_DIR "/" AR6004_HW_1_3_FIRMWARE_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_3_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_3_DEFAULT_BOARD_DATA_FILE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

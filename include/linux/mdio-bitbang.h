@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_MDIO_BITBANG_H
 #define __LINUX_MDIO_BITBANG_H
 
@@ -36,12 +33,6 @@ struct mdiobb_ops {
 
 struct mdiobb_ctrl {
 	const struct mdiobb_ops *ops;
-<<<<<<< HEAD
-	/* reset callback */
-	int (*reset)(struct mii_bus *bus);
-};
-
-=======
 	unsigned int override_op_c22;
 	u8 op_c22_read;
 	u8 op_c22_write;
@@ -52,7 +43,6 @@ int mdiobb_write_c22(struct mii_bus *bus, int phy, int reg, u16 val);
 int mdiobb_read_c45(struct mii_bus *bus, int devad, int phy, int reg);
 int mdiobb_write_c45(struct mii_bus *bus, int devad, int phy, int reg, u16 val);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The returned bus is not yet registered with the phy layer. */
 struct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl *ctrl);
 

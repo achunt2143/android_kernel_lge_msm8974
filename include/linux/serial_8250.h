@@ -1,30 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/serial_8250.h
  *
  *  Copyright (C) 2004 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_SERIAL_8250_H
 #define _LINUX_SERIAL_8250_H
 
-<<<<<<< HEAD
-#include <linux/serial_core.h>
-#include <linux/platform_device.h>
-
-/*
- * This is the platform device platform_data structure
-=======
 #include <linux/errno.h>
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
@@ -47,38 +29,19 @@ struct uart_8250_port;
  *	Write @value into UART divisor latch.
  *
  *	Locking: Caller holds port's lock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct plat_serial8250_port {
 	unsigned long	iobase;		/* io base address */
 	void __iomem	*membase;	/* ioremap cookie or NULL */
 	resource_size_t	mapbase;	/* resource base */
-<<<<<<< HEAD
-	unsigned int	irq;		/* interrupt number */
-	unsigned long	irqflags;	/* request_irq flags */
-	unsigned int	uartclk;	/* UART clock rate */
-=======
 	resource_size_t	mapsize;
 	unsigned int	uartclk;	/* UART clock rate */
 	unsigned int	irq;		/* interrupt number */
 	unsigned long	irqflags;	/* request_irq flags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void            *private_data;
 	unsigned char	regshift;	/* register shift */
 	unsigned char	iotype;		/* UPIO_* */
 	unsigned char	hub6;
-<<<<<<< HEAD
-	upf_t		flags;		/* UPF_* flags */
-	unsigned int	type;		/* If UPF_FIXED_TYPE */
-	unsigned int	(*serial_in)(struct uart_port *, int);
-	void		(*serial_out)(struct uart_port *, int, int);
-	void		(*set_termios)(struct uart_port *,
-			               struct ktermios *new,
-			               struct ktermios *old);
-	int		(*handle_irq)(struct uart_port *);
-	void		(*pm)(struct uart_port *, unsigned int state,
-			      unsigned old);
-=======
 	unsigned char	has_sysrq;	/* supports magic SysRq */
 	unsigned int	type;		/* If UPF_FIXED_TYPE */
 	upf_t		flags;		/* UPF_* flags */
@@ -97,7 +60,6 @@ struct plat_serial8250_port {
 	void		(*pm)(struct uart_port *, unsigned int state,
 			      unsigned old);
 	void		(*handle_break)(struct uart_port *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -114,16 +76,10 @@ enum {
 	PLAT8250_DEV_BOCA,
 	PLAT8250_DEV_EXAR_ST16C554,
 	PLAT8250_DEV_HUB6,
-<<<<<<< HEAD
-	PLAT8250_DEV_MCA,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PLAT8250_DEV_AU1X00,
 	PLAT8250_DEV_SM501,
 };
 
-<<<<<<< HEAD
-=======
 struct uart_8250_dma;
 struct uart_8250_port;
 
@@ -149,19 +105,11 @@ struct uart_8250_em485 {
 	unsigned int		tx_stopped:1;	/* tx is currently stopped */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This should be used by drivers which want to register
  * their own 8250 ports without registering their own
  * platform device.  Using these will make your driver
  * dependent on the 8250 driver.
-<<<<<<< HEAD
- */
-struct uart_port;
-struct uart_8250_port;
-
-int serial8250_register_port(struct uart_port *);
-=======
  *
  * @dl_read: ``u32 ()(struct uart_8250_port *port)``
  *
@@ -227,31 +175,10 @@ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
 }
 
 int serial8250_register_8250_port(const struct uart_8250_port *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void serial8250_unregister_port(int line);
 void serial8250_suspend_port(int line);
 void serial8250_resume_port(int line);
 
-<<<<<<< HEAD
-extern int early_serial_setup(struct uart_port *port);
-
-extern int serial8250_find_port(struct uart_port *p);
-extern int serial8250_find_port_for_earlycon(void);
-extern int setup_early_serial8250_console(char *cmdline);
-extern void serial8250_do_set_termios(struct uart_port *port,
-		struct ktermios *termios, struct ktermios *old);
-extern void serial8250_do_pm(struct uart_port *port, unsigned int state,
-			     unsigned int oldstate);
-extern int fsl8250_handle_irq(struct uart_port *port);
-int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
-unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr);
-void serial8250_tx_chars(struct uart_8250_port *up);
-unsigned int serial8250_modem_status(struct uart_8250_port *up);
-
-extern void serial8250_set_isa_configurator(void (*v)
-					(int port, struct uart_port *up,
-						unsigned short *capabilities));
-=======
 int early_serial_setup(struct uart_port *port);
 int early_serial8250_setup(struct earlycon_device *device, const char *options);
 
@@ -296,6 +223,5 @@ int au_platform_setup(struct plat_serial8250_port *p);
 static inline int rt288x_setup(struct uart_port *p) { return -ENODEV; }
 static inline int au_platform_setup(struct plat_serial8250_port *p) { return -ENODEV; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -8,28 +8,17 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/ssb/ssb_regs.h>
 #include <linux/ssb/ssb_driver_chipcommon.h>
 #include <linux/delay.h>
 #include <linux/export.h>
 #ifdef CONFIG_BCM47XX
-<<<<<<< HEAD
-#include <asm/mach-bcm47xx/nvram.h>
-#endif
-
-#include "ssb_private.h"
-
-=======
 #include <linux/bcm47xx_nvram.h>
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 ssb_chipco_pll_read(struct ssb_chipcommon *cc, u32 offset)
 {
 	chipco_write32(cc, SSB_CHIPCO_PLLCTL_ADDR, offset);
@@ -121,13 +110,8 @@ static void ssb_pmu0_pllinit_r0(struct ssb_chipcommon *cc,
 		return;
 	}
 
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO PFX "Programming PLL to %u.%03u MHz\n",
-		   (crystalfreq / 1000), (crystalfreq % 1000));
-=======
 	dev_info(cc->dev->dev, "Programming PLL to %u.%03u MHz\n",
 		 crystalfreq / 1000, crystalfreq % 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First turn the PLL off. */
 	switch (bus->chip_id) {
@@ -144,11 +128,7 @@ static void ssb_pmu0_pllinit_r0(struct ssb_chipcommon *cc,
 			      ~(1 << SSB_PMURES_5354_BB_PLL_PU));
 		break;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 1500; i; i--) {
 		tmp = chipco_read32(cc, SSB_CHIPCO_CLKCTLST);
@@ -158,11 +138,7 @@ static void ssb_pmu0_pllinit_r0(struct ssb_chipcommon *cc,
 	}
 	tmp = chipco_read32(cc, SSB_CHIPCO_CLKCTLST);
 	if (tmp & SSB_CHIPCO_CLKCTLST_HAVEHT)
-<<<<<<< HEAD
-		ssb_printk(KERN_EMERG PFX "Failed to turn the PLL off!\n");
-=======
 		dev_emerg(cc->dev->dev, "Failed to turn the PLL off!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set PDIV in PLL control 0. */
 	pllctl = ssb_chipco_pll_read(cc, SSB_PMU0_PLLCTL0);
@@ -273,13 +249,8 @@ static void ssb_pmu1_pllinit_r0(struct ssb_chipcommon *cc,
 		return;
 	}
 
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO PFX "Programming PLL to %u.%03u MHz\n",
-		   (crystalfreq / 1000), (crystalfreq % 1000));
-=======
 	dev_info(cc->dev->dev, "Programming PLL to %u.%03u MHz\n",
 		 crystalfreq / 1000, crystalfreq % 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First turn the PLL off. */
 	switch (bus->chip_id) {
@@ -294,11 +265,7 @@ static void ssb_pmu1_pllinit_r0(struct ssb_chipcommon *cc,
 		buffer_strength = 0x222222;
 		break;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 1500; i; i--) {
 		tmp = chipco_read32(cc, SSB_CHIPCO_CLKCTLST);
@@ -308,11 +275,7 @@ static void ssb_pmu1_pllinit_r0(struct ssb_chipcommon *cc,
 	}
 	tmp = chipco_read32(cc, SSB_CHIPCO_CLKCTLST);
 	if (tmp & SSB_CHIPCO_CLKCTLST_HAVEHT)
-<<<<<<< HEAD
-		ssb_printk(KERN_EMERG PFX "Failed to turn the PLL off!\n");
-=======
 		dev_emerg(cc->dev->dev, "Failed to turn the PLL off!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set p1div and p2div. */
 	pllctl = ssb_chipco_pll_read(cc, SSB_PMU1_PLLCTL0);
@@ -359,11 +322,7 @@ static void ssb_pmu_pll_init(struct ssb_chipcommon *cc)
 	if (bus->bustype == SSB_BUSTYPE_SSB) {
 #ifdef CONFIG_BCM47XX
 		char buf[20];
-<<<<<<< HEAD
-		if (nvram_getenv("xtalfreq", buf, sizeof(buf)) >= 0)
-=======
 		if (bcm47xx_nvram_getenv("xtalfreq", buf, sizeof(buf)) >= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			crystalfreq = simple_strtoul(buf, NULL, 0);
 #endif
 	}
@@ -387,18 +346,11 @@ static void ssb_pmu_pll_init(struct ssb_chipcommon *cc)
 			chipco_write32(cc, SSB_CHIPCO_PLLCTL_DATA, 0x380005C0);
 		}
 		break;
-<<<<<<< HEAD
-	default:
-		ssb_printk(KERN_ERR PFX
-			   "ERROR: PLL init unknown for device %04X\n",
-			   bus->chip_id);
-=======
 	case 43222:
 		break;
 	default:
 		dev_err(cc->dev->dev, "ERROR: PLL init unknown for device %04X\n",
 			bus->chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -483,10 +435,7 @@ static void ssb_pmu_resources_init(struct ssb_chipcommon *cc)
 		 min_msk = 0xCBB;
 		 break;
 	case 0x4322:
-<<<<<<< HEAD
-=======
 	case 43222:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We keep the default settings:
 		 * min_msk = 0xCBB
 		 * max_msk = 0x7FFFF
@@ -522,14 +471,8 @@ static void ssb_pmu_resources_init(struct ssb_chipcommon *cc)
 		max_msk = 0xFFFFF;
 		break;
 	default:
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR PFX
-			   "ERROR: PMU resource config unknown for device %04X\n",
-			   bus->chip_id);
-=======
 		dev_err(cc->dev->dev, "ERROR: PMU resource config unknown for device %04X\n",
 			bus->chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (updown_tab) {
@@ -558,11 +501,7 @@ static void ssb_pmu_resources_init(struct ssb_chipcommon *cc)
 					      ~(depend_tab[i].depend));
 				break;
 			default:
-<<<<<<< HEAD
-				SSB_WARN_ON(1);
-=======
 				WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -574,11 +513,7 @@ static void ssb_pmu_resources_init(struct ssb_chipcommon *cc)
 		chipco_write32(cc, SSB_CHIPCO_PMU_MAXRES_MSK, max_msk);
 }
 
-<<<<<<< HEAD
-/* http://bcm-v4.sipsolutions.net/802.11/SSB/PmuInit */
-=======
 /* https://bcm-v4.sipsolutions.net/802.11/SSB/PmuInit */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ssb_pmu_init(struct ssb_chipcommon *cc)
 {
 	u32 pmucap;
@@ -589,13 +524,8 @@ void ssb_pmu_init(struct ssb_chipcommon *cc)
 	pmucap = chipco_read32(cc, SSB_CHIPCO_PMU_CAP);
 	cc->pmu.rev = (pmucap & SSB_CHIPCO_PMU_CAP_REVISION);
 
-<<<<<<< HEAD
-	ssb_dprintk(KERN_DEBUG PFX "Found rev %u PMU (capabilities 0x%08X)\n",
-		    cc->pmu.rev, pmucap);
-=======
 	dev_dbg(cc->dev->dev, "Found rev %u PMU (capabilities 0x%08X)\n",
 		cc->pmu.rev, pmucap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cc->pmu.rev == 1)
 		chipco_mask32(cc, SSB_CHIPCO_PMU_CTL,
@@ -638,20 +568,12 @@ void ssb_pmu_set_ldo_voltage(struct ssb_chipcommon *cc,
 			mask = 0x3F;
 			break;
 		default:
-<<<<<<< HEAD
-			SSB_WARN_ON(1);
-=======
 			WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		break;
 	case 0x4312:
-<<<<<<< HEAD
-		if (SSB_WARN_ON(id != LDO_PAREF))
-=======
 		if (WARN_ON(id != LDO_PAREF))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		addr = 0;
 		shift = 21;
@@ -694,8 +616,6 @@ void ssb_pmu_set_ldo_paref(struct ssb_chipcommon *cc, bool on)
 EXPORT_SYMBOL(ssb_pmu_set_ldo_voltage);
 EXPORT_SYMBOL(ssb_pmu_set_ldo_paref);
 
-<<<<<<< HEAD
-=======
 static u32 ssb_pmu_get_alp_clock_clk0(struct ssb_chipcommon *cc)
 {
 	u32 crystalfreq;
@@ -722,7 +642,6 @@ u32 ssb_pmu_get_alp_clock(struct ssb_chipcommon *cc)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 ssb_pmu_get_cpu_clock(struct ssb_chipcommon *cc)
 {
 	struct ssb_bus *bus = cc->dev->bus;
@@ -732,14 +651,8 @@ u32 ssb_pmu_get_cpu_clock(struct ssb_chipcommon *cc)
 		/* 5354 chip uses a non programmable PLL of frequency 240MHz */
 		return 240000000;
 	default:
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR PFX
-			   "ERROR: PMU cpu clock unknown for device %04X\n",
-			   bus->chip_id);
-=======
 		dev_err(cc->dev->dev, "ERROR: PMU cpu clock unknown for device %04X\n",
 			bus->chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
@@ -752,14 +665,8 @@ u32 ssb_pmu_get_controlclock(struct ssb_chipcommon *cc)
 	case 0x5354:
 		return 120000000;
 	default:
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR PFX
-			   "ERROR: PMU controlclock unknown for device %04X\n",
-			   bus->chip_id);
-=======
 		dev_err(cc->dev->dev, "ERROR: PMU controlclock unknown for device %04X\n",
 			bus->chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
@@ -780,14 +687,6 @@ void ssb_pmu_spuravoid_pllupdate(struct ssb_chipcommon *cc, int spuravoid)
 		pmu_ctl = SSB_CHIPCO_PMU_CTL_PLL_UPD;
 		break;
 	case 43222:
-<<<<<<< HEAD
-		/* TODO: BCM43222 requires updating PLLs too */
-		return;
-	default:
-		ssb_printk(KERN_ERR PFX
-			   "Unknown spuravoidance settings for chip 0x%04X, not changing PLL\n",
-			   cc->dev->bus->chip_id);
-=======
 		if (spuravoid == 1) {
 			ssb_chipco_pll_write(cc, SSB_PMU1_PLLCTL0, 0x11500008);
 			ssb_chipco_pll_write(cc, SSB_PMU1_PLLCTL1, 0x0C000C06);
@@ -809,7 +708,6 @@ void ssb_pmu_spuravoid_pllupdate(struct ssb_chipcommon *cc, int spuravoid)
 		dev_err(cc->dev->dev,
 			"Unknown spuravoidance settings for chip 0x%04X, not changing PLL\n",
 			cc->dev->bus->chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 

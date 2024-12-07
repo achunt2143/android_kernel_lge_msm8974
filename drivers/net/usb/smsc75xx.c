@@ -1,53 +1,23 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  /***************************************************************************
  *
  * Copyright (C) 2007-2010 SMSC
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *****************************************************************************/
 
 #include <linux/module.h>
 #include <linux/kmod.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
 #include <linux/mii.h>
 #include <linux/usb.h>
-<<<<<<< HEAD
-#include <linux/crc32.h>
-#include <linux/usb/usbnet.h>
-#include <linux/slab.h>
-=======
 #include <linux/bitrev.h>
 #include <linux/crc16.h>
 #include <linux/crc32.h>
 #include <linux/usb/usbnet.h>
 #include <linux/slab.h>
 #include <linux/of_net.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "smsc75xx.h"
 
 #define SMSC_CHIPNAME			"smsc75xx"
@@ -70,17 +40,6 @@
 #define USB_PRODUCT_ID_LAN7500		(0x7500)
 #define USB_PRODUCT_ID_LAN7505		(0x7505)
 #define RXW_PADDING			2
-<<<<<<< HEAD
-
-#define check_warn(ret, fmt, args...) \
-	({ if (ret < 0) netdev_warn(dev->net, fmt, ##args); })
-
-#define check_warn_return(ret, fmt, args...) \
-	({ if (ret < 0) { netdev_warn(dev->net, fmt, ##args); return ret; } })
-
-#define check_warn_goto_done(ret, fmt, args...) \
-	({ if (ret < 0) { netdev_warn(dev->net, fmt, ##args); goto done; } })
-=======
 #define SUPPORTED_WAKE			(WAKE_PHY | WAKE_UCAST | WAKE_BCAST | \
 					 WAKE_MCAST | WAKE_ARP | WAKE_MAGIC)
 
@@ -90,23 +49,16 @@
 #define SUSPEND_SUSPEND3		(0x08)
 #define SUSPEND_ALLMODES		(SUSPEND_SUSPEND0 | SUSPEND_SUSPEND1 | \
 					 SUSPEND_SUSPEND2 | SUSPEND_SUSPEND3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct smsc75xx_priv {
 	struct usbnet *dev;
 	u32 rfe_ctl;
-<<<<<<< HEAD
-=======
 	u32 wolopts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 multicast_hash_table[DP_SEL_VHF_HASH_LEN];
 	struct mutex dataport_mutex;
 	spinlock_t rfe_ctl_lock;
 	struct work_struct set_multicast;
-<<<<<<< HEAD
-=======
 	u8 suspend_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct usb_context {
@@ -118,31 +70,6 @@ static bool turbo_mode = true;
 module_param(turbo_mode, bool, 0644);
 MODULE_PARM_DESC(turbo_mode, "Enable multiple frames per Rx transaction");
 
-<<<<<<< HEAD
-static int __must_check smsc75xx_read_reg(struct usbnet *dev, u32 index,
-					  u32 *data)
-{
-	u32 *buf = kmalloc(4, GFP_KERNEL);
-	int ret;
-
-	BUG_ON(!dev);
-
-	if (!buf)
-		return -ENOMEM;
-
-	ret = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
-		USB_VENDOR_REQUEST_READ_REGISTER,
-		USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		00, index, buf, 4, USB_CTRL_GET_TIMEOUT);
-
-	if (unlikely(ret < 0))
-		netdev_warn(dev->net,
-			"Failed to read reg index 0x%08x: %d", index, ret);
-
-	le32_to_cpus(buf);
-	*data = *buf;
-	kfree(buf);
-=======
 static int smsc75xx_link_ok_nopm(struct usbnet *dev);
 static int smsc75xx_phy_gig_workaround(struct usbnet *dev);
 
@@ -173,39 +100,10 @@ static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
 
 	le32_to_cpus(&buf);
 	*data = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __must_check smsc75xx_write_reg(struct usbnet *dev, u32 index,
-					   u32 data)
-{
-	u32 *buf = kmalloc(4, GFP_KERNEL);
-	int ret;
-
-	BUG_ON(!dev);
-
-	if (!buf)
-		return -ENOMEM;
-
-	*buf = data;
-	cpu_to_le32s(buf);
-
-	ret = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
-		USB_VENDOR_REQUEST_WRITE_REGISTER,
-		USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		00, index, buf, 4, USB_CTRL_SET_TIMEOUT);
-
-	if (unlikely(ret < 0))
-		netdev_warn(dev->net,
-			"Failed to write reg index 0x%08x: %d", index, ret);
-
-	kfree(buf);
-
-	return ret;
-=======
 static int __must_check __smsc75xx_write_reg(struct usbnet *dev, u32 index,
 					     u32 data, int in_pm)
 {
@@ -255,33 +153,23 @@ static int __must_check smsc75xx_write_reg(struct usbnet *dev, u32 index,
 					   u32 data)
 {
 	return __smsc75xx_write_reg(dev, index, data, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Loop until the read is completed with timeout
  * called with phy_mutex held */
-<<<<<<< HEAD
-static int smsc75xx_phy_wait_not_busy(struct usbnet *dev)
-=======
 static __must_check int __smsc75xx_phy_wait_not_busy(struct usbnet *dev,
 						     int in_pm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long start_time = jiffies;
 	u32 val;
 	int ret;
 
 	do {
-<<<<<<< HEAD
-		ret = smsc75xx_read_reg(dev, MII_ACCESS, &val);
-		check_warn_return(ret, "Error reading MII_ACCESS");
-=======
 		ret = __smsc75xx_read_reg(dev, MII_ACCESS, &val, in_pm);
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading MII_ACCESS\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(val & MII_ACCESS_BUSY))
 			return 0;
@@ -290,12 +178,8 @@ static __must_check int __smsc75xx_phy_wait_not_busy(struct usbnet *dev,
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static int smsc75xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
-=======
 static int __smsc75xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
 				int in_pm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet *dev = netdev_priv(netdev);
 	u32 val, addr;
@@ -304,16 +188,11 @@ static int __smsc75xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
 	mutex_lock(&dev->phy_mutex);
 
 	/* confirm MII not busy */
-<<<<<<< HEAD
-	ret = smsc75xx_phy_wait_not_busy(dev);
-	check_warn_goto_done(ret, "MII is busy in smsc75xx_mdio_read");
-=======
 	ret = __smsc75xx_phy_wait_not_busy(dev, in_pm);
 	if (ret < 0) {
 		netdev_warn(dev->net, "MII is busy in smsc75xx_mdio_read\n");
 		goto done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the address, index & direction (read from PHY) */
 	phy_id &= dev->mii.phy_id_mask;
@@ -321,16 +200,6 @@ static int __smsc75xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
 	addr = ((phy_id << MII_ACCESS_PHY_ADDR_SHIFT) & MII_ACCESS_PHY_ADDR)
 		| ((idx << MII_ACCESS_REG_ADDR_SHIFT) & MII_ACCESS_REG_ADDR)
 		| MII_ACCESS_READ | MII_ACCESS_BUSY;
-<<<<<<< HEAD
-	ret = smsc75xx_write_reg(dev, MII_ACCESS, addr);
-	check_warn_goto_done(ret, "Error writing MII_ACCESS");
-
-	ret = smsc75xx_phy_wait_not_busy(dev);
-	check_warn_goto_done(ret, "Timed out reading MII reg %02X", idx);
-
-	ret = smsc75xx_read_reg(dev, MII_DATA, &val);
-	check_warn_goto_done(ret, "Error reading MII_DATA");
-=======
 	ret = __smsc75xx_write_reg(dev, MII_ACCESS, addr, in_pm);
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing MII_ACCESS\n");
@@ -348,7 +217,6 @@ static int __smsc75xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
 		netdev_warn(dev->net, "Error reading MII_DATA\n");
 		goto done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = (u16)(val & 0xFFFF);
 
@@ -357,13 +225,8 @@ done:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void smsc75xx_mdio_write(struct net_device *netdev, int phy_id, int idx,
-				int regval)
-=======
 static void __smsc75xx_mdio_write(struct net_device *netdev, int phy_id,
 				  int idx, int regval, int in_pm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbnet *dev = netdev_priv(netdev);
 	u32 val, addr;
@@ -372,14 +235,6 @@ static void __smsc75xx_mdio_write(struct net_device *netdev, int phy_id,
 	mutex_lock(&dev->phy_mutex);
 
 	/* confirm MII not busy */
-<<<<<<< HEAD
-	ret = smsc75xx_phy_wait_not_busy(dev);
-	check_warn_goto_done(ret, "MII is busy in smsc75xx_mdio_write");
-
-	val = regval;
-	ret = smsc75xx_write_reg(dev, MII_DATA, val);
-	check_warn_goto_done(ret, "Error writing MII_DATA");
-=======
 	ret = __smsc75xx_phy_wait_not_busy(dev, in_pm);
 	if (ret < 0) {
 		netdev_warn(dev->net, "MII is busy in smsc75xx_mdio_write\n");
@@ -392,7 +247,6 @@ static void __smsc75xx_mdio_write(struct net_device *netdev, int phy_id,
 		netdev_warn(dev->net, "Error writing MII_DATA\n");
 		goto done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the address, index & direction (write to PHY) */
 	phy_id &= dev->mii.phy_id_mask;
@@ -400,13 +254,6 @@ static void __smsc75xx_mdio_write(struct net_device *netdev, int phy_id,
 	addr = ((phy_id << MII_ACCESS_PHY_ADDR_SHIFT) & MII_ACCESS_PHY_ADDR)
 		| ((idx << MII_ACCESS_REG_ADDR_SHIFT) & MII_ACCESS_REG_ADDR)
 		| MII_ACCESS_WRITE | MII_ACCESS_BUSY;
-<<<<<<< HEAD
-	ret = smsc75xx_write_reg(dev, MII_ACCESS, addr);
-	check_warn_goto_done(ret, "Error writing MII_ACCESS");
-
-	ret = smsc75xx_phy_wait_not_busy(dev);
-	check_warn_goto_done(ret, "Timed out writing MII reg %02X", idx);
-=======
 	ret = __smsc75xx_write_reg(dev, MII_ACCESS, addr, in_pm);
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing MII_ACCESS\n");
@@ -418,14 +265,11 @@ static void __smsc75xx_mdio_write(struct net_device *netdev, int phy_id,
 		netdev_warn(dev->net, "Timed out writing MII reg %02X\n", idx);
 		goto done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	mutex_unlock(&dev->phy_mutex);
 }
 
-<<<<<<< HEAD
-=======
 static int smsc75xx_mdio_read_nopm(struct net_device *netdev, int phy_id,
 				   int idx)
 {
@@ -449,7 +293,6 @@ static void smsc75xx_mdio_write(struct net_device *netdev, int phy_id, int idx,
 	__smsc75xx_mdio_write(netdev, phy_id, idx, regval, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int smsc75xx_wait_eeprom(struct usbnet *dev)
 {
 	unsigned long start_time = jiffies;
@@ -458,14 +301,10 @@ static int smsc75xx_wait_eeprom(struct usbnet *dev)
 
 	do {
 		ret = smsc75xx_read_reg(dev, E2P_CMD, &val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error reading E2P_CMD");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(val & E2P_CMD_BUSY) || (val & E2P_CMD_TIMEOUT))
 			break;
@@ -473,11 +312,7 @@ static int smsc75xx_wait_eeprom(struct usbnet *dev)
 	} while (!time_after(jiffies, start_time + HZ));
 
 	if (val & (E2P_CMD_TIMEOUT | E2P_CMD_BUSY)) {
-<<<<<<< HEAD
-		netdev_warn(dev->net, "EEPROM read operation timeout");
-=======
 		netdev_warn(dev->net, "EEPROM read operation timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -492,14 +327,10 @@ static int smsc75xx_eeprom_confirm_not_busy(struct usbnet *dev)
 
 	do {
 		ret = smsc75xx_read_reg(dev, E2P_CMD, &val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error reading E2P_CMD");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(val & E2P_CMD_BUSY))
 			return 0;
@@ -507,11 +338,7 @@ static int smsc75xx_eeprom_confirm_not_busy(struct usbnet *dev)
 		udelay(40);
 	} while (!time_after(jiffies, start_time + HZ));
 
-<<<<<<< HEAD
-	netdev_warn(dev->net, "EEPROM is busy");
-=======
 	netdev_warn(dev->net, "EEPROM is busy\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -531,28 +358,20 @@ static int smsc75xx_read_eeprom(struct usbnet *dev, u32 offset, u32 length,
 	for (i = 0; i < length; i++) {
 		val = E2P_CMD_BUSY | E2P_CMD_READ | (offset & E2P_CMD_ADDR);
 		ret = smsc75xx_write_reg(dev, E2P_CMD, val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error writing E2P_CMD");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error writing E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = smsc75xx_wait_eeprom(dev);
 		if (ret < 0)
 			return ret;
 
 		ret = smsc75xx_read_reg(dev, E2P_DATA, &val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error reading E2P_DATA");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading E2P_DATA\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		data[i] = val & 0xFF;
 		offset++;
@@ -577,14 +396,10 @@ static int smsc75xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 	/* Issue write/erase enable command */
 	val = E2P_CMD_BUSY | E2P_CMD_EWEN;
 	ret = smsc75xx_write_reg(dev, E2P_CMD, val);
-<<<<<<< HEAD
-	check_warn_return(ret, "Error writing E2P_CMD");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing E2P_CMD\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = smsc75xx_wait_eeprom(dev);
 	if (ret < 0)
@@ -595,26 +410,18 @@ static int smsc75xx_write_eeprom(struct usbnet *dev, u32 offset, u32 length,
 		/* Fill data register */
 		val = data[i];
 		ret = smsc75xx_write_reg(dev, E2P_DATA, val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error writing E2P_DATA");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error writing E2P_DATA\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Send "write" command */
 		val = E2P_CMD_BUSY | E2P_CMD_WRITE | (offset & E2P_CMD_ADDR);
 		ret = smsc75xx_write_reg(dev, E2P_CMD, val);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error writing E2P_CMD");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error writing E2P_CMD\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = smsc75xx_wait_eeprom(dev);
 		if (ret < 0)
@@ -633,14 +440,10 @@ static int smsc75xx_dataport_wait_not_busy(struct usbnet *dev)
 	for (i = 0; i < 100; i++) {
 		u32 dp_sel;
 		ret = smsc75xx_read_reg(dev, DP_SEL, &dp_sel);
-<<<<<<< HEAD
-		check_warn_return(ret, "Error reading DP_SEL");
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Error reading DP_SEL\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (dp_sel & DP_SEL_DPRDY)
 			return 0;
@@ -648,11 +451,7 @@ static int smsc75xx_dataport_wait_not_busy(struct usbnet *dev)
 		udelay(40);
 	}
 
-<<<<<<< HEAD
-	netdev_warn(dev->net, "smsc75xx_dataport_wait_not_busy timed out");
-=======
 	netdev_warn(dev->net, "smsc75xx_dataport_wait_not_busy timed out\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EIO;
 }
@@ -667,12 +466,6 @@ static int smsc75xx_dataport_write(struct usbnet *dev, u32 ram_select, u32 addr,
 	mutex_lock(&pdata->dataport_mutex);
 
 	ret = smsc75xx_dataport_wait_not_busy(dev);
-<<<<<<< HEAD
-	check_warn_goto_done(ret, "smsc75xx_dataport_write busy on entry");
-
-	ret = smsc75xx_read_reg(dev, DP_SEL, &dp_sel);
-	check_warn_goto_done(ret, "Error reading DP_SEL");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "smsc75xx_dataport_write busy on entry\n");
 		goto done;
@@ -683,27 +476,10 @@ static int smsc75xx_dataport_write(struct usbnet *dev, u32 ram_select, u32 addr,
 		netdev_warn(dev->net, "Error reading DP_SEL\n");
 		goto done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dp_sel &= ~DP_SEL_RSEL;
 	dp_sel |= ram_select;
 	ret = smsc75xx_write_reg(dev, DP_SEL, dp_sel);
-<<<<<<< HEAD
-	check_warn_goto_done(ret, "Error writing DP_SEL");
-
-	for (i = 0; i < length; i++) {
-		ret = smsc75xx_write_reg(dev, DP_ADDR, addr + i);
-		check_warn_goto_done(ret, "Error writing DP_ADDR");
-
-		ret = smsc75xx_write_reg(dev, DP_DATA, buf[i]);
-		check_warn_goto_done(ret, "Error writing DP_DATA");
-
-		ret = smsc75xx_write_reg(dev, DP_CMD, DP_CMD_WRITE);
-		check_warn_goto_done(ret, "Error writing DP_CMD");
-
-		ret = smsc75xx_dataport_wait_not_busy(dev);
-		check_warn_goto_done(ret, "smsc75xx_dataport_write timeout");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing DP_SEL\n");
 		goto done;
@@ -733,7 +509,6 @@ static int smsc75xx_dataport_write(struct usbnet *dev, u32 ram_select, u32 addr,
 			netdev_warn(dev->net, "smsc75xx_dataport_write timeout\n");
 			goto done;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 done:
@@ -754,24 +529,15 @@ static void smsc75xx_deferred_multicast_write(struct work_struct *param)
 	struct usbnet *dev = pdata->dev;
 	int ret;
 
-<<<<<<< HEAD
-	netif_dbg(dev, drv, dev->net, "deferred multicast write 0x%08x",
-		pdata->rfe_ctl);
-=======
 	netif_dbg(dev, drv, dev->net, "deferred multicast write 0x%08x\n",
 		  pdata->rfe_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smsc75xx_dataport_write(dev, DP_SEL_VHF, DP_SEL_VHF_VLAN_LEN,
 		DP_SEL_VHF_HASH_LEN, pdata->multicast_hash_table);
 
 	ret = smsc75xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
-<<<<<<< HEAD
-	check_warn(ret, "Error writing RFE_CRL");
-=======
 	if (ret < 0)
 		netdev_warn(dev->net, "Error writing RFE_CRL\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc75xx_set_multicast(struct net_device *netdev)
@@ -791,26 +557,15 @@ static void smsc75xx_set_multicast(struct net_device *netdev)
 		pdata->multicast_hash_table[i] = 0;
 
 	if (dev->net->flags & IFF_PROMISC) {
-<<<<<<< HEAD
-		netif_dbg(dev, drv, dev->net, "promiscuous mode enabled");
-		pdata->rfe_ctl |= RFE_CTL_AM | RFE_CTL_AU;
-	} else if (dev->net->flags & IFF_ALLMULTI) {
-		netif_dbg(dev, drv, dev->net, "receive all multicast enabled");
-=======
 		netif_dbg(dev, drv, dev->net, "promiscuous mode enabled\n");
 		pdata->rfe_ctl |= RFE_CTL_AM | RFE_CTL_AU;
 	} else if (dev->net->flags & IFF_ALLMULTI) {
 		netif_dbg(dev, drv, dev->net, "receive all multicast enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->rfe_ctl |= RFE_CTL_AM | RFE_CTL_DPF;
 	} else if (!netdev_mc_empty(dev->net)) {
 		struct netdev_hw_addr *ha;
 
-<<<<<<< HEAD
-		netif_dbg(dev, drv, dev->net, "receive multicast hash filter");
-=======
 		netif_dbg(dev, drv, dev->net, "receive multicast hash filter\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pdata->rfe_ctl |= RFE_CTL_MHF | RFE_CTL_DPF;
 
@@ -820,11 +575,7 @@ static void smsc75xx_set_multicast(struct net_device *netdev)
 				(1 << (bitnum % 32));
 		}
 	} else {
-<<<<<<< HEAD
-		netif_dbg(dev, drv, dev->net, "receive own packets only");
-=======
 		netif_dbg(dev, drv, dev->net, "receive own packets only\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->rfe_ctl |= RFE_CTL_DPF;
 	}
 
@@ -852,20 +603,6 @@ static int smsc75xx_update_flowcontrol(struct usbnet *dev, u8 duplex,
 		if (cap & FLOW_CTRL_RX)
 			flow |= FLOW_RX_FCEN;
 
-<<<<<<< HEAD
-		netif_dbg(dev, link, dev->net, "rx pause %s, tx pause %s",
-			(cap & FLOW_CTRL_RX ? "enabled" : "disabled"),
-			(cap & FLOW_CTRL_TX ? "enabled" : "disabled"));
-	} else {
-		netif_dbg(dev, link, dev->net, "half duplex");
-	}
-
-	ret = smsc75xx_write_reg(dev, FLOW, flow);
-	check_warn_return(ret, "Error writing FLOW");
-
-	ret = smsc75xx_write_reg(dev, FCT_FLOW, fct_flow);
-	check_warn_return(ret, "Error writing FCT_FLOW");
-=======
 		netif_dbg(dev, link, dev->net, "rx pause %s, tx pause %s\n",
 			  (cap & FLOW_CTRL_RX ? "enabled" : "disabled"),
 			  (cap & FLOW_CTRL_TX ? "enabled" : "disabled"));
@@ -884,7 +621,6 @@ static int smsc75xx_update_flowcontrol(struct usbnet *dev, u8 duplex,
 		netdev_warn(dev->net, "Error writing FCT_FLOW\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -896,15 +632,6 @@ static int smsc75xx_link_reset(struct usbnet *dev)
 	u16 lcladv, rmtadv;
 	int ret;
 
-<<<<<<< HEAD
-	/* read and write to clear phy interrupt status */
-	ret = smsc75xx_mdio_read(dev->net, mii->phy_id, PHY_INT_SRC);
-	check_warn_return(ret, "Error reading PHY_INT_SRC");
-	smsc75xx_mdio_write(dev->net, mii->phy_id, PHY_INT_SRC, 0xffff);
-
-	ret = smsc75xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL);
-	check_warn_return(ret, "Error writing INT_STS");
-=======
 	/* write to clear phy interrupt status */
 	smsc75xx_mdio_write(dev->net, mii->phy_id, PHY_INT_SRC,
 		PHY_INT_SRC_CLEAR_ALL);
@@ -914,21 +641,14 @@ static int smsc75xx_link_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Error writing INT_STS\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mii_check_media(mii, 1, 1);
 	mii_ethtool_gset(&dev->mii, &ecmd);
 	lcladv = smsc75xx_mdio_read(dev->net, mii->phy_id, MII_ADVERTISE);
 	rmtadv = smsc75xx_mdio_read(dev->net, mii->phy_id, MII_LPA);
 
-<<<<<<< HEAD
-	netif_dbg(dev, link, dev->net, "speed: %u duplex: %d lcladv: %04x"
-		  " rmtadv: %04x", ethtool_cmd_speed(&ecmd),
-		  ecmd.duplex, lcladv, rmtadv);
-=======
 	netif_dbg(dev, link, dev->net, "speed: %u duplex: %d lcladv: %04x rmtadv: %04x\n",
 		  ethtool_cmd_speed(&ecmd), ecmd.duplex, lcladv, rmtadv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return smsc75xx_update_flowcontrol(dev, ecmd.duplex, lcladv, rmtadv);
 }
@@ -938,17 +658,6 @@ static void smsc75xx_status(struct usbnet *dev, struct urb *urb)
 	u32 intdata;
 
 	if (urb->actual_length != 4) {
-<<<<<<< HEAD
-		netdev_warn(dev->net,
-			"unexpected urb length %d", urb->actual_length);
-		return;
-	}
-
-	memcpy(&intdata, urb->transfer_buffer, 4);
-	le32_to_cpus(&intdata);
-
-	netif_dbg(dev, link, dev->net, "intdata: 0x%08X", intdata);
-=======
 		netdev_warn(dev->net, "unexpected urb length %d\n",
 			    urb->actual_length);
 		return;
@@ -957,18 +666,12 @@ static void smsc75xx_status(struct usbnet *dev, struct urb *urb)
 	intdata = get_unaligned_le32(urb->transfer_buffer);
 
 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (intdata & INT_ENP_PHY_INT)
 		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
 	else
-<<<<<<< HEAD
-		netdev_warn(dev->net,
-			"unexpected interrupt, intdata=0x%08X", intdata);
-=======
 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
 			    intdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc75xx_ethtool_get_eeprom_len(struct net_device *net)
@@ -992,21 +695,14 @@ static int smsc75xx_ethtool_set_eeprom(struct net_device *netdev,
 	struct usbnet *dev = netdev_priv(netdev);
 
 	if (ee->magic != LAN75XX_EEPROM_MAGIC) {
-<<<<<<< HEAD
-		netdev_warn(dev->net,
-			"EEPROM: magic value mismatch: 0x%x", ee->magic);
-=======
 		netdev_warn(dev->net, "EEPROM: magic value mismatch: 0x%x\n",
 			    ee->magic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	return smsc75xx_write_eeprom(dev, ee->offset, ee->len, data);
 }
 
-<<<<<<< HEAD
-=======
 static void smsc75xx_ethtool_get_wol(struct net_device *net,
 				     struct ethtool_wolinfo *wolinfo)
 {
@@ -1036,20 +732,12 @@ static int smsc75xx_ethtool_set_wol(struct net_device *net,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ethtool_ops smsc75xx_ethtool_ops = {
 	.get_link	= usbnet_get_link,
 	.nway_reset	= usbnet_nway_reset,
 	.get_drvinfo	= usbnet_get_drvinfo,
 	.get_msglevel	= usbnet_get_msglevel,
 	.set_msglevel	= usbnet_set_msglevel,
-<<<<<<< HEAD
-	.get_settings	= usbnet_get_settings,
-	.set_settings	= usbnet_set_settings,
-	.get_eeprom_len	= smsc75xx_ethtool_get_eeprom_len,
-	.get_eeprom	= smsc75xx_ethtool_get_eeprom,
-	.set_eeprom	= smsc75xx_ethtool_set_eeprom,
-=======
 	.get_eeprom_len	= smsc75xx_ethtool_get_eeprom_len,
 	.get_eeprom	= smsc75xx_ethtool_get_eeprom,
 	.set_eeprom	= smsc75xx_ethtool_set_eeprom,
@@ -1057,7 +745,6 @@ static const struct ethtool_ops smsc75xx_ethtool_ops = {
 	.set_wol	= smsc75xx_ethtool_set_wol,
 	.get_link_ksettings	= usbnet_get_link_ksettings_mii,
 	.set_link_ksettings	= usbnet_set_link_ksettings_mii,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
@@ -1072,15 +759,6 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 
 static void smsc75xx_init_mac_address(struct usbnet *dev)
 {
-<<<<<<< HEAD
-	/* try reading mac address from EEPROM */
-	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
-			dev->net->dev_addr) == 0) {
-		if (is_valid_ether_addr(dev->net->dev_addr)) {
-			/* eeprom values are valid so use them */
-			netif_dbg(dev, ifup, dev->net,
-				"MAC address read from EEPROM");
-=======
 	u8 addr[ETH_ALEN];
 
 	/* maybe the boot loader passed the MAC address in devicetree */
@@ -1088,16 +766,10 @@ static void smsc75xx_init_mac_address(struct usbnet *dev)
 		if (is_valid_ether_addr(dev->net->dev_addr)) {
 			/* device tree values are valid so use them */
 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
-<<<<<<< HEAD
-	/* no eeprom, or eeprom values are invalid. generate random MAC */
-	eth_hw_addr_random(dev->net);
-	netif_dbg(dev, ifup, dev->net, "MAC address set to random_ether_addr");
-=======
 	/* try reading mac address from EEPROM */
 	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN, addr) == 0) {
 		eth_hw_addr_set(dev->net, addr);
@@ -1112,7 +784,6 @@ static void smsc75xx_init_mac_address(struct usbnet *dev)
 	/* no useful static MAC address found. generate a random one */
 	eth_hw_addr_random(dev->net);
 	netif_dbg(dev, ifup, dev->net, "MAC address set to eth_random_addr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc75xx_set_mac_address(struct usbnet *dev)
@@ -1122,21 +793,6 @@ static int smsc75xx_set_mac_address(struct usbnet *dev)
 	u32 addr_hi = dev->net->dev_addr[4] | dev->net->dev_addr[5] << 8;
 
 	int ret = smsc75xx_write_reg(dev, RX_ADDRH, addr_hi);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write RX_ADDRH: %d", ret);
-
-	ret = smsc75xx_write_reg(dev, RX_ADDRL, addr_lo);
-	check_warn_return(ret, "Failed to write RX_ADDRL: %d", ret);
-
-	addr_hi |= ADDR_FILTX_FB_VALID;
-	ret = smsc75xx_write_reg(dev, ADDR_FILTX, addr_hi);
-	check_warn_return(ret, "Failed to write ADDR_FILTX: %d", ret);
-
-	ret = smsc75xx_write_reg(dev, ADDR_FILTX + 4, addr_lo);
-	check_warn_return(ret, "Failed to write ADDR_FILTX+4: %d", ret);
-
-	return 0;
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write RX_ADDRH: %d\n", ret);
 		return ret;
@@ -1160,7 +816,6 @@ static int smsc75xx_set_mac_address(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to write ADDR_FILTX+4: %d\n", ret);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc75xx_phy_initialize(struct usbnet *dev)
@@ -1182,24 +837,14 @@ static int smsc75xx_phy_initialize(struct usbnet *dev)
 	do {
 		msleep(10);
 		bmcr = smsc75xx_mdio_read(dev->net, dev->mii.phy_id, MII_BMCR);
-<<<<<<< HEAD
-		check_warn_return(bmcr, "Error reading MII_BMCR");
-=======
 		if (bmcr < 0) {
 			netdev_warn(dev->net, "Error reading MII_BMCR\n");
 			return bmcr;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout++;
 	} while ((bmcr & BMCR_RESET) && (timeout < 100));
 
 	if (timeout >= 100) {
-<<<<<<< HEAD
-		netdev_warn(dev->net, "timeout on PHY Reset");
-		return -EIO;
-	}
-
-=======
 		netdev_warn(dev->net, "timeout on PHY Reset\n");
 		return -EIO;
 	}
@@ -1207,7 +852,6 @@ static int smsc75xx_phy_initialize(struct usbnet *dev)
 	/* phy workaround for gig link */
 	smsc75xx_phy_gig_workaround(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc75xx_mdio_write(dev->net, dev->mii.phy_id, MII_ADVERTISE,
 		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
 		ADVERTISE_PAUSE_ASYM);
@@ -1216,26 +860,18 @@ static int smsc75xx_phy_initialize(struct usbnet *dev)
 
 	/* read and write to clear phy interrupt status */
 	ret = smsc75xx_mdio_read(dev->net, dev->mii.phy_id, PHY_INT_SRC);
-<<<<<<< HEAD
-	check_warn_return(ret, "Error reading PHY_INT_SRC");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error reading PHY_INT_SRC\n");
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc75xx_mdio_write(dev->net, dev->mii.phy_id, PHY_INT_SRC, 0xffff);
 
 	smsc75xx_mdio_write(dev->net, dev->mii.phy_id, PHY_INT_MASK,
 		PHY_INT_MASK_DEFAULT);
 	mii_nway_restart(&dev->mii);
 
-<<<<<<< HEAD
-	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
-=======
 	netif_dbg(dev, ifup, dev->net, "phy initialised successfully\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1246,28 +882,20 @@ static int smsc75xx_set_rx_max_frame_length(struct usbnet *dev, int size)
 	bool rxenabled;
 
 	ret = smsc75xx_read_reg(dev, MAC_RX, &buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to read MAC_RX: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to read MAC_RX: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxenabled = ((buf & MAC_RX_RXEN) != 0);
 
 	if (rxenabled) {
 		buf &= ~MAC_RX_RXEN;
 		ret = smsc75xx_write_reg(dev, MAC_RX, buf);
-<<<<<<< HEAD
-		check_warn_return(ret, "Failed to write MAC_RX: %d", ret);
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Failed to write MAC_RX: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* add 4 to size for FCS */
@@ -1275,26 +903,18 @@ static int smsc75xx_set_rx_max_frame_length(struct usbnet *dev, int size)
 	buf |= (((size + 4) << MAC_RX_MAX_SIZE_SHIFT) & MAC_RX_MAX_SIZE);
 
 	ret = smsc75xx_write_reg(dev, MAC_RX, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write MAC_RX: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write MAC_RX: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rxenabled) {
 		buf |= MAC_RX_RXEN;
 		ret = smsc75xx_write_reg(dev, MAC_RX, buf);
-<<<<<<< HEAD
-		check_warn_return(ret, "Failed to write MAC_RX: %d", ret);
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Failed to write MAC_RX: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1305,19 +925,11 @@ static int smsc75xx_change_mtu(struct net_device *netdev, int new_mtu)
 	struct usbnet *dev = netdev_priv(netdev);
 	int ret;
 
-<<<<<<< HEAD
-	if (new_mtu > MAX_SINGLE_PACKET_SIZE)
-		return -EINVAL;
-
-	ret = smsc75xx_set_rx_max_frame_length(dev, new_mtu + ETH_HLEN);
-	check_warn_return(ret, "Failed to set mac rx frame length");
-=======
 	ret = smsc75xx_set_rx_max_frame_length(dev, new_mtu + ETH_HLEN);
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to set mac rx frame length\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return usbnet_change_mtu(netdev, new_mtu);
 }
@@ -1342,9 +954,6 @@ static int smsc75xx_set_features(struct net_device *netdev,
 	/* it's racing here! */
 
 	ret = smsc75xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
-<<<<<<< HEAD
-	check_warn_return(ret, "Error writing RFE_CTL");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Error writing RFE_CTL\n");
 		return ret;
@@ -1430,7 +1039,6 @@ static int smsc75xx_phy_gig_workaround(struct usbnet *dev)
 		netdev_warn(dev->net, "timeout waiting for PHY Reset\n");
 		return -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1441,12 +1049,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 	u32 buf;
 	int ret = 0, timeout;
 
-<<<<<<< HEAD
-	netif_dbg(dev, ifup, dev->net, "entering smsc75xx_reset");
-
-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-	check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-=======
 	netif_dbg(dev, ifup, dev->net, "entering smsc75xx_reset\n");
 
 	ret = smsc75xx_wait_ready(dev, 0);
@@ -1460,46 +1062,27 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= HW_CFG_LRST;
 
 	ret = smsc75xx_write_reg(dev, HW_CFG, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write HW_CFG: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write HW_CFG: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timeout = 0;
 	do {
 		msleep(10);
 		ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-<<<<<<< HEAD
-		check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Failed to read HW_CFG: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout++;
 	} while ((buf & HW_CFG_LRST) && (timeout < 100));
 
 	if (timeout >= 100) {
-<<<<<<< HEAD
-		netdev_warn(dev->net, "timeout on completion of Lite Reset");
-		return -EIO;
-	}
-
-	netif_dbg(dev, ifup, dev->net, "Lite reset complete, resetting PHY");
-
-	ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
-	check_warn_return(ret, "Failed to read PMT_CTL: %d", ret);
-=======
 		netdev_warn(dev->net, "timeout on completion of Lite Reset\n");
 		return -EIO;
 	}
@@ -1511,55 +1094,27 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= PMT_CTL_PHY_RST;
 
 	ret = smsc75xx_write_reg(dev, PMT_CTL, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write PMT_CTL: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write PMT_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timeout = 0;
 	do {
 		msleep(10);
 		ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
-<<<<<<< HEAD
-		check_warn_return(ret, "Failed to read PMT_CTL: %d", ret);
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout++;
 	} while ((buf & PMT_CTL_PHY_RST) && (timeout < 100));
 
 	if (timeout >= 100) {
-<<<<<<< HEAD
-		netdev_warn(dev->net, "timeout waiting for PHY Reset");
-		return -EIO;
-	}
-
-	netif_dbg(dev, ifup, dev->net, "PHY reset complete");
-
-	smsc75xx_init_mac_address(dev);
-
-	ret = smsc75xx_set_mac_address(dev);
-	check_warn_return(ret, "Failed to set mac address");
-
-	netif_dbg(dev, ifup, dev->net, "MAC Address: %pM", dev->net->dev_addr);
-
-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-	check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG : 0x%08x", buf);
-=======
 		netdev_warn(dev->net, "timeout waiting for PHY Reset\n");
 		return -EIO;
 	}
@@ -1583,20 +1138,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 
 	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG : 0x%08x\n",
 		  buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= HW_CFG_BIR;
 
 	ret = smsc75xx_write_reg(dev, HW_CFG, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write HW_CFG: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-	check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG after "
-			"writing HW_CFG_BIR: 0x%08x", buf);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net,  "Failed to write HW_CFG: %d\n", ret);
 		return ret;
@@ -1610,7 +1155,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 
 	netif_dbg(dev, ifup, dev->net, "Read Value from HW_CFG after writing HW_CFG_BIR: 0x%08x\n",
 		  buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!turbo_mode) {
 		buf = 0;
@@ -1623,34 +1167,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 		dev->rx_urb_size = DEFAULT_FS_BURST_CAP_SIZE;
 	}
 
-<<<<<<< HEAD
-	netif_dbg(dev, ifup, dev->net, "rx_urb_size=%ld",
-		(ulong)dev->rx_urb_size);
-
-	ret = smsc75xx_write_reg(dev, BURST_CAP, buf);
-	check_warn_return(ret, "Failed to write BURST_CAP: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, BURST_CAP, &buf);
-	check_warn_return(ret, "Failed to read BURST_CAP: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net,
-		"Read Value from BURST_CAP after writing: 0x%08x", buf);
-
-	ret = smsc75xx_write_reg(dev, BULK_IN_DLY, DEFAULT_BULK_IN_DELAY);
-	check_warn_return(ret, "Failed to write BULK_IN_DLY: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, BULK_IN_DLY, &buf);
-	check_warn_return(ret, "Failed to read BULK_IN_DLY: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net,
-		"Read Value from BULK_IN_DLY after writing: 0x%08x", buf);
-
-	if (turbo_mode) {
-		ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-		check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-
-		netif_dbg(dev, ifup, dev->net, "HW_CFG: 0x%08x", buf);
-=======
 	netif_dbg(dev, ifup, dev->net, "rx_urb_size=%ld\n",
 		  (ulong)dev->rx_urb_size);
 
@@ -1692,19 +1208,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		}
 
 		netif_dbg(dev, ifup, dev->net, "HW_CFG: 0x%08x\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		buf |= (HW_CFG_MEF | HW_CFG_BCE);
 
 		ret = smsc75xx_write_reg(dev, HW_CFG, buf);
-<<<<<<< HEAD
-		check_warn_return(ret, "Failed to write HW_CFG: %d", ret);
-
-		ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
-		check_warn_return(ret, "Failed to read HW_CFG: %d", ret);
-
-		netif_dbg(dev, ifup, dev->net, "HW_CFG: 0x%08x", buf);
-=======
 		if (ret < 0) {
 			netdev_warn(dev->net, "Failed to write HW_CFG: %d\n", ret);
 			return ret;
@@ -1717,51 +1224,11 @@ static int smsc75xx_reset(struct usbnet *dev)
 		}
 
 		netif_dbg(dev, ifup, dev->net, "HW_CFG: 0x%08x\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set FIFO sizes */
 	buf = (MAX_RX_FIFO_SIZE - 512) / 512;
 	ret = smsc75xx_write_reg(dev, FCT_RX_FIFO_END, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write FCT_RX_FIFO_END: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "FCT_RX_FIFO_END set to 0x%08x", buf);
-
-	buf = (MAX_TX_FIFO_SIZE - 512) / 512;
-	ret = smsc75xx_write_reg(dev, FCT_TX_FIFO_END, buf);
-	check_warn_return(ret, "Failed to write FCT_TX_FIFO_END: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "FCT_TX_FIFO_END set to 0x%08x", buf);
-
-	ret = smsc75xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL);
-	check_warn_return(ret, "Failed to write INT_STS: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, ID_REV, &buf);
-	check_warn_return(ret, "Failed to read ID_REV: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "ID_REV = 0x%08x", buf);
-
-	/* Configure GPIO pins as LED outputs */
-	ret = smsc75xx_read_reg(dev, LED_GPIO_CFG, &buf);
-	check_warn_return(ret, "Failed to read LED_GPIO_CFG: %d", ret);
-
-	buf &= ~(LED_GPIO_CFG_LED2_FUN_SEL | LED_GPIO_CFG_LED10_FUN_SEL);
-	buf |= LED_GPIO_CFG_LEDGPIO_EN | LED_GPIO_CFG_LED2_FUN_SEL;
-
-	ret = smsc75xx_write_reg(dev, LED_GPIO_CFG, buf);
-	check_warn_return(ret, "Failed to write LED_GPIO_CFG: %d", ret);
-
-	ret = smsc75xx_write_reg(dev, FLOW, 0);
-	check_warn_return(ret, "Failed to write FLOW: %d", ret);
-
-	ret = smsc75xx_write_reg(dev, FCT_FLOW, 0);
-	check_warn_return(ret, "Failed to write FCT_FLOW: %d", ret);
-
-	/* Don't need rfe_ctl_lock during initialisation */
-	ret = smsc75xx_read_reg(dev, RFE_CTL, &pdata->rfe_ctl);
-	check_warn_return(ret, "Failed to read RFE_CTL: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write FCT_RX_FIFO_END: %d\n", ret);
 		return ret;
@@ -1834,19 +1301,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read RFE_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->rfe_ctl |= RFE_CTL_AB | RFE_CTL_DPF;
 
 	ret = smsc75xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write RFE_CTL: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, RFE_CTL, &pdata->rfe_ctl);
-	check_warn_return(ret, "Failed to read RFE_CTL: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "RFE_CTL set to 0x%08x", pdata->rfe_ctl);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write RFE_CTL: %d\n", ret);
 		return ret;
@@ -1860,7 +1318,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 
 	netif_dbg(dev, ifup, dev->net, "RFE_CTL set to 0x%08x\n",
 		  pdata->rfe_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable or disable checksum offload engines */
 	smsc75xx_set_features(dev->net, dev->net->features);
@@ -1868,12 +1325,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 	smsc75xx_set_multicast(dev->net);
 
 	ret = smsc75xx_phy_initialize(dev);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to initialize PHY: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, INT_EP_CTL, &buf);
-	check_warn_return(ret, "Failed to read INT_EP_CTL: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to initialize PHY: %d\n", ret);
 		return ret;
@@ -1884,26 +1335,11 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read INT_EP_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable PHY interrupts */
 	buf |= INT_ENP_PHY_INT;
 
 	ret = smsc75xx_write_reg(dev, INT_EP_CTL, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write INT_EP_CTL: %d", ret);
-
-	/* allow mac to detect speed and duplex from phy */
-	ret = smsc75xx_read_reg(dev, MAC_CR, &buf);
-	check_warn_return(ret, "Failed to read MAC_CR: %d", ret);
-
-	buf |= (MAC_CR_ADD | MAC_CR_ASD);
-	ret = smsc75xx_write_reg(dev, MAC_CR, buf);
-	check_warn_return(ret, "Failed to write MAC_CR: %d", ret);
-
-	ret = smsc75xx_read_reg(dev, MAC_TX, &buf);
-	check_warn_return(ret, "Failed to read MAC_TX: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write INT_EP_CTL: %d\n", ret);
 		return ret;
@@ -1928,19 +1364,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read MAC_TX: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= MAC_TX_TXEN;
 
 	ret = smsc75xx_write_reg(dev, MAC_TX, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write MAC_TX: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "MAC_TX set to 0x%08x", buf);
-
-	ret = smsc75xx_read_reg(dev, FCT_TX_CTL, &buf);
-	check_warn_return(ret, "Failed to read FCT_TX_CTL: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write MAC_TX: %d\n", ret);
 		return ret;
@@ -1953,22 +1380,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read FCT_TX_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= FCT_TX_CTL_EN;
 
 	ret = smsc75xx_write_reg(dev, FCT_TX_CTL, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write FCT_TX_CTL: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "FCT_TX_CTL set to 0x%08x", buf);
-
-	ret = smsc75xx_set_rx_max_frame_length(dev, dev->net->mtu + ETH_HLEN);
-	check_warn_return(ret, "Failed to set max rx frame length");
-
-	ret = smsc75xx_read_reg(dev, MAC_RX, &buf);
-	check_warn_return(ret, "Failed to read MAC_RX: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write FCT_TX_CTL: %d\n", ret);
 		return ret;
@@ -1987,19 +1402,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read MAC_RX: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= MAC_RX_RXEN;
 
 	ret = smsc75xx_write_reg(dev, MAC_RX, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write MAC_RX: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "MAC_RX set to 0x%08x", buf);
-
-	ret = smsc75xx_read_reg(dev, FCT_RX_CTL, &buf);
-	check_warn_return(ret, "Failed to read FCT_RX_CTL: %d", ret);
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write MAC_RX: %d\n", ret);
 		return ret;
@@ -2012,18 +1418,10 @@ static int smsc75xx_reset(struct usbnet *dev)
 		netdev_warn(dev->net, "Failed to read FCT_RX_CTL: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf |= FCT_RX_CTL_EN;
 
 	ret = smsc75xx_write_reg(dev, FCT_RX_CTL, buf);
-<<<<<<< HEAD
-	check_warn_return(ret, "Failed to write FCT_RX_CTL: %d", ret);
-
-	netif_dbg(dev, ifup, dev->net, "FCT_RX_CTL set to 0x%08x", buf);
-
-	netif_dbg(dev, ifup, dev->net, "smsc75xx_reset, return 0");
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "Failed to write FCT_RX_CTL: %d\n", ret);
 		return ret;
@@ -2032,7 +1430,6 @@ static int smsc75xx_reset(struct usbnet *dev)
 	netif_dbg(dev, ifup, dev->net, "FCT_RX_CTL set to 0x%08x\n", buf);
 
 	netif_dbg(dev, ifup, dev->net, "smsc75xx_reset, return 0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2041,18 +1438,11 @@ static const struct net_device_ops smsc75xx_netdev_ops = {
 	.ndo_stop		= usbnet_stop,
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
-<<<<<<< HEAD
-	.ndo_change_mtu		= smsc75xx_change_mtu,
-	.ndo_set_mac_address 	= eth_mac_addr,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_do_ioctl 		= smsc75xx_ioctl,
-=======
 	.ndo_get_stats64	= dev_get_tstats64,
 	.ndo_change_mtu		= smsc75xx_change_mtu,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_eth_ioctl		= smsc75xx_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= smsc75xx_set_multicast,
 	.ndo_set_features	= smsc75xx_set_features,
 };
@@ -2065,18 +1455,6 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	printk(KERN_INFO SMSC_CHIPNAME " v" SMSC_DRIVER_VERSION "\n");
 
 	ret = usbnet_get_endpoints(dev, intf);
-<<<<<<< HEAD
-	check_warn_return(ret, "usbnet_get_endpoints failed: %d", ret);
-
-	dev->data[0] = (unsigned long)kzalloc(sizeof(struct smsc75xx_priv),
-		GFP_KERNEL);
-
-	pdata = (struct smsc75xx_priv *)(dev->data[0]);
-	if (!pdata) {
-		netdev_warn(dev->net, "Unable to allocate smsc75xx_priv");
-		return -ENOMEM;
-	}
-=======
 	if (ret < 0) {
 		netdev_warn(dev->net, "usbnet_get_endpoints failed: %d\n", ret);
 		return ret;
@@ -2088,7 +1466,6 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	if (!pdata)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->dev = dev;
 
@@ -2106,10 +1483,6 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->hw_features = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
 				NETIF_F_RXCSUM;
 
-<<<<<<< HEAD
-	/* Init all registers */
-	ret = smsc75xx_reset(dev);
-=======
 	ret = smsc75xx_wait_ready(dev, 0);
 	if (ret < 0) {
 		netdev_warn(dev->net, "device not ready in smsc75xx_bind\n");
@@ -2124,16 +1497,12 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 		netdev_warn(dev->net, "smsc75xx_reset error %d\n", ret);
 		goto cancel_work;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->net->netdev_ops = &smsc75xx_netdev_ops;
 	dev->net->ethtool_ops = &smsc75xx_ethtool_ops;
 	dev->net->flags |= IFF_MULTICAST;
 	dev->net->hard_header_len += SMSC75XX_TX_OVERHEAD;
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
-<<<<<<< HEAD
-	return 0;
-=======
 	dev->net->max_mtu = MAX_SINGLE_PACKET_SIZE;
 	return 0;
 
@@ -2143,28 +1512,19 @@ free_pdata:
 	kfree(pdata);
 	dev->data[0] = 0;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc75xx_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	if (pdata) {
-<<<<<<< HEAD
-		netif_dbg(dev, ifdown, dev->net, "free pdata");
-		kfree(pdata);
-		pdata = NULL;
-=======
 		cancel_work_sync(&pdata->set_multicast);
 		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
 		kfree(pdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->data[0] = 0;
 	}
 }
 
-<<<<<<< HEAD
-=======
 static u16 smsc_crc(const u8 *buffer, size_t len)
 {
 	return bitrev16(crc16(0xFFFF, buffer, len));
@@ -2807,7 +2167,6 @@ static int smsc75xx_resume(struct usb_interface *intf)
 	return usbnet_resume(intf);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void smsc75xx_rx_csum_offload(struct usbnet *dev, struct sk_buff *skb,
 				     u32 rx_cmd_a, u32 rx_cmd_b)
 {
@@ -2831,19 +2190,10 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		struct sk_buff *ax_skb;
 		unsigned char *packet;
 
-<<<<<<< HEAD
-		memcpy(&rx_cmd_a, skb->data, sizeof(rx_cmd_a));
-		le32_to_cpus(&rx_cmd_a);
-		skb_pull(skb, 4);
-
-		memcpy(&rx_cmd_b, skb->data, sizeof(rx_cmd_b));
-		le32_to_cpus(&rx_cmd_b);
-=======
 		rx_cmd_a = get_unaligned_le32(skb->data);
 		skb_pull(skb, 4);
 
 		rx_cmd_b = get_unaligned_le32(skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_pull(skb, 4 + RXW_PADDING);
 
 		packet = skb->data;
@@ -2852,11 +2202,6 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		size = (rx_cmd_a & RX_CMD_A_LEN) - RXW_PADDING;
 		align_count = (4 - ((size + RXW_PADDING) % 4)) % 4;
 
-<<<<<<< HEAD
-		if (unlikely(rx_cmd_a & RX_CMD_A_RED)) {
-			netif_dbg(dev, rx_err, dev->net,
-				"Error rx_cmd_a=0x%08x", rx_cmd_a);
-=======
 		if (unlikely(size > skb->len)) {
 			netif_dbg(dev, rx_err, dev->net,
 				  "size err rx_cmd_a=0x%08x\n",
@@ -2867,7 +2212,6 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		if (unlikely(rx_cmd_a & RX_CMD_A_RED)) {
 			netif_dbg(dev, rx_err, dev->net,
 				  "Error rx_cmd_a=0x%08x\n", rx_cmd_a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->net->stats.rx_errors++;
 			dev->net->stats.rx_dropped++;
 
@@ -2879,12 +2223,8 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			/* MAX_SINGLE_PACKET_SIZE + 4(CRC) + 2(COE) + 4(Vlan) */
 			if (unlikely(size > (MAX_SINGLE_PACKET_SIZE + ETH_HLEN + 12))) {
 				netif_dbg(dev, rx_err, dev->net,
-<<<<<<< HEAD
-					"size err rx_cmd_a=0x%08x", rx_cmd_a);
-=======
 					  "size err rx_cmd_a=0x%08x\n",
 					  rx_cmd_a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 
@@ -2901,11 +2241,7 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 			ax_skb = skb_clone(skb, GFP_ATOMIC);
 			if (unlikely(!ax_skb)) {
-<<<<<<< HEAD
-				netdev_warn(dev->net, "Error allocating skb");
-=======
 				netdev_warn(dev->net, "Error allocating skb\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 
@@ -2929,14 +2265,6 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			skb_pull(skb, align_count);
 	}
 
-<<<<<<< HEAD
-	if (unlikely(skb->len < 0)) {
-		netdev_warn(dev->net, "invalid rx length<0 %d", skb->len);
-		return 0;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -2944,22 +2272,11 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 					 struct sk_buff *skb, gfp_t flags)
 {
 	u32 tx_cmd_a, tx_cmd_b;
-<<<<<<< HEAD
-
-	if (skb_headroom(skb) < SMSC75XX_TX_OVERHEAD) {
-		struct sk_buff *skb2 =
-			skb_copy_expand(skb, SMSC75XX_TX_OVERHEAD, 0, flags);
-		dev_kfree_skb_any(skb);
-		skb = skb2;
-		if (!skb)
-			return NULL;
-=======
 	void *ptr;
 
 	if (skb_cow_head(skb, SMSC75XX_TX_OVERHEAD)) {
 		dev_kfree_skb_any(skb);
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tx_cmd_a = (u32)(skb->len & TX_CMD_A_LEN) | TX_CMD_A_FCS;
@@ -2976,32 +2293,19 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 		tx_cmd_b = 0;
 	}
 
-<<<<<<< HEAD
-	skb_push(skb, 4);
-	cpu_to_le32s(&tx_cmd_b);
-	memcpy(skb->data, &tx_cmd_b, 4);
-
-	skb_push(skb, 4);
-	cpu_to_le32s(&tx_cmd_a);
-	memcpy(skb->data, &tx_cmd_a, 4);
-=======
 	ptr = skb_push(skb, 8);
 	put_unaligned_le32(tx_cmd_a, ptr);
 	put_unaligned_le32(tx_cmd_b, ptr + 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb;
 }
 
-<<<<<<< HEAD
-=======
 static int smsc75xx_manage_power(struct usbnet *dev, int on)
 {
 	dev->intf->needs_remote_wakeup = on;
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct driver_info smsc75xx_info = {
 	.description	= "smsc75xx USB 2.0 Gigabit Ethernet",
 	.bind		= smsc75xx_bind,
@@ -3011,10 +2315,7 @@ static const struct driver_info smsc75xx_info = {
 	.rx_fixup	= smsc75xx_rx_fixup,
 	.tx_fixup	= smsc75xx_tx_fixup,
 	.status		= smsc75xx_status,
-<<<<<<< HEAD
-=======
 	.manage_power	= smsc75xx_manage_power,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= FLAG_ETHER | FLAG_SEND_ZLP | FLAG_LINK_INTR,
 };
 
@@ -3037,27 +2338,17 @@ static struct usb_driver smsc75xx_driver = {
 	.name		= SMSC_CHIPNAME,
 	.id_table	= products,
 	.probe		= usbnet_probe,
-<<<<<<< HEAD
-	.suspend	= usbnet_suspend,
-	.resume		= usbnet_resume,
-	.disconnect	= usbnet_disconnect,
-=======
 	.suspend	= smsc75xx_suspend,
 	.resume		= smsc75xx_resume,
 	.reset_resume	= smsc75xx_resume,
 	.disconnect	= usbnet_disconnect,
 	.disable_hub_initiated_lpm = 1,
 	.supports_autosuspend = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(smsc75xx_driver);
 
 MODULE_AUTHOR("Nancy Lin");
-<<<<<<< HEAD
-MODULE_AUTHOR("Steve Glendinning <steve.glendinning@smsc.com>");
-=======
 MODULE_AUTHOR("Steve Glendinning <steve.glendinning@shawell.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SMSC75XX USB 2.0 Gigabit Ethernet Devices");
 MODULE_LICENSE("GPL");

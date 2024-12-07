@@ -1,58 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	fs/libfs.c
  *	Library for filesystems writers.
  */
 
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <linux/pagemap.h>
-#include <linux/slab.h>
-=======
 #include <linux/blkdev.h>
 #include <linux/export.h>
 #include <linux/pagemap.h>
 #include <linux/slab.h>
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/vfs.h>
 #include <linux/quotaops.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/exportfs.h>
-#include <linux/writeback.h>
-#include <linux/buffer_head.h> /* sync_mapping_buffers */
-
-#include <asm/uaccess.h>
-
-#include "internal.h"
-
-static inline int simple_positive(struct dentry *dentry)
-{
-	return dentry->d_inode && !d_unhashed(dentry);
-}
-
-int simple_getattr(struct vfsmount *mnt, struct dentry *dentry,
-		   struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	generic_fillattr(inode, stat);
-	stat->blocks = inode->i_mapping->nrpages << (PAGE_CACHE_SHIFT - 9);
-	return 0;
-}
-
-int simple_statfs(struct dentry *dentry, struct kstatfs *buf)
-{
-	buf->f_type = dentry->d_sb->s_magic;
-	buf->f_bsize = PAGE_CACHE_SIZE;
-	buf->f_namelen = NAME_MAX;
-	return 0;
-}
-=======
 #include <linux/namei.h>
 #include <linux/exportfs.h>
 #include <linux/iversion.h>
@@ -91,18 +51,11 @@ int simple_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return 0;
 }
 EXPORT_SYMBOL(simple_statfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Retaining negative dentries for an in-memory filesystem just wastes
  * memory and lookup time: arrange for them to be deleted immediately.
  */
-<<<<<<< HEAD
-static int simple_delete_dentry(const struct dentry *dentry)
-{
-	return 1;
-}
-=======
 int always_delete_dentry(const struct dentry *dentry)
 {
 	return 1;
@@ -113,7 +66,6 @@ const struct dentry_operations simple_dentry_operations = {
 	.d_delete = always_delete_dentry,
 };
 EXPORT_SYMBOL(simple_dentry_operations);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Lookup the data. This is trivial - if the dentry didn't already
@@ -121,27 +73,6 @@ EXPORT_SYMBOL(simple_dentry_operations);
  */
 struct dentry *simple_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 {
-<<<<<<< HEAD
-	static const struct dentry_operations simple_dentry_operations = {
-		.d_delete = simple_delete_dentry,
-	};
-
-	if (dentry->d_name.len > NAME_MAX)
-		return ERR_PTR(-ENAMETOOLONG);
-	d_set_d_op(dentry, &simple_dentry_operations);
-	d_add(dentry, NULL);
-	return NULL;
-}
-
-int dcache_dir_open(struct inode *inode, struct file *file)
-{
-	static struct qstr cursor_name = QSTR_INIT(".", 1);
-
-	file->private_data = d_alloc(file->f_path.dentry, &cursor_name);
-
-	return file->private_data ? 0 : -ENOMEM;
-}
-=======
 	if (dentry->d_name.len > NAME_MAX)
 		return ERR_PTR(-ENAMETOOLONG);
 	if (!dentry->d_sb->s_d_op)
@@ -158,63 +89,12 @@ int dcache_dir_open(struct inode *inode, struct file *file)
 	return file->private_data ? 0 : -ENOMEM;
 }
 EXPORT_SYMBOL(dcache_dir_open);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dcache_dir_close(struct inode *inode, struct file *file)
 {
 	dput(file->private_data);
 	return 0;
 }
-<<<<<<< HEAD
-
-loff_t dcache_dir_lseek(struct file *file, loff_t offset, int origin)
-{
-	struct dentry *dentry = file->f_path.dentry;
-	mutex_lock(&dentry->d_inode->i_mutex);
-	switch (origin) {
-		case 1:
-			offset += file->f_pos;
-		case 0:
-			if (offset >= 0)
-				break;
-		default:
-			mutex_unlock(&dentry->d_inode->i_mutex);
-			return -EINVAL;
-	}
-	if (offset != file->f_pos) {
-		file->f_pos = offset;
-		if (file->f_pos >= 2) {
-			struct list_head *p;
-			struct dentry *cursor = file->private_data;
-			loff_t n = file->f_pos - 2;
-
-			spin_lock(&dentry->d_lock);
-			/* d_lock not required for cursor */
-			list_del(&cursor->d_child);
-			p = dentry->d_subdirs.next;
-			while (n && p != &dentry->d_subdirs) {
-				struct dentry *next;
-				next = list_entry(p, struct dentry, d_child);
-				spin_lock_nested(&next->d_lock, DENTRY_D_LOCK_NESTED);
-				if (simple_positive(next))
-					n--;
-				spin_unlock(&next->d_lock);
-				p = p->next;
-			}
-			list_add_tail(&cursor->d_child, p);
-			spin_unlock(&dentry->d_lock);
-		}
-	}
-	mutex_unlock(&dentry->d_inode->i_mutex);
-	return offset;
-}
-
-/* Relationship between i_mode and the DT_xxx types */
-static inline unsigned char dt_type(struct inode *inode)
-{
-	return (inode->i_mode >> 12) & 15;
-}
-=======
 EXPORT_SYMBOL(dcache_dir_close);
 
 /* parent is locked at least shared */
@@ -299,7 +179,6 @@ loff_t dcache_dir_lseek(struct file *file, loff_t offset, int whence)
 	return offset;
 }
 EXPORT_SYMBOL(dcache_dir_lseek);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Directory is locked and all positive dentries in it are safe, since
@@ -307,64 +186,6 @@ EXPORT_SYMBOL(dcache_dir_lseek);
  * both impossible due to the lock on directory.
  */
 
-<<<<<<< HEAD
-int dcache_readdir(struct file * filp, void * dirent, filldir_t filldir)
-{
-	struct dentry *dentry = filp->f_path.dentry;
-	struct dentry *cursor = filp->private_data;
-	struct list_head *p, *q = &cursor->d_child;
-	ino_t ino;
-	int i = filp->f_pos;
-
-	switch (i) {
-		case 0:
-			ino = dentry->d_inode->i_ino;
-			if (filldir(dirent, ".", 1, i, ino, DT_DIR) < 0)
-				break;
-			filp->f_pos++;
-			i++;
-			/* fallthrough */
-		case 1:
-			ino = parent_ino(dentry);
-			if (filldir(dirent, "..", 2, i, ino, DT_DIR) < 0)
-				break;
-			filp->f_pos++;
-			i++;
-			/* fallthrough */
-		default:
-			spin_lock(&dentry->d_lock);
-			if (filp->f_pos == 2)
-				list_move(q, &dentry->d_subdirs);
-
-			for (p=q->next; p != &dentry->d_subdirs; p=p->next) {
-				struct dentry *next;
-				next = list_entry(p, struct dentry, d_child);
-				spin_lock_nested(&next->d_lock, DENTRY_D_LOCK_NESTED);
-				if (!simple_positive(next)) {
-					spin_unlock(&next->d_lock);
-					continue;
-				}
-
-				spin_unlock(&next->d_lock);
-				spin_unlock(&dentry->d_lock);
-				if (filldir(dirent, next->d_name.name, 
-					    next->d_name.len, filp->f_pos, 
-					    next->d_inode->i_ino, 
-					    dt_type(next->d_inode)) < 0)
-					return 0;
-				spin_lock(&dentry->d_lock);
-				spin_lock_nested(&next->d_lock, DENTRY_D_LOCK_NESTED);
-				/* next is still alive */
-				list_move(q, p);
-				spin_unlock(&next->d_lock);
-				p = q;
-				filp->f_pos++;
-			}
-			spin_unlock(&dentry->d_lock);
-	}
-	return 0;
-}
-=======
 int dcache_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct dentry *dentry = file->f_path.dentry;
@@ -398,38 +219,26 @@ int dcache_readdir(struct file *file, struct dir_context *ctx)
 	return 0;
 }
 EXPORT_SYMBOL(dcache_readdir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ssize_t generic_read_dir(struct file *filp, char __user *buf, size_t siz, loff_t *ppos)
 {
 	return -EISDIR;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(generic_read_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct file_operations simple_dir_operations = {
 	.open		= dcache_dir_open,
 	.release	= dcache_dir_close,
 	.llseek		= dcache_dir_lseek,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= dcache_readdir,
-	.fsync		= noop_fsync,
-};
-=======
 	.iterate_shared	= dcache_readdir,
 	.fsync		= noop_fsync,
 };
 EXPORT_SYMBOL(simple_dir_operations);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct inode_operations simple_dir_inode_operations = {
 	.lookup		= simple_lookup,
 };
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_dir_inode_operations);
 
 /* 0 is '.', 1 is '..', so always start with offset 2 or more */
@@ -789,40 +598,11 @@ void simple_recursive_removal(struct dentry *dentry,
 	}
 }
 EXPORT_SYMBOL(simple_recursive_removal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct super_operations simple_super_operations = {
 	.statfs		= simple_statfs,
 };
 
-<<<<<<< HEAD
-/*
- * Common helper for pseudo-filesystems (sockfs, pipefs, bdev - stuff that
- * will never be mountable)
- */
-struct dentry *mount_pseudo(struct file_system_type *fs_type, char *name,
-	const struct super_operations *ops,
-	const struct dentry_operations *dops, unsigned long magic)
-{
-	struct super_block *s = sget(fs_type, NULL, set_anon_super, NULL);
-	struct dentry *dentry;
-	struct inode *root;
-	struct qstr d_name = QSTR_INIT(name, strlen(name));
-
-	if (IS_ERR(s))
-		return ERR_CAST(s);
-
-	s->s_flags = MS_NOUSER;
-	s->s_maxbytes = MAX_LFS_FILESIZE;
-	s->s_blocksize = PAGE_SIZE;
-	s->s_blocksize_bits = PAGE_SHIFT;
-	s->s_magic = magic;
-	s->s_op = ops ? ops : &simple_super_operations;
-	s->s_time_gran = 1;
-	root = new_inode(s);
-	if (!root)
-		goto Enomem;
-=======
 static int pseudo_fs_fill_super(struct super_block *s, struct fs_context *fc)
 {
 	struct pseudo_fs_context *ctx = fc->fs_private;
@@ -839,7 +619,6 @@ static int pseudo_fs_fill_super(struct super_block *s, struct fs_context *fc)
 	if (!root)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * since this is the first inode, make it number 1. New inodes created
 	 * after this must take care not to collide with it (by passing
@@ -847,25 +626,6 @@ static int pseudo_fs_fill_super(struct super_block *s, struct fs_context *fc)
 	 */
 	root->i_ino = 1;
 	root->i_mode = S_IFDIR | S_IRUSR | S_IWUSR;
-<<<<<<< HEAD
-	root->i_atime = root->i_mtime = root->i_ctime = CURRENT_TIME;
-	dentry = __d_alloc(s, &d_name);
-	if (!dentry) {
-		iput(root);
-		goto Enomem;
-	}
-	d_instantiate(dentry, root);
-	s->s_root = dentry;
-	s->s_d_op = dops;
-	s->s_flags |= MS_ACTIVE;
-	return dget(s->s_root);
-
-Enomem:
-	deactivate_locked_super(s);
-	return ERR_PTR(-ENOMEM);
-}
-
-=======
 	simple_inode_init_ts(root);
 	s->s_root = d_make_root(root);
 	if (!s->s_root)
@@ -910,21 +670,12 @@ struct pseudo_fs_context *init_pseudo(struct fs_context *fc,
 }
 EXPORT_SYMBOL(init_pseudo);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int simple_open(struct inode *inode, struct file *file)
 {
 	if (inode->i_private)
 		file->private_data = inode->i_private;
 	return 0;
 }
-<<<<<<< HEAD
-
-int simple_link(struct dentry *old_dentry, struct inode *dir, struct dentry *dentry)
-{
-	struct inode *inode = old_dentry->d_inode;
-
-	inode->i_ctime = dir->i_ctime = dir->i_mtime = CURRENT_TIME;
-=======
 EXPORT_SYMBOL(simple_open);
 
 int simple_link(struct dentry *old_dentry, struct inode *dir, struct dentry *dentry)
@@ -933,17 +684,13 @@ int simple_link(struct dentry *old_dentry, struct inode *dir, struct dentry *den
 
 	inode_set_mtime_to_ts(dir,
 			      inode_set_ctime_to_ts(dir, inode_set_ctime_current(inode)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inc_nlink(inode);
 	ihold(inode);
 	dget(dentry);
 	d_instantiate(dentry, inode);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int simple_empty(struct dentry *dentry)
 {
@@ -951,11 +698,7 @@ int simple_empty(struct dentry *dentry)
 	int ret = 0;
 
 	spin_lock(&dentry->d_lock);
-<<<<<<< HEAD
-	list_for_each_entry(child, &dentry->d_subdirs, d_child) {
-=======
 	hlist_for_each_entry(child, &dentry->d_children, d_sib) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_nested(&child->d_lock, DENTRY_D_LOCK_NESTED);
 		if (simple_positive(child)) {
 			spin_unlock(&child->d_lock);
@@ -968,14 +711,6 @@ out:
 	spin_unlock(&dentry->d_lock);
 	return ret;
 }
-<<<<<<< HEAD
-
-int simple_unlink(struct inode *dir, struct dentry *dentry)
-{
-	struct inode *inode = dentry->d_inode;
-
-	inode->i_ctime = dir->i_ctime = dir->i_mtime = CURRENT_TIME;
-=======
 EXPORT_SYMBOL(simple_empty);
 
 int simple_unlink(struct inode *dir, struct dentry *dentry)
@@ -984,38 +719,22 @@ int simple_unlink(struct inode *dir, struct dentry *dentry)
 
 	inode_set_mtime_to_ts(dir,
 			      inode_set_ctime_to_ts(dir, inode_set_ctime_current(inode)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drop_nlink(inode);
 	dput(dentry);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_unlink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int simple_rmdir(struct inode *dir, struct dentry *dentry)
 {
 	if (!simple_empty(dentry))
 		return -ENOTEMPTY;
 
-<<<<<<< HEAD
-	drop_nlink(dentry->d_inode);
-=======
 	drop_nlink(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	simple_unlink(dir, dentry);
 	drop_nlink(dir);
 	return 0;
 }
-<<<<<<< HEAD
-
-int simple_rename(struct inode *old_dir, struct dentry *old_dentry,
-		struct inode *new_dir, struct dentry *new_dentry)
-{
-	struct inode *inode = old_dentry->d_inode;
-	int they_are_dirs = S_ISDIR(old_dentry->d_inode->i_mode);
-=======
 EXPORT_SYMBOL(simple_rmdir);
 
 /**
@@ -1075,22 +794,14 @@ int simple_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 
 	if (flags & RENAME_EXCHANGE)
 		return simple_rename_exchange(old_dir, old_dentry, new_dir, new_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!simple_empty(new_dentry))
 		return -ENOTEMPTY;
 
-<<<<<<< HEAD
-	if (new_dentry->d_inode) {
-		simple_unlink(new_dir, new_dentry);
-		if (they_are_dirs) {
-			drop_nlink(new_dentry->d_inode);
-=======
 	if (d_really_is_positive(new_dentry)) {
 		simple_unlink(new_dir, new_dentry);
 		if (they_are_dirs) {
 			drop_nlink(d_inode(new_dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			drop_nlink(old_dir);
 		}
 	} else if (they_are_dirs) {
@@ -1098,16 +809,6 @@ int simple_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		inc_nlink(new_dir);
 	}
 
-<<<<<<< HEAD
-	old_dir->i_ctime = old_dir->i_mtime = new_dir->i_ctime =
-		new_dir->i_mtime = inode->i_ctime = CURRENT_TIME;
-
-	return 0;
-}
-
-/**
- * simple_setattr - setattr for simple filesystem
-=======
 	simple_rename_timestamp(old_dir, old_dentry, new_dir, new_dentry);
 	return 0;
 }
@@ -1116,7 +817,6 @@ EXPORT_SYMBOL(simple_rename);
 /**
  * simple_setattr - setattr for simple filesystem
  * @idmap: idmap of the target mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dentry: dentry
  * @iattr: iattr structure
  *
@@ -1129,16 +829,6 @@ EXPORT_SYMBOL(simple_rename);
  * on simple regular filesystems.  Anything that needs to change on-disk
  * or wire state on size changes needs its own setattr method.
  */
-<<<<<<< HEAD
-int simple_setattr(struct dentry *dentry, struct iattr *iattr)
-{
-	struct inode *inode = dentry->d_inode;
-	int error;
-
-	WARN_ON_ONCE(inode->i_op->truncate);
-
-	error = inode_change_ok(inode, iattr);
-=======
 int simple_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		   struct iattr *iattr)
 {
@@ -1146,69 +836,27 @@ int simple_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	int error;
 
 	error = setattr_prepare(idmap, dentry, iattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
 	if (iattr->ia_valid & ATTR_SIZE)
 		truncate_setsize(inode, iattr->ia_size);
-<<<<<<< HEAD
-	setattr_copy(inode, iattr);
-=======
 	setattr_copy(idmap, inode, iattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 EXPORT_SYMBOL(simple_setattr);
 
-<<<<<<< HEAD
-int simple_readpage(struct file *file, struct page *page)
-{
-	clear_highpage(page);
-	flush_dcache_page(page);
-	SetPageUptodate(page);
-	unlock_page(page);
-=======
 static int simple_read_folio(struct file *file, struct folio *folio)
 {
 	folio_zero_range(folio, 0, folio_size(folio));
 	flush_dcache_folio(folio);
 	folio_mark_uptodate(folio);
 	folio_unlock(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int simple_write_begin(struct file *file, struct address_space *mapping,
-<<<<<<< HEAD
-			loff_t pos, unsigned len, unsigned flags,
-			struct page **pagep, void **fsdata)
-{
-	struct page *page;
-	pgoff_t index;
-
-	index = pos >> PAGE_CACHE_SHIFT;
-
-	page = grab_cache_page_write_begin(mapping, index, flags);
-	if (!page)
-		return -ENOMEM;
-
-	*pagep = page;
-
-	if (!PageUptodate(page) && (len != PAGE_CACHE_SIZE)) {
-		unsigned from = pos & (PAGE_CACHE_SIZE - 1);
-
-		zero_user_segments(page, 0, from, from + len, PAGE_CACHE_SIZE);
-	}
-	return 0;
-}
-
-/**
- * simple_write_end - .write_end helper for non-block-device FSes
- * @available: See .write_end of address_space_operations
- * @file: 		"
-=======
 			loff_t pos, unsigned len,
 			struct page **pagep, void **fsdata)
 {
@@ -1234,7 +882,6 @@ EXPORT_SYMBOL(simple_write_begin);
 /**
  * simple_write_end - .write_end helper for non-block-device FSes
  * @file: See .write_end of address_space_operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mapping: 		"
  * @pos: 		"
  * @len: 		"
@@ -1251,25 +898,6 @@ EXPORT_SYMBOL(simple_write_begin);
  * is not called, so a filesystem that actually does store data in .write_inode
  * should extend on what's done here with a call to mark_inode_dirty() in the
  * case that i_size has changed.
-<<<<<<< HEAD
- */
-int simple_write_end(struct file *file, struct address_space *mapping,
-			loff_t pos, unsigned len, unsigned copied,
-			struct page *page, void *fsdata)
-{
-	struct inode *inode = page->mapping->host;
-	loff_t last_pos = pos + copied;
-
-	/* zero the stale part of the page if we did a short copy */
-	if (copied < len) {
-		unsigned from = pos & (PAGE_CACHE_SIZE - 1);
-
-		zero_user(page, from + copied, len - copied);
-	}
-
-	if (!PageUptodate(page))
-		SetPageUptodate(page);
-=======
  *
  * Use *ONLY* with simple_read_folio()
  */
@@ -1290,7 +918,6 @@ static int simple_write_end(struct file *file, struct address_space *mapping,
 		}
 		folio_mark_uptodate(folio);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * No need to use i_size_read() here, the i_size
 	 * cannot change under us because we hold the i_mutex.
@@ -1298,22 +925,14 @@ static int simple_write_end(struct file *file, struct address_space *mapping,
 	if (last_pos > inode->i_size)
 		i_size_write(inode, last_pos);
 
-<<<<<<< HEAD
-	set_page_dirty(page);
-	unlock_page(page);
-	page_cache_release(page);
-=======
 	folio_mark_dirty(folio);
 	folio_unlock(folio);
 	folio_put(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return copied;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Provides ramfs-style behavior: data in the pagecache, but no writeback.
  */
 const struct address_space_operations ram_aops = {
@@ -1325,23 +944,11 @@ const struct address_space_operations ram_aops = {
 EXPORT_SYMBOL(ram_aops);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the inodes created here are not hashed. If you use iunique to generate
  * unique inode values later for this filesystem, then you must take care
  * to pass it an appropriate max_reserved value to avoid collisions.
  */
 int simple_fill_super(struct super_block *s, unsigned long magic,
-<<<<<<< HEAD
-		      struct tree_descr *files)
-{
-	struct inode *inode;
-	struct dentry *root;
-	struct dentry *dentry;
-	int i;
-
-	s->s_blocksize = PAGE_CACHE_SIZE;
-	s->s_blocksize_bits = PAGE_CACHE_SHIFT;
-=======
 		      const struct tree_descr *files)
 {
 	struct inode *inode;
@@ -1350,7 +957,6 @@ int simple_fill_super(struct super_block *s, unsigned long magic,
 
 	s->s_blocksize = PAGE_SIZE;
 	s->s_blocksize_bits = PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s->s_magic = magic;
 	s->s_op = &simple_super_operations;
 	s->s_time_gran = 1;
@@ -1364,21 +970,12 @@ int simple_fill_super(struct super_block *s, unsigned long magic,
 	 */
 	inode->i_ino = 1;
 	inode->i_mode = S_IFDIR | 0755;
-<<<<<<< HEAD
-	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-	inode->i_op = &simple_dir_inode_operations;
-	inode->i_fop = &simple_dir_operations;
-	set_nlink(inode, 2);
-	root = d_make_root(inode);
-	if (!root)
-=======
 	simple_inode_init_ts(inode);
 	inode->i_op = &simple_dir_inode_operations;
 	inode->i_fop = &simple_dir_operations;
 	set_nlink(inode, 2);
 	s->s_root = d_make_root(inode);
 	if (!s->s_root)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	for (i = 0; !files->name || files->name[0]; i++, files++) {
 		if (!files->name)
@@ -1390,18 +987,6 @@ int simple_fill_super(struct super_block *s, unsigned long magic,
 				"with an index of 1!\n", __func__,
 				s->s_type->name);
 
-<<<<<<< HEAD
-		dentry = d_alloc_name(root, files->name);
-		if (!dentry)
-			goto out;
-		inode = new_inode(s);
-		if (!inode) {
-			dput(dentry);
-			goto out;
-		}
-		inode->i_mode = S_IFREG | files->mode;
-		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-=======
 		dentry = d_alloc_name(s->s_root, files->name);
 		if (!dentry)
 			return -ENOMEM;
@@ -1412,25 +997,13 @@ int simple_fill_super(struct super_block *s, unsigned long magic,
 		}
 		inode->i_mode = S_IFREG | files->mode;
 		simple_inode_init_ts(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_fop = files->ops;
 		inode->i_ino = i;
 		d_add(dentry, inode);
 	}
-<<<<<<< HEAD
-	s->s_root = root;
-	return 0;
-out:
-	d_genocide(root);
-	shrink_dcache_parent(root);
-	dput(root);
-	return -ENOMEM;
-}
-=======
 	return 0;
 }
 EXPORT_SYMBOL(simple_fill_super);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(pin_fs_lock);
 
@@ -1440,11 +1013,7 @@ int simple_pin_fs(struct file_system_type *type, struct vfsmount **mount, int *c
 	spin_lock(&pin_fs_lock);
 	if (unlikely(!*mount)) {
 		spin_unlock(&pin_fs_lock);
-<<<<<<< HEAD
-		mnt = vfs_kern_mount(type, MS_KERNMOUNT, type->name, NULL);
-=======
 		mnt = vfs_kern_mount(type, SB_KERNMOUNT, type->name, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(mnt))
 			return PTR_ERR(mnt);
 		spin_lock(&pin_fs_lock);
@@ -1457,10 +1026,7 @@ int simple_pin_fs(struct file_system_type *type, struct vfsmount **mount, int *c
 	mntput(mnt);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_pin_fs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void simple_release_fs(struct vfsmount **mount, int *count)
 {
@@ -1472,10 +1038,7 @@ void simple_release_fs(struct vfsmount **mount, int *count)
 	spin_unlock(&pin_fs_lock);
 	mntput(mnt);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_release_fs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * simple_read_from_buffer - copy data from the buffer to user space
@@ -1510,10 +1073,7 @@ ssize_t simple_read_from_buffer(void __user *to, size_t count, loff_t *ppos,
 	*ppos = pos + count;
 	return count;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_read_from_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * simple_write_to_buffer - copy data from user space to the buffer
@@ -1548,10 +1108,7 @@ ssize_t simple_write_to_buffer(void *to, size_t available, loff_t *ppos,
 	*ppos = pos + count;
 	return count;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_write_to_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * memory_read_from_buffer - copy data from the buffer
@@ -1583,10 +1140,7 @@ ssize_t memory_read_from_buffer(void *to, size_t count, loff_t *ppos,
 
 	return count;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(memory_read_from_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Transaction based IO.
@@ -1608,10 +1162,7 @@ void simple_transaction_set(struct file *file, size_t n)
 	smp_mb();
 	ar->size = n;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_transaction_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 char *simple_transaction_get(struct file *file, const char __user *buf, size_t size)
 {
@@ -1643,10 +1194,7 @@ char *simple_transaction_get(struct file *file, const char __user *buf, size_t s
 
 	return ar->data;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_transaction_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ssize_t simple_transaction_read(struct file *file, char __user *buf, size_t size, loff_t *pos)
 {
@@ -1656,20 +1204,14 @@ ssize_t simple_transaction_read(struct file *file, char __user *buf, size_t size
 		return 0;
 	return simple_read_from_buffer(buf, size, pos, ar->data, ar->size);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_transaction_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int simple_transaction_release(struct inode *inode, struct file *file)
 {
 	free_page((unsigned long)file->private_data);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(simple_transaction_release);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Simple attribute files */
 
@@ -1691,11 +1233,7 @@ int simple_attr_open(struct inode *inode, struct file *file,
 {
 	struct simple_attr *attr;
 
-<<<<<<< HEAD
-	attr = kmalloc(sizeof(*attr), GFP_KERNEL);
-=======
 	attr = kzalloc(sizeof(*attr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!attr)
 		return -ENOMEM;
 
@@ -1709,20 +1247,14 @@ int simple_attr_open(struct inode *inode, struct file *file,
 
 	return nonseekable_open(inode, file);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(simple_attr_open);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int simple_attr_release(struct inode *inode, struct file *file)
 {
 	kfree(file->private_data);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(simple_attr_release);	/* GPL-only?  This?  Really? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* read from the buffer that is filled with the get function */
 ssize_t simple_attr_read(struct file *file, char __user *buf,
@@ -1741,17 +1273,11 @@ ssize_t simple_attr_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (*ppos) {		/* continued read */
-		size = strlen(attr->get_buf);
-	} else {		/* first read */
-=======
 	if (*ppos && attr->get_buf[0]) {
 		/* continued read */
 		size = strlen(attr->get_buf);
 	} else {
 		/* first read */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 val;
 		ret = attr->get(attr->data, &val);
 		if (ret)
@@ -1766,15 +1292,6 @@ out:
 	mutex_unlock(&attr->mutex);
 	return ret;
 }
-<<<<<<< HEAD
-
-/* interpret the buffer as a number to call the set function with */
-ssize_t simple_attr_write(struct file *file, const char __user *buf,
-			  size_t len, loff_t *ppos)
-{
-	struct simple_attr *attr;
-	u64 val;
-=======
 EXPORT_SYMBOL_GPL(simple_attr_read);
 
 /* interpret the buffer as a number to call the set function with */
@@ -1783,7 +1300,6 @@ static ssize_t simple_attr_write_xsigned(struct file *file, const char __user *b
 {
 	struct simple_attr *attr;
 	unsigned long long val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t size;
 	ssize_t ret;
 
@@ -1801,16 +1317,12 @@ static ssize_t simple_attr_write_xsigned(struct file *file, const char __user *b
 		goto out;
 
 	attr->set_buf[size] = '\0';
-<<<<<<< HEAD
-	val = simple_strtoll(attr->set_buf, NULL, 0);
-=======
 	if (is_signed)
 		ret = kstrtoll(attr->set_buf, 0, &val);
 	else
 		ret = kstrtoull(attr->set_buf, 0, &val);
 	if (ret)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = attr->set(attr->data, val);
 	if (ret == 0)
 		ret = len; /* on success, claim we got the whole input */
@@ -1819,8 +1331,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 ssize_t simple_attr_write(struct file *file, const char __user *buf,
 			  size_t len, loff_t *ppos)
 {
@@ -1876,7 +1386,6 @@ int generic_encode_ino32_fh(struct inode *inode, __u32 *fh, int *max_len,
 }
 EXPORT_SYMBOL_GPL(generic_encode_ino32_fh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * generic_fh_to_dentry - generic helper for the fh_to_dentry export operation
  * @sb:		filesystem to do the file handle conversion on
@@ -1910,11 +1419,7 @@ struct dentry *generic_fh_to_dentry(struct super_block *sb, struct fid *fid,
 EXPORT_SYMBOL_GPL(generic_fh_to_dentry);
 
 /**
-<<<<<<< HEAD
- * generic_fh_to_dentry - generic helper for the fh_to_parent export operation
-=======
  * generic_fh_to_parent - generic helper for the fh_to_parent export operation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sb:		filesystem to do the file handle conversion on
  * @fid:	file handle to convert
  * @fh_len:	length of the file handle in bytes
@@ -1947,43 +1452,24 @@ struct dentry *generic_fh_to_parent(struct super_block *sb, struct fid *fid,
 EXPORT_SYMBOL_GPL(generic_fh_to_parent);
 
 /**
-<<<<<<< HEAD
- * generic_file_fsync - generic fsync implementation for simple filesystems
- * @file:	file to synchronize
-=======
  * __generic_file_fsync - generic fsync implementation for simple filesystems
  *
  * @file:	file to synchronize
  * @start:	start offset in bytes
  * @end:	end offset in bytes (inclusive)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @datasync:	only synchronize essential metadata if true
  *
  * This is a generic implementation of the fsync method for simple
  * filesystems which track all non-inode metadata in the buffers list
  * hanging off the address_space structure.
  */
-<<<<<<< HEAD
-int generic_file_fsync(struct file *file, loff_t start, loff_t end,
-		       int datasync)
-=======
 int __generic_file_fsync(struct file *file, loff_t start, loff_t end,
 				 int datasync)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = file->f_mapping->host;
 	int err;
 	int ret;
 
-<<<<<<< HEAD
-	err = filemap_write_and_wait_range(inode->i_mapping, start, end);
-	if (err)
-		return err;
-
-	mutex_lock(&inode->i_mutex);
-	ret = sync_mapping_buffers(inode->i_mapping);
-	if (!(inode->i_state & I_DIRTY))
-=======
 	err = file_write_and_wait_range(file, start, end);
 	if (err)
 		return err;
@@ -1991,7 +1477,6 @@ int __generic_file_fsync(struct file *file, loff_t start, loff_t end,
 	inode_lock(inode);
 	ret = sync_mapping_buffers(inode->i_mapping);
 	if (!(inode->i_state & I_DIRTY_ALL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	if (datasync && !(inode->i_state & I_DIRTY_DATASYNC))
 		goto out;
@@ -1999,12 +1484,6 @@ int __generic_file_fsync(struct file *file, loff_t start, loff_t end,
 	err = sync_inode_metadata(inode, 1);
 	if (ret == 0)
 		ret = err;
-<<<<<<< HEAD
-out:
-	mutex_unlock(&inode->i_mutex);
-	return ret;
-}
-=======
 
 out:
 	inode_unlock(inode);
@@ -2037,7 +1516,6 @@ int generic_file_fsync(struct file *file, loff_t start, loff_t end,
 		return err;
 	return blkdev_issue_flush(inode->i_sb->s_bdev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(generic_file_fsync);
 
 /**
@@ -2053,20 +1531,12 @@ int generic_check_addressable(unsigned blocksize_bits, u64 num_blocks)
 {
 	u64 last_fs_block = num_blocks - 1;
 	u64 last_fs_page =
-<<<<<<< HEAD
-		last_fs_block >> (PAGE_CACHE_SHIFT - blocksize_bits);
-=======
 		last_fs_block >> (PAGE_SHIFT - blocksize_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(num_blocks == 0))
 		return 0;
 
-<<<<<<< HEAD
-	if ((blocksize_bits < 9) || (blocksize_bits > PAGE_CACHE_SHIFT))
-=======
 	if ((blocksize_bits < 9) || (blocksize_bits > PAGE_SHIFT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if ((last_fs_block > (sector_t)(~0ULL) >> (blocksize_bits - 9)) ||
@@ -2084,44 +1554,6 @@ int noop_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(dcache_dir_close);
-EXPORT_SYMBOL(dcache_dir_lseek);
-EXPORT_SYMBOL(dcache_dir_open);
-EXPORT_SYMBOL(dcache_readdir);
-EXPORT_SYMBOL(generic_read_dir);
-EXPORT_SYMBOL(mount_pseudo);
-EXPORT_SYMBOL(simple_write_begin);
-EXPORT_SYMBOL(simple_write_end);
-EXPORT_SYMBOL(simple_dir_inode_operations);
-EXPORT_SYMBOL(simple_dir_operations);
-EXPORT_SYMBOL(simple_empty);
-EXPORT_SYMBOL(simple_fill_super);
-EXPORT_SYMBOL(simple_getattr);
-EXPORT_SYMBOL(simple_open);
-EXPORT_SYMBOL(simple_link);
-EXPORT_SYMBOL(simple_lookup);
-EXPORT_SYMBOL(simple_pin_fs);
-EXPORT_SYMBOL(simple_readpage);
-EXPORT_SYMBOL(simple_release_fs);
-EXPORT_SYMBOL(simple_rename);
-EXPORT_SYMBOL(simple_rmdir);
-EXPORT_SYMBOL(simple_statfs);
-EXPORT_SYMBOL(noop_fsync);
-EXPORT_SYMBOL(simple_unlink);
-EXPORT_SYMBOL(simple_read_from_buffer);
-EXPORT_SYMBOL(simple_write_to_buffer);
-EXPORT_SYMBOL(memory_read_from_buffer);
-EXPORT_SYMBOL(simple_transaction_set);
-EXPORT_SYMBOL(simple_transaction_get);
-EXPORT_SYMBOL(simple_transaction_read);
-EXPORT_SYMBOL(simple_transaction_release);
-EXPORT_SYMBOL_GPL(simple_attr_open);
-EXPORT_SYMBOL_GPL(simple_attr_release);
-EXPORT_SYMBOL_GPL(simple_attr_read);
-EXPORT_SYMBOL_GPL(simple_attr_write);
-=======
 EXPORT_SYMBOL(noop_fsync);
 
 ssize_t noop_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
@@ -2698,4 +2130,3 @@ void stashed_dentry_prune(struct dentry *dentry)
 	 */
 	cmpxchg(stashed, dentry, NULL);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

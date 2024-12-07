@@ -48,11 +48,7 @@ static DEFINE_SPINLOCK(mda_lock);
 
 /* description of the hardware layout */
 
-<<<<<<< HEAD
-static unsigned long	mda_vram_base;		/* Base of video memory */
-=======
 static u16		*mda_vram_base;		/* Base of video memory */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long	mda_vram_len;		/* Size of video memory */
 static unsigned int	mda_num_columns;	/* Number of text columns */
 static unsigned int	mda_num_lines;		/* Number of text lines */
@@ -209,15 +205,6 @@ static int mda_detect(void)
 
 	/* do a memory check */
 
-<<<<<<< HEAD
-	p = (u16 *) mda_vram_base;
-	q = (u16 *) (mda_vram_base + 0x01000);
-
-	p_save = scr_readw(p); q_save = scr_readw(q);
-
-	scr_writew(0xAA55, p); if (scr_readw(p) == 0xAA55) count++;
-	scr_writew(0x55AA, p); if (scr_readw(p) == 0x55AA) count++;
-=======
 	p = mda_vram_base;
 	q = mda_vram_base + 0x01000 / 2;
 
@@ -232,7 +219,6 @@ static int mda_detect(void)
 	if (scr_readw(p) == 0x55AA)
 		count++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scr_writew(p_save, p);
 
 	if (count != 2) {
@@ -241,15 +227,6 @@ static int mda_detect(void)
 
 	/* check if we have 4K or 8K */
 
-<<<<<<< HEAD
-	scr_writew(0xA55A, q); scr_writew(0x0000, p);
-	if (scr_readw(q) == 0xA55A) count++;
-	
-	scr_writew(0x5AA5, q); scr_writew(0x0000, p);
-	if (scr_readw(q) == 0x5AA5) count++;
-
-	scr_writew(p_save, p); scr_writew(q_save, q);
-=======
 	scr_writew(0xA55A, q);
 	scr_writew(0x0000, p);
 	if (scr_readw(q) == 0xA55A)
@@ -262,7 +239,6 @@ static int mda_detect(void)
 
 	scr_writew(p_save, p);
 	scr_writew(q_save, q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (count == 4) {
 		mda_vram_len = 0x02000;
@@ -276,23 +252,12 @@ static int mda_detect(void)
 	/* Edward: These two mess `tests' mess up my cursor on bootup */
 
 	/* cursor low register */
-<<<<<<< HEAD
-	if (! test_mda_b(0x66, 0x0f)) {
-		return 0;
-	}
-
-	/* cursor low register */
-	if (! test_mda_b(0x99, 0x0f)) {
-		return 0;
-	}
-=======
 	if (!test_mda_b(0x66, 0x0f))
 		return 0;
 
 	/* cursor low register */
 	if (!test_mda_b(0x99, 0x0f))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* See if the card is a Hercules, by checking whether the vsync
@@ -302,31 +267,13 @@ static int mda_detect(void)
 	
 	p_save = q_save = inb_p(mda_status_port) & MDA_STATUS_VSYNC;
 
-<<<<<<< HEAD
-	for (count=0; count < 50000 && p_save == q_save; count++) {
-=======
 	for (count = 0; count < 50000 && p_save == q_save; count++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q_save = inb(mda_status_port) & MDA_STATUS_VSYNC;
 		udelay(2);
 	}
 
 	if (p_save != q_save) {
 		switch (inb_p(mda_status_port) & 0x70) {
-<<<<<<< HEAD
-			case 0x10:
-				mda_type = TYPE_HERCPLUS;
-				mda_type_name = "HerculesPlus";
-				break;
-			case 0x50:
-				mda_type = TYPE_HERCCOLOR;
-				mda_type_name = "HerculesColor";
-				break;
-			default:
-				mda_type = TYPE_HERC;
-				mda_type_name = "Hercules";
-				break;
-=======
 		case 0x10:
 			mda_type = TYPE_HERCPLUS;
 			mda_type_name = "HerculesPlus";
@@ -339,7 +286,6 @@ static int mda_detect(void)
 			mda_type = TYPE_HERC;
 			mda_type_name = "Hercules";
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -377,11 +323,7 @@ static const char *mdacon_startup(void)
 	mda_num_lines   = 25;
 
 	mda_vram_len  = 0x01000;
-<<<<<<< HEAD
-	mda_vram_base = VGA_MAP_MEM(0xb0000, mda_vram_len);
-=======
 	mda_vram_base = (u16 *)VGA_MAP_MEM(0xb0000, mda_vram_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mda_index_port  = 0x3b4;
 	mda_value_port  = 0x3b5;
@@ -410,11 +352,7 @@ static const char *mdacon_startup(void)
 	return "MDA-2";
 }
 
-<<<<<<< HEAD
-static void mdacon_init(struct vc_data *c, int init)
-=======
 static void mdacon_init(struct vc_data *c, bool init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	c->vc_complement_mask = 0x0800;	 /* reverse video */
 	c->vc_display_fg = &mda_display_fg;
@@ -456,15 +394,10 @@ static inline u16 mda_convert_attr(u16 ch)
 		(ch & 0x00ff) | attr;
 }
 
-<<<<<<< HEAD
-static u8 mdacon_build_attr(struct vc_data *c, u8 color, u8 intensity, 
-			    u8 blink, u8 underline, u8 reverse, u8 italic)
-=======
 static u8 mdacon_build_attr(struct vc_data *c, u8 color,
 			    enum vc_intensity intensity,
 			    bool blink, bool underline, bool reverse,
 			    bool italic)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* The attribute is just a bit vector:
 	 *
@@ -474,19 +407,11 @@ static u8 mdacon_build_attr(struct vc_data *c, u8 color,
 	 *	Bit 7    : blink
 	 */
 
-<<<<<<< HEAD
-	return (intensity & 3) |
-		((underline & 1) << 2) |
-		((reverse   & 1) << 3) |
-		(!!italic << 4) |
-		((blink     & 1) << 7);
-=======
 	return (intensity & VCI_MASK) |
 		(underline << 2) |
 		(reverse << 3) |
 		(italic << 4) |
 		(blink << 7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mdacon_invert_region(struct vc_data *c, u16 *p, int count)
@@ -497,19 +422,6 @@ static void mdacon_invert_region(struct vc_data *c, u16 *p, int count)
 	}
 }
 
-<<<<<<< HEAD
-#define MDA_ADDR(x,y)  ((u16 *) mda_vram_base + (y)*mda_num_columns + (x))
-
-static void mdacon_putc(struct vc_data *c, int ch, int y, int x)
-{
-	scr_writew(mda_convert_attr(ch), MDA_ADDR(x, y));
-}
-
-static void mdacon_putcs(struct vc_data *c, const unsigned short *s,
-		         int count, int y, int x)
-{
-	u16 *dest = MDA_ADDR(x, y);
-=======
 static inline u16 *mda_addr(unsigned int x, unsigned int y)
 {
 	return mda_vram_base + y * mda_num_columns + x;
@@ -519,83 +431,12 @@ static void mdacon_putcs(struct vc_data *c, const u16 *s, unsigned int count,
 			 unsigned int y, unsigned int x)
 {
 	u16 *dest = mda_addr(x, y);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (; count > 0; count--) {
 		scr_writew(mda_convert_attr(scr_readw(s++)), dest++);
 	}
 }
 
-<<<<<<< HEAD
-static void mdacon_clear(struct vc_data *c, int y, int x, 
-			  int height, int width)
-{
-	u16 *dest = MDA_ADDR(x, y);
-	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
-
-	if (width <= 0 || height <= 0)
-		return;
-
-	if (x==0 && width==mda_num_columns) {
-		scr_memsetw(dest, eattr, height*width*2);
-	} else {
-		for (; height > 0; height--, dest+=mda_num_columns)
-			scr_memsetw(dest, eattr, width*2);
-	}
-}
-                        
-static void mdacon_bmove(struct vc_data *c, int sy, int sx, 
-			 int dy, int dx, int height, int width)
-{
-	u16 *src, *dest;
-
-	if (width <= 0 || height <= 0)
-		return;
-		
-	if (sx==0 && dx==0 && width==mda_num_columns) {
-		scr_memmovew(MDA_ADDR(0,dy), MDA_ADDR(0,sy), height*width*2);
-
-	} else if (dy < sy || (dy == sy && dx < sx)) {
-		src  = MDA_ADDR(sx, sy);
-		dest = MDA_ADDR(dx, dy);
-
-		for (; height > 0; height--) {
-			scr_memmovew(dest, src, width*2);
-			src  += mda_num_columns;
-			dest += mda_num_columns;
-		}
-	} else {
-		src  = MDA_ADDR(sx, sy+height-1);
-		dest = MDA_ADDR(dx, dy+height-1);
-
-		for (; height > 0; height--) {
-			scr_memmovew(dest, src, width*2);
-			src  -= mda_num_columns;
-			dest -= mda_num_columns;
-		}
-	}
-}
-
-static int mdacon_switch(struct vc_data *c)
-{
-	return 1;	/* redrawing needed */
-}
-
-static int mdacon_set_palette(struct vc_data *c, unsigned char *table)
-{
-	return -EINVAL;
-}
-
-static int mdacon_blank(struct vc_data *c, int blank, int mode_switch)
-{
-	if (mda_type == TYPE_MDA) {
-		if (blank) 
-			scr_memsetw((void *)mda_vram_base, 
-				mda_convert_attr(c->vc_video_erase_char),
-				c->vc_screenbuf_size);
-		/* Tell console.c that it has to restore the screen itself */
-		return 1;
-=======
 static void mdacon_clear(struct vc_data *c, unsigned int y, unsigned int x,
 			 unsigned int width)
 {
@@ -620,27 +461,12 @@ static bool mdacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
 				c->vc_screenbuf_size);
 		/* Tell console.c that it has to restore the screen itself */
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (blank)
 			outb_p(0x00, mda_mode_port);	/* disable video */
 		else
 			outb_p(MDA_MODE_VIDEO_EN | MDA_MODE_BLINK_EN, 
 				mda_mode_port);
-<<<<<<< HEAD
-		return 0;
-	}
-}
-
-static int mdacon_scrolldelta(struct vc_data *c, int lines)
-{
-	return 0;
-}
-
-static void mdacon_cursor(struct vc_data *c, int mode)
-{
-	if (mode == CM_ERASE) {
-=======
 		return false;
 	}
 }
@@ -648,20 +474,13 @@ static void mdacon_cursor(struct vc_data *c, int mode)
 static void mdacon_cursor(struct vc_data *c, bool enable)
 {
 	if (!enable) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mda_set_cursor(mda_vram_len - 1);
 		return;
 	}
 
-<<<<<<< HEAD
-	mda_set_cursor(c->vc_y*mda_num_columns*2 + c->vc_x*2);
-
-	switch (c->vc_cursor_type & 0x0f) {
-=======
 	mda_set_cursor(c->state.y * mda_num_columns * 2 + c->state.x * 2);
 
 	switch (CUR_SIZE(c->vc_cursor_type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case CUR_LOWER_THIRD:	mda_set_cursor_size(10, 13); break;
 		case CUR_LOWER_HALF:	mda_set_cursor_size(7,  13); break;
@@ -672,21 +491,13 @@ static void mdacon_cursor(struct vc_data *c, bool enable)
 	}
 }
 
-<<<<<<< HEAD
-static int mdacon_scroll(struct vc_data *c, int t, int b, int dir, int lines)
-=======
 static bool mdacon_scroll(struct vc_data *c, unsigned int t, unsigned int b,
 		enum con_scroll dir, unsigned int lines)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
 
 	if (!lines)
-<<<<<<< HEAD
-		return 0;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lines > c->vc_rows)   /* maximum realistic size */
 		lines = c->vc_rows;
@@ -694,28 +505,13 @@ static bool mdacon_scroll(struct vc_data *c, unsigned int t, unsigned int b,
 	switch (dir) {
 
 	case SM_UP:
-<<<<<<< HEAD
-		scr_memmovew(MDA_ADDR(0,t), MDA_ADDR(0,t+lines),
-				(b-t-lines)*mda_num_columns*2);
-		scr_memsetw(MDA_ADDR(0,b-lines), eattr,
-=======
 		scr_memmovew(mda_addr(0, t), mda_addr(0, t + lines),
 				(b-t-lines)*mda_num_columns*2);
 		scr_memsetw(mda_addr(0, b - lines), eattr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lines*mda_num_columns*2);
 		break;
 
 	case SM_DOWN:
-<<<<<<< HEAD
-		scr_memmovew(MDA_ADDR(0,t+lines), MDA_ADDR(0,t),
-				(b-t-lines)*mda_num_columns*2);
-		scr_memsetw(MDA_ADDR(0,t), eattr, lines*mda_num_columns*2);
-		break;
-	}
-
-	return 0;
-=======
 		scr_memmovew(mda_addr(0, t + lines), mda_addr(0, t),
 				(b-t-lines)*mda_num_columns*2);
 		scr_memsetw(mda_addr(0, t), eattr, lines*mda_num_columns*2);
@@ -723,7 +519,6 @@ static bool mdacon_scroll(struct vc_data *c, unsigned int t, unsigned int b,
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -737,35 +532,17 @@ static const struct consw mda_con = {
 	.con_init =		mdacon_init,
 	.con_deinit =		mdacon_deinit,
 	.con_clear =		mdacon_clear,
-<<<<<<< HEAD
-	.con_putc =		mdacon_putc,
-	.con_putcs =		mdacon_putcs,
-	.con_cursor =		mdacon_cursor,
-	.con_scroll =		mdacon_scroll,
-	.con_bmove =		mdacon_bmove,
-	.con_switch =		mdacon_switch,
-	.con_blank =		mdacon_blank,
-	.con_set_palette =	mdacon_set_palette,
-	.con_scrolldelta =	mdacon_scrolldelta,
-=======
 	.con_putcs =		mdacon_putcs,
 	.con_cursor =		mdacon_cursor,
 	.con_scroll =		mdacon_scroll,
 	.con_switch =		mdacon_switch,
 	.con_blank =		mdacon_blank,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.con_build_attr =	mdacon_build_attr,
 	.con_invert_region =	mdacon_invert_region,
 };
 
 int __init mda_console_init(void)
 {
-<<<<<<< HEAD
-	if (mda_first_vc > mda_last_vc)
-		return 1;
-
-	return take_over_console(&mda_con, mda_first_vc-1, mda_last_vc-1, 0);
-=======
 	int err;
 
 	if (mda_first_vc > mda_last_vc)
@@ -774,7 +551,6 @@ int __init mda_console_init(void)
 	err = do_take_over_console(&mda_con, mda_first_vc-1, mda_last_vc-1, 0);
 	console_unlock();
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit mda_console_exit(void)

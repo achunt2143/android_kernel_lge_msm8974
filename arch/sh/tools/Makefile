@@ -13,8 +13,4 @@
 include/generated/machtypes.h: $(src)/gen-mach-types $(src)/mach-types
 	@echo '  Generating $@'
 	$(Q)mkdir -p $(dir $@)
-<<<<<<< HEAD
-	$(Q)LC_ALL=C $(AWK) -f $^ > $@ || { rm -f $@; /bin/false; }
-=======
 	$(Q)LC_ALL=C $(AWK) -f $^ > $@
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

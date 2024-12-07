@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __FS_CEPH_AUTH_X_PROTOCOL
 #define __FS_CEPH_AUTH_X_PROTOCOL
 
@@ -41,12 +38,8 @@ struct ceph_x_authenticate {
 	__u8 struct_v;
 	__le64 client_challenge;
 	__le64 key;
-<<<<<<< HEAD
-	/* ticket blob */
-=======
 	/* old_ticket blob */
 	/* nautilus+: other_keys */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 struct ceph_x_service_ticket_request {
@@ -78,8 +71,6 @@ struct ceph_x_authorize_a {
 struct ceph_x_authorize_b {
 	__u8 struct_v;
 	__le64 nonce;
-<<<<<<< HEAD
-=======
 	__u8 have_challenge;
 	__le64 server_challenge_plus_one;
 } __attribute__ ((packed));
@@ -87,7 +78,6 @@ struct ceph_x_authorize_b {
 struct ceph_x_authorize_challenge {
 	__u8 struct_v;
 	__le64 server_challenge;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 struct ceph_x_authorize_reply {
@@ -97,11 +87,7 @@ struct ceph_x_authorize_reply {
 
 
 /*
-<<<<<<< HEAD
- * encyption bundle
-=======
  * encryption bundle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define CEPHX_ENC_MAGIC 0xff009cad8826aa55ull
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver interface to access RICOH_RC5T583 power management chip.
  *
@@ -10,22 +7,6 @@
  *
  * Based on code
  *      Copyright (C) 2011 RICOH COMPANY,LTD
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_RC5T583_H
@@ -35,18 +16,10 @@
 #include <linux/types.h>
 #include <linux/regmap.h>
 
-<<<<<<< HEAD
-#define RC5T583_MAX_REGS		0xF8
-
-/* Maximum number of main interrupts */
-#define MAX_MAIN_INTERRUPT		5
-#define RC5T583_MAX_GPEDGE_REG		2
-=======
 /* Maximum number of main interrupts */
 #define MAX_MAIN_INTERRUPT		5
 #define RC5T583_MAX_GPEDGE_REG		2
 #define RC5T583_MAX_INTERRUPT_EN_REGS	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RC5T583_MAX_INTERRUPT_MASK_REGS	9
 
 /* Interrupt enable register */
@@ -160,8 +133,6 @@
 #define RC5T583_GPIO_MON_IOIN	0xAB
 #define RC5T583_GPIO_GPOFUNC	0xAC
 
-<<<<<<< HEAD
-=======
 /* RTC registers */
 #define RC5T583_RTC_SEC		0xE0
 #define RC5T583_RTC_MIN		0xE1
@@ -187,7 +158,6 @@
 #define RC5T583_MAX_REG		0xF7
 #define RC5T583_NUM_REGS	(RC5T583_MAX_REG + 1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RICOH_RC5T583 IRQ definitions */
 enum {
 	RC5T583_IRQ_ONKEY,
@@ -292,8 +262,6 @@ enum {
 	RC5T583_EXT_PWRREQ2_CONTROL = 0x2,
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	RC5T583_REGULATOR_DC0,
 	RC5T583_REGULATOR_DC1,
@@ -314,7 +282,6 @@ enum {
 	RC5T583_REGULATOR_MAX,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rc5t583 {
 	struct device	*dev;
 	struct regmap	*regmap;
@@ -327,11 +294,7 @@ struct rc5t583 {
 	uint8_t		intc_inten_reg;
 
 	/* For group interrupt bits and address */
-<<<<<<< HEAD
-	uint8_t		irq_en_reg[RC5T583_MAX_INTERRUPT_MASK_REGS];
-=======
 	uint8_t		irq_en_reg[RC5T583_MAX_INTERRUPT_EN_REGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For gpio edge */
 	uint8_t		gpedge_reg[RC5T583_MAX_GPEDGE_REG];
@@ -341,9 +304,6 @@ struct rc5t583 {
  * rc5t583_platform_data: Platform data for ricoh rc5t583 pmu.
  * The board specific data is provided through this structure.
  * @irq_base: Irq base number on which this device registers their interrupts.
-<<<<<<< HEAD
- * @enable_shutdown: Enable shutdown through the input pin "shutdown".
-=======
  * @gpio_base: GPIO base from which gpio of this device will start.
  * @enable_shutdown: Enable shutdown through the input pin "shutdown".
  * @regulator_deepsleep_slot: The slot number on which device goes to sleep
@@ -352,20 +312,15 @@ struct rc5t583 {
  *		regulator output enable/disable is controlled by the external
  *		power request input state.
  * @reg_init_data: Regulator init data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 struct rc5t583_platform_data {
 	int		irq_base;
-<<<<<<< HEAD
-	bool		enable_shutdown;
-=======
 	int		gpio_base;
 	bool		enable_shutdown;
 	int		regulator_deepsleep_slot[RC5T583_REGULATOR_MAX];
 	unsigned long	regulator_ext_pwr_control[RC5T583_REGULATOR_MAX];
 	struct regulator_init_data *reg_init_data[RC5T583_REGULATOR_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int rc5t583_write(struct device *dev, uint8_t reg, uint8_t val)

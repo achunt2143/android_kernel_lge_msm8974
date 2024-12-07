@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- * Register cache access API
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/slab.h>
-#include <linux/export.h>
-#include <linux/device.h>
-#include <trace/events/regmap.h>
-#include <linux/bsearch.h>
-#include <linux/sort.h>
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Register cache access API
@@ -34,17 +13,12 @@
 #include <linux/sort.h>
 
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "internal.h"
 
 static const struct regcache_ops *cache_types[] = {
 	&regcache_rbtree_ops,
-<<<<<<< HEAD
-	&regcache_lzo_ops,
-=======
 	&regcache_maple_ops,
 	&regcache_flat_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int regcache_hw_init(struct regmap *map)
@@ -52,62 +26,12 @@ static int regcache_hw_init(struct regmap *map)
 	int i, j;
 	int ret;
 	int count;
-<<<<<<< HEAD
-	unsigned int val;
-=======
 	unsigned int reg, val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *tmp_buf;
 
 	if (!map->num_reg_defaults_raw)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!map->reg_defaults_raw) {
-		u32 cache_bypass = map->cache_bypass;
-		dev_warn(map->dev, "No cache defaults, reading back from HW\n");
-
-		/* Bypass the cache access till data read from HW*/
-		map->cache_bypass = 1;
-		tmp_buf = kmalloc(map->cache_size_raw, GFP_KERNEL);
-		if (!tmp_buf)
-			return -EINVAL;
-		ret = regmap_bulk_read(map, 0, tmp_buf,
-				       map->num_reg_defaults_raw);
-		map->cache_bypass = cache_bypass;
-		if (ret < 0) {
-			kfree(tmp_buf);
-			return ret;
-		}
-		map->reg_defaults_raw = tmp_buf;
-		map->cache_free = 1;
-	}
-
-	/* calculate the size of reg_defaults */
-	for (count = 0, i = 0; i < map->num_reg_defaults_raw; i++) {
-		val = regcache_get_val(map->reg_defaults_raw,
-				       i, map->cache_word_size);
-		if (regmap_volatile(map, i))
-			continue;
-		count++;
-	}
-
-	map->reg_defaults = kmalloc(count * sizeof(struct reg_default),
-				      GFP_KERNEL);
-	if (!map->reg_defaults) {
-		ret = -ENOMEM;
-		goto err_free;
-	}
-
-	/* fill the reg_defaults */
-	map->num_reg_defaults = count;
-	for (i = 0, j = 0; i < map->num_reg_defaults_raw; i++) {
-		val = regcache_get_val(map->reg_defaults_raw,
-				       i, map->cache_word_size);
-		if (regmap_volatile(map, i))
-			continue;
-		map->reg_defaults[j].reg = i;
-=======
 	/* calculate the size of reg_defaults */
 	for (count = 0, i = 0; i < map->num_reg_defaults_raw; i++)
 		if (regmap_readable(map, i * map->reg_stride) &&
@@ -174,7 +98,6 @@ static int regcache_hw_init(struct regmap *map)
 		}
 
 		map->reg_defaults[j].reg = reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map->reg_defaults[j].def = val;
 		j++;
 	}
@@ -182,12 +105,7 @@ static int regcache_hw_init(struct regmap *map)
 	return 0;
 
 err_free:
-<<<<<<< HEAD
-	if (map->cache_free)
-		kfree(map->reg_defaults_raw);
-=======
 	kfree(map->reg_defaults);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -199,19 +117,14 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
 	void *tmp_buf;
 
 	if (map->cache_type == REGCACHE_NONE) {
-<<<<<<< HEAD
-=======
 		if (config->reg_defaults || config->num_reg_defaults_raw)
 			dev_warn(map->dev,
 				 "No cache used with register defaults set!\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map->cache_bypass = true;
 		return 0;
 	}
 
-<<<<<<< HEAD
-=======
 	if (config->reg_defaults && !config->num_reg_defaults) {
 		dev_err(map->dev,
 			 "Register defaults are set without the number!\n");
@@ -228,17 +141,12 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
 		if (config->reg_defaults[i].reg % map->reg_stride)
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(cache_types); i++)
 		if (cache_types[i]->type == map->cache_type)
 			break;
 
 	if (i == ARRAY_SIZE(cache_types)) {
-<<<<<<< HEAD
-		dev_err(map->dev, "Could not match compress type: %d\n",
-=======
 		dev_err(map->dev, "Could not match cache type: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			map->cache_type);
 		return -EINVAL;
 	}
@@ -262,11 +170,6 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
 	 * a copy of it.
 	 */
 	if (config->reg_defaults) {
-<<<<<<< HEAD
-		if (!map->num_reg_defaults)
-			return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp_buf = kmemdup(config->reg_defaults, map->num_reg_defaults *
 				  sizeof(struct reg_default), GFP_KERNEL);
 		if (!tmp_buf)
@@ -280,12 +183,6 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
 		ret = regcache_hw_init(map);
 		if (ret < 0)
 			return ret;
-<<<<<<< HEAD
-	}
-
-	if (!map->max_register)
-		map->max_register = map->num_reg_defaults_raw;
-=======
 		if (map->cache_bypass)
 			return 0;
 	}
@@ -294,7 +191,6 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
 		map->max_register = (map->num_reg_defaults_raw  - 1) * map->reg_stride;
 		map->max_register_is_set = true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map->cache_ops->init) {
 		dev_dbg(map->dev, "Initializing %s cache\n",
@@ -332,11 +228,7 @@ void regcache_exit(struct regmap *map)
 }
 
 /**
-<<<<<<< HEAD
- * regcache_read: Fetch the value of a given register from the cache.
-=======
  * regcache_read - Fetch the value of a given register from the cache.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: map to configure.
  * @reg: The register index.
@@ -350,11 +242,7 @@ int regcache_read(struct regmap *map,
 	int ret;
 
 	if (map->cache_type == REGCACHE_NONE)
-<<<<<<< HEAD
-		return -ENOSYS;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!map->cache_ops);
 
@@ -362,11 +250,7 @@ int regcache_read(struct regmap *map,
 		ret = map->cache_ops->read(map, reg, value);
 
 		if (ret == 0)
-<<<<<<< HEAD
-			trace_regmap_reg_read_cache(map->dev, reg, *value);
-=======
 			trace_regmap_reg_read_cache(map, reg, *value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return ret;
 	}
@@ -375,11 +259,7 @@ int regcache_read(struct regmap *map,
 }
 
 /**
-<<<<<<< HEAD
- * regcache_write: Set the value of a given register in the cache.
-=======
  * regcache_write - Set the value of a given register in the cache.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: map to configure.
  * @reg: The register index.
@@ -395,22 +275,12 @@ int regcache_write(struct regmap *map,
 
 	BUG_ON(!map->cache_ops);
 
-<<<<<<< HEAD
-	if (!regmap_writeable(map, reg))
-		return -EIO;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!regmap_volatile(map, reg))
 		return map->cache_ops->write(map, reg, value);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * regcache_sync: Sync the register cache with the hardware.
-=======
 bool regcache_reg_needs_sync(struct regmap *map, unsigned int reg,
 			     unsigned int val)
 {
@@ -473,7 +343,6 @@ static int rbtree_all(const void *key, const struct rb_node *node)
 
 /**
  * regcache_sync - Sync the register cache with the hardware.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: map to configure.
  *
@@ -488,13 +357,6 @@ int regcache_sync(struct regmap *map)
 	int ret = 0;
 	unsigned int i;
 	const char *name;
-<<<<<<< HEAD
-	unsigned int bypass;
-
-	BUG_ON(!map->cache_ops || !map->cache_ops->sync);
-
-	mutex_lock(&map->lock);
-=======
 	bool bypass;
 	struct rb_node *node;
 
@@ -504,27 +366,18 @@ int regcache_sync(struct regmap *map)
 	BUG_ON(!map->cache_ops);
 
 	map->lock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Remember the initial bypass state */
 	bypass = map->cache_bypass;
 	dev_dbg(map->dev, "Syncing %s cache\n",
 		map->cache_ops->name);
 	name = map->cache_ops->name;
-<<<<<<< HEAD
-	trace_regcache_sync(map->dev, name, "start");
-=======
 	trace_regcache_sync(map, name, "start");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!map->cache_dirty)
 		goto out;
 
 	/* Apply any patch first */
-<<<<<<< HEAD
-	map->cache_bypass = 1;
-=======
 	map->cache_bypass = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < map->patch_regs; i++) {
 		ret = _regmap_write(map, map->patch[i].reg, map->patch[i].def);
 		if (ret != 0) {
@@ -533,29 +386,17 @@ int regcache_sync(struct regmap *map)
 			goto out;
 		}
 	}
-<<<<<<< HEAD
-	map->cache_bypass = 0;
-
-	ret = map->cache_ops->sync(map, 0, map->max_register);
-=======
 	map->cache_bypass = false;
 
 	if (map->cache_ops->sync)
 		ret = map->cache_ops->sync(map, 0, map->max_register);
 	else
 		ret = regcache_default_sync(map, 0, map->max_register);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret == 0)
 		map->cache_dirty = false;
 
 out:
-<<<<<<< HEAD
-	trace_regcache_sync(map->dev, name, "stop");
-	/* Restore the bypass state */
-	map->cache_bypass = bypass;
-	mutex_unlock(&map->lock);
-=======
 	/* Restore the bypass state */
 	map->cache_bypass = bypass;
 	map->no_sync_defaults = false;
@@ -587,18 +428,13 @@ out:
 	regmap_async_complete(map);
 
 	trace_regcache_sync(map, name, "stop");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regcache_sync);
 
 /**
-<<<<<<< HEAD
- * regcache_sync_region: Sync part  of the register cache with the hardware.
-=======
  * regcache_sync_region - Sync part  of the register cache with the hardware.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: map to sync.
  * @min: first register to sync
@@ -614,13 +450,6 @@ int regcache_sync_region(struct regmap *map, unsigned int min,
 {
 	int ret = 0;
 	const char *name;
-<<<<<<< HEAD
-	unsigned int bypass;
-
-	BUG_ON(!map->cache_ops || !map->cache_ops->sync);
-
-	mutex_lock(&map->lock);
-=======
 	bool bypass;
 
 	if (WARN_ON(map->cache_type == REGCACHE_NONE))
@@ -629,7 +458,6 @@ int regcache_sync_region(struct regmap *map, unsigned int min,
 	BUG_ON(!map->cache_ops);
 
 	map->lock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remember the initial bypass state */
 	bypass = map->cache_bypass;
@@ -637,24 +465,11 @@ int regcache_sync_region(struct regmap *map, unsigned int min,
 	name = map->cache_ops->name;
 	dev_dbg(map->dev, "Syncing %s cache from %d-%d\n", name, min, max);
 
-<<<<<<< HEAD
-	trace_regcache_sync(map->dev, name, "start region");
-=======
 	trace_regcache_sync(map, name, "start region");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!map->cache_dirty)
 		goto out;
 
-<<<<<<< HEAD
-	ret = map->cache_ops->sync(map, min, max);
-
-out:
-	trace_regcache_sync(map->dev, name, "stop region");
-	/* Restore the bypass state */
-	map->cache_bypass = bypass;
-	mutex_unlock(&map->lock);
-=======
 	map->async = true;
 
 	if (map->cache_ops->sync)
@@ -672,19 +487,12 @@ out:
 	regmap_async_complete(map);
 
 	trace_regcache_sync(map, name, "stop region");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regcache_sync_region);
 
 /**
-<<<<<<< HEAD
- * regcache_cache_only: Put a register map into cache only mode
- *
- * @map: map to configure
- * @cache_only: flag if changes should be written to the hardware
-=======
  * regcache_drop_region - Discard part of the register cache
  *
  * @map: map to operate on
@@ -720,7 +528,6 @@ EXPORT_SYMBOL_GPL(regcache_drop_region);
  *
  * @map: map to configure
  * @enable: flag if changes should be written to the hardware
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When a register map is marked as cache only writes to the register
  * map API will only update the register cache, they will not cause
@@ -730,39 +537,16 @@ EXPORT_SYMBOL_GPL(regcache_drop_region);
  */
 void regcache_cache_only(struct regmap *map, bool enable)
 {
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-	WARN_ON(map->cache_bypass && enable);
-	map->cache_only = enable;
-	trace_regmap_cache_only(map->dev, enable);
-	mutex_unlock(&map->lock);
-=======
 	map->lock(map->lock_arg);
 	WARN_ON(map->cache_type != REGCACHE_NONE &&
 		map->cache_bypass && enable);
 	map->cache_only = enable;
 	trace_regmap_cache_only(map, enable);
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(regcache_cache_only);
 
 /**
-<<<<<<< HEAD
- * regcache_mark_dirty: Mark the register cache as dirty
- *
- * @map: map to mark
- *
- * Mark the register cache as dirty, for example due to the device
- * having been powered down for suspend.  If the cache is not marked
- * as dirty then the cache sync will be suppressed.
- */
-void regcache_mark_dirty(struct regmap *map)
-{
-	mutex_lock(&map->lock);
-	map->cache_dirty = true;
-	mutex_unlock(&map->lock);
-=======
  * regcache_mark_dirty - Indicate that HW registers were reset to default values
  *
  * @map: map to mark
@@ -781,20 +565,10 @@ void regcache_mark_dirty(struct regmap *map)
 	map->cache_dirty = true;
 	map->no_sync_defaults = true;
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(regcache_mark_dirty);
 
 /**
-<<<<<<< HEAD
- * regcache_cache_bypass: Put a register map into cache bypass mode
- *
- * @map: map to configure
- * @cache_bypass: flag if changes should not be written to the hardware
- *
- * When a register map is marked with the cache bypass option, writes
- * to the register map API will only update the hardware and not the
-=======
  * regcache_cache_bypass - Put a register map into cache bypass mode
  *
  * @map: map to configure
@@ -802,30 +576,11 @@ EXPORT_SYMBOL_GPL(regcache_mark_dirty);
  *
  * When a register map is marked with the cache bypass option, writes
  * to the register map API will only update the hardware and not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the cache directly.  This is useful when syncing the cache back to
  * the hardware.
  */
 void regcache_cache_bypass(struct regmap *map, bool enable)
 {
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-	WARN_ON(map->cache_only && enable);
-	map->cache_bypass = enable;
-	trace_regmap_cache_bypass(map->dev, enable);
-	mutex_unlock(&map->lock);
-}
-EXPORT_SYMBOL_GPL(regcache_cache_bypass);
-
-bool regcache_set_val(void *base, unsigned int idx,
-		      unsigned int val, unsigned int word_size)
-{
-	switch (word_size) {
-	case 1: {
-		u8 *cache = base;
-		if (cache[idx] == val)
-			return true;
-=======
 	map->lock(map->lock_arg);
 	WARN_ON(map->cache_only && enable);
 	map->cache_bypass = enable;
@@ -871,56 +626,32 @@ void regcache_set_val(struct regmap *map, void *base, unsigned int idx,
 	case 1: {
 		u8 *cache = base;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cache[idx] = val;
 		break;
 	}
 	case 2: {
 		u16 *cache = base;
-<<<<<<< HEAD
-		if (cache[idx] == val)
-			return true;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cache[idx] = val;
 		break;
 	}
 	case 4: {
 		u32 *cache = base;
-<<<<<<< HEAD
-		if (cache[idx] == val)
-			return true;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cache[idx] = val;
 		break;
 	}
 	default:
 		BUG();
 	}
-<<<<<<< HEAD
-	return false;
-}
-
-unsigned int regcache_get_val(const void *base, unsigned int idx,
-			      unsigned int word_size)
-=======
 }
 
 unsigned int regcache_get_val(struct regmap *map, const void *base,
 			      unsigned int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!base)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (word_size) {
-	case 1: {
-		const u8 *cache = base;
-=======
 	/* Use device native format if possible */
 	if (map->format.parse_val)
 		return map->format.parse_val(regcache_get_val_addr(map, base,
@@ -930,23 +661,16 @@ unsigned int regcache_get_val(struct regmap *map, const void *base,
 	case 1: {
 		const u8 *cache = base;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cache[idx];
 	}
 	case 2: {
 		const u16 *cache = base;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cache[idx];
 	}
 	case 4: {
 		const u32 *cache = base;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cache[idx];
 	}
 	default:
@@ -980,8 +704,6 @@ int regcache_lookup_reg(struct regmap *map, unsigned int reg)
 	else
 		return -ENOENT;
 }
-<<<<<<< HEAD
-=======
 
 static bool regcache_reg_present(unsigned long *cache_present, unsigned int idx)
 {
@@ -1121,4 +843,3 @@ int regcache_sync_block(struct regmap *map, void *block,
 		return regcache_sync_block_single(map, block, cache_present,
 						  block_base, start, end);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

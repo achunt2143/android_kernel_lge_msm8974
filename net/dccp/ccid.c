@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/ccid.c
  *
@@ -9,13 +6,6 @@
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
  *
  *  CCID infrastructure
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or modify it
- *	under the terms of the GNU General Public License version 2 as
- *	published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -53,10 +43,7 @@ bool ccid_support_check(u8 const *ccid_array, u8 array_len)
  * ccid_get_builtin_ccids  -  Populate a list of built-in CCIDs
  * @ccid_array: pointer to copy into
  * @array_len: value to return length into
-<<<<<<< HEAD
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function allocates memory - caller must see that it is freed after use.
  */
 int ccid_get_builtin_ccids(u8 **ccid_array, u8 *array_len)
@@ -89,11 +76,7 @@ int ccid_getsockopt_builtin_ccids(struct sock *sk, int len,
 	return err;
 }
 
-<<<<<<< HEAD
-static struct kmem_cache *ccid_kmem_cache_create(int obj_size, char *slab_name_fmt, const char *fmt,...)
-=======
 static __printf(3, 4) struct kmem_cache *ccid_kmem_cache_create(int obj_size, char *slab_name_fmt, const char *fmt,...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kmem_cache *slab;
 	va_list args;
@@ -109,18 +92,10 @@ static __printf(3, 4) struct kmem_cache *ccid_kmem_cache_create(int obj_size, ch
 
 static void ccid_kmem_cache_destroy(struct kmem_cache *slab)
 {
-<<<<<<< HEAD
-	if (slab != NULL)
-		kmem_cache_destroy(slab);
-}
-
-static int ccid_activate(struct ccid_operations *ccid_ops)
-=======
 	kmem_cache_destroy(slab);
 }
 
 static int __init ccid_activate(struct ccid_operations *ccid_ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -ENOBUFS;
 

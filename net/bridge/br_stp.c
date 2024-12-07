@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Spanning tree protocol; generic parts
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- */
-#include <linux/kernel.h>
-#include <linux/rculist.h>
-=======
  */
 #include <linux/kernel.h>
 #include <linux/rculist.h>
 #include <net/switchdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "br_private.h"
 #include "br_private_stp.h"
@@ -40,15 +26,6 @@ static const char *const br_port_state_names[] = {
 	[BR_STATE_BLOCKING] = "blocking",
 };
 
-<<<<<<< HEAD
-void br_log_state(const struct net_bridge_port *p)
-{
-	br_info(p->br, "port %u(%s) entered %s state\n",
-		(unsigned) p->port_no, p->dev->name,
-		br_port_state_names[p->state]);
-}
-
-=======
 void br_set_state(struct net_bridge_port *p, unsigned int state)
 {
 	struct switchdev_attr attr = {
@@ -107,18 +84,13 @@ u8 br_port_get_stp_state(const struct net_device *dev)
 }
 EXPORT_SYMBOL_GPL(br_port_get_stp_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* called under bridge lock */
 struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
 {
 	struct net_bridge_port *p;
 
-<<<<<<< HEAD
-	list_for_each_entry_rcu(p, &br->port_list, list) {
-=======
 	list_for_each_entry_rcu(p, &br->port_list, list,
 				lockdep_is_held(&br->lock)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p->port_no == port_no)
 			return p;
 	}
@@ -177,8 +149,6 @@ static int br_should_become_root_port(const struct net_bridge_port *p,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void br_root_port_block(const struct net_bridge *br,
 			       struct net_bridge_port *p)
 {
@@ -193,7 +163,6 @@ static void br_root_port_block(const struct net_bridge *br,
 		mod_timer(&p->forward_delay_timer, jiffies + br->forward_delay);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* called under bridge lock */
 static void br_root_selection(struct net_bridge *br)
 {
@@ -201,16 +170,12 @@ static void br_root_selection(struct net_bridge *br)
 	u16 root_port = 0;
 
 	list_for_each_entry(p, &br->port_list, list) {
-<<<<<<< HEAD
-		if (br_should_become_root_port(p, root_port))
-=======
 		if (!br_should_become_root_port(p, root_port))
 			continue;
 
 		if (p->flags & BR_ROOT_BLOCK)
 			br_root_port_block(br, p);
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			root_port = p->port_no;
 	}
 
@@ -276,14 +241,9 @@ void br_transmit_config(struct net_bridge_port *p)
 		br_send_config_bpdu(p, &bpdu);
 		p->topology_change_ack = 0;
 		p->config_pending = 0;
-<<<<<<< HEAD
-		mod_timer(&p->hold_timer,
-			  round_jiffies(jiffies + BR_HOLD_TIME));
-=======
 		if (p->br->stp_enabled == BR_KERNEL_STP)
 			mod_timer(&p->hold_timer,
 				  round_jiffies(jiffies + BR_HOLD_TIME));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -308,19 +268,12 @@ static void br_record_config_timeout_values(struct net_bridge *br,
 	br->max_age = bpdu->max_age;
 	br->hello_time = bpdu->hello_time;
 	br->forward_delay = bpdu->forward_delay;
-<<<<<<< HEAD
-	br->topology_change = bpdu->topology_change;
-=======
 	__br_set_topology_change(br, bpdu->topology_change);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under bridge lock */
 void br_transmit_tcn(struct net_bridge *br)
 {
-<<<<<<< HEAD
-	br_send_tcn_bpdu(br_get_port(br, br->root_port));
-=======
 	struct net_bridge_port *p;
 
 	p = br_get_port(br, br->root_port);
@@ -329,7 +282,6 @@ void br_transmit_tcn(struct net_bridge *br)
 	else
 		br_notice(br, "root port %u not found for topology notice\n",
 			  br->root_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under bridge lock */
@@ -426,11 +378,7 @@ void br_topology_change_detection(struct net_bridge *br)
 		isroot ? "propagating" : "sending tcn bpdu");
 
 	if (isroot) {
-<<<<<<< HEAD
-		br->topology_change = 1;
-=======
 		__br_set_topology_change(br, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&br->topology_change_timer, jiffies
 			  + br->bridge_forward_delay + br->bridge_max_age);
 	} else if (!br->topology_change_detected) {
@@ -488,14 +436,8 @@ static void br_make_blocking(struct net_bridge_port *p)
 		    p->state == BR_STATE_LEARNING)
 			br_topology_change_detection(p->br);
 
-<<<<<<< HEAD
-		p->state = BR_STATE_BLOCKING;
-		br_log_state(p);
-		br_ifinfo_notify(RTM_NEWLINK, p);
-=======
 		br_set_state(p, BR_STATE_BLOCKING);
 		br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		del_timer(&p->forward_delay_timer);
 	}
@@ -510,19 +452,6 @@ static void br_make_forwarding(struct net_bridge_port *p)
 		return;
 
 	if (br->stp_enabled == BR_NO_STP || br->forward_delay == 0) {
-<<<<<<< HEAD
-		p->state = BR_STATE_FORWARDING;
-		br_topology_change_detection(br);
-		del_timer(&p->forward_delay_timer);
-	} else if (br->stp_enabled == BR_KERNEL_STP)
-		p->state = BR_STATE_LISTENING;
-	else
-		p->state = BR_STATE_LEARNING;
-
-	br_multicast_enable_port(p);
-	br_log_state(p);
-	br_ifinfo_notify(RTM_NEWLINK, p);
-=======
 		br_set_state(p, BR_STATE_FORWARDING);
 		br_topology_change_detection(br);
 		del_timer(&p->forward_delay_timer);
@@ -532,7 +461,6 @@ static void br_make_forwarding(struct net_bridge_port *p)
 		br_set_state(p, BR_STATE_LEARNING);
 
 	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (br->forward_delay != 0)
 		mod_timer(&p->forward_delay_timer, jiffies + br->forward_delay);
@@ -564,15 +492,12 @@ void br_port_state_selection(struct net_bridge *br)
 			}
 		}
 
-<<<<<<< HEAD
-=======
 		if (p->state != BR_STATE_BLOCKING)
 			br_multicast_enable_port(p);
 		/* Multicast is not disabled for the port when it goes in
 		 * blocking state because the timers will expire and stop by
 		 * themselves without sending more queries.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p->state == BR_STATE_FORWARDING)
 			++liveports;
 	}
@@ -597,11 +522,8 @@ void br_received_config_bpdu(struct net_bridge_port *p,
 	struct net_bridge *br;
 	int was_root;
 
-<<<<<<< HEAD
-=======
 	p->stp_xstats.rx_bpdu++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	br = p->br;
 	was_root = br_is_root_bridge(br);
 
@@ -635,17 +557,11 @@ void br_received_config_bpdu(struct net_bridge_port *p,
 /* called under bridge lock */
 void br_received_tcn_bpdu(struct net_bridge_port *p)
 {
-<<<<<<< HEAD
-	if (br_is_designated_port(p)) {
-		br_info(p->br, "port %u(%s) received tcn bpdu\n",
-			(unsigned) p->port_no, p->dev->name);
-=======
 	p->stp_xstats.rx_tcn++;
 
 	if (br_is_designated_port(p)) {
 		br_info(p->br, "port %u(%s) received tcn bpdu\n",
 			(unsigned int) p->port_no, p->dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		br_topology_change_detection(p->br);
 		br_topology_change_acknowledge(p);
@@ -684,8 +600,6 @@ int br_set_max_age(struct net_bridge *br, unsigned long val)
 
 }
 
-<<<<<<< HEAD
-=======
 /* called under bridge lock */
 int __set_ageing_time(struct net_device *dev, unsigned long t)
 {
@@ -773,7 +687,6 @@ void __br_set_topology_change(struct net_bridge *br, unsigned char val)
 	br->topology_change = val;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __br_set_forward_delay(struct net_bridge *br, unsigned long t)
 {
 	br->bridge_forward_delay = t;

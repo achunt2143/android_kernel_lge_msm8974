@@ -1,38 +1,14 @@
 /*
-<<<<<<< HEAD
- * include/asm-xtensa/smp.h
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2001 - 2005 Tensilica Inc.
-=======
  * Copyright (C) 2001 - 2013 Tensilica Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_SMP_H
 #define _XTENSA_SMP_H
 
-<<<<<<< HEAD
-extern struct xtensa_cpuinfo boot_cpu_data;
-
-#define cpu_data (&boot_cpu_data)
-#define current_cpu_data boot_cpu_data
-
-struct xtensa_cpuinfo {
-	unsigned long	*pgd_cache;
-	unsigned long	*pte_cache;
-	unsigned long	pgtable_cache_sz;
-};
-
-#define cpu_logical_map(cpu)	(cpu)
-
-=======
 #ifdef CONFIG_SMP
 
 #define raw_smp_processor_id()	(current_thread_info()->cpu)
@@ -65,5 +41,4 @@ void cpu_restart(void);
 
 #endif /* CONFIG_SMP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _XTENSA_SMP_H */

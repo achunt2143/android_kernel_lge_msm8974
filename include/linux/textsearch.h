@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_TEXTSEARCH_H
 #define __LINUX_TEXTSEARCH_H
 
@@ -26,11 +23,7 @@ struct ts_config;
 struct ts_state
 {
 	unsigned int		offset;
-<<<<<<< HEAD
-	char			cb[40];
-=======
 	char			cb[48];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -69,11 +62,7 @@ struct ts_config
 	int 			flags;
 
 	/**
-<<<<<<< HEAD
-	 * get_next_block - fetch next block of data
-=======
 	 * @get_next_block: fetch next block of data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * @consumed: number of bytes consumed by the caller
 	 * @dst: destination buffer
 	 * @conf: search configuration
@@ -90,11 +79,7 @@ struct ts_config
 						  struct ts_state *state);
 
 	/**
-<<<<<<< HEAD
-	 * finish - finalize/clean a series of get_next_block() calls
-=======
 	 * @finish: finalize/clean a series of get_next_block() calls
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * @conf: search configuration
 	 * @state: search state
 	 *

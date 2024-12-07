@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ISA bus.
  */
@@ -43,44 +40,25 @@ static int isa_bus_probe(struct device *dev)
 {
 	struct isa_driver *isa_driver = dev->platform_data;
 
-<<<<<<< HEAD
-	if (isa_driver->probe)
-=======
 	if (isa_driver && isa_driver->probe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return isa_driver->probe(dev, to_isa_dev(dev)->id);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int isa_bus_remove(struct device *dev)
-{
-	struct isa_driver *isa_driver = dev->platform_data;
-
-	if (isa_driver->remove)
-		return isa_driver->remove(dev, to_isa_dev(dev)->id);
-
-	return 0;
-=======
 static void isa_bus_remove(struct device *dev)
 {
 	struct isa_driver *isa_driver = dev->platform_data;
 
 	if (isa_driver && isa_driver->remove)
 		isa_driver->remove(dev, to_isa_dev(dev)->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void isa_bus_shutdown(struct device *dev)
 {
 	struct isa_driver *isa_driver = dev->platform_data;
 
-<<<<<<< HEAD
-	if (isa_driver->shutdown)
-=======
 	if (isa_driver && isa_driver->shutdown)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		isa_driver->shutdown(dev, to_isa_dev(dev)->id);
 }
 
@@ -88,11 +66,7 @@ static int isa_bus_suspend(struct device *dev, pm_message_t state)
 {
 	struct isa_driver *isa_driver = dev->platform_data;
 
-<<<<<<< HEAD
-	if (isa_driver->suspend)
-=======
 	if (isa_driver && isa_driver->suspend)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return isa_driver->suspend(dev, to_isa_dev(dev)->id, state);
 
 	return 0;
@@ -102,21 +76,13 @@ static int isa_bus_resume(struct device *dev)
 {
 	struct isa_driver *isa_driver = dev->platform_data;
 
-<<<<<<< HEAD
-	if (isa_driver->resume)
-=======
 	if (isa_driver && isa_driver->resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return isa_driver->resume(dev, to_isa_dev(dev)->id);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct bus_type isa_bus_type = {
-=======
 static const struct bus_type isa_bus_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "isa",
 	.match		= isa_bus_match,
 	.probe		= isa_bus_probe,
@@ -183,16 +149,8 @@ int isa_register_driver(struct isa_driver *isa_driver, unsigned int ndev)
 			break;
 		}
 
-<<<<<<< HEAD
-		if (isa_dev->dev.platform_data) {
-			isa_dev->next = isa_driver->devices;
-			isa_driver->devices = &isa_dev->dev;
-		} else
-			device_unregister(&isa_dev->dev);
-=======
 		isa_dev->next = isa_driver->devices;
 		isa_driver->devices = &isa_dev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!error && !isa_driver->devices)
@@ -218,8 +176,4 @@ static int __init isa_bus_init(void)
 	return error;
 }
 
-<<<<<<< HEAD
-device_initcall(isa_bus_init);
-=======
 postcore_initcall(isa_bus_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

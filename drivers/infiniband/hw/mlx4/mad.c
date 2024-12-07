@@ -32,13 +32,6 @@
 
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
-<<<<<<< HEAD
-
-#include <linux/mlx4/cmd.h>
-#include <linux/gfp.h>
-#include <rdma/ib_pma.h>
-
-=======
 #include <rdma/ib_sa.h>
 #include <rdma/ib_cache.h>
 
@@ -50,7 +43,6 @@
 #include <net/ipv6.h>
 
 #include <linux/mlx4/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mlx4_ib.h"
 
 enum {
@@ -58,19 +50,6 @@ enum {
 	MLX4_IB_VENDOR_CLASS2 = 0xa
 };
 
-<<<<<<< HEAD
-/* Counters should be saturate once they reach their maximum value */
-#define ASSIGN_32BIT_COUNTER(counter, value) do {\
-	if ((value) > (u32)~0U)			 \
-		counter = cpu_to_be32((u32)~0U); \
-	else					 \
-		counter = cpu_to_be32(value);	 \
-} while (0)
-
-int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int ignore_mkey, int ignore_bkey,
-		 int port, struct ib_wc *in_wc, struct ib_grh *in_grh,
-		 void *in_mad, void *response_mad)
-=======
 #define MLX4_TUN_SEND_WRID_SHIFT 34
 #define MLX4_TUN_QPN_SHIFT 32
 #define MLX4_TUN_WRID_RECV (((u64) 1) << MLX4_TUN_SEND_WRID_SHIFT)
@@ -130,7 +109,6 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 		 int port, const struct ib_wc *in_wc,
 		 const struct ib_grh *in_grh,
 		 const void *in_mad, void *response_mad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_cmd_mailbox *inmailbox, *outmailbox;
 	void *inbox;
@@ -155,12 +133,6 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 	 * Key check traps can't be generated unless we have in_wc to
 	 * tell us where to send the trap.
 	 */
-<<<<<<< HEAD
-	if (ignore_mkey || !in_wc)
-		op_modifier |= 0x1;
-	if (ignore_bkey || !in_wc)
-		op_modifier |= 0x2;
-=======
 	if ((mad_ifc_flags & MLX4_MAD_IFC_IGNORE_MKEY) || !in_wc)
 		op_modifier |= 0x1;
 	if ((mad_ifc_flags & MLX4_MAD_IFC_IGNORE_BKEY) || !in_wc)
@@ -168,7 +140,6 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 	if (mlx4_is_mfunc(dev->dev) &&
 	    (mad_ifc_flags & MLX4_MAD_IFC_NET_VIEW || in_wc))
 		op_modifier |= 0x8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (in_wc) {
 		struct {
@@ -198,15 +169,6 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 
 		op_modifier |= 0x4;
 
-<<<<<<< HEAD
-		in_modifier |= in_wc->slid << 16;
-	}
-
-	err = mlx4_cmd_box(dev->dev, inmailbox->dma, outmailbox->dma,
-			   in_modifier, op_modifier,
-			   MLX4_CMD_MAD_IFC, MLX4_CMD_TIME_CLASS_C,
-			   MLX4_CMD_NATIVE);
-=======
 		in_modifier |= ib_lid_cpu16(in_wc->slid) << 16;
 	}
 
@@ -214,7 +176,6 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 			   mlx4_is_master(dev->dev) ? (op_modifier & ~0x8) : op_modifier,
 			   MLX4_CMD_MAD_IFC, MLX4_CMD_TIME_CLASS_C,
 			   (op_modifier & 0x8) ? MLX4_CMD_NATIVE : MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!err)
 		memcpy(response_mad, outmailbox->buf, 256);
@@ -225,81 +186,16 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 	return err;
 }
 
-<<<<<<< HEAD
-static void update_sm_ah(struct mlx4_ib_dev *dev, u8 port_num, u16 lid, u8 sl)
-{
-	struct ib_ah *new_ah;
-	struct ib_ah_attr ah_attr;
-=======
 static void update_sm_ah(struct mlx4_ib_dev *dev, u32 port_num, u16 lid, u8 sl)
 {
 	struct ib_ah *new_ah;
 	struct rdma_ah_attr ah_attr;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev->send_agent[port_num - 1][0])
 		return;
 
 	memset(&ah_attr, 0, sizeof ah_attr);
-<<<<<<< HEAD
-	ah_attr.dlid     = lid;
-	ah_attr.sl       = sl;
-	ah_attr.port_num = port_num;
-
-	new_ah = ib_create_ah(dev->send_agent[port_num - 1][0]->qp->pd,
-			      &ah_attr);
-	if (IS_ERR(new_ah))
-		return;
-
-	spin_lock(&dev->sm_lock);
-	if (dev->sm_ah[port_num - 1])
-		ib_destroy_ah(dev->sm_ah[port_num - 1]);
-	dev->sm_ah[port_num - 1] = new_ah;
-	spin_unlock(&dev->sm_lock);
-}
-
-/*
- * Snoop SM MADs for port info and P_Key table sets, so we can
- * synthesize LID change and P_Key change events.
- */
-static void smp_snoop(struct ib_device *ibdev, u8 port_num, struct ib_mad *mad,
-				u16 prev_lid)
-{
-	struct ib_event event;
-
-	if ((mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_LID_ROUTED ||
-	     mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) &&
-	    mad->mad_hdr.method == IB_MGMT_METHOD_SET) {
-		if (mad->mad_hdr.attr_id == IB_SMP_ATTR_PORT_INFO) {
-			struct ib_port_info *pinfo =
-				(struct ib_port_info *) ((struct ib_smp *) mad)->data;
-			u16 lid = be16_to_cpu(pinfo->lid);
-
-			update_sm_ah(to_mdev(ibdev), port_num,
-				     be16_to_cpu(pinfo->sm_lid),
-				     pinfo->neighbormtu_mastersmsl & 0xf);
-
-			event.device	       = ibdev;
-			event.element.port_num = port_num;
-
-			if (pinfo->clientrereg_resv_subnetto & 0x80) {
-				event.event    = IB_EVENT_CLIENT_REREGISTER;
-				ib_dispatch_event(&event);
-			}
-
-			if (prev_lid != lid) {
-				event.event    = IB_EVENT_LID_CHANGE;
-				ib_dispatch_event(&event);
-			}
-		}
-
-		if (mad->mad_hdr.attr_id == IB_SMP_ATTR_PKEY_TABLE) {
-			event.device	       = ibdev;
-			event.event	       = IB_EVENT_PKEY_CHANGE;
-			event.element.port_num = port_num;
-			ib_dispatch_event(&event);
-=======
 	ah_attr.type = rdma_ah_find_type(&dev->ib_dev, port_num);
 	rdma_ah_set_dlid(&ah_attr, lid);
 	rdma_ah_set_sl(&ah_attr, sl);
@@ -464,7 +360,6 @@ static void __propagate_pkey_ev(struct mlx4_ib_dev *dev, int port_num,
 			}
 			if (have_event)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -472,24 +367,12 @@ static void __propagate_pkey_ev(struct mlx4_ib_dev *dev, int port_num,
 static void node_desc_override(struct ib_device *dev,
 			       struct ib_mad *mad)
 {
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_LID_ROUTED ||
 	     mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) &&
 	    mad->mad_hdr.method == IB_MGMT_METHOD_GET_RESP &&
 	    mad->mad_hdr.attr_id == IB_SMP_ATTR_NODE_DESC) {
-<<<<<<< HEAD
-		spin_lock(&to_mdev(dev)->sm_lock);
-		memcpy(((struct ib_smp *) mad)->data, dev->node_desc, 64);
-		spin_unlock(&to_mdev(dev)->sm_lock);
-	}
-}
-
-static void forward_trap(struct mlx4_ib_dev *dev, u8 port_num, struct ib_mad *mad)
-=======
 		spin_lock_irqsave(&to_mdev(dev)->sm_lock, flags);
 		memcpy(((struct ib_smp *) mad)->data, dev->node_desc,
 		       IB_DEVICE_NODE_DESC_MAX);
@@ -499,25 +382,17 @@ static void forward_trap(struct mlx4_ib_dev *dev, u8 port_num, struct ib_mad *ma
 
 static void forward_trap(struct mlx4_ib_dev *dev, u32 port_num,
 			 const struct ib_mad *mad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int qpn = mad->mad_hdr.mgmt_class != IB_MGMT_CLASS_SUBN_LID_ROUTED;
 	struct ib_mad_send_buf *send_buf;
 	struct ib_mad_agent *agent = dev->send_agent[port_num - 1][qpn];
 	int ret;
-<<<<<<< HEAD
-
-	if (agent) {
-		send_buf = ib_create_send_mad(agent, qpn, 0, 0, IB_MGMT_MAD_HDR,
-					      IB_MGMT_MAD_DATA, GFP_ATOMIC);
-=======
 	unsigned long flags;
 
 	if (agent) {
 		send_buf = ib_create_send_mad(agent, qpn, 0, 0, IB_MGMT_MAD_HDR,
 					      IB_MGMT_MAD_DATA, GFP_ATOMIC,
 					      IB_MGMT_BASE_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(send_buf))
 			return;
 		/*
@@ -526,32 +401,19 @@ static void forward_trap(struct mlx4_ib_dev *dev, u32 port_num,
 		 * wrong following the IB spec strictly, but we know
 		 * it's OK for our devices).
 		 */
-<<<<<<< HEAD
-		spin_lock(&dev->sm_lock);
-=======
 		spin_lock_irqsave(&dev->sm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(send_buf->mad, mad, sizeof *mad);
 		if ((send_buf->ah = dev->sm_ah[port_num - 1]))
 			ret = ib_post_send_mad(send_buf, NULL);
 		else
 			ret = -EINVAL;
-<<<<<<< HEAD
-		spin_unlock(&dev->sm_lock);
-=======
 		spin_unlock_irqrestore(&dev->sm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ret)
 			ib_free_send_mad(send_buf);
 	}
 }
 
-<<<<<<< HEAD
-static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u8 port_num,
-			struct ib_wc *in_wc, struct ib_grh *in_grh,
-			struct ib_mad *in_mad, struct ib_mad *out_mad)
-=======
 static int mlx4_ib_demux_sa_handler(struct ib_device *ibdev, int port, int slave,
 							     struct ib_sa_mad *sa_mad)
 {
@@ -960,17 +822,12 @@ static int mlx4_ib_demux_mad(struct ib_device *ibdev, u32 port,
 static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 			const struct ib_wc *in_wc, const struct ib_grh *in_grh,
 			const struct ib_mad *in_mad, struct ib_mad *out_mad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 slid, prev_lid = 0;
 	int err;
 	struct ib_port_attr pattr;
 
-<<<<<<< HEAD
-	slid = in_wc ? in_wc->slid : be16_to_cpu(IB_LID_PERMISSIVE);
-=======
 	slid = in_wc ? ib_lid_cpu16(in_wc->slid) : be16_to_cpu(IB_LID_PERMISSIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (in_mad->mad_hdr.method == IB_MGMT_METHOD_TRAP && slid == 0) {
 		forward_trap(to_mdev(ibdev), port_num, in_mad);
@@ -1004,33 +861,21 @@ static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 	    in_mad->mad_hdr.method == IB_MGMT_METHOD_SET &&
 	    in_mad->mad_hdr.attr_id == IB_SMP_ATTR_PORT_INFO &&
 	    !ib_query_port(ibdev, port_num, &pattr))
-<<<<<<< HEAD
-		prev_lid = pattr.lid;
-
-	err = mlx4_MAD_IFC(to_mdev(ibdev),
-			   mad_flags & IB_MAD_IGNORE_MKEY,
-			   mad_flags & IB_MAD_IGNORE_BKEY,
-=======
 		prev_lid = ib_lid_cpu16(pattr.lid);
 
 	err = mlx4_MAD_IFC(to_mdev(ibdev),
 			   (mad_flags & IB_MAD_IGNORE_MKEY ? MLX4_MAD_IFC_IGNORE_MKEY : 0) |
 			   (mad_flags & IB_MAD_IGNORE_BKEY ? MLX4_MAD_IFC_IGNORE_BKEY : 0) |
 			   MLX4_MAD_IFC_NET_VIEW,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   port_num, in_wc, in_grh, in_mad, out_mad);
 	if (err)
 		return IB_MAD_RESULT_FAILURE;
 
 	if (!out_mad->mad_hdr.status) {
 		smp_snoop(ibdev, port_num, in_mad, prev_lid);
-<<<<<<< HEAD
-		node_desc_override(ibdev, out_mad);
-=======
 		/* slaves get node desc from FW */
 		if (!mlx4_is_slave(to_mdev(ibdev)->dev))
 			node_desc_override(ibdev, out_mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set return bit in status of directed route responses */
@@ -1044,30 +889,6 @@ static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 	return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY;
 }
 
-<<<<<<< HEAD
-static void edit_counter(struct mlx4_counter *cnt,
-					struct ib_pma_portcounters *pma_cnt)
-{
-	ASSIGN_32BIT_COUNTER(pma_cnt->port_xmit_data,
-			     (be64_to_cpu(cnt->tx_bytes) >> 2));
-	ASSIGN_32BIT_COUNTER(pma_cnt->port_rcv_data,
-			     (be64_to_cpu(cnt->rx_bytes) >> 2));
-	ASSIGN_32BIT_COUNTER(pma_cnt->port_xmit_packets,
-			     be64_to_cpu(cnt->tx_frames));
-	ASSIGN_32BIT_COUNTER(pma_cnt->port_rcv_packets,
-			     be64_to_cpu(cnt->rx_frames));
-}
-
-static int iboe_process_mad(struct ib_device *ibdev, int mad_flags, u8 port_num,
-			struct ib_wc *in_wc, struct ib_grh *in_grh,
-			struct ib_mad *in_mad, struct ib_mad *out_mad)
-{
-	struct mlx4_cmd_mailbox *mailbox;
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-	int err;
-	u32 inmod = dev->counters[port_num - 1] & 0xffff;
-	u8 mode;
-=======
 static void edit_counter(struct mlx4_counter *cnt, void *counters,
 			 __be16 attr_id)
 {
@@ -1121,29 +942,10 @@ static int iboe_process_mad(struct ib_device *ibdev, int mad_flags,
 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
 	struct counter_index *tmp_counter;
 	int err = IB_MAD_RESULT_FAILURE, stats_avail = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (in_mad->mad_hdr.mgmt_class != IB_MGMT_CLASS_PERF_MGMT)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	mailbox = mlx4_alloc_cmd_mailbox(dev->dev);
-	if (IS_ERR(mailbox))
-		return IB_MAD_RESULT_FAILURE;
-
-	err = mlx4_cmd_box(dev->dev, 0, mailbox->dma, inmod, 0,
-			   MLX4_CMD_QUERY_IF_STAT, MLX4_CMD_TIME_CLASS_C,
-			   MLX4_CMD_WRAPPED);
-	if (err)
-		err = IB_MAD_RESULT_FAILURE;
-	else {
-		memset(out_mad->data, 0, sizeof out_mad->data);
-		mode = ((struct mlx4_counter *)mailbox->buf)->counter_mode;
-		switch (mode & 0xf) {
-		case 0:
-			edit_counter(mailbox->buf,
-						(void *)(out_mad->data + 40));
-=======
 	if (in_mad->mad_hdr.attr_id == IB_PMA_CLASS_PORT_INFO)
 		return iboe_process_mad_port_info((void *)(out_mad->data + 40));
 
@@ -1169,7 +971,6 @@ static int iboe_process_mad(struct ib_device *ibdev, int mad_flags,
 			edit_counter(&counter_stats,
 				     (void *)(out_mad->data + 40),
 				     in_mad->mad_hdr.attr_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY;
 			break;
 		default:
@@ -1177,27 +978,6 @@ static int iboe_process_mad(struct ib_device *ibdev, int mad_flags,
 		}
 	}
 
-<<<<<<< HEAD
-	mlx4_free_cmd_mailbox(dev->dev, mailbox);
-
-	return err;
-}
-
-int mlx4_ib_process_mad(struct ib_device *ibdev, int mad_flags, u8 port_num,
-			struct ib_wc *in_wc, struct ib_grh *in_grh,
-			struct ib_mad *in_mad, struct ib_mad *out_mad)
-{
-	switch (rdma_port_get_link_layer(ibdev, port_num)) {
-	case IB_LINK_LAYER_INFINIBAND:
-		return ib_process_mad(ibdev, mad_flags, port_num, in_wc,
-				      in_grh, in_mad, out_mad);
-	case IB_LINK_LAYER_ETHERNET:
-		return iboe_process_mad(ibdev, mad_flags, port_num, in_wc,
-					  in_grh, in_mad, out_mad);
-	default:
-		return -EINVAL;
-	}
-=======
 	return err;
 }
 
@@ -1230,17 +1010,13 @@ int mlx4_ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 					in_grh, in, out);
 
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void send_handler(struct ib_mad_agent *agent,
 			 struct ib_mad_send_wc *mad_send_wc)
 {
-<<<<<<< HEAD
-=======
 	if (mad_send_wc->send_buf->context[0])
 		rdma_destroy_ah(mad_send_wc->send_buf->context[0], 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_free_send_mad(mad_send_wc->send_buf);
 }
 
@@ -1258,11 +1034,7 @@ int mlx4_ib_mad_init(struct mlx4_ib_dev *dev)
 				agent = ib_register_mad_agent(&dev->ib_dev, p + 1,
 							      q ? IB_QPT_GSI : IB_QPT_SMI,
 							      NULL, 0, send_handler,
-<<<<<<< HEAD
-							      NULL, NULL);
-=======
 							      NULL, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (IS_ERR(agent)) {
 					ret = PTR_ERR(agent);
 					goto err;
@@ -1299,9 +1071,6 @@ void mlx4_ib_mad_cleanup(struct mlx4_ib_dev *dev)
 		}
 
 		if (dev->sm_ah[p])
-<<<<<<< HEAD
-			ib_destroy_ah(dev->sm_ah[p]);
-=======
 			rdma_destroy_ah(dev->sm_ah[p], 0);
 	}
 }
@@ -2626,6 +2395,5 @@ void mlx4_ib_close_sriov(struct mlx4_ib_dev *dev)
 		mlx4_ib_cm_paravirt_clean(dev, -1);
 		mlx4_ib_destroy_alias_guid_service(dev);
 		mlx4_ib_device_unregister_sysfs(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

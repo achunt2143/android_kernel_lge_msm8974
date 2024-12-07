@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-# 
-# Copyright (C) 2000, 2002, 2003 Jeff Dike (jdike@karaya.com)
-# Licensed under the GPL
-=======
 # SPDX-License-Identifier: GPL-2.0
 # 
 # Copyright (C) 2000, 2002, 2003 Jeff Dike (jdike@karaya.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 
 # pcap is broken in 2.5 because kbuild doesn't allow pcap.a to be linked
@@ -15,23 +9,13 @@
 slip-objs := slip_kern.o slip_user.o
 slirp-objs := slirp_kern.o slirp_user.o
 daemon-objs := daemon_kern.o daemon_user.o
-<<<<<<< HEAD
-=======
 vector-objs := vector_kern.o vector_user.o vector_transports.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 umcast-objs := umcast_kern.o umcast_user.o
 net-objs := net_kern.o net_user.o
 mconsole-objs := mconsole_kern.o mconsole_user.o
 hostaudio-objs := hostaudio_kern.o
 ubd-objs := ubd_kern.o ubd_user.o
 port-objs := port_kern.o port_user.o
-<<<<<<< HEAD
-harddog-objs := harddog_kern.o harddog_user.o
-
-LDFLAGS_pcap.o := -r $(shell $(CC) $(KBUILD_CFLAGS) -print-file-name=libpcap.a)
-
-LDFLAGS_vde.o := -r $(shell $(CC) $(CFLAGS) -print-file-name=libvdeplug.a)
-=======
 harddog-objs := harddog_kern.o
 harddog-builtin-$(CONFIG_UML_WATCHDOG) := harddog_user.o harddog_user_exp.o
 rtc-objs := rtc_kern.o rtc_user.o
@@ -39,22 +23,14 @@ rtc-objs := rtc_kern.o rtc_user.o
 LDFLAGS_pcap.o = $(shell $(CC) $(KBUILD_CFLAGS) -print-file-name=libpcap.a)
 
 LDFLAGS_vde.o = $(shell $(CC) $(CFLAGS) -print-file-name=libvdeplug.a)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 targets := pcap_kern.o pcap_user.o vde_kern.o vde_user.o
 
 $(obj)/pcap.o: $(obj)/pcap_kern.o $(obj)/pcap_user.o
-<<<<<<< HEAD
-	$(LD) -r -dp -o $@ $^ $(LDFLAGS) $(LDFLAGS_pcap.o)
-
-$(obj)/vde.o: $(obj)/vde_kern.o $(obj)/vde_user.o
-	$(LD) -r -dp -o $@ $^ $(LDFLAGS) $(LDFLAGS_vde.o)
-=======
 	$(LD) -r -dp -o $@ $^ $(ld_flags)
 
 $(obj)/vde.o: $(obj)/vde_kern.o $(obj)/vde_user.o
 	$(LD) -r -dp -o $@ $^ $(ld_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #XXX: The call below does not work because the flags are added before the
 # object name, so nothing from the library gets linked.
@@ -70,10 +46,7 @@ obj-$(CONFIG_STDERR_CONSOLE) += stderr_console.o
 obj-$(CONFIG_UML_NET_SLIP) += slip.o slip_common.o
 obj-$(CONFIG_UML_NET_SLIRP) += slirp.o slip_common.o
 obj-$(CONFIG_UML_NET_DAEMON) += daemon.o 
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_UML_NET_VECTOR) += vector.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_UML_NET_VDE) += vde.o
 obj-$(CONFIG_UML_NET_MCAST) += umcast.o
 obj-$(CONFIG_UML_NET_PCAP) += pcap.o
@@ -81,27 +54,13 @@ obj-$(CONFIG_UML_NET) += net.o
 obj-$(CONFIG_MCONSOLE) += mconsole.o
 obj-$(CONFIG_MMAPPER) += mmapper_kern.o 
 obj-$(CONFIG_BLK_DEV_UBD) += ubd.o 
-<<<<<<< HEAD
-obj-$(CONFIG_HOSTAUDIO) += hostaudio.o
-=======
 obj-$(CONFIG_UML_SOUND) += hostaudio.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_NULL_CHAN) += null.o 
 obj-$(CONFIG_PORT_CHAN) += port.o
 obj-$(CONFIG_PTY_CHAN) += pty.o
 obj-$(CONFIG_TTY_CHAN) += tty.o 
 obj-$(CONFIG_XTERM_CHAN) += xterm.o xterm_kern.o
 obj-$(CONFIG_UML_WATCHDOG) += harddog.o
-<<<<<<< HEAD
-obj-$(CONFIG_BLK_DEV_COW_COMMON) += cow_user.o
-obj-$(CONFIG_UML_RANDOM) += random.o
-
-# pcap_user.o must be added explicitly.
-USER_OBJS := fd.o null.o pty.o tty.o xterm.o slip_common.o pcap_user.o vde_user.o
-CFLAGS_null.o = -DDEV_NULL=$(DEV_NULL_PATH)
-
-include arch/um/scripts/Makefile.rules
-=======
 obj-y += $(harddog-builtin-y) $(harddog-builtin-m)
 obj-$(CONFIG_BLK_DEV_COW_COMMON) += cow_user.o
 obj-$(CONFIG_UML_RANDOM) += random.o
@@ -116,4 +75,3 @@ CFLAGS_null.o = -DDEV_NULL=$(DEV_NULL_PATH)
 CFLAGS_xterm.o += '-DCONFIG_XTERM_CHAN_DEFAULT_EMULATOR="$(CONFIG_XTERM_CHAN_DEFAULT_EMULATOR)"'
 
 include $(srctree)/arch/um/scripts/Makefile.rules
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

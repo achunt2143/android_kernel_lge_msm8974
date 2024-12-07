@@ -1,39 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Char device for device raw access
  *
  * Copyright (C) 2005-2007  Kristian Hoegsberg <krh@bitplanet.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
 #include <linux/compat.h>
 #include <linux/delay.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/dma-mapping.h>
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/firewire.h>
 #include <linux/firewire-cdev.h>
@@ -66,10 +43,7 @@
 #define FW_CDEV_VERSION_EVENT_REQUEST2		4
 #define FW_CDEV_VERSION_ALLOCATE_REGION_END	4
 #define FW_CDEV_VERSION_AUTO_FLUSH_ISO_OVERFLOW	5
-<<<<<<< HEAD
-=======
 #define FW_CDEV_VERSION_EVENT_ASYNC_TSTAMP	6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct client {
 	u32 version;
@@ -87,10 +61,7 @@ struct client {
 	u64 iso_closure;
 	struct fw_iso_buffer buffer;
 	unsigned long vm_start;
-<<<<<<< HEAD
-=======
 	bool buffer_is_mapped;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head phy_receiver_link;
 	u64 phy_receiver_closure;
@@ -141,10 +112,7 @@ struct inbound_transaction_resource {
 	struct client_resource resource;
 	struct fw_card *card;
 	struct fw_request *request;
-<<<<<<< HEAD
-=======
 	bool is_fcp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *data;
 	size_t length;
 };
@@ -152,11 +120,7 @@ struct inbound_transaction_resource {
 struct descriptor_resource {
 	struct client_resource resource;
 	struct fw_descriptor descriptor;
-<<<<<<< HEAD
-	u32 data[0];
-=======
 	u32 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct iso_resource {
@@ -206,14 +170,10 @@ struct outbound_transaction_event {
 	struct event event;
 	struct client *client;
 	struct outbound_transaction_resource r;
-<<<<<<< HEAD
-	struct fw_cdev_event_response response;
-=======
 	union {
 		struct fw_cdev_event_response without_tstamp;
 		struct fw_cdev_event_response2 with_tstamp;
 	} rsp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct inbound_transaction_event {
@@ -221,10 +181,7 @@ struct inbound_transaction_event {
 	union {
 		struct fw_cdev_event_request request;
 		struct fw_cdev_event_request2 request2;
-<<<<<<< HEAD
-=======
 		struct fw_cdev_event_request3 with_tstamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} req;
 };
 
@@ -247,36 +204,24 @@ struct outbound_phy_packet_event {
 	struct event event;
 	struct client *client;
 	struct fw_packet p;
-<<<<<<< HEAD
-	struct fw_cdev_event_phy_packet phy_packet;
-=======
 	union {
 		struct fw_cdev_event_phy_packet without_tstamp;
 		struct fw_cdev_event_phy_packet2 with_tstamp;
 	} phy_packet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct inbound_phy_packet_event {
 	struct event event;
-<<<<<<< HEAD
-	struct fw_cdev_event_phy_packet phy_packet;
-=======
 	union {
 		struct fw_cdev_event_phy_packet without_tstamp;
 		struct fw_cdev_event_phy_packet2 with_tstamp;
 	} phy_packet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_COMPAT
 static void __user *u64_to_uptr(u64 value)
 {
-<<<<<<< HEAD
-	if (is_compat_task())
-=======
 	if (in_compat_syscall())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return compat_ptr(value);
 	else
 		return (void __user *)(unsigned long)value;
@@ -284,11 +229,7 @@ static void __user *u64_to_uptr(u64 value)
 
 static u64 uptr_to_u64(void __user *ptr)
 {
-<<<<<<< HEAD
-	if (is_compat_task())
-=======
 	if (in_compat_syscall())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ptr_to_compat(ptr);
 	else
 		return (u64)(unsigned long)ptr;
@@ -449,15 +390,8 @@ static void queue_bus_reset_event(struct client *client)
 	struct bus_reset_event *e;
 
 	e = kzalloc(sizeof(*e), GFP_KERNEL);
-<<<<<<< HEAD
-	if (e == NULL) {
-		fw_notice(client->device->card, "out of memory when allocating event\n");
-		return;
-	}
-=======
 	if (e == NULL)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fill_bus_reset_event(&e->reset, client);
 
@@ -552,29 +486,6 @@ static int ioctl_get_info(struct client *client, union ioctl_arg *arg)
 static int add_client_resource(struct client *client,
 			       struct client_resource *resource, gfp_t gfp_mask)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	int ret;
-
- retry:
-	if (idr_pre_get(&client->resource_idr, gfp_mask) == 0)
-		return -ENOMEM;
-
-	spin_lock_irqsave(&client->lock, flags);
-	if (client->in_shutdown)
-		ret = -ECANCELED;
-	else
-		ret = idr_get_new(&client->resource_idr, resource,
-				  &resource->handle);
-	if (ret >= 0) {
-		client_get(client);
-		schedule_if_iso_resource(resource);
-	}
-	spin_unlock_irqrestore(&client->lock, flags);
-
-	if (ret == -EAGAIN)
-		goto retry;
-=======
 	bool preload = gfpflags_allow_blocking(gfp_mask);
 	unsigned long flags;
 	int ret;
@@ -597,7 +508,6 @@ static int add_client_resource(struct client *client,
 	spin_unlock_irqrestore(&client->lock, flags);
 	if (preload)
 		idr_preload_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret < 0 ? ret : 0;
 }
@@ -635,21 +545,6 @@ static void release_transaction(struct client *client,
 {
 }
 
-<<<<<<< HEAD
-static void complete_transaction(struct fw_card *card, int rcode,
-				 void *payload, size_t length, void *data)
-{
-	struct outbound_transaction_event *e = data;
-	struct fw_cdev_event_response *rsp = &e->response;
-	struct client *client = e->client;
-	unsigned long flags;
-
-	if (length < rsp->length)
-		rsp->length = length;
-	if (rcode == RCODE_COMPLETE)
-		memcpy(rsp->data, payload, rsp->length);
-
-=======
 static void complete_transaction(struct fw_card *card, int rcode, u32 request_tstamp,
 				 u32 response_tstamp, void *payload, size_t length, void *data)
 {
@@ -657,31 +552,12 @@ static void complete_transaction(struct fw_card *card, int rcode, u32 request_ts
 	struct client *client = e->client;
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&client->lock, flags);
 	idr_remove(&client->resource_idr, e->r.resource.handle);
 	if (client->in_shutdown)
 		wake_up(&client->tx_flush_wait);
 	spin_unlock_irqrestore(&client->lock, flags);
 
-<<<<<<< HEAD
-	rsp->type = FW_CDEV_EVENT_RESPONSE;
-	rsp->rcode = rcode;
-
-	/*
-	 * In the case that sizeof(*rsp) doesn't align with the position of the
-	 * data, and the read is short, preserve an extra copy of the data
-	 * to stay compatible with a pre-2.6.27 bug.  Since the bug is harmless
-	 * for short reads and some apps depended on it, this is both safe
-	 * and prudent for compatibility.
-	 */
-	if (rsp->length <= sizeof(*rsp) - offsetof(typeof(*rsp), data))
-		queue_event(client, &e->event, rsp, sizeof(*rsp),
-			    rsp->data, rsp->length);
-	else
-		queue_event(client, &e->event, rsp, sizeof(*rsp) + rsp->length,
-			    NULL, 0);
-=======
 	switch (e->rsp.without_tstamp.type) {
 	case FW_CDEV_EVENT_RESPONSE:
 	{
@@ -727,7 +603,6 @@ static void complete_transaction(struct fw_card *card, int rcode, u32 request_ts
 		break;
 	}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop the idr's reference */
 	client_put(client);
@@ -738,10 +613,7 @@ static int init_request(struct client *client,
 			int destination_id, int speed)
 {
 	struct outbound_transaction_event *e;
-<<<<<<< HEAD
-=======
 	void *payload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (request->tcode != TCODE_STREAM_DATA &&
@@ -755,16 +627,6 @@ static int init_request(struct client *client,
 	e = kmalloc(sizeof(*e) + request->length, GFP_KERNEL);
 	if (e == NULL)
 		return -ENOMEM;
-<<<<<<< HEAD
-
-	e->client = client;
-	e->response.length = request->length;
-	e->response.closure = request->closure;
-
-	if (request->data &&
-	    copy_from_user(e->response.data,
-			   u64_to_uptr(request->data), request->length)) {
-=======
 	e->client = client;
 
 	if (client->version < FW_CDEV_VERSION_EVENT_ASYNC_TSTAMP) {
@@ -784,7 +646,6 @@ static int init_request(struct client *client,
 	}
 
 	if (request->data && copy_from_user(payload, u64_to_uptr(request->data), request->length)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EFAULT;
 		goto failed;
 	}
@@ -794,16 +655,9 @@ static int init_request(struct client *client,
 	if (ret < 0)
 		goto failed;
 
-<<<<<<< HEAD
-	fw_send_request(client->device->card, &e->r.transaction,
-			request->tcode, destination_id, request->generation,
-			speed, request->offset, e->response.data,
-			request->length, complete_transaction, e);
-=======
 	fw_send_request_with_tstamp(client->device->card, &e->r.transaction, request->tcode,
 				    destination_id, request->generation, speed, request->offset,
 				    payload, request->length, complete_transaction, e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  failed:
@@ -835,27 +689,14 @@ static int ioctl_send_request(struct client *client, union ioctl_arg *arg)
 			    client->device->max_speed);
 }
 
-<<<<<<< HEAD
-static inline bool is_fcp_request(struct fw_request *request)
-{
-	return request == NULL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void release_request(struct client *client,
 			    struct client_resource *resource)
 {
 	struct inbound_transaction_resource *r = container_of(resource,
 			struct inbound_transaction_resource, resource);
 
-<<<<<<< HEAD
-	if (is_fcp_request(r->request))
-		kfree(r->data);
-=======
 	if (r->is_fcp)
 		fw_request_put(r->request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		fw_send_response(r->card, r->request, RCODE_CONFLICT_ERROR);
 
@@ -869,47 +710,15 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 			   void *payload, size_t length, void *callback_data)
 {
 	struct address_handler_resource *handler = callback_data;
-<<<<<<< HEAD
-	struct inbound_transaction_resource *r;
-	struct inbound_transaction_event *e;
-	size_t event_size0;
-	void *fcp_frame = NULL;
-=======
 	bool is_fcp = is_in_fcp_region(offset, length);
 	struct inbound_transaction_resource *r;
 	struct inbound_transaction_event *e;
 	size_t event_size0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* card may be different from handler->client->device->card */
 	fw_card_get(card);
 
-<<<<<<< HEAD
-	r = kmalloc(sizeof(*r), GFP_ATOMIC);
-	e = kmalloc(sizeof(*e), GFP_ATOMIC);
-	if (r == NULL || e == NULL) {
-		fw_notice(card, "out of memory when allocating event\n");
-		goto failed;
-	}
-	r->card    = card;
-	r->request = request;
-	r->data    = payload;
-	r->length  = length;
-
-	if (is_fcp_request(request)) {
-		/*
-		 * FIXME: Let core-transaction.c manage a
-		 * single reference-counted copy?
-		 */
-		fcp_frame = kmemdup(payload, length, GFP_ATOMIC);
-		if (fcp_frame == NULL)
-			goto failed;
-
-		r->data = fcp_frame;
-	}
-
-=======
 	// Extend the lifetime of data for request so that its payload is safely accessible in
 	// the process context for the client.
 	if (is_fcp)
@@ -926,7 +735,6 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 	r->data    = payload;
 	r->length  = length;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->resource.release = release_request;
 	ret = add_client_resource(handler->client, &r->resource, GFP_ATOMIC);
 	if (ret < 0)
@@ -945,11 +753,7 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 		req->handle	= r->resource.handle;
 		req->closure	= handler->closure;
 		event_size0	= sizeof(*req);
-<<<<<<< HEAD
-	} else {
-=======
 	} else if (handler->client->version < FW_CDEV_VERSION_EVENT_ASYNC_TSTAMP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct fw_cdev_event_request2 *req = &e->req.request2;
 
 		req->type	= FW_CDEV_EVENT_REQUEST2;
@@ -963,8 +767,6 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 		req->handle	= r->resource.handle;
 		req->closure	= handler->closure;
 		event_size0	= sizeof(*req);
-<<<<<<< HEAD
-=======
 	} else {
 		struct fw_cdev_event_request3 *req = &e->req.with_tstamp;
 
@@ -980,7 +782,6 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 		req->closure	= handler->closure;
 		req->tstamp	= fw_request_get_timestamp(request);
 		event_size0	= sizeof(*req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	queue_event(handler->client, &e->event,
@@ -990,18 +791,11 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
  failed:
 	kfree(r);
 	kfree(e);
-<<<<<<< HEAD
-	kfree(fcp_frame);
-
-	if (!is_fcp_request(request))
-		fw_send_response(card, request, RCODE_CONFLICT_ERROR);
-=======
 
 	if (!is_fcp)
 		fw_send_response(card, request, RCODE_CONFLICT_ERROR);
 	else
 		fw_request_put(request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fw_card_put(card);
 }
@@ -1076,14 +870,6 @@ static int ioctl_send_response(struct client *client, union ioctl_arg *arg)
 
 	r = container_of(resource, struct inbound_transaction_resource,
 			 resource);
-<<<<<<< HEAD
-	if (is_fcp_request(r->request))
-		goto out;
-
-	if (a->length != fw_get_response_length(r->request)) {
-		ret = -EINVAL;
-		kfree(r->request);
-=======
 	if (r->is_fcp) {
 		fw_request_put(r->request);
 		goto out;
@@ -1092,16 +878,11 @@ static int ioctl_send_response(struct client *client, union ioctl_arg *arg)
 	if (a->length != fw_get_response_length(r->request)) {
 		ret = -EINVAL;
 		fw_request_put(r->request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	if (copy_from_user(r->data, u64_to_uptr(a->data), a->length)) {
 		ret = -EFAULT;
-<<<<<<< HEAD
-		kfree(r->request);
-=======
 		fw_request_put(r->request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	fw_send_response(r->card, r->request, a->rcode);
@@ -1188,16 +969,9 @@ static void iso_callback(struct fw_iso_context *context, u32 cycle,
 	struct iso_interrupt_event *e;
 
 	e = kmalloc(sizeof(*e) + header_length, GFP_ATOMIC);
-<<<<<<< HEAD
-	if (e == NULL) {
-		fw_notice(context->card, "out of memory when allocating event\n");
-		return;
-	}
-=======
 	if (e == NULL)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->interrupt.type      = FW_CDEV_EVENT_ISO_INTERRUPT;
 	e->interrupt.closure   = client->iso_closure;
 	e->interrupt.cycle     = cycle;
@@ -1214,16 +988,9 @@ static void iso_mc_callback(struct fw_iso_context *context,
 	struct iso_interrupt_mc_event *e;
 
 	e = kmalloc(sizeof(*e), GFP_ATOMIC);
-<<<<<<< HEAD
-	if (e == NULL) {
-		fw_notice(context->card, "out of memory when allocating event\n");
-		return;
-	}
-=======
 	if (e == NULL)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->interrupt.type      = FW_CDEV_EVENT_ISO_INTERRUPT_MULTICHANNEL;
 	e->interrupt.closure   = client->iso_closure;
 	e->interrupt.completed = fw_iso_buffer_lookup(&client->buffer,
@@ -1232,8 +999,6 @@ static void iso_mc_callback(struct fw_iso_context *context,
 		    sizeof(e->interrupt), NULL, 0);
 }
 
-<<<<<<< HEAD
-=======
 static enum dma_data_direction iso_dma_direction(struct fw_iso_context *context)
 {
 		if (context->type == FW_ISO_CONTEXT_TRANSMIT)
@@ -1256,17 +1021,12 @@ static struct fw_iso_context *fw_iso_mc_context_create(struct fw_card *card,
 	return ctx;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 {
 	struct fw_cdev_create_iso_context *a = &arg->create_iso_context;
 	struct fw_iso_context *context;
-<<<<<<< HEAD
-	fw_iso_callback_t cb;
-=======
 	union fw_iso_callback cb;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUILD_BUG_ON(FW_CDEV_ISO_CONTEXT_TRANSMIT != FW_ISO_CONTEXT_TRANSMIT ||
 		     FW_CDEV_ISO_CONTEXT_RECEIVE  != FW_ISO_CONTEXT_RECEIVE  ||
@@ -1278,11 +1038,7 @@ static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 		if (a->speed > SCODE_3200 || a->channel > 63)
 			return -EINVAL;
 
-<<<<<<< HEAD
-		cb = iso_callback;
-=======
 		cb.sc = iso_callback;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FW_ISO_CONTEXT_RECEIVE:
@@ -1290,29 +1046,17 @@ static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 		    a->channel > 63)
 			return -EINVAL;
 
-<<<<<<< HEAD
-		cb = iso_callback;
-		break;
-
-	case FW_ISO_CONTEXT_RECEIVE_MULTICHANNEL:
-		cb = (fw_iso_callback_t)iso_mc_callback;
-=======
 		cb.sc = iso_callback;
 		break;
 
 	case FW_ISO_CONTEXT_RECEIVE_MULTICHANNEL:
 		cb.mc = iso_mc_callback;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	context = fw_iso_context_create(client->device->card, a->type,
-			a->channel, a->speed, a->header_size, cb, client);
-=======
 	if (a->type == FW_ISO_CONTEXT_RECEIVE_MULTICHANNEL)
 		context = fw_iso_mc_context_create(client->device->card, cb.mc,
 						   client);
@@ -1320,7 +1064,6 @@ static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 		context = fw_iso_context_create(client->device->card, a->type,
 						a->channel, a->speed,
 						a->header_size, cb.sc, client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(context))
 		return PTR_ERR(context);
 	if (client->version < FW_CDEV_VERSION_AUTO_FLUSH_ISO_OVERFLOW)
@@ -1331,10 +1074,6 @@ static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 	if (client->iso_context != NULL) {
 		spin_unlock_irq(&client->lock);
 		fw_iso_context_destroy(context);
-<<<<<<< HEAD
-		return -EBUSY;
-	}
-=======
 
 		return -EBUSY;
 	}
@@ -1350,7 +1089,6 @@ static int ioctl_create_iso_context(struct client *client, union ioctl_arg *arg)
 		}
 		client->buffer_is_mapped = true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client->iso_closure = a->closure;
 	client->iso_context = context;
 	spin_unlock_irq(&client->lock);
@@ -1416,11 +1154,6 @@ static int ioctl_queue_iso(struct client *client, union ioctl_arg *arg)
 		return -EINVAL;
 
 	p = (struct fw_cdev_iso_packet __user *)u64_to_uptr(a->packets);
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, p, a->size))
-		return -EFAULT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	end = (void __user *)p + a->size;
 	count = 0;
@@ -1458,11 +1191,7 @@ static int ioctl_queue_iso(struct client *client, union ioctl_arg *arg)
 			&p->header[transmit_header_bytes / 4];
 		if (next > end)
 			return -EINVAL;
-<<<<<<< HEAD
-		if (__copy_from_user
-=======
 		if (copy_from_user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (u.packet.header, p->header, transmit_header_bytes))
 			return -EFAULT;
 		if (u.packet.skip && ctx->type == FW_ISO_CONTEXT_TRANSMIT &&
@@ -1534,29 +1263,12 @@ static int ioctl_get_cycle_timer2(struct client *client, union ioctl_arg *arg)
 {
 	struct fw_cdev_get_cycle_timer2 *a = &arg->get_cycle_timer2;
 	struct fw_card *card = client->device->card;
-<<<<<<< HEAD
-	struct timespec ts = {0, 0};
-	u32 cycle_time;
-=======
 	struct timespec64 ts = {0, 0};
 	u32 cycle_time = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	local_irq_disable();
 
-<<<<<<< HEAD
-	cycle_time = card->driver->read_csr(card, CSR_CYCLE_TIME);
-
-	switch (a->clk_id) {
-	case CLOCK_REALTIME:      getnstimeofday(&ts);                   break;
-	case CLOCK_MONOTONIC:     do_posix_clock_monotonic_gettime(&ts); break;
-	case CLOCK_MONOTONIC_RAW: getrawmonotonic(&ts);                  break;
-	default:
-		ret = -EINVAL;
-	}
-
-=======
 	ret = fw_card_read_cycle_time(card, &cycle_time);
 	if (ret < 0)
 		goto end;
@@ -1569,7 +1281,6 @@ static int ioctl_get_cycle_timer2(struct client *client, union ioctl_arg *arg)
 		ret = -EINVAL;
 	}
 end:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_enable();
 
 	a->tv_sec      = ts.tv_sec;
@@ -1656,12 +1367,7 @@ static void iso_resource_work(struct work_struct *work)
 	 */
 	if (r->todo == ISO_RES_REALLOC && !success &&
 	    !client->in_shutdown &&
-<<<<<<< HEAD
-	    idr_find(&client->resource_idr, r->resource.handle)) {
-		idr_remove(&client->resource_idr, r->resource.handle);
-=======
 	    idr_remove(&client->resource_idr, r->resource.handle)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client_put(client);
 		free = true;
 	}
@@ -1717,12 +1423,7 @@ static int init_iso_resource(struct client *client,
 	int ret;
 
 	if ((request->channels == 0 && request->bandwidth == 0) ||
-<<<<<<< HEAD
-	    request->bandwidth > BANDWIDTH_AVAILABLE_INITIAL ||
-	    request->bandwidth < 0)
-=======
 	    request->bandwidth > BANDWIDTH_AVAILABLE_INITIAL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	r  = kmalloc(sizeof(*r), GFP_KERNEL);
@@ -1854,27 +1555,6 @@ static void outbound_phy_packet_callback(struct fw_packet *packet,
 {
 	struct outbound_phy_packet_event *e =
 		container_of(packet, struct outbound_phy_packet_event, p);
-<<<<<<< HEAD
-
-	switch (status) {
-	/* expected: */
-	case ACK_COMPLETE:	e->phy_packet.rcode = RCODE_COMPLETE;	break;
-	/* should never happen with PHY packets: */
-	case ACK_PENDING:	e->phy_packet.rcode = RCODE_COMPLETE;	break;
-	case ACK_BUSY_X:
-	case ACK_BUSY_A:
-	case ACK_BUSY_B:	e->phy_packet.rcode = RCODE_BUSY;	break;
-	case ACK_DATA_ERROR:	e->phy_packet.rcode = RCODE_DATA_ERROR;	break;
-	case ACK_TYPE_ERROR:	e->phy_packet.rcode = RCODE_TYPE_ERROR;	break;
-	/* stale generation; cancelled; on certain controllers: no ack */
-	default:		e->phy_packet.rcode = status;		break;
-	}
-	e->phy_packet.data[0] = packet->timestamp;
-
-	queue_event(e->client, &e->event, &e->phy_packet,
-		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
-	client_put(e->client);
-=======
 	struct client *e_client = e->client;
 	u32 rcode;
 
@@ -1931,7 +1611,6 @@ static void outbound_phy_packet_callback(struct fw_packet *packet,
 	}
 
 	client_put(e_client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
@@ -1944,11 +1623,7 @@ static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
 	if (!client->device->is_local)
 		return -ENOSYS;
 
-<<<<<<< HEAD
-	e = kzalloc(sizeof(*e) + 4, GFP_KERNEL);
-=======
 	e = kzalloc(sizeof(*e) + sizeof(a->data), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e == NULL)
 		return -ENOMEM;
 
@@ -1961,12 +1636,6 @@ static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
 	e->p.header[2]		= a->data[1];
 	e->p.header_length	= 12;
 	e->p.callback		= outbound_phy_packet_callback;
-<<<<<<< HEAD
-	e->phy_packet.closure	= a->closure;
-	e->phy_packet.type	= FW_CDEV_EVENT_PHY_PACKET_SENT;
-	if (is_ping_packet(a->data))
-			e->phy_packet.length = 4;
-=======
 
 	if (client->version < FW_CDEV_VERSION_EVENT_ASYNC_TSTAMP) {
 		struct fw_cdev_event_phy_packet *pp = &e->phy_packet.without_tstamp;
@@ -1985,7 +1654,6 @@ static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
 		pp->length = sizeof(a->data);
 		memcpy(pp->data, a->data, sizeof(a->data));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card->driver->send_request(card, &e->p);
 
@@ -2021,20 +1689,6 @@ void fw_cdev_handle_phy_packet(struct fw_card *card, struct fw_packet *p)
 
 	list_for_each_entry(client, &card->phy_receiver_list, phy_receiver_link) {
 		e = kmalloc(sizeof(*e) + 8, GFP_ATOMIC);
-<<<<<<< HEAD
-		if (e == NULL) {
-			fw_notice(card, "out of memory when allocating event\n");
-			break;
-		}
-		e->phy_packet.closure	= client->phy_receiver_closure;
-		e->phy_packet.type	= FW_CDEV_EVENT_PHY_PACKET_RECEIVED;
-		e->phy_packet.rcode	= RCODE_COMPLETE;
-		e->phy_packet.length	= 8;
-		e->phy_packet.data[0]	= p->header[1];
-		e->phy_packet.data[1]	= p->header[2];
-		queue_event(client, &e->event,
-			    &e->phy_packet, sizeof(e->phy_packet) + 8, NULL, 0);
-=======
 		if (e == NULL)
 			break;
 
@@ -2061,7 +1715,6 @@ void fw_cdev_handle_phy_packet(struct fw_card *card, struct fw_packet *p)
 			pp->data[1] = p->header[2];
 			queue_event(client, &e->event, &e->phy_packet, sizeof(*pp) + 8, NULL, 0);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&card->lock, flags);
@@ -2132,24 +1785,9 @@ static long fw_device_op_ioctl(struct file *file,
 	return dispatch_ioctl(file->private_data, cmd, (void __user *)arg);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-static long fw_device_op_compat_ioctl(struct file *file,
-				      unsigned int cmd, unsigned long arg)
-{
-	return dispatch_ioctl(file->private_data, cmd, compat_ptr(arg));
-}
-#endif
-
 static int fw_device_op_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct client *client = file->private_data;
-	enum dma_data_direction direction;
-=======
-static int fw_device_op_mmap(struct file *file, struct vm_area_struct *vma)
-{
-	struct client *client = file->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long size;
 	int page_count, ret;
 
@@ -2172,22 +1810,6 @@ static int fw_device_op_mmap(struct file *file, struct vm_area_struct *vma)
 	if (size & ~PAGE_MASK)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (vma->vm_flags & VM_WRITE)
-		direction = DMA_TO_DEVICE;
-	else
-		direction = DMA_FROM_DEVICE;
-
-	ret = fw_iso_buffer_init(&client->buffer, client->device->card,
-				 page_count, direction);
-	if (ret < 0)
-		return ret;
-
-	ret = fw_iso_buffer_map(&client->buffer, vma);
-	if (ret < 0)
-		fw_iso_buffer_destroy(&client->buffer, client->device->card);
-
-=======
 	ret = fw_iso_buffer_alloc(&client->buffer, page_count);
 	if (ret < 0)
 		return ret;
@@ -2211,7 +1833,6 @@ static int fw_device_op_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
  fail:
 	fw_iso_buffer_destroy(&client->buffer, client->device->card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2272,10 +1893,6 @@ static int fw_device_op_release(struct inode *inode, struct file *file)
 	wait_event(client->tx_flush_wait, !has_outbound_transactions(client));
 
 	idr_for_each(&client->resource_idr, shutdown_resource, client);
-<<<<<<< HEAD
-	idr_remove_all(&client->resource_idr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idr_destroy(&client->resource_idr);
 
 	list_for_each_entry_safe(event, next_event, &client->event_list, link)
@@ -2286,30 +1903,17 @@ static int fw_device_op_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int fw_device_op_poll(struct file *file, poll_table * pt)
-{
-	struct client *client = file->private_data;
-	unsigned int mask = 0;
-=======
 static __poll_t fw_device_op_poll(struct file *file, poll_table * pt)
 {
 	struct client *client = file->private_data;
 	__poll_t mask = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &client->wait, pt);
 
 	if (fw_device_is_shutdown(client->device))
-<<<<<<< HEAD
-		mask |= POLLHUP | POLLERR;
-	if (!list_empty(&client->event_list))
-		mask |= POLLIN | POLLRDNORM;
-=======
 		mask |= EPOLLHUP | EPOLLERR;
 	if (!list_empty(&client->event_list))
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
@@ -2323,11 +1927,5 @@ const struct file_operations fw_device_ops = {
 	.mmap		= fw_device_op_mmap,
 	.release	= fw_device_op_release,
 	.poll		= fw_device_op_poll,
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-	.compat_ioctl	= fw_device_op_compat_ioctl,
-#endif
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for BCM963xx builtin Ethernet mac
  *
  * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -42,22 +22,13 @@
 #include "bcm63xx_enet.h"
 
 static char bcm_enet_driver_name[] = "bcm63xx_enet";
-<<<<<<< HEAD
-static char bcm_enet_driver_version[] = "1.0";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int copybreak __read_mostly = 128;
 module_param(copybreak, int, 0);
 MODULE_PARM_DESC(copybreak, "Receive copy threshold");
 
-<<<<<<< HEAD
-/* io memory shared between all devices */
-static void __iomem *bcm_enet_shared_base;
-=======
 /* io registers memory shared between all devices */
 static void __iomem *bcm_enet_shared_base[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * io helpers to access mac registers
@@ -74,13 +45,6 @@ static inline void enet_writel(struct bcm_enet_priv *priv,
 }
 
 /*
-<<<<<<< HEAD
- * io helpers to access shared registers
- */
-static inline u32 enet_dma_readl(struct bcm_enet_priv *priv, u32 off)
-{
-	return bcm_readl(bcm_enet_shared_base + off);
-=======
  * io helpers to access switch registers
  */
 static inline u32 enetsw_readl(struct bcm_enet_priv *priv, u32 off)
@@ -121,15 +85,11 @@ static inline void enetsw_writeb(struct bcm_enet_priv *priv,
 static inline u32 enet_dma_readl(struct bcm_enet_priv *priv, u32 off)
 {
 	return bcm_readl(bcm_enet_shared_base[0] + off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void enet_dma_writel(struct bcm_enet_priv *priv,
 				       u32 val, u32 off)
 {
-<<<<<<< HEAD
-	bcm_writel(val, bcm_enet_shared_base + off);
-=======
 	bcm_writel(val, bcm_enet_shared_base[0] + off);
 }
 
@@ -155,7 +115,6 @@ static inline void enet_dmas_writel(struct bcm_enet_priv *priv,
 				       u32 val, u32 off, int chan)
 {
 	bcm_writel(val, bcm_enet_shared_base[2] + off + chan * priv->dma_chan_width);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -261,11 +220,7 @@ static void bcm_enet_mdio_write_mii(struct net_device *dev, int mii_id,
 /*
  * refill rx queue
  */
-<<<<<<< HEAD
-static int bcm_enet_refill_rx(struct net_device *dev)
-=======
 static int bcm_enet_refill_rx(struct net_device *dev, bool napi_mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 
@@ -273,35 +228,12 @@ static int bcm_enet_refill_rx(struct net_device *dev, bool napi_mode)
 
 	while (priv->rx_desc_count < priv->rx_ring_size) {
 		struct bcm_enet_desc *desc;
-<<<<<<< HEAD
-		struct sk_buff *skb;
-		dma_addr_t p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int desc_idx;
 		u32 len_stat;
 
 		desc_idx = priv->rx_dirty_desc;
 		desc = &priv->rx_desc_cpu[desc_idx];
 
-<<<<<<< HEAD
-		if (!priv->rx_skb[desc_idx]) {
-			skb = netdev_alloc_skb(dev, priv->rx_skb_size);
-			if (!skb)
-				break;
-			priv->rx_skb[desc_idx] = skb;
-
-			p = dma_map_single(&priv->pdev->dev, skb->data,
-					   priv->rx_skb_size,
-					   DMA_FROM_DEVICE);
-			desc->address = p;
-		}
-
-		len_stat = priv->rx_skb_size << DMADESC_LENGTH_SHIFT;
-		len_stat |= DMADESC_OWNER_MASK;
-		if (priv->rx_dirty_desc == priv->rx_ring_size - 1) {
-			len_stat |= DMADESC_WRAP_MASK;
-=======
 		if (!priv->rx_buf[desc_idx]) {
 			void *buf;
 
@@ -322,7 +254,6 @@ static int bcm_enet_refill_rx(struct net_device *dev, bool napi_mode)
 		len_stat |= DMADESC_OWNER_MASK;
 		if (priv->rx_dirty_desc == priv->rx_ring_size - 1) {
 			len_stat |= (DMADESC_WRAP_MASK >> priv->dma_desc_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->rx_dirty_desc = 0;
 		} else {
 			priv->rx_dirty_desc++;
@@ -333,14 +264,10 @@ static int bcm_enet_refill_rx(struct net_device *dev, bool napi_mode)
 		priv->rx_desc_count++;
 
 		/* tell dma engine we allocated one buffer */
-<<<<<<< HEAD
-		enet_dma_writel(priv, 1, ENETDMA_BUFALLOC_REG(priv->rx_chan));
-=======
 		if (priv->dma_has_sram)
 			enet_dma_writel(priv, 1, ENETDMA_BUFALLOC_REG(priv->rx_chan));
 		else
 			enet_dmac_writel(priv, 1, ENETDMAC_BUFALLOC, priv->rx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If rx ring is still empty, set a timer to try allocating
@@ -357,18 +284,6 @@ static int bcm_enet_refill_rx(struct net_device *dev, bool napi_mode)
 /*
  * timer callback to defer refill rx queue in case we're OOM
  */
-<<<<<<< HEAD
-static void bcm_enet_refill_rx_timer(unsigned long data)
-{
-	struct net_device *dev;
-	struct bcm_enet_priv *priv;
-
-	dev = (struct net_device *)data;
-	priv = netdev_priv(dev);
-
-	spin_lock(&priv->rx_lock);
-	bcm_enet_refill_rx((struct net_device *)data);
-=======
 static void bcm_enet_refill_rx_timer(struct timer_list *t)
 {
 	struct bcm_enet_priv *priv = from_timer(priv, t, rx_timeout);
@@ -376,7 +291,6 @@ static void bcm_enet_refill_rx_timer(struct timer_list *t)
 
 	spin_lock(&priv->rx_lock);
 	bcm_enet_refill_rx(dev, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&priv->rx_lock);
 }
 
@@ -386,18 +300,12 @@ static void bcm_enet_refill_rx_timer(struct timer_list *t)
 static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 {
 	struct bcm_enet_priv *priv;
-<<<<<<< HEAD
-=======
 	struct list_head rx_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *kdev;
 	int processed;
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&rx_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdev = &priv->pdev->dev;
 	processed = 0;
 
@@ -412,10 +320,7 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 		int desc_idx;
 		u32 len_stat;
 		unsigned int len;
-<<<<<<< HEAD
-=======
 		void *buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		desc_idx = priv->rx_curr_desc;
 		desc = &priv->rx_desc_cpu[desc_idx];
@@ -434,30 +339,18 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 		priv->rx_curr_desc++;
 		if (priv->rx_curr_desc == priv->rx_ring_size)
 			priv->rx_curr_desc = 0;
-<<<<<<< HEAD
-		priv->rx_desc_count--;
-
-		/* if the packet does not have start of packet _and_
-		 * end of packet flag set, then just recycle it */
-		if ((len_stat & DMADESC_ESOP_MASK) != DMADESC_ESOP_MASK) {
-=======
 
 		/* if the packet does not have start of packet _and_
 		 * end of packet flag set, then just recycle it */
 		if ((len_stat & (DMADESC_ESOP_MASK >> priv->dma_desc_shift)) !=
 			(DMADESC_ESOP_MASK >> priv->dma_desc_shift)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_dropped++;
 			continue;
 		}
 
 		/* recycle packet if it's marked as bad */
-<<<<<<< HEAD
-		if (unlikely(len_stat & DMADESC_ERR_MASK)) {
-=======
 		if (!priv->enet_is_sw &&
 		    unlikely(len_stat & DMADESC_ERR_MASK)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_errors++;
 
 			if (len_stat & DMADESC_OVSIZE_MASK)
@@ -472,25 +365,14 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 		}
 
 		/* valid packet */
-<<<<<<< HEAD
-		skb = priv->rx_skb[desc_idx];
-=======
 		buf = priv->rx_buf[desc_idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = (len_stat & DMADESC_LENGTH_MASK) >> DMADESC_LENGTH_SHIFT;
 		/* don't include FCS */
 		len -= 4;
 
 		if (len < copybreak) {
-<<<<<<< HEAD
-			struct sk_buff *nskb;
-
-			nskb = netdev_alloc_skb_ip_align(dev, len);
-			if (!nskb) {
-=======
 			skb = napi_alloc_skb(&priv->napi, len);
 			if (unlikely(!skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* forget packet, just rearm desc */
 				dev->stats.rx_dropped++;
 				continue;
@@ -498,16 +380,6 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 
 			dma_sync_single_for_cpu(kdev, desc->address,
 						len, DMA_FROM_DEVICE);
-<<<<<<< HEAD
-			memcpy(nskb->data, skb->data, len);
-			dma_sync_single_for_device(kdev, desc->address,
-						   len, DMA_FROM_DEVICE);
-			skb = nskb;
-		} else {
-			dma_unmap_single(&priv->pdev->dev, desc->address,
-					 priv->rx_skb_size, DMA_FROM_DEVICE);
-			priv->rx_skb[desc_idx] = NULL;
-=======
 			memcpy(skb->data, buf + priv->rx_buf_offset, len);
 			dma_sync_single_for_device(kdev, desc->address,
 						   len, DMA_FROM_DEVICE);
@@ -523,25 +395,12 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 				continue;
 			}
 			skb_reserve(skb, priv->rx_buf_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		skb_put(skb, len);
 		skb->protocol = eth_type_trans(skb, dev);
 		dev->stats.rx_packets++;
 		dev->stats.rx_bytes += len;
-<<<<<<< HEAD
-		netif_receive_skb(skb);
-
-	} while (--budget > 0);
-
-	if (processed || !priv->rx_desc_count) {
-		bcm_enet_refill_rx(dev);
-
-		/* kick rx dma */
-		enet_dma_writel(priv, ENETDMA_CHANCFG_EN_MASK,
-				ENETDMA_CHANCFG_REG(priv->rx_chan));
-=======
 		list_add_tail(&skb->list, &rx_list);
 
 	} while (processed < budget);
@@ -555,7 +414,6 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 		/* kick rx dma */
 		enet_dmac_writel(priv, priv->dma_chan_en_mask,
 					 ENETDMAC_CHANCFG, priv->rx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return processed;
@@ -565,14 +423,6 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
 /*
  * try to or force reclaim of transmitted buffers
  */
-<<<<<<< HEAD
-static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
-{
-	struct bcm_enet_priv *priv;
-	int released;
-
-	priv = netdev_priv(dev);
-=======
 static int bcm_enet_tx_reclaim(struct net_device *dev, int force, int budget)
 {
 	struct bcm_enet_priv *priv;
@@ -581,7 +431,6 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force, int budget)
 
 	priv = netdev_priv(dev);
 	bytes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	released = 0;
 
 	while (priv->tx_desc_count < priv->tx_ring_size) {
@@ -618,12 +467,6 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force, int budget)
 		if (desc->len_stat & DMADESC_UNDER_MASK)
 			dev->stats.tx_errors++;
 
-<<<<<<< HEAD
-		dev_kfree_skb(skb);
-		released++;
-	}
-
-=======
 		bytes += skb->len;
 		napi_consume_skb(skb, budget);
 		released++;
@@ -631,7 +474,6 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force, int budget)
 
 	netdev_completed_queue(dev, released, bytes);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_queue_stopped(dev) && released)
 		netif_wake_queue(dev);
 
@@ -645,25 +487,12 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
 {
 	struct bcm_enet_priv *priv;
 	struct net_device *dev;
-<<<<<<< HEAD
-	int tx_work_done, rx_work_done;
-=======
 	int rx_work_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = container_of(napi, struct bcm_enet_priv, napi);
 	dev = priv->net_dev;
 
 	/* ack interrupts */
-<<<<<<< HEAD
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IR_REG(priv->rx_chan));
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IR_REG(priv->tx_chan));
-
-	/* reclaim sent skb */
-	tx_work_done = bcm_enet_tx_reclaim(dev, 0);
-=======
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IR, priv->rx_chan);
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
@@ -671,33 +500,18 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
 
 	/* reclaim sent skb */
 	bcm_enet_tx_reclaim(dev, 0, budget);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&priv->rx_lock);
 	rx_work_done = bcm_enet_receive_queue(dev, budget);
 	spin_unlock(&priv->rx_lock);
 
-<<<<<<< HEAD
-	if (rx_work_done >= budget || tx_work_done > 0) {
-		/* rx/tx queue is not yet empty/clean */
-=======
 	if (rx_work_done >= budget) {
 		/* rx queue is not yet empty/clean */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rx_work_done;
 	}
 
 	/* no more packet in rx/tx queue, remove device from poll
 	 * queue */
-<<<<<<< HEAD
-	napi_complete(napi);
-
-	/* restore rx/tx interrupt */
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IRMASK_REG(priv->rx_chan));
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IRMASK_REG(priv->tx_chan));
-=======
 	napi_complete_done(napi, rx_work_done);
 
 	/* restore rx/tx interrupt */
@@ -705,7 +519,6 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
 			 ENETDMAC_IRMASK, priv->rx_chan);
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IRMASK, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rx_work_done;
 }
@@ -748,13 +561,8 @@ static irqreturn_t bcm_enet_isr_dma(int irq, void *dev_id)
 	priv = netdev_priv(dev);
 
 	/* mask rx/tx interrupts */
-<<<<<<< HEAD
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->tx_chan));
-=======
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->rx_chan);
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	napi_schedule(&priv->napi);
 
@@ -764,21 +572,13 @@ static irqreturn_t bcm_enet_isr_dma(int irq, void *dev_id)
 /*
  * tx request callback
  */
-<<<<<<< HEAD
-static int bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t
 bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 	struct bcm_enet_desc *desc;
 	u32 len_stat;
-<<<<<<< HEAD
-	int ret;
-=======
 	netdev_tx_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = netdev_priv(dev);
 
@@ -795,8 +595,6 @@ bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
-=======
 	/* pad small packets sent on a switch device */
 	if (priv->enet_is_sw && skb->len < 64) {
 		int needed = 64 - skb->len;
@@ -816,7 +614,6 @@ bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		data = skb_put_zero(skb, needed);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* point to the next available desc */
 	desc = &priv->tx_desc_cpu[priv->tx_curr_desc];
 	priv->tx_skb[priv->tx_curr_desc] = skb;
@@ -826,22 +623,14 @@ bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 				       DMA_TO_DEVICE);
 
 	len_stat = (skb->len << DMADESC_LENGTH_SHIFT) & DMADESC_LENGTH_MASK;
-<<<<<<< HEAD
-	len_stat |= DMADESC_ESOP_MASK |
-=======
 	len_stat |= (DMADESC_ESOP_MASK >> priv->dma_desc_shift) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DMADESC_APPEND_CRC |
 		DMADESC_OWNER_MASK;
 
 	priv->tx_curr_desc++;
 	if (priv->tx_curr_desc == priv->tx_ring_size) {
 		priv->tx_curr_desc = 0;
-<<<<<<< HEAD
-		len_stat |= DMADESC_WRAP_MASK;
-=======
 		len_stat |= (DMADESC_WRAP_MASK >> priv->dma_desc_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	priv->tx_desc_count--;
 
@@ -851,18 +640,12 @@ bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	desc->len_stat = len_stat;
 	wmb();
 
-<<<<<<< HEAD
-	/* kick tx dma */
-	enet_dma_writel(priv, ENETDMA_CHANCFG_EN_MASK,
-			ENETDMA_CHANCFG_REG(priv->tx_chan));
-=======
 	netdev_sent_queue(dev, skb->len);
 
 	/* kick tx dma */
 	if (!netdev_xmit_more() || !priv->tx_desc_count)
 		enet_dmac_writel(priv, priv->dma_chan_en_mask,
 				 ENETDMAC_CHANCFG, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop queue if no more desc available */
 	if (!priv->tx_desc_count)
@@ -887,11 +670,7 @@ static int bcm_enet_set_mac_address(struct net_device *dev, void *p)
 	u32 val;
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* use perfect match register 0 to store my mac address */
 	val = (dev->dev_addr[2] << 24) | (dev->dev_addr[3] << 16) |
@@ -994,12 +773,9 @@ static void bcm_enet_set_flow(struct bcm_enet_priv *priv, int rx_en, int tx_en)
 		val &= ~ENET_RXCFG_ENFLOW_MASK;
 	enet_writel(priv, val, ENET_RXCFG_REG);
 
-<<<<<<< HEAD
-=======
 	if (!priv->dma_has_sram)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* tx flow control (pause frame generation) */
 	val = enet_dma_readl(priv, ENETDMA_CFG_REG);
 	if (tx_en)
@@ -1019,11 +795,7 @@ static void bcm_enet_adjust_phy_link(struct net_device *dev)
 	int status_changed;
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	phydev = priv->phydev;
-=======
 	phydev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status_changed = 0;
 
 	if (priv->old_link != phydev->link) {
@@ -1049,11 +821,7 @@ static void bcm_enet_adjust_phy_link(struct net_device *dev)
 			rx_pause_en = 1;
 			tx_pause_en = 1;
 		} else if (!priv->pause_auto) {
-<<<<<<< HEAD
-			/* pause setting overrided by user */
-=======
 			/* pause setting overridden by user */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rx_pause_en = priv->pause_rx;
 			tx_pause_en = priv->pause_tx;
 		} else {
@@ -1098,8 +866,6 @@ static void bcm_enet_adjust_link(struct net_device *dev)
 		priv->pause_tx ? "tx" : "off");
 }
 
-<<<<<<< HEAD
-=======
 static void bcm_enet_free_rx_buf_ring(struct device *kdev, struct bcm_enet_priv *priv)
 {
 	int i;
@@ -1118,7 +884,6 @@ static void bcm_enet_free_rx_buf_ring(struct device *kdev, struct bcm_enet_priv 
 	kfree(priv->rx_buf);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * open callback, allocate dma rings & buffers and start rx operation
  */
@@ -1142,11 +907,7 @@ static int bcm_enet_open(struct net_device *dev)
 		snprintf(phy_id, sizeof(phy_id), PHY_ID_FMT,
 			 priv->mii_bus->id, priv->phy_id);
 
-<<<<<<< HEAD
-		phydev = phy_connect(dev, phy_id, bcm_enet_adjust_phy_link, 0,
-=======
 		phydev = phy_connect(dev, phy_id, bcm_enet_adjust_phy_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     PHY_INTERFACE_MODE_MII);
 
 		if (IS_ERR(phydev)) {
@@ -1155,72 +916,36 @@ static int bcm_enet_open(struct net_device *dev)
 		}
 
 		/* mask with MAC supported features */
-<<<<<<< HEAD
-		phydev->supported &= (SUPPORTED_10baseT_Half |
-				      SUPPORTED_10baseT_Full |
-				      SUPPORTED_100baseT_Half |
-				      SUPPORTED_100baseT_Full |
-				      SUPPORTED_Autoneg |
-				      SUPPORTED_Pause |
-				      SUPPORTED_MII);
-		phydev->advertising = phydev->supported;
-
-		if (priv->pause_auto && priv->pause_rx && priv->pause_tx)
-			phydev->advertising |= SUPPORTED_Pause;
-		else
-			phydev->advertising &= ~SUPPORTED_Pause;
-
-		dev_info(kdev, "attached PHY at address %d [%s]\n",
-			 phydev->addr, phydev->drv->name);
-=======
 		phy_support_sym_pause(phydev);
 		phy_set_max_speed(phydev, SPEED_100);
 		phy_set_sym_pause(phydev, priv->pause_rx, priv->pause_rx,
 				  priv->pause_auto);
 
 		phy_attached_info(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		priv->old_link = 0;
 		priv->old_duplex = -1;
 		priv->old_pause = -1;
-<<<<<<< HEAD
-		priv->phydev = phydev;
-=======
 	} else {
 		phydev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* mask all interrupts and request them */
 	enet_writel(priv, 0, ENET_IRMASK_REG);
-<<<<<<< HEAD
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->tx_chan));
-=======
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->rx_chan);
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_irq(dev->irq, bcm_enet_isr_mac, 0, dev->name, dev);
 	if (ret)
 		goto out_phy_disconnect;
 
-<<<<<<< HEAD
-	ret = request_irq(priv->irq_rx, bcm_enet_isr_dma, IRQF_DISABLED,
-=======
 	ret = request_irq(priv->irq_rx, bcm_enet_isr_dma, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  dev->name, dev);
 	if (ret)
 		goto out_freeirq;
 
 	ret = request_irq(priv->irq_tx, bcm_enet_isr_dma,
-<<<<<<< HEAD
-			  IRQF_DISABLED, dev->name, dev);
-=======
 			  0, dev->name, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_freeirq_rx;
 
@@ -1238,18 +963,10 @@ static int bcm_enet_open(struct net_device *dev)
 	size = priv->rx_ring_size * sizeof(struct bcm_enet_desc);
 	p = dma_alloc_coherent(kdev, size, &priv->rx_desc_dma, GFP_KERNEL);
 	if (!p) {
-<<<<<<< HEAD
-		dev_err(kdev, "cannot allocate rx ring %u\n", size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_freeirq_tx;
 	}
 
-<<<<<<< HEAD
-	memset(p, 0, size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->rx_desc_alloc_size = size;
 	priv->rx_desc_cpu = p;
 
@@ -1257,31 +974,16 @@ static int bcm_enet_open(struct net_device *dev)
 	size = priv->tx_ring_size * sizeof(struct bcm_enet_desc);
 	p = dma_alloc_coherent(kdev, size, &priv->tx_desc_dma, GFP_KERNEL);
 	if (!p) {
-<<<<<<< HEAD
-		dev_err(kdev, "cannot allocate tx ring\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_free_rx_ring;
 	}
 
-<<<<<<< HEAD
-	memset(p, 0, size);
-	priv->tx_desc_alloc_size = size;
-	priv->tx_desc_cpu = p;
-
-	priv->tx_skb = kzalloc(sizeof(struct sk_buff *) * priv->tx_ring_size,
-			       GFP_KERNEL);
-	if (!priv->tx_skb) {
-		dev_err(kdev, "cannot allocate rx skb queue\n");
-=======
 	priv->tx_desc_alloc_size = size;
 	priv->tx_desc_cpu = p;
 
 	priv->tx_skb = kcalloc(priv->tx_ring_size, sizeof(struct sk_buff *),
 			       GFP_KERNEL);
 	if (!priv->tx_skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_free_tx_ring;
 	}
@@ -1291,18 +993,10 @@ static int bcm_enet_open(struct net_device *dev)
 	priv->tx_curr_desc = 0;
 	spin_lock_init(&priv->tx_lock);
 
-<<<<<<< HEAD
-	/* init & fill rx ring with skbs */
-	priv->rx_skb = kzalloc(sizeof(struct sk_buff *) * priv->rx_ring_size,
-			       GFP_KERNEL);
-	if (!priv->rx_skb) {
-		dev_err(kdev, "cannot allocate rx skb queue\n");
-=======
 	/* init & fill rx ring with buffers */
 	priv->rx_buf = kcalloc(priv->rx_ring_size, sizeof(void *),
 			       GFP_KERNEL);
 	if (!priv->rx_buf) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_free_tx_skb;
 	}
@@ -1312,13 +1006,6 @@ static int bcm_enet_open(struct net_device *dev)
 	priv->rx_curr_desc = 0;
 
 	/* initialize flow control buffer allocation */
-<<<<<<< HEAD
-	enet_dma_writel(priv, ENETDMA_BUFALLOC_FORCE_MASK | 0,
-			ENETDMA_BUFALLOC_REG(priv->rx_chan));
-
-	if (bcm_enet_refill_rx(dev)) {
-		dev_err(kdev, "cannot allocate rx skb queue\n");
-=======
 	if (priv->dma_has_sram)
 		enet_dma_writel(priv, ENETDMA_BUFALLOC_FORCE_MASK | 0,
 				ENETDMA_BUFALLOC_REG(priv->rx_chan));
@@ -1328,26 +1015,11 @@ static int bcm_enet_open(struct net_device *dev)
 
 	if (bcm_enet_refill_rx(dev, false)) {
 		dev_err(kdev, "cannot allocate rx buffer queue\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out;
 	}
 
 	/* write rx & tx ring addresses */
-<<<<<<< HEAD
-	enet_dma_writel(priv, priv->rx_desc_dma,
-			ENETDMA_RSTART_REG(priv->rx_chan));
-	enet_dma_writel(priv, priv->tx_desc_dma,
-			ENETDMA_RSTART_REG(priv->tx_chan));
-
-	/* clear remaining state ram for rx & tx channel */
-	enet_dma_writel(priv, 0, ENETDMA_SRAM2_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_SRAM2_REG(priv->tx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_SRAM3_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_SRAM3_REG(priv->tx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_SRAM4_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_SRAM4_REG(priv->tx_chan));
-=======
 	if (priv->dma_has_sram) {
 		enet_dmas_writel(priv, priv->rx_desc_dma,
 				 ENETDMAS_RSTART_REG, priv->rx_chan);
@@ -1372,35 +1044,21 @@ static int bcm_enet_open(struct net_device *dev)
 		enet_dmac_writel(priv, 0, ENETDMAC_FC, priv->rx_chan);
 		enet_dmac_writel(priv, 0, ENETDMAC_FC, priv->tx_chan);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set max rx/tx length */
 	enet_writel(priv, priv->hw_mtu, ENET_RXMAXLEN_REG);
 	enet_writel(priv, priv->hw_mtu, ENET_TXMAXLEN_REG);
 
 	/* set dma maximum burst len */
-<<<<<<< HEAD
-	enet_dma_writel(priv, BCMENET_DMA_MAXBURST,
-			ENETDMA_MAXBURST_REG(priv->rx_chan));
-	enet_dma_writel(priv, BCMENET_DMA_MAXBURST,
-			ENETDMA_MAXBURST_REG(priv->tx_chan));
-=======
 	enet_dmac_writel(priv, priv->dma_maxburst,
 			 ENETDMAC_MAXBURST, priv->rx_chan);
 	enet_dmac_writel(priv, priv->dma_maxburst,
 			 ENETDMAC_MAXBURST, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set correct transmit fifo watermark */
 	enet_writel(priv, BCMENET_TX_FIFO_TRESH, ENET_TXWMARK_REG);
 
 	/* set flow control low/high threshold to 1/3 / 2/3 */
-<<<<<<< HEAD
-	val = priv->rx_ring_size / 3;
-	enet_dma_writel(priv, val, ENETDMA_FLOWCL_REG(priv->rx_chan));
-	val = (priv->rx_ring_size * 2) / 3;
-	enet_dma_writel(priv, val, ENETDMA_FLOWCH_REG(priv->rx_chan));
-=======
 	if (priv->dma_has_sram) {
 		val = priv->rx_ring_size / 3;
 		enet_dma_writel(priv, val, ENETDMA_FLOWCL_REG(priv->rx_chan));
@@ -1411,7 +1069,6 @@ static int bcm_enet_open(struct net_device *dev)
 		enet_dmac_writel(priv, priv->rx_ring_size, ENETDMAC_LEN, priv->rx_chan);
 		enet_dmac_writel(priv, priv->tx_ring_size, ENETDMAC_LEN, priv->tx_chan);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* all set, enable mac and interrupts, start dma engine and
 	 * kick rx dma channel */
@@ -1419,46 +1076,24 @@ static int bcm_enet_open(struct net_device *dev)
 	val = enet_readl(priv, ENET_CTL_REG);
 	val |= ENET_CTL_ENABLE_MASK;
 	enet_writel(priv, val, ENET_CTL_REG);
-<<<<<<< HEAD
-	enet_dma_writel(priv, ENETDMA_CFG_EN_MASK, ENETDMA_CFG_REG);
-	enet_dma_writel(priv, ENETDMA_CHANCFG_EN_MASK,
-			ENETDMA_CHANCFG_REG(priv->rx_chan));
-=======
 	if (priv->dma_has_sram)
 		enet_dma_writel(priv, ENETDMA_CFG_EN_MASK, ENETDMA_CFG_REG);
 	enet_dmac_writel(priv, priv->dma_chan_en_mask,
 			 ENETDMAC_CHANCFG, priv->rx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* watch "mib counters about to overflow" interrupt */
 	enet_writel(priv, ENET_IR_MIB, ENET_IR_REG);
 	enet_writel(priv, ENET_IR_MIB, ENET_IRMASK_REG);
 
 	/* watch "packet transferred" interrupt in rx and tx */
-<<<<<<< HEAD
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IR_REG(priv->rx_chan));
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IR_REG(priv->tx_chan));
-=======
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IR, priv->rx_chan);
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IR, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure we enable napi before rx interrupt  */
 	napi_enable(&priv->napi);
 
-<<<<<<< HEAD
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IRMASK_REG(priv->rx_chan));
-	enet_dma_writel(priv, ENETDMA_IR_PKTDONE_MASK,
-			ENETDMA_IRMASK_REG(priv->tx_chan));
-
-	if (priv->has_phy)
-		phy_start(priv->phydev);
-=======
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
 			 ENETDMAC_IRMASK, priv->rx_chan);
 	enet_dmac_writel(priv, priv->dma_chan_int_mask,
@@ -1466,7 +1101,6 @@ static int bcm_enet_open(struct net_device *dev)
 
 	if (phydev)
 		phy_start(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		bcm_enet_adjust_link(dev);
 
@@ -1474,22 +1108,7 @@ static int bcm_enet_open(struct net_device *dev)
 	return 0;
 
 out:
-<<<<<<< HEAD
-	for (i = 0; i < priv->rx_ring_size; i++) {
-		struct bcm_enet_desc *desc;
-
-		if (!priv->rx_skb[i])
-			continue;
-
-		desc = &priv->rx_desc_cpu[i];
-		dma_unmap_single(kdev, desc->address, priv->rx_skb_size,
-				 DMA_FROM_DEVICE);
-		kfree_skb(priv->rx_skb[i]);
-	}
-	kfree(priv->rx_skb);
-=======
 	bcm_enet_free_rx_buf_ring(kdev, priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_free_tx_skb:
 	kfree(priv->tx_skb);
@@ -1512,12 +1131,8 @@ out_freeirq:
 	free_irq(dev->irq, dev);
 
 out_phy_disconnect:
-<<<<<<< HEAD
-	phy_disconnect(priv->phydev);
-=======
 	if (phydev)
 		phy_disconnect(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1552,23 +1167,14 @@ static void bcm_enet_disable_dma(struct bcm_enet_priv *priv, int chan)
 {
 	int limit;
 
-<<<<<<< HEAD
-	enet_dma_writel(priv, 0, ENETDMA_CHANCFG_REG(chan));
-=======
 	enet_dmac_writel(priv, 0, ENETDMAC_CHANCFG, chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	limit = 1000;
 	do {
 		u32 val;
 
-<<<<<<< HEAD
-		val = enet_dma_readl(priv, ENETDMA_CHANCFG_REG(chan));
-		if (!(val & ENETDMA_CHANCFG_EN_MASK))
-=======
 		val = enet_dmac_readl(priv, ENETDMAC_CHANCFG, chan);
 		if (!(val & ENETDMAC_CHANCFG_EN_MASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		udelay(1);
 	} while (limit--);
@@ -1581,10 +1187,6 @@ static int bcm_enet_stop(struct net_device *dev)
 {
 	struct bcm_enet_priv *priv;
 	struct device *kdev;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = netdev_priv(dev);
 	kdev = &priv->pdev->dev;
@@ -1592,22 +1194,13 @@ static int bcm_enet_stop(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&priv->napi);
 	if (priv->has_phy)
-<<<<<<< HEAD
-		phy_stop(priv->phydev);
-=======
 		phy_stop(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer_sync(&priv->rx_timeout);
 
 	/* mask all interrupts */
 	enet_writel(priv, 0, ENET_IRMASK_REG);
-<<<<<<< HEAD
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->rx_chan));
-	enet_dma_writel(priv, 0, ENETDMA_IRMASK_REG(priv->tx_chan));
-=======
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->rx_chan);
 	enet_dmac_writel(priv, 0, ENETDMAC_IRMASK, priv->tx_chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure no mib update is scheduled */
 	cancel_work_sync(&priv->mib_update_task);
@@ -1618,32 +1211,12 @@ static int bcm_enet_stop(struct net_device *dev)
 	bcm_enet_disable_mac(priv);
 
 	/* force reclaim of all tx buffers */
-<<<<<<< HEAD
-	bcm_enet_tx_reclaim(dev, 1);
-
-	/* free the rx skb ring */
-	for (i = 0; i < priv->rx_ring_size; i++) {
-		struct bcm_enet_desc *desc;
-
-		if (!priv->rx_skb[i])
-			continue;
-
-		desc = &priv->rx_desc_cpu[i];
-		dma_unmap_single(kdev, desc->address, priv->rx_skb_size,
-				 DMA_FROM_DEVICE);
-		kfree_skb(priv->rx_skb[i]);
-	}
-
-	/* free remaining allocated memory */
-	kfree(priv->rx_skb);
-=======
 	bcm_enet_tx_reclaim(dev, 1, 0);
 
 	/* free the rx buffer ring */
 	bcm_enet_free_rx_buf_ring(kdev, priv);
 
 	/* free remaining allocated memory */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv->tx_skb);
 	dma_free_coherent(kdev, priv->rx_desc_alloc_size,
 			  priv->rx_desc_cpu, priv->rx_desc_dma);
@@ -1654,18 +1227,11 @@ static int bcm_enet_stop(struct net_device *dev)
 	free_irq(dev->irq, dev);
 
 	/* release phy */
-<<<<<<< HEAD
-	if (priv->has_phy) {
-		phy_disconnect(priv->phydev);
-		priv->phydev = NULL;
-	}
-=======
 	if (priv->has_phy)
 		phy_disconnect(dev->phydev);
 
 	/* reset BQL after forced tx reclaim to prevent kernel panic */
 	netdev_reset_queue(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1742,12 +1308,7 @@ static const struct bcm_enet_stats bcm_enet_gstrings_stats[] = {
 
 };
 
-<<<<<<< HEAD
-#define BCM_ENET_STATS_LEN	\
-	(sizeof(bcm_enet_gstrings_stats) / sizeof(struct bcm_enet_stats))
-=======
 #define BCM_ENET_STATS_LEN	ARRAY_SIZE(bcm_enet_gstrings_stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u32 unused_mib_regs[] = {
 	ETH_MIB_TX_ALL_OCTETS,
@@ -1760,16 +1321,8 @@ static const u32 unused_mib_regs[] = {
 static void bcm_enet_get_drvinfo(struct net_device *netdev,
 				 struct ethtool_drvinfo *drvinfo)
 {
-<<<<<<< HEAD
-	strncpy(drvinfo->driver, bcm_enet_driver_name, 32);
-	strncpy(drvinfo->version, bcm_enet_driver_version, 32);
-	strncpy(drvinfo->fw_version, "N/A", 32);
-	strncpy(drvinfo->bus_info, "bcm63xx", 32);
-	drvinfo->n_stats = BCM_ENET_STATS_LEN;
-=======
 	strscpy(drvinfo->driver, bcm_enet_driver_name, sizeof(drvinfo->driver));
 	strscpy(drvinfo->bus_info, "bcm63xx", sizeof(drvinfo->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bcm_enet_get_sset_count(struct net_device *netdev,
@@ -1869,39 +1422,11 @@ static void bcm_enet_get_ethtool_stats(struct net_device *netdev,
 	mutex_unlock(&priv->mib_update_lock);
 }
 
-<<<<<<< HEAD
-static int bcm_enet_get_settings(struct net_device *dev,
-				 struct ethtool_cmd *cmd)
-=======
 static int bcm_enet_nway_reset(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-
-	cmd->maxrxpkt = 0;
-	cmd->maxtxpkt = 0;
-
-	if (priv->has_phy) {
-		if (!priv->phydev)
-			return -ENODEV;
-		return phy_ethtool_gset(priv->phydev, cmd);
-	} else {
-		cmd->autoneg = 0;
-		ethtool_cmd_speed_set(cmd, ((priv->force_speed_100)
-					    ? SPEED_100 : SPEED_10));
-		cmd->duplex = (priv->force_duplex_full) ?
-			DUPLEX_FULL : DUPLEX_HALF;
-		cmd->supported = ADVERTISED_10baseT_Half  |
-			ADVERTISED_10baseT_Full |
-			ADVERTISED_100baseT_Half |
-			ADVERTISED_100baseT_Full;
-		cmd->advertising = 0;
-		cmd->port = PORT_MII;
-		cmd->transceiver = XCVR_EXTERNAL;
-=======
 	if (priv->has_phy)
 		return phy_ethtool_nway_reset(dev);
 
@@ -1939,37 +1464,17 @@ static int bcm_enet_get_link_ksettings(struct net_device *dev,
 		ethtool_convert_legacy_u32_to_link_mode(
 			cmd->link_modes.advertising, advertising);
 		cmd->base.port = PORT_MII;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bcm_enet_set_settings(struct net_device *dev,
-				 struct ethtool_cmd *cmd)
-=======
 static int bcm_enet_set_link_ksettings(struct net_device *dev,
 				       const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 
 	priv = netdev_priv(dev);
 	if (priv->has_phy) {
-<<<<<<< HEAD
-		if (!priv->phydev)
-			return -ENODEV;
-		return phy_ethtool_sset(priv->phydev, cmd);
-	} else {
-
-		if (cmd->autoneg ||
-		    (cmd->speed != SPEED_100 && cmd->speed != SPEED_10) ||
-		    cmd->port != PORT_MII)
-			return -EINVAL;
-
-		priv->force_speed_100 = (cmd->speed == SPEED_100) ? 1 : 0;
-		priv->force_duplex_full = (cmd->duplex == DUPLEX_FULL) ? 1 : 0;
-=======
 		if (!dev->phydev)
 			return -ENODEV;
 		return phy_ethtool_ksettings_set(dev->phydev, cmd);
@@ -1985,7 +1490,6 @@ static int bcm_enet_set_link_ksettings(struct net_device *dev,
 			(cmd->base.speed == SPEED_100) ? 1 : 0;
 		priv->force_duplex_full =
 			(cmd->base.duplex == DUPLEX_FULL) ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (netif_running(dev))
 			bcm_enet_adjust_link(dev);
@@ -1993,16 +1497,11 @@ static int bcm_enet_set_link_ksettings(struct net_device *dev,
 	}
 }
 
-<<<<<<< HEAD
-static void bcm_enet_get_ringparam(struct net_device *dev,
-				   struct ethtool_ringparam *ering)
-=======
 static void
 bcm_enet_get_ringparam(struct net_device *dev,
 		       struct ethtool_ringparam *ering,
 		       struct kernel_ethtool_ringparam *kernel_ering,
 		       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 
@@ -2016,13 +1515,9 @@ bcm_enet_get_ringparam(struct net_device *dev,
 }
 
 static int bcm_enet_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-				  struct ethtool_ringparam *ering)
-=======
 				  struct ethtool_ringparam *ering,
 				  struct kernel_ethtool_ringparam *kernel_ering,
 				  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 	int was_running;
@@ -2092,23 +1587,15 @@ static const struct ethtool_ops bcm_enet_ethtool_ops = {
 	.get_strings		= bcm_enet_get_strings,
 	.get_sset_count		= bcm_enet_get_sset_count,
 	.get_ethtool_stats      = bcm_enet_get_ethtool_stats,
-<<<<<<< HEAD
-	.get_settings		= bcm_enet_get_settings,
-	.set_settings		= bcm_enet_set_settings,
-=======
 	.nway_reset		= bcm_enet_nway_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= bcm_enet_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
 	.get_ringparam		= bcm_enet_get_ringparam,
 	.set_ringparam		= bcm_enet_set_ringparam,
 	.get_pauseparam		= bcm_enet_get_pauseparam,
 	.set_pauseparam		= bcm_enet_set_pauseparam,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= bcm_enet_get_link_ksettings,
 	.set_link_ksettings	= bcm_enet_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int bcm_enet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
@@ -2117,15 +1604,9 @@ static int bcm_enet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 	priv = netdev_priv(dev);
 	if (priv->has_phy) {
-<<<<<<< HEAD
-		if (!priv->phydev)
-			return -ENODEV;
-		return phy_mii_ioctl(priv->phydev, rq, cmd);
-=======
 		if (!dev->phydev)
 			return -ENODEV;
 		return phy_mii_ioctl(dev->phydev, rq, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct mii_if_info mii;
 
@@ -2140,15 +1621,6 @@ static int bcm_enet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 }
 
 /*
-<<<<<<< HEAD
- * calculate actual hardware mtu
- */
-static int compute_hw_mtu(struct bcm_enet_priv *priv, int mtu)
-{
-	int actual_mtu;
-
-	actual_mtu = mtu;
-=======
  * adjust mtu, can't be called while device is running
  */
 static int bcm_enet_change_mtu(struct net_device *dev, int new_mtu)
@@ -2158,17 +1630,10 @@ static int bcm_enet_change_mtu(struct net_device *dev, int new_mtu)
 
 	if (netif_running(dev))
 		return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* add ethernet header + vlan tag size */
 	actual_mtu += VLAN_ETH_HLEN;
 
-<<<<<<< HEAD
-	if (actual_mtu < 64 || actual_mtu > BCMENET_MAX_MTU)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * setup maximum size before we get overflow mark in
 	 * descriptor, note that this will not prevent reception of
@@ -2181,33 +1646,12 @@ static int bcm_enet_change_mtu(struct net_device *dev, int new_mtu)
 	 * align rx buffer size to dma burst len, account FCS since
 	 * it's appended
 	 */
-<<<<<<< HEAD
-	priv->rx_skb_size = ALIGN(actual_mtu + ETH_FCS_LEN,
-				  BCMENET_DMA_MAXBURST * 4);
-	return 0;
-}
-
-/*
- * adjust mtu, can't be called while device is running
- */
-static int bcm_enet_change_mtu(struct net_device *dev, int new_mtu)
-{
-	int ret;
-
-	if (netif_running(dev))
-		return -EBUSY;
-
-	ret = compute_hw_mtu(netdev_priv(dev), new_mtu);
-	if (ret)
-		return ret;
-=======
 	priv->rx_buf_size = ALIGN(actual_mtu + ETH_FCS_LEN,
 				  priv->dma_maxburst * 4);
 
 	priv->rx_frag_size = SKB_DATA_ALIGN(priv->rx_buf_offset + priv->rx_buf_size) +
 					    SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mtu = new_mtu;
 	return 0;
 }
@@ -2260,51 +1704,18 @@ static const struct net_device_ops bcm_enet_ops = {
 	.ndo_start_xmit		= bcm_enet_start_xmit,
 	.ndo_set_mac_address	= bcm_enet_set_mac_address,
 	.ndo_set_rx_mode	= bcm_enet_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= bcm_enet_ioctl,
-	.ndo_change_mtu		= bcm_enet_change_mtu,
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller = bcm_enet_netpoll,
-#endif
-=======
 	.ndo_eth_ioctl		= bcm_enet_ioctl,
 	.ndo_change_mtu		= bcm_enet_change_mtu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * allocate netdevice, request register memory and register device.
  */
-<<<<<<< HEAD
-static int __devinit bcm_enet_probe(struct platform_device *pdev)
-=======
 static int bcm_enet_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm_enet_priv *priv;
 	struct net_device *dev;
 	struct bcm63xx_enet_platform_data *pd;
-<<<<<<< HEAD
-	struct resource *res_mem, *res_irq, *res_irq_rx, *res_irq_tx;
-	struct mii_bus *bus;
-	const char *clk_name;
-	unsigned int iomem_size;
-	int i, ret;
-
-	/* stop if shared driver failed, assume driver->probe will be
-	 * called in the same order we register devices (correct ?) */
-	if (!bcm_enet_shared_base)
-		return -ENODEV;
-
-	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	res_irq_rx = platform_get_resource(pdev, IORESOURCE_IRQ, 1);
-	res_irq_tx = platform_get_resource(pdev, IORESOURCE_IRQ, 2);
-	if (!res_mem || !res_irq || !res_irq_rx || !res_irq_tx)
-		return -ENODEV;
-
-	ret = 0;
-=======
 	int irq, irq_rx, irq_tx;
 	struct mii_bus *bus;
 	int i, ret;
@@ -2318,51 +1729,11 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	if (irq < 0 || irq_rx < 0 || irq_tx < 0)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = alloc_etherdev(sizeof(*priv));
 	if (!dev)
 		return -ENOMEM;
 	priv = netdev_priv(dev);
 
-<<<<<<< HEAD
-	ret = compute_hw_mtu(priv, dev->mtu);
-	if (ret)
-		goto out;
-
-	iomem_size = resource_size(res_mem);
-	if (!request_mem_region(res_mem->start, iomem_size, "bcm63xx_enet")) {
-		ret = -EBUSY;
-		goto out;
-	}
-
-	priv->base = ioremap(res_mem->start, iomem_size);
-	if (priv->base == NULL) {
-		ret = -ENOMEM;
-		goto out_release_mem;
-	}
-	dev->irq = priv->irq = res_irq->start;
-	priv->irq_rx = res_irq_rx->start;
-	priv->irq_tx = res_irq_tx->start;
-	priv->mac_id = pdev->id;
-
-	/* get rx & tx dma channel id for this mac */
-	if (priv->mac_id == 0) {
-		priv->rx_chan = 0;
-		priv->tx_chan = 1;
-		clk_name = "enet0";
-	} else {
-		priv->rx_chan = 2;
-		priv->tx_chan = 3;
-		clk_name = "enet1";
-	}
-
-	priv->mac_clk = clk_get(&pdev->dev, clk_name);
-	if (IS_ERR(priv->mac_clk)) {
-		ret = PTR_ERR(priv->mac_clk);
-		goto out_unmap;
-	}
-	clk_enable(priv->mac_clk);
-=======
 	priv->enet_is_sw = false;
 	priv->dma_maxburst = BCMENET_DMA_MAXBURST;
 	priv->rx_buf_offset = NET_SKB_PAD;
@@ -2389,21 +1760,14 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	ret = clk_prepare_enable(priv->mac_clk);
 	if (ret)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize default and fetch platform data */
 	priv->rx_ring_size = BCMENET_DEF_RX_DESC;
 	priv->tx_ring_size = BCMENET_DEF_TX_DESC;
 
-<<<<<<< HEAD
-	pd = pdev->dev.platform_data;
-	if (pd) {
-		memcpy(dev->dev_addr, pd->mac_addr, ETH_ALEN);
-=======
 	pd = dev_get_platdata(&pdev->dev);
 	if (pd) {
 		eth_hw_addr_set(dev, pd->mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->has_phy = pd->has_phy;
 		priv->phy_id = pd->phy_id;
 		priv->has_phy_interrupt = pd->has_phy_interrupt;
@@ -2414,19 +1778,6 @@ static int bcm_enet_probe(struct platform_device *pdev)
 		priv->pause_tx = pd->pause_tx;
 		priv->force_duplex_full = pd->force_duplex_full;
 		priv->force_speed_100 = pd->force_speed_100;
-<<<<<<< HEAD
-	}
-
-	if (priv->mac_id == 0 && priv->has_phy && !priv->use_external_mii) {
-		/* using internal PHY, enable clock */
-		priv->phy_clk = clk_get(&pdev->dev, "ephy");
-		if (IS_ERR(priv->phy_clk)) {
-			ret = PTR_ERR(priv->phy_clk);
-			priv->phy_clk = NULL;
-			goto out_put_clk_mac;
-		}
-		clk_enable(priv->phy_clk);
-=======
 		priv->dma_chan_en_mask = pd->dma_chan_en_mask;
 		priv->dma_chan_int_mask = pd->dma_chan_int_mask;
 		priv->dma_chan_width = pd->dma_chan_width;
@@ -2447,7 +1798,6 @@ static int bcm_enet_probe(struct platform_device *pdev)
 		ret = clk_prepare_enable(priv->phy_clk);
 		if (ret)
 			goto out_disable_clk_mac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* do minimal hardware init to be able to probe mii bus */
@@ -2468,32 +1818,15 @@ static int bcm_enet_probe(struct platform_device *pdev)
 		bus->priv = priv;
 		bus->read = bcm_enet_mdio_read_phylib;
 		bus->write = bcm_enet_mdio_write_phylib;
-<<<<<<< HEAD
-		sprintf(bus->id, "%s-%d", pdev->name, priv->mac_id);
-=======
 		sprintf(bus->id, "%s-%d", pdev->name, pdev->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* only probe bus where we think the PHY is, because
 		 * the mdio read operation return 0 instead of 0xffff
 		 * if a slave is not present on hw */
 		bus->phy_mask = ~(1 << priv->phy_id);
 
-<<<<<<< HEAD
-		bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
-		if (!bus->irq) {
-			ret = -ENOMEM;
-			goto out_free_mdio;
-		}
-
 		if (priv->has_phy_interrupt)
 			bus->irq[priv->phy_id] = priv->phy_interrupt;
-		else
-			bus->irq[priv->phy_id] = PHY_POLL;
-=======
-		if (priv->has_phy_interrupt)
-			bus->irq[priv->phy_id] = priv->phy_interrupt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = mdiobus_register(bus);
 		if (ret) {
@@ -2503,11 +1836,7 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	} else {
 
 		/* run platform code to initialize PHY device */
-<<<<<<< HEAD
-		if (pd->mii_config &&
-=======
 		if (pd && pd->mii_config &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    pd->mii_config(dev, 1, bcm_enet_mdio_read_mii,
 				   bcm_enet_mdio_write_mii)) {
 			dev_err(&pdev->dev, "unable to configure mdio bus\n");
@@ -2518,13 +1847,7 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	spin_lock_init(&priv->rx_lock);
 
 	/* init rx timeout (used for oom) */
-<<<<<<< HEAD
-	init_timer(&priv->rx_timeout);
-	priv->rx_timeout.function = bcm_enet_refill_rx_timer;
-	priv->rx_timeout.data = (unsigned long)dev;
-=======
 	timer_setup(&priv->rx_timeout, bcm_enet_refill_rx_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init the mib update lock&work */
 	mutex_init(&priv->mib_update_lock);
@@ -2536,18 +1859,12 @@ static int bcm_enet_probe(struct platform_device *pdev)
 
 	/* register netdevice */
 	dev->netdev_ops = &bcm_enet_ops;
-<<<<<<< HEAD
-	netif_napi_add(dev, &priv->napi, bcm_enet_poll, 16);
-
-	SET_ETHTOOL_OPS(dev, &bcm_enet_ethtool_ops);
-=======
 	netif_napi_add_weight(dev, &priv->napi, bcm_enet_poll, 16);
 
 	dev->ethtool_ops = &bcm_enet_ethtool_ops;
 	/* MTU range: 46 - 2028 */
 	dev->min_mtu = ETH_ZLEN - ETH_HLEN;
 	dev->max_mtu = BCMENET_MAX_MTU - VLAN_ETH_HLEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	ret = register_netdev(dev);
@@ -2562,15 +1879,8 @@ static int bcm_enet_probe(struct platform_device *pdev)
 	return 0;
 
 out_unregister_mdio:
-<<<<<<< HEAD
-	if (priv->mii_bus) {
-		mdiobus_unregister(priv->mii_bus);
-		kfree(priv->mii_bus->irq);
-	}
-=======
 	if (priv->mii_bus)
 		mdiobus_unregister(priv->mii_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_free_mdio:
 	if (priv->mii_bus)
@@ -2579,27 +1889,10 @@ out_free_mdio:
 out_uninit_hw:
 	/* turn off mdc clock */
 	enet_writel(priv, 0, ENET_MIISC_REG);
-<<<<<<< HEAD
-	if (priv->phy_clk) {
-		clk_disable(priv->phy_clk);
-		clk_put(priv->phy_clk);
-	}
-
-out_put_clk_mac:
-	clk_disable(priv->mac_clk);
-	clk_put(priv->mac_clk);
-
-out_unmap:
-	iounmap(priv->base);
-
-out_release_mem:
-	release_mem_region(res_mem->start, iomem_size);
-=======
 	clk_disable_unprepare(priv->phy_clk);
 
 out_disable_clk_mac:
 	clk_disable_unprepare(priv->mac_clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	free_netdev(dev);
 	return ret;
@@ -2609,18 +1902,10 @@ out:
 /*
  * exit func, stops hardware and unregisters netdevice
  */
-<<<<<<< HEAD
-static int __devexit bcm_enet_remove(struct platform_device *pdev)
-{
-	struct bcm_enet_priv *priv;
-	struct net_device *dev;
-	struct resource *res;
-=======
 static void bcm_enet_remove(struct platform_device *pdev)
 {
 	struct bcm_enet_priv *priv;
 	struct net_device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop netdevice */
 	dev = platform_get_drvdata(pdev);
@@ -2632,50 +1917,16 @@ static void bcm_enet_remove(struct platform_device *pdev)
 
 	if (priv->has_phy) {
 		mdiobus_unregister(priv->mii_bus);
-<<<<<<< HEAD
-		kfree(priv->mii_bus->irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdiobus_free(priv->mii_bus);
 	} else {
 		struct bcm63xx_enet_platform_data *pd;
 
-<<<<<<< HEAD
-		pd = pdev->dev.platform_data;
-=======
 		pd = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pd && pd->mii_config)
 			pd->mii_config(dev, 0, bcm_enet_mdio_read_mii,
 				       bcm_enet_mdio_write_mii);
 	}
 
-<<<<<<< HEAD
-	/* release device resources */
-	iounmap(priv->base);
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(res->start, resource_size(res));
-
-	/* disable hw block clocks */
-	if (priv->phy_clk) {
-		clk_disable(priv->phy_clk);
-		clk_put(priv->phy_clk);
-	}
-	clk_disable(priv->mac_clk);
-	clk_put(priv->mac_clk);
-
-	platform_set_drvdata(pdev, NULL);
-	free_netdev(dev);
-	return 0;
-}
-
-struct platform_driver bcm63xx_enet_driver = {
-	.probe	= bcm_enet_probe,
-	.remove	= __devexit_p(bcm_enet_remove),
-	.driver	= {
-		.name	= "bcm63xx_enet",
-		.owner  = THIS_MODULE,
-=======
 	/* disable hw block clocks */
 	clk_disable_unprepare(priv->phy_clk);
 	clk_disable_unprepare(priv->mac_clk);
@@ -2688,32 +1939,10 @@ static struct platform_driver bcm63xx_enet_driver = {
 	.remove_new = bcm_enet_remove,
 	.driver	= {
 		.name	= "bcm63xx_enet",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 /*
-<<<<<<< HEAD
- * reserve & remap memory space shared between all macs
- */
-static int __devinit bcm_enet_shared_probe(struct platform_device *pdev)
-{
-	struct resource *res;
-	unsigned int iomem_size;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res)
-		return -ENODEV;
-
-	iomem_size = resource_size(res);
-	if (!request_mem_region(res->start, iomem_size, "bcm63xx_enet_dma"))
-		return -EBUSY;
-
-	bcm_enet_shared_base = ioremap(res->start, iomem_size);
-	if (!bcm_enet_shared_base) {
-		release_mem_region(res->start, iomem_size);
-		return -ENOMEM;
-=======
  * switch mii access callbacks
  */
 static int bcmenet_sw_mdio_read(struct bcm_enet_priv *priv,
@@ -3398,25 +2627,10 @@ bcm_enetsw_set_ringparam(struct net_device *dev,
 		err = bcm_enetsw_open(dev);
 		if (err)
 			dev_close(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit bcm_enet_shared_remove(struct platform_device *pdev)
-{
-	struct resource *res;
-
-	iounmap(bcm_enet_shared_base);
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(res->start, resource_size(res));
-	return 0;
-}
-
-/*
- * this "shared" driver is needed because both macs share a single
-=======
 static const struct ethtool_ops bcm_enetsw_ethtool_ops = {
 	.get_strings		= bcm_enetsw_get_strings,
 	.get_sset_count		= bcm_enetsw_get_sset_count,
@@ -3567,36 +2781,10 @@ static int bcm_enet_shared_probe(struct platform_device *pdev)
 }
 
 /* this "shared" driver is needed because both macs share a single
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * address space
  */
 struct platform_driver bcm63xx_enet_shared_driver = {
 	.probe	= bcm_enet_shared_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(bcm_enet_shared_remove),
-	.driver	= {
-		.name	= "bcm63xx_enet_shared",
-		.owner  = THIS_MODULE,
-	},
-};
-
-/*
- * entry point
- */
-static int __init bcm_enet_init(void)
-{
-	int ret;
-
-	ret = platform_driver_register(&bcm63xx_enet_shared_driver);
-	if (ret)
-		return ret;
-
-	ret = platform_driver_register(&bcm63xx_enet_driver);
-	if (ret)
-		platform_driver_unregister(&bcm63xx_enet_shared_driver);
-
-	return ret;
-=======
 	.driver	= {
 		.name	= "bcm63xx_enet_shared",
 	},
@@ -3612,17 +2800,11 @@ static struct platform_driver * const drivers[] = {
 static int __init bcm_enet_init(void)
 {
 	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit bcm_enet_exit(void)
 {
-<<<<<<< HEAD
-	platform_driver_unregister(&bcm63xx_enet_driver);
-	platform_driver_unregister(&bcm63xx_enet_shared_driver);
-=======
 	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

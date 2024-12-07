@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -26,82 +23,6 @@
 #include <linux/gfp.h>
 #include <net/tcp.h>
 
-<<<<<<< HEAD
-int sysctl_tcp_syn_retries __read_mostly = TCP_SYN_RETRIES;
-int sysctl_tcp_synack_retries __read_mostly = TCP_SYNACK_RETRIES;
-int sysctl_tcp_keepalive_time __read_mostly = TCP_KEEPALIVE_TIME;
-int sysctl_tcp_keepalive_probes __read_mostly = TCP_KEEPALIVE_PROBES;
-int sysctl_tcp_keepalive_intvl __read_mostly = TCP_KEEPALIVE_INTVL;
-int sysctl_tcp_retries1 __read_mostly = TCP_RETR1;
-int sysctl_tcp_retries2 __read_mostly = TCP_RETR2;
-int sysctl_tcp_orphan_retries __read_mostly;
-int sysctl_tcp_thin_linear_timeouts __read_mostly;
-
-static void tcp_write_timer(unsigned long);
-static void tcp_delack_timer(unsigned long);
-static void tcp_keepalive_timer(unsigned long data);
-
-/*Function to reset tcp_ack related sysctl on resetting master control */
-void set_tcp_default(void)
-{
-	sysctl_tcp_delack_seg	= TCP_DELACK_SEG;
-}
-
-/*sysctl handler for tcp_ack realted master control */
-int tcp_proc_delayed_ack_control(ctl_table *table, int write,
-			void __user *buffer, size_t *length, loff_t *ppos)
-{
-	int ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
-
-	/* The ret value will be 0 if the input validation is successful
-	 * and the values are written to sysctl table. If not, the stack
-	 * will continue to work with currently configured values
-	 */
-	return ret;
-}
-
-/*sysctl handler for tcp_ack realted master control */
-int tcp_use_userconfig_sysctl_handler(ctl_table *table, int write,
-			void __user *buffer, size_t *length, loff_t *ppos)
-{
-	int ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
-
-	if (write && ret == 0) {
-		if (!sysctl_tcp_use_userconfig)
-			set_tcp_default();
-	}
-	return ret;
-}
-
-void tcp_init_xmit_timers(struct sock *sk)
-{
-	inet_csk_init_xmit_timers(sk, &tcp_write_timer, &tcp_delack_timer,
-				  &tcp_keepalive_timer);
-}
-EXPORT_SYMBOL(tcp_init_xmit_timers);
-
-static void tcp_write_err(struct sock *sk)
-{
-	sk->sk_err = sk->sk_err_soft ? : ETIMEDOUT;
-	sk->sk_error_report(sk);
-
-	tcp_done(sk);
-	NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPABORTONTIMEOUT);
-}
-
-/* Do not allow orphaned sockets to eat all our resources.
- * This is direct violation of TCP specs, but it is required
- * to prevent DoS attacks. It is called when a retransmission timeout
- * or zero probe timeout occurs on orphaned socket.
- *
- * Criteria is still not confirmed experimentally and may change.
- * We kill the socket, if:
- * 1. If number of orphaned sockets exceeds an administratively configured
- *    limit.
- * 2. If we have strong memory pressure.
- */
-static int tcp_out_of_resources(struct sock *sk, int do_reset)
-=======
 static u32 tcp_clamp_rto_to_user_timeout(const struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
@@ -185,53 +106,22 @@ static void tcp_write_err(struct sock *sk)
  *  3. If our net namespace is exiting.
  */
 static int tcp_out_of_resources(struct sock *sk, bool do_reset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	int shift = 0;
 
 	/* If peer does not open window for long time, or did not transmit
 	 * anything for long time, penalize it. */
-<<<<<<< HEAD
-	if ((s32)(tcp_time_stamp - tp->lsndtime) > 2*TCP_RTO_MAX || !do_reset)
-		shift++;
-
-	/* If some dubious ICMP arrived, penalize even more. */
-	if (sk->sk_err_soft)
-=======
 	if ((s32)(tcp_jiffies32 - tp->lsndtime) > 2*TCP_RTO_MAX || !do_reset)
 		shift++;
 
 	/* If some dubious ICMP arrived, penalize even more. */
 	if (READ_ONCE(sk->sk_err_soft))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shift++;
 
 	if (tcp_check_oom(sk, shift)) {
 		/* Catch exceptional cases, when connection requires reset.
 		 *      1. Last segment was sent recently. */
-<<<<<<< HEAD
-		if ((s32)(tcp_time_stamp - tp->lsndtime) <= TCP_TIMEWAIT_LEN ||
-		    /*  2. Window is closed. */
-		    (!tp->snd_wnd && !tp->packets_out))
-			do_reset = 1;
-		if (do_reset)
-			tcp_send_active_reset(sk, GFP_ATOMIC);
-		tcp_done(sk);
-		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPABORTONMEMORY);
-		return 1;
-	}
-	return 0;
-}
-
-/* Calculate maximal number or retries on an orphaned socket. */
-static int tcp_orphan_retries(struct sock *sk, int alive)
-{
-	int retries = sysctl_tcp_orphan_retries; /* May be zero. */
-
-	/* We know from an ICMP that something is wrong. */
-	if (sk->sk_err_soft && !alive)
-=======
 		if ((s32)(tcp_jiffies32 - tp->lsndtime) <= TCP_TIMEWAIT_LEN ||
 		    /*  2. Window is closed. */
 		    (!tp->snd_wnd && !tp->packets_out))
@@ -263,7 +153,6 @@ static int tcp_orphan_retries(struct sock *sk, bool alive)
 
 	/* We know from an ICMP that something is wrong. */
 	if (READ_ONCE(sk->sk_err_soft) && !alive)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retries = 0;
 
 	/* However, if socket sent something recently, select some safe
@@ -276,38 +165,6 @@ static int tcp_orphan_retries(struct sock *sk, bool alive)
 
 static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
 {
-<<<<<<< HEAD
-	/* Black hole detection */
-	if (sysctl_tcp_mtu_probing) {
-		if (!icsk->icsk_mtup.enabled) {
-			icsk->icsk_mtup.enabled = 1;
-			tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
-		} else {
-			struct tcp_sock *tp = tcp_sk(sk);
-			int mss;
-
-			mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
-			mss = min(sysctl_tcp_base_mss, mss);
-			mss = max(mss, 68 - tp->tcp_header_len);
-			icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
-			tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
-		}
-	}
-}
-
-/* This function calculates a "timeout" which is equivalent to the timeout of a
- * TCP connection after "boundary" unsuccessful, exponentially backed-off
- * retransmissions with an initial RTO of TCP_RTO_MIN or TCP_TIMEOUT_INIT if
- * syn_set flag is set.
- */
-static bool retransmits_timed_out(struct sock *sk,
-				  unsigned int boundary,
-				  unsigned int timeout,
-				  bool syn_set)
-{
-	unsigned int linear_backoff_thresh, start_ts;
-	unsigned int rto_base = syn_set ? TCP_TIMEOUT_INIT : TCP_RTO_MIN;
-=======
 	const struct net *net = sock_net(sk);
 	int mss;
 
@@ -361,28 +218,10 @@ static bool retransmits_timed_out(struct sock *sk,
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	unsigned int start_ts, delta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!inet_csk(sk)->icsk_retransmits)
 		return false;
 
-<<<<<<< HEAD
-	if (unlikely(!tcp_sk(sk)->retrans_stamp))
-		start_ts = TCP_SKB_CB(tcp_write_queue_head(sk))->when;
-	else
-		start_ts = tcp_sk(sk)->retrans_stamp;
-
-	if (likely(timeout == 0)) {
-		linear_backoff_thresh = ilog2(TCP_RTO_MAX/rto_base);
-
-		if (boundary <= linear_backoff_thresh)
-			timeout = ((2 << boundary) - 1) * rto_base;
-		else
-			timeout = ((2 << linear_backoff_thresh) - 1) * rto_base +
-				(boundary - linear_backoff_thresh) * TCP_RTO_MAX;
-	}
-	return (tcp_time_stamp - start_ts) >= timeout;
-=======
 	start_ts = tp->retrans_stamp;
 	if (likely(timeout == 0)) {
 		unsigned int rto_base = TCP_RTO_MIN;
@@ -398,51 +237,12 @@ static bool retransmits_timed_out(struct sock *sk,
 		return (s32)(delta - timeout * USEC_PER_MSEC) >= 0;
 	}
 	return (s32)(tcp_time_stamp_ts(tp) - start_ts - timeout) >= 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* A write timeout has occurred. Process the after effects. */
 static int tcp_write_timeout(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
-<<<<<<< HEAD
-	int retry_until;
-	bool do_reset = false, syn_set = false;
-
-	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
-		if (icsk->icsk_retransmits)
-			dst_negative_advice(sk);
-		retry_until = icsk->icsk_syn_retries ? : sysctl_tcp_syn_retries;
-		syn_set = true;
-/* 2013-10-30 beney.kim@lge.com LGP_DATA_TCPIP_DATASCHEDULER [START] */
-	} else if ((1 << sk->sk_state) & (TCPF_TIME_WAIT)) {
-		// printk(KERN_INFO "tcp_write_timeout: TCP sk=%p, TIME_WAIT State, retry_timer is set to %d, DataScheduler 1.4\n", sk, sysctl_tcp_retries1);
-		// printk(KERN_INFO "tcp_write_timeout: TCP sk=%p, timeout %lu, last rto %d, retransmit %d, backoff %d",
-        //        sk, icsk->icsk_timeout, icsk->icsk_rto, icsk->icsk_retransmits, icsk->icsk_backoff);
-		retry_until = sysctl_tcp_retries1;
-	} else if ((1 << sk->sk_state) & (TCPF_LAST_ACK)) {
-		// printk(KERN_INFO "tcp_write_timeout: TCP sk=%p, LAST_ACK State, retry_timer is set to %d, DataScheduler 1.4\n", sk, sysctl_tcp_retries1);
-		// printk(KERN_INFO "tcp_write_timeout: TCP sk=%p, timeout %lu, last rto %d, retransmit %d, backoff %d",
-        //        sk, icsk->icsk_timeout, icsk->icsk_rto, icsk->icsk_retransmits, icsk->icsk_backoff);
-		do_reset = true;
-		retry_until = sysctl_tcp_retries1;
-/* 2013-10-30 beney.kim@lge.com LGP_DATA_TCPIP_DATASCHEDULER [END] */
-	} else {
-		if (retransmits_timed_out(sk, sysctl_tcp_retries1, 0, 0)) {
-			/* Black hole detection */
-			tcp_mtu_probing(icsk, sk);
-
-			dst_negative_advice(sk);
-		}
-
-		retry_until = sysctl_tcp_retries2;
-		if (sock_flag(sk, SOCK_DEAD)) {
-			const int alive = (icsk->icsk_rto < TCP_RTO_MAX);
-
-			retry_until = tcp_orphan_retries(sk, alive);
-			do_reset = alive ||
-				!retransmits_timed_out(sk, retry_until, 0, 0);
-=======
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct net *net = sock_net(sk);
 	bool expired = false, do_reset;
@@ -475,23 +275,11 @@ static int tcp_write_timeout(struct sock *sk)
 			retry_until = tcp_orphan_retries(sk, alive);
 			do_reset = alive ||
 				!retransmits_timed_out(sk, retry_until, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (tcp_out_of_resources(sk, do_reset))
 				return 1;
 		}
 	}
-<<<<<<< HEAD
-
-	if (retransmits_timed_out(sk, retry_until,
-				  syn_set ? 0 : icsk->icsk_user_timeout, syn_set)) {
-/* 2013-10-30 beney.kim@lge.com LGP_DATA_TCPIP_DATASCHEDULER [START] */
-		if (do_reset) {
-			// printk(KERN_INFO "tcp_write_timeout: TCP sk=%p, Reset Connection, DataScheduler 1.4\n", sk);
-			tcp_send_active_reset(sk, GFP_ATOMIC);
-		}
-/* 2013-10-30 beney.kim@lge.com LGP_DATA_TCPIP_DATASCHEDULER [END] */
-=======
 	if (!expired)
 		expired = retransmits_timed_out(sk, retry_until,
 						READ_ONCE(icsk->icsk_user_timeout));
@@ -503,57 +291,10 @@ static int tcp_write_timeout(struct sock *sk)
 				  icsk->icsk_rto, (int)expired);
 
 	if (expired) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Has it gone just too far? */
 		tcp_write_err(sk);
 		return 1;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-static void tcp_delack_timer(unsigned long data)
-{
-	struct sock *sk = (struct sock *)data;
-	struct tcp_sock *tp = tcp_sk(sk);
-	struct inet_connection_sock *icsk = inet_csk(sk);
-
-	bh_lock_sock(sk);
-	if (sock_owned_by_user(sk)) {
-		/* Try again later. */
-		icsk->icsk_ack.blocked = 1;
-		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_DELAYEDACKLOCKED);
-		sk_reset_timer(sk, &icsk->icsk_delack_timer, jiffies + TCP_DELACK_MIN);
-		goto out_unlock;
-	}
-
-	sk_mem_reclaim_partial(sk);
-
-	if (sk->sk_state == TCP_CLOSE || !(icsk->icsk_ack.pending & ICSK_ACK_TIMER))
-		goto out;
-
-	if (time_after(icsk->icsk_ack.timeout, jiffies)) {
-		sk_reset_timer(sk, &icsk->icsk_delack_timer, icsk->icsk_ack.timeout);
-		goto out;
-	}
-	icsk->icsk_ack.pending &= ~ICSK_ACK_TIMER;
-
-	if (!skb_queue_empty(&tp->ucopy.prequeue)) {
-		struct sk_buff *skb;
-
-		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPSCHEDULERFAILED);
-
-		while ((skb = __skb_dequeue(&tp->ucopy.prequeue)) != NULL)
-			sk_backlog_rcv(sk, skb);
-
-		tp->ucopy.memory = 0;
-	}
-
-	if (inet_csk_ack_scheduled(sk)) {
-		if (!icsk->icsk_ack.pingpong) {
-			/* Delayed ACK missed: inflate ATO. */
-			icsk->icsk_ack.ato = min(icsk->icsk_ack.ato << 1, icsk->icsk_rto);
-=======
 
 	if (sk_rethink_txhash(sk)) {
 		tp->timeout_rehash++;
@@ -592,24 +333,10 @@ void tcp_delack_timer_handler(struct sock *sk)
 		if (!inet_csk_in_pingpong_mode(sk)) {
 			/* Delayed ACK missed: inflate ATO. */
 			icsk->icsk_ack.ato = min_t(u32, icsk->icsk_ack.ato << 1, icsk->icsk_rto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* Delayed ACK missed: leave pingpong mode and
 			 * deflate ATO.
 			 */
-<<<<<<< HEAD
-			icsk->icsk_ack.pingpong = 0;
-			icsk->icsk_ack.ato      = TCP_ATO_MIN;
-		}
-		tcp_send_ack(sk);
-		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_DELAYEDACKS);
-	}
-
-out:
-	if (sk_under_memory_pressure(sk))
-		sk_mem_reclaim(sk);
-out_unlock:
-=======
 			inet_csk_exit_pingpong_mode(sk);
 			icsk->icsk_ack.ato      = TCP_ATO_MIN;
 		}
@@ -644,7 +371,6 @@ static void tcp_delack_timer(struct timer_list *t)
 		if (!test_and_set_bit(TCP_DELACK_TIMER_DEFERRED, &sk->sk_tsq_flags))
 			sock_hold(sk);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh_unlock_sock(sk);
 	sock_put(sk);
 }
@@ -652,44 +378,6 @@ static void tcp_delack_timer(struct timer_list *t)
 static void tcp_probe_timer(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
-<<<<<<< HEAD
-	struct tcp_sock *tp = tcp_sk(sk);
-	int max_probes;
-
-	if (tp->packets_out || !tcp_send_head(sk)) {
-		icsk->icsk_probes_out = 0;
-		return;
-	}
-
-	/* *WARNING* RFC 1122 forbids this
-	 *
-	 * It doesn't AFAIK, because we kill the retransmit timer -AK
-	 *
-	 * FIXME: We ought not to do it, Solaris 2.5 actually has fixing
-	 * this behaviour in Solaris down as a bug fix. [AC]
-	 *
-	 * Let me to explain. icsk_probes_out is zeroed by incoming ACKs
-	 * even if they advertise zero window. Hence, connection is killed only
-	 * if we received no ACKs for normal connection timeout. It is not killed
-	 * only because window stays zero for some time, window may be zero
-	 * until armageddon and even later. We are in full accordance
-	 * with RFCs, only probe timer combines both retransmission timeout
-	 * and probe timeout in one bottle.				--ANK
-	 */
-	max_probes = sysctl_tcp_retries2;
-
-	if (sock_flag(sk, SOCK_DEAD)) {
-		const int alive = ((icsk->icsk_rto << icsk->icsk_backoff) < TCP_RTO_MAX);
-
-		max_probes = tcp_orphan_retries(sk, alive);
-
-		if (tcp_out_of_resources(sk, alive || icsk->icsk_probes_out <= max_probes))
-			return;
-	}
-
-	if (icsk->icsk_probes_out > max_probes) {
-		tcp_write_err(sk);
-=======
 	struct sk_buff *skb = tcp_send_head(sk);
 	struct tcp_sock *tp = tcp_sk(sk);
 	int max_probes;
@@ -731,28 +419,12 @@ static void tcp_probe_timer(struct sock *sk)
 
 	if (icsk->icsk_probes_out >= max_probes) {
 abort:		tcp_write_err(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Only send another probe if we didn't close things up. */
 		tcp_send_probe0(sk);
 	}
 }
 
-<<<<<<< HEAD
-/*
- *	The TCP retransmit timer.
- */
-
-void tcp_retransmit_timer(struct sock *sk)
-{
-	struct tcp_sock *tp = tcp_sk(sk);
-	struct inet_connection_sock *icsk = inet_csk(sk);
-
-	if (!tp->packets_out)
-		goto out;
-
-	WARN_ON(tcp_write_queue_empty(sk));
-=======
 static void tcp_update_rto_stats(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
@@ -859,7 +531,6 @@ void tcp_retransmit_timer(struct sock *sk)
 		return;
 
 	tp->tlp_high_seq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tp->snd_wnd && !sock_flag(sk, SOCK_DEAD) &&
 	    !((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV))) {
@@ -869,29 +540,6 @@ void tcp_retransmit_timer(struct sock *sk)
 		 * we cannot allow such beasts to hang infinitely.
 		 */
 		struct inet_sock *inet = inet_sk(sk);
-<<<<<<< HEAD
-		if (sk->sk_family == AF_INET) {
-			LIMIT_NETDEBUG(KERN_DEBUG pr_fmt("Peer %pI4:%u/%u unexpectedly shrunk window %u:%u (repaired)\n"),
-				       &inet->inet_daddr,
-				       ntohs(inet->inet_dport), inet->inet_num,
-				       tp->snd_una, tp->snd_nxt);
-		}
-#if IS_ENABLED(CONFIG_IPV6)
-		else if (sk->sk_family == AF_INET6) {
-			struct ipv6_pinfo *np = inet6_sk(sk);
-			LIMIT_NETDEBUG(KERN_DEBUG pr_fmt("Peer %pI6:%u/%u unexpectedly shrunk window %u:%u (repaired)\n"),
-				       &np->daddr,
-				       ntohs(inet->inet_dport), inet->inet_num,
-				       tp->snd_una, tp->snd_nxt);
-		}
-#endif
-		if (tcp_time_stamp - tp->rcv_tstamp > TCP_RTO_MAX) {
-			tcp_write_err(sk);
-			goto out;
-		}
-		tcp_enter_loss(sk, 0);
-		tcp_retransmit_skb(sk, tcp_write_queue_head(sk));
-=======
 		u32 rtx_delta;
 
 		rtx_delta = tcp_time_stamp_ts(tp) - (tp->retrans_stamp ?: 
@@ -921,24 +569,16 @@ void tcp_retransmit_timer(struct sock *sk)
 		}
 		tcp_enter_loss(sk);
 		tcp_retransmit_skb(sk, skb, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sk_dst_reset(sk);
 		goto out_reset_timer;
 	}
 
-<<<<<<< HEAD
-=======
 	__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPTIMEOUTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tcp_write_timeout(sk))
 		goto out;
 
 	if (icsk->icsk_retransmits == 0) {
-<<<<<<< HEAD
-		int mib_idx;
-=======
 		int mib_idx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (icsk->icsk_ca_state == TCP_CA_Recovery) {
 			if (tcp_is_sack(tp))
@@ -953,28 +593,6 @@ void tcp_retransmit_timer(struct sock *sk)
 				mib_idx = LINUX_MIB_TCPSACKFAILURES;
 			else
 				mib_idx = LINUX_MIB_TCPRENOFAILURES;
-<<<<<<< HEAD
-		} else {
-			mib_idx = LINUX_MIB_TCPTIMEOUTS;
-		}
-		NET_INC_STATS_BH(sock_net(sk), mib_idx);
-	}
-
-	if (tcp_use_frto(sk)) {
-		tcp_enter_frto(sk);
-	} else {
-		tcp_enter_loss(sk, 0);
-	}
-
-	if (tcp_retransmit_skb(sk, tcp_write_queue_head(sk)) > 0) {
-		/* Retransmission failed because of local congestion,
-		 * do not backoff.
-		 */
-		if (!icsk->icsk_retransmits)
-			icsk->icsk_retransmits = 1;
-		inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
-					  min(icsk->icsk_rto, TCP_RESOURCE_PROBE_INTERVAL),
-=======
 		}
 		if (mib_idx)
 			__NET_INC_STATS(sock_net(sk), mib_idx);
@@ -989,7 +607,6 @@ void tcp_retransmit_timer(struct sock *sk)
 		 */
 		inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
 					  TCP_RESOURCE_PROBE_INTERVAL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  TCP_RTO_MAX);
 		goto out;
 	}
@@ -1009,11 +626,6 @@ void tcp_retransmit_timer(struct sock *sk)
 	 * implemented ftp to mars will work nicely. We will have to fix
 	 * the 120 second clamps though!
 	 */
-<<<<<<< HEAD
-	icsk->icsk_backoff++;
-	icsk->icsk_retransmits++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_reset_timer:
 	/* If stream is thin, use linear timeouts. Since 'icsk_backoff' is
@@ -1026,19 +638,6 @@ out_reset_timer:
 	 * linear-timeout retransmissions into a black hole
 	 */
 	if (sk->sk_state == TCP_ESTABLISHED &&
-<<<<<<< HEAD
-	    (tp->thin_lto || sysctl_tcp_thin_linear_timeouts) &&
-	    tcp_stream_is_thin(tp) &&
-	    icsk->icsk_retransmits <= TCP_THIN_LINEAR_RETRIES) {
-		icsk->icsk_backoff = 0;
-		icsk->icsk_rto = min(__tcp_set_rto(tp), TCP_RTO_MAX);
-	} else {
-		/* Use normal (exponential) backoff */
-		icsk->icsk_rto = min(icsk->icsk_rto << 1, TCP_RTO_MAX);
-	}
-	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS, icsk->icsk_rto, TCP_RTO_MAX);
-	if (retransmits_timed_out(sk, sysctl_tcp_retries1 + 1, 0, 0))
-=======
 	    (tp->thin_lto || READ_ONCE(net->ipv4.sysctl_tcp_thin_linear_timeouts)) &&
 	    tcp_stream_is_thin(tp) &&
 	    icsk->icsk_retransmits <= TCP_THIN_LINEAR_RETRIES) {
@@ -1058,50 +657,11 @@ out_reset_timer:
 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
 				  tcp_clamp_rto_to_user_timeout(sk), TCP_RTO_MAX);
 	if (retransmits_timed_out(sk, READ_ONCE(net->ipv4.sysctl_tcp_retries1) + 1, 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sk_dst_reset(sk);
 
 out:;
 }
 
-<<<<<<< HEAD
-static void tcp_write_timer(unsigned long data)
-{
-	struct sock *sk = (struct sock *)data;
-	struct inet_connection_sock *icsk = inet_csk(sk);
-	int event;
-
-	bh_lock_sock(sk);
-	if (sock_owned_by_user(sk)) {
-		/* Try again later */
-		sk_reset_timer(sk, &icsk->icsk_retransmit_timer, jiffies + (HZ / 20));
-		goto out_unlock;
-	}
-
-	if (sk->sk_state == TCP_CLOSE || !icsk->icsk_pending)
-		goto out;
-
-	if (time_after(icsk->icsk_timeout, jiffies)) {
-		sk_reset_timer(sk, &icsk->icsk_retransmit_timer, icsk->icsk_timeout);
-		goto out;
-	}
-
-	event = icsk->icsk_pending;
-	icsk->icsk_pending = 0;
-
-	switch (event) {
-	case ICSK_TIME_RETRANS:
-		tcp_retransmit_timer(sk);
-		break;
-	case ICSK_TIME_PROBE0:
-		tcp_probe_timer(sk);
-		break;
-	}
-
-out:
-	sk_mem_reclaim(sk);
-out_unlock:
-=======
 /* Called with bottom-half processing disabled.
    Called by tcp_write_timer() */
 void tcp_write_timer_handler(struct sock *sk)
@@ -1153,32 +713,15 @@ static void tcp_write_timer(struct timer_list *t)
 		if (!test_and_set_bit(TCP_WRITE_TIMER_DEFERRED, &sk->sk_tsq_flags))
 			sock_hold(sk);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh_unlock_sock(sk);
 	sock_put(sk);
 }
 
-<<<<<<< HEAD
-/*
- *	Timer for listening sockets
- */
-
-static void tcp_synack_timer(struct sock *sk)
-{
-	inet_csk_reqsk_queue_prune(sk, TCP_SYNQ_INTERVAL,
-				   TCP_TIMEOUT_INIT, TCP_RTO_MAX);
-}
-
-void tcp_syn_ack_timeout(struct sock *sk, struct request_sock *req)
-{
-	NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPTIMEOUTS);
-=======
 void tcp_syn_ack_timeout(const struct request_sock *req)
 {
 	struct net *net = read_pnet(&inet_rsk(req)->ireq_net);
 
 	__NET_INC_STATS(net, LINUX_MIB_TCPTIMEOUTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcp_syn_ack_timeout);
 
@@ -1192,20 +735,12 @@ void tcp_set_keepalive(struct sock *sk, int val)
 	else if (!val)
 		inet_csk_delete_keepalive_timer(sk);
 }
-<<<<<<< HEAD
-
-
-static void tcp_keepalive_timer (unsigned long data)
-{
-	struct sock *sk = (struct sock *) data;
-=======
 EXPORT_SYMBOL_GPL(tcp_set_keepalive);
 
 
 static void tcp_keepalive_timer (struct timer_list *t)
 {
 	struct sock *sk = from_timer(sk, t, sk_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inet_connection_sock *icsk = inet_csk(sk);
 	struct tcp_sock *tp = tcp_sk(sk);
 	u32 elapsed;
@@ -1219,14 +754,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
 	}
 
 	if (sk->sk_state == TCP_LISTEN) {
-<<<<<<< HEAD
-		tcp_synack_timer(sk);
-		goto out;
-	}
-
-	if (sk->sk_state == TCP_FIN_WAIT2 && sock_flag(sk, SOCK_DEAD)) {
-		if (tp->linger2 >= 0) {
-=======
 		pr_err("Hmm... keepalive on a LISTEN ???\n");
 		goto out;
 	}
@@ -1234,7 +761,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
 	tcp_mstamp_refresh(tp);
 	if (sk->sk_state == TCP_FIN_WAIT2 && sock_flag(sk, SOCK_DEAD)) {
 		if (READ_ONCE(tp->linger2) >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			const int tmo = tcp_fin_time(sk) - TCP_TIMEWAIT_LEN;
 
 			if (tmo > 0) {
@@ -1246,36 +772,19 @@ static void tcp_keepalive_timer (struct timer_list *t)
 		goto death;
 	}
 
-<<<<<<< HEAD
-	if (!sock_flag(sk, SOCK_KEEPOPEN) || sk->sk_state == TCP_CLOSE)
-=======
 	if (!sock_flag(sk, SOCK_KEEPOPEN) ||
 	    ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_SYN_SENT)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	elapsed = keepalive_time_when(tp);
 
 	/* It is alive without keepalive 8) */
-<<<<<<< HEAD
-	if (tp->packets_out || tcp_send_head(sk))
-=======
 	if (tp->packets_out || !tcp_write_queue_empty(sk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto resched;
 
 	elapsed = keepalive_time_elapsed(tp);
 
 	if (elapsed >= keepalive_time_when(tp)) {
-<<<<<<< HEAD
-		/* If the TCP_USER_TIMEOUT option is enabled, use that
-		 * to determine when to timeout instead.
-		 */
-		if ((icsk->icsk_user_timeout != 0 &&
-		    elapsed >= icsk->icsk_user_timeout &&
-		    icsk->icsk_probes_out > 0) ||
-		    (icsk->icsk_user_timeout == 0 &&
-=======
 		u32 user_timeout = READ_ONCE(icsk->icsk_user_timeout);
 
 		/* If the TCP_USER_TIMEOUT option is enabled, use that
@@ -1285,17 +794,12 @@ static void tcp_keepalive_timer (struct timer_list *t)
 		    elapsed >= msecs_to_jiffies(user_timeout) &&
 		    icsk->icsk_probes_out > 0) ||
 		    (user_timeout == 0 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    icsk->icsk_probes_out >= keepalive_probes(tp))) {
 			tcp_send_active_reset(sk, GFP_ATOMIC);
 			tcp_write_err(sk);
 			goto out;
 		}
-<<<<<<< HEAD
-		if (tcp_write_wakeup(sk) <= 0) {
-=======
 		if (tcp_write_wakeup(sk, LINUX_MIB_TCPKEEPALIVE) <= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			icsk->icsk_probes_out++;
 			elapsed = keepalive_intvl_when(tp);
 		} else {
@@ -1309,11 +813,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
 		elapsed = keepalive_time_when(tp) - elapsed;
 	}
 
-<<<<<<< HEAD
-	sk_mem_reclaim(sk);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 resched:
 	inet_csk_reset_keepalive_timer (sk, elapsed);
 	goto out;
@@ -1325,8 +824,6 @@ out:
 	bh_unlock_sock(sk);
 	sock_put(sk);
 }
-<<<<<<< HEAD
-=======
 
 static enum hrtimer_restart tcp_compressed_ack_kick(struct hrtimer *timer)
 {
@@ -1367,4 +864,3 @@ void tcp_init_xmit_timers(struct sock *sk)
 		     HRTIMER_MODE_REL_PINNED_SOFT);
 	tcp_sk(sk)->compressed_ack_timer.function = tcp_compressed_ack_kick;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

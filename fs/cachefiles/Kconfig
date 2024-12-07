@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-
-config CACHEFILES
-	tristate "Filesystem caching on files"
-	depends on FSCACHE && BLOCK
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 
 config CACHEFILES
 	tristate "Filesystem caching on files"
 	depends on NETFS_SUPPORT && FSCACHE && BLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This permits use of a mounted filesystem as a cache for other
 	  filesystems - primarily networking filesystems - thus allowing fast
 	  local disk to enhance the speed of slower devices.
 
-<<<<<<< HEAD
-	  See Documentation/filesystems/caching/cachefiles.txt for more
-=======
 	  See Documentation/filesystems/caching/cachefiles.rst for more
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information.
 
 config CACHEFILES_DEBUG
@@ -31,26 +20,6 @@ config CACHEFILES_DEBUG
 	  enabled by setting bits in /sys/modules/cachefiles/parameter/debug or
 	  by including a debugging specifier in /etc/cachefilesd.conf.
 
-<<<<<<< HEAD
-config CACHEFILES_HISTOGRAM
-	bool "Gather latency information on CacheFiles"
-	depends on CACHEFILES && PROC_FS
-	help
-
-	  This option causes latency information to be gathered on CacheFiles
-	  operation and exported through file:
-
-		/proc/fs/cachefiles/histogram
-
-	  The generation of this histogram adds a certain amount of overhead to
-	  execution as there are a number of points at which data is gathered,
-	  and on a multi-CPU system these may be on cachelines that keep
-	  bouncing between CPUs.  On the other hand, the histogram may be
-	  useful for debugging purposes.  Saying 'N' here is recommended.
-
-	  See Documentation/filesystems/caching/cachefiles.txt for more
-	  information.
-=======
 config CACHEFILES_ERROR_INJECTION
 	bool "Provide error injection for cachefiles"
 	depends on CACHEFILES && SYSCTL
@@ -69,4 +38,3 @@ config CACHEFILES_ONDEMAND
 	  and is delegated to userspace.
 
 	  If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

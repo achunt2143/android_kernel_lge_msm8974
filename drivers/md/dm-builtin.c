@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-#include "dm.h"
-
-#include <linux/export.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include "dm-core.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The kobject release method must not be placed in the module itself,
@@ -51,8 +45,4 @@ void dm_kobject_release(struct kobject *kobj)
 {
 	complete(dm_get_completion_from_kobject(kobj));
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(dm_kobject_release);

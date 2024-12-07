@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010-2011 Red Hat, Inc.
  *
@@ -12,18 +9,6 @@
 #define DM_THIN_METADATA_H
 
 #include "persistent-data/dm-block-manager.h"
-<<<<<<< HEAD
-
-#define THIN_METADATA_BLOCK_SIZE 4096
-
-/*
- * The metadata device is currently limited in size.
- *
- * We have one block of index, which can hold 255 index entries.  Each
- * index entry contains allocation info about 16k metadata blocks.
- */
-#define THIN_METADATA_MAX_SECTORS (255 * (1 << 14) * (THIN_METADATA_BLOCK_SIZE / (1 << SECTOR_SHIFT)))
-=======
 #include "persistent-data/dm-space-map.h"
 #include "persistent-data/dm-space-map-metadata.h"
 
@@ -33,7 +18,6 @@
  * The metadata device is currently limited in size.
  */
 #define THIN_METADATA_MAX_SECTORS DM_SM_METADATA_MAX_SECTORS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * A metadata device larger than 16GB triggers a warning.
@@ -42,14 +26,11 @@
 
 /*----------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 /*
  * Thin metadata superblock flags.
  */
 #define THIN_METADATA_NEEDS_CHECK_FLAG (1 << 0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dm_pool_metadata;
 struct dm_thin_device;
 
@@ -62,12 +43,8 @@ typedef uint64_t dm_thin_id;
  * Reopens or creates a new, empty metadata volume.
  */
 struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
-<<<<<<< HEAD
-					       sector_t data_block_size);
-=======
 					       sector_t data_block_size,
 					       bool format_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dm_pool_metadata_close(struct dm_pool_metadata *pmd);
 
@@ -108,8 +85,6 @@ int dm_pool_delete_thin_device(struct dm_pool_metadata *pmd,
 int dm_pool_commit_metadata(struct dm_pool_metadata *pmd);
 
 /*
-<<<<<<< HEAD
-=======
  * Discards all uncommitted changes.  Rereads the superblock, rolling back
  * to the last good transaction.  Thin devices remain open.
  * dm_thin_aborted_changes() tells you if they had uncommitted changes.
@@ -120,7 +95,6 @@ int dm_pool_commit_metadata(struct dm_pool_metadata *pmd);
 int dm_pool_abort_metadata(struct dm_pool_metadata *pmd);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Set/get userspace transaction id.
  */
 int dm_pool_set_metadata_transaction_id(struct dm_pool_metadata *pmd,
@@ -132,13 +106,6 @@ int dm_pool_get_metadata_transaction_id(struct dm_pool_metadata *pmd,
 
 /*
  * Hold/get root for userspace transaction.
-<<<<<<< HEAD
- */
-int dm_pool_hold_metadata_root(struct dm_pool_metadata *pmd);
-
-int dm_pool_get_held_metadata_root(struct dm_pool_metadata *pmd,
-				   dm_block_t *result);
-=======
  *
  * The metadata snapshot is a copy of the current superblock (minus the
  * space maps).  Userland can access the data structures for READ
@@ -151,7 +118,6 @@ int dm_pool_release_metadata_snap(struct dm_pool_metadata *pmd);
 
 int dm_pool_get_metadata_snap(struct dm_pool_metadata *pmd,
 			      dm_block_t *result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Actions on a single virtual device.
@@ -169,27 +135,16 @@ dm_thin_id dm_thin_dev_id(struct dm_thin_device *td);
 
 struct dm_thin_lookup_result {
 	dm_block_t block;
-<<<<<<< HEAD
-	int shared;
-=======
 	bool shared:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Returns:
-<<<<<<< HEAD
- *   -EWOULDBLOCK iff @can_block is set and would block.
-=======
  *   -EWOULDBLOCK iff @can_issue_io is set and would issue IO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   -ENODATA iff that mapping is not present.
  *   0 success
  */
 int dm_thin_find_block(struct dm_thin_device *td, dm_block_t block,
-<<<<<<< HEAD
-		       int can_block, struct dm_thin_lookup_result *result);
-=======
 		       int can_issue_io, struct dm_thin_lookup_result *result);
 
 /*
@@ -200,7 +155,6 @@ int dm_thin_find_mapped_range(struct dm_thin_device *td,
 			      dm_block_t begin, dm_block_t end,
 			      dm_block_t *thin_begin, dm_block_t *thin_end,
 			      dm_block_t *pool_begin, bool *maybe_shared);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Obtain an unused block.
@@ -213,25 +167,18 @@ int dm_pool_alloc_data_block(struct dm_pool_metadata *pmd, dm_block_t *result);
 int dm_thin_insert_block(struct dm_thin_device *td, dm_block_t block,
 			 dm_block_t data_block);
 
-<<<<<<< HEAD
-int dm_thin_remove_block(struct dm_thin_device *td, dm_block_t block);
-=======
 int dm_thin_remove_range(struct dm_thin_device *td,
 			 dm_block_t begin, dm_block_t end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Queries.
  */
-<<<<<<< HEAD
-=======
 bool dm_thin_changed_this_transaction(struct dm_thin_device *td);
 
 bool dm_pool_changed_this_transaction(struct dm_pool_metadata *pmd);
 
 bool dm_thin_aborted_changes(struct dm_thin_device *td);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dm_thin_get_highest_mapped_block(struct dm_thin_device *td,
 				     dm_block_t *highest_mapped);
 
@@ -246,12 +193,6 @@ int dm_pool_get_free_metadata_block_count(struct dm_pool_metadata *pmd,
 int dm_pool_get_metadata_dev_size(struct dm_pool_metadata *pmd,
 				  dm_block_t *result);
 
-<<<<<<< HEAD
-int dm_pool_get_data_block_size(struct dm_pool_metadata *pmd, sector_t *result);
-
-int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result);
-
-=======
 int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result);
 
 int dm_pool_block_is_shared(struct dm_pool_metadata *pmd, dm_block_t b, bool *result);
@@ -259,14 +200,11 @@ int dm_pool_block_is_shared(struct dm_pool_metadata *pmd, dm_block_t b, bool *re
 int dm_pool_inc_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e);
 int dm_pool_dec_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns -ENOSPC if the new size is too small and already allocated
  * blocks would be lost.
  */
 int dm_pool_resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_size);
-<<<<<<< HEAD
-=======
 int dm_pool_resize_metadata_dev(struct dm_pool_metadata *pmd, dm_block_t new_size);
 
 /*
@@ -298,7 +236,6 @@ typedef int (*dm_pool_pre_commit_fn)(void *context);
 void dm_pool_register_pre_commit_callback(struct dm_pool_metadata *pmd,
 					  dm_pool_pre_commit_fn fn,
 					  void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------------------------------------------------------------*/
 

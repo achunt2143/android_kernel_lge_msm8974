@@ -1,34 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Input driver to ExplorerPS/2 device driver module.
  *
  * Copyright (c) 1999-2002 Vojtech Pavlik
  * Copyright (c) 2004      Dmitry Torokhov
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #define MOUSEDEV_MINOR_BASE	32
-<<<<<<< HEAD
-#define MOUSEDEV_MINORS		32
-#define MOUSEDEV_MIX		31
-
-=======
 #define MOUSEDEV_MINORS		31
 #define MOUSEDEV_MIX		63
 
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/poll.h>
@@ -38,15 +22,8 @@
 #include <linux/random.h>
 #include <linux/major.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
-#include <linux/miscdevice.h>
-#endif
-=======
 #include <linux/cdev.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("Mouse (ExplorerPS/2) device interfaces");
@@ -80,40 +57,26 @@ struct mousedev_hw_data {
 
 struct mousedev {
 	int open;
-<<<<<<< HEAD
-	int minor;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_handle handle;
 	wait_queue_head_t wait;
 	struct list_head client_list;
 	spinlock_t client_lock; /* protects client_list */
 	struct mutex mutex;
 	struct device dev;
-<<<<<<< HEAD
-	bool exist;
-
-	struct list_head mixdev_node;
-	int mixdev_open;
-=======
 	struct cdev cdev;
 	bool exist;
 
 	struct list_head mixdev_node;
 	bool opened_by_mixdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mousedev_hw_data packet;
 	unsigned int pkt_count;
 	int old_x[4], old_y[4];
 	int frac_dx, frac_dy;
 	unsigned long touch;
-<<<<<<< HEAD
-=======
 
 	int (*open_device)(struct mousedev *mousedev);
 	void (*close_device)(struct mousedev *mousedev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum mousedev_emul {
@@ -138,11 +101,7 @@ struct mousedev_client {
 	spinlock_t packet_lock;
 	int pos_x, pos_y;
 
-<<<<<<< HEAD
-	signed char ps2[6];
-=======
 	u8 ps2[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char ready, buffer, bufsiz;
 	unsigned char imexseq, impsseq;
 	enum mousedev_emul mode;
@@ -154,22 +113,9 @@ struct mousedev_client {
 static unsigned char mousedev_imps_seq[] = { 0xf3, 200, 0xf3, 100, 0xf3, 80 };
 static unsigned char mousedev_imex_seq[] = { 0xf3, 200, 0xf3, 200, 0xf3, 80 };
 
-<<<<<<< HEAD
-static struct input_handler mousedev_handler;
-
-static struct mousedev *mousedev_table[MOUSEDEV_MINORS];
-static DEFINE_MUTEX(mousedev_table_mutex);
 static struct mousedev *mousedev_mix;
 static LIST_HEAD(mousedev_mix_list);
 
-static void mixdev_open_devices(void);
-static void mixdev_close_devices(void);
-
-=======
-static struct mousedev *mousedev_mix;
-static LIST_HEAD(mousedev_mix_list);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fx(i)  (mousedev->old_x[(mousedev->pkt_count - (i)) & 03])
 #define fy(i)  (mousedev->old_y[(mousedev->pkt_count - (i)) & 03])
 
@@ -343,18 +289,10 @@ static void mousedev_notify_readers(struct mousedev *mousedev,
 		}
 
 		client->pos_x += packet->dx;
-<<<<<<< HEAD
-		client->pos_x = client->pos_x < 0 ?
-			0 : (client->pos_x >= xres ? xres : client->pos_x);
-		client->pos_y += packet->dy;
-		client->pos_y = client->pos_y < 0 ?
-			0 : (client->pos_y >= yres ? yres : client->pos_y);
-=======
 		client->pos_x = clamp_val(client->pos_x, 0, xres);
 
 		client->pos_y += packet->dy;
 		client->pos_y = clamp_val(client->pos_y, 0, yres);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		p->dx += packet->dx;
 		p->dy += packet->dy;
@@ -486,13 +424,7 @@ static int mousedev_open_device(struct mousedev *mousedev)
 	if (retval)
 		return retval;
 
-<<<<<<< HEAD
-	if (mousedev->minor == MOUSEDEV_MIX)
-		mixdev_open_devices();
-	else if (!mousedev->exist)
-=======
 	if (!mousedev->exist)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 	else if (!mousedev->open++) {
 		retval = input_open_device(&mousedev->handle);
@@ -508,13 +440,7 @@ static void mousedev_close_device(struct mousedev *mousedev)
 {
 	mutex_lock(&mousedev->mutex);
 
-<<<<<<< HEAD
-	if (mousedev->minor == MOUSEDEV_MIX)
-		mixdev_close_devices();
-	else if (mousedev->exist && !--mousedev->open)
-=======
 	if (mousedev->exist && !--mousedev->open)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_close_device(&mousedev->handle);
 
 	mutex_unlock(&mousedev->mutex);
@@ -525,23 +451,6 @@ static void mousedev_close_device(struct mousedev *mousedev)
  * stream. Note that this function is called with mousedev_mix->mutex
  * held.
  */
-<<<<<<< HEAD
-static void mixdev_open_devices(void)
-{
-	struct mousedev *mousedev;
-
-	if (mousedev_mix->open++)
-		return;
-
-	list_for_each_entry(mousedev, &mousedev_mix_list, mixdev_node) {
-		if (!mousedev->mixdev_open) {
-			if (mousedev_open_device(mousedev))
-				continue;
-
-			mousedev->mixdev_open = 1;
-		}
-	}
-=======
 static int mixdev_open_devices(struct mousedev *mixdev)
 {
 	int error;
@@ -565,7 +474,6 @@ static int mixdev_open_devices(struct mousedev *mixdev)
 
 	mutex_unlock(&mixdev->mutex);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -573,21 +481,6 @@ static int mixdev_open_devices(struct mousedev *mixdev)
  * device. Note that this function is called with mousedev_mix->mutex
  * held.
  */
-<<<<<<< HEAD
-static void mixdev_close_devices(void)
-{
-	struct mousedev *mousedev;
-
-	if (--mousedev_mix->open)
-		return;
-
-	list_for_each_entry(mousedev, &mousedev_mix_list, mixdev_node) {
-		if (mousedev->mixdev_open) {
-			mousedev->mixdev_open = 0;
-			mousedev_close_device(mousedev);
-		}
-	}
-=======
 static void mixdev_close_devices(struct mousedev *mixdev)
 {
 	mutex_lock(&mixdev->mutex);
@@ -604,7 +497,6 @@ static void mixdev_close_devices(struct mousedev *mixdev)
 	}
 
 	mutex_unlock(&mixdev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -633,12 +525,7 @@ static int mousedev_release(struct inode *inode, struct file *file)
 	mousedev_detach_client(mousedev, client);
 	kfree(client);
 
-<<<<<<< HEAD
-	mousedev_close_device(mousedev);
-	put_device(&mousedev->dev);
-=======
 	mousedev->close_device(mousedev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -648,38 +535,6 @@ static int mousedev_open(struct inode *inode, struct file *file)
 	struct mousedev_client *client;
 	struct mousedev *mousedev;
 	int error;
-<<<<<<< HEAD
-	int i;
-
-#ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
-	if (imajor(inode) == MISC_MAJOR)
-		i = MOUSEDEV_MIX;
-	else
-#endif
-		i = iminor(inode) - MOUSEDEV_MINOR_BASE;
-
-	if (i >= MOUSEDEV_MINORS)
-		return -ENODEV;
-
-	error = mutex_lock_interruptible(&mousedev_table_mutex);
-	if (error) {
-		return error;
-	}
-	mousedev = mousedev_table[i];
-	if (mousedev)
-		get_device(&mousedev->dev);
-	mutex_unlock(&mousedev_table_mutex);
-
-	if (!mousedev) {
-		return -ENODEV;
-	}
-
-	client = kzalloc(sizeof(struct mousedev_client), GFP_KERNEL);
-	if (!client) {
-		error = -ENOMEM;
-		goto err_put_mousedev;
-	}
-=======
 
 #ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
 	if (imajor(inode) == MISC_MAJOR)
@@ -691,7 +546,6 @@ static int mousedev_open(struct inode *inode, struct file *file)
 	client = kzalloc(sizeof(struct mousedev_client), GFP_KERNEL);
 	if (!client)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&client->packet_lock);
 	client->pos_x = xres / 2;
@@ -699,54 +553,18 @@ static int mousedev_open(struct inode *inode, struct file *file)
 	client->mousedev = mousedev;
 	mousedev_attach_client(mousedev, client);
 
-<<<<<<< HEAD
-	error = mousedev_open_device(mousedev);
-=======
 	error = mousedev->open_device(mousedev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto err_free_client;
 
 	file->private_data = client;
-<<<<<<< HEAD
-=======
 	stream_open(inode, file);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_free_client:
 	mousedev_detach_client(mousedev, client);
 	kfree(client);
-<<<<<<< HEAD
- err_put_mousedev:
-	put_device(&mousedev->dev);
-	return error;
-}
-
-static inline int mousedev_limit_delta(int delta, int limit)
-{
-	return delta > limit ? limit : (delta < -limit ? -limit : delta);
-}
-
-static void mousedev_packet(struct mousedev_client *client,
-			    signed char *ps2_data)
-{
-	struct mousedev_motion *p = &client->packets[client->tail];
-
-	ps2_data[0] = 0x08 |
-		((p->dx < 0) << 4) | ((p->dy < 0) << 5) | (p->buttons & 0x07);
-	ps2_data[1] = mousedev_limit_delta(p->dx, 127);
-	ps2_data[2] = mousedev_limit_delta(p->dy, 127);
-	p->dx -= ps2_data[1];
-	p->dy -= ps2_data[2];
-
-	switch (client->mode) {
-	case MOUSEDEV_EMUL_EXPS:
-		ps2_data[3] = mousedev_limit_delta(p->dz, 7);
-		p->dz -= ps2_data[3];
-		ps2_data[3] = (ps2_data[3] & 0x0f) | ((p->buttons & 0x18) << 1);
-=======
 	return error;
 }
 
@@ -773,17 +591,10 @@ static void mousedev_packet(struct mousedev_client *client, u8 *ps2_data)
 		p->dz -= dz;
 
 		ps2_data[3] = (dz & 0x0f) | ((p->buttons & 0x18) << 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client->bufsiz = 4;
 		break;
 
 	case MOUSEDEV_EMUL_IMPS:
-<<<<<<< HEAD
-		ps2_data[0] |=
-			((p->buttons & 0x10) >> 3) | ((p->buttons & 0x08) >> 1);
-		ps2_data[3] = mousedev_limit_delta(p->dz, 127);
-		p->dz -= ps2_data[3];
-=======
 		dz = clamp_val(p->dz, -127, 127);
 		p->dz -= dz;
 
@@ -791,23 +602,16 @@ static void mousedev_packet(struct mousedev_client *client, u8 *ps2_data)
 			       ((p->buttons & 0x08) >> 1);
 		ps2_data[3] = dz;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client->bufsiz = 4;
 		break;
 
 	case MOUSEDEV_EMUL_PS2:
 	default:
-<<<<<<< HEAD
-		ps2_data[0] |=
-			((p->buttons & 0x10) >> 3) | ((p->buttons & 0x08) >> 1);
-		p->dz = 0;
-=======
 		p->dz = 0;
 
 		ps2_data[0] |= ((p->buttons & 0x10) >> 3) |
 			       ((p->buttons & 0x08) >> 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client->bufsiz = 3;
 		break;
 	}
@@ -900,10 +704,7 @@ static ssize_t mousedev_write(struct file *file, const char __user *buffer,
 		mousedev_generate_response(client, c);
 
 		spin_unlock_irq(&client->packet_lock);
-<<<<<<< HEAD
-=======
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kill_fasync(&client->fasync, SIGIO, POLL_IN);
@@ -917,11 +718,7 @@ static ssize_t mousedev_read(struct file *file, char __user *buffer,
 {
 	struct mousedev_client *client = file->private_data;
 	struct mousedev *mousedev = client->mousedev;
-<<<<<<< HEAD
-	signed char data[sizeof(client->ps2)];
-=======
 	u8 data[sizeof(client->ps2)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = 0;
 
 	if (!client->ready && !client->buffer && mousedev->exist &&
@@ -958,19 +755,6 @@ static ssize_t mousedev_read(struct file *file, char __user *buffer,
 }
 
 /* No kernel lock - fine */
-<<<<<<< HEAD
-static unsigned int mousedev_poll(struct file *file, poll_table *wait)
-{
-	struct mousedev_client *client = file->private_data;
-	struct mousedev *mousedev = client->mousedev;
-	unsigned int mask;
-
-	poll_wait(file, &mousedev->wait, wait);
-
-	mask = mousedev->exist ? POLLOUT | POLLWRNORM : POLLHUP | POLLERR;
-	if (client->ready || client->buffer)
-		mask |= POLLIN | POLLRDNORM;
-=======
 static __poll_t mousedev_poll(struct file *file, poll_table *wait)
 {
 	struct mousedev_client *client = file->private_data;
@@ -982,37 +766,11 @@ static __poll_t mousedev_poll(struct file *file, poll_table *wait)
 	mask = mousedev->exist ? EPOLLOUT | EPOLLWRNORM : EPOLLHUP | EPOLLERR;
 	if (client->ready || client->buffer)
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
 
 static const struct file_operations mousedev_fops = {
-<<<<<<< HEAD
-	.owner =	THIS_MODULE,
-	.read =		mousedev_read,
-	.write =	mousedev_write,
-	.poll =		mousedev_poll,
-	.open =		mousedev_open,
-	.release =	mousedev_release,
-	.fasync =	mousedev_fasync,
-	.llseek = noop_llseek,
-};
-
-static int mousedev_install_chrdev(struct mousedev *mousedev)
-{
-	mousedev_table[mousedev->minor] = mousedev;
-	return 0;
-}
-
-static void mousedev_remove_chrdev(struct mousedev *mousedev)
-{
-	mutex_lock(&mousedev_table_mutex);
-	mousedev_table[mousedev->minor] = NULL;
-	mutex_unlock(&mousedev_table_mutex);
-}
-
-=======
 	.owner		= THIS_MODULE,
 	.read		= mousedev_read,
 	.write		= mousedev_write,
@@ -1023,7 +781,6 @@ static void mousedev_remove_chrdev(struct mousedev *mousedev)
 	.llseek		= noop_llseek,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mark device non-existent. This disables writes, ioctls and
  * prevents new users from opening the device. Already posted
@@ -1058,29 +815,12 @@ static void mousedev_cleanup(struct mousedev *mousedev)
 
 	mousedev_mark_dead(mousedev);
 	mousedev_hangup(mousedev);
-<<<<<<< HEAD
-	mousedev_remove_chrdev(mousedev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mousedev is marked dead so no one else accesses mousedev->open */
 	if (mousedev->open)
 		input_close_device(handle);
 }
 
-<<<<<<< HEAD
-static struct mousedev *mousedev_create(struct input_dev *dev,
-					struct input_handler *handler,
-					int minor)
-{
-	struct mousedev *mousedev;
-	int error;
-
-	mousedev = kzalloc(sizeof(struct mousedev), GFP_KERNEL);
-	if (!mousedev) {
-		error = -ENOMEM;
-		goto err_out;
-=======
 static int mousedev_reserve_minor(bool mixdev)
 {
 	int minor;
@@ -1117,7 +857,6 @@ static struct mousedev *mousedev_create(struct input_dev *dev,
 	if (!mousedev) {
 		error = -ENOMEM;
 		goto err_free_minor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	INIT_LIST_HEAD(&mousedev->client_list);
@@ -1125,17 +864,6 @@ static struct mousedev *mousedev_create(struct input_dev *dev,
 	spin_lock_init(&mousedev->client_lock);
 	mutex_init(&mousedev->mutex);
 	lockdep_set_subclass(&mousedev->mutex,
-<<<<<<< HEAD
-			     minor == MOUSEDEV_MIX ? SINGLE_DEPTH_NESTING : 0);
-	init_waitqueue_head(&mousedev->wait);
-
-	if (minor == MOUSEDEV_MIX)
-		dev_set_name(&mousedev->dev, "mice");
-	else
-		dev_set_name(&mousedev->dev, "mouse%d", minor);
-
-	mousedev->minor = minor;
-=======
 			     mixdev ? SINGLE_DEPTH_NESTING : 0);
 	init_waitqueue_head(&mousedev->wait);
 
@@ -1155,7 +883,6 @@ static struct mousedev *mousedev_create(struct input_dev *dev,
 		mousedev->close_device = mousedev_close_device;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mousedev->exist = true;
 	mousedev->handle.dev = input_get_device(dev);
 	mousedev->handle.name = dev_name(&mousedev->dev);
@@ -1165,35 +892,19 @@ static struct mousedev *mousedev_create(struct input_dev *dev,
 	mousedev->dev.class = &input_class;
 	if (dev)
 		mousedev->dev.parent = &dev->dev;
-<<<<<<< HEAD
-	mousedev->dev.devt = MKDEV(INPUT_MAJOR, MOUSEDEV_MINOR_BASE + minor);
-	mousedev->dev.release = mousedev_free;
-	device_initialize(&mousedev->dev);
-
-	if (minor != MOUSEDEV_MIX) {
-=======
 	mousedev->dev.devt = MKDEV(INPUT_MAJOR, minor);
 	mousedev->dev.release = mousedev_free;
 	device_initialize(&mousedev->dev);
 
 	if (!mixdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = input_register_handle(&mousedev->handle);
 		if (error)
 			goto err_free_mousedev;
 	}
 
-<<<<<<< HEAD
-	error = mousedev_install_chrdev(mousedev);
-	if (error)
-		goto err_unregister_handle;
-
-	error = device_add(&mousedev->dev);
-=======
 	cdev_init(&mousedev->cdev, &mousedev_fops);
 
 	error = cdev_device_add(&mousedev->cdev, &mousedev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto err_cleanup_mousedev;
 
@@ -1201,36 +912,22 @@ static struct mousedev *mousedev_create(struct input_dev *dev,
 
  err_cleanup_mousedev:
 	mousedev_cleanup(mousedev);
-<<<<<<< HEAD
- err_unregister_handle:
-	if (minor != MOUSEDEV_MIX)
-		input_unregister_handle(&mousedev->handle);
- err_free_mousedev:
-	put_device(&mousedev->dev);
-=======
 	if (!mixdev)
 		input_unregister_handle(&mousedev->handle);
  err_free_mousedev:
 	put_device(&mousedev->dev);
  err_free_minor:
 	input_free_minor(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_out:
 	return ERR_PTR(error);
 }
 
 static void mousedev_destroy(struct mousedev *mousedev)
 {
-<<<<<<< HEAD
-	device_del(&mousedev->dev);
-	mousedev_cleanup(mousedev);
-	if (mousedev->minor != MOUSEDEV_MIX)
-=======
 	cdev_device_del(&mousedev->cdev, &mousedev->dev);
 	mousedev_cleanup(mousedev);
 	input_free_minor(MINOR(mousedev->dev.devt));
 	if (mousedev != mousedev_mix)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_unregister_handle(&mousedev->handle);
 	put_device(&mousedev->dev);
 }
@@ -1248,11 +945,7 @@ static int mixdev_add_device(struct mousedev *mousedev)
 		if (retval)
 			goto out;
 
-<<<<<<< HEAD
-		mousedev->mixdev_open = 1;
-=======
 		mousedev->opened_by_mixdev = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	get_device(&mousedev->dev);
@@ -1267,13 +960,8 @@ static void mixdev_remove_device(struct mousedev *mousedev)
 {
 	mutex_lock(&mousedev_mix->mutex);
 
-<<<<<<< HEAD
-	if (mousedev->mixdev_open) {
-		mousedev->mixdev_open = 0;
-=======
 	if (mousedev->opened_by_mixdev) {
 		mousedev->opened_by_mixdev = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mousedev_close_device(mousedev);
 	}
 
@@ -1288,25 +976,9 @@ static int mousedev_connect(struct input_handler *handler,
 			    const struct input_device_id *id)
 {
 	struct mousedev *mousedev;
-<<<<<<< HEAD
-	int minor;
-	int error;
-
-	for (minor = 0; minor < MOUSEDEV_MINORS; minor++)
-		if (!mousedev_table[minor])
-			break;
-
-	if (minor == MOUSEDEV_MINORS) {
-		pr_err("no more free mousedev devices\n");
-		return -ENFILE;
-	}
-
-	mousedev = mousedev_create(dev, handler, minor);
-=======
 	int error;
 
 	mousedev = mousedev_create(dev, handler, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(mousedev))
 		return PTR_ERR(mousedev);
 
@@ -1379,22 +1051,6 @@ static const struct input_device_id mousedev_ids[] = {
 MODULE_DEVICE_TABLE(input, mousedev_ids);
 
 static struct input_handler mousedev_handler = {
-<<<<<<< HEAD
-	.event =	mousedev_event,
-	.connect =	mousedev_connect,
-	.disconnect =	mousedev_disconnect,
-	.fops =		&mousedev_fops,
-	.minor =	MOUSEDEV_MINOR_BASE,
-	.name =		"mousedev",
-	.id_table =	mousedev_ids,
-};
-
-#ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
-static struct miscdevice psaux_mouse = {
-	PSMOUSE_MINOR, "psaux", &mousedev_fops
-};
-static int psaux_registered;
-=======
 	.event		= mousedev_event,
 	.connect	= mousedev_connect,
 	.disconnect	= mousedev_disconnect,
@@ -1435,18 +1091,13 @@ static void __exit mousedev_psaux_unregister(void)
 #else
 static inline void mousedev_psaux_register(void) { }
 static inline void mousedev_psaux_unregister(void) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int __init mousedev_init(void)
 {
 	int error;
 
-<<<<<<< HEAD
-	mousedev_mix = mousedev_create(NULL, &mousedev_handler, MOUSEDEV_MIX);
-=======
 	mousedev_mix = mousedev_create(NULL, &mousedev_handler, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(mousedev_mix))
 		return PTR_ERR(mousedev_mix);
 
@@ -1456,18 +1107,7 @@ static int __init mousedev_init(void)
 		return error;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
-	error = misc_register(&psaux_mouse);
-	if (error)
-		pr_warning("could not register psaux device, error: %d\n",
-			   error);
-	else
-		psaux_registered = 1;
-#endif
-=======
 	mousedev_psaux_register();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("PS/2 mouse device common for all mice\n");
 
@@ -1476,14 +1116,7 @@ static int __init mousedev_init(void)
 
 static void __exit mousedev_exit(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_INPUT_MOUSEDEV_PSAUX
-	if (psaux_registered)
-		misc_deregister(&psaux_mouse);
-#endif
-=======
 	mousedev_psaux_unregister();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_unregister_handler(&mousedev_handler);
 	mousedev_destroy(mousedev_mix);
 }

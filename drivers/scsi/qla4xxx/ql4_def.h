@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __QL4_DEF_H
@@ -31,13 +23,8 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-#include <linux/bsg-lib.h>
-=======
 #include <linux/bsg-lib.h>
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/tcp.h>
 #include <scsi/scsi.h>
@@ -54,10 +41,7 @@
 #include "ql4_nx.h"
 #include "ql4_fw.h"
 #include "ql4_nvram.h"
-<<<<<<< HEAD
-=======
 #include "ql4_83xx.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef PCI_DEVICE_ID_QLOGIC_ISP4010
 #define PCI_DEVICE_ID_QLOGIC_ISP4010	0x4010
@@ -75,8 +59,6 @@
 #define PCI_DEVICE_ID_QLOGIC_ISP8022	0x8022
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef PCI_DEVICE_ID_QLOGIC_ISP8324
 #define PCI_DEVICE_ID_QLOGIC_ISP8324	0x8032
 #endif
@@ -85,16 +67,12 @@
 #define PCI_DEVICE_ID_QLOGIC_ISP8042	0x8042
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ISP4XXX_PCI_FN_1	0x1
 #define ISP4XXX_PCI_FN_2	0x3
 
 #define QLA_SUCCESS			0
 #define QLA_ERROR			1
-<<<<<<< HEAD
-=======
 #define STATUS(status)		status == QLA_ERROR ? "FAILED" : "SUCCEEDED"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Data bit definitions
@@ -162,10 +140,7 @@
 #define RESPONSE_QUEUE_DEPTH		64
 #define QUEUE_SIZE			64
 #define DMA_BUFFER_SIZE			512
-<<<<<<< HEAD
-=======
 #define IOCB_HIWAT_CUSHION		4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Misc
@@ -188,8 +163,6 @@
 #define LSDW(x) ((u32)((u64)(x)))
 #define MSDW(x) ((u32)((((u64)(x)) >> 16) >> 16))
 
-<<<<<<< HEAD
-=======
 #define DEV_DB_NON_PERSISTENT	0
 #define DEV_DB_PERSISTENT	1
 
@@ -212,7 +185,6 @@
 	p = (o & f) ? "enable" : "disable";	\
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Retry & Timeout Values
  */
@@ -223,11 +195,7 @@
 #define ADAPTER_INIT_TOV		30
 #define ADAPTER_RESET_TOV		180
 #define EXTEND_CMD_TOV			60
-<<<<<<< HEAD
-#define WAIT_CMD_TOV			30
-=======
 #define WAIT_CMD_TOV			5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EH_WAIT_CMD_TOV			120
 #define FIRMWARE_UP_TOV			60
 #define RESET_FIRMWARE_TOV		30
@@ -239,17 +207,6 @@
 #define DISABLE_ACB_TOV			30
 #define IP_CONFIG_TOV			30
 #define LOGIN_TOV			12
-<<<<<<< HEAD
-
-#define MAX_RESET_HA_RETRIES		2
-#define FW_ALIVE_WAIT_TOV		3
-
-#define CMD_SP(Cmnd)			((Cmnd)->SCp.ptr)
-
-/*
- * SCSI Request Block structure	 (srb)	that is placed
- * on cmd->SCp location of every I/O	 [We have 22 bytes available]
-=======
 #define BOOT_LOGIN_RESP_TOV		60
 
 #define MAX_RESET_HA_RETRIES		2
@@ -273,7 +230,6 @@ static inline struct qla4xxx_cmd_priv *qla4xxx_cmd_priv(struct scsi_cmnd *cmd)
 
 /*
  * SCSI Request Block structure (srb) that is associated with each scsi_cmnd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct srb {
 	struct list_head list;	/* (8)	 */
@@ -352,11 +308,8 @@ struct ddb_entry {
 
 	/* Driver Re-login  */
 	unsigned long flags;		  /* DDB Flags */
-<<<<<<< HEAD
-=======
 #define DDB_CONN_CLOSE_FAILURE		0 /* 0x00000001 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t default_relogin_timeout; /*  Max time to wait for
 					   *  relogin to complete */
 	atomic_t retry_relogin_timer;	  /* Min Time between relogins
@@ -373,13 +326,9 @@ struct ddb_entry {
 struct qla_ddb_index {
 	struct list_head list;
 	uint16_t fw_ddb_idx;
-<<<<<<< HEAD
-	struct dev_db_entry fw_ddb;
-=======
 	uint16_t flash_ddb_idx;
 	struct dev_db_entry fw_ddb;
 	uint8_t flash_isid[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define DDB_IPADDR_LEN 64
@@ -409,15 +358,10 @@ struct ql4_tuple_ddb {
  * DDB flags.
  */
 #define DF_RELOGIN		0	/* Relogin to device */
-<<<<<<< HEAD
-#define DF_ISNS_DISCOVERED	2	/* Device was discovered via iSNS */
-#define DF_FO_MASKED		3
-=======
 #define DF_BOOT_TGT		1	/* Boot target entry */
 #define DF_ISNS_DISCOVERED	2	/* Device was discovered via iSNS */
 #define DF_FO_MASKED		3
 #define DF_DISABLE_RELOGIN		4	/* Disable relogin to device */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum qla4_work_type {
 	QLA4_EVENT_AEN,
@@ -431,21 +375,13 @@ struct qla4_work_evt {
 		struct {
 			enum iscsi_host_event_code code;
 			uint32_t data_size;
-<<<<<<< HEAD
-			uint8_t data[0];
-=======
 			uint8_t data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} aen;
 		struct {
 			uint32_t status;
 			uint32_t pid;
 			uint32_t data_size;
-<<<<<<< HEAD
-			uint8_t data[0];
-=======
 			uint8_t data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} ping;
 	} u;
 };
@@ -470,11 +406,8 @@ struct ql82xx_hw_data {
 	uint32_t flt_iscsi_param;
 	uint32_t flt_region_chap;
 	uint32_t flt_chap_size;
-<<<<<<< HEAD
-=======
 	uint32_t flt_region_ddb;
 	uint32_t flt_ddb_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qla4_8xxx_legacy_intr_set {
@@ -485,23 +418,7 @@ struct qla4_8xxx_legacy_intr_set {
 };
 
 /* MSI-X Support */
-<<<<<<< HEAD
-
-#define QLA_MSIX_DEFAULT	0x00
-#define QLA_MSIX_RSP_Q		0x01
-
 #define QLA_MSIX_ENTRIES	2
-#define QLA_MIDX_DEFAULT	0
-#define QLA_MIDX_RSP_Q		1
-
-struct ql4_msix_entry {
-	int have_irq;
-	uint16_t msix_vector;
-	uint16_t msix_entry;
-};
-=======
-#define QLA_MSIX_ENTRIES	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ISP Operations
@@ -512,15 +429,10 @@ struct isp_operations {
 	void (*disable_intrs) (struct scsi_qla_host *);
 	void (*enable_intrs) (struct scsi_qla_host *);
 	int (*start_firmware) (struct scsi_qla_host *);
-<<<<<<< HEAD
-	irqreturn_t (*intr_handler) (int , void *);
-	void (*interrupt_service_routine) (struct scsi_qla_host *, uint32_t);
-=======
 	int (*restart_firmware) (struct scsi_qla_host *);
 	irqreturn_t (*intr_handler) (int , void *);
 	void (*interrupt_service_routine) (struct scsi_qla_host *, uint32_t);
 	int (*need_reset) (struct scsi_qla_host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*reset_chip) (struct scsi_qla_host *);
 	int (*reset_firmware) (struct scsi_qla_host *);
 	void (*queue_iocb) (struct scsi_qla_host *);
@@ -528,8 +440,6 @@ struct isp_operations {
 	uint16_t (*rd_shdw_req_q_out) (struct scsi_qla_host *);
 	uint16_t (*rd_shdw_rsp_q_in) (struct scsi_qla_host *);
 	int (*get_sys_info) (struct scsi_qla_host *);
-<<<<<<< HEAD
-=======
 	uint32_t (*rd_reg_direct) (struct scsi_qla_host *, ulong);
 	void (*wr_reg_direct) (struct scsi_qla_host *, ulong, uint32_t);
 	int (*rd_reg_indirect) (struct scsi_qla_host *, uint32_t, uint32_t *);
@@ -549,7 +459,6 @@ struct ql4_mdump_size_table {
 	uint32_t size_cmask_10;
 	uint32_t size_cmask_FF;
 	uint32_t version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*qla4xxx ipaddress configuration details */
@@ -575,8 +484,6 @@ struct ipaddress_config {
 	uint16_t eth_mtu_size;
 	uint16_t ipv4_port;
 	uint16_t ipv6_port;
-<<<<<<< HEAD
-=======
 	uint8_t control;
 	uint16_t ipv6_tcp_options;
 	uint8_t tcp_wsf;
@@ -605,7 +512,6 @@ struct ipaddress_config {
 	uint16_t iscsi_max_outstnd_r2t;
 	uint16_t iscsi_max_burst_len;
 	uint8_t iscsi_name[224];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define QL4_CHAP_MAX_NAME_LEN 256
@@ -656,17 +562,6 @@ struct scsi_qla_host {
 #define AF_INIT_DONE			1 /* 0x00000002 */
 #define AF_MBOX_COMMAND			2 /* 0x00000004 */
 #define AF_MBOX_COMMAND_DONE		3 /* 0x00000008 */
-<<<<<<< HEAD
-#define AF_INTERRUPTS_ON		6 /* 0x00000040 */
-#define AF_GET_CRASH_RECORD		7 /* 0x00000080 */
-#define AF_LINK_UP			8 /* 0x00000100 */
-#define AF_IRQ_ATTACHED			10 /* 0x00000400 */
-#define AF_DISABLE_ACB_COMPLETE		11 /* 0x00000800 */
-#define AF_HA_REMOVAL			12 /* 0x00001000 */
-#define AF_INTx_ENABLED			15 /* 0x00008000 */
-#define AF_MSI_ENABLED			16 /* 0x00010000 */
-#define AF_MSIX_ENABLED			17 /* 0x00020000 */
-=======
 #define AF_ST_DISCOVERY_IN_PROGRESS	4 /* 0x00000010 */
 #define AF_INTERRUPTS_ON		6 /* 0x00000040 */
 #define AF_GET_CRASH_RECORD		7 /* 0x00000080 */
@@ -675,21 +570,17 @@ struct scsi_qla_host {
 #define AF_IRQ_ATTACHED			10 /* 0x00000400 */
 #define AF_DISABLE_ACB_COMPLETE		11 /* 0x00000800 */
 #define AF_HA_REMOVAL			12 /* 0x00001000 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AF_MBOX_COMMAND_NOPOLL		18 /* 0x00040000 */
 #define AF_FW_RECOVERY			19 /* 0x00080000 */
 #define AF_EEH_BUSY			20 /* 0x00100000 */
 #define AF_PCI_CHANNEL_IO_PERM_FAILURE	21 /* 0x00200000 */
 #define AF_BUILD_DDB_LIST		22 /* 0x00400000 */
-<<<<<<< HEAD
-=======
 #define AF_82XX_FW_DUMPED		24 /* 0x01000000 */
 #define AF_8XXX_RST_OWNER		25 /* 0x02000000 */
 #define AF_82XX_DUMP_READING		26 /* 0x04000000 */
 #define AF_83XX_IOCB_INTR_ON		28 /* 0x10000000 */
 #define AF_83XX_MBOX_INTR_ON		29 /* 0x20000000 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long dpc_flags;
 
 #define DPC_RESET_HA			1 /* 0x00000002 */
@@ -701,28 +592,18 @@ struct scsi_qla_host {
 #define DPC_AEN				9 /* 0x00000200 */
 #define DPC_GET_DHCP_IP_ADDR		15 /* 0x00008000 */
 #define DPC_LINK_CHANGED		18 /* 0x00040000 */
-<<<<<<< HEAD
-#define DPC_RESET_ACTIVE		20 /* 0x00040000 */
-#define DPC_HA_UNRECOVERABLE		21 /* 0x00080000 ISP-82xx only*/
-#define DPC_HA_NEED_QUIESCENT		22 /* 0x00100000 ISP-82xx only*/
-
-=======
 #define DPC_RESET_ACTIVE		20 /* 0x00100000 */
 #define DPC_HA_UNRECOVERABLE		21 /* 0x00200000 ISP-82xx only*/
 #define DPC_HA_NEED_QUIESCENT		22 /* 0x00400000 ISP-82xx only*/
 #define DPC_POST_IDC_ACK		23 /* 0x00800000 */
 #define DPC_RESTORE_ACB			24 /* 0x01000000 */
 #define DPC_SYSFS_DDB_EXPORT		25 /* 0x02000000 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct Scsi_Host *host; /* pointer to host data */
 	uint32_t tot_ddbs;
 
 	uint16_t iocb_cnt;
-<<<<<<< HEAD
-=======
 	uint16_t iocb_hiwat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SRB cache. */
 #define SRB_MIN_REQ	128
@@ -850,11 +731,7 @@ struct scsi_qla_host {
 	uint8_t acb_version;
 
 	/* qla82xx specific fields */
-<<<<<<< HEAD
-	struct device_reg_82xx  __iomem *qla4_8xxx_reg; /* Base I/O address */
-=======
 	struct device_reg_82xx  __iomem *qla4_82xx_reg; /* Base I/O address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long nx_pcibase;	/* Base I/O address */
 	uint8_t *nx_db_rd_ptr;		/* Doorbell read pointer */
 	unsigned long nx_db_wr_ptr;	/* Door bell write pointer */
@@ -880,12 +757,6 @@ struct scsi_qla_host {
 	struct isp_operations *isp_ops;
 	struct ql82xx_hw_data hw;
 
-<<<<<<< HEAD
-	struct ql4_msix_entry msix_entries[QLA_MSIX_ENTRIES];
-
-	uint32_t nx_dev_init_timeout;
-	uint32_t nx_reset_timeout;
-=======
 	uint32_t nx_dev_init_timeout;
 	uint32_t nx_reset_timeout;
 	void *fw_dump;
@@ -894,7 +765,6 @@ struct scsi_qla_host {
 	void *fw_dump_tmplt_hdr;
 	uint32_t fw_dump_tmplt_size;
 	uint32_t fw_dump_skip_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct completion mbx_intr_comp;
 
@@ -904,18 +774,9 @@ struct scsi_qla_host {
 	struct iscsi_iface *iface_ipv6_1;
 
 	/* --- From About Firmware --- */
-<<<<<<< HEAD
-	uint16_t iscsi_major;
-	uint16_t iscsi_minor;
-	uint16_t bootload_major;
-	uint16_t bootload_minor;
-	uint16_t bootload_patch;
-	uint16_t bootload_build;
-=======
 	struct about_fw_info fw_info;
 	uint32_t fw_uptime_secs;  /* seconds elapsed since fw bootup */
 	uint32_t fw_uptime_msecs; /* milliseconds beyond elapsed seconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t def_timeout; /* Default login timeout */
 
 	uint32_t flash_state;
@@ -952,8 +813,6 @@ struct scsi_qla_host {
 #define MAX_MRB		128
 	struct mrb *active_mrb_array[MAX_MRB];
 	uint32_t mrb_index;
-<<<<<<< HEAD
-=======
 
 	uint32_t *reg_tbl;
 	struct qla4_83xx_reset_template reset_tmplt;
@@ -968,7 +827,6 @@ struct scsi_qla_host {
 	int idc_extend_tmo;
 	struct completion idc_comp;
 	struct completion link_up_comp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ql4_task_data {
@@ -988,11 +846,7 @@ struct ql4_task_data {
 
 struct qla_endpoint {
 	struct Scsi_Host *host;
-<<<<<<< HEAD
-	struct sockaddr dst_addr;
-=======
 	struct sockaddr_storage dst_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qla_conn {
@@ -1035,15 +889,6 @@ static inline int is_qla8022(struct scsi_qla_host *ha)
 	return ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8022;
 }
 
-<<<<<<< HEAD
-/* Note: Currently AER/EEH is now supported only for 8022 cards
- * This function needs to be updated when AER/EEH is enabled
- * for other cards.
- */
-static inline int is_aer_supported(struct scsi_qla_host *ha)
-{
-	return ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8022;
-=======
 static inline int is_qla8032(struct scsi_qla_host *ha)
 {
 	return ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8324;
@@ -1064,18 +909,13 @@ static inline int is_aer_supported(struct scsi_qla_host *ha)
 	return ((ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8022) ||
 		(ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8324) ||
 		(ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP8042));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int adapter_up(struct scsi_qla_host *ha)
 {
 	return (test_bit(AF_ONLINE, &ha->flags) != 0) &&
-<<<<<<< HEAD
-		(test_bit(AF_LINK_UP, &ha->flags) != 0);
-=======
 	       (test_bit(AF_LINK_UP, &ha->flags) != 0) &&
 	       (!test_bit(AF_LOOPBACK, &ha->flags));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct scsi_qla_host* to_qla_host(struct Scsi_Host *shost)
@@ -1210,8 +1050,6 @@ static inline int ql4xxx_reset_active(struct scsi_qla_host *ha)
 	       test_bit(DPC_HA_UNRECOVERABLE, &ha->dpc_flags);
 
 }
-<<<<<<< HEAD
-=======
 
 static inline int qla4_8xxx_rd_direct(struct scsi_qla_host *ha,
 				      const uint32_t crb_reg)
@@ -1226,7 +1064,6 @@ static inline void qla4_8xxx_wr_direct(struct scsi_qla_host *ha,
 	ha->isp_ops->wr_reg_direct(ha, ha->reg_tbl[crb_reg], value);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------*/
 
 /* Defines for qla4xxx_initialize_adapter() and qla4xxx_recover_adapter() */
@@ -1241,10 +1078,7 @@ static inline void qla4_8xxx_wr_direct(struct scsi_qla_host *ha,
 #define PROCESS_ALL_AENS	 0
 #define FLUSH_DDB_CHANGED_AENS	 1
 
-<<<<<<< HEAD
-=======
 /* Defines for udev events */
 #define QL4_UEVENT_CODE_FW_DUMP		0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/*_QLA4XXX_H */

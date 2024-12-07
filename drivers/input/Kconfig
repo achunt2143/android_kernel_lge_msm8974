@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Input device configuration
 #
 
 menu "Input device support"
-<<<<<<< HEAD
-	depends on !S390 && !UML
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config INPUT
 	tristate "Generic input layer (needed for keyboard, mouse, ...)" if EXPERT
@@ -23,11 +16,7 @@ config INPUT
 
 	  Say N here if you have a headless (no monitor, no keyboard) system.
 
-<<<<<<< HEAD
-	  More information is available: <file:Documentation/input/input.txt>
-=======
 	  More information is available: <file:Documentation/input/input.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say Y.
 
@@ -36,11 +25,6 @@ config INPUT
 
 if INPUT
 
-<<<<<<< HEAD
-config INPUT_OF_MATRIX_KEYMAP
-	depends on USE_OF
-	bool
-=======
 config INPUT_LEDS
 	tristate "Export input device LEDs in sysfs"
 	depends on LEDS_CLASS
@@ -53,7 +37,6 @@ config INPUT_LEDS
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called input-leds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config INPUT_FF_MEMLESS
 	tristate "Support for memoryless force-feedback devices"
@@ -68,22 +51,6 @@ config INPUT_FF_MEMLESS
 	  To compile this driver as a module, choose M here: the
 	  module will be called ff-memless.
 
-<<<<<<< HEAD
-config INPUT_POLLDEV
-	tristate "Polled input device skeleton"
-	help
-	  Say Y here if you are using a driver for an input
-	  device that periodically polls hardware state. This
-	  option is only useful for out-of-tree drivers since
-	  in-tree drivers select it automatically.
-
-	  If unsure, say N.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called input-polldev.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_SPARSEKMAP
 	tristate "Sparse keymap support library"
 	help
@@ -97,8 +64,6 @@ config INPUT_SPARSEKMAP
 	  To compile this driver as a module, choose M here: the
 	  module will be called sparse-keymap.
 
-<<<<<<< HEAD
-=======
 config INPUT_MATRIXKMAP
 	tristate "Matrix keymap support library"
 	help
@@ -119,15 +84,10 @@ config INPUT_VIVALDIFMAP
 	  option so that drivers can use common code to parse and
 	  expose the vivaldi function row keymap.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "Userland interfaces"
 
 config INPUT_MOUSEDEV
 	tristate "Mouse interface"
-<<<<<<< HEAD
-	default y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want your mouse to be accessible as char devices
 	  13:32+ - /dev/input/mouseX and 13:63 - /dev/input/mice as an
@@ -142,10 +102,6 @@ config INPUT_MOUSEDEV
 
 config INPUT_MOUSEDEV_PSAUX
 	bool "Provide legacy /dev/psaux device"
-<<<<<<< HEAD
-	default y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on INPUT_MOUSEDEV
 	help
 	  Say Y here if you want your mouse also be accessible as char device
@@ -154,10 +110,6 @@ config INPUT_MOUSEDEV_PSAUX
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_MOUSEDEV_SCREEN_X
 	int "Horizontal screen resolution"
 	depends on INPUT_MOUSEDEV
@@ -186,11 +138,7 @@ config INPUT_JOYDEV
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-	  More information is available: <file:Documentation/input/joystick.txt>
-=======
 	  More information is available: <file:Documentation/input/joydev/joystick.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called joydev.
@@ -218,8 +166,6 @@ config INPUT_EVBUG
 	  To compile this driver as a module, choose M here: the
 	  module will be called evbug.
 
-<<<<<<< HEAD
-=======
 config INPUT_KUNIT_TEST
 	tristate "KUnit tests for Input" if !KUNIT_ALL_TESTS
 	depends on INPUT && KUNIT
@@ -230,7 +176,6 @@ config INPUT_KUNIT_TEST
 
 	  If in doubt, say "N".
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_APMPOWER
 	tristate "Input Power Event -> APM Bridge" if EXPERT
 	depends on INPUT && APM_EMULATION
@@ -243,18 +188,6 @@ config INPUT_APMPOWER
 	  To compile this driver as a module, choose M here: the
 	  module will be called apm-power.
 
-<<<<<<< HEAD
-config INPUT_KEYRESET
-	tristate "Reset key"
-	depends on INPUT
-	---help---
-	  Say Y here if you want to reboot when some keys are pressed;
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called keyreset.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "Input Device Drivers"
 
 source "drivers/input/keyboard/Kconfig"
@@ -269,11 +202,8 @@ source "drivers/input/touchscreen/Kconfig"
 
 source "drivers/input/misc/Kconfig"
 
-<<<<<<< HEAD
-=======
 source "drivers/input/rmi4/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 menu "Hardware I/O ports"

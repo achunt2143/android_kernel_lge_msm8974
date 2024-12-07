@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-config FS_ENCRYPTION
-	tristate "FS Encryption (Per-file encryption)"
-	depends on BLOCK
-	select CRYPTO
-	select CRYPTO_AES
-	select CRYPTO_CBC
-	select CRYPTO_ECB
-	select CRYPTO_XTS
-	select CRYPTO_CTS
-	select CRYPTO_CTR
-	select CRYPTO_SHA256
-	select KEYS
-	select ENCRYPTED_KEYS
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config FS_ENCRYPTION
 	bool "FS Encryption (Per-file encryption)"
@@ -21,14 +6,10 @@ config FS_ENCRYPTION
 	select CRYPTO_SKCIPHER
 	select CRYPTO_LIB_SHA256
 	select KEYS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enable encryption of files and directories.  This
 	  feature is similar to ecryptfs, but it is more memory
 	  efficient since it avoids caching the encrypted and
-<<<<<<< HEAD
-	  decrypted pages in the page cache.
-=======
 	  decrypted pages in the page cache.  Currently Ext4,
 	  F2FS, UBIFS, and CephFS make use of this feature.
 
@@ -63,4 +44,3 @@ config FS_ENCRYPTION_INLINE_CRYPT
 	depends on FS_ENCRYPTION && BLK_INLINE_ENCRYPTION
 	help
 	  Enable fscrypt to use inline encryption hardware if available.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

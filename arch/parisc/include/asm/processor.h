@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-parisc/processor.h
  *
@@ -14,40 +11,18 @@
 
 #ifndef __ASSEMBLY__
 #include <linux/threads.h>
-<<<<<<< HEAD
-
-=======
 #include <linux/irqreturn.h>
 
 #include <asm/assembly.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/prefetch.h>
 #include <asm/hardware.h>
 #include <asm/pdc.h>
 #include <asm/ptrace.h>
 #include <asm/types.h>
 #include <asm/percpu.h>
-<<<<<<< HEAD
-
-#endif /* __ASSEMBLY__ */
-
-#define KERNEL_STACK_SIZE 	(4*PAGE_SIZE)
-
-/*
- * Default implementation of macro that returns current
- * instruction pointer ("program counter").
- */
-#ifdef CONFIG_PA20
-#define current_ia(x)	__asm__("mfia %0" : "=r"(x))
-#else /* mfia added in pa2.0 */
-#define current_ia(x)	__asm__("blr 0,%0\n\tnop" : "=r"(x))
-#endif
-#define current_text_addr() ({ void *pc; current_ia(pc); pc; })
-=======
 #endif /* __ASSEMBLY__ */
 
 #define HAVE_ARCH_PICK_MMAP_LAYOUT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TASK_SIZE_OF(tsk)       ((tsk)->thread.task_size)
 #define TASK_SIZE	        TASK_SIZE_OF(current)
@@ -64,30 +39,18 @@
 #define DEFAULT_MAP_BASE	DEFAULT_MAP_BASE32
 #endif
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* XXX: STACK_TOP actually should be STACK_BOTTOM for parisc.
  * prumpf */
 
 #define STACK_TOP	TASK_SIZE
 #define STACK_TOP_MAX	DEFAULT_TASK_SIZE
 
-<<<<<<< HEAD
-#endif
-
-#ifndef __ASSEMBLY__
-
-=======
 #ifndef __ASSEMBLY__
 
 struct rlimit;
 unsigned long mmap_upper_limit(struct rlimit *rlim_stack);
 unsigned long calc_max_stack_size(unsigned long stack_max);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Data detected about CPUs at boot time which is the same for all CPU's.
  * HP boxes are SMP - ie identical processors.
@@ -117,30 +80,12 @@ struct system_cpuinfo_parisc {
 /* Per CPU data structure - ie varies per CPU.  */
 struct cpuinfo_parisc {
 	unsigned long it_value;     /* Interval Timer at last timer Intr */
-<<<<<<< HEAD
-	unsigned long it_delta;     /* Interval delta (tic_10ms / HZ * 100) */
 	unsigned long irq_count;    /* number of IRQ's since boot */
-	unsigned long irq_max_cr16; /* longest time to handle a single IRQ */
-=======
-	unsigned long irq_count;    /* number of IRQ's since boot */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long cpuid;        /* aka slot_number or set to NO_PROC_ID */
 	unsigned long hpa;          /* Host Physical address */
 	unsigned long txn_addr;     /* MMIO addr of EIR or id_eid */
 #ifdef CONFIG_SMP
 	unsigned long pending_ipi;  /* bitmap of type ipi_message_type */
-<<<<<<< HEAD
-	unsigned long ipi_count;    /* number ipi Interrupts */
-#endif
-	unsigned long bh_count;     /* number of times bh was invoked */
-	unsigned long prof_counter; /* per CPU profiling support */
-	unsigned long prof_multiplier;	/* per CPU profiling support */
-	unsigned long fp_rev;
-	unsigned long fp_model;
-	unsigned int state;
-	struct parisc_device *dev;
-	unsigned long loops_per_jiffy;
-=======
 #endif
 	unsigned long bh_count;     /* number of times bh was invoked */
 	unsigned long fp_rev;
@@ -149,27 +94,14 @@ struct cpuinfo_parisc {
 	unsigned long cpu_loc;      /* CPU location from PAT firmware */
 	unsigned int state;
 	struct parisc_device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct system_cpuinfo_parisc boot_cpu_data;
 DECLARE_PER_CPU(struct cpuinfo_parisc, cpu_data);
-<<<<<<< HEAD
-
-#define CPU_HVERSION ((boot_cpu_data.hversion >> 4) & 0x0FFF)
-
-typedef struct {
-	int seg;  
-} mm_segment_t;
-
-#define ARCH_MIN_TASKALIGN	8
-
-=======
 extern int time_keeper_id;		/* CPU used for timekeeping */
 
 #define CPU_HVERSION ((boot_cpu_data.hversion >> 4) & 0x0FFF)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct thread_struct {
 	struct pt_regs regs;
 	unsigned long  task_size;
@@ -214,16 +146,7 @@ struct thread_struct {
 	.flags		= 0 \
 	}
 
-<<<<<<< HEAD
-/*
- * Return saved PC of a blocked thread.  This is used by ps mostly.
- */
-
 struct task_struct;
-unsigned long thread_saved_pc(struct task_struct *t);
-=======
-struct task_struct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void show_trace(struct task_struct *task, unsigned long *stack);
 
 /*
@@ -243,36 +166,6 @@ void show_trace(struct task_struct *task, unsigned long *stack);
  */
 typedef unsigned int elf_caddr_t;
 
-<<<<<<< HEAD
-#define start_thread_som(regs, new_pc, new_sp) do {	\
-	unsigned long *sp = (unsigned long *)new_sp;	\
-	__u32 spaceid = (__u32)current->mm->context;	\
-	unsigned long pc = (unsigned long)new_pc;	\
-	/* offset pc for priv. level */			\
-	pc |= 3;					\
-							\
-	regs->iasq[0] = spaceid;			\
-	regs->iasq[1] = spaceid;			\
-	regs->iaoq[0] = pc;				\
-	regs->iaoq[1] = pc + 4;                         \
-	regs->sr[2] = LINUX_GATEWAY_SPACE;              \
-	regs->sr[3] = 0xffff;				\
-	regs->sr[4] = spaceid;				\
-	regs->sr[5] = spaceid;				\
-	regs->sr[6] = spaceid;				\
-	regs->sr[7] = spaceid;				\
-	regs->gr[ 0] = USER_PSW;                        \
-	regs->gr[30] = ((new_sp)+63)&~63;		\
-	regs->gr[31] = pc;				\
-							\
-	get_user(regs->gr[26],&sp[0]);			\
-	get_user(regs->gr[25],&sp[-1]); 		\
-	get_user(regs->gr[24],&sp[-2]); 		\
-	get_user(regs->gr[23],&sp[-3]); 		\
-} while(0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The ELF abi wants things done a "wee bit" differently than
  * som does.  Supporting this behavior here avoids
  * having our own version of create_elf_tables.
@@ -343,23 +236,11 @@ on downward growing arches, it looks like this:
  * it in here from the current->personality
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-#define USER_WIDE_MODE	(!test_thread_flag(TIF_32BIT))
-#else
-#define USER_WIDE_MODE	0
-#endif
-
-#define start_thread(regs, new_pc, new_sp) do {		\
-	elf_addr_t *sp = (elf_addr_t *)new_sp;		\
-	__u32 spaceid = (__u32)current->mm->context;	\
-=======
 #define USER_WIDE_MODE	(!is_32bit_task())
 
 #define start_thread(regs, new_pc, new_sp) do {		\
 	elf_addr_t *sp = (elf_addr_t *)new_sp;		\
 	__u32 spaceid = (__u32)current->mm->context.space_id;	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	elf_addr_t pc = (elf_addr_t)new_pc | 3;		\
 	elf_caddr_t *argv = (elf_caddr_t *)bprm->exec + 1;	\
 							\
@@ -386,45 +267,15 @@ on downward growing arches, it looks like this:
 	regs->gr[23] = 0;				\
 } while(0)
 
-<<<<<<< HEAD
-struct task_struct;
-struct mm_struct;
-
-/* Free all resources held by a thread. */
-extern void release_thread(struct task_struct *);
-extern int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
-
-/* Prepare to copy thread state - unlazy all lazy status */
-#define prepare_to_copy(tsk)	do { } while (0)
-
-extern void map_hpux_gateway_page(struct task_struct *tsk, struct mm_struct *mm);
-
-extern unsigned long get_wchan(struct task_struct *p);
-=======
 struct mm_struct;
 
 extern unsigned long __get_wchan(struct task_struct *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KSTK_EIP(tsk)	((tsk)->thread.regs.iaoq[0])
 #define KSTK_ESP(tsk)	((tsk)->thread.regs.gr[30])
 
 #define cpu_relax()	barrier()
 
-<<<<<<< HEAD
-/* Used as a macro to identify the combined VIPT/PIPT cached
- * CPUs which require a guarantee of coherency (no inequivalent
- * aliases with different data, whether clean or not) to operate */
-static inline int parisc_requires_coherency(void)
-{
-#ifdef CONFIG_PA8X00
-	return (boot_cpu_data.cpu_type == mako) ||
-		(boot_cpu_data.cpu_type == mako2);
-#else
-	return 0;
-#endif
-}
-=======
 /*
  * parisc_requires_coherency() is used to identify the combined VIPT/PIPT
  * cached CPUs which require a guarantee of coherency (no inequivalent aliases
@@ -473,7 +324,6 @@ extern void sba_distributed_lmmio(struct parisc_device *, struct resource *);
 extern void sba_directed_lmmio(struct parisc_device *, struct resource *);
 extern void lba_set_iregs(struct parisc_device *lba, u32 ibase, u32 imask);
 extern void ccio_cujo20_fixup(struct parisc_device *dev, u32 iovp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASSEMBLY__ */
 

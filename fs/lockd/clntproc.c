@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/lockd/clntproc.c
  *
@@ -15,10 +12,7 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nfs_fs.h>
 #include <linux/utsname.h>
 #include <linux/freezer.h>
@@ -26,11 +20,8 @@
 #include <linux/sunrpc/svc.h>
 #include <linux/lockd/lockd.h>
 
-<<<<<<< HEAD
-=======
 #include "trace.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NLMDBG_FACILITY		NLMDBG_CLIENT
 #define NLMCLNT_GRACE_WAIT	(5*HZ)
 #define NLMCLNT_POLL_TIMEOUT	(30*HZ)
@@ -59,17 +50,6 @@ void nlmclnt_next_cookie(struct nlm_cookie *c)
 	c->len=4;
 }
 
-<<<<<<< HEAD
-static struct nlm_lockowner *nlm_get_lockowner(struct nlm_lockowner *lockowner)
-{
-	atomic_inc(&lockowner->count);
-	return lockowner;
-}
-
-static void nlm_put_lockowner(struct nlm_lockowner *lockowner)
-{
-	if (!atomic_dec_and_lock(&lockowner->count, &lockowner->host->h_lock))
-=======
 static struct nlm_lockowner *
 nlmclnt_get_lockowner(struct nlm_lockowner *lockowner)
 {
@@ -80,7 +60,6 @@ nlmclnt_get_lockowner(struct nlm_lockowner *lockowner)
 static void nlmclnt_put_lockowner(struct nlm_lockowner *lockowner)
 {
 	if (!refcount_dec_and_lock(&lockowner->count, &lockowner->host->h_lock))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	list_del(&lockowner->list);
 	spin_unlock(&lockowner->host->h_lock);
@@ -107,54 +86,31 @@ static inline uint32_t __nlm_alloc_pid(struct nlm_host *host)
 	return res;
 }
 
-<<<<<<< HEAD
-static struct nlm_lockowner *__nlm_find_lockowner(struct nlm_host *host, fl_owner_t owner)
-=======
 static struct nlm_lockowner *__nlmclnt_find_lockowner(struct nlm_host *host, fl_owner_t owner)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlm_lockowner *lockowner;
 	list_for_each_entry(lockowner, &host->h_lockowners, list) {
 		if (lockowner->owner != owner)
 			continue;
-<<<<<<< HEAD
-		return nlm_get_lockowner(lockowner);
-=======
 		return nlmclnt_get_lockowner(lockowner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct nlm_lockowner *nlm_find_lockowner(struct nlm_host *host, fl_owner_t owner)
-=======
 static struct nlm_lockowner *nlmclnt_find_lockowner(struct nlm_host *host, fl_owner_t owner)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlm_lockowner *res, *new = NULL;
 
 	spin_lock(&host->h_lock);
-<<<<<<< HEAD
-	res = __nlm_find_lockowner(host, owner);
-=======
 	res = __nlmclnt_find_lockowner(host, owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res == NULL) {
 		spin_unlock(&host->h_lock);
 		new = kmalloc(sizeof(*new), GFP_KERNEL);
 		spin_lock(&host->h_lock);
-<<<<<<< HEAD
-		res = __nlm_find_lockowner(host, owner);
-		if (res == NULL && new != NULL) {
-			res = new;
-			atomic_set(&new->count, 1);
-=======
 		res = __nlmclnt_find_lockowner(host, owner);
 		if (res == NULL && new != NULL) {
 			res = new;
 			refcount_set(&new->count, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new->owner = owner;
 			new->pid = __nlm_alloc_pid(host);
 			new->host = nlm_get_host(host);
@@ -174,20 +130,6 @@ static void nlmclnt_setlockargs(struct nlm_rqst *req, struct file_lock *fl)
 {
 	struct nlm_args	*argp = &req->a_args;
 	struct nlm_lock	*lock = &argp->lock;
-<<<<<<< HEAD
-
-	nlmclnt_next_cookie(&argp->cookie);
-	memcpy(&lock->fh, NFS_FH(fl->fl_file->f_path.dentry->d_inode), sizeof(struct nfs_fh));
-	lock->caller  = utsname()->nodename;
-	lock->oh.data = req->a_owner;
-	lock->oh.len  = snprintf(req->a_owner, sizeof(req->a_owner), "%u@%s",
-				(unsigned int)fl->fl_u.nfs_fl.owner->pid,
-				utsname()->nodename);
-	lock->svid = fl->fl_u.nfs_fl.owner->pid;
-	lock->fl.fl_start = fl->fl_start;
-	lock->fl.fl_end = fl->fl_end;
-	lock->fl.fl_type = fl->fl_type;
-=======
 	char *nodename = req->a_host->h_rpcclnt->cl_nodename;
 
 	nlmclnt_next_cookie(&argp->cookie);
@@ -202,16 +144,11 @@ static void nlmclnt_setlockargs(struct nlm_rqst *req, struct file_lock *fl)
 	lock->fl.fl_start = fl->fl_start;
 	lock->fl.fl_end = fl->fl_end;
 	lock->fl.c.flc_type = fl->c.flc_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nlmclnt_release_lockargs(struct nlm_rqst *req)
 {
-<<<<<<< HEAD
-	BUG_ON(req->a_args.lock.fl.fl_ops != NULL);
-=======
 	WARN_ON_ONCE(req->a_args.lock.fl.fl_ops != NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -219,16 +156,6 @@ static void nlmclnt_release_lockargs(struct nlm_rqst *req)
  * @host: address of a valid nlm_host context representing the NLM server
  * @cmd: fcntl-style file lock operation to perform
  * @fl: address of arguments for the lock operation
-<<<<<<< HEAD
- *
- */
-int nlmclnt_proc(struct nlm_host *host, int cmd, struct file_lock *fl)
-{
-	struct nlm_rqst		*call;
-	int			status;
-
-	nlm_get_host(host);
-=======
  * @data: address of data to be sent to callback operations
  *
  */
@@ -238,19 +165,10 @@ int nlmclnt_proc(struct nlm_host *host, int cmd, struct file_lock *fl, void *dat
 	int			status;
 	const struct nlmclnt_operations *nlmclnt_ops = host->h_nlmclnt_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call = nlm_alloc_call(host);
 	if (call == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	nlmclnt_locks_init_private(fl, host);
-	/* Set up the argument struct */
-	nlmclnt_setlockargs(call, fl);
-
-	if (IS_SETLK(cmd) || IS_SETLKW(cmd)) {
-		if (fl->fl_type != F_UNLCK) {
-=======
 	if (nlmclnt_ops && nlmclnt_ops->nlmclnt_alloc_call)
 		nlmclnt_ops->nlmclnt_alloc_call(data);
 
@@ -266,7 +184,6 @@ int nlmclnt_proc(struct nlm_host *host, int cmd, struct file_lock *fl, void *dat
 
 	if (IS_SETLK(cmd) || IS_SETLKW(cmd)) {
 		if (fl->c.flc_type != F_UNLCK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			call->a_args.block = IS_SETLKW(cmd) ? 1 : 0;
 			status = nlmclnt_lock(call, fl);
 		} else
@@ -285,12 +202,6 @@ EXPORT_SYMBOL_GPL(nlmclnt_proc);
 
 /*
  * Allocate an NLM RPC call struct
-<<<<<<< HEAD
- *
- * Note: the caller must hold a reference to host. In case of failure,
- * this reference will be released.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct nlm_rqst *nlm_alloc_call(struct nlm_host *host)
 {
@@ -299,17 +210,10 @@ struct nlm_rqst *nlm_alloc_call(struct nlm_host *host)
 	for(;;) {
 		call = kzalloc(sizeof(*call), GFP_KERNEL);
 		if (call != NULL) {
-<<<<<<< HEAD
-			atomic_set(&call->a_count, 1);
-			locks_init_lock(&call->a_args.lock.fl);
-			locks_init_lock(&call->a_res.lock.fl);
-			call->a_host = host;
-=======
 			refcount_set(&call->a_count, 1);
 			locks_init_lock(&call->a_args.lock.fl);
 			locks_init_lock(&call->a_res.lock.fl);
 			call->a_host = nlm_get_host(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return call;
 		}
 		if (signalled())
@@ -317,26 +221,17 @@ struct nlm_rqst *nlm_alloc_call(struct nlm_host *host)
 		printk("nlm_alloc_call: failed, waiting for memory\n");
 		schedule_timeout_interruptible(5*HZ);
 	}
-<<<<<<< HEAD
-	nlmclnt_release_host(host);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 void nlmclnt_release_call(struct nlm_rqst *call)
 {
-<<<<<<< HEAD
-	if (!atomic_dec_and_test(&call->a_count))
-		return;
-=======
 	const struct nlmclnt_operations *nlmclnt_ops = call->a_host->h_nlmclnt_ops;
 
 	if (!refcount_dec_and_test(&call->a_count))
 		return;
 	if (nlmclnt_ops && nlmclnt_ops->nlmclnt_release_call)
 		nlmclnt_ops->nlmclnt_release_call(call->a_callback_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmclnt_release_host(call->a_host);
 	nlmclnt_release_lockargs(call);
 	kfree(call);
@@ -367,11 +262,7 @@ static int nlm_wait_on_grace(wait_queue_head_t *queue)
  * Generic NLM call
  */
 static int
-<<<<<<< HEAD
-nlmclnt_call(struct rpc_cred *cred, struct nlm_rqst *req, u32 proc)
-=======
 nlmclnt_call(const struct cred *cred, struct nlm_rqst *req, u32 proc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlm_host	*host = req->a_host;
 	struct rpc_clnt	*clnt;
@@ -516,11 +407,7 @@ int nlm_async_reply(struct nlm_rqst *req, u32 proc, const struct rpc_call_ops *t
  *      completion in order to be able to correctly track the lock
  *      state.
  */
-<<<<<<< HEAD
-static int nlmclnt_async_call(struct rpc_cred *cred, struct nlm_rqst *req, u32 proc, const struct rpc_call_ops *tk_ops)
-=======
 static int nlmclnt_async_call(const struct cred *cred, struct nlm_rqst *req, u32 proc, const struct rpc_call_ops *tk_ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpc_message msg = {
 		.rpc_argp	= &req->a_args,
@@ -546,22 +433,14 @@ nlmclnt_test(struct nlm_rqst *req, struct file_lock *fl)
 {
 	int	status;
 
-<<<<<<< HEAD
-	status = nlmclnt_call(nfs_file_cred(fl->fl_file), req, NLMPROC_TEST);
-=======
 	status = nlmclnt_call(nfs_file_cred(fl->c.flc_file), req,
 			      NLMPROC_TEST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		goto out;
 
 	switch (req->a_res.status) {
 		case nlm_granted:
-<<<<<<< HEAD
-			fl->fl_type = F_UNLCK;
-=======
 			fl->c.flc_type = F_UNLCK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case nlm_lck_denied:
 			/*
@@ -569,24 +448,16 @@ nlmclnt_test(struct nlm_rqst *req, struct file_lock *fl)
 			 */
 			fl->fl_start = req->a_res.lock.fl.fl_start;
 			fl->fl_end = req->a_res.lock.fl.fl_end;
-<<<<<<< HEAD
-			fl->fl_type = req->a_res.lock.fl.fl_type;
-			fl->fl_pid = 0;
-=======
 			fl->c.flc_type = req->a_res.lock.fl.c.flc_type;
 			fl->c.flc_pid = -req->a_res.lock.fl.c.flc_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			status = nlm_stat_to_errno(req->a_res.status);
 	}
 out:
-<<<<<<< HEAD
-=======
 	trace_nlmclnt_test(&req->a_args.lock,
 			   (const struct sockaddr *)&req->a_host->h_addr,
 			   req->a_host->h_addrlen, req->a_res.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmclnt_release_call(req);
 	return status;
 }
@@ -595,11 +466,7 @@ static void nlmclnt_locks_copy_lock(struct file_lock *new, struct file_lock *fl)
 {
 	spin_lock(&fl->fl_u.nfs_fl.owner->host->h_lock);
 	new->fl_u.nfs_fl.state = fl->fl_u.nfs_fl.state;
-<<<<<<< HEAD
-	new->fl_u.nfs_fl.owner = nlm_get_lockowner(fl->fl_u.nfs_fl.owner);
-=======
 	new->fl_u.nfs_fl.owner = nlmclnt_get_lockowner(fl->fl_u.nfs_fl.owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&new->fl_u.nfs_fl.list, &fl->fl_u.nfs_fl.owner->host->h_granted);
 	spin_unlock(&fl->fl_u.nfs_fl.owner->host->h_lock);
 }
@@ -609,11 +476,7 @@ static void nlmclnt_locks_release_private(struct file_lock *fl)
 	spin_lock(&fl->fl_u.nfs_fl.owner->host->h_lock);
 	list_del(&fl->fl_u.nfs_fl.list);
 	spin_unlock(&fl->fl_u.nfs_fl.owner->host->h_lock);
-<<<<<<< HEAD
-	nlm_put_lockowner(fl->fl_u.nfs_fl.owner);
-=======
 	nlmclnt_put_lockowner(fl->fl_u.nfs_fl.owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_lock_operations nlmclnt_lock_ops = {
@@ -623,37 +486,16 @@ static const struct file_lock_operations nlmclnt_lock_ops = {
 
 static void nlmclnt_locks_init_private(struct file_lock *fl, struct nlm_host *host)
 {
-<<<<<<< HEAD
-	BUG_ON(fl->fl_ops != NULL);
-	fl->fl_u.nfs_fl.state = 0;
-	fl->fl_u.nfs_fl.owner = nlm_find_lockowner(host, fl->fl_owner);
-=======
 	fl->fl_u.nfs_fl.state = 0;
 	fl->fl_u.nfs_fl.owner = nlmclnt_find_lockowner(host,
 						       fl->c.flc_owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&fl->fl_u.nfs_fl.list);
 	fl->fl_ops = &nlmclnt_lock_ops;
 }
 
 static int do_vfs_lock(struct file_lock *fl)
 {
-<<<<<<< HEAD
-	int res = 0;
-	switch (fl->fl_flags & (FL_POSIX|FL_FLOCK)) {
-		case FL_POSIX:
-			res = posix_lock_file_wait(fl->fl_file, fl);
-			break;
-		case FL_FLOCK:
-			res = flock_lock_file_wait(fl->fl_file, fl);
-			break;
-		default:
-			BUG();
-	}
-	return res;
-=======
 	return locks_lock_file_wait(fl->c.flc_file, fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -679,14 +521,6 @@ static int do_vfs_lock(struct file_lock *fl)
 static int
 nlmclnt_lock(struct nlm_rqst *req, struct file_lock *fl)
 {
-<<<<<<< HEAD
-	struct rpc_cred *cred = nfs_file_cred(fl->fl_file);
-	struct nlm_host	*host = req->a_host;
-	struct nlm_res	*resp = &req->a_res;
-	struct nlm_wait *block = NULL;
-	unsigned char fl_flags = fl->fl_flags;
-	unsigned char fl_type;
-=======
 	const struct cred *cred = nfs_file_cred(fl->c.flc_file);
 	struct nlm_host	*host = req->a_host;
 	struct nlm_res	*resp = &req->a_res;
@@ -694,22 +528,12 @@ nlmclnt_lock(struct nlm_rqst *req, struct file_lock *fl)
 	unsigned char flags = fl->c.flc_flags;
 	unsigned char type;
 	__be32 b_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = -ENOLCK;
 
 	if (nsm_monitor(host) < 0)
 		goto out;
 	req->a_args.state = nsm_local_state;
 
-<<<<<<< HEAD
-	fl->fl_flags |= FL_ACCESS;
-	status = do_vfs_lock(fl);
-	fl->fl_flags = fl_flags;
-	if (status < 0)
-		goto out;
-
-	block = nlmclnt_prepare_block(host, fl);
-=======
 	fl->c.flc_flags |= FL_ACCESS;
 	status = do_vfs_lock(fl);
 	fl->c.flc_flags = flags;
@@ -717,16 +541,12 @@ nlmclnt_lock(struct nlm_rqst *req, struct file_lock *fl)
 		goto out;
 
 	nlmclnt_prepare_block(&block, host, fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 again:
 	/*
 	 * Initialise resp->status to a valid non-zero value,
 	 * since 0 == nlm_lck_granted
 	 */
 	resp->status = nlm_lck_blocked;
-<<<<<<< HEAD
-	for(;;) {
-=======
 
 	/*
 	 * A GRANTED callback can come at any time -- even before the reply
@@ -735,30 +555,17 @@ again:
 	 */
 	nlmclnt_queue_block(&block);
 	for (;;) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Reboot protection */
 		fl->fl_u.nfs_fl.state = host->h_state;
 		status = nlmclnt_call(cred, req, NLMPROC_LOCK);
 		if (status < 0)
 			break;
 		/* Did a reclaimer thread notify us of a server reboot? */
-<<<<<<< HEAD
-		if (resp->status ==  nlm_lck_denied_grace_period)
-=======
 		if (resp->status == nlm_lck_denied_grace_period)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (resp->status != nlm_lck_blocked)
 			break;
 		/* Wait on an NLM blocking lock */
-<<<<<<< HEAD
-		status = nlmclnt_block(block, req, NLMCLNT_POLL_TIMEOUT);
-		if (status < 0)
-			break;
-		if (resp->status != nlm_lck_blocked)
-			break;
-	}
-=======
 		status = nlmclnt_wait(&block, req, NLMCLNT_POLL_TIMEOUT);
 		if (status < 0)
 			break;
@@ -768,7 +575,6 @@ again:
 	b_status = nlmclnt_dequeue_block(&block);
 	if (resp->status == nlm_lck_blocked)
 		resp->status = b_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if we were interrupted while blocking, then cancel the lock request
 	 * and exit
@@ -777,11 +583,7 @@ again:
 		if (!req->a_args.block)
 			goto out_unlock;
 		if (nlmclnt_cancel(host, req->a_args.block, fl) == 0)
-<<<<<<< HEAD
-			goto out_unblock;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (resp->status == nlm_granted) {
@@ -792,19 +594,11 @@ again:
 			goto again;
 		}
 		/* Ensure the resulting lock will get added to granted list */
-<<<<<<< HEAD
-		fl->fl_flags |= FL_SLEEP;
-		if (do_vfs_lock(fl) < 0)
-			printk(KERN_WARNING "%s: VFS is out of sync with lock manager!\n", __func__);
-		up_read(&host->h_rwsem);
-		fl->fl_flags = fl_flags;
-=======
 		fl->c.flc_flags |= FL_SLEEP;
 		if (do_vfs_lock(fl) < 0)
 			printk(KERN_WARNING "%s: VFS is out of sync with lock manager!\n", __func__);
 		up_read(&host->h_rwsem);
 		fl->c.flc_flags = flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = 0;
 	}
 	if (status < 0)
@@ -814,15 +608,6 @@ again:
 	 * cases NLM_LCK_DENIED is returned for a permanent error.  So
 	 * turn it into an ENOLCK.
 	 */
-<<<<<<< HEAD
-	if (resp->status == nlm_lck_denied && (fl_flags & FL_SLEEP))
-		status = -ENOLCK;
-	else
-		status = nlm_stat_to_errno(resp->status);
-out_unblock:
-	nlmclnt_finish_block(block);
-out:
-=======
 	if (resp->status == nlm_lck_denied && (flags & FL_SLEEP))
 		status = -ENOLCK;
 	else
@@ -831,23 +616,10 @@ out:
 	trace_nlmclnt_lock(&req->a_args.lock,
 			   (const struct sockaddr *)&req->a_host->h_addr,
 			   req->a_host->h_addrlen, req->a_res.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmclnt_release_call(req);
 	return status;
 out_unlock:
 	/* Fatal error: ensure that we remove the lock altogether */
-<<<<<<< HEAD
-	dprintk("lockd: lock attempt ended in fatal error.\n"
-		"       Attempting to unlock.\n");
-	nlmclnt_finish_block(block);
-	fl_type = fl->fl_type;
-	fl->fl_type = F_UNLCK;
-	down_read(&host->h_rwsem);
-	do_vfs_lock(fl);
-	up_read(&host->h_rwsem);
-	fl->fl_type = fl_type;
-	fl->fl_flags = fl_flags;
-=======
 	trace_nlmclnt_lock(&req->a_args.lock,
 			   (const struct sockaddr *)&req->a_host->h_addr,
 			   req->a_host->h_addrlen, req->a_res.status);
@@ -860,7 +632,6 @@ out_unlock:
 	up_read(&host->h_rwsem);
 	fl->c.flc_type = type;
 	fl->c.flc_flags = flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmclnt_async_call(cred, req, NLMPROC_UNLOCK, &nlmclnt_unlock_ops);
 	return status;
 }
@@ -869,49 +640,28 @@ out_unlock:
  * RECLAIM: Try to reclaim a lock
  */
 int
-<<<<<<< HEAD
-nlmclnt_reclaim(struct nlm_host *host, struct file_lock *fl)
-{
-	struct nlm_rqst reqst, *req;
-	int		status;
-
-	req = &reqst;
-=======
 nlmclnt_reclaim(struct nlm_host *host, struct file_lock *fl,
 		struct nlm_rqst *req)
 {
 	int		status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(req, 0, sizeof(*req));
 	locks_init_lock(&req->a_args.lock.fl);
 	locks_init_lock(&req->a_res.lock.fl);
 	req->a_host  = host;
-<<<<<<< HEAD
-	req->a_flags = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up the argument struct */
 	nlmclnt_setlockargs(req, fl);
 	req->a_args.reclaim = 1;
 
-<<<<<<< HEAD
-	status = nlmclnt_call(nfs_file_cred(fl->fl_file), req, NLMPROC_LOCK);
-=======
 	status = nlmclnt_call(nfs_file_cred(fl->c.flc_file), req,
 			      NLMPROC_LOCK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status >= 0 && req->a_res.status == nlm_granted)
 		return 0;
 
 	printk(KERN_WARNING "lockd: failed to reclaim lock for pid %d "
-<<<<<<< HEAD
-				"(errno %d, status %d)\n", fl->fl_pid,
-=======
 				"(errno %d, status %d)\n",
 				fl->c.flc_pid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status, ntohl(req->a_res.status));
 
 	/*
@@ -938,44 +688,26 @@ nlmclnt_unlock(struct nlm_rqst *req, struct file_lock *fl)
 	struct nlm_host	*host = req->a_host;
 	struct nlm_res	*resp = &req->a_res;
 	int status;
-<<<<<<< HEAD
-	unsigned char fl_flags = fl->fl_flags;
-=======
 	unsigned char flags = fl->c.flc_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Note: the server is supposed to either grant us the unlock
 	 * request, or to deny it with NLM_LCK_DENIED_GRACE_PERIOD. In either
 	 * case, we want to unlock.
 	 */
-<<<<<<< HEAD
-	fl->fl_flags |= FL_EXISTS;
-	down_read(&host->h_rwsem);
-	status = do_vfs_lock(fl);
-	up_read(&host->h_rwsem);
-	fl->fl_flags = fl_flags;
-=======
 	fl->c.flc_flags |= FL_EXISTS;
 	down_read(&host->h_rwsem);
 	status = do_vfs_lock(fl);
 	up_read(&host->h_rwsem);
 	fl->c.flc_flags = flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == -ENOENT) {
 		status = 0;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	atomic_inc(&req->a_count);
-	status = nlmclnt_async_call(nfs_file_cred(fl->fl_file), req,
-			NLMPROC_UNLOCK, &nlmclnt_unlock_ops);
-=======
 	refcount_inc(&req->a_count);
 	status = nlmclnt_async_call(nfs_file_cred(fl->c.flc_file), req,
 				    NLMPROC_UNLOCK, &nlmclnt_unlock_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		goto out;
 
@@ -988,18 +720,13 @@ nlmclnt_unlock(struct nlm_rqst *req, struct file_lock *fl)
 	/* What to do now? I'm out of my depth... */
 	status = -ENOLCK;
 out:
-<<<<<<< HEAD
-=======
 	trace_nlmclnt_unlock(&req->a_args.lock,
 			     (const struct sockaddr *)&req->a_host->h_addr,
 			     req->a_host->h_addrlen, req->a_res.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmclnt_release_call(req);
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 static void nlmclnt_unlock_prepare(struct rpc_task *task, void *data)
 {
 	struct nlm_rqst	*req = data;
@@ -1013,17 +740,12 @@ static void nlmclnt_unlock_prepare(struct rpc_task *task, void *data)
 		rpc_call_start(task);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nlmclnt_unlock_callback(struct rpc_task *task, void *data)
 {
 	struct nlm_rqst	*req = data;
 	u32 status = ntohl(req->a_res.status);
 
-<<<<<<< HEAD
-	if (RPC_ASSASSINATED(task))
-=======
 	if (RPC_SIGNALLED(task))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto die;
 
 	if (task->tk_status < 0) {
@@ -1051,10 +773,7 @@ die:
 }
 
 static const struct rpc_call_ops nlmclnt_unlock_ops = {
-<<<<<<< HEAD
-=======
 	.rpc_call_prepare = nlmclnt_unlock_prepare,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rpc_call_done = nlmclnt_unlock_callback,
 	.rpc_release = nlmclnt_rpc_release,
 };
@@ -1072,11 +791,7 @@ static int nlmclnt_cancel(struct nlm_host *host, int block, struct file_lock *fl
 	dprintk("lockd: blocking lock attempt was interrupted by a signal.\n"
 		"       Attempting to cancel lock.\n");
 
-<<<<<<< HEAD
-	req = nlm_alloc_call(nlm_get_host(host));
-=======
 	req = nlm_alloc_call(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!req)
 		return -ENOMEM;
 	req->a_flags = RPC_TASK_ASYNC;
@@ -1084,15 +799,9 @@ static int nlmclnt_cancel(struct nlm_host *host, int block, struct file_lock *fl
 	nlmclnt_setlockargs(req, fl);
 	req->a_args.block = block;
 
-<<<<<<< HEAD
-	atomic_inc(&req->a_count);
-	status = nlmclnt_async_call(nfs_file_cred(fl->fl_file), req,
-			NLMPROC_CANCEL, &nlmclnt_cancel_ops);
-=======
 	refcount_inc(&req->a_count);
 	status = nlmclnt_async_call(nfs_file_cred(fl->c.flc_file), req,
 				    NLMPROC_CANCEL, &nlmclnt_cancel_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == 0 && req->a_res.status == nlm_lck_denied)
 		status = -ENOLCK;
 	nlmclnt_release_call(req);
@@ -1104,11 +813,7 @@ static void nlmclnt_cancel_callback(struct rpc_task *task, void *data)
 	struct nlm_rqst	*req = data;
 	u32 status = ntohl(req->a_res.status);
 
-<<<<<<< HEAD
-	if (RPC_ASSASSINATED(task))
-=======
 	if (RPC_SIGNALLED(task))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto die;
 
 	if (task->tk_status < 0) {
@@ -1117,12 +822,6 @@ static void nlmclnt_cancel_callback(struct rpc_task *task, void *data)
 		goto retry_cancel;
 	}
 
-<<<<<<< HEAD
-	dprintk("lockd: cancel status %u (task %u)\n",
-			status, task->tk_pid);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (status) {
 	case NLM_LCK_GRANTED:
 	case NLM_LCK_DENIED_GRACE_PERIOD:

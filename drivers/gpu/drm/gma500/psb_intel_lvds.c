@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright © 2006-2007 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright © 2006-2007 Intel Corporation
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *	Eric Anholt <eric@anholt.net>
  *	Dave Airlie <airlied@linux.ie>
@@ -28,16 +9,6 @@
  */
 
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <drm/drmP.h>
-
-#include "intel_bios.h"
-#include "psb_drv.h"
-#include "psb_intel_drv.h"
-#include "psb_intel_reg.h"
-#include "power.h"
-#include <linux/pm_runtime.h>
-=======
 #include <linux/pm_runtime.h>
 
 #include <drm/drm_crtc_helper.h>
@@ -49,7 +20,6 @@
 #include "psb_drv.h"
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LVDS I2C backlight control macros
@@ -81,12 +51,7 @@ struct psb_intel_lvds_priv {
 	uint32_t savePFIT_PGM_RATIOS;
 	uint32_t saveBLC_PWM_CTL;
 
-<<<<<<< HEAD
-	struct psb_intel_i2c_chan *i2c_bus;
-	struct psb_intel_i2c_chan *ddc_bus;
-=======
 	struct gma_i2c_chan *i2c_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -95,11 +60,7 @@ struct psb_intel_lvds_priv {
  */
 static u32 psb_intel_lvds_get_max_backlight(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ret;
 
 	if (gma_power_begin(dev, false)) {
@@ -128,16 +89,9 @@ static u32 psb_intel_lvds_get_max_backlight(struct drm_device *dev)
 static int psb_lvds_i2c_set_brightness(struct drm_device *dev,
 					unsigned int level)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv =
-		(struct drm_psb_private *)dev->dev_private;
-
-	struct psb_intel_i2c_chan *lvds_i2c_bus = dev_priv->lvds_i2c_bus;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 
 	struct gma_i2c_chan *lvds_i2c_bus = dev_priv->lvds_i2c_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 out_buf[2];
 	unsigned int blc_i2c_brightness;
 
@@ -160,11 +114,7 @@ static int psb_lvds_i2c_set_brightness(struct drm_device *dev,
 	out_buf[0] = dev_priv->lvds_bl->brightnesscmd;
 	out_buf[1] = (u8)blc_i2c_brightness;
 
-<<<<<<< HEAD
-	if (i2c_transfer(&lvds_i2c_bus->adapter, msgs, 1) == 1) {
-=======
 	if (i2c_transfer(&lvds_i2c_bus->base, msgs, 1) == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(dev->dev, "I2C set brightness.(command, value) (%d, %d)\n",
 			dev_priv->lvds_bl->brightnesscmd,
 			blc_i2c_brightness);
@@ -178,12 +128,7 @@ static int psb_lvds_i2c_set_brightness(struct drm_device *dev,
 
 static int psb_lvds_pwm_set_brightness(struct drm_device *dev, int level)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv =
-			(struct drm_psb_private *)dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 max_pwm_blc;
 	u32 blc_pwm_duty_cycle;
@@ -215,11 +160,7 @@ static int psb_lvds_pwm_set_brightness(struct drm_device *dev, int level)
  */
 void psb_intel_lvds_set_brightness(struct drm_device *dev, int level)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev->dev, "backlight level is %d\n", level);
 
@@ -241,11 +182,7 @@ void psb_intel_lvds_set_brightness(struct drm_device *dev, int level)
  */
 static void psb_intel_lvds_set_backlight(struct drm_device *dev, int level)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 blc_pwm_ctl;
 
 	if (gma_power_begin(dev, false)) {
@@ -270,11 +207,7 @@ static void psb_intel_lvds_set_backlight(struct drm_device *dev, int level)
  */
 static void psb_intel_lvds_set_power(struct drm_device *dev, bool on)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
 	u32 pp_status;
 
@@ -282,11 +215,7 @@ static void psb_intel_lvds_set_power(struct drm_device *dev, bool on)
 	        dev_err(dev->dev, "set power, chip off!\n");
 		return;
         }
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (on) {
 		REG_WRITE(PP_CONTROL, REG_READ(PP_CONTROL) |
 			  POWER_TARGET_ON);
@@ -324,19 +253,10 @@ static void psb_intel_lvds_encoder_dpms(struct drm_encoder *encoder, int mode)
 static void psb_intel_lvds_save(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv =
-		(struct drm_psb_private *)dev->dev_private;
-	struct psb_intel_encoder *psb_intel_encoder =
-					psb_intel_attached_encoder(connector);
-	struct psb_intel_lvds_priv *lvds_priv =
-		(struct psb_intel_lvds_priv *)psb_intel_encoder->dev_priv;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct gma_encoder *gma_encoder = gma_attached_encoder(connector);
 	struct psb_intel_lvds_priv *lvds_priv =
 		(struct psb_intel_lvds_priv *)gma_encoder->dev_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lvds_priv->savePP_ON = REG_READ(LVDSPP_ON);
 	lvds_priv->savePP_OFF = REG_READ(LVDSPP_OFF);
@@ -373,16 +293,9 @@ static void psb_intel_lvds_restore(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
 	u32 pp_status;
-<<<<<<< HEAD
-	struct psb_intel_encoder *psb_intel_encoder =
-					psb_intel_attached_encoder(connector);
-	struct psb_intel_lvds_priv *lvds_priv =
-		(struct psb_intel_lvds_priv *)psb_intel_encoder->dev_priv;
-=======
 	struct gma_encoder *gma_encoder = gma_attached_encoder(connector);
 	struct psb_intel_lvds_priv *lvds_priv =
 		(struct psb_intel_lvds_priv *)gma_encoder->dev_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev->dev, "(0x%x, 0x%x, 0x%x, 0x%x, 0x%x, 0x%x)\n",
 			lvds_priv->savePP_ON,
@@ -417,18 +330,6 @@ static void psb_intel_lvds_restore(struct drm_connector *connector)
 	}
 }
 
-<<<<<<< HEAD
-int psb_intel_lvds_mode_valid(struct drm_connector *connector,
-				 struct drm_display_mode *mode)
-{
-	struct drm_psb_private *dev_priv = connector->dev->dev_private;
-	struct psb_intel_encoder *psb_intel_encoder =
-					psb_intel_attached_encoder(connector);
-	struct drm_display_mode *fixed_mode =
-					dev_priv->mode_dev.panel_fixed_mode;
-
-	if (psb_intel_encoder->type == INTEL_OUTPUT_MIPI2)
-=======
 enum drm_mode_status psb_intel_lvds_mode_valid(struct drm_connector *connector,
 				 struct drm_display_mode *mode)
 {
@@ -438,7 +339,6 @@ enum drm_mode_status psb_intel_lvds_mode_valid(struct drm_connector *connector,
 					dev_priv->mode_dev.panel_fixed_mode;
 
 	if (gma_encoder->type == INTEL_OUTPUT_MIPI2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fixed_mode = dev_priv->mode_dev.panel_fixed_mode2;
 
 	/* just in case */
@@ -459,31 +359,6 @@ enum drm_mode_status psb_intel_lvds_mode_valid(struct drm_connector *connector,
 }
 
 bool psb_intel_lvds_mode_fixup(struct drm_encoder *encoder,
-<<<<<<< HEAD
-				  struct drm_display_mode *mode,
-				  struct drm_display_mode *adjusted_mode)
-{
-	struct drm_device *dev = encoder->dev;
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
-	struct psb_intel_crtc *psb_intel_crtc =
-				to_psb_intel_crtc(encoder->crtc);
-	struct drm_encoder *tmp_encoder;
-	struct drm_display_mode *panel_fixed_mode = mode_dev->panel_fixed_mode;
-	struct psb_intel_encoder *psb_intel_encoder =
-						to_psb_intel_encoder(encoder);
-
-	if (psb_intel_encoder->type == INTEL_OUTPUT_MIPI2)
-		panel_fixed_mode = mode_dev->panel_fixed_mode2;
-
-	/* PSB requires the LVDS is on pipe B, MRST has only one pipe anyway */
-	if (!IS_MRST(dev) && psb_intel_crtc->pipe == 0) {
-		printk(KERN_ERR "Can't support LVDS on pipe A\n");
-		return false;
-	}
-	if (IS_MRST(dev) && psb_intel_crtc->pipe != 0) {
-		printk(KERN_ERR "Must use PIPE A\n");
-=======
 				  const struct drm_display_mode *mode,
 				  struct drm_display_mode *adjusted_mode)
 {
@@ -505,7 +380,6 @@ bool psb_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 	}
 	if (IS_MRST(dev) && gma_crtc->pipe != 0) {
 		pr_err("Must use PIPE A\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 	/* Should never happen!! */
@@ -513,12 +387,7 @@ bool psb_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 			    head) {
 		if (tmp_encoder != encoder
 		    && tmp_encoder->crtc == encoder->crtc) {
-<<<<<<< HEAD
-			printk(KERN_ERR "Can't enable LVDS and another "
-			       "encoder on the same pipe\n");
-=======
 			pr_err("Can't enable LVDS and another encoder on the same pipe\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		}
 	}
@@ -555,11 +424,7 @@ bool psb_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 static void psb_intel_lvds_prepare(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
 
 	if (!gma_power_begin(dev, true))
@@ -577,11 +442,7 @@ static void psb_intel_lvds_prepare(struct drm_encoder *encoder)
 static void psb_intel_lvds_commit(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
 
 	if (mode_dev->backlight_duty_cycle == 0)
@@ -596,11 +457,7 @@ static void psb_intel_lvds_mode_set(struct drm_encoder *encoder,
 				struct drm_display_mode *adjusted_mode)
 {
 	struct drm_device *dev = encoder->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pfit_control;
 
 	/*
@@ -629,61 +486,21 @@ static void psb_intel_lvds_mode_set(struct drm_encoder *encoder,
 }
 
 /*
-<<<<<<< HEAD
- * Detect the LVDS connection.
- *
- * This always returns CONNECTOR_STATUS_CONNECTED.
- * This connector should only have
- * been set up if the LVDS was actually connected anyway.
- */
-static enum drm_connector_status psb_intel_lvds_detect(struct drm_connector
-						   *connector, bool force)
-{
-	return connector_status_connected;
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return the list of DDC modes if available, or the BIOS fixed mode otherwise.
  */
 static int psb_intel_lvds_get_modes(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
-	struct psb_intel_encoder *psb_intel_encoder =
-					psb_intel_attached_encoder(connector);
-	struct psb_intel_lvds_priv *lvds_priv = psb_intel_encoder->dev_priv;
-	int ret = 0;
-
-	if (!IS_MRST(dev))
-		ret = psb_intel_ddc_get_modes(connector, &lvds_priv->i2c_bus->adapter);
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
 	int ret = 0;
 
 	if (!IS_MRST(dev))
 		ret = psb_intel_ddc_get_modes(connector, connector->ddc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	/* Didn't get an EDID, so
-	 * Set wide sync ranges so we get all modes
-	 * handed to valid_mode for checking
-	 */
-	connector->display_info.min_vfreq = 0;
-	connector->display_info.max_vfreq = 200;
-	connector->display_info.min_hfreq = 0;
-	connector->display_info.max_hfreq = 200;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mode_dev->panel_fixed_mode != NULL) {
 		struct drm_display_mode *mode =
 		    drm_mode_duplicate(dev, mode_dev->panel_fixed_mode);
@@ -694,26 +511,6 @@ static int psb_intel_lvds_get_modes(struct drm_connector *connector)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * psb_intel_lvds_destroy - unregister and free LVDS structures
- * @connector: connector to free
- *
- * Unregister the DDC bus for this connector then free the driver private
- * structure.
- */
-void psb_intel_lvds_destroy(struct drm_connector *connector)
-{
-	struct psb_intel_encoder *psb_intel_encoder =
-					psb_intel_attached_encoder(connector);
-	struct psb_intel_lvds_priv *lvds_priv = psb_intel_encoder->dev_priv;
-
-	if (lvds_priv->ddc_bus)
-		psb_intel_i2c_destroy(lvds_priv->ddc_bus);
-	drm_sysfs_connector_remove(connector);
-	drm_connector_cleanup(connector);
-	kfree(connector);
-=======
 void psb_intel_lvds_destroy(struct drm_connector *connector)
 {
 	struct gma_connector *gma_connector = to_gma_connector(connector);
@@ -722,7 +519,6 @@ void psb_intel_lvds_destroy(struct drm_connector *connector)
 	gma_i2c_destroy(ddc_bus);
 	drm_connector_cleanup(connector);
 	kfree(gma_connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int psb_intel_lvds_set_property(struct drm_connector *connector,
@@ -735,12 +531,7 @@ int psb_intel_lvds_set_property(struct drm_connector *connector,
 		return -1;
 
 	if (!strcmp(property->name, "scaling mode")) {
-<<<<<<< HEAD
-		struct psb_intel_crtc *crtc =
-					to_psb_intel_crtc(encoder->crtc);
-=======
 		struct gma_crtc *crtc = to_gma_crtc(encoder->crtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t curval;
 
 		if (!crtc)
@@ -757,11 +548,7 @@ int psb_intel_lvds_set_property(struct drm_connector *connector,
 			goto set_prop_error;
 		}
 
-<<<<<<< HEAD
-		if (drm_connector_property_get_value(connector,
-=======
 		if (drm_object_property_get_value(&connector->base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     property,
 						     &curval))
 			goto set_prop_error;
@@ -769,11 +556,7 @@ int psb_intel_lvds_set_property(struct drm_connector *connector,
 		if (curval == value)
 			goto set_prop_done;
 
-<<<<<<< HEAD
-		if (drm_connector_property_set_value(connector,
-=======
 		if (drm_object_property_set_value(&connector->base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							property,
 							value))
 			goto set_prop_error;
@@ -784,29 +567,6 @@ int psb_intel_lvds_set_property(struct drm_connector *connector,
 						      &crtc->saved_mode,
 						      encoder->crtc->x,
 						      encoder->crtc->y,
-<<<<<<< HEAD
-						      encoder->crtc->fb))
-				goto set_prop_error;
-		}
-	} else if (!strcmp(property->name, "backlight")) {
-		if (drm_connector_property_set_value(connector,
-							property,
-							value))
-			goto set_prop_error;
-		else {
-#ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
-			struct drm_psb_private *devp =
-						encoder->dev->dev_private;
-			struct backlight_device *bd = devp->backlight_device;
-			if (bd) {
-				bd->props.brightness = value;
-				backlight_update_status(bd);
-			}
-#endif
-		}
-	} else if (!strcmp(property->name, "DPMS")) {
-		struct drm_encoder_helper_funcs *hfuncs
-=======
 						      encoder->crtc->primary->fb))
 				goto set_prop_error;
 		}
@@ -819,7 +579,6 @@ int psb_intel_lvds_set_property(struct drm_connector *connector,
                         gma_backlight_set(encoder->dev, value);
 	} else if (!strcmp(property->name, "DPMS")) {
 		const struct drm_encoder_helper_funcs *hfuncs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						= encoder->helper_private;
 		hfuncs->dpms(encoder, value);
 	}
@@ -842,48 +601,20 @@ const struct drm_connector_helper_funcs
 				psb_intel_lvds_connector_helper_funcs = {
 	.get_modes = psb_intel_lvds_get_modes,
 	.mode_valid = psb_intel_lvds_mode_valid,
-<<<<<<< HEAD
-	.best_encoder = psb_intel_best_encoder,
-=======
 	.best_encoder = gma_best_encoder,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct drm_connector_funcs psb_intel_lvds_connector_funcs = {
 	.dpms = drm_helper_connector_dpms,
-<<<<<<< HEAD
-	.save = psb_intel_lvds_save,
-	.restore = psb_intel_lvds_restore,
-	.detect = psb_intel_lvds_detect,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.set_property = psb_intel_lvds_set_property,
 	.destroy = psb_intel_lvds_destroy,
 };
 
-<<<<<<< HEAD
-
-static void psb_intel_lvds_enc_destroy(struct drm_encoder *encoder)
-{
-	drm_encoder_cleanup(encoder);
-}
-
-const struct drm_encoder_funcs psb_intel_lvds_enc_funcs = {
-	.destroy = psb_intel_lvds_enc_destroy,
-};
-
-
-
-/**
- * psb_intel_lvds_init - setup LVDS connectors on this device
- * @dev: drm device
-=======
 /**
  * psb_intel_lvds_init - setup LVDS connectors on this device
  * @dev: drm device
  * @mode_dev: mode device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Create the connector, register the LVDS DDC bus, and try to figure out what
  * modes we can display on the LVDS panel (if present).
@@ -891,36 +622,13 @@ const struct drm_encoder_funcs psb_intel_lvds_enc_funcs = {
 void psb_intel_lvds_init(struct drm_device *dev,
 			 struct psb_intel_mode_device *mode_dev)
 {
-<<<<<<< HEAD
-	struct psb_intel_encoder *psb_intel_encoder;
-	struct psb_intel_connector *psb_intel_connector;
-=======
 	struct gma_encoder *gma_encoder;
 	struct gma_connector *gma_connector;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_lvds_priv *lvds_priv;
 	struct drm_connector *connector;
 	struct drm_encoder *encoder;
 	struct drm_display_mode *scan;	/* *modes, *bios_mode; */
 	struct drm_crtc *crtc;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	u32 lvds;
-	int pipe;
-
-	psb_intel_encoder =
-			kzalloc(sizeof(struct psb_intel_encoder), GFP_KERNEL);
-	if (!psb_intel_encoder) {
-		dev_err(dev->dev, "psb_intel_encoder allocation error\n");
-		return;
-	}
-
-	psb_intel_connector =
-		kzalloc(sizeof(struct psb_intel_connector), GFP_KERNEL);
-	if (!psb_intel_connector) {
-		dev_err(dev->dev, "psb_intel_connector allocation error\n");
-		goto failed_encoder;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct gma_i2c_chan *ddc_bus;
 	u32 lvds;
@@ -938,32 +646,11 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	if (!gma_connector) {
 		dev_err(dev->dev, "gma_connector allocation error\n");
 		goto err_free_encoder;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lvds_priv = kzalloc(sizeof(struct psb_intel_lvds_priv), GFP_KERNEL);
 	if (!lvds_priv) {
 		dev_err(dev->dev, "LVDS private allocation error\n");
-<<<<<<< HEAD
-		goto failed_connector;
-	}
-
-	psb_intel_encoder->dev_priv = lvds_priv;
-
-	connector = &psb_intel_connector->base;
-	encoder = &psb_intel_encoder->base;
-	drm_connector_init(dev, connector,
-			   &psb_intel_lvds_connector_funcs,
-			   DRM_MODE_CONNECTOR_LVDS);
-
-	drm_encoder_init(dev, encoder,
-			 &psb_intel_lvds_enc_funcs,
-			 DRM_MODE_ENCODER_LVDS);
-
-	psb_intel_connector_attach_encoder(psb_intel_connector,
-					   psb_intel_encoder);
-	psb_intel_encoder->type = INTEL_OUTPUT_LVDS;
-=======
 		goto err_free_connector;
 	}
 
@@ -994,7 +681,6 @@ void psb_intel_lvds_init(struct drm_device *dev,
 
 	gma_connector_attach_encoder(gma_connector, gma_encoder);
 	gma_encoder->type = INTEL_OUTPUT_LVDS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	drm_encoder_helper_add(encoder, &psb_intel_lvds_helper_funcs);
 	drm_connector_helper_add(connector,
@@ -1004,17 +690,10 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	connector->doublescan_allowed = false;
 
 	/*Attach connector properties*/
-<<<<<<< HEAD
-	drm_connector_attach_property(connector,
-				      dev->mode_config.scaling_mode_property,
-				      DRM_MODE_SCALE_FULLSCREEN);
-	drm_connector_attach_property(connector,
-=======
 	drm_object_attach_property(&connector->base,
 				      dev->mode_config.scaling_mode_property,
 				      DRM_MODE_SCALE_FULLSCREEN);
 	drm_object_attach_property(&connector->base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      dev_priv->backlight_property,
 				      BRIGHTNESS_MAX_LEVEL);
 
@@ -1022,19 +701,11 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	 * Set up I2C bus
 	 * FIXME: distroy i2c_bus when exit
 	 */
-<<<<<<< HEAD
-	lvds_priv->i2c_bus = psb_intel_i2c_create(dev, GPIOB, "LVDSBLC_B");
-	if (!lvds_priv->i2c_bus) {
-		dev_printk(KERN_ERR,
-			&dev->pdev->dev, "I2C bus registration failed.\n");
-		goto failed_blc_i2c;
-=======
 	lvds_priv->i2c_bus = gma_i2c_create(dev, GPIOB, "LVDSBLC_B");
 	if (!lvds_priv->i2c_bus) {
 		dev_printk(KERN_ERR,
 			dev->dev, "I2C bus registration failed.\n");
 		goto err_encoder_cleanup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lvds_priv->i2c_bus->slave_addr = 0x2C;
 	dev_priv->lvds_i2c_bus =  lvds_priv->i2c_bus;
@@ -1049,52 +720,23 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	 *    if closed, act like it's not there for now
 	 */
 
-<<<<<<< HEAD
-	/* Set up the DDC bus. */
-	lvds_priv->ddc_bus = psb_intel_i2c_create(dev, GPIOC, "LVDSDDC_C");
-	if (!lvds_priv->ddc_bus) {
-		dev_printk(KERN_ERR, &dev->pdev->dev,
-			   "DDC bus registration " "failed.\n");
-		goto failed_ddc;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Attempt to get the fixed panel mode from DDC.  Assume that the
 	 * preferred mode is the right one.
 	 */
-<<<<<<< HEAD
-	psb_intel_ddc_get_modes(connector, &lvds_priv->ddc_bus->adapter);
-=======
 	mutex_lock(&dev->mode_config.mutex);
 	psb_intel_ddc_get_modes(connector, &ddc_bus->base);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(scan, &connector->probed_modes, head) {
 		if (scan->type & DRM_MODE_TYPE_PREFERRED) {
 			mode_dev->panel_fixed_mode =
 			    drm_mode_duplicate(dev, scan);
-<<<<<<< HEAD
-=======
 			DRM_DEBUG_KMS("Using mode from DDC\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;	/* FIXME: check for quirks */
 		}
 	}
 
 	/* Failed to get EDID, what about VBT? do we need this? */
-<<<<<<< HEAD
-	if (mode_dev->vbt_mode)
-		mode_dev->panel_fixed_mode =
-		    drm_mode_duplicate(dev, mode_dev->vbt_mode);
-
-	if (!mode_dev->panel_fixed_mode)
-		if (dev_priv->lfp_lvds_vbt_mode)
-			mode_dev->panel_fixed_mode =
-				drm_mode_duplicate(dev,
-					dev_priv->lfp_lvds_vbt_mode);
-=======
 	if (dev_priv->lfp_lvds_vbt_mode) {
 		mode_dev->panel_fixed_mode =
 			drm_mode_duplicate(dev, dev_priv->lfp_lvds_vbt_mode);
@@ -1106,7 +748,6 @@ void psb_intel_lvds_init(struct drm_device *dev,
 			goto out;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we didn't get EDID, try checking if the panel is already turned
@@ -1123,10 +764,7 @@ void psb_intel_lvds_init(struct drm_device *dev,
 		if (mode_dev->panel_fixed_mode) {
 			mode_dev->panel_fixed_mode->type |=
 			    DRM_MODE_TYPE_PREFERRED;
-<<<<<<< HEAD
-=======
 			DRM_DEBUG_KMS("Using pre-programmed mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;	/* FIXME: check for quirks */
 		}
 	}
@@ -1134,11 +772,7 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	/* If we still don't have a mode after all that, give up. */
 	if (!mode_dev->panel_fixed_mode) {
 		dev_err(dev->dev, "Found no modes on the lvds, ignoring the LVDS\n");
-<<<<<<< HEAD
-		goto failed_find;
-=======
 		goto err_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1146,24 +780,6 @@ void psb_intel_lvds_init(struct drm_device *dev,
 	 * actually having one.
 	 */
 out:
-<<<<<<< HEAD
-	drm_sysfs_connector_add(connector);
-	return;
-
-failed_find:
-	if (lvds_priv->ddc_bus)
-		psb_intel_i2c_destroy(lvds_priv->ddc_bus);
-failed_ddc:
-	if (lvds_priv->i2c_bus)
-		psb_intel_i2c_destroy(lvds_priv->i2c_bus);
-failed_blc_i2c:
-	drm_encoder_cleanup(encoder);
-	drm_connector_cleanup(connector);
-failed_connector:
-	kfree(psb_intel_connector);
-failed_encoder:
-	kfree(psb_intel_encoder);
-=======
 	mutex_unlock(&dev->mode_config.mutex);
 	return;
 
@@ -1182,6 +798,5 @@ err_free_connector:
 	kfree(gma_connector);
 err_free_encoder:
 	kfree(gma_encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

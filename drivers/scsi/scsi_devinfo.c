@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/blkdev.h>
 #include <linux/init.h>
@@ -25,11 +22,7 @@ struct scsi_dev_info_list {
 	struct list_head dev_info_list;
 	char vendor[8];
 	char model[16];
-<<<<<<< HEAD
-	unsigned flags;
-=======
 	blist_flags_t flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned compatible; /* for use with scsi_static_device_list entries */
 };
 
@@ -41,12 +34,7 @@ struct scsi_dev_info_list_table {
 };
 
 
-<<<<<<< HEAD
-static const char spaces[] = "                "; /* 16 of them */
-static unsigned scsi_default_dev_flags;
-=======
 static blist_flags_t scsi_default_dev_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(scsi_dev_info_list);
 static char scsi_dev_flags[256];
 
@@ -63,11 +51,7 @@ static struct {
 	char *vendor;
 	char *model;
 	char *revision;	/* revision known to be bad, unused */
-<<<<<<< HEAD
-	unsigned flags;
-=======
 	blist_flags_t flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } scsi_static_device_list[] __initdata = {
 	/*
 	 * The following devices are known not to tolerate a lun != 0 scan
@@ -124,13 +108,8 @@ static struct {
 	 * seagate controller, which causes SCSI code to reset bus.
 	 */
 	{"HP", "C1750A", "3226", BLIST_NOLUN},		/* scanjet iic */
-<<<<<<< HEAD
-	{"HP", "C1790A", "", BLIST_NOLUN},		/* scanjet iip */
-	{"HP", "C2500A", "", BLIST_NOLUN},		/* scanjet iicx */
-=======
 	{"HP", "C1790A", NULL, BLIST_NOLUN},		/* scanjet iip */
 	{"HP", "C2500A", NULL, BLIST_NOLUN},		/* scanjet iicx */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"MEDIAVIS", "CDR-H93MV", "1.31", BLIST_NOLUN},	/* locks up */
 	{"MICROTEK", "ScanMaker II", "5.61", BLIST_NOLUN},	/* responds to all lun */
 	{"MITSUMI", "CD-R CR-2201CS", "6119", BLIST_NOLUN},	/* locks up */
@@ -140,11 +119,7 @@ static struct {
 	{"QUANTUM", "FIREBALL ST4.3S", "0F0C", BLIST_NOLUN},	/* locks up */
 	{"RELISYS", "Scorpio", NULL, BLIST_NOLUN},	/* responds to all lun */
 	{"SANKYO", "CP525", "6.64", BLIST_NOLUN},	/* causes failed REQ SENSE, extra reset */
-<<<<<<< HEAD
-	{"TEXEL", "CD-ROM", "1.06", BLIST_NOLUN},
-=======
 	{"TEXEL", "CD-ROM", "1.06", BLIST_NOLUN | BLIST_BORKEN},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"transtec", "T5008", "0001", BLIST_NOREPORTLUN },
 	{"YAMAHA", "CDR100", "1.00", BLIST_NOLUN},	/* locks up */
 	{"YAMAHA", "CDR102", "1.00", BLIST_NOLUN},	/* locks up */
@@ -159,10 +134,7 @@ static struct {
 	{"3PARdata", "VV", NULL, BLIST_REPORTLUN2},
 	{"ADAPTEC", "AACRAID", NULL, BLIST_FORCELUN},
 	{"ADAPTEC", "Adaptec 5400S", NULL, BLIST_FORCELUN},
-<<<<<<< HEAD
-=======
 	{"AIX", "VDASD", NULL, BLIST_TRY_VPD_PAGES | BLIST_NO_VPD_SIZE},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"AFT PRO", "-IX CF", "0.0>", BLIST_FORCELUN},
 	{"BELKIN", "USB 2 HS-CF", "1.95",  BLIST_FORCELUN | BLIST_INQUIRY_36},
 	{"BROWNIE", "1200U3P", NULL, BLIST_NOREPORTLUN},
@@ -186,39 +158,16 @@ static struct {
 	{"DELL", "PSEUDO DEVICE .", NULL, BLIST_SPARSELUN},	/* Dell PV 530F */
 	{"DELL", "PV530F", NULL, BLIST_SPARSELUN},
 	{"DELL", "PERCRAID", NULL, BLIST_FORCELUN},
-<<<<<<< HEAD
-	{"DGC", "RAID", NULL, BLIST_SPARSELUN},	/* Dell PV 650F, storage on LUN 0 */
-	{"DGC", "DISK", NULL, BLIST_SPARSELUN},	/* Dell PV 650F, no storage on LUN 0 */
-	{"EMC",  "Invista", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"EMC", "SYMMETRIX", NULL, BLIST_SPARSELUN | BLIST_LARGELUN | BLIST_FORCELUN},
-=======
 	{"DGC", "RAID", NULL, BLIST_SPARSELUN},	/* EMC CLARiiON, storage on LUN 0 */
 	{"DGC", "DISK", NULL, BLIST_SPARSELUN},	/* EMC CLARiiON, no storage on LUN 0 */
 	{"EMC",  "Invista", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
 	{"EMC", "SYMMETRIX", NULL, BLIST_SPARSELUN | BLIST_LARGELUN |
 	 BLIST_REPORTLUN2 | BLIST_RETRY_ITF},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"EMULEX", "MD21/S2     ESDI", NULL, BLIST_SINGLELUN},
 	{"easyRAID", "16P", NULL, BLIST_NOREPORTLUN},
 	{"easyRAID", "X6P", NULL, BLIST_NOREPORTLUN},
 	{"easyRAID", "F8", NULL, BLIST_NOREPORTLUN},
 	{"FSC", "CentricStor", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-<<<<<<< HEAD
-	{"Generic", "USB SD Reader", "1.00", BLIST_FORCELUN | BLIST_INQUIRY_36},
-	{"Generic", "USB Storage-SMC", "0180", BLIST_FORCELUN | BLIST_INQUIRY_36},
-	{"Generic", "USB Storage-SMC", "0207", BLIST_FORCELUN | BLIST_INQUIRY_36},
-	{"HITACHI", "DF400", "*", BLIST_REPORTLUN2},
-	{"HITACHI", "DF500", "*", BLIST_REPORTLUN2},
-	{"HITACHI", "DISK-SUBSYSTEM", "*", BLIST_REPORTLUN2},
-	{"HITACHI", "OPEN-", "*", BLIST_REPORTLUN2},
-	{"HITACHI", "OP-C-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HITACHI", "3380-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HITACHI", "3390-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HITACHI", "6586-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HITACHI", "6588-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "A6189A", NULL, BLIST_SPARSELUN | BLIST_LARGELUN},	/* HP VA7400 */
-	{"HP", "OPEN-", "*", BLIST_REPORTLUN2}, /* HP XP Arrays */
-=======
 	{"FUJITSU", "ETERNUS_DXM", "*", BLIST_RETRY_ASC_C1},
 	{"Generic", "USB SD Reader", "1.00", BLIST_FORCELUN | BLIST_INQUIRY_36},
 	{"Generic", "USB Storage-SMC", NULL, BLIST_FORCELUN | BLIST_INQUIRY_36}, /* FW: 0180 and 0207 */
@@ -230,56 +179,34 @@ static struct {
 	{"HITACHI", "OPEN-", "*", BLIST_REPORTLUN2 | BLIST_TRY_VPD_PAGES},
 	{"HP", "A6189A", NULL, BLIST_SPARSELUN | BLIST_LARGELUN},	/* HP VA7400 */
 	{"HP", "OPEN-", "*", BLIST_REPORTLUN2 | BLIST_TRY_VPD_PAGES}, /* HP XP Arrays */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"HP", "NetRAID-4M", NULL, BLIST_FORCELUN},
 	{"HP", "HSV100", NULL, BLIST_REPORTLUN2 | BLIST_NOSTARTONADD},
 	{"HP", "C1557A", NULL, BLIST_FORCELUN},
 	{"HP", "C3323-300", "4269", BLIST_NOTQ},
 	{"HP", "C5713A", NULL, BLIST_NOREPORTLUN},
-<<<<<<< HEAD
-	{"HP", "DF400", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "DF500", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "DF600", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "OP-C-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "3380-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "3390-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "6586-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"HP", "6588-", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-	{"IBM", "AuSaV1S2", NULL, BLIST_FORCELUN},
-	{"IBM", "ProFibre 4000R", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
-=======
 	{"HP", "DISK-SUBSYSTEM", "*", BLIST_REPORTLUN2},
 	{"HPE", "OPEN-", "*", BLIST_REPORTLUN2 | BLIST_TRY_VPD_PAGES},
 	{"IBM", "AuSaV1S2", NULL, BLIST_FORCELUN},
 	{"IBM", "ProFibre 4000R", "*", BLIST_SPARSELUN | BLIST_LARGELUN},
 	{"IBM", "2076", NULL, BLIST_NO_VPD_SIZE},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"IBM", "2105", NULL, BLIST_RETRY_HWERROR},
 	{"iomega", "jaz 1GB", "J.86", BLIST_NOTQ | BLIST_NOLUN},
 	{"IOMEGA", "ZIP", NULL, BLIST_NOTQ | BLIST_NOLUN},
 	{"IOMEGA", "Io20S         *F", NULL, BLIST_KEY},
 	{"INSITE", "Floptical   F*8I", NULL, BLIST_KEY},
 	{"INSITE", "I325VM", NULL, BLIST_KEY},
-<<<<<<< HEAD
-	{"iRiver", "iFP Mass Driver", NULL, BLIST_NOT_LOCKABLE | BLIST_INQUIRY_36},
-	{"LASOUND", "CDX7405", "3.10", BLIST_MAX5LUN | BLIST_SINGLELUN},
-=======
 	{"Intel", "Multi-Flex", NULL, BLIST_NO_RSOC},
 	{"iRiver", "iFP Mass Driver", NULL, BLIST_NOT_LOCKABLE | BLIST_INQUIRY_36},
 	{"LASOUND", "CDX7405", "3.10", BLIST_MAX5LUN | BLIST_SINGLELUN},
 	{"Marvell", "Console", NULL, BLIST_SKIP_VPD_PAGES},
 	{"Marvell", "91xx Config", "1.01", BLIST_SKIP_VPD_PAGES},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"MATSHITA", "PD-1", NULL, BLIST_FORCELUN | BLIST_SINGLELUN},
 	{"MATSHITA", "DMC-LC5", NULL, BLIST_NOT_LOCKABLE | BLIST_INQUIRY_36},
 	{"MATSHITA", "DMC-LC40", NULL, BLIST_NOT_LOCKABLE | BLIST_INQUIRY_36},
 	{"Medion", "Flash XL  MMC/SD", "2.6D", BLIST_FORCELUN},
 	{"MegaRAID", "LD", NULL, BLIST_FORCELUN},
 	{"MICROP", "4110", NULL, BLIST_NOTQ},
-<<<<<<< HEAD
-=======
 	{"MSFT", "Virtual HD", NULL, BLIST_MAX_1024 | BLIST_NO_RSOC},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"MYLEX", "DACARMRB", "*", BLIST_REPORTLUN2},
 	{"nCipher", "Fastness Crypto", NULL, BLIST_FORCELUN},
 	{"NAKAMICH", "MJ-4.8S", NULL, BLIST_FORCELUN | BLIST_SINGLELUN},
@@ -292,34 +219,21 @@ static struct {
 	{"PIONEER", "CD-ROM DRM-602X", NULL, BLIST_FORCELUN | BLIST_SINGLELUN},
 	{"PIONEER", "CD-ROM DRM-604X", NULL, BLIST_FORCELUN | BLIST_SINGLELUN},
 	{"PIONEER", "CD-ROM DRM-624X", NULL, BLIST_FORCELUN | BLIST_SINGLELUN},
-<<<<<<< HEAD
-	{"Promise", "", NULL, BLIST_SPARSELUN},
-	{"QNAP", "iSCSI Storage", NULL, BLIST_MAX_1024},
-=======
 	{"Promise", "VTrak E610f", NULL, BLIST_SPARSELUN | BLIST_NO_RSOC},
 	{"Promise", "", NULL, BLIST_SPARSELUN},
 	{"QEMU", "QEMU CD-ROM", NULL, BLIST_SKIP_VPD_PAGES},
 	{"QNAP", "iSCSI Storage", NULL, BLIST_MAX_1024},
 	{"SYNOLOGY", "iSCSI Storage", NULL, BLIST_MAX_1024},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"QUANTUM", "XP34301", "1071", BLIST_NOTQ},
 	{"REGAL", "CDC-4X", NULL, BLIST_MAX5LUN | BLIST_SINGLELUN},
 	{"SanDisk", "ImageMate CF-SD1", NULL, BLIST_FORCELUN},
 	{"SEAGATE", "ST34555N", "0930", BLIST_NOTQ},	/* Chokes on tagged INQUIRY */
 	{"SEAGATE", "ST3390N", "9546", BLIST_NOTQ},
-<<<<<<< HEAD
-=======
 	{"SEAGATE", "ST900MM0006", NULL, BLIST_SKIP_VPD_PAGES},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"SGI", "RAID3", "*", BLIST_SPARSELUN},
 	{"SGI", "RAID5", "*", BLIST_SPARSELUN},
 	{"SGI", "TP9100", "*", BLIST_REPORTLUN2},
 	{"SGI", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
-<<<<<<< HEAD
-	{"IBM", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
-	{"SUN", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
-	{"DELL", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
-=======
 	{"SKhynix", "H28U74301AMR", NULL, BLIST_SKIP_VPD_PAGES},
 	{"IBM", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
 	{"SUN", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
@@ -332,17 +246,12 @@ static struct {
 	{"FUJITSU", "Universal Xport", "*", BLIST_NO_ULD_ATTACH},
 	{"SanDisk", "Cruzer Blade", NULL, BLIST_TRY_VPD_PAGES |
 		BLIST_INQUIRY_36},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"SMSC", "USB 2 HS-CF", NULL, BLIST_SPARSELUN | BLIST_INQUIRY_36},
 	{"SONY", "CD-ROM CDU-8001", NULL, BLIST_BORKEN},
 	{"SONY", "TSL", NULL, BLIST_FORCELUN},		/* DDS3 & DDS4 autoloaders */
 	{"ST650211", "CF", NULL, BLIST_RETRY_HWERROR},
 	{"SUN", "T300", "*", BLIST_SPARSELUN},
 	{"SUN", "T4", "*", BLIST_SPARSELUN},
-<<<<<<< HEAD
-	{"TEXEL", "CD-ROM", "1.06", BLIST_BORKEN},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"Tornado-", "F4", "*", BLIST_NOREPORTLUN},
 	{"TOSHIBA", "CDROM", NULL, BLIST_ISROM},
 	{"TOSHIBA", "CD-ROM", NULL, BLIST_ISROM},
@@ -384,22 +293,6 @@ static void scsi_strcpy_devinfo(char *name, char *to, size_t to_length,
 	size_t from_length;
 
 	from_length = strlen(from);
-<<<<<<< HEAD
-	strncpy(to, from, min(to_length, from_length));
-	if (from_length < to_length) {
-		if (compatible) {
-			/*
-			 * NUL terminate the string if it is short.
-			 */
-			to[from_length] = '\0';
-		} else {
-			/* 
-			 * space pad the string if it is short. 
-			 */
-			strncpy(&to[from_length], spaces,
-				to_length - from_length);
-		}
-=======
 	/* This zero-pads the destination */
 	strncpy(to, from, to_length);
 	if (from_length < to_length && !compatible) {
@@ -407,7 +300,6 @@ static void scsi_strcpy_devinfo(char *name, char *to, size_t to_length,
 		 * space pad the string if it is short.
 		 */
 		memset(&to[from_length], ' ', to_length - from_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (from_length > to_length)
 		 printk(KERN_WARNING "%s: %s string '%s' is too long\n",
@@ -423,26 +315,15 @@ static void scsi_strcpy_devinfo(char *name, char *to, size_t to_length,
  * @flags:	if strflags NULL, use this flag value
  *
  * Description:
-<<<<<<< HEAD
- * 	Create and add one dev_info entry for @vendor, @model, @strflags or
- * 	@flag. If @compatible, add to the tail of the list, do not space
- * 	pad, and set devinfo->compatible. The scsi_static_device_list entries
- * 	are added with @compatible 1 and @clfags NULL.
-=======
  *	Create and add one dev_info entry for @vendor, @model, @strflags or
  *	@flag. If @compatible, add to the tail of the list, do not space
  *	pad, and set devinfo->compatible. The scsi_static_device_list entries
  *	are added with @compatible 1 and @clfags NULL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 OK, -error on failure.
  **/
 static int scsi_dev_info_list_add(int compatible, char *vendor, char *model,
-<<<<<<< HEAD
-			    char *strflags, int flags)
-=======
 			    char *strflags, blist_flags_t flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return scsi_dev_info_list_add_keyed(compatible, vendor, model,
 					    strflags, flags,
@@ -459,29 +340,17 @@ static int scsi_dev_info_list_add(int compatible, char *vendor, char *model,
  * @key:	specify list to use
  *
  * Description:
-<<<<<<< HEAD
- * 	Create and add one dev_info entry for @vendor, @model,
- * 	@strflags or @flag in list specified by @key. If @compatible,
- * 	add to the tail of the list, do not space pad, and set
- * 	devinfo->compatible. The scsi_static_device_list entries are
- * 	added with @compatible 1 and @clfags NULL.
-=======
  *	Create and add one dev_info entry for @vendor, @model,
  *	@strflags or @flag in list specified by @key. If @compatible,
  *	add to the tail of the list, do not space pad, and set
  *	devinfo->compatible. The scsi_static_device_list entries are
  *	added with @compatible 1 and @clfags NULL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 OK, -error on failure.
  **/
 int scsi_dev_info_list_add_keyed(int compatible, char *vendor, char *model,
-<<<<<<< HEAD
-				 char *strflags, int flags, int key)
-=======
 				 char *strflags, blist_flags_t flags,
 				 enum scsi_devinfo_key key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_dev_info_list *devinfo;
 	struct scsi_dev_info_list_table *devinfo_table =
@@ -501,13 +370,6 @@ int scsi_dev_info_list_add_keyed(int compatible, char *vendor, char *model,
 	scsi_strcpy_devinfo("model", devinfo->model, sizeof(devinfo->model),
 			    model, compatible);
 
-<<<<<<< HEAD
-	if (strflags)
-		devinfo->flags = simple_strtoul(strflags, NULL, 0);
-	else
-		devinfo->flags = flags;
-
-=======
 	if (strflags) {
 		unsigned long long val;
 		int ret = kstrtoull(strflags, 0, &val);
@@ -525,7 +387,6 @@ int scsi_dev_info_list_add_keyed(int compatible, char *vendor, char *model,
 		return -EINVAL;
 	}
 	devinfo->flags = flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devinfo->compatible = compatible;
 
 	if (compatible)
@@ -540,8 +401,6 @@ int scsi_dev_info_list_add_keyed(int compatible, char *vendor, char *model,
 EXPORT_SYMBOL(scsi_dev_info_list_add_keyed);
 
 /**
-<<<<<<< HEAD
-=======
  * scsi_dev_info_list_find - find a matching dev_info list entry.
  * @vendor:	full vendor string
  * @model:	full model (product) string
@@ -626,90 +485,12 @@ static struct scsi_dev_info_list *scsi_dev_info_list_find(const char *vendor,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scsi_dev_info_list_del_keyed - remove one dev_info list entry.
  * @vendor:	vendor string
  * @model:	model (product) string
  * @key:	specify list to use
  *
  * Description:
-<<<<<<< HEAD
- * 	Remove and destroy one dev_info entry for @vendor, @model
- * 	in list specified by @key.
- *
- * Returns: 0 OK, -error on failure.
- **/
-int scsi_dev_info_list_del_keyed(char *vendor, char *model, int key)
-{
-	struct scsi_dev_info_list *devinfo, *found = NULL;
-	struct scsi_dev_info_list_table *devinfo_table =
-		scsi_devinfo_lookup_by_key(key);
-
-	if (IS_ERR(devinfo_table))
-		return PTR_ERR(devinfo_table);
-
-	list_for_each_entry(devinfo, &devinfo_table->scsi_dev_info_list,
-			    dev_info_list) {
-		if (devinfo->compatible) {
-			/*
-			 * Behave like the older version of get_device_flags.
-			 */
-			size_t max;
-			/*
-			 * XXX why skip leading spaces? If an odd INQUIRY
-			 * value, that should have been part of the
-			 * scsi_static_device_list[] entry, such as "  FOO"
-			 * rather than "FOO". Since this code is already
-			 * here, and we don't know what device it is
-			 * trying to work with, leave it as-is.
-			 */
-			max = 8;	/* max length of vendor */
-			while ((max > 0) && *vendor == ' ') {
-				max--;
-				vendor++;
-			}
-			/*
-			 * XXX removing the following strlen() would be
-			 * good, using it means that for a an entry not in
-			 * the list, we scan every byte of every vendor
-			 * listed in scsi_static_device_list[], and never match
-			 * a single one (and still have to compare at
-			 * least the first byte of each vendor).
-			 */
-			if (memcmp(devinfo->vendor, vendor,
-				    min(max, strlen(devinfo->vendor))))
-				continue;
-			/*
-			 * Skip spaces again.
-			 */
-			max = 16;	/* max length of model */
-			while ((max > 0) && *model == ' ') {
-				max--;
-				model++;
-			}
-			if (memcmp(devinfo->model, model,
-				   min(max, strlen(devinfo->model))))
-				continue;
-			found = devinfo;
-		} else {
-			if (!memcmp(devinfo->vendor, vendor,
-				     sizeof(devinfo->vendor)) &&
-			     !memcmp(devinfo->model, model,
-				      sizeof(devinfo->model)))
-				found = devinfo;
-		}
-		if (found)
-			break;
-	}
-
-	if (found) {
-		list_del(&found->dev_info_list);
-		kfree(found);
-		return 0;
-	}
-
-	return -ENOENT;
-=======
  *	Remove and destroy one dev_info entry for @vendor, @model
  *	in list specified by @key.
  *
@@ -727,7 +508,6 @@ int scsi_dev_info_list_del_keyed(char *vendor, char *model,
 	list_del(&found->dev_info_list);
 	kfree(found);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(scsi_dev_info_list_del_keyed);
 
@@ -736,17 +516,10 @@ EXPORT_SYMBOL(scsi_dev_info_list_del_keyed);
  * @dev_list:	string of device flags to add
  *
  * Description:
-<<<<<<< HEAD
- * 	Parse dev_list, and add entries to the scsi_dev_info_list.
- * 	dev_list is of the form "vendor:product:flag,vendor:product:flag".
- * 	dev_list is modified via strsep. Can be called for command line
- * 	addition, for proc or mabye a sysfs interface.
-=======
  *	Parse dev_list, and add entries to the scsi_dev_info_list.
  *	dev_list is of the form "vendor:product:flag,vendor:product:flag".
  *	dev_list is modified via strsep. Can be called for command line
  *	addition, for proc or mabye a sysfs interface.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 if OK, -error on failure.
  **/
@@ -778,15 +551,9 @@ static int scsi_dev_info_list_add_str(char *dev_list)
 		if (model)
 			strflags = strsep(&next, next_check);
 		if (!model || !strflags) {
-<<<<<<< HEAD
-			printk(KERN_ERR "%s: bad dev info string '%s' '%s'"
-			       " '%s'\n", __func__, vendor, model,
-			       strflags);
-=======
 			pr_err("%s: bad dev info string '%s' '%s' '%s'\n",
 			       __func__, vendor, model ? model : "",
 			       strflags ? strflags : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = -EINVAL;
 		} else
 			res = scsi_dev_info_list_add(0 /* compatible */, vendor,
@@ -796,12 +563,8 @@ static int scsi_dev_info_list_add_str(char *dev_list)
 }
 
 /**
-<<<<<<< HEAD
- * get_device_flags - get device specific flags from the dynamic device list.
-=======
  * scsi_get_device_flags - get device specific flags from the dynamic
  *	device list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sdev:       &scsi_device to get flags for
  * @vendor:	vendor name
  * @model:	model name
@@ -812,15 +575,9 @@ static int scsi_dev_info_list_add_str(char *dev_list)
  *     matching flags value, else return the host or global default
  *     settings.  Called during scan time.
  **/
-<<<<<<< HEAD
-int scsi_get_device_flags(struct scsi_device *sdev,
-			  const unsigned char *vendor,
-			  const unsigned char *model)
-=======
 blist_flags_t scsi_get_device_flags(struct scsi_device *sdev,
 				    const unsigned char *vendor,
 				    const unsigned char *model)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return scsi_get_device_flags_keyed(sdev, vendor, model,
 					   SCSI_DEVINFO_GLOBAL);
@@ -840,73 +597,6 @@ blist_flags_t scsi_get_device_flags(struct scsi_device *sdev,
  *     flags value, else return the host or global default settings.
  *     Called during scan time.
  **/
-<<<<<<< HEAD
-int scsi_get_device_flags_keyed(struct scsi_device *sdev,
-				const unsigned char *vendor,
-				const unsigned char *model,
-				int key)
-{
-	struct scsi_dev_info_list *devinfo;
-	struct scsi_dev_info_list_table *devinfo_table;
-
-	devinfo_table = scsi_devinfo_lookup_by_key(key);
-
-	if (IS_ERR(devinfo_table))
-		return PTR_ERR(devinfo_table);
-
-	list_for_each_entry(devinfo, &devinfo_table->scsi_dev_info_list,
-			    dev_info_list) {
-		if (devinfo->compatible) {
-			/*
-			 * Behave like the older version of get_device_flags.
-			 */
-			size_t max;
-			/*
-			 * XXX why skip leading spaces? If an odd INQUIRY
-			 * value, that should have been part of the
-			 * scsi_static_device_list[] entry, such as "  FOO"
-			 * rather than "FOO". Since this code is already
-			 * here, and we don't know what device it is
-			 * trying to work with, leave it as-is.
-			 */
-			max = 8;	/* max length of vendor */
-			while ((max > 0) && *vendor == ' ') {
-				max--;
-				vendor++;
-			}
-			/*
-			 * XXX removing the following strlen() would be
-			 * good, using it means that for a an entry not in
-			 * the list, we scan every byte of every vendor
-			 * listed in scsi_static_device_list[], and never match
-			 * a single one (and still have to compare at
-			 * least the first byte of each vendor).
-			 */
-			if (memcmp(devinfo->vendor, vendor,
-				    min(max, strlen(devinfo->vendor))))
-				continue;
-			/*
-			 * Skip spaces again.
-			 */
-			max = 16;	/* max length of model */
-			while ((max > 0) && *model == ' ') {
-				max--;
-				model++;
-			}
-			if (memcmp(devinfo->model, model,
-				   min(max, strlen(devinfo->model))))
-				continue;
-			return devinfo->flags;
-		} else {
-			if (!memcmp(devinfo->vendor, vendor,
-				     sizeof(devinfo->vendor)) &&
-			     !memcmp(devinfo->model, model,
-				      sizeof(devinfo->model)))
-				return devinfo->flags;
-		}
-	}
-	/* nothing found, return nothing */
-=======
 blist_flags_t scsi_get_device_flags_keyed(struct scsi_device *sdev,
 				const unsigned char *vendor,
 				const unsigned char *model,
@@ -919,7 +609,6 @@ blist_flags_t scsi_get_device_flags_keyed(struct scsi_device *sdev,
 		return devinfo->flags;
 
 	/* key or device not found: return nothing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (key != SCSI_DEVINFO_GLOBAL)
 		return 0;
 
@@ -950,11 +639,7 @@ static int devinfo_seq_show(struct seq_file *m, void *v)
 	    devinfo_table->name)
 		seq_printf(m, "[%s]:\n", devinfo_table->name);
 
-<<<<<<< HEAD
-	seq_printf(m, "'%.8s' '%.16s' 0x%x\n",
-=======
 	seq_printf(m, "'%.8s' '%.16s' 0x%llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   devinfo->vendor, devinfo->model, devinfo->flags);
 	return 0;
 }
@@ -1020,11 +705,7 @@ static int proc_scsi_devinfo_open(struct inode *inode, struct file *file)
 	return seq_open(file, &scsi_devinfo_seq_ops);
 }
 
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * proc_scsi_dev_info_write - allow additions to scsi_dev_info_list via /proc.
  *
  * Description: Adds a black/white list entry for vendor and model with an
@@ -1061,22 +742,12 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static const struct file_operations scsi_devinfo_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= proc_scsi_devinfo_open,
-	.read		= seq_read,
-	.write		= proc_scsi_devinfo_write,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-=======
 static const struct proc_ops scsi_devinfo_proc_ops = {
 	.proc_open	= proc_scsi_devinfo_open,
 	.proc_read	= seq_read,
 	.proc_write	= proc_scsi_devinfo_write,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* CONFIG_SCSI_PROC_FS */
 
@@ -1086,15 +757,9 @@ MODULE_PARM_DESC(dev_flags,
 	 " list entries for vendor and model with an integer value of flags"
 	 " to the scsi device info list");
 
-<<<<<<< HEAD
-module_param_named(default_dev_flags, scsi_default_dev_flags, int, S_IRUGO|S_IWUSR);
-MODULE_PARM_DESC(default_dev_flags,
-		 "scsi default device flag integer value");
-=======
 module_param_named(default_dev_flags, scsi_default_dev_flags, ullong, 0644);
 MODULE_PARM_DESC(default_dev_flags,
 		 "scsi default device flag uint64_t value");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * scsi_exit_devinfo - remove /proc/scsi/device_info & the scsi_dev_info_list
@@ -1116,11 +781,7 @@ void scsi_exit_devinfo(void)
  * Adds the requested list, returns zero on success, -EEXIST if the
  * key is already registered to a list, or other error on failure.
  */
-<<<<<<< HEAD
-int scsi_dev_info_add_list(int key, const char *name)
-=======
 int scsi_dev_info_add_list(enum scsi_devinfo_key key, const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_dev_info_list_table *devinfo_table =
 		scsi_devinfo_lookup_by_key(key);
@@ -1152,11 +813,7 @@ EXPORT_SYMBOL(scsi_dev_info_add_list);
  * frees the list itself.  Returns 0 on success or -EINVAL if the key
  * can't be found.
  */
-<<<<<<< HEAD
-int scsi_dev_info_remove_list(int key)
-=======
 int scsi_dev_info_remove_list(enum scsi_devinfo_key key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *lh, *lh_next;
 	struct scsi_dev_info_list_table *devinfo_table =
@@ -1186,13 +843,8 @@ EXPORT_SYMBOL(scsi_dev_info_remove_list);
  * scsi_init_devinfo - set up the dynamic device list.
  *
  * Description:
-<<<<<<< HEAD
- * 	Add command line entries from scsi_dev_flags, then add
- * 	scsi_static_device_list entries to the scsi device info list.
-=======
  *	Add command line entries from scsi_dev_flags, then add
  *	scsi_static_device_list entries to the scsi device info list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __init scsi_init_devinfo(void)
 {
@@ -1220,11 +872,7 @@ int __init scsi_init_devinfo(void)
 	}
 
 #ifdef CONFIG_SCSI_PROC_FS
-<<<<<<< HEAD
-	p = proc_create("scsi/device_info", 0, NULL, &scsi_devinfo_proc_fops);
-=======
 	p = proc_create("scsi/device_info", 0, NULL, &scsi_devinfo_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!p) {
 		error = -ENOMEM;
 		goto out;

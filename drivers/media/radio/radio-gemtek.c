@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GemTek radio card driver
  *
@@ -19,32 +16,21 @@
  *    Various bugfixes and enhancements by Russell Kroll <rkroll@exploits.org>
  *
  * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
-<<<<<<< HEAD
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@infradead.org>
-=======
  * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: this card seems to swap the left and right audio channels!
  *
  * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>	/* Modules 			*/
-=======
 #include <linux/module.h>	/* Modules			*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>		/* Initdata			*/
 #include <linux/ioport.h>	/* request_region		*/
 #include <linux/delay.h>	/* udelay			*/
 #include <linux/videodev2.h>	/* kernel radio structs		*/
 #include <linux/mutex.h>
 #include <linux/io.h>		/* outb, outb_p			*/
-<<<<<<< HEAD
-=======
 #include <linux/pnp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-device.h>
@@ -82,21 +68,10 @@ module_param(probe, bool, 0444);
 MODULE_PARM_DESC(probe, "Enable automatic device probing.");
 
 module_param(hardmute, bool, 0644);
-<<<<<<< HEAD
-MODULE_PARM_DESC(hardmute, "Enable 'hard muting' by shutting down PLL, may "
-	 "reduce static noise.");
-
-module_param_array(io, int, NULL, 0444);
-MODULE_PARM_DESC(io, "Force I/O ports for the GemTek Radio card if automatic "
-	 "probing is disabled or fails. The most common I/O ports are: 0x20c "
-	 "0x30c, 0x24c or 0x34c (0x20c, 0x248 and 0x28c have been reported to "
-	 "work for the combined sound/radiocard).");
-=======
 MODULE_PARM_DESC(hardmute, "Enable 'hard muting' by shutting down PLL, may reduce static noise.");
 
 module_param_array(io, int, NULL, 0444);
 MODULE_PARM_DESC(io, "Force I/O ports for the GemTek Radio card if automatic probing is disabled or fails. The most common I/O ports are: 0x20c 0x30c, 0x24c or 0x34c (0x20c, 0x248 and 0x28c have been reported to work for the combined sound/radiocard).");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(radio_nr, int, NULL, 0444);
 MODULE_PARM_DESC(radio_nr, "Radio device numbers");
@@ -128,15 +103,9 @@ struct gemtek {
 	u32 bu2614data;
 };
 
-<<<<<<< HEAD
-#define BU2614_FREQ_BITS 	16 /* D0..D15, Frequency data		*/
-#define BU2614_PORT_BITS	3 /* P0..P2, Output port control data	*/
-#define BU2614_VOID_BITS	4 /* unused 				*/
-=======
 #define BU2614_FREQ_BITS	16 /* D0..D15, Frequency data		*/
 #define BU2614_PORT_BITS	3 /* P0..P2, Output port control data	*/
 #define BU2614_VOID_BITS	4 /* unused				*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BU2614_FMES_BITS	1 /* CT, Frequency measurement beginning data */
 #define BU2614_STDF_BITS	3 /* R0..R2, Standard frequency data	*/
 #define BU2614_SWIN_BITS	1 /* S, Switch between FMIN / AMIN	*/
@@ -145,11 +114,7 @@ struct gemtek {
 #define BU2614_FMUN_BITS	1 /* GT, Frequency measurement time & unlock */
 #define BU2614_TEST_BITS	1 /* TS, Test data is input		*/
 
-<<<<<<< HEAD
-#define BU2614_FREQ_SHIFT 	0
-=======
 #define BU2614_FREQ_SHIFT	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BU2614_PORT_SHIFT	(BU2614_FREQ_BITS + BU2614_FREQ_SHIFT)
 #define BU2614_VOID_SHIFT	(BU2614_PORT_BITS + BU2614_PORT_SHIFT)
 #define BU2614_FMES_SHIFT	(BU2614_VOID_BITS + BU2614_VOID_SHIFT)
@@ -160,11 +125,7 @@ struct gemtek {
 #define BU2614_FMUN_SHIFT	(BU2614_VOID2_BITS + BU2614_VOID2_SHIFT)
 #define BU2614_TEST_SHIFT	(BU2614_FMUN_BITS + BU2614_FMUN_SHIFT)
 
-<<<<<<< HEAD
-#define MKMASK(field)	(((1<<BU2614_##field##_BITS) - 1) << \
-=======
 #define MKMASK(field)	(((1UL<<BU2614_##field##_BITS) - 1) << \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BU2614_##field##_SHIFT)
 #define BU2614_PORT_MASK	MKMASK(PORT)
 #define BU2614_FREQ_MASK	MKMASK(FREQ)
@@ -320,8 +281,6 @@ static const struct radio_isa_ops gemtek_ops = {
 
 static const int gemtek_ioports[] = { 0x20c, 0x30c, 0x24c, 0x34c, 0x248, 0x28c };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PNP
 static const struct pnp_device_id gemtek_pnp_devices[] = {
 	/* AOpen FX-3D/Pro Radio */
@@ -332,7 +291,6 @@ static const struct pnp_device_id gemtek_pnp_devices[] = {
 MODULE_DEVICE_TABLE(pnp, gemtek_pnp_devices);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct radio_isa_driver gemtek_driver = {
 	.driver = {
 		.match		= radio_isa_match,
@@ -342,8 +300,6 @@ static struct radio_isa_driver gemtek_driver = {
 			.name	= "radio-gemtek",
 		},
 	},
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PNP
 	.pnp_driver = {
 		.name		= "radio-gemtek",
@@ -352,7 +308,6 @@ static struct radio_isa_driver gemtek_driver = {
 		.remove		= radio_isa_pnp_remove,
 	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.io_params = io,
 	.radio_nr_params = radio_nr,
 	.io_ports = gemtek_ioports,
@@ -366,25 +321,18 @@ static struct radio_isa_driver gemtek_driver = {
 static int __init gemtek_init(void)
 {
 	gemtek_driver.probe = probe;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PNP
 	pnp_register_driver(&gemtek_driver.pnp_driver);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return isa_register_driver(&gemtek_driver.driver, GEMTEK_MAX);
 }
 
 static void __exit gemtek_exit(void)
 {
-<<<<<<< HEAD
-	hardmute = 1;	/* Turn off PLL */
-=======
 	hardmute = true;	/* Turn off PLL */
 #ifdef CONFIG_PNP
 	pnp_unregister_driver(&gemtek_driver.pnp_driver);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isa_unregister_driver(&gemtek_driver.driver);
 }
 

@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/of.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/string.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/mod_devicetable.h>
 #include <linux/errno.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/of_platform.h>
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "of_device_common.h"
 
@@ -79,10 +67,7 @@ void of_propagate_archdata(struct platform_device *bus)
 		op->dev.archdata.stc = bus_sd->stc;
 		op->dev.archdata.host_controller = bus_sd->host_controller;
 		op->dev.archdata.numa_node = bus_sd->numa_node;
-<<<<<<< HEAD
-=======
 		op->dev.dma_ops = bus->dev.dma_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (dp->child)
 			of_propagate_archdata(op);
@@ -168,13 +153,8 @@ int of_bus_sbus_match(struct device_node *np)
 	struct device_node *dp = np;
 
 	while (dp) {
-<<<<<<< HEAD
-		if (!strcmp(dp->name, "sbus") ||
-		    !strcmp(dp->name, "sbi"))
-=======
 		if (of_node_name_eq(dp, "sbus") ||
 		    of_node_name_eq(dp, "sbi"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 
 		/* Have a look at use_1to1_mapping().  We're trying
@@ -182,11 +162,7 @@ int of_bus_sbus_match(struct device_node *np)
 		 * don't have some intervening real bus that provides
 		 * ranges based translations.
 		 */
-<<<<<<< HEAD
-		if (of_find_property(dp, "ranges", NULL) != NULL)
-=======
 		if (of_property_present(dp, "ranges"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		dp = dp->parent;

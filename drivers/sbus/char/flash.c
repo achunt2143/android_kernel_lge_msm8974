@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* flash.c: Allow mmap access to the OBP Flash, for OBP updates.
  *
  * Copyright (C) 1997  Eddie C. Dost  (ecd@skynet.be)
@@ -13,24 +10,13 @@
 #include <linux/miscdevice.h>
 #include <linux/fcntl.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/mm.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/platform_device.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/upa.h>
 
@@ -44,11 +30,6 @@ static struct {
 	unsigned long busy;		/* In use? */
 } flash;
 
-<<<<<<< HEAD
-#define FLASH_MINOR	152
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 flash_mmap(struct file *file, struct vm_area_struct *vma)
 {
@@ -173,30 +154,18 @@ static const struct file_operations flash_fops = {
 	.release =	flash_release,
 };
 
-<<<<<<< HEAD
-static struct miscdevice flash_dev = { FLASH_MINOR, "flash", &flash_fops };
-
-static int __devinit flash_probe(struct platform_device *op)
-=======
 static struct miscdevice flash_dev = { SBUS_FLASH_MINOR, "flash", &flash_fops };
 
 static int flash_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	struct device_node *parent;
 
 	parent = dp->parent;
 
-<<<<<<< HEAD
-	if (strcmp(parent->name, "sbus") &&
-	    strcmp(parent->name, "sbi") &&
-	    strcmp(parent->name, "ebus"))
-=======
 	if (!of_node_name_eq(parent, "sbus") &&
 	    !of_node_name_eq(parent, "sbi") &&
 	    !of_node_name_eq(parent, "ebus"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	flash.read_base = op->resource[0].start;
@@ -210,30 +179,17 @@ static int flash_probe(struct platform_device *op)
 	}
 	flash.busy = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: OBP Flash, RD %lx[%lx] WR %lx[%lx]\n",
-	       op->dev.of_node->full_name,
-=======
 	printk(KERN_INFO "%pOF: OBP Flash, RD %lx[%lx] WR %lx[%lx]\n",
 	       op->dev.of_node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       flash.read_base, flash.read_size,
 	       flash.write_base, flash.write_size);
 
 	return misc_register(&flash_dev);
 }
 
-<<<<<<< HEAD
-static int __devexit flash_remove(struct platform_device *op)
-{
-	misc_deregister(&flash_dev);
-
-	return 0;
-=======
 static void flash_remove(struct platform_device *op)
 {
 	misc_deregister(&flash_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id flash_match[] = {
@@ -247,18 +203,10 @@ MODULE_DEVICE_TABLE(of, flash_match);
 static struct platform_driver flash_driver = {
 	.driver = {
 		.name = "flash",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = flash_match,
-	},
-	.probe		= flash_probe,
-	.remove		= __devexit_p(flash_remove),
-=======
 		.of_match_table = flash_match,
 	},
 	.probe		= flash_probe,
 	.remove_new	= flash_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(flash_driver);

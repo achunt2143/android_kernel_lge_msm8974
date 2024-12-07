@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  *
  * Authors:
  *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
  *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LOCAL_NFC_H
@@ -34,22 +13,15 @@
 #include <net/nfc/nfc.h>
 #include <net/sock.h>
 
-<<<<<<< HEAD
-=======
 #define NFC_TARGET_MODE_IDLE 0
 #define NFC_TARGET_MODE_SLEEP 1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfc_protocol {
 	int id;
 	struct proto *proto;
 	struct module *owner;
 	int (*create)(struct net *net, struct socket *sock,
-<<<<<<< HEAD
-		      const struct nfc_protocol *nfc_proto);
-=======
 		      const struct nfc_protocol *nfc_proto, int kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfc_rawsock {
@@ -59,79 +31,23 @@ struct nfc_rawsock {
 	struct work_struct tx_work;
 	bool tx_work_scheduled;
 };
-<<<<<<< HEAD
-=======
 
 struct nfc_sock_list {
 	struct hlist_head head;
 	rwlock_t          lock;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define nfc_rawsock(sk) ((struct nfc_rawsock *) sk)
 #define to_rawsock_sk(_tx_work) \
 	((struct sock *) container_of(_tx_work, struct nfc_rawsock, tx_work))
 
-<<<<<<< HEAD
-#ifdef CONFIG_NFC_LLCP
-=======
 struct nfc_llcp_sdp_tlv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void nfc_llcp_mac_is_down(struct nfc_dev *dev);
 void nfc_llcp_mac_is_up(struct nfc_dev *dev, u32 target_idx,
 			u8 comm_mode, u8 rf_mode);
 int nfc_llcp_register_device(struct nfc_dev *dev);
 void nfc_llcp_unregister_device(struct nfc_dev *dev);
-<<<<<<< HEAD
-int nfc_llcp_set_remote_gb(struct nfc_dev *dev, u8 *gb, u8 gb_len);
-u8 *nfc_llcp_general_bytes(struct nfc_dev *dev, size_t *general_bytes_len);
-int __init nfc_llcp_init(void);
-void nfc_llcp_exit(void);
-
-#else
-
-static inline void nfc_llcp_mac_is_down(struct nfc_dev *dev)
-{
-}
-
-static inline void nfc_llcp_mac_is_up(struct nfc_dev *dev, u32 target_idx,
-				      u8 comm_mode, u8 rf_mode)
-{
-}
-
-static inline int nfc_llcp_register_device(struct nfc_dev *dev)
-{
-	return 0;
-}
-
-static inline void nfc_llcp_unregister_device(struct nfc_dev *dev)
-{
-}
-
-static inline int nfc_llcp_set_remote_gb(struct nfc_dev *dev,
-					 u8 *gb, u8 gb_len)
-{
-	return 0;
-}
-
-static inline u8 *nfc_llcp_general_bytes(struct nfc_dev *dev, u8 *gb_len)
-{
-	*gb_len = 0;
-	return NULL;
-}
-
-static inline int nfc_llcp_init(void)
-{
-	return 0;
-}
-
-static inline void nfc_llcp_exit(void)
-{
-}
-
-#endif
-=======
 int nfc_llcp_set_remote_gb(struct nfc_dev *dev, const u8 *gb, u8 gb_len);
 u8 *nfc_llcp_general_bytes(struct nfc_dev *dev, size_t *general_bytes_len);
 int nfc_llcp_data_received(struct nfc_dev *dev, struct sk_buff *skb);
@@ -141,7 +57,6 @@ int __init nfc_llcp_init(void);
 void nfc_llcp_exit(void);
 void nfc_llcp_free_sdp_tlv(struct nfc_llcp_sdp_tlv *sdp);
 void nfc_llcp_free_sdp_tlv_list(struct hlist_head *head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init rawsock_init(void);
 void rawsock_exit(void);
@@ -161,10 +76,7 @@ void nfc_genl_data_init(struct nfc_genl_data *genl_data);
 void nfc_genl_data_exit(struct nfc_genl_data *genl_data);
 
 int nfc_genl_targets_found(struct nfc_dev *dev);
-<<<<<<< HEAD
-=======
 int nfc_genl_target_lost(struct nfc_dev *dev, u32 target_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int nfc_genl_device_added(struct nfc_dev *dev);
 int nfc_genl_device_removed(struct nfc_dev *dev);
@@ -173,9 +85,6 @@ int nfc_genl_dep_link_up_event(struct nfc_dev *dev, u32 target_idx,
 			       u8 comm_mode, u8 rf_mode);
 int nfc_genl_dep_link_down_event(struct nfc_dev *dev);
 
-<<<<<<< HEAD
-struct nfc_dev *nfc_get_device(unsigned idx);
-=======
 int nfc_genl_tm_activated(struct nfc_dev *dev, u32 protocol);
 int nfc_genl_tm_deactivated(struct nfc_dev *dev);
 
@@ -188,7 +97,6 @@ int nfc_genl_se_transaction(struct nfc_dev *dev, u8 se_idx,
 int nfc_genl_se_connectivity(struct nfc_dev *dev, u8 se_idx);
 
 struct nfc_dev *nfc_get_device(unsigned int idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void nfc_put_device(struct nfc_dev *dev)
 {
@@ -214,22 +122,15 @@ static inline void nfc_device_iter_exit(struct class_dev_iter *iter)
 	class_dev_iter_exit(iter);
 }
 
-<<<<<<< HEAD
-=======
 int nfc_fw_download(struct nfc_dev *dev, const char *firmware_name);
 int nfc_genl_fw_download_done(struct nfc_dev *dev, const char *firmware_name,
 			      u32 result);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nfc_dev_up(struct nfc_dev *dev);
 
 int nfc_dev_down(struct nfc_dev *dev);
 
-<<<<<<< HEAD
-int nfc_start_poll(struct nfc_dev *dev, u32 protocols);
-=======
 int nfc_start_poll(struct nfc_dev *dev, u32 im_protocols, u32 tm_protocols);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int nfc_stop_poll(struct nfc_dev *dev);
 
@@ -239,19 +140,12 @@ int nfc_dep_link_down(struct nfc_dev *dev);
 
 int nfc_activate_target(struct nfc_dev *dev, u32 target_idx, u32 protocol);
 
-<<<<<<< HEAD
-int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx);
-=======
 int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx, u8 mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int nfc_data_exchange(struct nfc_dev *dev, u32 target_idx, struct sk_buff *skb,
 		      data_exchange_cb_t cb, void *cb_context);
 
-<<<<<<< HEAD
-=======
 int nfc_enable_se(struct nfc_dev *dev, u32 se_idx);
 int nfc_disable_se(struct nfc_dev *dev, u32 se_idx);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LOCAL_NFC_H */

@@ -58,10 +58,6 @@
 		};
 
 		MDIO: mdio@6000 {
-<<<<<<< HEAD
-			device_type = "mdio";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			compatible = "tsi109-mdio", "tsi108-mdio";
 			reg = <0x00006000 0x00000050>;
 			#address-cells = <1>;
@@ -195,10 +191,6 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = "/tsi109@c0000000/serial@7808";
-=======
 		stdout-path = "/tsi109@c0000000/serial@7808";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

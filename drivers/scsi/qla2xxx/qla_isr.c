@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
- */
-#include "qla_def.h"
-
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include <scsi/scsi_tcq.h>
-#include <scsi/scsi_bsg_fc.h>
-#include <scsi/scsi_eh.h>
-
-static void qla2x00_mbx_completion(scsi_qla_host_t *, uint16_t);
-static void qla2x00_process_completed_request(struct scsi_qla_host *,
-	struct req_que *, uint32_t);
-static void qla2x00_status_entry(scsi_qla_host_t *, struct rsp_que *, void *);
-static void qla2x00_status_cont_entry(struct rsp_que *, sts_cont_entry_t *);
-static void qla2x00_error_entry(scsi_qla_host_t *, struct rsp_que *,
-	sts_entry_t *);
-
-/**
- * qla2100_intr_handler() - Process interrupts for the ISP2100 and ISP2200.
- * @irq:
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
@@ -358,7 +331,6 @@ int __qla_copy_purex_to_buffer(struct scsi_qla_host *vha,
 /**
  * qla2100_intr_handler() - Process interrupts for the ISP2100 and ISP2200.
  * @irq: interrupt number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev_id: SCSI driver HA context
  *
  * Called by system whenever the host adapter generates an interrupt.
@@ -374,11 +346,7 @@ qla2100_intr_handler(int irq, void *dev_id)
 	int		status;
 	unsigned long	iter;
 	uint16_t	hccr;
-<<<<<<< HEAD
-	uint16_t	mb[4];
-=======
 	uint16_t	mb[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rsp_que *rsp;
 	unsigned long	flags;
 
@@ -396,13 +364,9 @@ qla2100_intr_handler(int irq, void *dev_id)
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	vha = pci_get_drvdata(ha->pdev);
 	for (iter = 50; iter--; ) {
-<<<<<<< HEAD
-		hccr = RD_REG_WORD(&reg->hccr);
-=======
 		hccr = rd_reg_word(&reg->hccr);
 		if (qla2x00_check_reg16_for_disconnect(vha, hccr))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hccr & HCCR_RISC_PAUSE) {
 			if (pci_channel_offline(ha->pdev))
 				break;
@@ -412,20 +376,6 @@ qla2100_intr_handler(int irq, void *dev_id)
 			 * bit to be cleared.  Schedule a big hammer to get
 			 * out of the RISC PAUSED state.
 			 */
-<<<<<<< HEAD
-			WRT_REG_WORD(&reg->hccr, HCCR_RESET_RISC);
-			RD_REG_WORD(&reg->hccr);
-
-			ha->isp_ops->fw_dump(vha, 1);
-			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
-			break;
-		} else if ((RD_REG_WORD(&reg->istatus) & ISR_RISC_INT) == 0)
-			break;
-
-		if (RD_REG_WORD(&reg->semaphore) & BIT_0) {
-			WRT_REG_WORD(&reg->hccr, HCCR_CLR_RISC_INT);
-			RD_REG_WORD(&reg->hccr);
-=======
 			wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
 			rd_reg_word(&reg->hccr);
 
@@ -438,7 +388,6 @@ qla2100_intr_handler(int irq, void *dev_id)
 		if (rd_reg_word(&reg->semaphore) & BIT_0) {
 			wrt_reg_word(&reg->hccr, HCCR_CLR_RISC_INT);
 			rd_reg_word(&reg->hccr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Get mailbox data. */
 			mb[0] = RD_MAILBOX_REG(ha, reg, 0);
@@ -457,31 +406,6 @@ qla2100_intr_handler(int irq, void *dev_id)
 				    mb[0]);
 			}
 			/* Release mailbox registers. */
-<<<<<<< HEAD
-			WRT_REG_WORD(&reg->semaphore, 0);
-			RD_REG_WORD(&reg->semaphore);
-		} else {
-			qla2x00_process_response_queue(rsp);
-
-			WRT_REG_WORD(&reg->hccr, HCCR_CLR_RISC_INT);
-			RD_REG_WORD(&reg->hccr);
-		}
-	}
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-
-	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags) &&
-	    (status & MBX_INTERRUPT) && ha->flags.mbox_int) {
-		set_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
-		complete(&ha->mbx_intr_comp);
-	}
-
-	return (IRQ_HANDLED);
-}
-
-/**
- * qla2300_intr_handler() - Process interrupts for the ISP23xx and ISP63xx.
- * @irq:
-=======
 			wrt_reg_word(&reg->semaphore, 0);
 			rd_reg_word(&reg->semaphore);
 		} else {
@@ -521,7 +445,6 @@ qla2x00_check_reg16_for_disconnect(scsi_qla_host_t *vha, uint16_t reg)
 /**
  * qla2300_intr_handler() - Process interrupts for the ISP23xx and ISP63xx.
  * @irq: interrupt number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev_id: SCSI driver HA context
  *
  * Called by system whenever the host adapter generates an interrupt.
@@ -537,11 +460,7 @@ qla2300_intr_handler(int irq, void *dev_id)
 	unsigned long	iter;
 	uint32_t	stat;
 	uint16_t	hccr;
-<<<<<<< HEAD
-	uint16_t	mb[4];
-=======
 	uint16_t	mb[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rsp_que *rsp;
 	struct qla_hw_data *ha;
 	unsigned long	flags;
@@ -560,23 +479,15 @@ qla2300_intr_handler(int irq, void *dev_id)
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	vha = pci_get_drvdata(ha->pdev);
 	for (iter = 50; iter--; ) {
-<<<<<<< HEAD
-		stat = RD_REG_DWORD(&reg->u.isp2300.host_status);
-=======
 		stat = rd_reg_dword(&reg->u.isp2300.host_status);
 		if (qla2x00_check_reg32_for_disconnect(vha, stat))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stat & HSR_RISC_PAUSED) {
 			if (unlikely(pci_channel_offline(ha->pdev)))
 				break;
 
-<<<<<<< HEAD
-			hccr = RD_REG_WORD(&reg->hccr);
-=======
 			hccr = rd_reg_word(&reg->hccr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hccr & (BIT_15 | BIT_13 | BIT_11 | BIT_8))
 				ql_log(ql_log_warn, vha, 0x5026,
 				    "Parity error -- HCCR=%x, Dumping "
@@ -591,17 +502,10 @@ qla2300_intr_handler(int irq, void *dev_id)
 			 * interrupt bit to be cleared.  Schedule a big
 			 * hammer to get out of the RISC PAUSED state.
 			 */
-<<<<<<< HEAD
-			WRT_REG_WORD(&reg->hccr, HCCR_RESET_RISC);
-			RD_REG_WORD(&reg->hccr);
-
-			ha->isp_ops->fw_dump(vha, 1);
-=======
 			wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
 			rd_reg_word(&reg->hccr);
 
 			ha->isp_ops->fw_dump(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 			break;
 		} else if ((stat & HSR_RISC_INT) == 0)
@@ -616,11 +520,7 @@ qla2300_intr_handler(int irq, void *dev_id)
 			status |= MBX_INTERRUPT;
 
 			/* Release mailbox registers. */
-<<<<<<< HEAD
-			WRT_REG_WORD(&reg->semaphore, 0);
-=======
 			wrt_reg_word(&reg->semaphore, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 0x12:
 			mb[0] = MSW(stat);
@@ -648,36 +548,18 @@ qla2300_intr_handler(int irq, void *dev_id)
 			    "Unrecognized interrupt type (%d).\n", stat & 0xff);
 			break;
 		}
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->hccr, HCCR_CLR_RISC_INT);
-		RD_REG_WORD_RELAXED(&reg->hccr);
-	}
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-
-	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags) &&
-	    (status & MBX_INTERRUPT) && ha->flags.mbox_int) {
-		set_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
-		complete(&ha->mbx_intr_comp);
-	}
-
-=======
 		wrt_reg_word(&reg->hccr, HCCR_CLR_RISC_INT);
 		rd_reg_word_relaxed(&reg->hccr);
 	}
 	qla2x00_handle_mbx_completion(ha, status);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (IRQ_HANDLED);
 }
 
 /**
  * qla2x00_mbx_completion() - Process mailbox command completions.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
-=======
  * @vha: SCSI driver HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mb0: Mailbox0 register
  */
 static void
@@ -685,25 +567,15 @@ qla2x00_mbx_completion(scsi_qla_host_t *vha, uint16_t mb0)
 {
 	uint16_t	cnt;
 	uint32_t	mboxes;
-<<<<<<< HEAD
-	uint16_t __iomem *wptr;
-=======
 	__le16 __iomem *wptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
 	/* Read all mbox registers? */
-<<<<<<< HEAD
-	mboxes = (1 << ha->mbx_count) - 1;
-	if (!ha->mcp)
-		ql_dbg(ql_dbg_async, vha, 0x5001, "MBX pointer ERRROR.\n");
-=======
 	WARN_ON_ONCE(ha->mbx_count > 32);
 	mboxes = (1ULL << ha->mbx_count) - 1;
 	if (!ha->mcp)
 		ql_dbg(ql_dbg_async, vha, 0x5001, "MBX pointer ERROR.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		mboxes = ha->mcp->in_mb;
 
@@ -711,17 +583,6 @@ qla2x00_mbx_completion(scsi_qla_host_t *vha, uint16_t mb0)
 	ha->flags.mbox_int = 1;
 	ha->mailbox_out[0] = mb0;
 	mboxes >>= 1;
-<<<<<<< HEAD
-	wptr = (uint16_t __iomem *)MAILBOX_REG(ha, reg, 1);
-
-	for (cnt = 1; cnt < ha->mbx_count; cnt++) {
-		if (IS_QLA2200(ha) && cnt == 8)
-			wptr = (uint16_t __iomem *)MAILBOX_REG(ha, reg, 8);
-		if ((cnt == 4 || cnt == 5) && (mboxes & BIT_0))
-			ha->mailbox_out[cnt] = qla2x00_debounce_register(wptr);
-		else if (mboxes & BIT_0)
-			ha->mailbox_out[cnt] = RD_REG_WORD(wptr);
-=======
 	wptr = MAILBOX_REG(ha, reg, 1);
 
 	for (cnt = 1; cnt < ha->mbx_count; cnt++) {
@@ -731,7 +592,6 @@ qla2x00_mbx_completion(scsi_qla_host_t *vha, uint16_t mb0)
 			ha->mailbox_out[cnt] = qla2x00_debounce_register(wptr);
 		else if (mboxes & BIT_0)
 			ha->mailbox_out[cnt] = rd_reg_word(wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		wptr++;
 		mboxes >>= 1;
@@ -745,15 +605,6 @@ qla81xx_idc_event(scsi_qla_host_t *vha, uint16_t aen, uint16_t descr)
 		{ "Complete", "Request Notification", "Time Extension" };
 	int rval;
 	struct device_reg_24xx __iomem *reg24 = &vha->hw->iobase->isp24;
-<<<<<<< HEAD
-	uint16_t __iomem *wptr;
-	uint16_t cnt, timeout, mb[QLA_IDC_ACK_REGS];
-
-	/* Seed data -- mailbox1 -> mailbox7. */
-	wptr = (uint16_t __iomem *)&reg24->mailbox1;
-	for (cnt = 0; cnt < QLA_IDC_ACK_REGS; cnt++, wptr++)
-		mb[cnt] = RD_REG_WORD(wptr);
-=======
 	struct device_reg_82xx __iomem *reg82 = &vha->hw->iobase->isp82;
 	__le16 __iomem *wptr;
 	uint16_t cnt, timeout, mb[QLA_IDC_ACK_REGS];
@@ -768,29 +619,12 @@ qla81xx_idc_event(scsi_qla_host_t *vha, uint16_t aen, uint16_t descr)
 
 	for (cnt = 0; cnt < QLA_IDC_ACK_REGS; cnt++, wptr++)
 		mb[cnt] = rd_reg_word(wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ql_dbg(ql_dbg_async, vha, 0x5021,
 	    "Inter-Driver Communication %s -- "
 	    "%04x %04x %04x %04x %04x %04x %04x.\n",
 	    event[aen & 0xff], mb[0], mb[1], mb[2], mb[3],
 	    mb[4], mb[5], mb[6]);
-<<<<<<< HEAD
-
-	/* Acknowledgement needed? [Notify && non-zero timeout]. */
-	timeout = (descr >> 8) & 0xf;
-	if (aen != MBA_IDC_NOTIFY || !timeout)
-		return;
-
-	ql_dbg(ql_dbg_async, vha, 0x5022,
-	    "%lu Inter-Driver Communication %s -- ACK timeout=%d.\n",
-	    vha->host_no, event[aen & 0xff], timeout);
-
-	rval = qla2x00_post_idc_ack_work(vha, mb);
-	if (rval != QLA_SUCCESS)
-		ql_log(ql_log_warn, vha, 0x5023,
-		    "IDC failed to post ACK.\n");
-=======
 	switch (aen) {
 	/* Handle IDC Error completion case. */
 	case MBA_IDC_COMPLETE:
@@ -1410,28 +1244,17 @@ qla27xx_copy_fpin_pkt(struct scsi_qla_host *vha, void **pkt,
 	} while (entry_count_remaining > 0);
 	host_to_fcp_swap((uint8_t *)&item->iocb, total_bytes);
 	return item;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_async_event() - Process aynchronous events.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
-=======
  * @vha: SCSI driver HA context
  * @rsp: response queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mb: Mailbox registers (0 - 3)
  */
 void
 qla2x00_async_event(scsi_qla_host_t *vha, struct rsp_que *rsp, uint16_t *mb)
 {
-<<<<<<< HEAD
-#define LS_UNKNOWN	2
-	static char *link_speeds[] = { "1", "2", "?", "4", "8", "16", "10" };
-	char		*link_speed;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t	handle_cnt;
 	uint16_t	cnt, mbx;
 	uint32_t	handles[5];
@@ -1441,8 +1264,6 @@ qla2x00_async_event(scsi_qla_host_t *vha, struct rsp_que *rsp, uint16_t *mb)
 	struct device_reg_82xx __iomem *reg82 = &ha->iobase->isp82;
 	uint32_t	rscn_entry, host_pid;
 	unsigned long	flags;
-<<<<<<< HEAD
-=======
 	fc_port_t	*fcport = NULL;
 
 	if (!vha->hw->flags.fw_started) {
@@ -1451,7 +1272,6 @@ qla2x00_async_event(scsi_qla_host_t *vha, struct rsp_que *rsp, uint16_t *mb)
 		    mb[0], mb[1], mb[2], mb[3]);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup to process RIO completion. */
 	handle_cnt = 0;
@@ -1459,11 +1279,7 @@ qla2x00_async_event(scsi_qla_host_t *vha, struct rsp_que *rsp, uint16_t *mb)
 		goto skip_rio;
 	switch (mb[0]) {
 	case MBA_SCSI_COMPLETION:
-<<<<<<< HEAD
-		handles[0] = le32_to_cpu((uint32_t)((mb[2] << 16) | mb[1]));
-=======
 		handles[0] = make_handle(mb[2], mb[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle_cnt = 1;
 		break;
 	case MBA_CMPLT_1_16BIT:
@@ -1502,16 +1318,9 @@ qla2x00_async_event(scsi_qla_host_t *vha, struct rsp_que *rsp, uint16_t *mb)
 		mb[0] = MBA_SCSI_COMPLETION;
 		break;
 	case MBA_CMPLT_2_32BIT:
-<<<<<<< HEAD
-		handles[0] = le32_to_cpu((uint32_t)((mb[2] << 16) | mb[1]));
-		handles[1] = le32_to_cpu(
-		    ((uint32_t)(RD_MAILBOX_REG(ha, reg, 7) << 16)) |
-		    RD_MAILBOX_REG(ha, reg, 6));
-=======
 		handles[0] = make_handle(mb[2], mb[1]);
 		handles[1] = make_handle(RD_MAILBOX_REG(ha, reg, 7),
 					 RD_MAILBOX_REG(ha, reg, 6));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle_cnt = 2;
 		mb[0] = MBA_SCSI_COMPLETION;
 		break;
@@ -1537,15 +1346,6 @@ skip_rio:
 		break;
 
 	case MBA_SYSTEM_ERR:		/* System Error */
-<<<<<<< HEAD
-		mbx = (IS_QLA81XX(ha) || IS_QLA83XX(ha)) ?
-			RD_REG_WORD(&reg24->mailbox7) : 0;
-		ql_log(ql_log_warn, vha, 0x5003,
-		    "ISP System Error - mbx1=%xh mbx2=%xh mbx3=%xh "
-		    "mbx7=%xh.\n", mb[1], mb[2], mb[3], mbx);
-
-		ha->isp_ops->fw_dump(vha, 1);
-=======
 		mbx = 0;
 
 		vha->hw_err_cnt++;
@@ -1573,7 +1373,6 @@ skip_rio:
 		ha->isp_ops->fw_dump(vha);
 		ha->flags.fw_init_done = 0;
 		QLA_FW_STOPPED(ha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (IS_FWI2_CAPABLE(ha)) {
 			if (mb[1] == 0 && mb[2] == 0) {
@@ -1584,11 +1383,7 @@ skip_rio:
 				vha->device_flags |= DFLG_DEV_FAILED;
 			} else {
 				/* Check to see if MPI timeout occurred */
-<<<<<<< HEAD
-				if ((mbx & MBX_3) && (ha->flags.port0))
-=======
 				if ((mbx & MBX_3) && (ha->port_no == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					set_bit(MPI_RESET_NEEDED,
 					    &vha->dpc_flags);
 
@@ -1608,35 +1403,22 @@ skip_rio:
 		ql_log(ql_log_warn, vha, 0x5006,
 		    "ISP Request Transfer Error (%x).\n",  mb[1]);
 
-<<<<<<< HEAD
-=======
 		vha->hw_err_cnt++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 		break;
 
 	case MBA_RSP_TRANSFER_ERR:	/* Response Transfer Error */
 		ql_log(ql_log_warn, vha, 0x5007,
-<<<<<<< HEAD
-		    "ISP Response Transfer Error.\n");
-=======
 		    "ISP Response Transfer Error (%x).\n", mb[1]);
 
 		vha->hw_err_cnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 		break;
 
 	case MBA_WAKEUP_THRES:		/* Request Queue Wake-up */
 		ql_dbg(ql_dbg_async, vha, 0x5008,
-<<<<<<< HEAD
-		    "Asynchronous WAKEUP_THRES.\n");
-		break;
-
-	case MBA_LIP_OCCURRED:		/* Loop Initialization Procedure */
-=======
 		    "Asynchronous WAKEUP_THRES (%x).\n", mb[1]);
 		break;
 
@@ -1649,18 +1431,13 @@ skip_rio:
 	case MBA_LIP_OCCURRED:		/* Loop Initialization Procedure */
 		ha->flags.lip_ae = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_async, vha, 0x5009,
 		    "LIP occurred (%x).\n", mb[1]);
 
 		if (atomic_read(&vha->loop_state) != LOOP_DOWN) {
 			atomic_set(&vha->loop_state, LOOP_DOWN);
 			atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-<<<<<<< HEAD
-			qla2x00_mark_all_devices_lost(vha, 1);
-=======
 			qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (vha->vp_idx) {
@@ -1676,32 +1453,6 @@ skip_rio:
 		break;
 
 	case MBA_LOOP_UP:		/* Loop Up Event */
-<<<<<<< HEAD
-		if (IS_QLA2100(ha) || IS_QLA2200(ha)) {
-			link_speed = link_speeds[0];
-			ha->link_data_rate = PORT_SPEED_1GB;
-		} else {
-			link_speed = link_speeds[LS_UNKNOWN];
-			if (mb[1] < 6)
-				link_speed = link_speeds[mb[1]];
-			else if (mb[1] == 0x13)
-				link_speed = link_speeds[6];
-			ha->link_data_rate = mb[1];
-		}
-
-		ql_dbg(ql_dbg_async, vha, 0x500a,
-		    "LOOP UP detected (%s Gbps).\n", link_speed);
-
-		vha->flags.management_server_logged_in = 0;
-		qla2x00_post_aen_work(vha, FCH_EVT_LINKUP, ha->link_data_rate);
-		break;
-
-	case MBA_LOOP_DOWN:		/* Loop Down Event */
-		mbx = (IS_QLA81XX(ha) || IS_QLA8031(ha))
-			? RD_REG_WORD(&reg24->mailbox4) : 0;
-		mbx = IS_QLA82XX(ha) ? RD_REG_WORD(&reg82->mailbox_out[4]) : mbx;
-		ql_dbg(ql_dbg_async, vha, 0x500b,
-=======
 		if (IS_QLA2100(ha) || IS_QLA2200(ha))
 			ha->link_data_rate = PORT_SPEED_1GB;
 		else
@@ -1738,17 +1489,12 @@ skip_rio:
 		mbx = (IS_P3P_TYPE(ha)) ? rd_reg_word(&reg82->mailbox_out[4])
 			: mbx;
 		ql_log(ql_log_info, vha, 0x500b,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "LOOP DOWN detected (%x %x %x %x).\n",
 		    mb[1], mb[2], mb[3], mbx);
 
 		if (atomic_read(&vha->loop_state) != LOOP_DOWN) {
 			atomic_set(&vha->loop_state, LOOP_DOWN);
 			atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-<<<<<<< HEAD
-			vha->device_flags |= DFLG_NO_CABLE;
-			qla2x00_mark_all_devices_lost(vha, 1);
-=======
 			/*
 			 * In case of loop down, restore WWPN from
 			 * NVRAM in case of FA-WWPN capable ISP
@@ -1771,7 +1517,6 @@ skip_rio:
 
 			vha->device_flags |= DFLG_NO_CABLE;
 			qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (vha->vp_idx) {
@@ -1791,11 +1536,7 @@ skip_rio:
 		if (atomic_read(&vha->loop_state) != LOOP_DOWN) {
 			atomic_set(&vha->loop_state, LOOP_DOWN);
 			atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-<<<<<<< HEAD
-			qla2x00_mark_all_devices_lost(vha, 1);
-=======
 			qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (vha->vp_idx) {
@@ -1812,16 +1553,6 @@ skip_rio:
 
 	/* case MBA_DCBX_COMPLETE: */
 	case MBA_POINT_TO_POINT:	/* Point-to-Point */
-<<<<<<< HEAD
-		if (IS_QLA2100(ha))
-			break;
-
-		if (IS_QLA81XX(ha) || IS_QLA82XX(ha) || IS_QLA8031(ha)) {
-			ql_dbg(ql_dbg_async, vha, 0x500d,
-			    "DCBX Completed -- %04x %04x %04x.\n",
-			    mb[1], mb[2], mb[3]);
-			if (ha->notify_dcbx_comp)
-=======
 		ha->flags.lip_ae = 0;
 
 		if (IS_QLA2100(ha))
@@ -1832,7 +1563,6 @@ skip_rio:
 			    "DCBX Completed -- %04x %04x %04x.\n",
 			    mb[1], mb[2], mb[3]);
 			if (ha->notify_dcbx_comp && !vha->vp_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				complete(&ha->dcbx_comp);
 
 		} else
@@ -1848,12 +1578,8 @@ skip_rio:
 			if (!atomic_read(&vha->loop_down_timer))
 				atomic_set(&vha->loop_down_timer,
 				    LOOP_DOWN_TIME);
-<<<<<<< HEAD
-			qla2x00_mark_all_devices_lost(vha, 1);
-=======
 			if (!N2N_TOPO(ha))
 				qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (vha->vp_idx) {
@@ -1867,10 +1593,6 @@ skip_rio:
 		set_bit(REGISTER_FC4_NEEDED, &vha->dpc_flags);
 		set_bit(REGISTER_FDMI_NEEDED, &vha->dpc_flags);
 
-<<<<<<< HEAD
-		ha->flags.gpsc_supported = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vha->flags.management_server_logged_in = 0;
 		break;
 
@@ -1886,11 +1608,7 @@ skip_rio:
 			if (!atomic_read(&vha->loop_down_timer))
 				atomic_set(&vha->loop_down_timer,
 				    LOOP_DOWN_TIME);
-<<<<<<< HEAD
-			qla2x00_mark_all_devices_lost(vha, 1);
-=======
 			qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (vha->vp_idx) {
@@ -1923,14 +1641,6 @@ skip_rio:
 			(mb[1] != 0xffff)) && vha->vp_idx != (mb[3] & 0xff))
 			break;
 
-<<<<<<< HEAD
-		/* Global event -- port logout or port unavailable. */
-		if (mb[1] == 0xffff && mb[2] == 0x7) {
-			ql_dbg(ql_dbg_async, vha, 0x5010,
-			    "Port unavailable %04x %04x %04x.\n",
-			    mb[1], mb[2], mb[3]);
-
-=======
 		if (mb[2] == 0x7) {
 			ql_dbg(ql_dbg_async, vha, 0x5010,
 			    "Port %s %04x %04x %04x.\n",
@@ -1973,28 +1683,19 @@ skip_rio:
 			break;
 
 global_port_update:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (atomic_read(&vha->loop_state) != LOOP_DOWN) {
 				atomic_set(&vha->loop_state, LOOP_DOWN);
 				atomic_set(&vha->loop_down_timer,
 				    LOOP_DOWN_TIME);
 				vha->device_flags |= DFLG_NO_CABLE;
-<<<<<<< HEAD
-				qla2x00_mark_all_devices_lost(vha, 1);
-=======
 				qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (vha->vp_idx) {
 				atomic_set(&vha->vp_state, VP_FAILED);
 				fc_vport_set_state(vha->fc_vport,
 				    FC_VPORT_FAILED);
-<<<<<<< HEAD
-				qla2x00_mark_all_devices_lost(vha, 1);
-=======
 				qla2x00_mark_all_devices_lost(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			vha->flags.management_server_logged_in = 0;
@@ -2009,10 +1710,7 @@ global_port_update:
 		 */
 		atomic_set(&vha->loop_down_timer, 0);
 		if (atomic_read(&vha->loop_state) != LOOP_DOWN &&
-<<<<<<< HEAD
-=======
 			!ha->flags.n2n_ae  &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    atomic_read(&vha->loop_state) != LOOP_DEAD) {
 			ql_dbg(ql_dbg_async, vha, 0x5011,
 			    "Asynchronous PORT UPDATE ignored %04x/%04x/%04x.\n",
@@ -2028,19 +1726,11 @@ global_port_update:
 		 * Mark all devices as missing so we will login again.
 		 */
 		atomic_set(&vha->loop_state, LOOP_UP);
-<<<<<<< HEAD
-
-		qla2x00_mark_all_devices_lost(vha, 1);
-
-		set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
-		set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
-=======
 		vha->scan.scan_retry = 0;
 
 		set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
 		set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
 		set_bit(VP_CONFIG_OK, &vha->vp_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MBA_RSCN_UPDATE:		/* State Change Registration */
@@ -2051,15 +1741,9 @@ global_port_update:
 		if (ha->flags.npiv_supported && vha->vp_idx != (mb[3] & 0xff))
 			break;
 
-<<<<<<< HEAD
-		ql_dbg(ql_dbg_async, vha, 0x5013,
-		    "RSCN database changed -- %04x %04x %04x.\n",
-		    mb[1], mb[2], mb[3]);
-=======
 		ql_log(ql_log_warn, vha, 0x5013,
 		       "RSCN database changed -- %04x %04x %04x.\n",
 		       mb[1], mb[2], mb[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rscn_entry = ((mb[1] & 0xff) << 16) | mb[2];
 		host_pid = (vha->d_id.b.domain << 16) | (vha->d_id.b.area << 8)
@@ -2074,16 +1758,6 @@ global_port_update:
 		/* Ignore reserved bits from RSCN-payload. */
 		rscn_entry = ((mb[1] & 0x3ff) << 16) | mb[2];
 
-<<<<<<< HEAD
-		atomic_set(&vha->loop_down_timer, 0);
-		vha->flags.management_server_logged_in = 0;
-
-		set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
-		set_bit(RSCN_UPDATE, &vha->dpc_flags);
-		qla2x00_post_aen_work(vha, FCH_EVT_RSCN, rscn_entry);
-		break;
-
-=======
 		/* Skip RSCNs for virtual ports on the same physical port */
 		if (qla2x00_is_a_vp_did(vha, rscn_entry))
 			break;
@@ -2113,7 +1787,6 @@ global_port_update:
 			       "Congestion Alarm %04x %04x.\n", mb[1], mb[2]);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* case MBA_RIO_RESPONSE: */
 	case MBA_ZIO_RESPONSE:
 		ql_dbg(ql_dbg_async, vha, 0x5015,
@@ -2129,10 +1802,7 @@ global_port_update:
 		ql_dbg(ql_dbg_async, vha, 0x5016,
 		    "Discard RND Frame -- %04x %04x %04x.\n",
 		    mb[1], mb[2], mb[3]);
-<<<<<<< HEAD
-=======
 		vha->interface_err_cnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MBA_TRACE_NOTIFICATION:
@@ -2193,13 +1863,6 @@ global_port_update:
 		    "FCF Configuration Error -- %04x %04x %04x.\n",
 		    mb[1], mb[2], mb[3]);
 		break;
-<<<<<<< HEAD
-	case MBA_IDC_COMPLETE:
-	case MBA_IDC_NOTIFY:
-	case MBA_IDC_TIME_EXT:
-		qla81xx_idc_event(vha, mb[0], mb[1]);
-		break;
-=======
 	case MBA_IDC_NOTIFY:
 		if (IS_QLA8031(vha->hw) || IS_QLA8044(ha)) {
 			mb[4] = rd_reg_word(&reg24->mailbox4);
@@ -2296,32 +1959,20 @@ global_port_update:
 		ql_dbg(ql_dbg_async, vha, 0x5091, "Transceiver Removal\n");
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ql_dbg(ql_dbg_async, vha, 0x5057,
 		    "Unknown AEN:%04x %04x %04x %04x\n",
 		    mb[0], mb[1], mb[2], mb[3]);
 	}
 
-<<<<<<< HEAD
-=======
 	qlt_async_event(mb[0], vha, mb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vha->vp_idx && ha->num_vhosts)
 		qla2x00_alert_all_vps(rsp, mb);
 }
 
 /**
  * qla2x00_process_completed_request() - Process a Fast Post response.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
- * @index: SRB index
- */
-static void
-qla2x00_process_completed_request(struct scsi_qla_host *vha,
-				struct req_que *req, uint32_t index)
-=======
  * @vha: SCSI driver HA context
  * @req: request queue
  * @index: SRB index
@@ -2329,25 +1980,16 @@ qla2x00_process_completed_request(struct scsi_qla_host *vha,
 void
 qla2x00_process_completed_request(struct scsi_qla_host *vha,
 				  struct req_que *req, uint32_t index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	srb_t *sp;
 	struct qla_hw_data *ha = vha->hw;
 
 	/* Validate handle. */
-<<<<<<< HEAD
-	if (index >= MAX_OUTSTANDING_COMMANDS) {
-		ql_log(ql_log_warn, vha, 0x3014,
-		    "Invalid SCSI command index (%x).\n", index);
-
-		if (IS_QLA82XX(ha))
-=======
 	if (index >= req->num_outstanding_cmds) {
 		ql_log(ql_log_warn, vha, 0x3014,
 		    "Invalid SCSI command index (%x).\n", index);
 
 		if (IS_P3P_TYPE(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags);
 		else
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
@@ -2360,19 +2002,11 @@ qla2x00_process_completed_request(struct scsi_qla_host *vha,
 		req->outstanding_cmds[index] = NULL;
 
 		/* Save ISP completion status */
-<<<<<<< HEAD
-		sp->done(ha, sp, DID_OK << 16);
-	} else {
-		ql_log(ql_log_warn, vha, 0x3016, "Invalid SCSI SRB.\n");
-
-		if (IS_QLA82XX(ha))
-=======
 		sp->done(sp, DID_OK << 16);
 	} else {
 		ql_log(ql_log_warn, vha, 0x3016, "Invalid SCSI SRB.\n");
 
 		if (IS_P3P_TYPE(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags);
 		else
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
@@ -2380,25 +2014,6 @@ qla2x00_process_completed_request(struct scsi_qla_host *vha,
 }
 
 static srb_t *
-<<<<<<< HEAD
-qla2x00_get_sp_from_handle(scsi_qla_host_t *vha, const char *func,
-    struct req_que *req, void *iocb)
-{
-	struct qla_hw_data *ha = vha->hw;
-	sts_entry_t *pkt = iocb;
-	srb_t *sp = NULL;
-	uint16_t index;
-
-	index = LSW(pkt->handle);
-	if (index >= MAX_OUTSTANDING_COMMANDS) {
-		ql_log(ql_log_warn, vha, 0x5031,
-		    "Invalid command index (%x).\n", index);
-		if (IS_QLA82XX(ha))
-			set_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags);
-		else
-			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
-		goto done;
-=======
 qla_get_sp_from_handle(scsi_qla_host_t *vha, const char *func,
 		       struct req_que *req, void *iocb, u16 *ret_index)
 {
@@ -2420,25 +2035,10 @@ qla_get_sp_from_handle(scsi_qla_host_t *vha, const char *func,
 		else
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sp = req->outstanding_cmds[index];
 	if (!sp) {
 		ql_log(ql_log_warn, vha, 0x5032,
-<<<<<<< HEAD
-		    "Invalid completion handle (%x) -- timed-out.\n", index);
-		return sp;
-	}
-	if (sp->handle != index) {
-		ql_log(ql_log_warn, vha, 0x5033,
-		    "SRB handle (%x) mismatch %x.\n", sp->handle, index);
-		return NULL;
-	}
-
-	req->outstanding_cmds[index] = NULL;
-
-done:
-=======
 			"%s: Invalid completion handle (%x) -- timed-out.\n",
 			func, index);
 		return NULL;
@@ -2466,7 +2066,6 @@ qla2x00_get_sp_from_handle(scsi_qla_host_t *vha, const char *func,
 	if (sp)
 		req->outstanding_cmds[index] = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sp;
 }
 
@@ -2505,11 +2104,7 @@ qla2x00_mbx_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
 		    le16_to_cpu(mbx->status_flags));
 
 		ql_dump_buffer(ql_dbg_async + ql_dbg_buffer, vha, 0x5029,
-<<<<<<< HEAD
-		    (uint8_t *)mbx, sizeof(*mbx));
-=======
 		    mbx, sizeof(*mbx));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto logio_done;
 	}
@@ -2557,9 +2152,6 @@ qla2x00_mbx_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
 	    le16_to_cpu(mbx->mb7));
 
 logio_done:
-<<<<<<< HEAD
-	sp->done(vha, sp, 0);
-=======
 	sp->done(sp, 0);
 }
 
@@ -2617,7 +2209,6 @@ qla24xxx_nack_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
 		res = QLA_FUNCTION_FAILED;
 
 	sp->done(sp, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2627,88 +2218,15 @@ qla2x00_ct_entry(scsi_qla_host_t *vha, struct req_que *req,
 	const char func[] = "CT_IOCB";
 	const char *type;
 	srb_t *sp;
-<<<<<<< HEAD
-	struct fc_bsg_job *bsg_job;
-	uint16_t comp_status;
-	int res;
-=======
 	struct bsg_job *bsg_job;
 	struct fc_bsg_reply *bsg_reply;
 	uint16_t comp_status;
 	int res = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp = qla2x00_get_sp_from_handle(vha, func, req, pkt);
 	if (!sp)
 		return;
 
-<<<<<<< HEAD
-	bsg_job = sp->u.bsg_job;
-
-	type = "ct pass-through";
-
-	comp_status = le16_to_cpu(pkt->comp_status);
-
-	/* return FC_CTELS_STATUS_OK and leave the decoding of the ELS/CT
-	 * fc payload  to the caller
-	 */
-	bsg_job->reply->reply_data.ctels_reply.status = FC_CTELS_STATUS_OK;
-	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-
-	if (comp_status != CS_COMPLETE) {
-		if (comp_status == CS_DATA_UNDERRUN) {
-			res = DID_OK << 16;
-			bsg_job->reply->reply_payload_rcv_len =
-			    le16_to_cpu(((sts_entry_t *)pkt)->rsp_info_len);
-
-			ql_log(ql_log_warn, vha, 0x5048,
-			    "CT pass-through-%s error "
-			    "comp_status-status=0x%x total_byte = 0x%x.\n",
-			    type, comp_status,
-			    bsg_job->reply->reply_payload_rcv_len);
-		} else {
-			ql_log(ql_log_warn, vha, 0x5049,
-			    "CT pass-through-%s error "
-			    "comp_status-status=0x%x.\n", type, comp_status);
-			res = DID_ERROR << 16;
-			bsg_job->reply->reply_payload_rcv_len = 0;
-		}
-		ql_dump_buffer(ql_dbg_async + ql_dbg_buffer, vha, 0x5035,
-		    (uint8_t *)pkt, sizeof(*pkt));
-	} else {
-		res = DID_OK << 16;
-		bsg_job->reply->reply_payload_rcv_len =
-		    bsg_job->reply_payload.payload_len;
-		bsg_job->reply_len = 0;
-	}
-
-	sp->done(vha, sp, res);
-}
-
-static void
-qla24xx_els_ct_entry(scsi_qla_host_t *vha, struct req_que *req,
-    struct sts_entry_24xx *pkt, int iocb_type)
-{
-	const char func[] = "ELS_CT_IOCB";
-	const char *type;
-	srb_t *sp;
-	struct fc_bsg_job *bsg_job;
-	uint16_t comp_status;
-	uint32_t fw_status[3];
-	uint8_t* fw_sts_ptr;
-	int res;
-
-	sp = qla2x00_get_sp_from_handle(vha, func, req, pkt);
-	if (!sp)
-		return;
-	bsg_job = sp->u.bsg_job;
-
-	type = NULL;
-	switch (sp->type) {
-	case SRB_ELS_CMD_RPT:
-	case SRB_ELS_CMD_HST:
-		type = "els";
-=======
 	switch (sp->type) {
 	case SRB_CT_CMD:
 	    bsg_job = sp->u.bsg_job;
@@ -2829,13 +2347,10 @@ qla24xx_els_ct_entry(scsi_qla_host_t *v, struct req_que *req,
 				}
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SRB_CT_CMD:
 		type = "ct pass-through";
 		break;
-<<<<<<< HEAD
-=======
 	case SRB_ELS_DCMD:
 		type = "Driver ELS logo";
 		if (iocb_type != ELS_IOCB_TYPE) {
@@ -2855,18 +2370,12 @@ qla24xx_els_ct_entry(scsi_qla_host_t *v, struct req_que *req,
 			sp->name);
 		sp->done(sp, res);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ql_dbg(ql_dbg_user, vha, 0x503e,
 		    "Unrecognized SRB: (%p) type=%d.\n", sp, sp->type);
 		return;
 	}
 
-<<<<<<< HEAD
-	comp_status = fw_status[0] = le16_to_cpu(pkt->comp_status);
-	fw_status[1] = le16_to_cpu(((struct els_sts_entry_24xx*)pkt)->error_subcode_1);
-	fw_status[2] = le16_to_cpu(((struct els_sts_entry_24xx*)pkt)->error_subcode_2);
-=======
 	if (iocb_type == ELS_IOCB_TYPE) {
 		els = &sp->u.iocb_cmd;
 		els->u.els_plogi.fw_status[0] = cpu_to_le32(fw_status[0]);
@@ -2939,71 +2448,31 @@ qla24xx_els_ct_entry(scsi_qla_host_t *v, struct req_que *req,
 		}
 		goto els_ct_done;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* return FC_CTELS_STATUS_OK and leave the decoding of the ELS/CT
 	 * fc payload  to the caller
 	 */
-<<<<<<< HEAD
-	bsg_job->reply->reply_data.ctels_reply.status = FC_CTELS_STATUS_OK;
-=======
 	bsg_job = sp->u.bsg_job;
 	bsg_reply = bsg_job->reply;
 	bsg_reply->reply_data.ctels_reply.status = FC_CTELS_STATUS_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bsg_job->reply_len = sizeof(struct fc_bsg_reply) + sizeof(fw_status);
 
 	if (comp_status != CS_COMPLETE) {
 		if (comp_status == CS_DATA_UNDERRUN) {
 			res = DID_OK << 16;
-<<<<<<< HEAD
-			bsg_job->reply->reply_payload_rcv_len =
-			    le16_to_cpu(((struct els_sts_entry_24xx *)pkt)->total_byte_count);
-=======
 			bsg_reply->reply_payload_rcv_len =
 				le32_to_cpu(ese->total_byte_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ql_dbg(ql_dbg_user, vha, 0x503f,
 			    "ELS-CT pass-through-%s error hdl=%x comp_status-status=0x%x "
 			    "error subcode 1=0x%x error subcode 2=0x%x total_byte = 0x%x.\n",
 			    type, sp->handle, comp_status, fw_status[1], fw_status[2],
-<<<<<<< HEAD
-			    le16_to_cpu(((struct els_sts_entry_24xx *)
-				pkt)->total_byte_count));
-			fw_sts_ptr = ((uint8_t*)bsg_job->req->sense) + sizeof(struct fc_bsg_reply);
-			memcpy( fw_sts_ptr, fw_status, sizeof(fw_status));
-		}
-		else {
-=======
 			    le32_to_cpu(ese->total_byte_count));
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ql_dbg(ql_dbg_user, vha, 0x5040,
 			    "ELS-CT pass-through-%s error hdl=%x comp_status-status=0x%x "
 			    "error subcode 1=0x%x error subcode 2=0x%x.\n",
 			    type, sp->handle, comp_status,
-<<<<<<< HEAD
-			    le16_to_cpu(((struct els_sts_entry_24xx *)
-				pkt)->error_subcode_1),
-			    le16_to_cpu(((struct els_sts_entry_24xx *)
-				    pkt)->error_subcode_2));
-			res = DID_ERROR << 16;
-			bsg_job->reply->reply_payload_rcv_len = 0;
-			fw_sts_ptr = ((uint8_t*)bsg_job->req->sense) + sizeof(struct fc_bsg_reply);
-			memcpy( fw_sts_ptr, fw_status, sizeof(fw_status));
-		}
-		ql_dump_buffer(ql_dbg_user + ql_dbg_buffer, vha, 0x5056,
-				(uint8_t *)pkt, sizeof(*pkt));
-	}
-	else {
-		res =  DID_OK << 16;
-		bsg_job->reply->reply_payload_rcv_len = bsg_job->reply_payload.payload_len;
-		bsg_job->reply_len = 0;
-	}
-
-	sp->done(vha, sp, res);
-=======
 			    le32_to_cpu(ese->error_subcode_1),
 			    le32_to_cpu(ese->error_subcode_2));
 			res = DID_ERROR << 16;
@@ -3022,7 +2491,6 @@ qla24xx_els_ct_entry(scsi_qla_host_t *v, struct req_que *req,
 els_ct_done:
 
 	sp->done(sp, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -3036,10 +2504,7 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 	struct srb_iocb *lio;
 	uint16_t *data;
 	uint32_t iop[2];
-<<<<<<< HEAD
-=======
 	int logit = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp = qla2x00_get_sp_from_handle(vha, func, req, logio);
 	if (!sp)
@@ -3055,15 +2520,6 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 		QLA_LOGIO_LOGIN_RETRIED : 0;
 	if (logio->entry_status) {
 		ql_log(ql_log_warn, fcport->vha, 0x5034,
-<<<<<<< HEAD
-		    "Async-%s error entry - hdl=%x"
-		    "portid=%02x%02x%02x entry-status=%x.\n",
-		    type, sp->handle, fcport->d_id.b.domain,
-		    fcport->d_id.b.area, fcport->d_id.b.al_pa,
-		    logio->entry_status);
-		ql_dump_buffer(ql_dbg_async + ql_dbg_buffer, vha, 0x504d,
-		    (uint8_t *)logio, sizeof(*logio));
-=======
 		    "Async-%s error entry - %8phC hdl=%x"
 		    "portid=%02x%02x%02x entry-status=%x.\n",
 		    type, fcport->port_name, sp->handle, fcport->d_id.b.domain,
@@ -3071,24 +2527,11 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 		    logio->entry_status);
 		ql_dump_buffer(ql_dbg_async + ql_dbg_buffer, vha, 0x504d,
 		    logio, sizeof(*logio));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto logio_done;
 	}
 
 	if (le16_to_cpu(logio->comp_status) == CS_COMPLETE) {
-<<<<<<< HEAD
-		ql_dbg(ql_dbg_async, fcport->vha, 0x5036,
-		    "Async-%s complete - hdl=%x portid=%02x%02x%02x "
-		    "iop0=%x.\n", type, sp->handle, fcport->d_id.b.domain,
-		    fcport->d_id.b.area, fcport->d_id.b.al_pa,
-		    le32_to_cpu(logio->io_parameter[0]));
-
-		data[0] = MBS_COMMAND_COMPLETE;
-		if (sp->type != SRB_LOGIN_CMD)
-			goto logio_done;
-
-=======
 		ql_dbg(ql_dbg_async, sp->vha, 0x5036,
 		    "Async-%s complete: handle=%x pid=%06x wwpn=%8phC iop0=%x\n",
 		    type, sp->handle, fcport->d_id.b24, fcport->port_name,
@@ -3112,7 +2555,6 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 		if (le32_to_cpu(logio->io_parameter[5]) & LIO_COMM_FEAT_FCSP)
 			fcport->flags |= FCF_FCSP_DEVICE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iop[0] = le32_to_cpu(logio->io_parameter[0]);
 		if (iop[0] & BIT_4) {
 			fcport->port_type = FCT_TARGET;
@@ -3121,12 +2563,9 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 		} else if (iop[0] & BIT_5)
 			fcport->port_type = FCT_INITIATOR;
 
-<<<<<<< HEAD
-=======
 		if (iop[0] & BIT_7)
 			fcport->flags |= FCF_CONF_COMP_SUPPORTED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (logio->io_parameter[7] || logio->io_parameter[8])
 			fcport->supported_classes |= FC_COS_CLASS2;
 		if (logio->io_parameter[9] || logio->io_parameter[10])
@@ -3137,21 +2576,12 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 
 	iop[0] = le32_to_cpu(logio->io_parameter[0]);
 	iop[1] = le32_to_cpu(logio->io_parameter[1]);
-<<<<<<< HEAD
-=======
 	lio->u.logio.iop[0] = iop[0];
 	lio->u.logio.iop[1] = iop[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (iop[0]) {
 	case LSC_SCODE_PORTID_USED:
 		data[0] = MBS_PORT_ID_USED;
 		data[1] = LSW(iop[1]);
-<<<<<<< HEAD
-		break;
-	case LSC_SCODE_NPORT_USED:
-		data[0] = MBS_LOOP_ID_USED;
-		break;
-=======
 		logit = 0;
 		break;
 	case LSC_SCODE_NPORT_USED:
@@ -3184,29 +2614,11 @@ qla24xx_logio_entry(scsi_qla_host_t *vha, struct req_que *req,
 			qla2xxx_wake_dpc(vha);
 		}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		data[0] = MBS_COMMAND_ERROR;
 		break;
 	}
 
-<<<<<<< HEAD
-	ql_dbg(ql_dbg_async, fcport->vha, 0x5037,
-	    "Async-%s failed - hdl=%x portid=%02x%02x%02x comp=%x "
-	    "iop0=%x iop1=%x.\n", type, sp->handle, fcport->d_id.b.domain,
-	    fcport->d_id.b.area, fcport->d_id.b.al_pa,
-	    le16_to_cpu(logio->comp_status),
-	    le32_to_cpu(logio->io_parameter[0]),
-	    le32_to_cpu(logio->io_parameter[1]));
-
-logio_done:
-	sp->done(vha, sp, 0);
-}
-
-static void
-qla24xx_tm_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
-    struct tsk_mgmt_entry *tsk)
-=======
 	if (logit)
 		ql_log(ql_log_warn, sp->vha, 0x5037, "Async-%s failed: "
 		       "handle=%x pid=%06x wwpn=%8phC comp_status=%x iop0=%x iop1=%x\n",
@@ -3228,7 +2640,6 @@ logio_done:
 
 static void
 qla24xx_tm_iocb_entry(scsi_qla_host_t *vha, struct req_que *req, void *tsk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char func[] = "TMF-IOCB";
 	const char *type;
@@ -3236,62 +2647,22 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *vha, struct req_que *req, void *tsk)
 	srb_t *sp;
 	struct srb_iocb *iocb;
 	struct sts_entry_24xx *sts = (struct sts_entry_24xx *)tsk;
-<<<<<<< HEAD
-	int error = 1;
-=======
 	u16 comp_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp = qla2x00_get_sp_from_handle(vha, func, req, tsk);
 	if (!sp)
 		return;
 
-<<<<<<< HEAD
-	iocb = &sp->u.iocb_cmd;
-	type = sp->name;
-	fcport = sp->fcport;
-=======
 	comp_status = le16_to_cpu(sts->comp_status);
 	iocb = &sp->u.iocb_cmd;
 	type = sp->name;
 	fcport = sp->fcport;
 	iocb->u.tmf.data = QLA_SUCCESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sts->entry_status) {
 		ql_log(ql_log_warn, fcport->vha, 0x5038,
 		    "Async-%s error - hdl=%x entry-status(%x).\n",
 		    type, sp->handle, sts->entry_status);
-<<<<<<< HEAD
-	} else if (sts->comp_status != __constant_cpu_to_le16(CS_COMPLETE)) {
-		ql_log(ql_log_warn, fcport->vha, 0x5039,
-		    "Async-%s error - hdl=%x completion status(%x).\n",
-		    type, sp->handle, sts->comp_status);
-	} else if (!(le16_to_cpu(sts->scsi_status) &
-	    SS_RESPONSE_INFO_LEN_VALID)) {
-		ql_log(ql_log_warn, fcport->vha, 0x503a,
-		    "Async-%s error - hdl=%x no response info(%x).\n",
-		    type, sp->handle, sts->scsi_status);
-	} else if (le32_to_cpu(sts->rsp_data_len) < 4) {
-		ql_log(ql_log_warn, fcport->vha, 0x503b,
-		    "Async-%s error - hdl=%x not enough response(%d).\n",
-		    type, sp->handle, sts->rsp_data_len);
-	} else if (sts->data[3]) {
-		ql_log(ql_log_warn, fcport->vha, 0x503c,
-		    "Async-%s error - hdl=%x response(%x).\n",
-		    type, sp->handle, sts->data[3]);
-	} else {
-		error = 0;
-	}
-
-	if (error) {
-		iocb->u.tmf.data = error;
-		ql_dump_buffer(ql_dbg_async + ql_dbg_buffer, vha, 0x5055,
-		    (uint8_t *)sts, sizeof(*sts));
-	}
-
-	sp->done(vha, sp, 0);
-=======
 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
 	} else if (sts->comp_status != cpu_to_le16(CS_COMPLETE)) {
 		ql_log(ql_log_warn, fcport->vha, 0x5039,
@@ -3558,16 +2929,11 @@ static void qla2x00_process_response_entry(struct scsi_qla_host *vha,
 		       pkt->entry_type, pkt->entry_status);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_process_response_queue() - Process response queue entries.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
-=======
  * @rsp: response queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void
 qla2x00_process_response_queue(struct rsp_que *rsp)
@@ -3576,11 +2942,6 @@ qla2x00_process_response_queue(struct rsp_que *rsp)
 	struct qla_hw_data *ha = rsp->hw;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 	sts_entry_t	*pkt;
-<<<<<<< HEAD
-	uint16_t        handle_cnt;
-	uint16_t        cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vha = pci_get_drvdata(ha->pdev);
 
@@ -3605,67 +2966,20 @@ qla2x00_process_response_queue(struct rsp_que *rsp)
 			continue;
 		}
 
-<<<<<<< HEAD
-		switch (pkt->entry_type) {
-		case STATUS_TYPE:
-			qla2x00_status_entry(vha, rsp, pkt);
-			break;
-		case STATUS_TYPE_21:
-			handle_cnt = ((sts21_entry_t *)pkt)->handle_count;
-			for (cnt = 0; cnt < handle_cnt; cnt++) {
-				qla2x00_process_completed_request(vha, rsp->req,
-				    ((sts21_entry_t *)pkt)->handle[cnt]);
-			}
-			break;
-		case STATUS_TYPE_22:
-			handle_cnt = ((sts22_entry_t *)pkt)->handle_count;
-			for (cnt = 0; cnt < handle_cnt; cnt++) {
-				qla2x00_process_completed_request(vha, rsp->req,
-				    ((sts22_entry_t *)pkt)->handle[cnt]);
-			}
-			break;
-		case STATUS_CONT_TYPE:
-			qla2x00_status_cont_entry(rsp, (sts_cont_entry_t *)pkt);
-			break;
-		case MBX_IOCB_TYPE:
-			qla2x00_mbx_iocb_entry(vha, rsp->req,
-			    (struct mbx_entry *)pkt);
-			break;
-		case CT_IOCB_TYPE:
-			qla2x00_ct_entry(vha, rsp->req, pkt, CT_IOCB_TYPE);
-			break;
-		default:
-			/* Type Not Supported. */
-			ql_log(ql_log_warn, vha, 0x504a,
-			    "Received unknown response pkt type %x "
-			    "entry status=%x.\n",
-			    pkt->entry_type, pkt->entry_status);
-			break;
-		}
-=======
 		qla2x00_process_response_entry(vha, rsp, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		((response_t *)pkt)->signature = RESPONSE_PROCESSED;
 		wmb();
 	}
 
 	/* Adjust ring index */
-<<<<<<< HEAD
-	WRT_REG_WORD(ISP_RSP_Q_OUT(ha, reg), rsp->ring_index);
-=======
 	wrt_reg_word(ISP_RSP_Q_OUT(ha, reg), rsp->ring_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
 qla2x00_handle_sense(srb_t *sp, uint8_t *sense_data, uint32_t par_sense_len,
 		     uint32_t sense_len, struct rsp_que *rsp, int res)
 {
-<<<<<<< HEAD
-	struct scsi_qla_host *vha = sp->fcport->vha;
-=======
 	struct scsi_qla_host *vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_cmnd *cp = GET_CMD_SP(sp);
 	uint32_t track_sense_len;
 
@@ -3692,13 +3006,8 @@ qla2x00_handle_sense(srb_t *sp, uint8_t *sense_data, uint32_t par_sense_len,
 
 	if (sense_len) {
 		ql_dbg(ql_dbg_io + ql_dbg_buffer, vha, 0x301c,
-<<<<<<< HEAD
-		    "Check condition Sense data, nexus%ld:%d:%d cmd=%p.\n",
-		    sp->fcport->vha->host_no, cp->device->id, cp->device->lun,
-=======
 		    "Check condition Sense data, nexus%ld:%d:%llu cmd=%p.\n",
 		    sp->vha->host_no, cp->device->id, cp->device->lun,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    cp);
 		ql_dump_buffer(ql_dbg_io + ql_dbg_buffer, vha, 0x302b,
 		    cp->sense_buffer, sense_len);
@@ -3707,11 +3016,7 @@ qla2x00_handle_sense(srb_t *sp, uint8_t *sense_data, uint32_t par_sense_len,
 
 struct scsi_dif_tuple {
 	__be16 guard;       /* Checksum */
-<<<<<<< HEAD
-	__be16 app_tag;         /* APPL identifer */
-=======
 	__be16 app_tag;         /* APPL identifier */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 ref_tag;         /* Target LBA or indirect LBA */
 };
 
@@ -3724,11 +3029,7 @@ struct scsi_dif_tuple {
 static inline int
 qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 {
-<<<<<<< HEAD
-	struct scsi_qla_host *vha = sp->fcport->vha;
-=======
 	struct scsi_qla_host *vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
 	uint8_t		*ap = &sts24->data[12];
 	uint8_t		*ep = &sts24->data[20];
@@ -3740,21 +3041,12 @@ qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 	 * swab32 of the "data" field in the beginning of qla2x00_status_entry()
 	 * would make guard field appear at offset 2
 	 */
-<<<<<<< HEAD
-	a_guard   = le16_to_cpu(*(uint16_t *)(ap + 2));
-	a_app_tag = le16_to_cpu(*(uint16_t *)(ap + 0));
-	a_ref_tag = le32_to_cpu(*(uint32_t *)(ap + 4));
-	e_guard   = le16_to_cpu(*(uint16_t *)(ep + 2));
-	e_app_tag = le16_to_cpu(*(uint16_t *)(ep + 0));
-	e_ref_tag = le32_to_cpu(*(uint32_t *)(ep + 4));
-=======
 	a_guard   = get_unaligned_le16(ap + 2);
 	a_app_tag = get_unaligned_le16(ap + 0);
 	a_ref_tag = get_unaligned_le32(ap + 4);
 	e_guard   = get_unaligned_le16(ep + 2);
 	e_app_tag = get_unaligned_le16(ep + 0);
 	e_ref_tag = get_unaligned_le32(ep + 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ql_dbg(ql_dbg_io, vha, 0x3023,
 	    "iocb(s) %p Returned STATUS.\n", sts24);
@@ -3771,15 +3063,9 @@ qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 	 * For type     3: ref & app tag is all 'f's
 	 * For type 0,1,2: app tag is all 'f's
 	 */
-<<<<<<< HEAD
-	if ((a_app_tag == 0xffff) &&
-	    ((scsi_get_prot_type(cmd) != SCSI_PROT_DIF_TYPE3) ||
-	     (a_ref_tag == 0xffffffff))) {
-=======
 	if (a_app_tag == be16_to_cpu(T10_PI_APP_ESCAPE) &&
 	    (scsi_get_prot_type(cmd) != SCSI_PROT_DIF_TYPE3 ||
 	     a_ref_tag == be32_to_cpu(T10_PI_REF_ESCAPE))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t blocks_done, resid;
 		sector_t lba_s = scsi_get_lba(cmd);
 
@@ -3796,11 +3082,7 @@ qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 		if (scsi_prot_sg_count(cmd)) {
 			uint32_t i, j = 0, k = 0, num_ent;
 			struct scatterlist *sg;
-<<<<<<< HEAD
-			struct sd_dif_tuple *spt;
-=======
 			struct t10_pi_tuple *spt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Patch the corresponding protection tags */
 			scsi_for_each_prot_sg(cmd, sg,
@@ -3825,15 +3107,9 @@ qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 			spt = page_address(sg_page(sg)) + sg->offset;
 			spt += j;
 
-<<<<<<< HEAD
-			spt->app_tag = 0xffff;
-			if (scsi_get_prot_type(cmd) == SCSI_PROT_DIF_TYPE3)
-				spt->ref_tag = 0xffffffff;
-=======
 			spt->app_tag = T10_PI_APP_ESCAPE;
 			if (scsi_get_prot_type(cmd) == SCSI_PROT_DIF_TYPE3)
 				spt->ref_tag = T10_PI_REF_ESCAPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return 0;
@@ -3841,57 +3117,28 @@ qla2x00_handle_dif_error(srb_t *sp, struct sts_entry_24xx *sts24)
 
 	/* check guard */
 	if (e_guard != a_guard) {
-<<<<<<< HEAD
-		scsi_build_sense_buffer(1, cmd->sense_buffer, ILLEGAL_REQUEST,
-		    0x10, 0x1);
-		set_driver_byte(cmd, DRIVER_SENSE);
-		set_host_byte(cmd, DID_ABORT);
-		cmd->result |= SAM_STAT_CHECK_CONDITION << 1;
-=======
 		scsi_build_sense(cmd, 1, ILLEGAL_REQUEST, 0x10, 0x1);
 		set_host_byte(cmd, DID_ABORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	/* check ref tag */
 	if (e_ref_tag != a_ref_tag) {
-<<<<<<< HEAD
-		scsi_build_sense_buffer(1, cmd->sense_buffer, ILLEGAL_REQUEST,
-		    0x10, 0x3);
-		set_driver_byte(cmd, DRIVER_SENSE);
-		set_host_byte(cmd, DID_ABORT);
-		cmd->result |= SAM_STAT_CHECK_CONDITION << 1;
-=======
 		scsi_build_sense(cmd, 1, ILLEGAL_REQUEST, 0x10, 0x3);
 		set_host_byte(cmd, DID_ABORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	/* check appl tag */
 	if (e_app_tag != a_app_tag) {
-<<<<<<< HEAD
-		scsi_build_sense_buffer(1, cmd->sense_buffer, ILLEGAL_REQUEST,
-		    0x10, 0x2);
-		set_driver_byte(cmd, DRIVER_SENSE);
-		set_host_byte(cmd, DID_ABORT);
-		cmd->result |= SAM_STAT_CHECK_CONDITION << 1;
-=======
 		scsi_build_sense(cmd, 1, ILLEGAL_REQUEST, 0x10, 0x2);
 		set_host_byte(cmd, DID_ABORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	return 1;
 }
 
-<<<<<<< HEAD
-/**
- * qla2x00_status_entry() - Process a Status IOCB entry.
- * @ha: SCSI driver HA context
-=======
 static void
 qla25xx_process_bidir_status_iocb(scsi_qla_host_t *vha, void *pkt,
 				  struct req_que *req, uint32_t index)
@@ -4044,7 +3291,6 @@ done:
  * qla2x00_status_entry() - Process a Status IOCB entry.
  * @vha: SCSI driver HA context
  * @rsp: response queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pkt: Entry pointer
  */
 static void
@@ -4053,13 +3299,8 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	srb_t		*sp;
 	fc_port_t	*fcport;
 	struct scsi_cmnd *cp;
-<<<<<<< HEAD
-	sts_entry_t *sts;
-	struct sts_entry_24xx *sts24;
-=======
 	sts_entry_t *sts = pkt;
 	struct sts_entry_24xx *sts24 = pkt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t	comp_status;
 	uint16_t	scsi_status;
 	uint16_t	ox_id;
@@ -4074,14 +3315,6 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	struct req_que *req;
 	int logit = 1;
 	int res = 0;
-<<<<<<< HEAD
-
-	sts = (sts_entry_t *) pkt;
-	sts24 = (struct sts_entry_24xx *) pkt;
-	if (IS_FWI2_CAPABLE(ha)) {
-		comp_status = le16_to_cpu(sts24->comp_status);
-		scsi_status = le16_to_cpu(sts24->scsi_status) & SS_MASK;
-=======
 	uint16_t state_flags = 0;
 	uint16_t sts_qual = 0;
 
@@ -4089,7 +3322,6 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		comp_status = le16_to_cpu(sts24->comp_status);
 		scsi_status = le16_to_cpu(sts24->scsi_status) & SS_MASK;
 		state_flags = le16_to_cpu(sts24->state_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		comp_status = le16_to_cpu(sts->comp_status);
 		scsi_status = le16_to_cpu(sts->scsi_status) & SS_MASK;
@@ -4098,9 +3330,6 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	que = MSW(sts->handle);
 	req = ha->req_q_map[que];
 
-<<<<<<< HEAD
-	/* Fast path completion. */
-=======
 	/* Check for invalid queue pointer */
 	if (req == NULL ||
 	    que >= find_first_zero_bit(ha->req_qid_map, ha->max_req_queues)) {
@@ -4165,52 +3394,23 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	qla_chk_edif_rx_sa_delete_pending(vha, sp, sts24);
 	sp->qpair->cmd_completion_cnt++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (comp_status == CS_COMPLETE && scsi_status == 0) {
 		qla2x00_process_completed_request(vha, req, handle);
 
 		return;
 	}
 
-<<<<<<< HEAD
-	/* Validate handle. */
-	if (handle < MAX_OUTSTANDING_COMMANDS) {
-		sp = req->outstanding_cmds[handle];
-		req->outstanding_cmds[handle] = NULL;
-	} else
-		sp = NULL;
-
-	if (sp == NULL) {
-		ql_dbg(ql_dbg_io, vha, 0x3017,
-		    "Invalid status handle (0x%x).\n", sts->handle);
-
-		if (IS_QLA82XX(ha))
-			set_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags);
-		else
-			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
-		qla2xxx_wake_dpc(vha);
-		return;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp = GET_CMD_SP(sp);
 	if (cp == NULL) {
 		ql_dbg(ql_dbg_io, vha, 0x3018,
 		    "Command already returned (0x%x/%p).\n",
 		    sts->handle, sp);
 
-<<<<<<< HEAD
-		return;
-	}
-
-  	lscsi_status = scsi_status & STATUS_MASK;
-=======
 		req->outstanding_cmds[handle] = NULL;
 		return;
 	}
 
 	lscsi_status = scsi_status & STATUS_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fcport = sp->fcport;
 
@@ -4231,10 +3431,7 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		host_to_fcp_swap(sts24->data, sizeof(sts24->data));
 		ox_id = le16_to_cpu(sts24->ox_id);
 		par_sense_len = sizeof(sts24->data);
-<<<<<<< HEAD
-=======
 		sts_qual = le16_to_cpu(sts24->status_qualifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (scsi_status & SS_SENSE_LEN_VALID)
 			sense_len = le16_to_cpu(sts->req_sense_length);
@@ -4269,8 +3466,6 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		comp_status = CS_DATA_OVERRUN;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Check retry_delay_timer value if we receive a busy or
 	 * queue full.
 	 */
@@ -4279,7 +3474,6 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		qla2x00_set_retry_delay_timestamp(fcport, sts_qual);
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Based on Host and scsi status generate status code for Linux
 	 */
 	switch (comp_status) {
@@ -4297,12 +3491,7 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 			    ((unsigned)(scsi_bufflen(cp) - resid) <
 			     cp->underflow)) {
 				ql_dbg(ql_dbg_io, fcport->vha, 0x301a,
-<<<<<<< HEAD
-				    "Mid-layer underflow "
-				    "detected (0x%x of 0x%x bytes).\n",
-=======
 				    "Mid-layer underflow detected (0x%x of 0x%x bytes).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    resid, scsi_bufflen(cp));
 
 				res = DID_ERROR << 16;
@@ -4334,16 +3523,9 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		scsi_set_resid(cp, resid);
 		if (scsi_status & SS_RESIDUAL_UNDER) {
 			if (IS_FWI2_CAPABLE(ha) && fw_resid_len != resid_len) {
-<<<<<<< HEAD
-				ql_dbg(ql_dbg_io, fcport->vha, 0x301d,
-				    "Dropped frame(s) detected "
-				    "(0x%x of 0x%x bytes).\n",
-				    resid, scsi_bufflen(cp));
-=======
 				ql_log(ql_log_warn, fcport->vha, 0x301d,
 				       "Dropped frame(s) detected (0x%x of 0x%x bytes).\n",
 				       resid, scsi_bufflen(cp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				res = DID_ERROR << 16 | lscsi_status;
 				goto check_scsi_status;
@@ -4353,12 +3535,7 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 			    ((unsigned)(scsi_bufflen(cp) - resid) <
 			    cp->underflow)) {
 				ql_dbg(ql_dbg_io, fcport->vha, 0x301e,
-<<<<<<< HEAD
-				    "Mid-layer underflow "
-				    "detected (0x%x of 0x%x bytes).\n",
-=======
 				    "Mid-layer underflow detected (0x%x of 0x%x bytes).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    resid, scsi_bufflen(cp));
 
 				res = DID_ERROR << 16;
@@ -4371,18 +3548,11 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 			 * task not completed.
 			 */
 
-<<<<<<< HEAD
-			ql_dbg(ql_dbg_io, fcport->vha, 0x301f,
-			    "Dropped frame(s) detected (0x%x "
-			    "of 0x%x bytes).\n", resid,
-			    scsi_bufflen(cp));
-=======
 			ql_log(ql_log_warn, fcport->vha, 0x301f,
 			       "Dropped frame(s) detected (0x%x of 0x%x bytes).\n",
 			       resid, scsi_bufflen(cp));
 
 			vha->interface_err_cnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			res = DID_ERROR << 16 | lscsi_status;
 			goto check_scsi_status;
@@ -4426,10 +3596,7 @@ check_scsi_status:
 	case CS_PORT_UNAVAILABLE:
 	case CS_TIMEOUT:
 	case CS_RESET:
-<<<<<<< HEAD
-=======
 	case CS_EDIF_INV_REQ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We are going to have the fc class block the rport
@@ -4446,14 +3613,6 @@ check_scsi_status:
 				break;
 		}
 
-<<<<<<< HEAD
-		ql_dbg(ql_dbg_io, fcport->vha, 0x3021,
-		    "Port down status: port-state=0x%x.\n",
-		    atomic_read(&fcport->state));
-
-		if (atomic_read(&fcport->state) == FCS_ONLINE)
-			qla2x00_mark_device_lost(fcport->vha, fcport, 1, 1);
-=======
 		if (atomic_read(&fcport->state) == FCS_ONLINE) {
 			ql_dbg(ql_dbg_disc, fcport->vha, 0x3021,
 				"Port to be marked lost on fcport=%02x%02x%02x, current "
@@ -4465,7 +3624,6 @@ check_scsi_status:
 			qlt_schedule_sess_for_deletion(fcport);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case CS_ABORTED:
@@ -4474,8 +3632,6 @@ check_scsi_status:
 
 	case CS_DIF_ERROR:
 		logit = qla2x00_handle_dif_error(sp, sts24);
-<<<<<<< HEAD
-=======
 		res = cp->result;
 		break;
 
@@ -4503,7 +3659,6 @@ check_scsi_status:
 		    pkt, sizeof(*sts24));
 		res = DID_ERROR << 16;
 		vha->hw_err_cnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		res = DID_ERROR << 16;
@@ -4513,22 +3668,6 @@ check_scsi_status:
 out:
 	if (logit)
 		ql_dbg(ql_dbg_io, fcport->vha, 0x3022,
-<<<<<<< HEAD
-		    "FCP command status: 0x%x-0x%x (0x%x) "
-		    "nexus=%ld:%d:%d portid=%02x%02x%02x oxid=0x%x "
-		    "cdb=%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x len=0x%x "
-		    "rsp_info=0x%x resid=0x%x fw_resid=0x%x.\n",
-		    comp_status, scsi_status, res, vha->host_no,
-		    cp->device->id, cp->device->lun, fcport->d_id.b.domain,
-		    fcport->d_id.b.area, fcport->d_id.b.al_pa, ox_id,
-		    cp->cmnd[0], cp->cmnd[1], cp->cmnd[2], cp->cmnd[3],
-		    cp->cmnd[4], cp->cmnd[5], cp->cmnd[6], cp->cmnd[7],
-		    cp->cmnd[8], cp->cmnd[9], scsi_bufflen(cp), rsp_info_len,
-		    resid_len, fw_resid_len);
-
-	if (rsp->status_srb == NULL)
-		sp->done(ha, sp, res);
-=======
 		       "FCP command status: 0x%x-0x%x (0x%x) nexus=%ld:%d:%llu portid=%02x%02x%02x oxid=0x%x cdb=%10phN len=0x%x rsp_info=0x%x resid=0x%x fw_resid=0x%x sp=%p cp=%p.\n",
 		       comp_status, scsi_status, res, vha->host_no,
 		       cp->device->id, cp->device->lun, fcport->d_id.b.domain,
@@ -4541,16 +3680,11 @@ out:
 
 	/* for io's, clearing of outstanding_cmds[handle] means scsi_done was called */
 	req->outstanding_cmds[handle] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_status_cont_entry() - Process a Status Continuations entry.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
-=======
  * @rsp: response queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pkt: Entry pointer
  *
  * Extended sense data.
@@ -4602,29 +3736,18 @@ qla2x00_status_cont_entry(struct rsp_que *rsp, sts_cont_entry_t *pkt)
 	/* Place command on done queue. */
 	if (sense_len == 0) {
 		rsp->status_srb = NULL;
-<<<<<<< HEAD
-		sp->done(ha, sp, cp->result);
-=======
 		sp->done(sp, cp->result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
  * qla2x00_error_entry() - Process an error entry.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
- * @pkt: Entry pointer
- */
-static void
-=======
  * @vha: SCSI driver HA context
  * @rsp: response queue
  * @pkt: Entry pointer
  * return : 1=allow further error analysis. 0=no additional error analysis.
  */
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_error_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, sts_entry_t *pkt)
 {
 	srb_t *sp;
@@ -4633,17 +3756,11 @@ qla2x00_error_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, sts_entry_t *pkt)
 	uint16_t que = MSW(pkt->handle);
 	struct req_que *req = NULL;
 	int res = DID_ERROR << 16;
-<<<<<<< HEAD
-
-	ql_dbg(ql_dbg_async, vha, 0x502a,
-	    "type of error status in response: 0x%x\n", pkt->entry_status);
-=======
 	u16 index;
 
 	ql_dbg(ql_dbg_async, vha, 0x502a,
 	    "iocb type %xh with error status %xh, handle %xh, rspq id %d\n",
 	    pkt->entry_type, pkt->entry_status, pkt->handle, rsp->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (que >= ha->max_req_queues || !ha->req_q_map[que])
 		goto fatal;
@@ -4653,22 +3770,6 @@ qla2x00_error_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, sts_entry_t *pkt)
 	if (pkt->entry_status & RF_BUSY)
 		res = DID_BUS_BUSY << 16;
 
-<<<<<<< HEAD
-	sp = qla2x00_get_sp_from_handle(vha, func, req, pkt);
-	if (sp) {
-		sp->done(ha, sp, res);
-		return;
-	}
-fatal:
-	ql_log(ql_log_warn, vha, 0x5030,
-	    "Error entry - invalid handle/queue.\n");
-
-	if (IS_QLA82XX(ha))
-		set_bit(FCOE_CTX_RESET_NEEDED, &vha->dpc_flags);
-	else
-		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
-	qla2xxx_wake_dpc(vha);
-=======
 	if ((pkt->handle & ~QLA_TGT_HANDLE_MASK) == QLA_TGT_SKIP_HANDLE)
 		return 0;
 
@@ -4706,16 +3807,11 @@ fatal:
 	ql_log(ql_log_warn, vha, 0x5030,
 	    "Error entry - invalid handle/queue (%04x).\n", que);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla24xx_mbx_completion() - Process mailbox command completions.
-<<<<<<< HEAD
- * @ha: SCSI driver HA context
-=======
  * @vha: SCSI driver HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mb0: Mailbox0 register
  */
 static void
@@ -4723,25 +3819,15 @@ qla24xx_mbx_completion(scsi_qla_host_t *vha, uint16_t mb0)
 {
 	uint16_t	cnt;
 	uint32_t	mboxes;
-<<<<<<< HEAD
-	uint16_t __iomem *wptr;
-=======
 	__le16 __iomem *wptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 
 	/* Read all mbox registers? */
-<<<<<<< HEAD
-	mboxes = (1 << ha->mbx_count) - 1;
-	if (!ha->mcp)
-		ql_dbg(ql_dbg_async, vha, 0x504e, "MBX pointer ERRROR.\n");
-=======
 	WARN_ON_ONCE(ha->mbx_count > 32);
 	mboxes = (1ULL << ha->mbx_count) - 1;
 	if (!ha->mcp)
 		ql_dbg(ql_dbg_async, vha, 0x504e, "MBX pointer ERROR.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		mboxes = ha->mcp->in_mb;
 
@@ -4749,30 +3835,17 @@ qla24xx_mbx_completion(scsi_qla_host_t *vha, uint16_t mb0)
 	ha->flags.mbox_int = 1;
 	ha->mailbox_out[0] = mb0;
 	mboxes >>= 1;
-<<<<<<< HEAD
-	wptr = (uint16_t __iomem *)&reg->mailbox1;
-
-	for (cnt = 1; cnt < ha->mbx_count; cnt++) {
-		if (mboxes & BIT_0)
-			ha->mailbox_out[cnt] = RD_REG_WORD(wptr);
-=======
 	wptr = &reg->mailbox1;
 
 	for (cnt = 1; cnt < ha->mbx_count; cnt++) {
 		if (mboxes & BIT_0)
 			ha->mailbox_out[cnt] = rd_reg_word(wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mboxes >>= 1;
 		wptr++;
 	}
 }
 
-<<<<<<< HEAD
-/**
- * qla24xx_process_response_queue() - Process response queue entries.
- * @ha: SCSI driver HA context
-=======
 static void
 qla24xx_abort_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
 	struct abort_entry_24xx *pkt)
@@ -4877,21 +3950,12 @@ static void qla_marker_iocb_entry(scsi_qla_host_t *vha, struct req_que *req,
  * qla24xx_process_response_queue() - Process response queue entries.
  * @vha: SCSI driver HA context
  * @rsp: response queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void qla24xx_process_response_queue(struct scsi_qla_host *vha,
 	struct rsp_que *rsp)
 {
 	struct sts_entry_24xx *pkt;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-
-	if (!vha->flags.online)
-		return;
-
-	while (rsp->ring_ptr->signature != RESPONSE_PROCESSED) {
-		pkt = (struct sts_entry_24xx *)rsp->ring_ptr;
-=======
 	struct purex_entry_24xx *purex_entry;
 	struct purex_item *pure_item;
 	struct pt_ls4_rx_unsol *p;
@@ -4922,7 +3986,6 @@ void qla24xx_process_response_queue(struct scsi_qla_host *vha,
 		       rsp->ring_ptr->signature != RESPONSE_PROCESSED) {
 		pkt = (struct sts_entry_24xx *)rsp->ring_ptr;
 		cur_ring_index = rsp->ring_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rsp->ring_index++;
 		if (rsp->ring_index == rsp->length) {
@@ -4933,21 +3996,14 @@ void qla24xx_process_response_queue(struct scsi_qla_host *vha,
 		}
 
 		if (pkt->entry_status != 0) {
-<<<<<<< HEAD
-			qla2x00_error_entry(vha, rsp, (sts_entry_t *) pkt);
-=======
 			if (qla2x00_error_entry(vha, rsp, (sts_entry_t *) pkt))
 				goto process_err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			((response_t *)pkt)->signature = RESPONSE_PROCESSED;
 			wmb();
 			continue;
 		}
-<<<<<<< HEAD
-=======
 process_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (pkt->entry_type) {
 		case STATUS_TYPE:
@@ -4964,22 +4020,6 @@ process_err:
 			qla24xx_logio_entry(vha, rsp->req,
 			    (struct logio_entry_24xx *)pkt);
 			break;
-<<<<<<< HEAD
-		case TSK_MGMT_IOCB_TYPE:
-			qla24xx_tm_iocb_entry(vha, rsp->req,
-			    (struct tsk_mgmt_entry *)pkt);
-			break;
-                case CT_IOCB_TYPE:
-			qla24xx_els_ct_entry(vha, rsp->req, pkt, CT_IOCB_TYPE);
-			break;
-                case ELS_IOCB_TYPE:
-			qla24xx_els_ct_entry(vha, rsp->req, pkt, ELS_IOCB_TYPE);
-			break;
-		case MARKER_TYPE:
-			/* Do nothing in this case, this check is to prevent it
-			 * from falling into default case
-			 */
-=======
 		case CT_IOCB_TYPE:
 			qla24xx_els_ct_entry(vha, rsp->req, pkt, CT_IOCB_TYPE);
 			break;
@@ -5103,19 +4143,12 @@ process_err:
 				return;
 			}
 			qla2xxx_process_purls_iocb((void **)&pkt, &rsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			/* Type Not Supported. */
 			ql_dbg(ql_dbg_async, vha, 0x5042,
-<<<<<<< HEAD
-			    "Received unknown response pkt type %x "
-			    "entry status=%x.\n",
-			    pkt->entry_type, pkt->entry_status);
-=======
 			       "Received unknown response pkt type 0x%x entry status=%x.\n",
 			       pkt->entry_type, pkt->entry_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		((response_t *)pkt)->signature = RESPONSE_PROCESSED;
@@ -5123,13 +4156,6 @@ process_err:
 	}
 
 	/* Adjust ring index */
-<<<<<<< HEAD
-	if (IS_QLA82XX(ha)) {
-		struct device_reg_82xx __iomem *reg = &ha->iobase->isp82;
-		WRT_REG_DWORD(&reg->rsp_q_out[0], rsp->ring_index);
-	} else
-		WRT_REG_DWORD(rsp->rsp_q_out, rsp->ring_index);
-=======
 	if (IS_P3P_TYPE(ha)) {
 		struct device_reg_82xx __iomem *reg = &ha->iobase->isp82;
 
@@ -5137,7 +4163,6 @@ process_err:
 	} else {
 		wrt_reg_dword(rsp->rsp_q_out, rsp->ring_index);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -5148,19 +4173,6 @@ qla2xxx_check_risc_status(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 
-<<<<<<< HEAD
-	if (!IS_QLA25XX(ha) && !IS_QLA81XX(ha) && !IS_QLA83XX(ha))
-		return;
-
-	rval = QLA_SUCCESS;
-	WRT_REG_DWORD(&reg->iobase_addr, 0x7C00);
-	RD_REG_DWORD(&reg->iobase_addr);
-	WRT_REG_DWORD(&reg->iobase_window, 0x0001);
-	for (cnt = 10000; (RD_REG_DWORD(&reg->iobase_window) & BIT_0) == 0 &&
-	    rval == QLA_SUCCESS; cnt--) {
-		if (cnt) {
-			WRT_REG_DWORD(&reg->iobase_window, 0x0001);
-=======
 	if (!IS_QLA25XX(ha) && !IS_QLA81XX(ha) && !IS_QLA83XX(ha) &&
 	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 		return;
@@ -5173,7 +4185,6 @@ qla2xxx_check_risc_status(scsi_qla_host_t *vha)
 	    rval == QLA_SUCCESS; cnt--) {
 		if (cnt) {
 			wrt_reg_dword(&reg->iobase_window, 0x0001);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(10);
 		} else
 			rval = QLA_FUNCTION_TIMEOUT;
@@ -5181,20 +4192,12 @@ qla2xxx_check_risc_status(scsi_qla_host_t *vha)
 	if (rval == QLA_SUCCESS)
 		goto next_test;
 
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->iobase_window, 0x0003);
-	for (cnt = 100; (RD_REG_DWORD(&reg->iobase_window) & BIT_0) == 0 &&
-	    rval == QLA_SUCCESS; cnt--) {
-		if (cnt) {
-			WRT_REG_DWORD(&reg->iobase_window, 0x0003);
-=======
 	rval = QLA_SUCCESS;
 	wrt_reg_dword(&reg->iobase_window, 0x0003);
 	for (cnt = 100; (rd_reg_dword(&reg->iobase_window) & BIT_0) == 0 &&
 	    rval == QLA_SUCCESS; cnt--) {
 		if (cnt) {
 			wrt_reg_dword(&reg->iobase_window, 0x0003);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(10);
 		} else
 			rval = QLA_FUNCTION_TIMEOUT;
@@ -5203,31 +4206,18 @@ qla2xxx_check_risc_status(scsi_qla_host_t *vha)
 		goto done;
 
 next_test:
-<<<<<<< HEAD
-	if (RD_REG_DWORD(&reg->iobase_c8) & BIT_3)
-=======
 	if (rd_reg_dword(&reg->iobase_c8) & BIT_3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_log(ql_log_info, vha, 0x504c,
 		    "Additional code -- 0x55AA.\n");
 
 done:
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->iobase_window, 0x0000);
-	RD_REG_DWORD(&reg->iobase_window);
-=======
 	wrt_reg_dword(&reg->iobase_window, 0x0000);
 	rd_reg_dword(&reg->iobase_window);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla24xx_intr_handler() - Process interrupts for the ISP23xx and ISP24xx.
-<<<<<<< HEAD
- * @irq:
-=======
  * @irq: interrupt number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev_id: SCSI driver HA context
  *
  * Called by system whenever the host adapter generates an interrupt.
@@ -5244,16 +4234,10 @@ qla24xx_intr_handler(int irq, void *dev_id)
 	unsigned long	iter;
 	uint32_t	stat;
 	uint32_t	hccr;
-<<<<<<< HEAD
-	uint16_t	mb[4];
-	struct rsp_que *rsp;
-	unsigned long	flags;
-=======
 	uint16_t	mb[8];
 	struct rsp_que *rsp;
 	unsigned long	flags;
 	bool process_atio = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rsp = (struct rsp_que *) dev_id;
 	if (!rsp) {
@@ -5272,22 +4256,14 @@ qla24xx_intr_handler(int irq, void *dev_id)
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	vha = pci_get_drvdata(ha->pdev);
 	for (iter = 50; iter--; ) {
-<<<<<<< HEAD
-		stat = RD_REG_DWORD(&reg->host_status);
-=======
 		stat = rd_reg_dword(&reg->host_status);
 		if (qla2x00_check_reg32_for_disconnect(vha, stat))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stat & HSRX_RISC_PAUSED) {
 			if (unlikely(pci_channel_offline(ha->pdev)))
 				break;
 
-<<<<<<< HEAD
-			hccr = RD_REG_DWORD(&reg->hccr);
-=======
 			hccr = rd_reg_dword(&reg->hccr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ql_log(ql_log_warn, vha, 0x504b,
 			    "RISC paused -- HCCR=%x, Dumping firmware.\n",
@@ -5295,43 +4271,21 @@ qla24xx_intr_handler(int irq, void *dev_id)
 
 			qla2xxx_check_risc_status(vha);
 
-<<<<<<< HEAD
-			ha->isp_ops->fw_dump(vha, 1);
-=======
 			ha->isp_ops->fw_dump(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 			break;
 		} else if ((stat & HSRX_RISC_INT) == 0)
 			break;
 
 		switch (stat & 0xff) {
-<<<<<<< HEAD
-		case 0x1:
-		case 0x2:
-		case 0x10:
-		case 0x11:
-=======
 		case INTR_ROM_MB_SUCCESS:
 		case INTR_ROM_MB_FAILED:
 		case INTR_MB_SUCCESS:
 		case INTR_MB_FAILED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qla24xx_mbx_completion(vha, MSW(stat));
 			status |= MBX_INTERRUPT;
 
 			break;
-<<<<<<< HEAD
-		case 0x12:
-			mb[0] = MSW(stat);
-			mb[1] = RD_REG_WORD(&reg->mailbox1);
-			mb[2] = RD_REG_WORD(&reg->mailbox2);
-			mb[3] = RD_REG_WORD(&reg->mailbox3);
-			qla2x00_async_event(vha, rsp, mb);
-			break;
-		case 0x13:
-		case 0x14:
-=======
 		case INTR_ASYNC_EVENT:
 			mb[0] = MSW(stat);
 			mb[1] = rd_reg_word(&reg->mailbox1);
@@ -5349,7 +4303,6 @@ qla24xx_intr_handler(int irq, void *dev_id)
 			break;
 		case INTR_ATIO_RSP_QUE_UPDATE:
 			process_atio = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qla24xx_process_response_queue(vha, rsp);
 			break;
 		default:
@@ -5357,17 +4310,6 @@ qla24xx_intr_handler(int irq, void *dev_id)
 			    "Unrecognized interrupt type (%d).\n", stat * 0xff);
 			break;
 		}
-<<<<<<< HEAD
-		WRT_REG_DWORD(&reg->hccr, HCCRX_CLR_RISC_INT);
-		RD_REG_DWORD_RELAXED(&reg->hccr);
-	}
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-
-	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags) &&
-	    (status & MBX_INTERRUPT) && ha->flags.mbox_int) {
-		set_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
-		complete(&ha->mbx_intr_comp);
-=======
 		wrt_reg_dword(&reg->hccr, HCCRX_CLR_RISC_INT);
 		rd_reg_dword_relaxed(&reg->hccr);
 		if (unlikely(IS_QLA83XX(ha) && (ha->pdev->revision == 1)))
@@ -5380,7 +4322,6 @@ qla24xx_intr_handler(int irq, void *dev_id)
 		spin_lock_irqsave(&ha->tgt.atio_lock, flags);
 		qlt_24xx_process_atio_queue(vha, 0);
 		spin_unlock_irqrestore(&ha->tgt.atio_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
@@ -5409,13 +4350,8 @@ qla24xx_msix_rsp_q(int irq, void *dev_id)
 	vha = pci_get_drvdata(ha->pdev);
 	qla24xx_process_response_queue(vha, rsp);
 	if (!ha->flags.disable_msix_handshake) {
-<<<<<<< HEAD
-		WRT_REG_DWORD(&reg->hccr, HCCRX_CLR_RISC_INT);
-		RD_REG_DWORD_RELAXED(&reg->hccr);
-=======
 		wrt_reg_dword(&reg->hccr, HCCRX_CLR_RISC_INT);
 		rd_reg_dword_relaxed(&reg->hccr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
@@ -5423,38 +4359,6 @@ qla24xx_msix_rsp_q(int irq, void *dev_id)
 }
 
 static irqreturn_t
-<<<<<<< HEAD
-qla25xx_msix_rsp_q(int irq, void *dev_id)
-{
-	struct qla_hw_data *ha;
-	struct rsp_que *rsp;
-	struct device_reg_24xx __iomem *reg;
-	unsigned long flags;
-
-	rsp = (struct rsp_que *) dev_id;
-	if (!rsp) {
-		ql_log(ql_log_info, NULL, 0x505b,
-		    "%s: NULL response queue pointer.\n", __func__);
-		return IRQ_NONE;
-	}
-	ha = rsp->hw;
-
-	/* Clear the interrupt, if enabled, for this response queue */
-	if (!ha->flags.disable_msix_handshake) {
-		reg = &ha->iobase->isp24;
-		spin_lock_irqsave(&ha->hardware_lock, flags);
-		WRT_REG_DWORD(&reg->hccr, HCCRX_CLR_RISC_INT);
-		RD_REG_DWORD_RELAXED(&reg->hccr);
-		spin_unlock_irqrestore(&ha->hardware_lock, flags);
-	}
-	queue_work_on((int) (rsp->id - 1), ha->wq, &rsp->q_work);
-
-	return IRQ_HANDLED;
-}
-
-static irqreturn_t
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla24xx_msix_default(int irq, void *dev_id)
 {
 	scsi_qla_host_t	*vha;
@@ -5464,14 +4368,9 @@ qla24xx_msix_default(int irq, void *dev_id)
 	int		status;
 	uint32_t	stat;
 	uint32_t	hccr;
-<<<<<<< HEAD
-	uint16_t	mb[4];
-	unsigned long flags;
-=======
 	uint16_t	mb[8];
 	unsigned long flags;
 	bool process_atio = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rsp = (struct rsp_que *) dev_id;
 	if (!rsp) {
@@ -5486,68 +4385,37 @@ qla24xx_msix_default(int irq, void *dev_id)
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	vha = pci_get_drvdata(ha->pdev);
 	do {
-<<<<<<< HEAD
-		stat = RD_REG_DWORD(&reg->host_status);
-=======
 		stat = rd_reg_dword(&reg->host_status);
 		if (qla2x00_check_reg32_for_disconnect(vha, stat))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stat & HSRX_RISC_PAUSED) {
 			if (unlikely(pci_channel_offline(ha->pdev)))
 				break;
 
-<<<<<<< HEAD
-			hccr = RD_REG_DWORD(&reg->hccr);
-=======
 			hccr = rd_reg_dword(&reg->hccr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ql_log(ql_log_info, vha, 0x5050,
 			    "RISC paused -- HCCR=%x, Dumping firmware.\n",
 			    hccr);
 
 			qla2xxx_check_risc_status(vha);
-<<<<<<< HEAD
-
-			ha->isp_ops->fw_dump(vha, 1);
-=======
 			vha->hw_err_cnt++;
 
 			ha->isp_ops->fw_dump(vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 			break;
 		} else if ((stat & HSRX_RISC_INT) == 0)
 			break;
 
 		switch (stat & 0xff) {
-<<<<<<< HEAD
-		case 0x1:
-		case 0x2:
-		case 0x10:
-		case 0x11:
-=======
 		case INTR_ROM_MB_SUCCESS:
 		case INTR_ROM_MB_FAILED:
 		case INTR_MB_SUCCESS:
 		case INTR_MB_FAILED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qla24xx_mbx_completion(vha, MSW(stat));
 			status |= MBX_INTERRUPT;
 
 			break;
-<<<<<<< HEAD
-		case 0x12:
-			mb[0] = MSW(stat);
-			mb[1] = RD_REG_WORD(&reg->mailbox1);
-			mb[2] = RD_REG_WORD(&reg->mailbox2);
-			mb[3] = RD_REG_WORD(&reg->mailbox3);
-			qla2x00_async_event(vha, rsp, mb);
-			break;
-		case 0x13:
-		case 0x14:
-=======
 		case INTR_ASYNC_EVENT:
 			mb[0] = MSW(stat);
 			mb[1] = rd_reg_word(&reg->mailbox1);
@@ -5565,7 +4433,6 @@ qla24xx_msix_default(int irq, void *dev_id)
 			break;
 		case INTR_ATIO_RSP_QUE_UPDATE:
 			process_atio = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qla24xx_process_response_queue(vha, rsp);
 			break;
 		default:
@@ -5573,17 +4440,6 @@ qla24xx_msix_default(int irq, void *dev_id)
 			    "Unrecognized interrupt type (%d).\n", stat & 0xff);
 			break;
 		}
-<<<<<<< HEAD
-		WRT_REG_DWORD(&reg->hccr, HCCRX_CLR_RISC_INT);
-	} while (0);
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-
-	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags) &&
-	    (status & MBX_INTERRUPT) && ha->flags.mbox_int) {
-		set_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
-		complete(&ha->mbx_intr_comp);
-	}
-=======
 		wrt_reg_dword(&reg->hccr, HCCRX_CLR_RISC_INT);
 	} while (0);
 	qla2x00_handle_mbx_completion(ha, status);
@@ -5640,7 +4496,6 @@ qla2xxx_msix_rsp_q_hs(int irq, void *dev_id)
 
 	queue_work(ha->wq, &qpair->q_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -5651,15 +4506,6 @@ struct qla_init_msix_entry {
 	irq_handler_t handler;
 };
 
-<<<<<<< HEAD
-static struct qla_init_msix_entry msix_entries[3] = {
-	{ "qla2xxx (default)", qla24xx_msix_default },
-	{ "qla2xxx (rsp_q)", qla24xx_msix_rsp_q },
-	{ "qla2xxx (multiq)", qla25xx_msix_rsp_q },
-};
-
-static struct qla_init_msix_entry qla82xx_msix_entries[2] = {
-=======
 static const struct qla_init_msix_entry msix_entries[] = {
 	{ "default", qla24xx_msix_default },
 	{ "rsp_q", qla24xx_msix_rsp_q },
@@ -5669,76 +4515,10 @@ static const struct qla_init_msix_entry msix_entries[] = {
 };
 
 static const struct qla_init_msix_entry qla82xx_msix_entries[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "qla2xxx (default)", qla82xx_msix_default },
 	{ "qla2xxx (rsp_q)", qla82xx_msix_rsp_q },
 };
 
-<<<<<<< HEAD
-static void
-qla24xx_disable_msix(struct qla_hw_data *ha)
-{
-	int i;
-	struct qla_msix_entry *qentry;
-	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
-
-	for (i = 0; i < ha->msix_count; i++) {
-		qentry = &ha->msix_entries[i];
-		if (qentry->have_irq)
-			free_irq(qentry->vector, qentry->rsp);
-	}
-	pci_disable_msix(ha->pdev);
-	kfree(ha->msix_entries);
-	ha->msix_entries = NULL;
-	ha->flags.msix_enabled = 0;
-	ql_dbg(ql_dbg_init, vha, 0x0042,
-	    "Disabled the MSI.\n");
-}
-
-static int
-qla24xx_enable_msix(struct qla_hw_data *ha, struct rsp_que *rsp)
-{
-#define MIN_MSIX_COUNT	2
-	int i, ret;
-	struct msix_entry *entries;
-	struct qla_msix_entry *qentry;
-	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
-
-	entries = kzalloc(sizeof(struct msix_entry) * ha->msix_count,
-			GFP_KERNEL);
-	if (!entries) {
-		ql_log(ql_log_warn, vha, 0x00bc,
-		    "Failed to allocate memory for msix_entry.\n");
-		return -ENOMEM;
-	}
-
-	for (i = 0; i < ha->msix_count; i++)
-		entries[i].entry = i;
-
-	ret = pci_enable_msix(ha->pdev, entries, ha->msix_count);
-	if (ret) {
-		if (ret < MIN_MSIX_COUNT)
-			goto msix_failed;
-
-		ql_log(ql_log_warn, vha, 0x00c6,
-		    "MSI-X: Failed to enable support "
-		    "-- %d/%d\n Retry with %d vectors.\n",
-		    ha->msix_count, ret, ret);
-		ha->msix_count = ret;
-		ret = pci_enable_msix(ha->pdev, entries, ha->msix_count);
-		if (ret) {
-msix_failed:
-			ql_log(ql_log_fatal, vha, 0x00c7,
-			    "MSI-X: Failed to enable support, "
-			    "giving   up -- %d/%d.\n",
-			    ha->msix_count, ret);
-			goto msix_out;
-		}
-		ha->max_rsp_queues = ha->msix_count - 1;
-	}
-	ha->msix_entries = kzalloc(sizeof(struct qla_msix_entry) *
-				ha->msix_count, GFP_KERNEL);
-=======
 static int
 qla24xx_enable_msix(struct qla_hw_data *ha, struct rsp_que *rsp)
 {
@@ -5796,63 +4576,16 @@ qla24xx_enable_msix(struct qla_hw_data *ha, struct rsp_que *rsp)
 	ha->msix_entries = kcalloc(ha->msix_count,
 				   sizeof(struct qla_msix_entry),
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->msix_entries) {
 		ql_log(ql_log_fatal, vha, 0x00c8,
 		    "Failed to allocate memory for ha->msix_entries.\n");
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		goto msix_out;
-=======
 		goto free_irqs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ha->flags.msix_enabled = 1;
 
 	for (i = 0; i < ha->msix_count; i++) {
 		qentry = &ha->msix_entries[i];
-<<<<<<< HEAD
-		qentry->vector = entries[i].vector;
-		qentry->entry = entries[i].entry;
-		qentry->have_irq = 0;
-		qentry->rsp = NULL;
-	}
-
-	/* Enable MSI-X vectors for the base queue */
-	for (i = 0; i < 2; i++) {
-		qentry = &ha->msix_entries[i];
-		if (IS_QLA82XX(ha)) {
-			ret = request_irq(qentry->vector,
-				qla82xx_msix_entries[i].handler,
-				0, qla82xx_msix_entries[i].name, rsp);
-		} else {
-			ret = request_irq(qentry->vector,
-				msix_entries[i].handler,
-				0, msix_entries[i].name, rsp);
-		}
-		if (ret) {
-			ql_log(ql_log_fatal, vha, 0x00cb,
-			    "MSI-X: unable to register handler -- %x/%d.\n",
-			    qentry->vector, ret);
-			qla24xx_disable_msix(ha);
-			ha->mqenable = 0;
-			goto msix_out;
-		}
-		qentry->have_irq = 1;
-		qentry->rsp = rsp;
-		rsp->msix = qentry;
-	}
-
-	/* Enable MSI-X vector for response queue update for queue 0 */
-	if (IS_QLA83XX(ha)) {
-		if (ha->msixbase && ha->mqiobase &&
-		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1))
-			ha->mqenable = 1;
-	} else
-		if (ha->mqiobase
-		    && (ha->max_rsp_queues > 1 || ha->max_req_queues > 1))
-			ha->mqenable = 1;
-=======
 		qentry->vector = pci_irq_vector(ha->pdev, i);
 		qentry->vector_base0 = i;
 		qentry->entry = i;
@@ -5918,7 +4651,6 @@ msix_register_fail:
 	else
 		ha->mqenable = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ql_dbg(ql_dbg_multiq, vha, 0xc005,
 	    "mqiobase=%p, max_rsp_queues=%d, max_req_queues=%d.\n",
 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
@@ -5927,32 +4659,16 @@ msix_register_fail:
 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
 
 msix_out:
-<<<<<<< HEAD
-	kfree(entries);
-	return ret;
-=======
 	return ret;
 
 free_irqs:
 	pci_free_irq_vectors(ha->pdev);
 	goto msix_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
 qla2x00_request_irqs(struct qla_hw_data *ha, struct rsp_que *rsp)
 {
-<<<<<<< HEAD
-	int ret;
-	device_reg_t __iomem *reg = ha->iobase;
-	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
-
-	/* If possible, enable MSI-X. */
-	if (!IS_QLA2432(ha) && !IS_QLA2532(ha) && !IS_QLA8432(ha) &&
-		!IS_CNA_CAPABLE(ha) && !IS_QLA2031(ha))
-		goto skip_msi;
-
-=======
 	int ret = QLA_FUNCTION_FAILED;
 	device_reg_t *reg = ha->iobase;
 	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
@@ -5966,7 +4682,6 @@ qla2x00_request_irqs(struct qla_hw_data *ha, struct rsp_que *rsp)
 	if (ql2xenablemsix == 2)
 		goto skip_msix;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ha->pdev->subsystem_vendor == PCI_VENDOR_ID_HP &&
 		(ha->pdev->subsystem_device == 0x7040 ||
 		ha->pdev->subsystem_device == 0x7041 ||
@@ -5992,18 +4707,6 @@ qla2x00_request_irqs(struct qla_hw_data *ha, struct rsp_que *rsp)
 		    ha->chip_revision, ha->fw_attributes);
 		goto clear_risc_ints;
 	}
-<<<<<<< HEAD
-	ql_log(ql_log_info, vha, 0x0037,
-	    "MSI-X Falling back-to MSI mode -%d.\n", ret);
-skip_msix:
-
-	if (!IS_QLA24XX(ha) && !IS_QLA2532(ha) && !IS_QLA8432(ha) &&
-	    !IS_QLA8001(ha))
-		goto skip_msi;
-
-	ret = pci_enable_msi(ha->pdev);
-	if (!ret) {
-=======
 
 skip_msix:
 
@@ -6017,17 +4720,11 @@ skip_msix:
 
 	ret = pci_alloc_irq_vectors(ha->pdev, 1, 1, PCI_IRQ_MSI);
 	if (ret > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_init, vha, 0x0038,
 		    "MSI: Enabled.\n");
 		ha->flags.msi_enabled = 1;
 	} else
 		ql_log(ql_log_warn, vha, 0x0039,
-<<<<<<< HEAD
-		    "MSI-X; Falling back-to INTa mode -- %d.\n", ret);
-skip_msi:
-
-=======
 		    "Falling back-to INTa mode -- ret=%d.\n", ret);
 skip_msi:
 
@@ -6035,7 +4732,6 @@ skip_msi:
 	if (!ha->flags.msi_enabled && IS_QLA82XX(ha))
 		return QLA_FUNCTION_FAILED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = request_irq(ha->pdev->irq, ha->isp_ops->intr_handler,
 	    ha->flags.msi_enabled ? 0 : IRQF_SHARED,
 	    QLA2XXX_DRIVER_NAME, rsp);
@@ -6044,27 +4740,6 @@ skip_msi:
 		    "Failed to reserve interrupt %d already in use.\n",
 		    ha->pdev->irq);
 		goto fail;
-<<<<<<< HEAD
-	}
-
-clear_risc_ints:
-
-	/*
-	 * FIXME: Noted that 8014s were being dropped during NK testing.
-	 * Timing deltas during MSI-X/INTa transitions?
-	 */
-	if (IS_QLA81XX(ha) || IS_QLA82XX(ha) || IS_QLA83XX(ha))
-		goto fail;
-	spin_lock_irq(&ha->hardware_lock);
-	if (IS_FWI2_CAPABLE(ha)) {
-		WRT_REG_DWORD(&reg->isp24.hccr, HCCRX_CLR_HOST_INT);
-		WRT_REG_DWORD(&reg->isp24.hccr, HCCRX_CLR_RISC_INT);
-	} else {
-		WRT_REG_WORD(&reg->isp.semaphore, 0);
-		WRT_REG_WORD(&reg->isp.hccr, HCCR_CLR_RISC_INT);
-		WRT_REG_WORD(&reg->isp.hccr, HCCR_CLR_HOST_INT);
-	}
-=======
 	} else if (!ha->flags.msi_enabled) {
 		ql_dbg(ql_dbg_init, vha, 0x0125,
 		    "INTa mode: Enabled.\n");
@@ -6079,7 +4754,6 @@ clear_risc_ints:
 
 	spin_lock_irq(&ha->hardware_lock);
 	wrt_reg_word(&reg->isp.semaphore, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&ha->hardware_lock);
 
 fail:
@@ -6090,29 +4764,6 @@ void
 qla2x00_free_irqs(scsi_qla_host_t *vha)
 {
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-	struct rsp_que *rsp = ha->rsp_q_map[0];
-
-	if (ha->flags.msix_enabled)
-		qla24xx_disable_msix(ha);
-	else if (ha->flags.msi_enabled) {
-		free_irq(ha->pdev->irq, rsp);
-		pci_disable_msi(ha->pdev);
-	} else
-		free_irq(ha->pdev->irq, rsp);
-}
-
-
-int qla25xx_request_irq(struct rsp_que *rsp)
-{
-	struct qla_hw_data *ha = rsp->hw;
-	struct qla_init_msix_entry *intr = &msix_entries[2];
-	struct qla_msix_entry *msix = rsp->msix;
-	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
-	int ret;
-
-	ret = request_irq(msix->vector, intr->handler, 0, intr->name, rsp);
-=======
 	struct rsp_que *rsp;
 	struct qla_msix_entry *qentry;
 	int i;
@@ -6156,7 +4807,6 @@ int qla25xx_request_irq(struct qla_hw_data *ha, struct qla_qpair *qpair,
 	scnprintf(msix->name, sizeof(msix->name),
 	    "qla2xxx%lu_qpair%d", vha->host_no, qpair->id);
 	ret = request_irq(msix->vector, intr->handler, 0, msix->name, qpair);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		ql_log(ql_log_fatal, vha, 0x00e6,
 		    "MSI-X: Unable to register handler -- %x/%d.\n",
@@ -6164,11 +4814,7 @@ int qla25xx_request_irq(struct qla_hw_data *ha, struct qla_qpair *qpair,
 		return ret;
 	}
 	msix->have_irq = 1;
-<<<<<<< HEAD
-	msix->rsp = rsp;
-=======
 	msix->handle = qpair;
 	qla_mapq_init_qp_cpu_map(ha, msix, qpair);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

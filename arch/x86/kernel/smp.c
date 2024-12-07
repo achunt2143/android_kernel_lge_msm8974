@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Intel SMP support routines.
  *
@@ -10,12 +7,6 @@
  *      (c) 2002,2003 Andi Kleen, SuSE Labs.
  *
  *	i386 and x86_64 integration by Glauber Costa <gcosta@redhat.com>
-<<<<<<< HEAD
- *
- *	This code is released under the GNU General Public License version 2 or
- *	later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -30,19 +21,13 @@
 #include <linux/interrupt.h>
 #include <linux/cpu.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-=======
 #include <linux/kexec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mtrr.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/proto.h>
 #include <asm/apic.h>
-<<<<<<< HEAD
-#include <asm/nmi.h>
-=======
 #include <asm/cpu.h>
 #include <asm/idtentry.h>
 #include <asm/nmi.h>
@@ -51,7 +36,6 @@
 #include <asm/kexec.h>
 #include <asm/reboot.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Some notes on x86 processor bugs affecting SMP operation:
  *
@@ -85,11 +69,7 @@
  *	5AP.	symmetric IO mode (normal Linux operation) not affected.
  *		'noapic' mode has vector 0xf filled out properly.
  *	6AP.	'noapic' mode might be affected - fixed in later steppings
-<<<<<<< HEAD
- *	7AP.	We do not assume writes to the LVT deassering IRQs
-=======
  *	7AP.	We do not assume writes to the LVT deasserting IRQs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	8AP.	We do not enable low power mode (deep sleep) during MP bootup
  *	9AP.	We do not use mixed mode
  *
@@ -135,52 +115,8 @@
  *	about nothing of note with C stepping upwards.
  */
 
-<<<<<<< HEAD
-/*
- * this function sends a 'reschedule' IPI to another CPU.
- * it goes straight through and wastes no time serializing
- * anything. Worst case is that we lose a reschedule ...
- */
-static void native_smp_send_reschedule(int cpu)
-{
-	if (unlikely(cpu_is_offline(cpu))) {
-		WARN_ON(1);
-		return;
-	}
-	apic->send_IPI_mask(cpumask_of(cpu), RESCHEDULE_VECTOR);
-}
-
-void native_send_call_func_single_ipi(int cpu)
-{
-	apic->send_IPI_mask(cpumask_of(cpu), CALL_FUNCTION_SINGLE_VECTOR);
-}
-
-void native_send_call_func_ipi(const struct cpumask *mask)
-{
-	cpumask_var_t allbutself;
-
-	if (!alloc_cpumask_var(&allbutself, GFP_ATOMIC)) {
-		apic->send_IPI_mask(mask, CALL_FUNCTION_VECTOR);
-		return;
-	}
-
-	cpumask_copy(allbutself, cpu_online_mask);
-	cpumask_clear_cpu(smp_processor_id(), allbutself);
-
-	if (cpumask_equal(mask, allbutself) &&
-	    cpumask_equal(cpu_online_mask, cpu_callout_mask))
-		apic->send_IPI_allbutself(CALL_FUNCTION_VECTOR);
-	else
-		apic->send_IPI_mask(mask, CALL_FUNCTION_VECTOR);
-
-	free_cpumask_var(allbutself);
-}
-
-static atomic_t stopping_cpu = ATOMIC_INIT(-1);
-=======
 static atomic_t stopping_cpu = ATOMIC_INIT(-1);
 static bool smp_no_nmi_ipi = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int smp_stop_nmi_callback(unsigned int val, struct pt_regs *regs)
 {
@@ -188,74 +124,12 @@ static int smp_stop_nmi_callback(unsigned int val, struct pt_regs *regs)
 	if (raw_smp_processor_id() == atomic_read(&stopping_cpu))
 		return NMI_HANDLED;
 
-<<<<<<< HEAD
-=======
 	cpu_emergency_disable_virtualization();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stop_this_cpu(NULL);
 
 	return NMI_HANDLED;
 }
 
-<<<<<<< HEAD
-static void native_nmi_stop_other_cpus(int wait)
-{
-	unsigned long flags;
-	unsigned long timeout;
-
-	if (reboot_force)
-		return;
-
-	/*
-	 * Use an own vector here because smp_call_function
-	 * does lots of things not suitable in a panic situation.
-	 */
-	if (num_online_cpus() > 1) {
-		/* did someone beat us here? */
-		if (atomic_cmpxchg(&stopping_cpu, -1, safe_smp_processor_id()) != -1)
-			return;
-
-		if (register_nmi_handler(NMI_LOCAL, smp_stop_nmi_callback,
-					 NMI_FLAG_FIRST, "smp_stop"))
-			/* Note: we ignore failures here */
-			return;
-
-		/* sync above data before sending NMI */
-		wmb();
-
-		apic->send_IPI_allbutself(NMI_VECTOR);
-
-		/*
-		 * Don't wait longer than a second if the caller
-		 * didn't ask us to wait.
-		 */
-		timeout = USEC_PER_SEC;
-		while (num_online_cpus() > 1 && (wait || timeout--))
-			udelay(1);
-	}
-
-	local_irq_save(flags);
-	disable_local_APIC();
-	local_irq_restore(flags);
-}
-
-/*
- * this function calls the 'stop' function on all other CPUs in the system.
- */
-
-asmlinkage void smp_reboot_interrupt(void)
-{
-	ack_APIC_irq();
-	irq_enter();
-	stop_this_cpu(NULL);
-	irq_exit();
-}
-
-static void native_irq_stop_other_cpus(int wait)
-{
-	unsigned long flags;
-	unsigned long timeout;
-=======
 /*
  * this function calls the 'stop' function on all other CPUs in the system.
  */
@@ -276,31 +150,10 @@ static void native_stop_other_cpus(int wait)
 {
 	unsigned int old_cpu, this_cpu;
 	unsigned long flags, timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reboot_force)
 		return;
 
-<<<<<<< HEAD
-	/*
-	 * Use an own vector here because smp_call_function
-	 * does lots of things not suitable in a panic situation.
-	 * On most systems we could also use an NMI here,
-	 * but there are a few systems around where NMI
-	 * is problematic so stay with an non NMI for now
-	 * (this implies we cannot stop CPUs spinning with irq off
-	 * currently)
-	 */
-	if (num_online_cpus() > 1) {
-		apic->send_IPI_allbutself(REBOOT_VECTOR);
-
-		/*
-		 * Don't wait longer than a second if the caller
-		 * didn't ask us to wait.
-		 */
-		timeout = USEC_PER_SEC;
-		while (num_online_cpus() > 1 && (wait || timeout--))
-=======
 	/* Only proceed if this is the first CPU to reach this code */
 	old_cpu = -1;
 	this_cpu = smp_processor_id();
@@ -373,51 +226,11 @@ static void native_stop_other_cpus(int wait)
 		 */
 		timeout = USEC_PER_MSEC * 10;
 		while (!cpumask_empty(&cpus_stop_mask) && (wait || timeout--))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(1);
 	}
 
 	local_irq_save(flags);
 	disable_local_APIC();
-<<<<<<< HEAD
-	local_irq_restore(flags);
-}
-
-static void native_smp_disable_nmi_ipi(void)
-{
-	smp_ops.stop_other_cpus = native_irq_stop_other_cpus;
-}
-
-/*
- * Reschedule call back.
- */
-void smp_reschedule_interrupt(struct pt_regs *regs)
-{
-	ack_APIC_irq();
-	inc_irq_stat(irq_resched_count);
-	scheduler_ipi();
-	/*
-	 * KVM uses this interrupt to force a cpu out of guest mode
-	 */
-}
-
-void smp_call_function_interrupt(struct pt_regs *regs)
-{
-	ack_APIC_irq();
-	irq_enter();
-	generic_smp_call_function_interrupt();
-	inc_irq_stat(irq_call_count);
-	irq_exit();
-}
-
-void smp_call_function_single_interrupt(struct pt_regs *regs)
-{
-	ack_APIC_irq();
-	irq_enter();
-	generic_smp_call_function_single_interrupt();
-	inc_irq_stat(irq_call_count);
-	irq_exit();
-=======
 	mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
 	local_irq_restore(flags);
 
@@ -457,18 +270,12 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_call_function_single)
 	inc_irq_stat(irq_call_count);
 	generic_smp_call_function_single_interrupt();
 	trace_call_function_single_exit(CALL_FUNCTION_SINGLE_VECTOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nonmi_ipi_setup(char *str)
 {
-<<<<<<< HEAD
-        native_smp_disable_nmi_ipi();
-        return 1;
-=======
 	smp_no_nmi_ipi = true;
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __setup("nonmi_ipi", nonmi_ipi_setup);
@@ -478,13 +285,6 @@ struct smp_ops smp_ops = {
 	.smp_prepare_cpus	= native_smp_prepare_cpus,
 	.smp_cpus_done		= native_smp_cpus_done,
 
-<<<<<<< HEAD
-	.stop_other_cpus	= native_nmi_stop_other_cpus,
-	.smp_send_reschedule	= native_smp_send_reschedule,
-
-	.cpu_up			= native_cpu_up,
-	.cpu_die		= native_cpu_die,
-=======
 	.stop_other_cpus	= native_stop_other_cpus,
 #if defined(CONFIG_CRASH_DUMP)
 	.crash_stop_other_cpus	= kdump_nmi_shootdown_cpus,
@@ -492,7 +292,6 @@ struct smp_ops smp_ops = {
 	.smp_send_reschedule	= native_smp_send_reschedule,
 
 	.kick_ap_alive		= native_kick_ap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cpu_disable		= native_cpu_disable,
 	.play_dead		= native_play_dead,
 

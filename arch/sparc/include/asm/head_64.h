@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_HEAD_H
 #define _SPARC64_HEAD_H
 
@@ -19,13 +16,10 @@
 
 #define	PTREGS_OFF	(STACK_BIAS + STACKFRAME_SZ)
 
-<<<<<<< HEAD
-=======
 #define	RTRAP_PSTATE		(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_IE)
 #define	RTRAP_PSTATE_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV)
 #define RTRAP_PSTATE_AG_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_AG)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __CHEETAH_ID	0x003e0014
 #define __JALAPENO_ID	0x003e0016
 #define __SERRANO_ID	0x003e0022

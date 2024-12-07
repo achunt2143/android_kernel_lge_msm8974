@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-/*
- *  arch/arm/include/asm/opcodes.h
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  arch/arm/include/asm/opcodes.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_ARM_OPCODES_H
 #define __ASM_ARM_OPCODES_H
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-=======
 #include <linux/linkage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern asmlinkage unsigned int arm_check_condition(u32 opcode, u32 psr);
 #endif
 
@@ -29,8 +17,6 @@ extern asmlinkage unsigned int arm_check_condition(u32 opcode, u32 psr);
 
 
 /*
-<<<<<<< HEAD
-=======
  * Assembler opcode byteswap helpers.
  * These are only intended for use by this header: don't use them directly,
  * because they will be suboptimal in most cases.
@@ -58,7 +44,6 @@ extern asmlinkage unsigned int arm_check_condition(u32 opcode, u32 psr);
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Opcode byteswap helpers
  *
  * These macros help with converting instructions between a canonical integer
@@ -81,11 +66,6 @@ extern asmlinkage unsigned int arm_check_condition(u32 opcode, u32 psr);
  * Note that values in the range 0x0000E800..0xE7FFFFFF intentionally do not
  * represent any valid Thumb-2 instruction.  For this range,
  * __opcode_is_thumb32() and __opcode_is_thumb16() will both be false.
-<<<<<<< HEAD
- */
-
-#ifndef __ASSEMBLY__
-=======
  *
  * The ___asm variants are intended only for use by this header, in situations
  * involving inline assembler.  For .S files, the normal __opcode_*() macros
@@ -101,26 +81,10 @@ extern asmlinkage unsigned int arm_check_condition(u32 opcode, u32 psr);
 #define ___opcode_identity16(x) ___asm_opcode_identity16(x)
 
 #else /* ! __ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/swab.h>
 
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_ENDIAN_BE8
-#define __opcode_to_mem_arm(x) swab32(x)
-#define __opcode_to_mem_thumb16(x) swab16(x)
-#define __opcode_to_mem_thumb32(x) swahb32(x)
-#else
-#define __opcode_to_mem_arm(x) ((u32)(x))
-#define __opcode_to_mem_thumb16(x) ((u16)(x))
-#define __opcode_to_mem_thumb32(x) swahw32(x)
-#endif
-
-#define __mem_to_opcode_arm(x) __opcode_to_mem_arm(x)
-#define __mem_to_opcode_thumb16(x) __opcode_to_mem_thumb16(x)
-#define __mem_to_opcode_thumb32(x) __opcode_to_mem_thumb32(x)
-=======
 #define ___opcode_swab32(x) swab32(x)
 #define ___opcode_swab16(x) swab16(x)
 #define ___opcode_swahb32(x) swahb32(x)
@@ -168,23 +132,10 @@ extern __u32 __opcode_to_mem_thumb32(__u32);
 #ifndef CONFIG_CPU_ENDIAN_BE32
 #define __mem_to_opcode_thumb32(x) __opcode_to_mem_thumb32(x)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Operations specific to Thumb opcodes */
 
 /* Instruction size checks: */
-<<<<<<< HEAD
-#define __opcode_is_thumb32(x) ((u32)(x) >= 0xE8000000UL)
-#define __opcode_is_thumb16(x) ((u32)(x) < 0xE800UL)
-
-/* Operations to construct or split 32-bit Thumb instructions: */
-#define __opcode_thumb32_first(x) ((u16)((x) >> 16))
-#define __opcode_thumb32_second(x) ((u16)(x))
-#define __opcode_thumb32_compose(first, second) \
-	(((u32)(u16)(first) << 16) | (u32)(u16)(second))
-
-#endif /* __ASSEMBLY__ */
-=======
 #define __opcode_is_thumb32(x) (		\
 	   ((x) & 0xF8000000) == 0xE8000000	\
 	|| ((x) & 0xF0000000) == 0xF0000000	\
@@ -278,6 +229,5 @@ extern __u32 __opcode_to_mem_thumb32(__u32);
 #define ___inst_thumb32(first, second) \
 	".short " __stringify(first) ", " __stringify(second) "\n\t"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_ARM_OPCODES_H */

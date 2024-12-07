@@ -45,28 +45,19 @@
 /*
  * Returns the kernel segment base of a given address
  */
-<<<<<<< HEAD
-#define KSEGX(a)		((_ACAST32_ (a)) & 0xe0000000)
-=======
 #define KSEGX(a)		((_ACAST32_(a)) & _ACAST32_(0xe0000000))
 
 /*
  * Gives the size of each kernel segment
  */
 #define CSEGX_SIZE		0x20000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns the physical address of a CKSEGx / XKPHYS address
  */
 #define CPHYSADDR(a)		((_ACAST32_(a)) & 0x1fffffff)
-<<<<<<< HEAD
-#define XPHYSADDR(a)            ((_ACAST64_(a)) &			\
-				 _CONST64_(0x000000ffffffffff))
-=======
 #define XPHYSADDR(a)		((_ACAST64_(a)) &			\
 				 _CONST64_(0x0000ffffffffffff))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 
@@ -140,12 +131,7 @@
 #define PHYS_TO_XKSEG_UNCACHED(p)	PHYS_TO_XKPHYS(K_CALG_UNCACHED, (p))
 #define PHYS_TO_XKSEG_CACHED(p)		PHYS_TO_XKPHYS(K_CALG_COH_SHAREABLE, (p))
 #define XKPHYS_TO_PHYS(p)		((p) & TO_PHYS_MASK)
-<<<<<<< HEAD
-#define PHYS_TO_XKPHYS(cm, a)		(_CONST64_(0x8000000000000000) | \
-					 (_CONST64_(cm) << 59) | (a))
-=======
 #define PHYS_TO_XKPHYS(cm, a)		(XKPHYS | (_ACAST64_(cm) << 59) | (a))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The ultimate limited of the 64-bit MIPS architecture:  2 bits for selecting
@@ -154,24 +140,9 @@
  */
 #define TO_PHYS_MASK	_CONST64_(0x07ffffffffffffff)	/* 2^^59 - 1 */
 
-<<<<<<< HEAD
-#ifndef CONFIG_CPU_R8000
-
-/*
- * The R8000 doesn't have the 32-bit compat spaces so we don't define them
- * in order to catch bugs in the source code.
- */
-
 #define COMPAT_K1BASE32		_CONST64_(0xffffffffa0000000)
 #define PHYS_TO_COMPATK1(x)	((x) | COMPAT_K1BASE32) /* 32-bit compat k1 */
 
-#endif
-
-=======
-#define COMPAT_K1BASE32		_CONST64_(0xffffffffa0000000)
-#define PHYS_TO_COMPATK1(x)	((x) | COMPAT_K1BASE32) /* 32-bit compat k1 */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KDM_TO_PHYS(x)		(_ACAST64_ (x) & TO_PHYS_MASK)
 #define PHYS_TO_K0(x)		(_ACAST64_ (x) | CAC_BASE)
 

@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2006 Jake Moilanen <moilanen@austin.ibm.com>, IBM Corp.
- * Copyright 2006-2007 Michael Ellerman, IBM Corp.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2 of the
- * License.
- *
- */
-
-#include <linux/device.h>
-#include <linux/irq.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2006 Jake Moilanen <moilanen@austin.ibm.com>, IBM Corp.
@@ -23,19 +8,15 @@
 #include <linux/device.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/msi.h>
 
 #include <asm/rtas.h>
 #include <asm/hw_irq.h>
 #include <asm/ppc-pci.h>
-<<<<<<< HEAD
-=======
 #include <asm/machdep.h>
 #include <asm/xive.h>
 
 #include "pseries.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int query_token, change_token;
 
@@ -44,31 +25,8 @@ static int query_token, change_token;
 #define RTAS_RESET_FN		2
 #define RTAS_CHANGE_MSI_FN	3
 #define RTAS_CHANGE_MSIX_FN	4
-<<<<<<< HEAD
-
-static struct pci_dn *get_pdn(struct pci_dev *pdev)
-{
-	struct device_node *dn;
-	struct pci_dn *pdn;
-
-	dn = pci_device_to_OF_node(pdev);
-	if (!dn) {
-		dev_dbg(&pdev->dev, "rtas_msi: No OF device node\n");
-		return NULL;
-	}
-
-	pdn = PCI_DN(dn);
-	if (!pdn) {
-		dev_dbg(&pdev->dev, "rtas_msi: No PCI DN\n");
-		return NULL;
-	}
-
-	return pdn;
-}
-=======
 #define RTAS_CHANGE_32MSI_FN	5
 #define RTAS_CHANGE_32MSIX_FN	6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RTAS Helpers */
 
@@ -83,12 +41,8 @@ static int rtas_change_msi(struct pci_dn *pdn, u32 func, u32 num_irqs)
 
 	seq_num = 1;
 	do {
-<<<<<<< HEAD
-		if (func == RTAS_CHANGE_MSI_FN || func == RTAS_CHANGE_MSIX_FN)
-=======
 		if (func == RTAS_CHANGE_MSI_FN || func == RTAS_CHANGE_MSIX_FN ||
 		    func == RTAS_CHANGE_32MSI_FN || func == RTAS_CHANGE_32MSIX_FN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = rtas_call(change_token, 6, 4, rtas_ret, addr,
 					BUID_HI(buid), BUID_LO(buid),
 					func, num_irqs, seq_num);
@@ -119,11 +73,7 @@ static void rtas_disable_msi(struct pci_dev *pdev)
 {
 	struct pci_dn *pdn;
 
-<<<<<<< HEAD
-	pdn = get_pdn(pdev);
-=======
 	pdn = pci_get_pdn(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdn)
 		return;
 
@@ -163,48 +113,6 @@ static int rtas_query_irq_number(struct pci_dn *pdn, int offset)
 	return rtas_ret[0];
 }
 
-<<<<<<< HEAD
-static void rtas_teardown_msi_irqs(struct pci_dev *pdev)
-{
-	struct msi_desc *entry;
-
-	list_for_each_entry(entry, &pdev->msi_list, list) {
-		if (entry->irq == NO_IRQ)
-			continue;
-
-		irq_set_msi_desc(entry->irq, NULL);
-		irq_dispose_mapping(entry->irq);
-	}
-
-	rtas_disable_msi(pdev);
-}
-
-static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
-{
-	struct device_node *dn;
-	struct pci_dn *pdn;
-	const u32 *req_msi;
-
-	pdn = get_pdn(pdev);
-	if (!pdn)
-		return -ENODEV;
-
-	dn = pdn->node;
-
-	req_msi = of_get_property(dn, prop_name, NULL);
-	if (!req_msi) {
-		pr_debug("rtas_msi: No %s on %s\n", prop_name, dn->full_name);
-		return -ENOENT;
-	}
-
-	if (*req_msi < nvec) {
-		pr_debug("rtas_msi: %s requests < %d MSIs\n", prop_name, nvec);
-
-		if (*req_msi == 0) /* Be paranoid */
-			return -ENOSPC;
-
-		return *req_msi;
-=======
 static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
 {
 	struct device_node *dn;
@@ -227,7 +135,6 @@ static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
 			return -ENOSPC;
 
 		return req_msi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -245,20 +152,6 @@ static int check_req_msix(struct pci_dev *pdev, int nvec)
 
 /* Quota calculation */
 
-<<<<<<< HEAD
-static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
-{
-	struct device_node *dn;
-	const u32 *p;
-
-	dn = of_node_get(pci_device_to_OF_node(dev));
-	while (dn) {
-		p = of_get_property(dn, "ibm,pe-total-#msi", NULL);
-		if (p) {
-			pr_debug("rtas_msi: found prop on dn %s\n",
-				dn->full_name);
-			*total = *p;
-=======
 static struct device_node *__find_pe_total_msi(struct device_node *node, int *total)
 {
 	struct device_node *dn;
@@ -271,7 +164,6 @@ static struct device_node *__find_pe_total_msi(struct device_node *node, int *to
 			pr_debug("rtas_msi: found prop on dn %pOF\n",
 				dn);
 			*total = be32_to_cpup(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return dn;
 		}
 
@@ -281,11 +173,6 @@ static struct device_node *__find_pe_total_msi(struct device_node *node, int *to
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
-{
-	struct device_node *dn;
-=======
 static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
 {
 	return __find_pe_total_msi(pci_device_to_OF_node(dev), total);
@@ -295,7 +182,6 @@ static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 {
 	struct device_node *dn;
 	struct eeh_dev *edev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Found our PE and assume 8 at that point. */
 
@@ -303,16 +189,12 @@ static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 	if (!dn)
 		return NULL;
 
-<<<<<<< HEAD
-	dn = eeh_find_device_pe(dn);
-=======
 	/* Get the top level device in the PE */
 	edev = pdn_to_eeh_dev(PCI_DN(dn));
 	if (edev->pe)
 		edev = list_first_entry(&edev->pe->edevs, struct eeh_dev,
 					entry);
 	dn = pci_device_to_OF_node(edev->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dn)
 		return NULL;
 
@@ -323,11 +205,7 @@ static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 
 	/* Hardcode of 8 for old firmwares */
 	*total = 8;
-<<<<<<< HEAD
-	pr_debug("rtas_msi: using PE dn %s\n", dn->full_name);
-=======
 	pr_debug("rtas_msi: using PE dn %pOF\n", dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dn;
 }
@@ -344,15 +222,6 @@ struct msi_counts {
 static void *count_non_bridge_devices(struct device_node *dn, void *data)
 {
 	struct msi_counts *counts = data;
-<<<<<<< HEAD
-	const u32 *p;
-	u32 class;
-
-	pr_debug("rtas_msi: counting %s\n", dn->full_name);
-
-	p = of_get_property(dn, "class-code", NULL);
-	class = p ? *p : 0;
-=======
 	const __be32 *p;
 	u32 class;
 
@@ -360,7 +229,6 @@ static void *count_non_bridge_devices(struct device_node *dn, void *data)
 
 	p = of_get_property(dn, "class-code", NULL);
 	class = p ? be32_to_cpup(p) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((class >> 8) != PCI_CLASS_BRIDGE_PCI)
 		counts->num_devices++;
@@ -371,11 +239,7 @@ static void *count_non_bridge_devices(struct device_node *dn, void *data)
 static void *count_spare_msis(struct device_node *dn, void *data)
 {
 	struct msi_counts *counts = data;
-<<<<<<< HEAD
-	const u32 *p;
-=======
 	const __be32 *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int req;
 
 	if (dn == counts->requestor)
@@ -386,19 +250,11 @@ static void *count_spare_msis(struct device_node *dn, void *data)
 		req = 0;
 		p = of_get_property(dn, "ibm,req#msi", NULL);
 		if (p)
-<<<<<<< HEAD
-			req = *p;
-
-		p = of_get_property(dn, "ibm,req#msi-x", NULL);
-		if (p)
-			req = max(req, (int)*p);
-=======
 			req = be32_to_cpup(p);
 
 		p = of_get_property(dn, "ibm,req#msi-x", NULL);
 		if (p)
 			req = max(req, (int)be32_to_cpup(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (req < counts->quota)
@@ -427,20 +283,12 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	pr_debug("rtas_msi: found PE %s\n", pe_dn->full_name);
-=======
 	pr_debug("rtas_msi: found PE %pOF\n", pe_dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&counts, 0, sizeof(struct msi_counts));
 
 	/* Work out how many devices we have below this PE */
-<<<<<<< HEAD
-	traverse_pci_devices(pe_dn, count_non_bridge_devices, &counts);
-=======
 	pci_traverse_device_nodes(pe_dn, count_non_bridge_devices, &counts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (counts.num_devices == 0) {
 		pr_err("rtas_msi: found 0 devices under PE for %s\n",
@@ -455,11 +303,7 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 	/* else, we have some more calculating to do */
 	counts.requestor = pci_device_to_OF_node(dev);
 	counts.request = request;
-<<<<<<< HEAD
-	traverse_pci_devices(pe_dn, count_spare_msis, &counts);
-=======
 	pci_traverse_device_nodes(pe_dn, count_spare_msis, &counts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the quota isn't an integer multiple of the total, we can
 	 * use the remainder as spare MSIs for anyone that wants them. */
@@ -479,11 +323,6 @@ out:
 	return request;
 }
 
-<<<<<<< HEAD
-static int rtas_msi_check_device(struct pci_dev *pdev, int nvec, int type)
-{
-	int quota, rc;
-=======
 static void rtas_hack_32bit_msi_gen2(struct pci_dev *pdev)
 {
 	u32 addr_hi, addr_lo;
@@ -508,7 +347,6 @@ static int rtas_prepare_msi_irqs(struct pci_dev *pdev, int nvec_in, int type,
 	int quota, rc;
 	int nvec = nvec_in;
 	int use_32bit_msi_hack = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type == PCI_CAP_ID_MSIX)
 		rc = check_req_msix(pdev, nvec);
@@ -523,45 +361,6 @@ static int rtas_prepare_msi_irqs(struct pci_dev *pdev, int nvec_in, int type,
 	if (quota && quota < nvec)
 		return quota;
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int check_msix_entries(struct pci_dev *pdev)
-{
-	struct msi_desc *entry;
-	int expected;
-
-	/* There's no way for us to express to firmware that we want
-	 * a discontiguous, or non-zero based, range of MSI-X entries.
-	 * So we must reject such requests. */
-
-	expected = 0;
-	list_for_each_entry(entry, &pdev->msi_list, list) {
-		if (entry->msi_attrib.entry_nr != expected) {
-			pr_debug("rtas_msi: bad MSI-X entries.\n");
-			return -EINVAL;
-		}
-		expected++;
-	}
-
-	return 0;
-}
-
-static int rtas_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
-{
-	struct pci_dn *pdn;
-	int hwirq, virq, i, rc;
-	struct msi_desc *entry;
-	struct msi_msg msg;
-
-	pdn = get_pdn(pdev);
-	if (!pdn)
-		return -ENODEV;
-
-	if (type == PCI_CAP_ID_MSIX && check_msix_entries(pdev))
-		return -EINVAL;
-=======
 	/*
 	 * Firmware currently refuse any non power of two allocation
 	 * so we round up if the quota will allow it.
@@ -575,17 +374,12 @@ static int rtas_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 	}
 
 	pdn = pci_get_pdn(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Try the new more explicit firmware interface, if that fails fall
 	 * back to the old interface. The old interface is known to never
 	 * return MSI-Xs.
 	 */
-<<<<<<< HEAD
-	if (type == PCI_CAP_ID_MSI) {
-		rc = rtas_change_msi(pdn, RTAS_CHANGE_MSI_FN, nvec);
-=======
 again:
 	if (type == PCI_CAP_ID_MSI) {
 		if (pdev->no_64bit_msi) {
@@ -605,43 +399,11 @@ again:
 
 		if (rc < 0)
 			rc = rtas_change_msi(pdn, RTAS_CHANGE_MSI_FN, nvec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rc < 0) {
 			pr_debug("rtas_msi: trying the old firmware call.\n");
 			rc = rtas_change_msi(pdn, RTAS_CHANGE_FN, nvec);
 		}
-<<<<<<< HEAD
-	} else
-		rc = rtas_change_msi(pdn, RTAS_CHANGE_MSIX_FN, nvec);
-
-	if (rc != nvec) {
-		pr_debug("rtas_msi: rtas_change_msi() failed\n");
-		return rc;
-	}
-
-	i = 0;
-	list_for_each_entry(entry, &pdev->msi_list, list) {
-		hwirq = rtas_query_irq_number(pdn, i++);
-		if (hwirq < 0) {
-			pr_debug("rtas_msi: error (%d) getting hwirq\n", rc);
-			return hwirq;
-		}
-
-		virq = irq_create_mapping(NULL, hwirq);
-
-		if (virq == NO_IRQ) {
-			pr_debug("rtas_msi: Failed mapping hwirq %d\n", hwirq);
-			return -ENOSPC;
-		}
-
-		dev_dbg(&pdev->dev, "rtas_msi: allocated virq %d\n", virq);
-		irq_set_msi_desc(virq, entry);
-
-		/* Read config space back so we can restore after reset */
-		read_msi_msg(virq, &msg);
-		entry->msg = msg;
-=======
 
 		if (use_32bit_msi_hack && rc > 0)
 			rtas_hack_32bit_msi_gen2(pdev);
@@ -659,18 +421,11 @@ again:
 		}
 		pr_debug("rtas_msi: rtas_change_msi() failed\n");
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
-{
-	/* No LSI -> leave MSIs (if any) configured */
-	if (pdev->irq == NO_IRQ) {
-=======
 static int pseries_msi_ops_prepare(struct irq_domain *domain, struct device *dev,
 				   int nvec, msi_alloc_info_t *arg)
 {
@@ -913,7 +668,6 @@ static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 {
 	/* No LSI -> leave MSIs (if any) configured */
 	if (!pdev->irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&pdev->dev, "rtas_msi: no LSI, nothing to do.\n");
 		return;
 	}
@@ -930,13 +684,8 @@ static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 
 static int rtas_msi_init(void)
 {
-<<<<<<< HEAD
-	query_token  = rtas_token("ibm,query-interrupt-source-number");
-	change_token = rtas_token("ibm,change-msi");
-=======
 	query_token  = rtas_function_token(RTAS_FN_IBM_QUERY_INTERRUPT_SOURCE_NUMBER);
 	change_token = rtas_function_token(RTAS_FN_IBM_CHANGE_MSI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((query_token == RTAS_UNKNOWN_SERVICE) ||
 			(change_token == RTAS_UNKNOWN_SERVICE)) {
@@ -946,21 +695,9 @@ static int rtas_msi_init(void)
 
 	pr_debug("rtas_msi: Registering RTAS MSI callbacks.\n");
 
-<<<<<<< HEAD
-	WARN_ON(ppc_md.setup_msi_irqs);
-	ppc_md.setup_msi_irqs = rtas_setup_msi_irqs;
-	ppc_md.teardown_msi_irqs = rtas_teardown_msi_irqs;
-	ppc_md.msi_check_device = rtas_msi_check_device;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(ppc_md.pci_irq_fixup);
 	ppc_md.pci_irq_fixup = rtas_msi_pci_irq_fixup;
 
 	return 0;
 }
-<<<<<<< HEAD
-arch_initcall(rtas_msi_init);
-=======
 machine_arch_initcall(pseries, rtas_msi_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,40 +1,14 @@
-<<<<<<< HEAD
-/* pinnacle-grey.h - Keytable for pinnacle_grey Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // pinnacle-grey.h - Keytable for pinnacle_grey Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table pinnacle_grey[] = {
-<<<<<<< HEAD
-	{ 0x3a, KEY_0 },
-	{ 0x31, KEY_1 },
-	{ 0x32, KEY_2 },
-	{ 0x33, KEY_3 },
-	{ 0x34, KEY_4 },
-	{ 0x35, KEY_5 },
-	{ 0x36, KEY_6 },
-	{ 0x37, KEY_7 },
-	{ 0x38, KEY_8 },
-	{ 0x39, KEY_9 },
-=======
 	{ 0x3a, KEY_NUMERIC_0 },
 	{ 0x31, KEY_NUMERIC_1 },
 	{ 0x32, KEY_NUMERIC_2 },
@@ -45,7 +19,6 @@ static struct rc_map_table pinnacle_grey[] = {
 	{ 0x37, KEY_NUMERIC_7 },
 	{ 0x38, KEY_NUMERIC_8 },
 	{ 0x39, KEY_NUMERIC_9 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x2f, KEY_POWER },
 
@@ -88,17 +61,10 @@ static struct rc_map_table pinnacle_grey[] = {
 
 static struct rc_map_list pinnacle_grey_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = pinnacle_grey,
-		.size    = ARRAY_SIZE(pinnacle_grey),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_PINNACLE_GREY,
-=======
 		.scan     = pinnacle_grey,
 		.size     = ARRAY_SIZE(pinnacle_grey),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_PINNACLE_GREY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -116,9 +82,5 @@ module_init(init_rc_map_pinnacle_grey)
 module_exit(exit_rc_map_pinnacle_grey)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("pinnacle-grey remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

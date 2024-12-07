@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/fs.h>
 #include <linux/posix_acl.h>
@@ -13,42 +10,6 @@
 #include <linux/posix_acl_xattr.h>
 #include "xattr.h"
 #include "acl.h"
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-static int reiserfs_set_acl(struct reiserfs_transaction_handle *th,
-			    struct inode *inode, int type,
-			    struct posix_acl *acl);
-
-static int
-posix_acl_set(struct dentry *dentry, const char *name, const void *value,
-		size_t size, int flags, int type)
-{
-	struct inode *inode = dentry->d_inode;
-	struct posix_acl *acl;
-	int error, error2;
-	struct reiserfs_transaction_handle th;
-	size_t jcreate_blocks;
-	if (!reiserfs_posixacl(inode->i_sb))
-		return -EOPNOTSUPP;
-	if (!inode_owner_or_capable(inode))
-		return -EPERM;
-
-	if (value) {
-		acl = posix_acl_from_xattr(value, size);
-		if (IS_ERR(acl)) {
-			return PTR_ERR(acl);
-		} else if (acl) {
-			error = posix_acl_valid(acl);
-			if (error)
-				goto release_and_out;
-		}
-	} else
-		acl = NULL;
-
-	/* Pessimism: We can't assume that anything from the xattr root up
-	 * has been created. */
-=======
 #include <linux/uaccess.h>
 
 static int __reiserfs_set_acl(struct reiserfs_transaction_handle *th,
@@ -72,45 +33,12 @@ reiserfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	 * Pessimism: We can't assume that anything from the xattr root up
 	 * has been created.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jcreate_blocks = reiserfs_xattr_jcreate_nblocks(inode) +
 			 reiserfs_xattr_nblocks(inode, size) * 2;
 
 	reiserfs_write_lock(inode->i_sb);
 	error = journal_begin(&th, inode->i_sb, jcreate_blocks);
-<<<<<<< HEAD
-	if (error == 0) {
-		error = reiserfs_set_acl(&th, inode, type, acl);
-		error2 = journal_end(&th, inode->i_sb, jcreate_blocks);
-		if (error2)
-			error = error2;
-	}
-	reiserfs_write_unlock(inode->i_sb);
-
-      release_and_out:
-	posix_acl_release(acl);
-	return error;
-}
-
-static int
-posix_acl_get(struct dentry *dentry, const char *name, void *buffer,
-		size_t size, int type)
-{
-	struct posix_acl *acl;
-	int error;
-
-	if (!reiserfs_posixacl(dentry->d_sb))
-		return -EOPNOTSUPP;
-
-	acl = reiserfs_get_acl(dentry->d_inode, type);
-	if (IS_ERR(acl))
-		return PTR_ERR(acl);
-	if (acl == NULL)
-		return -ENODATA;
-	error = posix_acl_to_xattr(acl, buffer, size);
-	posix_acl_release(acl);
-=======
 	reiserfs_write_unlock(inode->i_sb);
 	if (error == 0) {
 		if (type == ACL_TYPE_ACCESS && acl) {
@@ -130,7 +58,6 @@ unlock:
 		if (error2)
 			error = error2;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -138,11 +65,7 @@ unlock:
 /*
  * Convert from filesystem to in-memory representation.
  */
-<<<<<<< HEAD
-static struct posix_acl *posix_acl_from_disk(const void *value, size_t size)
-=======
 static struct posix_acl *reiserfs_posix_acl_from_disk(const void *value, size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *end = (char *)value + size;
 	int n, count;
@@ -177,12 +100,6 @@ static struct posix_acl *reiserfs_posix_acl_from_disk(const void *value, size_t 
 		case ACL_OTHER:
 			value = (char *)value +
 			    sizeof(reiserfs_acl_entry_short);
-<<<<<<< HEAD
-			acl->a_entries[n].e_id = ACL_UNDEFINED_ID;
-			break;
-
-		case ACL_USER:
-=======
 			break;
 
 		case ACL_USER:
@@ -193,18 +110,13 @@ static struct posix_acl *reiserfs_posix_acl_from_disk(const void *value, size_t 
 				make_kuid(&init_user_ns,
 					  le32_to_cpu(entry->e_id));
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ACL_GROUP:
 			value = (char *)value + sizeof(reiserfs_acl_entry);
 			if ((char *)value > end)
 				goto fail;
-<<<<<<< HEAD
-			acl->a_entries[n].e_id = le32_to_cpu(entry->e_id);
-=======
 			acl->a_entries[n].e_gid =
 				make_kgid(&init_user_ns,
 					  le32_to_cpu(entry->e_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -215,11 +127,7 @@ static struct posix_acl *reiserfs_posix_acl_from_disk(const void *value, size_t 
 		goto fail;
 	return acl;
 
-<<<<<<< HEAD
-      fail:
-=======
 fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	posix_acl_release(acl);
 	return ERR_PTR(-EINVAL);
 }
@@ -227,11 +135,7 @@ fail:
 /*
  * Convert from in-memory to filesystem representation.
  */
-<<<<<<< HEAD
-static void *posix_acl_to_disk(const struct posix_acl *acl, size_t * size)
-=======
 static void *reiserfs_posix_acl_to_disk(const struct posix_acl *acl, size_t * size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	reiserfs_acl_header *ext_acl;
 	char *e;
@@ -247,19 +151,12 @@ static void *reiserfs_posix_acl_to_disk(const struct posix_acl *acl, size_t * si
 	ext_acl->a_version = cpu_to_le32(REISERFS_ACL_VERSION);
 	e = (char *)ext_acl + sizeof(reiserfs_acl_header);
 	for (n = 0; n < acl->a_count; n++) {
-<<<<<<< HEAD
-=======
 		const struct posix_acl_entry *acl_e = &acl->a_entries[n];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reiserfs_acl_entry *entry = (reiserfs_acl_entry *) e;
 		entry->e_tag = cpu_to_le16(acl->a_entries[n].e_tag);
 		entry->e_perm = cpu_to_le16(acl->a_entries[n].e_perm);
 		switch (acl->a_entries[n].e_tag) {
 		case ACL_USER:
-<<<<<<< HEAD
-		case ACL_GROUP:
-			entry->e_id = cpu_to_le32(acl->a_entries[n].e_id);
-=======
 			entry->e_id = cpu_to_le32(
 				from_kuid(&init_user_ns, acl_e->e_uid));
 			e += sizeof(reiserfs_acl_entry);
@@ -267,7 +164,6 @@ static void *reiserfs_posix_acl_to_disk(const struct posix_acl *acl, size_t * si
 		case ACL_GROUP:
 			entry->e_id = cpu_to_le32(
 				from_kgid(&init_user_ns, acl_e->e_gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e += sizeof(reiserfs_acl_entry);
 			break;
 
@@ -284,11 +180,7 @@ static void *reiserfs_posix_acl_to_disk(const struct posix_acl *acl, size_t * si
 	}
 	return (char *)ext_acl;
 
-<<<<<<< HEAD
-      fail:
-=======
 fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ext_acl);
 	return ERR_PTR(-EINVAL);
 }
@@ -299,29 +191,13 @@ fail:
  * inode->i_mutex: down
  * BKL held [before 2.5.x]
  */
-<<<<<<< HEAD
-struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
-=======
 struct posix_acl *reiserfs_get_acl(struct inode *inode, int type, bool rcu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *name, *value;
 	struct posix_acl *acl;
 	int size;
 	int retval;
 
-<<<<<<< HEAD
-	acl = get_cached_acl(inode, type);
-	if (acl != ACL_NOT_CACHED)
-		return acl;
-
-	switch (type) {
-	case ACL_TYPE_ACCESS:
-		name = POSIX_ACL_XATTR_ACCESS;
-		break;
-	case ACL_TYPE_DEFAULT:
-		name = POSIX_ACL_XATTR_DEFAULT;
-=======
 	if (rcu)
 		return ERR_PTR(-ECHILD);
 
@@ -331,7 +207,6 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type, bool rcu)
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = XATTR_NAME_POSIX_ACL_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -339,15 +214,8 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type, bool rcu)
 
 	size = reiserfs_xattr_get(inode, name, NULL, 0);
 	if (size < 0) {
-<<<<<<< HEAD
-		if (size == -ENODATA || size == -ENOSYS) {
-			set_cached_acl(inode, type, NULL);
-			return NULL;
-		}
-=======
 		if (size == -ENODATA || size == -ENOSYS)
 			return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(size);
 	}
 
@@ -357,28 +225,16 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type, bool rcu)
 
 	retval = reiserfs_xattr_get(inode, name, value, size);
 	if (retval == -ENODATA || retval == -ENOSYS) {
-<<<<<<< HEAD
-		/* This shouldn't actually happen as it should have
-		   been caught above.. but just in case */
-=======
 		/*
 		 * This shouldn't actually happen as it should have
 		 * been caught above.. but just in case
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acl = NULL;
 	} else if (retval < 0) {
 		acl = ERR_PTR(retval);
 	} else {
-<<<<<<< HEAD
-		acl = posix_acl_from_disk(value, retval);
-	}
-	if (!IS_ERR(acl))
-		set_cached_acl(inode, type, acl);
-=======
 		acl = reiserfs_posix_acl_from_disk(value, retval);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(value);
 	return acl;
@@ -391,11 +247,7 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type, bool rcu)
  * BKL held [before 2.5.x]
  */
 static int
-<<<<<<< HEAD
-reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
-=======
 __reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 int type, struct posix_acl *acl)
 {
 	char *name;
@@ -403,29 +255,12 @@ __reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	size_t size = 0;
 	int error;
 
-<<<<<<< HEAD
-	if (S_ISLNK(inode->i_mode))
-		return -EOPNOTSUPP;
-
-	switch (type) {
-	case ACL_TYPE_ACCESS:
-		name = POSIX_ACL_XATTR_ACCESS;
-		if (acl) {
-			error = posix_acl_update_mode(inode, &inode->i_mode, &acl);
-			if (error)
-				return error;
-		}
-		break;
-	case ACL_TYPE_DEFAULT:
-		name = POSIX_ACL_XATTR_DEFAULT;
-=======
 	switch (type) {
 	case ACL_TYPE_ACCESS:
 		name = XATTR_NAME_POSIX_ACL_ACCESS;
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = XATTR_NAME_POSIX_ACL_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!S_ISDIR(inode->i_mode))
 			return acl ? -EACCES : 0;
 		break;
@@ -434,11 +269,7 @@ __reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	}
 
 	if (acl) {
-<<<<<<< HEAD
-		value = posix_acl_to_disk(acl, &size);
-=======
 		value = reiserfs_posix_acl_to_disk(acl, &size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(value))
 			return (int)PTR_ERR(value);
 	}
@@ -454,11 +285,7 @@ __reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	if (error == -ENODATA) {
 		error = 0;
 		if (type == ACL_TYPE_ACCESS) {
-<<<<<<< HEAD
-			inode->i_ctime = CURRENT_TIME_SEC;
-=======
 			inode_set_ctime_current(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_inode_dirty(inode);
 		}
 	}
@@ -471,77 +298,22 @@ __reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	return error;
 }
 
-<<<<<<< HEAD
-/* dir->i_mutex: locked,
- * inode is new and not released into the wild yet */
-=======
 /*
  * dir->i_mutex: locked,
  * inode is new and not released into the wild yet
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int
 reiserfs_inherit_default_acl(struct reiserfs_transaction_handle *th,
 			     struct inode *dir, struct dentry *dentry,
 			     struct inode *inode)
 {
-<<<<<<< HEAD
-	struct posix_acl *acl;
-=======
 	struct posix_acl *default_acl, *acl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	/* ACLs only get applied to files and directories */
 	if (S_ISLNK(inode->i_mode))
 		return 0;
 
-<<<<<<< HEAD
-	/* ACLs can only be used on "new" objects, so if it's an old object
-	 * there is nothing to inherit from */
-	if (get_inode_sd_version(dir) == STAT_DATA_V1)
-		goto apply_umask;
-
-	/* Don't apply ACLs to objects in the .reiserfs_priv tree.. This
-	 * would be useless since permissions are ignored, and a pain because
-	 * it introduces locking cycles */
-	if (IS_PRIVATE(dir)) {
-		inode->i_flags |= S_PRIVATE;
-		goto apply_umask;
-	}
-
-	acl = reiserfs_get_acl(dir, ACL_TYPE_DEFAULT);
-	if (IS_ERR(acl))
-		return PTR_ERR(acl);
-
-	if (acl) {
-		/* Copy the default ACL to the default ACL of a new directory */
-		if (S_ISDIR(inode->i_mode)) {
-			err = reiserfs_set_acl(th, inode, ACL_TYPE_DEFAULT,
-					       acl);
-			if (err)
-				goto cleanup;
-		}
-
-		/* Now we reconcile the new ACL and the mode,
-		   potentially modifying both */
-		err = posix_acl_create(&acl, GFP_NOFS, &inode->i_mode);
-		if (err < 0)
-			return err;
-
-		/* If we need an ACL.. */
-		if (err > 0)
-			err = reiserfs_set_acl(th, inode, ACL_TYPE_ACCESS, acl);
-	      cleanup:
-		posix_acl_release(acl);
-	} else {
-	      apply_umask:
-		/* no ACL, apply umask */
-		inode->i_mode &= ~current_umask();
-	}
-
-	return err;
-=======
 	/*
 	 * ACLs can only be used on "new" objects, so if it's an old object
 	 * there is nothing to inherit from
@@ -579,7 +351,6 @@ apply_umask:
 	/* no ACL, apply umask */
 	inode->i_mode &= ~current_umask();
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is used to cache the default acl before a new object is created.
@@ -601,22 +372,14 @@ int reiserfs_cache_default_acl(struct inode *inode)
 	if (IS_PRIVATE(inode))
 		return 0;
 
-<<<<<<< HEAD
-	acl = reiserfs_get_acl(inode, ACL_TYPE_DEFAULT);
-=======
 	acl = get_inode_acl(inode, ACL_TYPE_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (acl && !IS_ERR(acl)) {
 		int size = reiserfs_acl_size(acl->a_count);
 
 		/* Other xattrs can be created during inode creation. We don't
 		 * want to claim too many blocks, so we check to see if we
-<<<<<<< HEAD
-		 * we need to create the tree to the xattrs, and then we
-=======
 		 * need to create the tree to the xattrs, and then we
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * just want two files. */
 		nblocks = reiserfs_xattr_jcreate_nblocks(inode);
 		nblocks += JOURNAL_BLOCKS_PER_OBJECT(inode->i_sb);
@@ -631,89 +394,6 @@ int reiserfs_cache_default_acl(struct inode *inode)
 	return nblocks;
 }
 
-<<<<<<< HEAD
-int reiserfs_acl_chmod(struct inode *inode)
-{
-	struct reiserfs_transaction_handle th;
-	struct posix_acl *acl;
-	size_t size;
-	int depth;
-	int error;
-
-	if (S_ISLNK(inode->i_mode))
-		return -EOPNOTSUPP;
-
-	if (get_inode_sd_version(inode) == STAT_DATA_V1 ||
-	    !reiserfs_posixacl(inode->i_sb)) {
-		return 0;
-	}
-
-	reiserfs_write_unlock(inode->i_sb);
-	acl = reiserfs_get_acl(inode, ACL_TYPE_ACCESS);
-	reiserfs_write_lock(inode->i_sb);
-	if (!acl)
-		return 0;
-	if (IS_ERR(acl))
-		return PTR_ERR(acl);
-	error = posix_acl_chmod(&acl, GFP_NOFS, inode->i_mode);
-	if (error)
-		return error;
-
-	size = reiserfs_xattr_nblocks(inode, reiserfs_acl_size(acl->a_count));
-	depth = reiserfs_write_lock_once(inode->i_sb);
-	error = journal_begin(&th, inode->i_sb, size * 2);
-	if (!error) {
-		int error2;
-		error = reiserfs_set_acl(&th, inode, ACL_TYPE_ACCESS, acl);
-		error2 = journal_end(&th, inode->i_sb, size * 2);
-		if (error2)
-			error = error2;
-	}
-	reiserfs_write_unlock_once(inode->i_sb, depth);
-	posix_acl_release(acl);
-	return error;
-}
-
-static size_t posix_acl_access_list(struct dentry *dentry, char *list,
-				    size_t list_size, const char *name,
-				    size_t name_len, int type)
-{
-	const size_t size = sizeof(POSIX_ACL_XATTR_ACCESS);
-	if (!reiserfs_posixacl(dentry->d_sb))
-		return 0;
-	if (list && size <= list_size)
-		memcpy(list, POSIX_ACL_XATTR_ACCESS, size);
-	return size;
-}
-
-const struct xattr_handler reiserfs_posix_acl_access_handler = {
-	.prefix = POSIX_ACL_XATTR_ACCESS,
-	.flags = ACL_TYPE_ACCESS,
-	.get = posix_acl_get,
-	.set = posix_acl_set,
-	.list = posix_acl_access_list,
-};
-
-static size_t posix_acl_default_list(struct dentry *dentry, char *list,
-				     size_t list_size, const char *name,
-				     size_t name_len, int type)
-{
-	const size_t size = sizeof(POSIX_ACL_XATTR_DEFAULT);
-	if (!reiserfs_posixacl(dentry->d_sb))
-		return 0;
-	if (list && size <= list_size)
-		memcpy(list, POSIX_ACL_XATTR_DEFAULT, size);
-	return size;
-}
-
-const struct xattr_handler reiserfs_posix_acl_default_handler = {
-	.prefix = POSIX_ACL_XATTR_DEFAULT,
-	.flags = ACL_TYPE_DEFAULT,
-	.get = posix_acl_get,
-	.set = posix_acl_set,
-	.list = posix_acl_default_list,
-};
-=======
 /*
  * Called under i_mutex
  */
@@ -729,4 +409,3 @@ int reiserfs_acl_chmod(struct dentry *dentry)
 
 	return posix_acl_chmod(&nop_mnt_idmap, dentry, inode->i_mode);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

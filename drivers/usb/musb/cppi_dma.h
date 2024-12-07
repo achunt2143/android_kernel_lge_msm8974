@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) 2005-2006 by Texas Instruments */
 
 #ifndef _CPPI_DMA_H_
@@ -11,24 +8,10 @@
 #include <linux/list.h>
 #include <linux/errno.h>
 #include <linux/dmapool.h>
-<<<<<<< HEAD
-
-#include "musb_dma.h"
-#include "musb_core.h"
-
-
-/* FIXME fully isolate CPPI from DaVinci ... the "CPPI generic" registers
- * would seem to be shared with the TUSB6020 (over VLYNQ).
- */
-
-#include "davinci.h"
-
-=======
 #include <linux/dmaengine.h>
 
 #include "musb_core.h"
 #include "musb_dma.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CPPI RX/TX state RAM */
 
@@ -125,10 +108,6 @@ struct cppi_channel {
 /* CPPI DMA controller object */
 struct cppi {
 	struct dma_controller		controller;
-<<<<<<< HEAD
-	struct musb			*musb;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem			*mregs;		/* Mentor regs */
 	void __iomem			*tibase;	/* TI/CPPI regs */
 
@@ -142,10 +121,6 @@ struct cppi {
 	struct list_head		tx_complete;
 };
 
-<<<<<<< HEAD
-/* CPPI IRQ handler */
-extern irqreturn_t cppi_interrupt(int, void *);
-=======
 struct cppi41_dma_channel {
 	struct dma_channel channel;
 	struct cppi41_dma_controller *controller;
@@ -165,6 +140,5 @@ struct cppi41_dma_channel {
 	struct list_head tx_check;
 	int tx_zlp;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* end of ifndef _CPPI_DMA_H_ */

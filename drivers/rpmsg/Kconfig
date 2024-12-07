@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-menu "Rpmsg drivers (EXPERIMENTAL)"
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 menu "Rpmsg drivers"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # RPMSG always gets selected by whoever wants it
 config RPMSG
 	tristate
-<<<<<<< HEAD
-	select VIRTIO
-	select VIRTIO_RING
-	depends on EXPERIMENTAL
-=======
 
 config RPMSG_CHAR
 	tristate "RPMSG device interface"
@@ -89,6 +80,5 @@ config RPMSG_VIRTIO
 	select RPMSG
 	select RPMSG_NS
 	select VIRTIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endmenu

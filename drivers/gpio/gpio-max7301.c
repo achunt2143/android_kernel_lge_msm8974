@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Juergen Beisert, Pengutronix
  * Copyright (C) 2008 Guennadi Liakhovetski, Pengutronix
  * Copyright (C) 2009 Wolfram Sang, Pengutronix
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Check max730x.c for further details.
  */
 
@@ -32,11 +22,7 @@ static int max7301_spi_write(struct device *dev, unsigned int reg,
 	struct spi_device *spi = to_spi_device(dev);
 	u16 word = ((reg & 0x7F) << 8) | (val & 0xFF);
 
-<<<<<<< HEAD
-	return spi_write(spi, (const u8 *)&word, sizeof(word));
-=======
 	return spi_write_then_read(spi, &word, sizeof(word), NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* A read from the MAX7301 means two transfers; here, one message each */
@@ -48,29 +34,14 @@ static int max7301_spi_read(struct device *dev, unsigned int reg)
 	struct spi_device *spi = to_spi_device(dev);
 
 	word = 0x8000 | (reg << 8);
-<<<<<<< HEAD
-	ret = spi_write(spi, (const u8 *)&word, sizeof(word));
-	if (ret)
-		return ret;
-	/*
-	 * This relies on the fact, that a transfer with NULL tx_buf shifts out
-	 * zero bytes (=NOOP for MAX7301)
-	 */
-	ret = spi_read(spi, (u8 *)&word, sizeof(word));
-=======
 	ret = spi_write_then_read(spi, &word, sizeof(word), &word,
 				  sizeof(word));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	return word & 0xff;
 }
 
-<<<<<<< HEAD
-static int __devinit max7301_probe(struct spi_device *spi)
-=======
 static int max7301_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max7301 *ts;
 	int ret;
@@ -81,11 +52,7 @@ static int max7301_probe(struct spi_device *spi)
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	ts = kzalloc(sizeof(struct max7301), GFP_KERNEL);
-=======
 	ts = devm_kzalloc(&spi->dev, sizeof(struct max7301), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ts)
 		return -ENOMEM;
 
@@ -94,23 +61,12 @@ static int max7301_probe(struct spi_device *spi)
 	ts->dev = &spi->dev;
 
 	ret = __max730x_probe(ts);
-<<<<<<< HEAD
-	if (ret)
-		kfree(ts);
-	return ret;
-}
-
-static int __devexit max7301_remove(struct spi_device *spi)
-{
-	return __max730x_remove(&spi->dev);
-=======
 	return ret;
 }
 
 static void max7301_remove(struct spi_device *spi)
 {
 	__max730x_remove(&spi->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct spi_device_id max7301_id[] = {
@@ -122,16 +78,9 @@ MODULE_DEVICE_TABLE(spi, max7301_id);
 static struct spi_driver max7301_driver = {
 	.driver = {
 		.name = "max7301",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = max7301_probe,
-	.remove = __devexit_p(max7301_remove),
-=======
 	},
 	.probe = max7301_probe,
 	.remove = max7301_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max7301_id,
 };
 

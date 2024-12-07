@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_ASM_H
 #define _ASM_X86_ASM_H
 
 #ifdef __ASSEMBLY__
-<<<<<<< HEAD
-# define __ASM_FORM(x)	x
-# define __ASM_FORM_COMMA(x) x,
-# define __ASM_EX_SEC	.section __ex_table, "a"
-#else
-# define __ASM_FORM(x)	" " #x " "
-# define __ASM_FORM_COMMA(x) " " #x ","
-# define __ASM_EX_SEC	" .section __ex_table,\"a\"\n"
-#endif
-
-#ifdef CONFIG_X86_32
-# define __ASM_SEL(a,b) __ASM_FORM(a)
-#else
-# define __ASM_SEL(a,b) __ASM_FORM(b)
-=======
 # define __ASM_FORM(x, ...)		x,## __VA_ARGS__
 # define __ASM_FORM_RAW(x, ...)		x,## __VA_ARGS__
 # define __ASM_FORM_COMMA(x, ...)	x,## __VA_ARGS__,
@@ -43,16 +25,11 @@
 /* 64 bit */
 # define __ASM_SEL(a,b)		__ASM_FORM(b)
 # define __ASM_SEL_RAW(a,b)	__ASM_FORM_RAW(b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define __ASM_SIZE(inst, ...)	__ASM_SEL(inst##l##__VA_ARGS__, \
 					  inst##q##__VA_ARGS__)
-<<<<<<< HEAD
-#define __ASM_REG(reg)		__ASM_SEL(e##reg, r##reg)
-=======
 #define __ASM_REG(reg)         __ASM_SEL_RAW(e##reg, r##reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _ASM_PTR	__ASM_SEL(.long, .quad)
 #define _ASM_ALIGN	__ASM_SEL(.balign 4, .balign 8)
@@ -63,10 +40,7 @@
 #define _ASM_ADD	__ASM_SIZE(add)
 #define _ASM_SUB	__ASM_SIZE(sub)
 #define _ASM_XADD	__ASM_SIZE(xadd)
-<<<<<<< HEAD
-=======
 #define _ASM_MUL	__ASM_SIZE(mul)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _ASM_AX		__ASM_REG(ax)
 #define _ASM_BX		__ASM_REG(bx)
@@ -77,23 +51,6 @@
 #define _ASM_SI		__ASM_REG(si)
 #define _ASM_DI		__ASM_REG(di)
 
-<<<<<<< HEAD
-/* Exception table entry */
-#ifdef __ASSEMBLY__
-# define _ASM_EXTABLE(from,to)	    \
-	__ASM_EX_SEC ;		    \
-	_ASM_ALIGN ;		    \
-	_ASM_PTR from , to ;	    \
-	.previous
-#else
-# define _ASM_EXTABLE(from,to) \
-	__ASM_EX_SEC	\
-	_ASM_ALIGN "\n" \
-	_ASM_PTR #from "," #to "\n" \
-	" .previous\n"
-#endif
-
-=======
 /* Adds a (%rip) suffix on 64 bits only; for immediate memory references */
 #define _ASM_RIP(x)	__ASM_SEL_RAW(x, x (__ASM_REGPFX rip))
 
@@ -279,5 +236,4 @@ register unsigned long current_stack_pointer asm(_ASM_SP);
 	_ASM_EXTABLE_TYPE(from, to, EX_TYPE_FAULT)
 
 #endif /* __KERNEL__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_ASM_H */

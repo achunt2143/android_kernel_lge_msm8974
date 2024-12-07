@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for alpha-specific library files..
 #
 
 asflags-y := $(KBUILD_CFLAGS)
-<<<<<<< HEAD
-ccflags-y := -Werror
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Many of these routines have implementations tuned for ev6.
 # Choose them iff we're targeting ev6 specifically.
@@ -20,10 +13,7 @@ ev6-$(CONFIG_ALPHA_EV6) := ev6-
 ev67-$(CONFIG_ALPHA_EV67) := ev67-
 
 lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
-<<<<<<< HEAD
-=======
 	udiv-qrnnd.o \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay.o \
 	$(ev6-y)memset.o \
 	$(ev6-y)memcpy.o \
@@ -31,27 +21,13 @@ lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
 	checksum.o \
 	csum_partial_copy.o \
 	$(ev67-y)strlen.o \
-<<<<<<< HEAD
-	$(ev67-y)strcat.o \
-	strcpy.o \
-	$(ev67-y)strncat.o \
-	strncpy.o \
-	$(ev6-y)stxcpy.o \
-	$(ev6-y)stxncpy.o \
-=======
 	stycpy.o \
 	styncpy.o \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(ev67-y)strchr.o \
 	$(ev67-y)strrchr.o \
 	$(ev6-y)memchr.o \
 	$(ev6-y)copy_user.o \
 	$(ev6-y)clear_user.o \
-<<<<<<< HEAD
-	$(ev6-y)strncpy_from_user.o \
-	$(ev67-y)strlen_user.o \
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(ev6-y)csum_ipv6_magic.o \
 	$(ev6-y)clear_page.o \
 	$(ev6-y)copy_page.o \
@@ -59,27 +35,12 @@ lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
 	callback_srm.o srm_puts.o srm_printk.o \
 	fls.o
 
-<<<<<<< HEAD
-lib-$(CONFIG_SMP) += dec_and_lock.o
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # The division routines are built from single source, with different defines.
 AFLAGS___divqu.o = -DDIV
 AFLAGS___remqu.o =       -DREM
 AFLAGS___divlu.o = -DDIV       -DINTSIZE
 AFLAGS___remlu.o =       -DREM -DINTSIZE
 
-<<<<<<< HEAD
-$(obj)/__divqu.o: $(obj)/$(ev6-y)divide.S
-	$(cmd_as_o_S)
-$(obj)/__remqu.o: $(obj)/$(ev6-y)divide.S
-	$(cmd_as_o_S)
-$(obj)/__divlu.o: $(obj)/$(ev6-y)divide.S
-	$(cmd_as_o_S)
-$(obj)/__remlu.o: $(obj)/$(ev6-y)divide.S
-	$(cmd_as_o_S)
-=======
 $(addprefix $(obj)/,__divqu.o __remqu.o __divlu.o __remlu.o): \
 						$(src)/$(ev6-y)divide.S FORCE
 	$(call if_changed_rule,as_o_S)
@@ -97,4 +58,3 @@ $(obj)/stycpy.o: $(obj)/strcpy.o $(obj)/$(ev67-y)strcat.o \
 $(obj)/styncpy.o: $(obj)/strncpy.o $(obj)/$(ev67-y)strncat.o \
 		 $(obj)/$(ev6-y)stxncpy.o FORCE
 	$(call if_changed,ld)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

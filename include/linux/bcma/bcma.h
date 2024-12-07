@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_BCMA_H_
 #define LINUX_BCMA_H_
 
 #include <linux/pci.h>
 #include <linux/mod_devicetable.h>
 
-<<<<<<< HEAD
-#include <linux/bcma/bcma_driver_chipcommon.h>
-#include <linux/bcma/bcma_driver_pci.h>
-#include <linux/bcma/bcma_driver_mips.h>
-#include <linux/ssb/ssb.h> /* SPROM sharing */
-
-#include "bcma_regs.h"
-=======
 #include <linux/bcma/bcma_driver_arm_c9.h>
 #include <linux/bcma/bcma_driver_chipcommon.h>
 #include <linux/bcma/bcma_driver_pci.h>
@@ -25,7 +14,6 @@
 #include <linux/ssb/ssb.h> /* SPROM sharing */
 
 #include <linux/bcma/bcma_regs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bcma_device;
 struct bcma_bus;
@@ -42,14 +30,11 @@ struct bcma_chipinfo {
 	u8 pkg;
 };
 
-<<<<<<< HEAD
-=======
 struct bcma_boardinfo {
 	u16 vendor;
 	u16 type;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bcma_clkmode {
 	BCMA_CLKMODE_FAST,
 	BCMA_CLKMODE_DYNAMIC,
@@ -89,8 +74,6 @@ struct bcma_host_ops {
 
 /* Core-ID values. */
 #define BCMA_CORE_OOB_ROUTER		0x367	/* Out of band */
-<<<<<<< HEAD
-=======
 #define BCMA_CORE_4706_CHIPCOMMON	0x500
 #define BCMA_CORE_NS_PCIEG2		0x501
 #define BCMA_CORE_NS_DMA		0x502
@@ -110,7 +93,6 @@ struct bcma_host_ops {
 #define BCMA_CORE_ALTA			0x534	/* I2S core */
 #define BCMA_CORE_4706_MAC_GBIT_COMMON	0x5DC
 #define BCMA_CORE_DDR23_PHY		0x5DD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CORE_INVALID		0x700
 #define BCMA_CORE_CHIPCOMMON		0x800
 #define BCMA_CORE_ILINE20		0x801
@@ -167,11 +149,6 @@ struct bcma_host_ops {
 #define BCMA_CORE_I2S			0x834
 #define BCMA_CORE_SDR_DDR1_MEM_CTL	0x835	/* SDR/DDR1 memory controller core */
 #define BCMA_CORE_SHIM			0x837	/* SHIM component in ubus/6362 */
-<<<<<<< HEAD
-#define BCMA_CORE_DEFAULT		0xFFF
-
-#define BCMA_MAX_NR_CORES		16
-=======
 #define BCMA_CORE_PHY_AC		0x83B
 #define BCMA_CORE_PCIE2			0x83C	/* PCI Express Gen2 */
 #define BCMA_CORE_USB30_DEV		0x83D
@@ -286,7 +263,6 @@ struct bcma_host_ops {
 #define BCMA_BOARD_TYPE_BCM953572SDRNR2	0X0590
 /* BCM43142 */
 #define BCMA_BOARD_TYPE_BCM943142HM	0X05E0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bcma_device {
 	struct bcma_bus *bus;
@@ -302,10 +278,7 @@ struct bcma_device {
 	u8 core_unit;
 
 	u32 addr;
-<<<<<<< HEAD
-=======
 	u32 addr_s[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 wrap;
 
 	void __iomem *io_addr;
@@ -343,8 +316,6 @@ int __bcma_driver_register(struct bcma_driver *drv, struct module *owner);
 
 extern void bcma_driver_unregister(struct bcma_driver *drv);
 
-<<<<<<< HEAD
-=======
 /* module_bcma_driver() - Helper macro for drivers that don't do
  * anything special in module init/exit.  This eliminates a lot of
  * boilerplate.  Each module may only use this macro once, and
@@ -354,7 +325,6 @@ extern void bcma_driver_unregister(struct bcma_driver *drv);
 	module_driver(__bcma_driver, bcma_driver_register, \
 			bcma_driver_unregister)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Set a fallback SPROM.
  * See kdoc at the function definition for complete documentation. */
 extern int bcma_arch_register_fallback_sprom(
@@ -362,37 +332,14 @@ extern int bcma_arch_register_fallback_sprom(
 		struct ssb_sprom *out));
 
 struct bcma_bus {
-<<<<<<< HEAD
-=======
 	struct device *dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The MMIO area. */
 	void __iomem *mmio;
 
 	const struct bcma_host_ops *ops;
 
 	enum bcma_hosttype hosttype;
-<<<<<<< HEAD
-	union {
-		/* Pointer to the PCI bus (only for BCMA_HOSTTYPE_PCI) */
-		struct pci_dev *host_pci;
-		/* Pointer to the SDIO device (only for BCMA_HOSTTYPE_SDIO) */
-		struct sdio_func *host_sdio;
-	};
-
-	struct bcma_chipinfo chipinfo;
-
-	struct bcma_device *mapped_core;
-	struct list_head cores;
-	u8 nr_cores;
-	u8 init_done:1;
-	u8 num;
-
-	struct bcma_drv_cc drv_cc;
-	struct bcma_drv_pci drv_pci;
-	struct bcma_drv_mips drv_mips;
-=======
 	bool host_is_pcie2; /* Used for BCMA_HOSTTYPE_PCI only */
 	struct pci_dev *host_pci; /* PCI bus pointer (BCMA_HOSTTYPE_PCI only) */
 
@@ -411,7 +358,6 @@ struct bcma_bus {
 	struct bcma_drv_pcie2 drv_pcie2;
 	struct bcma_drv_mips drv_mips;
 	struct bcma_drv_gmac_cmn drv_gmac_cmn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We decided to share SPROM struct with SSB as long as we do not need
 	 * any hacks for BCMA. This simplifies drivers code. */
@@ -495,9 +441,6 @@ static inline void bcma_maskset16(struct bcma_device *cc,
 	bcma_write16(cc, offset, (bcma_read16(cc, offset) & mask) | set);
 }
 
-<<<<<<< HEAD
-extern struct bcma_device *bcma_find_core(struct bcma_bus *bus, u16 coreid);
-=======
 extern struct bcma_device *bcma_find_core_unit(struct bcma_bus *bus, u16 coreid,
 					       u8 unit);
 static inline struct bcma_device *bcma_find_core(struct bcma_bus *bus,
@@ -527,7 +470,6 @@ static inline int bcma_host_pci_irq_ctl(struct bcma_bus *bus,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern bool bcma_core_is_enabled(struct bcma_device *core);
 extern void bcma_core_disable(struct bcma_device *core, u32 flags);
 extern int bcma_core_enable(struct bcma_device *core, u32 flags);
@@ -535,19 +477,13 @@ extern void bcma_core_set_clockmode(struct bcma_device *core,
 				    enum bcma_clkmode clkmode);
 extern void bcma_core_pll_ctl(struct bcma_device *core, u32 req, u32 status,
 			      bool on);
-<<<<<<< HEAD
-=======
 extern u32 bcma_chipco_pll_read(struct bcma_drv_cc *cc, u32 offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_DMA_TRANSLATION_MASK	0xC0000000
 #define  BCMA_DMA_TRANSLATION_NONE	0x00000000
 #define  BCMA_DMA_TRANSLATION_DMA32_CMT	0x40000000 /* Client Mode Translation for 32-bit DMA */
 #define  BCMA_DMA_TRANSLATION_DMA64_CMT	0x80000000 /* Client Mode Translation for 64-bit DMA */
 extern u32 bcma_core_dma_translation(struct bcma_device *core);
 
-<<<<<<< HEAD
-=======
 extern unsigned int bcma_core_irq(struct bcma_device *core, int num);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_BCMA_H_ */

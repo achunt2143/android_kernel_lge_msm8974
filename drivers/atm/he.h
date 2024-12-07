@@ -281,11 +281,7 @@ struct he_dev {
 	int irq_peak;
 
 	struct tasklet_struct tasklet;
-<<<<<<< HEAD
-	struct pci_pool *tpd_pool;
-=======
 	struct dma_pool *tpd_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head outstanding_tpds;
 
 	dma_addr_t tpdrq_phys;
@@ -300,11 +296,7 @@ struct he_dev {
 	struct he_buff **rbpl_virt;
 	unsigned long *rbpl_table;
 	unsigned long rbpl_hint;
-<<<<<<< HEAD
-	struct pci_pool *rbpl_pool;
-=======
 	struct dma_pool *rbpl_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t rbpl_phys;
 	struct he_rbp *rbpl_base, *rbpl_tail;
 	struct list_head rbpl_outstanding;

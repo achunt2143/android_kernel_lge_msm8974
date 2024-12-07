@@ -1,51 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009 Renesas Solutions Corp.
  *
  * Kuninori Morimoto <morimoto.kuninori@renesas.com>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-
-#include <linux/init.h>
-#include <linux/device.h>
-#include <linux/platform_device.h>
-#include <linux/mmc/host.h>
-#include <linux/mmc/sh_mmcif.h>
-#include <linux/mmc/sh_mobile_sdhi.h>
-#include <linux/mtd/physmap.h>
-#include <linux/gpio.h>
-#include <linux/interrupt.h>
-#include <linux/io.h>
-#include <linux/delay.h>
-#include <linux/usb/r8a66597.h>
-#include <linux/usb/renesas_usbhs.h>
-#include <linux/i2c.h>
-#include <linux/i2c/tsc2007.h>
-#include <linux/spi/spi.h>
-#include <linux/spi/sh_msiof.h>
-#include <linux/spi/mmc_spi.h>
-#include <linux/input.h>
-#include <linux/input/sh_keysc.h>
-#include <linux/sh_eth.h>
-#include <linux/videodev2.h>
-#include <video/sh_mobile_lcdc.h>
-#include <sound/sh_fsi.h>
-#include <media/sh_mobile_ceu.h>
-#include <media/soc_camera.h>
-#include <media/tw9910.h>
-#include <media/mt9t112.h>
-#include <asm/heartbeat.h>
-#include <asm/clock.h>
-#include <asm/suspend.h>
-#include <cpu/sh7724.h>
-=======
  */
 #include <asm/clock.h>
 #include <asm/heartbeat.h>
@@ -89,7 +46,6 @@
 #include <sound/simple_card.h>
 
 #include <video/sh_mobile_lcdc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Address      Interface        BusWidth
@@ -116,8 +72,6 @@
  *                                  OFF-ON : MMC
  */
 
-<<<<<<< HEAD
-=======
 /*
  * FSI - DA7210
  *
@@ -132,7 +86,6 @@
 static phys_addr_t ceu0_dma_membase;
 static phys_addr_t ceu1_dma_membase;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Heartbeat */
 static unsigned char led_pos[] = { 0, 1, 2, 3 };
 
@@ -204,34 +157,20 @@ static struct resource sh_eth_resources[] = {
 		.flags = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start = 91,
-=======
 		.start = evt2irq(0xd60),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL,
 	},
 };
 
 static struct sh_eth_plat_data sh_eth_plat = {
 	.phy = 0x1f, /* SMSC LAN8700 */
-<<<<<<< HEAD
-	.edmac_endian = EDMAC_LITTLE_ENDIAN,
-	.register_type = SH_ETH_REG_FAST_SH4,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 	.ether_link_active_low = 1
 };
 
 static struct platform_device sh_eth_device = {
-<<<<<<< HEAD
-	.name = "sh-eth",
-	.id	= 0,
-=======
 	.name = "sh7724-ether",
 	.id = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev = {
 		.platform_data = &sh_eth_plat,
 	},
@@ -257,13 +196,8 @@ static struct resource usb0_host_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 65,
-		.end	= 65,
-=======
 		.start	= evt2irq(0xa20),
 		.end	= evt2irq(0xa20),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ | IRQF_TRIGGER_LOW,
 	},
 };
@@ -298,13 +232,8 @@ static struct resource usb1_common_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 66,
-		.end	= 66,
-=======
 		.start	= evt2irq(0xa40),
 		.end	= evt2irq(0xa40),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ | IRQF_TRIGGER_LOW,
 	},
 };
@@ -329,11 +258,6 @@ static int usbhs_get_id(struct platform_device *pdev)
 	return gpio_get_value(GPIO_PTB3);
 }
 
-<<<<<<< HEAD
-static struct renesas_usbhs_platform_info usbhs_info = {
-	.platform_callback = {
-		.get_id		= usbhs_get_id,
-=======
 static int usbhs_phy_reset(struct platform_device *pdev)
 {
 	/* enable vbus if HOST */
@@ -347,7 +271,6 @@ static struct renesas_usbhs_platform_info usbhs_info = {
 	.platform_callback = {
 		.get_id		= usbhs_get_id,
 		.phy_reset	= usbhs_phy_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.driver_param = {
 		.buswait_bwait		= 4,
@@ -366,13 +289,8 @@ static struct resource usbhs_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 66,
-		.end	= 66,
-=======
 		.start	= evt2irq(0xa40),
 		.end	= evt2irq(0xa40),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -389,11 +307,7 @@ static struct platform_device usbhs_device = {
 	.resource	= usbhs_resources,
 };
 
-<<<<<<< HEAD
-/* LCDC */
-=======
 /* LCDC and backlight */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct fb_videomode ecovec_lcd_modes[] = {
 	{
 		.name		= "Panel",
@@ -424,21 +338,6 @@ static const struct fb_videomode ecovec_dvi_modes[] = {
 	},
 };
 
-<<<<<<< HEAD
-static int ecovec24_set_brightness(int brightness)
-{
-	gpio_set_value(GPIO_PTR1, brightness);
-
-	return 0;
-}
-
-static int ecovec24_get_brightness(void)
-{
-	return gpio_get_value(GPIO_PTR1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sh_mobile_lcdc_info lcdc_info = {
 	.ch[0] = {
 		.interface_type = RGB18,
@@ -448,15 +347,6 @@ static struct sh_mobile_lcdc_info lcdc_info = {
 			.width = 152,
 			.height = 91,
 		},
-<<<<<<< HEAD
-		.bl_info = {
-			.name = "sh_mobile_lcdc_bl",
-			.max_brightness = 1,
-			.set_brightness = ecovec24_set_brightness,
-			.get_brightness = ecovec24_get_brightness,
-		},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -468,11 +358,7 @@ static struct resource lcdc_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 106,
-=======
 		.start	= evt2irq(0xf40),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -486,11 +372,6 @@ static struct platform_device lcdc_device = {
 	},
 };
 
-<<<<<<< HEAD
-/* CEU0 */
-static struct sh_mobile_ceu_info sh_mobile_ceu0_info = {
-	.flags = SH_CEU_FLAG_USE_8BIT_BUS,
-=======
 static struct gpiod_lookup_table gpio_backlight_lookup = {
 	.dev_id		= "gpio-backlight.0",
 	.table = {
@@ -536,7 +417,6 @@ static struct ceu_platform_data ceu0_pdata = {
 			.i2c_address	= 0x45,
 		},
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource ceu0_resources[] = {
@@ -547,23 +427,6 @@ static struct resource ceu0_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 52,
-		.flags  = IORESOURCE_IRQ,
-	},
-	[2] = {
-		/* place holder for contiguous memory */
-	},
-};
-
-static struct platform_device ceu0_device = {
-	.name		= "sh_mobile_ceu",
-	.id             = 0, /* "ceu0" clock */
-	.num_resources	= ARRAY_SIZE(ceu0_resources),
-	.resource	= ceu0_resources,
-	.dev	= {
-		.platform_data	= &sh_mobile_ceu0_info,
-=======
 		.start  = evt2irq(0x880),
 		.flags  = IORESOURCE_IRQ,
 	},
@@ -576,15 +439,10 @@ static struct platform_device ceu0_device = {
 	.resource	= ceu0_resources,
 	.dev	= {
 		.platform_data	= &ceu0_pdata,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 /* CEU1 */
-<<<<<<< HEAD
-static struct sh_mobile_ceu_info sh_mobile_ceu1_info = {
-	.flags = SH_CEU_FLAG_USE_8BIT_BUS,
-=======
 static struct ceu_platform_data ceu1_pdata = {
 	.num_subdevs			= 1,
 	.subdevs = {
@@ -596,7 +454,6 @@ static struct ceu_platform_data ceu1_pdata = {
 			.i2c_address	= 0x3c,
 		},
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource ceu1_resources[] = {
@@ -607,23 +464,6 @@ static struct resource ceu1_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 63,
-		.flags  = IORESOURCE_IRQ,
-	},
-	[2] = {
-		/* place holder for contiguous memory */
-	},
-};
-
-static struct platform_device ceu1_device = {
-	.name		= "sh_mobile_ceu",
-	.id             = 1, /* "ceu1" clock */
-	.num_resources	= ARRAY_SIZE(ceu1_resources),
-	.resource	= ceu1_resources,
-	.dev	= {
-		.platform_data	= &sh_mobile_ceu1_info,
-=======
 		.start  = evt2irq(0x9e0),
 		.flags  = IORESOURCE_IRQ,
 	},
@@ -660,13 +500,10 @@ static struct gpiod_lookup_table mt9t112_1_gpios = {
 	.table		= {
 		GPIO_LOOKUP("sh7724_pfc", GPIO_PTA4, "standby",
 			    GPIO_ACTIVE_HIGH),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 /* I2C device */
-<<<<<<< HEAD
-=======
 static struct tw9910_video_info tw9910_info = {
 	.buswidth	= 8,
 	.mpout		= TW9910_MPO_FIELD,
@@ -682,13 +519,10 @@ static struct mt9t112_platform_data mt9t112_1_pdata = {
 	.divider = { 0x49, 0x6, 0, 6, 0, 9, 9, 6, 0 }, /* for 24MHz */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_board_info i2c0_devices[] = {
 	{
 		I2C_BOARD_INFO("da7210", 0x1a),
 	},
-<<<<<<< HEAD
-=======
 	{
 		I2C_BOARD_INFO("tw9910", 0x45),
 		.platform_data = &tw9910_info,
@@ -698,7 +532,6 @@ static struct i2c_board_info i2c0_devices[] = {
 		I2C_BOARD_INFO("mt9t112", 0x3c),
 		.platform_data = &mt9t112_0_pdata,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct i2c_board_info i2c1_devices[] = {
@@ -707,10 +540,6 @@ static struct i2c_board_info i2c1_devices[] = {
 	},
 	{
 		I2C_BOARD_INFO("lis3lv02d", 0x1c),
-<<<<<<< HEAD
-		.irq = 33,
-	}
-=======
 		.irq = evt2irq(0x620),
 	},
 	{
@@ -718,7 +547,6 @@ static struct i2c_board_info i2c1_devices[] = {
 		I2C_BOARD_INFO("mt9t112", 0x3c),
 		.platform_data = &mt9t112_1_pdata,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* KEYSC */
@@ -743,11 +571,7 @@ static struct resource keysc_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 79,
-=======
 		.start  = evt2irq(0xbe0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -763,14 +587,9 @@ static struct platform_device keysc_device = {
 };
 
 /* TouchScreen */
-<<<<<<< HEAD
-#define IRQ0 32
-static int ts_get_pendown_state(void)
-=======
 #define IRQ0 evt2irq(0x600)
 
 static int ts_get_pendown_state(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int val = 0;
 	gpio_free(GPIO_FN_INTC_IRQ0);
@@ -805,27 +624,6 @@ static struct i2c_board_info ts_i2c_clients = {
 	.irq		= IRQ0,
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
-/* SDHI0 */
-static void sdhi0_set_pwr(struct platform_device *pdev, int state)
-{
-	gpio_set_value(GPIO_PTB6, state);
-}
-
-static int sdhi0_get_cd(struct platform_device *pdev)
-{
-	return !gpio_get_value(GPIO_PTY7);
-}
-
-static struct sh_mobile_sdhi_info sdhi0_info = {
-	.dma_slave_tx	= SHDMA_SLAVE_SDHI0_TX,
-	.dma_slave_rx	= SHDMA_SLAVE_SDHI0_RX,
-	.set_pwr	= sdhi0_set_pwr,
-	.tmio_caps      = MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
-			  MMC_CAP_NEEDS_POLL,
-	.get_cd		= sdhi0_get_cd,
-=======
 static struct regulator_consumer_supply cn12_power_consumers[] =
 {
 	REGULATOR_SUPPLY("vmmc", "sh_mmcif.0"),
@@ -920,7 +718,6 @@ static struct tmio_mmc_data sdhi0_info = {
 	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI0_RX,
 	.capabilities	= MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
 			  MMC_CAP_NEEDS_POLL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource sdhi0_resources[] = {
@@ -931,11 +728,7 @@ static struct resource sdhi0_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 100,
-=======
 		.start  = evt2irq(0xe80),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -952,25 +745,6 @@ static struct platform_device sdhi0_device = {
 
 #if !defined(CONFIG_MMC_SH_MMCIF) && !defined(CONFIG_MMC_SH_MMCIF_MODULE)
 /* SDHI1 */
-<<<<<<< HEAD
-static void sdhi1_set_pwr(struct platform_device *pdev, int state)
-{
-	gpio_set_value(GPIO_PTB7, state);
-}
-
-static int sdhi1_get_cd(struct platform_device *pdev)
-{
-	return !gpio_get_value(GPIO_PTW7);
-}
-
-static struct sh_mobile_sdhi_info sdhi1_info = {
-	.dma_slave_tx	= SHDMA_SLAVE_SDHI1_TX,
-	.dma_slave_rx	= SHDMA_SLAVE_SDHI1_RX,
-	.tmio_caps      = MMC_CAP_SDIO_IRQ | MMC_CAP_POWER_OFF_CARD |
-			  MMC_CAP_NEEDS_POLL,
-	.set_pwr	= sdhi1_set_pwr,
-	.get_cd		= sdhi1_get_cd,
-=======
 static struct tmio_mmc_data sdhi1_info = {
 	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI1_TX,
 	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI1_RX,
@@ -985,7 +759,6 @@ static struct gpiod_lookup_table sdhi1_gpio_table = {
 		GPIO_LOOKUP("sh7724_pfc", GPIO_PTW7, "cd", GPIO_ACTIVE_LOW),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource sdhi1_resources[] = {
@@ -996,11 +769,7 @@ static struct resource sdhi1_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 23,
-=======
 		.start  = evt2irq(0x4e0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -1019,39 +788,18 @@ static struct platform_device sdhi1_device = {
 #else
 
 /* MMC SPI */
-<<<<<<< HEAD
-static int mmc_spi_get_ro(struct device *dev)
-{
-	return gpio_get_value(GPIO_PTY6);
-}
-
-static int mmc_spi_get_cd(struct device *dev)
-{
-	return !gpio_get_value(GPIO_PTY7);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mmc_spi_setpower(struct device *dev, unsigned int maskval)
 {
 	gpio_set_value(GPIO_PTB6, maskval ? 1 : 0);
 }
 
 static struct mmc_spi_platform_data mmc_spi_info = {
-<<<<<<< HEAD
-	.get_ro = mmc_spi_get_ro,
-	.get_cd = mmc_spi_get_cd,
-	.caps = MMC_CAP_NEEDS_POLL,
-=======
 	.caps = MMC_CAP_NEEDS_POLL,
 	.caps2 = MMC_CAP2_RO_ACTIVE_HIGH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ocr_mask = MMC_VDD_32_33 | MMC_VDD_33_34, /* 3.3V only */
 	.setpower = mmc_spi_setpower,
 };
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table mmc_spi_gpio_table = {
 	.dev_id = "mmc_spi.0", /* device "mmc_spi" @ CS0 */
 	.table = {
@@ -1065,17 +813,12 @@ static struct gpiod_lookup_table mmc_spi_gpio_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct spi_board_info spi_bus[] = {
 	{
 		.modalias	= "mmc_spi",
 		.platform_data	= &mmc_spi_info,
 		.max_speed_hz	= 5000000,
 		.mode		= SPI_MODE_0,
-<<<<<<< HEAD
-		.controller_data = (void *) GPIO_PTM4,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1092,11 +835,7 @@ static struct resource msiof0_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 84,
-=======
 		.start	= evt2irq(0xc80),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -1111,126 +850,6 @@ static struct platform_device msiof0_device = {
 	.resource	= msiof0_resources,
 };
 
-<<<<<<< HEAD
-#endif
-
-/* I2C Video/Camera */
-static struct i2c_board_info i2c_camera[] = {
-	{
-		I2C_BOARD_INFO("tw9910", 0x45),
-	},
-	{
-		/* 1st camera */
-		I2C_BOARD_INFO("mt9t112", 0x3c),
-	},
-	{
-		/* 2nd camera */
-		I2C_BOARD_INFO("mt9t112", 0x3c),
-	},
-};
-
-/* tw9910 */
-static int tw9910_power(struct device *dev, int mode)
-{
-	int val = mode ? 0 : 1;
-
-	gpio_set_value(GPIO_PTU2, val);
-	if (mode)
-		mdelay(100);
-
-	return 0;
-}
-
-static struct tw9910_video_info tw9910_info = {
-	.buswidth	= SOCAM_DATAWIDTH_8,
-	.mpout		= TW9910_MPO_FIELD,
-};
-
-static struct soc_camera_link tw9910_link = {
-	.i2c_adapter_id	= 0,
-	.bus_id		= 1,
-	.power		= tw9910_power,
-	.board_info	= &i2c_camera[0],
-	.priv		= &tw9910_info,
-};
-
-/* mt9t112 */
-static int mt9t112_power1(struct device *dev, int mode)
-{
-	gpio_set_value(GPIO_PTA3, mode);
-	if (mode)
-		mdelay(100);
-
-	return 0;
-}
-
-static struct mt9t112_camera_info mt9t112_info1 = {
-	.flags = MT9T112_FLAG_PCLK_RISING_EDGE | MT9T112_FLAG_DATAWIDTH_8,
-	.divider = { 0x49, 0x6, 0, 6, 0, 9, 9, 6, 0 }, /* for 24MHz */
-};
-
-static struct soc_camera_link mt9t112_link1 = {
-	.i2c_adapter_id	= 0,
-	.power		= mt9t112_power1,
-	.bus_id		= 0,
-	.board_info	= &i2c_camera[1],
-	.priv		= &mt9t112_info1,
-};
-
-static int mt9t112_power2(struct device *dev, int mode)
-{
-	gpio_set_value(GPIO_PTA4, mode);
-	if (mode)
-		mdelay(100);
-
-	return 0;
-}
-
-static struct mt9t112_camera_info mt9t112_info2 = {
-	.flags = MT9T112_FLAG_PCLK_RISING_EDGE | MT9T112_FLAG_DATAWIDTH_8,
-	.divider = { 0x49, 0x6, 0, 6, 0, 9, 9, 6, 0 }, /* for 24MHz */
-};
-
-static struct soc_camera_link mt9t112_link2 = {
-	.i2c_adapter_id	= 1,
-	.power		= mt9t112_power2,
-	.bus_id		= 1,
-	.board_info	= &i2c_camera[2],
-	.priv		= &mt9t112_info2,
-};
-
-static struct platform_device camera_devices[] = {
-	{
-		.name	= "soc-camera-pdrv",
-		.id	= 0,
-		.dev	= {
-			.platform_data = &tw9910_link,
-		},
-	},
-	{
-		.name	= "soc-camera-pdrv",
-		.id	= 1,
-		.dev	= {
-			.platform_data = &mt9t112_link1,
-		},
-	},
-	{
-		.name	= "soc-camera-pdrv",
-		.id	= 2,
-		.dev	= {
-			.platform_data = &mt9t112_link2,
-		},
-	},
-};
-
-/* FSI */
-static struct sh_fsi_platform_info fsi_info = {
-	.port_b = {
-		.flags = SH_FSI_BRS_INV,
-	},
-};
-
-=======
 static struct gpiod_lookup_table msiof_gpio_table = {
 	.dev_id = "spi_sh_msiof.0",
 	.table = {
@@ -1242,7 +861,6 @@ static struct gpiod_lookup_table msiof_gpio_table = {
 #endif
 
 /* FSI */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource fsi_resources[] = {
 	[0] = {
 		.name	= "FSI",
@@ -1251,11 +869,7 @@ static struct resource fsi_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 108,
-=======
 		.start  = evt2irq(0xf80),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -1265,13 +879,6 @@ static struct platform_device fsi_device = {
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(fsi_resources),
 	.resource	= fsi_resources,
-<<<<<<< HEAD
-	.dev	= {
-		.platform_data	= &fsi_info,
-	},
-};
-
-=======
 };
 
 static struct simple_util_info fsi_da7210_info = {
@@ -1298,7 +905,6 @@ static struct platform_device fsi_da7210_device = {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IrDA */
 static struct resource irda_resources[] = {
 	[0] = {
@@ -1308,11 +914,7 @@ static struct resource irda_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 20,
-=======
 		.start  = evt2irq(0x480),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -1323,13 +925,8 @@ static struct platform_device irda_device = {
 	.resource       = irda_resources,
 };
 
-<<<<<<< HEAD
-#include <media/ak881x.h>
-#include <media/sh_vou.h>
-=======
 #include <media/i2c/ak881x.h>
 #include <media/drv-intf/sh_vou.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ak881x_pdata ak881x_pdata = {
 	.flags = AK881X_IF_MODE_SLAVE,
@@ -1354,11 +951,7 @@ static struct resource sh_vou_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 55,
-=======
 		.start  = evt2irq(0x8e0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -1375,19 +968,6 @@ static struct platform_device vou_device = {
 
 #if defined(CONFIG_MMC_SH_MMCIF) || defined(CONFIG_MMC_SH_MMCIF_MODULE)
 /* SH_MMCIF */
-<<<<<<< HEAD
-static void mmcif_set_pwr(struct platform_device *pdev, int state)
-{
-	gpio_set_value(GPIO_PTB7, state);
-}
-
-static void mmcif_down_pwr(struct platform_device *pdev)
-{
-	gpio_set_value(GPIO_PTB7, 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource sh_mmcif_resources[] = {
 	[0] = {
 		.name	= "SH_MMCIF",
@@ -1397,30 +977,17 @@ static struct resource sh_mmcif_resources[] = {
 	},
 	[1] = {
 		/* MMC2I */
-<<<<<<< HEAD
-		.start	= 29,
-=======
 		.start	= evt2irq(0x5a0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 	[2] = {
 		/* MMC3I */
-<<<<<<< HEAD
-		.start	= 30,
-=======
 		.start	= evt2irq(0x5c0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_mmcif_plat_data sh_mmcif_plat = {
-<<<<<<< HEAD
-	.set_pwr	= mmcif_set_pwr,
-	.down_pwr	= mmcif_down_pwr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sup_pclk	= 0, /* SH7724: Max Pclk/2 */
 	.caps		= MMC_CAP_4_BIT_DATA |
 			  MMC_CAP_8_BIT_DATA |
@@ -1439,14 +1006,11 @@ static struct platform_device sh_mmcif_device = {
 };
 #endif
 
-<<<<<<< HEAD
-=======
 static struct platform_device *ecovec_ceu_devices[] __initdata = {
 	&ceu0_device,
 	&ceu1_device,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device *ecovec_devices[] __initdata = {
 	&heartbeat_device,
 	&nor_flash_device,
@@ -1455,17 +1019,10 @@ static struct platform_device *ecovec_devices[] __initdata = {
 	&usb1_common_device,
 	&usbhs_device,
 	&lcdc_device,
-<<<<<<< HEAD
-	&ceu0_device,
-	&ceu1_device,
-	&keysc_device,
-#if defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
-=======
 	&keysc_device,
 	&cn12_power,
 #if defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
 	&sdhi0_power,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sdhi0_device,
 #if !defined(CONFIG_MMC_SH_MMCIF) && !defined(CONFIG_MMC_SH_MMCIF_MODULE)
 	&sdhi1_device,
@@ -1473,15 +1030,8 @@ static struct platform_device *ecovec_devices[] __initdata = {
 #else
 	&msiof0_device,
 #endif
-<<<<<<< HEAD
-	&camera_devices[0],
-	&camera_devices[1],
-	&camera_devices[2],
-	&fsi_device,
-=======
 	&fsi_device,
 	&fsi_da7210_device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&irda_device,
 	&vou_device,
 #if defined(CONFIG_MMC_SH_MMCIF) || defined(CONFIG_MMC_SH_MMCIF_MODULE)
@@ -1654,17 +1204,9 @@ static int __init arch_setup(void)
 
 	gpio_request(GPIO_PTE6, NULL);
 	gpio_request(GPIO_PTU1, NULL);
-<<<<<<< HEAD
-	gpio_request(GPIO_PTR1, NULL);
 	gpio_request(GPIO_PTA2, NULL);
 	gpio_direction_input(GPIO_PTE6);
 	gpio_direction_output(GPIO_PTU1, 0);
-	gpio_direction_output(GPIO_PTR1, 0);
-=======
-	gpio_request(GPIO_PTA2, NULL);
-	gpio_direction_input(GPIO_PTE6);
-	gpio_direction_output(GPIO_PTU1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpio_direction_output(GPIO_PTA2, 0);
 
 	/* I/O buffer drive ability is high */
@@ -1677,12 +1219,9 @@ static int __init arch_setup(void)
 		lcdc_info.ch[0].lcd_modes		= ecovec_dvi_modes;
 		lcdc_info.ch[0].num_modes		= ARRAY_SIZE(ecovec_dvi_modes);
 
-<<<<<<< HEAD
-=======
 		/* No backlight */
 		gpio_backlight_data.dev = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpio_set_value(GPIO_PTA2, 1);
 		gpio_set_value(GPIO_PTU1, 1);
 	} else {
@@ -1692,11 +1231,6 @@ static int __init arch_setup(void)
 		lcdc_info.ch[0].lcd_modes		= ecovec_lcd_modes;
 		lcdc_info.ch[0].num_modes		= ARRAY_SIZE(ecovec_lcd_modes);
 
-<<<<<<< HEAD
-		gpio_set_value(GPIO_PTR1, 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FIXME
 		 *
 		 * LCDDON control is needed for Panel,
@@ -1732,10 +1266,6 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_FN_VIO0_CLK, NULL);
 	gpio_request(GPIO_FN_VIO0_FLD, NULL);
 	gpio_request(GPIO_FN_VIO0_HD,  NULL);
-<<<<<<< HEAD
-	platform_resource_setup_memory(&ceu0_device, "ceu0", 4 << 20);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable CEU1 */
 	gpio_request(GPIO_FN_VIO1_D7,  NULL);
@@ -1750,10 +1280,6 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_FN_VIO1_HD,  NULL);
 	gpio_request(GPIO_FN_VIO1_VD,  NULL);
 	gpio_request(GPIO_FN_VIO1_CLK, NULL);
-<<<<<<< HEAD
-	platform_resource_setup_memory(&ceu1_device, "ceu1", 4 << 20);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable KEYSC */
 	gpio_request(GPIO_FN_KEYOUT5_IN5, NULL);
@@ -1775,13 +1301,6 @@ static int __init arch_setup(void)
 	gpio_direction_input(GPIO_PTR6);
 
 	/* SD-card slot CN11 */
-<<<<<<< HEAD
-	/* Card-detect, used on CN11, either with SDHI0 or with SPI */
-	gpio_request(GPIO_PTY7, NULL);
-	gpio_direction_input(GPIO_PTY7);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
 	/* enable SDHI0 on CN11 (needs DS2.4 set to ON) */
 	gpio_request(GPIO_FN_SDHI0WP,  NULL);
@@ -1791,31 +1310,16 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_FN_SDHI0D2,  NULL);
 	gpio_request(GPIO_FN_SDHI0D1,  NULL);
 	gpio_request(GPIO_FN_SDHI0D0,  NULL);
-<<<<<<< HEAD
-	gpio_request(GPIO_PTB6, NULL);
-	gpio_direction_output(GPIO_PTB6, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	/* enable MSIOF0 on CN11 (needs DS2.4 set to OFF) */
 	gpio_request(GPIO_FN_MSIOF0_TXD, NULL);
 	gpio_request(GPIO_FN_MSIOF0_RXD, NULL);
 	gpio_request(GPIO_FN_MSIOF0_TSCK, NULL);
-<<<<<<< HEAD
-	gpio_request(GPIO_PTM4, NULL); /* software CS control of TSYNC pin */
-	gpio_direction_output(GPIO_PTM4, 1); /* active low CS */
-	gpio_request(GPIO_PTB6, NULL); /* 3.3V power control */
-	gpio_direction_output(GPIO_PTB6, 0); /* disable power by default */
-	gpio_request(GPIO_PTY6, NULL); /* write protect */
-	gpio_direction_input(GPIO_PTY6);
-
-=======
 	gpio_request(GPIO_PTB6, NULL); /* 3.3V power control */
 	gpio_direction_output(GPIO_PTB6, 0); /* disable power by default */
 
 	gpiod_add_lookup_table(&mmc_spi_gpio_table);
 	gpiod_add_lookup_table(&msiof_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_register_board_info(spi_bus, ARRAY_SIZE(spi_bus));
 #endif
 
@@ -1832,11 +1336,6 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_FN_MMC_D0, NULL);
 	gpio_request(GPIO_FN_MMC_CLK, NULL);
 	gpio_request(GPIO_FN_MMC_CMD, NULL);
-<<<<<<< HEAD
-	gpio_request(GPIO_PTB7, NULL);
-	gpio_direction_output(GPIO_PTB7, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cn12_enabled = true;
 #elif defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
@@ -1848,15 +1347,6 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_FN_SDHI1D2,  NULL);
 	gpio_request(GPIO_FN_SDHI1D1,  NULL);
 	gpio_request(GPIO_FN_SDHI1D0,  NULL);
-<<<<<<< HEAD
-	gpio_request(GPIO_PTB7, NULL);
-	gpio_direction_output(GPIO_PTB7, 0);
-
-	/* Card-detect, used on CN12 with SDHI1 */
-	gpio_request(GPIO_PTW7, NULL);
-	gpio_direction_input(GPIO_PTW7);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cn12_enabled = true;
 #endif
@@ -1866,19 +1356,6 @@ static int __init arch_setup(void)
 		__raw_writew((__raw_readw(IODRIVEA) & ~0x3000) | 0x2000,
 			     IODRIVEA);
 
-<<<<<<< HEAD
-	/* enable Video */
-	gpio_request(GPIO_PTU2, NULL);
-	gpio_direction_output(GPIO_PTU2, 1);
-
-	/* enable Camera */
-	gpio_request(GPIO_PTA3, NULL);
-	gpio_request(GPIO_PTA4, NULL);
-	gpio_direction_output(GPIO_PTA3, 0);
-	gpio_direction_output(GPIO_PTA4, 0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable FSI */
 	gpio_request(GPIO_FN_FSIMCKB,    NULL);
 	gpio_request(GPIO_FN_FSIIBSD,    NULL);
@@ -1927,14 +1404,11 @@ static int __init arch_setup(void)
 	gpio_request(GPIO_PTU5, NULL);
 	gpio_direction_output(GPIO_PTU5, 0);
 
-<<<<<<< HEAD
-=======
 	/* Register gpio lookup tables for cameras and video decoder */
 	gpiod_add_lookup_table(&tw9910_gpios);
 	gpiod_add_lookup_table(&mt9t112_0_gpios);
 	gpiod_add_lookup_table(&mt9t112_1_gpios);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable I2C device */
 	i2c_register_board_info(0, i2c0_devices,
 				ARRAY_SIZE(i2c0_devices));
@@ -1976,8 +1450,6 @@ static int __init arch_setup(void)
 	gpio_set_value(GPIO_PTG4, 1);
 #endif
 
-<<<<<<< HEAD
-=======
 	/* Initialize CEU platform devices separately to map memory first */
 	device_initialize(&ecovec_ceu_devices[0]->dev);
 	dma_declare_coherent_memory(&ecovec_ceu_devices[0]->dev,
@@ -2006,7 +1478,6 @@ static int __init arch_setup(void)
 	if (IS_ERR(gpio_backlight_device))
 		return PTR_ERR(gpio_backlight_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(ecovec_devices,
 				    ARRAY_SIZE(ecovec_devices));
 }
@@ -2019,10 +1490,6 @@ static int __init devices_setup(void)
 }
 device_initcall(devices_setup);
 
-<<<<<<< HEAD
-static struct sh_machine_vector mv_ecovec __initmv = {
-	.mv_name	= "R0P7724 (EcoVec)",
-=======
 /* Reserve a portion of memory for CEU 0 and CEU 1 buffers */
 static void __init ecovec_mv_mem_reserve(void)
 {
@@ -2049,5 +1516,4 @@ static void __init ecovec_mv_mem_reserve(void)
 static struct sh_machine_vector mv_ecovec __initmv = {
 	.mv_name	= "R0P7724 (EcoVec)",
 	.mv_mem_reserve	= ecovec_mv_mem_reserve,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

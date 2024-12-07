@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/wait.h>
-<<<<<<< HEAD
-#include "net_user.h"
-#include "os.h"
-=======
 #include <net_user.h>
 #include <os.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "slirp.h"
 
 static int slirp_user_init(void *data, void *dev)
@@ -31,30 +20,18 @@ static int slirp_user_init(void *data, void *dev)
 }
 
 struct slirp_pre_exec_data {
-<<<<<<< HEAD
-	int stdin;
-	int stdout;
-=======
 	int stdin_fd;
 	int stdout_fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void slirp_pre_exec(void *arg)
 {
 	struct slirp_pre_exec_data *data = arg;
 
-<<<<<<< HEAD
-	if (data->stdin != -1)
-		dup2(data->stdin, 0);
-	if (data->stdout != -1)
-		dup2(data->stdout, 1);
-=======
 	if (data->stdin_fd != -1)
 		dup2(data->stdin_fd, 0);
 	if (data->stdout_fd != -1)
 		dup2(data->stdout_fd, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int slirp_tramp(char **argv, int fd)
@@ -62,13 +39,8 @@ static int slirp_tramp(char **argv, int fd)
 	struct slirp_pre_exec_data pe_data;
 	int pid;
 
-<<<<<<< HEAD
-	pe_data.stdin = fd;
-	pe_data.stdout = fd;
-=======
 	pe_data.stdin_fd = fd;
 	pe_data.stdout_fd = fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = run_helper(slirp_pre_exec, &pe_data, argv);
 
 	return pid;

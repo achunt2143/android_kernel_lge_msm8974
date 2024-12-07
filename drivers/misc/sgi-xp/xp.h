@@ -3,10 +3,7 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
-=======
  * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2004-2008 Silicon Graphics, Inc. All rights reserved.
  */
 
@@ -19,35 +16,8 @@
 
 #include <linux/mutex.h>
 
-<<<<<<< HEAD
-#if defined CONFIG_X86_UV || defined CONFIG_IA64_SGI_UV
-#include <asm/uv/uv.h>
-#define is_uv()		is_uv_system()
-#endif
-
-#ifndef is_uv
-#define is_uv()		0
-#endif
-
-#if defined CONFIG_IA64
-#include <asm/sn/arch.h>	/* defines is_shub1() and is_shub2() */
-#define is_shub()	ia64_platform_is("sn2")
-#endif
-
-#ifndef is_shub1
-#define is_shub1()	0
-#endif
-
-#ifndef is_shub2
-#define is_shub2()	0
-#endif
-
-#ifndef is_shub
-#define is_shub()	0
-=======
 #if defined CONFIG_X86_UV
 #include <asm/uv/uv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef USE_DBUG_ON
@@ -105,11 +75,7 @@
 
 #define XPC_MSG_SIZE(_payload_size) \
 				ALIGN(XPC_MSG_HDR_MAX_SIZE + (_payload_size), \
-<<<<<<< HEAD
-				      is_uv() ? 64 : 128)
-=======
 				      is_uv_system() ? 64 : 128)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -322,12 +288,9 @@ static inline enum xp_retval
 xpc_send(short partid, int ch_number, u32 flags, void *payload,
 	 u16 payload_size)
 {
-<<<<<<< HEAD
-=======
 	if (!xpc_interface.send)
 		return xpNotLoaded;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xpc_interface.send(partid, ch_number, flags, payload,
 				  payload_size);
 }
@@ -336,12 +299,9 @@ static inline enum xp_retval
 xpc_send_notify(short partid, int ch_number, u32 flags, void *payload,
 		u16 payload_size, xpc_notify_func func, void *key)
 {
-<<<<<<< HEAD
-=======
 	if (!xpc_interface.send_notify)
 		return xpNotLoaded;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xpc_interface.send_notify(partid, ch_number, flags, payload,
 					 payload_size, func, key);
 }
@@ -349,23 +309,16 @@ xpc_send_notify(short partid, int ch_number, u32 flags, void *payload,
 static inline void
 xpc_received(short partid, int ch_number, void *payload)
 {
-<<<<<<< HEAD
-	return xpc_interface.received(partid, ch_number, payload);
-=======
 	if (xpc_interface.received)
 		xpc_interface.received(partid, ch_number, payload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline enum xp_retval
 xpc_partid_to_nasids(short partid, void *nasids)
 {
-<<<<<<< HEAD
-=======
 	if (!xpc_interface.partid_to_nasids)
 		return xpNotLoaded;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xpc_interface.partid_to_nasids(partid, nasids);
 }
 
@@ -381,19 +334,8 @@ extern int (*xp_cpu_to_nasid) (int);
 extern enum xp_retval (*xp_expand_memprotect) (unsigned long, unsigned long);
 extern enum xp_retval (*xp_restrict_memprotect) (unsigned long, unsigned long);
 
-<<<<<<< HEAD
-extern u64 xp_nofault_PIOR_target;
-extern int xp_nofault_PIOR(void *);
-extern int xp_error_PIOR(void);
-
-extern struct device *xp;
-extern enum xp_retval xp_init_sn2(void);
-extern enum xp_retval xp_init_uv(void);
-extern void xp_exit_sn2(void);
-=======
 extern struct device *xp;
 extern enum xp_retval xp_init_uv(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void xp_exit_uv(void);
 
 #endif /* _DRIVERS_MISC_SGIXP_XP_H */

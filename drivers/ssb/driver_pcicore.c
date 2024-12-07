@@ -8,22 +8,14 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/pci.h>
 #include <linux/export.h>
 #include <linux/delay.h>
 #include <linux/ssb/ssb_embedded.h>
 
-<<<<<<< HEAD
-#include "ssb_private.h"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 ssb_pcie_read(struct ssb_pcicore *pc, u32 address);
 static void ssb_pcie_write(struct ssb_pcicore *pc, u32 address, u32 data);
 static u16 ssb_pcie_mdio_read(struct ssb_pcicore *pc, u8 device, u8 address);
@@ -63,12 +55,8 @@ void pcicore_write16(struct ssb_pcicore *pc, u16 offset, u16 value)
 #include <asm/paccess.h>
 /* Probe a 32bit value on the bus and catch bus exceptions.
  * Returns nonzero on a bus exception.
-<<<<<<< HEAD
- * This is MIPS specific */
-=======
  * This is MIPS specific
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mips_busprobe32(val, addr)	get_dbe((val), ((u32 *)(addr)))
 
 /* Assume one-hot slot wiring */
@@ -128,22 +116,14 @@ static int ssb_extpci_read_config(struct ssb_pcicore *pc,
 	u32 addr, val;
 	void __iomem *mmio;
 
-<<<<<<< HEAD
-	SSB_WARN_ON(!pc->hostmode);
-=======
 	WARN_ON(!pc->hostmode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(len != 1 && len != 2 && len != 4))
 		goto out;
 	addr = get_cfgspace_addr(pc, bus, dev, func, off);
 	if (unlikely(!addr))
 		goto out;
 	err = -ENOMEM;
-<<<<<<< HEAD
-	mmio = ioremap_nocache(addr, len);
-=======
 	mmio = ioremap(addr, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mmio)
 		goto out;
 
@@ -182,22 +162,14 @@ static int ssb_extpci_write_config(struct ssb_pcicore *pc,
 	u32 addr, val = 0;
 	void __iomem *mmio;
 
-<<<<<<< HEAD
-	SSB_WARN_ON(!pc->hostmode);
-=======
 	WARN_ON(!pc->hostmode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(len != 1 && len != 2 && len != 4))
 		goto out;
 	addr = get_cfgspace_addr(pc, bus, dev, func, off);
 	if (unlikely(!addr))
 		goto out;
 	err = -ENOMEM;
-<<<<<<< HEAD
-	mmio = ioremap_nocache(addr, len);
-=======
 	mmio = ioremap(addr, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mmio)
 		goto out;
 
@@ -284,12 +256,8 @@ static struct pci_controller ssb_pcicore_controller = {
 };
 
 /* This function is called when doing a pci_enable_device().
-<<<<<<< HEAD
- * We must first check if the device is a device on the PCI-core bridge. */
-=======
  * We must first check if the device is a device on the PCI-core bridge.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ssb_pcicore_plat_dev_init(struct pci_dev *d)
 {
 	if (d->bus->ops != &ssb_pcicore_pciops) {
@@ -297,12 +265,7 @@ int ssb_pcicore_plat_dev_init(struct pci_dev *d)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO "PCI: Fixing up device %s\n",
-		   pci_name(d));
-=======
 	dev_info(&d->dev, "PCI: Fixing up device %s\n", pci_name(d));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fix up interrupt lines */
 	d->irq = ssb_mips_irq(extpci_core->dev) + 2;
@@ -323,20 +286,12 @@ static void ssb_pcicore_fixup_pcibridge(struct pci_dev *dev)
 	if (dev->bus->number != 0 || PCI_SLOT(dev->devfn) != 0)
 		return;
 
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO "PCI: Fixing up bridge %s\n", pci_name(dev));
-=======
 	dev_info(&dev->dev, "PCI: Fixing up bridge %s\n", pci_name(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable PCI bridge bus mastering and memory space */
 	pci_set_master(dev);
 	if (pcibios_enable_device(dev, ~0) < 0) {
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR "PCI: SSB bridge enable failed\n");
-=======
 		dev_err(&dev->dev, "PCI: SSB bridge enable failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -345,14 +300,9 @@ static void ssb_pcicore_fixup_pcibridge(struct pci_dev *dev)
 
 	/* Make sure our latency is high enough to handle the devices behind us */
 	lat = 168;
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO "PCI: Fixing latency timer of device %s to %u\n",
-		   pci_name(dev), lat);
-=======
 	dev_info(&dev->dev,
 		 "PCI: Fixing latency timer of device %s to %u\n",
 		 pci_name(dev), lat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_byte(dev, PCI_LATENCY_TIMER, lat);
 }
 DECLARE_PCI_FIXUP_EARLY(PCI_ANY_ID, PCI_ANY_ID, ssb_pcicore_fixup_pcibridge);
@@ -367,11 +317,7 @@ int ssb_pcicore_pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return ssb_mips_irq(extpci_core->dev) + 2;
 }
 
-<<<<<<< HEAD
-static void __devinit ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
-=======
 static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -379,11 +325,7 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 		return;
 	extpci_core = pc;
 
-<<<<<<< HEAD
-	ssb_dprintk(KERN_INFO PFX "PCIcore in host mode found\n");
-=======
 	dev_dbg(pc->dev->dev, "PCIcore in host mode found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset devices on the external PCI bus */
 	val = SSB_PCICORE_CTL_RST_OE;
 	val |= SSB_PCICORE_CTL_CLK_OE;
@@ -398,11 +340,7 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 	udelay(1); /* Assertion time demanded by the PCI standard */
 
 	if (pc->dev->bus->has_cardbus_slot) {
-<<<<<<< HEAD
-		ssb_dprintk(KERN_INFO PFX "CardBus slot detected\n");
-=======
 		dev_dbg(pc->dev->dev, "CardBus slot detected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pc->cardbusmode = 1;
 		/* GPIO 1 resets the bridge */
 		ssb_gpio_out(pc->dev->bus, 1, 1);
@@ -422,8 +360,6 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 	pcicore_write32(pc, SSB_PCICORE_SBTOPCI2,
 			SSB_PCICORE_SBTOPCI_MEM | SSB_PCI_DMA);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Accessing PCI config without a proper delay after devices reset (not
 	 * GPIO reset) was causing reboots on WRT300N v1.0 (BCM4704).
@@ -434,7 +370,6 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 	 */
 	usleep_range(1000, 2000);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable PCI bridge BAR0 prefetch and burst */
 	val = PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	ssb_extpci_write_config(pc, 0, 0, 0, PCI_COMMAND, &val, 2);
@@ -448,13 +383,6 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 
 	/* Ok, ready to run, register it to the system.
 	 * The following needs change, if we want to port hostmode
-<<<<<<< HEAD
-	 * to non-MIPS platform. */
-	ssb_pcicore_controller.io_map_base = (unsigned long)ioremap_nocache(SSB_PCI_MEM, 0x04000000);
-	set_io_port_base(ssb_pcicore_controller.io_map_base);
-	/* Give some time to the PCI controller to configure itself with the new
-	 * values. Not waiting at this point causes crashes of the machine. */
-=======
 	 * to non-MIPS platform.
 	 */
 	ssb_pcicore_controller.io_map_base = (unsigned long)ioremap(SSB_PCI_MEM, 0x04000000);
@@ -462,16 +390,11 @@ static void ssb_pcicore_init_hostmode(struct ssb_pcicore *pc)
 	/* Give some time to the PCI controller to configure itself with the new
 	 * values. Not waiting at this point causes crashes of the machine.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdelay(10);
 	register_pci_controller(&ssb_pcicore_controller);
 }
 
-<<<<<<< HEAD
-static int __devinit pcicore_is_in_hostmode(struct ssb_pcicore *pc)
-=======
 static int pcicore_is_in_hostmode(struct ssb_pcicore *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_bus *bus = pc->dev->bus;
 	u16 chipid_top;
@@ -486,12 +409,8 @@ static int pcicore_is_in_hostmode(struct ssb_pcicore *pc)
 		return 0;
 
 	/* The 200-pin BCM4712 package does not bond out PCI. Even when
-<<<<<<< HEAD
-	 * PCI is bonded out, some boards may leave the pins floating. */
-=======
 	 * PCI is bonded out, some boards may leave the pins floating.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bus->chip_id == 0x4712) {
 		if (bus->chip_package == SSB_CHIPPACK_BCM4712S)
 			return 0;
@@ -509,11 +428,7 @@ static int pcicore_is_in_hostmode(struct ssb_pcicore *pc)
  * Workarounds.
  **************************************************/
 
-<<<<<<< HEAD
-static void __devinit ssb_pcicore_fix_sprom_core_index(struct ssb_pcicore *pc)
-=======
 static void ssb_pcicore_fix_sprom_core_index(struct ssb_pcicore *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 tmp = pcicore_read16(pc, SSB_PCICORE_SPROM(0));
 	if (((tmp & 0xF000) >> 12) != pc->dev->core_index) {
@@ -615,11 +530,7 @@ static void ssb_pcicore_pcie_setup_workarounds(struct ssb_pcicore *pc)
  * Generic and Clientmode operation code.
  **************************************************/
 
-<<<<<<< HEAD
-static void __devinit ssb_pcicore_init_clientmode(struct ssb_pcicore *pc)
-=======
 static void ssb_pcicore_init_clientmode(struct ssb_pcicore *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_device *pdev = pc->dev;
 	struct ssb_bus *bus = pdev->bus;
@@ -638,11 +549,7 @@ static void ssb_pcicore_init_clientmode(struct ssb_pcicore *pc)
 	}
 }
 
-<<<<<<< HEAD
-void __devinit ssb_pcicore_init(struct ssb_pcicore *pc)
-=======
 void ssb_pcicore_init(struct ssb_pcicore *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_device *dev = pc->dev;
 
@@ -783,12 +690,8 @@ int ssb_pcicore_dev_irqvecs_enable(struct ssb_pcicore *pc,
 	if (dev->bus->bustype != SSB_BUSTYPE_PCI) {
 		/* This SSB device is not on a PCI host-bus. So the IRQs are
 		 * not routed through the PCI core.
-<<<<<<< HEAD
-		 * So we must not enable routing through the PCI core. */
-=======
 		 * So we must not enable routing through the PCI core.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -805,11 +708,7 @@ int ssb_pcicore_dev_irqvecs_enable(struct ssb_pcicore *pc,
 		/* Calculate the "coremask" for the device. */
 		coremask = (1 << dev->core_index);
 
-<<<<<<< HEAD
-		SSB_WARN_ON(bus->bustype != SSB_BUSTYPE_PCI);
-=======
 		WARN_ON(bus->bustype != SSB_BUSTYPE_PCI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = pci_read_config_dword(bus->host_pci, SSB_PCI_IRQMASK, &tmp);
 		if (err)
 			goto out;

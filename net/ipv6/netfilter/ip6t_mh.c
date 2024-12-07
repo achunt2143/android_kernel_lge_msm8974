@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright (C)2006 USAGI/WIDE Project
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C)2006 USAGI/WIDE Project
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author:
  *	Masahide NAKAMURA @USAGI <masahide.nakamura.cz@hitachi.com>
  *
  * Based on net/netfilter/xt_tcpudp.c
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/types.h>

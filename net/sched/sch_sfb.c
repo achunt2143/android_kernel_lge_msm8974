@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * net/sched/sch_sfb.c	  Stochastic Fair Blue
  *
  * Copyright (c) 2008-2011 Juliusz Chroboczek <jch@pps.jussieu.fr>
  * Copyright (c) 2011 Eric Dumazet <eric.dumazet@gmail.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * W. Feng, D. Kandlur, D. Saha, K. Shin. Blue:
  * A New Class of Active Queue Management Algorithms.
  * U. Michigan CSE-TR-387-99, April 1999.
  *
  * http://www.thefengs.com/wuchang/blue/CSE-TR-387-99.pdf
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,19 +18,11 @@
 #include <linux/errno.h>
 #include <linux/skbuff.h>
 #include <linux/random.h>
-<<<<<<< HEAD
-#include <linux/jhash.h>
-#include <net/ip.h>
-#include <net/pkt_sched.h>
-#include <net/inet_ecn.h>
-#include <net/flow_keys.h>
-=======
 #include <linux/siphash.h>
 #include <net/ip.h>
 #include <net/pkt_sched.h>
 #include <net/pkt_cls.h>
 #include <net/inet_ecn.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SFB uses two B[l][n] : L x N arrays of bins (L levels, N bins per level)
@@ -67,22 +45,14 @@ struct sfb_bucket {
  * (Section 4.4 of SFB reference : moving hash functions)
  */
 struct sfb_bins {
-<<<<<<< HEAD
-	u32		  perturbation; /* jhash perturbation */
-=======
 	siphash_key_t	  perturbation; /* siphash key */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sfb_bucket bins[SFB_LEVELS][SFB_NUMBUCKETS];
 };
 
 struct sfb_sched_data {
 	struct Qdisc	*qdisc;
-<<<<<<< HEAD
-	struct tcf_proto *filter_list;
-=======
 	struct tcf_proto __rcu *filter_list;
 	struct tcf_block *block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	rehash_interval;
 	unsigned long	warmup_time;	/* double buffering warmup time in jiffies */
 	u32		max;
@@ -165,17 +135,6 @@ static void increment_one_qlen(u32 sfbhash, u32 slot, struct sfb_sched_data *q)
 	}
 }
 
-<<<<<<< HEAD
-static void increment_qlen(const struct sk_buff *skb, struct sfb_sched_data *q)
-{
-	u32 sfbhash;
-
-	sfbhash = sfb_hash(skb, 0);
-	if (sfbhash)
-		increment_one_qlen(sfbhash, 0, q);
-
-	sfbhash = sfb_hash(skb, 1);
-=======
 static void increment_qlen(const struct sfb_skb_cb *cb, struct sfb_sched_data *q)
 {
 	u32 sfbhash;
@@ -185,7 +144,6 @@ static void increment_qlen(const struct sfb_skb_cb *cb, struct sfb_sched_data *q
 		increment_one_qlen(sfbhash, 0, q);
 
 	sfbhash = cb->hashes[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sfbhash)
 		increment_one_qlen(sfbhash, 1, q);
 }
@@ -259,12 +217,8 @@ static u32 sfb_compute_qlen(u32 *prob_r, u32 *avgpm_r, const struct sfb_sched_da
 
 static void sfb_init_perturbation(u32 slot, struct sfb_sched_data *q)
 {
-<<<<<<< HEAD
-	q->bins[slot].perturbation = net_random();
-=======
 	get_random_bytes(&q->bins[slot].perturbation,
 			 sizeof(q->bins[slot].perturbation));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sfb_swap_slot(struct sfb_sched_data *q)
@@ -297,33 +251,21 @@ static bool sfb_rate_limit(struct sk_buff *skb, struct sfb_sched_data *q)
 	return false;
 }
 
-<<<<<<< HEAD
-static bool sfb_classify(struct sk_buff *skb, struct sfb_sched_data *q,
-=======
 static bool sfb_classify(struct sk_buff *skb, struct tcf_proto *fl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 int *qerr, u32 *salt)
 {
 	struct tcf_result res;
 	int result;
 
-<<<<<<< HEAD
-	result = tc_classify(skb, q->filter_list, &res);
-=======
 	result = tcf_classify(skb, NULL, fl, &res, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result >= 0) {
 #ifdef CONFIG_NET_CLS_ACT
 		switch (result) {
 		case TC_ACT_STOLEN:
 		case TC_ACT_QUEUED:
-<<<<<<< HEAD
-			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
-=======
 		case TC_ACT_TRAP:
 			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TC_ACT_SHOT:
 			return false;
 		}
@@ -334,22 +276,6 @@ static bool sfb_classify(struct sk_buff *skb, struct tcf_proto *fl,
 	return false;
 }
 
-<<<<<<< HEAD
-static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-{
-
-	struct sfb_sched_data *q = qdisc_priv(sch);
-	struct Qdisc *child = q->qdisc;
-	int i;
-	u32 p_min = ~0;
-	u32 minqlen = ~0;
-	u32 r, slot, salt, sfbhash;
-	int ret = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
-	struct flow_keys keys;
-
-	if (unlikely(sch->q.qlen >= q->limit)) {
-		sch->qstats.overlimits++;
-=======
 static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		       struct sk_buff **to_free)
 {
@@ -368,7 +294,6 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 
 	if (unlikely(sch->q.qlen >= q->limit)) {
 		qdisc_qstats_overlimit(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->stats.queuedrop++;
 		goto drop;
 	}
@@ -385,25 +310,6 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		}
 	}
 
-<<<<<<< HEAD
-	if (q->filter_list) {
-		/* If using external classifiers, get result and record it. */
-		if (!sfb_classify(skb, q, &ret, &salt))
-			goto other_drop;
-		keys.src = salt;
-		keys.dst = 0;
-		keys.ports = 0;
-	} else {
-		skb_flow_dissect(skb, &keys);
-	}
-
-	slot = q->slot;
-
-	sfbhash = jhash_3words((__force u32)keys.dst,
-			       (__force u32)keys.src,
-			       (__force u32)keys.ports,
-			       q->bins[slot].perturbation);
-=======
 	fl = rcu_dereference_bh(q->filter_list);
 	if (fl) {
 		u32 salt;
@@ -417,7 +323,6 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	}
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sfbhash)
 		sfbhash = 1;
 	sfb_skb_cb(skb)->hashes[slot] = sfbhash;
@@ -441,11 +346,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	sfb_skb_cb(skb)->hashes[slot] = 0;
 
 	if (unlikely(minqlen >= q->max)) {
-<<<<<<< HEAD
-		sch->qstats.overlimits++;
-=======
 		qdisc_qstats_overlimit(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->stats.bucketdrop++;
 		goto drop;
 	}
@@ -453,15 +354,8 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	if (unlikely(p_min >= SFB_MAX_PROB)) {
 		/* Inelastic flow */
 		if (q->double_buffering) {
-<<<<<<< HEAD
-			sfbhash = jhash_3words((__force u32)keys.dst,
-					       (__force u32)keys.src,
-					       (__force u32)keys.ports,
-					       q->bins[slot].perturbation);
-=======
 			sfbhash = skb_get_hash_perturb(skb,
 			    &q->bins[slot].perturbation);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!sfbhash)
 				sfbhash = 1;
 			sfb_skb_cb(skb)->hashes[slot] = sfbhash;
@@ -478,22 +372,14 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			}
 		}
 		if (sfb_rate_limit(skb, q)) {
-<<<<<<< HEAD
-			sch->qstats.overlimits++;
-=======
 			qdisc_qstats_overlimit(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q->stats.penaltydrop++;
 			goto drop;
 		}
 		goto enqueue;
 	}
 
-<<<<<<< HEAD
-	r = net_random() & SFB_MAX_PROB;
-=======
 	r = get_random_u16() & SFB_MAX_PROB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(r < p_min)) {
 		if (unlikely(p_min > SFB_MAX_PROB / 2)) {
@@ -515,15 +401,6 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	}
 
 enqueue:
-<<<<<<< HEAD
-	ret = qdisc_enqueue(skb, child);
-	if (likely(ret == NET_XMIT_SUCCESS)) {
-		sch->q.qlen++;
-		increment_qlen(skb, q);
-	} else if (net_xmit_drop_count(ret)) {
-		q->stats.childdrop++;
-		sch->qstats.drops++;
-=======
 	memcpy(&cb, sfb_skb_cb(skb), sizeof(cb));
 	ret = qdisc_enqueue(skb, child, to_free);
 	if (likely(ret == NET_XMIT_SUCCESS)) {
@@ -533,24 +410,15 @@ enqueue:
 	} else if (net_xmit_drop_count(ret)) {
 		q->stats.childdrop++;
 		qdisc_qstats_drop(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 
 drop:
-<<<<<<< HEAD
-	qdisc_drop(skb, sch);
-	return NET_XMIT_CN;
-other_drop:
-	if (ret & __NET_XMIT_BYPASS)
-		sch->qstats.drops++;
-=======
 	qdisc_drop(skb, sch, to_free);
 	return NET_XMIT_CN;
 other_drop:
 	if (ret & __NET_XMIT_BYPASS)
 		qdisc_qstats_drop(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 	return ret;
 }
@@ -565,10 +433,7 @@ static struct sk_buff *sfb_dequeue(struct Qdisc *sch)
 
 	if (skb) {
 		qdisc_bstats_update(sch, skb);
-<<<<<<< HEAD
-=======
 		qdisc_qstats_backlog_dec(sch, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sch->q.qlen--;
 		decrement_qlen(skb, q);
 	}
@@ -590,13 +455,8 @@ static void sfb_reset(struct Qdisc *sch)
 {
 	struct sfb_sched_data *q = qdisc_priv(sch);
 
-<<<<<<< HEAD
-	qdisc_reset(q->qdisc);
-	sch->q.qlen = 0;
-=======
 	if (likely(q->qdisc))
 		qdisc_reset(q->qdisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->slot = 0;
 	q->double_buffering = false;
 	sfb_zero_all_buckets(q);
@@ -607,13 +467,8 @@ static void sfb_destroy(struct Qdisc *sch)
 {
 	struct sfb_sched_data *q = qdisc_priv(sch);
 
-<<<<<<< HEAD
-	tcf_destroy_chain(&q->filter_list);
-	qdisc_destroy(q->qdisc);
-=======
 	tcf_block_put(q->block);
 	qdisc_put(q->qdisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct nla_policy sfb_policy[TCA_SFB_MAX + 1] = {
@@ -632,30 +487,19 @@ static const struct tc_sfb_qopt sfb_default_ops = {
 	.penalty_burst = 20,
 };
 
-<<<<<<< HEAD
-static int sfb_change(struct Qdisc *sch, struct nlattr *opt)
-{
-	struct sfb_sched_data *q = qdisc_priv(sch);
-	struct Qdisc *child;
-=======
 static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
 		      struct netlink_ext_ack *extack)
 {
 	struct sfb_sched_data *q = qdisc_priv(sch);
 	struct Qdisc *child, *old;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *tb[TCA_SFB_MAX + 1];
 	const struct tc_sfb_qopt *ctl = &sfb_default_ops;
 	u32 limit;
 	int err;
 
 	if (opt) {
-<<<<<<< HEAD
-		err = nla_parse_nested(tb, TCA_SFB_MAX, opt, sfb_policy);
-=======
 		err = nla_parse_nested_deprecated(tb, TCA_SFB_MAX, opt,
 						  sfb_policy, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return -EINVAL;
 
@@ -667,18 +511,6 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
 
 	limit = ctl->limit;
 	if (limit == 0)
-<<<<<<< HEAD
-		limit = max_t(u32, qdisc_dev(sch)->tx_queue_len, 1);
-
-	child = fifo_create_dflt(sch, &pfifo_qdisc_ops, limit);
-	if (IS_ERR(child))
-		return PTR_ERR(child);
-
-	sch_tree_lock(sch);
-
-	qdisc_tree_decrease_qlen(q->qdisc, q->qdisc->q.qlen);
-	qdisc_destroy(q->qdisc);
-=======
 		limit = qdisc_dev(sch)->tx_queue_len;
 
 	child = fifo_create_dflt(sch, &pfifo_qdisc_ops, limit, extack);
@@ -691,7 +523,6 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
 
 	qdisc_purge_queue(q->qdisc);
 	old = q->qdisc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->qdisc = child;
 
 	q->rehash_interval = msecs_to_jiffies(ctl->rehash_interval);
@@ -714,22 +545,11 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
 	sfb_init_perturbation(1, q);
 
 	sch_tree_unlock(sch);
-<<<<<<< HEAD
-=======
 	qdisc_put(old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sfb_init(struct Qdisc *sch, struct nlattr *opt)
-{
-	struct sfb_sched_data *q = qdisc_priv(sch);
-
-	q->qdisc = &noop_qdisc;
-	return sfb_change(sch, opt);
-=======
 static int sfb_init(struct Qdisc *sch, struct nlattr *opt,
 		    struct netlink_ext_ack *extack)
 {
@@ -742,7 +562,6 @@ static int sfb_init(struct Qdisc *sch, struct nlattr *opt,
 
 	q->qdisc = &noop_qdisc;
 	return sfb_change(sch, opt, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sfb_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -762,18 +581,11 @@ static int sfb_dump(struct Qdisc *sch, struct sk_buff *skb)
 	};
 
 	sch->qstats.backlog = q->qdisc->qstats.backlog;
-<<<<<<< HEAD
-	opts = nla_nest_start(skb, TCA_OPTIONS);
-	if (opts == NULL)
-		goto nla_put_failure;
-	NLA_PUT(skb, TCA_SFB_PARMS, sizeof(opt), &opt);
-=======
 	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
 	if (opts == NULL)
 		goto nla_put_failure;
 	if (nla_put(skb, TCA_SFB_PARMS, sizeof(opt), &opt))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nla_nest_end(skb, opts);
 
 nla_put_failure:
@@ -805,27 +617,14 @@ static int sfb_dump_class(struct Qdisc *sch, unsigned long cl,
 }
 
 static int sfb_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
-<<<<<<< HEAD
-		     struct Qdisc **old)
-=======
 		     struct Qdisc **old, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sfb_sched_data *q = qdisc_priv(sch);
 
 	if (new == NULL)
 		new = &noop_qdisc;
 
-<<<<<<< HEAD
-	sch_tree_lock(sch);
-	*old = q->qdisc;
-	q->qdisc = new;
-	qdisc_tree_decrease_qlen(*old, (*old)->q.qlen);
-	qdisc_reset(*old);
-	sch_tree_unlock(sch);
-=======
 	*old = qdisc_replace(sch, new, &q->qdisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -836,40 +635,24 @@ static struct Qdisc *sfb_leaf(struct Qdisc *sch, unsigned long arg)
 	return q->qdisc;
 }
 
-<<<<<<< HEAD
-static unsigned long sfb_get(struct Qdisc *sch, u32 classid)
-=======
 static unsigned long sfb_find(struct Qdisc *sch, u32 classid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 1;
 }
 
-<<<<<<< HEAD
-static void sfb_put(struct Qdisc *sch, unsigned long arg)
-=======
 static void sfb_unbind(struct Qdisc *sch, unsigned long arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static int sfb_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
-<<<<<<< HEAD
-			    struct nlattr **tca, unsigned long *arg)
-=======
 			    struct nlattr **tca, unsigned long *arg,
 			    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static int sfb_delete(struct Qdisc *sch, unsigned long cl)
-=======
 static int sfb_delete(struct Qdisc *sch, unsigned long cl,
 		      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
@@ -877,35 +660,18 @@ static int sfb_delete(struct Qdisc *sch, unsigned long cl,
 static void sfb_walk(struct Qdisc *sch, struct qdisc_walker *walker)
 {
 	if (!walker->stop) {
-<<<<<<< HEAD
-		if (walker->count >= walker->skip)
-			if (walker->fn(sch, 1, walker) < 0) {
-				walker->stop = 1;
-				return;
-			}
-		walker->count++;
-	}
-}
-
-static struct tcf_proto **sfb_find_tcf(struct Qdisc *sch, unsigned long cl)
-=======
 		tc_qdisc_stats_dump(sch, 1, walker);
 	}
 }
 
 static struct tcf_block *sfb_tcf_block(struct Qdisc *sch, unsigned long cl,
 				       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sfb_sched_data *q = qdisc_priv(sch);
 
 	if (cl)
 		return NULL;
-<<<<<<< HEAD
-	return &q->filter_list;
-=======
 	return q->block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long sfb_bind(struct Qdisc *sch, unsigned long parent,
@@ -918,16 +684,6 @@ static unsigned long sfb_bind(struct Qdisc *sch, unsigned long parent,
 static const struct Qdisc_class_ops sfb_class_ops = {
 	.graft		=	sfb_graft,
 	.leaf		=	sfb_leaf,
-<<<<<<< HEAD
-	.get		=	sfb_get,
-	.put		=	sfb_put,
-	.change		=	sfb_change_class,
-	.delete		=	sfb_delete,
-	.walk		=	sfb_walk,
-	.tcf_chain	=	sfb_find_tcf,
-	.bind_tcf	=	sfb_bind,
-	.unbind_tcf	=	sfb_put,
-=======
 	.find		=	sfb_find,
 	.change		=	sfb_change_class,
 	.delete		=	sfb_delete,
@@ -935,7 +691,6 @@ static const struct Qdisc_class_ops sfb_class_ops = {
 	.tcf_block	=	sfb_tcf_block,
 	.bind_tcf	=	sfb_bind,
 	.unbind_tcf	=	sfb_unbind,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dump		=	sfb_dump_class,
 };
 
@@ -954,10 +709,7 @@ static struct Qdisc_ops sfb_qdisc_ops __read_mostly = {
 	.dump_stats	=	sfb_dump_stats,
 	.owner		=	THIS_MODULE,
 };
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_NET_SCH("sfb");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init sfb_module_init(void)
 {

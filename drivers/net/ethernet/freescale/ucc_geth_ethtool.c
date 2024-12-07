@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2007 Freescale Semiconductor, Inc. All rights reserved.
  *
@@ -12,21 +9,9 @@
  * Limitation:
  * Can only get/set settings of the first queue.
  * Need to re-open the interface manually after changing some parameters.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
  */
 
 #include <linux/kernel.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/stddef.h>
 #include <linux/interrupt.h>
@@ -43,20 +28,12 @@
 
 #include <asm/io.h>
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/types.h>
 
 #include "ucc_geth.h"
 
-<<<<<<< HEAD
-static char hw_stat_gstrings[][ETH_GSTRING_LEN] = {
-=======
 static const char hw_stat_gstrings[][ETH_GSTRING_LEN] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"tx-64-frames",
 	"tx-65-127-frames",
 	"tx-128-255-frames",
@@ -77,17 +54,10 @@ static const char hw_stat_gstrings[][ETH_GSTRING_LEN] = {
 	"rx-dropped-frames",
 };
 
-<<<<<<< HEAD
-static char tx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
-	"tx-single-collision",
-	"tx-multiple-collision",
-	"tx-late-collsion",
-=======
 static const char tx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
 	"tx-single-collision",
 	"tx-multiple-collision",
 	"tx-late-collision",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"tx-aborted-frames",
 	"tx-lost-frames",
 	"tx-carrier-sense-errors",
@@ -99,11 +69,7 @@ static const char tx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
 	"tx-jumbo-frames",
 };
 
-<<<<<<< HEAD
-static char rx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
-=======
 static const char rx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"rx-crc-errors",
 	"rx-alignment-errors",
 	"rx-in-range-length-errors",
@@ -135,32 +101,14 @@ static const char rx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
 #define UEC_RX_FW_STATS_LEN ARRAY_SIZE(rx_fw_stat_gstrings)
 
 static int
-<<<<<<< HEAD
-uec_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
-{
-	struct ucc_geth_private *ugeth = netdev_priv(netdev);
-	struct phy_device *phydev = ugeth->phydev;
-	struct ucc_geth_info *ug_info = ugeth->ug_info;
-=======
 uec_get_ksettings(struct net_device *netdev, struct ethtool_link_ksettings *cmd)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct phy_device *phydev = ugeth->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!phydev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	ecmd->maxtxpkt = 1;
-	ecmd->maxrxpkt = ug_info->interruptcoalescingmaxvalue[0];
-
-	return phy_ethtool_gset(phydev, ecmd);
-}
-
-static int
-uec_set_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
-=======
 	phy_ethtool_ksettings_get(phydev, cmd);
 
 	return 0;
@@ -169,7 +117,6 @@ uec_set_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 static int
 uec_set_ksettings(struct net_device *netdev,
 		  const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct phy_device *phydev = ugeth->phydev;
@@ -177,11 +124,7 @@ uec_set_ksettings(struct net_device *netdev,
 	if (!phydev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	return phy_ethtool_sset(phydev, ecmd);
-=======
 	return phy_ethtool_ksettings_set(phydev, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -211,12 +154,7 @@ uec_set_pauseparam(struct net_device *netdev,
 	if (ugeth->phydev->autoneg) {
 		if (netif_running(netdev)) {
 			/* FIXME: automatically restart */
-<<<<<<< HEAD
-			printk(KERN_INFO
-				"Please re-open the interface.\n");
-=======
 			netdev_info(netdev, "Please re-open the interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		struct ucc_geth_info *ug_info = ugeth->ug_info;
@@ -269,13 +207,9 @@ uec_get_regs(struct net_device *netdev,
 
 static void
 uec_get_ringparam(struct net_device *netdev,
-<<<<<<< HEAD
-                    struct ethtool_ringparam *ring)
-=======
 		  struct ethtool_ringparam *ring,
 		  struct kernel_ethtool_ringparam *kernel_ring,
 		  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct ucc_geth_info *ug_info = ugeth->ug_info;
@@ -294,45 +228,15 @@ uec_get_ringparam(struct net_device *netdev,
 
 static int
 uec_set_ringparam(struct net_device *netdev,
-<<<<<<< HEAD
-                    struct ethtool_ringparam *ring)
-=======
 		  struct ethtool_ringparam *ring,
 		  struct kernel_ethtool_ringparam *kernel_ring,
 		  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct ucc_geth_info *ug_info = ugeth->ug_info;
 	int queue = 0, ret = 0;
 
 	if (ring->rx_pending < UCC_GETH_RX_BD_RING_SIZE_MIN) {
-<<<<<<< HEAD
-		printk("%s: RxBD ring size must be no smaller than %d.\n",
-			       	netdev->name, UCC_GETH_RX_BD_RING_SIZE_MIN);
-		return -EINVAL;
-	}
-	if (ring->rx_pending % UCC_GETH_RX_BD_RING_SIZE_ALIGNMENT) {
-		printk("%s: RxBD ring size must be multiple of %d.\n",
-			netdev->name, UCC_GETH_RX_BD_RING_SIZE_ALIGNMENT);
-		return -EINVAL;
-	}
-	if (ring->tx_pending < UCC_GETH_TX_BD_RING_SIZE_MIN) {
-		printk("%s: TxBD ring size must be no smaller than %d.\n",
-				netdev->name, UCC_GETH_TX_BD_RING_SIZE_MIN);
-		return -EINVAL;
-	}
-
-	ug_info->bdRingLenRx[queue] = ring->rx_pending;
-	ug_info->bdRingLenTx[queue] = ring->tx_pending;
-
-	if (netif_running(netdev)) {
-		/* FIXME: restart automatically */
-		printk(KERN_INFO
-			"Please re-open the interface.\n");
-	}
-
-=======
 		netdev_info(netdev, "RxBD ring size must be no smaller than %d\n",
 			    UCC_GETH_RX_BD_RING_SIZE_MIN);
 		return -EINVAL;
@@ -354,7 +258,6 @@ uec_set_ringparam(struct net_device *netdev,
 	ug_info->bdRingLenRx[queue] = ring->rx_pending;
 	ug_info->bdRingLenTx[queue] = ring->tx_pending;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -429,32 +332,13 @@ static void uec_get_ethtool_stats(struct net_device *netdev,
 	}
 }
 
-<<<<<<< HEAD
-static int uec_nway_reset(struct net_device *netdev)
-{
-	struct ucc_geth_private *ugeth = netdev_priv(netdev);
-
-	return phy_start_aneg(ugeth->phydev);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Report driver information */
 static void
 uec_get_drvinfo(struct net_device *netdev,
                        struct ethtool_drvinfo *drvinfo)
 {
-<<<<<<< HEAD
-	strncpy(drvinfo->driver, DRV_NAME, 32);
-	strncpy(drvinfo->version, DRV_VERSION, 32);
-	strncpy(drvinfo->fw_version, "N/A", 32);
-	strncpy(drvinfo->bus_info, "QUICC ENGINE", 32);
-	drvinfo->eedump_len = 0;
-	drvinfo->regdump_len = uec_get_regs_len(netdev);
-=======
 	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
 	strscpy(drvinfo->bus_info, "QUICC ENGINE", sizeof(drvinfo->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -496,21 +380,12 @@ static int uec_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 #endif /* CONFIG_PM */
 
 static const struct ethtool_ops uec_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings           = uec_get_settings,
-	.set_settings           = uec_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo            = uec_get_drvinfo,
 	.get_regs_len           = uec_get_regs_len,
 	.get_regs               = uec_get_regs,
 	.get_msglevel           = uec_get_msglevel,
 	.set_msglevel           = uec_set_msglevel,
-<<<<<<< HEAD
-	.nway_reset             = uec_nway_reset,
-=======
 	.nway_reset             = phy_ethtool_nway_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link               = ethtool_op_get_link,
 	.get_ringparam          = uec_get_ringparam,
 	.set_ringparam          = uec_set_ringparam,
@@ -521,19 +396,12 @@ static const struct ethtool_ops uec_ethtool_ops = {
 	.get_ethtool_stats      = uec_get_ethtool_stats,
 	.get_wol		= uec_get_wol,
 	.set_wol		= uec_set_wol,
-<<<<<<< HEAD
-=======
 	.get_ts_info		= ethtool_op_get_ts_info,
 	.get_link_ksettings	= uec_get_ksettings,
 	.set_link_ksettings	= uec_set_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void uec_set_ethtool_ops(struct net_device *netdev)
 {
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &uec_ethtool_ops);
-=======
 	netdev->ethtool_ops = &uec_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,31 +1,18 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_FIRMWARE_H
 #define _LINUX_FIRMWARE_H
 
 #include <linux/types.h>
 #include <linux/compiler.h>
-<<<<<<< HEAD
-#include <linux/gfp.h>
-
-#define FW_ACTION_NOHOTPLUG 0
-#define FW_ACTION_HOTPLUG 1
-=======
 #include <linux/cleanup.h>
 #include <linux/gfp.h>
 
 #define FW_ACTION_NOUEVENT 0
 #define FW_ACTION_UEVENT 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct firmware {
 	size_t size;
 	const u8 *data;
-<<<<<<< HEAD
-	struct page **pages;
-=======
 
 	/* firmware loader private fields */
 	void *priv;
@@ -89,37 +76,11 @@ struct fw_upload_ops {
 	enum fw_upload_err (*poll_complete)(struct fw_upload *fw_upload);
 	void (*cancel)(struct fw_upload *fw_upload);
 	void (*cleanup)(struct fw_upload *fw_upload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct module;
 struct device;
 
-<<<<<<< HEAD
-struct builtin_fw {
-	char *name;
-	void *data;
-	unsigned long size;
-};
-
-/* We have to play tricks here much like stringify() to get the
-   __COUNTER__ macro to be expanded as we want it */
-#define __fw_concat1(x, y) x##y
-#define __fw_concat(x, y) __fw_concat1(x, y)
-
-#define DECLARE_BUILTIN_FIRMWARE(name, blob)				     \
-	DECLARE_BUILTIN_FIRMWARE_SIZE(name, &(blob), sizeof(blob))
-
-#define DECLARE_BUILTIN_FIRMWARE_SIZE(name, blob, size)			     \
-	static const struct builtin_fw __fw_concat(__builtin_fw,__COUNTER__) \
-	__used __section(.builtin_fw) = { name, blob, size }
-
-#if defined(CONFIG_FW_LOADER) || (defined(CONFIG_FW_LOADER_MODULE) && defined(MODULE))
-int request_firmware_direct(const char *name, struct device *device,
-			    phys_addr_t addr, size_t size);
-int request_firmware(const struct firmware **fw, const char *name,
-		     struct device *device);
-=======
 /*
  * Built-in firmware functionality is only available if FW_LOADER=y, but not
  * FW_LOADER=m
@@ -141,22 +102,10 @@ int firmware_request_nowarn(const struct firmware **fw, const char *name,
 			    struct device *device);
 int firmware_request_platform(const struct firmware **fw, const char *name,
 			      struct device *device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int request_firmware_nowait(
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
 	void (*cont)(const struct firmware *fw, void *context));
-<<<<<<< HEAD
-
-void release_firmware(const struct firmware *fw);
-#else
-static inline int request_firmware_direct(const char *name,
-					  struct device *device,
-					  phys_addr_t addr, size_t size)
-{
-	return -EINVAL;
-}
-=======
 int request_firmware_direct(const struct firmware **fw, const char *name,
 			    struct device *device);
 int request_firmware_into_buf(const struct firmware **firmware_p,
@@ -167,15 +116,12 @@ int request_partial_firmware_into_buf(const struct firmware **firmware_p,
 
 void release_firmware(const struct firmware *fw);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int request_firmware(const struct firmware **fw,
 				   const char *name,
 				   struct device *device)
 {
 	return -EINVAL;
 }
-<<<<<<< HEAD
-=======
 
 static inline int firmware_request_nowarn(const struct firmware **fw,
 					  const char *name,
@@ -191,7 +137,6 @@ static inline int firmware_request_platform(const struct firmware **fw,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int request_firmware_nowait(
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
@@ -203,9 +148,6 @@ static inline int request_firmware_nowait(
 static inline void release_firmware(const struct firmware *fw)
 {
 }
-<<<<<<< HEAD
-#endif
-=======
 
 static inline int request_firmware_direct(const struct firmware **fw,
 					  const char *name,
@@ -258,6 +200,5 @@ static inline void firmware_upload_unregister(struct fw_upload *fw_upload)
 int firmware_request_cache(struct device *device, const char *name);
 
 DEFINE_FREE(firmware, struct firmware *, release_firmware(_T))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

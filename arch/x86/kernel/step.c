@@ -1,23 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * x86 single-step support code, common to 32-bit and 64-bit.
  */
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/ptrace.h>
-#include <asm/desc.h>
-=======
 #include <linux/sched/task_stack.h>
 #include <linux/mm.h>
 #include <linux/ptrace.h>
 
 #include <asm/desc.h>
 #include <asm/debugreg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 
 unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *regs)
@@ -25,20 +16,13 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 	unsigned long addr, seg;
 
 	addr = regs->ip;
-<<<<<<< HEAD
-	seg = regs->cs & 0xffff;
-=======
 	seg = regs->cs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (v8086_mode(regs)) {
 		addr = (addr & 0xffff) + (seg << 4);
 		return addr;
 	}
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MODIFY_LDT_SYSCALL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We'll assume that the code segments in the GDT
 	 * are all zero-based. That is largely true: the
@@ -53,11 +37,7 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 
 		mutex_lock(&child->mm->context.lock);
 		if (unlikely(!child->mm->context.ldt ||
-<<<<<<< HEAD
-			     seg >= child->mm->context.ldt->size))
-=======
 			     seg >= child->mm->context.ldt->nr_entries))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr = -1L; /* bogus selector, access would fault */
 		else {
 			desc = &child->mm->context.ldt->entries[seg];
@@ -70,10 +50,7 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 		}
 		mutex_unlock(&child->mm->context.lock);
 	}
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return addr;
 }
@@ -84,12 +61,8 @@ static int is_setting_trap_flag(struct task_struct *child, struct pt_regs *regs)
 	unsigned char opcode[15];
 	unsigned long addr = convert_ip_to_linear(child, regs);
 
-<<<<<<< HEAD
-	copied = access_process_vm(child, addr, opcode, sizeof(opcode), 0);
-=======
 	copied = access_process_vm(child, addr, opcode, sizeof(opcode),
 			FOLL_FORCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < copied; i++) {
 		switch (opcode[i]) {
 		/* popf and iret */
@@ -156,25 +129,17 @@ static int enable_single_step(struct task_struct *child)
 		regs->flags |= X86_EFLAGS_TF;
 
 	/*
-<<<<<<< HEAD
-	 * Always set TIF_SINGLESTEP - this guarantees that
-	 * we single-step system calls etc..  This will also
-=======
 	 * Always set TIF_SINGLESTEP.  This will also
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * cause us to set TF when returning to user mode.
 	 */
 	set_tsk_thread_flag(child, TIF_SINGLESTEP);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Ensure that a trap is triggered once stepping out of a system
 	 * call prior to executing any user instruction.
 	 */
 	set_task_syscall_work(child, SYSCALL_EXIT_TRAP);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oflags = regs->flags;
 
 	/* Set TF on the kernel stack.. */
@@ -206,11 +171,7 @@ static int enable_single_step(struct task_struct *child)
 	return 1;
 }
 
-<<<<<<< HEAD
-static void set_task_blockstep(struct task_struct *task, bool on)
-=======
 void set_task_blockstep(struct task_struct *task, bool on)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long debugctl;
 
@@ -218,17 +179,10 @@ void set_task_blockstep(struct task_struct *task, bool on)
 	 * Ensure irq/preemption can't change debugctl in between.
 	 * Note also that both TIF_BLOCKSTEP and debugctl should
 	 * be changed atomically wrt preemption.
-<<<<<<< HEAD
-	 * FIXME: this means that set/clear TIF_BLOCKSTEP is simply
-	 * wrong if task != current, SIGKILL can wakeup the stopped
-	 * tracee and set/clear can play with the running task, this
-	 * can confuse the next __switch_to_xtra().
-=======
 	 *
 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
 	 * task is current or it can't be running, otherwise we can race
 	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	local_irq_disable();
 	debugctl = get_debugctlmsr();
@@ -282,10 +236,7 @@ void user_disable_single_step(struct task_struct *child)
 
 	/* Always clear TIF_SINGLESTEP... */
 	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
-<<<<<<< HEAD
-=======
 	clear_task_syscall_work(child, SYSCALL_EXIT_TRAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* But touch TF only if it was set by us.. */
 	if (test_and_clear_tsk_thread_flag(child, TIF_FORCED_TF))

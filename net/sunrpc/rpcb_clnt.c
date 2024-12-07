@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * In-kernel rpcbind client supporting versions 2, 3, and 4 of the rpcbind
  * protocol
@@ -27,22 +24,6 @@
 #include <linux/errno.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/nsproxy.h>
-#include <net/ipv6.h>
-
-#include <linux/sunrpc/clnt.h>
-#include <linux/sunrpc/sched.h>
-#include <linux/sunrpc/xprtsock.h>
-
-#include "netns.h"
-
-#ifdef RPC_DEBUG
-# define RPCDBG_FACILITY	RPCDBG_BIND
-#endif
-
-#define RPCBIND_SOCK_PATHNAME	"/var/run/rpcbind.sock"
-=======
 #include <net/ipv6.h>
 
 #include <linux/sunrpc/clnt.h>
@@ -56,7 +37,6 @@
 
 #define RPCBIND_SOCK_PATHNAME	"/var/run/rpcbind.sock"
 #define RPCBIND_SOCK_ABSTRACT_NAME "\0/run/rpcbind.sock"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RPCBIND_PROGRAM		(100000u)
 #define RPCBIND_PORT		(111u)
@@ -148,15 +128,6 @@ struct rpcbind_args {
 	int			r_status;
 };
 
-<<<<<<< HEAD
-static struct rpc_procinfo rpcb_procedures2[];
-static struct rpc_procinfo rpcb_procedures3[];
-static struct rpc_procinfo rpcb_procedures4[];
-
-struct rpcb_info {
-	u32			rpc_vers;
-	struct rpc_procinfo *	rpc_proc;
-=======
 static const struct rpc_procinfo rpcb_procedures2[];
 static const struct rpc_procinfo rpcb_procedures3[];
 static const struct rpc_procinfo rpcb_procedures4[];
@@ -164,7 +135,6 @@ static const struct rpc_procinfo rpcb_procedures4[];
 struct rpcb_info {
 	u32			rpc_vers;
 	const struct rpc_procinfo *rpc_proc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct rpcb_info rpcb_next_version[];
@@ -234,28 +204,14 @@ void rpcb_put_local(struct net *net)
 }
 
 static void rpcb_set_local(struct net *net, struct rpc_clnt *clnt,
-<<<<<<< HEAD
-			struct rpc_clnt *clnt4)
-=======
 			struct rpc_clnt *clnt4,
 			bool is_af_local)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
 
 	/* Protected by rpcb_create_local_mutex */
 	sn->rpcb_local_clnt = clnt;
 	sn->rpcb_local_clnt4 = clnt4;
-<<<<<<< HEAD
-	smp_wmb(); 
-	sn->rpcb_users = 1;
-	dprintk("RPC:       created new rpcb local clients (rpcb_local_clnt: "
-			"%p, rpcb_local_clnt4: %p) for net %p%s\n",
-			sn->rpcb_local_clnt, sn->rpcb_local_clnt4,
-			net, (net == &init_net) ? " (init_net)" : "");
-}
-
-=======
 	sn->rpcb_is_af_local = is_af_local ? 1 : 0;
 	smp_wmb();
 	sn->rpcb_users = 1;
@@ -265,24 +221,10 @@ static void rpcb_set_local(struct net *net, struct rpc_clnt *clnt,
 # define SUN_LEN(ptr) (offsetof(struct sockaddr_un, sun_path)		\
 		      + 1 + strlen((ptr)->sun_path + 1))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns zero on success, otherwise a negative errno value
  * is returned.
  */
-<<<<<<< HEAD
-static int rpcb_create_local_unix(struct net *net)
-{
-	static const struct sockaddr_un rpcb_localaddr_rpcbind = {
-		.sun_family		= AF_LOCAL,
-		.sun_path		= RPCBIND_SOCK_PATHNAME,
-	};
-	struct rpc_create_args args = {
-		.net		= net,
-		.protocol	= XPRT_TRANSPORT_LOCAL,
-		.address	= (struct sockaddr *)&rpcb_localaddr_rpcbind,
-		.addrsize	= sizeof(rpcb_localaddr_rpcbind),
-=======
 static int rpcb_create_af_local(struct net *net,
 				const struct sockaddr_un *addr)
 {
@@ -291,13 +233,10 @@ static int rpcb_create_af_local(struct net *net,
 		.protocol	= XPRT_TRANSPORT_LOCAL,
 		.address	= (struct sockaddr *)addr,
 		.addrsize	= SUN_LEN(addr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.servername	= "localhost",
 		.program	= &rpcb_program,
 		.version	= RPCBVERS_2,
 		.authflavor	= RPC_AUTH_NULL,
-<<<<<<< HEAD
-=======
 		.cred		= current_cred(),
 		/*
 		 * We turn off the idle timeout to prevent the kernel
@@ -307,7 +246,6 @@ static int rpcb_create_af_local(struct net *net,
 		 * reconnect code.
 		 */
 		.flags		= RPC_CLNT_CREATE_NO_IDLE_TIMEOUT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct rpc_clnt *clnt, *clnt4;
 	int result = 0;
@@ -319,38 +257,20 @@ static int rpcb_create_af_local(struct net *net,
 	 */
 	clnt = rpc_create(&args);
 	if (IS_ERR(clnt)) {
-<<<<<<< HEAD
-		dprintk("RPC:       failed to create AF_LOCAL rpcbind "
-				"client (errno %ld).\n", PTR_ERR(clnt));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = PTR_ERR(clnt);
 		goto out;
 	}
 
 	clnt4 = rpc_bind_new_program(clnt, &rpcb_program, RPCBVERS_4);
-<<<<<<< HEAD
-	if (IS_ERR(clnt4)) {
-		dprintk("RPC:       failed to bind second program to "
-				"rpcbind v4 client (errno %ld).\n",
-				PTR_ERR(clnt4));
-		clnt4 = NULL;
-	}
-
-	rpcb_set_local(net, clnt, clnt4);
-=======
 	if (IS_ERR(clnt4))
 		clnt4 = NULL;
 
 	rpcb_set_local(net, clnt, clnt4, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return result;
 }
 
-<<<<<<< HEAD
-=======
 static int rpcb_create_local_abstract(struct net *net)
 {
 	static const struct sockaddr_un rpcb_localaddr_abstract = {
@@ -371,7 +291,6 @@ static int rpcb_create_local_unix(struct net *net)
 	return rpcb_create_af_local(net, &rpcb_localaddr_unix);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns zero on success, otherwise a negative errno value
  * is returned.
@@ -392,10 +311,7 @@ static int rpcb_create_local_net(struct net *net)
 		.program	= &rpcb_program,
 		.version	= RPCBVERS_2,
 		.authflavor	= RPC_AUTH_UNIX,
-<<<<<<< HEAD
-=======
 		.cred		= current_cred(),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= RPC_CLNT_CREATE_NOPING,
 	};
 	struct rpc_clnt *clnt, *clnt4;
@@ -403,11 +319,6 @@ static int rpcb_create_local_net(struct net *net)
 
 	clnt = rpc_create(&args);
 	if (IS_ERR(clnt)) {
-<<<<<<< HEAD
-		dprintk("RPC:       failed to create local rpcbind "
-				"client (errno %ld).\n", PTR_ERR(clnt));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = PTR_ERR(clnt);
 		goto out;
 	}
@@ -418,21 +329,10 @@ static int rpcb_create_local_net(struct net *net)
 	 * v4 upcalls.
 	 */
 	clnt4 = rpc_bind_new_program(clnt, &rpcb_program, RPCBVERS_4);
-<<<<<<< HEAD
-	if (IS_ERR(clnt4)) {
-		dprintk("RPC:       failed to bind second program to "
-				"rpcbind v4 client (errno %ld).\n",
-				PTR_ERR(clnt4));
-		clnt4 = NULL;
-	}
-
-	rpcb_set_local(net, clnt, clnt4);
-=======
 	if (IS_ERR(clnt4))
 		clnt4 = NULL;
 
 	rpcb_set_local(net, clnt, clnt4, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return result;
@@ -454,12 +354,8 @@ int rpcb_create_local(struct net *net)
 	if (rpcb_get_local(net))
 		goto out;
 
-<<<<<<< HEAD
-	if (rpcb_create_local_unix(net) != 0)
-=======
 	if (rpcb_create_local_abstract(net) != 0 &&
 	    rpcb_create_local_unix(net) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = rpcb_create_local_net(net);
 
 out:
@@ -467,30 +363,18 @@ out:
 	return result;
 }
 
-<<<<<<< HEAD
-static struct rpc_clnt *rpcb_create(struct net *net, const char *hostname,
-				    struct sockaddr *srvaddr, size_t salen,
-				    int proto, u32 version)
-=======
 static struct rpc_clnt *rpcb_create(struct net *net, const char *nodename,
 				    const char *hostname,
 				    struct sockaddr *srvaddr, size_t salen,
 				    int proto, u32 version,
 				    const struct cred *cred,
 				    const struct rpc_timeout *timeo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpc_create_args args = {
 		.net		= net,
 		.protocol	= proto,
 		.address	= srvaddr,
 		.addrsize	= salen,
-<<<<<<< HEAD
-		.servername	= hostname,
-		.program	= &rpcb_program,
-		.version	= version,
-		.authflavor	= RPC_AUTH_UNIX,
-=======
 		.timeout	= timeo,
 		.servername	= hostname,
 		.nodename	= nodename,
@@ -498,7 +382,6 @@ static struct rpc_clnt *rpcb_create(struct net *net, const char *nodename,
 		.version	= version,
 		.authflavor	= RPC_AUTH_UNIX,
 		.cred		= cred,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= (RPC_CLNT_CREATE_NOPING |
 					RPC_CLNT_CREATE_NONPRIVPORT),
 	};
@@ -517,20 +400,6 @@ static struct rpc_clnt *rpcb_create(struct net *net, const char *nodename,
 	return rpc_create(&args);
 }
 
-<<<<<<< HEAD
-static int rpcb_register_call(struct rpc_clnt *clnt, struct rpc_message *msg)
-{
-	int result, error = 0;
-
-	msg->rpc_resp = &result;
-
-	error = rpc_call_sync(clnt, msg, RPC_TASK_SOFTCONN);
-	if (error < 0) {
-		dprintk("RPC:       failed to contact local rpcbind "
-				"server (errno %d).\n", -error);
-		return error;
-	}
-=======
 static int rpcb_register_call(struct sunrpc_net *sn, struct rpc_clnt *clnt, struct rpc_message *msg, bool is_set)
 {
 	int flags = RPC_TASK_NOCONNECT;
@@ -543,7 +412,6 @@ static int rpcb_register_call(struct sunrpc_net *sn, struct rpc_clnt *clnt, stru
 	error = rpc_call_sync(clnt, msg, flags);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!result)
 		return -EACCES;
@@ -552,10 +420,7 @@ static int rpcb_register_call(struct sunrpc_net *sn, struct rpc_clnt *clnt, stru
 
 /**
  * rpcb_register - set or unset a port registration with the local rpcbind svc
-<<<<<<< HEAD
-=======
  * @net: target network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @prog: RPC program number to bind
  * @vers: RPC version number to bind
  * @prot: transport protocol to register
@@ -598,18 +463,6 @@ int rpcb_register(struct net *net, u32 prog, u32 vers, int prot, unsigned short 
 		.rpc_argp	= &map,
 	};
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
-<<<<<<< HEAD
-
-	dprintk("RPC:       %sregistering (%u, %u, %d, %u) with local "
-			"rpcbind\n", (port ? "" : "un"),
-			prog, vers, prot, port);
-
-	msg.rpc_proc = &rpcb_procedures2[RPCBPROC_UNSET];
-	if (port)
-		msg.rpc_proc = &rpcb_procedures2[RPCBPROC_SET];
-
-	return rpcb_register_call(sn->rpcb_local_clnt, &msg);
-=======
 	bool is_set = false;
 
 	trace_pmap_register(prog, vers, prot, port);
@@ -621,7 +474,6 @@ int rpcb_register(struct net *net, u32 prog, u32 vers, int prot, unsigned short 
 	}
 
 	return rpcb_register_call(sn, sn->rpcb_local_clnt, &msg, is_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -634,26 +486,11 @@ static int rpcb_register_inet4(struct sunrpc_net *sn,
 	const struct sockaddr_in *sin = (const struct sockaddr_in *)sap;
 	struct rpcbind_args *map = msg->rpc_argp;
 	unsigned short port = ntohs(sin->sin_port);
-<<<<<<< HEAD
-=======
 	bool is_set = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	map->r_addr = rpc_sockaddr2uaddr(sap, GFP_KERNEL);
 
-<<<<<<< HEAD
-	dprintk("RPC:       %sregistering [%u, %u, %s, '%s'] with "
-		"local rpcbind\n", (port ? "" : "un"),
-			map->r_prog, map->r_vers,
-			map->r_addr, map->r_netid);
-
-	msg->rpc_proc = &rpcb_procedures4[RPCBPROC_UNSET];
-	if (port)
-		msg->rpc_proc = &rpcb_procedures4[RPCBPROC_SET];
-
-	result = rpcb_register_call(sn->rpcb_local_clnt4, msg);
-=======
 	msg->rpc_proc = &rpcb_procedures4[RPCBPROC_UNSET];
 	if (port != 0) {
 		msg->rpc_proc = &rpcb_procedures4[RPCBPROC_SET];
@@ -661,7 +498,6 @@ static int rpcb_register_inet4(struct sunrpc_net *sn,
 	}
 
 	result = rpcb_register_call(sn, sn->rpcb_local_clnt4, msg, is_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(map->r_addr);
 	return result;
 }
@@ -676,26 +512,11 @@ static int rpcb_register_inet6(struct sunrpc_net *sn,
 	const struct sockaddr_in6 *sin6 = (const struct sockaddr_in6 *)sap;
 	struct rpcbind_args *map = msg->rpc_argp;
 	unsigned short port = ntohs(sin6->sin6_port);
-<<<<<<< HEAD
-=======
 	bool is_set = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	map->r_addr = rpc_sockaddr2uaddr(sap, GFP_KERNEL);
 
-<<<<<<< HEAD
-	dprintk("RPC:       %sregistering [%u, %u, %s, '%s'] with "
-		"local rpcbind\n", (port ? "" : "un"),
-			map->r_prog, map->r_vers,
-			map->r_addr, map->r_netid);
-
-	msg->rpc_proc = &rpcb_procedures4[RPCBPROC_UNSET];
-	if (port)
-		msg->rpc_proc = &rpcb_procedures4[RPCBPROC_SET];
-
-	result = rpcb_register_call(sn->rpcb_local_clnt4, msg);
-=======
 	msg->rpc_proc = &rpcb_procedures4[RPCBPROC_UNSET];
 	if (port != 0) {
 		msg->rpc_proc = &rpcb_procedures4[RPCBPROC_SET];
@@ -703,7 +524,6 @@ static int rpcb_register_inet6(struct sunrpc_net *sn,
 	}
 
 	result = rpcb_register_call(sn, sn->rpcb_local_clnt4, msg, is_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(map->r_addr);
 	return result;
 }
@@ -713,30 +533,17 @@ static int rpcb_unregister_all_protofamilies(struct sunrpc_net *sn,
 {
 	struct rpcbind_args *map = msg->rpc_argp;
 
-<<<<<<< HEAD
-	dprintk("RPC:       unregistering [%u, %u, '%s'] with "
-		"local rpcbind\n",
-			map->r_prog, map->r_vers, map->r_netid);
-=======
 	trace_rpcb_unregister(map->r_prog, map->r_vers, map->r_netid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map->r_addr = "";
 	msg->rpc_proc = &rpcb_procedures4[RPCBPROC_UNSET];
 
-<<<<<<< HEAD
-	return rpcb_register_call(sn->rpcb_local_clnt4, msg);
-=======
 	return rpcb_register_call(sn, sn->rpcb_local_clnt4, msg, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * rpcb_v4_register - set or unset a port registration with the local rpcbind
-<<<<<<< HEAD
-=======
  * @net: target network namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @program: RPC program number of service to (un)register
  * @version: RPC version number of service to (un)register
  * @address: address family, IP address, and port to (un)register
@@ -798,11 +605,8 @@ int rpcb_v4_register(struct net *net, const u32 program, const u32 version,
 	if (address == NULL)
 		return rpcb_unregister_all_protofamilies(sn, &msg);
 
-<<<<<<< HEAD
-=======
 	trace_rpcb_register(map.r_prog, map.r_vers, map.r_addr, map.r_netid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (address->sa_family) {
 	case AF_INET:
 		return rpcb_register_inet4(sn, address, &msg);
@@ -813,12 +617,8 @@ int rpcb_v4_register(struct net *net, const u32 program, const u32 version,
 	return -EAFNOSUPPORT;
 }
 
-<<<<<<< HEAD
-static struct rpc_task *rpcb_call_async(struct rpc_clnt *rpcb_clnt, struct rpcbind_args *map, struct rpc_procinfo *proc)
-=======
 static struct rpc_task *rpcb_call_async(struct rpc_clnt *rpcb_clnt,
 		struct rpcbind_args *map, const struct rpc_procinfo *proc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpc_message msg = {
 		.rpc_proc = proc,
@@ -846,17 +646,10 @@ static struct rpc_task *rpcb_call_async(struct rpc_clnt *rpcb_clnt,
 static struct rpc_clnt *rpcb_find_transport_owner(struct rpc_clnt *clnt)
 {
 	struct rpc_clnt *parent = clnt->cl_parent;
-<<<<<<< HEAD
-	struct rpc_xprt *xprt = rcu_dereference(clnt->cl_xprt);
-
-	while (parent != clnt) {
-		if (rcu_dereference(parent->cl_xprt) != xprt)
-=======
 	struct rpc_xprt_switch *xps = rcu_access_pointer(clnt->cl_xpi.xpi_xpswitch);
 
 	while (parent != clnt) {
 		if (rcu_access_pointer(parent->cl_xpi.xpi_xpswitch) != xps)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if (clnt->cl_autobind)
 			break;
@@ -876,11 +669,7 @@ static struct rpc_clnt *rpcb_find_transport_owner(struct rpc_clnt *clnt)
 void rpcb_getport_async(struct rpc_task *task)
 {
 	struct rpc_clnt *clnt;
-<<<<<<< HEAD
-	struct rpc_procinfo *proc;
-=======
 	const struct rpc_procinfo *proc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 bind_version;
 	struct rpc_xprt *xprt;
 	struct rpc_clnt	*rpcb_clnt;
@@ -892,25 +681,6 @@ void rpcb_getport_async(struct rpc_task *task)
 	int status;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	do {
-		clnt = rpcb_find_transport_owner(task->tk_client);
-		xprt = xprt_get(rcu_dereference(clnt->cl_xprt));
-	} while (xprt == NULL);
-	rcu_read_unlock();
-
-	dprintk("RPC: %5u %s(%s, %u, %u, %d)\n",
-		task->tk_pid, __func__,
-		xprt->servername, clnt->cl_prog, clnt->cl_vers, xprt->prot);
-
-	/* Put self on the wait queue to ensure we get notified if
-	 * some other task is already attempting to bind the port */
-	rpc_sleep_on(&xprt->binding, task, NULL);
-
-	if (xprt_test_and_set_binding(xprt)) {
-		dprintk("RPC: %5u %s: waiting for another binder\n",
-			task->tk_pid, __func__);
-=======
 	clnt = rpcb_find_transport_owner(task->tk_client);
 	rcu_read_unlock();
 	xprt = xprt_get(task->tk_xprt);
@@ -921,7 +691,6 @@ void rpcb_getport_async(struct rpc_task *task)
 			NULL, jiffies + xprt->bind_timeout);
 
 	if (xprt_test_and_set_binding(xprt)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xprt_put(xprt);
 		return;
 	}
@@ -929,11 +698,6 @@ void rpcb_getport_async(struct rpc_task *task)
 	/* Someone else may have bound if we slept */
 	if (xprt_bound(xprt)) {
 		status = 0;
-<<<<<<< HEAD
-		dprintk("RPC: %5u %s: already bound\n",
-			task->tk_pid, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bailout_nofree;
 	}
 
@@ -952,40 +716,11 @@ void rpcb_getport_async(struct rpc_task *task)
 		break;
 	default:
 		status = -EAFNOSUPPORT;
-<<<<<<< HEAD
-		dprintk("RPC: %5u %s: bad address family\n",
-				task->tk_pid, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bailout_nofree;
 	}
 	if (proc == NULL) {
 		xprt->bind_index = 0;
 		status = -EPFNOSUPPORT;
-<<<<<<< HEAD
-		dprintk("RPC: %5u %s: no more getport versions available\n",
-			task->tk_pid, __func__);
-		goto bailout_nofree;
-	}
-
-	dprintk("RPC: %5u %s: trying rpcbind version %u\n",
-		task->tk_pid, __func__, bind_version);
-
-	rpcb_clnt = rpcb_create(xprt->xprt_net, xprt->servername, sap, salen,
-				xprt->prot, bind_version);
-	if (IS_ERR(rpcb_clnt)) {
-		status = PTR_ERR(rpcb_clnt);
-		dprintk("RPC: %5u %s: rpcb_create failed, error %ld\n",
-			task->tk_pid, __func__, PTR_ERR(rpcb_clnt));
-		goto bailout_nofree;
-	}
-
-	map = kzalloc(sizeof(struct rpcbind_args), GFP_ATOMIC);
-	if (!map) {
-		status = -ENOMEM;
-		dprintk("RPC: %5u %s: no memory available\n",
-			task->tk_pid, __func__);
-=======
 		goto bailout_nofree;
 	}
 
@@ -1005,7 +740,6 @@ void rpcb_getport_async(struct rpc_task *task)
 	map = kzalloc(sizeof(struct rpcbind_args), rpc_task_gfp_mask());
 	if (!map) {
 		status = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bailout_release_client;
 	}
 	map->r_prog = clnt->cl_prog;
@@ -1019,15 +753,11 @@ void rpcb_getport_async(struct rpc_task *task)
 	case RPCBVERS_4:
 	case RPCBVERS_3:
 		map->r_netid = xprt->address_strings[RPC_DISPLAY_NETID];
-<<<<<<< HEAD
-		map->r_addr = rpc_sockaddr2uaddr(sap, GFP_ATOMIC);
-=======
 		map->r_addr = rpc_sockaddr2uaddr(sap, rpc_task_gfp_mask());
 		if (!map->r_addr) {
 			status = -ENOMEM;
 			goto bailout_free_args;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map->r_owner = "";
 		break;
 	case RPCBVERS_2:
@@ -1041,11 +771,6 @@ void rpcb_getport_async(struct rpc_task *task)
 	rpc_release_client(rpcb_clnt);
 	if (IS_ERR(child)) {
 		/* rpcb_map_release() has freed the arguments */
-<<<<<<< HEAD
-		dprintk("RPC: %5u %s: rpc_run_task failed\n",
-			task->tk_pid, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1053,11 +778,8 @@ void rpcb_getport_async(struct rpc_task *task)
 	rpc_put_task(child);
 	return;
 
-<<<<<<< HEAD
-=======
 bailout_free_args:
 	kfree(map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bailout_release_client:
 	rpc_release_client(rpcb_clnt);
 bailout_nofree:
@@ -1074,36 +796,6 @@ static void rpcb_getport_done(struct rpc_task *child, void *data)
 {
 	struct rpcbind_args *map = data;
 	struct rpc_xprt *xprt = map->r_xprt;
-<<<<<<< HEAD
-	int status = child->tk_status;
-
-	/* Garbage reply: retry with a lesser rpcbind version */
-	if (status == -EIO)
-		status = -EPROTONOSUPPORT;
-
-	/* rpcbind server doesn't support this rpcbind protocol version */
-	if (status == -EPROTONOSUPPORT)
-		xprt->bind_index++;
-
-	if (status < 0) {
-		/* rpcbind server not available on remote host? */
-		xprt->ops->set_port(xprt, 0);
-	} else if (map->r_port == 0) {
-		/* Requested RPC service wasn't registered on remote host */
-		xprt->ops->set_port(xprt, 0);
-		status = -EACCES;
-	} else {
-		/* Succeeded */
-		xprt->ops->set_port(xprt, map->r_port);
-		xprt_set_bound(xprt);
-		status = 0;
-	}
-
-	dprintk("RPC: %5u rpcb_getport_done(status %d, port %u)\n",
-			child->tk_pid, status, map->r_port);
-
-	map->r_status = status;
-=======
 
 	map->r_status = child->tk_status;
 
@@ -1131,7 +823,6 @@ static void rpcb_getport_done(struct rpc_task *child, void *data)
 	xprt->ops->set_port(xprt, map->r_port);
 	if (map->r_port)
 		xprt_set_bound(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1139,23 +830,11 @@ static void rpcb_getport_done(struct rpc_task *child, void *data)
  */
 
 static void rpcb_enc_mapping(struct rpc_rqst *req, struct xdr_stream *xdr,
-<<<<<<< HEAD
-			     const struct rpcbind_args *rpcb)
-{
-	__be32 *p;
-
-	dprintk("RPC: %5u encoding PMAP_%s call (%u, %u, %d, %u)\n",
-			req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name,
-			rpcb->r_prog, rpcb->r_vers, rpcb->r_prot, rpcb->r_port);
-
-=======
 			     const void *data)
 {
 	const struct rpcbind_args *rpcb = data;
 	__be32 *p;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_reserve_space(xdr, RPCB_mappingargs_sz << 2);
 	*p++ = cpu_to_be32(rpcb->r_prog);
 	*p++ = cpu_to_be32(rpcb->r_vers);
@@ -1164,14 +843,9 @@ static void rpcb_enc_mapping(struct rpc_rqst *req, struct xdr_stream *xdr,
 }
 
 static int rpcb_dec_getport(struct rpc_rqst *req, struct xdr_stream *xdr,
-<<<<<<< HEAD
-			    struct rpcbind_args *rpcb)
-{
-=======
 			    void *data)
 {
 	struct rpcbind_args *rpcb = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long port;
 	__be32 *p;
 
@@ -1182,11 +856,6 @@ static int rpcb_dec_getport(struct rpc_rqst *req, struct xdr_stream *xdr,
 		return -EIO;
 
 	port = be32_to_cpup(p);
-<<<<<<< HEAD
-	dprintk("RPC: %5u PMAP_%s result: %lu\n", req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name, port);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(port > USHRT_MAX))
 		return -EIO;
 
@@ -1195,14 +864,9 @@ static int rpcb_dec_getport(struct rpc_rqst *req, struct xdr_stream *xdr,
 }
 
 static int rpcb_dec_set(struct rpc_rqst *req, struct xdr_stream *xdr,
-<<<<<<< HEAD
-			unsigned int *boolp)
-{
-=======
 			void *data)
 {
 	unsigned int *boolp = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *p;
 
 	p = xdr_inline_decode(xdr, 4);
@@ -1212,14 +876,6 @@ static int rpcb_dec_set(struct rpc_rqst *req, struct xdr_stream *xdr,
 	*boolp = 0;
 	if (*p != xdr_zero)
 		*boolp = 1;
-<<<<<<< HEAD
-
-	dprintk("RPC: %5u RPCB_%s call %s\n",
-			req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name,
-			(*boolp ? "succeeded" : "failed"));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1230,37 +886,20 @@ static void encode_rpcb_string(struct xdr_stream *xdr, const char *string,
 	u32 len;
 
 	len = strlen(string);
-<<<<<<< HEAD
-	BUG_ON(len > maxstrlen);
-=======
 	WARN_ON_ONCE(len > maxstrlen);
 	if (len > maxstrlen)
 		/* truncate and hope for the best */
 		len = maxstrlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_reserve_space(xdr, 4 + len);
 	xdr_encode_opaque(p, string, len);
 }
 
 static void rpcb_enc_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
-<<<<<<< HEAD
-			     const struct rpcbind_args *rpcb)
-{
-	__be32 *p;
-
-	dprintk("RPC: %5u encoding RPCB_%s call (%u, %u, '%s', '%s')\n",
-			req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name,
-			rpcb->r_prog, rpcb->r_vers,
-			rpcb->r_netid, rpcb->r_addr);
-
-=======
 			     const void *data)
 {
 	const struct rpcbind_args *rpcb = data;
 	__be32 *p;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_reserve_space(xdr, (RPCB_program_sz + RPCB_version_sz) << 2);
 	*p++ = cpu_to_be32(rpcb->r_prog);
 	*p = cpu_to_be32(rpcb->r_vers);
@@ -1271,14 +910,9 @@ static void rpcb_enc_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
 }
 
 static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
-<<<<<<< HEAD
-			    struct rpcbind_args *rpcb)
-{
-=======
 			    void *data)
 {
 	struct rpcbind_args *rpcb = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_storage address;
 	struct sockaddr *sap = (struct sockaddr *)&address;
 	__be32 *p;
@@ -1295,16 +929,8 @@ static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
 	 * If the returned universal address is a null string,
 	 * the requested RPC service was not registered.
 	 */
-<<<<<<< HEAD
-	if (len == 0) {
-		dprintk("RPC: %5u RPCB reply: program not registered\n",
-				req->rq_task->tk_pid);
-		return 0;
-	}
-=======
 	if (len == 0)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(len > RPCBIND_MAXUADDRLEN))
 		goto out_fail;
@@ -1312,11 +938,6 @@ static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
 	p = xdr_inline_decode(xdr, len);
 	if (unlikely(p == NULL))
 		goto out_fail;
-<<<<<<< HEAD
-	dprintk("RPC: %5u RPCB_%s reply: %s\n", req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name, (char *)p);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rpc_uaddr2sockaddr(req->rq_xprt->xprt_net, (char *)p, len,
 				sap, sizeof(address)) == 0)
@@ -1326,12 +947,6 @@ static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
 	return 0;
 
 out_fail:
-<<<<<<< HEAD
-	dprintk("RPC: %5u malformed RPCB_%s reply\n",
-			req->rq_task->tk_pid,
-			req->rq_task->tk_msg.rpc_proc->p_name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -1340,19 +955,11 @@ out_fail:
  * since the Linux kernel RPC code requires only these.
  */
 
-<<<<<<< HEAD
-static struct rpc_procinfo rpcb_procedures2[] = {
-	[RPCBPROC_SET] = {
-		.p_proc		= RPCBPROC_SET,
-		.p_encode	= (kxdreproc_t)rpcb_enc_mapping,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 static const struct rpc_procinfo rpcb_procedures2[] = {
 	[RPCBPROC_SET] = {
 		.p_proc		= RPCBPROC_SET,
 		.p_encode	= rpcb_enc_mapping,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_mappingargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_SET,
@@ -1361,13 +968,8 @@ static const struct rpc_procinfo rpcb_procedures2[] = {
 	},
 	[RPCBPROC_UNSET] = {
 		.p_proc		= RPCBPROC_UNSET,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_mapping,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 		.p_encode	= rpcb_enc_mapping,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_mappingargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_UNSET,
@@ -1376,13 +978,8 @@ static const struct rpc_procinfo rpcb_procedures2[] = {
 	},
 	[RPCBPROC_GETPORT] = {
 		.p_proc		= RPCBPROC_GETPORT,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_mapping,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_getport,
-=======
 		.p_encode	= rpcb_enc_mapping,
 		.p_decode	= rpcb_dec_getport,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_mappingargs_sz,
 		.p_replen	= RPCB_getportres_sz,
 		.p_statidx	= RPCBPROC_GETPORT,
@@ -1391,19 +988,11 @@ static const struct rpc_procinfo rpcb_procedures2[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct rpc_procinfo rpcb_procedures3[] = {
-	[RPCBPROC_SET] = {
-		.p_proc		= RPCBPROC_SET,
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 static const struct rpc_procinfo rpcb_procedures3[] = {
 	[RPCBPROC_SET] = {
 		.p_proc		= RPCBPROC_SET,
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_SET,
@@ -1412,13 +1001,8 @@ static const struct rpc_procinfo rpcb_procedures3[] = {
 	},
 	[RPCBPROC_UNSET] = {
 		.p_proc		= RPCBPROC_UNSET,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_UNSET,
@@ -1427,13 +1011,8 @@ static const struct rpc_procinfo rpcb_procedures3[] = {
 	},
 	[RPCBPROC_GETADDR] = {
 		.p_proc		= RPCBPROC_GETADDR,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_getaddr,
-=======
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_getaddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_getaddrres_sz,
 		.p_statidx	= RPCBPROC_GETADDR,
@@ -1442,19 +1021,11 @@ static const struct rpc_procinfo rpcb_procedures3[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct rpc_procinfo rpcb_procedures4[] = {
-	[RPCBPROC_SET] = {
-		.p_proc		= RPCBPROC_SET,
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 static const struct rpc_procinfo rpcb_procedures4[] = {
 	[RPCBPROC_SET] = {
 		.p_proc		= RPCBPROC_SET,
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_SET,
@@ -1463,13 +1034,8 @@ static const struct rpc_procinfo rpcb_procedures4[] = {
 	},
 	[RPCBPROC_UNSET] = {
 		.p_proc		= RPCBPROC_UNSET,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_set,
-=======
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_setres_sz,
 		.p_statidx	= RPCBPROC_UNSET,
@@ -1478,13 +1044,8 @@ static const struct rpc_procinfo rpcb_procedures4[] = {
 	},
 	[RPCBPROC_GETADDR] = {
 		.p_proc		= RPCBPROC_GETADDR,
-<<<<<<< HEAD
-		.p_encode	= (kxdreproc_t)rpcb_enc_getaddr,
-		.p_decode	= (kxdrdproc_t)rpcb_dec_getaddr,
-=======
 		.p_encode	= rpcb_enc_getaddr,
 		.p_decode	= rpcb_dec_getaddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.p_arglen	= RPCB_getaddrargs_sz,
 		.p_replen	= RPCB_getaddrres_sz,
 		.p_statidx	= RPCBPROC_GETADDR,
@@ -1517,24 +1078,6 @@ static const struct rpcb_info rpcb_next_version6[] = {
 	},
 };
 
-<<<<<<< HEAD
-static const struct rpc_version rpcb_version2 = {
-	.number		= RPCBVERS_2,
-	.nrprocs	= ARRAY_SIZE(rpcb_procedures2),
-	.procs		= rpcb_procedures2
-};
-
-static const struct rpc_version rpcb_version3 = {
-	.number		= RPCBVERS_3,
-	.nrprocs	= ARRAY_SIZE(rpcb_procedures3),
-	.procs		= rpcb_procedures3
-};
-
-static const struct rpc_version rpcb_version4 = {
-	.number		= RPCBVERS_4,
-	.nrprocs	= ARRAY_SIZE(rpcb_procedures4),
-	.procs		= rpcb_procedures4
-=======
 static unsigned int rpcb_version2_counts[ARRAY_SIZE(rpcb_procedures2)];
 static const struct rpc_version rpcb_version2 = {
 	.number		= RPCBVERS_2,
@@ -1557,7 +1100,6 @@ static const struct rpc_version rpcb_version4 = {
 	.nrprocs	= ARRAY_SIZE(rpcb_procedures4),
 	.procs		= rpcb_procedures4,
 	.counts		= rpcb_version4_counts,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct rpc_version *rpcb_version[] = {

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/nfs4.h
  *
@@ -13,156 +10,6 @@
  *  Kendrick Smith <kmsmith@umich.edu>
  *  Andy Adamson   <andros@umich.edu>
  */
-<<<<<<< HEAD
-
-#ifndef _LINUX_NFS4_H
-#define _LINUX_NFS4_H
-
-#include <linux/types.h>
-
-#define NFS4_BITMAP_SIZE	2
-#define NFS4_VERIFIER_SIZE	8
-#define NFS4_STATEID_SEQID_SIZE 4
-#define NFS4_STATEID_OTHER_SIZE 12
-#define NFS4_STATEID_SIZE	(NFS4_STATEID_SEQID_SIZE + NFS4_STATEID_OTHER_SIZE)
-#define NFS4_FHSIZE		128
-#define NFS4_MAXPATHLEN		PATH_MAX
-#define NFS4_MAXNAMLEN		NAME_MAX
-#define NFS4_OPAQUE_LIMIT	1024
-#define NFS4_MAX_SESSIONID_LEN	16
-
-#define NFS4_ACCESS_READ        0x0001
-#define NFS4_ACCESS_LOOKUP      0x0002
-#define NFS4_ACCESS_MODIFY      0x0004
-#define NFS4_ACCESS_EXTEND      0x0008
-#define NFS4_ACCESS_DELETE      0x0010
-#define NFS4_ACCESS_EXECUTE     0x0020
-
-#define NFS4_FH_PERSISTENT		0x0000
-#define NFS4_FH_NOEXPIRE_WITH_OPEN	0x0001
-#define NFS4_FH_VOLATILE_ANY		0x0002
-#define NFS4_FH_VOL_MIGRATION		0x0004
-#define NFS4_FH_VOL_RENAME		0x0008
-
-#define NFS4_OPEN_RESULT_CONFIRM 0x0002
-#define NFS4_OPEN_RESULT_LOCKTYPE_POSIX 0x0004
-
-#define NFS4_SHARE_ACCESS_MASK	0x000F
-#define NFS4_SHARE_ACCESS_READ	0x0001
-#define NFS4_SHARE_ACCESS_WRITE	0x0002
-#define NFS4_SHARE_ACCESS_BOTH	0x0003
-#define NFS4_SHARE_DENY_READ	0x0001
-#define NFS4_SHARE_DENY_WRITE	0x0002
-#define NFS4_SHARE_DENY_BOTH	0x0003
-
-/* nfs41 */
-#define NFS4_SHARE_WANT_MASK		0xFF00
-#define NFS4_SHARE_WANT_NO_PREFERENCE	0x0000
-#define NFS4_SHARE_WANT_READ_DELEG	0x0100
-#define NFS4_SHARE_WANT_WRITE_DELEG	0x0200
-#define NFS4_SHARE_WANT_ANY_DELEG	0x0300
-#define NFS4_SHARE_WANT_NO_DELEG	0x0400
-#define NFS4_SHARE_WANT_CANCEL		0x0500
-
-#define NFS4_SHARE_WHEN_MASK		0xF0000
-#define NFS4_SHARE_SIGNAL_DELEG_WHEN_RESRC_AVAIL	0x10000
-#define NFS4_SHARE_PUSH_DELEG_WHEN_UNCONTENDED		0x20000
-
-#define NFS4_CDFC4_FORE	0x1
-#define NFS4_CDFC4_BACK 0x2
-#define NFS4_CDFC4_BOTH 0x3
-#define NFS4_CDFC4_FORE_OR_BOTH 0x3
-#define NFS4_CDFC4_BACK_OR_BOTH 0x7
-
-#define NFS4_SET_TO_SERVER_TIME	0
-#define NFS4_SET_TO_CLIENT_TIME	1
-
-#define NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE 0
-#define NFS4_ACE_ACCESS_DENIED_ACE_TYPE  1
-#define NFS4_ACE_SYSTEM_AUDIT_ACE_TYPE   2
-#define NFS4_ACE_SYSTEM_ALARM_ACE_TYPE   3
-
-#define ACL4_SUPPORT_ALLOW_ACL 0x01
-#define ACL4_SUPPORT_DENY_ACL  0x02
-#define ACL4_SUPPORT_AUDIT_ACL 0x04
-#define ACL4_SUPPORT_ALARM_ACL 0x08
-
-#define NFS4_ACE_FILE_INHERIT_ACE             0x00000001
-#define NFS4_ACE_DIRECTORY_INHERIT_ACE        0x00000002
-#define NFS4_ACE_NO_PROPAGATE_INHERIT_ACE     0x00000004
-#define NFS4_ACE_INHERIT_ONLY_ACE             0x00000008
-#define NFS4_ACE_SUCCESSFUL_ACCESS_ACE_FLAG   0x00000010
-#define NFS4_ACE_FAILED_ACCESS_ACE_FLAG       0x00000020
-#define NFS4_ACE_IDENTIFIER_GROUP             0x00000040
-
-#define NFS4_ACE_READ_DATA                    0x00000001
-#define NFS4_ACE_LIST_DIRECTORY               0x00000001
-#define NFS4_ACE_WRITE_DATA                   0x00000002
-#define NFS4_ACE_ADD_FILE                     0x00000002
-#define NFS4_ACE_APPEND_DATA                  0x00000004
-#define NFS4_ACE_ADD_SUBDIRECTORY             0x00000004
-#define NFS4_ACE_READ_NAMED_ATTRS             0x00000008
-#define NFS4_ACE_WRITE_NAMED_ATTRS            0x00000010
-#define NFS4_ACE_EXECUTE                      0x00000020
-#define NFS4_ACE_DELETE_CHILD                 0x00000040
-#define NFS4_ACE_READ_ATTRIBUTES              0x00000080
-#define NFS4_ACE_WRITE_ATTRIBUTES             0x00000100
-#define NFS4_ACE_DELETE                       0x00010000
-#define NFS4_ACE_READ_ACL                     0x00020000
-#define NFS4_ACE_WRITE_ACL                    0x00040000
-#define NFS4_ACE_WRITE_OWNER                  0x00080000
-#define NFS4_ACE_SYNCHRONIZE                  0x00100000
-#define NFS4_ACE_GENERIC_READ                 0x00120081
-#define NFS4_ACE_GENERIC_WRITE                0x00160106
-#define NFS4_ACE_GENERIC_EXECUTE              0x001200A0
-#define NFS4_ACE_MASK_ALL                     0x001F01FF
-
-#define EXCHGID4_FLAG_SUPP_MOVED_REFER		0x00000001
-#define EXCHGID4_FLAG_SUPP_MOVED_MIGR		0x00000002
-#define EXCHGID4_FLAG_BIND_PRINC_STATEID	0x00000100
-
-#define EXCHGID4_FLAG_USE_NON_PNFS		0x00010000
-#define EXCHGID4_FLAG_USE_PNFS_MDS		0x00020000
-#define EXCHGID4_FLAG_USE_PNFS_DS		0x00040000
-#define EXCHGID4_FLAG_MASK_PNFS			0x00070000
-
-#define EXCHGID4_FLAG_UPD_CONFIRMED_REC_A	0x40000000
-#define EXCHGID4_FLAG_CONFIRMED_R		0x80000000
-/*
- * Since the validity of these bits depends on whether
- * they're set in the argument or response, have separate
- * invalid flag masks for arg (_A) and resp (_R).
- */
-#define EXCHGID4_FLAG_MASK_A			0x40070103
-#define EXCHGID4_FLAG_MASK_R			0x80070103
-
-#define SEQ4_STATUS_CB_PATH_DOWN		0x00000001
-#define SEQ4_STATUS_CB_GSS_CONTEXTS_EXPIRING	0x00000002
-#define SEQ4_STATUS_CB_GSS_CONTEXTS_EXPIRED	0x00000004
-#define SEQ4_STATUS_EXPIRED_ALL_STATE_REVOKED	0x00000008
-#define SEQ4_STATUS_EXPIRED_SOME_STATE_REVOKED	0x00000010
-#define SEQ4_STATUS_ADMIN_STATE_REVOKED		0x00000020
-#define SEQ4_STATUS_RECALLABLE_STATE_REVOKED	0x00000040
-#define SEQ4_STATUS_LEASE_MOVED			0x00000080
-#define SEQ4_STATUS_RESTART_RECLAIM_NEEDED	0x00000100
-#define SEQ4_STATUS_CB_PATH_DOWN_SESSION	0x00000200
-#define SEQ4_STATUS_BACKCHANNEL_FAULT		0x00000400
-
-#define NFS4_SECINFO_STYLE4_CURRENT_FH	0
-#define NFS4_SECINFO_STYLE4_PARENT	1
-
-#define NFS4_MAX_UINT64	(~(u64)0)
-
-/* An NFS4 sessions server must support at least NFS4_MAX_OPS operations.
- * If a compound requires more operations, adjust NFS4_MAX_OPS accordingly.
- */
-#define NFS4_MAX_OPS   8
-
-/* Our NFS4 client back channel server only wants the cb_sequene and the
- * actual operation per compound
- */
-#define NFS4_MAX_BACK_CHANNEL_OPS 2
-=======
 #ifndef _LINUX_NFS4_H
 #define _LINUX_NFS4_H
 
@@ -170,7 +17,6 @@
 #include <linux/uidgid.h>
 #include <uapi/linux/nfs4.h>
 #include <linux/sunrpc/msg_prot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_NAMED = 0,
@@ -179,32 +25,19 @@ enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_EVERYONE,
 };
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-#include <linux/list.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfs4_ace {
 	uint32_t	type;
 	uint32_t	flag;
 	uint32_t	access_mask;
 	int		whotype;
-<<<<<<< HEAD
-	uid_t		who;
-=======
 	union {
 		kuid_t	who_uid;
 		kgid_t	who_gid;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfs4_acl {
 	uint32_t	naces;
-<<<<<<< HEAD
-	struct nfs4_ace	aces[0];
-=======
 	struct nfs4_ace	aces[];
 };
 
@@ -215,19 +48,10 @@ struct nfs4_label {
 	uint32_t	pi;
 	u32		len;
 	char	*label;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef struct { char data[NFS4_VERIFIER_SIZE]; } nfs4_verifier;
 
-<<<<<<< HEAD
-struct nfs_stateid4 {
-	__be32 seqid;
-	char other[NFS4_STATEID_OTHER_SIZE];
-} __attribute__ ((packed));
-
-typedef struct nfs_stateid4 nfs4_stateid;
-=======
 struct nfs4_stateid_struct {
 	union {
 		char data[NFS4_STATEID_SIZE];
@@ -250,7 +74,6 @@ struct nfs4_stateid_struct {
 };
 
 typedef struct nfs4_stateid_struct nfs4_stateid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfs_opnum4 {
 	OP_ACCESS = 3,
@@ -312,8 +135,6 @@ enum nfs_opnum4 {
 	OP_DESTROY_CLIENTID = 57,
 	OP_RECLAIM_COMPLETE = 58,
 
-<<<<<<< HEAD
-=======
 	/* nfs42 */
 	OP_ALLOCATE = 59,
 	OP_COPY = 60,
@@ -335,7 +156,6 @@ enum nfs_opnum4 {
 	OP_LISTXATTRS              = 74,
 	OP_REMOVEXATTR             = 75,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OP_ILLEGAL = 10044,
 };
 
@@ -343,14 +163,10 @@ enum nfs_opnum4 {
 Needs to be updated if more operations are defined in future.*/
 
 #define FIRST_NFS4_OP	OP_ACCESS
-<<<<<<< HEAD
-#define LAST_NFS4_OP 	OP_RECLAIM_COMPLETE
-=======
 #define LAST_NFS40_OP	OP_RELEASE_LOCKOWNER
 #define LAST_NFS41_OP	OP_RECLAIM_COMPLETE
 #define LAST_NFS42_OP	OP_REMOVEXATTR
 #define LAST_NFS4_OP	LAST_NFS42_OP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfsstat4 {
 	NFS4_OK = 0,
@@ -461,13 +277,6 @@ enum nfsstat4 {
 	NFS4ERR_REJECT_DELEG	= 10085,	/* on callback */
 	NFS4ERR_RETURNCONFLICT	= 10086,	/* outstanding layoutreturn */
 	NFS4ERR_DELEG_REVOKED	= 10087,	/* deleg./layout revoked */
-<<<<<<< HEAD
-};
-
-static inline bool seqid_mutating_err(u32 err)
-{
-	/* rfc 3530 section 8.1.5: */
-=======
 
 	/* nfs42 */
 	NFS4ERR_PARTNER_NOTSUPP	= 10088,
@@ -490,7 +299,6 @@ static inline bool seqid_mutating_err(u32 err)
 static inline bool seqid_mutating_err(u32 err)
 {
 	/* See RFC 7530, section 9.1.7 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (err) {
 	case NFS4ERR_STALE_CLIENTID:
 	case NFS4ERR_STALE_STATEID:
@@ -499,14 +307,9 @@ static inline bool seqid_mutating_err(u32 err)
 	case NFS4ERR_BADXDR:
 	case NFS4ERR_RESOURCE:
 	case NFS4ERR_NOFILEHANDLE:
-<<<<<<< HEAD
-		return false;
-	};
-=======
 	case NFS4ERR_MOVED:
 		return false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -586,72 +389,6 @@ enum lock_type4 {
 	NFS4_WRITEW_LT = 4
 };
 
-<<<<<<< HEAD
-
-/* Mandatory Attributes */
-#define FATTR4_WORD0_SUPPORTED_ATTRS    (1UL << 0)
-#define FATTR4_WORD0_TYPE               (1UL << 1)
-#define FATTR4_WORD0_FH_EXPIRE_TYPE     (1UL << 2)
-#define FATTR4_WORD0_CHANGE             (1UL << 3)
-#define FATTR4_WORD0_SIZE               (1UL << 4)
-#define FATTR4_WORD0_LINK_SUPPORT       (1UL << 5)
-#define FATTR4_WORD0_SYMLINK_SUPPORT    (1UL << 6)
-#define FATTR4_WORD0_NAMED_ATTR         (1UL << 7)
-#define FATTR4_WORD0_FSID               (1UL << 8)
-#define FATTR4_WORD0_UNIQUE_HANDLES     (1UL << 9)
-#define FATTR4_WORD0_LEASE_TIME         (1UL << 10)
-#define FATTR4_WORD0_RDATTR_ERROR       (1UL << 11)
-/* Mandatory in NFSv4.1 */
-#define FATTR4_WORD2_SUPPATTR_EXCLCREAT (1UL << 11)
-
-/* Recommended Attributes */
-#define FATTR4_WORD0_ACL                (1UL << 12)
-#define FATTR4_WORD0_ACLSUPPORT         (1UL << 13)
-#define FATTR4_WORD0_ARCHIVE            (1UL << 14)
-#define FATTR4_WORD0_CANSETTIME         (1UL << 15)
-#define FATTR4_WORD0_CASE_INSENSITIVE   (1UL << 16)
-#define FATTR4_WORD0_CASE_PRESERVING    (1UL << 17)
-#define FATTR4_WORD0_CHOWN_RESTRICTED   (1UL << 18)
-#define FATTR4_WORD0_FILEHANDLE         (1UL << 19)
-#define FATTR4_WORD0_FILEID             (1UL << 20)
-#define FATTR4_WORD0_FILES_AVAIL        (1UL << 21)
-#define FATTR4_WORD0_FILES_FREE         (1UL << 22)
-#define FATTR4_WORD0_FILES_TOTAL        (1UL << 23)
-#define FATTR4_WORD0_FS_LOCATIONS       (1UL << 24)
-#define FATTR4_WORD0_HIDDEN             (1UL << 25)
-#define FATTR4_WORD0_HOMOGENEOUS        (1UL << 26)
-#define FATTR4_WORD0_MAXFILESIZE        (1UL << 27)
-#define FATTR4_WORD0_MAXLINK            (1UL << 28)
-#define FATTR4_WORD0_MAXNAME            (1UL << 29)
-#define FATTR4_WORD0_MAXREAD            (1UL << 30)
-#define FATTR4_WORD0_MAXWRITE           (1UL << 31)
-#define FATTR4_WORD1_MIMETYPE           (1UL << 0)
-#define FATTR4_WORD1_MODE               (1UL << 1)
-#define FATTR4_WORD1_NO_TRUNC           (1UL << 2)
-#define FATTR4_WORD1_NUMLINKS           (1UL << 3)
-#define FATTR4_WORD1_OWNER              (1UL << 4)
-#define FATTR4_WORD1_OWNER_GROUP        (1UL << 5)
-#define FATTR4_WORD1_QUOTA_HARD         (1UL << 6)
-#define FATTR4_WORD1_QUOTA_SOFT         (1UL << 7)
-#define FATTR4_WORD1_QUOTA_USED         (1UL << 8)
-#define FATTR4_WORD1_RAWDEV             (1UL << 9)
-#define FATTR4_WORD1_SPACE_AVAIL        (1UL << 10)
-#define FATTR4_WORD1_SPACE_FREE         (1UL << 11)
-#define FATTR4_WORD1_SPACE_TOTAL        (1UL << 12)
-#define FATTR4_WORD1_SPACE_USED         (1UL << 13)
-#define FATTR4_WORD1_SYSTEM             (1UL << 14)
-#define FATTR4_WORD1_TIME_ACCESS        (1UL << 15)
-#define FATTR4_WORD1_TIME_ACCESS_SET    (1UL << 16)
-#define FATTR4_WORD1_TIME_BACKUP        (1UL << 17)
-#define FATTR4_WORD1_TIME_CREATE        (1UL << 18)
-#define FATTR4_WORD1_TIME_DELTA         (1UL << 19)
-#define FATTR4_WORD1_TIME_METADATA      (1UL << 20)
-#define FATTR4_WORD1_TIME_MODIFY        (1UL << 21)
-#define FATTR4_WORD1_TIME_MODIFY_SET    (1UL << 22)
-#define FATTR4_WORD1_MOUNTED_ON_FILEID  (1UL << 23)
-#define FATTR4_WORD1_FS_LAYOUT_TYPES    (1UL << 30)
-#define FATTR4_WORD2_LAYOUT_BLKSIZE     (1UL << 1)
-=======
 /*
  * Symbol names and values are from RFC 7531 Section 2.
  * "XDR Description of NFSv4.0"
@@ -855,24 +592,12 @@ enum {
 #define THRESHOLD_WR                    (1UL << 1)
 #define THRESHOLD_RD_IO                 (1UL << 2)
 #define THRESHOLD_WR_IO                 (1UL << 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSPROC4_NULL 0
 #define NFSPROC4_COMPOUND 1
 #define NFS4_VERSION 4
 #define NFS4_MINOR_VERSION 0
 
-<<<<<<< HEAD
-#if defined(CONFIG_NFS_V4_1)
-#define NFS4_MAX_MINOR_VERSION 1
-#else
-#define NFS4_MAX_MINOR_VERSION 0
-#endif /* CONFIG_NFS_V4_1 */
-
-#define NFS4_DEBUG 1
-
-/* Index of predefined Linux client operations */
-=======
 #define NFS4_DEBUG 1
 
 /*
@@ -881,7 +606,6 @@ enum {
  * To ensure that /proc/net/rpc/nfs remains correctly ordered, please
  * append only to this enum when adding new client operations.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	NFSPROC4_CLNT_NULL = 0,		/* Unused */
@@ -921,13 +645,8 @@ enum {
 	NFSPROC4_CLNT_FS_LOCATIONS,
 	NFSPROC4_CLNT_RELEASE_LOCKOWNER,
 	NFSPROC4_CLNT_SECINFO,
-<<<<<<< HEAD
-
-	/* nfs41 */
-=======
 	NFSPROC4_CLNT_FSID_PRESENT,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NFSPROC4_CLNT_EXCHANGE_ID,
 	NFSPROC4_CLNT_CREATE_SESSION,
 	NFSPROC4_CLNT_DESTROY_SESSION,
@@ -942,8 +661,6 @@ enum {
 	NFSPROC4_CLNT_TEST_STATEID,
 	NFSPROC4_CLNT_FREE_STATEID,
 	NFSPROC4_CLNT_GETDEVICELIST,
-<<<<<<< HEAD
-=======
 	NFSPROC4_CLNT_BIND_CONN_TO_SESSION,
 	NFSPROC4_CLNT_DESTROY_CLIENTID,
 
@@ -964,7 +681,6 @@ enum {
 	NFSPROC4_CLNT_LISTXATTRS,
 	NFSPROC4_CLNT_REMOVEXATTR,
 	NFSPROC4_CLNT_READ_PLUS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* nfs41 types */
@@ -989,12 +705,9 @@ enum pnfs_layouttype {
 	LAYOUT_NFSV4_1_FILES  = 1,
 	LAYOUT_OSD2_OBJECTS = 2,
 	LAYOUT_BLOCK_VOLUME = 3,
-<<<<<<< HEAD
-=======
 	LAYOUT_FLEX_FILES = 4,
 	LAYOUT_SCSI = 5,
 	LAYOUT_TYPE_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* used for both layout return and recall */
@@ -1015,8 +728,6 @@ enum pnfs_notify_deviceid_type4 {
 	NOTIFY_DEVICEID4_DELETE = 1 << 2,
 };
 
-<<<<<<< HEAD
-=======
 enum pnfs_block_volume_type {
 	PNFS_BLOCK_VOLUME_SIMPLE	= 0,
 	PNFS_BLOCK_VOLUME_SLICE		= 1,
@@ -1053,7 +764,6 @@ enum scsi_designator_type {
 	PS_DESIGNATOR_NAME	= 8
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFL4_UFLG_MASK			0x0000003F
 #define NFL4_UFLG_DENSE			0x00000001
 #define NFL4_UFLG_COMMIT_THRU_MDS	0x00000002
@@ -1073,16 +783,6 @@ struct nfs4_deviceid {
 	char data[NFS4_DEVICEID4_SIZE];
 };
 
-<<<<<<< HEAD
-#endif
-#endif
-
-/*
- * Local variables:
- *  c-basic-offset: 8
- * End:
- */
-=======
 enum data_content4 {
 	NFS4_CONTENT_DATA		= 0,
 	NFS4_CONTENT_HOLE		= 1,
@@ -1192,4 +892,3 @@ enum nfs_cb_opnum4 {
 };
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

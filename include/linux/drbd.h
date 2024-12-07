@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   drbd.h
   Kernel module for 2.6.x Kernels
@@ -12,30 +9,10 @@
   Copyright (C) 2001-2008, Philipp Reisner <philipp.reisner@linbit.com>.
   Copyright (C) 2001-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
 
-<<<<<<< HEAD
-  drbd is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
-
-  drbd is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with drbd; see the file COPYING.  If not, write to
-  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 */
 #ifndef DRBD_H
 #define DRBD_H
-<<<<<<< HEAD
-#include <linux/connector.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/types.h>
 
 #ifdef __KERNEL__
@@ -61,17 +38,6 @@
 
 #endif
 
-<<<<<<< HEAD
-
-extern const char *drbd_buildtag(void);
-#define REL_VERSION "8.3.11"
-#define API_VERSION 88
-#define PRO_VERSION_MIN 86
-#define PRO_VERSION_MAX 96
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum drbd_io_error_p {
 	EP_PASS_ON, /* FIXME should the better be named "Ignore"? */
 	EP_CALL_HELPER,
@@ -79,12 +45,8 @@ enum drbd_io_error_p {
 };
 
 enum drbd_fencing_p {
-<<<<<<< HEAD
-	FP_DONT_CARE,
-=======
 	FP_NOT_AVAIL = -1, /* Not a policy */
 	FP_DONT_CARE = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FP_RESOURCE,
 	FP_STONITH
 };
@@ -120,8 +82,6 @@ enum drbd_on_congestion {
 	OC_DISCONNECT,
 };
 
-<<<<<<< HEAD
-=======
 enum drbd_read_balancing {
 	RB_PREFER_LOCAL,
 	RB_PREFER_REMOTE,
@@ -136,7 +96,6 @@ enum drbd_read_balancing {
 	RB_1M_STRIPING,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* KEEP the order, do not delete or insert. Only append. */
 enum drbd_ret_code {
 	ERR_CODE_BASE		= 100,
@@ -147,13 +106,8 @@ enum drbd_ret_code {
 	ERR_OPEN_MD_DISK	= 105,
 	ERR_DISK_NOT_BDEV	= 107,
 	ERR_MD_NOT_BDEV		= 108,
-<<<<<<< HEAD
-	ERR_DISK_TO_SMALL	= 111,
-	ERR_MD_DISK_TO_SMALL	= 112,
-=======
 	ERR_DISK_TOO_SMALL	= 111,
 	ERR_MD_DISK_TOO_SMALL	= 112,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ERR_BDCLAIM_DISK	= 114,
 	ERR_BDCLAIM_MD_DISK	= 115,
 	ERR_MD_IDX_INVALID	= 116,
@@ -162,11 +116,7 @@ enum drbd_ret_code {
 	ERR_AUTH_ALG		= 120,
 	ERR_AUTH_ALG_ND		= 121,
 	ERR_NOMEM		= 122,
-<<<<<<< HEAD
-	ERR_DISCARD		= 123,
-=======
 	ERR_DISCARD_IMPOSSIBLE	= 123,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ERR_DISK_CONFIGURED	= 124,
 	ERR_NET_CONFIGURED	= 125,
 	ERR_MANDATORY_TAG	= 126,
@@ -174,13 +124,8 @@ enum drbd_ret_code {
 	ERR_INTR		= 129, /* EINTR */
 	ERR_RESIZE_RESYNC	= 130,
 	ERR_NO_PRIMARY		= 131,
-<<<<<<< HEAD
-	ERR_SYNC_AFTER		= 132,
-	ERR_SYNC_AFTER_CYCLE	= 133,
-=======
 	ERR_RESYNC_AFTER	= 132,
 	ERR_RESYNC_AFTER_CYCLE	= 133,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ERR_PAUSE_IS_SET	= 134,
 	ERR_PAUSE_IS_CLEAR	= 135,
 	ERR_PACKET_NR		= 137,
@@ -204,9 +149,6 @@ enum drbd_ret_code {
 	ERR_CONG_NOT_PROTO_A	= 155,
 	ERR_PIC_AFTER_DEP	= 156,
 	ERR_PIC_PEER_DEP	= 157,
-<<<<<<< HEAD
-
-=======
 	ERR_RES_NOT_KNOWN	= 158,
 	ERR_RES_IN_USE		= 159,
 	ERR_MINOR_CONFIGURED    = 160,
@@ -220,7 +162,6 @@ enum drbd_ret_code {
 	ERR_MD_LAYOUT_TOO_SMALL = 168,
 	ERR_MD_LAYOUT_NO_FIT    = 169,
 	ERR_IMPLICIT_SHRINK     = 170,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* insert new ones above this line */
 	AFTER_LAST_ERR_CODE
 };
@@ -284,11 +225,7 @@ enum drbd_disk_state {
 	D_DISKLESS,
 	D_ATTACHING,      /* In the process of reading the meta-data */
 	D_FAILED,         /* Becomes D_DISKLESS as soon as we told it the peer */
-<<<<<<< HEAD
-			/* when >= D_FAILED it is legal to access mdev->bc */
-=======
 			  /* when >= D_FAILED it is legal to access mdev->ldev */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	D_NEGOTIATING,    /* Late attaching state, we need to talk to the peer */
 	D_INCONSISTENT,
 	D_OUTDATED,
@@ -365,23 +302,11 @@ enum drbd_state_rv {
 	SS_NOT_SUPPORTED = -17,      /* drbd-8.2 only */
 	SS_IN_TRANSIENT_STATE = -18,  /* Retry after the next state change */
 	SS_CONCURRENT_ST_CHG = -19,   /* Concurrent cluster side state change! */
-<<<<<<< HEAD
-	SS_AFTER_LAST_ERROR = -20,    /* Keep this at bottom */
-};
-
-/* from drbd_strings.c */
-extern const char *drbd_conn_str(enum drbd_conns);
-extern const char *drbd_role_str(enum drbd_role);
-extern const char *drbd_disk_str(enum drbd_disk_state);
-extern const char *drbd_set_st_err_str(enum drbd_state_rv);
-
-=======
 	SS_O_VOL_PEER_PRI = -20,
 	SS_OUTDATE_WO_CONN = -21,
 	SS_AFTER_LAST_ERROR = -22,    /* Keep this at bottom */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SHARED_SECRET_MAX 64
 
 #define MDF_CONSISTENT		(1 << 0)
@@ -390,15 +315,11 @@ extern const char *drbd_set_st_err_str(enum drbd_state_rv);
 #define MDF_FULL_SYNC		(1 << 3)
 #define MDF_WAS_UP_TO_DATE	(1 << 4)
 #define MDF_PEER_OUT_DATED	(1 << 5)
-<<<<<<< HEAD
-#define MDF_CRASHED_PRIMARY     (1 << 6)
-=======
 #define MDF_CRASHED_PRIMARY	(1 << 6)
 #define MDF_AL_CLEAN		(1 << 7)
 #define MDF_AL_DISABLED		(1 << 8)
 
 #define MAX_PEERS 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum drbd_uuid_index {
 	UI_CURRENT,
@@ -410,25 +331,14 @@ enum drbd_uuid_index {
 	UI_EXTENDED_SIZE   /* Everything. */
 };
 
-<<<<<<< HEAD
-=======
 #define HISTORY_UUIDS MAX_PEERS
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum drbd_timeout_flag {
 	UT_DEFAULT      = 0,
 	UT_DEGRADED     = 1,
 	UT_PEER_OUTDATED = 2,
 };
 
-<<<<<<< HEAD
-#define UUID_JUST_CREATED ((__u64)4)
-
-#define DRBD_MAGIC 0x83740267
-#define BE_DRBD_MAGIC __constant_cpu_to_be32(DRBD_MAGIC)
-#define DRBD_MAGIC_BIG 0x835a
-#define BE_DRBD_MAGIC_BIG __constant_cpu_to_be16(DRBD_MAGIC_BIG)
-=======
 enum drbd_notification_type {
 	NOTIFY_EXISTS,
 	NOTIFY_CREATE,
@@ -471,38 +381,12 @@ enum write_ordering_e {
 /* how I came up with this magic?
  * base64 decode "actlog==" ;) */
 #define DRBD_AL_MAGIC 0x69cb65a2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* these are of type "int" */
 #define DRBD_MD_INDEX_INTERNAL -1
 #define DRBD_MD_INDEX_FLEX_EXT -2
 #define DRBD_MD_INDEX_FLEX_INT -3
 
-<<<<<<< HEAD
-/* Start of the new netlink/connector stuff */
-
-#define DRBD_NL_CREATE_DEVICE 0x01
-#define DRBD_NL_SET_DEFAULTS  0x02
-
-
-/* For searching a vacant cn_idx value */
-#define CN_IDX_STEP			6977
-
-struct drbd_nl_cfg_req {
-	int packet_type;
-	unsigned int drbd_minor;
-	int flags;
-	unsigned short tag_list[];
-};
-
-struct drbd_nl_cfg_reply {
-	int packet_type;
-	unsigned int minor;
-	int ret_code; /* enum ret_code or set_st_err_t */
-	unsigned short tag_list[]; /* only used with get_* calls */
-};
-=======
 #define DRBD_CPU_MASK_SIZE 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

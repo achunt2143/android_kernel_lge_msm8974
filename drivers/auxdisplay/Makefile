@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel auxiliary displays device drivers.
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_KS0108)		+= ks0108.o
-obj-$(CONFIG_CFAG12864B)	+= cfag12864b.o cfag12864bfb.o
-=======
 obj-$(CONFIG_ARM_CHARLCD)	+= arm-charlcd.o
 obj-$(CONFIG_CFAG12864B)	+= cfag12864b.o cfag12864bfb.o
 obj-$(CONFIG_CHARLCD)		+= charlcd.o
@@ -23,4 +16,3 @@ obj-$(CONFIG_LINEDISP)		+= line-display.o
 obj-$(CONFIG_MAX6959)		+= max6959.o
 obj-$(CONFIG_PARPORT_PANEL)	+= panel.o
 obj-$(CONFIG_SEG_LED_GPIO)	+= seg-led-gpio.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

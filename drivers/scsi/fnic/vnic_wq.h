@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _VNIC_WQ_H_
 #define _VNIC_WQ_H_
@@ -40,11 +21,8 @@
 #define vnic_wq_service fnic_wq_service
 #define vnic_wq_free fnic_wq_free
 #define vnic_wq_alloc fnic_wq_alloc
-<<<<<<< HEAD
-=======
 #define vnic_wq_devcmd2_alloc fnic_wq_devcmd2_alloc
 #define vnic_wq_init_start fnic_wq_init_start
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define vnic_wq_init fnic_wq_init
 #define vnic_wq_error_status fnic_wq_error_status
 #define vnic_wq_enable fnic_wq_enable
@@ -175,15 +153,12 @@ static inline void vnic_wq_service(struct vnic_wq *wq,
 void vnic_wq_free(struct vnic_wq *wq);
 int vnic_wq_alloc(struct vnic_dev *vdev, struct vnic_wq *wq, unsigned int index,
 	unsigned int desc_count, unsigned int desc_size);
-<<<<<<< HEAD
-=======
 int vnic_wq_devcmd2_alloc(struct vnic_dev *vdev, struct vnic_wq *wq,
 		unsigned int desc_count, unsigned int desc_size);
 void vnic_wq_init_start(struct vnic_wq *wq, unsigned int cq_index,
 		unsigned int fetch_index, unsigned int posted_index,
 		unsigned int error_interrupt_enable,
 		unsigned int error_interrupt_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void vnic_wq_init(struct vnic_wq *wq, unsigned int cq_index,
 	unsigned int error_interrupt_enable,
 	unsigned int error_interrupt_offset);

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Time related functions for Hexagon architecture
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -37,16 +17,11 @@
 #include <linux/of_irq.h>
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#include <asm/timer-regs.h>
-#include <asm/hexagon_vm.h>
-=======
 #include <asm/delay.h>
 #include <asm/hexagon_vm.h>
 #include <asm/time.h>
 
 #define TIMER_ENABLE		BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For the clocksource we need:
@@ -61,8 +36,6 @@ cycles_t	pcycle_freq_mhz;
 cycles_t	thread_freq_mhz;
 cycles_t	sleep_clk_freq;
 
-<<<<<<< HEAD
-=======
 /*
  * 8x50 HDD Specs 5-8.  Simulator co-sim not fixed until
  * release 1.1, and then it's "adjustable" and probably not defaulted.
@@ -70,7 +43,6 @@ cycles_t	sleep_clk_freq;
 #define RTOS_TIMER_INT		3
 #define RTOS_TIMER_REGS_ADDR	0xAB000000UL
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource rtos_timer_resources[] = {
 	{
 		.start	= RTOS_TIMER_REGS_ADDR,
@@ -97,15 +69,9 @@ struct adsp_hw_timer_struct {
 /*  Look for "TCX0" for related constants.  */
 static __iomem struct adsp_hw_timer_struct *rtos_timer;
 
-<<<<<<< HEAD
-static cycle_t timer_get_cycles(struct clocksource *cs)
-{
-	return (cycle_t) __vmgettime();
-=======
 static u64 timer_get_cycles(struct clocksource *cs)
 {
 	return (u64) __vmgettime();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct clocksource hexagon_clocksource = {
@@ -124,31 +90,10 @@ static int set_next_event(unsigned long delta, struct clock_event_device *evt)
 	iowrite32(0, &rtos_timer->clear);
 
 	iowrite32(delta, &rtos_timer->match);
-<<<<<<< HEAD
-	iowrite32(1 << TIMER_ENABLE, &rtos_timer->enable);
-	return 0;
-}
-
-/*
- * Sets the mode (periodic, shutdown, oneshot, etc) of a timer.
- */
-static void set_mode(enum clock_event_mode mode,
-	struct clock_event_device *evt)
-{
-	switch (mode) {
-	case CLOCK_EVT_MODE_SHUTDOWN:
-		/* XXX implement me */
-	default:
-		break;
-	}
-}
-
-=======
 	iowrite32(TIMER_ENABLE, &rtos_timer->enable);
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 /*  Broadcast mechanism  */
 static void broadcast(const struct cpumask *mask)
@@ -157,20 +102,13 @@ static void broadcast(const struct cpumask *mask)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 /* XXX Implement set_state_shutdown() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct clock_event_device hexagon_clockevent_dev = {
 	.name		= "clockevent",
 	.features	= CLOCK_EVT_FEAT_ONESHOT,
 	.rating		= 400,
 	.irq		= RTOS_TIMER_INT,
 	.set_next_event = set_next_event,
-<<<<<<< HEAD
-	.set_mode	= set_mode,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	.broadcast	= broadcast,
 #endif
@@ -191,10 +129,6 @@ void setup_percpu_clockdev(void)
 
 	dummy_clock_dev->features = CLOCK_EVT_FEAT_DUMMY;
 	dummy_clock_dev->cpumask = cpumask_of(cpu);
-<<<<<<< HEAD
-	dummy_clock_dev->mode = CLOCK_EVT_MODE_UNUSED;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clockevents_register_device(dummy_clock_dev);
 }
@@ -219,16 +153,6 @@ static irqreturn_t timer_interrupt(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-/*  This should also be pulled from devtree  */
-static struct irqaction rtos_timer_intdesc = {
-	.handler = timer_interrupt,
-	.flags = IRQF_TIMER | IRQF_TRIGGER_RISING,
-	.name = "rtos_timer"
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * time_init_deferred - called by start_kernel to set up timer/clock source
  *
@@ -238,21 +162,11 @@ static struct irqaction rtos_timer_intdesc = {
  * This runs just before the delay loop is calibrated, and
  * is used for delay calibration.
  */
-<<<<<<< HEAD
-void __init time_init_deferred(void)
-{
-	struct resource *resource = NULL;
-	struct clock_event_device *ce_dev = &hexagon_clockevent_dev;
-	struct device_node *dn;
-	struct resource r;
-	int err;
-=======
 static void __init time_init_deferred(void)
 {
 	struct resource *resource = NULL;
 	struct clock_event_device *ce_dev = &hexagon_clockevent_dev;
 	unsigned long flag = IRQF_TIMER | IRQF_TRIGGER_RISING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ce_dev->cpumask = cpu_all_mask;
 
@@ -260,19 +174,10 @@ static void __init time_init_deferred(void)
 		resource = rtos_timer_device.resource;
 
 	/*  ioremap here means this has to run later, after paging init  */
-<<<<<<< HEAD
-	rtos_timer = ioremap(resource->start, resource->end
-		- resource->start + 1);
-
-	if (!rtos_timer) {
-		release_mem_region(resource->start, resource->end
-			- resource->start + 1);
-=======
 	rtos_timer = ioremap(resource->start, resource_size(resource));
 
 	if (!rtos_timer) {
 		release_mem_region(resource->start, resource_size(resource));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	clocksource_register_khz(&hexagon_clocksource, pcycle_freq_mhz * 1000);
 
@@ -285,25 +190,17 @@ static void __init time_init_deferred(void)
 	clockevents_calc_mult_shift(ce_dev, sleep_clk_freq, 4);
 
 	ce_dev->max_delta_ns = clockevent_delta2ns(0x7fffffff, ce_dev);
-<<<<<<< HEAD
-	ce_dev->min_delta_ns = clockevent_delta2ns(0xf, ce_dev);
-=======
 	ce_dev->max_delta_ticks = 0x7fffffff;
 	ce_dev->min_delta_ns = clockevent_delta2ns(0xf, ce_dev);
 	ce_dev->min_delta_ticks = 0xf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 	setup_percpu_clockdev();
 #endif
 
 	clockevents_register_device(ce_dev);
-<<<<<<< HEAD
-	setup_irq(ce_dev->irq, &rtos_timer_intdesc);
-=======
 	if (request_irq(ce_dev->irq, timer_interrupt, flag, "rtos_timer", NULL))
 		pr_err("Failed to register rtos_timer interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init time_init(void)
@@ -311,8 +208,6 @@ void __init time_init(void)
 	late_time_init = time_init_deferred;
 }
 
-<<<<<<< HEAD
-=======
 void __delay(unsigned long cycles)
 {
 	unsigned long long start = __vmgettime();
@@ -322,7 +217,6 @@ void __delay(unsigned long cycles)
 }
 EXPORT_SYMBOL(__delay);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This could become parametric or perhaps even computed at run-time,
  * but for now we take the observed simulator jitter.

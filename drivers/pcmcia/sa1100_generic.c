@@ -31,13 +31,9 @@
 ======================================================================*/
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/init.h>
 #include <linux/regulator/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 
@@ -47,29 +43,6 @@
 
 #include "sa1100_generic.h"
 
-<<<<<<< HEAD
-int __init pcmcia_collie_init(struct device *dev);
-
-static int (*sa11x0_pcmcia_hw_init[])(struct device *dev) __devinitdata = {
-#ifdef CONFIG_SA1100_ASSABET
-	pcmcia_assabet_init,
-#endif
-#ifdef CONFIG_SA1100_CERF
-	pcmcia_cerf_init,
-#endif
-#if defined(CONFIG_SA1100_H3100) || defined(CONFIG_SA1100_H3600)
-	pcmcia_h3600_init,
-#endif
-#ifdef CONFIG_SA1100_NANOENGINE
-	pcmcia_nanoengine_init,
-#endif
-#ifdef CONFIG_SA1100_SHANNON
-	pcmcia_shannon_init,
-#endif
-#ifdef CONFIG_SA1100_SIMPAD
-	pcmcia_simpad_init,
-#endif
-=======
 static const char *sa11x0_cf_gpio_names[] = {
 	[SOC_STAT_CD] = "detect",
 	[SOC_STAT_BVD1] = "bvd1",
@@ -128,30 +101,20 @@ static int (*sa11x0_pcmcia_legacy_hw_init[])(struct device *dev) = {
 #ifdef CONFIG_SA1100_H3600
 	pcmcia_h3600_init,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SA1100_COLLIE
        pcmcia_collie_init,
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit sa11x0_drv_pcmcia_probe(struct platform_device *dev)
-=======
 static int sa11x0_drv_pcmcia_legacy_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret = -ENODEV;
 
 	/*
 	 * Initialise any "on-board" PCMCIA sockets.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(sa11x0_pcmcia_hw_init); i++) {
-		ret = sa11x0_pcmcia_hw_init[i](&dev->dev);
-=======
 	for (i = 0; i < ARRAY_SIZE(sa11x0_pcmcia_legacy_hw_init); i++) {
 		ret = sa11x0_pcmcia_legacy_hw_init[i](&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret == 0)
 			break;
 	}
@@ -159,11 +122,7 @@ static int sa11x0_drv_pcmcia_legacy_probe(struct platform_device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int sa11x0_drv_pcmcia_remove(struct platform_device *dev)
-=======
 static void sa11x0_drv_pcmcia_legacy_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct skt_dev_info *sinfo = platform_get_drvdata(dev);
 	int i;
@@ -172,11 +131,6 @@ static void sa11x0_drv_pcmcia_legacy_remove(struct platform_device *dev)
 
 	for (i = 0; i < sinfo->nskt; i++)
 		soc_pcmcia_remove_one(&sinfo->skt[i]);
-<<<<<<< HEAD
-
-	kfree(sinfo);
-	return 0;
-=======
 }
 
 static int sa11x0_drv_pcmcia_probe(struct platform_device *pdev)
@@ -216,22 +170,14 @@ static void sa11x0_drv_pcmcia_remove(struct platform_device *dev)
 	skt = platform_get_drvdata(dev);
 
 	soc_pcmcia_remove_one(skt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sa11x0_pcmcia_driver = {
 	.driver = {
 		.name		= "sa11x0-pcmcia",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-	},
-	.probe		= sa11x0_drv_pcmcia_probe,
-	.remove		= sa11x0_drv_pcmcia_remove,
-=======
 	},
 	.probe		= sa11x0_drv_pcmcia_probe,
 	.remove_new	= sa11x0_drv_pcmcia_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* sa11x0_pcmcia_init()

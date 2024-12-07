@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble ICE1712 (Envy24)
  *
@@ -9,29 +6,8 @@
  *
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
  *                    2002 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
  */      
 
-#include <asm/io.h>
-=======
- */      
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -173,12 +149,8 @@ static int snd_ice1712_ews88mt_chip_select(struct snd_ice1712 *ice, int chip_mas
 
      __error:
 	snd_i2c_unlock(ice->i2c);
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AK4524 chip select failed, check cable to the front module\n");
-=======
 	dev_err(ice->card->dev,
 		"AK4524 chip select failed, check cable to the front module\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -189,11 +161,7 @@ static void ews88mt_ak4524_lock(struct snd_akm4xxx *ak, int chip)
 	unsigned char tmp;
 	/* assert AK4524 CS */
 	if (snd_ice1712_ews88mt_chip_select(ice, ~(1 << chip) & 0x0f) < 0)
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "fatal error (ews88mt chip select)\n");
-=======
 		dev_err(ice->card->dev, "fatal error (ews88mt chip select)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ice1712_save_gpio_status(ice);
 	tmp = ICE1712_EWS88_SERIAL_DATA |
 		ICE1712_EWS88_SERIAL_CLOCK |
@@ -362,11 +330,7 @@ static void ews88_setup_spdif(struct snd_ice1712 *ice, int rate)
 
 /*
  */
-<<<<<<< HEAD
-static struct snd_akm4xxx akm_ews88mt __devinitdata = {
-=======
 static const struct snd_akm4xxx akm_ews88mt = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_adcs = 8,
 	.num_dacs = 8,
 	.type = SND_AK4524,
@@ -376,11 +340,7 @@ static const struct snd_akm4xxx akm_ews88mt = {
 	}
 };
 
-<<<<<<< HEAD
-static struct snd_ak4xxx_private akm_ews88mt_priv __devinitdata = {
-=======
 static const struct snd_ak4xxx_private akm_ews88mt_priv = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 1, /* CIF high */
 	.data_mask = ICE1712_EWS88_SERIAL_DATA,
@@ -392,11 +352,7 @@ static const struct snd_ak4xxx_private akm_ews88mt_priv = {
 	.mask_flags = 0,
 };
 
-<<<<<<< HEAD
-static struct snd_akm4xxx akm_ewx2496 __devinitdata = {
-=======
 static const struct snd_akm4xxx akm_ewx2496 = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_adcs = 2,
 	.num_dacs = 2,
 	.type = SND_AK4524,
@@ -405,11 +361,7 @@ static const struct snd_akm4xxx akm_ewx2496 = {
 	}
 };
 
-<<<<<<< HEAD
-static struct snd_ak4xxx_private akm_ewx2496_priv __devinitdata = {
-=======
 static const struct snd_ak4xxx_private akm_ewx2496_priv = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 1, /* CIF high */
 	.data_mask = ICE1712_EWS88_SERIAL_DATA,
@@ -421,11 +373,7 @@ static const struct snd_ak4xxx_private akm_ewx2496_priv = {
 	.mask_flags = 0,
 };
 
-<<<<<<< HEAD
-static struct snd_akm4xxx akm_6fire __devinitdata = {
-=======
 static const struct snd_akm4xxx akm_6fire = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_adcs = 6,
 	.num_dacs = 6,
 	.type = SND_AK4524,
@@ -434,11 +382,7 @@ static const struct snd_akm4xxx akm_6fire = {
 	}
 };
 
-<<<<<<< HEAD
-static struct snd_ak4xxx_private akm_6fire_priv __devinitdata = {
-=======
 static const struct snd_ak4xxx_private akm_6fire_priv = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 1, /* CIF high */
 	.data_mask = ICE1712_6FIRE_SERIAL_DATA,
@@ -462,11 +406,7 @@ static const struct snd_ak4xxx_private akm_6fire_priv = {
 
 static int snd_ice1712_6fire_write_pca(struct snd_ice1712 *ice, unsigned char reg, unsigned char data);
 
-<<<<<<< HEAD
-static int __devinit snd_ice1712_ews_init(struct snd_ice1712 *ice)
-=======
 static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_akm4xxx *ak;
@@ -502,14 +442,9 @@ static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
 	ice->spec = spec;
 
 	/* create i2c */
-<<<<<<< HEAD
-	if ((err = snd_i2c_bus_create(ice->card, "ICE1712 GPIO 1", NULL, &ice->i2c)) < 0) {
-		snd_printk(KERN_ERR "unable to create I2C bus\n");
-=======
 	err = snd_i2c_bus_create(ice->card, "ICE1712 GPIO 1", NULL, &ice->i2c);
 	if (err < 0) {
 		dev_err(ice->card->dev, "unable to create I2C bus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	ice->i2c->private_data = ice;
@@ -522,12 +457,8 @@ static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
 					    ICE1712_6FIRE_PCF9554_ADDR,
 					    &spec->i2cdevs[EWS_I2C_6FIRE]);
 		if (err < 0) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "PCF9554 initialization failed\n");
-=======
 			dev_err(ice->card->dev,
 				"PCF9554 initialization failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		snd_ice1712_6fire_write_pca(ice, PCF9554_REG_CONFIG, 0x80);
@@ -553,12 +484,8 @@ static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
 		if (err < 0)
 			return err;
 		/* Check if the front module is connected */
-<<<<<<< HEAD
-		if ((err = snd_ice1712_ews88mt_chip_select(ice, 0x0f)) < 0)
-=======
 		err = snd_ice1712_ews88mt_chip_select(ice, 0x0f);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		break;
 	case ICE1712_SUBDEVICE_EWS88D:
@@ -573,22 +500,14 @@ static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
 	/* set up SPDIF interface */
 	switch (ice->eeprom.subvendor) {
 	case ICE1712_SUBDEVICE_EWX2496:
-<<<<<<< HEAD
-		if ((err = snd_ice1712_init_cs8427(ice, CS8427_BASE_ADDR)) < 0)
-=======
 		err = snd_ice1712_init_cs8427(ice, CS8427_BASE_ADDR);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		snd_cs8427_reg_write(ice->cs8427, CS8427_REG_RECVERRMASK, CS8427_UNLOCK | CS8427_CONF | CS8427_BIP | CS8427_PAR);
 		break;
 	case ICE1712_SUBDEVICE_DMX6FIRE:
-<<<<<<< HEAD
-		if ((err = snd_ice1712_init_cs8427(ice, ICE1712_6FIRE_CS8427_ADDR)) < 0)
-=======
 		err = snd_ice1712_init_cs8427(ice, ICE1712_6FIRE_CS8427_ADDR);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		snd_cs8427_reg_write(ice->cs8427, CS8427_REG_RECVERRMASK, CS8427_UNLOCK | CS8427_CONF | CS8427_BIP | CS8427_PAR);
 		break;
@@ -648,23 +567,10 @@ static int snd_ice1712_ews_init(struct snd_ice1712 *ice)
 /* i/o sensitivity - this callback is shared among other devices, too */
 static int snd_ice1712_ewx_io_sense_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo){
 
-<<<<<<< HEAD
-	static char *texts[2] = {
-		"+4dBu", "-10dBV",
-	};
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item >= 2)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[2] = {
 		"+4dBu", "-10dBV",
 	};
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ice1712_ewx_io_sense_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -695,11 +601,7 @@ static int snd_ice1712_ewx_io_sense_put(struct snd_kcontrol *kcontrol, struct sn
 	return val != nval;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ice1712_ewx2496_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ice1712_ewx2496_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Input Sensitivity Switch",
@@ -807,11 +709,7 @@ static int snd_ice1712_ews88mt_input_sense_put(struct snd_kcontrol *kcontrol, st
 	return ndata != data;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ice1712_ews88mt_input_sense __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ice1712_ews88mt_input_sense = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Input Sensitivity Switch",
 	.info = snd_ice1712_ewx_io_sense_info,
@@ -820,11 +718,7 @@ static const struct snd_kcontrol_new snd_ice1712_ews88mt_input_sense = {
 	.count = 8,
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ice1712_ews88mt_output_sense __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ice1712_ews88mt_output_sense = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Output Sensitivity Switch",
 	.info = snd_ice1712_ewx_io_sense_info,
@@ -902,11 +796,7 @@ static int snd_ice1712_ews88d_control_put(struct snd_kcontrol *kcontrol, struct 
   .private_value = xshift | (xinvert << 8),\
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ice1712_ews88d_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ice1712_ews88d_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EWS88D_CONTROL(SNDRV_CTL_ELEM_IFACE_MIXER, "IEC958 Input Optical", 0, 1, 0), /* inverted */
 	EWS88D_CONTROL(SNDRV_CTL_ELEM_IFACE_MIXER, "ADAT Output Optical", 1, 0, 0),
 	EWS88D_CONTROL(SNDRV_CTL_ELEM_IFACE_MIXER, "ADAT External Master Clock", 2, 0, 0),
@@ -926,13 +816,6 @@ static int snd_ice1712_6fire_read_pca(struct snd_ice1712 *ice, unsigned char reg
 
 	snd_i2c_lock(ice->i2c);
 	byte = reg;
-<<<<<<< HEAD
-	snd_i2c_sendbytes(spec->i2cdevs[EWS_I2C_6FIRE], &byte, 1);
-	byte = 0;
-	if (snd_i2c_readbytes(spec->i2cdevs[EWS_I2C_6FIRE], &byte, 1) != 1) {
-		snd_i2c_unlock(ice->i2c);
-		printk(KERN_ERR "cannot read pca\n");
-=======
 	if (snd_i2c_sendbytes(spec->i2cdevs[EWS_I2C_6FIRE], &byte, 1) != 1) {
 		snd_i2c_unlock(ice->i2c);
 		dev_err(ice->card->dev, "cannot send pca\n");
@@ -943,7 +826,6 @@ static int snd_ice1712_6fire_read_pca(struct snd_ice1712 *ice, unsigned char reg
 	if (snd_i2c_readbytes(spec->i2cdevs[EWS_I2C_6FIRE], &byte, 1) != 1) {
 		snd_i2c_unlock(ice->i2c);
 		dev_err(ice->card->dev, "cannot read pca\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	snd_i2c_unlock(ice->i2c);
@@ -975,12 +857,8 @@ static int snd_ice1712_6fire_control_get(struct snd_kcontrol *kcontrol, struct s
 	int invert = (kcontrol->private_value >> 8) & 1;
 	int data;
 	
-<<<<<<< HEAD
-	if ((data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT)) < 0)
-=======
 	data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT);
 	if (data < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return data;
 	data = (data >> shift) & 1;
 	if (invert)
@@ -996,12 +874,8 @@ static int snd_ice1712_6fire_control_put(struct snd_kcontrol *kcontrol, struct s
 	int invert = (kcontrol->private_value >> 8) & 1;
 	int data, ndata;
 	
-<<<<<<< HEAD
-	if ((data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT)) < 0)
-=======
 	data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT);
 	if (data < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return data;
 	ndata = data & ~(1 << shift);
 	if (ucontrol->value.integer.value[0])
@@ -1017,23 +891,10 @@ static int snd_ice1712_6fire_control_put(struct snd_kcontrol *kcontrol, struct s
 
 static int snd_ice1712_6fire_select_input_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[4] = {
-		"Internal", "Front Input", "Rear Input", "Wave Table"
-	};
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 4;
-	if (uinfo->value.enumerated.item >= 4)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[4] = {
 		"Internal", "Front Input", "Rear Input", "Wave Table"
 	};
 	return snd_ctl_enum_info(uinfo, 1, 4, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
      
 static int snd_ice1712_6fire_select_input_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1041,12 +902,8 @@ static int snd_ice1712_6fire_select_input_get(struct snd_kcontrol *kcontrol, str
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
 	int data;
 	
-<<<<<<< HEAD
-	if ((data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT)) < 0)
-=======
 	data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT);
 	if (data < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return data;
 	ucontrol->value.integer.value[0] = data & 3;
 	return 0;
@@ -1057,12 +914,8 @@ static int snd_ice1712_6fire_select_input_put(struct snd_kcontrol *kcontrol, str
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
 	int data, ndata;
 	
-<<<<<<< HEAD
-	if ((data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT)) < 0)
-=======
 	data = snd_ice1712_6fire_read_pca(ice, PCF9554_REG_OUTPUT);
 	if (data < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return data;
 	ndata = data & ~3;
 	ndata |= (ucontrol->value.integer.value[0] & 3);
@@ -1083,11 +936,7 @@ static int snd_ice1712_6fire_select_input_put(struct snd_kcontrol *kcontrol, str
   .private_value = xshift | (xinvert << 8),\
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ice1712_6fire_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ice1712_6fire_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Analog Input Select",
@@ -1103,11 +952,7 @@ static const struct snd_kcontrol_new snd_ice1712_6fire_controls[] = {
 };
 
 
-<<<<<<< HEAD
-static int __devinit snd_ice1712_ews_add_controls(struct snd_ice1712 *ice)
-=======
 static int snd_ice1712_ews_add_controls(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int idx;
 	int err;
@@ -1173,11 +1018,7 @@ static int snd_ice1712_ews_add_controls(struct snd_ice1712 *ice)
 
 
 /* entry point */
-<<<<<<< HEAD
-struct snd_ice1712_card_info snd_ice1712_ews_cards[] __devinitdata = {
-=======
 struct snd_ice1712_card_info snd_ice1712_ews_cards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = ICE1712_SUBDEVICE_EWX2496,
 		.name = "TerraTec EWX24/96",

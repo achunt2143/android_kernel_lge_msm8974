@@ -1,24 +1,12 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # USB Imaging devices configuration
 #
 comment "USB Imaging devices"
-<<<<<<< HEAD
-	depends on USB
-
-config USB_MDC800
-	tristate "USB Mustek MDC800 Digital Camera support"
-	depends on USB
-	---help---
-=======
 
 config USB_MDC800
 	tristate "USB Mustek MDC800 Digital Camera support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you want to connect this type of still camera to
 	  your computer's USB port. This driver can be used with gphoto 0.4.3
 	  and higher (look at <http://www.gphoto.org/>).
@@ -30,11 +18,7 @@ config USB_MDC800
 
 config USB_MICROTEK
 	tristate "Microtek X6USB scanner support"
-<<<<<<< HEAD
-	depends on USB && SCSI
-=======
 	depends on SCSI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want support for the Microtek X6USB and
 	  possibly the Phantom 336CX, Phantom C6 and ScanMaker V6U(S)L.

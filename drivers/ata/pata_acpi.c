@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	ACPI PATA driver
  *
@@ -11,26 +8,14 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-#include <scsi/scsi_host.h>
-#include <acpi/acpi_bus.h>
-
-#include <linux/libata.h>
-#include <linux/ata.h>
-=======
 #include <linux/acpi.h>
 #include <linux/libata.h>
 #include <linux/ata.h>
 #include <scsi/scsi_host.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"pata_acpi"
 #define DRV_VERSION	"0.2.3"
@@ -43,11 +28,7 @@ struct pata_acpi {
 
 /**
  *	pacpi_pre_reset	-	check for 40/80 pin
-<<<<<<< HEAD
- *	@ap: Port
-=======
  *	@link: ATA link
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@deadline: deadline jiffies for the operation
  *
  *	Perform the PATA port setup we need.
@@ -57,11 +38,7 @@ static int pacpi_pre_reset(struct ata_link *link, unsigned long deadline)
 {
 	struct ata_port *ap = link->ap;
 	struct pata_acpi *acpi = ap->private_data;
-<<<<<<< HEAD
-	if (ap->acpi_handle == NULL || ata_acpi_gtm(ap, &acpi->gtm) < 0)
-=======
 	if (ACPI_HANDLE(&ap->tdev) == NULL || ata_acpi_gtm(ap, &acpi->gtm) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return ata_sff_prereset(link, deadline);
@@ -86,13 +63,8 @@ static int pacpi_cable_detect(struct ata_port *ap)
 
 /**
  *	pacpi_discover_modes	-	filter non ACPI modes
-<<<<<<< HEAD
- *	@adev: ATA device
- *	@mask: proposed modes
-=======
  *	@ap: ATA port
  *	@adev: ATA device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Try the modes available and see which ones the ACPI method will
  *	set up sensibly. From this we get a mask of ACPI modes we can use
@@ -125,11 +97,7 @@ static unsigned long pacpi_discover_modes(struct ata_port *ap, struct ata_device
  *	this case the list of discovered valid modes obtained by ACPI probing
  */
 
-<<<<<<< HEAD
-static unsigned long pacpi_mode_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int pacpi_mode_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_acpi *acpi = adev->link->ap->private_data;
 	return mask & acpi->mask[adev->devno];
@@ -226,11 +194,7 @@ static int pacpi_port_start(struct ata_port *ap)
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	struct pata_acpi *acpi;
 
-<<<<<<< HEAD
-	if (ap->acpi_handle == NULL)
-=======
 	if (ACPI_HANDLE(&ap->tdev) == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	acpi = ap->private_data = devm_kzalloc(&pdev->dev, sizeof(struct pata_acpi), GFP_KERNEL);
@@ -241,11 +205,7 @@ static int pacpi_port_start(struct ata_port *ap)
 	return ata_bmdma_port_start(ap);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template pacpi_sht = {
-=======
 static const struct scsi_host_template pacpi_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -264,11 +224,7 @@ static struct ata_port_operations pacpi_ops = {
 /**
  *	pacpi_init_one - Register ACPI ATA PCI device with kernel services
  *	@pdev: PCI device to register
-<<<<<<< HEAD
- *	@ent: Entry in pacpi_pci_tbl matching with @pdev
-=======
  *	@id: PCI device ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called from kernel PCI layer.
  *
@@ -310,39 +266,16 @@ static struct pci_driver pacpi_pci_driver = {
 	.id_table		= pacpi_pci_tbl,
 	.probe			= pacpi_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init pacpi_init(void)
-{
-	return pci_register_driver(&pacpi_pci_driver);
-}
-
-static void __exit pacpi_exit(void)
-{
-	pci_unregister_driver(&pacpi_pci_driver);
-}
-
-module_init(pacpi_init);
-module_exit(pacpi_exit);
-=======
 module_pci_driver(pacpi_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for ATA in ACPI mode");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, pacpi_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

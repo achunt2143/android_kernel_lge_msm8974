@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __START_H__
@@ -26,24 +20,6 @@
  * 'UL' and other type specifiers unilaterally.  We
  * use the following macros to deal with this.
  */
-<<<<<<< HEAD
-
-#ifdef __ASSEMBLY__
-#define _UML_AC(X, Y)	(Y)
-#else
-#define __UML_AC(X, Y)	(X(Y))
-#define _UML_AC(X, Y)	__UML_AC(X, Y)
-#endif
-
-#define STUB_START _UML_AC(, 0x100000)
-#define STUB_CODE _UML_AC((unsigned long), STUB_START)
-#define STUB_DATA _UML_AC((unsigned long), STUB_CODE + UM_KERN_PAGE_SIZE)
-#define STUB_END _UML_AC((unsigned long), STUB_DATA + UM_KERN_PAGE_SIZE)
-
-#ifndef __ASSEMBLY__
-
-#include "sysdep/ptrace.h"
-=======
 #define STUB_START stub_start
 #define STUB_CODE STUB_START
 #define STUB_DATA (STUB_CODE + UM_KERN_PAGE_SIZE)
@@ -53,7 +29,6 @@
 #ifndef __ASSEMBLY__
 
 #include <sysdep/ptrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpu_task {
 	int pid;
@@ -62,10 +37,6 @@ struct cpu_task {
 
 extern struct cpu_task cpu_tasks[];
 
-<<<<<<< HEAD
-extern unsigned long low_physmem;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long high_physmem;
 extern unsigned long uml_physmem;
 extern unsigned long uml_reserved;
@@ -73,17 +44,6 @@ extern unsigned long end_vm;
 extern unsigned long start_vm;
 extern unsigned long long highmem;
 
-<<<<<<< HEAD
-extern unsigned long _stext, _etext, _sdata, _edata, __bss_start, _end;
-extern unsigned long _unprotected_end;
-extern unsigned long brk_start;
-
-extern unsigned long host_task_size;
-
-extern int linux_main(int argc, char **argv);
-
-extern void (*sig_info[])(int, struct uml_pt_regs *);
-=======
 extern unsigned long brk_start;
 
 extern unsigned long host_task_size;
@@ -94,7 +54,6 @@ extern void uml_finishsetup(void);
 
 struct siginfo;
 extern void (*sig_info[])(int, struct siginfo *si, struct uml_pt_regs *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

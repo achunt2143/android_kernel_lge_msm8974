@@ -184,11 +184,8 @@ struct aal1 {
 	unsigned char		sequence;
 };
 
-<<<<<<< HEAD
-=======
 struct vc_map;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rate_estimator {
 	struct timer_list	timer;
 	unsigned int		interval;
@@ -198,10 +195,7 @@ struct rate_estimator {
 	long			avcps;
 	u32			cps;
 	u32			maxcps;
-<<<<<<< HEAD
-=======
 	struct vc_map		*vc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vc_map {
@@ -795,11 +789,7 @@ struct idt77252_skb_prv {
 	struct scqe	tbd;	/* Transmit Buffer Descriptor */
 	dma_addr_t	paddr;	/* DMA handle */
 	u32		pool;	/* sb_pool handle */
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IDT77252_PRV_TBD(skb)	\
 	(((struct idt77252_skb_prv *)(ATM_SKB(skb)+1))->tbd)

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * If TRACE_SYSTEM is defined, that will be the directory created
- * in the ftrace directory under /sys/kernel/debug/tracing/events/<system>
- *
- * The define_trace.h below will also look for a file name of
- * TRACE_SYSTEM.h where TRACE_SYSTEM is what is defined here.
- * In this case, it would look for sample.h
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * If TRACE_SYSTEM is defined, that will be the directory created
@@ -15,18 +6,13 @@
  * The define_trace.h below will also look for a file name of
  * TRACE_SYSTEM.h where TRACE_SYSTEM is what is defined here.
  * In this case, it would look for sample-trace.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the header name will be different than the system name
  * (as in this case), then you can override the header name that
  * define_trace.h will look up by defining TRACE_INCLUDE_FILE
  *
  * This file is called trace-events-sample.h but we want the system
-<<<<<<< HEAD
- * to be called "sample". Therefore we must define the name of this
-=======
  * to be called "sample-trace". Therefore we must define the name of this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * file:
  *
  * #define TRACE_INCLUDE_FILE trace-events-sample
@@ -37,9 +23,6 @@
  * protection, just like TRACE_INCLUDE_FILE.
  */
 #undef TRACE_SYSTEM
-<<<<<<< HEAD
-#define TRACE_SYSTEM sample
-=======
 #define TRACE_SYSTEM sample-trace
 
 /*
@@ -59,7 +42,6 @@
  * The TRACE_SYSTEM_VAR is only used internally and not visible to
  * user space.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Notice that this file is not protected like a normal header.
@@ -91,19 +73,6 @@
  *    Here it is simply "foo, bar".
  *
  * struct:  This defines the way the data will be stored in the ring buffer.
-<<<<<<< HEAD
- *    There are currently two types of elements. __field and __array.
- *    a __field is broken up into (type, name). Where type can be any
- *    type but an array.
- *    For an array. there are three fields. (type, name, size). The
- *    type of elements in the array, the name of the field and the size
- *    of the array.
- *
- *    __array( char, foo, 10) is the same as saying   char foo[10].
- *
- * fast_assign: This is a C like function that is used to store the items
- *    into the ring buffer.
-=======
  *          The items declared here become part of a special structure
  *          called "__entry", which can be used in the fast_assign part of the
  *          TRACE_EVENT macro.
@@ -247,13 +216,10 @@
  *    into the ring buffer. A special variable called "__entry" will be the
  *    structure that points into the ring buffer and has the same fields as
  *    described by the struct part of TRACE_EVENT above.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * printk: This is a way to print out the data in pretty print. This is
  *    useful if the system crashes and you are logging via a serial line,
  *    the data can be printed to the console using this "printk" method.
-<<<<<<< HEAD
-=======
  *    This is also used to print out the data from the trace files.
  *    Again, the __entry macro is used to access the data from the ring buffer.
  *
@@ -273,19 +239,11 @@
  *
  *      For __cpumask(target_cpus) use __get_cpumask(target_cpus)
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note, that for both the assign and the printk, __entry is the handler
  * to the data structure in the ring buffer, and is defined by the
  * TP_STRUCT__entry.
  */
-<<<<<<< HEAD
-TRACE_EVENT(foo_bar,
-
-	TP_PROTO(char *foo, int bar),
-
-	TP_ARGS(foo, bar),
-=======
 
 /*
  * It is OK to have helper functions in the file, but they need to be protected
@@ -336,21 +294,10 @@ TRACE_EVENT(foo_bar,
 		 const char *fmt, va_list *va),
 
 	TP_ARGS(foo, bar, lst, string, mask, fmt, va),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array(	char,	foo,    10		)
 		__field(	int,	bar			)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		strncpy(__entry->foo, foo, 10);
-		__entry->bar	= bar;
-	),
-
-	TP_printk("foo %s %d", __entry->foo, __entry->bar)
-=======
 		__dynamic_array(int,	list,   __length_of(lst))
 		__string(	str,	string			)
 		__bitmask(	cpus,	num_possible_cpus()	)
@@ -637,7 +584,6 @@ TRACE_EVENT(foo_rel_loc,
 	TP_printk("foo_rel_loc %s, %d, %s, %s", __get_rel_str(foo), __entry->bar,
 		  __get_rel_bitmask(bitmask),
 		  __get_rel_cpumask(cpumask))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 #endif
 

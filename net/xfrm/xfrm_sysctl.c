@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sysctl.h>
 #include <linux/slab.h>
 #include <net/net_namespace.h>
@@ -21,21 +18,13 @@ static struct ctl_table xfrm_table[] = {
 		.procname	= "xfrm_aevent_etime",
 		.maxlen		= sizeof(u32),
 		.mode		= 0644,
-<<<<<<< HEAD
-		.proc_handler	= proc_dointvec
-=======
 		.proc_handler	= proc_douintvec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "xfrm_aevent_rseqth",
 		.maxlen		= sizeof(u32),
 		.mode		= 0644,
-<<<<<<< HEAD
-		.proc_handler	= proc_dointvec
-=======
 		.proc_handler	= proc_douintvec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "xfrm_larval_drop",
@@ -55,10 +44,7 @@ static struct ctl_table xfrm_table[] = {
 int __net_init xfrm_sysctl_init(struct net *net)
 {
 	struct ctl_table *table;
-<<<<<<< HEAD
-=======
 	size_t table_size = ARRAY_SIZE(xfrm_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__xfrm_sysctl_init(net);
 
@@ -70,9 +56,6 @@ int __net_init xfrm_sysctl_init(struct net *net)
 	table[2].data = &net->xfrm.sysctl_larval_drop;
 	table[3].data = &net->xfrm.sysctl_acq_expires;
 
-<<<<<<< HEAD
-	net->xfrm.sysctl_hdr = register_net_sysctl_table(net, net_core_path, table);
-=======
 	/* Don't export sysctls to unprivileged users */
 	if (net->user_ns != &init_user_ns) {
 		table[0].procname = NULL;
@@ -81,7 +64,6 @@ int __net_init xfrm_sysctl_init(struct net *net)
 
 	net->xfrm.sysctl_hdr = register_net_sysctl_sz(net, "net/core", table,
 						      table_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!net->xfrm.sysctl_hdr)
 		goto out_register;
 	return 0;

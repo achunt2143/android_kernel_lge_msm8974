@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PPS API kernel header
  *
  * Copyright (C) 2009   Rodolfo Giometti <giometti@linux.it>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LINUX_PPS_KERNEL_H
 #define LINUX_PPS_KERNEL_H
 
 #include <linux/pps.h>
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/time.h>
@@ -45,15 +21,9 @@ struct pps_device;
 
 /* The specific PPS source info */
 struct pps_source_info {
-<<<<<<< HEAD
-	char name[PPS_MAX_NAME_LEN];		/* simbolic name */
-	char path[PPS_MAX_NAME_LEN];		/* path of connected device */
-	int mode;				/* PPS's allowed mode */
-=======
 	char name[PPS_MAX_NAME_LEN];		/* symbolic name */
 	char path[PPS_MAX_NAME_LEN];		/* path of connected device */
 	int mode;				/* PPS allowed mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*echo)(struct pps_device *pps,
 			int event, void *data);	/* PPS echo function */
@@ -64,32 +34,19 @@ struct pps_source_info {
 
 struct pps_event_time {
 #ifdef CONFIG_NTP_PPS
-<<<<<<< HEAD
-	struct timespec ts_raw;
-#endif /* CONFIG_NTP_PPS */
-	struct timespec ts_real;
-=======
 	struct timespec64 ts_raw;
 #endif /* CONFIG_NTP_PPS */
 	struct timespec64 ts_real;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* The main struct */
 struct pps_device {
 	struct pps_source_info info;		/* PSS source info */
 
-<<<<<<< HEAD
-	struct pps_kparams params;		/* PPS's current params */
-
-	__u32 assert_sequence;			/* PPS' assert event seq # */
-	__u32 clear_sequence;			/* PPS' clear event seq # */
-=======
 	struct pps_kparams params;		/* PPS current params */
 
 	__u32 assert_sequence;			/* PPS assert event seq # */
 	__u32 clear_sequence;			/* PPS clear event seq # */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pps_ktime assert_tu;
 	struct pps_ktime clear_tu;
 	int current_mode;			/* PPS mode at event time */
@@ -98,11 +55,7 @@ struct pps_device {
 	wait_queue_head_t queue;		/* PPS event queue */
 
 	unsigned int id;			/* PPS source unique ID */
-<<<<<<< HEAD
-	void const *lookup_cookie;		/* pps_lookup_dev only */
-=======
 	void const *lookup_cookie;		/* For pps_lookup_dev() only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cdev cdev;
 	struct device *dev;
 	struct fasync_struct *async_queue;	/* fasync method */
@@ -113,11 +66,7 @@ struct pps_device {
  * Global variables
  */
 
-<<<<<<< HEAD
-extern struct device_attribute pps_attrs[];
-=======
 extern const struct attribute_group *pps_groups[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Internal functions.
@@ -138,44 +87,16 @@ extern struct pps_device *pps_register_source(
 extern void pps_unregister_source(struct pps_device *pps);
 extern void pps_event(struct pps_device *pps,
 		struct pps_event_time *ts, int event, void *data);
-<<<<<<< HEAD
-/* Look up a pps device by magic cookie */
-struct pps_device *pps_lookup_dev(void const *cookie);
-
-static inline void timespec_to_pps_ktime(struct pps_ktime *kt,
-		struct timespec ts)
-=======
 /* Look up a pps_device by magic cookie */
 struct pps_device *pps_lookup_dev(void const *cookie);
 
 static inline void timespec_to_pps_ktime(struct pps_ktime *kt,
 		struct timespec64 ts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kt->sec = ts.tv_sec;
 	kt->nsec = ts.tv_nsec;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NTP_PPS
-
-static inline void pps_get_ts(struct pps_event_time *ts)
-{
-	getnstime_raw_and_real(&ts->ts_raw, &ts->ts_real);
-}
-
-#else /* CONFIG_NTP_PPS */
-
-static inline void pps_get_ts(struct pps_event_time *ts)
-{
-	getnstimeofday(&ts->ts_real);
-}
-
-#endif /* CONFIG_NTP_PPS */
-
-#endif /* LINUX_PPS_KERNEL_H */
-
-=======
 static inline void pps_get_ts(struct pps_event_time *ts)
 {
 	struct system_time_snapshot snap;
@@ -197,4 +118,3 @@ static inline void pps_sub_ts(struct pps_event_time *ts, struct timespec64 delta
 }
 
 #endif /* LINUX_PPS_KERNEL_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

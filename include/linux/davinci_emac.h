@@ -12,11 +12,7 @@
 #define _LINUX_DAVINCI_EMAC_H
 
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-#include <linux/memory.h>
-=======
 #include <linux/nvmem-consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mdio_platform_data {
 	unsigned long		bus_freq;
@@ -50,8 +46,4 @@ enum {
 	EMAC_VERSION_2,	/* DM646x */
 };
 
-<<<<<<< HEAD
-void davinci_get_mac_addr(struct memory_accessor *mem_acc, void *context);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

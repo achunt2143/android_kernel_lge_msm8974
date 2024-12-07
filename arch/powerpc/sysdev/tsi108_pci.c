@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common routines for Tundra Semiconductor TSI108 host bridge.
  *
@@ -9,54 +6,25 @@
  * Author: Alex Bounine (alexandreb@tundra.com)
  * Author: Roy Zang (tie-fei.zang@freescale.com)
  * 	   Add pci interrupt router host
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/interrupt.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/byteorder.h>
 #include <asm/io.h>
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <asm/tsi108.h>
 #include <asm/tsi108_pci.h>
 #include <asm/tsi108_irq.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 #ifdef DEBUG
@@ -157,15 +125,8 @@ void tsi108_clear_pci_error(u32 pci_cfg_base)
 		".section .fixup,\"ax\"\n"		\
 		"3:	li %0,-1\n"			\
 		"	b 2b\n"				\
-<<<<<<< HEAD
-		".section __ex_table,\"a\"\n"		\
-		"	.align 2\n"			\
-		"	.long 1b,3b\n"			\
-		".text"					\
-=======
 		".previous\n"				\
 		EX_TABLE(1b, 3b)			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(x) : "r"(addr))
 
 int
@@ -240,13 +201,8 @@ int __init tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary)
 	/* Get bus range if any */
 	bus_range = of_get_property(dev, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get bus-range for %s, assume"
-		       " bus 0\n", dev->full_name);
-=======
 		printk(KERN_WARNING "Can't get bus-range for %pOF, assume"
 		       " bus 0\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hose = pcibios_alloc_controller(dev);
@@ -261,14 +217,8 @@ int __init tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary)
 
 	(hose)->ops = &tsi108_direct_pci_ops;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Found tsi108 PCI host bridge at 0x%08x. "
-	       "Firmware bus number: %d->%d\n",
-	       rsrc.start, hose->first_busno, hose->last_busno);
-=======
 	pr_info("Found tsi108 PCI host bridge at 0x%pa. Firmware bus number: %d->%d\n",
 		&rsrc.start, hose->first_busno, hose->last_busno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Interpret the "ranges" property */
 	/* This also maps the I/O region and sets isa_io/mem_base */
@@ -307,11 +257,7 @@ static void tsi108_pci_int_unmask(u_int irq)
 	mb();
 }
 
-<<<<<<< HEAD
-static void init_pci_source(void)
-=======
 static void __init init_pci_source(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	tsi108_write_reg(TSI108_PCI_OFFSET + TSI108_PCI_IRP_CFG_CTL,
 			0x0000ff00);
@@ -436,11 +382,7 @@ static int pci_irq_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct irq_domain_ops pci_irq_domain_ops = {
-=======
 static const struct irq_domain_ops pci_irq_domain_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.map = pci_irq_host_map,
 	.xlate = pci_irq_host_xlate,
 };
@@ -462,12 +404,8 @@ void __init tsi108_pci_int_init(struct device_node *node)
 {
 	DBG("Tsi108_pci_int_init: initializing PCI interrupts\n");
 
-<<<<<<< HEAD
-	pci_irq_host = irq_domain_add_legacy_isa(node, &pci_irq_domain_ops, NULL);
-=======
 	pci_irq_host = irq_domain_add_legacy(node, NR_IRQS_LEGACY, 0, 0,
 					     &pci_irq_domain_ops, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_irq_host == NULL) {
 		printk(KERN_ERR "pci_irq_host: failed to allocate irq domain!\n");
 		return;
@@ -476,20 +414,12 @@ void __init tsi108_pci_int_init(struct device_node *node)
 	init_pci_source();
 }
 
-<<<<<<< HEAD
-void tsi108_irq_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 void tsi108_irq_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = get_pci_source();
 
-<<<<<<< HEAD
-	if (cascade_irq != NO_IRQ)
-=======
 	if (cascade_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);

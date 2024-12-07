@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _UAPI_LINUX_MEMFD_H
-#define _UAPI_LINUX_MEMFD_H
-
-/* flags for memfd_create(2) (unsigned int) */
-#define MFD_CLOEXEC		0x0001U
-#define MFD_ALLOW_SEALING	0x0002U
-=======
 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_LINUX_MEMFD_H
 #define _UAPI_LINUX_MEMFD_H
@@ -43,6 +35,5 @@
 #define MFD_HUGE_1GB	HUGETLB_FLAG_ENCODE_1GB
 #define MFD_HUGE_2GB	HUGETLB_FLAG_ENCODE_2GB
 #define MFD_HUGE_16GB	HUGETLB_FLAG_ENCODE_16GB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _UAPI_LINUX_MEMFD_H */

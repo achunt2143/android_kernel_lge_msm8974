@@ -11,13 +11,6 @@
 
 #include <asm/cpu.h>
 #include <asm/cpu-info.h>
-<<<<<<< HEAD
-#include <cpu-feature-overrides.h>
-
-#ifndef current_cpu_type
-#define current_cpu_type()      current_cpu_data.cputype
-#endif
-=======
 #include <asm/isa-rev.h>
 #include <cpu-feature-overrides.h>
 
@@ -73,72 +66,12 @@
 	(__isa_range(ge, lt) || ((MIPS_ISA_REV < (lt)) && __isa(flag)))
 #define __isa_range_and_ase(ge, lt, ase) \
 	(__isa_range(ge, lt) && __ase(ase))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SMP assumption: Options of CPU 0 are a superset of all processors.
  * This is true for all known MIPS systems.
  */
 #ifndef cpu_has_tlb
-<<<<<<< HEAD
-#define cpu_has_tlb		(cpu_data[0].options & MIPS_CPU_TLB)
-#endif
-#ifndef cpu_has_4kex
-#define cpu_has_4kex		(cpu_data[0].options & MIPS_CPU_4KEX)
-#endif
-#ifndef cpu_has_3k_cache
-#define cpu_has_3k_cache	(cpu_data[0].options & MIPS_CPU_3K_CACHE)
-#endif
-#define cpu_has_6k_cache	0
-#define cpu_has_8k_cache	0
-#ifndef cpu_has_4k_cache
-#define cpu_has_4k_cache	(cpu_data[0].options & MIPS_CPU_4K_CACHE)
-#endif
-#ifndef cpu_has_tx39_cache
-#define cpu_has_tx39_cache	(cpu_data[0].options & MIPS_CPU_TX39_CACHE)
-#endif
-#ifndef cpu_has_octeon_cache
-#define cpu_has_octeon_cache	0
-#endif
-#ifndef cpu_has_fpu
-#define cpu_has_fpu		(current_cpu_data.options & MIPS_CPU_FPU)
-#define raw_cpu_has_fpu		(raw_current_cpu_data.options & MIPS_CPU_FPU)
-#else
-#define raw_cpu_has_fpu		cpu_has_fpu
-#endif
-#ifndef cpu_has_32fpr
-#define cpu_has_32fpr		(cpu_data[0].options & MIPS_CPU_32FPR)
-#endif
-#ifndef cpu_has_counter
-#define cpu_has_counter		(cpu_data[0].options & MIPS_CPU_COUNTER)
-#endif
-#ifndef cpu_has_watch
-#define cpu_has_watch		(cpu_data[0].options & MIPS_CPU_WATCH)
-#endif
-#ifndef cpu_has_divec
-#define cpu_has_divec		(cpu_data[0].options & MIPS_CPU_DIVEC)
-#endif
-#ifndef cpu_has_vce
-#define cpu_has_vce		(cpu_data[0].options & MIPS_CPU_VCE)
-#endif
-#ifndef cpu_has_cache_cdex_p
-#define cpu_has_cache_cdex_p	(cpu_data[0].options & MIPS_CPU_CACHE_CDEX_P)
-#endif
-#ifndef cpu_has_cache_cdex_s
-#define cpu_has_cache_cdex_s	(cpu_data[0].options & MIPS_CPU_CACHE_CDEX_S)
-#endif
-#ifndef cpu_has_prefetch
-#define cpu_has_prefetch	(cpu_data[0].options & MIPS_CPU_PREFETCH)
-#endif
-#ifndef cpu_has_mcheck
-#define cpu_has_mcheck		(cpu_data[0].options & MIPS_CPU_MCHECK)
-#endif
-#ifndef cpu_has_ejtag
-#define cpu_has_ejtag		(cpu_data[0].options & MIPS_CPU_EJTAG)
-#endif
-#ifndef cpu_has_llsc
-#define cpu_has_llsc		(cpu_data[0].options & MIPS_CPU_LLSC)
-=======
 #define cpu_has_tlb		__opt(MIPS_CPU_TLB)
 #endif
 #ifndef cpu_has_ftlb
@@ -254,27 +187,10 @@
 #endif
 #ifndef cpu_has_llsc
 #define cpu_has_llsc		__isa_ge_or_opt(1, MIPS_CPU_LLSC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifndef kernel_uses_llsc
 #define kernel_uses_llsc	cpu_has_llsc
 #endif
-<<<<<<< HEAD
-#ifndef cpu_has_mips16
-#define cpu_has_mips16		(cpu_data[0].ases & MIPS_ASE_MIPS16)
-#endif
-#ifndef cpu_has_mdmx
-#define cpu_has_mdmx           (cpu_data[0].ases & MIPS_ASE_MDMX)
-#endif
-#ifndef cpu_has_mips3d
-#define cpu_has_mips3d         (cpu_data[0].ases & MIPS_ASE_MIPS3D)
-#endif
-#ifndef cpu_has_smartmips
-#define cpu_has_smartmips      (cpu_data[0].ases & MIPS_ASE_SMARTMIPS)
-#endif
-#ifndef kernel_uses_smartmips_rixi
-#define kernel_uses_smartmips_rixi 0
-=======
 #ifndef cpu_has_guestctl0ext
 #define cpu_has_guestctl0ext	__opt(MIPS_CPU_GUESTCTL0EXT)
 #endif
@@ -328,7 +244,6 @@
 #endif
 #ifndef cpu_has_xpa
 #define cpu_has_xpa		(cpu_has_lpa && cpu_has_mvh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifndef cpu_has_vtag_icache
 #define cpu_has_vtag_icache	(cpu_data[0].icache.flags & MIPS_CACHE_VTAG)
@@ -344,11 +259,7 @@
 #endif
 
 /*
-<<<<<<< HEAD
- * I-Cache snoops remote store.  This only matters on SMP.  Some multiprocessors
-=======
  * I-Cache snoops remote store.	 This only matters on SMP.  Some multiprocessors
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * such as the R10000 have I-Caches that snoop local stores; the embedded ones
  * don't.  For maintaining I-cache coherency this means we need to flush the
  * D-cache all the way back to whever the I-cache does refills from, so the
@@ -366,20 +277,6 @@
 #endif
 #endif
 
-<<<<<<< HEAD
-# ifndef cpu_has_mips32r1
-# define cpu_has_mips32r1	(cpu_data[0].isa_level & MIPS_CPU_ISA_M32R1)
-# endif
-# ifndef cpu_has_mips32r2
-# define cpu_has_mips32r2	(cpu_data[0].isa_level & MIPS_CPU_ISA_M32R2)
-# endif
-# ifndef cpu_has_mips64r1
-# define cpu_has_mips64r1	(cpu_data[0].isa_level & MIPS_CPU_ISA_M64R1)
-# endif
-# ifndef cpu_has_mips64r2
-# define cpu_has_mips64r2	(cpu_data[0].isa_level & MIPS_CPU_ISA_M64R2)
-# endif
-=======
 #ifndef cpu_has_mips_1
 # define cpu_has_mips_1		(MIPS_ISA_REV < 6)
 #endif
@@ -422,22 +319,10 @@
 #ifndef cpu_has_mips64r6
 # define cpu_has_mips64r6	__isa_ge_and_flag(6, MIPS_CPU_ISA_M64R6)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Shortcuts ...
  */
-<<<<<<< HEAD
-#define cpu_has_mips32	(cpu_has_mips32r1 | cpu_has_mips32r2)
-#define cpu_has_mips64	(cpu_has_mips64r1 | cpu_has_mips64r2)
-#define cpu_has_mips_r1	(cpu_has_mips32r1 | cpu_has_mips64r1)
-#define cpu_has_mips_r2	(cpu_has_mips32r2 | cpu_has_mips64r2)
-#define cpu_has_mips_r	(cpu_has_mips32r1 | cpu_has_mips32r2 | \
-			 cpu_has_mips64r1 | cpu_has_mips64r2)
-
-#ifndef cpu_has_mips_r2_exec_hazard
-#define cpu_has_mips_r2_exec_hazard cpu_has_mips_r2
-=======
 #define cpu_has_mips_2_3_4_5	(cpu_has_mips_2 | cpu_has_mips_3_4_5)
 #define cpu_has_mips_3_4_5	(cpu_has_mips_3 | cpu_has_mips_4_5)
 #define cpu_has_mips_4_5	(cpu_has_mips_4 | cpu_has_mips_5)
@@ -504,31 +389,10 @@
 									\
 	__res;								\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * MIPS32, MIPS64, VR5500, IDT32332, IDT32334 and maybe a few other
-<<<<<<< HEAD
- * pre-MIPS32/MIPS53 processors have CLO, CLZ.  The IDT RC64574 is 64-bit and
- * has CLO and CLZ but not DCLO nor DCLZ.  For 64-bit kernels
- * cpu_has_clo_clz also indicates the availability of DCLO and DCLZ.
- */
-# ifndef cpu_has_clo_clz
-# define cpu_has_clo_clz	cpu_has_mips_r
-# endif
-
-#ifndef cpu_has_dsp
-#define cpu_has_dsp		(cpu_data[0].ases & MIPS_ASE_DSP)
-#endif
-
-#ifndef cpu_has_mipsmt
-#define cpu_has_mipsmt		(cpu_data[0].ases & MIPS_ASE_MIPSMT)
-#endif
-
-#ifndef cpu_has_userlocal
-#define cpu_has_userlocal	(cpu_data[0].options & MIPS_CPU_ULRI)
-=======
  * pre-MIPS32/MIPS64 processors have CLO, CLZ.	The IDT RC64574 is 64-bit and
  * has CLO and CLZ but not DCLO nor DCLZ.  For 64-bit kernels
  * cpu_has_clo_clz also indicates the availability of DCLO and DCLZ.
@@ -585,16 +449,11 @@
 
 #ifndef cpu_has_userlocal
 #define cpu_has_userlocal	__isa_ge_or_opt(6, MIPS_CPU_ULRI)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_32BIT
 # ifndef cpu_has_nofpuex
-<<<<<<< HEAD
-# define cpu_has_nofpuex	(cpu_data[0].options & MIPS_CPU_NOFPUEX)
-=======
 # define cpu_has_nofpuex	__isa_lt_and_opt(1, MIPS_CPU_NOFPUEX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # endif
 # ifndef cpu_has_64bits
 # define cpu_has_64bits		(cpu_data[0].isa_level & MIPS_CPU_ISA_64BIT)
@@ -605,12 +464,6 @@
 # ifndef cpu_has_64bit_gp_regs
 # define cpu_has_64bit_gp_regs		0
 # endif
-<<<<<<< HEAD
-# ifndef cpu_has_64bit_addresses
-# define cpu_has_64bit_addresses	0
-# endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ifndef cpu_vmbits
 # define cpu_vmbits 31
 # endif
@@ -629,12 +482,6 @@
 # ifndef cpu_has_64bit_gp_regs
 # define cpu_has_64bit_gp_regs		1
 # endif
-<<<<<<< HEAD
-# ifndef cpu_has_64bit_addresses
-# define cpu_has_64bit_addresses	1
-# endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ifndef cpu_vmbits
 # define cpu_vmbits cpu_data[0].vmbits
 # define __NEED_VMBITS_PROBE
@@ -642,31 +489,19 @@
 #endif
 
 #if defined(CONFIG_CPU_MIPSR2_IRQ_VI) && !defined(cpu_has_vint)
-<<<<<<< HEAD
-# define cpu_has_vint		(cpu_data[0].options & MIPS_CPU_VINT)
-=======
 # define cpu_has_vint		__opt(MIPS_CPU_VINT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif !defined(cpu_has_vint)
 # define cpu_has_vint			0
 #endif
 
 #if defined(CONFIG_CPU_MIPSR2_IRQ_EI) && !defined(cpu_has_veic)
-<<<<<<< HEAD
-# define cpu_has_veic		(cpu_data[0].options & MIPS_CPU_VEIC)
-=======
 # define cpu_has_veic		__opt(MIPS_CPU_VEIC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif !defined(cpu_has_veic)
 # define cpu_has_veic			0
 #endif
 
 #ifndef cpu_has_inclusive_pcaches
-<<<<<<< HEAD
-#define cpu_has_inclusive_pcaches	(cpu_data[0].options & MIPS_CPU_INCLUSIVE_CACHES)
-=======
 #define cpu_has_inclusive_pcaches	__opt(MIPS_CPU_INCLUSIVE_CACHES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef cpu_dcache_line_size
@@ -678,19 +513,14 @@
 #ifndef cpu_scache_line_size
 #define cpu_scache_line_size()	cpu_data[0].scache.linesz
 #endif
-<<<<<<< HEAD
-=======
 #ifndef cpu_tcache_line_size
 #define cpu_tcache_line_size()	cpu_data[0].tcache.linesz
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef cpu_hwrena_impl_bits
 #define cpu_hwrena_impl_bits		0
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef cpu_has_perf_cntr_intr_bit
 #define cpu_has_perf_cntr_intr_bit	__opt(MIPS_CPU_PCI)
 #endif
@@ -921,5 +751,4 @@
 #define cpu_guest_has_dyn_maar	(cpu_data[0].guest.options_dyn & MIPS_CPU_MAAR)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_CPU_FEATURES_H */

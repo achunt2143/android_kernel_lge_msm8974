@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_MSHYPER_H
 #define _ASM_X86_MSHYPER_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/hyperv.h>
-
-struct ms_hyperv_info {
-	u32 features;
-	u32 hints;
-};
-
-extern struct ms_hyperv_info ms_hyperv;
-=======
 #include <linux/nmi.h>
 #include <linux/msi.h>
 #include <linux/io.h>
@@ -360,6 +347,5 @@ static inline int __init hv_vtl_early_init(void) { return 0; }
 #endif
 
 #include <asm-generic/mshyperv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

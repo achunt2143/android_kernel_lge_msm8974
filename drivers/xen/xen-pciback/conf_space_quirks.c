@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Handle special overlays for broken devices.
  *
@@ -9,11 +6,8 @@
  * Author: Chris Bookholt <hap10@epoch.ncsc.mil>
  */
 
-<<<<<<< HEAD
-=======
 #define dev_fmt(fmt) DRV_NAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include "pciback.h"
@@ -43,13 +37,8 @@ static struct xen_pcibk_config_quirk *xen_pcibk_find_quirk(struct pci_dev *dev)
 		if (match_one_device(&tmp_quirk->devid, dev) != NULL)
 			goto out;
 	tmp_quirk = NULL;
-<<<<<<< HEAD
-	printk(KERN_DEBUG DRV_NAME
-	       ": quirk didn't match any device known\n");
-=======
 	dev_printk(KERN_DEBUG, &dev->dev,
 		   "quirk didn't match any device known\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return tmp_quirk;
 }
@@ -108,11 +97,7 @@ int xen_pcibk_config_quirks_init(struct pci_dev *dev)
 	struct xen_pcibk_config_quirk *quirk;
 	int ret = 0;
 
-<<<<<<< HEAD
-	quirk = kzalloc(sizeof(*quirk), GFP_ATOMIC);
-=======
 	quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!quirk) {
 		ret = -ENOMEM;
 		goto out;

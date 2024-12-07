@@ -20,15 +20,12 @@
  *
  * For each partition, these fields are available:
  * name: string that will be used to label the partition's MTD device.
-<<<<<<< HEAD
-=======
  * types: some partitions can be containers using specific format to describe
  *	embedded subpartitions / volumes. E.g. many home routers use "firmware"
  *	partition that contains at least kernel and rootfs. In such case an
  *	extra parser is needed that will detect these dynamic partitions and
  *	report them to the MTD subsystem. If set this property stores an array
  *	of parser names to use when looking for subpartitions.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * size: the partition size; if defined as MTDPART_SIZ_FULL, the partition
  * 	will extend to the end of the master MTD device.
  * offset: absolute starting position within the master MTD device; if
@@ -40,23 +37,13 @@
  * 	master MTD flag set for the corresponding MTD partition.
  * 	For example, to force a read-only partition, simply adding
  * 	MTD_WRITEABLE to the mask_flags will do the trick.
-<<<<<<< HEAD
-=======
  * add_flags: contains flags to add to the parent flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: writeable partitions require their size and offset be
  * erasesize aligned (e.g. use MTDPART_OFS_NEXTBLK).
  */
 
 struct mtd_partition {
-<<<<<<< HEAD
-	char *name;			/* identifier string */
-	uint64_t size;			/* partition size */
-	uint64_t offset;		/* offset within the master MTD space */
-	uint32_t mask_flags;		/* master MTD flags to mask out for this partition */
-	struct nand_ecclayout *ecclayout;	/* out of band layout for this partition (NAND only) */
-=======
 	const char *name;		/* identifier string */
 	const char *const *types;	/* names of parsers to use if any */
 	uint64_t size;			/* partition size */
@@ -64,7 +51,6 @@ struct mtd_partition {
 	uint32_t mask_flags;		/* master MTD flags to mask out for this partition */
 	uint32_t add_flags;		/* flags to add to the partition */
 	struct device_node *of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MTDPART_OFS_RETAIN	(-3)
@@ -79,25 +65,12 @@ struct device_node;
 /**
  * struct mtd_part_parser_data - used to pass data to MTD partition parsers.
  * @origin: for RedBoot, start address of MTD device
-<<<<<<< HEAD
- * @of_node: for OF parsers, device node containing partitioning information
- */
-struct mtd_part_parser_data {
-	unsigned long origin;
-	struct device_node *of_node;
-};
-
-
-void part_fill_badblockstats(struct mtd_info *mtd);
-
-=======
  */
 struct mtd_part_parser_data {
 	unsigned long origin;
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions dealing with the various ways of partitioning the space
  */
@@ -106,19 +79,6 @@ struct mtd_part_parser {
 	struct list_head list;
 	struct module *owner;
 	const char *name;
-<<<<<<< HEAD
-	int (*parse_fn)(struct mtd_info *, struct mtd_partition **,
-			struct mtd_part_parser_data *);
-};
-
-extern int register_mtd_parser(struct mtd_part_parser *parser);
-extern int deregister_mtd_parser(struct mtd_part_parser *parser);
-
-int mtd_is_partition(struct mtd_info *mtd);
-int mtd_add_partition(struct mtd_info *master, char *name,
-		      long long offset, long long length);
-int mtd_del_partition(struct mtd_info *master, int partno);
-=======
 	const struct of_device_id *of_match_table;
 	int (*parse_fn)(struct mtd_info *, const struct mtd_partition **,
 			struct mtd_part_parser_data *);
@@ -151,6 +111,5 @@ int mtd_add_partition(struct mtd_info *master, const char *name,
 		      long long offset, long long length);
 int mtd_del_partition(struct mtd_info *master, int partno);
 uint64_t mtd_get_device_size(const struct mtd_info *mtd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

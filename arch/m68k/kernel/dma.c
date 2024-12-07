@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-#include "dma_mm.c"
-#else
-#include "dma_no.c"
-#endif
-=======
 /*
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file COPYING in the main directory of this archive
@@ -50,4 +43,3 @@ void arch_sync_dma_for_device(phys_addr_t handle, size_t size,
 		break;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

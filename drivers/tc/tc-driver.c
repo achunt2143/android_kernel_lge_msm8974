@@ -56,13 +56,8 @@ EXPORT_SYMBOL(tc_unregister_driver);
  * system is in its list of supported devices.  Returns the matching
  * tc_device_id structure or %NULL if there is no match.
  */
-<<<<<<< HEAD
-const struct tc_device_id *tc_match_device(struct tc_driver *tdrv,
-					   struct tc_dev *tdev)
-=======
 static const struct tc_device_id *tc_match_device(struct tc_driver *tdrv,
 						  struct tc_dev *tdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct tc_device_id *id = tdrv->id_table;
 
@@ -76,10 +71,6 @@ static const struct tc_device_id *tc_match_device(struct tc_driver *tdrv,
 	}
 	return NULL;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(tc_match_device);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * tc_bus_match - Tell if a device structure has a matching
@@ -104,11 +95,7 @@ static int tc_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct bus_type tc_bus_type = {
-=======
 const struct bus_type tc_bus_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "tc",
 	.match	= tc_bus_match,
 };

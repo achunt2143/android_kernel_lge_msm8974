@@ -1,66 +1,29 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2008, 2009 open80211s Ltd.
- * Authors:    Luis Carlos Cobo <luisca@cozybit.com>
- * 	       Javier Cardona <javier@cozybit.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2008, 2009 open80211s Ltd.
  * Copyright (C) 2018 - 2024 Intel Corporation
  * Authors:    Luis Carlos Cobo <luisca@cozybit.com>
  * 	       Javier Cardona <javier@cozybit.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <asm/unaligned.h>
 #include "ieee80211_i.h"
 #include "mesh.h"
-<<<<<<< HEAD
-
-#define MESHCONF_CAPAB_ACCEPT_PLINKS 0x01
-#define MESHCONF_CAPAB_FORWARDING    0x08
-
-#define TMR_RUNNING_HK	0
-#define TMR_RUNNING_MP	1
-#define TMR_RUNNING_MPR	2
-
-int mesh_allocated;
-static struct kmem_cache *rm_cache;
-
-#ifdef CONFIG_MAC80211_MESH
-=======
 #include "wme.h"
 #include "driver-ops.h"
 
 static int mesh_allocated;
 static struct kmem_cache *rm_cache;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool mesh_action_is_path_sel(struct ieee80211_mgmt *mgmt)
 {
 	return (mgmt->u.action.u.mesh_action.action_code ==
 			WLAN_MESH_ACTION_HWMP_PATH_SELECTION);
 }
-<<<<<<< HEAD
-#else
-bool mesh_action_is_path_sel(struct ieee80211_mgmt *mgmt)
-{ return false; }
-#endif
 
 void ieee80211s_init(void)
 {
-	mesh_pathtbl_init();
-=======
-
-void ieee80211s_init(void)
-{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mesh_allocated = 1;
 	rm_cache = kmem_cache_create("mesh_rmc", sizeof(struct rmc_entry),
 				     0, 0, NULL);
@@ -68,15 +31,6 @@ void ieee80211s_init(void)
 
 void ieee80211s_stop(void)
 {
-<<<<<<< HEAD
-	mesh_pathtbl_unregister();
-	kmem_cache_destroy(rm_cache);
-}
-
-static void ieee80211_mesh_housekeeping_timer(unsigned long data)
-{
-	struct ieee80211_sub_if_data *sdata = (void *) data;
-=======
 	if (!mesh_allocated)
 		return;
 	kmem_cache_destroy(rm_cache);
@@ -86,39 +40,17 @@ static void ieee80211_mesh_housekeeping_timer(struct timer_list *t)
 {
 	struct ieee80211_sub_if_data *sdata =
 		from_timer(sdata, t, u.mesh.housekeeping_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 
 	set_bit(MESH_WORK_HOUSEKEEPING, &ifmsh->wrkq_flags);
 
-<<<<<<< HEAD
-	if (local->quiescing) {
-		set_bit(TMR_RUNNING_HK, &ifmsh->timers_running);
-		return;
-	}
-
-	ieee80211_queue_work(&local->hw, &sdata->work);
-=======
 	wiphy_work_queue(local->hw.wiphy, &sdata->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * mesh_matches_local - check if the config of a mesh point matches ours
  *
-<<<<<<< HEAD
- * @ie: information elements of a management frame from the mesh peer
- * @sdata: local mesh subif
- *
- * This function checks if the mesh configuration of a mesh point matches the
- * local mesh configuration, i.e. if both nodes belong to the same mesh network.
- */
-bool mesh_matches_local(struct ieee802_11_elems *ie, struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct ieee80211_local *local = sdata->local;
-=======
  * @sdata: local mesh subif
  * @ie: information elements of a management frame from the mesh peer
  *
@@ -135,7 +67,6 @@ bool mesh_matches_local(struct ieee80211_sub_if_data *sdata,
 	struct cfg80211_chan_def sta_chan_def;
 	struct ieee80211_supported_band *sband;
 	u32 vht_cap_info = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * As support for each feature is added, check for matching
@@ -154,19 +85,6 @@ bool mesh_matches_local(struct ieee80211_sub_if_data *sdata,
 	     (ifmsh->mesh_cc_id == ie->mesh_config->meshconf_congest) &&
 	     (ifmsh->mesh_sp_id == ie->mesh_config->meshconf_synch) &&
 	     (ifmsh->mesh_auth_id == ie->mesh_config->meshconf_auth)))
-<<<<<<< HEAD
-		goto mismatch;
-
-	/* disallow peering with mismatched channel types for now */
-	if (ie->ht_info_elem &&
-	    (local->_oper_channel_type !=
-	     ieee80211_ht_info_to_channel_type(ie->ht_info_elem)))
-		goto mismatch;
-
-	return true;
-mismatch:
-	return false;
-=======
 		return false;
 
 	sband = ieee80211_get_sband(sdata);
@@ -198,35 +116,18 @@ mismatch:
 		return false;
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * mesh_peer_accepts_plinks - check if an mp is willing to establish peer links
  *
  * @ie: information elements of a management frame from the mesh peer
-<<<<<<< HEAD
-=======
  *
  * Returns: %true if the mesh peer is willing to establish peer links
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 bool mesh_peer_accepts_plinks(struct ieee802_11_elems *ie)
 {
 	return (ie->mesh_config->meshconf_cap &
-<<<<<<< HEAD
-	    MESHCONF_CAPAB_ACCEPT_PLINKS) != 0;
-}
-
-/**
- * mesh_accept_plinks_update: update accepting_plink in local mesh beacons
- *
- * @sdata: mesh interface in which mesh beacons are going to be updated
- */
-void mesh_accept_plinks_update(struct ieee80211_sub_if_data *sdata)
-{
-	bool free_plinks;
-=======
 			IEEE80211_MESHCONF_CAPAB_ACCEPT_PLINKS) != 0;
 }
 
@@ -241,7 +142,6 @@ u64 mesh_accept_plinks_update(struct ieee80211_sub_if_data *sdata)
 {
 	bool free_plinks;
 	u64 changed = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In case mesh_plink_free_count > 0 and mesh_plinktbl_capacity == 0,
 	 * the mesh interface might be able to establish plinks with peers that
@@ -251,10 +151,6 @@ u64 mesh_accept_plinks_update(struct ieee80211_sub_if_data *sdata)
 	 */
 	free_plinks = mesh_plink_availables(sdata);
 
-<<<<<<< HEAD
-	if (free_plinks != sdata->u.mesh.accepting_plinks)
-		ieee80211_mesh_housekeeping_timer((unsigned long) sdata);
-=======
 	if (free_plinks != sdata->u.mesh.accepting_plinks) {
 		sdata->u.mesh.accepting_plinks = free_plinks;
 		changed = BSS_CHANGED_BEACON;
@@ -275,7 +171,6 @@ void mesh_sta_cleanup(struct sta_info *sta)
 
 	if (changed)
 		ieee80211_mbss_info_change_notify(sdata, changed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mesh_rmc_init(struct ieee80211_sub_if_data *sdata)
@@ -287,42 +182,26 @@ int mesh_rmc_init(struct ieee80211_sub_if_data *sdata)
 		return -ENOMEM;
 	sdata->u.mesh.rmc->idx_mask = RMC_BUCKETS - 1;
 	for (i = 0; i < RMC_BUCKETS; i++)
-<<<<<<< HEAD
-		INIT_LIST_HEAD(&sdata->u.mesh.rmc->bucket[i].list);
-=======
 		INIT_HLIST_HEAD(&sdata->u.mesh.rmc->bucket[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void mesh_rmc_free(struct ieee80211_sub_if_data *sdata)
 {
 	struct mesh_rmc *rmc = sdata->u.mesh.rmc;
-<<<<<<< HEAD
-	struct rmc_entry *p, *n;
-=======
 	struct rmc_entry *p;
 	struct hlist_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!sdata->u.mesh.rmc)
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < RMC_BUCKETS; i++)
-		list_for_each_entry_safe(p, n, &rmc->bucket[i].list, list) {
-			list_del(&p->list);
-			kmem_cache_free(rm_cache, p);
-		}
-=======
 	for (i = 0; i < RMC_BUCKETS; i++) {
 		hlist_for_each_entry_safe(p, n, &rmc->bucket[i], list) {
 			hlist_del(&p->list);
 			kmem_cache_free(rm_cache, p);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(rmc);
 	sdata->u.mesh.rmc = NULL;
@@ -331,10 +210,7 @@ void mesh_rmc_free(struct ieee80211_sub_if_data *sdata)
 /**
  * mesh_rmc_check - Check frame in recent multicast cache and add if absent.
  *
-<<<<<<< HEAD
-=======
  * @sdata:	interface
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sa:		source address
  * @mesh_hdr:	mesh_header
  *
@@ -344,42 +220,22 @@ void mesh_rmc_free(struct ieee80211_sub_if_data *sdata)
  * received this frame lately. If the frame is not in the cache, it is added to
  * it.
  */
-<<<<<<< HEAD
-int mesh_rmc_check(u8 *sa, struct ieee80211s_hdr *mesh_hdr,
-		   struct ieee80211_sub_if_data *sdata)
-=======
 int mesh_rmc_check(struct ieee80211_sub_if_data *sdata,
 		   const u8 *sa, struct ieee80211s_hdr *mesh_hdr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mesh_rmc *rmc = sdata->u.mesh.rmc;
 	u32 seqnum = 0;
 	int entries = 0;
 	u8 idx;
-<<<<<<< HEAD
-	struct rmc_entry *p, *n;
-=======
 	struct rmc_entry *p;
 	struct hlist_node *n;
 
 	if (!rmc)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't care about endianness since only match matters */
 	memcpy(&seqnum, &mesh_hdr->seqnum, sizeof(mesh_hdr->seqnum));
 	idx = le32_to_cpu(mesh_hdr->seqnum) & rmc->idx_mask;
-<<<<<<< HEAD
-	list_for_each_entry_safe(p, n, &rmc->bucket[idx].list, list) {
-		++entries;
-		if (time_after(jiffies, p->exp_time) ||
-				(entries == RMC_QUEUE_MAX_LEN)) {
-			list_del(&p->list);
-			kmem_cache_free(rm_cache, p);
-			--entries;
-		} else if ((seqnum == p->seqnum) &&
-			   (compare_ether_addr(sa, p->sa) == 0))
-=======
 	hlist_for_each_entry_safe(p, n, &rmc->bucket[idx], list) {
 		++entries;
 		if (time_after(jiffies, p->exp_time) ||
@@ -388,7 +244,6 @@ int mesh_rmc_check(struct ieee80211_sub_if_data *sdata,
 			kmem_cache_free(rm_cache, p);
 			--entries;
 		} else if ((seqnum == p->seqnum) && ether_addr_equal(sa, p->sa))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 	}
 
@@ -399,32 +254,20 @@ int mesh_rmc_check(struct ieee80211_sub_if_data *sdata,
 	p->seqnum = seqnum;
 	p->exp_time = jiffies + RMC_TIMEOUT;
 	memcpy(p->sa, sa, ETH_ALEN);
-<<<<<<< HEAD
-	list_add(&p->list, &rmc->bucket[idx].list);
-	return 0;
-}
-
-int
-mesh_add_meshconf_ie(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
-=======
 	hlist_add_head(&p->list, &rmc->bucket[idx]);
 	return 0;
 }
 
 int mesh_add_meshconf_ie(struct ieee80211_sub_if_data *sdata,
 			 struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	u8 *pos, neighbors;
 	u8 meshconf_len = sizeof(struct ieee80211_meshconf_ie);
-<<<<<<< HEAD
-=======
 	bool is_connected_to_gate = ifmsh->num_gates > 0 ||
 		ifmsh->mshcfg.dot11MeshGateAnnouncementProtocol ||
 		ifmsh->mshcfg.dot11MeshConnectedToMeshGate;
 	bool is_connected_to_as = ifmsh->mshcfg.dot11MeshConnectedToAuthServer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb_tailroom(skb) < 2 + meshconf_len)
 		return -ENOMEM;
@@ -433,12 +276,9 @@ int mesh_add_meshconf_ie(struct ieee80211_sub_if_data *sdata,
 	*pos++ = WLAN_EID_MESH_CONFIG;
 	*pos++ = meshconf_len;
 
-<<<<<<< HEAD
-=======
 	/* save a pointer for quick updates in pre-tbtt */
 	ifmsh->meshconf_offset = pos - skb->data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Active path selection protocol ID */
 	*pos++ = ifmsh->mesh_pp_id;
 	/* Active path selection metric ID   */
@@ -450,24 +290,6 @@ int mesh_add_meshconf_ie(struct ieee80211_sub_if_data *sdata,
 	/* Authentication Protocol identifier */
 	*pos++ = ifmsh->mesh_auth_id;
 	/* Mesh Formation Info - number of neighbors */
-<<<<<<< HEAD
-	neighbors = atomic_read(&ifmsh->mshstats.estab_plinks);
-	/* Number of neighbor mesh STAs or 15 whichever is smaller */
-	neighbors = (neighbors > 15) ? 15 : neighbors;
-	*pos++ = neighbors << 1;
-	/* Mesh capability */
-	ifmsh->accepting_plinks = mesh_plink_availables(sdata);
-	*pos = MESHCONF_CAPAB_FORWARDING;
-	*pos++ |= ifmsh->accepting_plinks ?
-	    MESHCONF_CAPAB_ACCEPT_PLINKS : 0x00;
-	*pos++ = 0x00;
-
-	return 0;
-}
-
-int
-mesh_add_meshid_ie(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
-=======
 	neighbors = atomic_read(&ifmsh->estab_plinks);
 	neighbors = min_t(int, neighbors, IEEE80211_MAX_MESH_PEERINGS);
 	*pos++ = (is_connected_to_as << 7) |
@@ -486,7 +308,6 @@ mesh_add_meshid_ie(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
 }
 
 int mesh_add_meshid_ie(struct ieee80211_sub_if_data *sdata, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	u8 *pos;
@@ -503,10 +324,6 @@ int mesh_add_meshid_ie(struct ieee80211_sub_if_data *sdata, struct sk_buff *skb)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-mesh_add_vendor_ies(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
-=======
 static int mesh_add_awake_window_ie(struct ieee80211_sub_if_data *sdata,
 				    struct sk_buff *skb)
 {
@@ -532,7 +349,6 @@ static int mesh_add_awake_window_ie(struct ieee80211_sub_if_data *sdata,
 
 int mesh_add_vendor_ies(struct ieee80211_sub_if_data *sdata,
 			struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	u8 offset, len;
@@ -544,31 +360,18 @@ int mesh_add_vendor_ies(struct ieee80211_sub_if_data *sdata,
 	/* fast-forward to vendor IEs */
 	offset = ieee80211_ie_split_vendor(ifmsh->ie, ifmsh->ie_len, 0);
 
-<<<<<<< HEAD
-	if (offset) {
-=======
 	if (offset < ifmsh->ie_len) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = ifmsh->ie_len - offset;
 		data = ifmsh->ie + offset;
 		if (skb_tailroom(skb) < len)
 			return -ENOMEM;
-<<<<<<< HEAD
-		memcpy(skb_put(skb, len), data, len);
-=======
 		skb_put_data(skb, data, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-mesh_add_rsn_ie(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
-=======
 int mesh_add_rsn_ie(struct ieee80211_sub_if_data *sdata, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	u8 len = 0;
@@ -578,22 +381,6 @@ int mesh_add_rsn_ie(struct ieee80211_sub_if_data *sdata, struct sk_buff *skb)
 		return 0;
 
 	/* find RSN IE */
-<<<<<<< HEAD
-	data = ifmsh->ie;
-	while (data < ifmsh->ie + ifmsh->ie_len) {
-		if (*data == WLAN_EID_RSN) {
-			len = data[1] + 2;
-			break;
-		}
-		data++;
-	}
-
-	if (len) {
-		if (skb_tailroom(skb) < len)
-			return -ENOMEM;
-		memcpy(skb_put(skb, len), data, len);
-	}
-=======
 	data = cfg80211_find_ie(WLAN_EID_RSN, ifmsh->ie, ifmsh->ie_len);
 	if (!data)
 		return 0;
@@ -603,38 +390,20 @@ int mesh_add_rsn_ie(struct ieee80211_sub_if_data *sdata, struct sk_buff *skb)
 	if (skb_tailroom(skb) < len)
 		return -ENOMEM;
 	skb_put_data(skb, data, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int mesh_add_ds_params_ie(struct sk_buff *skb,
-			  struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_supported_band *sband;
-=======
 static int mesh_add_ds_params_ie(struct ieee80211_sub_if_data *sdata,
 				 struct sk_buff *skb)
 {
 	struct ieee80211_chanctx_conf *chanctx_conf;
 	struct ieee80211_channel *chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *pos;
 
 	if (skb_tailroom(skb) < 3)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-	if (sband->band == IEEE80211_BAND_2GHZ) {
-		pos = skb_put(skb, 2 + 1);
-		*pos++ = WLAN_EID_DS_PARAMS;
-		*pos++ = 1;
-		*pos++ = ieee80211_frequency_to_channel(local->hw.conf.channel->center_freq);
-	}
-=======
 	rcu_read_lock();
 	chanctx_conf = rcu_dereference(sdata->vif.bss_conf.chanctx_conf);
 	if (WARN_ON(!chanctx_conf)) {
@@ -648,23 +417,10 @@ static int mesh_add_ds_params_ie(struct ieee80211_sub_if_data *sdata,
 	*pos++ = WLAN_EID_DS_PARAMS;
 	*pos++ = 1;
 	*pos++ = ieee80211_frequency_to_channel(chan->center_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int mesh_add_ht_cap_ie(struct sk_buff *skb,
-		       struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_supported_band *sband;
-	u8 *pos;
-
-	sband = local->hw.wiphy->bands[local->oper_channel->band];
-	if (!sband->ht_cap.ht_supported ||
-	    local->_oper_channel_type == NL80211_CHAN_NO_HT)
-=======
 int mesh_add_ht_cap_ie(struct ieee80211_sub_if_data *sdata,
 		       struct sk_buff *skb)
 {
@@ -683,7 +439,6 @@ int mesh_add_ht_cap_ie(struct ieee80211_sub_if_data *sdata,
 	    sdata->vif.bss_conf.chanreq.oper.width == NL80211_CHAN_WIDTH_20_NOHT ||
 	    sdata->vif.bss_conf.chanreq.oper.width == NL80211_CHAN_WIDTH_5 ||
 	    sdata->vif.bss_conf.chanreq.oper.width == NL80211_CHAN_WIDTH_10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (skb_tailroom(skb) < 2 + sizeof(struct ieee80211_ht_cap))
@@ -695,60 +450,6 @@ int mesh_add_ht_cap_ie(struct ieee80211_sub_if_data *sdata,
 	return 0;
 }
 
-<<<<<<< HEAD
-int mesh_add_ht_info_ie(struct sk_buff *skb,
-			struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_channel *channel = local->oper_channel;
-	enum nl80211_channel_type channel_type = local->_oper_channel_type;
-	struct ieee80211_supported_band *sband =
-				local->hw.wiphy->bands[channel->band];
-	struct ieee80211_sta_ht_cap *ht_cap = &sband->ht_cap;
-	u8 *pos;
-
-	if (!ht_cap->ht_supported || channel_type == NL80211_CHAN_NO_HT)
-		return 0;
-
-	if (skb_tailroom(skb) < 2 + sizeof(struct ieee80211_ht_info))
-		return -ENOMEM;
-
-	pos = skb_put(skb, 2 + sizeof(struct ieee80211_ht_info));
-	ieee80211_ie_build_ht_info(pos, ht_cap, channel, channel_type);
-
-	return 0;
-}
-static void ieee80211_mesh_path_timer(unsigned long data)
-{
-	struct ieee80211_sub_if_data *sdata =
-		(struct ieee80211_sub_if_data *) data;
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct ieee80211_local *local = sdata->local;
-
-	if (local->quiescing) {
-		set_bit(TMR_RUNNING_MP, &ifmsh->timers_running);
-		return;
-	}
-
-	ieee80211_queue_work(&local->hw, &sdata->work);
-}
-
-static void ieee80211_mesh_path_root_timer(unsigned long data)
-{
-	struct ieee80211_sub_if_data *sdata =
-		(struct ieee80211_sub_if_data *) data;
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct ieee80211_local *local = sdata->local;
-
-	set_bit(MESH_WORK_ROOT, &ifmsh->wrkq_flags);
-
-	if (local->quiescing) {
-		set_bit(TMR_RUNNING_MPR, &ifmsh->timers_running);
-		return;
-	}
-
-	ieee80211_queue_work(&local->hw, &sdata->work);
-=======
 int mesh_add_ht_oper_ie(struct ieee80211_sub_if_data *sdata,
 			struct sk_buff *skb)
 {
@@ -996,16 +697,11 @@ static void ieee80211_mesh_path_root_timer(struct timer_list *t)
 	set_bit(MESH_WORK_ROOT, &ifmsh->wrkq_flags);
 
 	wiphy_work_queue(sdata->local->hw.wiphy, &sdata->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_mesh_root_setup(struct ieee80211_if_mesh *ifmsh)
 {
-<<<<<<< HEAD
-	if (ifmsh->mshcfg.dot11MeshHWMPRootMode)
-=======
 	if (ifmsh->mshcfg.dot11MeshHWMPRootMode > IEEE80211_ROOTMODE_ROOT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(MESH_WORK_ROOT, &ifmsh->wrkq_flags);
 	else {
 		clear_bit(MESH_WORK_ROOT, &ifmsh->wrkq_flags);
@@ -1014,17 +710,6 @@ void ieee80211_mesh_root_setup(struct ieee80211_if_mesh *ifmsh)
 	}
 }
 
-<<<<<<< HEAD
-/**
- * ieee80211_fill_mesh_addresses - fill addresses of a locally originated mesh frame
- * @hdr:    	802.11 frame header
- * @fc:		frame control field
- * @meshda:	destination address in the mesh
- * @meshsa:	source address address in the mesh.  Same as TA, as frame is
- *              locally originated.
- *
- * Return the length of the 802.11 (does not include a mesh control header)
-=======
 static void
 ieee80211_mesh_update_bss_params(struct ieee80211_sub_if_data *sdata,
 				 u8 *ie, u8 ie_len)
@@ -1162,7 +847,6 @@ bool ieee80211_mesh_xmit_fast(struct ieee80211_sub_if_data *sdata,
  *              locally originated.
  *
  * Returns: the length of the 802.11 frame header (excludes mesh control header)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ieee80211_fill_mesh_addresses(struct ieee80211_hdr *hdr, __le16 *fc,
 				  const u8 *meshda, const u8 *meshsa)
@@ -1177,11 +861,7 @@ int ieee80211_fill_mesh_addresses(struct ieee80211_hdr *hdr, __le16 *fc,
 	} else {
 		*fc |= cpu_to_le16(IEEE80211_FCTL_FROMDS | IEEE80211_FCTL_TODS);
 		/* RA TA DA SA */
-<<<<<<< HEAD
-		memset(hdr->addr1, 0, ETH_ALEN);   /* RA is resolved later */
-=======
 		eth_zero_addr(hdr->addr1);   /* RA is resolved later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(hdr->addr2, meshsa, ETH_ALEN);
 		memcpy(hdr->addr3, meshda, ETH_ALEN);
 		memcpy(hdr->addr4, meshsa, ETH_ALEN);
@@ -1191,65 +871,14 @@ int ieee80211_fill_mesh_addresses(struct ieee80211_hdr *hdr, __le16 *fc,
 
 /**
  * ieee80211_new_mesh_header - create a new mesh header
-<<<<<<< HEAD
- * @meshhdr:    uninitialized mesh header
- * @sdata:	mesh interface to be used
-=======
  * @sdata:	mesh interface to be used
  * @meshhdr:    uninitialized mesh header
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr4or5:   1st address in the ae header, which may correspond to address 4
  *              (if addr6 is NULL) or address 5 (if addr6 is present). It may
  *              be NULL.
  * @addr6:	2nd address in the ae header, which corresponds to addr6 of the
  *              mesh frame
  *
-<<<<<<< HEAD
- * Return the header length.
- */
-int ieee80211_new_mesh_header(struct ieee80211s_hdr *meshhdr,
-		struct ieee80211_sub_if_data *sdata, char *addr4or5,
-		char *addr6)
-{
-	int aelen = 0;
-	BUG_ON(!addr4or5 && addr6);
-	memset(meshhdr, 0, sizeof(*meshhdr));
-	meshhdr->ttl = sdata->u.mesh.mshcfg.dot11MeshTTL;
-	put_unaligned(cpu_to_le32(sdata->u.mesh.mesh_seqnum), &meshhdr->seqnum);
-	sdata->u.mesh.mesh_seqnum++;
-	if (addr4or5 && !addr6) {
-		meshhdr->flags |= MESH_FLAGS_AE_A4;
-		aelen += ETH_ALEN;
-		memcpy(meshhdr->eaddr1, addr4or5, ETH_ALEN);
-	} else if (addr4or5 && addr6) {
-		meshhdr->flags |= MESH_FLAGS_AE_A5_A6;
-		aelen += 2 * ETH_ALEN;
-		memcpy(meshhdr->eaddr1, addr4or5, ETH_ALEN);
-		memcpy(meshhdr->eaddr2, addr6, ETH_ALEN);
-	}
-	return 6 + aelen;
-}
-
-static void ieee80211_mesh_housekeeping(struct ieee80211_sub_if_data *sdata,
-			   struct ieee80211_if_mesh *ifmsh)
-{
-	bool free_plinks;
-
-#ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	printk(KERN_DEBUG "%s: running mesh housekeeping\n",
-	       sdata->name);
-#endif
-
-	ieee80211_sta_expire(sdata, IEEE80211_MESH_PEER_INACTIVITY_LIMIT);
-	mesh_path_expire(sdata);
-
-	free_plinks = mesh_plink_availables(sdata);
-	if (free_plinks != sdata->u.mesh.accepting_plinks)
-		ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON);
-
-	mod_timer(&ifmsh->housekeeping_timer,
-		  round_jiffies(jiffies + IEEE80211_MESH_HOUSEKEEPING_INTERVAL));
-=======
  * Returns: the header length
  */
 unsigned int ieee80211_new_mesh_header(struct ieee80211_sub_if_data *sdata,
@@ -1296,54 +925,11 @@ static void ieee80211_mesh_housekeeping(struct ieee80211_sub_if_data *sdata)
 	mod_timer(&ifmsh->housekeeping_timer,
 		  round_jiffies(jiffies +
 				IEEE80211_MESH_HOUSEKEEPING_INTERVAL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ieee80211_mesh_rootpath(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-<<<<<<< HEAD
-
-	mesh_path_tx_root_frame(sdata);
-	mod_timer(&ifmsh->mesh_path_root_timer,
-		  round_jiffies(TU_TO_EXP_TIME(
-				  ifmsh->mshcfg.dot11MeshHWMPRannInterval)));
-}
-
-#ifdef CONFIG_PM
-void ieee80211_mesh_quiesce(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-
-	/* use atomic bitops in case all timers fire at the same time */
-
-	if (del_timer_sync(&ifmsh->housekeeping_timer))
-		set_bit(TMR_RUNNING_HK, &ifmsh->timers_running);
-	if (del_timer_sync(&ifmsh->mesh_path_timer))
-		set_bit(TMR_RUNNING_MP, &ifmsh->timers_running);
-	if (del_timer_sync(&ifmsh->mesh_path_root_timer))
-		set_bit(TMR_RUNNING_MPR, &ifmsh->timers_running);
-}
-
-void ieee80211_mesh_restart(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-
-	if (test_and_clear_bit(TMR_RUNNING_HK, &ifmsh->timers_running))
-		add_timer(&ifmsh->housekeeping_timer);
-	if (test_and_clear_bit(TMR_RUNNING_MP, &ifmsh->timers_running))
-		add_timer(&ifmsh->mesh_path_timer);
-	if (test_and_clear_bit(TMR_RUNNING_MPR, &ifmsh->timers_running))
-		add_timer(&ifmsh->mesh_path_root_timer);
-	ieee80211_mesh_root_setup(ifmsh);
-}
-#endif
-
-void ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct ieee80211_local *local = sdata->local;
-=======
 	u32 interval;
 
 	mesh_path_tx_root_frame(sdata);
@@ -1594,7 +1180,6 @@ int ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata)
 		      BSS_CHANGED_BASIC_RATES |
 		      BSS_CHANGED_BEACON_INT |
 		      BSS_CHANGED_MCAST_RATE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local->fif_other_bss++;
 	/* mesh ifaces must set allmulti to forward mcast traffic */
@@ -1602,17 +1187,6 @@ int ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata)
 	ieee80211_configure_filter(local);
 
 	ifmsh->mesh_cc_id = 0;	/* Disabled */
-<<<<<<< HEAD
-	ifmsh->mesh_sp_id = 0;	/* Neighbor Offset */
-	ifmsh->mesh_auth_id = 0;	/* Disabled */
-	set_bit(MESH_WORK_HOUSEKEEPING, &ifmsh->wrkq_flags);
-	ieee80211_mesh_root_setup(ifmsh);
-	ieee80211_queue_work(&local->hw, &sdata->work);
-	sdata->vif.bss_conf.beacon_int = MESH_DEFAULT_BEACON_INTERVAL;
-	ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON |
-						BSS_CHANGED_BEACON_ENABLED |
-						BSS_CHANGED_BEACON_INT);
-=======
 	/* register sync ops from extensible synchronization framework */
 	ifmsh->sync_ops = ieee80211_mesh_sync_ops_get(ifmsh->mesh_sp_id);
 	ifmsh->sync_offset_clockdrift_max = 0;
@@ -1635,19 +1209,12 @@ int ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata)
 
 	netif_carrier_on(sdata->dev);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_stop_mesh(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-<<<<<<< HEAD
-
-	ifmsh->mesh_id_len = 0;
-	ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON_ENABLED);
-	sta_info_flush(local, NULL);
-=======
 	struct beacon_data *bcn;
 
 	netif_carrier_off(sdata->dev);
@@ -1673,34 +1240,20 @@ void ieee80211_stop_mesh(struct ieee80211_sub_if_data *sdata)
 	/* free all potentially still buffered group-addressed frames */
 	local->total_ps_buffered -= skb_queue_len(&ifmsh->ps.bc_buf);
 	skb_queue_purge(&ifmsh->ps.bc_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer_sync(&sdata->u.mesh.housekeeping_timer);
 	del_timer_sync(&sdata->u.mesh.mesh_path_root_timer);
 	del_timer_sync(&sdata->u.mesh.mesh_path_timer);
-<<<<<<< HEAD
-	/*
-	 * If the timer fired while we waited for it, it will have
-	 * requeued the work. Now the work will be running again
-	 * but will not rearm the timer again because it checks
-	 * whether the interface is running, which, at this point,
-	 * it no longer is.
-	 */
-	cancel_work_sync(&sdata->work);
-=======
 
 	/* clear any mesh work (for next join) we may have accrued */
 	ifmsh->wrkq_flags = 0;
 	memset(ifmsh->mbss_changed, 0, sizeof(ifmsh->mbss_changed));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local->fif_other_bss--;
 	atomic_dec(&local->iff_allmultis);
 	ieee80211_configure_filter(local);
 }
 
-<<<<<<< HEAD
-=======
 static void ieee80211_mesh_csa_mark_radar(struct ieee80211_sub_if_data *sdata)
 {
 	int err;
@@ -1900,7 +1453,6 @@ free:
 	kfree(elems);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ieee80211_mesh_rx_bcn_presp(struct ieee80211_sub_if_data *sdata,
 					u16 stype,
 					struct ieee80211_mgmt *mgmt,
@@ -1908,18 +1460,6 @@ static void ieee80211_mesh_rx_bcn_presp(struct ieee80211_sub_if_data *sdata,
 					struct ieee80211_rx_status *rx_status)
 {
 	struct ieee80211_local *local = sdata->local;
-<<<<<<< HEAD
-	struct ieee802_11_elems elems;
-	struct ieee80211_channel *channel;
-	u32 supp_rates = 0;
-	size_t baselen;
-	int freq;
-	enum ieee80211_band band = rx_status->band;
-
-	/* ignore ProbeResp to foreign address */
-	if (stype == IEEE80211_STYPE_PROBE_RESP &&
-	    compare_ether_addr(mgmt->da, sdata->vif.addr))
-=======
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	struct ieee802_11_elems *elems;
 	struct ieee80211_channel *channel;
@@ -1930,24 +1470,12 @@ static void ieee80211_mesh_rx_bcn_presp(struct ieee80211_sub_if_data *sdata,
 	/* ignore ProbeResp to foreign address */
 	if (stype == IEEE80211_STYPE_PROBE_RESP &&
 	    !ether_addr_equal(mgmt->da, sdata->vif.addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	baselen = (u8 *) mgmt->u.probe_resp.variable - (u8 *) mgmt;
 	if (baselen > len)
 		return;
 
-<<<<<<< HEAD
-	ieee802_11_parse_elems(mgmt->u.probe_resp.variable, len - baselen,
-			       &elems);
-
-	/* ignore beacons from secure mesh peers if our security is off */
-	if (elems.rsn_len && sdata->u.mesh.security == IEEE80211_MESH_SEC_NONE)
-		return;
-
-	if (elems.ds_params && elems.ds_params_len == 1)
-		freq = ieee80211_channel_to_frequency(elems.ds_params[0], band);
-=======
 	elems = ieee802_11_parse_elems(mgmt->u.probe_resp.variable,
 				       len - baselen,
 				       false, NULL);
@@ -1962,22 +1490,12 @@ static void ieee80211_mesh_rx_bcn_presp(struct ieee80211_sub_if_data *sdata,
 
 	if (elems->ds_params)
 		freq = ieee80211_channel_to_frequency(elems->ds_params[0], band);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		freq = rx_status->freq;
 
 	channel = ieee80211_get_channel(local->hw.wiphy, freq);
 
 	if (!channel || channel->flags & IEEE80211_CHAN_DISABLED)
-<<<<<<< HEAD
-		return;
-
-	if (elems.mesh_id && elems.mesh_config &&
-	    mesh_matches_local(&elems, sdata)) {
-		supp_rates = ieee80211_sta_get_rates(local, &elems, band);
-		mesh_neighbour_update(mgmt->sa, supp_rates, sdata, &elems);
-	}
-=======
 		goto free;
 
 	if (mesh_matches_local(sdata, elems)) {
@@ -2133,7 +1651,6 @@ static void mesh_rx_csa_frame(struct ieee80211_sub_if_data *sdata,
 	}
 free:
 	kfree(elems);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ieee80211_mesh_rx_mgmt_action(struct ieee80211_sub_if_data *sdata,
@@ -2155,12 +1672,9 @@ static void ieee80211_mesh_rx_mgmt_action(struct ieee80211_sub_if_data *sdata,
 		if (mesh_action_is_path_sel(mgmt))
 			mesh_rx_path_sel_frame(sdata, mgmt, len);
 		break;
-<<<<<<< HEAD
-=======
 	case WLAN_CATEGORY_SPECTRUM_MGMT:
 		mesh_rx_csa_frame(sdata, mgmt, len);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2171,15 +1685,12 @@ void ieee80211_mesh_rx_queued_mgmt(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_mgmt *mgmt;
 	u16 stype;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
 	/* mesh already went down */
 	if (!sdata->u.mesh.mesh_id_len)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_status = IEEE80211_SKB_RXCB(skb);
 	mgmt = (struct ieee80211_mgmt *) skb->data;
 	stype = le16_to_cpu(mgmt->frame_control) & IEEE80211_FCTL_STYPE;
@@ -2190,20 +1701,15 @@ void ieee80211_mesh_rx_queued_mgmt(struct ieee80211_sub_if_data *sdata,
 		ieee80211_mesh_rx_bcn_presp(sdata, stype, mgmt, skb->len,
 					    rx_status);
 		break;
-<<<<<<< HEAD
-=======
 	case IEEE80211_STYPE_PROBE_REQ:
 		ieee80211_mesh_rx_probe_req(sdata, mgmt, skb->len);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE80211_STYPE_ACTION:
 		ieee80211_mesh_rx_mgmt_action(sdata, mgmt, skb->len, rx_status);
 		break;
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void mesh_bss_info_changed(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -2227,50 +1733,21 @@ static void mesh_bss_info_changed(struct ieee80211_sub_if_data *sdata)
 	ieee80211_link_info_change_notify(sdata, &sdata->deflink, changed);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ieee80211_mesh_work(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
 	/* mesh already went down */
 	if (!sdata->u.mesh.mesh_id_len)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ifmsh->preq_queue_len &&
 	    time_after(jiffies,
 		       ifmsh->last_preq + msecs_to_jiffies(ifmsh->mshcfg.dot11MeshHWMPpreqMinInterval)))
 		mesh_path_start_discovery(sdata);
 
-<<<<<<< HEAD
-	if (test_and_clear_bit(MESH_WORK_GROW_MPATH_TABLE, &ifmsh->wrkq_flags))
-		mesh_mpath_table_grow();
-
-	if (test_and_clear_bit(MESH_WORK_GROW_MPP_TABLE, &ifmsh->wrkq_flags))
-		mesh_mpp_table_grow();
-
-	if (test_and_clear_bit(MESH_WORK_HOUSEKEEPING, &ifmsh->wrkq_flags))
-		ieee80211_mesh_housekeeping(sdata, ifmsh);
-
-	if (test_and_clear_bit(MESH_WORK_ROOT, &ifmsh->wrkq_flags))
-		ieee80211_mesh_rootpath(sdata);
-}
-
-void ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local)
-{
-	struct ieee80211_sub_if_data *sdata;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(sdata, &local->interfaces, list)
-		if (ieee80211_vif_is_mesh(&sdata->vif))
-			ieee80211_queue_work(&local->hw, &sdata->work);
-	rcu_read_unlock();
-}
-=======
 	if (test_and_clear_bit(MESH_WORK_HOUSEKEEPING, &ifmsh->wrkq_flags))
 		ieee80211_mesh_housekeeping(sdata);
 
@@ -2284,46 +1761,20 @@ void ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local)
 		mesh_bss_info_changed(sdata);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ieee80211_mesh_init_sdata(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-<<<<<<< HEAD
-
-	setup_timer(&ifmsh->housekeeping_timer,
-		    ieee80211_mesh_housekeeping_timer,
-		    (unsigned long) sdata);
-
-	ifmsh->accepting_plinks = true;
-	ifmsh->preq_id = 0;
-	ifmsh->sn = 0;
-	ifmsh->num_gates = 0;
-=======
 	static u8 zero_addr[ETH_ALEN] = {};
 
 	timer_setup(&ifmsh->housekeeping_timer,
 		    ieee80211_mesh_housekeeping_timer, 0);
 
 	ifmsh->accepting_plinks = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&ifmsh->mpaths, 0);
 	mesh_rmc_init(sdata);
 	ifmsh->last_preq = jiffies;
 	ifmsh->next_perr = jiffies;
-<<<<<<< HEAD
-	/* Allocate all mesh structures when creating the first mesh interface. */
-	if (!mesh_allocated)
-		ieee80211s_init();
-	setup_timer(&ifmsh->mesh_path_timer,
-		    ieee80211_mesh_path_timer,
-		    (unsigned long) sdata);
-	setup_timer(&ifmsh->mesh_path_root_timer,
-		    ieee80211_mesh_path_root_timer,
-		    (unsigned long) sdata);
-	INIT_LIST_HEAD(&ifmsh->preq_queue.list);
-	spin_lock_init(&ifmsh->mesh_preq_queue_lock);
-=======
 	ifmsh->csa_role = IEEE80211_MESH_CSA_ROLE_NONE;
 	/* Allocate all mesh structures when creating the first mesh interface. */
 	if (!mesh_allocated)
@@ -2347,5 +1798,4 @@ void ieee80211_mesh_teardown_sdata(struct ieee80211_sub_if_data *sdata)
 {
 	mesh_rmc_free(sdata);
 	mesh_pathtbl_unregister(sdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

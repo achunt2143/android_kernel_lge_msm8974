@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sata_vsc.c - Vitesse VSC7174 4 port DPA SATA
  *
@@ -13,46 +10,17 @@
  *
  *  Bits from Jeff Garzik, Copyright RedHat, Inc.
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
-=======
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/driver-api/libata.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Vitesse hardware documentation presumably available under NDA.
  *  Intel 31244 (same hardware interface) documentation presumably
  *  available from http://developer.intel.com/
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -215,40 +183,24 @@ static void vsc_sata_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 static void vsc_sata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
-<<<<<<< HEAD
-	u16 nsect, lbal, lbam, lbah, feature;
-
-	tf->command = ata_sff_check_status(ap);
-	tf->device = readw(ioaddr->device_addr);
-	feature = readw(ioaddr->error_addr);
-=======
 	u16 nsect, lbal, lbam, lbah, error;
 
 	tf->status = ata_sff_check_status(ap);
 	tf->device = readw(ioaddr->device_addr);
 	error = readw(ioaddr->error_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsect = readw(ioaddr->nsect_addr);
 	lbal = readw(ioaddr->lbal_addr);
 	lbam = readw(ioaddr->lbam_addr);
 	lbah = readw(ioaddr->lbah_addr);
 
-<<<<<<< HEAD
-	tf->feature = feature;
-=======
 	tf->error = error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect = nsect;
 	tf->lbal = lbal;
 	tf->lbam = lbam;
 	tf->lbah = lbah;
 
 	if (tf->flags & ATA_TFLAG_LBA48) {
-<<<<<<< HEAD
-		tf->hob_feature = feature >> 8;
-=======
 		tf->hob_feature = error >> 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tf->hob_nsect = nsect >> 8;
 		tf->hob_lbal = lbal >> 8;
 		tf->hob_lbam = lbam >> 8;
@@ -325,11 +277,7 @@ out:
 }
 
 
-<<<<<<< HEAD
-static struct scsi_host_template vsc_sata_sht = {
-=======
 static const struct scsi_host_template vsc_sata_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -347,12 +295,7 @@ static struct ata_port_operations vsc_sata_ops = {
 	.scr_write		= vsc_sata_scr_write,
 };
 
-<<<<<<< HEAD
-static void __devinit vsc_sata_setup_port(struct ata_ioports *port,
-					  void __iomem *base)
-=======
 static void vsc_sata_setup_port(struct ata_ioports *port, void __iomem *base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	port->cmd_addr		= base + VSC_SATA_TF_CMD_OFFSET;
 	port->data_addr		= base + VSC_SATA_TF_DATA_OFFSET;
@@ -374,13 +317,8 @@ static void vsc_sata_setup_port(struct ata_ioports *port, void __iomem *base)
 }
 
 
-<<<<<<< HEAD
-static int __devinit vsc_sata_init_one(struct pci_dev *pdev,
-				       const struct pci_device_id *ent)
-=======
 static int vsc_sata_init_one(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const struct ata_port_info pi = {
 		.flags		= ATA_FLAG_SATA,
@@ -433,14 +371,7 @@ static int vsc_sata_init_one(struct pci_dev *pdev,
 	/*
 	 * Use 32 bit DMA mask, because 64 bit address support is poor.
 	 */
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (rc)
-		return rc;
-	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -484,28 +415,10 @@ static struct pci_driver vsc_sata_pci_driver = {
 	.remove			= ata_pci_remove_one,
 };
 
-<<<<<<< HEAD
-static int __init vsc_sata_init(void)
-{
-	return pci_register_driver(&vsc_sata_pci_driver);
-}
-
-static void __exit vsc_sata_exit(void)
-{
-	pci_unregister_driver(&vsc_sata_pci_driver);
-}
-=======
 module_pci_driver(vsc_sata_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jeremy Higdon");
 MODULE_DESCRIPTION("low-level driver for Vitesse VSC7174 SATA controller");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, vsc_sata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(vsc_sata_init);
-module_exit(vsc_sata_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

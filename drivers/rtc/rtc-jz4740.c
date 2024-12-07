@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
  *  Copyright (C) 2010, Paul Cercueil <paul@crapouillou.net>
  *	 JZ4740 SoC RTC driver
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under  the terms of  the GNU General Public License as published by the
- *  Free Software Foundation;  either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  675 Mass Ave, Cambridge, MA 02139, USA.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/platform_device.h>
-=======
  */
 
 #include <linux/clk.h>
@@ -36,7 +16,6 @@
 #include <linux/pm_wakeirq.h>
 #include <linux/property.h>
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rtc.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -46,9 +25,6 @@
 #define JZ_REG_RTC_SEC_ALARM	0x08
 #define JZ_REG_RTC_REGULATOR	0x0C
 #define JZ_REG_RTC_HIBERNATE	0x20
-<<<<<<< HEAD
-#define JZ_REG_RTC_SCRATCHPAD	0x34
-=======
 #define JZ_REG_RTC_WAKEUP_FILTER	0x24
 #define JZ_REG_RTC_RESET_COUNTER	0x28
 #define JZ_REG_RTC_SCRATCHPAD	0x34
@@ -57,7 +33,6 @@
 /* The following are present on the jz4780 */
 #define JZ_REG_RTC_WENR	0x3C
 #define JZ_RTC_WENR_WEN	BIT(31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JZ_RTC_CTRL_WRDY	BIT(7)
 #define JZ_RTC_CTRL_1HZ		BIT(6)
@@ -67,15 +42,6 @@
 #define JZ_RTC_CTRL_AE		BIT(2)
 #define JZ_RTC_CTRL_ENABLE	BIT(0)
 
-<<<<<<< HEAD
-struct jz4740_rtc {
-	struct resource *mem;
-	void __iomem *base;
-
-	struct rtc_device *rtc;
-
-	unsigned int irq;
-=======
 /* Magic value to enable writes on jz4780 */
 #define JZ_RTC_WENR_MAGIC	0xA55A
 
@@ -98,16 +64,12 @@ struct jz4740_rtc {
 	struct rtc_device *rtc;
 
 	struct clk_hw clk32k;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;
 };
 
-<<<<<<< HEAD
-=======
 static struct device *dev_for_power_off;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline uint32_t jz4740_rtc_reg_read(struct jz4740_rtc *rtc, size_t reg)
 {
 	return readl(rtc->base + reg);
@@ -116,15 +78,6 @@ static inline uint32_t jz4740_rtc_reg_read(struct jz4740_rtc *rtc, size_t reg)
 static int jz4740_rtc_wait_write_ready(struct jz4740_rtc *rtc)
 {
 	uint32_t ctrl;
-<<<<<<< HEAD
-	int timeout = 1000;
-
-	do {
-		ctrl = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_CTRL);
-	} while (!(ctrl & JZ_RTC_CTRL_WRDY) && --timeout);
-
-	return timeout ? 0 : -EIO;
-=======
 
 	return readl_poll_timeout(rtc->base + JZ_REG_RTC_CTRL, ctrl,
 				  ctrl & JZ_RTC_CTRL_WRDY, 0, 1000);
@@ -143,23 +96,17 @@ static inline int jz4780_rtc_enable_write(struct jz4740_rtc *rtc)
 
 	return readl_poll_timeout(rtc->base + JZ_REG_RTC_WENR, ctrl,
 				  ctrl & JZ_RTC_WENR_WEN, 0, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int jz4740_rtc_reg_write(struct jz4740_rtc *rtc, size_t reg,
 	uint32_t val)
 {
-<<<<<<< HEAD
-	int ret;
-	ret = jz4740_rtc_wait_write_ready(rtc);
-=======
 	int ret = 0;
 
 	if (rtc->type >= ID_JZ4760)
 		ret = jz4780_rtc_enable_write(rtc);
 	if (ret == 0)
 		ret = jz4740_rtc_wait_write_ready(rtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0)
 		writel(val, rtc->base + reg);
 
@@ -198,12 +145,9 @@ static int jz4740_rtc_read_time(struct device *dev, struct rtc_time *time)
 	uint32_t secs, secs2;
 	int timeout = 5;
 
-<<<<<<< HEAD
-=======
 	if (jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD) != 0x12345678)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the seconds register is read while it is updated, it can contain a
 	 * bogus value. This can be avoided by making sure that two consecutive
 	 * reads have the same value.
@@ -219,18 +163,6 @@ static int jz4740_rtc_read_time(struct device *dev, struct rtc_time *time)
 	if (timeout == 0)
 		return -EIO;
 
-<<<<<<< HEAD
-	rtc_time_to_tm(secs, time);
-
-	return rtc_valid_tm(time);
-}
-
-static int jz4740_rtc_set_mmss(struct device *dev, unsigned long secs)
-{
-	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
-
-	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SEC, secs);
-=======
 	rtc_time64_to_tm(secs, time);
 
 	return 0;
@@ -246,7 +178,6 @@ static int jz4740_rtc_set_time(struct device *dev, struct rtc_time *time)
 		return ret;
 
 	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD, 0x12345678);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int jz4740_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
@@ -262,28 +193,16 @@ static int jz4740_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	alrm->enabled = !!(ctrl & JZ_RTC_CTRL_AE);
 	alrm->pending = !!(ctrl & JZ_RTC_CTRL_AF);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(secs, &alrm->time);
-
-	return rtc_valid_tm(&alrm->time);
-=======
 	rtc_time64_to_tm(secs, &alrm->time);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int jz4740_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	int ret;
 	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	unsigned long secs;
-
-	rtc_tm_to_time(&alrm->time, &secs);
-=======
 	uint32_t secs = lower_32_bits(rtc_tm_to_time64(&alrm->time));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SEC_ALARM, secs);
 	if (!ret)
@@ -299,15 +218,9 @@ static int jz4740_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	return jz4740_rtc_ctrl_set_bits(rtc, JZ_RTC_CTRL_AF_IRQ, enable);
 }
 
-<<<<<<< HEAD
-static struct rtc_class_ops jz4740_rtc_ops = {
-	.read_time	= jz4740_rtc_read_time,
-	.set_mmss	= jz4740_rtc_set_mmss,
-=======
 static const struct rtc_class_ops jz4740_rtc_ops = {
 	.read_time	= jz4740_rtc_read_time,
 	.set_time	= jz4740_rtc_set_time,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_alarm	= jz4740_rtc_read_alarm,
 	.set_alarm	= jz4740_rtc_set_alarm,
 	.alarm_irq_enable = jz4740_rtc_alarm_irq_enable,
@@ -334,57 +247,11 @@ static irqreturn_t jz4740_rtc_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-void jz4740_rtc_poweroff(struct device *dev)
-=======
 static void jz4740_rtc_poweroff(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
 	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_HIBERNATE, 1);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(jz4740_rtc_poweroff);
-
-static int __devinit jz4740_rtc_probe(struct platform_device *pdev)
-{
-	int ret;
-	struct jz4740_rtc *rtc;
-	uint32_t scratchpad;
-
-	rtc = kzalloc(sizeof(*rtc), GFP_KERNEL);
-	if (!rtc)
-		return -ENOMEM;
-
-	rtc->irq = platform_get_irq(pdev, 0);
-	if (rtc->irq < 0) {
-		ret = -ENOENT;
-		dev_err(&pdev->dev, "Failed to get platform irq\n");
-		goto err_free;
-	}
-
-	rtc->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!rtc->mem) {
-		ret = -ENOENT;
-		dev_err(&pdev->dev, "Failed to get platform mmio memory\n");
-		goto err_free;
-	}
-
-	rtc->mem = request_mem_region(rtc->mem->start, resource_size(rtc->mem),
-					pdev->name);
-	if (!rtc->mem) {
-		ret = -EBUSY;
-		dev_err(&pdev->dev, "Failed to request mmio memory region\n");
-		goto err_free;
-	}
-
-	rtc->base = ioremap_nocache(rtc->mem->start, resource_size(rtc->mem));
-	if (!rtc->base) {
-		ret = -EBUSY;
-		dev_err(&pdev->dev, "Failed to ioremap mmio memory\n");
-		goto err_release_mem_region;
-	}
-=======
 
 static void jz4740_rtc_power_off(void)
 {
@@ -495,113 +362,11 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 	clk = devm_clk_get_enabled(dev, "rtc");
 	if (IS_ERR(clk))
 		return dev_err_probe(dev, PTR_ERR(clk), "Failed to get RTC clock\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&rtc->lock);
 
 	platform_set_drvdata(pdev, rtc);
 
-<<<<<<< HEAD
-	device_init_wakeup(&pdev->dev, 1);
-
-	rtc->rtc = rtc_device_register(pdev->name, &pdev->dev, &jz4740_rtc_ops,
-					THIS_MODULE);
-	if (IS_ERR(rtc->rtc)) {
-		ret = PTR_ERR(rtc->rtc);
-		dev_err(&pdev->dev, "Failed to register rtc device: %d\n", ret);
-		goto err_iounmap;
-	}
-
-	ret = request_irq(rtc->irq, jz4740_rtc_irq, 0,
-				pdev->name, rtc);
-	if (ret) {
-		dev_err(&pdev->dev, "Failed to request rtc irq: %d\n", ret);
-		goto err_unregister_rtc;
-	}
-
-	scratchpad = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
-	if (scratchpad != 0x12345678) {
-		ret = jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD, 0x12345678);
-		ret = jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SEC, 0);
-		if (ret) {
-			dev_err(&pdev->dev, "Could not write write to RTC registers\n");
-			goto err_free_irq;
-		}
-	}
-
-	return 0;
-
-err_free_irq:
-	free_irq(rtc->irq, rtc);
-err_unregister_rtc:
-	rtc_device_unregister(rtc->rtc);
-err_iounmap:
-	platform_set_drvdata(pdev, NULL);
-	iounmap(rtc->base);
-err_release_mem_region:
-	release_mem_region(rtc->mem->start, resource_size(rtc->mem));
-err_free:
-	kfree(rtc);
-
-	return ret;
-}
-
-static int __devexit jz4740_rtc_remove(struct platform_device *pdev)
-{
-	struct jz4740_rtc *rtc = platform_get_drvdata(pdev);
-
-	free_irq(rtc->irq, rtc);
-
-	rtc_device_unregister(rtc->rtc);
-
-	iounmap(rtc->base);
-	release_mem_region(rtc->mem->start, resource_size(rtc->mem));
-
-	kfree(rtc);
-
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-
-#ifdef CONFIG_PM
-static int jz4740_rtc_suspend(struct device *dev)
-{
-	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
-
-	if (device_may_wakeup(dev))
-		enable_irq_wake(rtc->irq);
-	return 0;
-}
-
-static int jz4740_rtc_resume(struct device *dev)
-{
-	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
-
-	if (device_may_wakeup(dev))
-		disable_irq_wake(rtc->irq);
-	return 0;
-}
-
-static const struct dev_pm_ops jz4740_pm_ops = {
-	.suspend = jz4740_rtc_suspend,
-	.resume  = jz4740_rtc_resume,
-};
-#define JZ4740_RTC_PM_OPS (&jz4740_pm_ops)
-
-#else
-#define JZ4740_RTC_PM_OPS NULL
-#endif  /* CONFIG_PM */
-
-static struct platform_driver jz4740_rtc_driver = {
-	.probe	 = jz4740_rtc_probe,
-	.remove	 = __devexit_p(jz4740_rtc_remove),
-	.driver	 = {
-		.name  = "jz4740-rtc",
-		.owner = THIS_MODULE,
-		.pm    = JZ4740_RTC_PM_OPS,
-=======
 	device_init_wakeup(dev, 1);
 
 	ret = dev_pm_set_wake_irq(dev, irq);
@@ -664,7 +429,6 @@ static struct platform_driver jz4740_rtc_driver = {
 	.driver	 = {
 		.name  = "jz4740-rtc",
 		.of_match_table = jz4740_rtc_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

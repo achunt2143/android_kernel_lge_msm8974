@@ -9,18 +9,11 @@
 #include <linux/ptrace.h>
 #include <linux/kernel.h>
 #include <asm/unistd.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/ucontext.h>
-#include "frame_kern.h"
-#include "skas.h"
-=======
 #include <linux/uaccess.h>
 #include <asm/ucontext.h>
 #include <frame_kern.h>
 #include <registers.h>
 #include <skas.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_32
 
@@ -164,12 +157,9 @@ static int copy_sc_from_user(struct pt_regs *regs,
 	struct sigcontext sc;
 	int err, pid;
 
-<<<<<<< HEAD
-=======
 	/* Always make any pending restarted system calls return -EINTR */
 	current->restart_block.fn = do_no_restart_syscall;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = copy_from_user(&sc, from, sizeof(sc));
 	if (err)
 		return err;
@@ -222,11 +212,7 @@ static int copy_sc_from_user(struct pt_regs *regs,
 		if (err)
 			return 1;
 
-<<<<<<< HEAD
-		err = convert_fxsr_from_user(&fpx, sc.fpstate);
-=======
 		err = convert_fxsr_from_user(&fpx, (void *)sc.fpstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return 1;
 
@@ -240,37 +226,16 @@ static int copy_sc_from_user(struct pt_regs *regs,
 	} else
 #endif
 	{
-<<<<<<< HEAD
-		struct user_i387_struct fp;
-
-		err = copy_from_user(&fp, sc.fpstate,
-				     sizeof(struct user_i387_struct));
-		if (err)
-			return 1;
-
-		err = restore_fp_registers(pid, (unsigned long *) &fp);
-		if (err < 0) {
-			printk(KERN_ERR "copy_sc_from_user - "
-			       "restore_fp_registers failed, errno = %d\n",
-			       -err);
-			return 1;
-		}
-=======
 		err = copy_from_user(regs->regs.fp, (void *)sc.fpstate,
 				     sizeof(struct _xstate));
 		if (err)
 			return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
 static int copy_sc_to_user(struct sigcontext __user *to,
-<<<<<<< HEAD
-			   struct _fpstate __user *to_fp, struct pt_regs *regs,
-=======
 			   struct _xstate __user *to_fp, struct pt_regs *regs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   unsigned long mask)
 {
 	struct sigcontext sc;
@@ -317,11 +282,7 @@ static int copy_sc_to_user(struct sigcontext __user *to,
 #endif
 #undef PUTREG
 	sc.oldmask = mask;
-<<<<<<< HEAD
-	sc.fpstate = to_fp;
-=======
 	sc.fpstate = (unsigned long)to_fp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = copy_to_user(to, &sc, sizeof(struct sigcontext));
 	if (err)
@@ -340,18 +301,6 @@ static int copy_sc_to_user(struct sigcontext __user *to,
 			return 1;
 		}
 
-<<<<<<< HEAD
-		err = convert_fxsr_to_user(to_fp, &fpx);
-		if (err)
-			return 1;
-
-		err |= __put_user(fpx.swd, &to_fp->status);
-		err |= __put_user(X86_FXSR_MAGIC, &to_fp->magic);
-		if (err)
-			return 1;
-
-		if (copy_to_user(&to_fp->_fxsr_env[0], &fpx,
-=======
 		err = convert_fxsr_to_user(&to_fp->fpstate, &fpx);
 		if (err)
 			return 1;
@@ -362,20 +311,12 @@ static int copy_sc_to_user(struct sigcontext __user *to,
 			return 1;
 
 		if (copy_to_user(&to_fp->fpstate._fxsr_env[0], &fpx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 sizeof(struct user_fxsr_struct)))
 			return 1;
 	} else
 #endif
 	{
-<<<<<<< HEAD
-		struct user_i387_struct fp;
-
-		err = save_fp_registers(pid, (unsigned long *) &fp);
-		if (copy_to_user(to_fp, &fp, sizeof(struct user_i387_struct)))
-=======
 		if (copy_to_user(to_fp, regs->regs.fp, sizeof(struct _xstate)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 	}
 
@@ -384,22 +325,12 @@ static int copy_sc_to_user(struct sigcontext __user *to,
 
 #ifdef CONFIG_X86_32
 static int copy_ucontext_to_user(struct ucontext __user *uc,
-<<<<<<< HEAD
-				 struct _fpstate __user *fp, sigset_t *set,
-=======
 				 struct _xstate __user *fp, sigset_t *set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 unsigned long sp)
 {
 	int err = 0;
 
-<<<<<<< HEAD
-	err |= put_user(current->sas_ss_sp, &uc->uc_stack.ss_sp);
-	err |= put_user(sas_ss_flags(sp), &uc->uc_stack.ss_flags);
-	err |= put_user(current->sas_ss_size, &uc->uc_stack.ss_size);
-=======
 	err |= __save_altstack(&uc->uc_stack, sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err |= copy_sc_to_user(&uc->uc_mcontext, fp, &current->thread.regs, 0);
 	err |= copy_to_user(&uc->uc_sigmask, set, sizeof(*set));
 	return err;
@@ -410,11 +341,7 @@ struct sigframe
 	char __user *pretcode;
 	int sig;
 	struct sigcontext sc;
-<<<<<<< HEAD
-	struct _fpstate fpstate;
-=======
 	struct _xstate fpstate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long extramask[_NSIG_WORDS-1];
 	char retcode[8];
 };
@@ -427,19 +354,6 @@ struct rt_sigframe
 	void __user *puc;
 	struct siginfo info;
 	struct ucontext uc;
-<<<<<<< HEAD
-	struct _fpstate fpstate;
-	char retcode[8];
-};
-
-int setup_signal_stack_sc(unsigned long stack_top, int sig,
-			  struct k_sigaction *ka, struct pt_regs *regs,
-			  sigset_t *mask)
-{
-	struct sigframe __user *frame;
-	void __user *restorer;
-	int err = 0;
-=======
 	struct _xstate fpstate;
 	char retcode[8];
 };
@@ -450,26 +364,16 @@ int setup_signal_stack_sc(unsigned long stack_top, struct ksignal *ksig,
 	struct sigframe __user *frame;
 	void __user *restorer;
 	int err = 0, sig = ksig->sig;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the same calculation as i386 - ((sp + 4) & 15) == 0 */
 	stack_top = ((stack_top + 4) & -16UL) - 4;
 	frame = (struct sigframe __user *) stack_top - 1;
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
-		return 1;
-
-	restorer = frame->retcode;
-	if (ka->sa.sa_flags & SA_RESTORER)
-		restorer = ka->sa.sa_restorer;
-=======
 	if (!access_ok(frame, sizeof(*frame)))
 		return 1;
 
 	restorer = frame->retcode;
 	if (ksig->ka.sa.sa_flags & SA_RESTORER)
 		restorer = ksig->ka.sa.sa_restorer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err |= __put_user(restorer, &frame->pretcode);
 	err |= __put_user(sig, &frame->sig);
@@ -493,34 +397,6 @@ int setup_signal_stack_sc(unsigned long stack_top, struct ksignal *ksig,
 		return err;
 
 	PT_REGS_SP(regs) = (unsigned long) frame;
-<<<<<<< HEAD
-	PT_REGS_IP(regs) = (unsigned long) ka->sa.sa_handler;
-	PT_REGS_EAX(regs) = (unsigned long) sig;
-	PT_REGS_EDX(regs) = (unsigned long) 0;
-	PT_REGS_ECX(regs) = (unsigned long) 0;
-
-	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
-		ptrace_notify(SIGTRAP);
-	return 0;
-}
-
-int setup_signal_stack_si(unsigned long stack_top, int sig,
-			  struct k_sigaction *ka, struct pt_regs *regs,
-			  siginfo_t *info, sigset_t *mask)
-{
-	struct rt_sigframe __user *frame;
-	void __user *restorer;
-	int err = 0;
-
-	stack_top &= -8UL;
-	frame = (struct rt_sigframe __user *) stack_top - 1;
-	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
-		return 1;
-
-	restorer = frame->retcode;
-	if (ka->sa.sa_flags & SA_RESTORER)
-		restorer = ka->sa.sa_restorer;
-=======
 	PT_REGS_IP(regs) = (unsigned long) ksig->ka.sa.sa_handler;
 	PT_REGS_AX(regs) = (unsigned long) sig;
 	PT_REGS_DX(regs) = (unsigned long) 0;
@@ -543,17 +419,12 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	restorer = frame->retcode;
 	if (ksig->ka.sa.sa_flags & SA_RESTORER)
 		restorer = ksig->ka.sa.sa_restorer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err |= __put_user(restorer, &frame->pretcode);
 	err |= __put_user(sig, &frame->sig);
 	err |= __put_user(&frame->info, &frame->pinfo);
 	err |= __put_user(&frame->uc, &frame->puc);
-<<<<<<< HEAD
-	err |= copy_siginfo_to_user(&frame->info, info);
-=======
 	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err |= copy_ucontext_to_user(&frame->uc, &frame->fpstate, mask,
 					PT_REGS_SP(regs));
 
@@ -572,19 +443,6 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 		return err;
 
 	PT_REGS_SP(regs) = (unsigned long) frame;
-<<<<<<< HEAD
-	PT_REGS_IP(regs) = (unsigned long) ka->sa.sa_handler;
-	PT_REGS_EAX(regs) = (unsigned long) sig;
-	PT_REGS_EDX(regs) = (unsigned long) &frame->info;
-	PT_REGS_ECX(regs) = (unsigned long) &frame->uc;
-
-	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
-		ptrace_notify(SIGTRAP);
-	return 0;
-}
-
-long sys_sigreturn(struct pt_regs *regs)
-=======
 	PT_REGS_IP(regs) = (unsigned long) ksig->ka.sa.sa_handler;
 	PT_REGS_AX(regs) = (unsigned long) sig;
 	PT_REGS_DX(regs) = (unsigned long) &frame->info;
@@ -593,30 +451,17 @@ long sys_sigreturn(struct pt_regs *regs)
 }
 
 long sys_sigreturn(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp = PT_REGS_SP(&current->thread.regs);
 	struct sigframe __user *frame = (struct sigframe __user *)(sp - 8);
 	sigset_t set;
 	struct sigcontext __user *sc = &frame->sc;
-<<<<<<< HEAD
-	unsigned long __user *oldmask = &sc->oldmask;
-	unsigned long __user *extramask = frame->extramask;
-	int sig_size = (_NSIG_WORDS - 1) * sizeof(unsigned long);
-
-	if (copy_from_user(&set.sig[0], oldmask, sizeof(set.sig[0])) ||
-	    copy_from_user(&set.sig[1], extramask, sig_size))
-		goto segfault;
-
-	sigdelsetmask(&set, ~_BLOCKABLE);
-=======
 	int sig_size = (_NSIG_WORDS - 1) * sizeof(unsigned long);
 
 	if (copy_from_user(&set.sig[0], &sc->oldmask, sizeof(set.sig[0])) ||
 	    copy_from_user(&set.sig[1], frame->extramask, sig_size))
 		goto segfault;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_blocked(&set);
 
 	if (copy_sc_from_user(&current->thread.regs, sc))
@@ -627,11 +472,7 @@ long sys_sigreturn(void)
 	return PT_REGS_SYSCALL_RET(&current->thread.regs);
 
  segfault:
-<<<<<<< HEAD
-	force_sig(SIGSEGV, current);
-=======
 	force_sig(SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -642,18 +483,6 @@ struct rt_sigframe
 	char __user *pretcode;
 	struct ucontext uc;
 	struct siginfo info;
-<<<<<<< HEAD
-	struct _fpstate fpstate;
-};
-
-int setup_signal_stack_si(unsigned long stack_top, int sig,
-			  struct k_sigaction *ka, struct pt_regs * regs,
-			  siginfo_t *info, sigset_t *set)
-{
-	struct rt_sigframe __user *frame;
-	int err = 0;
-	struct task_struct *me = current;
-=======
 	struct _xstate fpstate;
 };
 
@@ -663,26 +492,17 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	struct rt_sigframe __user *frame;
 	int err = 0, sig = ksig->sig;
 	unsigned long fp_to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	frame = (struct rt_sigframe __user *)
 		round_down(stack_top - sizeof(struct rt_sigframe), 16);
 	/* Subtract 128 for a red zone and 8 for proper alignment */
 	frame = (struct rt_sigframe __user *) ((unsigned long) frame - 128 - 8);
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
-		goto out;
-
-	if (ka->sa.sa_flags & SA_SIGINFO) {
-		err |= copy_siginfo_to_user(&frame->info, info);
-=======
 	if (!access_ok(frame, sizeof(*frame)))
 		goto out;
 
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
 		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 	}
@@ -690,18 +510,6 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
 	err |= __put_user(0, &frame->uc.uc_link);
-<<<<<<< HEAD
-	err |= __put_user(me->sas_ss_sp, &frame->uc.uc_stack.ss_sp);
-	err |= __put_user(sas_ss_flags(PT_REGS_SP(regs)),
-			  &frame->uc.uc_stack.ss_flags);
-	err |= __put_user(me->sas_ss_size, &frame->uc.uc_stack.ss_size);
-	err |= copy_sc_to_user(&frame->uc.uc_mcontext, &frame->fpstate, regs,
-			       set->sig[0]);
-	err |= __put_user(&frame->fpstate, &frame->uc.uc_mcontext.fpstate);
-	if (sizeof(*set) == 16) {
-		__put_user(set->sig[0], &frame->uc.uc_sigmask.sig[0]);
-		__put_user(set->sig[1], &frame->uc.uc_sigmask.sig[1]);
-=======
 	err |= __save_altstack(&frame->uc.uc_stack, PT_REGS_SP(regs));
 	err |= copy_sc_to_user(&frame->uc.uc_mcontext, &frame->fpstate, regs,
 			       set->sig[0]);
@@ -712,7 +520,6 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	if (sizeof(*set) == 16) {
 		err |= __put_user(set->sig[0], &frame->uc.uc_sigmask.sig[0]);
 		err |= __put_user(set->sig[1], &frame->uc.uc_sigmask.sig[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	else
 		err |= __copy_to_user(&frame->uc.uc_sigmask, set,
@@ -723,14 +530,9 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	 * already in userspace.
 	 */
 	/* x86-64 should always use SA_RESTORER. */
-<<<<<<< HEAD
-	if (ka->sa.sa_flags & SA_RESTORER)
-		err |= __put_user(ka->sa.sa_restorer, &frame->pretcode);
-=======
 	if (ksig->ka.sa.sa_flags & SA_RESTORER)
 		err |= __put_user((void *)ksig->ka.sa.sa_restorer,
 				  &frame->pretcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		/* could use a vstub here */
 		return err;
@@ -738,48 +540,24 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	/* Set up registers for signal handler */
-	{
-		struct exec_domain *ed = current_thread_info()->exec_domain;
-		if (unlikely(ed && ed->signal_invmap && sig < 32))
-			sig = ed->signal_invmap[sig];
-	}
-
-	PT_REGS_SP(regs) = (unsigned long) frame;
-	PT_REGS_RDI(regs) = sig;
-	/* In case the signal handler was declared without prototypes */
-	PT_REGS_RAX(regs) = 0;
-=======
 	PT_REGS_SP(regs) = (unsigned long) frame;
 	PT_REGS_DI(regs) = sig;
 	/* In case the signal handler was declared without prototypes */
 	PT_REGS_AX(regs) = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This also works for non SA_SIGINFO handlers because they expect the
 	 * next argument after the signal number on the stack.
 	 */
-<<<<<<< HEAD
-	PT_REGS_RSI(regs) = (unsigned long) &frame->info;
-	PT_REGS_RDX(regs) = (unsigned long) &frame->uc;
-	PT_REGS_RIP(regs) = (unsigned long) ka->sa.sa_handler;
-=======
 	PT_REGS_SI(regs) = (unsigned long) &frame->info;
 	PT_REGS_DX(regs) = (unsigned long) &frame->uc;
 	PT_REGS_IP(regs) = (unsigned long) ksig->ka.sa.sa_handler;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return err;
 }
 #endif
 
-<<<<<<< HEAD
-long sys_rt_sigreturn(struct pt_regs *regs)
-=======
 long sys_rt_sigreturn(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp = PT_REGS_SP(&current->thread.regs);
 	struct rt_sigframe __user *frame =
@@ -790,10 +568,6 @@ long sys_rt_sigreturn(void)
 	if (copy_from_user(&set, &uc->uc_sigmask, sizeof(set)))
 		goto segfault;
 
-<<<<<<< HEAD
-	sigdelsetmask(&set, ~_BLOCKABLE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_blocked(&set);
 
 	if (copy_sc_from_user(&current->thread.regs, &uc->uc_mcontext))
@@ -804,23 +578,6 @@ long sys_rt_sigreturn(void)
 	return PT_REGS_SYSCALL_RET(&current->thread.regs);
 
  segfault:
-<<<<<<< HEAD
-	force_sig(SIGSEGV, current);
-	return 0;
-}
-
-#ifdef CONFIG_X86_32
-long ptregs_sigreturn(void)
-{
-	return sys_sigreturn(NULL);
-}
-long ptregs_rt_sigreturn(void)
-{
-	return sys_rt_sigreturn(NULL);
-}
-#endif
-=======
 	force_sig(SIGSEGV);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

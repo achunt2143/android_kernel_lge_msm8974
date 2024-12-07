@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2017 Broadcom. All Rights Reserved.
@@ -22,7 +5,6 @@
  *
  * Contact Information:
  * linux-drivers@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef BEISCSI_H
@@ -30,11 +12,7 @@
 
 #include <linux/pci.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-#include <linux/blk-iopoll.h>
-=======
 #include <linux/irq_poll.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FW_VER_LEN	32
 #define MCC_Q_LEN	128
 #define MCC_CQ_LEN	256
@@ -42,11 +20,7 @@
 /* BladeEngine Generation numbers */
 #define BE_GEN2 2
 #define BE_GEN3 3
-<<<<<<< HEAD
-
-=======
 #define BE_GEN4	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_dma_mem {
 	void *va;
 	dma_addr_t dma;
@@ -60,11 +34,7 @@ struct be_queue_info {
 	u16 id;
 	u16 tail, head;
 	bool created;
-<<<<<<< HEAD
-	atomic_t used;		/* Number of valid elements in the queue */
-=======
 	u16 used;		/* Number of valid elements in the queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline u32 MODULO(u16 val, u16 limit)
@@ -105,13 +75,6 @@ static inline void queue_tail_inc(struct be_queue_info *q)
 
 /*ISCSI */
 
-<<<<<<< HEAD
-struct be_eq_obj {
-	struct be_queue_info q;
-	struct beiscsi_hba *phba;
-	struct be_queue_info *cq;
-	struct blk_iopoll	iopoll;
-=======
 struct be_aic_obj {		/* Adaptive interrupt coalescing (AIC) info */
 	unsigned long jiffies;
 	u32 eq_prev;		/* Used to calculate eqe */
@@ -128,7 +91,6 @@ struct be_eq_obj {
 	struct be_queue_info *cq;
 	struct work_struct mcc_work; /* Work Item */
 	struct irq_poll	iopoll;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct be_mcc_obj {
@@ -136,8 +98,6 @@ struct be_mcc_obj {
 	struct be_queue_info cq;
 };
 
-<<<<<<< HEAD
-=======
 struct beiscsi_mcc_tag_state {
 	unsigned long tag_state;
 #define MCC_TAG_STATE_RUNNING	0
@@ -148,7 +108,6 @@ struct beiscsi_mcc_tag_state {
 	struct be_dma_mem tag_mem_state;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_ctrl_info {
 	u8 __iomem *csr;
 	u8 __iomem *db;		/* Door Bell */
@@ -156,11 +115,7 @@ struct be_ctrl_info {
 	struct pci_dev *pdev;
 
 	/* Mbox used for cmd request/response */
-<<<<<<< HEAD
-	spinlock_t mbox_lock;	/* For serializing mbox cmds to BE card */
-=======
 	struct mutex mbox_lock;	/* For serializing mbox cmds to BE card */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_dma_mem mbox_mem;
 	/* Mbox mem is adjusted to align to 16 bytes. The allocated addr
 	 * is stored for freeing purpose */
@@ -169,16 +124,6 @@ struct be_ctrl_info {
 	/* MCC Rings */
 	struct be_mcc_obj mcc_obj;
 	spinlock_t mcc_lock;	/* For serializing mcc cmds to BE card */
-<<<<<<< HEAD
-	spinlock_t mcc_cq_lock;
-
-	wait_queue_head_t mcc_wait[MAX_MCC_CMD + 1];
-	unsigned int mcc_tag[MAX_MCC_CMD];
-	unsigned int mcc_numtag[MAX_MCC_CMD + 1];
-	unsigned short mcc_alloc_index;
-	unsigned short mcc_free_index;
-	unsigned int mcc_tag_available;
-=======
 
 	wait_queue_head_t mcc_wait[MAX_MCC_CMD + 1];
 	unsigned int mcc_tag[MAX_MCC_CMD];
@@ -188,16 +133,10 @@ struct be_ctrl_info {
 	unsigned int mcc_tag_available;
 
 	struct beiscsi_mcc_tag_state ptag_state[MAX_MCC_CMD + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #include "be_cmds.h"
 
-<<<<<<< HEAD
-#define PAGE_SHIFT_4K 12
-#define PAGE_SIZE_4K (1 << PAGE_SHIFT_4K)
-#define mcc_timeout		120000 /* 5s timeout */
-=======
 /* WRB index mask for MCC_Q_LEN queue entries */
 #define MCC_Q_WRB_IDX_MASK	CQE_STATUS_WRB_MASK
 #define MCC_Q_WRB_IDX_SHIFT	CQE_STATUS_WRB_SHIFT
@@ -206,20 +145,12 @@ struct be_ctrl_info {
 
 #define PAGE_SHIFT_4K		12
 #define PAGE_SIZE_4K		(1 << PAGE_SHIFT_4K)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Returns number of pages spanned by the data starting at the given addr */
 #define PAGES_4K_SPANNED(_address, size)				\
 		((u32)((((size_t)(_address) & (PAGE_SIZE_4K - 1)) +	\
 			(size) + (PAGE_SIZE_4K - 1)) >> PAGE_SHIFT_4K))
 
-<<<<<<< HEAD
-/* Byte offset into the page corresponding to given address */
-#define OFFSET_IN_PAGE(addr)						\
-		((size_t)(addr) & (PAGE_SIZE_4K-1))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Returns bit offset within a DWORD of a bitfield */
 #define AMAP_BIT_OFFSET(_struct, field)					\
 		(((size_t)&(((_struct *)0)->field))%32)

@@ -1,36 +1,14 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2009, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2009, Intel Corporation.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Weidong Han <weidong.han@intel.com>
  */
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
-<<<<<<< HEAD
-=======
 #include <linux/pci-acpi.h>
 #include <xen/pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/xen.h>
 #include <xen/interface/physdev.h>
 #include <xen/interface/xen.h>
@@ -38,14 +16,11 @@
 #include <asm/xen/hypervisor.h>
 #include <asm/xen/hypercall.h>
 #include "../pci/pci.h"
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PCI_MMCONFIG
 #include <asm/pci_x86.h>
 
 static int xen_mcfg_late(void);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool __read_mostly pci_seg_supported = true;
 
@@ -56,15 +31,6 @@ static int xen_add_device(struct device *dev)
 #ifdef CONFIG_PCI_IOV
 	struct pci_dev *physfn = pci_dev->physfn;
 #endif
-<<<<<<< HEAD
-
-	if (pci_seg_supported) {
-		struct physdev_pci_device_add add = {
-			.seg = pci_domain_nr(pci_dev->bus),
-			.bus = pci_dev->bus->number,
-			.devfn = pci_dev->devfn
-		};
-=======
 #ifdef CONFIG_PCI_MMCONFIG
 	static bool pci_mcfg_reserved = false;
 	/*
@@ -88,31 +54,12 @@ static int xen_add_device(struct device *dev)
 		};
 		struct physdev_pci_device_add *add = &add_ext.add;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ACPI
 		acpi_handle handle;
 #endif
 
 #ifdef CONFIG_PCI_IOV
 		if (pci_dev->is_virtfn) {
-<<<<<<< HEAD
-			add.flags = XEN_PCI_DEV_VIRTFN;
-			add.physfn.bus = physfn->bus->number;
-			add.physfn.devfn = physfn->devfn;
-		} else
-#endif
-		if (pci_ari_enabled(pci_dev->bus) && PCI_SLOT(pci_dev->devfn))
-			add.flags = XEN_PCI_DEV_EXTFN;
-
-#ifdef CONFIG_ACPI
-		handle = DEVICE_ACPI_HANDLE(&pci_dev->dev);
-		if (!handle)
-			handle = DEVICE_ACPI_HANDLE(pci_dev->bus->bridge);
-#ifdef CONFIG_PCI_IOV
-		if (!handle && pci_dev->is_virtfn)
-			handle = DEVICE_ACPI_HANDLE(physfn->bus->bridge);
-#endif
-=======
 			add->flags = XEN_PCI_DEV_VIRTFN;
 			add->physfn.bus = physfn->bus->number;
 			add->physfn.devfn = physfn->devfn;
@@ -139,7 +86,6 @@ static int xen_add_device(struct device *dev)
 					break;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (handle) {
 			acpi_status status;
 
@@ -149,13 +95,8 @@ static int xen_add_device(struct device *dev)
 				status = acpi_evaluate_integer(handle, "_PXM",
 							       NULL, &pxm);
 				if (ACPI_SUCCESS(status)) {
-<<<<<<< HEAD
-					add.optarr[0] = pxm;
-					add.flags |= XEN_PCI_DEV_PXM;
-=======
 					add->optarr[0] = pxm;
 					add->flags |= XEN_PCI_DEV_PXM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				status = acpi_get_parent(handle, &handle);
@@ -163,11 +104,7 @@ static int xen_add_device(struct device *dev)
 		}
 #endif /* CONFIG_ACPI */
 
-<<<<<<< HEAD
-		r = HYPERVISOR_physdev_op(PHYSDEVOP_pci_device_add, &add);
-=======
 		r = HYPERVISOR_physdev_op(PHYSDEVOP_pci_device_add, add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r != -ENOSYS)
 			return r;
 		pci_seg_supported = false;
@@ -276,8 +213,6 @@ static int __init register_xen_pci_notifier(void)
 }
 
 arch_initcall(register_xen_pci_notifier);
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PCI_MMCONFIG
 static int xen_mcfg_late(void)
@@ -395,4 +330,3 @@ int xen_unregister_device_domain_owner(struct pci_dev *dev)
 }
 EXPORT_SYMBOL_GPL(xen_unregister_device_domain_owner);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

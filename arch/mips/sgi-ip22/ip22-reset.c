@@ -7,20 +7,11 @@
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/ds1286.h>
-#include <linux/module.h>
-#include <linux/interrupt.h>
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/notifier.h>
-=======
 #include <linux/rtc/ds1286.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
 #include <linux/panic_notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <linux/timer.h>
 
@@ -47,14 +38,9 @@
 #define PANIC_FREQ		(HZ / 8)
 
 static struct timer_list power_timer, blink_timer, debounce_timer;
-<<<<<<< HEAD
-
-#define MACHINE_PANICED		1
-=======
 static unsigned long blink_timer_timeout;
 
 #define MACHINE_PANICKED		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MACHINE_SHUTTING_DOWN	2
 
 static int machine_state;
@@ -96,45 +82,26 @@ static void __noreturn sgi_machine_halt(void)
 	ArcEnterInteractiveMode();
 }
 
-<<<<<<< HEAD
-static void power_timeout(unsigned long data)
-=======
 static void power_timeout(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sgi_machine_power_off();
 }
 
-<<<<<<< HEAD
-static void blink_timeout(unsigned long data)
-=======
 static void blink_timeout(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* XXX fix this for fullhouse  */
 	sgi_ioc_reset ^= (SGIOC_RESET_LC0OFF|SGIOC_RESET_LC1OFF);
 	sgioc->reset = sgi_ioc_reset;
 
-<<<<<<< HEAD
-	mod_timer(&blink_timer, jiffies + data);
-}
-
-static void debounce(unsigned long data)
-=======
 	mod_timer(&blink_timer, jiffies + blink_timer_timeout);
 }
 
 static void debounce(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	del_timer(&debounce_timer);
 	if (sgint->istat1 & SGINT_ISTAT1_PWR) {
 		/* Interrupt still being sent. */
-<<<<<<< HEAD
-		debounce_timer.expires = jiffies + (HZ / 20); /* 0.05s  */
-=======
 		debounce_timer.expires = jiffies + (HZ / 20); /* 0.05s	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&debounce_timer);
 
 		sgioc->panel = SGIOC_PANEL_POWERON | SGIOC_PANEL_POWERINTR |
@@ -144,11 +111,7 @@ static void debounce(struct timer_list *unused)
 		return;
 	}
 
-<<<<<<< HEAD
-	if (machine_state & MACHINE_PANICED)
-=======
 	if (machine_state & MACHINE_PANICKED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sgimc->cpuctrl0 |= SGIMC_CCTRL0_SYSINIT;
 
 	enable_irq(SGI_PANEL_IRQ);
@@ -156,11 +119,7 @@ static void debounce(struct timer_list *unused)
 
 static inline void power_button(void)
 {
-<<<<<<< HEAD
-	if (machine_state & MACHINE_PANICED)
-=======
 	if (machine_state & MACHINE_PANICKED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if ((machine_state & MACHINE_SHUTTING_DOWN) ||
@@ -170,18 +129,10 @@ static inline void power_button(void)
 	}
 
 	machine_state |= MACHINE_SHUTTING_DOWN;
-<<<<<<< HEAD
-	blink_timer.data = POWERDOWN_FREQ;
-	blink_timeout(POWERDOWN_FREQ);
-
-	init_timer(&power_timer);
-	power_timer.function = power_timeout;
-=======
 	blink_timer_timeout = POWERDOWN_FREQ;
 	blink_timeout(&blink_timer);
 
 	timer_setup(&power_timer, power_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	power_timer.expires = jiffies + POWERDOWN_TIMEOUT * HZ;
 	add_timer(&power_timer);
 }
@@ -196,12 +147,7 @@ static irqreturn_t panel_int(int irq, void *dev_id)
 	if (sgint->istat1 & SGINT_ISTAT1_PWR) {
 		/* Wait until interrupt goes away */
 		disable_irq_nosync(SGI_PANEL_IRQ);
-<<<<<<< HEAD
-		init_timer(&debounce_timer);
-		debounce_timer.function = debounce;
-=======
 		timer_setup(&debounce_timer, debounce, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		debounce_timer.expires = jiffies + 5;
 		add_timer(&debounce_timer);
 	}
@@ -218,16 +164,6 @@ static irqreturn_t panel_int(int irq, void *dev_id)
 }
 
 static int panic_event(struct notifier_block *this, unsigned long event,
-<<<<<<< HEAD
-                      void *ptr)
-{
-	if (machine_state & MACHINE_PANICED)
-		return NOTIFY_DONE;
-	machine_state |= MACHINE_PANICED;
-
-	blink_timer.data = PANIC_FREQ;
-	blink_timeout(PANIC_FREQ);
-=======
 		      void *ptr)
 {
 	if (machine_state & MACHINE_PANICKED)
@@ -236,7 +172,6 @@ static int panic_event(struct notifier_block *this, unsigned long event,
 
 	blink_timer_timeout = PANIC_FREQ;
 	blink_timeout(&blink_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
@@ -259,12 +194,7 @@ static int __init reboot_setup(void)
 		return res;
 	}
 
-<<<<<<< HEAD
-	init_timer(&blink_timer);
-	blink_timer.function = blink_timeout;
-=======
 	timer_setup(&blink_timer, blink_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_notifier_chain_register(&panic_notifier_list, &panic_block);
 
 	return 0;

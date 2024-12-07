@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * inftlcore.c -- Linux driver for Inverse Flash Translation Layer (INFTL)
  *
@@ -10,23 +7,6 @@
  * Based heavily on the nftlcore.c code which is:
  * Copyright © 1999 Machine Vision Holdings, Inc.
  * Copyright © 1999 David Woodhouse <dwmw2@infradead.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -40,13 +20,8 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nftl.h>
 #include <linux/mtd/inftl.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/mtd/rawnand.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/errno.h>
 #include <asm/io.h>
 
@@ -62,11 +37,7 @@ static void inftl_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 	struct INFTLrecord *inftl;
 	unsigned long temp;
 
-<<<<<<< HEAD
-	if (mtd->type != MTD_NANDFLASH || mtd->size > UINT_MAX)
-=======
 	if (!mtd_type_is_nand(mtd) || mtd->size > UINT_MAX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	/* OK, this is moderately ugly.  But probably safe.  Alternatives? */
 	if (memcmp(mtd->name, "DiskOnChip", 10))
@@ -165,11 +136,7 @@ static void inftl_remove_dev(struct mtd_blktrans_dev *dev)
 int inftl_read_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 		   size_t *retlen, uint8_t *buf)
 {
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -189,11 +156,7 @@ int inftl_read_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 int inftl_write_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 		    size_t *retlen, uint8_t *buf)
 {
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -213,11 +176,7 @@ int inftl_write_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 static int inftl_write(struct mtd_info *mtd, loff_t offs, size_t len,
 		       size_t *retlen, uint8_t *buf, uint8_t *oob)
 {
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -397,11 +356,7 @@ static u16 INFTL_foldchain(struct INFTLrecord *inftl, unsigned thisVUC, unsigned
 	 * Newest unit in chain now contains data from _all_ older units.
 	 * So go through and erase each unit in chain, oldest first. (This
 	 * is important, by doing oldest first if we crash/reboot then it
-<<<<<<< HEAD
-	 * it is relatively simple to clean up the mess).
-=======
 	 * is relatively simple to clean up the mess).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	pr_debug("INFTL: want to erase virtual chain %d\n", thisVUC);
 
@@ -982,22 +937,7 @@ static struct mtd_blktrans_ops inftl_tr = {
 	.owner		= THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static int __init init_inftl(void)
-{
-	return register_mtd_blktrans(&inftl_tr);
-}
-
-static void __exit cleanup_inftl(void)
-{
-	deregister_mtd_blktrans(&inftl_tr);
-}
-
-module_init(init_inftl);
-module_exit(cleanup_inftl);
-=======
 module_mtd_blktrans(inftl_tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Greg Ungerer <gerg@snapgear.com>, David Woodhouse <dwmw2@infradead.org>, Fabrice Bellard <fabrice.bellard@netgem.com> et al.");

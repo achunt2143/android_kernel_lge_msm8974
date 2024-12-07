@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support code for the SCOOP interface found on various Sharp PDAs
  *
  * Copyright (c) 2004 Richard Purdie
  *
  *	Based on code written by Sharp/Lineo for 2.4 kernels
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- */
-
-#include <linux/device.h>
-#include <linux/gpio.h>
-=======
  */
 
 #include <linux/device.h>
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/platform_device.h>
@@ -80,11 +65,7 @@ static void __scoop_gpio_set(struct scoop_dev *sdev,
 
 static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
-=======
 	struct scoop_dev *sdev = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&sdev->scoop_lock, flags);
@@ -96,27 +77,16 @@ static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int scoop_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
-
-	/* XXX: I'm unsure, but it seems so */
-	return ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1));
-=======
 	struct scoop_dev *sdev = gpiochip_get_data(chip);
 
 	/* XXX: I'm unsure, but it seems so */
 	return !!(ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scoop_gpio_direction_input(struct gpio_chip *chip,
 			unsigned offset)
 {
-<<<<<<< HEAD
-	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
-=======
 	struct scoop_dev *sdev = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -134,11 +104,7 @@ static int scoop_gpio_direction_input(struct gpio_chip *chip,
 static int scoop_gpio_direction_output(struct gpio_chip *chip,
 			unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
-=======
 	struct scoop_dev *sdev = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -206,20 +172,12 @@ static int scoop_resume(struct platform_device *dev)
 #define scoop_resume	NULL
 #endif
 
-<<<<<<< HEAD
-static int __devinit scoop_probe(struct platform_device *pdev)
-=======
 static int scoop_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scoop_dev *devptr;
 	struct scoop_config *inf;
 	struct resource *mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	int ret;
-<<<<<<< HEAD
-	int temp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mem)
 		return -EINVAL;
@@ -262,22 +220,13 @@ static int scoop_probe(struct platform_device *pdev)
 		devptr->gpio.direction_input = scoop_gpio_direction_input;
 		devptr->gpio.direction_output = scoop_gpio_direction_output;
 
-<<<<<<< HEAD
-		ret = gpiochip_add(&devptr->gpio);
-=======
 		ret = gpiochip_add_data(&devptr->gpio, devptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto err_gpio;
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-	if (devptr->gpio.base != -1)
-		temp = gpiochip_remove(&devptr->gpio);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_gpio:
 	platform_set_drvdata(pdev, NULL);
 err_ioremap:
@@ -287,48 +236,21 @@ err_ioremap:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit scoop_remove(struct platform_device *pdev)
-{
-	struct scoop_dev *sdev = platform_get_drvdata(pdev);
-	int ret;
-
-	if (!sdev)
-		return -EINVAL;
-
-	if (sdev->gpio.base != -1) {
-		ret = gpiochip_remove(&sdev->gpio);
-		if (ret) {
-			dev_err(&pdev->dev, "Can't remove gpio chip: %d\n", ret);
-			return ret;
-		}
-	}
-=======
 static void scoop_remove(struct platform_device *pdev)
 {
 	struct scoop_dev *sdev = platform_get_drvdata(pdev);
 
 	if (sdev->gpio.base != -1)
 		gpiochip_remove(&sdev->gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, NULL);
 	iounmap(sdev->base);
 	kfree(sdev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver scoop_driver = {
 	.probe		= scoop_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(scoop_remove),
-=======
 	.remove_new	= scoop_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= scoop_suspend,
 	.resume		= scoop_resume,
 	.driver		= {

@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_RTNETLINK_H
 #define __NET_RTNETLINK_H
 
 #include <linux/rtnetlink.h>
 #include <net/netlink.h>
 
-<<<<<<< HEAD
-typedef int (*rtnl_doit_func)(struct sk_buff *, struct nlmsghdr *, void *);
-typedef int (*rtnl_dumpit_func)(struct sk_buff *, struct netlink_callback *);
-typedef u16 (*rtnl_calcit_func)(struct sk_buff *, struct nlmsghdr *);
-
-extern int	__rtnl_register(int protocol, int msgtype,
-				rtnl_doit_func, rtnl_dumpit_func,
-				rtnl_calcit_func);
-extern void	rtnl_register(int protocol, int msgtype,
-			      rtnl_doit_func, rtnl_dumpit_func,
-			      rtnl_calcit_func);
-extern int	rtnl_unregister(int protocol, int msgtype);
-extern void	rtnl_unregister_all(int protocol);
-=======
 typedef int (*rtnl_doit_func)(struct sk_buff *, struct nlmsghdr *,
 			      struct netlink_ext_ack *);
 typedef int (*rtnl_dumpit_func)(struct sk_buff *, struct netlink_callback *);
@@ -51,7 +34,6 @@ int rtnl_register_module(struct module *owner, int protocol, int msgtype,
 			 rtnl_doit_func, rtnl_dumpit_func, unsigned int flags);
 int rtnl_unregister(int protocol, int msgtype);
 void rtnl_unregister_all(int protocol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 {
@@ -66,11 +48,6 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
  *
  *	@list: Used internally
  *	@kind: Identifier
-<<<<<<< HEAD
- *	@maxtype: Highest device specific netlink attribute number
- *	@policy: Netlink policy for device specific attribute validation
- *	@validate: Optional validation function for netlink/changelink parameters
-=======
  *	@netns_refund: Physical device, move to init_net on netns exit
  *	@maxtype: Highest device specific netlink attribute number
  *	@policy: Netlink policy for device specific attribute validation
@@ -78,7 +55,6 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
  *	@alloc: netdev allocation function, can be %NULL and is then used
  *		in place of alloc_netdev_mqs(), in this case @priv_size
  *		and @setup are unused. Returns a netdev or ERR_PTR().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@priv_size: sizeof net_device private space
  *	@setup: net_device setup function
  *	@newlink: Function for configuring and registering a new device
@@ -87,11 +63,6 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
  *	@get_size: Function to calculate required room for dumping device
  *		   specific netlink attributes
  *	@fill_info: Function to dump device specific netlink attributes
-<<<<<<< HEAD
- *	@get_xstats_size: Function to calculate required room for dumping devic
- *			  specific statistics
- *	@fill_xstats: Function to dump device specific statistics
-=======
  *	@get_xstats_size: Function to calculate required room for dumping device
  *			  specific statistics
  *	@fill_xstats: Function to dump device specific statistics
@@ -103,7 +74,6 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
  *	@get_linkxstats_size: Function to calculate the required room for
  *			      dumping device-specific extended link stats
  *	@fill_linkxstats: Function to dump device-specific extended link stats
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct rtnl_link_ops {
 	struct list_head	list;
@@ -111,14 +81,6 @@ struct rtnl_link_ops {
 	const char		*kind;
 
 	size_t			priv_size;
-<<<<<<< HEAD
-	void			(*setup)(struct net_device *dev);
-
-	int			maxtype;
-	const struct nla_policy	*policy;
-	int			(*validate)(struct nlattr *tb[],
-					    struct nlattr *data[]);
-=======
 	struct net_device	*(*alloc)(struct nlattr *tb[],
 					  const char *ifname,
 					  unsigned char name_assign_type,
@@ -132,24 +94,16 @@ struct rtnl_link_ops {
 	int			(*validate)(struct nlattr *tb[],
 					    struct nlattr *data[],
 					    struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			(*newlink)(struct net *src_net,
 					   struct net_device *dev,
 					   struct nlattr *tb[],
-<<<<<<< HEAD
-					   struct nlattr *data[]);
-	int			(*changelink)(struct net_device *dev,
-					      struct nlattr *tb[],
-					      struct nlattr *data[]);
-=======
 					   struct nlattr *data[],
 					   struct netlink_ext_ack *extack);
 	int			(*changelink)(struct net_device *dev,
 					      struct nlattr *tb[],
 					      struct nlattr *data[],
 					      struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			(*dellink)(struct net_device *dev,
 					   struct list_head *head);
 
@@ -160,18 +114,6 @@ struct rtnl_link_ops {
 	size_t			(*get_xstats_size)(const struct net_device *dev);
 	int			(*fill_xstats)(struct sk_buff *skb,
 					       const struct net_device *dev);
-<<<<<<< HEAD
-	int			(*get_tx_queues)(struct net *net, struct nlattr *tb[],
-						 unsigned int *tx_queues,
-						 unsigned int *real_tx_queues);
-};
-
-extern int	__rtnl_link_register(struct rtnl_link_ops *ops);
-extern void	__rtnl_link_unregister(struct rtnl_link_ops *ops);
-
-extern int	rtnl_link_register(struct rtnl_link_ops *ops);
-extern void	rtnl_link_unregister(struct rtnl_link_ops *ops);
-=======
 	unsigned int		(*get_num_tx_queues)(void);
 	unsigned int		(*get_num_rx_queues)(void);
 
@@ -200,7 +142,6 @@ void __rtnl_link_unregister(struct rtnl_link_ops *ops);
 
 int rtnl_link_register(struct rtnl_link_ops *ops);
 void rtnl_link_unregister(struct rtnl_link_ops *ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * 	struct rtnl_af_ops - rtnetlink address family operations
@@ -210,11 +151,7 @@ void rtnl_link_unregister(struct rtnl_link_ops *ops);
  * 	@fill_link_af: Function to fill IFLA_AF_SPEC with address family
  * 		       specific netlink attributes.
  * 	@get_link_af_size: Function to calculate size of address family specific
-<<<<<<< HEAD
- * 			   netlink attributes exlusive the container attribute.
-=======
  * 			   netlink attributes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@validate_link_af: Validate a IFLA_AF_SPEC attribute, must check attr
  *			   for invalid configuration settings.
  * 	@set_link_af: Function to parse a IFLA_AF_SPEC attribute and modify
@@ -225,30 +162,6 @@ struct rtnl_af_ops {
 	int			family;
 
 	int			(*fill_link_af)(struct sk_buff *skb,
-<<<<<<< HEAD
-						const struct net_device *dev);
-	size_t			(*get_link_af_size)(const struct net_device *dev);
-
-	int			(*validate_link_af)(const struct net_device *dev,
-						    const struct nlattr *attr);
-	int			(*set_link_af)(struct net_device *dev,
-					       const struct nlattr *attr);
-};
-
-extern int	__rtnl_af_register(struct rtnl_af_ops *ops);
-extern void	__rtnl_af_unregister(struct rtnl_af_ops *ops);
-
-extern int	rtnl_af_register(struct rtnl_af_ops *ops);
-extern void	rtnl_af_unregister(struct rtnl_af_ops *ops);
-
-
-extern struct net *rtnl_link_get_net(struct net *src_net, struct nlattr *tb[]);
-extern struct net_device *rtnl_create_link(struct net *src_net, struct net *net,
-	char *ifname, const struct rtnl_link_ops *ops, struct nlattr *tb[]);
-extern int rtnl_configure_link(struct net_device *dev,
-			       const struct ifinfomsg *ifm);
-extern const struct nla_policy ifla_policy[IFLA_MAX+1];
-=======
 						const struct net_device *dev,
 						u32 ext_filter_mask);
 	size_t			(*get_link_af_size)(const struct net_device *dev,
@@ -281,7 +194,6 @@ int rtnl_configure_link(struct net_device *dev, const struct ifinfomsg *ifm,
 int rtnl_nla_parse_ifinfomsg(struct nlattr **tb, const struct nlattr *nla_peer,
 			     struct netlink_ext_ack *exterr);
 struct net *rtnl_get_net_ns_capable(struct sock *sk, int netnsid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODULE_ALIAS_RTNL_LINK(kind) MODULE_ALIAS("rtnl-link-" kind)
 

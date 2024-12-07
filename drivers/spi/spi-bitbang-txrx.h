@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mix this utility code with some glue code to get one of several types of
  * simple SPI master driver.  Two do polled word-at-a-time I/O:
@@ -42,15 +39,10 @@
  *
  * Since this is software, the timings may not be exactly what your board's
  * chips need ... there may be several reasons you'd need to tweak timings
-<<<<<<< HEAD
- * in these routines, not just make to make it faster or slower to match a
- * particular CPU clock rate.
-=======
  * in these routines, not just to make it faster or slower to match a
  * particular CPU clock rate.
  *
  * ToDo: Maybe the bitrev macros can be used to improve the code?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static inline u32
@@ -60,25 +52,17 @@ bitbang_txrx_be_cpha0(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_0; else this is SPI_MODE_2 */
 
-<<<<<<< HEAD
-=======
 	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on trailing edge */
-<<<<<<< HEAD
-		if ((flags & SPI_MASTER_NO_TX) == 0)
-			setmosi(spi, word & (1 << 31));
-=======
 		if ((flags & SPI_CONTROLLER_NO_TX) == 0) {
 			if ((word & (1 << 31)) != oldbit) {
 				setmosi(spi, word & (1 << 31));
 				oldbit = word & (1 << 31);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spidelay(nsecs);	/* T(setup) */
 
 		setsck(spi, !cpol);
@@ -86,11 +70,7 @@ bitbang_txrx_be_cpha0(struct spi_device *spi,
 
 		/* sample MSB (from slave) on leading edge */
 		word <<= 1;
-<<<<<<< HEAD
-		if ((flags & SPI_MASTER_NO_RX) == 0)
-=======
 		if ((flags & SPI_CONTROLLER_NO_RX) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			word |= getmiso(spi);
 		setsck(spi, cpol);
 	}
@@ -104,26 +84,18 @@ bitbang_txrx_be_cpha1(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_1; else this is SPI_MODE_3 */
 
-<<<<<<< HEAD
-=======
 	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on leading edge */
 		setsck(spi, !cpol);
-<<<<<<< HEAD
-		if ((flags & SPI_MASTER_NO_TX) == 0)
-			setmosi(spi, word & (1 << 31));
-=======
 		if ((flags & SPI_CONTROLLER_NO_TX) == 0) {
 			if ((word & (1 << 31)) != oldbit) {
 				setmosi(spi, word & (1 << 31));
 				oldbit = word & (1 << 31);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spidelay(nsecs); /* T(setup) */
 
 		setsck(spi, cpol);
@@ -131,17 +103,11 @@ bitbang_txrx_be_cpha1(struct spi_device *spi,
 
 		/* sample MSB (from slave) on trailing edge */
 		word <<= 1;
-<<<<<<< HEAD
-		if ((flags & SPI_MASTER_NO_RX) == 0)
-=======
 		if ((flags & SPI_CONTROLLER_NO_RX) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			word |= getmiso(spi);
 	}
 	return word;
 }
-<<<<<<< HEAD
-=======
 
 static inline u32
 bitbang_txrx_le_cpha0(struct spi_device *spi,
@@ -208,4 +174,3 @@ bitbang_txrx_le_cpha1(struct spi_device *spi,
 	}
 	return word;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

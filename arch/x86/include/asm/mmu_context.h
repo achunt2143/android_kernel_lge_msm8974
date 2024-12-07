@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_MMU_CONTEXT_H
 #define _ASM_X86_MMU_CONTEXT_H
 
 #include <asm/desc.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-#include <asm/tlbflush.h>
-#include <asm/paravirt.h>
-#ifndef CONFIG_PARAVIRT
-#include <asm-generic/mm_hooks.h>
-
-static inline void paravirt_activate_mm(struct mm_struct *prev,
-					struct mm_struct *next)
-{
-}
-#endif	/* !CONFIG_PARAVIRT */
-
-=======
 #include <linux/mm_types.h>
 #include <linux/pkeys.h>
 
@@ -40,7 +23,6 @@ void cr4_update_pce(void *ignored);
 #endif
 
 #ifdef CONFIG_MODIFY_LDT_SYSCALL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ldt_structs can be allocated, used, and freed, but they are never
  * modified while live.
@@ -52,41 +34,6 @@ struct ldt_struct {
 	 * call gates.  On native, we could merge the ldt_struct and LDT
 	 * allocations, but it's not worth trying to optimize.
 	 */
-<<<<<<< HEAD
-	struct desc_struct *entries;
-	int size;
-};
-
-static inline void load_mm_ldt(struct mm_struct *mm)
-{
-	struct ldt_struct *ldt;
-
-	/* smp_read_barrier_depends synchronizes with barrier in install_ldt */
-	ldt = ACCESS_ONCE(mm->context.ldt);
-	smp_read_barrier_depends();
-
-	/*
-	 * Any change to mm->context.ldt is followed by an IPI to all
-	 * CPUs with the mm active.  The LDT will not be freed until
-	 * after the IPI is handled by all such CPUs.  This means that,
-	 * if the ldt_struct changes before we return, the values we see
-	 * will be safe, and the new values will be loaded before we run
-	 * any user code.
-	 *
-	 * NB: don't try to convert this to use RCU without extreme care.
-	 * We would still need IRQs off, because we don't want to change
-	 * the local LDT after an IPI loaded a newer value than the one
-	 * that we can see.
-	 */
-
-	if (unlikely(ldt))
-		set_ldt(ldt->entries, ldt->size);
-	else
-		clear_LDT();
-
-	DEBUG_LOCKS_WARN_ON(preemptible());
-}
-=======
 	struct desc_struct	*entries;
 	unsigned int		nr_entries;
 
@@ -101,69 +48,10 @@ static inline void load_mm_ldt(struct mm_struct *mm)
 	 */
 	int			slot;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Used for LDT copy/destruction.
  */
-<<<<<<< HEAD
-int init_new_context(struct task_struct *tsk, struct mm_struct *mm);
-void destroy_context(struct mm_struct *mm);
-
-
-static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
-{
-#ifdef CONFIG_SMP
-	if (percpu_read(cpu_tlbstate.state) == TLBSTATE_OK)
-		percpu_write(cpu_tlbstate.state, TLBSTATE_LAZY);
-#endif
-}
-
-static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-			     struct task_struct *tsk)
-{
-	unsigned cpu = smp_processor_id();
-
-	if (likely(prev != next)) {
-#ifdef CONFIG_SMP
-		percpu_write(cpu_tlbstate.state, TLBSTATE_OK);
-		percpu_write(cpu_tlbstate.active_mm, next);
-#endif
-		cpumask_set_cpu(cpu, mm_cpumask(next));
-
-		/* Re-load page tables */
-		load_cr3(next->pgd);
-
-		/* stop flush ipis for the previous mm */
-		cpumask_clear_cpu(cpu, mm_cpumask(prev));
-
-		/*
-		 * load the LDT, if the LDT is different:
-		 */
-		if (unlikely(prev->context.ldt != next->context.ldt))
-			load_mm_ldt(next);
-	}
-#ifdef CONFIG_SMP
-	else {
-		percpu_write(cpu_tlbstate.state, TLBSTATE_OK);
-		BUG_ON(percpu_read(cpu_tlbstate.active_mm) != next);
-
-		if (!cpumask_test_and_set_cpu(cpu, mm_cpumask(next))) {
-			/* We were in lazy tlb mode and leave_mm disabled
-			 * tlb flush IPI delivery. We must reload CR3
-			 * to make sure to use no freed page tables.
-			 */
-			load_cr3(next->pgd);
-			load_mm_ldt(next);
-		}
-	}
-#endif
-}
-
-#define activate_mm(prev, next)			\
-do {						\
-	paravirt_activate_mm((prev), (next));	\
-=======
 static inline void init_new_context_ldt(struct mm_struct *mm)
 {
 	mm->context.ldt = NULL;
@@ -287,33 +175,23 @@ extern void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
 #define activate_mm(prev, next)			\
 do {						\
 	paravirt_enter_mmap(next);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch_mm((prev), (next), NULL);	\
 } while (0);
 
 #ifdef CONFIG_X86_32
 #define deactivate_mm(tsk, mm)			\
 do {						\
-<<<<<<< HEAD
-	lazy_load_gs(0);			\
-=======
 	loadsegment(gs, 0);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 #else
 #define deactivate_mm(tsk, mm)			\
 do {						\
-<<<<<<< HEAD
-=======
 	shstk_free(tsk);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load_gs_index(0);			\
 	loadsegment(fs, 0);			\
 } while (0)
 #endif
 
-<<<<<<< HEAD
-=======
 static inline void arch_dup_pkeys(struct mm_struct *oldmm,
 				  struct mm_struct *mm)
 {
@@ -384,5 +262,4 @@ unsigned long __get_current_cr3_fast(void);
 
 #include <asm-generic/mmu_context.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_MMU_CONTEXT_H */

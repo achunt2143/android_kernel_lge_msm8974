@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM Hot Plug Controller Driver
  *
@@ -12,24 +9,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <gregkh@us.ibm.com>
  *
  */
@@ -43,15 +22,6 @@
 #include <linux/wait.h>
 #include "../pci.h"
 #include <asm/pci_x86.h>		/* for struct irq_routing_table */
-<<<<<<< HEAD
-#include "ibmphp.h"
-
-#define attn_on(sl)  ibmphp_hpc_writeslot (sl, HPC_SLOT_ATTNON)
-#define attn_off(sl) ibmphp_hpc_writeslot (sl, HPC_SLOT_ATTNOFF)
-#define attn_LED_blink(sl) ibmphp_hpc_writeslot (sl, HPC_SLOT_BLINKLED)
-#define get_ctrl_revision(sl, rev) ibmphp_hpc_readslot (sl, READ_REVLEVEL, rev)
-#define get_hpc_options(sl, opt) ibmphp_hpc_readslot (sl, READ_HPCOPTIONS, opt)
-=======
 #include <asm/io_apic.h>
 #include "ibmphp.h"
 
@@ -60,7 +30,6 @@
 #define attn_LED_blink(sl) ibmphp_hpc_writeslot(sl, HPC_SLOT_BLINKLED)
 #define get_ctrl_revision(sl, rev) ibmphp_hpc_readslot(sl, READ_REVLEVEL, rev)
 #define get_hpc_options(sl, opt) ibmphp_hpc_readslot(sl, READ_HPCOPTIONS, opt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_VERSION	"0.6"
 #define DRIVER_DESC	"IBM Hot Plug PCI Controller Driver"
@@ -69,52 +38,18 @@ int ibmphp_debug;
 
 static bool debug;
 module_param(debug, bool, S_IRUGO | S_IWUSR);
-<<<<<<< HEAD
-MODULE_PARM_DESC (debug, "Debugging mode enabled or not");
-MODULE_LICENSE ("GPL");
-MODULE_DESCRIPTION (DRIVER_DESC);
-=======
 MODULE_PARM_DESC(debug, "Debugging mode enabled or not");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION(DRIVER_DESC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pci_bus *ibmphp_pci_bus;
 static int max_slots;
 
-<<<<<<< HEAD
-static int irqs[16];    /* PIC mode IRQ's we're using so far (in case MPS
-=======
 static int irqs[16];    /* PIC mode IRQs we're using so far (in case MPS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * tables don't provide default info for empty slots */
 
 static int init_flag;
 
-<<<<<<< HEAD
-/*
-static int get_max_adapter_speed_1 (struct hotplug_slot *, u8 *, u8);
-
-static inline int get_max_adapter_speed (struct hotplug_slot *hs, u8 *value)
-{
-	return get_max_adapter_speed_1 (hs, value, 1);
-}
-*/
-static inline int get_cur_bus_info(struct slot **sl) 
-{
-	int rc = 1;
-	struct slot * slot_cur = *sl;
-
-	debug("options = %x\n", slot_cur->ctrl->options);
-	debug("revision = %x\n", slot_cur->ctrl->revision);	
-
-	if (READ_BUS_STATUS(slot_cur->ctrl)) 
-		rc = ibmphp_hpc_readslot(slot_cur, READ_BUSSTATUS, NULL);
-	
-	if (rc) 
-		return rc;
-	  
-=======
 static inline int get_cur_bus_info(struct slot **sl)
 {
 	int rc = 1;
@@ -129,7 +64,6 @@ static inline int get_cur_bus_info(struct slot **sl)
 	if (rc)
 		return rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot_cur->bus_on->current_speed = CURRENT_BUS_SPEED(slot_cur->busstatus);
 	if (READ_BUS_MODE(slot_cur->ctrl))
 		slot_cur->bus_on->current_bus_mode =
@@ -141,11 +75,7 @@ static inline int get_cur_bus_info(struct slot **sl)
 			slot_cur->busstatus,
 			slot_cur->bus_on->current_speed,
 			slot_cur->bus_on->current_bus_mode);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*sl = slot_cur;
 	return 0;
 }
@@ -153,36 +83,20 @@ static inline int get_cur_bus_info(struct slot **sl)
 static inline int slot_update(struct slot **sl)
 {
 	int rc;
-<<<<<<< HEAD
- 	rc = ibmphp_hpc_readslot(*sl, READ_ALLSTAT, NULL);
-	if (rc) 
-=======
 	rc = ibmphp_hpc_readslot(*sl, READ_ALLSTAT, NULL);
 	if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	if (!init_flag)
 		rc = get_cur_bus_info(sl);
 	return rc;
 }
 
-<<<<<<< HEAD
-static int __init get_max_slots (void)
-{
-	struct slot * slot_cur;
-	struct list_head * tmp;
-	u8 slot_count = 0;
-
-	list_for_each(tmp, &ibmphp_slot_head) {
-		slot_cur = list_entry(tmp, struct slot, ibm_slot_list);
-=======
 static int __init get_max_slots(void)
 {
 	struct slot *slot_cur;
 	u8 slot_count = 0;
 
 	list_for_each_entry(slot_cur, &ibmphp_slot_head, ibm_slot_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* sometimes the hot-pluggable slots start with 4 (not always from 1) */
 		slot_count = max(slot_count, slot_cur->number);
 	}
@@ -218,20 +132,10 @@ int ibmphp_init_devno(struct slot **cur_slot)
 	for (loop = 0; loop < len; loop++) {
 		if ((*cur_slot)->number == rtable->slots[loop].slot &&
 		    (*cur_slot)->bus == rtable->slots[loop].bus) {
-<<<<<<< HEAD
-			struct io_apic_irq_attr irq_attr;
-
-			(*cur_slot)->device = PCI_SLOT(rtable->slots[loop].devfn);
-			for (i = 0; i < 4; i++)
-				(*cur_slot)->irq[i] = IO_APIC_get_PCI_irq_vector((int) (*cur_slot)->bus,
-						(int) (*cur_slot)->device, i,
-						&irq_attr);
-=======
 			(*cur_slot)->device = PCI_SLOT(rtable->slots[loop].devfn);
 			for (i = 0; i < 4; i++)
 				(*cur_slot)->irq[i] = IO_APIC_get_PCI_irq_vector((int) (*cur_slot)->bus,
 						(int) (*cur_slot)->device, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			debug("(*cur_slot)->irq[0] = %x\n",
 					(*cur_slot)->irq[0]);
@@ -242,11 +146,7 @@ int ibmphp_init_devno(struct slot **cur_slot)
 			debug("(*cur_slot)->irq[3] = %x\n",
 					(*cur_slot)->irq[3]);
 
-<<<<<<< HEAD
-			debug("rtable->exlusive_irqs = %x\n",
-=======
 			debug("rtable->exclusive_irqs = %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rtable->exclusive_irqs);
 			debug("rtable->slots[loop].irq[0].bitmap = %x\n",
 					rtable->slots[loop].irq[0].bitmap);
@@ -339,20 +239,10 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 			break;
 		}
 		if (rc == 0) {
-<<<<<<< HEAD
-			pslot = hotplug_slot->private;
-			if (pslot)
-				rc = ibmphp_hpc_writeslot(pslot, cmd);
-			else
-				rc = -ENODEV;
-		}
-	} else	
-=======
 			pslot = to_slot(hotplug_slot);
 			rc = ibmphp_hpc_writeslot(pslot, cmd);
 		}
 	} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 
 	ibmphp_unlock_operations();
@@ -361,11 +251,7 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 * value)
-=======
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct slot *pslot;
@@ -373,24 +259,6 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 	debug("get_attention_status - Entry hotplug_slot[%lx] pvalue[%lx]\n",
 					(ulong) hotplug_slot, (ulong) value);
-<<<<<<< HEAD
-        
-	ibmphp_lock_operations();
-	if (hotplug_slot) {
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			memcpy(&myslot, pslot, sizeof(struct slot));
-			rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
-						&(myslot.status));
-			if (!rc)
-				rc = ibmphp_hpc_readslot(pslot,
-						READ_EXTSLOTSTATUS,
-						&(myslot.ext_status));
-			if (!rc)
-				*value = SLOT_ATTN(myslot.status,
-						myslot.ext_status);
-		}
-=======
 
 	ibmphp_lock_operations();
 	if (hotplug_slot) {
@@ -403,7 +271,6 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 						 &myslot.ext_status);
 		if (!rc)
 			*value = SLOT_ATTN(myslot.status, myslot.ext_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ibmphp_unlock_operations();
@@ -411,11 +278,7 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 * value)
-=======
 static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct slot *pslot;
@@ -425,23 +288,12 @@ static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 					(ulong) hotplug_slot, (ulong) value);
 	ibmphp_lock_operations();
 	if (hotplug_slot) {
-<<<<<<< HEAD
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			memcpy(&myslot, pslot, sizeof(struct slot));
-			rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
-						&(myslot.status));
-			if (!rc)
-				*value = SLOT_LATCH(myslot.status);
-		}
-=======
 		pslot = to_slot(hotplug_slot);
 		memcpy(&myslot, pslot, sizeof(struct slot));
 		rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
 					 &myslot.status);
 		if (!rc)
 			*value = SLOT_LATCH(myslot.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ibmphp_unlock_operations();
@@ -451,11 +303,7 @@ static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 }
 
 
-<<<<<<< HEAD
-static int get_power_status(struct hotplug_slot *hotplug_slot, u8 * value)
-=======
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct slot *pslot;
@@ -465,23 +313,12 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 					(ulong) hotplug_slot, (ulong) value);
 	ibmphp_lock_operations();
 	if (hotplug_slot) {
-<<<<<<< HEAD
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			memcpy(&myslot, pslot, sizeof(struct slot));
-			rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
-						&(myslot.status));
-			if (!rc)
-				*value = SLOT_PWRGD(myslot.status);
-		}
-=======
 		pslot = to_slot(hotplug_slot);
 		memcpy(&myslot, pslot, sizeof(struct slot));
 		rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
 					 &myslot.status);
 		if (!rc)
 			*value = SLOT_PWRGD(myslot.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ibmphp_unlock_operations();
@@ -490,11 +327,7 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int get_adapter_present(struct hotplug_slot *hotplug_slot, u8 * value)
-=======
 static int get_adapter_present(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct slot *pslot;
@@ -505,20 +338,6 @@ static int get_adapter_present(struct hotplug_slot *hotplug_slot, u8 *value)
 					(ulong) hotplug_slot, (ulong) value);
 	ibmphp_lock_operations();
 	if (hotplug_slot) {
-<<<<<<< HEAD
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			memcpy(&myslot, pslot, sizeof(struct slot));
-			rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
-						&(myslot.status));
-			if (!rc) {
-				present = SLOT_PRESENT(myslot.status);
-				if (present == HPC_SLOT_EMPTY)
-					*value = 0;
-				else
-					*value = 1;
-			}
-=======
 		pslot = to_slot(hotplug_slot);
 		memcpy(&myslot, pslot, sizeof(struct slot));
 		rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
@@ -529,7 +348,6 @@ static int get_adapter_present(struct hotplug_slot *hotplug_slot, u8 *value)
 				*value = 0;
 			else
 				*value = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -540,38 +358,23 @@ static int get_adapter_present(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static int get_max_bus_speed(struct slot *slot)
 {
-<<<<<<< HEAD
-	int rc;
-	u8 mode = 0;
-	enum pci_bus_speed speed;
-	struct pci_bus *bus = slot->hotplug_slot->pci_slot->bus;
-=======
 	int rc = 0;
 	u8 mode = 0;
 	enum pci_bus_speed speed;
 	struct pci_bus *bus = slot->hotplug_slot.pci_slot->bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	debug("%s - Entry slot[%p]\n", __func__, slot);
 
 	ibmphp_lock_operations();
 	mode = slot->supported_bus_mode;
-<<<<<<< HEAD
-	speed = slot->supported_speed; 
-=======
 	speed = slot->supported_speed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ibmphp_unlock_operations();
 
 	switch (speed) {
 	case BUS_SPEED_33:
 		break;
 	case BUS_SPEED_66:
-<<<<<<< HEAD
-		if (mode == BUS_MODE_PCIX) 
-=======
 		if (mode == BUS_MODE_PCIX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			speed += 0x01;
 		break;
 	case BUS_SPEED_100:
@@ -590,72 +393,6 @@ static int get_max_bus_speed(struct slot *slot)
 	return rc;
 }
 
-<<<<<<< HEAD
-/*
-static int get_max_adapter_speed_1(struct hotplug_slot *hotplug_slot, u8 * value, u8 flag)
-{
-	int rc = -ENODEV;
-	struct slot *pslot;
-	struct slot myslot;
-
-	debug("get_max_adapter_speed_1 - Entry hotplug_slot[%lx] pvalue[%lx]\n",
-						(ulong)hotplug_slot, (ulong) value);
-
-	if (flag)
-		ibmphp_lock_operations();
-
-	if (hotplug_slot && value) {
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			memcpy(&myslot, pslot, sizeof(struct slot));
-			rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS,
-						&(myslot.status));
-
-			if (!(SLOT_LATCH (myslot.status)) &&
-					(SLOT_PRESENT (myslot.status))) {
-				rc = ibmphp_hpc_readslot(pslot,
-						READ_EXTSLOTSTATUS,
-						&(myslot.ext_status));
-				if (!rc)
-					*value = SLOT_SPEED(myslot.ext_status);
-			} else
-				*value = MAX_ADAPTER_NONE;
-                }
-	}
-
-	if (flag)
-		ibmphp_unlock_operations();
-
-	debug("get_max_adapter_speed_1 - Exit rc[%d] value[%x]\n", rc, *value);
-	return rc;
-}
-
-static int get_bus_name(struct hotplug_slot *hotplug_slot, char * value)
-{
-	int rc = -ENODEV;
-	struct slot *pslot = NULL;
-
-	debug("get_bus_name - Entry hotplug_slot[%lx]\n", (ulong)hotplug_slot);
-
-	ibmphp_lock_operations();
-
-	if (hotplug_slot) {
-		pslot = hotplug_slot->private;
-		if (pslot) {
-			rc = 0;
-			snprintf(value, 100, "Bus %x", pslot->bus);
-		}
-	} else
-		rc = -ENODEV;
-
-	ibmphp_unlock_operations();
-	debug("get_bus_name - Exit rc[%d] value[%x]\n", rc, *value);
-	return rc;
-}
-*/
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************
  * This routine will initialize the ops data structure used in the validate
  * function. It will also power off empty slots that are powered on since BIOS
@@ -664,21 +401,6 @@ static int get_bus_name(struct hotplug_slot *hotplug_slot, char * value)
 static int __init init_ops(void)
 {
 	struct slot *slot_cur;
-<<<<<<< HEAD
-	struct list_head *tmp;
-	int retval;
-	int rc;
-
-	list_for_each(tmp, &ibmphp_slot_head) {
-		slot_cur = list_entry(tmp, struct slot, ibm_slot_list);
-
-		if (!slot_cur)
-			return -ENODEV;
-
-		debug("BEFORE GETTING SLOT STATUS, slot # %x\n",
-							slot_cur->number);
-		if (slot_cur->ctrl->revision == 0xFF) 
-=======
 	int retval;
 	int rc;
 
@@ -686,18 +408,12 @@ static int __init init_ops(void)
 		debug("BEFORE GETTING SLOT STATUS, slot # %x\n",
 							slot_cur->number);
 		if (slot_cur->ctrl->revision == 0xFF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (get_ctrl_revision(slot_cur,
 						&slot_cur->ctrl->revision))
 				return -1;
 
-<<<<<<< HEAD
-		if (slot_cur->bus_on->current_speed == 0xFF) 
-			if (get_cur_bus_info(&slot_cur)) 
-=======
 		if (slot_cur->bus_on->current_speed == 0xFF)
 			if (get_cur_bus_info(&slot_cur))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -1;
 		get_max_bus_speed(slot_cur);
 
@@ -715,13 +431,8 @@ static int __init init_ops(void)
 		debug("SLOT_PRESENT = %x\n", SLOT_PRESENT(slot_cur->status));
 		debug("SLOT_LATCH = %x\n", SLOT_LATCH(slot_cur->status));
 
-<<<<<<< HEAD
-		if ((SLOT_PWRGD(slot_cur->status)) && 
-		    !(SLOT_PRESENT(slot_cur->status)) && 
-=======
 		if ((SLOT_PWRGD(slot_cur->status)) &&
 		    !(SLOT_PRESENT(slot_cur->status)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(SLOT_LATCH(slot_cur->status))) {
 			debug("BEFORE POWER OFF COMMAND\n");
 				rc = power_off(slot_cur);
@@ -762,22 +473,13 @@ static int validate(struct slot *slot_cur, int opn)
 
 	switch (opn) {
 		case ENABLE:
-<<<<<<< HEAD
-			if (!(SLOT_PWRGD(slot_cur->status)) && 
-			     (SLOT_PRESENT(slot_cur->status)) && 
-=======
 			if (!(SLOT_PWRGD(slot_cur->status)) &&
 			     (SLOT_PRESENT(slot_cur->status)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     !(SLOT_LATCH(slot_cur->status)))
 				return 0;
 			break;
 		case DISABLE:
-<<<<<<< HEAD
-			if ((SLOT_PWRGD(slot_cur->status)) && 
-=======
 			if ((SLOT_PWRGD(slot_cur->status)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (SLOT_PRESENT(slot_cur->status)) &&
 			    !(SLOT_LATCH(slot_cur->status)))
 				return 0;
@@ -796,38 +498,10 @@ static int validate(struct slot *slot_cur, int opn)
  ****************************************************************************/
 int ibmphp_update_slot_info(struct slot *slot_cur)
 {
-<<<<<<< HEAD
-	struct hotplug_slot_info *info;
-	struct pci_bus *bus = slot_cur->hotplug_slot->pci_slot->bus;
-	int rc;
-	u8 bus_speed;
-	u8 mode;
-
-	info = kmalloc(sizeof(struct hotplug_slot_info), GFP_KERNEL);
-	if (!info) {
-		err("out of system memory\n");
-		return -ENOMEM;
-	}
-        
-	info->power_status = SLOT_PWRGD(slot_cur->status);
-	info->attention_status = SLOT_ATTN(slot_cur->status,
-						slot_cur->ext_status);
-	info->latch_status = SLOT_LATCH(slot_cur->status);
-        if (!SLOT_PRESENT(slot_cur->status)) {
-                info->adapter_status = 0;
-/*		info->max_adapter_speed_status = MAX_ADAPTER_NONE; */
-	} else {
-                info->adapter_status = 1;
-/*		get_max_adapter_speed_1(slot_cur->hotplug_slot,
-					&info->max_adapter_speed_status, 0); */
-	}
-
-=======
 	struct pci_bus *bus = slot_cur->hotplug_slot.pci_slot->bus;
 	u8 bus_speed;
 	u8 mode;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus_speed = slot_cur->bus_on->current_speed;
 	mode = slot_cur->bus_on->current_bus_mode;
 
@@ -835,11 +509,7 @@ int ibmphp_update_slot_info(struct slot *slot_cur)
 		case BUS_SPEED_33:
 			break;
 		case BUS_SPEED_66:
-<<<<<<< HEAD
-			if (mode == BUS_MODE_PCIX) 
-=======
 			if (mode == BUS_MODE_PCIX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bus_speed += 0x01;
 			else if (mode == BUS_MODE_PCI)
 				;
@@ -855,17 +525,9 @@ int ibmphp_update_slot_info(struct slot *slot_cur)
 	}
 
 	bus->cur_bus_speed = bus_speed;
-<<<<<<< HEAD
-	// To do: bus_names 
-	
-	rc = pci_hp_change_slot_info(slot_cur->hotplug_slot, info);
-	kfree(info);
-	return rc;
-=======
 	// To do: bus_names
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -878,13 +540,7 @@ static struct pci_func *ibm_slot_find(u8 busno, u8 device, u8 function)
 {
 	struct pci_func *func_cur;
 	struct slot *slot_cur;
-<<<<<<< HEAD
-	struct list_head * tmp;
-	list_for_each(tmp, &ibmphp_slot_head) {
-		slot_cur = list_entry(tmp, struct slot, ibm_slot_list);
-=======
 	list_for_each_entry(slot_cur, &ibmphp_slot_head, ibm_slot_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (slot_cur->func) {
 			func_cur = slot_cur->func;
 			while (func_cur) {
@@ -906,17 +562,6 @@ static struct pci_func *ibm_slot_find(u8 busno, u8 device, u8 function)
  *************************************************************/
 static void free_slots(void)
 {
-<<<<<<< HEAD
-	struct slot *slot_cur;
-	struct list_head * tmp;
-	struct list_head * next;
-
-	debug("%s -- enter\n", __func__);
-
-	list_for_each_safe(tmp, next, &ibmphp_slot_head) {
-		slot_cur = list_entry(tmp, struct slot, ibm_slot_list);
-		pci_hp_deregister(slot_cur->hotplug_slot);
-=======
 	struct slot *slot_cur, *next;
 
 	debug("%s -- enter\n", __func__);
@@ -935,7 +580,6 @@ static void free_slots(void)
 
 		pci_hp_destroy(&slot_cur->hotplug_slot);
 		kfree(slot_cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	debug("%s -- exit\n", __func__);
 }
@@ -950,29 +594,16 @@ static void ibm_unconfigure_device(struct pci_func *func)
 					func->device, func->function);
 	debug("func->device << 3 | 0x0  = %x\n", func->device << 3 | 0x0);
 
-<<<<<<< HEAD
-	for (j = 0; j < 0x08; j++) {
-		temp = pci_get_bus_and_slot(func->busno, (func->device << 3) | j);
-=======
 	pci_lock_rescan_remove();
 
 	for (j = 0; j < 0x08; j++) {
 		temp = pci_get_domain_bus_and_slot(0, func->busno,
 						   (func->device << 3) | j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (temp) {
 			pci_stop_and_remove_bus_device(temp);
 			pci_dev_put(temp);
 		}
 	}
-<<<<<<< HEAD
-	pci_dev_put(func->dev);
-}
-
-/*
- * The following function is to fix kernel bug regarding 
- * getting bus entries, here we manually add those primary 
-=======
 
 	pci_dev_put(func->dev);
 
@@ -982,16 +613,11 @@ static void ibm_unconfigure_device(struct pci_func *func)
 /*
  * The following function is to fix kernel bug regarding
  * getting bus entries, here we manually add those primary
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bus entries to kernel bus structure whenever apply
  */
 static u8 bus_structure_fixup(u8 busno)
 {
-<<<<<<< HEAD
-	struct pci_bus *bus;
-=======
 	struct pci_bus *bus, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *dev;
 	u16 l;
 
@@ -999,23 +625,12 @@ static u8 bus_structure_fixup(u8 busno)
 		return 1;
 
 	bus = kmalloc(sizeof(*bus), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!bus) {
-		err("%s - out of memory\n", __func__);
-		return 1;
-	}
-	dev = kmalloc(sizeof(*dev), GFP_KERNEL);
-	if (!dev) {
-		kfree(bus);
-		err("%s - out of memory\n", __func__);
-=======
 	if (!bus)
 		return 1;
 
 	dev = kmalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev) {
 		kfree(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -1025,11 +640,6 @@ static u8 bus_structure_fixup(u8 busno)
 	for (dev->devfn = 0; dev->devfn < 256; dev->devfn += 8) {
 		if (!pci_read_config_word(dev, PCI_VENDOR_ID, &l) &&
 					(l != 0x0000) && (l != 0xffff)) {
-<<<<<<< HEAD
-			debug("%s - Inside bus_struture_fixup()\n",
-							__func__);
-			pci_scan_bus(busno, ibmphp_pci_bus->ops, NULL);
-=======
 			debug("%s - Inside bus_structure_fixup()\n",
 							__func__);
 			b = pci_scan_bus(busno, ibmphp_pci_bus->ops, NULL);
@@ -1037,7 +647,6 @@ static u8 bus_structure_fixup(u8 busno)
 				continue;
 
 			pci_bus_add_devices(b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1050,59 +659,29 @@ static u8 bus_structure_fixup(u8 busno)
 
 static int ibm_configure_device(struct pci_func *func)
 {
-<<<<<<< HEAD
-	unsigned char bus;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_bus *child;
 	int num;
 	int flag = 0;	/* this is to make sure we don't double scan the bus,
 					for bridged devices primarily */
 
-<<<<<<< HEAD
-	if (!(bus_structure_fixup(func->busno)))
-		flag = 1;
-	if (func->dev == NULL)
-		func->dev = pci_get_bus_and_slot(func->busno,
-=======
 	pci_lock_rescan_remove();
 
 	if (!(bus_structure_fixup(func->busno)))
 		flag = 1;
 	if (func->dev == NULL)
 		func->dev = pci_get_domain_bus_and_slot(0, func->busno,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PCI_DEVFN(func->device, func->function));
 
 	if (func->dev == NULL) {
 		struct pci_bus *bus = pci_find_bus(0, func->busno);
 		if (!bus)
-<<<<<<< HEAD
-			return 0;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		num = pci_scan_slot(bus,
 				PCI_DEVFN(func->device, func->function));
 		if (num)
 			pci_bus_add_devices(bus);
 
-<<<<<<< HEAD
-		func->dev = pci_get_bus_and_slot(func->busno,
-				PCI_DEVFN(func->device, func->function));
-		if (func->dev == NULL) {
-			err("ERROR... : pci_dev still NULL\n");
-			return 0;
-		}
-	}
-	if (!(flag) && (func->dev->hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
-		pci_read_config_byte(func->dev, PCI_SECONDARY_BUS, &bus);
-		child = pci_add_new_bus(func->dev->bus, func->dev, bus);
-		pci_do_scan_bus(child);
-	}
-
-=======
 		func->dev = pci_get_domain_bus_and_slot(0, func->busno,
 				PCI_DEVFN(func->device, func->function));
 		if (func->dev == NULL) {
@@ -1119,26 +698,16 @@ static int ibm_configure_device(struct pci_func *func)
 
  out:
 	pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*******************************************************
-<<<<<<< HEAD
- * Returns whether the bus is empty or not 
- *******************************************************/
-static int is_bus_empty(struct slot * slot_cur)
-{
-	int rc;
-	struct slot * tmp_slot;
-=======
  * Returns whether the bus is empty or not
  *******************************************************/
 static int is_bus_empty(struct slot *slot_cur)
 {
 	int rc;
 	struct slot *tmp_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 i = slot_cur->bus_on->slot_min;
 
 	while (i <= slot_cur->bus_on->slot_max) {
@@ -1161,36 +730,21 @@ static int is_bus_empty(struct slot *slot_cur)
 }
 
 /***********************************************************
-<<<<<<< HEAD
- * If the HPC permits and the bus currently empty, tries to set the 
-=======
  * If the HPC permits and the bus currently empty, tries to set the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bus speed and mode at the maximum card and bus capability
  * Parameters: slot
  * Returns: bus is set (0) or error code
  ***********************************************************/
-<<<<<<< HEAD
-static int set_bus(struct slot * slot_cur)
-=======
 static int set_bus(struct slot *slot_cur)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	u8 speed;
 	u8 cmd = 0x0;
 	int retval;
-<<<<<<< HEAD
-	static struct pci_device_id ciobx[] = {
-		{ PCI_DEVICE(PCI_VENDOR_ID_SERVERWORKS, 0x0101) },
-	        { },
-	};	
-=======
 	static const struct pci_device_id ciobx[] = {
 		{ PCI_DEVICE(PCI_VENDOR_ID_SERVERWORKS, 0x0101) },
 		{ },
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	debug("%s - entry slot # %d\n", __func__, slot_cur->number);
 	if (SET_BUS_STATUS(slot_cur->ctrl) && is_bus_empty(slot_cur)) {
@@ -1211,11 +765,7 @@ static int set_bus(struct slot *slot_cur)
 				else if (!SLOT_BUS_MODE(slot_cur->ext_status))
 					/* if max slot/bus capability is 66 pci
 					and there's no bus mode mismatch, then
-<<<<<<< HEAD
-					the adapter supports 66 pci */ 
-=======
 					the adapter supports 66 pci */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cmd = HPC_BUS_66CONVMODE;
 				else
 					cmd = HPC_BUS_33CONVMODE;
@@ -1268,11 +818,7 @@ static int set_bus(struct slot *slot_cur)
 			return -EIO;
 		}
 	}
-<<<<<<< HEAD
-	/* This is for x440, once Brandon fixes the firmware, 
-=======
 	/* This is for x440, once Brandon fixes the firmware,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	will not need this delay */
 	msleep(1000);
 	debug("%s -Exit\n", __func__);
@@ -1280,26 +826,16 @@ static int set_bus(struct slot *slot_cur)
 }
 
 /* This routine checks the bus limitations that the slot is on from the BIOS.
-<<<<<<< HEAD
- * This is used in deciding whether or not to power up the slot.  
- * (electrical/spec limitations. For example, >1 133 MHz or >2 66 PCI cards on
- * same bus) 
-=======
  * This is used in deciding whether or not to power up the slot.
  * (electrical/spec limitations. For example, >1 133 MHz or >2 66 PCI cards on
  * same bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Parameters: slot
  * Returns: 0 = no limitations, -EINVAL = exceeded limitations on the bus
  */
 static int check_limitations(struct slot *slot_cur)
 {
 	u8 i;
-<<<<<<< HEAD
-	struct slot * tmp_slot;
-=======
 	struct slot *tmp_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 count = 0;
 	u8 limitation = 0;
 
@@ -1338,11 +874,7 @@ static int check_limitations(struct slot *slot_cur)
 static inline void print_card_capability(struct slot *slot_cur)
 {
 	info("capability of the card is ");
-<<<<<<< HEAD
-	if ((slot_cur->ext_status & CARD_INFO) == PCIX133) 
-=======
 	if ((slot_cur->ext_status & CARD_INFO) == PCIX133)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info("   133 MHz PCI-X\n");
 	else if ((slot_cur->ext_status & CARD_INFO) == PCIX66)
 		info("    66 MHz PCI-X\n");
@@ -1368,26 +900,16 @@ static int enable_slot(struct hotplug_slot *hs)
 	ibmphp_lock_operations();
 
 	debug("ENABLING SLOT........\n");
-<<<<<<< HEAD
-	slot_cur = hs->private;
-
-	if ((rc = validate(slot_cur, ENABLE))) {
-=======
 	slot_cur = to_slot(hs);
 
 	rc = validate(slot_cur, ENABLE);
 	if (rc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("validate function failed\n");
 		goto error_nopower;
 	}
 
 	attn_LED_blink(slot_cur);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = set_bus(slot_cur);
 	if (rc) {
 		err("was not able to set the bus\n");
@@ -1403,12 +925,7 @@ static int enable_slot(struct hotplug_slot *hs)
 	rc = check_limitations(slot_cur);
 	if (rc) {
 		err("Adding this card exceeds the limitations of this bus.\n");
-<<<<<<< HEAD
-		err("(i.e., >1 133MHz cards running on same bus, or "
-		     ">2 66 PCI cards running on same bus.\n");
-=======
 		err("(i.e., >1 133MHz cards running on same bus, or >2 66 PCI cards running on same bus.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Try hot-adding into another bus\n");
 		rc = -EINVAL;
 		goto error_nopower;
@@ -1432,19 +949,10 @@ static int enable_slot(struct hotplug_slot *hs)
 					!(SLOT_PWRGD(slot_cur->status)))
 			err("power fault occurred trying to power up\n");
 		else if (SLOT_BUS_SPEED(slot_cur->status)) {
-<<<<<<< HEAD
-			err("bus speed mismatch occurred.  please check "
-				"current bus speed and card capability\n");
-			print_card_capability(slot_cur);
-		} else if (SLOT_BUS_MODE(slot_cur->ext_status)) {
-			err("bus mode mismatch occurred.  please check "
-				"current bus mode and card capability\n");
-=======
 			err("bus speed mismatch occurred.  please check current bus speed and card capability\n");
 			print_card_capability(slot_cur);
 		} else if (SLOT_BUS_MODE(slot_cur->ext_status)) {
 			err("bus mode mismatch occurred.  please check current bus mode and card capability\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			print_card_capability(slot_cur);
 		}
 		ibmphp_update_slot_info(slot_cur);
@@ -1460,29 +968,17 @@ static int enable_slot(struct hotplug_slot *hs)
 	rc = slot_update(&slot_cur);
 	if (rc)
 		goto error_power;
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = -EINVAL;
 	if (SLOT_POWER(slot_cur->status) && !(SLOT_PWRGD(slot_cur->status))) {
 		err("power fault occurred trying to power up...\n");
 		goto error_power;
 	}
 	if (SLOT_POWER(slot_cur->status) && (SLOT_BUS_SPEED(slot_cur->status))) {
-<<<<<<< HEAD
-		err("bus speed mismatch occurred.  please check current bus "
-					"speed and card capability\n");
-		print_card_capability(slot_cur);
-		goto error_power;
-	} 
-=======
 		err("bus speed mismatch occurred.  please check current bus speed and card capability\n");
 		print_card_capability(slot_cur);
 		goto error_power;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Don't think this case will happen after above checks...
 	 * but just in case, for paranoia sake */
 	if (!(SLOT_POWER(slot_cur->status))) {
@@ -1492,13 +988,7 @@ static int enable_slot(struct hotplug_slot *hs)
 
 	slot_cur->func = kzalloc(sizeof(struct pci_func), GFP_KERNEL);
 	if (!slot_cur->func) {
-<<<<<<< HEAD
-		/* We cannot do update_slot_info here, since no memory for
-		 * kmalloc n.e.ways, and update_slot_info allocates some */
-		err("out of system memory\n");
-=======
 		/* do update_slot_info here? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto error_power;
 	}
@@ -1537,11 +1027,7 @@ static int enable_slot(struct hotplug_slot *hs)
 	ibmphp_print_test();
 	rc = ibmphp_update_slot_info(slot_cur);
 exit:
-<<<<<<< HEAD
-	ibmphp_unlock_operations(); 
-=======
 	ibmphp_unlock_operations();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 
 error_nopower:
@@ -1571,15 +1057,6 @@ error_power:
 * HOT REMOVING ADAPTER CARD                                   *
 * INPUT: POINTER TO THE HOTPLUG SLOT STRUCTURE                *
 * OUTPUT: SUCCESS 0 ; FAILURE: UNCONFIGURE , VALIDATE         *
-<<<<<<< HEAD
-          DISABLE POWER ,                                    *
-**************************************************************/
-static int ibmphp_disable_slot(struct hotplug_slot *hotplug_slot)
-{
-	struct slot *slot = hotplug_slot->private;
-	int rc;
-	
-=======
 *		DISABLE POWER ,                               *
 **************************************************************/
 static int ibmphp_disable_slot(struct hotplug_slot *hotplug_slot)
@@ -1587,7 +1064,6 @@ static int ibmphp_disable_slot(struct hotplug_slot *hotplug_slot)
 	struct slot *slot = to_slot(hotplug_slot);
 	int rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ibmphp_lock_operations();
 	rc = ibmphp_do_disable_slot(slot);
 	ibmphp_unlock_operations();
@@ -1599,20 +1075,11 @@ int ibmphp_do_disable_slot(struct slot *slot_cur)
 	int rc;
 	u8 flag;
 
-<<<<<<< HEAD
-	debug("DISABLING SLOT...\n"); 
-		
-	if ((slot_cur == NULL) || (slot_cur->ctrl == NULL)) {
-		return -ENODEV;
-	}
-	
-=======
 	debug("DISABLING SLOT...\n");
 
 	if ((slot_cur == NULL) || (slot_cur->ctrl == NULL))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flag = slot_cur->flag;
 	slot_cur->flag = 1;
 
@@ -1625,16 +1092,9 @@ int ibmphp_do_disable_slot(struct slot *slot_cur)
 	attn_LED_blink(slot_cur);
 
 	if (slot_cur->func == NULL) {
-<<<<<<< HEAD
-		/* We need this for fncs's that were there on bootup */
-		slot_cur->func = kzalloc(sizeof(struct pci_func), GFP_KERNEL);
-		if (!slot_cur->func) {
-			err("out of system memory\n");
-=======
 		/* We need this for functions that were there on bootup */
 		slot_cur->func = kzalloc(sizeof(struct pci_func), GFP_KERNEL);
 		if (!slot_cur->func) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto error;
 		}
@@ -1643,14 +1103,6 @@ int ibmphp_do_disable_slot(struct slot *slot_cur)
 	}
 
 	ibm_unconfigure_device(slot_cur->func);
-<<<<<<< HEAD
-        
-	/* If we got here from latch suddenly opening on operating card or 
-	a power fault, there's no power to the card, so cannot
-	read from it to determine what resources it occupied.  This operation
-	is forbidden anyhow.  The best we can do is remove it from kernel
-	lists at least */
-=======
 
 	/*
 	 * If we got here from latch suddenly opening on operating card or
@@ -1658,7 +1110,6 @@ int ibmphp_do_disable_slot(struct slot *slot_cur)
 	 * read from it to determine what resources it occupied.  This operation
 	 * is forbidden anyhow.  The best we can do is remove it from kernel
 	 * lists at least */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!flag) {
 		attn_off(slot_cur);
@@ -1695,20 +1146,12 @@ error:
 		rc = -EFAULT;
 		goto exit;
 	}
-<<<<<<< HEAD
-	if (flag)		
-=======
 	if (flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ibmphp_update_slot_info(slot_cur);
 	goto exit;
 }
 
-<<<<<<< HEAD
-struct hotplug_slot_ops ibmphp_hotplug_slot_ops = {
-=======
 const struct hotplug_slot_ops ibmphp_hotplug_slot_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_attention_status =		set_attention_status,
 	.enable_slot =			enable_slot,
 	.disable_slot =			ibmphp_disable_slot,
@@ -1717,12 +1160,6 @@ const struct hotplug_slot_ops ibmphp_hotplug_slot_ops = {
 	.get_attention_status =		get_attention_status,
 	.get_latch_status =		get_latch_status,
 	.get_adapter_status =		get_adapter_present,
-<<<<<<< HEAD
-/*	.get_max_adapter_speed =	get_max_adapter_speed,
-	.get_bus_name_status =		get_bus_name,
-*/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ibmphp_unload(void)
@@ -1752,10 +1189,6 @@ static int __init ibmphp_init(void)
 
 	ibmphp_pci_bus = kmalloc(sizeof(*ibmphp_pci_bus), GFP_KERNEL);
 	if (!ibmphp_pci_bus) {
-<<<<<<< HEAD
-		err("out of memory\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto exit;
 	}
@@ -1770,18 +1203,6 @@ static int __init ibmphp_init(void)
 
 	ibmphp_debug = debug;
 
-<<<<<<< HEAD
-	ibmphp_hpc_initvars();
-
-	for (i = 0; i < 16; i++)
-		irqs[i] = 0;
-
-	if ((rc = ibmphp_access_ebda()))
-		goto error;
-	debug("after ibmphp_access_ebda()\n");
-
-	if ((rc = ibmphp_rsrc_init()))
-=======
 	for (i = 0; i < 16; i++)
 		irqs[i] = 0;
 
@@ -1792,19 +1213,13 @@ static int __init ibmphp_init(void)
 
 	rc = ibmphp_rsrc_init();
 	if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	debug("AFTER Resource & EBDA INITIALIZATIONS\n");
 
 	max_slots = get_max_slots();
-<<<<<<< HEAD
-	
-	if ((rc = ibmphp_register_pci()))
-=======
 
 	rc = ibmphp_register_pci();
 	if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	if (init_ops()) {
@@ -1813,15 +1228,9 @@ static int __init ibmphp_init(void)
 	}
 
 	ibmphp_print_test();
-<<<<<<< HEAD
-	if ((rc = ibmphp_hpc_start_poll_thread())) {
-		goto error;
-	}
-=======
 	rc = ibmphp_hpc_start_poll_thread();
 	if (rc)
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	return rc;

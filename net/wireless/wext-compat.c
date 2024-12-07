@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cfg80211 - wext compat code
  *
@@ -10,10 +7,7 @@
  * we directly assign the wireless handlers of wireless interfaces.
  *
  * Copyright 2008-2009	Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
-=======
  * Copyright (C) 2019-2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -27,56 +21,6 @@
 #include <net/cfg80211-wext.h>
 #include "wext-compat.h"
 #include "core.h"
-<<<<<<< HEAD
-
-int cfg80211_wext_giwname(struct net_device *dev,
-			  struct iw_request_info *info,
-			  char *name, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct ieee80211_supported_band *sband;
-	bool is_ht = false, is_a = false, is_b = false, is_g = false;
-
-	if (!wdev)
-		return -EOPNOTSUPP;
-
-	sband = wdev->wiphy->bands[IEEE80211_BAND_5GHZ];
-	if (sband) {
-		is_a = true;
-		is_ht |= sband->ht_cap.ht_supported;
-	}
-
-	sband = wdev->wiphy->bands[IEEE80211_BAND_2GHZ];
-	if (sband) {
-		int i;
-		/* Check for mandatory rates */
-		for (i = 0; i < sband->n_bitrates; i++) {
-			if (sband->bitrates[i].bitrate == 10)
-				is_b = true;
-			if (sband->bitrates[i].bitrate == 60)
-				is_g = true;
-		}
-		is_ht |= sband->ht_cap.ht_supported;
-	}
-
-	strcpy(name, "IEEE 802.11");
-	if (is_a)
-		strcat(name, "a");
-	if (is_b)
-		strcat(name, "b");
-	if (is_g)
-		strcat(name, "g");
-	if (is_ht)
-		strcat(name, "n");
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwname);
-
-int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
-			  u32 *mode, char *extra)
-{
-=======
 #include "rdev-ops.h"
 
 int cfg80211_wext_giwname(struct net_device *dev,
@@ -92,18 +36,13 @@ int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
 			  union iwreq_data *wrqu, char *extra)
 {
 	__u32 *mode = &wrqu->mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev;
 	struct vif_params vifparams;
 	enum nl80211_iftype type;
 	int ret;
 
-<<<<<<< HEAD
-	rdev = wiphy_to_dev(wdev->wiphy);
-=======
 	rdev = wiphy_to_rdev(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (*mode) {
 	case IW_MODE_INFRA:
@@ -112,12 +51,6 @@ int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
 	case IW_MODE_ADHOC:
 		type = NL80211_IFTYPE_ADHOC;
 		break;
-<<<<<<< HEAD
-	case IW_MODE_REPEAT:
-		type = NL80211_IFTYPE_WDS;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IW_MODE_MONITOR:
 		type = NL80211_IFTYPE_MONITOR;
 		break;
@@ -130,19 +63,6 @@ int cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,
 
 	memset(&vifparams, 0, sizeof(vifparams));
 
-<<<<<<< HEAD
-	cfg80211_lock_rdev(rdev);
-	ret = cfg80211_change_iface(rdev, dev, type, NULL, &vifparams);
-	cfg80211_unlock_rdev(rdev);
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(cfg80211_wext_siwmode);
-
-int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
-			  u32 *mode, char *extra)
-{
-=======
 	wiphy_lock(wdev->wiphy);
 	ret = cfg80211_change_iface(rdev, dev, type, &vifparams);
 	wiphy_unlock(wdev->wiphy);
@@ -155,7 +75,6 @@ int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 			  union iwreq_data *wrqu, char *extra)
 {
 	__u32 *mode = &wrqu->mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	if (!wdev)
@@ -186,29 +105,17 @@ int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 	}
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwmode);
-=======
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwmode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 int cfg80211_wext_giwrange(struct net_device *dev,
 			   struct iw_request_info *info,
-<<<<<<< HEAD
-			   struct iw_point *data, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct iw_range *range = (struct iw_range *) extra;
-	enum ieee80211_band band;
-=======
 			   union iwreq_data *wrqu, char *extra)
 {
 	struct iw_point *data = &wrqu->data;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct iw_range *range = (struct iw_range *) extra;
 	enum nl80211_band band;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, c = 0;
 
 	if (!wdev)
@@ -236,11 +143,7 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 	case CFG80211_SIGNAL_TYPE_NONE:
 		break;
 	case CFG80211_SIGNAL_TYPE_MBM:
-<<<<<<< HEAD
-		range->max_qual.level = -110;
-=======
 		range->max_qual.level = (u8)-110;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		range->max_qual.qual = 70;
 		range->avg_qual.qual = 35;
 		range->max_qual.updated |= IW_QUAL_DBM;
@@ -284,11 +187,7 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 		}
 	}
 
-<<<<<<< HEAD
-	for (band = 0; band < IEEE80211_NUM_BANDS; band ++) {
-=======
 	for (band = 0; band < NUM_NL80211_BANDS; band ++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ieee80211_supported_band *sband;
 
 		sband = wdev->wiphy->bands[band];
@@ -321,48 +220,27 @@ int cfg80211_wext_giwrange(struct net_device *dev,
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwrange);
-=======
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwrange);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /**
  * cfg80211_wext_freq - get wext frequency for non-"auto"
-<<<<<<< HEAD
- * @wiphy: the wiphy
- * @freq: the wext freq encoding
- *
- * Returns a frequency, or a negative error code, or 0 for auto.
- */
-int cfg80211_wext_freq(struct wiphy *wiphy, struct iw_freq *freq)
-=======
  * @freq: the wext freq encoding
  *
  * Returns: a frequency, or a negative error code, or 0 for auto.
  */
 int cfg80211_wext_freq(struct iw_freq *freq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Parse frequency - return 0 for auto and
 	 * -EINVAL for impossible things.
 	 */
 	if (freq->e == 0) {
-<<<<<<< HEAD
-		enum ieee80211_band band = IEEE80211_BAND_2GHZ;
-		if (freq->m < 0)
-			return 0;
-		if (freq->m > 14)
-			band = IEEE80211_BAND_5GHZ;
-=======
 		enum nl80211_band band = NL80211_BAND_2GHZ;
 		if (freq->m < 0)
 			return 0;
 		if (freq->m > 14)
 			band = NL80211_BAND_5GHZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ieee80211_channel_to_frequency(freq->m, band);
 	} else {
 		int i, div = 1000000;
@@ -376,35 +254,6 @@ int cfg80211_wext_freq(struct iw_freq *freq)
 
 int cfg80211_wext_siwrts(struct net_device *dev,
 			 struct iw_request_info *info,
-<<<<<<< HEAD
-			 struct iw_param *rts, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	u32 orts = wdev->wiphy->rts_threshold;
-	int err;
-
-	if (rts->disabled || !rts->fixed)
-		wdev->wiphy->rts_threshold = (u32) -1;
-	else if (rts->value < 0)
-		return -EINVAL;
-	else
-		wdev->wiphy->rts_threshold = rts->value;
-
-	err = rdev->ops->set_wiphy_params(wdev->wiphy,
-					  WIPHY_PARAM_RTS_THRESHOLD);
-	if (err)
-		wdev->wiphy->rts_threshold = orts;
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(cfg80211_wext_siwrts);
-
-int cfg80211_wext_giwrts(struct net_device *dev,
-			 struct iw_request_info *info,
-			 struct iw_param *rts, char *extra)
-{
-=======
 			 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *rts = &wrqu->rts;
@@ -439,7 +288,6 @@ int cfg80211_wext_giwrts(struct net_device *dev,
 			 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *rts = &wrqu->rts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	rts->value = wdev->wiphy->rts_threshold;
@@ -448,24 +296,6 @@ int cfg80211_wext_giwrts(struct net_device *dev,
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwrts);
-
-int cfg80211_wext_siwfrag(struct net_device *dev,
-			  struct iw_request_info *info,
-			  struct iw_param *frag, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	u32 ofrag = wdev->wiphy->frag_threshold;
-	int err;
-
-	if (frag->disabled || !frag->fixed)
-		wdev->wiphy->frag_threshold = (u32) -1;
-	else if (frag->value < 256)
-		return -EINVAL;
-	else {
-=======
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwrts);
 
 int cfg80211_wext_siwfrag(struct net_device *dev,
@@ -485,26 +315,10 @@ int cfg80211_wext_siwfrag(struct net_device *dev,
 		err = -EINVAL;
 		goto out;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Fragment length must be even, so strip LSB. */
 		wdev->wiphy->frag_threshold = frag->value & ~0x1;
 	}
 
-<<<<<<< HEAD
-	err = rdev->ops->set_wiphy_params(wdev->wiphy,
-					  WIPHY_PARAM_FRAG_THRESHOLD);
-	if (err)
-		wdev->wiphy->frag_threshold = ofrag;
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(cfg80211_wext_siwfrag);
-
-int cfg80211_wext_giwfrag(struct net_device *dev,
-			  struct iw_request_info *info,
-			  struct iw_param *frag, char *extra)
-{
-=======
 	err = rdev_set_wiphy_params(rdev, WIPHY_PARAM_FRAG_THRESHOLD);
 	if (err)
 		wdev->wiphy->frag_threshold = ofrag;
@@ -520,7 +334,6 @@ int cfg80211_wext_giwfrag(struct net_device *dev,
 			  union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *frag = &wrqu->frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	frag->value = wdev->wiphy->frag_threshold;
@@ -529,16 +342,6 @@ int cfg80211_wext_giwfrag(struct net_device *dev,
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwfrag);
-
-static int cfg80211_wext_siwretry(struct net_device *dev,
-				  struct iw_request_info *info,
-				  struct iw_param *retry, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-=======
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwfrag);
 
 static int cfg80211_wext_siwretry(struct net_device *dev,
@@ -548,24 +351,16 @@ static int cfg80211_wext_siwretry(struct net_device *dev,
 	struct iw_param *retry = &wrqu->retry;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 changed = 0;
 	u8 olong = wdev->wiphy->retry_long;
 	u8 oshort = wdev->wiphy->retry_short;
 	int err;
 
-<<<<<<< HEAD
-	if (retry->disabled ||
-	    (retry->flags & IW_RETRY_TYPE) != IW_RETRY_LIMIT)
-		return -EINVAL;
-
-=======
 	if (retry->disabled || retry->value < 1 || retry->value > 255 ||
 	    (retry->flags & IW_RETRY_TYPE) != IW_RETRY_LIMIT)
 		return -EINVAL;
 
 	wiphy_lock(&rdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retry->flags & IW_RETRY_LONG) {
 		wdev->wiphy->retry_long = retry->value;
 		changed |= WIPHY_PARAM_RETRY_LONG;
@@ -579,36 +374,21 @@ static int cfg80211_wext_siwretry(struct net_device *dev,
 		changed |= WIPHY_PARAM_RETRY_SHORT;
 	}
 
-<<<<<<< HEAD
-	if (!changed)
-		return 0;
-
-	err = rdev->ops->set_wiphy_params(wdev->wiphy, changed);
-=======
 	err = rdev_set_wiphy_params(rdev, changed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		wdev->wiphy->retry_short = oshort;
 		wdev->wiphy->retry_long = olong;
 	}
-<<<<<<< HEAD
-=======
 	wiphy_unlock(&rdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 int cfg80211_wext_giwretry(struct net_device *dev,
 			   struct iw_request_info *info,
-<<<<<<< HEAD
-			   struct iw_param *retry, char *extra)
-{
-=======
 			   union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *retry = &wrqu->retry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	retry->disabled = 0;
@@ -618,15 +398,9 @@ int cfg80211_wext_giwretry(struct net_device *dev,
 		 * First return short value, iwconfig will ask long value
 		 * later if needed
 		 */
-<<<<<<< HEAD
-		retry->flags |= IW_RETRY_LIMIT;
-		retry->value = wdev->wiphy->retry_short;
-		if (wdev->wiphy->retry_long != wdev->wiphy->retry_short)
-=======
 		retry->flags |= IW_RETRY_LIMIT | IW_RETRY_SHORT;
 		retry->value = wdev->wiphy->retry_short;
 		if (wdev->wiphy->retry_long == wdev->wiphy->retry_short)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retry->flags |= IW_RETRY_LONG;
 
 		return 0;
@@ -639,37 +413,17 @@ int cfg80211_wext_giwretry(struct net_device *dev,
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cfg80211_wext_giwretry);
-
-static int __cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
-				     struct net_device *dev, bool pairwise,
-				     const u8 *addr, bool remove, bool tx_key,
-				     int idx, struct key_params *params)
-=======
 EXPORT_WEXT_HANDLER(cfg80211_wext_giwretry);
 
 static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 				   struct net_device *dev, bool pairwise,
 				   const u8 *addr, bool remove, bool tx_key,
 				   int idx, struct key_params *params)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	int err, i;
 	bool rejoin = false;
 
-<<<<<<< HEAD
-	if (pairwise && !addr)
-		return -EINVAL;
-
-	if (!wdev->wext.keys) {
-		wdev->wext.keys = kzalloc(sizeof(*wdev->wext.keys),
-					      GFP_KERNEL);
-		if (!wdev->wext.keys)
-			return -ENOMEM;
-		for (i = 0; i < 6; i++)
-=======
 	if (wdev->valid_links)
 		return -EINVAL;
 
@@ -686,7 +440,6 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		if (!wdev->wext.keys)
 			return -ENOMEM;
 		for (i = 0; i < 4; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wdev->wext.keys->params[i].key =
 				wdev->wext.keys->data[i];
 	}
@@ -696,11 +449,7 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		return -EOPNOTSUPP;
 
 	if (params->cipher == WLAN_CIPHER_SUITE_AES_CMAC) {
-<<<<<<< HEAD
-		if (!wdev->current_bss)
-=======
 		if (!wdev->connected)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOLINK;
 
 		if (!rdev->ops->set_default_mgmt_key)
@@ -713,24 +462,16 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 
 	if (remove) {
 		err = 0;
-<<<<<<< HEAD
-		if (wdev->current_bss) {
-=======
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If removing the current TX key, we will need to
 			 * join a new IBSS without the privacy bit clear.
 			 */
 			if (idx == wdev->wext.default_key &&
 			    wdev->iftype == NL80211_IFTYPE_ADHOC) {
-<<<<<<< HEAD
-				__cfg80211_leave_ibss(rdev, wdev->netdev, true);
-=======
 				cfg80211_leave_ibss(rdev, wdev->netdev, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rejoin = true;
 			}
 
@@ -738,13 +479,8 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 			    !(rdev->wiphy.flags & WIPHY_FLAG_IBSS_RSN))
 				err = -ENOENT;
 			else
-<<<<<<< HEAD
-				err = rdev->ops->del_key(&rdev->wiphy, dev, idx,
-							 pairwise, addr);
-=======
 				err = rdev_del_key(rdev, dev, -1, idx, pairwise,
 						   addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		wdev->wext.connect.privacy = false;
 		/*
@@ -754,13 +490,9 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		if (err == -ENOENT)
 			err = 0;
 		if (!err) {
-<<<<<<< HEAD
-			if (!addr) {
-=======
 			if (!addr && idx < 4) {
 				memset(wdev->wext.keys->data[idx], 0,
 				       sizeof(wdev->wext.keys->data[idx]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wdev->wext.keys->params[idx].key_len = 0;
 				wdev->wext.keys->params[idx].cipher = 0;
 			}
@@ -783,15 +515,6 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 		return -EINVAL;
 
 	err = 0;
-<<<<<<< HEAD
-	if (wdev->current_bss)
-		err = rdev->ops->add_key(&rdev->wiphy, dev, idx,
-					 pairwise, addr, params);
-	if (err)
-		return err;
-
-	if (!addr) {
-=======
 	if (wdev->connected ||
 	    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 	     wdev->u.ibss.current_bss))
@@ -809,7 +532,6 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	 */
 	if (!addr && (params->cipher == WLAN_CIPHER_SUITE_WEP40 ||
 		      params->cipher == WLAN_CIPHER_SUITE_WEP104)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wdev->wext.keys->params[idx] = *params;
 		memcpy(wdev->wext.keys->data[idx],
 			params->key, params->key_len);
@@ -820,13 +542,9 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	if ((params->cipher == WLAN_CIPHER_SUITE_WEP40 ||
 	     params->cipher == WLAN_CIPHER_SUITE_WEP104) &&
 	    (tx_key || (!addr && wdev->wext.default_key == -1))) {
-<<<<<<< HEAD
-		if (wdev->current_bss) {
-=======
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If we are getting a new TX key from not having
 			 * had one before we need to join a new IBSS with
@@ -834,19 +552,11 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 			 */
 			if (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 			    wdev->wext.default_key == -1) {
-<<<<<<< HEAD
-				__cfg80211_leave_ibss(rdev, wdev->netdev, true);
-				rejoin = true;
-			}
-			err = rdev->ops->set_default_key(&rdev->wiphy, dev,
-							 idx, true, true);
-=======
 				cfg80211_leave_ibss(rdev, wdev->netdev, true);
 				rejoin = true;
 			}
 			err = rdev_set_default_key(rdev, dev, -1, idx, true,
 						   true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!err) {
 			wdev->wext.default_key = idx;
@@ -858,16 +568,10 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 
 	if (params->cipher == WLAN_CIPHER_SUITE_AES_CMAC &&
 	    (tx_key || (!addr && wdev->wext.default_mgmt_key == -1))) {
-<<<<<<< HEAD
-		if (wdev->current_bss)
-			err = rdev->ops->set_default_mgmt_key(&rdev->wiphy,
-							      dev, idx);
-=======
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss))
 			err = rdev_set_default_mgmt_key(rdev, dev, -1, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err)
 			wdev->wext.default_mgmt_key = idx;
 		return err;
@@ -876,32 +580,6 @@ static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int cfg80211_set_encryption(struct cfg80211_registered_device *rdev,
-				   struct net_device *dev, bool pairwise,
-				   const u8 *addr, bool remove, bool tx_key,
-				   int idx, struct key_params *params)
-{
-	int err;
-
-	/* devlist mutex needed for possible IBSS re-join */
-	mutex_lock(&rdev->devlist_mtx);
-	wdev_lock(dev->ieee80211_ptr);
-	err = __cfg80211_set_encryption(rdev, dev, pairwise, addr,
-					remove, tx_key, idx, params);
-	wdev_unlock(dev->ieee80211_ptr);
-	mutex_unlock(&rdev->devlist_mtx);
-
-	return err;
-}
-
-static int cfg80211_wext_siwencode(struct net_device *dev,
-				   struct iw_request_info *info,
-				   struct iw_point *erq, char *keybuf)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-=======
 static int cfg80211_wext_siwencode(struct net_device *dev,
 				   struct iw_request_info *info,
 				   union iwreq_data *wrqu, char *keybuf)
@@ -909,7 +587,6 @@ static int cfg80211_wext_siwencode(struct net_device *dev,
 	struct iw_point *erq = &wrqu->encoding;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx, err;
 	bool remove = false;
 	struct key_params params;
@@ -924,49 +601,29 @@ static int cfg80211_wext_siwencode(struct net_device *dev,
 	    !rdev->ops->set_default_key)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-=======
 	wiphy_lock(&rdev->wiphy);
 	if (wdev->valid_links) {
 		err = -EOPNOTSUPP;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = erq->flags & IW_ENCODE_INDEX;
 	if (idx == 0) {
 		idx = wdev->wext.default_key;
 		if (idx < 0)
 			idx = 0;
-<<<<<<< HEAD
-	} else if (idx < 1 || idx > 4)
-		return -EINVAL;
-	else
-		idx--;
-=======
 	} else if (idx < 1 || idx > 4) {
 		err = -EINVAL;
 		goto out;
 	} else {
 		idx--;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (erq->flags & IW_ENCODE_DISABLED)
 		remove = true;
 	else if (erq->length == 0) {
 		/* No key data - just set the default TX key index */
 		err = 0;
-<<<<<<< HEAD
-		wdev_lock(wdev);
-		if (wdev->current_bss)
-			err = rdev->ops->set_default_key(&rdev->wiphy, dev,
-							 idx, true, true);
-		if (!err)
-			wdev->wext.default_key = idx;
-		wdev_unlock(wdev);
-		return err;
-=======
 		if (wdev->connected ||
 		    (wdev->iftype == NL80211_IFTYPE_ADHOC &&
 		     wdev->u.ibss.current_bss))
@@ -975,24 +632,11 @@ static int cfg80211_wext_siwencode(struct net_device *dev,
 		if (!err)
 			wdev->wext.default_key = idx;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(&params, 0, sizeof(params));
 	params.key = keybuf;
 	params.key_len = erq->length;
-<<<<<<< HEAD
-	if (erq->length == 5)
-		params.cipher = WLAN_CIPHER_SUITE_WEP40;
-	else if (erq->length == 13)
-		params.cipher = WLAN_CIPHER_SUITE_WEP104;
-	else if (!remove)
-		return -EINVAL;
-
-	return cfg80211_set_encryption(rdev, dev, false, NULL, remove,
-				       wdev->wext.default_key == -1,
-				       idx, &params);
-=======
 	if (erq->length == 5) {
 		params.cipher = WLAN_CIPHER_SUITE_WEP40;
 	} else if (erq->length == 13) {
@@ -1009,33 +653,22 @@ out:
 	wiphy_unlock(&rdev->wiphy);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_siwencodeext(struct net_device *dev,
 				      struct iw_request_info *info,
-<<<<<<< HEAD
-				      struct iw_point *erq, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-=======
 				      union iwreq_data *wrqu, char *extra)
 {
 	struct iw_point *erq = &wrqu->encoding;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iw_encode_ext *ext = (struct iw_encode_ext *) extra;
 	const u8 *addr;
 	int idx;
 	bool remove = false;
 	struct key_params params;
 	u32 cipher;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wdev->iftype != NL80211_IFTYPE_STATION &&
 	    wdev->iftype != NL80211_IFTYPE_ADHOC)
@@ -1047,12 +680,9 @@ static int cfg80211_wext_siwencodeext(struct net_device *dev,
 	    !rdev->ops->set_default_key)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-=======
 	if (wdev->valid_links)
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ext->alg) {
 	case IW_ENCODE_ALG_NONE:
 		remove = true;
@@ -1113,35 +743,23 @@ static int cfg80211_wext_siwencodeext(struct net_device *dev,
 		params.seq_len = 6;
 	}
 
-<<<<<<< HEAD
-	return cfg80211_set_encryption(
-=======
 	wiphy_lock(wdev->wiphy);
 	ret = cfg80211_set_encryption(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rdev, dev,
 			!(ext->ext_flags & IW_ENCODE_EXT_GROUP_KEY),
 			addr, remove,
 			ext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY,
 			idx, &params);
-<<<<<<< HEAD
-=======
 	wiphy_unlock(wdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwencode(struct net_device *dev,
 				   struct iw_request_info *info,
-<<<<<<< HEAD
-				   struct iw_point *erq, char *keybuf)
-{
-=======
 				   union iwreq_data *wrqu, char *keybuf)
 {
 	struct iw_point *erq = &wrqu->encoding;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	int idx;
 
@@ -1177,36 +795,6 @@ static int cfg80211_wext_giwencode(struct net_device *dev,
 
 static int cfg80211_wext_siwfreq(struct net_device *dev,
 				 struct iw_request_info *info,
-<<<<<<< HEAD
-				 struct iw_freq *wextfreq, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	int freq, err;
-
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_siwfreq(dev, info, wextfreq, extra);
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_siwfreq(dev, info, wextfreq, extra);
-	case NL80211_IFTYPE_MONITOR:
-	case NL80211_IFTYPE_WDS:
-	case NL80211_IFTYPE_MESH_POINT:
-		freq = cfg80211_wext_freq(wdev->wiphy, wextfreq);
-		if (freq < 0)
-			return freq;
-		if (freq == 0)
-			return -EINVAL;
-		mutex_lock(&rdev->devlist_mtx);
-		wdev_lock(wdev);
-		err = cfg80211_set_freq(rdev, wdev, freq, NL80211_CHAN_NO_HT);
-		wdev_unlock(wdev);
-		mutex_unlock(&rdev->devlist_mtx);
-		return err;
-	default:
-		return -EOPNOTSUPP;
-	}
-=======
 				 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_freq *wextfreq = &wrqu->freq;
@@ -1270,41 +858,10 @@ static int cfg80211_wext_siwfreq(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwfreq(struct net_device *dev,
 				 struct iw_request_info *info,
-<<<<<<< HEAD
-				 struct iw_freq *freq, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	struct ieee80211_channel *chan;
-
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_giwfreq(dev, info, freq, extra);
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_giwfreq(dev, info, freq, extra);
-	case NL80211_IFTYPE_MONITOR:
-		if (!rdev->ops->get_channel)
-			return -EINVAL;
-
-		chan = rdev->ops->get_channel(wdev->wiphy);
-		if (!chan)
-			return -EINVAL;
-		freq->m = chan->center_freq;
-		freq->e = 6;
-		return 0;
-	default:
-		if (!wdev->channel)
-			return -EINVAL;
-		freq->m = wdev->channel->center_freq;
-		freq->e = 6;
-		return 0;
-	}
-=======
 				 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_freq *freq = &wrqu->freq;
@@ -1342,7 +899,6 @@ static int cfg80211_wext_giwfreq(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_siwtxpower(struct net_device *dev,
@@ -1350,16 +906,10 @@ static int cfg80211_wext_siwtxpower(struct net_device *dev,
 				    union iwreq_data *data, char *extra)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
-<<<<<<< HEAD
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	enum nl80211_tx_power_setting type;
-	int dbm = 0;
-=======
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	enum nl80211_tx_power_setting type;
 	int dbm = 0;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((data->txpower.flags & IW_TXPOW_TYPE) != IW_TXPOW_DBM)
 		return -EINVAL;
@@ -1371,11 +921,7 @@ static int cfg80211_wext_siwtxpower(struct net_device *dev,
 
 	/* only change when not disabling */
 	if (!data->txpower.disabled) {
-<<<<<<< HEAD
-		rfkill_set_sw_state(rdev->rfkill, false);
-=======
 		rfkill_set_sw_state(rdev->wiphy.rfkill, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (data->txpower.fixed) {
 			/*
@@ -1400,14 +946,6 @@ static int cfg80211_wext_siwtxpower(struct net_device *dev,
 			}
 		}
 	} else {
-<<<<<<< HEAD
-		rfkill_set_sw_state(rdev->rfkill, true);
-		schedule_work(&rdev->rfkill_sync);
-		return 0;
-	}
-
-	return rdev->ops->set_tx_power(wdev->wiphy, type, DBM_TO_MBM(dbm));
-=======
 		if (rfkill_set_sw_state(rdev->wiphy.rfkill, true))
 			schedule_work(&rdev->rfkill_block);
 		return 0;
@@ -1418,7 +956,6 @@ static int cfg80211_wext_siwtxpower(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwtxpower(struct net_device *dev,
@@ -1426,11 +963,7 @@ static int cfg80211_wext_giwtxpower(struct net_device *dev,
 				    union iwreq_data *data, char *extra)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
-<<<<<<< HEAD
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-=======
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, val;
 
 	if ((data->txpower.flags & IW_TXPOW_TYPE) != IW_TXPOW_DBM)
@@ -1441,23 +974,15 @@ static int cfg80211_wext_giwtxpower(struct net_device *dev,
 	if (!rdev->ops->get_tx_power)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	err = rdev->ops->get_tx_power(wdev->wiphy, &val);
-=======
 	wiphy_lock(&rdev->wiphy);
 	err = rdev_get_tx_power(rdev, wdev, &val);
 	wiphy_unlock(&rdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	/* well... oh well */
 	data->txpower.fixed = 1;
-<<<<<<< HEAD
-	data->txpower.disabled = rfkill_blocked(rdev->rfkill);
-=======
 	data->txpower.disabled = rfkill_blocked(rdev->wiphy.rfkill);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->txpower.value = val;
 	data->txpower.flags = IW_TXPOW_DBM;
 
@@ -1615,14 +1140,9 @@ static int cfg80211_set_key_mgt(struct wireless_dev *wdev, u32 key_mgt)
 
 static int cfg80211_wext_siwauth(struct net_device *dev,
 				 struct iw_request_info *info,
-<<<<<<< HEAD
-				 struct iw_param *data, char *extra)
-{
-=======
 				 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *data = &wrqu->param;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	if (wdev->iftype != NL80211_IFTYPE_STATION)
@@ -1654,11 +1174,7 @@ static int cfg80211_wext_siwauth(struct net_device *dev,
 
 static int cfg80211_wext_giwauth(struct net_device *dev,
 				 struct iw_request_info *info,
-<<<<<<< HEAD
-				 struct iw_param *data, char *extra)
-=======
 				 union iwreq_data *wrqu, char *extra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* XXX: what do we need? */
 
@@ -1667,20 +1183,12 @@ static int cfg80211_wext_giwauth(struct net_device *dev,
 
 static int cfg80211_wext_siwpower(struct net_device *dev,
 				  struct iw_request_info *info,
-<<<<<<< HEAD
-				  struct iw_param *wrq, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	bool ps = wdev->ps;
-=======
 				  union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *wrq = &wrqu->power;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	bool ps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int timeout = wdev->ps_timeout;
 	int err;
 
@@ -1710,13 +1218,9 @@ static int cfg80211_wext_siwpower(struct net_device *dev,
 			timeout = wrq->value / 1000;
 	}
 
-<<<<<<< HEAD
-	err = rdev->ops->set_power_mgmt(wdev->wiphy, dev, ps, timeout);
-=======
 	wiphy_lock(&rdev->wiphy);
 	err = rdev_set_power_mgmt(rdev, dev, ps, timeout);
 	wiphy_unlock(&rdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1729,14 +1233,9 @@ static int cfg80211_wext_siwpower(struct net_device *dev,
 
 static int cfg80211_wext_giwpower(struct net_device *dev,
 				  struct iw_request_info *info,
-<<<<<<< HEAD
-				  struct iw_param *wrq, char *extra)
-{
-=======
 				  union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *wrq = &wrqu->power;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 
 	wrq->disabled = !wdev->ps;
@@ -1744,62 +1243,6 @@ static int cfg80211_wext_giwpower(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int cfg80211_wds_wext_siwap(struct net_device *dev,
-				   struct iw_request_info *info,
-				   struct sockaddr *addr, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	int err;
-
-	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_WDS))
-		return -EINVAL;
-
-	if (addr->sa_family != ARPHRD_ETHER)
-		return -EINVAL;
-
-	if (netif_running(dev))
-		return -EBUSY;
-
-	if (!rdev->ops->set_wds_peer)
-		return -EOPNOTSUPP;
-
-	err = rdev->ops->set_wds_peer(wdev->wiphy, dev, (u8 *) &addr->sa_data);
-	if (err)
-		return err;
-
-	memcpy(&wdev->wext.bssid, (u8 *) &addr->sa_data, ETH_ALEN);
-
-	return 0;
-}
-
-static int cfg80211_wds_wext_giwap(struct net_device *dev,
-				   struct iw_request_info *info,
-				   struct sockaddr *addr, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-
-	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_WDS))
-		return -EINVAL;
-
-	addr->sa_family = ARPHRD_ETHER;
-	memcpy(&addr->sa_data, wdev->wext.bssid, ETH_ALEN);
-
-	return 0;
-}
-
-static int cfg80211_wext_siwrate(struct net_device *dev,
-				 struct iw_request_info *info,
-				 struct iw_param *rate, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	struct cfg80211_bitrate_mask mask;
-	u32 fixed, maxrate;
-	struct ieee80211_supported_band *sband;
-	int band, ridx;
-=======
 static int cfg80211_wext_siwrate(struct net_device *dev,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
@@ -1811,7 +1254,6 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 	u32 fixed, maxrate;
 	struct ieee80211_supported_band *sband;
 	int band, ridx, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool match = false;
 
 	if (!rdev->ops->set_bitrate_mask)
@@ -1829,11 +1271,7 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 		maxrate = rate->value / 100000;
 	}
 
-<<<<<<< HEAD
-	for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
-=======
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sband = wdev->wiphy->bands[band];
 		if (sband == NULL)
 			continue;
@@ -1854,9 +1292,6 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 	if (!match)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return rdev->ops->set_bitrate_mask(wdev->wiphy, dev, NULL, &mask);
-=======
 	wiphy_lock(&rdev->wiphy);
 	if (dev->ieee80211_ptr->valid_links)
 		ret = -EOPNOTSUPP;
@@ -1865,26 +1300,16 @@ static int cfg80211_wext_siwrate(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwrate(struct net_device *dev,
 				 struct iw_request_info *info,
-<<<<<<< HEAD
-				 struct iw_param *rate, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	/* we are under RTNL - globally locked - so can use a static struct */
-	static struct station_info sinfo;
-=======
 				 union iwreq_data *wrqu, char *extra)
 {
 	struct iw_param *rate = &wrqu->bitrate;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	struct station_info sinfo = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 addr[ETH_ALEN];
 	int err;
 
@@ -1895,27 +1320,6 @@ static int cfg80211_wext_giwrate(struct net_device *dev,
 		return -EOPNOTSUPP;
 
 	err = 0;
-<<<<<<< HEAD
-	wdev_lock(wdev);
-	if (wdev->current_bss)
-		memcpy(addr, wdev->current_bss->pub.bssid, ETH_ALEN);
-	else
-		err = -EOPNOTSUPP;
-	wdev_unlock(wdev);
-	if (err)
-		return err;
-
-	err = rdev->ops->get_station(&rdev->wiphy, dev, addr, &sinfo);
-	if (err)
-		return err;
-
-	if (!(sinfo.filled & STATION_INFO_TX_BITRATE))
-		return -EOPNOTSUPP;
-
-	rate->value = 100000 * cfg80211_calculate_bitrate(&sinfo.txrate);
-
-	return 0;
-=======
 	if (!wdev->valid_links && wdev->links[0].client.current_bss)
 		memcpy(addr, wdev->links[0].client.current_bss->pub.bssid,
 		       ETH_ALEN);
@@ -1940,27 +1344,18 @@ static int cfg80211_wext_giwrate(struct net_device *dev,
 free:
 	cfg80211_sinfo_release_content(&sinfo);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Get wireless statistics.  Called by /proc/net/wireless and by SIOCGIWSTATS */
 static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
-<<<<<<< HEAD
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	/* we are under RTNL - globally locked - so can use static structs */
-	static struct iw_statistics wstats;
-	static struct station_info sinfo;
-	u8 bssid[ETH_ALEN];
-=======
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	/* we are under RTNL - globally locked - so can use static structs */
 	static struct iw_statistics wstats;
 	static struct station_info sinfo = {};
 	u8 bssid[ETH_ALEN];
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_STATION)
 		return NULL;
@@ -1969,17 +1364,6 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 		return NULL;
 
 	/* Grab BSSID of current BSS, if any */
-<<<<<<< HEAD
-	wdev_lock(wdev);
-	if (!wdev->current_bss) {
-		wdev_unlock(wdev);
-		return NULL;
-	}
-	memcpy(bssid, wdev->current_bss->pub.bssid, ETH_ALEN);
-	wdev_unlock(wdev);
-
-	if (rdev->ops->get_station(&rdev->wiphy, dev, bssid, &sinfo))
-=======
 	wiphy_lock(&rdev->wiphy);
 	if (wdev->valid_links || !wdev->links[0].client.current_bss) {
 		wiphy_unlock(&rdev->wiphy);
@@ -1993,18 +1377,13 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 	wiphy_unlock(&rdev->wiphy);
 
 	if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	memset(&wstats, 0, sizeof(wstats));
 
 	switch (rdev->wiphy.signal_type) {
 	case CFG80211_SIGNAL_TYPE_MBM:
-<<<<<<< HEAD
-		if (sinfo.filled & STATION_INFO_SIGNAL) {
-=======
 		if (sinfo.filled & BIT_ULL(NL80211_STA_INFO_SIGNAL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int sig = sinfo.signal;
 			wstats.qual.updated |= IW_QUAL_LEVEL_UPDATED;
 			wstats.qual.updated |= IW_QUAL_QUAL_UPDATED;
@@ -2017,37 +1396,22 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 			wstats.qual.qual = sig + 110;
 			break;
 		}
-<<<<<<< HEAD
-	case CFG80211_SIGNAL_TYPE_UNSPEC:
-		if (sinfo.filled & STATION_INFO_SIGNAL) {
-=======
 		fallthrough;
 	case CFG80211_SIGNAL_TYPE_UNSPEC:
 		if (sinfo.filled & BIT_ULL(NL80211_STA_INFO_SIGNAL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wstats.qual.updated |= IW_QUAL_LEVEL_UPDATED;
 			wstats.qual.updated |= IW_QUAL_QUAL_UPDATED;
 			wstats.qual.level = sinfo.signal;
 			wstats.qual.qual = sinfo.signal;
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		wstats.qual.updated |= IW_QUAL_LEVEL_INVALID;
 		wstats.qual.updated |= IW_QUAL_QUAL_INVALID;
 	}
 
 	wstats.qual.updated |= IW_QUAL_NOISE_INVALID;
-<<<<<<< HEAD
-	if (sinfo.filled & STATION_INFO_RX_DROP_MISC)
-		wstats.discard.misc = sinfo.rx_dropped_misc;
-	if (sinfo.filled & STATION_INFO_TX_FAILED)
-		wstats.discard.retries = sinfo.tx_failed;
-
-=======
 	if (sinfo.filled & BIT_ULL(NL80211_STA_INFO_RX_DROP_MISC))
 		wstats.discard.misc = sinfo.rx_dropped_misc;
 	if (sinfo.filled & BIT_ULL(NL80211_STA_INFO_TX_FAILED))
@@ -2055,28 +1419,11 @@ static struct iw_statistics *cfg80211_wireless_stats(struct net_device *dev)
 
 	cfg80211_sinfo_release_content(&sinfo);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &wstats;
 }
 
 static int cfg80211_wext_siwap(struct net_device *dev,
 			       struct iw_request_info *info,
-<<<<<<< HEAD
-			       struct sockaddr *ap_addr, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_siwap(dev, info, ap_addr, extra);
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_siwap(dev, info, ap_addr, extra);
-	case NL80211_IFTYPE_WDS:
-		return cfg80211_wds_wext_siwap(dev, info, ap_addr, extra);
-	default:
-		return -EOPNOTSUPP;
-	}
-=======
 			       union iwreq_data *wrqu, char *extra)
 {
 	struct sockaddr *ap_addr = &wrqu->ap_addr;
@@ -2099,27 +1446,10 @@ static int cfg80211_wext_siwap(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwap(struct net_device *dev,
 			       struct iw_request_info *info,
-<<<<<<< HEAD
-			       struct sockaddr *ap_addr, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_giwap(dev, info, ap_addr, extra);
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_giwap(dev, info, ap_addr, extra);
-	case NL80211_IFTYPE_WDS:
-		return cfg80211_wds_wext_giwap(dev, info, ap_addr, extra);
-	default:
-		return -EOPNOTSUPP;
-	}
-=======
 			       union iwreq_data *wrqu, char *extra)
 {
 	struct sockaddr *ap_addr = &wrqu->ap_addr;
@@ -2142,25 +1472,10 @@ static int cfg80211_wext_giwap(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_siwessid(struct net_device *dev,
 				  struct iw_request_info *info,
-<<<<<<< HEAD
-				  struct iw_point *data, char *ssid)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_siwessid(dev, info, data, ssid);
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_siwessid(dev, info, data, ssid);
-	default:
-		return -EOPNOTSUPP;
-	}
-=======
 				  union iwreq_data *wrqu, char *ssid)
 {
 	struct iw_point *data = &wrqu->data;
@@ -2183,37 +1498,20 @@ static int cfg80211_wext_siwessid(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_giwessid(struct net_device *dev,
 				  struct iw_request_info *info,
-<<<<<<< HEAD
-				  struct iw_point *data, char *ssid)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-=======
 				  union iwreq_data *wrqu, char *ssid)
 {
 	struct iw_point *data = &wrqu->data;
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->flags = 0;
 	data->length = 0;
 
-<<<<<<< HEAD
-	switch (wdev->iftype) {
-	case NL80211_IFTYPE_ADHOC:
-		return cfg80211_ibss_wext_giwessid(dev, info, data, ssid);
-	case NL80211_IFTYPE_STATION:
-		return cfg80211_mgd_wext_giwessid(dev, info, data, ssid);
-	default:
-		return -EOPNOTSUPP;
-	}
-=======
 	wiphy_lock(&rdev->wiphy);
 	switch (wdev->iftype) {
 	case NL80211_IFTYPE_ADHOC:
@@ -2229,19 +1527,10 @@ static int cfg80211_wext_giwessid(struct net_device *dev,
 	wiphy_unlock(&rdev->wiphy);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cfg80211_wext_siwpmksa(struct net_device *dev,
 				  struct iw_request_info *info,
-<<<<<<< HEAD
-				  struct iw_point *data, char *extra)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	struct cfg80211_registered_device *rdev = wiphy_to_dev(wdev->wiphy);
-	struct cfg80211_pmksa cfg_pmksa;
-	struct iw_pmksa *pmksa = (struct iw_pmksa *)extra;
-=======
 				  union iwreq_data *wrqu, char *extra)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
@@ -2249,7 +1538,6 @@ static int cfg80211_wext_siwpmksa(struct net_device *dev,
 	struct cfg80211_pmksa cfg_pmksa;
 	struct iw_pmksa *pmksa = (struct iw_pmksa *)extra;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&cfg_pmksa, 0, sizeof(struct cfg80211_pmksa));
 
@@ -2259,65 +1547,6 @@ static int cfg80211_wext_siwpmksa(struct net_device *dev,
 	cfg_pmksa.bssid = pmksa->bssid.sa_data;
 	cfg_pmksa.pmkid = pmksa->pmkid;
 
-<<<<<<< HEAD
-	switch (pmksa->cmd) {
-	case IW_PMKSA_ADD:
-		if (!rdev->ops->set_pmksa)
-			return -EOPNOTSUPP;
-
-		return rdev->ops->set_pmksa(&rdev->wiphy, dev, &cfg_pmksa);
-
-	case IW_PMKSA_REMOVE:
-		if (!rdev->ops->del_pmksa)
-			return -EOPNOTSUPP;
-
-		return rdev->ops->del_pmksa(&rdev->wiphy, dev, &cfg_pmksa);
-
-	case IW_PMKSA_FLUSH:
-		if (!rdev->ops->flush_pmksa)
-			return -EOPNOTSUPP;
-
-		return rdev->ops->flush_pmksa(&rdev->wiphy, dev);
-
-	default:
-		return -EOPNOTSUPP;
-	}
-}
-
-static const iw_handler cfg80211_handlers[] = {
-	[IW_IOCTL_IDX(SIOCGIWNAME)]	= (iw_handler) cfg80211_wext_giwname,
-	[IW_IOCTL_IDX(SIOCSIWFREQ)]	= (iw_handler) cfg80211_wext_siwfreq,
-	[IW_IOCTL_IDX(SIOCGIWFREQ)]	= (iw_handler) cfg80211_wext_giwfreq,
-	[IW_IOCTL_IDX(SIOCSIWMODE)]	= (iw_handler) cfg80211_wext_siwmode,
-	[IW_IOCTL_IDX(SIOCGIWMODE)]	= (iw_handler) cfg80211_wext_giwmode,
-	[IW_IOCTL_IDX(SIOCGIWRANGE)]	= (iw_handler) cfg80211_wext_giwrange,
-	[IW_IOCTL_IDX(SIOCSIWAP)]	= (iw_handler) cfg80211_wext_siwap,
-	[IW_IOCTL_IDX(SIOCGIWAP)]	= (iw_handler) cfg80211_wext_giwap,
-	[IW_IOCTL_IDX(SIOCSIWMLME)]	= (iw_handler) cfg80211_wext_siwmlme,
-	[IW_IOCTL_IDX(SIOCSIWSCAN)]	= (iw_handler) cfg80211_wext_siwscan,
-	[IW_IOCTL_IDX(SIOCGIWSCAN)]	= (iw_handler) cfg80211_wext_giwscan,
-	[IW_IOCTL_IDX(SIOCSIWESSID)]	= (iw_handler) cfg80211_wext_siwessid,
-	[IW_IOCTL_IDX(SIOCGIWESSID)]	= (iw_handler) cfg80211_wext_giwessid,
-	[IW_IOCTL_IDX(SIOCSIWRATE)]	= (iw_handler) cfg80211_wext_siwrate,
-	[IW_IOCTL_IDX(SIOCGIWRATE)]	= (iw_handler) cfg80211_wext_giwrate,
-	[IW_IOCTL_IDX(SIOCSIWRTS)]	= (iw_handler) cfg80211_wext_siwrts,
-	[IW_IOCTL_IDX(SIOCGIWRTS)]	= (iw_handler) cfg80211_wext_giwrts,
-	[IW_IOCTL_IDX(SIOCSIWFRAG)]	= (iw_handler) cfg80211_wext_siwfrag,
-	[IW_IOCTL_IDX(SIOCGIWFRAG)]	= (iw_handler) cfg80211_wext_giwfrag,
-	[IW_IOCTL_IDX(SIOCSIWTXPOW)]	= (iw_handler) cfg80211_wext_siwtxpower,
-	[IW_IOCTL_IDX(SIOCGIWTXPOW)]	= (iw_handler) cfg80211_wext_giwtxpower,
-	[IW_IOCTL_IDX(SIOCSIWRETRY)]	= (iw_handler) cfg80211_wext_siwretry,
-	[IW_IOCTL_IDX(SIOCGIWRETRY)]	= (iw_handler) cfg80211_wext_giwretry,
-	[IW_IOCTL_IDX(SIOCSIWENCODE)]	= (iw_handler) cfg80211_wext_siwencode,
-	[IW_IOCTL_IDX(SIOCGIWENCODE)]	= (iw_handler) cfg80211_wext_giwencode,
-	[IW_IOCTL_IDX(SIOCSIWPOWER)]	= (iw_handler) cfg80211_wext_siwpower,
-	[IW_IOCTL_IDX(SIOCGIWPOWER)]	= (iw_handler) cfg80211_wext_giwpower,
-	[IW_IOCTL_IDX(SIOCSIWGENIE)]	= (iw_handler) cfg80211_wext_siwgenie,
-	[IW_IOCTL_IDX(SIOCSIWAUTH)]	= (iw_handler) cfg80211_wext_siwauth,
-	[IW_IOCTL_IDX(SIOCGIWAUTH)]	= (iw_handler) cfg80211_wext_giwauth,
-	[IW_IOCTL_IDX(SIOCSIWENCODEEXT)]= (iw_handler) cfg80211_wext_siwencodeext,
-	[IW_IOCTL_IDX(SIOCSIWPMKSA)]	= (iw_handler) cfg80211_wext_siwpmksa,
-=======
 	wiphy_lock(&rdev->wiphy);
 	switch (pmksa->cmd) {
 	case IW_PMKSA_ADD:
@@ -2386,7 +1615,6 @@ static const iw_handler cfg80211_handlers[] = {
 	IW_HANDLER(SIOCGIWAUTH,		cfg80211_wext_giwauth),
 	IW_HANDLER(SIOCSIWENCODEEXT,	cfg80211_wext_siwencodeext),
 	IW_HANDLER(SIOCSIWPMKSA,	cfg80211_wext_siwpmksa),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct iw_handler_def cfg80211_wext_handler = {

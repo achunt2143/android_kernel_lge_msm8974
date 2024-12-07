@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* thread_info.h: sparc64 low-level thread information
  *
  * Copyright (C) 2002  David S. Miller (davem@redhat.com)
@@ -18,21 +15,12 @@
 #define TI_FLAG_FAULT_CODE_SHIFT	56
 #define TI_FLAG_BYTE_WSTATE		1
 #define TI_FLAG_WSTATE_SHIFT		48
-<<<<<<< HEAD
-#define TI_FLAG_BYTE_CWP		2
-#define TI_FLAG_CWP_SHIFT		40
-#define TI_FLAG_BYTE_CURRENT_DS		3
-#define TI_FLAG_CURRENT_DS_SHIFT	32
-#define TI_FLAG_BYTE_FPDEPTH		4
-#define TI_FLAG_FPDEPTH_SHIFT		24
-=======
 #define TI_FLAG_BYTE_NOERROR		2
 #define TI_FLAG_BYTE_NOERROR_SHIFT	40
 #define TI_FLAG_BYTE_FPDEPTH		3
 #define TI_FLAG_FPDEPTH_SHIFT		32
 #define TI_FLAG_BYTE_CWP		4
 #define TI_FLAG_CWP_SHIFT		24
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TI_FLAG_BYTE_WSAVED		5
 #define TI_FLAG_WSAVED_SHIFT		16
 
@@ -44,10 +32,6 @@
 #include <asm/types.h>
 
 struct task_struct;
-<<<<<<< HEAD
-struct exec_domain;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct thread_info {
 	/* D$ line 1 */
@@ -60,16 +44,9 @@ struct thread_info {
 	/* D$ line 2 */
 	unsigned long		fault_address;
 	struct pt_regs		*kregs;
-<<<<<<< HEAD
-	struct exec_domain	*exec_domain;
-	int			preempt_count;	/* 0 => preemptable, <0 => BUG */
-	__u8			new_child;
-	__u8			syscall_noerror;
-=======
 	int			preempt_count;	/* 0 => preemptable, <0 => BUG */
 	__u8			new_child;
 	__u8			__pad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16			cpu;
 
 	unsigned long		*utraps;
@@ -80,20 +57,11 @@ struct thread_info {
 	unsigned long		gsr[7];
 	unsigned long		xfsr[7];
 
-<<<<<<< HEAD
-	struct restart_block	restart_block;
-
-	struct pt_regs		*kern_una_regs;
-	unsigned int		kern_una_insn;
-
-	unsigned long		fpregs[0] __attribute__ ((aligned(64)));
-=======
 	struct pt_regs		*kern_una_regs;
 	unsigned int		kern_una_insn;
 
 	unsigned long		fpregs[(7 * 256) / sizeof(unsigned long)]
 		__attribute__ ((aligned(64)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* !(__ASSEMBLY__) */
@@ -104,35 +72,13 @@ struct thread_info {
 #define TI_FAULT_CODE	(TI_FLAGS + TI_FLAG_BYTE_FAULT_CODE)
 #define TI_WSTATE	(TI_FLAGS + TI_FLAG_BYTE_WSTATE)
 #define TI_CWP		(TI_FLAGS + TI_FLAG_BYTE_CWP)
-<<<<<<< HEAD
-#define TI_CURRENT_DS	(TI_FLAGS + TI_FLAG_BYTE_CURRENT_DS)
-#define TI_FPDEPTH	(TI_FLAGS + TI_FLAG_BYTE_FPDEPTH)
-#define TI_WSAVED	(TI_FLAGS + TI_FLAG_BYTE_WSAVED)
-=======
 #define TI_FPDEPTH	(TI_FLAGS + TI_FLAG_BYTE_FPDEPTH)
 #define TI_WSAVED	(TI_FLAGS + TI_FLAG_BYTE_WSAVED)
 #define TI_SYS_NOERROR	(TI_FLAGS + TI_FLAG_BYTE_NOERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TI_FPSAVED	0x00000010
 #define TI_KSP		0x00000018
 #define TI_FAULT_ADDR	0x00000020
 #define TI_KREGS	0x00000028
-<<<<<<< HEAD
-#define TI_EXEC_DOMAIN	0x00000030
-#define TI_PRE_COUNT	0x00000038
-#define TI_NEW_CHILD	0x0000003c
-#define TI_SYS_NOERROR	0x0000003d
-#define TI_CPU		0x0000003e
-#define TI_UTRAPS	0x00000040
-#define TI_REG_WINDOW	0x00000048
-#define TI_RWIN_SPTRS	0x000003c8
-#define TI_GSR		0x00000400
-#define TI_XFSR		0x00000438
-#define TI_RESTART_BLOCK 0x00000470
-#define TI_KUNA_REGS	0x000004a0
-#define TI_KUNA_INSN	0x000004a8
-#define TI_FPREGS	0x000004c0
-=======
 #define TI_PRE_COUNT	0x00000030
 #define TI_NEW_CHILD	0x00000034
 #define TI_CPU		0x00000036
@@ -144,7 +90,6 @@ struct thread_info {
 #define TI_KUNA_REGS	0x00000468
 #define TI_KUNA_INSN	0x00000470
 #define TI_FPREGS	0x00000480
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We embed this in the uppermost byte of thread_info->flags */
 #define FAULT_CODE_WRITE	0x01	/* Write access, implies D-TLB	   */
@@ -152,10 +97,7 @@ struct thread_info {
 #define FAULT_CODE_ITLB		0x04	/* Miss happened in I-TLB	   */
 #define FAULT_CODE_WINFIXUP	0x08	/* Miss happened during spill/fill */
 #define FAULT_CODE_BLKCOMMIT	0x10	/* Use blk-commit ASI in copy_page */
-<<<<<<< HEAD
-=======
 #define	FAULT_CODE_BAD_RA	0x20	/* Bad RA for sun4v		   */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if PAGE_SHIFT == 13
 #define THREAD_SIZE (2*PAGE_SIZE)
@@ -165,11 +107,6 @@ struct thread_info {
 #define THREAD_SHIFT PAGE_SHIFT
 #endif /* PAGE_SHIFT == 13 */
 
-<<<<<<< HEAD
-#define PREEMPT_ACTIVE		0x10000000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * macros/functions for gaining access to the thread information structure
  */
@@ -178,51 +115,6 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)				\
 {							\
 	.task		=	&tsk,			\
-<<<<<<< HEAD
-	.flags		= ((unsigned long)ASI_P) << TI_FLAG_CURRENT_DS_SHIFT,	\
-	.exec_domain	=	&default_exec_domain,	\
-	.preempt_count	=	INIT_PREEMPT_COUNT,	\
-	.restart_block	= {				\
-		.fn	=	do_no_restart_syscall,	\
-	},						\
-}
-
-#define init_thread_info	(init_thread_union.thread_info)
-#define init_stack		(init_thread_union.stack)
-
-/* how to get the thread information struct from C */
-register struct thread_info *current_thread_info_reg asm("g6");
-#define current_thread_info()	(current_thread_info_reg)
-
-/* thread information allocation */
-#if PAGE_SHIFT == 13
-#define __THREAD_INFO_ORDER	1
-#else /* PAGE_SHIFT == 13 */
-#define __THREAD_INFO_ORDER	0
-#endif /* PAGE_SHIFT == 13 */
-
-#define __HAVE_ARCH_THREAD_INFO_ALLOCATOR
-
-#ifdef CONFIG_DEBUG_STACK_USAGE
-#define THREAD_FLAGS (GFP_KERNEL | __GFP_ZERO)
-#else
-#define THREAD_FLAGS (GFP_KERNEL)
-#endif
-
-#define alloc_thread_info_node(tsk, node)				\
-({									\
-	struct page *page = alloc_pages_node(node, THREAD_FLAGS,	\
-					     __THREAD_INFO_ORDER);	\
-	struct thread_info *ret;					\
-									\
-	ret = page ? page_address(page) : NULL;				\
-	ret;								\
-})
-
-#define free_thread_info(ti) \
-	free_pages((unsigned long)(ti),__THREAD_INFO_ORDER)
-
-=======
 	.preempt_count	=	INIT_PREEMPT_COUNT,	\
 	.kregs		=	(struct pt_regs *)(init_stack+THREAD_SIZE)-1 \
 }
@@ -242,7 +134,6 @@ extern struct thread_info *current_thread_info(void);
 #define THREAD_SIZE_ORDER	0
 #endif /* PAGE_SHIFT == 13 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __thread_flag_byte_ptr(ti)	\
 	((unsigned char *)(&((ti)->flags)))
 #define __cur_thread_flag_byte_ptr	__thread_flag_byte_ptr(current_thread_info())
@@ -253,21 +144,12 @@ extern struct thread_info *current_thread_info(void);
 #define set_thread_wstate(val)		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_WSTATE] = (val))
 #define get_thread_cwp()		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_CWP])
 #define set_thread_cwp(val)		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_CWP] = (val))
-<<<<<<< HEAD
-#define get_thread_current_ds()		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_CURRENT_DS])
-#define set_thread_current_ds(val)	(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_CURRENT_DS] = (val))
-=======
 #define get_thread_noerror()		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_NOERROR])
 #define set_thread_noerror(val)		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_NOERROR] = (val))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define get_thread_fpdepth()		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_FPDEPTH])
 #define set_thread_fpdepth(val)		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_FPDEPTH] = (val))
 #define get_thread_wsaved()		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_WSAVED])
 #define set_thread_wsaved(val)		(__cur_thread_flag_byte_ptr[TI_FLAG_BYTE_WSAVED] = (val))
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__ASSEMBLY__) */
 
 /*
@@ -297,19 +179,11 @@ extern struct thread_info *current_thread_info(void);
 #define TIF_NOTIFY_RESUME	1	/* callback before returning to user */
 #define TIF_SIGPENDING		2	/* signal pending */
 #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
-<<<<<<< HEAD
-/* flag bit 4 is available */
-#define TIF_UNALIGNED		5	/* allowed to do unaligned accesses */
-/* flag bit 6 is available */
-#define TIF_32BIT		7	/* 32-bit binary */
-/* flag bit 8 is available */
-=======
 #define TIF_NOTIFY_SIGNAL	4	/* signal notifications exist */
 #define TIF_UNALIGNED		5	/* allowed to do unaligned accesses */
 #define TIF_UPROBE		6	/* breakpointed or singlestepped */
 #define TIF_32BIT		7	/* 32-bit binary */
 #define TIF_NOHZ		8	/* in adaptive nohz mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIF_SECCOMP		9	/* secure computing */
 #define TIF_SYSCALL_AUDIT	10	/* syscall auditing active */
 #define TIF_SYSCALL_TRACEPOINT	11	/* syscall tracepoint instrumentation */
@@ -317,11 +191,7 @@ extern struct thread_info *current_thread_info(void);
  *       in using in assembly, else we can't use the mask as
  *       an immediate value in instructions such as andcc.
  */
-<<<<<<< HEAD
-/* flag bit 12 is available */
-=======
 #define TIF_MCDPER		12	/* Precise MCD exception */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
 #define TIF_POLLING_NRFLAG	14
 
@@ -329,16 +199,11 @@ extern struct thread_info *current_thread_info(void);
 #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
-<<<<<<< HEAD
-#define _TIF_UNALIGNED		(1<<TIF_UNALIGNED)
-#define _TIF_32BIT		(1<<TIF_32BIT)
-=======
 #define _TIF_NOTIFY_SIGNAL	(1<<TIF_NOTIFY_SIGNAL)
 #define _TIF_UNALIGNED		(1<<TIF_UNALIGNED)
 #define _TIF_UPROBE		(1<<TIF_UPROBE)
 #define _TIF_32BIT		(1<<TIF_32BIT)
 #define _TIF_NOHZ		(1<<TIF_NOHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _TIF_SECCOMP		(1<<TIF_SECCOMP)
 #define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
 #define _TIF_SYSCALL_TRACEPOINT	(1<<TIF_SYSCALL_TRACEPOINT)
@@ -347,15 +212,11 @@ extern struct thread_info *current_thread_info(void);
 #define _TIF_USER_WORK_MASK	((0xff << TI_FLAG_WSAVED_SHIFT) | \
 				 _TIF_DO_NOTIFY_RESUME_MASK | \
 				 _TIF_NEED_RESCHED)
-<<<<<<< HEAD
-#define _TIF_DO_NOTIFY_RESUME_MASK	(_TIF_NOTIFY_RESUME | _TIF_SIGPENDING)
-=======
 #define _TIF_DO_NOTIFY_RESUME_MASK	(_TIF_NOTIFY_RESUME | \
 					 _TIF_SIGPENDING | _TIF_UPROBE | \
 					 _TIF_NOTIFY_SIGNAL)
 
 #define is_32bit_task()	(test_thread_flag(TIF_32BIT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Thread-synchronous status.
@@ -366,18 +227,6 @@ extern struct thread_info *current_thread_info(void);
  *
  * Note that there are only 8 bits available.
  */
-<<<<<<< HEAD
-#define TS_RESTORE_SIGMASK	0x0001	/* restore signal mask in do_signal() */
-
-#ifndef __ASSEMBLY__
-#define HAVE_SET_RESTORE_SIGMASK	1
-static inline void set_restore_sigmask(void)
-{
-	struct thread_info *ti = current_thread_info();
-	ti->status |= TS_RESTORE_SIGMASK;
-	set_bit(TIF_SIGPENDING, &ti->flags);
-}
-=======
 
 #ifndef __ASSEMBLY__
 
@@ -386,7 +235,6 @@ static inline void set_restore_sigmask(void)
 	((test_thread_flag(TIF_32BIT) && !thread32_stack_is_64bit(__SP)) ? \
 	 false : true)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !__ASSEMBLY__ */
 
 #endif /* __KERNEL__ */

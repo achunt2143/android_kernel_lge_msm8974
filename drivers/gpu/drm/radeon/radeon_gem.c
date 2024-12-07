@@ -25,21 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-
-int radeon_gem_object_init(struct drm_gem_object *obj)
-{
-	BUG();
-
-	return 0;
-}
-
-void radeon_gem_object_free(struct drm_gem_object *gobj)
-=======
 
 #include <linux/iosys-map.h>
 #include <linux/pci.h>
@@ -97,27 +82,15 @@ static const struct vm_operations_struct radeon_gem_vm_ops = {
 };
 
 static void radeon_gem_object_free(struct drm_gem_object *gobj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct radeon_bo *robj = gem_to_radeon_bo(gobj);
 
 	if (robj) {
-<<<<<<< HEAD
-=======
 		radeon_mn_unregister(robj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_bo_unref(&robj);
 	}
 }
 
-<<<<<<< HEAD
-int radeon_gem_object_create(struct radeon_device *rdev, int size,
-				int alignment, int initial_domain,
-				bool discardable, bool kernel,
-				struct drm_gem_object **obj)
-{
-	struct radeon_bo *robj;
-=======
 int radeon_gem_object_create(struct radeon_device *rdev, unsigned long size,
 				int alignment, int initial_domain,
 				u32 flags, bool kernel,
@@ -125,7 +98,6 @@ int radeon_gem_object_create(struct radeon_device *rdev, unsigned long size,
 {
 	struct radeon_bo *robj;
 	unsigned long max_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	*obj = NULL;
@@ -133,16 +105,6 @@ int radeon_gem_object_create(struct radeon_device *rdev, unsigned long size,
 	if (alignment < PAGE_SIZE) {
 		alignment = PAGE_SIZE;
 	}
-<<<<<<< HEAD
-	r = radeon_bo_create(rdev, size, alignment, kernel, initial_domain, &robj);
-	if (r) {
-		if (r != -ERESTARTSYS)
-			DRM_ERROR("Failed to allocate GEM object (%d, %d, %u, %d)\n",
-				  size, initial_domain, alignment, r);
-		return r;
-	}
-	*obj = &robj->gem_base;
-=======
 
 	/* Maximum bo size is the unpinned gtt size since we use the gtt to
 	 * handle vram to system pool migrations.
@@ -171,7 +133,6 @@ retry:
 	*obj = &robj->tbo.base;
 	(*obj)->funcs = &radeon_gem_object_funcs;
 	robj->pid = task_pid_nr(current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&rdev->gem.mutex);
 	list_add_tail(&robj->list, &rdev->gem.objects);
@@ -180,20 +141,12 @@ retry:
 	return 0;
 }
 
-<<<<<<< HEAD
-int radeon_gem_set_domain(struct drm_gem_object *gobj,
-=======
 static int radeon_gem_set_domain(struct drm_gem_object *gobj,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  uint32_t rdomain, uint32_t wdomain)
 {
 	struct radeon_bo *robj;
 	uint32_t domain;
-<<<<<<< HEAD
-	int r;
-=======
 	long r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: reeimplement */
 	robj = gem_to_radeon_bo(gobj);
@@ -204,23 +157,11 @@ static int radeon_gem_set_domain(struct drm_gem_object *gobj,
 	}
 	if (!domain) {
 		/* Do nothings */
-<<<<<<< HEAD
-		printk(KERN_WARNING "Set domain withou domain !\n");
-=======
 		pr_warn("Set domain without domain !\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	if (domain == RADEON_GEM_DOMAIN_CPU) {
 		/* Asking for cpu access wait for object idle */
-<<<<<<< HEAD
-		r = radeon_bo_wait(robj, NULL, false);
-		if (r) {
-			printk(KERN_ERR "Failed to wait for object !\n");
-			return r;
-		}
-	}
-=======
 		r = dma_resv_wait_timeout(robj->tbo.base.resv,
 					  DMA_RESV_USAGE_BOOKKEEP,
 					  true, 30 * HZ);
@@ -236,7 +177,6 @@ static int radeon_gem_set_domain(struct drm_gem_object *gobj,
 		/* A BO that is associated with a dma-buf cannot be sensibly migrated to VRAM */
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -255,41 +195,12 @@ void radeon_gem_fini(struct radeon_device *rdev)
  * Call from drm_gem_handle_create which appear in both new and open ioctl
  * case.
  */
-<<<<<<< HEAD
-int radeon_gem_object_open(struct drm_gem_object *obj, struct drm_file *file_priv)
-{
-	return 0;
-}
-
-void radeon_gem_object_close(struct drm_gem_object *obj,
-			     struct drm_file *file_priv)
-=======
 static int radeon_gem_object_open(struct drm_gem_object *obj, struct drm_file *file_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct radeon_bo *rbo = gem_to_radeon_bo(obj);
 	struct radeon_device *rdev = rbo->rdev;
 	struct radeon_fpriv *fpriv = file_priv->driver_priv;
 	struct radeon_vm *vm = &fpriv->vm;
-<<<<<<< HEAD
-	struct radeon_bo_va *bo_va, *tmp;
-
-	if (rdev->family < CHIP_CAYMAN) {
-		return;
-	}
-
-	if (radeon_bo_reserve(rbo, false)) {
-		return;
-	}
-	list_for_each_entry_safe(bo_va, tmp, &rbo->va, bo_list) {
-		if (bo_va->vm == vm) {
-			/* remove from this vm address space */
-			mutex_lock(&vm->mutex);
-			list_del(&bo_va->vm_list);
-			mutex_unlock(&vm->mutex);
-			list_del(&bo_va->bo_list);
-			kfree(bo_va);
-=======
 	struct radeon_bo_va *bo_va;
 	int r;
 
@@ -339,14 +250,11 @@ static void radeon_gem_object_close(struct drm_gem_object *obj,
 	if (bo_va) {
 		if (--bo_va->ref_count == 0) {
 			radeon_vm_bo_rmv(rdev, bo_va);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	radeon_bo_unreserve(rbo);
 }
 
-<<<<<<< HEAD
-=======
 static int radeon_gem_handle_lockup(struct radeon_device *rdev, int r)
 {
 	if (r == -EDEADLK) {
@@ -381,7 +289,6 @@ const struct drm_gem_object_funcs radeon_gem_object_funcs = {
 	.mmap = radeon_gem_object_mmap,
 	.vm_ops = &radeon_gem_vm_ops,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GEM ioctls.
@@ -391,40 +298,6 @@ int radeon_gem_info_ioctl(struct drm_device *dev, void *data,
 {
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_radeon_gem_info *args = data;
-<<<<<<< HEAD
-	struct ttm_mem_type_manager *man;
-	unsigned i;
-
-	man = &rdev->mman.bdev.man[TTM_PL_VRAM];
-
-	args->vram_size = rdev->mc.real_vram_size;
-	args->vram_visible = (u64)man->size << PAGE_SHIFT;
-	if (rdev->stollen_vga_memory)
-		args->vram_visible -= radeon_bo_size(rdev->stollen_vga_memory);
-	args->vram_visible -= radeon_fbdev_total_size(rdev);
-	args->gart_size = rdev->mc.gtt_size - 4096 - RADEON_IB_POOL_SIZE*64*1024;
-	for(i = 0; i < RADEON_NUM_RINGS; ++i)
-		args->gart_size -= rdev->ring[i].ring_size;
-	return 0;
-}
-
-int radeon_gem_pread_ioctl(struct drm_device *dev, void *data,
-			   struct drm_file *filp)
-{
-	/* TODO: implement */
-	DRM_ERROR("unimplemented %s\n", __func__);
-	return -ENOSYS;
-}
-
-int radeon_gem_pwrite_ioctl(struct drm_device *dev, void *data,
-			    struct drm_file *filp)
-{
-	/* TODO: implement */
-	DRM_ERROR("unimplemented %s\n", __func__);
-	return -ENOSYS;
-}
-
-=======
 	struct ttm_resource_manager *man;
 
 	man = ttm_manager_type(&rdev->mman.bdev, TTM_PL_VRAM);
@@ -438,7 +311,6 @@ int radeon_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 			    struct drm_file *filp)
 {
@@ -448,14 +320,6 @@ int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 	uint32_t handle;
 	int r;
 
-<<<<<<< HEAD
-	/* create a gem object to contain this object in */
-	args->size = roundup(args->size, PAGE_SIZE);
-	r = radeon_gem_object_create(rdev, args->size, args->alignment,
-					args->initial_domain, false,
-					false, &gobj);
-	if (r) {
-=======
 	down_read(&rdev->exclusive_lock);
 	/* create a gem object to contain this object in */
 	args->size = roundup(args->size, PAGE_SIZE);
@@ -465,21 +329,10 @@ int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 	if (r) {
 		up_read(&rdev->exclusive_lock);
 		r = radeon_gem_handle_lockup(rdev, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 	r = drm_gem_handle_create(filp, gobj, &handle);
 	/* drop reference from allocate - handle holds it now */
-<<<<<<< HEAD
-	drm_gem_object_unreference_unlocked(gobj);
-	if (r) {
-		return r;
-	}
-	args->handle = handle;
-	return 0;
-}
-
-=======
 	drm_gem_object_put(gobj);
 	if (r) {
 		up_read(&rdev->exclusive_lock);
@@ -582,38 +435,18 @@ handle_lockup:
 	return r;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_gem_set_domain_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp)
 {
 	/* transition the BO to a domain -
 	 * just validate the BO into a certain domain */
-<<<<<<< HEAD
-	struct drm_radeon_gem_set_domain *args = data;
-	struct drm_gem_object *gobj;
-	struct radeon_bo *robj;
-=======
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_radeon_gem_set_domain *args = data;
 	struct drm_gem_object *gobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	/* for now if someone requests domain CPU -
 	 * just make sure the buffer is finished with */
-<<<<<<< HEAD
-
-	/* just do a BO wait for now */
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-	if (gobj == NULL) {
-		return -ENOENT;
-	}
-	robj = gem_to_radeon_bo(gobj);
-
-	r = radeon_gem_set_domain(gobj, args->read_domains, args->write_domain);
-
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 	down_read(&rdev->exclusive_lock);
 
 	/* just do a BO wait for now */
@@ -628,7 +461,6 @@ int radeon_gem_set_domain_ioctl(struct drm_device *dev, void *data,
 	drm_gem_object_put(gobj);
 	up_read(&rdev->exclusive_lock);
 	r = radeon_gem_handle_lockup(rdev, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -639,26 +471,17 @@ int radeon_mode_dumb_mmap(struct drm_file *filp,
 	struct drm_gem_object *gobj;
 	struct radeon_bo *robj;
 
-<<<<<<< HEAD
-	gobj = drm_gem_object_lookup(dev, filp, handle);
-=======
 	gobj = drm_gem_object_lookup(filp, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL) {
 		return -ENOENT;
 	}
 	robj = gem_to_radeon_bo(gobj);
-<<<<<<< HEAD
-	*offset_p = radeon_bo_mmap_offset(robj);
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 	if (radeon_ttm_tt_has_userptr(robj->rdev, robj->tbo.ttm)) {
 		drm_gem_object_put(gobj);
 		return -EPERM;
 	}
 	*offset_p = radeon_bo_mmap_offset(robj);
 	drm_gem_object_put(gobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -679,31 +502,11 @@ int radeon_gem_busy_ioctl(struct drm_device *dev, void *data,
 	int r;
 	uint32_t cur_placement = 0;
 
-<<<<<<< HEAD
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-=======
 	gobj = drm_gem_object_lookup(filp, args->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL) {
 		return -ENOENT;
 	}
 	robj = gem_to_radeon_bo(gobj);
-<<<<<<< HEAD
-	r = radeon_bo_wait(robj, &cur_placement, true);
-	switch (cur_placement) {
-	case TTM_PL_VRAM:
-		args->domain = RADEON_GEM_DOMAIN_VRAM;
-		break;
-	case TTM_PL_TT:
-		args->domain = RADEON_GEM_DOMAIN_GTT;
-		break;
-	case TTM_PL_SYSTEM:
-		args->domain = RADEON_GEM_DOMAIN_CPU;
-	default:
-		break;
-	}
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 
 	r = dma_resv_test_signaled(robj->tbo.base.resv, DMA_RESV_USAGE_READ);
 	if (r == 0)
@@ -714,21 +517,12 @@ int radeon_gem_busy_ioctl(struct drm_device *dev, void *data,
 	cur_placement = READ_ONCE(robj->tbo.resource->mem_type);
 	args->domain = radeon_mem_type_to_domain(cur_placement);
 	drm_gem_object_put(gobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 int radeon_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 			      struct drm_file *filp)
 {
-<<<<<<< HEAD
-	struct drm_radeon_gem_wait_idle *args = data;
-	struct drm_gem_object *gobj;
-	struct radeon_bo *robj;
-	int r;
-
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-=======
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_radeon_gem_wait_idle *args = data;
 	struct drm_gem_object *gobj;
@@ -738,18 +532,10 @@ int radeon_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 	long ret;
 
 	gobj = drm_gem_object_lookup(filp, args->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL) {
 		return -ENOENT;
 	}
 	robj = gem_to_radeon_bo(gobj);
-<<<<<<< HEAD
-	r = radeon_bo_wait(robj, NULL, false);
-	/* callback hw specific functions if any */
-	if (robj->rdev->asic->ioctl_wait_idle)
-		robj->rdev->asic->ioctl_wait_idle(robj->rdev, robj);
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 
 	ret = dma_resv_wait_timeout(robj->tbo.base.resv, DMA_RESV_USAGE_READ,
 				    true, 30 * HZ);
@@ -765,7 +551,6 @@ int radeon_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 		robj->rdev->asic->mmio_hdp_flush(rdev);
 	drm_gem_object_put(gobj);
 	r = radeon_gem_handle_lockup(rdev, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -778,20 +563,12 @@ int radeon_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 	int r = 0;
 
 	DRM_DEBUG("%d \n", args->handle);
-<<<<<<< HEAD
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-=======
 	gobj = drm_gem_object_lookup(filp, args->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL)
 		return -ENOENT;
 	robj = gem_to_radeon_bo(gobj);
 	r = radeon_bo_set_tiling_flags(robj, args->tiling_flags, args->pitch);
-<<<<<<< HEAD
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 	drm_gem_object_put(gobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -804,11 +581,7 @@ int radeon_gem_get_tiling_ioctl(struct drm_device *dev, void *data,
 	int r = 0;
 
 	DRM_DEBUG("\n");
-<<<<<<< HEAD
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-=======
 	gobj = drm_gem_object_lookup(filp, args->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL)
 		return -ENOENT;
 	rbo = gem_to_radeon_bo(gobj);
@@ -818,12 +591,6 @@ int radeon_gem_get_tiling_ioctl(struct drm_device *dev, void *data,
 	radeon_bo_get_tiling_flags(rbo, &args->tiling_flags, &args->pitch);
 	radeon_bo_unreserve(rbo);
 out:
-<<<<<<< HEAD
-	drm_gem_object_unreference_unlocked(gobj);
-	return r;
-}
-
-=======
 	drm_gem_object_put(gobj);
 	return r;
 }
@@ -890,7 +657,6 @@ error_free:
 		DRM_ERROR("Couldn't update BO_VA (%d)\n", r);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *filp)
 {
@@ -909,11 +675,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 	}
 
 	/* !! DONT REMOVE !!
-<<<<<<< HEAD
-	 * We don't support vm_id yet, to be sure we don't have have broken
-=======
 	 * We don't support vm_id yet, to be sure we don't have broken
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * userspace, reject anyone trying to use non 0 value thus moving
 	 * forward we can use those fields without breaking existant userspace
 	 */
@@ -923,11 +685,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 	}
 
 	if (args->offset < RADEON_VA_RESERVED_SIZE) {
-<<<<<<< HEAD
-		dev_err(&dev->pdev->dev,
-=======
 		dev_err(dev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"offset 0x%lX is in reserved area 0x%X\n",
 			(unsigned long)args->offset,
 			RADEON_VA_RESERVED_SIZE);
@@ -941,44 +699,24 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 	 */
 	invalid_flags = RADEON_VM_PAGE_VALID | RADEON_VM_PAGE_SYSTEM;
 	if ((args->flags & invalid_flags)) {
-<<<<<<< HEAD
-		dev_err(&dev->pdev->dev, "invalid flags 0x%08X vs 0x%08X\n",
-=======
 		dev_err(dev->dev, "invalid flags 0x%08X vs 0x%08X\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			args->flags, invalid_flags);
 		args->operation = RADEON_VA_RESULT_ERROR;
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if (!(args->flags & RADEON_VM_PAGE_SNOOPED)) {
-		dev_err(&dev->pdev->dev, "only supported snooped mapping for now\n");
-		args->operation = RADEON_VA_RESULT_ERROR;
-		return -EINVAL;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (args->operation) {
 	case RADEON_VA_MAP:
 	case RADEON_VA_UNMAP:
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(&dev->pdev->dev, "unsupported operation %d\n",
-=======
 		dev_err(dev->dev, "unsupported operation %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			args->operation);
 		args->operation = RADEON_VA_RESULT_ERROR;
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	gobj = drm_gem_object_lookup(dev, filp, args->handle);
-=======
 	gobj = drm_gem_object_lookup(filp, args->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gobj == NULL) {
 		args->operation = RADEON_VA_RESULT_ERROR;
 		return -ENOENT;
@@ -987,24 +725,6 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 	r = radeon_bo_reserve(rbo, false);
 	if (r) {
 		args->operation = RADEON_VA_RESULT_ERROR;
-<<<<<<< HEAD
-		drm_gem_object_unreference_unlocked(gobj);
-		return r;
-	}
-	switch (args->operation) {
-	case RADEON_VA_MAP:
-		bo_va = radeon_bo_va(rbo, &fpriv->vm);
-		if (bo_va) {
-			args->operation = RADEON_VA_RESULT_VA_EXIST;
-			args->offset = bo_va->soffset;
-			goto out;
-		}
-		r = radeon_vm_bo_add(rdev, &fpriv->vm, rbo,
-				     args->offset, args->flags);
-		break;
-	case RADEON_VA_UNMAP:
-		r = radeon_vm_bo_rmv(rdev, &fpriv->vm, rbo);
-=======
 		drm_gem_object_put(gobj);
 		return r;
 	}
@@ -1028,28 +748,17 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 		break;
 	case RADEON_VA_UNMAP:
 		r = radeon_vm_bo_set_addr(rdev, bo_va, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
-<<<<<<< HEAD
-=======
 	if (!r)
 		radeon_gem_va_update_vm(rdev, bo_va);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	args->operation = RADEON_VA_RESULT_OK;
 	if (r) {
 		args->operation = RADEON_VA_RESULT_ERROR;
 	}
 out:
-<<<<<<< HEAD
-	radeon_bo_unreserve(rbo);
-	drm_gem_object_unreference_unlocked(gobj);
-	return r;
-}
-
-=======
 	drm_gem_object_put(gobj);
 	return r;
 }
@@ -1119,7 +828,6 @@ int radeon_align_pitch(struct radeon_device *rdev, int width, int cpp, bool tile
 	return aligned * cpp;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_mode_dumb_create(struct drm_file *file_priv,
 			    struct drm_device *dev,
 			    struct drm_mode_create_dumb *args)
@@ -1129,16 +837,6 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
 	uint32_t handle;
 	int r;
 
-<<<<<<< HEAD
-	args->pitch = radeon_align_pitch(rdev, args->width, args->bpp, 0) * ((args->bpp + 1) / 8);
-	args->size = args->pitch * args->height;
-	args->size = ALIGN(args->size, PAGE_SIZE);
-
-	r = radeon_gem_object_create(rdev, args->size, 0,
-				     RADEON_GEM_DOMAIN_VRAM,
-				     false, ttm_bo_type_device,
-				     &gobj);
-=======
 	args->pitch = radeon_align_pitch(rdev, args->width,
 					 DIV_ROUND_UP(args->bpp, 8), 0);
 	args->size = (u64)args->pitch * args->height;
@@ -1147,17 +845,12 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
 	r = radeon_gem_object_create(rdev, args->size, 0,
 				     RADEON_GEM_DOMAIN_VRAM, 0,
 				     false, &gobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return -ENOMEM;
 
 	r = drm_gem_handle_create(file_priv, gobj, &handle);
 	/* drop reference from allocate - handle holds it now */
-<<<<<<< HEAD
-	drm_gem_object_unreference_unlocked(gobj);
-=======
 	drm_gem_object_put(gobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		return r;
 	}
@@ -1165,13 +858,6 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-int radeon_mode_dumb_destroy(struct drm_file *file_priv,
-			     struct drm_device *dev,
-			     uint32_t handle)
-{
-	return drm_gem_handle_delete(file_priv, handle);
-=======
 #if defined(CONFIG_DEBUG_FS)
 static int radeon_debugfs_gem_info_show(struct seq_file *m, void *unused)
 {
@@ -1218,5 +904,4 @@ void radeon_gem_debugfs_init(struct radeon_device *rdev)
 			    &radeon_debugfs_gem_info_fops);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

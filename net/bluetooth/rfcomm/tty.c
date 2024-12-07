@@ -26,62 +26,33 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
 #include <linux/tty_flip.h>
 
-<<<<<<< HEAD
-#include <linux/capability.h>
-#include <linux/slab.h>
-#include <linux/skbuff.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 #include <net/bluetooth/rfcomm.h>
 
-<<<<<<< HEAD
-#define RFCOMM_TTY_MAGIC 0x6d02		/* magic number for rfcomm struct */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RFCOMM_TTY_PORTS RFCOMM_MAX_DEV	/* whole lotta rfcomm devices */
 #define RFCOMM_TTY_MAJOR 216		/* device node major id of the usb/bluetooth.c driver */
 #define RFCOMM_TTY_MINOR 0
 
-<<<<<<< HEAD
-static struct tty_driver *rfcomm_tty_driver;
-
-struct rfcomm_dev {
-	struct list_head	list;
-	atomic_t		refcnt;
-=======
 static DEFINE_MUTEX(rfcomm_ioctl_mutex);
 static struct tty_driver *rfcomm_tty_driver;
 
 struct rfcomm_dev {
 	struct tty_port		port;
 	struct list_head	list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char			name[12];
 	int			id;
 	unsigned long		flags;
-<<<<<<< HEAD
-	atomic_t		opened;
-	int			err;
-
-=======
 	int			err;
 
 	unsigned long		status;		/* don't export to userspace */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdaddr_t		src;
 	bdaddr_t		dst;
 	u8			channel;
@@ -89,12 +60,6 @@ struct rfcomm_dev {
 	uint			modem_status;
 
 	struct rfcomm_dlc	*dlc;
-<<<<<<< HEAD
-	struct tty_struct	*tty;
-	wait_queue_head_t       wait;
-	struct tasklet_struct   wakeup_task;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct device		*tty_dev;
 
@@ -104,41 +69,21 @@ struct rfcomm_dev {
 };
 
 static LIST_HEAD(rfcomm_dev_list);
-<<<<<<< HEAD
-static DEFINE_RWLOCK(rfcomm_dev_lock);
-=======
 static DEFINE_MUTEX(rfcomm_dev_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void rfcomm_dev_data_ready(struct rfcomm_dlc *dlc, struct sk_buff *skb);
 static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err);
 static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig);
 
-<<<<<<< HEAD
-static void rfcomm_tty_wakeup(unsigned long arg);
-
-/* ---- Device functions ---- */
-static void rfcomm_dev_destruct(struct rfcomm_dev *dev)
-{
-=======
 /* ---- Device functions ---- */
 
 static void rfcomm_dev_destruct(struct tty_port *port)
 {
 	struct rfcomm_dev *dev = container_of(port, struct rfcomm_dev, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rfcomm_dlc *dlc = dev->dlc;
 
 	BT_DBG("dev %p dlc %p", dev, dlc);
 
-<<<<<<< HEAD
-	/* Refcount should only hit zero when called from rfcomm_dev_del()
-	   which will have taken us off the list. Everything else are
-	   refcounting bugs. */
-	BUG_ON(!list_empty(&dev->list));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_dlc_lock(dlc);
 	/* Detach DLC if it's owned by this dev */
 	if (dlc->owner == dev)
@@ -147,16 +92,12 @@ static void rfcomm_dev_destruct(struct tty_port *port)
 
 	rfcomm_dlc_put(dlc);
 
-<<<<<<< HEAD
-	tty_unregister_device(rfcomm_tty_driver, dev->id);
-=======
 	if (dev->tty_dev)
 		tty_unregister_device(rfcomm_tty_driver, dev->id);
 
 	mutex_lock(&rfcomm_dev_lock);
 	list_del(&dev->list);
 	mutex_unlock(&rfcomm_dev_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(dev);
 
@@ -165,36 +106,6 @@ static void rfcomm_dev_destruct(struct tty_port *port)
 	module_put(THIS_MODULE);
 }
 
-<<<<<<< HEAD
-static inline void rfcomm_dev_hold(struct rfcomm_dev *dev)
-{
-	atomic_inc(&dev->refcnt);
-}
-
-static inline void rfcomm_dev_put(struct rfcomm_dev *dev)
-{
-	/* The reason this isn't actually a race, as you no
-	   doubt have a little voice screaming at you in your
-	   head, is that the refcount should never actually
-	   reach zero unless the device has already been taken
-	   off the list, in rfcomm_dev_del(). And if that's not
-	   true, we'll hit the BUG() in rfcomm_dev_destruct()
-	   anyway. */
-	if (atomic_dec_and_test(&dev->refcnt))
-		rfcomm_dev_destruct(dev);
-}
-
-static struct rfcomm_dev *__rfcomm_dev_get(int id)
-{
-	struct rfcomm_dev *dev;
-	struct list_head  *p;
-
-	list_for_each(p, &rfcomm_dev_list) {
-		dev = list_entry(p, struct rfcomm_dev, list);
-		if (dev->id == id)
-			return dev;
-	}
-=======
 /* device-specific initialization: open the dlc */
 static int rfcomm_dev_activate(struct tty_port *port, struct tty_struct *tty)
 {
@@ -241,29 +152,10 @@ static struct rfcomm_dev *__rfcomm_dev_lookup(int id)
 	list_for_each_entry(dev, &rfcomm_dev_list, list)
 		if (dev->id == id)
 			return dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
 
-<<<<<<< HEAD
-static inline struct rfcomm_dev *rfcomm_dev_get(int id)
-{
-	struct rfcomm_dev *dev;
-
-	read_lock(&rfcomm_dev_lock);
-
-	dev = __rfcomm_dev_get(id);
-
-	if (dev) {
-		if (test_bit(RFCOMM_TTY_RELEASED, &dev->flags))
-			dev = NULL;
-		else
-			rfcomm_dev_hold(dev);
-	}
-
-	read_unlock(&rfcomm_dev_lock);
-=======
 static struct rfcomm_dev *rfcomm_dev_get(int id)
 {
 	struct rfcomm_dev *dev;
@@ -276,40 +168,15 @@ static struct rfcomm_dev *rfcomm_dev_get(int id)
 		dev = NULL;
 
 	mutex_unlock(&rfcomm_dev_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dev;
 }
 
-<<<<<<< HEAD
-static struct device *rfcomm_get_device(struct rfcomm_dev *dev)
-=======
 static void rfcomm_reparent_device(struct rfcomm_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hci_dev *hdev;
 	struct hci_conn *conn;
 
-<<<<<<< HEAD
-	hdev = hci_get_route(&dev->dst, &dev->src);
-	if (!hdev)
-		return NULL;
-
-	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &dev->dst);
-
-	hci_dev_put(hdev);
-
-	return conn ? &conn->dev : NULL;
-}
-
-static ssize_t show_address(struct device *tty_dev, struct device_attribute *attr, char *buf)
-{
-	struct rfcomm_dev *dev = dev_get_drvdata(tty_dev);
-	return sprintf(buf, "%s\n", batostr(&dev->dst));
-}
-
-static ssize_t show_channel(struct device *tty_dev, struct device_attribute *attr, char *buf)
-=======
 	hdev = hci_get_route(&dev->dst, &dev->src, BDADDR_BREDR);
 	if (!hdev)
 		return;
@@ -339,30 +206,11 @@ static ssize_t address_show(struct device *tty_dev,
 
 static ssize_t channel_show(struct device *tty_dev,
 			    struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfcomm_dev *dev = dev_get_drvdata(tty_dev);
 	return sprintf(buf, "%d\n", dev->channel);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(address, S_IRUGO, show_address, NULL);
-static DEVICE_ATTR(channel, S_IRUGO, show_channel, NULL);
-
-static int rfcomm_dev_add(struct rfcomm_dev_req *req, struct rfcomm_dlc *dlc)
-{
-	struct rfcomm_dev *dev;
-	struct list_head *head = &rfcomm_dev_list, *p;
-	int err = 0;
-
-	BT_DBG("id %d channel %d", req->dev_id, req->channel);
-
-	dev = kzalloc(sizeof(struct rfcomm_dev), GFP_KERNEL);
-	if (!dev)
-		return -ENOMEM;
-
-	write_lock_bh(&rfcomm_dev_lock);
-=======
 static DEVICE_ATTR_RO(address);
 static DEVICE_ATTR_RO(channel);
 
@@ -378,37 +226,21 @@ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
 		return ERR_PTR(-ENOMEM);
 
 	mutex_lock(&rfcomm_dev_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (req->dev_id < 0) {
 		dev->id = 0;
 
-<<<<<<< HEAD
-		list_for_each(p, &rfcomm_dev_list) {
-			if (list_entry(p, struct rfcomm_dev, list)->id != dev->id)
-				break;
-
-			dev->id++;
-			head = p;
-=======
 		list_for_each_entry(entry, &rfcomm_dev_list, list) {
 			if (entry->id != dev->id)
 				break;
 
 			dev->id++;
 			head = &entry->list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		dev->id = req->dev_id;
 
-<<<<<<< HEAD
-		list_for_each(p, &rfcomm_dev_list) {
-			struct rfcomm_dev *entry = list_entry(p, struct rfcomm_dev, list);
-
-=======
 		list_for_each_entry(entry, &rfcomm_dev_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (entry->id == dev->id) {
 				err = -EADDRINUSE;
 				goto out;
@@ -417,11 +249,7 @@ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
 			if (entry->id > dev->id - 1)
 				break;
 
-<<<<<<< HEAD
-			head = p;
-=======
 			head = &entry->list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -433,10 +261,6 @@ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
 	sprintf(dev->name, "rfcomm%d", dev->id);
 
 	list_add(&dev->list, head);
-<<<<<<< HEAD
-	atomic_set(&dev->refcnt, 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bacpy(&dev->src, &req->src);
 	bacpy(&dev->dst, &req->dst);
@@ -445,15 +269,8 @@ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
 	dev->flags = req->flags &
 		((1 << RFCOMM_RELEASE_ONHUP) | (1 << RFCOMM_REUSE_DLC));
 
-<<<<<<< HEAD
-	atomic_set(&dev->opened, 0);
-
-	init_waitqueue_head(&dev->wait);
-	tasklet_init(&dev->wakeup_task, rfcomm_tty_wakeup, (unsigned long) dev);
-=======
 	tty_port_init(&dev->port);
 	dev->port.ops = &rfcomm_port_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_head_init(&dev->pending);
 
@@ -489,22 +306,6 @@ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
 	   holds reference to this module. */
 	__module_get(THIS_MODULE);
 
-<<<<<<< HEAD
-out:
-	write_unlock_bh(&rfcomm_dev_lock);
-
-	if (err < 0)
-		goto free;
-
-	dev->tty_dev = tty_register_device(rfcomm_tty_driver, dev->id, NULL);
-
-	if (IS_ERR(dev->tty_dev)) {
-		err = PTR_ERR(dev->tty_dev);
-		list_del(&dev->list);
-		goto free;
-	}
-
-=======
 	mutex_unlock(&rfcomm_dev_lock);
 	return dev;
 
@@ -536,7 +337,6 @@ static int rfcomm_dev_add(struct rfcomm_dev_req *req, struct rfcomm_dlc *dlc)
 
 	dev->tty_dev = tty;
 	rfcomm_reparent_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(dev->tty_dev, dev);
 
 	if (device_create_file(dev->tty_dev, &dev_attr_address) < 0)
@@ -546,36 +346,6 @@ static int rfcomm_dev_add(struct rfcomm_dev_req *req, struct rfcomm_dlc *dlc)
 		BT_ERR("Failed to create channel attribute");
 
 	return dev->id;
-<<<<<<< HEAD
-
-free:
-	kfree(dev);
-	return err;
-}
-
-static void rfcomm_dev_del(struct rfcomm_dev *dev)
-{
-	BT_DBG("dev %p", dev);
-
-	BUG_ON(test_and_set_bit(RFCOMM_TTY_RELEASED, &dev->flags));
-
-	if (atomic_read(&dev->opened) > 0)
-		return;
-
-	write_lock_bh(&rfcomm_dev_lock);
-	list_del_init(&dev->list);
-	write_unlock_bh(&rfcomm_dev_lock);
-
-	rfcomm_dev_put(dev);
-}
-
-/* ---- Send buffer ---- */
-static inline unsigned int rfcomm_room(struct rfcomm_dlc *dlc)
-{
-	/* We can't let it be zero, because we don't get a callback
-	   when tx_credits becomes nonzero, hence we'd never wake up */
-	return dlc->mtu * (dlc->tx_credits?:1);
-=======
 }
 
 /* ---- Send buffer ---- */
@@ -587,24 +357,11 @@ static inline unsigned int rfcomm_room(struct rfcomm_dev *dev)
 	int pending = 40 - atomic_read(&dev->wmem_alloc);
 
 	return max(0, pending) * dlc->mtu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rfcomm_wfree(struct sk_buff *skb)
 {
 	struct rfcomm_dev *dev = (void *) skb->sk;
-<<<<<<< HEAD
-	atomic_sub(skb->truesize, &dev->wmem_alloc);
-	if (test_bit(RFCOMM_TTY_ATTACHED, &dev->flags))
-		tasklet_schedule(&dev->wakeup_task);
-	rfcomm_dev_put(dev);
-}
-
-static inline void rfcomm_set_owner_w(struct sk_buff *skb, struct rfcomm_dev *dev)
-{
-	rfcomm_dev_hold(dev);
-	atomic_add(skb->truesize, &dev->wmem_alloc);
-=======
 	atomic_dec(&dev->wmem_alloc);
 	if (test_bit(RFCOMM_TTY_ATTACHED, &dev->flags))
 		tty_port_tty_wakeup(&dev->port);
@@ -615,39 +372,23 @@ static void rfcomm_set_owner_w(struct sk_buff *skb, struct rfcomm_dev *dev)
 {
 	tty_port_get(&dev->port);
 	atomic_inc(&dev->wmem_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->sk = (void *) dev;
 	skb->destructor = rfcomm_wfree;
 }
 
 static struct sk_buff *rfcomm_wmalloc(struct rfcomm_dev *dev, unsigned long size, gfp_t priority)
 {
-<<<<<<< HEAD
-	if (atomic_read(&dev->wmem_alloc) < rfcomm_room(dev->dlc)) {
-		struct sk_buff *skb = alloc_skb(size, priority);
-		if (skb) {
-			rfcomm_set_owner_w(skb, dev);
-			return skb;
-		}
-	}
-	return NULL;
-=======
 	struct sk_buff *skb = alloc_skb(size, priority);
 	if (skb)
 		rfcomm_set_owner_w(skb, dev);
 	return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---- Device IOCTLs ---- */
 
 #define NOCAP_FLAGS ((1 << RFCOMM_REUSE_DLC) | (1 << RFCOMM_RELEASE_ONHUP))
 
-<<<<<<< HEAD
-static int rfcomm_create_dev(struct sock *sk, void __user *arg)
-=======
 static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfcomm_dev_req req;
 	struct rfcomm_dlc *dlc;
@@ -669,30 +410,20 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
 		dlc = rfcomm_pi(sk)->dlc;
 		rfcomm_dlc_hold(dlc);
 	} else {
-<<<<<<< HEAD
-=======
 		/* Validate the channel is unused */
 		dlc = rfcomm_dlc_exists(&req.src, &req.dst, req.channel);
 		if (IS_ERR(dlc))
 			return PTR_ERR(dlc);
 		if (dlc)
 			return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlc = rfcomm_dlc_alloc(GFP_KERNEL);
 		if (!dlc)
 			return -ENOMEM;
 	}
 
 	id = rfcomm_dev_add(&req, dlc);
-<<<<<<< HEAD
-	if (id < 0) {
-		rfcomm_dlc_put(dlc);
-		return id;
-	}
-=======
 	if (id < 0)
 		return id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (req.flags & (1 << RFCOMM_REUSE_DLC)) {
 		/* DLC is now used by device.
@@ -703,18 +434,11 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
 	return id;
 }
 
-<<<<<<< HEAD
-static int rfcomm_release_dev(void __user *arg)
-{
-	struct rfcomm_dev_req req;
-	struct rfcomm_dev *dev;
-=======
 static int __rfcomm_release_dev(void __user *arg)
 {
 	struct rfcomm_dev_req req;
 	struct rfcomm_dev *dev;
 	struct tty_struct *tty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&req, arg, sizeof(req)))
 		return -EFAULT;
@@ -726,12 +450,6 @@ static int __rfcomm_release_dev(void __user *arg)
 		return -ENODEV;
 
 	if (dev->flags != NOCAP_FLAGS && !capable(CAP_NET_ADMIN)) {
-<<<<<<< HEAD
-		rfcomm_dev_put(dev);
-		return -EPERM;
-	}
-
-=======
 		tty_port_put(&dev->port);
 		return -EPERM;
 	}
@@ -742,27 +460,10 @@ static int __rfcomm_release_dev(void __user *arg)
 		return -EALREADY;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (req.flags & (1 << RFCOMM_HANGUP_NOW))
 		rfcomm_dlc_close(dev->dlc, 0);
 
 	/* Shut down TTY synchronously before freeing rfcomm_dev */
-<<<<<<< HEAD
-	if (dev->tty)
-		tty_vhangup(dev->tty);
-
-	if (!test_bit(RFCOMM_RELEASE_ONHUP, &dev->flags))
-		rfcomm_dev_del(dev);
-	rfcomm_dev_put(dev);
-	return 0;
-}
-
-static int rfcomm_get_dev_list(void __user *arg)
-{
-	struct rfcomm_dev_list_req *dl;
-	struct rfcomm_dev_info *di;
-	struct list_head *p;
-=======
 	tty = tty_port_tty_get(&dev->port);
 	if (tty) {
 		tty_vhangup(tty);
@@ -803,7 +504,6 @@ static int rfcomm_get_dev_list(void __user *arg)
 	struct rfcomm_dev *dev;
 	struct rfcomm_dev_list_req *dl;
 	struct rfcomm_dev_info *di;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int n = 0, size, err;
 	u16 dev_num;
 
@@ -817,28 +517,16 @@ static int rfcomm_get_dev_list(void __user *arg)
 
 	size = sizeof(*dl) + dev_num * sizeof(*di);
 
-<<<<<<< HEAD
-	dl = kmalloc(size, GFP_KERNEL);
-=======
 	dl = kzalloc(size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dl)
 		return -ENOMEM;
 
 	di = dl->dev_info;
 
-<<<<<<< HEAD
-	read_lock_bh(&rfcomm_dev_lock);
-
-	list_for_each(p, &rfcomm_dev_list) {
-		struct rfcomm_dev *dev = list_entry(p, struct rfcomm_dev, list);
-		if (test_bit(RFCOMM_TTY_RELEASED, &dev->flags))
-=======
 	mutex_lock(&rfcomm_dev_lock);
 
 	list_for_each_entry(dev, &rfcomm_dev_list, list) {
 		if (!tty_port_get(&dev->port))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		(di + n)->id      = dev->id;
 		(di + n)->flags   = dev->flags;
@@ -846,19 +534,12 @@ static int rfcomm_get_dev_list(void __user *arg)
 		(di + n)->channel = dev->channel;
 		bacpy(&(di + n)->src, &dev->src);
 		bacpy(&(di + n)->dst, &dev->dst);
-<<<<<<< HEAD
-=======
 		tty_port_put(&dev->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (++n >= dev_num)
 			break;
 	}
 
-<<<<<<< HEAD
-	read_unlock_bh(&rfcomm_dev_lock);
-=======
 	mutex_unlock(&rfcomm_dev_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dl->dev_num = n;
 	size = sizeof(*dl) + n * sizeof(*di);
@@ -893,11 +574,7 @@ static int rfcomm_get_dev_info(void __user *arg)
 	if (copy_to_user(arg, &di, sizeof(di)))
 		err = -EFAULT;
 
-<<<<<<< HEAD
-	rfcomm_dev_put(dev);
-=======
 	tty_port_put(&dev->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -926,37 +603,21 @@ int rfcomm_dev_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
 static void rfcomm_dev_data_ready(struct rfcomm_dlc *dlc, struct sk_buff *skb)
 {
 	struct rfcomm_dev *dev = dlc->owner;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev) {
 		kfree_skb(skb);
 		return;
 	}
 
-<<<<<<< HEAD
-	tty = dev->tty;
-	if (!tty || !skb_queue_empty(&dev->pending)) {
-=======
 	if (!skb_queue_empty(&dev->pending)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_queue_tail(&dev->pending, skb);
 		return;
 	}
 
-<<<<<<< HEAD
-	BT_DBG("dlc %p tty %p len %d", dlc, tty, skb->len);
-
-	tty_insert_flip_string(tty, skb->data, skb->len);
-	tty_flip_buffer_push(tty);
-=======
 	BT_DBG("dlc %p len %d", dlc, skb->len);
 
 	tty_insert_flip_string(&dev->port, skb->data, skb->len);
 	tty_flip_buffer_push(&dev->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree_skb(skb);
 }
@@ -970,40 +631,12 @@ static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err)
 	BT_DBG("dlc %p dev %p err %d", dlc, dev, err);
 
 	dev->err = err;
-<<<<<<< HEAD
-	wake_up_interruptible(&dev->wait);
-
-	if (dlc->state == BT_CLOSED) {
-		if (!dev->tty) {
-			if (test_bit(RFCOMM_RELEASE_ONHUP, &dev->flags)) {
-				/* Drop DLC lock here to avoid deadlock
-				 * 1. rfcomm_dev_get will take rfcomm_dev_lock
-				 *    but in rfcomm_dev_add there's lock order:
-				 *    rfcomm_dev_lock -> dlc lock
-				 * 2. rfcomm_dev_put will deadlock if it's
-				 *    the last reference
-				 */
-				rfcomm_dlc_unlock(dlc);
-				if (rfcomm_dev_get(dev->id) == NULL) {
-					rfcomm_dlc_lock(dlc);
-					return;
-				}
-
-				rfcomm_dev_del(dev);
-				rfcomm_dev_put(dev);
-				rfcomm_dlc_lock(dlc);
-			}
-		} else
-			tty_hangup(dev->tty);
-	}
-=======
 	if (dlc->state == BT_CONNECTED) {
 		rfcomm_reparent_device(dev);
 
 		wake_up_interruptible(&dev->port.open_wait);
 	} else if (dlc->state == BT_CLOSED)
 		tty_port_tty_hangup(&dev->port, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig)
@@ -1014,15 +647,8 @@ static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig)
 
 	BT_DBG("dlc %p dev %p v24_sig 0x%02x", dlc, dev, v24_sig);
 
-<<<<<<< HEAD
-	if ((dev->modem_status & TIOCM_CD) && !(v24_sig & RFCOMM_V24_DV)) {
-		if (dev->tty && !C_CLOCAL(dev->tty))
-			tty_hangup(dev->tty);
-	}
-=======
 	if ((dev->modem_status & TIOCM_CD) && !(v24_sig & RFCOMM_V24_DV))
 		tty_port_tty_hangup(&dev->port, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->modem_status =
 		((v24_sig & RFCOMM_V24_RTC) ? (TIOCM_DSR | TIOCM_DTR) : 0) |
@@ -1032,125 +658,24 @@ static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig)
 }
 
 /* ---- TTY functions ---- */
-<<<<<<< HEAD
-static void rfcomm_tty_wakeup(unsigned long arg)
-{
-	struct rfcomm_dev *dev = (void *) arg;
-	struct tty_struct *tty = dev->tty;
-	if (!tty)
-		return;
-
-	BT_DBG("dev %p tty %p", dev, tty);
-	tty_wakeup(tty);
-}
-
-static void rfcomm_tty_copy_pending(struct rfcomm_dev *dev)
-{
-	struct tty_struct *tty = dev->tty;
-	struct sk_buff *skb;
-	int inserted = 0;
-
-	if (!tty)
-		return;
-
-	BT_DBG("dev %p tty %p", dev, tty);
-=======
 static void rfcomm_tty_copy_pending(struct rfcomm_dev *dev)
 {
 	struct sk_buff *skb;
 	int inserted = 0;
 
 	BT_DBG("dev %p", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rfcomm_dlc_lock(dev->dlc);
 
 	while ((skb = skb_dequeue(&dev->pending))) {
-<<<<<<< HEAD
-		inserted += tty_insert_flip_string(tty, skb->data, skb->len);
-=======
 		inserted += tty_insert_flip_string(&dev->port, skb->data,
 				skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 	}
 
 	rfcomm_dlc_unlock(dev->dlc);
 
 	if (inserted > 0)
-<<<<<<< HEAD
-		tty_flip_buffer_push(tty);
-}
-
-static int rfcomm_tty_open(struct tty_struct *tty, struct file *filp)
-{
-	DECLARE_WAITQUEUE(wait, current);
-	struct rfcomm_dev *dev;
-	struct rfcomm_dlc *dlc;
-	int err, id;
-
-	id = tty->index;
-
-	BT_DBG("tty %p id %d", tty, id);
-
-	/* We don't leak this refcount. For reasons which are not entirely
-	   clear, the TTY layer will call our ->close() method even if the
-	   open fails. We decrease the refcount there, and decreasing it
-	   here too would cause breakage. */
-	dev = rfcomm_dev_get(id);
-	if (!dev)
-		return -ENODEV;
-
-	BT_DBG("dev %p dst %s channel %d opened %d", dev, batostr(&dev->dst),
-				dev->channel, atomic_read(&dev->opened));
-
-	if (atomic_inc_return(&dev->opened) > 1)
-		return 0;
-
-	dlc = dev->dlc;
-
-	/* Attach TTY and open DLC */
-
-	rfcomm_dlc_lock(dlc);
-	tty->driver_data = dev;
-	dev->tty = tty;
-	rfcomm_dlc_unlock(dlc);
-	set_bit(RFCOMM_TTY_ATTACHED, &dev->flags);
-
-	err = rfcomm_dlc_open(dlc, &dev->src, &dev->dst, dev->channel);
-	if (err < 0)
-		return err;
-
-	/* Wait for DLC to connect */
-	add_wait_queue(&dev->wait, &wait);
-	while (1) {
-		set_current_state(TASK_INTERRUPTIBLE);
-
-		if (dlc->state == BT_CLOSED) {
-			err = -dev->err;
-			break;
-		}
-
-		if (dlc->state == BT_CONNECTED)
-			break;
-
-		if (signal_pending(current)) {
-			err = -EINTR;
-			break;
-		}
-
-		tty_unlock();
-		schedule();
-		tty_lock();
-	}
-	set_current_state(TASK_RUNNING);
-	remove_wait_queue(&dev->wait, &wait);
-
-	if (err == 0)
-		device_move(dev->tty_dev, rfcomm_get_device(dev),
-			    DPM_ORDER_DEV_AFTER_PARENT);
-
-=======
 		tty_flip_buffer_push(&dev->port);
 }
 
@@ -1237,70 +762,15 @@ static int rfcomm_tty_open(struct tty_struct *tty, struct file *filp)
 	 * received data. This hack will be unnecessary and can
 	 * be removed when that's implemented
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_tty_copy_pending(dev);
 
 	rfcomm_dlc_unthrottle(dev->dlc);
 
-<<<<<<< HEAD
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-	if (!dev)
-		return;
-
-	BT_DBG("tty %p dev %p dlc %p opened %d", tty, dev, dev->dlc,
-						atomic_read(&dev->opened));
-
-	if (atomic_dec_and_test(&dev->opened)) {
-		if (dev->tty_dev->parent)
-			device_move(dev->tty_dev, NULL, DPM_ORDER_DEV_LAST);
-
-		/* Close DLC and dettach TTY */
-		rfcomm_dlc_close(dev->dlc, 0);
-
-		clear_bit(RFCOMM_TTY_ATTACHED, &dev->flags);
-		tasklet_kill(&dev->wakeup_task);
-
-		rfcomm_dlc_lock(dev->dlc);
-		tty->driver_data = NULL;
-		dev->tty = NULL;
-		rfcomm_dlc_unlock(dev->dlc);
-
-		if (test_bit(RFCOMM_TTY_RELEASED, &dev->flags)) {
-			write_lock_bh(&rfcomm_dev_lock);
-			list_del_init(&dev->list);
-			write_unlock_bh(&rfcomm_dev_lock);
-
-			rfcomm_dev_put(dev);
-		}
-	}
-
-	rfcomm_dev_put(dev);
-}
-
-static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
-{
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-	struct rfcomm_dlc *dlc = dev->dlc;
-	struct sk_buff *skb;
-	int err = 0, sent = 0, size;
-
-	BT_DBG("tty %p count %d", tty, count);
-
-	while (count) {
-		size = min_t(uint, count, dlc->mtu);
-
-		skb = rfcomm_wmalloc(dev, size + RFCOMM_SKB_RESERVE, GFP_ATOMIC);
-
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
 
 	BT_DBG("tty %p dev %p dlc %p opened %d", tty, dev, dev->dlc,
@@ -1323,48 +793,19 @@ static ssize_t rfcomm_tty_write(struct tty_struct *tty, const u8 *buf,
 		size = min_t(size_t, count, dlc->mtu);
 
 		skb = rfcomm_wmalloc(dev, size + RFCOMM_SKB_RESERVE, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb)
 			break;
 
 		skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
 
-<<<<<<< HEAD
-		memcpy(skb_put(skb, size), buf + sent, size);
-
-		err = rfcomm_dlc_send(dlc, skb);
-		if (err < 0) {
-			kfree_skb(skb);
-			break;
-		}
-=======
 		skb_put_data(skb, buf + sent, size);
 
 		rfcomm_dlc_send_noerror(dlc, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sent  += size;
 		count -= size;
 	}
 
-<<<<<<< HEAD
-	return sent ? sent : err;
-}
-
-static int rfcomm_tty_write_room(struct tty_struct *tty)
-{
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-	int room;
-
-	BT_DBG("tty %p", tty);
-
-	if (!dev || !dev->dlc)
-		return 0;
-
-	room = rfcomm_room(dev->dlc) - atomic_read(&dev->wmem_alloc);
-	if (room < 0)
-		room = 0;
-=======
 	return sent;
 }
 
@@ -1377,7 +818,6 @@ static unsigned int rfcomm_tty_write_room(struct tty_struct *tty)
 		room = rfcomm_room(dev);
 
 	BT_DBG("tty %p room %d", tty, room);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return room;
 }
@@ -1399,21 +839,6 @@ static int rfcomm_tty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned l
 		BT_DBG("TIOCMIWAIT");
 		break;
 
-<<<<<<< HEAD
-	case TIOCGSERIAL:
-		BT_ERR("TIOCGSERIAL is not supported");
-		return -ENOIOCTLCMD;
-
-	case TIOCSSERIAL:
-		BT_ERR("TIOCSSERIAL is not supported");
-		return -ENOIOCTLCMD;
-
-	case TIOCSERGSTRUCT:
-		BT_ERR("TIOCSERGSTRUCT is not supported");
-		return -ENOIOCTLCMD;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TIOCSERGETLSR:
 		BT_ERR("TIOCSERGETLSR is not supported");
 		return -ENOIOCTLCMD;
@@ -1430,27 +855,17 @@ static int rfcomm_tty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned l
 	return -ENOIOCTLCMD;
 }
 
-<<<<<<< HEAD
-static void rfcomm_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
-{
-	struct ktermios *new = tty->termios;
-=======
 static void rfcomm_tty_set_termios(struct tty_struct *tty,
 				   const struct ktermios *old)
 {
 	struct ktermios *new = &tty->termios;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_baud_rate = tty_termios_baud_rate(old);
 	int new_baud_rate = tty_termios_baud_rate(new);
 
 	u8 baud, data_bits, stop_bits, parity, x_on, x_off;
 	u16 changes = 0;
 
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p termios %p", tty, old);
 
@@ -1582,11 +997,7 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty,
 
 static void rfcomm_tty_throttle(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
@@ -1595,26 +1006,16 @@ static void rfcomm_tty_throttle(struct tty_struct *tty)
 
 static void rfcomm_tty_unthrottle(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
 	rfcomm_dlc_unthrottle(dev->dlc);
 }
 
-<<<<<<< HEAD
-static int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
-{
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
 {
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
@@ -1629,11 +1030,7 @@ static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
 
 static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
@@ -1644,11 +1041,7 @@ static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
 	tty_wakeup(tty);
 }
 
-<<<<<<< HEAD
-static void rfcomm_tty_send_xchar(struct tty_struct *tty, char ch)
-=======
 static void rfcomm_tty_send_xchar(struct tty_struct *tty, u8 ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BT_DBG("tty %p ch %c", tty, ch);
 }
@@ -1660,38 +1053,16 @@ static void rfcomm_tty_wait_until_sent(struct tty_struct *tty, int timeout)
 
 static void rfcomm_tty_hangup(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-
-	BT_DBG("tty %p dev %p", tty, dev);
-
-	if (!dev)
-		return;
-
-	rfcomm_tty_flush_buffer(tty);
-
-	if (test_bit(RFCOMM_RELEASE_ONHUP, &dev->flags)) {
-		if (rfcomm_dev_get(dev->id) == NULL)
-			return;
-		rfcomm_dev_del(dev);
-		rfcomm_dev_put(dev);
-	}
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
 	tty_port_hangup(&dev->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_tty_tiocmget(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p dev %p", tty, dev);
 
@@ -1700,11 +1071,7 @@ static int rfcomm_tty_tiocmget(struct tty_struct *tty)
 
 static int rfcomm_tty_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
 {
-<<<<<<< HEAD
-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-=======
 	struct rfcomm_dev *dev = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rfcomm_dlc *dlc = dev->dlc;
 	u8 v24_sig;
 
@@ -1753,22 +1120,12 @@ static const struct tty_operations rfcomm_ops = {
 	.wait_until_sent	= rfcomm_tty_wait_until_sent,
 	.tiocmget		= rfcomm_tty_tiocmget,
 	.tiocmset		= rfcomm_tty_tiocmset,
-<<<<<<< HEAD
-=======
 	.install                = rfcomm_tty_install,
 	.cleanup                = rfcomm_tty_cleanup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init rfcomm_init_ttys(void)
 {
-<<<<<<< HEAD
-	rfcomm_tty_driver = alloc_tty_driver(RFCOMM_TTY_PORTS);
-	if (!rfcomm_tty_driver)
-		return -1;
-
-	rfcomm_tty_driver->owner	= THIS_MODULE;
-=======
 	int error;
 
 	rfcomm_tty_driver = tty_alloc_driver(RFCOMM_TTY_PORTS,
@@ -1776,25 +1133,12 @@ int __init rfcomm_init_ttys(void)
 	if (IS_ERR(rfcomm_tty_driver))
 		return PTR_ERR(rfcomm_tty_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_tty_driver->driver_name	= "rfcomm";
 	rfcomm_tty_driver->name		= "rfcomm";
 	rfcomm_tty_driver->major	= RFCOMM_TTY_MAJOR;
 	rfcomm_tty_driver->minor_start	= RFCOMM_TTY_MINOR;
 	rfcomm_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
 	rfcomm_tty_driver->subtype	= SERIAL_TYPE_NORMAL;
-<<<<<<< HEAD
-	rfcomm_tty_driver->flags	= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
-	rfcomm_tty_driver->init_termios	= tty_std_termios;
-	rfcomm_tty_driver->init_termios.c_cflag	= B9600 | CS8 | CREAD | HUPCL | CLOCAL;
-	rfcomm_tty_driver->init_termios.c_lflag &= ~ICANON;
-	tty_set_operations(rfcomm_tty_driver, &rfcomm_ops);
-
-	if (tty_register_driver(rfcomm_tty_driver)) {
-		BT_ERR("Can't register RFCOMM TTY driver");
-		put_tty_driver(rfcomm_tty_driver);
-		return -1;
-=======
 	rfcomm_tty_driver->init_termios	= tty_std_termios;
 	rfcomm_tty_driver->init_termios.c_cflag	= B9600 | CS8 | CREAD | HUPCL;
 	rfcomm_tty_driver->init_termios.c_lflag &= ~ICANON;
@@ -1805,7 +1149,6 @@ int __init rfcomm_init_ttys(void)
 		BT_ERR("Can't register RFCOMM TTY driver");
 		tty_driver_kref_put(rfcomm_tty_driver);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	BT_INFO("RFCOMM TTY layer initialized");
@@ -1816,9 +1159,5 @@ int __init rfcomm_init_ttys(void)
 void rfcomm_cleanup_ttys(void)
 {
 	tty_unregister_driver(rfcomm_tty_driver);
-<<<<<<< HEAD
-	put_tty_driver(rfcomm_tty_driver);
-=======
 	tty_driver_kref_put(rfcomm_tty_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -31,10 +31,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -42,10 +38,7 @@
 #include <linux/dma-mapping.h>
 
 #include <linux/mlx4/cmd.h>
-<<<<<<< HEAD
-=======
 #include <linux/cpu_rmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mlx4.h"
 #include "fw.h"
@@ -85,16 +78,11 @@ enum {
 			       (1ull << MLX4_EVENT_TYPE_SRQ_QP_LAST_WQE)    | \
 			       (1ull << MLX4_EVENT_TYPE_SRQ_LIMIT)	    | \
 			       (1ull << MLX4_EVENT_TYPE_CMD)		    | \
-<<<<<<< HEAD
-=======
 			       (1ull << MLX4_EVENT_TYPE_OP_REQUIRED)	    | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       (1ull << MLX4_EVENT_TYPE_COMM_CHANNEL)       | \
 			       (1ull << MLX4_EVENT_TYPE_FLR_EVENT)	    | \
 			       (1ull << MLX4_EVENT_TYPE_FATAL_WARNING))
 
-<<<<<<< HEAD
-=======
 static u64 get_async_ev_mask(struct mlx4_dev *dev)
 {
 	u64 async_ev_mask = MLX4_ASYNC_EVENT_MASK;
@@ -106,27 +94,12 @@ static u64 get_async_ev_mask(struct mlx4_dev *dev)
 	return async_ev_mask;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void eq_set_ci(struct mlx4_eq *eq, int req_not)
 {
 	__raw_writel((__force u32) cpu_to_be32((eq->cons_index & 0xffffff) |
 					       req_not << 31),
 		     eq->doorbell);
 	/* We still want ordering, just not swabbing, so add a barrier */
-<<<<<<< HEAD
-	mb();
-}
-
-static struct mlx4_eqe *get_eqe(struct mlx4_eq *eq, u32 entry)
-{
-	unsigned long off = (entry & (eq->nent - 1)) * MLX4_EQ_ENTRY_SIZE;
-	return eq->page_list[off / PAGE_SIZE].buf + off % PAGE_SIZE;
-}
-
-static struct mlx4_eqe *next_eqe_sw(struct mlx4_eq *eq)
-{
-	struct mlx4_eqe *eqe = get_eqe(eq, eq->cons_index);
-=======
 	wmb();
 }
 
@@ -148,7 +121,6 @@ static struct mlx4_eqe *get_eqe(struct mlx4_eq *eq, u32 entry, u8 eqe_factor,
 static struct mlx4_eqe *next_eqe_sw(struct mlx4_eq *eq, u8 eqe_factor, u8 size)
 {
 	struct mlx4_eqe *eqe = get_eqe(eq, eq->cons_index, eqe_factor, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !!(eqe->owner & 0x80) ^ !!(eq->cons_index & eq->nent) ? NULL : eqe;
 }
 
@@ -173,33 +145,12 @@ void mlx4_gen_slave_eqe(struct work_struct *work)
 	struct mlx4_slave_event_eq *slave_eq = &mfunc->master.slave_eq;
 	struct mlx4_eqe *eqe;
 	u8 slave;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, phys_port, slave_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (eqe = next_slave_event_eqe(slave_eq); eqe;
 	      eqe = next_slave_event_eqe(slave_eq)) {
 		slave = eqe->slave_id;
 
-<<<<<<< HEAD
-		/* All active slaves need to receive the event */
-		if (slave == ALL_SLAVES) {
-			for (i = 0; i < dev->num_slaves; i++) {
-				if (i != dev->caps.function &&
-				    master->slave_state[i].active)
-					if (mlx4_GEN_EQE(dev, i, eqe))
-						mlx4_warn(dev, "Failed to "
-							  " generate event "
-							  "for slave %d\n", i);
-			}
-		} else {
-			if (mlx4_GEN_EQE(dev, slave, eqe))
-				mlx4_warn(dev, "Failed to generate event "
-					       "for slave %d\n", slave);
-		}
-=======
 		if (eqe->type == MLX4_EVENT_TYPE_PORT_CHANGE &&
 		    eqe->subtype == MLX4_PORT_CHANGE_SUBTYPE_DOWN &&
 		    mlx4_is_bonded(dev)) {
@@ -235,7 +186,6 @@ void mlx4_gen_slave_eqe(struct work_struct *work)
 					  slave);
 		}
 consume:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++slave_eq->cons;
 	}
 }
@@ -245,15 +195,6 @@ static void slave_event(struct mlx4_dev *dev, u8 slave, struct mlx4_eqe *eqe)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_slave_event_eq *slave_eq = &priv->mfunc.master.slave_eq;
-<<<<<<< HEAD
-	struct mlx4_eqe *s_eqe =
-		&slave_eq->event_eqe[slave_eq->prod & (SLAVE_EVENT_EQ_SIZE - 1)];
-
-	if ((!!(s_eqe->owner & 0x80)) ^
-	    (!!(slave_eq->prod & SLAVE_EVENT_EQ_SIZE))) {
-		mlx4_warn(dev, "Master failed to generate an EQE for slave: %d. "
-			  "No free EQE on slave events queue\n", slave);
-=======
 	struct mlx4_eqe *s_eqe;
 	unsigned long flags;
 
@@ -264,55 +205,34 @@ static void slave_event(struct mlx4_dev *dev, u8 slave, struct mlx4_eqe *eqe)
 		mlx4_warn(dev, "Master failed to generate an EQE for slave: %d. No free EQE on slave events queue\n",
 			  slave);
 		spin_unlock_irqrestore(&slave_eq->event_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	memcpy(s_eqe, eqe, sizeof(struct mlx4_eqe) - 1);
 	s_eqe->slave_id = slave;
-<<<<<<< HEAD
-	/* ensure all information is written before setting the ownersip bit */
-	wmb();
-=======
 	/* ensure all information is written before setting the ownership bit */
 	dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s_eqe->owner = !!(slave_eq->prod & SLAVE_EVENT_EQ_SIZE) ? 0x0 : 0x80;
 	++slave_eq->prod;
 
 	queue_work(priv->mfunc.master.comm_wq,
 		   &priv->mfunc.master.slave_event_work);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&slave_eq->event_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_slave_event(struct mlx4_dev *dev, int slave,
 			     struct mlx4_eqe *eqe)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	struct mlx4_slave_state *s_slave =
-		&priv->mfunc.master.slave_state[slave];
-
-	if (!s_slave->active) {
-		/*mlx4_warn(dev, "Trying to pass event to inactive slave\n");*/
-		return;
-	}
-=======
 
 	if (slave < 0 || slave > dev->persist->num_vfs ||
 	    slave == dev->caps.function ||
 	    !priv->mfunc.master.slave_state[slave].active)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slave_event(dev, slave, eqe);
 }
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_SMP)
 static void mlx4_set_eq_affinity_hint(struct mlx4_priv *priv, int vec)
 {
@@ -526,7 +446,6 @@ int mlx4_gen_slaves_port_mgt_ev(struct mlx4_dev *dev, u8 port, int attr)
 }
 EXPORT_SYMBOL(mlx4_gen_slaves_port_mgt_ev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_master_handle_slave_flr(struct work_struct *work)
 {
 	struct mlx4_mfunc_master_ctx *master =
@@ -540,27 +459,13 @@ void mlx4_master_handle_slave_flr(struct work_struct *work)
 	struct mlx4_slave_state *slave_state = priv->mfunc.master.slave_state;
 	int i;
 	int err;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_dbg(dev, "mlx4_handle_slave_flr\n");
 
 	for (i = 0 ; i < dev->num_slaves; i++) {
 
 		if (MLX4_COMM_CMD_FLR == slave_state[i].last_cmd) {
-<<<<<<< HEAD
-			mlx4_dbg(dev, "mlx4_handle_slave_flr: "
-				 "clean slave: %d\n", i);
-
-			mlx4_delete_all_resources_for_slave(dev, i);
-			/*return the slave to running mode*/
-			spin_lock(&priv->mfunc.master.slave_state_lock);
-			slave_state[i].last_cmd = MLX4_COMM_CMD_RESET;
-			slave_state[i].is_slave_going_down = 0;
-			spin_unlock(&priv->mfunc.master.slave_state_lock);
-=======
 			mlx4_dbg(dev, "mlx4_handle_slave_flr: clean slave: %d\n",
 				 i);
 			/* In case of 'Reset flow' FLR can be generated for
@@ -576,18 +481,12 @@ void mlx4_master_handle_slave_flr(struct work_struct *work)
 			slave_state[i].last_cmd = MLX4_COMM_CMD_RESET;
 			slave_state[i].is_slave_going_down = 0;
 			spin_unlock_irqrestore(&priv->mfunc.master.slave_state_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*notify the FW:*/
 			err = mlx4_cmd(dev, 0, i, 0, MLX4_CMD_INFORM_FLR_DONE,
 				       MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 			if (err)
-<<<<<<< HEAD
-				mlx4_warn(dev, "Failed to notify FW on "
-					  "FLR done (slave:%d)\n", i);
-=======
 				mlx4_warn(dev, "Failed to notify FW on FLR done (slave:%d)\n",
 					  i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -602,13 +501,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 	int port;
 	int slave = 0;
 	int ret;
-<<<<<<< HEAD
-	u32 flr_slave;
-	u8 update_slave_state;
-	int i;
-
-	while ((eqe = next_eqe_sw(eq))) {
-=======
 	int flr_slave;
 	u8 update_slave_state;
 	int i;
@@ -618,16 +510,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 	int eqe_size = dev->caps.eqe_size;
 
 	while ((eqe = next_eqe_sw(eq, dev->caps.eqe_factor, eqe_size))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Make sure we read EQ entry contents after we've
 		 * checked the ownership bit.
 		 */
-<<<<<<< HEAD
-		rmb();
-=======
 		dma_rmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (eqe->type) {
 		case MLX4_EVENT_TYPE_COMP:
@@ -651,13 +538,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 						be32_to_cpu(eqe->event.qp.qpn)
 						& 0xffffff, &slave);
 				if (ret && ret != -ENOENT) {
-<<<<<<< HEAD
-					mlx4_dbg(dev, "QP event %02x(%02x) on "
-						 "EQ %d at index %u: could "
-						 "not get slave id (%d)\n",
-=======
 					mlx4_dbg(dev, "QP event %02x(%02x) on EQ %d at index %u: could not get slave id (%d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 eqe->type, eqe->subtype,
 						 eq->eqn, eq->cons_index, ret);
 					break;
@@ -674,15 +555,10 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			break;
 
 		case MLX4_EVENT_TYPE_SRQ_LIMIT:
-<<<<<<< HEAD
-			mlx4_warn(dev, "%s: MLX4_EVENT_TYPE_SRQ_LIMIT\n",
-				  __func__);
-=======
 			mlx4_dbg(dev, "%s: MLX4_EVENT_TYPE_SRQ_LIMIT. srq_no=0x%x, eq 0x%x\n",
 				 __func__, be32_to_cpu(eqe->event.srq.srqn),
 				 eq->eqn);
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MLX4_EVENT_TYPE_SRQ_CATAS_ERROR:
 			if (mlx4_is_master(dev)) {
 				/* forward only to slave owning the SRQ */
@@ -692,30 +568,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 						& 0xffffff,
 						&slave);
 				if (ret && ret != -ENOENT) {
-<<<<<<< HEAD
-					mlx4_warn(dev, "SRQ event %02x(%02x) "
-						  "on EQ %d at index %u: could"
-						  " not get slave id (%d)\n",
-=======
 					mlx4_warn(dev, "SRQ event %02x(%02x) on EQ %d at index %u: could not get slave id (%d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  eqe->type, eqe->subtype,
 						  eq->eqn, eq->cons_index, ret);
 					break;
 				}
-<<<<<<< HEAD
-				mlx4_warn(dev, "%s: slave:%d, srq_no:0x%x,"
-					  " event: %02x(%02x)\n", __func__,
-					  slave,
-					  be32_to_cpu(eqe->event.srq.srqn),
-					  eqe->type, eqe->subtype);
-
-				if (!ret && slave != dev->caps.function) {
-					mlx4_warn(dev, "%s: sending event "
-						  "%02x(%02x) to slave:%d\n",
-						   __func__, eqe->type,
-						  eqe->subtype, slave);
-=======
 				if (eqe->type ==
 				    MLX4_EVENT_TYPE_SRQ_CATAS_ERROR)
 					mlx4_warn(dev, "%s: slave:%d, srq_no:0x%x, event: %02x(%02x)\n",
@@ -729,7 +586,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 						mlx4_warn(dev, "%s: sending event %02x(%02x) to slave:%d\n",
 							  __func__, eqe->type,
 							  eqe->subtype, slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mlx4_slave_event(dev, slave, eqe);
 					break;
 				}
@@ -745,42 +601,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 				       be64_to_cpu(eqe->event.cmd.out_param));
 			break;
 
-<<<<<<< HEAD
-		case MLX4_EVENT_TYPE_PORT_CHANGE:
-			port = be32_to_cpu(eqe->event.port_change.port) >> 28;
-			if (eqe->subtype == MLX4_PORT_CHANGE_SUBTYPE_DOWN) {
-				mlx4_dispatch_event(dev,
-						    MLX4_DEV_EVENT_PORT_DOWN,
-						    port);
-				mlx4_priv(dev)->sense.do_sense_port[port] = 1;
-				if (mlx4_is_master(dev))
-					/*change the state of all slave's port
-					* to down:*/
-					for (i = 0; i < dev->num_slaves; i++) {
-						mlx4_dbg(dev, "%s: Sending "
-							 "MLX4_PORT_CHANGE_SUBTYPE_DOWN"
-							 " to slave: %d, port:%d\n",
-							 __func__, i, port);
-						if (i == dev->caps.function)
-							continue;
-						mlx4_slave_event(dev, i, eqe);
-					}
-			} else {
-				mlx4_dispatch_event(dev,
-						    MLX4_DEV_EVENT_PORT_UP,
-						    port);
-				mlx4_priv(dev)->sense.do_sense_port[port] = 0;
-
-				if (mlx4_is_master(dev)) {
-					for (i = 0; i < dev->num_slaves; i++) {
-						if (i == dev->caps.function)
-							continue;
-						mlx4_slave_event(dev, i, eqe);
-					}
-				}
-			}
-			break;
-=======
 		case MLX4_EVENT_TYPE_PORT_CHANGE: {
 			struct mlx4_slaves_pport slaves_port;
 			port = be32_to_cpu(eqe->event.port_change.port) >> 28;
@@ -861,7 +681,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			}
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case MLX4_EVENT_TYPE_CQ_ERROR:
 			mlx4_warn(dev, "CQ %s on CQN %06x\n",
@@ -874,17 +693,9 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 					be32_to_cpu(eqe->event.cq_err.cqn)
 					& 0xffffff, &slave);
 				if (ret && ret != -ENOENT) {
-<<<<<<< HEAD
-					mlx4_dbg(dev, "CQ event %02x(%02x) on "
-						 "EQ %d at index %u: could "
-						  "not get slave id (%d)\n",
-						  eqe->type, eqe->subtype,
-						  eq->eqn, eq->cons_index, ret);
-=======
 					mlx4_dbg(dev, "CQ event %02x(%02x) on EQ %d at index %u: could not get slave id (%d)\n",
 						 eqe->type, eqe->subtype,
 						 eq->eqn, eq->cons_index, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 
@@ -903,12 +714,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			mlx4_warn(dev, "EQ overrun on EQN %d\n", eq->eqn);
 			break;
 
-<<<<<<< HEAD
-		case MLX4_EVENT_TYPE_COMM_CHANNEL:
-			if (!mlx4_is_master(dev)) {
-				mlx4_warn(dev, "Received comm channel event "
-					       "for non master device\n");
-=======
 		case MLX4_EVENT_TYPE_OP_REQUIRED:
 			atomic_inc(&priv->opreq_count);
 			/* FW commands can't be executed from interrupt context
@@ -920,16 +725,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 		case MLX4_EVENT_TYPE_COMM_CHANNEL:
 			if (!mlx4_is_master(dev)) {
 				mlx4_warn(dev, "Received comm channel event for non master device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			memcpy(&priv->mfunc.master.comm_arm_bit_vector,
 			       eqe->event.comm_channel_arm.bit_vec,
-<<<<<<< HEAD
-			       sizeof eqe->event.comm_channel_arm.bit_vec);
-=======
 			       sizeof(eqe->event.comm_channel_arm.bit_vec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			queue_work(priv->mfunc.master.comm_wq,
 				   &priv->mfunc.master.comm_work);
 			break;
@@ -937,22 +737,13 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 		case MLX4_EVENT_TYPE_FLR_EVENT:
 			flr_slave = be32_to_cpu(eqe->event.flr_event.slave_id);
 			if (!mlx4_is_master(dev)) {
-<<<<<<< HEAD
-				mlx4_warn(dev, "Non-master function received"
-					       "FLR event\n");
-=======
 				mlx4_warn(dev, "Non-master function received FLR event\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
 			mlx4_dbg(dev, "FLR event for slave: %d\n", flr_slave);
 
-<<<<<<< HEAD
-			if (flr_slave > dev->num_slaves) {
-=======
 			if (flr_slave >= dev->num_slaves) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mlx4_warn(dev,
 					  "Got FLR for unknown function: %d\n",
 					  flr_slave);
@@ -960,23 +751,15 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			} else
 				update_slave_state = 1;
 
-<<<<<<< HEAD
-			spin_lock(&priv->mfunc.master.slave_state_lock);
-=======
 			spin_lock_irqsave(&priv->mfunc.master.slave_state_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (update_slave_state) {
 				priv->mfunc.master.slave_state[flr_slave].active = false;
 				priv->mfunc.master.slave_state[flr_slave].last_cmd = MLX4_COMM_CMD_FLR;
 				priv->mfunc.master.slave_state[flr_slave].is_slave_going_down = 1;
 			}
-<<<<<<< HEAD
-			spin_unlock(&priv->mfunc.master.slave_state_lock);
-=======
 			spin_unlock_irqrestore(&priv->mfunc.master.slave_state_lock, flags);
 			mlx4_dispatch_event(dev, MLX4_DEV_EVENT_SLAVE_SHUTDOWN,
 					    &flr_slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			queue_work(priv->mfunc.master.comm_wq,
 				   &priv->mfunc.master.slave_flr_event_work);
 			break;
@@ -985,35 +768,17 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			if (eqe->subtype == MLX4_FATAL_WARNING_SUBTYPE_WARMING) {
 				if (mlx4_is_master(dev))
 					for (i = 0; i < dev->num_slaves; i++) {
-<<<<<<< HEAD
-						mlx4_dbg(dev, "%s: Sending "
-							"MLX4_FATAL_WARNING_SUBTYPE_WARMING"
-							" to slave: %d\n", __func__, i);
-=======
 						mlx4_dbg(dev, "%s: Sending MLX4_FATAL_WARNING_SUBTYPE_WARMING to slave: %d\n",
 							 __func__, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (i == dev->caps.function)
 							continue;
 						mlx4_slave_event(dev, i, eqe);
 					}
-<<<<<<< HEAD
-				mlx4_err(dev, "Temperature Threshold was reached! "
-					"Threshold: %d celsius degrees; "
-					"Current Temperature: %d\n",
-					be16_to_cpu(eqe->event.warming.warning_threshold),
-					be16_to_cpu(eqe->event.warming.current_temperature));
-			} else
-				mlx4_warn(dev, "Unhandled event FATAL WARNING (%02x), "
-					  "subtype %02x on EQ %d at index %u. owner=%x, "
-					  "nent=0x%x, slave=%x, ownership=%s\n",
-=======
 				mlx4_err(dev, "Temperature Threshold was reached! Threshold: %d celsius degrees; Current Temperature: %d\n",
 					 be16_to_cpu(eqe->event.warming.warning_threshold),
 					 be16_to_cpu(eqe->event.warming.current_temperature));
 			} else
 				mlx4_warn(dev, "Unhandled event FATAL WARNING (%02x), subtype %02x on EQ %d at index %u. owner=%x, nent=0x%x, slave=%x, ownership=%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  eqe->type, eqe->subtype, eq->eqn,
 					  eq->cons_index, eqe->owner, eq->nent,
 					  eqe->slave_id,
@@ -1022,14 +787,6 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 
 			break;
 
-<<<<<<< HEAD
-		case MLX4_EVENT_TYPE_EEC_CATAS_ERROR:
-		case MLX4_EVENT_TYPE_ECC_DETECT:
-		default:
-			mlx4_warn(dev, "Unhandled event %02x(%02x) on EQ %d at "
-				  "index %u. owner=%x, nent=0x%x, slave=%x, "
-				  "ownership=%s\n",
-=======
 		case MLX4_EVENT_TYPE_PORT_MNG_CHG_EVENT:
 			mlx4_dispatch_event(
 				dev, MLX4_DEV_EVENT_PORT_MGMT_CHANGE, eqe);
@@ -1059,18 +816,13 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 		case MLX4_EVENT_TYPE_ECC_DETECT:
 		default:
 			mlx4_warn(dev, "Unhandled event %02x(%02x) on EQ %d at index %u. owner=%x, nent=0x%x, slave=%x, ownership=%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  eqe->type, eqe->subtype, eq->eqn,
 				  eq->cons_index, eqe->owner, eq->nent,
 				  eqe->slave_id,
 				  !!(eqe->owner & 0x80) ^
 				  !!(eq->cons_index & eq->nent) ? "HW" : "SW");
 			break;
-<<<<<<< HEAD
-		};
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		++eq->cons_index;
 		eqes_found = 1;
@@ -1130,11 +882,7 @@ int mlx4_MAP_EQ_wrapper(struct mlx4_dev *dev, int slave,
 	struct mlx4_slave_event_eq_info *event_eq =
 		priv->mfunc.master.slave_state[slave].event_eq;
 	u32 in_modifier = vhcr->in_modifier;
-<<<<<<< HEAD
-	u32 eqn = in_modifier & 0x1FF;
-=======
 	u32 eqn = in_modifier & 0x3FF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 in_param =  vhcr->in_param;
 	int err = 0;
 	int i;
@@ -1167,19 +915,10 @@ static int mlx4_SW2HW_EQ(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox,
 			MLX4_CMD_WRAPPED);
 }
 
-<<<<<<< HEAD
-static int mlx4_HW2SW_EQ(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox,
-			 int eq_num)
-{
-	return mlx4_cmd_box(dev, 0, mailbox->dma, eq_num,
-			    0, MLX4_CMD_HW2SW_EQ, MLX4_CMD_TIME_CLASS_A,
-			    MLX4_CMD_WRAPPED);
-=======
 static int mlx4_HW2SW_EQ(struct mlx4_dev *dev,  int eq_num)
 {
 	return mlx4_cmd(dev, 0, eq_num, 1, MLX4_CMD_HW2SW_EQ,
 			MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_num_eq_uar(struct mlx4_dev *dev)
@@ -1189,13 +928,8 @@ static int mlx4_num_eq_uar(struct mlx4_dev *dev)
 	 * we need to map, take the difference of highest index and
 	 * the lowest index we'll use and add 1.
 	 */
-<<<<<<< HEAD
-	return (dev->caps.num_comp_vectors + 1 + dev->caps.reserved_eqs +
-		 dev->caps.comp_pool)/4 - dev->caps.reserved_eqs/4 + 1;
-=======
 	return (dev->caps.num_comp_vectors + 1 + dev->caps.reserved_eqs) / 4 -
 		dev->caps.reserved_eqs / 4 + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __iomem *mlx4_get_eq_uar(struct mlx4_dev *dev, struct mlx4_eq *eq)
@@ -1207,16 +941,10 @@ static void __iomem *mlx4_get_eq_uar(struct mlx4_dev *dev, struct mlx4_eq *eq)
 
 	if (!priv->eq_table.uar_map[index]) {
 		priv->eq_table.uar_map[index] =
-<<<<<<< HEAD
-			ioremap(pci_resource_start(dev->pdev, 2) +
-				((eq->eqn / 4) << PAGE_SHIFT),
-				PAGE_SIZE);
-=======
 			ioremap(
 				pci_resource_start(dev->persist->pdev, 2) +
 				((eq->eqn / 4) << (dev->uar_page_shift)),
 				(1 << (dev->uar_page_shift)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!priv->eq_table.uar_map[index]) {
 			mlx4_err(dev, "Couldn't map EQ doorbell for EQN 0x%06x\n",
 				 eq->eqn);
@@ -1227,8 +955,6 @@ static void __iomem *mlx4_get_eq_uar(struct mlx4_dev *dev, struct mlx4_eq *eq)
 	return priv->eq_table.uar_map[index] + 0x800 + 8 * (eq->eqn % 4);
 }
 
-<<<<<<< HEAD
-=======
 static void mlx4_unmap_uar(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -1241,7 +967,6 @@ static void mlx4_unmap_uar(struct mlx4_dev *dev)
 		}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 			  u8 intr, struct mlx4_eq *eq)
 {
@@ -1257,12 +982,6 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 
 	eq->dev   = dev;
 	eq->nent  = roundup_pow_of_two(max(nent, 2));
-<<<<<<< HEAD
-	npages = PAGE_ALIGN(eq->nent * MLX4_EQ_ENTRY_SIZE) / PAGE_SIZE;
-
-	eq->page_list = kmalloc(npages * sizeof *eq->page_list,
-				GFP_KERNEL);
-=======
 	/* CX3 is capable of extending the CQE/EQE from 32 to 64 bytes, with
 	 * strides of 64B,128B and 256B.
 	 */
@@ -1270,18 +989,13 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 
 	eq->page_list = kmalloc_array(npages, sizeof(*eq->page_list),
 				      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!eq->page_list)
 		goto err_out;
 
 	for (i = 0; i < npages; ++i)
 		eq->page_list[i].buf = NULL;
 
-<<<<<<< HEAD
-	dma_list = kmalloc(npages * sizeof *dma_list, GFP_KERNEL);
-=======
 	dma_list = kmalloc_array(npages, sizeof(*dma_list), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dma_list)
 		goto err_out_free;
 
@@ -1291,25 +1005,15 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 	eq_context = mailbox->buf;
 
 	for (i = 0; i < npages; ++i) {
-<<<<<<< HEAD
-		eq->page_list[i].buf = dma_alloc_coherent(&dev->pdev->dev,
-							  PAGE_SIZE, &t, GFP_KERNEL);
-=======
 		eq->page_list[i].buf = dma_alloc_coherent(&dev->persist->
 							  pdev->dev,
 							  PAGE_SIZE, &t,
 							  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!eq->page_list[i].buf)
 			goto err_out_free_pages;
 
 		dma_list[i] = t;
 		eq->page_list[i].map = t;
-<<<<<<< HEAD
-
-		memset(eq->page_list[i].buf, 0, PAGE_SIZE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	eq->eqn = mlx4_bitmap_alloc(&priv->eq_table.bitmap);
@@ -1330,10 +1034,6 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 	if (err)
 		goto err_out_free_mtt;
 
-<<<<<<< HEAD
-	memset(eq_context, 0, sizeof *eq_context);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eq_context->flags	  = cpu_to_be32(MLX4_EQ_STATUS_OK   |
 						MLX4_EQ_STATE_ARMED);
 	eq_context->log_eq_size	  = ilog2(eq->nent);
@@ -1355,34 +1055,23 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
 
 	eq->cons_index = 0;
 
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&eq->tasklet_ctx.list);
 	INIT_LIST_HEAD(&eq->tasklet_ctx.process_list);
 	spin_lock_init(&eq->tasklet_ctx.lock);
 	tasklet_setup(&eq->tasklet_ctx.task, mlx4_cq_tasklet_cb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 err_out_free_mtt:
 	mlx4_mtt_cleanup(dev, &eq->mtt);
 
 err_out_free_eq:
-<<<<<<< HEAD
-	mlx4_bitmap_free(&priv->eq_table.bitmap, eq->eqn);
-=======
 	mlx4_bitmap_free(&priv->eq_table.bitmap, eq->eqn, MLX4_USE_RR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_out_free_pages:
 	for (i = 0; i < npages; ++i)
 		if (eq->page_list[i].buf)
-<<<<<<< HEAD
-			dma_free_coherent(&dev->pdev->dev, PAGE_SIZE,
-=======
 			dma_free_coherent(&dev->persist->pdev->dev, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  eq->page_list[i].buf,
 					  eq->page_list[i].map);
 
@@ -1400,41 +1089,6 @@ static void mlx4_free_eq(struct mlx4_dev *dev,
 			 struct mlx4_eq *eq)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	struct mlx4_cmd_mailbox *mailbox;
-	int err;
-	int npages = PAGE_ALIGN(MLX4_EQ_ENTRY_SIZE * eq->nent) / PAGE_SIZE;
-	int i;
-
-	mailbox = mlx4_alloc_cmd_mailbox(dev);
-	if (IS_ERR(mailbox))
-		return;
-
-	err = mlx4_HW2SW_EQ(dev, mailbox, eq->eqn);
-	if (err)
-		mlx4_warn(dev, "HW2SW_EQ failed (%d)\n", err);
-
-	if (0) {
-		mlx4_dbg(dev, "Dumping EQ context %02x:\n", eq->eqn);
-		for (i = 0; i < sizeof (struct mlx4_eq_context) / 4; ++i) {
-			if (i % 4 == 0)
-				pr_cont("[%02x] ", i * 4);
-			pr_cont(" %08x", be32_to_cpup(mailbox->buf + i * 4));
-			if ((i + 1) % 4 == 0)
-				pr_cont("\n");
-		}
-	}
-
-	mlx4_mtt_cleanup(dev, &eq->mtt);
-	for (i = 0; i < npages; ++i)
-		dma_free_coherent(&dev->pdev->dev, PAGE_SIZE,
-				    eq->page_list[i].buf,
-				    eq->page_list[i].map);
-
-	kfree(eq->page_list);
-	mlx4_bitmap_free(&priv->eq_table.bitmap, eq->eqn);
-	mlx4_free_cmd_mailbox(dev, mailbox);
-=======
 	int err;
 	int i;
 	/* CX3 is capable of extending the CQE/EQE from 32 to 64 bytes, with
@@ -1457,22 +1111,11 @@ static void mlx4_free_eq(struct mlx4_dev *dev,
 
 	kfree(eq->page_list);
 	mlx4_bitmap_free(&priv->eq_table.bitmap, eq->eqn, MLX4_USE_RR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_free_irqs(struct mlx4_dev *dev)
 {
 	struct mlx4_eq_table *eq_table = &mlx4_priv(dev)->eq_table;
-<<<<<<< HEAD
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	int	i, vec;
-
-	if (eq_table->have_irq)
-		free_irq(dev->pdev->irq, dev);
-
-	for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i)
-		if (eq_table->eq[i].have_irq) {
-=======
 	int	i;
 
 	if (eq_table->have_irq)
@@ -1482,28 +1125,10 @@ static void mlx4_free_irqs(struct mlx4_dev *dev)
 		if (eq_table->eq[i].have_irq) {
 			free_cpumask_var(eq_table->eq[i].affinity_mask);
 			irq_update_affinity_hint(eq_table->eq[i].irq, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_irq(eq_table->eq[i].irq, eq_table->eq + i);
 			eq_table->eq[i].have_irq = 0;
 		}
 
-<<<<<<< HEAD
-	for (i = 0; i < dev->caps.comp_pool; i++) {
-		/*
-		 * Freeing the assigned irq's
-		 * all bits should be 0, but we need to validate
-		 */
-		if (priv->msix_ctl.pool_bm & 1ULL << i) {
-			/* NO need protecting*/
-			vec = dev->caps.num_comp_vectors + 1 + i;
-			free_irq(priv->eq_table.eq[vec].irq,
-				 &priv->eq_table.eq[vec]);
-		}
-	}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(eq_table->irq_names);
 }
 
@@ -1511,18 +1136,11 @@ static int mlx4_map_clr_int(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
-<<<<<<< HEAD
-	priv->clr_base = ioremap(pci_resource_start(dev->pdev, priv->fw.clr_int_bar) +
-				 priv->fw.clr_int_base, MLX4_CLR_INT_SIZE);
-	if (!priv->clr_base) {
-		mlx4_err(dev, "Couldn't map interrupt clear register, aborting.\n");
-=======
 	priv->clr_base = ioremap(pci_resource_start(dev->persist->pdev,
 				 priv->fw.clr_int_bar) +
 				 priv->fw.clr_int_base, MLX4_CLR_INT_SIZE);
 	if (!priv->clr_base) {
 		mlx4_err(dev, "Couldn't map interrupt clear register, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1541,11 +1159,7 @@ int mlx4_alloc_eq_table(struct mlx4_dev *dev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
 	priv->eq_table.eq = kcalloc(dev->caps.num_eqs - dev->caps.reserved_eqs,
-<<<<<<< HEAD
-				    sizeof *priv->eq_table.eq, GFP_KERNEL);
-=======
 				    sizeof(*priv->eq_table.eq), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv->eq_table.eq)
 		return -ENOMEM;
 
@@ -1564,28 +1178,19 @@ int mlx4_init_eq_table(struct mlx4_dev *dev)
 	int i;
 
 	priv->eq_table.uar_map = kcalloc(mlx4_num_eq_uar(dev),
-<<<<<<< HEAD
-					 sizeof *priv->eq_table.uar_map,
-=======
 					 sizeof(*priv->eq_table.uar_map),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 GFP_KERNEL);
 	if (!priv->eq_table.uar_map) {
 		err = -ENOMEM;
 		goto err_out_free;
 	}
 
-<<<<<<< HEAD
-	err = mlx4_bitmap_init(&priv->eq_table.bitmap, dev->caps.num_eqs,
-			       dev->caps.num_eqs - 1, dev->caps.reserved_eqs, 0);
-=======
 	err = mlx4_bitmap_init(&priv->eq_table.bitmap,
 			       roundup_pow_of_two(dev->caps.num_eqs),
 			       dev->caps.num_eqs - 1,
 			       dev->caps.reserved_eqs,
 			       roundup_pow_of_two(dev->caps.num_eqs) -
 			       dev->caps.num_eqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_out_free;
 
@@ -1604,78 +1209,6 @@ int mlx4_init_eq_table(struct mlx4_dev *dev)
 	}
 
 	priv->eq_table.irq_names =
-<<<<<<< HEAD
-		kmalloc(MLX4_IRQNAME_SIZE * (dev->caps.num_comp_vectors + 1 +
-					     dev->caps.comp_pool),
-			GFP_KERNEL);
-	if (!priv->eq_table.irq_names) {
-		err = -ENOMEM;
-		goto err_out_bitmap;
-	}
-
-	for (i = 0; i < dev->caps.num_comp_vectors; ++i) {
-		err = mlx4_create_eq(dev, dev->caps.num_cqs -
-					  dev->caps.reserved_cqs +
-					  MLX4_NUM_SPARE_EQE,
-				     (dev->flags & MLX4_FLAG_MSI_X) ? i : 0,
-				     &priv->eq_table.eq[i]);
-		if (err) {
-			--i;
-			goto err_out_unmap;
-		}
-	}
-
-	err = mlx4_create_eq(dev, MLX4_NUM_ASYNC_EQE + MLX4_NUM_SPARE_EQE,
-			     (dev->flags & MLX4_FLAG_MSI_X) ? dev->caps.num_comp_vectors : 0,
-			     &priv->eq_table.eq[dev->caps.num_comp_vectors]);
-	if (err)
-		goto err_out_comp;
-
-	/*if additional completion vectors poolsize is 0 this loop will not run*/
-	for (i = dev->caps.num_comp_vectors + 1;
-	      i < dev->caps.num_comp_vectors + dev->caps.comp_pool + 1; ++i) {
-
-		err = mlx4_create_eq(dev, dev->caps.num_cqs -
-					  dev->caps.reserved_cqs +
-					  MLX4_NUM_SPARE_EQE,
-				     (dev->flags & MLX4_FLAG_MSI_X) ? i : 0,
-				     &priv->eq_table.eq[i]);
-		if (err) {
-			--i;
-			goto err_out_unmap;
-		}
-	}
-
-
-	if (dev->flags & MLX4_FLAG_MSI_X) {
-		const char *eq_name;
-
-		for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i) {
-			if (i < dev->caps.num_comp_vectors) {
-				snprintf(priv->eq_table.irq_names +
-					 i * MLX4_IRQNAME_SIZE,
-					 MLX4_IRQNAME_SIZE,
-					 "mlx4-comp-%d@pci:%s", i,
-					 pci_name(dev->pdev));
-			} else {
-				snprintf(priv->eq_table.irq_names +
-					 i * MLX4_IRQNAME_SIZE,
-					 MLX4_IRQNAME_SIZE,
-					 "mlx4-async@pci:%s",
-					 pci_name(dev->pdev));
-			}
-
-			eq_name = priv->eq_table.irq_names +
-				  i * MLX4_IRQNAME_SIZE;
-			err = request_irq(priv->eq_table.eq[i].irq,
-					  mlx4_msi_x_interrupt, 0, eq_name,
-					  priv->eq_table.eq + i);
-			if (err)
-				goto err_out_async;
-
-			priv->eq_table.eq[i].have_irq = 1;
-		}
-=======
 		kmalloc_array(MLX4_IRQNAME_SIZE,
 			      (dev->caps.num_comp_vectors + 1),
 			      GFP_KERNEL);
@@ -1743,57 +1276,19 @@ int mlx4_init_eq_table(struct mlx4_dev *dev)
 			goto err_out_unmap;
 
 		priv->eq_table.eq[MLX4_EQ_ASYNC].have_irq = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		snprintf(priv->eq_table.irq_names,
 			 MLX4_IRQNAME_SIZE,
 			 DRV_NAME "@pci:%s",
-<<<<<<< HEAD
-			 pci_name(dev->pdev));
-		err = request_irq(dev->pdev->irq, mlx4_interrupt,
-				  IRQF_SHARED, priv->eq_table.irq_names, dev);
-		if (err)
-			goto err_out_async;
-=======
 			 pci_name(dev->persist->pdev));
 		err = request_irq(dev->persist->pdev->irq, mlx4_interrupt,
 				  IRQF_SHARED, priv->eq_table.irq_names, dev);
 		if (err)
 			goto err_out_unmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		priv->eq_table.have_irq = 1;
 	}
 
-<<<<<<< HEAD
-	err = mlx4_MAP_EQ(dev, MLX4_ASYNC_EVENT_MASK, 0,
-			  priv->eq_table.eq[dev->caps.num_comp_vectors].eqn);
-	if (err)
-		mlx4_warn(dev, "MAP_EQ for async EQ %d failed (%d)\n",
-			   priv->eq_table.eq[dev->caps.num_comp_vectors].eqn, err);
-
-	for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i)
-		eq_set_ci(&priv->eq_table.eq[i], 1);
-
-	return 0;
-
-err_out_async:
-	mlx4_free_eq(dev, &priv->eq_table.eq[dev->caps.num_comp_vectors]);
-
-err_out_comp:
-	i = dev->caps.num_comp_vectors - 1;
-
-err_out_unmap:
-	while (i >= 0) {
-		mlx4_free_eq(dev, &priv->eq_table.eq[i]);
-		--i;
-	}
-	if (!mlx4_is_slave(dev))
-		mlx4_unmap_clr_int(dev);
-	mlx4_free_irqs(dev);
-
-err_out_bitmap:
-=======
 	err = mlx4_MAP_EQ(dev, get_async_ev_mask(dev), 0,
 			  priv->eq_table.eq[MLX4_EQ_ASYNC].eqn);
 	if (err)
@@ -1824,7 +1319,6 @@ err_out_clr_int:
 
 err_out_bitmap:
 	mlx4_unmap_uar(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_bitmap_cleanup(&priv->eq_table.bitmap);
 
 err_out_free:
@@ -1838,14 +1332,6 @@ void mlx4_cleanup_eq_table(struct mlx4_dev *dev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int i;
 
-<<<<<<< HEAD
-	mlx4_MAP_EQ(dev, MLX4_ASYNC_EVENT_MASK, 1,
-		    priv->eq_table.eq[dev->caps.num_comp_vectors].eqn);
-
-	mlx4_free_irqs(dev);
-
-	for (i = 0; i < dev->caps.num_comp_vectors + dev->caps.comp_pool + 1; ++i)
-=======
 	mlx4_MAP_EQ(dev, get_async_ev_mask(dev), 1,
 		    priv->eq_table.eq[MLX4_EQ_ASYNC].eqn);
 
@@ -1860,107 +1346,17 @@ void mlx4_cleanup_eq_table(struct mlx4_dev *dev)
 	mlx4_free_irqs(dev);
 
 	for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_free_eq(dev, &priv->eq_table.eq[i]);
 
 	if (!mlx4_is_slave(dev))
 		mlx4_unmap_clr_int(dev);
 
-<<<<<<< HEAD
-	for (i = 0; i < mlx4_num_eq_uar(dev); ++i)
-		if (priv->eq_table.uar_map[i])
-			iounmap(priv->eq_table.uar_map[i]);
-
-=======
 	mlx4_unmap_uar(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_bitmap_cleanup(&priv->eq_table.bitmap);
 
 	kfree(priv->eq_table.uar_map);
 }
 
-<<<<<<< HEAD
-/* A test that verifies that we can accept interrupts on all
- * the irq vectors of the device.
- * Interrupts are checked using the NOP command.
- */
-int mlx4_test_interrupts(struct mlx4_dev *dev)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	int i;
-	int err;
-
-	err = mlx4_NOP(dev);
-	/* When not in MSI_X, there is only one irq to check */
-	if (!(dev->flags & MLX4_FLAG_MSI_X) || mlx4_is_slave(dev))
-		return err;
-
-	/* A loop over all completion vectors, for each vector we will check
-	 * whether it works by mapping command completions to that vector
-	 * and performing a NOP command
-	 */
-	for(i = 0; !err && (i < dev->caps.num_comp_vectors); ++i) {
-		/* Temporary use polling for command completions */
-		mlx4_cmd_use_polling(dev);
-
-		/* Map the new eq to handle all asyncronous events */
-		err = mlx4_MAP_EQ(dev, MLX4_ASYNC_EVENT_MASK, 0,
-				  priv->eq_table.eq[i].eqn);
-		if (err) {
-			mlx4_warn(dev, "Failed mapping eq for interrupt test\n");
-			mlx4_cmd_use_events(dev);
-			break;
-		}
-
-		/* Go back to using events */
-		mlx4_cmd_use_events(dev);
-		err = mlx4_NOP(dev);
-	}
-
-	/* Return to default */
-	mlx4_MAP_EQ(dev, MLX4_ASYNC_EVENT_MASK, 0,
-		    priv->eq_table.eq[dev->caps.num_comp_vectors].eqn);
-	return err;
-}
-EXPORT_SYMBOL(mlx4_test_interrupts);
-
-int mlx4_assign_eq(struct mlx4_dev *dev, char* name, int * vector)
-{
-
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	int vec = 0, err = 0, i;
-
-	mutex_lock(&priv->msix_ctl.pool_lock);
-	for (i = 0; !vec && i < dev->caps.comp_pool; i++) {
-		if (~priv->msix_ctl.pool_bm & 1ULL << i) {
-			priv->msix_ctl.pool_bm |= 1ULL << i;
-			vec = dev->caps.num_comp_vectors + 1 + i;
-			snprintf(priv->eq_table.irq_names +
-					vec * MLX4_IRQNAME_SIZE,
-					MLX4_IRQNAME_SIZE, "%s", name);
-			err = request_irq(priv->eq_table.eq[vec].irq,
-					  mlx4_msi_x_interrupt, 0,
-					  &priv->eq_table.irq_names[vec<<5],
-					  priv->eq_table.eq + vec);
-			if (err) {
-				/*zero out bit by fliping it*/
-				priv->msix_ctl.pool_bm ^= 1 << i;
-				vec = 0;
-				continue;
-				/*we dont want to break here*/
-			}
-			eq_set_ci(&priv->eq_table.eq[vec], 1);
-		}
-	}
-	mutex_unlock(&priv->msix_ctl.pool_lock);
-
-	if (vec) {
-		*vector = vec;
-	} else {
-		*vector = 0;
-		err = (i == dev->caps.comp_pool) ? -ENOSPC : err;
-	}
-=======
 /* A test that verifies that we can accept interrupts
  * on the vector allocated for asynchronous events
  */
@@ -2139,31 +1535,10 @@ err_unlock:
 	else
 		*vector = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(mlx4_assign_eq);
 
-<<<<<<< HEAD
-void mlx4_release_eq(struct mlx4_dev *dev, int vec)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	/*bm index*/
-	int i = vec - dev->caps.num_comp_vectors - 1;
-
-	if (likely(i >= 0)) {
-		/*sanity check , making sure were not trying to free irq's
-		  Belonging to a legacy EQ*/
-		mutex_lock(&priv->msix_ctl.pool_lock);
-		if (priv->msix_ctl.pool_bm & 1ULL << i) {
-			free_irq(priv->eq_table.eq[vec].irq,
-				 &priv->eq_table.eq[vec]);
-			priv->msix_ctl.pool_bm &= ~(1ULL << i);
-		}
-		mutex_unlock(&priv->msix_ctl.pool_lock);
-	}
-
-=======
 int mlx4_eq_get_irq(struct mlx4_dev *dev, int cq_vec)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -2184,7 +1559,6 @@ void mlx4_release_eq(struct mlx4_dev *dev, int vec)
 	 * to cpu_rmap.
 	 */
 	mutex_unlock(&priv->msix_ctl.pool_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mlx4_release_eq);
 

@@ -1,20 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ultra.S: Don't expand these all over the place...
  *
  * Copyright (C) 1997, 2000, 2008 David S. Miller (davem@davemloft.net)
  */
 
-<<<<<<< HEAD
-#include <asm/asi.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 #include <asm/asi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/spitfire.h>
 #include <asm/mmu_context.h>
@@ -39,11 +31,7 @@
 	.text
 	.align		32
 	.globl		__flush_tlb_mm
-<<<<<<< HEAD
-__flush_tlb_mm:		/* 18 insns */
-=======
 __flush_tlb_mm:		/* 19 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0=(ctx & TAG_CONTEXT_BITS), %o1=SECONDARY_CONTEXT */
 	ldxa		[%o1] ASI_DMMU, %g2
 	cmp		%g2, %o0
@@ -94,11 +82,7 @@ __flush_tlb_page:	/* 22 insns */
 
 	.align		32
 	.globl		__flush_tlb_pending
-<<<<<<< HEAD
-__flush_tlb_pending:	/* 26 insns */
-=======
 __flush_tlb_pending:	/* 27 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0 = context, %o1 = nr, %o2 = vaddrs[] */
 	rdpr		%pstate, %g7
 	sllx		%o1, 3, %o1
@@ -130,14 +114,6 @@ __flush_tlb_pending:	/* 27 insns */
 
 	.align		32
 	.globl		__flush_tlb_kernel_range
-<<<<<<< HEAD
-__flush_tlb_kernel_range:	/* 16 insns */
-	/* %o0=start, %o1=end */
-	cmp		%o0, %o1
-	be,pn		%xcc, 2f
-	 sethi		%hi(PAGE_SIZE), %o4
-	sub		%o1, %o0, %o3
-=======
 __flush_tlb_kernel_range:	/* 31 insns */
 	/* %o0=start, %o1=end */
 	cmp		%o0, %o1
@@ -146,7 +122,6 @@ __flush_tlb_kernel_range:	/* 31 insns */
 	srlx		%o3, 18, %o4
 	brnz,pn		%o4, __spitfire_flush_tlb_kernel_range_slow
 	 sethi		%hi(PAGE_SIZE), %o4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub		%o3, %o4, %o3
 	or		%o0, 0x20, %o0		! Nucleus
 1:	stxa		%g0, [%o0 + %o3] ASI_DMMU_DEMAP
@@ -159,8 +134,6 @@ __flush_tlb_kernel_range:	/* 31 insns */
 	retl
 	 nop
 	nop
-<<<<<<< HEAD
-=======
 	nop
 	nop
 	nop
@@ -196,7 +169,6 @@ __spitfire_flush_tlb_kernel_range_slow:
 	 nop
 	retl
 	 nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __spitfire_flush_tlb_mm_slow:
 	rdpr		%pstate, %g1
@@ -219,17 +191,10 @@ __spitfire_flush_tlb_mm_slow:
 	.globl		__flush_icache_page
 __flush_icache_page:	/* %o0 = phys_page */
 	srlx		%o0, PAGE_SHIFT, %o0
-<<<<<<< HEAD
-	sethi		%uhi(PAGE_OFFSET), %g1
-	sllx		%o0, PAGE_SHIFT, %o0
-	sethi		%hi(PAGE_SIZE), %g2
-	sllx		%g1, 32, %g1
-=======
 	sethi		%hi(PAGE_OFFSET), %g1
 	sllx		%o0, PAGE_SHIFT, %o0
 	sethi		%hi(PAGE_SIZE), %g2
 	ldx		[%g1 + %lo(PAGE_OFFSET)], %g1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add		%o0, %g1, %o0
 1:	subcc		%g2, 32, %g2
 	bne,pt		%icc, 1b
@@ -251,13 +216,8 @@ __flush_icache_page:	/* %o0 = phys_page */
 	.align		64
 	.globl		__flush_dcache_page
 __flush_dcache_page:	/* %o0=kaddr, %o1=flush_icache */
-<<<<<<< HEAD
-	sethi		%uhi(PAGE_OFFSET), %g1
-	sllx		%g1, 32, %g1
-=======
 	sethi		%hi(PAGE_OFFSET), %g1
 	ldx		[%g1 + %lo(PAGE_OFFSET)], %g1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub		%o0, %g1, %o0			! physical address
 	srlx		%o0, 11, %o0			! make D-cache TAG
 	sethi		%hi(1 << 14), %o2		! D-cache size
@@ -324,11 +284,7 @@ __cheetah_flush_tlb_page:	/* 22 insns */
 	be,pn		%icc, 1f
 	 andn		%o1, 1, %o3
 	stxa		%g0, [%o3] ASI_IMMU_DEMAP
-<<<<<<< HEAD
-1:	stxa		%g0, [%o3] ASI_DMMU_DEMAP
-=======
 1:	stxa		%g0, [%o3] ASI_DMMU_DEMAP	
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	membar		#Sync
 	stxa		%g2, [%o4] ASI_DMMU
 	sethi		%hi(KERNBASE), %o4
@@ -367,12 +323,6 @@ __cheetah_flush_tlb_pending:	/* 27 insns */
 	retl
 	 wrpr		%g7, 0x0, %pstate
 
-<<<<<<< HEAD
-#ifdef DCACHE_ALIASING_POSSIBLE
-__cheetah_flush_dcache_page: /* 11 insns */
-	sethi		%uhi(PAGE_OFFSET), %g1
-	sllx		%g1, 32, %g1
-=======
 __cheetah_flush_tlb_kernel_range:	/* 31 insns */
 	/* %o0=start, %o1=end */
 	cmp		%o0, %o1
@@ -411,7 +361,6 @@ __cheetah_flush_tlb_kernel_range:	/* 31 insns */
 __cheetah_flush_dcache_page: /* 11 insns */
 	sethi		%hi(PAGE_OFFSET), %g1
 	ldx		[%g1 + %lo(PAGE_OFFSET)], %g1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub		%o0, %g1, %o0
 	sethi		%hi(PAGE_SIZE), %o4
 1:	subcc		%o4, (1 << 5), %o4
@@ -432,25 +381,13 @@ __hypervisor_tlb_tl0_error:
 	ret
 	 restore
 
-<<<<<<< HEAD
-__hypervisor_flush_tlb_mm: /* 10 insns */
-=======
 __hypervisor_flush_tlb_mm: /* 19 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov		%o0, %o2	/* ARG2: mmu context */
 	mov		0, %o0		/* ARG0: CPU lists unimplemented */
 	mov		0, %o1		/* ARG1: CPU lists unimplemented */
 	mov		HV_MMU_ALL, %o3	/* ARG3: flags */
 	mov		HV_FAST_MMU_DEMAP_CTX, %o5
 	ta		HV_FAST_TRAP
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_tl0_error
-	 mov		HV_FAST_MMU_DEMAP_CTX, %o1
-	retl
-	 nop
-
-__hypervisor_flush_tlb_page: /* 11 insns */
-=======
 	brnz,pn		%o0, 1f
 	 mov		HV_FAST_MMU_DEMAP_CTX, %o1
 	retl
@@ -466,7 +403,6 @@ __hypervisor_flush_tlb_page: /* 11 insns */
 	nop
 
 __hypervisor_flush_tlb_page: /* 22 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0 = context, %o1 = vaddr */
 	mov		%o0, %g2
 	mov		%o1, %o0              /* ARG0: vaddr + IMMU-bit */
@@ -475,14 +411,6 @@ __hypervisor_flush_tlb_page: /* 22 insns */
 	srlx		%o0, PAGE_SHIFT, %o0
 	sllx		%o0, PAGE_SHIFT, %o0
 	ta		HV_MMU_UNMAP_ADDR_TRAP
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_tl0_error
-	 mov		HV_MMU_UNMAP_ADDR_TRAP, %o1
-	retl
-	 nop
-
-__hypervisor_flush_tlb_pending: /* 16 insns */
-=======
 	brnz,pn		%o0, 1f
 	 mov		HV_MMU_UNMAP_ADDR_TRAP, %o1
 	retl
@@ -500,7 +428,6 @@ __hypervisor_flush_tlb_pending: /* 16 insns */
 	nop
 
 __hypervisor_flush_tlb_pending: /* 27 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0 = context, %o1 = nr, %o2 = vaddrs[] */
 	sllx		%o1, 3, %g1
 	mov		%o2, %g2
@@ -512,26 +439,12 @@ __hypervisor_flush_tlb_pending: /* 27 insns */
 	srlx		%o0, PAGE_SHIFT, %o0
 	sllx		%o0, PAGE_SHIFT, %o0
 	ta		HV_MMU_UNMAP_ADDR_TRAP
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_tl0_error
-=======
 	brnz,pn		%o0, 1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov		HV_MMU_UNMAP_ADDR_TRAP, %o1
 	brnz,pt		%g1, 1b
 	 nop
 	retl
 	 nop
-<<<<<<< HEAD
-
-__hypervisor_flush_tlb_kernel_range: /* 16 insns */
-	/* %o0=start, %o1=end */
-	cmp		%o0, %o1
-	be,pn		%xcc, 2f
-	 sethi		%hi(PAGE_SIZE), %g3
-	mov		%o0, %g1
-	sub		%o1, %g1, %g2
-=======
 1:	sethi		%hi(__hypervisor_tlb_tl0_error), %o2
 	jmpl		%o2 + %lo(__hypervisor_tlb_tl0_error), %g0
 	 nop
@@ -553,24 +466,17 @@ __hypervisor_flush_tlb_kernel_range: /* 31 insns */
 	brnz,pn		%g3, 4f
 	 mov		%o0, %g1
 	sethi		%hi(PAGE_SIZE), %g3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub		%g2, %g3, %g2
 1:	add		%g1, %g2, %o0	/* ARG0: virtual address */
 	mov		0, %o1		/* ARG1: mmu context */
 	mov		HV_MMU_ALL, %o2	/* ARG2: flags */
 	ta		HV_MMU_UNMAP_ADDR_TRAP
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_tl0_error
-=======
 	brnz,pn		%o0, 3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov		HV_MMU_UNMAP_ADDR_TRAP, %o1
 	brnz,pt		%g2, 1b
 	 sub		%g2, %g3, %g2
 2:	retl
 	 nop
-<<<<<<< HEAD
-=======
 3:	sethi		%hi(__hypervisor_tlb_tl0_error), %o2
 	jmpl		%o2 + %lo(__hypervisor_tlb_tl0_error), %g0
 	 nop
@@ -584,7 +490,6 @@ __hypervisor_flush_tlb_kernel_range: /* 31 insns */
 	 mov		HV_FAST_MMU_DEMAP_CTX, %o1
 	retl
 	 nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DCACHE_ALIASING_POSSIBLE
 	/* XXX Niagara and friends have an 8K cache, so no aliasing is
@@ -607,46 +512,6 @@ tlb_patch_one:
 	retl
 	 nop
 
-<<<<<<< HEAD
-	.globl		cheetah_patch_cachetlbops
-cheetah_patch_cachetlbops:
-	save		%sp, -128, %sp
-
-	sethi		%hi(__flush_tlb_mm), %o0
-	or		%o0, %lo(__flush_tlb_mm), %o0
-	sethi		%hi(__cheetah_flush_tlb_mm), %o1
-	or		%o1, %lo(__cheetah_flush_tlb_mm), %o1
-	call		tlb_patch_one
-	 mov		19, %o2
-
-	sethi		%hi(__flush_tlb_page), %o0
-	or		%o0, %lo(__flush_tlb_page), %o0
-	sethi		%hi(__cheetah_flush_tlb_page), %o1
-	or		%o1, %lo(__cheetah_flush_tlb_page), %o1
-	call		tlb_patch_one
-	 mov		22, %o2
-
-	sethi		%hi(__flush_tlb_pending), %o0
-	or		%o0, %lo(__flush_tlb_pending), %o0
-	sethi		%hi(__cheetah_flush_tlb_pending), %o1
-	or		%o1, %lo(__cheetah_flush_tlb_pending), %o1
-	call		tlb_patch_one
-	 mov		27, %o2
-
-#ifdef DCACHE_ALIASING_POSSIBLE
-	sethi		%hi(__flush_dcache_page), %o0
-	or		%o0, %lo(__flush_dcache_page), %o0
-	sethi		%hi(__cheetah_flush_dcache_page), %o1
-	or		%o1, %lo(__cheetah_flush_dcache_page), %o1
-	call		tlb_patch_one
-	 mov		11, %o2
-#endif /* DCACHE_ALIASING_POSSIBLE */
-
-	ret
-	 restore
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	/* These are all called by the slaves of a cross call, at
 	 * trap level 1, with interrupts fully disabled.
@@ -663,11 +528,7 @@ cheetah_patch_cachetlbops:
 	 */
 	.align		32
 	.globl		xcall_flush_tlb_mm
-<<<<<<< HEAD
-xcall_flush_tlb_mm:	/* 21 insns */
-=======
 xcall_flush_tlb_mm:	/* 24 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov		PRIMARY_CONTEXT, %g2
 	ldxa		[%g2] ASI_DMMU, %g3
 	srlx		%g3, CTX_PGSZ1_NUC_SHIFT, %g4
@@ -689,18 +550,12 @@ xcall_flush_tlb_mm:	/* 24 insns */
 	nop
 	nop
 	nop
-<<<<<<< HEAD
-
-	.globl		xcall_flush_tlb_page
-xcall_flush_tlb_page:	/* 17 insns */
-=======
 	nop
 	nop
 	nop
 
 	.globl		xcall_flush_tlb_page
 xcall_flush_tlb_page:	/* 20 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %g5=context, %g1=vaddr */
 	mov		PRIMARY_CONTEXT, %g4
 	ldxa		[%g4] ASI_DMMU, %g2
@@ -719,30 +574,20 @@ xcall_flush_tlb_page:	/* 20 insns */
 	retry
 	nop
 	nop
-<<<<<<< HEAD
-
-	.globl		xcall_flush_tlb_kernel_range
-xcall_flush_tlb_kernel_range:	/* 25 insns */
-=======
 	nop
 	nop
 	nop
 
 	.globl		xcall_flush_tlb_kernel_range
 xcall_flush_tlb_kernel_range:	/* 44 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sethi		%hi(PAGE_SIZE - 1), %g2
 	or		%g2, %lo(PAGE_SIZE - 1), %g2
 	andn		%g1, %g2, %g1
 	andn		%g7, %g2, %g7
 	sub		%g7, %g1, %g3
-<<<<<<< HEAD
-	add		%g2, 1, %g2
-=======
 	srlx		%g3, 18, %g2
 	brnz,pn		%g2, 2f
 	 sethi		%hi(PAGE_SIZE), %g2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub		%g3, %g2, %g3
 	or		%g1, 0x20, %g1		! Nucleus
 1:	stxa		%g0, [%g1 + %g3] ASI_DMMU_DEMAP
@@ -751,10 +596,6 @@ xcall_flush_tlb_kernel_range:	/* 44 insns */
 	brnz,pt		%g3, 1b
 	 sub		%g3, %g2, %g3
 	retry
-<<<<<<< HEAD
-	nop
-	nop
-=======
 2:	mov		63 * 8, %g1
 1:	ldxa		[%g1] ASI_ITLB_DATA_ACCESS, %g2
 	andcc		%g2, 0x40, %g0			/* _PAGE_L_4U */
@@ -774,7 +615,6 @@ xcall_flush_tlb_kernel_range:	/* 44 insns */
 	brgez,pt	%g1, 1b
 	 nop
 	retry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop
 	nop
 	nop
@@ -815,13 +655,8 @@ xcall_sync_tick:
 
 	.globl		xcall_fetch_glob_regs
 xcall_fetch_glob_regs:
-<<<<<<< HEAD
-	sethi		%hi(global_reg_snapshot), %g1
-	or		%g1, %lo(global_reg_snapshot), %g1
-=======
 	sethi		%hi(global_cpu_snapshot), %g1
 	or		%g1, %lo(global_cpu_snapshot), %g1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__GET_CPUID(%g2)
 	sllx		%g2, 6, %g3
 	add		%g1, %g3, %g1
@@ -848,8 +683,6 @@ xcall_fetch_glob_regs:
 	stx		%g3, [%g1 + GR_SNAP_THREAD]
 	retry
 
-<<<<<<< HEAD
-=======
 	.globl		xcall_fetch_glob_pmu
 xcall_fetch_glob_pmu:
 	sethi		%hi(global_cpu_snapshot), %g1
@@ -956,7 +789,6 @@ __cheetah_xcall_flush_tlb_kernel_range:	/* 44 insns */
 	nop
 	nop
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DCACHE_ALIASING_POSSIBLE
 	.align		32
 	.globl		xcall_flush_dcache_page_cheetah
@@ -1020,11 +852,7 @@ __hypervisor_tlb_xcall_error:
 	ba,a,pt	%xcc, rtrap
 
 	.globl		__hypervisor_xcall_flush_tlb_mm
-<<<<<<< HEAD
-__hypervisor_xcall_flush_tlb_mm: /* 21 insns */
-=======
 __hypervisor_xcall_flush_tlb_mm: /* 24 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %g5=ctx, g1,g2,g3,g4,g7=scratch, %g6=unusable */
 	mov		%o0, %g2
 	mov		%o1, %g3
@@ -1038,11 +866,7 @@ __hypervisor_xcall_flush_tlb_mm: /* 24 insns */
 	mov		HV_FAST_MMU_DEMAP_CTX, %o5
 	ta		HV_FAST_TRAP
 	mov		HV_FAST_MMU_DEMAP_CTX, %g6
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_xcall_error
-=======
 	brnz,pn		%o0, 1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov		%o0, %g5
 	mov		%g2, %o0
 	mov		%g3, %o1
@@ -1051,18 +875,12 @@ __hypervisor_xcall_flush_tlb_mm: /* 24 insns */
 	mov		%g7, %o5
 	membar		#Sync
 	retry
-<<<<<<< HEAD
-
-	.globl		__hypervisor_xcall_flush_tlb_page
-__hypervisor_xcall_flush_tlb_page: /* 17 insns */
-=======
 1:	sethi		%hi(__hypervisor_tlb_xcall_error), %g4
 	jmpl		%g4 + %lo(__hypervisor_tlb_xcall_error), %g0
 	 nop
 
 	.globl		__hypervisor_xcall_flush_tlb_page
 __hypervisor_xcall_flush_tlb_page: /* 20 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %g5=ctx, %g1=vaddr */
 	mov		%o0, %g2
 	mov		%o1, %g3
@@ -1074,74 +892,47 @@ __hypervisor_xcall_flush_tlb_page: /* 20 insns */
 	sllx		%o0, PAGE_SHIFT, %o0
 	ta		HV_MMU_UNMAP_ADDR_TRAP
 	mov		HV_MMU_UNMAP_ADDR_TRAP, %g6
-<<<<<<< HEAD
-	brnz,a,pn	%o0, __hypervisor_tlb_xcall_error
-=======
 	brnz,a,pn	%o0, 1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov		%o0, %g5
 	mov		%g2, %o0
 	mov		%g3, %o1
 	mov		%g4, %o2
 	membar		#Sync
 	retry
-<<<<<<< HEAD
-
-	.globl		__hypervisor_xcall_flush_tlb_kernel_range
-__hypervisor_xcall_flush_tlb_kernel_range: /* 25 insns */
-=======
 1:	sethi		%hi(__hypervisor_tlb_xcall_error), %g4
 	jmpl		%g4 + %lo(__hypervisor_tlb_xcall_error), %g0
 	 nop
 
 	.globl		__hypervisor_xcall_flush_tlb_kernel_range
 __hypervisor_xcall_flush_tlb_kernel_range: /* 44 insns */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %g1=start, %g7=end, g2,g3,g4,g5,g6=scratch */
 	sethi		%hi(PAGE_SIZE - 1), %g2
 	or		%g2, %lo(PAGE_SIZE - 1), %g2
 	andn		%g1, %g2, %g1
 	andn		%g7, %g2, %g7
 	sub		%g7, %g1, %g3
-<<<<<<< HEAD
-=======
 	srlx		%g3, 18, %g7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add		%g2, 1, %g2
 	sub		%g3, %g2, %g3
 	mov		%o0, %g2
 	mov		%o1, %g4
-<<<<<<< HEAD
-	mov		%o2, %g7
-=======
 	brnz,pn		%g7, 2f
 	 mov		%o2, %g7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	add		%g1, %g3, %o0	/* ARG0: virtual address */
 	mov		0, %o1		/* ARG1: mmu context */
 	mov		HV_MMU_ALL, %o2	/* ARG2: flags */
 	ta		HV_MMU_UNMAP_ADDR_TRAP
 	mov		HV_MMU_UNMAP_ADDR_TRAP, %g6
-<<<<<<< HEAD
-	brnz,pn		%o0, __hypervisor_tlb_xcall_error
-=======
 	brnz,pn		%o0, 1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov		%o0, %g5
 	sethi		%hi(PAGE_SIZE), %o2
 	brnz,pt		%g3, 1b
 	 sub		%g3, %o2, %g3
-<<<<<<< HEAD
-	mov		%g2, %o0
-=======
 5:	mov		%g2, %o0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov		%g4, %o1
 	mov		%g7, %o2
 	membar		#Sync
 	retry
-<<<<<<< HEAD
-=======
 1:	sethi		%hi(__hypervisor_tlb_xcall_error), %g4
 	jmpl		%g4 + %lo(__hypervisor_tlb_xcall_error), %g0
 	 nop
@@ -1159,7 +950,6 @@ __hypervisor_xcall_flush_tlb_kernel_range: /* 44 insns */
 	mov		HV_FAST_MMU_DEMAP_CTX, %g6
 	ba,pt		%xcc, 1b
 	 clr		%g5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* These just get rescheduled to PIL vectors. */
 	.globl		xcall_call_function
@@ -1182,14 +972,6 @@ xcall_capture:
 	wr		%g0, (1 << PIL_SMP_CAPTURE), %set_softint
 	retry
 
-<<<<<<< HEAD
-	.globl		xcall_new_mmu_context_version
-xcall_new_mmu_context_version:
-	wr		%g0, (1 << PIL_SMP_CTX_NEW_VERSION), %set_softint
-	retry
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KGDB
 	.globl		xcall_kgdb_capture
 xcall_kgdb_capture:
@@ -1199,8 +981,6 @@ xcall_kgdb_capture:
 
 #endif /* CONFIG_SMP */
 
-<<<<<<< HEAD
-=======
 	.globl		cheetah_patch_cachetlbops
 cheetah_patch_cachetlbops:
 	save		%sp, -128, %sp
@@ -1253,7 +1033,6 @@ cheetah_patch_cachetlbops:
 
 	ret
 	 restore
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.globl		hypervisor_patch_cachetlbops
 hypervisor_patch_cachetlbops:
@@ -1264,44 +1043,28 @@ hypervisor_patch_cachetlbops:
 	sethi		%hi(__hypervisor_flush_tlb_mm), %o1
 	or		%o1, %lo(__hypervisor_flush_tlb_mm), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		10, %o2
-=======
 	 mov		19, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sethi		%hi(__flush_tlb_page), %o0
 	or		%o0, %lo(__flush_tlb_page), %o0
 	sethi		%hi(__hypervisor_flush_tlb_page), %o1
 	or		%o1, %lo(__hypervisor_flush_tlb_page), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		11, %o2
-=======
 	 mov		22, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sethi		%hi(__flush_tlb_pending), %o0
 	or		%o0, %lo(__flush_tlb_pending), %o0
 	sethi		%hi(__hypervisor_flush_tlb_pending), %o1
 	or		%o1, %lo(__hypervisor_flush_tlb_pending), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		16, %o2
-=======
 	 mov		27, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sethi		%hi(__flush_tlb_kernel_range), %o0
 	or		%o0, %lo(__flush_tlb_kernel_range), %o0
 	sethi		%hi(__hypervisor_flush_tlb_kernel_range), %o1
 	or		%o1, %lo(__hypervisor_flush_tlb_kernel_range), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		16, %o2
-=======
 	 mov		31, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DCACHE_ALIASING_POSSIBLE
 	sethi		%hi(__flush_dcache_page), %o0
@@ -1318,33 +1081,21 @@ hypervisor_patch_cachetlbops:
 	sethi		%hi(__hypervisor_xcall_flush_tlb_mm), %o1
 	or		%o1, %lo(__hypervisor_xcall_flush_tlb_mm), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		21, %o2
-=======
 	 mov		24, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sethi		%hi(xcall_flush_tlb_page), %o0
 	or		%o0, %lo(xcall_flush_tlb_page), %o0
 	sethi		%hi(__hypervisor_xcall_flush_tlb_page), %o1
 	or		%o1, %lo(__hypervisor_xcall_flush_tlb_page), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		17, %o2
-=======
 	 mov		20, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sethi		%hi(xcall_flush_tlb_kernel_range), %o0
 	or		%o0, %lo(xcall_flush_tlb_kernel_range), %o0
 	sethi		%hi(__hypervisor_xcall_flush_tlb_kernel_range), %o1
 	or		%o1, %lo(__hypervisor_xcall_flush_tlb_kernel_range), %o1
 	call		tlb_patch_one
-<<<<<<< HEAD
-	 mov		25, %o2
-=======
 	 mov		44, %o2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 
 	ret

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/compr_mm.h
  *
@@ -28,8 +25,6 @@
 #define STATIC_RW_DATA static
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * When an architecture needs to share the malloc()/free() implementation
  * between compilation units, it needs to have non-local visibility.
@@ -38,18 +33,13 @@
 #define MALLOC_VISIBLE static
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A trivial malloc implementation, adapted from
  *  malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
  */
 STATIC_RW_DATA unsigned long malloc_ptr;
 STATIC_RW_DATA int malloc_count;
 
-<<<<<<< HEAD
-static void *malloc(int size)
-=======
 MALLOC_VISIBLE void *malloc(int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *p;
 
@@ -58,11 +48,7 @@ MALLOC_VISIBLE void *malloc(int size)
 	if (!malloc_ptr)
 		malloc_ptr = free_mem_ptr;
 
-<<<<<<< HEAD
-	malloc_ptr = (malloc_ptr + 3) & ~3;     /* Align */
-=======
 	malloc_ptr = (malloc_ptr + 7) & ~7;     /* Align */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = (void *)malloc_ptr;
 	malloc_ptr += size;
@@ -74,11 +60,7 @@ MALLOC_VISIBLE void *malloc(int size)
 	return p;
 }
 
-<<<<<<< HEAD
-static void free(void *where)
-=======
 MALLOC_VISIBLE void free(void *where)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	malloc_count--;
 	if (!malloc_count)

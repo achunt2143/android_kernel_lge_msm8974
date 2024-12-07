@@ -1,52 +1,21 @@
-<<<<<<< HEAD
-/*
- *  Kernel Probes (KProbes)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * Copyright (C) IBM Corporation, 2002, 2006
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  *  Kernel Probes (KProbes)
  *
  * Copyright IBM Corp. 2002, 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * s390 port, used ppc64 as template. Mike Grundy <grundym@us.ibm.com>
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "kprobes: " fmt
 
 #include <linux/moduleloader.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kprobes.h>
 #include <linux/ptrace.h>
 #include <linux/preempt.h>
 #include <linux/stop_machine.h>
 #include <linux/kdebug.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-#include <asm/cacheflush.h>
-#include <asm/sections.h>
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/hardirq.h>
-=======
 #include <linux/extable.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -57,162 +26,12 @@
 #include <asm/dis.h>
 #include "kprobes.h"
 #include "entry.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU(struct kprobe *, current_kprobe);
 DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
 
 struct kretprobe_blackpoint kretprobe_blacklist[] = { };
 
-<<<<<<< HEAD
-static int __kprobes is_prohibited_opcode(kprobe_opcode_t *insn)
-{
-	switch (insn[0] >> 8) {
-	case 0x0c:	/* bassm */
-	case 0x0b:	/* bsm	 */
-	case 0x83:	/* diag  */
-	case 0x44:	/* ex	 */
-	case 0xac:	/* stnsm */
-	case 0xad:	/* stosm */
-		return -EINVAL;
-	}
-	switch (insn[0]) {
-	case 0x0101:	/* pr	 */
-	case 0xb25a:	/* bsa	 */
-	case 0xb240:	/* bakr  */
-	case 0xb258:	/* bsg	 */
-	case 0xb218:	/* pc	 */
-	case 0xb228:	/* pt	 */
-	case 0xb98d:	/* epsw	 */
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static int __kprobes get_fixup_type(kprobe_opcode_t *insn)
-{
-	/* default fixup method */
-	int fixup = FIXUP_PSW_NORMAL;
-
-	switch (insn[0] >> 8) {
-	case 0x05:	/* balr	*/
-	case 0x0d:	/* basr */
-		fixup = FIXUP_RETURN_REGISTER;
-		/* if r2 = 0, no branch will be taken */
-		if ((insn[0] & 0x0f) == 0)
-			fixup |= FIXUP_BRANCH_NOT_TAKEN;
-		break;
-	case 0x06:	/* bctr	*/
-	case 0x07:	/* bcr	*/
-		fixup = FIXUP_BRANCH_NOT_TAKEN;
-		break;
-	case 0x45:	/* bal	*/
-	case 0x4d:	/* bas	*/
-		fixup = FIXUP_RETURN_REGISTER;
-		break;
-	case 0x47:	/* bc	*/
-	case 0x46:	/* bct	*/
-	case 0x86:	/* bxh	*/
-	case 0x87:	/* bxle	*/
-		fixup = FIXUP_BRANCH_NOT_TAKEN;
-		break;
-	case 0x82:	/* lpsw	*/
-		fixup = FIXUP_NOT_REQUIRED;
-		break;
-	case 0xb2:	/* lpswe */
-		if ((insn[0] & 0xff) == 0xb2)
-			fixup = FIXUP_NOT_REQUIRED;
-		break;
-	case 0xa7:	/* bras	*/
-		if ((insn[0] & 0x0f) == 0x05)
-			fixup |= FIXUP_RETURN_REGISTER;
-		break;
-	case 0xc0:
-		if ((insn[0] & 0x0f) == 0x00 ||	/* larl  */
-		    (insn[0] & 0x0f) == 0x05)	/* brasl */
-		fixup |= FIXUP_RETURN_REGISTER;
-		break;
-	case 0xeb:
-		if ((insn[2] & 0xff) == 0x44 ||	/* bxhg  */
-		    (insn[2] & 0xff) == 0x45)	/* bxleg */
-			fixup = FIXUP_BRANCH_NOT_TAKEN;
-		break;
-	case 0xe3:	/* bctg	*/
-		if ((insn[2] & 0xff) == 0x46)
-			fixup = FIXUP_BRANCH_NOT_TAKEN;
-		break;
-	}
-	return fixup;
-}
-
-int __kprobes arch_prepare_kprobe(struct kprobe *p)
-{
-	if ((unsigned long) p->addr & 0x01)
-		return -EINVAL;
-
-	/* Make sure the probe isn't going on a difficult instruction */
-	if (is_prohibited_opcode(p->addr))
-		return -EINVAL;
-
-	p->opcode = *p->addr;
-	memcpy(p->ainsn.insn, p->addr, ((p->opcode >> 14) + 3) & -2);
-
-	return 0;
-}
-
-struct ins_replace_args {
-	kprobe_opcode_t *ptr;
-	kprobe_opcode_t opcode;
-};
-
-static int __kprobes swap_instruction(void *aref)
-{
-	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-	unsigned long status = kcb->kprobe_status;
-	struct ins_replace_args *args = aref;
-
-	kcb->kprobe_status = KPROBE_SWAP_INST;
-	probe_kernel_write(args->ptr, &args->opcode, sizeof(args->opcode));
-	kcb->kprobe_status = status;
-	return 0;
-}
-
-void __kprobes arch_arm_kprobe(struct kprobe *p)
-{
-	struct ins_replace_args args;
-
-	args.ptr = p->addr;
-	args.opcode = BREAKPOINT_INSTRUCTION;
-	stop_machine(swap_instruction, &args, NULL);
-}
-
-void __kprobes arch_disarm_kprobe(struct kprobe *p)
-{
-	struct ins_replace_args args;
-
-	args.ptr = p->addr;
-	args.opcode = p->opcode;
-	stop_machine(swap_instruction, &args, NULL);
-}
-
-void __kprobes arch_remove_kprobe(struct kprobe *p)
-{
-}
-
-static void __kprobes enable_singlestep(struct kprobe_ctlblk *kcb,
-					struct pt_regs *regs,
-					unsigned long ip)
-{
-	struct per_regs per_kprobe;
-
-	/* Set up the PER control registers %cr9-%cr11 */
-	per_kprobe.control = PER_EVENT_IFETCH;
-	per_kprobe.start = ip;
-	per_kprobe.end = ip;
-
-	/* Save control regs and psw mask */
-	__ctl_store(kcb->kprobe_saved_ctl, 9, 11);
-=======
 static int insn_page_in_use;
 
 void *alloc_insn_page(void)
@@ -421,29 +240,10 @@ static void enable_singlestep(struct kprobe_ctlblk *kcb,
 
 	/* Save control regs and psw mask */
 	__local_ctl_store(9, 11, kcb->kprobe_saved_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kcb->kprobe_saved_imask = regs->psw.mask &
 		(PSW_MASK_PER | PSW_MASK_IO | PSW_MASK_EXT);
 
 	/* Set PER control regs, turns on single step for the given address */
-<<<<<<< HEAD
-	__ctl_load(per_kprobe, 9, 11);
-	regs->psw.mask |= PSW_MASK_PER;
-	regs->psw.mask &= ~(PSW_MASK_IO | PSW_MASK_EXT);
-	regs->psw.addr = ip | PSW_ADDR_AMODE;
-}
-
-static void __kprobes disable_singlestep(struct kprobe_ctlblk *kcb,
-					 struct pt_regs *regs,
-					 unsigned long ip)
-{
-	/* Restore control regs and psw mask, set new psw address */
-	__ctl_load(kcb->kprobe_saved_ctl, 9, 11);
-	regs->psw.mask &= ~PSW_MASK_PER;
-	regs->psw.mask |= kcb->kprobe_saved_imask;
-	regs->psw.addr = ip | PSW_ADDR_AMODE;
-}
-=======
 	__local_ctl_load(9, 11, per_kprobe.regs);
 	regs->psw.mask |= PSW_MASK_PER;
 	regs->psw.mask &= ~(PSW_MASK_IO | PSW_MASK_EXT);
@@ -462,21 +262,12 @@ static void disable_singlestep(struct kprobe_ctlblk *kcb,
 	regs->psw.addr = ip;
 }
 NOKPROBE_SYMBOL(disable_singlestep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Activate a kprobe by storing its pointer to current_kprobe. The
  * previous kprobe is stored in kcb->prev_kprobe. A stack of up to
  * two kprobes can be active, see KPROBE_REENTER.
  */
-<<<<<<< HEAD
-static void __kprobes push_kprobe(struct kprobe_ctlblk *kcb, struct kprobe *p)
-{
-	kcb->prev_kprobe.kp = __get_cpu_var(current_kprobe);
-	kcb->prev_kprobe.status = kcb->kprobe_status;
-	__get_cpu_var(current_kprobe) = p;
-}
-=======
 static void push_kprobe(struct kprobe_ctlblk *kcb, struct kprobe *p)
 {
 	kcb->prev_kprobe.kp = __this_cpu_read(current_kprobe);
@@ -484,32 +275,12 @@ static void push_kprobe(struct kprobe_ctlblk *kcb, struct kprobe *p)
 	__this_cpu_write(current_kprobe, p);
 }
 NOKPROBE_SYMBOL(push_kprobe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Deactivate a kprobe by backing up to the previous state. If the
  * current state is KPROBE_REENTER prev_kprobe.kp will be non-NULL,
  * for any other state prev_kprobe.kp will be NULL.
  */
-<<<<<<< HEAD
-static void __kprobes pop_kprobe(struct kprobe_ctlblk *kcb)
-{
-	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
-	kcb->kprobe_status = kcb->prev_kprobe.status;
-}
-
-void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
-					struct pt_regs *regs)
-{
-	ri->ret_addr = (kprobe_opcode_t *) regs->gprs[14];
-
-	/* Replace the return addr with trampoline addr */
-	regs->gprs[14] = (unsigned long) &kretprobe_trampoline;
-}
-
-static void __kprobes kprobe_reenter_check(struct kprobe_ctlblk *kcb,
-					   struct kprobe *p)
-=======
 static void pop_kprobe(struct kprobe_ctlblk *kcb)
 {
 	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
@@ -519,7 +290,6 @@ static void pop_kprobe(struct kprobe_ctlblk *kcb)
 NOKPROBE_SYMBOL(pop_kprobe);
 
 static void kprobe_reenter_check(struct kprobe_ctlblk *kcb, struct kprobe *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (kcb->kprobe_status) {
 	case KPROBE_HIT_SSDONE:
@@ -534,23 +304,14 @@ static void kprobe_reenter_check(struct kprobe_ctlblk *kcb, struct kprobe *p)
 		 * is a BUG. The code path resides in the .kprobes.text
 		 * section and is executed with interrupts disabled.
 		 */
-<<<<<<< HEAD
-		printk(KERN_EMERG "Invalid kprobe detected at %p.\n", p->addr);
-=======
 		pr_err("Failed to recover from reentered kprobes.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_kprobe(p);
 		BUG();
 	}
 }
-<<<<<<< HEAD
-
-static int __kprobes kprobe_handler(struct pt_regs *regs)
-=======
 NOKPROBE_SYMBOL(kprobe_reenter_check);
 
 static int kprobe_handler(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kprobe_ctlblk *kcb;
 	struct kprobe *p;
@@ -562,11 +323,7 @@ static int kprobe_handler(struct pt_regs *regs)
 	 */
 	preempt_disable();
 	kcb = get_kprobe_ctlblk();
-<<<<<<< HEAD
-	p = get_kprobe((void *)((regs->psw.addr & PSW_ADDR_INSN) - 2));
-=======
 	p = get_kprobe((void *)(regs->psw.addr - 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p) {
 		if (kprobe_running()) {
@@ -587,16 +344,6 @@ static int kprobe_handler(struct pt_regs *regs)
 			 * If we have no pre-handler or it returned 0, we
 			 * continue with single stepping. If we have a
 			 * pre-handler and it returned non-zero, it prepped
-<<<<<<< HEAD
-			 * for calling the break_handler below on re-entry
-			 * for jprobe processing, so get out doing nothing
-			 * more here.
-			 */
-			push_kprobe(kcb, p);
-			kcb->kprobe_status = KPROBE_HIT_ACTIVE;
-			if (p->pre_handler && p->pre_handler(p, regs))
-				return 1;
-=======
 			 * for changing execution path, so get out doing
 			 * nothing more here.
 			 */
@@ -607,34 +354,10 @@ static int kprobe_handler(struct pt_regs *regs)
 				preempt_enable_no_resched();
 				return 1;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kcb->kprobe_status = KPROBE_HIT_SS;
 		}
 		enable_singlestep(kcb, regs, (unsigned long) p->ainsn.insn);
 		return 1;
-<<<<<<< HEAD
-	} else if (kprobe_running()) {
-		p = __get_cpu_var(current_kprobe);
-		if (p->break_handler && p->break_handler(p, regs)) {
-			/*
-			 * Continuation after the jprobe completed and
-			 * caused the jprobe_return trap. The jprobe
-			 * break_handler "returns" to the original
-			 * function that still has the kprobe breakpoint
-			 * installed. We continue with single stepping.
-			 */
-			kcb->kprobe_status = KPROBE_HIT_SS;
-			enable_singlestep(kcb, regs,
-					  (unsigned long) p->ainsn.insn);
-			return 1;
-		} /* else:
-		   * No kprobe at this address and the current kprobe
-		   * has no break handler (no jprobe!). The kernel just
-		   * exploded, let the standard trap handler pick up the
-		   * pieces.
-		   */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} /* else:
 	   * No kprobe at this address and no active kprobe. The trap has
 	   * not been caused by a kprobe breakpoint. The race of breakpoint
@@ -644,115 +367,7 @@ static int kprobe_handler(struct pt_regs *regs)
 	preempt_enable_no_resched();
 	return 0;
 }
-<<<<<<< HEAD
-
-/*
- * Function return probe trampoline:
- *	- init_kprobes() establishes a probepoint here
- *	- When the probed function returns, this probe
- *		causes the handlers to fire
- */
-static void __used kretprobe_trampoline_holder(void)
-{
-	asm volatile(".global kretprobe_trampoline\n"
-		     "kretprobe_trampoline: bcr 0,0\n");
-}
-
-/*
- * Called when the probe at kretprobe trampoline is hit
- */
-static int __kprobes trampoline_probe_handler(struct kprobe *p,
-					      struct pt_regs *regs)
-{
-	struct kretprobe_instance *ri;
-	struct hlist_head *head, empty_rp;
-	struct hlist_node *node, *tmp;
-	unsigned long flags, orig_ret_address;
-	unsigned long trampoline_address;
-	kprobe_opcode_t *correct_ret_addr;
-
-	INIT_HLIST_HEAD(&empty_rp);
-	kretprobe_hash_lock(current, &head, &flags);
-
-	/*
-	 * It is possible to have multiple instances associated with a given
-	 * task either because an multiple functions in the call path
-	 * have a return probe installed on them, and/or more than one return
-	 * return probe was registered for a target function.
-	 *
-	 * We can handle this because:
-	 *     - instances are always inserted at the head of the list
-	 *     - when multiple return probes are registered for the same
-	 *	 function, the first instance's ret_addr will point to the
-	 *	 real return address, and all the rest will point to
-	 *	 kretprobe_trampoline
-	 */
-	ri = NULL;
-	orig_ret_address = 0;
-	correct_ret_addr = NULL;
-	trampoline_address = (unsigned long) &kretprobe_trampoline;
-	hlist_for_each_entry_safe(ri, node, tmp, head, hlist) {
-		if (ri->task != current)
-			/* another task is sharing our hash bucket */
-			continue;
-
-		orig_ret_address = (unsigned long) ri->ret_addr;
-
-		if (orig_ret_address != trampoline_address)
-			/*
-			 * This is the real return address. Any other
-			 * instances associated with this task are for
-			 * other calls deeper on the call stack
-			 */
-			break;
-	}
-
-	kretprobe_assert(ri, orig_ret_address, trampoline_address);
-
-	correct_ret_addr = ri->ret_addr;
-	hlist_for_each_entry_safe(ri, node, tmp, head, hlist) {
-		if (ri->task != current)
-			/* another task is sharing our hash bucket */
-			continue;
-
-		orig_ret_address = (unsigned long) ri->ret_addr;
-
-		if (ri->rp && ri->rp->handler) {
-			ri->ret_addr = correct_ret_addr;
-			ri->rp->handler(ri, regs);
-		}
-
-		recycle_rp_inst(ri, &empty_rp);
-
-		if (orig_ret_address != trampoline_address)
-			/*
-			 * This is the real return address. Any other
-			 * instances associated with this task are for
-			 * other calls deeper on the call stack
-			 */
-			break;
-	}
-
-	regs->psw.addr = orig_ret_address | PSW_ADDR_AMODE;
-
-	pop_kprobe(get_kprobe_ctlblk());
-	kretprobe_hash_unlock(current, &flags);
-	preempt_enable_no_resched();
-
-	hlist_for_each_entry_safe(ri, node, tmp, &empty_rp, hlist) {
-		hlist_del(&ri->hlist);
-		kfree(ri);
-	}
-	/*
-	 * By returning a non-zero value, we are telling
-	 * kprobe_handler() that we don't want the post_handler
-	 * to run (and have re-enabled preemption)
-	 */
-	return 1;
-}
-=======
 NOKPROBE_SYMBOL(kprobe_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called after single-stepping.  p->addr is the address of the
@@ -762,29 +377,17 @@ NOKPROBE_SYMBOL(kprobe_handler);
  * single-stepped a copy of the instruction.  The address of this
  * copy is p->ainsn.insn.
  */
-<<<<<<< HEAD
-static void __kprobes resume_execution(struct kprobe *p, struct pt_regs *regs)
-{
-	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-	unsigned long ip = regs->psw.addr & PSW_ADDR_INSN;
-	int fixup = get_fixup_type(p->ainsn.insn);
-=======
 static void resume_execution(struct kprobe *p, struct pt_regs *regs)
 {
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 	unsigned long ip = regs->psw.addr;
 	int fixup = probe_get_fixup_type(p->ainsn.insn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fixup & FIXUP_PSW_NORMAL)
 		ip += (unsigned long) p->addr - (unsigned long) p->ainsn.insn;
 
 	if (fixup & FIXUP_BRANCH_NOT_TAKEN) {
-<<<<<<< HEAD
-		int ilen = ((p->ainsn.insn[0] >> 14) + 3) & -2;
-=======
 		int ilen = insn_length(p->ainsn.insn[0] >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ip - (unsigned long) p->ainsn.insn == ilen)
 			ip = (unsigned long) p->addr + ilen;
 	}
@@ -797,14 +400,9 @@ static void resume_execution(struct kprobe *p, struct pt_regs *regs)
 
 	disable_singlestep(kcb, regs, ip);
 }
-<<<<<<< HEAD
-
-static int __kprobes post_kprobe_handler(struct pt_regs *regs)
-=======
 NOKPROBE_SYMBOL(resume_execution);
 
 static int post_kprobe_handler(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 	struct kprobe *p = kprobe_running();
@@ -812,19 +410,11 @@ static int post_kprobe_handler(struct pt_regs *regs)
 	if (!p)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	resume_execution(p, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kcb->kprobe_status != KPROBE_REENTER && p->post_handler) {
 		kcb->kprobe_status = KPROBE_HIT_SSDONE;
 		p->post_handler(p, regs, 0);
 	}
-<<<<<<< HEAD
-
-	resume_execution(p, regs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pop_kprobe(kcb);
 	preempt_enable_no_resched();
 
@@ -838,19 +428,6 @@ static int post_kprobe_handler(struct pt_regs *regs)
 
 	return 1;
 }
-<<<<<<< HEAD
-
-static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
-{
-	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-	struct kprobe *p = kprobe_running();
-	const struct exception_table_entry *entry;
-
-	switch(kcb->kprobe_status) {
-	case KPROBE_SWAP_INST:
-		/* We are here because the instruction replacement failed */
-		return 0;
-=======
 NOKPROBE_SYMBOL(post_kprobe_handler);
 
 static int kprobe_trap_handler(struct pt_regs *regs, int trapnr)
@@ -859,7 +436,6 @@ static int kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	struct kprobe *p = kprobe_running();
 
 	switch(kcb->kprobe_status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KPROBE_HIT_SS:
 	case KPROBE_REENTER:
 		/*
@@ -876,40 +452,11 @@ static int kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_HIT_ACTIVE:
 	case KPROBE_HIT_SSDONE:
 		/*
-<<<<<<< HEAD
-		 * We increment the nmissed count for accounting,
-		 * we can also use npre/npostfault count for accouting
-		 * these specific fault cases.
-		 */
-		kprobes_inc_nmissed_count(p);
-
-		/*
-		 * We come here because instructions in the pre/post
-		 * handler caused the page_fault, this could happen
-		 * if handler tries to access user space by
-		 * copy_from_user(), get_user() etc. Let the
-		 * user-specified handler try to fix it first.
-		 */
-		if (p->fault_handler && p->fault_handler(p, regs, trapnr))
-			return 1;
-
-		/*
-		 * In case the user-specified fault handler returned
-		 * zero, try to fix up.
-		 */
-		entry = search_exception_tables(regs->psw.addr & PSW_ADDR_INSN);
-		if (entry) {
-			regs->psw.addr = entry->fixup | PSW_ADDR_AMODE;
-			return 1;
-		}
-
-=======
 		 * In case the user-specified fault handler returned
 		 * zero, try to fix up.
 		 */
 		if (fixup_exception(regs))
 			return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * fixup_exception() could not handle it,
 		 * Let do_page_fault() fix it.
@@ -920,14 +467,9 @@ static int kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	}
 	return 0;
 }
-<<<<<<< HEAD
-
-int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
-=======
 NOKPROBE_SYMBOL(kprobe_trap_handler);
 
 int kprobe_fault_handler(struct pt_regs *regs, int trapnr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -938,21 +480,13 @@ int kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 		local_irq_restore(regs->psw.mask & ~PSW_MASK_PER);
 	return ret;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kprobe_fault_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wrapper routine to for handling exceptions.
  */
-<<<<<<< HEAD
-int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
-				       unsigned long val, void *data)
-=======
 int kprobe_exceptions_notify(struct notifier_block *self,
 			     unsigned long val, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct die_args *args = (struct die_args *) data;
 	struct pt_regs *regs = args->regs;
@@ -984,67 +518,6 @@ int kprobe_exceptions_notify(struct notifier_block *self,
 
 	return ret;
 }
-<<<<<<< HEAD
-
-int __kprobes setjmp_pre_handler(struct kprobe *p, struct pt_regs *regs)
-{
-	struct jprobe *jp = container_of(p, struct jprobe, kp);
-	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-	unsigned long stack;
-
-	memcpy(&kcb->jprobe_saved_regs, regs, sizeof(struct pt_regs));
-
-	/* setup return addr to the jprobe handler routine */
-	regs->psw.addr = (unsigned long) jp->entry | PSW_ADDR_AMODE;
-	regs->psw.mask &= ~(PSW_MASK_IO | PSW_MASK_EXT);
-
-	/* r15 is the stack pointer */
-	stack = (unsigned long) regs->gprs[15];
-
-	memcpy(kcb->jprobes_stack, (void *) stack, MIN_STACK_SIZE(stack));
-	return 1;
-}
-
-void __kprobes jprobe_return(void)
-{
-	asm volatile(".word 0x0002");
-}
-
-static void __used __kprobes jprobe_return_end(void)
-{
-	asm volatile("bcr 0,0");
-}
-
-int __kprobes longjmp_break_handler(struct kprobe *p, struct pt_regs *regs)
-{
-	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-	unsigned long stack;
-
-	stack = (unsigned long) kcb->jprobe_saved_regs.gprs[15];
-
-	/* Put the regs back */
-	memcpy(regs, &kcb->jprobe_saved_regs, sizeof(struct pt_regs));
-	/* put the stack back */
-	memcpy((void *) stack, kcb->jprobes_stack, MIN_STACK_SIZE(stack));
-	preempt_enable_no_resched();
-	return 1;
-}
-
-static struct kprobe trampoline = {
-	.addr = (kprobe_opcode_t *) &kretprobe_trampoline,
-	.pre_handler = trampoline_probe_handler
-};
-
-int __init arch_init_kprobes(void)
-{
-	return register_kprobe(&trampoline);
-}
-
-int __kprobes arch_trampoline_kprobe(struct kprobe *p)
-{
-	return p->addr == (kprobe_opcode_t *) &kretprobe_trampoline;
-}
-=======
 NOKPROBE_SYMBOL(kprobe_exceptions_notify);
 
 int __init arch_init_kprobes(void)
@@ -1057,4 +530,3 @@ int arch_trampoline_kprobe(struct kprobe *p)
 	return 0;
 }
 NOKPROBE_SYMBOL(arch_trampoline_kprobe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

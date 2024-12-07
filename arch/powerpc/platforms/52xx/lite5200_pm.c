@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/suspend.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/init.h>
 #include <linux/suspend.h>
 #include <linux/of_address.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/time.h>
 #include <asm/mpc52xx.h>
@@ -52,23 +47,14 @@ static int lite5200_pm_begin(suspend_state_t state)
 static int lite5200_pm_prepare(void)
 {
 	struct device_node *np;
-<<<<<<< HEAD
-	const struct of_device_id immr_ids[] = {
-=======
 	static const struct of_device_id immr_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ .compatible = "fsl,mpc5200-immr", },
 		{ .compatible = "fsl,mpc5200b-immr", },
 		{ .type = "soc", .compatible = "mpc5200", }, /* lite5200 */
 		{ .type = "builtin", .compatible = "mpc5200", }, /* efika */
 		{}
 	};
-<<<<<<< HEAD
-	u64 regaddr64 = 0;
-	const u32 *regaddr_p;
-=======
 	struct resource res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* deep sleep? let mpc52xx code handle that */
 	if (lite5200_pm_target_state == PM_SUSPEND_STANDBY)
@@ -79,19 +65,10 @@ static int lite5200_pm_prepare(void)
 
 	/* map registers */
 	np = of_find_matching_node(NULL, immr_ids);
-<<<<<<< HEAD
-	regaddr_p = of_get_address(np, 0, NULL, NULL);
-	if (regaddr_p)
-		regaddr64 = of_translate_address(np, regaddr_p);
-	of_node_put(np);
-
-	mbar = ioremap((u32) regaddr64, 0xC000);
-=======
 	of_address_to_resource(np, 0, &res);
 	of_node_put(np);
 
 	mbar = ioremap(res.start, 0xC000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mbar) {
 		printk(KERN_ERR "%s:%i Error mapping registers\n", __func__, __LINE__);
 		return -ENOSYS;

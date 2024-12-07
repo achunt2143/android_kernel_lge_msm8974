@@ -1,60 +1,24 @@
-<<<<<<< HEAD
-/*
- *  ahci.c - AHCI SATA support
- *
- *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  ahci.c - AHCI SATA support
  *
  *  Maintained by:  Tejun Heo <tj@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    		    Please ALWAYS copy linux-ide@vger.kernel.org
  *		    on emails.
  *
  *  Copyright 2004-2005 Red Hat, Inc.
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- * libata documentation is available via 'make {ps|pdf}docs',
- * as Documentation/DocBook/libata.*
-=======
  * libata documentation is available via 'make {ps|pdf}docs',
  * as Documentation/driver-api/libata.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * AHCI hardware documentation:
  * http://www.intel.com/technology/serialata/pdf/rev1_0.pdf
  * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -65,11 +29,8 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
 #include <linux/libata.h>
-<<<<<<< HEAD
-=======
 #include <linux/ahci-remap.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ahci.h"
 
 #define DRV_NAME	"ahci"
@@ -77,29 +38,16 @@
 
 enum {
 	AHCI_PCI_BAR_STA2X11	= 0,
-<<<<<<< HEAD
-	AHCI_PCI_BAR_ENMOTUS	= 2,
-=======
 	AHCI_PCI_BAR_CAVIUM	= 0,
 	AHCI_PCI_BAR_LOONGSON	= 0,
 	AHCI_PCI_BAR_ENMOTUS	= 2,
 	AHCI_PCI_BAR_CAVIUM_GEN5	= 4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AHCI_PCI_BAR_STANDARD	= 5,
 };
 
 enum board_ids {
 	/* board IDs by feature in alphabetical order */
 	board_ahci,
-<<<<<<< HEAD
-	board_ahci_ign_iferr,
-	board_ahci_nomsi,
-	board_ahci_noncq,
-	board_ahci_nosntf,
-	board_ahci_yes_fbs,
-
-	/* board IDs for specific chipsets in alphabetical order */
-=======
 	board_ahci_43bit_dma,
 	board_ahci_ign_iferr,
 	board_ahci_no_debounce_delay,
@@ -118,7 +66,6 @@ enum board_ids {
 
 	/* board IDs for specific chipsets in alphabetical order */
 	board_ahci_al,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	board_ahci_avn,
 	board_ahci_mcp65,
 	board_ahci_mcp77,
@@ -136,26 +83,13 @@ enum board_ids {
 };
 
 static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
-<<<<<<< HEAD
-=======
 static void ahci_remove_one(struct pci_dev *dev);
 static void ahci_shutdown_one(struct pci_dev *dev);
 static void ahci_intel_pcs_quirk(struct pci_dev *pdev, struct ahci_host_priv *hpriv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ahci_vt8251_hardreset(struct ata_link *link, unsigned int *class,
 				 unsigned long deadline);
 static int ahci_avn_hardreset(struct ata_link *link, unsigned int *class,
 			      unsigned long deadline);
-<<<<<<< HEAD
-static int ahci_p5wdh_hardreset(struct ata_link *link, unsigned int *class,
-				unsigned long deadline);
-#ifdef CONFIG_PM
-static int ahci_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg);
-static int ahci_pci_device_resume(struct pci_dev *pdev);
-#endif
-
-static struct scsi_host_template ahci_sht = {
-=======
 static void ahci_mcp89_apple_enable(struct pci_dev *pdev);
 static bool is_mcp89_apple(struct pci_dev *pdev);
 static int ahci_p5wdh_hardreset(struct ata_link *link, unsigned int *class,
@@ -170,7 +104,6 @@ static int ahci_pci_device_resume(struct device *dev);
 #endif /* CONFIG_PM */
 
 static const struct scsi_host_template ahci_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AHCI_SHT("ahci"),
 };
 
@@ -191,21 +124,12 @@ static struct ata_port_operations ahci_avn_ops = {
 
 static const struct ata_port_info ahci_port_info[] = {
 	/* by features */
-<<<<<<< HEAD
-	[board_ahci] =
-	{
-=======
 	[board_ahci] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_ign_iferr] =
-	{
-=======
 	[board_ahci_43bit_dma] = {
 		AHCI_HFLAGS	(AHCI_HFLAG_43BIT_ONLY),
 		.flags		= AHCI_FLAG_COMMON,
@@ -214,16 +138,12 @@ static const struct ata_port_info ahci_port_info[] = {
 		.port_ops	= &ahci_ops,
 	},
 	[board_ahci_ign_iferr] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_IGN_IRQ_IF_ERR),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_nomsi] = {
-=======
 	[board_ahci_no_debounce_delay] = {
 		.flags		= AHCI_FLAG_COMMON,
 		.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
@@ -232,43 +152,27 @@ static const struct ata_port_info ahci_port_info[] = {
 		.port_ops	= &ahci_ops,
 	},
 	[board_ahci_no_msi] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_MSI),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_noncq] = {
-		AHCI_HFLAGS	(AHCI_HFLAG_NO_NCQ),
-=======
 	[board_ahci_pcs_quirk] = {
 		AHCI_HFLAGS	(AHCI_HFLAG_INTEL_PCS_QUIRK),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_nosntf] =
-	{
-		AHCI_HFLAGS	(AHCI_HFLAG_NO_SNTF),
-=======
 	[board_ahci_pcs_quirk_no_devslp] = {
 		AHCI_HFLAGS	(AHCI_HFLAG_INTEL_PCS_QUIRK |
 				 AHCI_HFLAG_NO_DEVSLP),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_yes_fbs] =
-	{
-=======
 	[board_ahci_pcs_quirk_no_sntf] = {
 		AHCI_HFLAGS	(AHCI_HFLAG_INTEL_PCS_QUIRK |
 				 AHCI_HFLAG_NO_SNTF),
@@ -278,7 +182,6 @@ static const struct ata_port_info ahci_port_info[] = {
 		.port_ops	= &ahci_ops,
 	},
 	[board_ahci_yes_fbs] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_YES_FBS),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
@@ -286,16 +189,6 @@ static const struct ata_port_info ahci_port_info[] = {
 		.port_ops	= &ahci_ops,
 	},
 	/* by chipsets */
-<<<<<<< HEAD
-	[board_ahci_avn] = {
-		.flags          = AHCI_FLAG_COMMON,
-		.pio_mask       = ATA_PIO4,
-		.udma_mask      = ATA_UDMA6,
-		.port_ops       = &ahci_avn_ops,
-	},
-	[board_ahci_mcp65] =
-	{
-=======
 	[board_ahci_al] = {
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_PMP | AHCI_HFLAG_NO_MSI),
 		.flags		= AHCI_FLAG_COMMON,
@@ -311,7 +204,6 @@ static const struct ata_port_info ahci_port_info[] = {
 		.port_ops	= &ahci_avn_ops,
 	},
 	[board_ahci_mcp65] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP |
 				 AHCI_HFLAG_YES_NCQ),
 		.flags		= AHCI_FLAG_COMMON | ATA_FLAG_NO_DIPM,
@@ -319,36 +211,21 @@ static const struct ata_port_info ahci_port_info[] = {
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_mcp77] =
-	{
-=======
 	[board_ahci_mcp77] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_mcp89] =
-	{
-=======
 	[board_ahci_mcp89] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_FPDMA_AA),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_mv] =
-	{
-=======
 	[board_ahci_mv] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_MSI |
 				 AHCI_HFLAG_MV_PATA | AHCI_HFLAG_NO_PMP),
 		.flags		= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA,
@@ -356,12 +233,7 @@ static const struct ata_port_info ahci_port_info[] = {
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_sb600] =
-	{
-=======
 	[board_ahci_sb600] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_IGN_SERR_INTERNAL |
 				 AHCI_HFLAG_NO_MSI | AHCI_HFLAG_SECT255 |
 				 AHCI_HFLAG_32BIT_ONLY),
@@ -370,24 +242,14 @@ static const struct ata_port_info ahci_port_info[] = {
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_pmp_retry_srst_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_sb700] =	/* for SB700 and SB800 */
-	{
-=======
 	[board_ahci_sb700] = {	/* for SB700 and SB800 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_IGN_SERR_INTERNAL),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
 		.udma_mask	= ATA_UDMA6,
 		.port_ops	= &ahci_pmp_retry_srst_ops,
 	},
-<<<<<<< HEAD
-	[board_ahci_vt8251] =
-	{
-=======
 	[board_ahci_vt8251] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AHCI_HFLAGS	(AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_PMP),
 		.flags		= AHCI_FLAG_COMMON,
 		.pio_mask	= ATA_PIO4,
@@ -398,90 +260,6 @@ static const struct ata_port_info ahci_port_info[] = {
 
 static const struct pci_device_id ahci_pci_tbl[] = {
 	/* Intel */
-<<<<<<< HEAD
-	{ PCI_VDEVICE(INTEL, 0x2652), board_ahci }, /* ICH6 */
-	{ PCI_VDEVICE(INTEL, 0x2653), board_ahci }, /* ICH6M */
-	{ PCI_VDEVICE(INTEL, 0x27c1), board_ahci }, /* ICH7 */
-	{ PCI_VDEVICE(INTEL, 0x27c5), board_ahci }, /* ICH7M */
-	{ PCI_VDEVICE(INTEL, 0x27c3), board_ahci }, /* ICH7R */
-	{ PCI_VDEVICE(AL, 0x5288), board_ahci_ign_iferr }, /* ULi M5288 */
-	{ PCI_VDEVICE(INTEL, 0x2681), board_ahci }, /* ESB2 */
-	{ PCI_VDEVICE(INTEL, 0x2682), board_ahci }, /* ESB2 */
-	{ PCI_VDEVICE(INTEL, 0x2683), board_ahci }, /* ESB2 */
-	{ PCI_VDEVICE(INTEL, 0x27c6), board_ahci }, /* ICH7-M DH */
-	{ PCI_VDEVICE(INTEL, 0x2821), board_ahci }, /* ICH8 */
-	{ PCI_VDEVICE(INTEL, 0x2822), board_ahci_nosntf }, /* ICH8 */
-	{ PCI_VDEVICE(INTEL, 0x2824), board_ahci }, /* ICH8 */
-	{ PCI_VDEVICE(INTEL, 0x2829), board_ahci }, /* ICH8M */
-	{ PCI_VDEVICE(INTEL, 0x282a), board_ahci }, /* ICH8M */
-	{ PCI_VDEVICE(INTEL, 0x2922), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x2923), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x2924), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x2925), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x2927), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x2929), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x292a), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x292b), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x292c), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x292f), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x294d), board_ahci }, /* ICH9 */
-	{ PCI_VDEVICE(INTEL, 0x294e), board_ahci }, /* ICH9M */
-	{ PCI_VDEVICE(INTEL, 0x502a), board_ahci }, /* Tolapai */
-	{ PCI_VDEVICE(INTEL, 0x502b), board_ahci }, /* Tolapai */
-	{ PCI_VDEVICE(INTEL, 0x3a05), board_ahci }, /* ICH10 */
-	{ PCI_VDEVICE(INTEL, 0x3a22), board_ahci }, /* ICH10 */
-	{ PCI_VDEVICE(INTEL, 0x3a25), board_ahci }, /* ICH10 */
-	{ PCI_VDEVICE(INTEL, 0x3b22), board_ahci }, /* PCH AHCI */
-	{ PCI_VDEVICE(INTEL, 0x3b23), board_ahci }, /* PCH AHCI */
-	{ PCI_VDEVICE(INTEL, 0x3b24), board_ahci }, /* PCH RAID */
-	{ PCI_VDEVICE(INTEL, 0x3b25), board_ahci }, /* PCH RAID */
-	{ PCI_VDEVICE(INTEL, 0x3b29), board_ahci }, /* PCH AHCI */
-	{ PCI_VDEVICE(INTEL, 0x3b2b), board_ahci }, /* PCH RAID */
-	{ PCI_VDEVICE(INTEL, 0x3b2c), board_ahci }, /* PCH RAID */
-	{ PCI_VDEVICE(INTEL, 0x3b2f), board_ahci }, /* PCH AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1c02), board_ahci }, /* CPT AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1c03), board_ahci }, /* CPT AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1c04), board_ahci }, /* CPT RAID */
-	{ PCI_VDEVICE(INTEL, 0x1c05), board_ahci }, /* CPT RAID */
-	{ PCI_VDEVICE(INTEL, 0x1c06), board_ahci }, /* CPT RAID */
-	{ PCI_VDEVICE(INTEL, 0x1c07), board_ahci }, /* CPT RAID */
-	{ PCI_VDEVICE(INTEL, 0x1d02), board_ahci }, /* PBG AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1d04), board_ahci }, /* PBG RAID */
-	{ PCI_VDEVICE(INTEL, 0x1d06), board_ahci }, /* PBG RAID */
-	{ PCI_VDEVICE(INTEL, 0x2826), board_ahci }, /* PBG RAID */
-	{ PCI_VDEVICE(INTEL, 0x2323), board_ahci }, /* DH89xxCC AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1e02), board_ahci }, /* Panther Point AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1e03), board_ahci }, /* Panther Point AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1e04), board_ahci }, /* Panther Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x1e05), board_ahci }, /* Panther Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x1e06), board_ahci }, /* Panther Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x1e07), board_ahci }, /* Panther Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x1e0e), board_ahci }, /* Panther Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c02), board_ahci }, /* Lynx Point AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8c03), board_ahci }, /* Lynx Point AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8c04), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c05), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c06), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c07), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c0e), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c0f), board_ahci }, /* Lynx Point RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c02), board_ahci }, /* Lynx Point-LP AHCI */
-	{ PCI_VDEVICE(INTEL, 0x9c03), board_ahci }, /* Lynx Point-LP AHCI */
-	{ PCI_VDEVICE(INTEL, 0x9c04), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c05), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c06), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c07), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c0e), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c0f), board_ahci }, /* Lynx Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f22), board_ahci }, /* Avoton AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1f23), board_ahci }, /* Avoton AHCI */
-	{ PCI_VDEVICE(INTEL, 0x1f24), board_ahci }, /* Avoton RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f25), board_ahci }, /* Avoton RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f26), board_ahci }, /* Avoton RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f27), board_ahci }, /* Avoton RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f2e), board_ahci }, /* Avoton RAID */
-	{ PCI_VDEVICE(INTEL, 0x1f2f), board_ahci }, /* Avoton RAID */
-=======
 	{ PCI_VDEVICE(INTEL, 0x06d6), board_ahci_pcs_quirk }, /* Comet Lake PCH-H RAID */
 	{ PCI_VDEVICE(INTEL, 0x2652), board_ahci_pcs_quirk }, /* ICH6 */
 	{ PCI_VDEVICE(INTEL, 0x2653), board_ahci_pcs_quirk }, /* ICH6M */
@@ -585,7 +363,6 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_VDEVICE(INTEL, 0x1f27), board_ahci_pcs_quirk }, /* Avoton RAID */
 	{ PCI_VDEVICE(INTEL, 0x1f2e), board_ahci_pcs_quirk }, /* Avoton RAID */
 	{ PCI_VDEVICE(INTEL, 0x1f2f), board_ahci_pcs_quirk }, /* Avoton RAID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, 0x1f32), board_ahci_avn }, /* Avoton AHCI */
 	{ PCI_VDEVICE(INTEL, 0x1f33), board_ahci_avn }, /* Avoton AHCI */
 	{ PCI_VDEVICE(INTEL, 0x1f34), board_ahci_avn }, /* Avoton RAID */
@@ -594,37 +371,6 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_VDEVICE(INTEL, 0x1f37), board_ahci_avn }, /* Avoton RAID */
 	{ PCI_VDEVICE(INTEL, 0x1f3e), board_ahci_avn }, /* Avoton RAID */
 	{ PCI_VDEVICE(INTEL, 0x1f3f), board_ahci_avn }, /* Avoton RAID */
-<<<<<<< HEAD
-	{ PCI_VDEVICE(INTEL, 0x8d02), board_ahci }, /* Wellsburg AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8d04), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x8d06), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x8d0e), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x8d62), board_ahci }, /* Wellsburg AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8d64), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x8d66), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x8d6e), board_ahci }, /* Wellsburg RAID */
-	{ PCI_VDEVICE(INTEL, 0x23a3), board_ahci }, /* Coleto Creek AHCI */
-	{ PCI_VDEVICE(INTEL, 0x9c83), board_ahci }, /* Wildcat Point-LP AHCI */
-	{ PCI_VDEVICE(INTEL, 0x9c85), board_ahci }, /* Wildcat Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c87), board_ahci }, /* Wildcat Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9c8f), board_ahci }, /* Wildcat Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c82), board_ahci }, /* 9 Series AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8c83), board_ahci }, /* 9 Series AHCI */
-	{ PCI_VDEVICE(INTEL, 0x8c84), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c85), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c86), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c87), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c8e), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x8c8f), board_ahci }, /* 9 Series RAID */
-	{ PCI_VDEVICE(INTEL, 0x9d03), board_ahci }, /* Sunrise Point-LP AHCI */
-	{ PCI_VDEVICE(INTEL, 0x9d05), board_ahci }, /* Sunrise Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0x9d07), board_ahci }, /* Sunrise Point-LP RAID */
-	{ PCI_VDEVICE(INTEL, 0xa103), board_ahci }, /* Sunrise Point-H AHCI */
-	{ PCI_VDEVICE(INTEL, 0xa103), board_ahci }, /* Sunrise Point-H RAID */
-	{ PCI_VDEVICE(INTEL, 0xa105), board_ahci }, /* Sunrise Point-H RAID */
-	{ PCI_VDEVICE(INTEL, 0xa107), board_ahci }, /* Sunrise Point-H RAID */
-	{ PCI_VDEVICE(INTEL, 0xa10f), board_ahci }, /* Sunrise Point-H RAID */
-=======
 	{ PCI_VDEVICE(INTEL, 0x2823), board_ahci_pcs_quirk }, /* Wellsburg/Lewisburg AHCI*/
 	{ PCI_VDEVICE(INTEL, 0x2826), board_ahci_pcs_quirk }, /* *burg SATA0 'RAID' */
 	{ PCI_VDEVICE(INTEL, 0x2827), board_ahci_pcs_quirk }, /* *burg SATA1 'RAID' */
@@ -684,18 +430,14 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	/* Elkhart Lake IDs 0x4b60 & 0x4b62 https://sata-io.org/product/8803 not tested yet */
 	{ PCI_VDEVICE(INTEL, 0x4b63), board_ahci_pcs_quirk }, /* Elkhart Lake AHCI */
 	{ PCI_VDEVICE(INTEL, 0x7ae2), board_ahci_pcs_quirk }, /* Alder Lake-P AHCI */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* JMicron 360/1/3/5/6, match class to avoid IDE function */
 	{ PCI_VENDOR_ID_JMICRON, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff, board_ahci_ign_iferr },
-<<<<<<< HEAD
-=======
 	/* JMicron 362B and 362C have an AHCI function with IDE class code */
 	{ PCI_VDEVICE(JMICRON, 0x2362), board_ahci_ign_iferr },
 	{ PCI_VDEVICE(JMICRON, 0x236f), board_ahci_ign_iferr },
 	/* May need to update quirk_jmicron_async_suspend() for additions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ATI */
 	{ PCI_VDEVICE(ATI, 0x4380), board_ahci_sb600 }, /* ATI SB600 */
@@ -706,11 +448,6 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_VDEVICE(ATI, 0x4394), board_ahci_sb700 }, /* ATI SB700/800 */
 	{ PCI_VDEVICE(ATI, 0x4395), board_ahci_sb700 }, /* ATI SB700/800 */
 
-<<<<<<< HEAD
-	/* AMD */
-	{ PCI_VDEVICE(AMD, 0x7800), board_ahci }, /* AMD Hudson-2 */
-	{ PCI_VDEVICE(AMD, 0x7900), board_ahci }, /* AMD CZ */
-=======
 	/* Amazon's Annapurna Labs support */
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031),
 		.class = PCI_CLASS_STORAGE_SATA_AHCI,
@@ -721,18 +458,14 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_VDEVICE(AMD, 0x7801), board_ahci_no_debounce_delay }, /* AMD Hudson-2 (AHCI mode) */
 	{ PCI_VDEVICE(AMD, 0x7900), board_ahci }, /* AMD CZ */
 	{ PCI_VDEVICE(AMD, 0x7901), board_ahci }, /* AMD Green Sardine */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* AMD is using RAID class only for ahci controllers */
 	{ PCI_VENDOR_ID_AMD, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_RAID << 8, 0xffffff, board_ahci },
 
-<<<<<<< HEAD
-=======
 	/* Dell S140/S150 */
 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_SUBVENDOR_ID_DELL, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_RAID << 8, 0xffffff, board_ahci_pcs_quirk },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* VIA */
 	{ PCI_VDEVICE(VIA, 0x3349), board_ahci_vt8251 }, /* VIA VT8251 */
 	{ PCI_VDEVICE(VIA, 0x6287), board_ahci_vt8251 }, /* VIA VT8251 */
@@ -834,25 +567,6 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	/* Marvell */
 	{ PCI_VDEVICE(MARVELL, 0x6145), board_ahci_mv },	/* 6145 */
 	{ PCI_VDEVICE(MARVELL, 0x6121), board_ahci_mv },	/* 6121 */
-<<<<<<< HEAD
-	{ PCI_DEVICE(0x1b4b, 0x9123),
-	  .class = PCI_CLASS_STORAGE_SATA_AHCI,
-	  .class_mask = 0xffffff,
-	  .driver_data = board_ahci_yes_fbs },			/* 88se9128 */
-	{ PCI_DEVICE(0x1b4b, 0x9125),
-	  .driver_data = board_ahci_yes_fbs },			/* 88se9125 */
-	{ PCI_DEVICE(0x1b4b, 0x917a),
-	  .driver_data = board_ahci_yes_fbs },			/* 88se9172 */
-	{ PCI_DEVICE(0x1b4b, 0x9182),
-	  .driver_data = board_ahci_yes_fbs },                  /* 88se9182 */
-	{ PCI_DEVICE(0x1b4b, 0x9192),
-	  .driver_data = board_ahci_yes_fbs },			/* 88se9172 on some Gigabyte */
-	{ PCI_DEVICE(0x1b4b, 0x91a3),
-	  .driver_data = board_ahci_yes_fbs },
-	{ PCI_DEVICE(0x1b4b, 0x9230),
-	  .driver_data = board_ahci_yes_fbs },
-	{ PCI_DEVICE(PCI_VENDOR_ID_TTI, 0x0642),
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL_EXT, 0x9123),
 	  .class = PCI_CLASS_STORAGE_SATA_AHCI,
 	  .class_mask = 0xffffff,
@@ -883,20 +597,12 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_TTI, 0x0642), /* highpoint rocketraid 642L */
 	  .driver_data = board_ahci_yes_fbs },
 	{ PCI_DEVICE(PCI_VENDOR_ID_TTI, 0x0645), /* highpoint rocketraid 644L */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .driver_data = board_ahci_yes_fbs },
 
 	/* Promise */
 	{ PCI_VDEVICE(PROMISE, 0x3f20), board_ahci },	/* PDC42819 */
 	{ PCI_VDEVICE(PROMISE, 0x3781), board_ahci },   /* FastTrak TX8660 ahci-mode */
 
-<<<<<<< HEAD
-	/* Asmedia */
-	{ PCI_VDEVICE(ASMEDIA, 0x0601), board_ahci },	/* ASM1060 */
-	{ PCI_VDEVICE(ASMEDIA, 0x0602), board_ahci },	/* ASM1060 */
-	{ PCI_VDEVICE(ASMEDIA, 0x0611), board_ahci },	/* ASM1061 */
-	{ PCI_VDEVICE(ASMEDIA, 0x0612), board_ahci },	/* ASM1062 */
-=======
 	/* ASMedia */
 	{ PCI_VDEVICE(ASMEDIA, 0x0601), board_ahci_43bit_dma },	/* ASM1060 */
 	{ PCI_VDEVICE(ASMEDIA, 0x0602), board_ahci_43bit_dma },	/* ASM1060 */
@@ -910,29 +616,20 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ PCI_VDEVICE(ASMEDIA, 0x1164), board_ahci },   /* ASM1164 */
 	{ PCI_VDEVICE(ASMEDIA, 0x1165), board_ahci },   /* ASM1165 */
 	{ PCI_VDEVICE(ASMEDIA, 0x1166), board_ahci },   /* ASM1166 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Samsung SSDs found on some macbooks.  NCQ times out if MSI is
 	 * enabled.  https://bugzilla.kernel.org/show_bug.cgi?id=60731
 	 */
-<<<<<<< HEAD
-	{ PCI_VDEVICE(SAMSUNG, 0x1600), board_ahci_nomsi },
-	{ PCI_VDEVICE(SAMSUNG, 0xa800), board_ahci_nomsi },
-=======
 	{ PCI_VDEVICE(SAMSUNG, 0x1600), board_ahci_no_msi },
 	{ PCI_VDEVICE(SAMSUNG, 0xa800), board_ahci_no_msi },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enmotus */
 	{ PCI_DEVICE(0x1c44, 0x8000), board_ahci },
 
-<<<<<<< HEAD
-=======
 	/* Loongson */
 	{ PCI_VDEVICE(LOONGSON, 0x7a08), board_ahci },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Generic, PCI class code for AHCI */
 	{ PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff, board_ahci },
@@ -940,29 +637,16 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	{ }	/* terminate list */
 };
 
-<<<<<<< HEAD
-=======
 static const struct dev_pm_ops ahci_pci_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(ahci_pci_device_suspend, ahci_pci_device_resume)
 	SET_RUNTIME_PM_OPS(ahci_pci_device_runtime_suspend,
 			   ahci_pci_device_runtime_resume, NULL)
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver ahci_pci_driver = {
 	.name			= DRV_NAME,
 	.id_table		= ahci_pci_tbl,
 	.probe			= ahci_init_one,
-<<<<<<< HEAD
-	.remove			= ata_pci_remove_one,
-#ifdef CONFIG_PM
-	.suspend		= ahci_pci_device_suspend,
-	.resume			= ahci_pci_device_resume,
-#endif
-};
-
-#if defined(CONFIG_PATA_MARVELL) || defined(CONFIG_PATA_MARVELL_MODULE)
-=======
 	.remove			= ahci_remove_one,
 	.shutdown		= ahci_shutdown_one,
 	.driver = {
@@ -971,7 +655,6 @@ static struct pci_driver ahci_pci_driver = {
 };
 
 #if IS_ENABLED(CONFIG_PATA_MARVELL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int marvell_enable;
 #else
 static int marvell_enable = 1;
@@ -979,8 +662,6 @@ static int marvell_enable = 1;
 module_param(marvell_enable, int, 0644);
 MODULE_PARM_DESC(marvell_enable, "Marvell SATA via AHCI (1 = enabled)");
 
-<<<<<<< HEAD
-=======
 static int mobile_lpm_policy = -1;
 module_param(mobile_lpm_policy, int, 0644);
 MODULE_PARM_DESC(mobile_lpm_policy, "Default LPM policy for mobile chipsets");
@@ -1065,23 +746,13 @@ static void ahci_get_port_map_mask(struct device *dev,
 free:
 	kfree(str);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ahci_pci_save_initial_config(struct pci_dev *pdev,
 					 struct ahci_host_priv *hpriv)
 {
-<<<<<<< HEAD
-	unsigned int force_port_map = 0;
-	unsigned int mask_port_map = 0;
-
-	if (pdev->vendor == PCI_VENDOR_ID_JMICRON && pdev->device == 0x2361) {
-		dev_info(&pdev->dev, "JMB361 has only one port\n");
-		force_port_map = 1;
-=======
 	if (pdev->vendor == PCI_VENDOR_ID_JMICRON && pdev->device == 0x2361) {
 		dev_info(&pdev->dev, "JMB361 has only one port\n");
 		hpriv->saved_port_map = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1091,50 +762,23 @@ static void ahci_pci_save_initial_config(struct pci_dev *pdev,
 	 */
 	if (hpriv->flags & AHCI_HFLAG_MV_PATA) {
 		if (pdev->device == 0x6121)
-<<<<<<< HEAD
-			mask_port_map = 0x3;
-		else
-			mask_port_map = 0xf;
-=======
 			hpriv->mask_port_map = 0x3;
 		else
 			hpriv->mask_port_map = 0xf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_info(&pdev->dev,
 			  "Disabling your PATA port. Use the boot option 'ahci.marvell_enable=0' to avoid this.\n");
 	}
 
-<<<<<<< HEAD
-	ahci_save_initial_config(&pdev->dev, hpriv, force_port_map,
-				 mask_port_map);
-=======
 	/* Handle port map masks passed as module parameter. */
 	if (ahci_mask_port_map)
 		ahci_get_port_map_mask(&pdev->dev, hpriv);
 
 	ahci_save_initial_config(&pdev->dev, hpriv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ahci_pci_reset_controller(struct ata_host *host)
 {
 	struct pci_dev *pdev = to_pci_dev(host->dev);
-<<<<<<< HEAD
-
-	ahci_reset_controller(host);
-
-	if (pdev->vendor == PCI_VENDOR_ID_INTEL) {
-		struct ahci_host_priv *hpriv = host->private_data;
-		u16 tmp16;
-
-		/* configure PCS */
-		pci_read_config_word(pdev, 0x92, &tmp16);
-		if ((tmp16 & hpriv->port_map) != hpriv->port_map) {
-			tmp16 |= hpriv->port_map;
-			pci_write_config_word(pdev, 0x92, tmp16);
-		}
-	}
-=======
 	struct ahci_host_priv *hpriv = host->private_data;
 	int rc;
 
@@ -1147,7 +791,6 @@ static int ahci_pci_reset_controller(struct ata_host *host)
 	 * them here.
 	 */
 	ahci_intel_pcs_quirk(pdev, hpriv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1165,21 +808,13 @@ static void ahci_pci_init_controller(struct ata_host *host)
 			mv = 2;
 		else
 			mv = 4;
-<<<<<<< HEAD
-		port_mmio = __ahci_port_base(host, mv);
-=======
 		port_mmio = __ahci_port_base(hpriv, mv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		writel(0, port_mmio + PORT_IRQ_MASK);
 
 		/* clear port IRQ */
 		tmp = readl(port_mmio + PORT_IRQ_STAT);
-<<<<<<< HEAD
-		VPRINTK("PORT_IRQ_STAT 0x%x\n", tmp);
-=======
 		dev_dbg(&pdev->dev, "PORT_IRQ_STAT 0x%x\n", tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp)
 			writel(tmp, port_mmio + PORT_IRQ_STAT);
 	}
@@ -1191,31 +826,16 @@ static int ahci_vt8251_hardreset(struct ata_link *link, unsigned int *class,
 				 unsigned long deadline)
 {
 	struct ata_port *ap = link->ap;
-<<<<<<< HEAD
-	bool online;
-	int rc;
-
-	DPRINTK("ENTER\n");
-
-	ahci_stop_engine(ap);
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 	bool online;
 	int rc;
 
 	hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = sata_link_hardreset(link, sata_ehc_deb_timing(&link->eh_context),
 				 deadline, &online, NULL);
 
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-
-	DPRINTK("EXIT, rc=%d, class=%u\n", rc, *class);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* vt8251 doesn't clear BSY on signature FIS reception,
 	 * request follow-up softreset.
@@ -1228,38 +848,23 @@ static int ahci_p5wdh_hardreset(struct ata_link *link, unsigned int *class,
 {
 	struct ata_port *ap = link->ap;
 	struct ahci_port_priv *pp = ap->private_data;
-<<<<<<< HEAD
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *d2h_fis = pp->rx_fis + RX_FIS_D2H_REG;
 	struct ata_taskfile tf;
 	bool online;
 	int rc;
 
-<<<<<<< HEAD
-	ahci_stop_engine(ap);
-
-	/* clear D2H reception area to properly wait for D2H FIS */
-	ata_tf_init(link->device, &tf);
-	tf.command = 0x80;
-=======
 	hpriv->stop_engine(ap);
 
 	/* clear D2H reception area to properly wait for D2H FIS */
 	ata_tf_init(link->device, &tf);
 	tf.status = ATA_BUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
 
 	rc = sata_link_hardreset(link, sata_ehc_deb_timing(&link->eh_context),
 				 deadline, &online, NULL);
 
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pseudo configuration device on SIMG4726 attached to
 	 * ASUS P5W-DH Deluxe doesn't send signature FIS after
@@ -1301,29 +906,17 @@ static int ahci_p5wdh_hardreset(struct ata_link *link, unsigned int *class,
 static int ahci_avn_hardreset(struct ata_link *link, unsigned int *class,
 			      unsigned long deadline)
 {
-<<<<<<< HEAD
-	const unsigned long *timing = sata_ehc_deb_timing(&link->eh_context);
-	struct ata_port *ap = link->ap;
-	struct ahci_port_priv *pp = ap->private_data;
-=======
 	const unsigned int *timing = sata_ehc_deb_timing(&link->eh_context);
 	struct ata_port *ap = link->ap;
 	struct ahci_port_priv *pp = ap->private_data;
 	struct ahci_host_priv *hpriv = ap->host->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *d2h_fis = pp->rx_fis + RX_FIS_D2H_REG;
 	unsigned long tmo = deadline - jiffies;
 	struct ata_taskfile tf;
 	bool online;
 	int rc, i;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-	ahci_stop_engine(ap);
-=======
 	hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 2; i++) {
 		u16 val;
@@ -1334,11 +927,7 @@ static int ahci_avn_hardreset(struct ata_link *link, unsigned int *class,
 
 		/* clear D2H reception area to properly wait for D2H FIS */
 		ata_tf_init(link->device, &tf);
-<<<<<<< HEAD
-		tf.command = ATA_BUSY;
-=======
 		tf.status = ATA_BUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ata_tf_to_fis(&tf, 0, 0, d2h_fis);
 
 		rc = sata_link_hardreset(link, timing, deadline, &online,
@@ -1348,12 +937,7 @@ static int ahci_avn_hardreset(struct ata_link *link, unsigned int *class,
 				(sstatus & 0xf) != 1)
 			break;
 
-<<<<<<< HEAD
-		ata_link_printk(link, KERN_INFO, "avn bounce port%d\n",
-				port);
-=======
 		ata_link_info(link,  "avn bounce port%d\n", port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pci_read_config_word(pdev, 0x92, &val);
 		val &= ~(1 << port);
@@ -1364,40 +948,22 @@ static int ahci_avn_hardreset(struct ata_link *link, unsigned int *class,
 		deadline += tmo;
 	}
 
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (online)
 		*class = ahci_dev_classify(ap);
 
-<<<<<<< HEAD
-	DPRINTK("EXIT, rc=%d, class=%u\n", rc, *class);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 
 #ifdef CONFIG_PM
-<<<<<<< HEAD
-static int ahci_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 static void ahci_pci_disable_interrupts(struct ata_host *host)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ahci_host_priv *hpriv = host->private_data;
 	void __iomem *mmio = hpriv->mmio;
 	u32 ctl;
 
-<<<<<<< HEAD
-	if (mesg.event & PM_EVENT_SUSPEND &&
-	    hpriv->flags & AHCI_HFLAG_NO_SUSPEND) {
-=======
 	/* AHCI spec rev1.1 section 8.3.3:
 	 * Software must disable interrupts prior to requesting a
 	 * transition of the HBA to D3 state.
@@ -1438,36 +1004,11 @@ static int ahci_pci_device_suspend(struct device *dev)
 	struct ahci_host_priv *hpriv = host->private_data;
 
 	if (hpriv->flags & AHCI_HFLAG_NO_SUSPEND) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev,
 			"BIOS update required for suspend/resume\n");
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	if (mesg.event & PM_EVENT_SLEEP) {
-		/* AHCI spec rev1.1 section 8.3.3:
-		 * Software must disable interrupts prior to requesting a
-		 * transition of the HBA to D3 state.
-		 */
-		ctl = readl(mmio + HOST_CTL);
-		ctl &= ~HOST_IRQ_EN;
-		writel(ctl, mmio + HOST_CTL);
-		readl(mmio + HOST_CTL); /* flush */
-	}
-
-	return ata_pci_device_suspend(pdev, mesg);
-}
-
-static int ahci_pci_device_resume(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-	int rc;
-
-	rc = ata_pci_device_do_resume(pdev);
-	if (rc)
-		return rc;
-=======
 	ahci_pci_disable_interrupts(host);
 	ata_host_suspend(host, PMSG_SUSPEND);
 	return 0;
@@ -1482,7 +1023,6 @@ static int ahci_pci_device_resume(struct device *dev)
 	/* Apple BIOS helpfully mangles the registers on resume */
 	if (is_mcp89_apple(pdev))
 		ahci_mcp89_apple_enable(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdev->dev.power.power_state.event == PM_EVENT_SUSPEND) {
 		rc = ahci_pci_reset_controller(host);
@@ -1498,15 +1038,6 @@ static int ahci_pci_device_resume(struct device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-static int ahci_configure_dma_masks(struct pci_dev *pdev, int using_dac)
-{
-	int rc;
-
-	/*
-	 * If the device fixup already set the dma_mask to some non-standard
-	 * value, don't extend it here. This happens on STA2X11, for example.
-=======
 #endif /* CONFIG_PM */
 
 static int ahci_configure_dma_masks(struct pci_dev *pdev,
@@ -1529,43 +1060,14 @@ static int ahci_configure_dma_masks(struct pci_dev *pdev,
 	 *
 	 * XXX: manipulating the DMA mask from platform code is completely
 	 * bogus, platform code should use dev->bus_dma_limit instead..
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (pdev->dma_mask && pdev->dma_mask < DMA_BIT_MASK(32))
 		return 0;
 
-<<<<<<< HEAD
-	if (using_dac &&
-	    !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (rc) {
-			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-			if (rc) {
-				dev_err(&pdev->dev,
-					"64-bit DMA enable failed\n");
-				return rc;
-			}
-		}
-	} else {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
-			return rc;
-		}
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev,
-				"32-bit consistent DMA enable failed\n");
-			return rc;
-		}
-	}
-	return 0;
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(dma_bits));
 	if (rc)
 		dev_err(&pdev->dev, "DMA enable failed\n");
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_pci_print_info(struct ata_host *host)
@@ -1607,11 +1109,7 @@ static void ahci_pci_print_info(struct ata_host *host)
  */
 static void ahci_p5wdh_workaround(struct ata_host *host)
 {
-<<<<<<< HEAD
-	static struct dmi_system_id sysids[] = {
-=======
 	static const struct dmi_system_id sysids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			.ident = "P5W DH Deluxe",
 			.matches = {
@@ -1636,8 +1134,6 @@ static void ahci_p5wdh_workaround(struct ata_host *host)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Macbook7,1 firmware forcibly disables MCP89 AHCI and changes PCI ID when
  * booting in BIOS compatibility mode.  We restore the registers but not ID.
@@ -1680,7 +1176,6 @@ static bool is_mcp89_apple(struct pci_dev *pdev)
 		pdev->subsystem_device == 0xcb89;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* only some SB600 ahci controllers can do 64bit DMA */
 static bool ahci_sb600_enable_64bit(struct pci_dev *pdev)
 {
@@ -1726,8 +1221,6 @@ static bool ahci_sb600_enable_64bit(struct pci_dev *pdev)
 			},
 		},
 		/*
-<<<<<<< HEAD
-=======
 		 * All BIOS versions for the MSI K9AGM2 (MS-7327) support
 		 * 64bit DMA.
 		 *
@@ -1744,7 +1237,6 @@ static bool ahci_sb600_enable_64bit(struct pci_dev *pdev)
 			},
 		},
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * All BIOS versions for the Asus M3A support 64bit DMA.
 		 * (all release versions from 0301 to 1206 were tested)
 		 */
@@ -1906,8 +1398,6 @@ static bool ahci_broken_suspend(struct pci_dev *pdev)
 	return strcmp(buf, dmi->driver_data) < 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool ahci_broken_lpm(struct pci_dev *pdev)
 {
 	static const struct dmi_system_id sysids[] = {
@@ -1961,7 +1451,6 @@ static bool ahci_broken_lpm(struct pci_dev *pdev)
 	return strcmp(buf, dmi->driver_data) < 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool ahci_broken_online(struct pci_dev *pdev)
 {
 #define ENCODE_BUSDEVFN(bus, slot, func)			\
@@ -2060,8 +1549,6 @@ static inline void ahci_gtf_filter_workaround(struct ata_host *host)
 {}
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * On the Acer Aspire Switch Alpha 12, sometimes all SATA ports are detected
  * as DUMMY, or detected but eventually get a "link down" and never get up
@@ -2301,7 +1788,6 @@ static ssize_t remapped_nvme_show(struct device *dev,
 
 static DEVICE_ATTR_RO(remapped_nvme);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	unsigned int board_id = ent->driver_data;
@@ -2313,11 +1799,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int n_ports, i, rc;
 	int ahci_pci_bar = AHCI_PCI_BAR_STANDARD;
 
-<<<<<<< HEAD
-	VPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON((int)ATA_MAX_QUEUE > AHCI_MAX_CMDS);
 
 	ata_print_version_once(&pdev->dev, DRV_VERSION);
@@ -2328,21 +1809,9 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (pdev->vendor == PCI_VENDOR_ID_MARVELL && !marvell_enable)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	/*
-	 * For some reason, MCP89 on MacBook 7,1 doesn't work with
-	 * ahci, use ata_generic instead.
-	 */
-	if (pdev->vendor == PCI_VENDOR_ID_NVIDIA &&
-	    pdev->device == PCI_DEVICE_ID_NVIDIA_NFORCE_MCP89_SATA &&
-	    pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE &&
-	    pdev->subsystem_device == 0xcb89)
-		return -ENODEV;
-=======
 	/* Apple BIOS on MCP89 prevents us using AHCI */
 	if (is_mcp89_apple(pdev))
 		ahci_mcp89_apple_enable(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Promise's PDC42819 is a SAS/SATA controller that has an AHCI mode.
 	 * At the moment, we can only use the AHCI mode. Let the users know
@@ -2352,17 +1821,11 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		dev_info(&pdev->dev,
 			 "PDC42819 can only drive SATA devices with this driver\n");
 
-<<<<<<< HEAD
-	/* Both Connext and Enmotus devices use non-standard BARs */
-=======
 	/* Some devices use non-standard BARs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdev->vendor == PCI_VENDOR_ID_STMICRO && pdev->device == 0xCC06)
 		ahci_pci_bar = AHCI_PCI_BAR_STA2X11;
 	else if (pdev->vendor == 0x1c44 && pdev->device == 0x8000)
 		ahci_pci_bar = AHCI_PCI_BAR_ENMOTUS;
-<<<<<<< HEAD
-=======
 	else if (pdev->vendor == PCI_VENDOR_ID_CAVIUM) {
 		if (pdev->device == 0xa01c)
 			ahci_pci_bar = AHCI_PCI_BAR_CAVIUM;
@@ -2372,25 +1835,12 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		if (pdev->device == 0x7a08)
 			ahci_pci_bar = AHCI_PCI_BAR_LOONGSON;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* acquire resources */
 	rc = pcim_enable_device(pdev);
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	/* AHCI controllers often implement SFF compatible interface.
-	 * Grab all PCI BARs just in case.
-	 */
-	rc = pcim_iomap_regions_request_all(pdev, 1 << ahci_pci_bar, DRV_NAME);
-	if (rc == -EBUSY)
-		pcim_pin_device(pdev);
-	if (rc)
-		return rc;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdev->vendor == PCI_VENDOR_ID_INTEL &&
 	    (pdev->device == 0x2652 || pdev->device == 0x2653)) {
 		u8 map;
@@ -2407,8 +1857,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* AHCI controllers often implement SFF compatible interface.
 	 * Grab all PCI BARs just in case.
 	 */
@@ -2418,7 +1866,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (rc)
 		return rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpriv = devm_kzalloc(dev, sizeof(*hpriv), GFP_KERNEL);
 	if (!hpriv)
 		return -ENOMEM;
@@ -2437,13 +1884,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ahci_sb600_enable_64bit(pdev))
 		hpriv->flags &= ~AHCI_HFLAG_32BIT_ONLY;
 
-<<<<<<< HEAD
-	if ((hpriv->flags & AHCI_HFLAG_NO_MSI) || pci_enable_msi(pdev))
-		pci_intx(pdev, 1);
-
-	hpriv->mmio = pcim_iomap_table(pdev)[ahci_pci_bar];
-
-=======
 	hpriv->mmio = pcim_iomap_table(pdev)[ahci_pci_bar];
 
 	/* detect remapped nvme devices */
@@ -2463,7 +1903,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		hpriv->irq_handler = ahci_thunderx_irq_handler;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* save initial config */
 	ahci_pci_save_initial_config(pdev, hpriv);
 
@@ -2478,8 +1917,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		 */
 		if (!(hpriv->flags & AHCI_HFLAG_NO_FPDMA_AA))
 			pi.flags |= ATA_FLAG_FPDMA_AA;
-<<<<<<< HEAD
-=======
 
 		/*
 		 * All AHCI controllers should be forward-compatible
@@ -2488,7 +1925,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		 * encountered.
 		 */
 		pi.flags |= ATA_FLAG_FPDMA_AUX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (hpriv->cap & HOST_CAP_PMP)
@@ -2502,15 +1938,12 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			"quirky BIOS, skipping spindown on poweroff\n");
 	}
 
-<<<<<<< HEAD
-=======
 	if (ahci_broken_lpm(pdev)) {
 		pi.flags |= ATA_FLAG_NO_LPM;
 		dev_warn(&pdev->dev,
 			 "BIOS update required for Link Power Management support\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ahci_broken_suspend(pdev)) {
 		hpriv->flags |= AHCI_HFLAG_NO_SUSPEND;
 		dev_warn(&pdev->dev,
@@ -2523,13 +1956,10 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			 "online status unreliable, applying workaround\n");
 	}
 
-<<<<<<< HEAD
-=======
 
 	/* Acer SA5-271 workaround modifies private_data */
 	acer_sa5_271_workaround(hpriv, pdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* CAP.NP sometimes indicate the index of the last enabled
 	 * port, at other times, that of the last possible port, so
 	 * determining the maximum port number requires looking at
@@ -2542,12 +1972,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return -ENOMEM;
 	host->private_data = hpriv;
 
-<<<<<<< HEAD
-	if (!(hpriv->cap & HOST_CAP_SSS) || ahci_ignore_sss)
-		host->flags |= ATA_HOST_PARALLEL_SCAN;
-	else
-		printk(KERN_INFO "ahci: SSS flag set, parallel bus scan disabled\n");
-=======
 	if (ahci_init_msi(pdev, n_ports, hpriv) < 0) {
 		/* legacy intx interrupts */
 		pci_intx(pdev, 1);
@@ -2567,7 +1991,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	if (!(hpriv->cap2 & HOST_CAP2_SDS))
 		host->flags |= ATA_HOST_NO_DEVSLP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pi.flags & ATA_FLAG_EM)
 		ahci_reset_em(host);
@@ -2583,12 +2006,9 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		if (ap->flags & ATA_FLAG_EM)
 			ap->em_message_type = hpriv->em_msg_type;
 
-<<<<<<< HEAD
-=======
 		ahci_mark_external_port(ap);
 
 		ahci_update_initial_lpm_policy(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* disabled/not-implemented port */
 		if (!(hpriv->port_map & (1 << i)))
@@ -2602,11 +2022,7 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	ahci_gtf_filter_workaround(host);
 
 	/* initialize adapter */
-<<<<<<< HEAD
-	rc = ahci_configure_dma_masks(pdev, hpriv->cap & HOST_CAP_64);
-=======
 	rc = ahci_configure_dma_masks(pdev, hpriv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -2618,22 +2034,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	ahci_pci_print_info(host);
 
 	pci_set_master(pdev);
-<<<<<<< HEAD
-	return ata_host_activate(host, pdev->irq, ahci_interrupt, IRQF_SHARED,
-				 &ahci_sht);
-}
-
-static int __init ahci_init(void)
-{
-	return pci_register_driver(&ahci_pci_driver);
-}
-
-static void __exit ahci_exit(void)
-{
-	pci_unregister_driver(&ahci_pci_driver);
-}
-
-=======
 
 	rc = ahci_host_activate(host, &ahci_sht);
 	if (rc)
@@ -2658,16 +2058,9 @@ static void ahci_remove_one(struct pci_dev *pdev)
 }
 
 module_pci_driver(ahci_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jeff Garzik");
 MODULE_DESCRIPTION("AHCI SATA low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, ahci_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(ahci_init);
-module_exit(ahci_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * irq.h: in kernel interrupt controller related definitions
  * Copyright (c) 2007, Intel Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
  * Authors:
  *   Yaozu (Eddie) Dong <Eddie.dong@intel.com>
- *
-=======
- * Authors:
- *   Yaozu (Eddie) Dong <Eddie.dong@intel.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __IRQ_H
@@ -36,12 +15,7 @@
 #include <linux/kvm_host.h>
 #include <linux/spinlock.h>
 
-<<<<<<< HEAD
-#include "iodev.h"
-#include "ioapic.h"
-=======
 #include <kvm/iodev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lapic.h"
 
 #define PIC_NUM_PINS 16
@@ -81,21 +55,6 @@ struct kvm_pic {
 	int output;		/* intr from master PIC */
 	struct kvm_io_device dev_master;
 	struct kvm_io_device dev_slave;
-<<<<<<< HEAD
-	struct kvm_io_device dev_eclr;
-	void (*ack_notifier)(void *opaque, int irq);
-	unsigned long irq_states[16];
-};
-
-struct kvm_pic *kvm_create_pic(struct kvm *kvm);
-void kvm_destroy_pic(struct kvm *kvm);
-int kvm_pic_read_irq(struct kvm *kvm);
-void kvm_pic_update_irq(struct kvm_pic *s);
-
-static inline struct kvm_pic *pic_irqchip(struct kvm *kvm)
-{
-	return kvm->arch.vpic;
-=======
 	struct kvm_io_device dev_elcr;
 	unsigned long irq_states[PIC_NUM_PINS];
 };
@@ -126,22 +85,10 @@ static inline int irqchip_kernel(struct kvm *kvm)
 static inline int pic_in_kernel(struct kvm *kvm)
 {
 	return irqchip_kernel(kvm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int irqchip_in_kernel(struct kvm *kvm)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = (pic_irqchip(kvm) != NULL);
-	smp_rmb();
-	return ret;
-}
-
-void kvm_pic_reset(struct kvm_kpic_state *s);
-
-=======
 	int mode = kvm->arch.irqchip_mode;
 
 	/* Matches smp_wmb() when setting irqchip_mode */
@@ -149,7 +96,6 @@ void kvm_pic_reset(struct kvm_kpic_state *s);
 	return mode != KVM_IRQCHIP_NONE;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvm_inject_pending_timer_irqs(struct kvm_vcpu *vcpu);
 void kvm_inject_apic_timer_irqs(struct kvm_vcpu *vcpu);
 void kvm_apic_nmi_wd_deliver(struct kvm_vcpu *vcpu);
@@ -159,13 +105,10 @@ void __kvm_migrate_timers(struct kvm_vcpu *vcpu);
 
 int apic_has_pending_timer(struct kvm_vcpu *vcpu);
 
-<<<<<<< HEAD
-=======
 int kvm_setup_default_irq_routing(struct kvm *kvm);
 int kvm_setup_empty_irq_routing(struct kvm *kvm);
 int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
 			     struct kvm_lapic_irq *irq,
 			     struct dest_map *dest_map);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

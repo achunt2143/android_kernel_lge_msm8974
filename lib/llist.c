@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Lock-less NULL terminated single linked list
  *
@@ -12,29 +9,9 @@
  *
  * Copyright 2010,2011 Intel Corp.
  *   Author: Huang Ying <ying.huang@intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <linux/kernel.h>
 #include <linux/export.h>
-#include <linux/interrupt.h>
-=======
- */
-#include <linux/kernel.h>
-#include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/llist.h>
 
 
@@ -49,20 +26,6 @@
 bool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,
 		     struct llist_head *head)
 {
-<<<<<<< HEAD
-	struct llist_node *entry, *old_entry;
-
-	entry = head->first;
-	for (;;) {
-		old_entry = entry;
-		new_last->next = entry;
-		entry = cmpxchg(&head->first, old_entry, new_first);
-		if (entry == old_entry)
-			break;
-	}
-
-	return old_entry == NULL;
-=======
 	struct llist_node *first = READ_ONCE(head->first);
 
 	do {
@@ -70,7 +33,6 @@ bool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,
 	} while (!try_cmpxchg(&head->first, &first, new_first));
 
 	return !first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(llist_add_batch);
 
@@ -90,20 +52,6 @@ EXPORT_SYMBOL_GPL(llist_add_batch);
  */
 struct llist_node *llist_del_first(struct llist_head *head)
 {
-<<<<<<< HEAD
-	struct llist_node *entry, *old_entry, *next;
-
-	entry = head->first;
-	for (;;) {
-		if (entry == NULL)
-			return NULL;
-		old_entry = entry;
-		next = entry->next;
-		entry = cmpxchg(&head->first, old_entry, next);
-		if (entry == old_entry)
-			break;
-	}
-=======
 	struct llist_node *entry, *next;
 
 	entry = smp_load_acquire(&head->first);
@@ -112,13 +60,10 @@ struct llist_node *llist_del_first(struct llist_head *head)
 			return NULL;
 		next = READ_ONCE(entry->next);
 	} while (!try_cmpxchg(&head->first, &entry, next));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return entry;
 }
 EXPORT_SYMBOL_GPL(llist_del_first);
-<<<<<<< HEAD
-=======
 
 /**
  * llist_del_first_this - delete given entry of lock-less list if it is first
@@ -169,4 +114,3 @@ struct llist_node *llist_reverse_order(struct llist_node *head)
 	return new_head;
 }
 EXPORT_SYMBOL_GPL(llist_reverse_order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

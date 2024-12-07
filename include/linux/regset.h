@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User-mode machine state access
  *
  * Copyright (C) 2007 Red Hat, Inc.  All rights reserved.
  *
-<<<<<<< HEAD
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License v.2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Red Hat Author: Roland McGrath.
  */
 
@@ -27,8 +17,6 @@
 struct task_struct;
 struct user_regset;
 
-<<<<<<< HEAD
-=======
 struct membuf {
 	void *p;
 	size_t left;
@@ -87,7 +75,6 @@ static inline struct membuf membuf_at(const struct membuf *s, size_t offs)
 		__s->left -= __size;			\
 	}						\
 	__s->left;})
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * user_regset_active_fn - type of @active function in &struct user_regset
@@ -107,32 +94,9 @@ static inline struct membuf membuf_at(const struct membuf *s, size_t offs)
 typedef int user_regset_active_fn(struct task_struct *target,
 				  const struct user_regset *regset);
 
-<<<<<<< HEAD
-/**
- * user_regset_get_fn - type of @get function in &struct user_regset
- * @target:	thread being examined
- * @regset:	regset being examined
- * @pos:	offset into the regset data to access, in bytes
- * @count:	amount of data to copy, in bytes
- * @kbuf:	if not %NULL, a kernel-space pointer to copy into
- * @ubuf:	if @kbuf is %NULL, a user-space pointer to copy into
- *
- * Fetch register values.  Return %0 on success; -%EIO or -%ENODEV
- * are usual failure returns.  The @pos and @count values are in
- * bytes, but must be properly aligned.  If @kbuf is non-null, that
- * buffer is used and @ubuf is ignored.  If @kbuf is %NULL, then
- * ubuf gives a userland pointer to access directly, and an -%EFAULT
- * return value is possible.
- */
-typedef int user_regset_get_fn(struct task_struct *target,
-			       const struct user_regset *regset,
-			       unsigned int pos, unsigned int count,
-			       void *kbuf, void __user *ubuf);
-=======
 typedef int user_regset_get2_fn(struct task_struct *target,
 			       const struct user_regset *regset,
 			       struct membuf to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * user_regset_set_fn - type of @set function in &struct user_regset
@@ -196,16 +160,6 @@ typedef int user_regset_writeback_fn(struct task_struct *target,
  * This is part of the state of an individual thread, not necessarily
  * actual CPU registers per se.  A register set consists of a number of
  * similar slots, given by @n.  Each slot is @size bytes, and aligned to
-<<<<<<< HEAD
- * @align bytes (which is at least @size).
- *
- * These functions must be called only on the current thread or on a
- * thread that is in %TASK_STOPPED or %TASK_TRACED state, that we are
- * guaranteed will not be woken up and return to user mode, and that we
- * have called wait_task_inactive() on.  (The target thread always might
- * wake up for SIGKILL while these functions are working, in which case
- * that thread's user_regset state might be scrambled.)
-=======
  * @align bytes (which is at least @size).  For dynamically-sized
  * regsets, @n must contain the maximum possible number of slots for the
  * regset.
@@ -222,7 +176,6 @@ typedef int user_regset_writeback_fn(struct task_struct *target,
  * wait_task_inactive() on.  (The target thread always might wake up for
  * SIGKILL while these functions are working, in which case that
  * thread's user_regset state might be scrambled.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The @pos argument must be aligned according to @align; the @count
  * argument must be a multiple of @size.  These functions are not
@@ -245,11 +198,7 @@ typedef int user_regset_writeback_fn(struct task_struct *target,
  * omitted when there is an @active function and it returns zero.
  */
 struct user_regset {
-<<<<<<< HEAD
-	user_regset_get_fn		*get;
-=======
 	user_regset_get2_fn		*regset_get;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	user_regset_set_fn		*set;
 	user_regset_active_fn		*active;
 	user_regset_writeback_fn	*writeback;
@@ -301,47 +250,6 @@ struct user_regset_view {
  */
 const struct user_regset_view *task_user_regset_view(struct task_struct *tsk);
 
-<<<<<<< HEAD
-
-/*
- * These are helpers for writing regset get/set functions in arch code.
- * Because @start_pos and @end_pos are always compile-time constants,
- * these are inlined into very little code though they look large.
- *
- * Use one or more calls sequentially for each chunk of regset data stored
- * contiguously in memory.  Call with constants for @start_pos and @end_pos,
- * giving the range of byte positions in the regset that data corresponds
- * to; @end_pos can be -1 if this chunk is at the end of the regset layout.
- * Each call updates the arguments to point past its chunk.
- */
-
-static inline int user_regset_copyout(unsigned int *pos, unsigned int *count,
-				      void **kbuf,
-				      void __user **ubuf, const void *data,
-				      const int start_pos, const int end_pos)
-{
-	if (*count == 0)
-		return 0;
-	BUG_ON(*pos < start_pos);
-	if (end_pos < 0 || *pos < end_pos) {
-		unsigned int copy = (end_pos < 0 ? *count
-				     : min(*count, end_pos - *pos));
-		data += *pos - start_pos;
-		if (*kbuf) {
-			memcpy(*kbuf, data, copy);
-			*kbuf += copy;
-		} else if (__copy_to_user(*ubuf, data, copy))
-			return -EFAULT;
-		else
-			*ubuf += copy;
-		*pos += copy;
-		*count -= copy;
-	}
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int user_regset_copyin(unsigned int *pos, unsigned int *count,
 				     const void **kbuf,
 				     const void __user **ubuf, void *data,
@@ -367,46 +275,6 @@ static inline int user_regset_copyin(unsigned int *pos, unsigned int *count,
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * These two parallel the two above, but for portions of a regset layout
- * that always read as all-zero or for which writes are ignored.
- */
-static inline int user_regset_copyout_zero(unsigned int *pos,
-					   unsigned int *count,
-					   void **kbuf, void __user **ubuf,
-					   const int start_pos,
-					   const int end_pos)
-{
-	if (*count == 0)
-		return 0;
-	BUG_ON(*pos < start_pos);
-	if (end_pos < 0 || *pos < end_pos) {
-		unsigned int copy = (end_pos < 0 ? *count
-				     : min(*count, end_pos - *pos));
-		if (*kbuf) {
-			memset(*kbuf, 0, copy);
-			*kbuf += copy;
-		} else if (__clear_user(*ubuf, copy))
-			return -EFAULT;
-		else
-			*ubuf += copy;
-		*pos += copy;
-		*count -= copy;
-	}
-	return 0;
-}
-
-static inline int user_regset_copyin_ignore(unsigned int *pos,
-					    unsigned int *count,
-					    const void **kbuf,
-					    const void __user **ubuf,
-					    const int start_pos,
-					    const int end_pos)
-{
-	if (*count == 0)
-		return 0;
-=======
 static inline void user_regset_copyin_ignore(unsigned int *pos,
 					     unsigned int *count,
 					     const void **kbuf,
@@ -416,7 +284,6 @@ static inline void user_regset_copyin_ignore(unsigned int *pos,
 {
 	if (*count == 0)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(*pos < start_pos);
 	if (end_pos < 0 || *pos < end_pos) {
 		unsigned int copy = (end_pos < 0 ? *count
@@ -428,36 +295,6 @@ static inline void user_regset_copyin_ignore(unsigned int *pos,
 		*pos += copy;
 		*count -= copy;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-/**
- * copy_regset_to_user - fetch a thread's user_regset data into user memory
- * @target:	thread to be examined
- * @view:	&struct user_regset_view describing user thread machine state
- * @setno:	index in @view->regsets
- * @offset:	offset into the regset data, in bytes
- * @size:	amount of data to copy, in bytes
- * @data:	user-mode pointer to copy into
- */
-static inline int copy_regset_to_user(struct task_struct *target,
-				      const struct user_regset_view *view,
-				      unsigned int setno,
-				      unsigned int offset, unsigned int size,
-				      void __user *data)
-{
-	const struct user_regset *regset = &view->regsets[setno];
-
-	if (!regset->get)
-		return -EOPNOTSUPP;
-
-	if (!access_ok(VERIFY_WRITE, data, size))
-		return -EFAULT;
-
-	return regset->get(target, regset, offset, size, NULL, data);
-}
-=======
 }
 
 extern int regset_get(struct task_struct *target,
@@ -473,7 +310,6 @@ extern int copy_regset_to_user(struct task_struct *target,
 			       const struct user_regset_view *view,
 			       unsigned int setno, unsigned int offset,
 			       unsigned int size, void __user *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * copy_regset_from_user - store into thread's user_regset data from user memory
@@ -495,18 +331,10 @@ static inline int copy_regset_from_user(struct task_struct *target,
 	if (!regset->set)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, data, size))
-=======
 	if (!access_ok(data, size))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return regset->set(target, regset, offset, size, NULL, data);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* <linux/regset.h> */

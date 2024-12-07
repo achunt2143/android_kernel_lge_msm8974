@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC head.S
  *
@@ -12,14 +9,6 @@
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
@@ -27,18 +16,11 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/serial_reg.h>
-<<<<<<< HEAD
-#include <asm/processor.h>
-#include <asm/page.h>
-#include <asm/mmu.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/mmu.h>
 #include <asm/thread_info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cache.h>
 #include <asm/spr_defs.h>
 #include <asm/asm-offsets.h>
@@ -49,11 +31,7 @@
 	l.add	rd,rd,rs
 
 #define CLEAR_GPR(gpr)				\
-<<<<<<< HEAD
-	l.or    gpr,r0,r0
-=======
 	l.movhi	gpr,0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LOAD_SYMBOL_2_GPR(gpr,symbol)		\
 	l.movhi gpr,hi(symbol)			;\
@@ -67,11 +45,6 @@
 
 /* ============================================[ tmp store locations ]=== */
 
-<<<<<<< HEAD
-/*
- * emergency_print temporary stores
- */
-=======
 #define SPR_SHADOW_GPR(x)	((x) + SPR_GPR_BASE + 32)
 
 /*
@@ -97,7 +70,6 @@
 #define EMERGENCY_PRINT_LOAD_GPR9	l.mfspr r9,r0,SPR_SHADOW_GPR(9)
 
 #else /* !CONFIG_OPENRISC_HAVE_SHADOW_GPRS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EMERGENCY_PRINT_STORE_GPR4	l.sw    0x20(r0),r4
 #define EMERGENCY_PRINT_LOAD_GPR4	l.lwz   r4,0x20(r0)
 
@@ -116,19 +88,11 @@
 #define EMERGENCY_PRINT_STORE_GPR9	l.sw    0x34(r0),r9
 #define EMERGENCY_PRINT_LOAD_GPR9	l.lwz   r9,0x34(r0)
 
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TLB miss handlers temorary stores
  */
-<<<<<<< HEAD
-#define EXCEPTION_STORE_GPR9		l.sw    0x10(r0),r9
-#define EXCEPTION_LOAD_GPR9		l.lwz   r9,0x10(r0)
-
-=======
 #ifdef CONFIG_OPENRISC_HAVE_SHADOW_GPRS
 #define EXCEPTION_STORE_GPR2		l.mtspr r0,r2,SPR_SHADOW_GPR(2)
 #define EXCEPTION_LOAD_GPR2		l.mfspr r2,r0,SPR_SHADOW_GPR(2)
@@ -146,7 +110,6 @@
 #define EXCEPTION_LOAD_GPR6		l.mfspr r6,r0,SPR_SHADOW_GPR(6)
 
 #else /* !CONFIG_OPENRISC_HAVE_SHADOW_GPRS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXCEPTION_STORE_GPR2		l.sw    0x64(r0),r2
 #define EXCEPTION_LOAD_GPR2		l.lwz   r2,0x64(r0)
 
@@ -162,17 +125,12 @@
 #define EXCEPTION_STORE_GPR6		l.sw    0x74(r0),r6
 #define EXCEPTION_LOAD_GPR6		l.lwz   r6,0x74(r0)
 
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * EXCEPTION_HANDLE temporary stores
  */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OPENRISC_HAVE_SHADOW_GPRS
 #define EXCEPTION_T_STORE_GPR30		l.mtspr r0,r30,SPR_SHADOW_GPR(30)
 #define EXCEPTION_T_LOAD_GPR30(reg)	l.mfspr reg,r0,SPR_SHADOW_GPR(30)
@@ -184,28 +142,12 @@
 #define EXCEPTION_T_LOAD_SP(reg)	l.mfspr reg,r0,SPR_SHADOW_GPR(1)
 
 #else /* !CONFIG_OPENRISC_HAVE_SHADOW_GPRS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXCEPTION_T_STORE_GPR30		l.sw    0x78(r0),r30
 #define EXCEPTION_T_LOAD_GPR30(reg)	l.lwz   reg,0x78(r0)
 
 #define EXCEPTION_T_STORE_GPR10		l.sw    0x7c(r0),r10
 #define EXCEPTION_T_LOAD_GPR10(reg)	l.lwz   reg,0x7c(r0)
 
-<<<<<<< HEAD
-#define EXCEPTION_T_STORE_SP		l.sw	0x80(r0),r1
-#define EXCEPTION_T_LOAD_SP(reg)	l.lwz   reg,0x80(r0)
-
-/*
- * For UNHANLDED_EXCEPTION
- */
-
-#define EXCEPTION_T_STORE_GPR31		l.sw    0x84(r0),r31
-#define EXCEPTION_T_LOAD_GPR31(reg)	l.lwz   reg,0x84(r0)
-
-/* =========================================================[ macros ]=== */
-
-
-=======
 #define EXCEPTION_T_STORE_SP		l.sw    0x80(r0),r1
 #define EXCEPTION_T_LOAD_SP(reg)	l.lwz   reg,0x80(r0)
 #endif
@@ -221,14 +163,10 @@
 	tophys  (t1,reg)					;\
 	l.lwz   reg,0(t1)
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GET_CURRENT_PGD(reg,t1)					\
 	LOAD_SYMBOL_2_GPR(reg,current_pgd)			;\
 	tophys  (t1,reg)					;\
 	l.lwz   reg,0(t1)
-<<<<<<< HEAD
-
-=======
 #endif
 
 /* Load r10 from current_thread_info_set - clobbers r1 and r30 */
@@ -248,7 +186,6 @@
 	/* r10: current_thread_info  */				;\
 	l.lwz   r10,0(r30)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DSCR: this is a common hook for handling exceptions. it will save
@@ -269,12 +206,7 @@
  *	 r4  - EEAR     exception EA
  *	 r10 - current	pointing to current_thread_info struct
  *	 r12 - syscall  0, since we didn't come from syscall
-<<<<<<< HEAD
- *	 r13 - temp	it actually contains new SR, not needed anymore
- *	 r31 - handler	address of the handler we'll jump to
-=======
  *	 r30 - handler	address of the handler we'll jump to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	 handler has to save remaining registers to the exception
  *	 ksp frame *before* tainting them!
@@ -295,14 +227,7 @@
 	l.bnf   2f                            /* kernel_mode */	;\
 	 EXCEPTION_T_STORE_SP                 /* delay slot */	;\
 1: /* user_mode:   */						;\
-<<<<<<< HEAD
-	LOAD_SYMBOL_2_GPR(r1,current_thread_info_set)		;\
-	tophys  (r30,r1)					;\
-	/* r10: current_thread_info  */				;\
-	l.lwz   r10,0(r30)					;\
-=======
 	GET_CURRENT_THREAD_INFO	 				;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tophys  (r30,r10)					;\
 	l.lwz   r1,(TI_KSP)(r30)				;\
 	/* fall through */					;\
@@ -314,10 +239,7 @@
 	/* r1 is KSP, r30 is __pa(KSP) */			;\
 	tophys  (r30,r1)					;\
 	l.sw    PT_GPR12(r30),r12				;\
-<<<<<<< HEAD
-=======
 	/* r4 use for tmp before EA */				;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.mfspr r12,r0,SPR_EPCR_BASE				;\
 	l.sw    PT_PC(r30),r12					;\
 	l.mfspr r12,r0,SPR_ESR_BASE				;\
@@ -337,14 +259,10 @@
 	/* r12 == 1 if we come from syscall */			;\
 	CLEAR_GPR(r12)						;\
 	/* ----- turn on MMU ----- */				;\
-<<<<<<< HEAD
-	l.ori	r30,r0,(EXCEPTION_SR)				;\
-=======
 	/* Carry DSX into exception SR */			;\
 	l.mfspr r30,r0,SPR_SR					;\
 	l.andi	r30,r30,SPR_SR_DSX				;\
 	l.ori	r30,r30,(EXCEPTION_SR)				;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.mtspr	r0,r30,SPR_ESR_BASE				;\
 	/* r30:	EA address of handler */			;\
 	LOAD_SYMBOL_2_GPR(r30,handler)				;\
@@ -373,31 +291,12 @@
  *
  */
 #define UNHANDLED_EXCEPTION(handler)				\
-<<<<<<< HEAD
-	EXCEPTION_T_STORE_GPR31					;\
-=======
 	EXCEPTION_T_STORE_GPR30					;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EXCEPTION_T_STORE_GPR10					;\
 	EXCEPTION_T_STORE_SP					;\
 	/* temporary store r3, r9 into r1, r10 */		;\
 	l.addi	r1,r3,0x0					;\
 	l.addi	r10,r9,0x0					;\
-<<<<<<< HEAD
-	/* the string referenced by r3 must be low enough */	;\
-	l.jal	_emergency_print				;\
-	l.ori	r3,r0,lo(_string_unhandled_exception)		;\
-	l.mfspr	r3,r0,SPR_NPC					;\
-	l.jal	_emergency_print_nr				;\
-	l.andi	r3,r3,0x1f00					;\
-	/* the string referenced by r3 must be low enough */	;\
-	l.jal	_emergency_print				;\
-	l.ori	r3,r0,lo(_string_epc_prefix)			;\
-	l.jal	_emergency_print_nr				;\
-	l.mfspr	r3,r0,SPR_EPCR_BASE				;\
-	l.jal	_emergency_print				;\
-	l.ori	r3,r0,lo(_string_nl)				;\
-=======
 	LOAD_SYMBOL_2_GPR(r9,_string_unhandled_exception)	;\
 	tophys	(r3,r9)						;\
 	l.jal	_emergency_print				;\
@@ -415,7 +314,6 @@
 	tophys	(r3,r9)						;\
 	l.jal	_emergency_print				;\
 	 l.nop							;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* end of printing */					;\
 	l.addi	r3,r1,0x0					;\
 	l.addi	r9,r10,0x0					;\
@@ -426,28 +324,6 @@
 	/* r1: KSP, r10: current, r31: __pa(KSP) */		;\
 	/* r12:	temp, syscall indicator, r13 temp */		;\
 	l.addi  r1,r1,-(INT_FRAME_SIZE)				;\
-<<<<<<< HEAD
-	/* r1 is KSP, r31 is __pa(KSP) */			;\
-	tophys  (r31,r1)					;\
-	l.sw    PT_GPR12(r31),r12					;\
-	l.mfspr r12,r0,SPR_EPCR_BASE				;\
-	l.sw    PT_PC(r31),r12					;\
-	l.mfspr r12,r0,SPR_ESR_BASE				;\
-	l.sw    PT_SR(r31),r12					;\
-	/* save r31 */						;\
-	EXCEPTION_T_LOAD_GPR31(r12)				;\
-	l.sw	PT_GPR31(r31),r12					;\
-	/* save r10 as was prior to exception */		;\
-	EXCEPTION_T_LOAD_GPR10(r12)				;\
-	l.sw	PT_GPR10(r31),r12					;\
-	/* save PT_SP as was prior to exception */			;\
-	EXCEPTION_T_LOAD_SP(r12)				;\
-	l.sw	PT_SP(r31),r12					;\
-	l.sw    PT_GPR13(r31),r13					;\
-	/* --> */						;\
-	/* save exception r4, set r4 = EA */			;\
-	l.sw	PT_GPR4(r31),r4					;\
-=======
 	/* r1 is KSP, r30 is __pa(KSP) */			;\
 	tophys  (r30,r1)					;\
 	l.sw    PT_GPR12(r30),r12					;\
@@ -468,24 +344,15 @@
 	/* --> */						;\
 	/* save exception r4, set r4 = EA */			;\
 	l.sw	PT_GPR4(r30),r4					;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.mfspr r4,r0,SPR_EEAR_BASE				;\
 	/* r12 == 1 if we come from syscall */			;\
 	CLEAR_GPR(r12)						;\
 	/* ----- play a MMU trick ----- */			;\
-<<<<<<< HEAD
-	l.ori	r31,r0,(EXCEPTION_SR)				;\
-	l.mtspr	r0,r31,SPR_ESR_BASE				;\
-	/* r31:	EA address of handler */			;\
-	LOAD_SYMBOL_2_GPR(r31,handler)				;\
-	l.mtspr r0,r31,SPR_EPCR_BASE				;\
-=======
 	l.ori	r30,r0,(EXCEPTION_SR)				;\
 	l.mtspr	r0,r30,SPR_ESR_BASE				;\
 	/* r31:	EA address of handler */			;\
 	LOAD_SYMBOL_2_GPR(r30,handler)				;\
 	l.mtspr r0,r30,SPR_EPCR_BASE				;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.rfe
 
 /* =====================================================[ exceptions] === */
@@ -495,15 +362,9 @@
 	/* Jump to .init code at _start which lives in the .head section
 	 * and will be discarded after boot.
 	 */
-<<<<<<< HEAD
-	LOAD_SYMBOL_2_GPR(r4, _start)
-	tophys	(r3,r4)			/* MMU disabled */
-	l.jr	r3
-=======
 	LOAD_SYMBOL_2_GPR(r15, _start)
 	tophys	(r13,r15)			/* MMU disabled */
 	l.jr	r13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 l.nop
 
 /* ---[ 0x200: BUS exception ]------------------------------------------- */
@@ -533,11 +394,7 @@ _dispatch_do_ipage_fault:
     .org 0x500
 	EXCEPTION_HANDLE(_timer_handler)
 
-<<<<<<< HEAD
-/* ---[ 0x600: Aligment exception ]-------------------------------------- */
-=======
 /* ---[ 0x600: Alignment exception ]-------------------------------------- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     .org 0x600
 	EXCEPTION_HANDLE(_alignment_handler)
 
@@ -567,15 +424,9 @@ _dispatch_do_ipage_fault:
     .org 0xc00
 	EXCEPTION_HANDLE(_sys_call_handler)
 
-<<<<<<< HEAD
-/* ---[ 0xd00: Trap exception ]------------------------------------------ */
-    .org 0xd00
-	UNHANDLED_EXCEPTION(_vector_0xd00)
-=======
 /* ---[ 0xd00: Floating point exception ]--------------------------------- */
     .org 0xd00
 	EXCEPTION_HANDLE(_fpe_trap_handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---[ 0xe00: Trap exception ]------------------------------------------ */
     .org 0xe00
@@ -661,12 +512,9 @@ _dispatch_do_ipage_fault:
 	__HEAD
 	.global _start
 _start:
-<<<<<<< HEAD
-=======
 	/* Init r0 to zero as per spec */
 	CLEAR_GPR(r0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* save kernel parameters */
 	l.or	r25,r0,r3	/* pointer to fdt */
 
@@ -677,8 +525,6 @@ _start:
 	l.ori	r3,r0,0x1
 	l.mtspr	r0,r3,SPR_SR
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Start the TTCR as early as possible, so that the RNG can make use of
 	 * measurements of boot time from the earliest opportunity. Especially
@@ -688,7 +534,6 @@ _start:
 	l.movhi r3,hi(SPR_TTMR_CR)
 	l.mtspr r0,r3,SPR_TTMR
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLEAR_GPR(r1)
 	CLEAR_GPR(r2)
 	CLEAR_GPR(r3)
@@ -720,12 +565,6 @@ _start:
 	CLEAR_GPR(r30)
 	CLEAR_GPR(r31)
 
-<<<<<<< HEAD
-	/*
-	 * set up initial ksp and current
-	 */
-	LOAD_SYMBOL_2_GPR(r1,init_thread_union+0x2000)	// setup kernel stack
-=======
 #ifdef CONFIG_SMP
 	l.mfspr	r26,r0,SPR_COREID
 	l.sfeq	r26,r0
@@ -737,7 +576,6 @@ _start:
 	 */
 	/* setup kernel stack */
 	LOAD_SYMBOL_2_GPR(r1,init_thread_union + THREAD_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LOAD_SYMBOL_2_GPR(r10,init_thread_union)	// setup current
 	tophys	(r31,r10)
 	l.sw	TI_KSP(r31), r1
@@ -771,31 +609,10 @@ enable_dc:
 	 l.nop
 
 flush_tlb:
-<<<<<<< HEAD
-	/*
-	 *  I N V A L I D A T E   T L B   e n t r i e s
-	 */
-	LOAD_SYMBOL_2_GPR(r5,SPR_DTLBMR_BASE(0))
-	LOAD_SYMBOL_2_GPR(r6,SPR_ITLBMR_BASE(0))
-	l.addi	r7,r0,128 /* Maximum number of sets */
-1:
-	l.mtspr	r5,r0,0x0
-	l.mtspr	r6,r0,0x0
-
-	l.addi	r5,r5,1
-	l.addi	r6,r6,1
-	l.sfeq	r7,r0
-	l.bnf	1b
-	 l.addi	r7,r7,-1
-
-
-/* The MMU needs to be enabled before or32_early_setup is called */
-=======
 	l.jal	_flush_tlb
 	 l.nop
 
 /* The MMU needs to be enabled before or1k_early_setup is called */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enable_mmu:
 	/*
@@ -837,15 +654,9 @@ enable_mmu:
 	/* magic number mismatch, set fdt pointer to null */
 	l.or	r25,r0,r0
 _fdt_found:
-<<<<<<< HEAD
-	/* pass fdt pointer to or32_early_setup in r3 */
-	l.or	r3,r0,r25
-	LOAD_SYMBOL_2_GPR(r24, or32_early_setup)
-=======
 	/* pass fdt pointer to or1k_early_setup in r3 */
 	l.or	r3,r0,r25
 	LOAD_SYMBOL_2_GPR(r24, or1k_early_setup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.jalr r24
 	 l.nop
 
@@ -891,12 +702,6 @@ jump_start_kernel:
 	l.jr    r30
 	 l.nop
 
-<<<<<<< HEAD
-/* ========================================[ cache ]=== */
-
-	/* aligment here so we don't change memory offsets with
-	 * memory controler defined
-=======
 _flush_tlb:
 	/*
 	 *  I N V A L I D A T E   T L B   e n t r i e s
@@ -1015,7 +820,6 @@ secondary_start:
 
 	/* alignment here so we don't change memory offsets with
 	 * memory controller defined
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	.align 0x2000
 
@@ -1139,14 +943,6 @@ _dc_enable:
 
 /* ===============================================[ page table masks ]=== */
 
-<<<<<<< HEAD
-/* bit 4 is used in hardware as write back cache bit. we never use this bit
- * explicitly, so we can reuse it as _PAGE_FILE bit and mask it out when
- * writing into hardware pte's
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DTLB_UP_CONVERT_MASK  0x3fa
 #define ITLB_UP_CONVERT_MASK  0x3a
 
@@ -1364,11 +1160,6 @@ ENTRY(dtlb_miss_handler)
 	EXCEPTION_STORE_GPR2
 	EXCEPTION_STORE_GPR3
 	EXCEPTION_STORE_GPR4
-<<<<<<< HEAD
-	EXCEPTION_STORE_GPR5
-	EXCEPTION_STORE_GPR6
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * get EA of the miss
 	 */
@@ -1376,87 +1167,26 @@ ENTRY(dtlb_miss_handler)
 	/*
 	 * pmd = (pmd_t *)(current_pgd + pgd_index(daddr));
 	 */
-<<<<<<< HEAD
-	GET_CURRENT_PGD(r3,r5)		// r3 is current_pgd, r5 is temp
-	l.srli	r4,r2,0x18		// >> PAGE_SHIFT + (PAGE_SHIFT - 2)
-	l.slli	r4,r4,0x2		// to get address << 2
-	l.add	r5,r4,r3		// r4 is pgd_index(daddr)
-=======
 	GET_CURRENT_PGD(r3,r4)		// r3 is current_pgd, r4 is temp
 	l.srli	r4,r2,0x18		// >> PAGE_SHIFT + (PAGE_SHIFT - 2)
 	l.slli	r4,r4,0x2		// to get address << 2
 	l.add	r3,r4,r3		// r4 is pgd_index(daddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if (pmd_none(*pmd))
 	 *   goto pmd_none:
 	 */
-<<<<<<< HEAD
-	tophys	(r4,r5)
-	l.lwz	r3,0x0(r4)		// get *pmd value
-	l.sfne	r3,r0
-	l.bnf	d_pmd_none
-	 l.andi	r3,r3,~PAGE_MASK //0x1fff		// ~PAGE_MASK
-	/*
-	 * if (pmd_bad(*pmd))
-	 *   pmd_clear(pmd)
-	 *   goto pmd_bad:
-	 */
-//	l.sfeq	r3,r0			// check *pmd value
-//	l.bf	d_pmd_good
-	l.addi	r3,r0,0xffffe000	// PAGE_MASK
-//	l.j	d_pmd_bad
-//	l.sw	0x0(r4),r0		// clear pmd
-=======
 	tophys	(r4,r3)
 	l.lwz	r3,0x0(r4)		// get *pmd value
 	l.sfne	r3,r0
 	l.bnf	d_pmd_none
 	 l.addi	r3,r0,0xffffe000	// PAGE_MASK
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 d_pmd_good:
 	/*
 	 * pte = *pte_offset(pmd, daddr);
 	 */
 	l.lwz	r4,0x0(r4)		// get **pmd value
 	l.and	r4,r4,r3		// & PAGE_MASK
-<<<<<<< HEAD
-	l.srli	r5,r2,0xd		// >> PAGE_SHIFT, r2 == EEAR
-	l.andi	r3,r5,0x7ff		// (1UL << PAGE_SHIFT - 2) - 1
-	l.slli	r3,r3,0x2		// to get address << 2
-	l.add	r3,r3,r4
-	l.lwz	r2,0x0(r3)		// this is pte at last
-	/*
-	 * if (!pte_present(pte))
-	 */
-	l.andi	r4,r2,0x1
-	l.sfne	r4,r0			// is pte present
-	l.bnf	d_pte_not_present
-	l.addi	r3,r0,0xffffe3fa	// PAGE_MASK | DTLB_UP_CONVERT_MASK
-	/*
-	 * fill DTLB TR register
-	 */
-	l.and	r4,r2,r3		// apply the mask
-	// Determine number of DMMU sets
-	l.mfspr r6, r0, SPR_DMMUCFGR
-	l.andi	r6, r6, SPR_DMMUCFGR_NTS
-	l.srli	r6, r6, SPR_DMMUCFGR_NTS_OFF
-	l.ori	r3, r0, 0x1
-	l.sll	r3, r3, r6 	// r3 = number DMMU sets DMMUCFGR
-	l.addi	r6, r3, -1  	// r6 = nsets mask
-	l.and	r5, r5, r6	// calc offset:	 & (NUM_TLB_ENTRIES-1)
-	                                                   //NUM_TLB_ENTRIES
-	l.mtspr	r5,r4,SPR_DTLBTR_BASE(0)
-	/*
-	 * fill DTLB MR register
-	 */
-	l.mfspr	r2,r0,SPR_EEAR_BASE
-	l.addi	r3,r0,0xffffe000	// PAGE_MASK
-	l.and	r4,r2,r3		// apply PAGE_MASK to EA (__PHX__ do we really need this?)
-	l.ori	r4,r4,0x1		// set hardware valid bit: DTBL_MR entry
-	l.mtspr	r5,r4,SPR_DTLBMR_BASE(0)
-=======
 	l.srli	r2,r2,0xd		// >> PAGE_SHIFT, r2 == EEAR
 	l.andi	r3,r2,0x7ff		// (1UL << PAGE_SHIFT - 2) - 1
 	l.slli	r3,r3,0x2		// to get address << 2
@@ -1491,49 +1221,23 @@ d_pmd_good:
 	l.slli	r3, r3, 0xd		/* << PAGE_SHIFT => EA & PAGE_MASK */
 	l.ori	r4,r3,0x1		// set hardware valid bit: DTBL_MR entry
 	l.mtspr	r2,r4,SPR_DTLBMR_BASE(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EXCEPTION_LOAD_GPR2
 	EXCEPTION_LOAD_GPR3
 	EXCEPTION_LOAD_GPR4
-<<<<<<< HEAD
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
-	l.rfe
-d_pmd_bad:
-	l.nop	1
-	EXCEPTION_LOAD_GPR2
-	EXCEPTION_LOAD_GPR3
-	EXCEPTION_LOAD_GPR4
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.rfe
 d_pmd_none:
 d_pte_not_present:
 	EXCEPTION_LOAD_GPR2
 	EXCEPTION_LOAD_GPR3
 	EXCEPTION_LOAD_GPR4
-<<<<<<< HEAD
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
-	l.j	_dispatch_do_dpage_fault
-	l.nop
-=======
 	EXCEPTION_HANDLE(_dtlb_miss_page_fault_handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ==============================================[ ITLB miss handler ]=== */
 ENTRY(itlb_miss_handler)
 	EXCEPTION_STORE_GPR2
 	EXCEPTION_STORE_GPR3
 	EXCEPTION_STORE_GPR4
-<<<<<<< HEAD
-	EXCEPTION_STORE_GPR5
-	EXCEPTION_STORE_GPR6
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * get EA of the miss
 	 */
@@ -1543,45 +1247,19 @@ ENTRY(itlb_miss_handler)
 	 * pmd = (pmd_t *)(current_pgd + pgd_index(daddr));
 	 *
 	 */
-<<<<<<< HEAD
-	GET_CURRENT_PGD(r3,r5)		// r3 is current_pgd, r5 is temp
-	l.srli	r4,r2,0x18		// >> PAGE_SHIFT + (PAGE_SHIFT - 2)
-	l.slli	r4,r4,0x2		// to get address << 2
-	l.add	r5,r4,r3		// r4 is pgd_index(daddr)
-=======
 	GET_CURRENT_PGD(r3,r4)		// r3 is current_pgd, r5 is temp
 	l.srli	r4,r2,0x18		// >> PAGE_SHIFT + (PAGE_SHIFT - 2)
 	l.slli	r4,r4,0x2		// to get address << 2
 	l.add	r3,r4,r3		// r4 is pgd_index(daddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if (pmd_none(*pmd))
 	 *   goto pmd_none:
 	 */
-<<<<<<< HEAD
-	tophys	(r4,r5)
-	l.lwz	r3,0x0(r4)		// get *pmd value
-	l.sfne	r3,r0
-	l.bnf	i_pmd_none
-	l.andi	r3,r3,0x1fff		// ~PAGE_MASK
-	/*
-	 * if (pmd_bad(*pmd))
-	 *   pmd_clear(pmd)
-	 *   goto pmd_bad:
-	 */
-
-//	l.sfeq	r3,r0			// check *pmd value
-//	l.bf	i_pmd_good
-	l.addi	r3,r0,0xffffe000	// PAGE_MASK
-//	l.j	i_pmd_bad
-//	l.sw	0x0(r4),r0		// clear pmd
-=======
 	tophys	(r4,r3)
 	l.lwz	r3,0x0(r4)		// get *pmd value
 	l.sfne	r3,r0
 	l.bnf	i_pmd_none
 	 l.addi	r3,r0,0xffffe000	// PAGE_MASK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 i_pmd_good:
 	/*
@@ -1590,45 +1268,15 @@ i_pmd_good:
 	 */
 	l.lwz	r4,0x0(r4)		// get **pmd value
 	l.and	r4,r4,r3		// & PAGE_MASK
-<<<<<<< HEAD
-	l.srli	r5,r2,0xd		// >> PAGE_SHIFT, r2 == EEAR
-	l.andi	r3,r5,0x7ff		// (1UL << PAGE_SHIFT - 2) - 1
-	l.slli	r3,r3,0x2		// to get address << 2
-	l.add	r3,r3,r4
-	l.lwz	r2,0x0(r3)		// this is pte at last
-=======
 	l.srli	r2,r2,0xd		// >> PAGE_SHIFT, r2 == EEAR
 	l.andi	r3,r2,0x7ff		// (1UL << PAGE_SHIFT - 2) - 1
 	l.slli	r3,r3,0x2		// to get address << 2
 	l.add	r3,r3,r4
 	l.lwz	r3,0x0(r3)		// this is pte at last
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if (!pte_present(pte))
 	 *
 	 */
-<<<<<<< HEAD
-	l.andi	r4,r2,0x1
-	l.sfne	r4,r0			// is pte present
-	l.bnf	i_pte_not_present
-	l.addi	r3,r0,0xffffe03a	// PAGE_MASK | ITLB_UP_CONVERT_MASK
-	/*
-	 * fill ITLB TR register
-	 */
-	l.and	r4,r2,r3		// apply the mask
-	l.andi	r3,r2,0x7c0		// _PAGE_EXEC | _PAGE_SRE | _PAGE_SWE |  _PAGE_URE | _PAGE_UWE
-//	l.andi	r3,r2,0x400		// _PAGE_EXEC
-	l.sfeq	r3,r0
-	l.bf	itlb_tr_fill //_workaround
-	// Determine number of IMMU sets
-	l.mfspr r6, r0, SPR_IMMUCFGR
-	l.andi	r6, r6, SPR_IMMUCFGR_NTS
-	l.srli	r6, r6, SPR_IMMUCFGR_NTS_OFF
-	l.ori	r3, r0, 0x1
-	l.sll	r3, r3, r6 	// r3 = number IMMU sets IMMUCFGR
-	l.addi	r6, r3, -1  	// r6 = nsets mask
-	l.and	r5, r5, r6	// calc offset:	 & (NUM_TLB_ENTRIES-1)
-=======
 	l.andi	r4,r3,0x1
 	l.sfne	r4,r0			// is pte present
 	l.bnf	i_pte_not_present
@@ -1650,7 +1298,6 @@ i_pmd_good:
 	l.mfspr	r3, r0, SPR_EEAR_BASE
 	l.srli	r3, r3, 0xd	// >> PAGE_SHIFT
 	l.and	r2, r3, r2	// calc offset:	 & (NUM_TLB_ENTRIES-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * __PHX__ :: fixme
@@ -1662,17 +1309,6 @@ i_pmd_good:
 itlb_tr_fill_workaround:
 	l.ori	r4,r4,0xc0		// | (SPR_ITLBTR_UXE | ITLBTR_SXE)
 itlb_tr_fill:
-<<<<<<< HEAD
-	l.mtspr	r5,r4,SPR_ITLBTR_BASE(0)
-	/*
-	 * fill DTLB MR register
-	 */
-	l.mfspr	r2,r0,SPR_EEAR_BASE
-	l.addi	r3,r0,0xffffe000	// PAGE_MASK
-	l.and	r4,r2,r3		// apply PAGE_MASK to EA (__PHX__ do we really need this?)
-	l.ori	r4,r4,0x1		// set hardware valid bit: DTBL_MR entry
-	l.mtspr	r5,r4,SPR_ITLBMR_BASE(0)
-=======
 	l.mtspr	r2,r4,SPR_ITLBTR_BASE(0)
 	/*
 	 * fill DTLB MR register
@@ -1680,258 +1316,24 @@ itlb_tr_fill:
 	l.slli	r3, r3, 0xd		/* << PAGE_SHIFT => EA & PAGE_MASK */
 	l.ori	r4,r3,0x1		// set hardware valid bit: ITBL_MR entry
 	l.mtspr	r2,r4,SPR_ITLBMR_BASE(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EXCEPTION_LOAD_GPR2
 	EXCEPTION_LOAD_GPR3
 	EXCEPTION_LOAD_GPR4
-<<<<<<< HEAD
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
 	l.rfe
 
-i_pmd_bad:
-	l.nop	1
-	EXCEPTION_LOAD_GPR2
-	EXCEPTION_LOAD_GPR3
-	EXCEPTION_LOAD_GPR4
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
-	l.rfe
-=======
-	l.rfe
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 i_pmd_none:
 i_pte_not_present:
 	EXCEPTION_LOAD_GPR2
 	EXCEPTION_LOAD_GPR3
 	EXCEPTION_LOAD_GPR4
-<<<<<<< HEAD
-	EXCEPTION_LOAD_GPR5
-	EXCEPTION_LOAD_GPR6
-	l.j	_dispatch_do_ipage_fault
-	l.nop
-=======
 	EXCEPTION_HANDLE(_itlb_miss_page_fault_handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ==============================================[ boot tlb handlers ]=== */
 
 
 /* =================================================[ debugging aids ]=== */
 
-<<<<<<< HEAD
-	.align 64
-_immu_trampoline:
-	.space 64
-_immu_trampoline_top:
-
-#define TRAMP_SLOT_0		(0x0)
-#define TRAMP_SLOT_1		(0x4)
-#define TRAMP_SLOT_2		(0x8)
-#define TRAMP_SLOT_3		(0xc)
-#define TRAMP_SLOT_4		(0x10)
-#define TRAMP_SLOT_5		(0x14)
-#define TRAMP_FRAME_SIZE	(0x18)
-
-ENTRY(_immu_trampoline_workaround)
-	// r2 EEA
-	// r6 is physical EEA
-	tophys(r6,r2)
-
-	LOAD_SYMBOL_2_GPR(r5,_immu_trampoline)
-	tophys	(r3,r5)			// r3 is trampoline (physical)
-
-	LOAD_SYMBOL_2_GPR(r4,0x15000000)
-	l.sw	TRAMP_SLOT_0(r3),r4
-	l.sw	TRAMP_SLOT_1(r3),r4
-	l.sw	TRAMP_SLOT_4(r3),r4
-	l.sw	TRAMP_SLOT_5(r3),r4
-
-					// EPC = EEA - 0x4
-	l.lwz	r4,0x0(r6)		// load op @ EEA + 0x0 (fc address)
-	l.sw	TRAMP_SLOT_3(r3),r4	// store it to _immu_trampoline_data
-	l.lwz	r4,-0x4(r6)		// load op @ EEA - 0x4 (f8 address)
-	l.sw	TRAMP_SLOT_2(r3),r4	// store it to _immu_trampoline_data
-
-	l.srli  r5,r4,26                // check opcode for write access
-	l.sfeqi r5,0                    // l.j
-	l.bf    0f
-	l.sfeqi r5,0x11                 // l.jr
-	l.bf    1f
-	l.sfeqi r5,1                    // l.jal
-	l.bf    2f
-	l.sfeqi r5,0x12                 // l.jalr
-	l.bf    3f
-	l.sfeqi r5,3                    // l.bnf
-	l.bf    4f
-	l.sfeqi r5,4                    // l.bf
-	l.bf    5f
-99:
-	l.nop
-	l.j	99b			// should never happen
-	l.nop	1
-
-	// r2 is EEA
-	// r3 is trampoline address (physical)
-	// r4 is instruction
-	// r6 is physical(EEA)
-	//
-	// r5
-
-2:	// l.jal
-
-	/* 19 20 aa aa	l.movhi r9,0xaaaa
-	 * a9 29 bb bb  l.ori	r9,0xbbbb
-	 *
-	 * where 0xaaaabbbb is EEA + 0x4 shifted right 2
-	 */
-
-	l.addi	r6,r2,0x4		// this is 0xaaaabbbb
-
-					// l.movhi r9,0xaaaa
-	l.ori	r5,r0,0x1920		// 0x1920 == l.movhi r9
-	l.sh	(TRAMP_SLOT_0+0x0)(r3),r5
-	l.srli	r5,r6,16
-	l.sh	(TRAMP_SLOT_0+0x2)(r3),r5
-
-					// l.ori   r9,0xbbbb
-	l.ori	r5,r0,0xa929		// 0xa929 == l.ori r9
-	l.sh	(TRAMP_SLOT_1+0x0)(r3),r5
-	l.andi	r5,r6,0xffff
-	l.sh	(TRAMP_SLOT_1+0x2)(r3),r5
-
-	/* falthrough, need to set up new jump offset */
-
-
-0:	// l.j
-	l.slli	r6,r4,6			// original offset shifted left 6 - 2
-//	l.srli	r6,r6,6			// original offset shifted right 2
-
-	l.slli	r4,r2,4			// old jump position: EEA shifted left 4
-//	l.srli	r4,r4,6			// old jump position: shifted right 2
-
-	l.addi	r5,r3,0xc		// new jump position (physical)
-	l.slli	r5,r5,4			// new jump position: shifted left 4
-
-	// calculate new jump offset
-	// new_off = old_off + (old_jump - new_jump)
-
-	l.sub	r5,r4,r5		// old_jump - new_jump
-	l.add	r5,r6,r5		// orig_off + (old_jump - new_jump)
-	l.srli	r5,r5,6			// new offset shifted right 2
-
-	// r5 is new jump offset
-					// l.j has opcode 0x0...
-	l.sw	TRAMP_SLOT_2(r3),r5	// write it back
-
-	l.j	trampoline_out
-	l.nop
-
-/* ----------------------------- */
-
-3:	// l.jalr
-
-	/* 19 20 aa aa	l.movhi r9,0xaaaa
-	 * a9 29 bb bb  l.ori	r9,0xbbbb
-	 *
-	 * where 0xaaaabbbb is EEA + 0x4 shifted right 2
-	 */
-
-	l.addi	r6,r2,0x4		// this is 0xaaaabbbb
-
-					// l.movhi r9,0xaaaa
-	l.ori	r5,r0,0x1920		// 0x1920 == l.movhi r9
-	l.sh	(TRAMP_SLOT_0+0x0)(r3),r5
-	l.srli	r5,r6,16
-	l.sh	(TRAMP_SLOT_0+0x2)(r3),r5
-
-					// l.ori   r9,0xbbbb
-	l.ori	r5,r0,0xa929		// 0xa929 == l.ori r9
-	l.sh	(TRAMP_SLOT_1+0x0)(r3),r5
-	l.andi	r5,r6,0xffff
-	l.sh	(TRAMP_SLOT_1+0x2)(r3),r5
-
-	l.lhz	r5,(TRAMP_SLOT_2+0x0)(r3)	// load hi part of jump instruction
-	l.andi	r5,r5,0x3ff		// clear out opcode part
-	l.ori	r5,r5,0x4400		// opcode changed from l.jalr -> l.jr
-	l.sh	(TRAMP_SLOT_2+0x0)(r3),r5 // write it back
-
-	/* falthrough */
-
-1:	// l.jr
-	l.j	trampoline_out
-	l.nop
-
-/* ----------------------------- */
-
-4:	// l.bnf
-5:	// l.bf
-	l.slli	r6,r4,6			// original offset shifted left 6 - 2
-//	l.srli	r6,r6,6			// original offset shifted right 2
-
-	l.slli	r4,r2,4			// old jump position: EEA shifted left 4
-//	l.srli	r4,r4,6			// old jump position: shifted right 2
-
-	l.addi	r5,r3,0xc		// new jump position (physical)
-	l.slli	r5,r5,4			// new jump position: shifted left 4
-
-	// calculate new jump offset
-	// new_off = old_off + (old_jump - new_jump)
-
-	l.add	r6,r6,r4		// (orig_off + old_jump)
-	l.sub	r6,r6,r5		// (orig_off + old_jump) - new_jump
-	l.srli	r6,r6,6			// new offset shifted right 2
-
-	// r6 is new jump offset
-	l.lwz	r4,(TRAMP_SLOT_2+0x0)(r3)	// load jump instruction
-	l.srli	r4,r4,16
-	l.andi	r4,r4,0xfc00		// get opcode part
-	l.slli	r4,r4,16
-	l.or	r6,r4,r6		// l.b(n)f new offset
-	l.sw	TRAMP_SLOT_2(r3),r6	// write it back
-
-	/* we need to add l.j to EEA + 0x8 */
-	tophys	(r4,r2)			// may not be needed (due to shifts down_
-	l.addi	r4,r4,(0x8 - 0x8)	// jump target = r2 + 0x8 (compensate for 0x8)
-					// jump position = r5 + 0x8 (0x8 compensated)
-	l.sub	r4,r4,r5		// jump offset = target - new_position + 0x8
-
-	l.slli	r4,r4,4			// the amount of info in imediate of jump
-	l.srli	r4,r4,6			// jump instruction with offset
-	l.sw	TRAMP_SLOT_4(r3),r4	// write it to 4th slot
-
-	/* fallthrough */
-
-trampoline_out:
-	// set up new EPC to point to our trampoline code
-	LOAD_SYMBOL_2_GPR(r5,_immu_trampoline)
-	l.mtspr	r0,r5,SPR_EPCR_BASE
-
-	// immu_trampoline is (4x) CACHE_LINE aligned
-	// and only 6 instructions long,
-	// so we need to invalidate only 2 lines
-
-	/* Establish cache block size
-	   If BS=0, 16;
-	   If BS=1, 32;
-	   r14 contain block size
-	*/
-	l.mfspr r21,r0,SPR_ICCFGR
-	l.andi	r21,r21,SPR_ICCFGR_CBS
-	l.srli	r21,r21,7
-	l.ori	r23,r0,16
-	l.sll	r14,r23,r21
-
-	l.mtspr	r0,r5,SPR_ICBIR
-	l.add	r5,r5,r14
-	l.mtspr	r0,r5,SPR_ICBIR
-
-	l.jr	r9
-	l.nop
-
-=======
 /*
  * DESC: Prints ASCII character stored in r7
  *
@@ -1989,7 +1391,6 @@ ENTRY(_emergency_putc)
 	EMERGENCY_PRINT_LOAD_GPR4
 	l.jr	r9
 	 l.nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DSCR: prints a string referenced by r3.
@@ -2002,55 +1403,6 @@ ENTRY(_emergency_putc)
  * POST: caller should be aware that r3, r9 are changed
  */
 ENTRY(_emergency_print)
-<<<<<<< HEAD
-	EMERGENCY_PRINT_STORE_GPR4
-	EMERGENCY_PRINT_STORE_GPR5
-	EMERGENCY_PRINT_STORE_GPR6
-	EMERGENCY_PRINT_STORE_GPR7
-2:
-	l.lbz	r7,0(r3)
-	l.sfeq	r7,r0
-	l.bf	9f
-	l.nop
-
-// putc:
-	l.movhi r4,hi(UART_BASE_ADD)
-
-	l.addi  r6,r0,0x20
-1:      l.lbz   r5,5(r4)
-	l.andi  r5,r5,0x20
-	l.sfeq  r5,r6
-	l.bnf   1b
-	l.nop
-
-	l.sb    0(r4),r7
-
-	l.addi  r6,r0,0x60
-1:      l.lbz   r5,5(r4)
-	l.andi  r5,r5,0x60
-	l.sfeq  r5,r6
-	l.bnf   1b
-	l.nop
-
-	/* next character */
-	l.j	2b
-	l.addi	r3,r3,0x1
-
-9:
-	EMERGENCY_PRINT_LOAD_GPR7
-	EMERGENCY_PRINT_LOAD_GPR6
-	EMERGENCY_PRINT_LOAD_GPR5
-	EMERGENCY_PRINT_LOAD_GPR4
-	l.jr	r9
-	l.nop
-
-ENTRY(_emergency_print_nr)
-	EMERGENCY_PRINT_STORE_GPR4
-	EMERGENCY_PRINT_STORE_GPR5
-	EMERGENCY_PRINT_STORE_GPR6
-	EMERGENCY_PRINT_STORE_GPR7
-	EMERGENCY_PRINT_STORE_GPR8
-=======
 	EMERGENCY_PRINT_STORE_GPR7
 	EMERGENCY_PRINT_STORE_GPR9
 
@@ -2086,7 +1438,6 @@ ENTRY(_emergency_print_nr)
 	EMERGENCY_PRINT_STORE_GPR7
 	EMERGENCY_PRINT_STORE_GPR8
 	EMERGENCY_PRINT_STORE_GPR9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	l.addi	r8,r0,32		// shift register
 
@@ -2098,54 +1449,17 @@ ENTRY(_emergency_print_nr)
 	/* don't skip the last zero if number == 0x0 */
 	l.sfeqi	r8,0x4
 	l.bf	2f
-<<<<<<< HEAD
-	l.nop
-
-	l.sfeq	r7,r0
-	l.bf	1b
-	l.nop
-=======
 	 l.nop
 
 	l.sfeq	r7,r0
 	l.bf	1b
 	 l.nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 2:
 	l.srl	r7,r3,r8
 
 	l.andi	r7,r7,0xf
 	l.sflts	r8,r0
-<<<<<<< HEAD
-	l.bf	9f
-
-	l.sfgtui r7,0x9
-	l.bnf	8f
-	l.nop
-	l.addi	r7,r7,0x27
-
-8:
-	l.addi	r7,r7,0x30
-// putc:
-	l.movhi r4,hi(UART_BASE_ADD)
-
-	l.addi  r6,r0,0x20
-1:      l.lbz   r5,5(r4)
-	l.andi  r5,r5,0x20
-	l.sfeq  r5,r6
-	l.bnf   1b
-	l.nop
-
-	l.sb    0(r4),r7
-
-	l.addi  r6,r0,0x60
-1:      l.lbz   r5,5(r4)
-	l.andi  r5,r5,0x60
-	l.sfeq  r5,r6
-	l.bnf   1b
-	l.nop
-=======
 	 l.bf	9f
 
 	/* Numbers greater than 9 translate to a-f */
@@ -2157,29 +1471,17 @@ ENTRY(_emergency_print_nr)
 	/* Convert to ascii and output character */
 8:	l.jal	_emergency_putc
 	 l.addi	r7,r7,0x30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* next character */
 	l.j	2b
 	l.addi	r8,r8,-0x4
 
 9:
-<<<<<<< HEAD
-	EMERGENCY_PRINT_LOAD_GPR8
-	EMERGENCY_PRINT_LOAD_GPR7
-	EMERGENCY_PRINT_LOAD_GPR6
-	EMERGENCY_PRINT_LOAD_GPR5
-	EMERGENCY_PRINT_LOAD_GPR4
-	l.jr	r9
-	l.nop
-
-=======
 	EMERGENCY_PRINT_LOAD_GPR9
 	EMERGENCY_PRINT_LOAD_GPR8
 	EMERGENCY_PRINT_LOAD_GPR7
 	l.jr	r9
 	 l.nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This should be used for debugging only.
@@ -2204,13 +1506,9 @@ ENTRY(_emergency_print_nr)
 
 ENTRY(_early_uart_init)
 	l.movhi	r3,hi(UART_BASE_ADD)
-<<<<<<< HEAD
-
-=======
 	l.ori	r3,r3,lo(UART_BASE_ADD)
 
 #if defined(CONFIG_SERIAL_8250)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.addi	r4,r0,0x7
 	l.sb	0x2(r3),r4
 
@@ -2228,20 +1526,6 @@ ENTRY(_early_uart_init)
 	l.addi  r4,r0,((UART_DIVISOR) & 0x000000ff)
 	l.sb	UART_DLL(r3),r4
 	l.sb	0x3(r3),r5
-<<<<<<< HEAD
-
-	l.jr	r9
-	l.nop
-
-_string_copying_linux:
-	.string "\n\n\n\n\n\rCopying Linux... \0"
-
-_string_ok_booting:
-	.string "Ok, booting the kernel.\n\r\0"
-
-_string_unhandled_exception:
-	.string "\n\rRunarunaround: Unhandled exception 0x\0"
-=======
 #endif
 
 	l.jr	r9
@@ -2261,33 +1545,19 @@ _secondary_evbar:
 	.section .rodata
 _string_unhandled_exception:
 	.string "\r\nRunarunaround: Unhandled exception 0x\0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _string_epc_prefix:
 	.string ": EPC=0x\0"
 
 _string_nl:
-<<<<<<< HEAD
-	.string "\n\r\0"
-
-	.global	_string_esr_irq_bug
-_string_esr_irq_bug:
-	.string "\n\rESR external interrupt bug, for details look into entry.S\n\r\0"
-
-=======
 	.string "\r\n\0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* ========================================[ page aligned structures ]=== */
 
 /*
  * .data section should be page aligned
-<<<<<<< HEAD
- *	(look into arch/or32/kernel/vmlinux.lds)
-=======
  *	(look into arch/openrisc/kernel/vmlinux.lds.S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 	.section .data,"aw"
 	.align	8192

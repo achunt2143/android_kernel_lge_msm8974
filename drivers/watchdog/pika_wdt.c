@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PIKA FPGA based Watchdog Timer
  *
@@ -26,12 +23,8 @@
 #include <linux/bitops.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME "PIKA-WDT"
 
@@ -62,11 +55,7 @@ static struct {
 	struct timer_list timer;	/* The timer that pings the watchdog */
 } pikawdt_private;
 
-<<<<<<< HEAD
-static struct watchdog_info ident = {
-=======
 static struct watchdog_info ident __ro_after_init = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.identity	= DRV_NAME,
 	.options	= WDIOF_CARDRESET |
 			  WDIOF_SETTIMEOUT |
@@ -97,11 +86,7 @@ static inline void pikawdt_reset(void)
 /*
  * Timer tick
  */
-<<<<<<< HEAD
-static void pikawdt_ping(unsigned long data)
-=======
 static void pikawdt_ping(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (time_before(jiffies, pikawdt_private.next_heartbeat) ||
 			(!nowayout && !pikawdt_private.open)) {
@@ -134,11 +119,7 @@ static int pikawdt_open(struct inode *inode, struct file *file)
 
 	pikawdt_start();
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -233,10 +214,7 @@ static const struct file_operations pikawdt_fops = {
 	.release	= pikawdt_release,
 	.write		= pikawdt_write,
 	.unlocked_ioctl	= pikawdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice pikawdt_miscdev = {
@@ -249,11 +227,7 @@ static int __init pikawdt_init(void)
 {
 	struct device_node *np;
 	void __iomem *fpga;
-<<<<<<< HEAD
-	static u32 post1;
-=======
 	u32 post1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	np = of_find_compatible_node(NULL, NULL, "pika,fpga");
@@ -297,11 +271,7 @@ static int __init pikawdt_init(void)
 
 	iounmap(fpga);
 
-<<<<<<< HEAD
-	setup_timer(&pikawdt_private.timer, pikawdt_ping, 0);
-=======
 	timer_setup(&pikawdt_private.timer, pikawdt_ping, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = misc_register(&pikawdt_miscdev);
 	if (ret) {
@@ -331,8 +301,3 @@ module_exit(pikawdt_exit);
 MODULE_AUTHOR("Sean MacLennan <smaclennan@pikatech.com>");
 MODULE_DESCRIPTION("PIKA FPGA based Watchdog Timer");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

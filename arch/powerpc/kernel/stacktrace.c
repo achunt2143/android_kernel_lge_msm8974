@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-/*
- * Stack trace utility
- *
- * Copyright 2008 Christoph Hellwig, IBM Corp.
- *
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-
-#include <linux/export.h>
-#include <linux/sched.h>
-#include <linux/stacktrace.h>
-#include <asm/ptrace.h>
-#include <asm/processor.h>
-
-/*
- * Save stack-backtrace addresses into a stack_trace buffer.
- */
-static void save_context_stack(struct stack_trace *trace, unsigned long sp,
-			struct task_struct *tsk, int savesched)
-{
-=======
 // SPDX-License-Identifier: GPL-2.0
 
 /*
@@ -65,56 +39,23 @@ void __no_sanitize_address arch_stack_walk(stack_trace_consume_fn consume_entry,
 	else
 		sp = task->thread.ksp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;) {
 		unsigned long *stack = (unsigned long *) sp;
 		unsigned long newsp, ip;
 
-<<<<<<< HEAD
-		if (!validate_sp(sp, tsk, STACK_FRAME_OVERHEAD))
-=======
 		if (!validate_sp(sp, task))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 
 		newsp = stack[0];
 		ip = stack[STACK_FRAME_LR_SAVE];
 
-<<<<<<< HEAD
-		if (savesched || !in_sched_functions(ip)) {
-			if (!trace->skip)
-				trace->entries[trace->nr_entries++] = ip;
-			else
-				trace->skip--;
-		}
-
-		if (trace->nr_entries >= trace->max_entries)
-=======
 		if (!consume_entry(cookie, ip))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 
 		sp = newsp;
 	}
 }
 
-<<<<<<< HEAD
-void save_stack_trace(struct stack_trace *trace)
-{
-	unsigned long sp;
-
-	asm("mr %0,1" : "=r" (sp));
-
-	save_context_stack(trace, sp, current, 1);
-}
-EXPORT_SYMBOL_GPL(save_stack_trace);
-
-void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
-{
-	save_context_stack(trace, tsk->thread.ksp, tsk, 0);
-}
-EXPORT_SYMBOL_GPL(save_stack_trace_tsk);
-=======
 /*
  * This function returns an error if it detects any unreliable features of the
  * stack.  Otherwise it guarantees that the stack trace is reliable.
@@ -268,4 +209,3 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
 	nmi_trigger_cpumask_backtrace(mask, exclude_cpu, raise_backtrace_ipi);
 }
 #endif /* defined(CONFIG_PPC_BOOK3S_64) && defined(CONFIG_NMI_IPI) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

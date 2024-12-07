@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef LINUX_CRASH_DUMP_H
-#define LINUX_CRASH_DUMP_H
-
-#ifdef CONFIG_CRASH_DUMP
-#include <linux/kexec.h>
-#include <linux/proc_fs.h>
-#include <linux/elf.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef LINUX_CRASH_DUMP_H
 #define LINUX_CRASH_DUMP_H
@@ -19,17 +9,12 @@
 #include <uapi/linux/vmcore.h>
 
 /* For IS_ENABLED(CONFIG_CRASH_DUMP) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELFCORE_ADDR_MAX	(-1ULL)
 #define ELFCORE_ADDR_ERR	(-2ULL)
 
 extern unsigned long long elfcorehdr_addr;
 extern unsigned long long elfcorehdr_size;
 
-<<<<<<< HEAD
-extern ssize_t copy_oldmem_page(unsigned long, char *, size_t,
-						unsigned long, int);
-=======
 #ifdef CONFIG_CRASH_DUMP
 extern int elfcorehdr_alloc(unsigned long long *addr, unsigned long long *size);
 extern void elfcorehdr_free(unsigned long long addr);
@@ -45,7 +30,6 @@ ssize_t copy_oldmem_page_encrypted(struct iov_iter *iter, unsigned long pfn,
 				   size_t csize, unsigned long offset);
 
 void vmcore_cleanup(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Architecture code defines this if there are other possible ELF
  * machine types, e.g. on bi-arch capable hardware. */
@@ -55,11 +39,6 @@ void vmcore_cleanup(void);
 
 /*
  * Architecture code can redefine this if there are any special checks
-<<<<<<< HEAD
- * needed for 64-bit ELF vmcores. In case of 32-bit only architecture,
- * this can be set to zero.
- */
-=======
  * needed for 32-bit ELF or 64-bit ELF vmcores.  In case of 32-bit
  * only architecture, vmcore_elf64_check_arch can be set to zero.
  */
@@ -67,31 +46,17 @@ void vmcore_cleanup(void);
 #define vmcore_elf32_check_arch(x) elf_check_arch(x)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef vmcore_elf64_check_arch
 #define vmcore_elf64_check_arch(x) (elf_check_arch(x) || vmcore_elf_check_arch_cross(x))
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef is_kdump_kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * is_kdump_kernel() checks whether this kernel is booting after a panic of
  * previous kernel or not. This is determined by checking if previous kernel
  * has passed the elf core header address on command line.
  *
  * This is not just a test if CONFIG_CRASH_DUMP is enabled or not. It will
-<<<<<<< HEAD
- * return 1 if CONFIG_CRASH_DUMP=y and if kernel is booting after a panic of
- * previous kernel.
- */
-
-static inline int is_kdump_kernel(void)
-{
-	return (elfcorehdr_addr != ELFCORE_ADDR_MAX) ? 1 : 0;
-}
-=======
  * return true if CONFIG_CRASH_DUMP=y and if kernel is booting after a panic
  * of previous kernel.
  */
@@ -101,7 +66,6 @@ static inline bool is_kdump_kernel(void)
 	return elfcorehdr_addr != ELFCORE_ADDR_MAX;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* is_vmcore_usable() checks if the kernel is booting after a panic and
  * the vmcore region is usable.
@@ -113,12 +77,8 @@ static inline bool is_kdump_kernel(void)
 
 static inline int is_vmcore_usable(void)
 {
-<<<<<<< HEAD
-	return is_kdump_kernel() && elfcorehdr_addr != ELFCORE_ADDR_ERR ? 1 : 0;
-=======
 	return elfcorehdr_addr != ELFCORE_ADDR_ERR &&
 		elfcorehdr_addr != ELFCORE_ADDR_MAX ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* vmcore_unusable() marks the vmcore as unusable,
@@ -127,21 +87,6 @@ static inline int is_vmcore_usable(void)
 
 static inline void vmcore_unusable(void)
 {
-<<<<<<< HEAD
-	if (is_kdump_kernel())
-		elfcorehdr_addr = ELFCORE_ADDR_ERR;
-}
-
-#define HAVE_OLDMEM_PFN_IS_RAM 1
-extern int register_oldmem_pfn_is_ram(int (*fn)(unsigned long pfn));
-extern void unregister_oldmem_pfn_is_ram(void);
-
-#else /* !CONFIG_CRASH_DUMP */
-static inline int is_kdump_kernel(void) { return 0; }
-#endif /* CONFIG_CRASH_DUMP */
-
-extern unsigned long saved_max_pfn;
-=======
 	elfcorehdr_addr = ELFCORE_ADDR_ERR;
 }
 
@@ -201,5 +146,4 @@ static inline ssize_t read_from_oldmem(struct iov_iter *iter, size_t count,
 }
 #endif /* CONFIG_PROC_VMCORE */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_CRASHDUMP_H */

@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
-<<<<<<< HEAD
-extra-$(CONFIG_AMIGA)	:= head.o
-extra-$(CONFIG_ATARI)	:= head.o
-extra-$(CONFIG_MAC)	:= head.o
-extra-$(CONFIG_APOLLO)	:= head.o
-extra-$(CONFIG_VME)	:= head.o
-extra-$(CONFIG_HP300)	:= head.o
-extra-$(CONFIG_Q40)	:= head.o
-extra-$(CONFIG_SUN3X)	:= head.o
-extra-$(CONFIG_SUN3)	:= sun3-head.o
-extra-y			+= vmlinux.lds
-
-obj-y	:= entry.o init_task.o irq.o m68k_ksyms.o module.o process.o ptrace.o
-=======
 extra-y			+= vmlinux.lds
 
 obj-$(CONFIG_AMIGA)	:= head.o
@@ -34,17 +17,10 @@ obj-$(CONFIG_VIRT)	:= head.o
 obj-$(CONFIG_SUN3)	:= sun3-head.o
 
 obj-y	+= entry.o irq.o module.o process.o ptrace.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y	+= setup.o signal.o sys_m68k.o syscalltable.o time.o traps.o
 
 obj-$(CONFIG_MMU_MOTOROLA) += ints.o vectors.o
 obj-$(CONFIG_MMU_SUN3) += ints.o vectors.o
-<<<<<<< HEAD
-
-ifndef CONFIG_MMU_SUN3
-obj-y	+= dma.o
-endif
-=======
 obj-$(CONFIG_PCI) += pcibios.o
 
 obj-$(CONFIG_M68K_NONCOHERENT_DMA) += dma.o
@@ -54,5 +30,4 @@ obj-$(CONFIG_BOOTINFO_PROC)	+= bootinfo_proc.o
 obj-$(CONFIG_UBOOT)		+= uboot.o
 
 obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

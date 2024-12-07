@@ -7,11 +7,7 @@
  *            ------------------
  *
  * You can find a subset of the documentation in 
-<<<<<<< HEAD
- * Documentation/networking/z8530drv.txt.
-=======
  * Documentation/networking/device_drivers/hamradio/z8530drv.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -152,10 +148,7 @@
 
 /* ----------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/signal.h>
@@ -186,23 +179,6 @@
 
 #include <asm/irq.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-#include "z8530.h"
-
-static const char banner[] __initdata = KERN_INFO \
-	"AX.25: Z8530 SCC driver version "VERSION".dl1bke\n";
-
-static void t_dwait(unsigned long);
-static void t_txdelay(unsigned long);
-static void t_tail(unsigned long);
-static void t_busy(unsigned long);
-static void t_maxkeyup(unsigned long);
-static void t_idle(unsigned long);
-static void scc_tx_done(struct scc_channel *);
-static void scc_start_tx_timer(struct scc_channel *, void (*)(unsigned long), unsigned long);
-=======
 #include <linux/uaccess.h>
 
 #include "z8530.h"
@@ -219,7 +195,6 @@ static void t_idle(struct timer_list *t);
 static void scc_tx_done(struct scc_channel *);
 static void scc_start_tx_timer(struct scc_channel *,
 			       void (*)(struct timer_list *), unsigned long);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void scc_start_maxkeyup(struct scc_channel *);
 static void scc_start_defer(struct scc_channel *);
 
@@ -236,12 +211,8 @@ static int scc_net_close(struct net_device *dev);
 static void scc_net_rx(struct scc_channel *scc, struct sk_buff *skb);
 static netdev_tx_t scc_net_tx(struct sk_buff *skb,
 			      struct net_device *dev);
-<<<<<<< HEAD
-static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
-=======
 static int scc_net_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 				  void __user *data, int cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int scc_net_set_mac_address(struct net_device *dev, void *addr);
 static struct net_device_stats * scc_net_get_stats(struct net_device *dev);
 
@@ -331,20 +302,12 @@ static inline void scc_discard_buffers(struct scc_channel *scc)
 	spin_lock_irqsave(&scc->lock, flags);	
 	if (scc->tx_buff != NULL)
 	{
-<<<<<<< HEAD
-		dev_kfree_skb(scc->tx_buff);
-=======
 		dev_kfree_skb_irq(scc->tx_buff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scc->tx_buff = NULL;
 	}
 	
 	while (!skb_queue_empty(&scc->tx_queue))
-<<<<<<< HEAD
-		dev_kfree_skb(skb_dequeue(&scc->tx_queue));
-=======
 		dev_kfree_skb_irq(skb_dequeue(&scc->tx_queue));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&scc->lock, flags);
 }
@@ -580,11 +543,7 @@ static inline void scc_rxint(struct scc_channel *scc)
 		}
 		
 		scc->rx_buff = skb;
-<<<<<<< HEAD
-		*(skb_put(skb, 1)) = 0;	/* KISS data */
-=======
 		skb_put_u8(skb, 0);	/* KISS data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	
 	if (skb->len >= scc->stat.bufsize)
@@ -599,11 +558,7 @@ static inline void scc_rxint(struct scc_channel *scc)
 		return;
 	}
 
-<<<<<<< HEAD
-	*(skb_put(skb, 1)) = Inb(scc->data);
-=======
 	skb_put_u8(skb, Inb(scc->data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1040,43 +995,27 @@ static void scc_key_trx(struct scc_channel *scc, char tx)
 
 /* ----> SCC timer interrupt handler and friends. <---- */
 
-<<<<<<< HEAD
-static void __scc_start_tx_timer(struct scc_channel *scc, void (*handler)(unsigned long), unsigned long when)
-=======
 static void __scc_start_tx_timer(struct scc_channel *scc,
 				 void (*handler)(struct timer_list *t),
 				 unsigned long when)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	del_timer(&scc->tx_t);
 
 	if (when == 0)
 	{
-<<<<<<< HEAD
-		handler((unsigned long) scc);
-	} else 
-	if (when != TIMER_OFF)
-	{
-		scc->tx_t.data = (unsigned long) scc;
-=======
 		handler(&scc->tx_t);
 	} else 
 	if (when != TIMER_OFF)
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scc->tx_t.function = handler;
 		scc->tx_t.expires = jiffies + (when*HZ)/100;
 		add_timer(&scc->tx_t);
 	}
 }
 
-<<<<<<< HEAD
-static void scc_start_tx_timer(struct scc_channel *scc, void (*handler)(unsigned long), unsigned long when)
-=======
 static void scc_start_tx_timer(struct scc_channel *scc,
 			       void (*handler)(struct timer_list *t),
 			       unsigned long when)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	
@@ -1094,10 +1033,6 @@ static void scc_start_defer(struct scc_channel *scc)
 	
 	if (scc->kiss.maxdefer != 0 && scc->kiss.maxdefer != TIMER_OFF)
 	{
-<<<<<<< HEAD
-		scc->tx_wdog.data = (unsigned long) scc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scc->tx_wdog.function = t_busy;
 		scc->tx_wdog.expires = jiffies + HZ*scc->kiss.maxdefer;
 		add_timer(&scc->tx_wdog);
@@ -1114,10 +1049,6 @@ static void scc_start_maxkeyup(struct scc_channel *scc)
 	
 	if (scc->kiss.maxkeyup != 0 && scc->kiss.maxkeyup != TIMER_OFF)
 	{
-<<<<<<< HEAD
-		scc->tx_wdog.data = (unsigned long) scc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scc->tx_wdog.function = t_maxkeyup;
 		scc->tx_wdog.expires = jiffies + HZ*scc->kiss.maxkeyup;
 		add_timer(&scc->tx_wdog);
@@ -1194,15 +1125,9 @@ static inline int is_grouped(struct scc_channel *scc)
  * fulldup == 2:  mintime expired, reset status or key trx and start txdelay
  */
 
-<<<<<<< HEAD
-static void t_dwait(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void t_dwait(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (scc->stat.tx_state == TXS_WAIT)	/* maxkeyup or idle timeout */
 	{
@@ -1242,15 +1167,9 @@ static void t_dwait(struct timer_list *t)
  * kick transmission by a fake scc_txint(scc), start 'maxkeyup' watchdog.
  */
 
-<<<<<<< HEAD
-static void t_txdelay(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void t_txdelay(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scc_start_maxkeyup(scc);
 
@@ -1269,26 +1188,6 @@ static void t_txdelay(struct timer_list *t)
  * transmission after 'mintime' seconds
  */
 
-<<<<<<< HEAD
-static void t_tail(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-	unsigned long flags;
-	
-	spin_lock_irqsave(&scc->lock, flags); 
- 	del_timer(&scc->tx_wdog);	
- 	scc_key_trx(scc, TX_OFF);
-	spin_unlock_irqrestore(&scc->lock, flags);
-
- 	if (scc->stat.tx_state == TXS_TIMEOUT)		/* we had a timeout? */
- 	{
- 		scc->stat.tx_state = TXS_WAIT;
-		scc_start_tx_timer(scc, t_dwait, scc->kiss.mintime*100);
- 		return;
- 	}
- 	
- 	scc->stat.tx_state = TXS_IDLE;
-=======
 static void t_tail(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_t);
@@ -1307,7 +1206,6 @@ static void t_tail(struct timer_list *t)
 	}
 
 	scc->stat.tx_state = TXS_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(scc->dev);
 }
 
@@ -1317,15 +1215,9 @@ static void t_tail(struct timer_list *t)
  * throw away send buffers if DCD remains active too long.
  */
 
-<<<<<<< HEAD
-static void t_busy(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void t_busy(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_wdog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer(&scc->tx_t);
 	netif_stop_queue(scc->dev);	/* don't pile on the wabbit! */
@@ -1342,15 +1234,9 @@ static void t_busy(struct timer_list *t)
  * this is our watchdog.
  */
 
-<<<<<<< HEAD
-static void t_maxkeyup(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void t_maxkeyup(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_wdog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&scc->lock, flags);
@@ -1382,15 +1268,9 @@ static void t_maxkeyup(struct timer_list *t)
  * expires.
  */
 
-<<<<<<< HEAD
-static void t_idle(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void t_idle(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	del_timer(&scc->tx_wdog);
 
@@ -1521,15 +1401,9 @@ static unsigned long scc_get_param(struct scc_channel *scc, unsigned int cmd)
 /* *			Send calibration pattern		     * */
 /* ******************************************************************* */
 
-<<<<<<< HEAD
-static void scc_stop_calibrate(unsigned long channel)
-{
-	struct scc_channel *scc = (struct scc_channel *) channel;
-=======
 static void scc_stop_calibrate(struct timer_list *t)
 {
 	struct scc_channel *scc = from_timer(scc, t, tx_wdog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	
 	spin_lock_irqsave(&scc->lock, flags);
@@ -1556,10 +1430,6 @@ scc_start_calibrate(struct scc_channel *scc, int duration, unsigned char pattern
 
 	del_timer(&scc->tx_wdog);
 
-<<<<<<< HEAD
-	scc->tx_wdog.data = (unsigned long) scc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scc->tx_wdog.function = scc_stop_calibrate;
 	scc->tx_wdog.expires = jiffies + HZ*duration;
 	add_timer(&scc->tx_wdog);
@@ -1648,24 +1518,15 @@ static int scc_net_alloc(const char *name, struct scc_channel *scc)
 	int err;
 	struct net_device *dev;
 
-<<<<<<< HEAD
-	dev = alloc_netdev(0, name, scc_net_setup);
-=======
 	dev = alloc_netdev(0, name, NET_NAME_UNKNOWN, scc_net_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev) 
 		return -ENOMEM;
 
 	dev->ml_priv = scc;
 	scc->dev = dev;
 	spin_lock_init(&scc->lock);
-<<<<<<< HEAD
-	init_timer(&scc->tx_t);
-	init_timer(&scc->tx_wdog);
-=======
 	timer_setup(&scc->tx_t, NULL, 0);
 	timer_setup(&scc->tx_wdog, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_netdevice(dev);
 	if (err) {
@@ -1691,11 +1552,7 @@ static const struct net_device_ops scc_netdev_ops = {
 	.ndo_start_xmit	     = scc_net_tx,
 	.ndo_set_mac_address = scc_net_set_mac_address,
 	.ndo_get_stats       = scc_net_get_stats,
-<<<<<<< HEAD
-	.ndo_do_ioctl        = scc_net_ioctl,
-=======
 	.ndo_siocdevprivate  = scc_net_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* ----> Initialize device <----- */
@@ -1707,12 +1564,6 @@ static void scc_net_setup(struct net_device *dev)
 	dev->netdev_ops	     = &scc_netdev_ops;
 	dev->header_ops      = &ax25_header_ops;
 
-<<<<<<< HEAD
-	memcpy(dev->broadcast, &ax25_bcast,  AX25_ADDR_LEN);
-	memcpy(dev->dev_addr,  &ax25_defaddr, AX25_ADDR_LEN);
- 
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->flags      = 0;
 
 	dev->type = ARPHRD_AX25;
@@ -1720,11 +1571,8 @@ static void scc_net_setup(struct net_device *dev)
 	dev->mtu = AX25_DEF_PACLEN;
 	dev->addr_len = AX25_ADDR_LEN;
 
-<<<<<<< HEAD
-=======
 	memcpy(dev->broadcast, &ax25_bcast,  AX25_ADDR_LEN);
 	dev_addr_set(dev, (u8 *)&ax25_defaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ----> open network device <---- */
@@ -1733,11 +1581,7 @@ static int scc_net_open(struct net_device *dev)
 {
 	struct scc_channel *scc = (struct scc_channel *) dev->ml_priv;
 
-<<<<<<< HEAD
- 	if (!scc->init)
-=======
 	if (!scc->init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	scc->tx_buff = NULL;
@@ -1797,12 +1641,9 @@ static netdev_tx_t scc_net_tx(struct sk_buff *skb, struct net_device *dev)
 	unsigned long flags;
 	char kisscmd;
 
-<<<<<<< HEAD
-=======
 	if (skb->protocol == htons(ETH_P_IP))
 		return ax25_ip_xmit(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb->len > scc->stat.bufsize || skb->len < 2) {
 		scc->dev_stat.tx_dropped++;	/* bogus frame */
 		dev_kfree_skb(skb);
@@ -1827,17 +1668,10 @@ static netdev_tx_t scc_net_tx(struct sk_buff *skb, struct net_device *dev)
 	if (skb_queue_len(&scc->tx_queue) > scc->dev->tx_queue_len) {
 		struct sk_buff *skb_del;
 		skb_del = skb_dequeue(&scc->tx_queue);
-<<<<<<< HEAD
-		dev_kfree_skb(skb_del);
-	}
-	skb_queue_tail(&scc->tx_queue, skb);
-	dev->trans_start = jiffies;
-=======
 		dev_kfree_skb_irq(skb_del);
 	}
 	skb_queue_tail(&scc->tx_queue, skb);
 	netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 
 	/*
@@ -1870,12 +1704,8 @@ static netdev_tx_t scc_net_tx(struct sk_buff *skb, struct net_device *dev)
  * SIOCSCCCAL		- send calib. pattern	arg: (struct scc_calibrate *) arg
  */
 
-<<<<<<< HEAD
-static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-=======
 static int scc_net_siocdevprivate(struct net_device *dev,
 				  struct ifreq *ifr, void __user *arg, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scc_kiss_cmd kiss_cmd;
 	struct scc_mem_config memcfg;
@@ -1884,11 +1714,6 @@ static int scc_net_siocdevprivate(struct net_device *dev,
 	struct scc_channel *scc = (struct scc_channel *) dev->ml_priv;
 	int chan;
 	unsigned char device_name[IFNAMSIZ];
-<<<<<<< HEAD
-	void __user *arg = ifr->ifr_data;
-	
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (!Driver_Initialized)
 	{
@@ -1897,12 +1722,9 @@ static int scc_net_siocdevprivate(struct net_device *dev,
 			int found = 1;
 
 			if (!capable(CAP_SYS_RAWIO)) return -EPERM;
-<<<<<<< HEAD
-=======
 			if (in_compat_syscall())
 				return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!arg) return -EFAULT;
 
 			if (Nchips >= SCC_MAXCHIPS) 
@@ -1919,11 +1741,7 @@ static int scc_net_siocdevprivate(struct net_device *dev,
 			if (!Ivec[hwcfg.irq].used && hwcfg.irq)
 			{
 				if (request_irq(hwcfg.irq, scc_isr,
-<<<<<<< HEAD
-						IRQF_DISABLED, "AX.25 SCC",
-=======
 						0, "AX.25 SCC",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						(void *)(long) hwcfg.irq))
 					printk(KERN_WARNING "z8530drv: warning, cannot get IRQ %d\n", hwcfg.irq);
 				else
@@ -2133,11 +1951,7 @@ static int scc_net_siocdevprivate(struct net_device *dev,
 static int scc_net_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *sa = (struct sockaddr *) addr;
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, sa->sa_data, dev->addr_len);
-=======
 	dev_addr_set(dev, sa->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2273,24 +2087,6 @@ static const struct seq_operations scc_net_seq_ops = {
 	.stop   = scc_net_seq_stop,
 	.show   = scc_net_seq_show,
 };
-<<<<<<< HEAD
-
-
-static int scc_net_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &scc_net_seq_ops);
-}
-
-static const struct file_operations scc_net_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = scc_net_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = seq_release_private,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */
 
  
@@ -2314,11 +2110,7 @@ static int __init scc_init_driver (void)
 	}
 	rtnl_unlock();
 
-<<<<<<< HEAD
-	proc_net_fops_create(&init_net, "z8530drv", 0, &scc_net_seq_fops);
-=======
 	proc_create_seq("z8530drv", 0, init_net.proc_net, &scc_net_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2373,19 +2165,11 @@ static void __exit scc_cleanup_driver(void)
 	if (Vector_Latch)
 		release_region(Vector_Latch, 1);
 
-<<<<<<< HEAD
-	proc_net_remove(&init_net, "z8530drv");
-=======
 	remove_proc_entry("z8530drv", init_net.proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Joerg Reuter <jreuter@yaina.de>");
 MODULE_DESCRIPTION("AX.25 Device Driver for Z8530 based HDLC cards");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("Z8530 based SCC cards for Amateur Radio");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 module_init(scc_init_driver);
 module_exit(scc_cleanup_driver);

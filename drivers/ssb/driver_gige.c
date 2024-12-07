@@ -24,11 +24,7 @@ MODULE_LICENSE("GPL");
 
 static const struct ssb_device_id ssb_gige_tbl[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_ETHERNET_GBIT, SSB_ANY_REV),
-<<<<<<< HEAD
-	SSB_DEVTABLE_END
-=======
 	{},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 /* MODULE_DEVICE_TABLE(ssb, ssb_gige_tbl); */
 
@@ -111,14 +107,8 @@ void gige_pcicfg_write32(struct ssb_gige *dev,
 	gige_write32(dev, SSB_GIGE_PCICFG + offset, value);
 }
 
-<<<<<<< HEAD
-static int __devinit ssb_gige_pci_read_config(struct pci_bus *bus,
-					      unsigned int devfn, int reg,
-					      int size, u32 *val)
-=======
 static int ssb_gige_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 				    int reg, int size, u32 *val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_gige *dev = container_of(bus->ops, struct ssb_gige, pci_ops);
 	unsigned long flags;
@@ -147,14 +137,8 @@ static int ssb_gige_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 	return PCIBIOS_SUCCESSFUL;
 }
 
-<<<<<<< HEAD
-static int __devinit ssb_gige_pci_write_config(struct pci_bus *bus,
-					       unsigned int devfn, int reg,
-					       int size, u32 val)
-=======
 static int ssb_gige_pci_write_config(struct pci_bus *bus, unsigned int devfn,
 				     int reg, int size, u32 val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_gige *dev = container_of(bus->ops, struct ssb_gige, pci_ops);
 	unsigned long flags;
@@ -183,13 +167,8 @@ static int ssb_gige_pci_write_config(struct pci_bus *bus, unsigned int devfn,
 	return PCIBIOS_SUCCESSFUL;
 }
 
-<<<<<<< HEAD
-static int __devinit ssb_gige_probe(struct ssb_device *sdev,
-				    const struct ssb_device_id *id)
-=======
 static int ssb_gige_probe(struct ssb_device *sdev,
 			  const struct ssb_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_gige *dev;
 	u32 base, tmslow, tmshigh;
@@ -263,11 +242,7 @@ static int ssb_gige_probe(struct ssb_device *sdev,
 bool pdev_is_ssb_gige_core(struct pci_dev *pdev)
 {
 	if (!pdev->resource[0].name)
-<<<<<<< HEAD
-		return 0;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (strcmp(pdev->resource[0].name, SSB_GIGE_MEM_RES_NAME) == 0);
 }
 EXPORT_SYMBOL(pdev_is_ssb_gige_core);

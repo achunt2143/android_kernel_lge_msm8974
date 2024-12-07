@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-/*
- * (C) 2002 - 2003 Dominik Brodowski <linux@brodo.de>
- *
- *  Licensed under the terms of the GNU GPL License version 2.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * (C) 2002 - 2003 Dominik Brodowski <linux@brodo.de>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Library for common functions for Intel SpeedStep v.1 and v.2 support
  *
  *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -45,11 +34,7 @@ static int relaxed_check;
 static unsigned int pentium3_get_frequency(enum speedstep_processor processor)
 {
 	/* See table 14 of p3_ds.pdf and table 22 of 29834003.pdf */
-<<<<<<< HEAD
-	struct {
-=======
 	static const struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int ratio;	/* Frequency Multiplier (x10) */
 		u8 bitmap;		/* power on configuration bits
 					[27, 25:22] (in MSR 0x2a) */
@@ -72,11 +57,7 @@ static unsigned int pentium3_get_frequency(enum speedstep_processor processor)
 	};
 
 	/* PIII(-M) FSB settings: see table b1-b of 24547206.pdf */
-<<<<<<< HEAD
-	struct {
-=======
 	static const struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int value;	/* Front Side Bus speed in MHz */
 		u8 bitmap;		/* power on configuration bits [18: 19]
 					(in MSR 0x2a) */
@@ -173,11 +154,7 @@ static unsigned int pentium_core_get_frequency(void)
 		fsb = 333333;
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "PCORE - MSR_FSB_FREQ undefined value");
-=======
 		pr_err("PCORE - MSR_FSB_FREQ undefined value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rdmsr(MSR_IA32_EBL_CR_POWERON, msr_lo, msr_tmp);
@@ -263,11 +240,7 @@ unsigned int speedstep_get_frequency(enum speedstep_processor processor)
 		return pentium3_get_frequency(processor);
 	default:
 		return 0;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(speedstep_get_frequency);
@@ -278,11 +251,7 @@ EXPORT_SYMBOL_GPL(speedstep_get_frequency);
  *********************************************************************/
 
 /* Keep in sync with the x86_cpu_id tables in the different modules */
-<<<<<<< HEAD
-unsigned int speedstep_detect_processor(void)
-=======
 enum speedstep_processor speedstep_detect_processor(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_x86 *c = &cpu_data(0);
 	u32 ebx, msr_lo, msr_hi;
@@ -302,15 +271,9 @@ enum speedstep_processor speedstep_detect_processor(void)
 		ebx = cpuid_ebx(0x00000001);
 		ebx &= 0x000000FF;
 
-<<<<<<< HEAD
-		pr_debug("ebx value is %x, x86_mask is %x\n", ebx, c->x86_mask);
-
-		switch (c->x86_mask) {
-=======
 		pr_debug("ebx value is %x, x86_stepping is %x\n", ebx, c->x86_stepping);
 
 		switch (c->x86_stepping) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 4:
 			/*
 			 * B-stepping [M-P4-M]
@@ -397,21 +360,13 @@ enum speedstep_processor speedstep_detect_processor(void)
 				msr_lo, msr_hi);
 		if ((msr_hi & (1<<18)) &&
 		    (relaxed_check ? 1 : (msr_hi & (3<<24)))) {
-<<<<<<< HEAD
-			if (c->x86_mask == 0x01) {
-=======
 			if (c->x86_stepping == 0x01) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_debug("early PIII version\n");
 				return SPEEDSTEP_CPU_PIII_C_EARLY;
 			} else
 				return SPEEDSTEP_CPU_PIII_C;
 		}
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return 0;
 	}
@@ -432,11 +387,7 @@ unsigned int speedstep_get_freqs(enum speedstep_processor processor,
 	unsigned int prev_speed;
 	unsigned int ret = 0;
 	unsigned long flags;
-<<<<<<< HEAD
-	struct timeval tv1, tv2;
-=======
 	ktime_t tv1, tv2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((!processor) || (!low_speed) || (!high_speed) || (!set_state))
 		return -EINVAL;
@@ -465,22 +416,14 @@ unsigned int speedstep_get_freqs(enum speedstep_processor processor,
 
 	/* start latency measurement */
 	if (transition_latency)
-<<<<<<< HEAD
-		do_gettimeofday(&tv1);
-=======
 		tv1 = ktime_get();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* switch to high state */
 	set_state(SPEEDSTEP_HIGH);
 
 	/* end latency measurement */
 	if (transition_latency)
-<<<<<<< HEAD
-		do_gettimeofday(&tv2);
-=======
 		tv2 = ktime_get();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*high_speed = speedstep_get_frequency(processor);
 	if (!*high_speed) {
@@ -500,12 +443,7 @@ unsigned int speedstep_get_freqs(enum speedstep_processor processor,
 		set_state(SPEEDSTEP_LOW);
 
 	if (transition_latency) {
-<<<<<<< HEAD
-		*transition_latency = (tv2.tv_sec - tv1.tv_sec) * USEC_PER_SEC +
-			tv2.tv_usec - tv1.tv_usec;
-=======
 		*transition_latency = ktime_to_us(ktime_sub(tv2, tv1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("transition latency is %u uSec\n", *transition_latency);
 
 		/* convert uSec to nSec and add 20% for safety reasons */
@@ -516,16 +454,8 @@ unsigned int speedstep_get_freqs(enum speedstep_processor processor,
 		 */
 		if (*transition_latency > 10000000 ||
 		    *transition_latency < 50000) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PFX "frequency transition "
-					"measured seems out of range (%u "
-					"nSec), falling back to a safe one of"
-					"%u nSec.\n",
-					*transition_latency, 500000);
-=======
 			pr_warn("frequency transition measured seems out of range (%u nSec), falling back to a safe one of %u nSec\n",
 				*transition_latency, 500000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*transition_latency = 500000;
 		}
 	}

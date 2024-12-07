@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright 2002-2007 H. Peter Anvin - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2 or (at your
- *   option) any later version; incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -66,15 +56,10 @@ int main(int argc, char *argv[])
 	uint8_t v;
 	uint8_t exptbl[256], invtbl[256];
 
-<<<<<<< HEAD
-	printf("#include <linux/raid/pq.h>\n");
-	printf("#include <linux/export.h>\n");
-=======
 	printf("#ifdef __KERNEL__\n");
 	printf("#include <linux/export.h>\n");
 	printf("#endif\n");
 	printf("#include <linux/raid/pq.h>\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Compute multiplication table */
 	printf("\nconst u8  __attribute__((aligned(256)))\n"
@@ -95,8 +80,6 @@ int main(int argc, char *argv[])
 	printf("EXPORT_SYMBOL(raid6_gfmul);\n");
 	printf("#endif\n");
 
-<<<<<<< HEAD
-=======
 	/* Compute vector multiplication table */
 	printf("\nconst u8  __attribute__((aligned(256)))\n"
 		"raid6_vgfmul[256][32] =\n"
@@ -122,7 +105,6 @@ int main(int argc, char *argv[])
 	printf("EXPORT_SYMBOL(raid6_vgfmul);\n");
 	printf("#endif\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Compute power-of-2 table (exponent) */
 	v = 1;
 	printf("\nconst u8 __attribute__((aligned(256)))\n"
@@ -142,8 +124,6 @@ int main(int argc, char *argv[])
 	printf("EXPORT_SYMBOL(raid6_gfexp);\n");
 	printf("#endif\n");
 
-<<<<<<< HEAD
-=======
 	/* Compute log-of-2 table */
 	printf("\nconst u8 __attribute__((aligned(256)))\n"
 	       "raid6_gflog[256] =\n" "{\n");
@@ -164,7 +144,6 @@ int main(int argc, char *argv[])
 	printf("EXPORT_SYMBOL(raid6_gflog);\n");
 	printf("#endif\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Compute inverse table x^-1 == x^254 */
 	printf("\nconst u8 __attribute__((aligned(256)))\n"
 	       "raid6_gfinv[256] =\n" "{\n");

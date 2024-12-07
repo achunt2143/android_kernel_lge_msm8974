@@ -1,62 +1,3 @@
-<<<<<<< HEAD
-#include "util.h"
-#include "../perf.h"
-#include "parse-options.h"
-#include "evsel.h"
-#include "cgroup.h"
-#include "evlist.h"
-
-int nr_cgroups;
-
-static int
-cgroupfs_find_mountpoint(char *buf, size_t maxlen)
-{
-	FILE *fp;
-	char mountpoint[PATH_MAX + 1], tokens[PATH_MAX + 1], type[PATH_MAX + 1];
-	char *token, *saved_ptr = NULL;
-	int found = 0;
-
-	fp = fopen("/proc/mounts", "r");
-	if (!fp)
-		return -1;
-
-	/*
-	 * in order to handle split hierarchy, we need to scan /proc/mounts
-	 * and inspect every cgroupfs mount point to find one that has
-	 * perf_event subsystem
-	 */
-	while (fscanf(fp, "%*s %"STR(PATH_MAX)"s %"STR(PATH_MAX)"s %"
-				STR(PATH_MAX)"s %*d %*d\n",
-				mountpoint, type, tokens) == 3) {
-
-		if (!strcmp(type, "cgroup")) {
-
-			token = strtok_r(tokens, ",", &saved_ptr);
-
-			while (token != NULL) {
-				if (!strcmp(token, "perf_event")) {
-					found = 1;
-					break;
-				}
-				token = strtok_r(NULL, ",", &saved_ptr);
-			}
-		}
-		if (found)
-			break;
-	}
-	fclose(fp);
-	if (!found)
-		return -1;
-
-	if (strlen(mountpoint) < maxlen) {
-		strcpy(buf, mountpoint);
-		return 0;
-	}
-	return -1;
-}
-
-static int open_cgroup(char *name)
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <subcmd/parse-options.h>
 #include "evsel.h"
@@ -88,24 +29,16 @@ struct cgroup_name {
 static LIST_HEAD(cgroup_list);
 
 static int open_cgroup(const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char path[PATH_MAX + 1];
 	char mnt[PATH_MAX + 1];
 	int fd;
 
 
-<<<<<<< HEAD
-	if (cgroupfs_find_mountpoint(mnt, PATH_MAX + 1))
-		return -1;
-
-	snprintf(path, PATH_MAX, "%s/%s", mnt, name);
-=======
 	if (cgroupfs_find_mountpoint(mnt, PATH_MAX + 1, "perf_event"))
 		return -1;
 
 	scnprintf(path, PATH_MAX, "%s/%s", mnt, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fd = open(path, O_RDONLY);
 	if (fd == -1)
@@ -114,40 +47,6 @@ static int open_cgroup(const char *name)
 	return fd;
 }
 
-<<<<<<< HEAD
-static int add_cgroup(struct perf_evlist *evlist, char *str)
-{
-	struct perf_evsel *counter;
-	struct cgroup_sel *cgrp = NULL;
-	int n;
-	/*
-	 * check if cgrp is already defined, if so we reuse it
-	 */
-	list_for_each_entry(counter, &evlist->entries, node) {
-		cgrp = counter->cgrp;
-		if (!cgrp)
-			continue;
-		if (!strcmp(cgrp->name, str))
-			break;
-
-		cgrp = NULL;
-	}
-
-	if (!cgrp) {
-		cgrp = zalloc(sizeof(*cgrp));
-		if (!cgrp)
-			return -1;
-
-		cgrp->name = str;
-
-		cgrp->fd = open_cgroup(str);
-		if (cgrp->fd == -1) {
-			free(cgrp);
-			return -1;
-		}
-	}
-
-=======
 #ifdef HAVE_FILE_HANDLE
 static u64 __read_cgroup_id(const char *path)
 {
@@ -259,62 +158,24 @@ static int add_cgroup(struct evlist *evlist, const char *str)
 
 	if (!cgrp)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * find corresponding event
 	 * if add cgroup N, then need to find event N
 	 */
 	n = 0;
-<<<<<<< HEAD
-	list_for_each_entry(counter, &evlist->entries, node) {
-=======
 	evlist__for_each_entry(evlist, counter) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (n == nr_cgroups)
 			goto found;
 		n++;
 	}
-<<<<<<< HEAD
-	if (cgrp->refcnt == 0)
-		free(cgrp);
-
-	return -1;
-found:
-	cgrp->refcnt++;
-=======
 
 	cgroup__put(cgrp);
 	return -1;
 found:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	counter->cgrp = cgrp;
 	return 0;
 }
 
-<<<<<<< HEAD
-void close_cgroup(struct cgroup_sel *cgrp)
-{
-	if (!cgrp)
-		return;
-
-	/* XXX: not reentrant */
-	if (--cgrp->refcnt == 0) {
-		close(cgrp->fd);
-		free(cgrp->name);
-		free(cgrp);
-	}
-}
-
-int parse_cgroups(const struct option *opt __used, const char *str,
-		  int unset __used)
-{
-	struct perf_evlist *evlist = *(struct perf_evlist **)opt->value;
-	const char *p, *e, *eos = str + strlen(str);
-	char *s;
-	int ret;
-
-	if (list_empty(&evlist->entries)) {
-=======
 static void cgroup__delete(struct cgroup *cgroup)
 {
 	if (cgroup->fd >= 0)
@@ -506,7 +367,6 @@ int parse_cgroups(const struct option *opt, const char *str,
 	int ret, i;
 
 	if (list_empty(&evlist->core.entries)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fprintf(stderr, "must define events before cgroups\n");
 		return -1;
 	}
@@ -522,16 +382,9 @@ int parse_cgroups(const struct option *opt, const char *str,
 			if (!s)
 				return -1;
 			ret = add_cgroup(evlist, s);
-<<<<<<< HEAD
-			if (ret) {
-				free(s);
-				return -1;
-			}
-=======
 			free(s);
 			if (ret)
 				return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* nr_cgroups is increased een for empty cgroups */
 		nr_cgroups++;
@@ -539,10 +392,6 @@ int parse_cgroups(const struct option *opt, const char *str,
 			break;
 		str = p+1;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-=======
 	/* for the case one cgroup combine to multiple events */
 	i = 0;
 	if (nr_cgroups == 1) {
@@ -783,4 +632,3 @@ void read_all_cgroups(struct rb_root *root)
 
 	release_cgroup_list();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

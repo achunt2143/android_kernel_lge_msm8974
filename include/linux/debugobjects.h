@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_DEBUGOBJECTS_H
 #define _LINUX_DEBUGOBJECTS_H
 
@@ -21,11 +18,7 @@ enum debug_obj_state {
 struct debug_obj_descr;
 
 /**
-<<<<<<< HEAD
- * struct debug_obj - representaion of an tracked object
-=======
  * struct debug_obj - representation of an tracked object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @node:	hlist node to link the object into the tracker list
  * @state:	tracked object state
  * @astate:	current active state
@@ -37,11 +30,7 @@ struct debug_obj {
 	enum debug_obj_state	state;
 	unsigned int		astate;
 	void			*object;
-<<<<<<< HEAD
-	struct debug_obj_descr	*descr;
-=======
 	const struct debug_obj_descr *descr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -50,15 +39,10 @@ struct debug_obj {
  * @name:		name of the object typee
  * @debug_hint:		function returning address, which have associated
  *			kernel symbol, to allow identify the object
-<<<<<<< HEAD
- * @fixup_init:		fixup function, which is called when the init check
- *			fails
-=======
  * @is_static_object:	return true if the obj is static, otherwise return false
  * @fixup_init:		fixup function, which is called when the init check
  *			fails. All fixup functions must return true if fixup
  *			was successful, otherwise return false
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fixup_activate:	fixup function, which is called when the activate check
  *			fails
  * @fixup_destroy:	fixup function, which is called when the destroy check
@@ -70,25 +54,6 @@ struct debug_obj {
  */
 struct debug_obj_descr {
 	const char		*name;
-<<<<<<< HEAD
-	void *(*debug_hint)	(void *addr);
-	int (*fixup_init)	(void *addr, enum debug_obj_state state);
-	int (*fixup_activate)	(void *addr, enum debug_obj_state state);
-	int (*fixup_destroy)	(void *addr, enum debug_obj_state state);
-	int (*fixup_free)	(void *addr, enum debug_obj_state state);
-	int (*fixup_assert_init)(void *addr, enum debug_obj_state state);
-};
-
-#ifdef CONFIG_DEBUG_OBJECTS
-extern void debug_object_init      (void *addr, struct debug_obj_descr *descr);
-extern void
-debug_object_init_on_stack(void *addr, struct debug_obj_descr *descr);
-extern void debug_object_activate  (void *addr, struct debug_obj_descr *descr);
-extern void debug_object_deactivate(void *addr, struct debug_obj_descr *descr);
-extern void debug_object_destroy   (void *addr, struct debug_obj_descr *descr);
-extern void debug_object_free      (void *addr, struct debug_obj_descr *descr);
-extern void debug_object_assert_init(void *addr, struct debug_obj_descr *descr);
-=======
 	void *(*debug_hint)(void *addr);
 	bool (*is_static_object)(void *addr);
 	bool (*fixup_init)(void *addr, enum debug_obj_state state);
@@ -107,7 +72,6 @@ extern void debug_object_deactivate(void *addr, const struct debug_obj_descr *de
 extern void debug_object_destroy   (void *addr, const struct debug_obj_descr *descr);
 extern void debug_object_free      (void *addr, const struct debug_obj_descr *descr);
 extern void debug_object_assert_init(void *addr, const struct debug_obj_descr *descr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Active state:
@@ -115,32 +79,13 @@ extern void debug_object_assert_init(void *addr, const struct debug_obj_descr *d
  * - Must return to 0 before deactivation.
  */
 extern void
-<<<<<<< HEAD
-debug_object_active_state(void *addr, struct debug_obj_descr *descr,
-=======
 debug_object_active_state(void *addr, const struct debug_obj_descr *descr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  unsigned int expect, unsigned int next);
 
 extern void debug_objects_early_init(void);
 extern void debug_objects_mem_init(void);
 #else
 static inline void
-<<<<<<< HEAD
-debug_object_init      (void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_init_on_stack(void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_activate  (void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_deactivate(void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_destroy   (void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_free      (void *addr, struct debug_obj_descr *descr) { }
-static inline void
-debug_object_assert_init(void *addr, struct debug_obj_descr *descr) { }
-=======
 debug_object_init      (void *addr, const struct debug_obj_descr *descr) { }
 static inline void
 debug_object_init_on_stack(void *addr, const struct debug_obj_descr *descr) { }
@@ -154,7 +99,6 @@ static inline void
 debug_object_free      (void *addr, const struct debug_obj_descr *descr) { }
 static inline void
 debug_object_assert_init(void *addr, const struct debug_obj_descr *descr) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void debug_objects_early_init(void) { }
 static inline void debug_objects_mem_init(void) { }

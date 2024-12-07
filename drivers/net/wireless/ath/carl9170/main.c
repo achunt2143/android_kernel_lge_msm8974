@@ -37,10 +37,6 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -52,19 +48,11 @@
 #include "cmd.h"
 
 static bool modparam_nohwcrypt;
-<<<<<<< HEAD
-module_param_named(nohwcrypt, modparam_nohwcrypt, bool, S_IRUGO);
-MODULE_PARM_DESC(nohwcrypt, "Disable hardware crypto offload.");
-
-int modparam_noht;
-module_param_named(noht, modparam_noht, int, S_IRUGO);
-=======
 module_param_named(nohwcrypt, modparam_nohwcrypt, bool, 0444);
 MODULE_PARM_DESC(nohwcrypt, "Disable hardware crypto offload.");
 
 int modparam_noht;
 module_param_named(noht, modparam_noht, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(noht, "Disable MPDU aggregation.");
 
 #define RATE(_bitrate, _hw_rate, _txpidx, _flags) {	\
@@ -319,12 +307,7 @@ static void carl9170_zap_queues(struct ar9170 *ar)
 	for (i = 0; i < ar->hw->queues; i++)
 		ar->tx_stats[i].limit = CARL9170_NUM_TX_LIMIT_HARD;
 
-<<<<<<< HEAD
-	for (i = 0; i < DIV_ROUND_UP(ar->fw.mem_blocks, BITS_PER_LONG); i++)
-		ar->mem_bitmap[i] = 0;
-=======
 	bitmap_zero(ar->mem_bitmap, ar->fw.mem_blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(cvif, &ar->vif_list, list) {
@@ -373,10 +356,6 @@ static int carl9170_op_start(struct ieee80211_hw *hw)
 	ar->ps.last_action = jiffies;
 	ar->ps.last_slept = jiffies;
 	ar->erp_mode = CARL9170_ERP_AUTO;
-<<<<<<< HEAD
-	ar->rx_software_decryption = false;
-	ar->disable_offload = false;
-=======
 
 	/* Set "disable hw crypto offload" whenever the module parameter
 	 * nohwcrypt is true or if the firmware does not support it.
@@ -384,7 +363,6 @@ static int carl9170_op_start(struct ieee80211_hw *hw)
 	ar->disable_offload = modparam_nohwcrypt |
 		ar->fw.disable_offload_fw;
 	ar->rx_software_decryption = ar->disable_offload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ar->hw->queues; i++) {
 		ar->queue_stop_timeout[i] = jiffies;
@@ -490,33 +468,13 @@ static void carl9170_restart_work(struct work_struct *work)
 {
 	struct ar9170 *ar = container_of(work, struct ar9170,
 					 restart_work);
-<<<<<<< HEAD
-	int err;
-=======
 	int err = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar->usedkeys = 0;
 	ar->filter_state = 0;
 	carl9170_cancel_worker(ar);
 
 	mutex_lock(&ar->mutex);
-<<<<<<< HEAD
-	err = carl9170_usb_restart(ar);
-	if (net_ratelimit()) {
-		if (err) {
-			dev_err(&ar->udev->dev, "Failed to restart device "
-				" (%d).\n", err);
-		 } else {
-			dev_info(&ar->udev->dev, "device restarted "
-				 "successfully.\n");
-		}
-	}
-
-	carl9170_zap_queues(ar);
-	mutex_unlock(&ar->mutex);
-	if (!err) {
-=======
 	if (!ar->force_usb_reset) {
 		err = carl9170_usb_restart(ar);
 		if (net_ratelimit()) {
@@ -530,7 +488,6 @@ static void carl9170_restart_work(struct work_struct *work)
 	mutex_unlock(&ar->mutex);
 
 	if (!err && !ar->force_usb_reset) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ar->restart_counter++;
 		atomic_set(&ar->pending_restarts, 0);
 
@@ -571,17 +528,10 @@ void carl9170_restart(struct ar9170 *ar, const enum carl9170_restart_reasons r)
 	if (!ar->registered)
 		return;
 
-<<<<<<< HEAD
-	if (IS_ACCEPTING_CMD(ar) && !ar->needs_full_reset)
-		ieee80211_queue_work(ar->hw, &ar->restart_work);
-	else
-		carl9170_usb_reset(ar);
-=======
 	if (!IS_ACCEPTING_CMD(ar) || ar->needs_full_reset)
 		ar->force_usb_reset = true;
 
 	ieee80211_queue_work(ar->hw, &ar->restart_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point, the device instance might have vanished/disabled.
@@ -618,14 +568,6 @@ static int carl9170_init_interface(struct ar9170 *ar,
 
 	memcpy(common->macaddr, vif->addr, ETH_ALEN);
 
-<<<<<<< HEAD
-	if (modparam_nohwcrypt ||
-	    ((vif->type != NL80211_IFTYPE_STATION) &&
-	     (vif->type != NL80211_IFTYPE_AP))) {
-		ar->rx_software_decryption = true;
-		ar->disable_offload = true;
-	}
-=======
 	/* We have to fall back to software crypto, whenever
 	 * the user choose to participates in an IBSS. HW
 	 * offload for IBSS RSN is not supported by this driver.
@@ -647,7 +589,6 @@ static int carl9170_init_interface(struct ar9170 *ar,
 	ar->disable_offload |= vif->p2p;
 
 	ar->rx_software_decryption = ar->disable_offload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = carl9170_set_operating_mode(ar);
 	return err;
@@ -657,11 +598,7 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 				     struct ieee80211_vif *vif)
 {
 	struct carl9170_vif_info *vif_priv = (void *) vif->drv_priv;
-<<<<<<< HEAD
-	struct ieee80211_vif *main_vif;
-=======
 	struct ieee80211_vif *main_vif, *old_main = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ar9170 *ar = hw->priv;
 	int vif_id = -1, err = 0;
 
@@ -683,8 +620,6 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 		goto init;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Because the AR9170 HW's MAC doesn't provide full support for
 	 * multiple, independent interfaces [of different operation modes].
 	 * We have to select ONE main interface [main mode of HW], but we
@@ -694,7 +629,6 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 	 * always the main intf. All following intfs in this list
 	 * are considered to be slave intfs.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	main_vif = carl9170_get_main_vif(ar);
 
 	if (main_vif) {
@@ -708,18 +642,11 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 
 			goto unlock;
 
-<<<<<<< HEAD
-		case NL80211_IFTYPE_AP:
-			if ((vif->type == NL80211_IFTYPE_STATION) ||
-			    (vif->type == NL80211_IFTYPE_WDS) ||
-			    (vif->type == NL80211_IFTYPE_AP))
-=======
 		case NL80211_IFTYPE_MESH_POINT:
 		case NL80211_IFTYPE_AP:
 			if ((vif->type == NL80211_IFTYPE_STATION) ||
 			    (vif->type == NL80211_IFTYPE_AP) ||
 			    (vif->type == NL80211_IFTYPE_MESH_POINT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			err = -EBUSY;
@@ -747,16 +674,6 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 	vif_priv->id = vif_id;
 	vif_priv->enable_beacon = false;
 	ar->vifs++;
-<<<<<<< HEAD
-	list_add_tail_rcu(&vif_priv->list, &ar->vif_list);
-	rcu_assign_pointer(ar->vif_priv[vif_id].vif, vif);
-
-init:
-	if (carl9170_get_main_vif(ar) == vif) {
-		rcu_assign_pointer(ar->beacon_iter, vif_priv);
-		rcu_read_unlock();
-
-=======
 	if (old_main) {
 		/* We end up in here, if the main interface is being replaced.
 		 * Put the new main interface at the HEAD of the list and the
@@ -792,7 +709,6 @@ init:
 				goto unlock;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = carl9170_init_interface(ar, vif);
 		if (err)
 			goto unlock;
@@ -997,12 +913,9 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_CHANNEL) {
-<<<<<<< HEAD
-=======
 		enum nl80211_channel_type channel_type =
 			cfg80211_get_chandef_type(&hw->conf.chandef);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* adjust slot time for 5 GHz */
 		err = carl9170_set_slot_time(ar);
 		if (err)
@@ -1012,13 +925,8 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 		if (err)
 			goto out;
 
-<<<<<<< HEAD
-		err = carl9170_set_channel(ar, hw->conf.channel,
-			hw->conf.channel_type, CARL9170_RFI_NONE);
-=======
 		err = carl9170_set_channel(ar, hw->conf.chandef.chan,
 					   channel_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 
@@ -1036,11 +944,7 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_POWER) {
-<<<<<<< HEAD
-		err = carl9170_set_mac_tpc(ar, ar->hw->conf.channel);
-=======
 		err = carl9170_set_mac_tpc(ar, ar->hw->conf.chandef.chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 	}
@@ -1092,14 +996,8 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 	if (multicast != ar->cur_mc_hash)
 		WARN_ON(carl9170_update_multicast(ar, multicast));
 
-<<<<<<< HEAD
-	if (changed_flags & (FIF_OTHER_BSS | FIF_PROMISC_IN_BSS)) {
-		ar->sniffer_enabled = !!(*new_flags &
-			(FIF_OTHER_BSS | FIF_PROMISC_IN_BSS));
-=======
 	if (changed_flags & FIF_OTHER_BSS) {
 		ar->sniffer_enabled = !!(*new_flags & FIF_OTHER_BSS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		WARN_ON(carl9170_set_operating_mode(ar));
 	}
@@ -1107,12 +1005,9 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 	if (ar->fw.rx_filter && changed_flags & ar->rx_filter_caps) {
 		u32 rx_filter = 0;
 
-<<<<<<< HEAD
-=======
 		if (!ar->fw.ba_filter)
 			rx_filter |= CARL9170_RX_FILTER_CTL_OTHER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(*new_flags & (FIF_FCSFAIL | FIF_PLCPFAIL)))
 			rx_filter |= CARL9170_RX_FILTER_BAD;
 
@@ -1122,11 +1017,7 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 		if (!(*new_flags & FIF_PSPOLL))
 			rx_filter |= CARL9170_RX_FILTER_CTL_PSPOLL;
 
-<<<<<<< HEAD
-		if (!(*new_flags & (FIF_OTHER_BSS | FIF_PROMISC_IN_BSS))) {
-=======
 		if (!(*new_flags & FIF_OTHER_BSS)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rx_filter |= CARL9170_RX_FILTER_OTHER_RA;
 			rx_filter |= CARL9170_RX_FILTER_DECRY_FAIL;
 		}
@@ -1141,11 +1032,7 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 static void carl9170_op_bss_info_changed(struct ieee80211_hw *hw,
 					 struct ieee80211_vif *vif,
 					 struct ieee80211_bss_conf *bss_conf,
-<<<<<<< HEAD
-					 u32 changed)
-=======
 					 u64 changed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ar9170 *ar = hw->priv;
 	struct ath_common *common = &ar->common;
@@ -1228,11 +1115,7 @@ static void carl9170_op_bss_info_changed(struct ieee80211_hw *hw,
 	}
 
 	if (changed & BSS_CHANGED_ASSOC) {
-<<<<<<< HEAD
-		ar->common.curaid = bss_conf->aid;
-=======
 		ar->common.curaid = vif->cfg.aid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = carl9170_set_beacon_timers(ar);
 		if (err)
 			goto out;
@@ -1284,13 +1167,7 @@ static int carl9170_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	if (ar->disable_offload || !vif)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	/*
-	 * We have to fall back to software encryption, whenever
-	 * the user choose to participates in an IBSS or is connected
-=======
 	/* Fall back to software encryption whenever the driver is connected
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to more than one network.
 	 *
 	 * This is very unfortunate, because some machines cannot handle
@@ -1324,10 +1201,7 @@ static int carl9170_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		break;
 	case WLAN_CIPHER_SUITE_CCMP:
 		ktype = AR9170_ENC_ALG_AESCCMP;
-<<<<<<< HEAD
-=======
 		key->flags |= IEEE80211_KEY_FLAG_SW_MGMT_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EOPNOTSUPP;
@@ -1432,13 +1306,8 @@ static int carl9170_op_sta_add(struct ieee80211_hw *hw,
 
 	atomic_set(&sta_info->pending_frames, 0);
 
-<<<<<<< HEAD
-	if (sta->ht_cap.ht_supported) {
-		if (sta->ht_cap.ampdu_density > 6) {
-=======
 	if (sta->deflink.ht_cap.ht_supported) {
 		if (sta->deflink.ht_cap.ampdu_density > 6) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * HW does support 16us AMPDU density.
 			 * No HT-Xmit for station.
@@ -1447,17 +1316,10 @@ static int carl9170_op_sta_add(struct ieee80211_hw *hw,
 			return 0;
 		}
 
-<<<<<<< HEAD
-		for (i = 0; i < CARL9170_NUM_TID; i++)
-			RCU_INIT_POINTER(sta_info->agg[i], NULL);
-
-		sta_info->ampdu_max_len = 1 << (3 + sta->ht_cap.ampdu_factor);
-=======
 		for (i = 0; i < ARRAY_SIZE(sta_info->agg); i++)
 			RCU_INIT_POINTER(sta_info->agg[i], NULL);
 
 		sta_info->ampdu_max_len = 1 << (3 + sta->deflink.ht_cap.ampdu_factor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sta_info->ht_sta = true;
 	}
 
@@ -1473,20 +1335,12 @@ static int carl9170_op_sta_remove(struct ieee80211_hw *hw,
 	unsigned int i;
 	bool cleanup = false;
 
-<<<<<<< HEAD
-	if (sta->ht_cap.ht_supported) {
-=======
 	if (sta->deflink.ht_cap.ht_supported) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sta_info->ht_sta = false;
 
 		rcu_read_lock();
-<<<<<<< HEAD
-		for (i = 0; i < CARL9170_NUM_TID; i++) {
-=======
 		for (i = 0; i < ARRAY_SIZE(sta_info->agg); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct carl9170_sta_tid *tid_info;
 
 			tid_info = rcu_dereference(sta_info->agg[i]);
@@ -1511,30 +1365,16 @@ static int carl9170_op_sta_remove(struct ieee80211_hw *hw,
 }
 
 static int carl9170_op_conf_tx(struct ieee80211_hw *hw,
-<<<<<<< HEAD
-			       struct ieee80211_vif *vif, u16 queue,
-=======
 			       struct ieee80211_vif *vif,
 			       unsigned int link_id, u16 queue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       const struct ieee80211_tx_queue_params *param)
 {
 	struct ar9170 *ar = hw->priv;
 	int ret;
 
 	mutex_lock(&ar->mutex);
-<<<<<<< HEAD
-	if (queue < ar->hw->queues) {
-		memcpy(&ar->edcf[ar9170_qmap[queue]], param, sizeof(*param));
-		ret = carl9170_set_qos(ar);
-	} else {
-		ret = -EINVAL;
-	}
-
-=======
 	memcpy(&ar->edcf[ar9170_qmap(queue)], param, sizeof(*param));
 	ret = carl9170_set_qos(ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ar->mutex);
 	return ret;
 }
@@ -1554,19 +1394,12 @@ static void carl9170_ampdu_work(struct work_struct *work)
 
 static int carl9170_op_ampdu_action(struct ieee80211_hw *hw,
 				    struct ieee80211_vif *vif,
-<<<<<<< HEAD
-				    enum ieee80211_ampdu_mlme_action action,
-				    struct ieee80211_sta *sta,
-				    u16 tid, u16 *ssn, u8 buf_size)
-{
-=======
 				    struct ieee80211_ampdu_params *params)
 {
 	struct ieee80211_sta *sta = params->sta;
 	enum ieee80211_ampdu_mlme_action action = params->action;
 	u16 tid = params->tid;
 	u16 *ssn = &params->ssn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ar9170 *ar = hw->priv;
 	struct carl9170_sta_info *sta_info = (void *) sta->drv_priv;
 	struct carl9170_sta_tid *tid_info;
@@ -1579,35 +1412,17 @@ static int carl9170_op_ampdu_action(struct ieee80211_hw *hw,
 		if (!sta_info->ht_sta)
 			return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-		rcu_read_lock();
-		if (rcu_dereference(sta_info->agg[tid])) {
-			rcu_read_unlock();
-			return -EBUSY;
-		}
-
-		tid_info = kzalloc(sizeof(struct carl9170_sta_tid),
-				   GFP_ATOMIC);
-		if (!tid_info) {
-			rcu_read_unlock();
-			return -ENOMEM;
-		}
-=======
 		tid_info = kzalloc(sizeof(struct carl9170_sta_tid),
 				   GFP_KERNEL);
 		if (!tid_info)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tid_info->hsn = tid_info->bsn = tid_info->snx = (*ssn);
 		tid_info->state = CARL9170_TID_STATE_PROGRESS;
 		tid_info->tid = tid;
 		tid_info->max = sta_info->ampdu_max_len;
-<<<<<<< HEAD
-=======
 		tid_info->sta = sta;
 		tid_info->vif = vif;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		INIT_LIST_HEAD(&tid_info->list);
 		INIT_LIST_HEAD(&tid_info->tmp_list);
@@ -1619,21 +1434,12 @@ static int carl9170_op_ampdu_action(struct ieee80211_hw *hw,
 		list_add_tail_rcu(&tid_info->list, &ar->tx_ampdu_list);
 		rcu_assign_pointer(sta_info->agg[tid], tid_info);
 		spin_unlock_bh(&ar->tx_ampdu_list_lock);
-<<<<<<< HEAD
-		rcu_read_unlock();
-
-		ieee80211_start_tx_ba_cb_irqsafe(vif, sta->addr, tid);
-		break;
-
-	case IEEE80211_AMPDU_TX_STOP:
-=======
 
 		return IEEE80211_AMPDU_TX_START_IMMEDIATE;
 
 	case IEEE80211_AMPDU_TX_STOP_CONT:
 	case IEEE80211_AMPDU_TX_STOP_FLUSH:
 	case IEEE80211_AMPDU_TX_STOP_FLUSH_CONT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_lock();
 		tid_info = rcu_dereference(sta_info->agg[tid]);
 		if (tid_info) {
@@ -1689,11 +1495,7 @@ static int carl9170_register_wps_button(struct ar9170 *ar)
 	if (!(ar->features & CARL9170_WPS_BUTTON))
 		return 0;
 
-<<<<<<< HEAD
-	input = input_allocate_device();
-=======
 	input = devm_input_allocate_device(&ar->udev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!input)
 		return -ENOMEM;
 
@@ -1711,15 +1513,8 @@ static int carl9170_register_wps_button(struct ar9170 *ar)
 	input_set_capability(input, EV_KEY, KEY_WPS_BUTTON);
 
 	err = input_register_device(input);
-<<<<<<< HEAD
-	if (err) {
-		input_free_device(input);
-		return err;
-	}
-=======
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar->wps.pbc = input;
 	return 0;
@@ -1743,11 +1538,7 @@ static int carl9170_rng_get(struct ar9170 *ar)
 
 	BUILD_BUG_ON(RB > CARL9170_MAX_CMD_PAYLOAD_LEN);
 
-<<<<<<< HEAD
-	if (!IS_ACCEPTING_CMD(ar) || !ar->rng.initialized)
-=======
 	if (!IS_ACCEPTING_CMD(ar))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 
 	count = ARRAY_SIZE(ar->rng.cache);
@@ -1793,17 +1584,6 @@ static int carl9170_rng_read(struct hwrng *rng, u32 *data)
 	return sizeof(u16);
 }
 
-<<<<<<< HEAD
-static void carl9170_unregister_hwrng(struct ar9170 *ar)
-{
-	if (ar->rng.initialized) {
-		hwrng_unregister(&ar->rng.rng);
-		ar->rng.initialized = false;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int carl9170_register_hwrng(struct ar9170 *ar)
 {
 	int err;
@@ -1814,33 +1594,14 @@ static int carl9170_register_hwrng(struct ar9170 *ar)
 	ar->rng.rng.data_read = carl9170_rng_read;
 	ar->rng.rng.priv = (unsigned long)ar;
 
-<<<<<<< HEAD
-	if (WARN_ON(ar->rng.initialized))
-		return -EALREADY;
-
-	err = hwrng_register(&ar->rng.rng);
-=======
 	err = devm_hwrng_register(&ar->udev->dev, &ar->rng.rng);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_err(&ar->udev->dev, "Failed to register the random "
 			"number generator (%d)\n", err);
 		return err;
 	}
 
-<<<<<<< HEAD
-	ar->rng.initialized = true;
-
-	err = carl9170_rng_get(ar);
-	if (err) {
-		carl9170_unregister_hwrng(ar);
-		return err;
-	}
-
-	return 0;
-=======
 	return carl9170_rng_get(ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_CARL9170_HWRNG */
 
@@ -1864,11 +1625,7 @@ static int carl9170_op_get_survey(struct ieee80211_hw *hw, int idx,
 			return err;
 	}
 
-<<<<<<< HEAD
-	for (b = 0; b < IEEE80211_NUM_BANDS; b++) {
-=======
 	for (b = 0; b < NUM_NL80211_BANDS; b++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		band = ar->hw->wiphy->bands[b];
 
 		if (!band)
@@ -1893,27 +1650,17 @@ found:
 		survey->filled |= SURVEY_INFO_IN_USE;
 
 	if (ar->fw.hw_counters) {
-<<<<<<< HEAD
-		survey->filled |= SURVEY_INFO_CHANNEL_TIME |
-				  SURVEY_INFO_CHANNEL_TIME_BUSY |
-				  SURVEY_INFO_CHANNEL_TIME_TX;
-=======
 		survey->filled |= SURVEY_INFO_TIME |
 				  SURVEY_INFO_TIME_BUSY |
 				  SURVEY_INFO_TIME_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void carl9170_op_flush(struct ieee80211_hw *hw, bool drop)
-=======
 static void carl9170_op_flush(struct ieee80211_hw *hw,
 			      struct ieee80211_vif *vif,
 			      u32 queues, bool drop)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ar9170 *ar = hw->priv;
 	unsigned int vid;
@@ -1965,11 +1712,6 @@ static bool carl9170_tx_frames_pending(struct ieee80211_hw *hw)
 }
 
 static const struct ieee80211_ops carl9170_ops = {
-<<<<<<< HEAD
-	.start			= carl9170_op_start,
-	.stop			= carl9170_op_stop,
-	.tx			= carl9170_op_tx,
-=======
 	.add_chanctx = ieee80211_emulate_add_chanctx,
 	.remove_chanctx = ieee80211_emulate_remove_chanctx,
 	.change_chanctx = ieee80211_emulate_change_chanctx,
@@ -1978,7 +1720,6 @@ static const struct ieee80211_ops carl9170_ops = {
 	.stop			= carl9170_op_stop,
 	.tx			= carl9170_op_tx,
 	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flush			= carl9170_op_flush,
 	.add_interface		= carl9170_op_add_interface,
 	.remove_interface	= carl9170_op_remove_interface,
@@ -2048,12 +1789,9 @@ void *carl9170_alloc(size_t priv_size)
 	for (i = 0; i < ar->hw->queues; i++) {
 		skb_queue_head_init(&ar->tx_status[i]);
 		skb_queue_head_init(&ar->tx_pending[i]);
-<<<<<<< HEAD
-=======
 
 		INIT_LIST_HEAD(&ar->bar_list[i]);
 		spin_lock_init(&ar->bar_list_lock[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	INIT_WORK(&ar->ps_work, carl9170_ps_work);
 	INIT_WORK(&ar->ping_work, carl9170_ping_work);
@@ -2072,14 +1810,6 @@ void *carl9170_alloc(size_t priv_size)
 	/* firmware decides which modes we support */
 	hw->wiphy->interface_modes = 0;
 
-<<<<<<< HEAD
-	hw->flags |= IEEE80211_HW_RX_INCLUDES_FCS |
-		     IEEE80211_HW_REPORTS_TX_ACK_STATUS |
-		     IEEE80211_HW_SUPPORTS_PS |
-		     IEEE80211_HW_PS_NULLFUNC_STACK |
-		     IEEE80211_HW_NEED_DTIM_PERIOD |
-		     IEEE80211_HW_SIGNAL_DBM;
-=======
 	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
 	ieee80211_hw_set(hw, MFP_CAPABLE);
 	ieee80211_hw_set(hw, REPORTS_TX_ACK_STATUS);
@@ -2089,18 +1819,13 @@ void *carl9170_alloc(size_t priv_size)
 	ieee80211_hw_set(hw, SUPPORTS_RC_TABLE);
 	ieee80211_hw_set(hw, SIGNAL_DBM);
 	ieee80211_hw_set(hw, SUPPORTS_HT_CCK_RATES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!modparam_noht) {
 		/*
 		 * see the comment above, why we allow the user
 		 * to disable HT by a module parameter.
 		 */
-<<<<<<< HEAD
-		hw->flags |= IEEE80211_HW_AMPDU_AGGREGATION;
-=======
 		ieee80211_hw_set(hw, AMPDU_AGGREGATION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hw->extra_tx_headroom = sizeof(struct _carl9170_tx_superframe);
@@ -2113,15 +1838,8 @@ void *carl9170_alloc(size_t priv_size)
 	for (i = 0; i < ARRAY_SIZE(ar->noise); i++)
 		ar->noise[i] = -95; /* ATH_DEFAULT_NOISE_FLOOR */
 
-<<<<<<< HEAD
-	hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
-
-	/* As IBSS Encryption is software-based, IBSS RSN is supported. */
-	hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
-=======
 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ar;
 
 err_nomem:
@@ -2181,11 +1899,7 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
 
-<<<<<<< HEAD
-		tx_params = (tx_streams - 1) <<
-=======
 		tx_params |= (tx_streams - 1) <<
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
 
 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
@@ -2193,21 +1907,13 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
 	}
 
 	if (ar->eeprom.operating_flags & AR9170_OPFLAG_2GHZ) {
-<<<<<<< HEAD
-		ar->hw->wiphy->bands[IEEE80211_BAND_2GHZ] =
-=======
 		ar->hw->wiphy->bands[NL80211_BAND_2GHZ] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&carl9170_band_2GHz;
 		chans += carl9170_band_2GHz.n_channels;
 		bands++;
 	}
 	if (ar->eeprom.operating_flags & AR9170_OPFLAG_5GHZ) {
-<<<<<<< HEAD
-		ar->hw->wiphy->bands[IEEE80211_BAND_5GHZ] =
-=======
 		ar->hw->wiphy->bands[NL80211_BAND_5GHZ] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&carl9170_band_5GHz;
 		chans += carl9170_band_5GHz.n_channels;
 		bands++;
@@ -2216,31 +1922,12 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
 	if (!bands)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ar->survey = kzalloc(sizeof(struct survey_info) * chans, GFP_KERNEL);
-=======
 	ar->survey = devm_kcalloc(&ar->udev->dev, chans,
 				  sizeof(struct survey_info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ar->survey)
 		return -ENOMEM;
 	ar->num_channels = chans;
 
-<<<<<<< HEAD
-	/*
-	 * I measured this, a bandswitch takes roughly
-	 * 135 ms and a frequency switch about 80.
-	 *
-	 * FIXME: measure these values again once EEPROM settings
-	 *	  are used, that will influence them!
-	 */
-	if (bands == 2)
-		ar->hw->channel_change_time = 135 * 1000;
-	else
-		ar->hw->channel_change_time = 80 * 1000;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regulatory->current_rd = le16_to_cpu(ar->eeprom.reg_domain[0]);
 
 	/* second part of wiphy init */
@@ -2249,22 +1936,13 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int carl9170_reg_notifier(struct wiphy *wiphy,
-				 struct regulatory_request *request)
-=======
 static void carl9170_reg_notifier(struct wiphy *wiphy,
 				  struct regulatory_request *request)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hw *hw = wiphy_to_ieee80211_hw(wiphy);
 	struct ar9170 *ar = hw->priv;
 
-<<<<<<< HEAD
-	return ath_reg_notifier_apply(wiphy, request, &ar->common.regulatory);
-=======
 	ath_reg_notifier_apply(wiphy, request, &ar->common.regulatory);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int carl9170_register(struct ar9170 *ar)
@@ -2272,16 +1950,7 @@ int carl9170_register(struct ar9170 *ar)
 	struct ath_regulatory *regulatory = &ar->common.regulatory;
 	int err = 0, i;
 
-<<<<<<< HEAD
-	if (WARN_ON(ar->mem_bitmap))
-		return -EINVAL;
-
-	ar->mem_bitmap = kzalloc(roundup(ar->fw.mem_blocks, BITS_PER_LONG) *
-				 sizeof(unsigned long), GFP_KERNEL);
-
-=======
 	ar->mem_bitmap = devm_bitmap_zalloc(&ar->udev->dev, ar->fw.mem_blocks, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ar->mem_bitmap)
 		return -ENOMEM;
 
@@ -2370,20 +2039,6 @@ void carl9170_unregister(struct ar9170 *ar)
 	carl9170_debugfs_unregister(ar);
 #endif /* CONFIG_CARL9170_DEBUGFS */
 
-<<<<<<< HEAD
-#ifdef CONFIG_CARL9170_WPC
-	if (ar->wps.pbc) {
-		input_unregister_device(ar->wps.pbc);
-		ar->wps.pbc = NULL;
-	}
-#endif /* CONFIG_CARL9170_WPC */
-
-#ifdef CONFIG_CARL9170_HWRNG
-	carl9170_unregister_hwrng(ar);
-#endif /* CONFIG_CARL9170_HWRNG */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	carl9170_cancel_worker(ar);
 	cancel_work_sync(&ar->restart_work);
 
@@ -2398,15 +2053,6 @@ void carl9170_free(struct ar9170 *ar)
 	kfree_skb(ar->rx_failover);
 	ar->rx_failover = NULL;
 
-<<<<<<< HEAD
-	kfree(ar->mem_bitmap);
-	ar->mem_bitmap = NULL;
-
-	kfree(ar->survey);
-	ar->survey = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_destroy(&ar->mutex);
 
 	ieee80211_free_hw(ar->hw);

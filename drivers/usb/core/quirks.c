@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB device quirk handling logic and table
  *
  * Copyright (c) 2007 Oliver Neukum
  * Copyright (c) 2007 Greg Kroah-Hartman <gregkh@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, version 2.
- *
- *
- */
-
-#include <linux/usb.h>
-#include <linux/usb/quirks.h>
-#include "usb.h"
-
-=======
  */
 
 #include <linux/moduleparam.h>
@@ -189,7 +172,6 @@ static struct kparam_string quirks_param_string = {
 device_param_cb(quirks, &quirks_param_ops, &quirks_param_string, 0644);
 MODULE_PARM_DESC(quirks, "Add/modify USB quirks by specifying quirks=vendorID:productID:quirks");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Lists of quirky USB devices, split in device quirks and interface quirks.
  * Device quirks are applied at the very beginning of the enumeration process,
  * right after reading the device descriptor. They can thus only match on device
@@ -211,8 +193,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* CBM - Flash disk */
 	{ USB_DEVICE(0x0204, 0x6025), .driver_info = USB_QUIRK_RESET_RESUME },
 
-<<<<<<< HEAD
-=======
 	/* WORLDE Controller KS49 or Prodipe MIDI 49C USB controller */
 	{ USB_DEVICE(0x0218, 0x0201), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
@@ -221,16 +201,10 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x0218, 0x0401), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* HP 5300/5370C scanner */
 	{ USB_DEVICE(0x03f0, 0x0701), .driver_info =
 			USB_QUIRK_STRING_FETCH_255 },
 
-<<<<<<< HEAD
-	/* Creative SB Audigy 2 NX */
-	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
-
-=======
 	/* HP v222w 16GB Mini USB Drive */
 	{ USB_DEVICE(0x03f0, 0x3f40), .driver_info = USB_QUIRK_DELAY_INIT },
 
@@ -240,15 +214,12 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* USB3503 */
 	{ USB_DEVICE(0x0424, 0x3503), .driver_info = USB_QUIRK_RESET_RESUME },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Microsoft Wireless Laser Mouse 6000 Receiver */
 	{ USB_DEVICE(0x045e, 0x00e1), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* Microsoft LifeCam-VX700 v2.0 */
 	{ USB_DEVICE(0x045e, 0x0770), .driver_info = USB_QUIRK_RESET_RESUME },
 
-<<<<<<< HEAD
-=======
 	/* Microsoft Surface Dock Ethernet (RTL8153 GigE) */
 	{ USB_DEVICE(0x045e, 0x07c6), .driver_info = USB_QUIRK_NO_LPM },
 
@@ -265,7 +236,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x046d, 0x085b), .driver_info = USB_QUIRK_DELAY_INIT },
 	{ USB_DEVICE(0x046d, 0x085c), .driver_info = USB_QUIRK_DELAY_INIT },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Logitech ConferenceCam CC3000e */
 	{ USB_DEVICE(0x046d, 0x0847), .driver_info = USB_QUIRK_DELAY_INIT },
 	{ USB_DEVICE(0x046d, 0x0848), .driver_info = USB_QUIRK_DELAY_INIT },
@@ -273,12 +243,9 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Logitech PTZ Pro Camera */
 	{ USB_DEVICE(0x046d, 0x0853), .driver_info = USB_QUIRK_DELAY_INIT },
 
-<<<<<<< HEAD
-=======
 	/* Logitech Screen Share */
 	{ USB_DEVICE(0x046d, 0x086c), .driver_info = USB_QUIRK_NO_LPM },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Logitech Quickcam Fusion */
 	{ USB_DEVICE(0x046d, 0x08c1), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -327,14 +294,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x04e8, 0x6601), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-<<<<<<< HEAD
-	{ USB_DEVICE(0x04f3, 0x009b), .driver_info =
-			USB_QUIRK_DEVICE_QUALIFIER },
-
-	{ USB_DEVICE(0x04f3, 0x016f), .driver_info =
-			USB_QUIRK_DEVICE_QUALIFIER },
-
-=======
 	/* Elan Touchscreen */
 	{ USB_DEVICE(0x04f3, 0x0089), .driver_info =
 			USB_QUIRK_DEVICE_QUALIFIER },
@@ -357,7 +316,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x04f3, 0x21b8), .driver_info =
 			USB_QUIRK_DEVICE_QUALIFIER },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Roland SC-8820 */
 	{ USB_DEVICE(0x0582, 0x0007), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -367,14 +325,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Alcor Micro Corp. Hub */
 	{ USB_DEVICE(0x058f, 0x9254), .driver_info = USB_QUIRK_RESET_RESUME },
 
-<<<<<<< HEAD
-	/* MicroTouch Systems touchscreen */
-	{ USB_DEVICE(0x0596, 0x051e), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* appletouch */
-	{ USB_DEVICE(0x05ac, 0x021a), .driver_info = USB_QUIRK_RESET_RESUME },
-
-=======
 	/* appletouch */
 	{ USB_DEVICE(0x05ac, 0x021a), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -387,7 +337,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Genesys Logic hub, internally used by Moshi USB to Ethernet Adapter */
 	{ USB_DEVICE(0x05e3, 0x0616), .driver_info = USB_QUIRK_NO_LPM },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Avision AV600U */
 	{ USB_DEVICE(0x0638, 0x0a13), .driver_info =
 	  USB_QUIRK_STRING_FETCH_255 },
@@ -396,26 +345,15 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x06a3, 0x0006), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-<<<<<<< HEAD
-=======
 	/* Agfa SNAPSCAN 1212U */
 	{ USB_DEVICE(0x06bd, 0x0001), .driver_info = USB_QUIRK_RESET_RESUME },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Guillemot Webcam Hercules Dualpix Exchange (2nd ID) */
 	{ USB_DEVICE(0x06f8, 0x0804), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* Guillemot Webcam Hercules Dualpix Exchange*/
 	{ USB_DEVICE(0x06f8, 0x3005), .driver_info = USB_QUIRK_RESET_RESUME },
 
-<<<<<<< HEAD
-	/* Midiman M-Audio Keystation 88es */
-	{ USB_DEVICE(0x0763, 0x0192), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* M-Systems Flash Disk Pioneers */
-	{ USB_DEVICE(0x08ec, 0x1000), .driver_info = USB_QUIRK_RESET_RESUME },
-
-=======
 	/* Guillemot Hercules DJ Console audio card (BZ 208357) */
 	{ USB_DEVICE(0x06f8, 0xb000), .driver_info =
 			USB_QUIRK_ENDPOINT_IGNORE },
@@ -449,16 +387,10 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x0926, 0x0208), .driver_info =
 			USB_QUIRK_ENDPOINT_IGNORE },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Keytouch QWERTY Panel keyboard */
 	{ USB_DEVICE(0x0926, 0x3333), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-<<<<<<< HEAD
-	/* X-Rite/Gretag-Macbeth Eye-One Pro display colorimeter */
-	{ USB_DEVICE(0x0971, 0x2000), .driver_info = USB_QUIRK_NO_SET_INTF },
-
-=======
 	/* Kingston DataTraveler 3.0 */
 	{ USB_DEVICE(0x0951, 0x1666), .driver_info = USB_QUIRK_NO_LPM },
 
@@ -477,15 +409,12 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* ELMO L-12F document camera */
 	{ USB_DEVICE(0x09a1, 0x0028), .driver_info = USB_QUIRK_DELAY_CTRL_MSG },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Broadcom BCM92035DGROM BT dongle */
 	{ USB_DEVICE(0x0a5c, 0x2021), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* MAYA44USB sound device */
 	{ USB_DEVICE(0x0a92, 0x0091), .driver_info = USB_QUIRK_RESET_RESUME },
 
-<<<<<<< HEAD
-=======
 	/* ASUS Base Station(T100) */
 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
@@ -503,13 +432,10 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x0c45, 0x7056), .driver_info =
 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Action Semiconductor flash disk */
 	{ USB_DEVICE(0x10d6, 0x2200), .driver_info =
 			USB_QUIRK_STRING_FETCH_255 },
 
-<<<<<<< HEAD
-=======
 	/* novation SoundControl XL */
 	{ USB_DEVICE(0x1235, 0x0061), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -523,7 +449,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x12d1, 0x15c3), .driver_info =
 			USB_QUIRK_DISCONNECT_SUSPEND },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SKYMEDI USB_DRIVE */
 	{ USB_DEVICE(0x1516, 0x8628), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -531,8 +456,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x1532, 0x0116), .driver_info =
 			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
 
-<<<<<<< HEAD
-=======
 	/* Lenovo ThinkPad OneLink+ Dock twin hub controllers (VIA Labs VL812) */
 	{ USB_DEVICE(0x17ef, 0x1018), .driver_info = USB_QUIRK_RESET_RESUME },
 	{ USB_DEVICE(0x17ef, 0x1019), .driver_info = USB_QUIRK_RESET_RESUME },
@@ -550,19 +473,10 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Lenovo ThinkPad USB-C Dock Gen2 Ethernet (RTL8153 GigE) */
 	{ USB_DEVICE(0x17ef, 0xa387), .driver_info = USB_QUIRK_NO_LPM },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* BUILDWIN Photo Frame */
 	{ USB_DEVICE(0x1908, 0x1315), .driver_info =
 			USB_QUIRK_HONOR_BNUMINTERFACES },
 
-<<<<<<< HEAD
-	/* INTEL VALUE SSD */
-	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* Protocol and OTG Electrical Test Device */
-	{ USB_DEVICE(0x1a0a, 0x0200), .driver_info = USB_QUIRK_OTG_PET },
-
-=======
 	/* Protocol and OTG Electrical Test Device */
 	{ USB_DEVICE(0x1a0a, 0x0200), .driver_info =
 			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
@@ -635,7 +549,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* INTEL VALUE SSD */
 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }  /* terminating entry must be last */
 };
 
@@ -647,8 +560,6 @@ static const struct usb_device_id usb_interface_quirk_list[] = {
 	{ }  /* terminating entry must be last */
 };
 
-<<<<<<< HEAD
-=======
 static const struct usb_device_id usb_amd_resume_quirk_list[] = {
 	/* Lenovo Mouse with Pixart controller */
 	{ USB_DEVICE(0x17ef, 0x602e), .driver_info = USB_QUIRK_RESET_RESUME },
@@ -701,7 +612,6 @@ bool usb_endpoint_is_ignored(struct usb_device *udev,
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool usb_match_any_interface(struct usb_device *udev,
 				    const struct usb_device_id *id)
 {
@@ -728,10 +638,6 @@ static bool usb_match_any_interface(struct usb_device *udev,
 	return false;
 }
 
-<<<<<<< HEAD
-static u32 __usb_detect_quirks(struct usb_device *udev,
-			       const struct usb_device_id *id)
-=======
 static int usb_amd_resume_quirk(struct usb_device *udev)
 {
 	struct usb_hcd *hcd;
@@ -746,7 +652,6 @@ static int usb_amd_resume_quirk(struct usb_device *udev)
 
 static u32 usb_detect_static_quirks(struct usb_device *udev,
 				    const struct usb_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 quirks = 0;
 
@@ -764,8 +669,6 @@ static u32 usb_detect_static_quirks(struct usb_device *udev,
 	return quirks;
 }
 
-<<<<<<< HEAD
-=======
 static u32 usb_detect_dynamic_quirks(struct usb_device *udev)
 {
 	u16 vid = le16_to_cpu(udev->descriptor.idVendor);
@@ -786,15 +689,11 @@ static u32 usb_detect_dynamic_quirks(struct usb_device *udev)
 	return flags;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detect any quirks the device has, and do any housekeeping for it if needed.
  */
 void usb_detect_quirks(struct usb_device *udev)
 {
-<<<<<<< HEAD
-	udev->quirks = __usb_detect_quirks(udev, usb_quirk_list);
-=======
 	udev->quirks = usb_detect_static_quirks(udev, usb_quirk_list);
 
 	/*
@@ -807,27 +706,10 @@ void usb_detect_quirks(struct usb_device *udev)
 
 	udev->quirks ^= usb_detect_dynamic_quirks(udev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (udev->quirks)
 		dev_dbg(&udev->dev, "USB quirks for this device: %x\n",
 			udev->quirks);
 
-<<<<<<< HEAD
-	/* For the present, all devices default to USB-PERSIST enabled */
-#if 0		/* was: #ifdef CONFIG_PM */
-	/* Hubs are automatically enabled for USB-PERSIST */
-	if (udev->descriptor.bDeviceClass == USB_CLASS_HUB)
-		udev->persist_enabled = 1;
-
-#else
-	/* In the absence of PM, we can safely enable USB-PERSIST
-	 * for all devices.  It will affect things like hub resets
-	 * and EMF-related port disables.
-	 */
-	if (!(udev->quirks & USB_QUIRK_RESET_MORPHS))
-		udev->persist_enabled = 1;
-#endif	/* CONFIG_PM */
-=======
 #ifdef CONFIG_USB_DEFAULT_PERSIST
 	if (!(udev->quirks & USB_QUIRK_RESET))
 		udev->persist_enabled = 1;
@@ -836,18 +718,13 @@ void usb_detect_quirks(struct usb_device *udev)
 	if (udev->descriptor.bDeviceClass == USB_CLASS_HUB)
 		udev->persist_enabled = 1;
 #endif	/* CONFIG_USB_DEFAULT_PERSIST */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void usb_detect_interface_quirks(struct usb_device *udev)
 {
 	u32 quirks;
 
-<<<<<<< HEAD
-	quirks = __usb_detect_quirks(udev, usb_interface_quirk_list);
-=======
 	quirks = usb_detect_static_quirks(udev, usb_interface_quirk_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (quirks == 0)
 		return;
 
@@ -855,8 +732,6 @@ void usb_detect_interface_quirks(struct usb_device *udev)
 		quirks);
 	udev->quirks |= quirks;
 }
-<<<<<<< HEAD
-=======
 
 void usb_release_quirk_list(void)
 {
@@ -865,4 +740,3 @@ void usb_release_quirk_list(void)
 	quirk_list = NULL;
 	mutex_unlock(&quirk_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

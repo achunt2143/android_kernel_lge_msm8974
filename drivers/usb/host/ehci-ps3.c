@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 EHCI Host Controller driver
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/firmware.h>
@@ -62,37 +43,12 @@ static int ps3_ehci_hc_reset(struct usb_hcd *hcd)
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 
 	ehci->big_endian_mmio = 1;
-<<<<<<< HEAD
-
-	ehci->caps = hcd->regs;
-	ehci->regs = hcd->regs + HC_LENGTH(ehci, ehci_readl(ehci,
-		&ehci->caps->hc_capbase));
-
-	dbg_hcs_params(ehci, "reset");
-	dbg_hcc_params(ehci, "reset");
-
-	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
-
-	result = ehci_halt(ehci);
-
-	if (result)
-		return result;
-
-	result = ehci_init(hcd);
-
-	if (result)
-		return result;
-
-	ehci_reset(ehci);
-
-=======
 	ehci->caps = hcd->regs;
 
 	result = ehci_setup(hcd);
 	if (result)
 		return result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ps3_ehci_setup_insnreg(ehci);
 
 	return result;
@@ -103,11 +59,7 @@ static const struct hc_driver ps3_ehci_hc_driver = {
 	.product_desc		= "PS3 EHCI Host Controller",
 	.hcd_priv_size		= sizeof(struct ehci_hcd),
 	.irq			= ehci_irq,
-<<<<<<< HEAD
-	.flags			= HCD_MEMORY | HCD_USB2,
-=======
 	.flags			= HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reset			= ps3_ehci_hc_reset,
 	.start			= ehci_run,
 	.stop			= ehci_stop,
@@ -129,20 +81,12 @@ static const struct hc_driver ps3_ehci_hc_driver = {
 	.clear_tt_buffer_complete	= ehci_clear_tt_buffer_complete,
 };
 
-<<<<<<< HEAD
-static int __devinit ps3_ehci_probe(struct ps3_system_bus_device *dev)
-=======
 static int ps3_ehci_probe(struct ps3_system_bus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	struct usb_hcd *hcd;
 	unsigned int virq;
-<<<<<<< HEAD
-	static u64 dummy_mask = DMA_BIT_MASK(32);
-=======
 	static u64 dummy_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usb_disabled()) {
 		result = -ENODEV;
@@ -187,13 +131,9 @@ static int ps3_ehci_probe(struct ps3_system_bus_device *dev)
 		goto fail_irq;
 	}
 
-<<<<<<< HEAD
-	dev->core.dma_mask = &dummy_mask; /* FIXME: for improper usb code */
-=======
 	dummy_mask = DMA_BIT_MASK(32);
 	dev->core.dma_mask = &dummy_mask;
 	dma_set_coherent_mask(&dev->core, dummy_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hcd = usb_create_hcd(&ps3_ehci_hc_driver, &dev->core, dev_name(&dev->core));
 
@@ -239,10 +179,7 @@ static int ps3_ehci_probe(struct ps3_system_bus_device *dev)
 		goto fail_add_hcd;
 	}
 
-<<<<<<< HEAD
-=======
 	device_wakeup_enable(hcd->self.controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 
 fail_add_hcd:
@@ -263,11 +200,7 @@ fail_start:
 	return result;
 }
 
-<<<<<<< HEAD
-static int ps3_ehci_remove(struct ps3_system_bus_device *dev)
-=======
 static void ps3_ehci_remove(struct ps3_system_bus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmp;
 	struct usb_hcd *hcd = ps3_system_bus_get_drvdata(dev);
@@ -279,10 +212,6 @@ static void ps3_ehci_remove(struct ps3_system_bus_device *dev)
 
 	tmp = hcd->irq;
 
-<<<<<<< HEAD
-	ehci_shutdown(hcd);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_remove_hcd(hcd);
 
 	ps3_system_bus_set_drvdata(dev, NULL);
@@ -298,11 +227,6 @@ static void ps3_ehci_remove(struct ps3_system_bus_device *dev)
 
 	ps3_dma_region_free(dev->d_region);
 	ps3_close_hv_device(dev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init ps3_ehci_driver_register(struct ps3_system_bus_driver *drv)

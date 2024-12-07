@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dir.c
  */
 
@@ -61,10 +41,7 @@ static int get_dir_index_using_offset(struct super_block *sb,
 {
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
 	int err, i, index, length = 0;
-<<<<<<< HEAD
-=======
 	unsigned int size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct squashfs_dir_index dir_index;
 
 	TRACE("Entered get_dir_index_using_offset, i_count %d, f_pos %lld\n",
@@ -92,10 +69,6 @@ static int get_dir_index_using_offset(struct super_block *sb,
 			 */
 			break;
 
-<<<<<<< HEAD
-		err = squashfs_read_metadata(sb, NULL, &index_start,
-				&index_offset, le32_to_cpu(dir_index.size) + 1);
-=======
 		size = le32_to_cpu(dir_index.size) + 1;
 
 		/* size should never be larger than SQUASHFS_NAME_LEN */
@@ -104,7 +77,6 @@ static int get_dir_index_using_offset(struct super_block *sb,
 
 		err = squashfs_read_metadata(sb, NULL, &index_start,
 				&index_offset, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			break;
 
@@ -122,16 +94,6 @@ static int get_dir_index_using_offset(struct super_block *sb,
 }
 
 
-<<<<<<< HEAD
-static int squashfs_readdir(struct file *file, void *dirent, filldir_t filldir)
-{
-	struct inode *inode = file->f_dentry->d_inode;
-	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
-	u64 block = squashfs_i(inode)->start + msblk->directory_table;
-	int offset = squashfs_i(inode)->offset, length, dir_count, size,
-				type, err;
-	unsigned int inode_number;
-=======
 static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *inode = file_inode(file);
@@ -139,7 +101,6 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 	u64 block = squashfs_i(inode)->start + msblk->directory_table;
 	int offset = squashfs_i(inode)->offset, length, err;
 	unsigned int inode_number, dir_count, size, type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct squashfs_dir_header dirh;
 	struct squashfs_dir_entry *dire;
 
@@ -159,19 +120,11 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 	 * It also means that the external f_pos is offset by 3 from the
 	 * on-disk directory f_pos.
 	 */
-<<<<<<< HEAD
-	while (file->f_pos < 3) {
-		char *name;
-		int i_ino;
-
-		if (file->f_pos == 0) {
-=======
 	while (ctx->pos < 3) {
 		char *name;
 		int i_ino;
 
 		if (ctx->pos == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name = ".";
 			size = 1;
 			i_ino = inode->i_ino;
@@ -181,36 +134,18 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 			i_ino = squashfs_i(inode)->parent;
 		}
 
-<<<<<<< HEAD
-		TRACE("Calling filldir(%p, %s, %d, %lld, %d, %d)\n",
-				dirent, name, size, file->f_pos, i_ino,
-				squashfs_filetype_table[1]);
-
-		if (filldir(dirent, name, size, file->f_pos, i_ino,
-				squashfs_filetype_table[1]) < 0) {
-				TRACE("Filldir returned less than 0\n");
-			goto finish;
-		}
-
-		file->f_pos += size;
-=======
 		if (!dir_emit(ctx, name, size, i_ino,
 				squashfs_filetype_table[1]))
 			goto finish;
 
 		ctx->pos += size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	length = get_dir_index_using_offset(inode->i_sb, &block, &offset,
 				squashfs_i(inode)->dir_idx_start,
 				squashfs_i(inode)->dir_idx_offset,
 				squashfs_i(inode)->dir_idx_cnt,
-<<<<<<< HEAD
-				file->f_pos);
-=======
 				ctx->pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (length < i_size_read(inode)) {
 		/*
@@ -250,11 +185,7 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 
 			length += sizeof(*dire) + size;
 
-<<<<<<< HEAD
-			if (file->f_pos >= length)
-=======
 			if (ctx->pos >= length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 
 			dire->name[size] = '\0';
@@ -262,24 +193,6 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 				((short) le16_to_cpu(dire->inode_number));
 			type = le16_to_cpu(dire->type);
 
-<<<<<<< HEAD
-			TRACE("Calling filldir(%p, %s, %d, %lld, %x:%x, %d, %d)"
-					"\n", dirent, dire->name, size,
-					file->f_pos,
-					le32_to_cpu(dirh.start_block),
-					le16_to_cpu(dire->offset),
-					inode_number,
-					squashfs_filetype_table[type]);
-
-			if (filldir(dirent, dire->name, size, file->f_pos,
-					inode_number,
-					squashfs_filetype_table[type]) < 0) {
-				TRACE("Filldir returned less than 0\n");
-				goto finish;
-			}
-
-			file->f_pos = length;
-=======
 			if (type > SQUASHFS_MAX_DIR_TYPE)
 				goto failed_read;
 
@@ -289,7 +202,6 @@ static int squashfs_readdir(struct file *file, struct dir_context *ctx)
 				goto finish;
 
 			ctx->pos = length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -306,11 +218,6 @@ failed_read:
 
 const struct file_operations squashfs_dir_ops = {
 	.read = generic_read_dir,
-<<<<<<< HEAD
-	.readdir = squashfs_readdir,
-	.llseek = default_llseek,
-=======
 	.iterate_shared = squashfs_readdir,
 	.llseek = generic_file_llseek,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

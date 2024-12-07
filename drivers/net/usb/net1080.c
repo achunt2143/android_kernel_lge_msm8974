@@ -1,37 +1,13 @@
-<<<<<<< HEAD
-/*
- * Net1080 based USB host-to-host cables
- * Copyright (C) 2000-2005 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Net1080 based USB host-to-host cables
  * Copyright (C) 2000-2005 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 // #define	DEBUG			// error path messages, extra info
 // #define	VERBOSE			// more; success messages
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -119,21 +95,11 @@ struct nc_trailer {
 static int
 nc_vendor_read(struct usbnet *dev, u8 req, u8 regnum, u16 *retval_ptr)
 {
-<<<<<<< HEAD
-	int status = usb_control_msg(dev->udev,
-		usb_rcvctrlpipe(dev->udev, 0),
-		req,
-		USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		0, regnum,
-		retval_ptr, sizeof *retval_ptr,
-		USB_CTRL_GET_TIMEOUT);
-=======
 	int status = usbnet_read_cmd(dev, req,
 				     USB_DIR_IN | USB_TYPE_VENDOR |
 				     USB_RECIP_DEVICE,
 				     0, regnum, retval_ptr,
 				     sizeof *retval_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status > 0)
 		status = 0;
 	if (!status)
@@ -147,26 +113,12 @@ nc_register_read(struct usbnet *dev, u8 regnum, u16 *retval_ptr)
 	return nc_vendor_read(dev, REQUEST_REGISTER, regnum, retval_ptr);
 }
 
-<<<<<<< HEAD
-// no retval ... can become async, usable in_interrupt()
-static void
-nc_vendor_write(struct usbnet *dev, u8 req, u8 regnum, u16 value)
-{
-	usb_control_msg(dev->udev,
-		usb_sndctrlpipe(dev->udev, 0),
-		req,
-		USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-		value, regnum,
-		NULL, 0,			// data is in setup packet
-		USB_CTRL_SET_TIMEOUT);
-=======
 static void
 nc_vendor_write(struct usbnet *dev, u8 req, u8 regnum, u16 value)
 {
 	usbnet_write_cmd(dev, req,
 			 USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			 value, regnum, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -182,19 +134,10 @@ static void nc_dump_registers(struct usbnet *dev)
 	u8	reg;
 	u16	*vp = kmalloc(sizeof (u16));
 
-<<<<<<< HEAD
-	if (!vp) {
-		dbg("no memory?");
-		return;
-	}
-
-	dbg("%s registers:", dev->net->name);
-=======
 	if (!vp)
 		return;
 
 	netdev_dbg(dev->net, "registers:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (reg = 0; reg < 0x20; reg++) {
 		int retval;
 
@@ -206,18 +149,10 @@ static void nc_dump_registers(struct usbnet *dev)
 
 		retval = nc_register_read(dev, reg, vp);
 		if (retval < 0)
-<<<<<<< HEAD
-			dbg("%s reg [0x%x] ==> error %d",
-				dev->net->name, reg, retval);
-		else
-			dbg("%s reg [0x%x] = 0x%x",
-				dev->net->name, reg, *vp);
-=======
 			netdev_dbg(dev->net, "reg [0x%x] ==> error %d\n",
 				   reg, retval);
 		else
 			netdev_dbg(dev->net, "reg [0x%x] = 0x%x\n", reg, *vp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(vp);
 }
@@ -316,51 +251,14 @@ static inline void nc_dump_status(struct usbnet *dev, u16 status)
  * TTL register
  */
 
-<<<<<<< HEAD
-#define	TTL_THIS(ttl)	(0x00ff & ttl)
 #define	TTL_OTHER(ttl)	(0x00ff & (ttl >> 8))
 #define MK_TTL(this,other)	((u16)(((other)<<8)|(0x00ff&(this))))
 
-static inline void nc_dump_ttl(struct usbnet *dev, u16 ttl)
-{
-	netif_dbg(dev, link, dev->net, "net1080 %s-%s ttl 0x%x this = %d, other = %d\n",
-		  dev->udev->bus->bus_name, dev->udev->devpath,
-		  ttl, TTL_THIS(ttl), TTL_OTHER(ttl));
-}
-
-=======
-#define	TTL_OTHER(ttl)	(0x00ff & (ttl >> 8))
-#define MK_TTL(this,other)	((u16)(((other)<<8)|(0x00ff&(this))))
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 static int net1080_reset(struct usbnet *dev)
 {
 	u16		usbctl, status, ttl;
-<<<<<<< HEAD
-	u16		*vp = kmalloc(sizeof (u16), GFP_KERNEL);
-	int		retval;
-
-	if (!vp)
-		return -ENOMEM;
-
-	// nc_dump_registers(dev);
-
-	if ((retval = nc_register_read(dev, REG_STATUS, vp)) < 0) {
-		dbg("can't read %s-%s status: %d",
-			dev->udev->bus->bus_name, dev->udev->devpath, retval);
-		goto done;
-	}
-	status = *vp;
-	nc_dump_status(dev, status);
-
-	if ((retval = nc_register_read(dev, REG_USBCTL, vp)) < 0) {
-		dbg("can't read USBCTL, %d", retval);
-		goto done;
-	}
-	usbctl = *vp;
-=======
 	u16		vp;
 	int		retval;
 
@@ -379,24 +277,11 @@ static int net1080_reset(struct usbnet *dev)
 		goto done;
 	}
 	usbctl = vp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nc_dump_usbctl(dev, usbctl);
 
 	nc_register_write(dev, REG_USBCTL,
 			USBCTL_FLUSH_THIS | USBCTL_FLUSH_OTHER);
 
-<<<<<<< HEAD
-	if ((retval = nc_register_read(dev, REG_TTL, vp)) < 0) {
-		dbg("can't read TTL, %d", retval);
-		goto done;
-	}
-	ttl = *vp;
-	// nc_dump_ttl(dev, ttl);
-
-	nc_register_write(dev, REG_TTL,
-			MK_TTL(NC_READ_TTL_MS, TTL_OTHER(ttl)) );
-	dbg("%s: assigned TTL, %d ms", dev->net->name, NC_READ_TTL_MS);
-=======
 	if ((retval = nc_register_read(dev, REG_TTL, &vp)) < 0) {
 		netdev_dbg(dev->net, "can't read TTL, %d\n", retval);
 		goto done;
@@ -406,7 +291,6 @@ static int net1080_reset(struct usbnet *dev)
 	nc_register_write(dev, REG_TTL,
 			MK_TTL(NC_READ_TTL_MS, TTL_OTHER(ttl)) );
 	netdev_dbg(dev->net, "assigned TTL, %d ms\n", NC_READ_TTL_MS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_info(dev, link, dev->net, "port %c, peer %sconnected\n",
 		   (status & STATUS_PORT_A) ? 'A' : 'B',
@@ -414,10 +298,6 @@ static int net1080_reset(struct usbnet *dev)
 	retval = 0;
 
 done:
-<<<<<<< HEAD
-	kfree(vp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -425,24 +305,12 @@ static int net1080_check_connect(struct usbnet *dev)
 {
 	int			retval;
 	u16			status;
-<<<<<<< HEAD
-	u16			*vp = kmalloc(sizeof (u16), GFP_KERNEL);
-
-	if (!vp)
-		return -ENOMEM;
-	retval = nc_register_read(dev, REG_STATUS, vp);
-	status = *vp;
-	kfree(vp);
-	if (retval != 0) {
-		dbg("%s net1080_check_conn read - %d", dev->net->name, retval);
-=======
 	u16			vp;
 
 	retval = nc_register_read(dev, REG_STATUS, &vp);
 	status = vp;
 	if (retval != 0) {
 		netdev_dbg(dev->net, "net1080_check_conn read - %d\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	}
 	if ((status & STATUS_CONN_OTHER) != STATUS_CONN_OTHER)
@@ -450,61 +318,6 @@ static int net1080_check_connect(struct usbnet *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void nc_flush_complete(struct urb *urb)
-{
-	kfree(urb->context);
-	usb_free_urb(urb);
-}
-
-static void nc_ensure_sync(struct usbnet *dev)
-{
-	dev->frame_errors++;
-	if (dev->frame_errors > 5) {
-		struct urb		*urb;
-		struct usb_ctrlrequest	*req;
-		int			status;
-
-		/* Send a flush */
-		urb = usb_alloc_urb(0, GFP_ATOMIC);
-		if (!urb)
-			return;
-
-		req = kmalloc(sizeof *req, GFP_ATOMIC);
-		if (!req) {
-			usb_free_urb(urb);
-			return;
-		}
-
-		req->bRequestType = USB_DIR_OUT
-			| USB_TYPE_VENDOR
-			| USB_RECIP_DEVICE;
-		req->bRequest = REQUEST_REGISTER;
-		req->wValue = cpu_to_le16(USBCTL_FLUSH_THIS
-				| USBCTL_FLUSH_OTHER);
-		req->wIndex = cpu_to_le16(REG_USBCTL);
-		req->wLength = cpu_to_le16(0);
-
-		/* queue an async control request, we don't need
-		 * to do anything when it finishes except clean up.
-		 */
-		usb_fill_control_urb(urb, dev->udev,
-			usb_sndctrlpipe(dev->udev, 0),
-			(unsigned char *) req,
-			NULL, 0,
-			nc_flush_complete, req);
-		status = usb_submit_urb(urb, GFP_ATOMIC);
-		if (status) {
-			kfree(req);
-			usb_free_urb(urb);
-			return;
-		}
-
-		netif_dbg(dev, rx_err, dev->net,
-			  "flush net1080; too many framing errors\n");
-		dev->frame_errors = 0;
-	}
-=======
 static void nc_ensure_sync(struct usbnet *dev)
 {
 	if (++dev->frame_errors <= 5)
@@ -521,7 +334,6 @@ static void nc_ensure_sync(struct usbnet *dev)
 	netif_dbg(dev, rx_err, dev->net,
 		  "flush net1080; too many framing errors\n");
 	dev->frame_errors = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int net1080_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
@@ -535,17 +347,9 @@ static int net1080_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		return 0;
 
 	if (!(skb->len & 0x01)) {
-<<<<<<< HEAD
-#ifdef DEBUG
-		struct net_device	*net = dev->net;
-		dbg("rx framesize %d range %d..%d mtu %d", skb->len,
-			net->hard_header_len, dev->hard_mtu, net->mtu);
-#endif
-=======
 		netdev_dbg(dev->net, "rx framesize %d range %d..%d mtu %d\n",
 			   skb->len, dev->net->hard_header_len, dev->hard_mtu,
 			   dev->net->mtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->net->stats.rx_frame_errors++;
 		nc_ensure_sync(dev);
 		return 0;
@@ -556,29 +360,17 @@ static int net1080_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	packet_len = le16_to_cpup(&header->packet_len);
 	if (FRAMED_SIZE(packet_len) > NC_MAX_PACKET) {
 		dev->net->stats.rx_frame_errors++;
-<<<<<<< HEAD
-		dbg("packet too big, %d", packet_len);
-=======
 		netdev_dbg(dev->net, "packet too big, %d\n", packet_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nc_ensure_sync(dev);
 		return 0;
 	} else if (hdr_len < MIN_HEADER) {
 		dev->net->stats.rx_frame_errors++;
-<<<<<<< HEAD
-		dbg("header too short, %d", hdr_len);
-=======
 		netdev_dbg(dev->net, "header too short, %d\n", hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nc_ensure_sync(dev);
 		return 0;
 	} else if (hdr_len > MIN_HEADER) {
 		// out of band data for us?
-<<<<<<< HEAD
-		dbg("header OOB, %d bytes", hdr_len - MIN_HEADER);
-=======
 		netdev_dbg(dev->net, "header OOB, %d bytes\n", hdr_len - MIN_HEADER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nc_ensure_sync(dev);
 		// switch (vendor/product ids) { ... }
 	}
@@ -591,38 +383,23 @@ static int net1080_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	if ((packet_len & 0x01) == 0) {
 		if (skb->data [packet_len] != PAD_BYTE) {
 			dev->net->stats.rx_frame_errors++;
-<<<<<<< HEAD
-			dbg("bad pad");
-=======
 			netdev_dbg(dev->net, "bad pad\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		skb_trim(skb, skb->len - 1);
 	}
 	if (skb->len != packet_len) {
 		dev->net->stats.rx_frame_errors++;
-<<<<<<< HEAD
-		dbg("bad packet len %d (expected %d)",
-			skb->len, packet_len);
-=======
 		netdev_dbg(dev->net, "bad packet len %d (expected %d)\n",
 			   skb->len, packet_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nc_ensure_sync(dev);
 		return 0;
 	}
 	if (header->packet_id != get_unaligned(&trailer->packet_id)) {
 		dev->net->stats.rx_fifo_errors++;
-<<<<<<< HEAD
-		dbg("(2+ dropped) rx packet_id mismatch 0x%x 0x%x",
-			le16_to_cpu(header->packet_id),
-			le16_to_cpu(trailer->packet_id));
-=======
 		netdev_dbg(dev->net, "(2+ dropped) rx packet_id mismatch 0x%x 0x%x\n",
 			   le16_to_cpu(header->packet_id),
 			   le16_to_cpu(trailer->packet_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 #if 0
@@ -676,24 +453,15 @@ net1080_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
 
 encapsulate:
 	/* header first */
-<<<<<<< HEAD
-	header = (struct nc_header *) skb_push(skb, sizeof *header);
-=======
 	header = skb_push(skb, sizeof *header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	header->hdr_len = cpu_to_le16(sizeof (*header));
 	header->packet_len = cpu_to_le16(len);
 	header->packet_id = cpu_to_le16((u16)dev->xid++);
 
 	/* maybe pad; then trailer */
 	if (!((skb->len + sizeof *trailer) & 0x01))
-<<<<<<< HEAD
-		*skb_put(skb, 1) = PAD_BYTE;
-	trailer = (struct nc_trailer *) skb_put(skb, sizeof *trailer);
-=======
 		skb_put_u8(skb, PAD_BYTE);
 	trailer = skb_put(skb, sizeof *trailer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_unaligned(header->packet_id, &trailer->packet_id);
 #if 0
 	netdev_dbg(dev->net, "frame >tx h %d p %d id %d\n",
@@ -744,10 +512,7 @@ static struct usb_driver net1080_driver = {
 	.disconnect =	usbnet_disconnect,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(net1080_driver);

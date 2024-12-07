@@ -1,45 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for ucd9200 series Digital PWM System Controllers
  *
  * Copyright (C) 2011 Ericsson AB.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/i2c/pmbus.h>
-=======
 #include <linux/pmbus.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pmbus.h"
 
 #define UCD9200_PHASE_INFO	0xd2
@@ -61,10 +34,6 @@ static const struct i2c_device_id ucd9200_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ucd9200_id);
 
-<<<<<<< HEAD
-static int ucd9200_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-=======
 static const struct of_device_id __maybe_unused ucd9200_of_match[] = {
 	{
 		.compatible = "ti,cd9200",
@@ -103,15 +72,11 @@ static const struct of_device_id __maybe_unused ucd9200_of_match[] = {
 MODULE_DEVICE_TABLE(of, ucd9200_of_match);
 
 static int ucd9200_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 block_buffer[I2C_SMBUS_BLOCK_MAX + 1];
 	struct pmbus_driver_info *info;
 	const struct i2c_device_id *mid;
-<<<<<<< HEAD
-=======
 	enum chips chip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j, ret;
 
 	if (!i2c_check_functionality(client->adapter,
@@ -136,12 +101,6 @@ static int ucd9200_probe(struct i2c_client *client)
 		dev_err(&client->dev, "Unsupported device\n");
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	if (id->driver_data != ucd9200 && id->driver_data != mid->driver_data)
-		dev_notice(&client->dev,
-			   "Device mismatch: Configured %s, detected %s\n",
-			   id->name, mid->name);
-=======
 
 	if (client->dev.of_node)
 		chip = (uintptr_t)of_device_get_match_data(&client->dev);
@@ -152,7 +111,6 @@ static int ucd9200_probe(struct i2c_client *client)
 		dev_notice(&client->dev,
 			   "Device mismatch: Configured %s, detected %s\n",
 			   client->name, mid->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info = devm_kzalloc(&client->dev, sizeof(struct pmbus_driver_info),
 			    GFP_KERNEL);
@@ -190,11 +148,7 @@ static int ucd9200_probe(struct i2c_client *client)
 	 * This only affects the READ_IOUT and READ_TEMPERATURE2 registers.
 	 * READ_IOUT will return the sum of currents of all phases of a rail,
 	 * and READ_TEMPERATURE2 will return the maximum temperature detected
-<<<<<<< HEAD
-	 * for the the phases of the rail.
-=======
 	 * for the phases of the rail.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (i = 0; i < info->pages; i++) {
 		/*
@@ -237,26 +191,16 @@ static int ucd9200_probe(struct i2c_client *client)
 	if (mid->driver_data == ucd9240)
 		info->func[0] |= PMBUS_HAVE_FAN12 | PMBUS_HAVE_STATUS_FAN12;
 
-<<<<<<< HEAD
-	return pmbus_do_probe(client, mid, info);
-=======
 	return pmbus_do_probe(client, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is the driver that will be inserted */
 static struct i2c_driver ucd9200_driver = {
 	.driver = {
 		.name = "ucd9200",
-<<<<<<< HEAD
-	},
-	.probe = ucd9200_probe,
-	.remove = pmbus_do_remove,
-=======
 		.of_match_table = of_match_ptr(ucd9200_of_match),
 	},
 	.probe = ucd9200_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ucd9200_id,
 };
 
@@ -265,7 +209,4 @@ module_i2c_driver(ucd9200_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for TI UCD922x, UCD924x");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

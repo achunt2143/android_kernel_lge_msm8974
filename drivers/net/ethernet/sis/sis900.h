@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sis900.h Definitions for SiS ethernet controllers including 7014/7016 and 900
  * Copyright 1999 Silicon Integrated System Corporation
  * References:
@@ -60,11 +57,7 @@ enum sis900_configuration_register_bits {
 	EDB_MASTER_EN = 0x00002000
 };
 
-<<<<<<< HEAD
-enum sis900_eeprom_access_reigster_bits {
-=======
 enum sis900_eeprom_access_register_bits {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MDC  = 0x00000040, MDDIR = 0x00000020, MDIO = 0x00000010, /* 7016 specific */
 	EECS = 0x00000008, EECLK = 0x00000004, EEDO = 0x00000002,
 	EEDI = 0x00000001
@@ -81,11 +74,7 @@ enum sis900_interrupt_register_bits {
 	RxERR  = 0x00000004, RxDESC = 0x00000002, RxOK  = 0x00000001
 };
 
-<<<<<<< HEAD
-enum sis900_interrupt_enable_reigster_bits {
-=======
 enum sis900_interrupt_enable_register_bits {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IE = 0x00000001
 };
 
@@ -322,11 +311,7 @@ enum sis630_revision_id {
 #define CRC_SIZE                4
 #define MAC_HEADER_SIZE         14
 
-<<<<<<< HEAD
-#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
-=======
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_FRAME_SIZE  (1518 + 4)
 #else
 #define MAX_FRAME_SIZE  1518

@@ -3,34 +3,6 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2004-2008, 2009, 2010, 2011 Cavium Networks
- */
-
-#include <linux/interrupt.h>
-#include <linux/bitops.h>
-#include <linux/percpu.h>
-#include <linux/irq.h>
-#include <linux/smp.h>
-
-#include <asm/octeon/octeon.h>
-
-static DEFINE_RAW_SPINLOCK(octeon_irq_ciu0_lock);
-static DEFINE_RAW_SPINLOCK(octeon_irq_ciu1_lock);
-
-static DEFINE_PER_CPU(unsigned long, octeon_irq_ciu0_en_mirror);
-static DEFINE_PER_CPU(unsigned long, octeon_irq_ciu1_en_mirror);
-
-static __read_mostly u8 octeon_irq_ciu_to_irq[8][64];
-
-union octeon_ciu_chip_data {
-	void *p;
-	unsigned long l;
-	struct {
-		unsigned int line:6;
-		unsigned int bit:6;
-	} s;
-=======
  * Copyright (C) 2004-2016 Cavium, Inc.
  */
 
@@ -109,7 +81,6 @@ struct octeon_ciu_chip_data {
 	int gpio_line;
 	int current_cpu;	/* Next CPU expected to take this irq */
 	int ciu_node; /* NUMA node number of the CIU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct octeon_core_chip_data {
@@ -123,22 +94,6 @@ struct octeon_core_chip_data {
 
 static struct octeon_core_chip_data octeon_irq_core_chip_data[MIPS_CORE_IRQ_LINES];
 
-<<<<<<< HEAD
-static void __init octeon_irq_set_ciu_mapping(int irq, int line, int bit,
-					      struct irq_chip *chip,
-					      irq_flow_handler_t handler)
-{
-	union octeon_ciu_chip_data cd;
-
-	irq_set_chip_and_handler(irq, chip, handler);
-
-	cd.l = 0;
-	cd.s.line = line;
-	cd.s.bit = bit;
-
-	irq_set_chip_data(irq, cd.p);
-	octeon_irq_ciu_to_irq[line][bit] = irq;
-=======
 static int octeon_irq_set_ciu_mapping(int irq, int line, int bit, int gpio_line,
 				      struct irq_chip *chip,
 				      irq_flow_handler_t handler)
@@ -183,7 +138,6 @@ static int octeon_irq_force_ciu_mapping(struct irq_domain *domain,
 		return ret;
 
 	return irq_domain_associate(domain, irq, line << 6 | bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int octeon_coreid_for_cpu(int cpu)
@@ -308,25 +262,9 @@ static void __init octeon_irq_init_core(void)
 		mutex_init(&cd->core_irq_mutex);
 
 		irq = OCTEON_IRQ_SW0 + i;
-<<<<<<< HEAD
-		switch (irq) {
-		case OCTEON_IRQ_TIMER:
-		case OCTEON_IRQ_SW0:
-		case OCTEON_IRQ_SW1:
-		case OCTEON_IRQ_5:
-		case OCTEON_IRQ_PERF:
-			irq_set_chip_data(irq, cd);
-			irq_set_chip_and_handler(irq, &octeon_irq_chip_core,
-						 handle_percpu_irq);
-			break;
-		default:
-			break;
-		}
-=======
 		irq_set_chip_data(irq, cd);
 		irq_set_chip_and_handler(irq, &octeon_irq_chip_core,
 					 handle_percpu_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -335,14 +273,6 @@ static int next_cpu_for_irq(struct irq_data *data)
 
 #ifdef CONFIG_SMP
 	int cpu;
-<<<<<<< HEAD
-	int weight = cpumask_weight(data->affinity);
-
-	if (weight > 1) {
-		cpu = smp_processor_id();
-		for (;;) {
-			cpu = cpumask_next(cpu, data->affinity);
-=======
 	const struct cpumask *mask = irq_data_get_affinity_mask(data);
 	int weight = cpumask_weight(mask);
 	struct octeon_ciu_chip_data *cd = irq_data_get_irq_chip_data(data);
@@ -351,7 +281,6 @@ static int next_cpu_for_irq(struct irq_data *data)
 		cpu = cd->current_cpu;
 		for (;;) {
 			cpu = cpumask_next(cpu, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cpu >= nr_cpu_ids) {
 				cpu = -1;
 				continue;
@@ -360,18 +289,11 @@ static int next_cpu_for_irq(struct irq_data *data)
 			}
 		}
 	} else if (weight == 1) {
-<<<<<<< HEAD
-		cpu = cpumask_first(data->affinity);
-	} else {
-		cpu = smp_processor_id();
-	}
-=======
 		cpu = cpumask_first(mask);
 	} else {
 		cpu = smp_processor_id();
 	}
 	cd->current_cpu = cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cpu;
 #else
 	return smp_processor_id();
@@ -384,25 +306,6 @@ static void octeon_irq_ciu_enable(struct irq_data *data)
 	int coreid = octeon_coreid_for_cpu(cpu);
 	unsigned long *pen;
 	unsigned long flags;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		pen = &per_cpu(octeon_irq_ciu0_en_mirror, cpu);
-		set_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN0(coreid * 2), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		pen = &per_cpu(octeon_irq_ciu1_en_mirror, cpu);
-		set_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-	}
-=======
 	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock = &per_cpu(octeon_irq_ciu_spinlock, cpu);
 
@@ -429,32 +332,12 @@ static void octeon_irq_ciu_enable(struct irq_data *data)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
 	}
 	raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void octeon_irq_ciu_enable_local(struct irq_data *data)
 {
 	unsigned long *pen;
 	unsigned long flags;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		pen = &__get_cpu_var(octeon_irq_ciu0_en_mirror);
-		set_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		pen = &__get_cpu_var(octeon_irq_ciu1_en_mirror);
-		set_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN1(cvmx_get_core_num() * 2 + 1), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-	}
-=======
 	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
@@ -481,32 +364,12 @@ static void octeon_irq_ciu_enable_local(struct irq_data *data)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1(cvmx_get_core_num() * 2 + 1), *pen);
 	}
 	raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void octeon_irq_ciu_disable_local(struct irq_data *data)
 {
 	unsigned long *pen;
 	unsigned long flags;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		pen = &__get_cpu_var(octeon_irq_ciu0_en_mirror);
-		clear_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		pen = &__get_cpu_var(octeon_irq_ciu1_en_mirror);
-		clear_bit(cd.s.bit, pen);
-		cvmx_write_csr(CVMX_CIU_INTX_EN1(cvmx_get_core_num() * 2 + 1), *pen);
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-	}
-=======
 	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
@@ -533,7 +396,6 @@ static void octeon_irq_ciu_disable_local(struct irq_data *data)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1(cvmx_get_core_num() * 2 + 1), *pen);
 	}
 	raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void octeon_irq_ciu_disable_all(struct irq_data *data)
@@ -541,32 +403,6 @@ static void octeon_irq_ciu_disable_all(struct irq_data *data)
 	unsigned long flags;
 	unsigned long *pen;
 	int cpu;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	wmb(); /* Make sure flag changes arrive before register updates. */
-
-	cd.p = irq_data_get_irq_chip_data(data);
-
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			pen = &per_cpu(octeon_irq_ciu0_en_mirror, cpu);
-			clear_bit(cd.s.bit, pen);
-			cvmx_write_csr(CVMX_CIU_INTX_EN0(coreid * 2), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			pen = &per_cpu(octeon_irq_ciu1_en_mirror, cpu);
-			clear_bit(cd.s.bit, pen);
-			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-=======
 	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock;
 
@@ -592,7 +428,6 @@ static void octeon_irq_ciu_disable_all(struct irq_data *data)
 		else
 			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
 		raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -601,30 +436,6 @@ static void octeon_irq_ciu_enable_all(struct irq_data *data)
 	unsigned long flags;
 	unsigned long *pen;
 	int cpu;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			pen = &per_cpu(octeon_irq_ciu0_en_mirror, cpu);
-			set_bit(cd.s.bit, pen);
-			cvmx_write_csr(CVMX_CIU_INTX_EN0(coreid * 2), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			pen = &per_cpu(octeon_irq_ciu1_en_mirror, cpu);
-			set_bit(cd.s.bit, pen);
-			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-=======
 	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock;
 
@@ -650,7 +461,6 @@ static void octeon_irq_ciu_enable_all(struct irq_data *data)
 		else
 			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
 		raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -662,31 +472,15 @@ static void octeon_irq_ciu_enable_v2(struct irq_data *data)
 {
 	u64 mask;
 	int cpu = next_cpu_for_irq(data);
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-	mask = 1ull << (cd.s.bit);
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
 	mask = 1ull << (cd->bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Called under the desc lock, so these should never get out
 	 * of sync.
 	 */
-<<<<<<< HEAD
-	if (cd.s.line == 0) {
-		int index = octeon_coreid_for_cpu(cpu) * 2;
-		set_bit(cd.s.bit, &per_cpu(octeon_irq_ciu0_en_mirror, cpu));
-		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
-	} else {
-		int index = octeon_coreid_for_cpu(cpu) * 2 + 1;
-		set_bit(cd.s.bit, &per_cpu(octeon_irq_ciu1_en_mirror, cpu));
-=======
 	if (cd->line == 0) {
 		int index = octeon_coreid_for_cpu(cpu) * 2;
 		set_bit(cd->bit, &per_cpu(octeon_irq_ciu0_en_mirror, cpu));
@@ -694,14 +488,11 @@ static void octeon_irq_ciu_enable_v2(struct irq_data *data)
 	} else {
 		int index = octeon_coreid_for_cpu(cpu) * 2 + 1;
 		set_bit(cd->bit, &per_cpu(octeon_irq_ciu1_en_mirror, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 	}
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Enable the irq in the sum2 registers.
  */
 static void octeon_irq_ciu_enable_sum2(struct irq_data *data)
@@ -763,27 +554,12 @@ static void octeon_irq_ciu_disable_all_sum2(struct irq_data *data)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Enable the irq on the current CPU for chips that
  * have the EN*_W1{S,C} registers.
  */
 static void octeon_irq_ciu_enable_local_v2(struct irq_data *data)
 {
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-	mask = 1ull << (cd.s.bit);
-
-	if (cd.s.line == 0) {
-		int index = cvmx_get_core_num() * 2;
-		set_bit(cd.s.bit, &__get_cpu_var(octeon_irq_ciu0_en_mirror));
-		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
-	} else {
-		int index = cvmx_get_core_num() * 2 + 1;
-		set_bit(cd.s.bit, &__get_cpu_var(octeon_irq_ciu1_en_mirror));
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
@@ -796,7 +572,6 @@ static void octeon_irq_ciu_enable_local_v2(struct irq_data *data)
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
 		set_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 	}
 }
@@ -804,20 +579,6 @@ static void octeon_irq_ciu_enable_local_v2(struct irq_data *data)
 static void octeon_irq_ciu_disable_local_v2(struct irq_data *data)
 {
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = irq_data_get_irq_chip_data(data);
-	mask = 1ull << (cd.s.bit);
-
-	if (cd.s.line == 0) {
-		int index = cvmx_get_core_num() * 2;
-		clear_bit(cd.s.bit, &__get_cpu_var(octeon_irq_ciu0_en_mirror));
-		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1C(index), mask);
-	} else {
-		int index = cvmx_get_core_num() * 2 + 1;
-		clear_bit(cd.s.bit, &__get_cpu_var(octeon_irq_ciu1_en_mirror));
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
@@ -830,7 +591,6 @@ static void octeon_irq_ciu_disable_local_v2(struct irq_data *data)
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
 		clear_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1C(index), mask);
 	}
 }
@@ -841,21 +601,12 @@ static void octeon_irq_ciu_disable_local_v2(struct irq_data *data)
 static void octeon_irq_ciu_ack(struct irq_data *data)
 {
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = data->chip_data;
-	mask = 1ull << (cd.s.bit);
-
-	if (cd.s.line == 0) {
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
 	mask = 1ull << (cd->bit);
 
 	if (cd->line == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int index = cvmx_get_core_num() * 2;
 		cvmx_write_csr(CVMX_CIU_INTX_SUM0(index), mask);
 	} else {
@@ -871,19 +622,6 @@ static void octeon_irq_ciu_disable_all_v2(struct irq_data *data)
 {
 	int cpu;
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	wmb(); /* Make sure flag changes arrive before register updates. */
-
-	cd.p = data->chip_data;
-	mask = 1ull << (cd.s.bit);
-
-	if (cd.s.line == 0) {
-		for_each_online_cpu(cpu) {
-			int index = octeon_coreid_for_cpu(cpu) * 2;
-			clear_bit(cd.s.bit, &per_cpu(octeon_irq_ciu0_en_mirror, cpu));
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
@@ -894,18 +632,13 @@ static void octeon_irq_ciu_disable_all_v2(struct irq_data *data)
 			int index = octeon_coreid_for_cpu(cpu) * 2;
 			clear_bit(cd->bit,
 				&per_cpu(octeon_irq_ciu0_en_mirror, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cvmx_write_csr(CVMX_CIU_INTX_EN0_W1C(index), mask);
 		}
 	} else {
 		for_each_online_cpu(cpu) {
 			int index = octeon_coreid_for_cpu(cpu) * 2 + 1;
-<<<<<<< HEAD
-			clear_bit(cd.s.bit, &per_cpu(octeon_irq_ciu1_en_mirror, cpu));
-=======
 			clear_bit(cd->bit,
 				&per_cpu(octeon_irq_ciu1_en_mirror, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cvmx_write_csr(CVMX_CIU_INTX_EN1_W1C(index), mask);
 		}
 	}
@@ -919,17 +652,6 @@ static void octeon_irq_ciu_enable_all_v2(struct irq_data *data)
 {
 	int cpu;
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = data->chip_data;
-	mask = 1ull << (cd.s.bit);
-
-	if (cd.s.line == 0) {
-		for_each_online_cpu(cpu) {
-			int index = octeon_coreid_for_cpu(cpu) * 2;
-			set_bit(cd.s.bit, &per_cpu(octeon_irq_ciu0_en_mirror, cpu));
-=======
 	struct octeon_ciu_chip_data *cd;
 
 	cd = irq_data_get_irq_chip_data(data);
@@ -940,25 +662,18 @@ static void octeon_irq_ciu_enable_all_v2(struct irq_data *data)
 			int index = octeon_coreid_for_cpu(cpu) * 2;
 			set_bit(cd->bit,
 				&per_cpu(octeon_irq_ciu0_en_mirror, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
 		}
 	} else {
 		for_each_online_cpu(cpu) {
 			int index = octeon_coreid_for_cpu(cpu) * 2 + 1;
-<<<<<<< HEAD
-			set_bit(cd.s.bit, &per_cpu(octeon_irq_ciu1_en_mirror, cpu));
-=======
 			set_bit(cd->bit,
 				&per_cpu(octeon_irq_ciu1_en_mirror, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 		}
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int octeon_irq_ciu_set_type(struct irq_data *data, unsigned int t)
 {
 	irqd_set_trigger_type(data, t);
@@ -1047,47 +762,30 @@ static void octeon_irq_ciu_gpio_ack(struct irq_data *data)
 	cvmx_write_csr(CVMX_GPIO_INT_CLR, mask);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 
 static void octeon_irq_cpu_offline_ciu(struct irq_data *data)
 {
 	int cpu = smp_processor_id();
 	cpumask_t new_affinity;
-<<<<<<< HEAD
-
-	if (!cpumask_test_cpu(cpu, data->affinity))
-		return;
-
-	if (cpumask_weight(data->affinity) > 1) {
-=======
 	const struct cpumask *mask = irq_data_get_affinity_mask(data);
 
 	if (!cpumask_test_cpu(cpu, mask))
 		return;
 
 	if (cpumask_weight(mask) > 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * It has multi CPU affinity, just remove this CPU
 		 * from the affinity set.
 		 */
-<<<<<<< HEAD
-		cpumask_copy(&new_affinity, data->affinity);
-=======
 		cpumask_copy(&new_affinity, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpumask_clear_cpu(cpu, &new_affinity);
 	} else {
 		/* Otherwise, put it on lowest numbered online CPU. */
 		cpumask_clear(&new_affinity);
 		cpumask_set_cpu(cpumask_first(cpu_online_mask), &new_affinity);
 	}
-<<<<<<< HEAD
-	__irq_set_affinity_locked(data, &new_affinity);
-=======
 	irq_set_affinity_locked(data, &new_affinity, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int octeon_irq_ciu_set_affinity(struct irq_data *data,
@@ -1096,17 +794,11 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
 	int cpu;
 	bool enable_one = !irqd_irq_disabled(data) && !irqd_irq_masked(data);
 	unsigned long flags;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-
-	cd.p = data->chip_data;
-=======
 	struct octeon_ciu_chip_data *cd;
 	unsigned long *pen;
 	raw_spinlock_t *lock;
 
 	cd = irq_data_get_irq_chip_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For non-v2 CIU, we will allow only single CPU affinity.
@@ -1119,38 +811,6 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
 	if (!enable_one)
 		return 0;
 
-<<<<<<< HEAD
-	if (cd.s.line == 0) {
-		raw_spin_lock_irqsave(&octeon_irq_ciu0_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			unsigned long *pen = &per_cpu(octeon_irq_ciu0_en_mirror, cpu);
-
-			if (cpumask_test_cpu(cpu, dest) && enable_one) {
-				enable_one = false;
-				set_bit(cd.s.bit, pen);
-			} else {
-				clear_bit(cd.s.bit, pen);
-			}
-			cvmx_write_csr(CVMX_CIU_INTX_EN0(coreid * 2), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu0_lock, flags);
-	} else {
-		raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-		for_each_online_cpu(cpu) {
-			int coreid = octeon_coreid_for_cpu(cpu);
-			unsigned long *pen = &per_cpu(octeon_irq_ciu1_en_mirror, cpu);
-
-			if (cpumask_test_cpu(cpu, dest) && enable_one) {
-				enable_one = false;
-				set_bit(cd.s.bit, pen);
-			} else {
-				clear_bit(cd.s.bit, pen);
-			}
-			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
-		}
-		raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-=======
 
 	for_each_online_cpu(cpu) {
 		int coreid = octeon_coreid_for_cpu(cpu);
@@ -1181,7 +841,6 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
 			cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
 
 		raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1197,42 +856,24 @@ static int octeon_irq_ciu_set_affinity_v2(struct irq_data *data,
 	int cpu;
 	bool enable_one = !irqd_irq_disabled(data) && !irqd_irq_masked(data);
 	u64 mask;
-<<<<<<< HEAD
-	union octeon_ciu_chip_data cd;
-=======
 	struct octeon_ciu_chip_data *cd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!enable_one)
 		return 0;
 
-<<<<<<< HEAD
-	cd.p = data->chip_data;
-	mask = 1ull << cd.s.bit;
-
-	if (cd.s.line == 0) {
-=======
 	cd = irq_data_get_irq_chip_data(data);
 	mask = 1ull << cd->bit;
 
 	if (cd->line == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for_each_online_cpu(cpu) {
 			unsigned long *pen = &per_cpu(octeon_irq_ciu0_en_mirror, cpu);
 			int index = octeon_coreid_for_cpu(cpu) * 2;
 			if (cpumask_test_cpu(cpu, dest) && enable_one) {
 				enable_one = false;
-<<<<<<< HEAD
-				set_bit(cd.s.bit, pen);
-				cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
-			} else {
-				clear_bit(cd.s.bit, pen);
-=======
 				set_bit(cd->bit, pen);
 				cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
 			} else {
 				clear_bit(cd->bit, pen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cvmx_write_csr(CVMX_CIU_INTX_EN0_W1C(index), mask);
 			}
 		}
@@ -1242,33 +883,16 @@ static int octeon_irq_ciu_set_affinity_v2(struct irq_data *data,
 			int index = octeon_coreid_for_cpu(cpu) * 2 + 1;
 			if (cpumask_test_cpu(cpu, dest) && enable_one) {
 				enable_one = false;
-<<<<<<< HEAD
-				set_bit(cd.s.bit, pen);
-				cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
-			} else {
-				clear_bit(cd.s.bit, pen);
-=======
 				set_bit(cd->bit, pen);
 				cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 			} else {
 				clear_bit(cd->bit, pen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cvmx_write_csr(CVMX_CIU_INTX_EN1_W1C(index), mask);
 			}
 		}
 	}
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-/*
- * The v1 CIU code already masks things, so supply a dummy version to
- * the core chip code.
- */
-static void octeon_irq_dummy_mask(struct irq_data *data)
-{
-=======
 
 static int octeon_irq_ciu_set_affinity_sum2(struct irq_data *data,
 					    const struct cpumask *dest,
@@ -1307,7 +931,6 @@ static unsigned int edge_startup(struct irq_data *data)
 	data->chip->irq_ack(data);
 	data->chip->irq_enable(data);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1325,13 +948,8 @@ static struct irq_chip octeon_irq_chip_ciu_v2 = {
 #endif
 };
 
-<<<<<<< HEAD
-static struct irq_chip octeon_irq_chip_ciu_edge_v2 = {
-	.name = "CIU-E",
-=======
 static struct irq_chip octeon_irq_chip_ciu_v2_edge = {
 	.name = "CIU",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_enable = octeon_irq_ciu_enable_v2,
 	.irq_disable = octeon_irq_ciu_disable_all_v2,
 	.irq_ack = octeon_irq_ciu_ack,
@@ -1343,8 +961,6 @@ static struct irq_chip octeon_irq_chip_ciu_v2_edge = {
 #endif
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Newer octeon chips have support for lockless CIU operation.
  */
@@ -1373,17 +989,12 @@ static struct irq_chip octeon_irq_chip_ciu_sum2_edge = {
 #endif
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct irq_chip octeon_irq_chip_ciu = {
 	.name = "CIU",
 	.irq_enable = octeon_irq_ciu_enable,
 	.irq_disable = octeon_irq_ciu_disable_all,
-<<<<<<< HEAD
-	.irq_mask = octeon_irq_dummy_mask,
-=======
 	.irq_mask = octeon_irq_ciu_disable_local,
 	.irq_unmask = octeon_irq_ciu_enable,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	.irq_set_affinity = octeon_irq_ciu_set_affinity,
 	.irq_cpu_offline = octeon_irq_cpu_offline_ciu,
@@ -1391,20 +1002,12 @@ static struct irq_chip octeon_irq_chip_ciu = {
 };
 
 static struct irq_chip octeon_irq_chip_ciu_edge = {
-<<<<<<< HEAD
-	.name = "CIU-E",
-	.irq_enable = octeon_irq_ciu_enable,
-	.irq_disable = octeon_irq_ciu_disable_all,
-	.irq_mask = octeon_irq_dummy_mask,
-	.irq_ack = octeon_irq_ciu_ack,
-=======
 	.name = "CIU",
 	.irq_enable = octeon_irq_ciu_enable,
 	.irq_disable = octeon_irq_ciu_disable_all,
 	.irq_ack = octeon_irq_ciu_ack,
 	.irq_mask = octeon_irq_ciu_disable_local,
 	.irq_unmask = octeon_irq_ciu_enable,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	.irq_set_affinity = octeon_irq_ciu_set_affinity,
 	.irq_cpu_offline = octeon_irq_cpu_offline_ciu,
@@ -1428,19 +1031,14 @@ static struct irq_chip octeon_irq_chip_ciu_mbox = {
 	.name = "CIU-M",
 	.irq_enable = octeon_irq_ciu_enable_all,
 	.irq_disable = octeon_irq_ciu_disable_all,
-<<<<<<< HEAD
-=======
 	.irq_ack = octeon_irq_ciu_disable_local,
 	.irq_eoi = octeon_irq_ciu_enable_local,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.irq_cpu_online = octeon_irq_ciu_enable_local,
 	.irq_cpu_offline = octeon_irq_ciu_disable_local,
 	.flags = IRQCHIP_ONOFFLINE_ENABLED,
 };
 
-<<<<<<< HEAD
-=======
 static struct irq_chip octeon_irq_chip_ciu_gpio_v2 = {
 	.name = "CIU-GPIO",
 	.irq_enable = octeon_irq_ciu_enable_gpio_v2,
@@ -1471,7 +1069,6 @@ static struct irq_chip octeon_irq_chip_ciu_gpio = {
 	.flags = IRQCHIP_SET_TYPE_MASKED,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Watchdog interrupts are special.  They are associated with a single
  * core, so we hardwire the affinity to that core.
@@ -1482,14 +1079,6 @@ static void octeon_irq_ciu_wd_enable(struct irq_data *data)
 	unsigned long *pen;
 	int coreid = data->irq - OCTEON_IRQ_WDOG0;	/* Bit 0-63 of EN1 */
 	int cpu = octeon_cpu_for_coreid(coreid);
-<<<<<<< HEAD
-
-	raw_spin_lock_irqsave(&octeon_irq_ciu1_lock, flags);
-	pen = &per_cpu(octeon_irq_ciu1_en_mirror, cpu);
-	set_bit(coreid, pen);
-	cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
-	raw_spin_unlock_irqrestore(&octeon_irq_ciu1_lock, flags);
-=======
 	raw_spinlock_t *lock = &per_cpu(octeon_irq_ciu_spinlock, cpu);
 
 	raw_spin_lock_irqsave(lock, flags);
@@ -1502,7 +1091,6 @@ static void octeon_irq_ciu_wd_enable(struct irq_data *data)
 	wmb();
 	cvmx_write_csr(CVMX_CIU_INTX_EN1(coreid * 2 + 1), *pen);
 	raw_spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1531,32 +1119,6 @@ static struct irq_chip octeon_irq_chip_ciu_wd = {
 	.name = "CIU-W",
 	.irq_enable = octeon_irq_ciu_wd_enable,
 	.irq_disable = octeon_irq_ciu_disable_all,
-<<<<<<< HEAD
-	.irq_mask = octeon_irq_dummy_mask,
-};
-
-static void octeon_irq_ip2_v1(void)
-{
-	const unsigned long core_id = cvmx_get_core_num();
-	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INTX_SUM0(core_id * 2));
-
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu0_en_mirror);
-	clear_c0_status(STATUSF_IP2);
-	if (likely(ciu_sum)) {
-		int bit = fls64(ciu_sum) - 1;
-		int irq = octeon_irq_ciu_to_irq[0][bit];
-		if (likely(irq))
-			do_IRQ(irq);
-		else
-			spurious_interrupt();
-	} else {
-		spurious_interrupt();
-	}
-	set_c0_status(STATUSF_IP2);
-}
-
-static void octeon_irq_ip2_v2(void)
-=======
 	.irq_mask = octeon_irq_ciu_disable_local,
 	.irq_unmask = octeon_irq_ciu_enable_local,
 };
@@ -1735,16 +1297,11 @@ static const struct irq_domain_ops octeon_irq_domain_gpio_ops = {
 };
 
 static void octeon_irq_ip2_ciu(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned long core_id = cvmx_get_core_num();
 	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INTX_SUM0(core_id * 2));
 
-<<<<<<< HEAD
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu0_en_mirror);
-=======
 	ciu_sum &= __this_cpu_read(octeon_irq_ciu0_en_mirror);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(ciu_sum)) {
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[0][bit];
@@ -1756,21 +1313,12 @@ static void octeon_irq_ip2_ciu(void)
 		spurious_interrupt();
 	}
 }
-<<<<<<< HEAD
-static void octeon_irq_ip3_v1(void)
-{
-	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INT_SUM1);
-
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu1_en_mirror);
-	clear_c0_status(STATUSF_IP3);
-=======
 
 static void octeon_irq_ip3_ciu(void)
 {
 	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INT_SUM1);
 
 	ciu_sum &= __this_cpu_read(octeon_irq_ciu1_en_mirror);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(ciu_sum)) {
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[1][bit];
@@ -1781,19 +1329,6 @@ static void octeon_irq_ip3_ciu(void)
 	} else {
 		spurious_interrupt();
 	}
-<<<<<<< HEAD
-	set_c0_status(STATUSF_IP3);
-}
-
-static void octeon_irq_ip3_v2(void)
-{
-	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INT_SUM1);
-
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu1_en_mirror);
-	if (likely(ciu_sum)) {
-		int bit = fls64(ciu_sum) - 1;
-		int irq = octeon_irq_ciu_to_irq[1][bit];
-=======
 }
 
 static void octeon_irq_ip4_ciu(void)
@@ -1807,7 +1342,6 @@ static void octeon_irq_ip4_ciu(void)
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[2][bit];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (likely(irq))
 			do_IRQ(irq);
 		else
@@ -1817,8 +1351,6 @@ static void octeon_irq_ip4_ciu(void)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static bool octeon_irq_use_ip4;
 
 static void octeon_irq_local_enable_ip4(void *arg)
@@ -1826,7 +1358,6 @@ static void octeon_irq_local_enable_ip4(void *arg)
 	set_c0_status(STATUSF_IP4);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void octeon_irq_ip4_mask(void)
 {
 	clear_c0_status(STATUSF_IP4);
@@ -1837,11 +1368,6 @@ static void (*octeon_irq_ip2)(void);
 static void (*octeon_irq_ip3)(void);
 static void (*octeon_irq_ip4)(void);
 
-<<<<<<< HEAD
-void __cpuinitdata (*octeon_irq_setup_secondary)(void);
-
-static void __cpuinit octeon_irq_percpu_enable(void)
-=======
 void (*octeon_irq_setup_secondary)(void);
 
 void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t h)
@@ -1852,16 +1378,10 @@ void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t h)
 }
 
 static void octeon_irq_percpu_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	irq_cpu_online();
 }
 
-<<<<<<< HEAD
-static void __cpuinit octeon_irq_init_ciu_percpu(void)
-{
-	int coreid = cvmx_get_core_num();
-=======
 static void octeon_irq_init_ciu_percpu(void)
 {
 	int coreid = cvmx_get_core_num();
@@ -1871,7 +1391,6 @@ static void octeon_irq_init_ciu_percpu(void)
 	__this_cpu_write(octeon_irq_ciu1_en_mirror, 0);
 	wmb();
 	raw_spin_lock_init(this_cpu_ptr(&octeon_irq_ciu_spinlock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Disable All CIU Interrupts. The ones we need will be
 	 * enabled later.  Read the SUM register so we know the write
@@ -1884,14 +1403,6 @@ static void octeon_irq_init_ciu_percpu(void)
 	cvmx_read_csr(CVMX_CIU_INTX_SUM0((coreid * 2)));
 }
 
-<<<<<<< HEAD
-static void __cpuinit octeon_irq_setup_secondary_ciu(void)
-{
-
-	__get_cpu_var(octeon_irq_ciu0_en_mirror) = 0;
-	__get_cpu_var(octeon_irq_ciu1_en_mirror) = 0;
-
-=======
 static void octeon_irq_init_ciu2_percpu(void)
 {
 	u64 regx, ipx;
@@ -1916,20 +1427,11 @@ static void octeon_irq_init_ciu2_percpu(void)
 
 static void octeon_irq_setup_secondary_ciu(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	octeon_irq_init_ciu_percpu();
 	octeon_irq_percpu_enable();
 
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
-<<<<<<< HEAD
-	clear_c0_status(STATUSF_IP4);
-}
-
-static void __init octeon_irq_init_ciu(void)
-{
-	unsigned int i;
-=======
 	if (octeon_irq_use_ip4)
 		set_c0_status(STATUSF_IP4);
 	else
@@ -1953,39 +1455,20 @@ static int __init octeon_irq_init_ciu(
 	struct device_node *ciu_node, struct device_node *parent)
 {
 	int i, r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct irq_chip *chip;
 	struct irq_chip *chip_edge;
 	struct irq_chip *chip_mbox;
 	struct irq_chip *chip_wd;
-<<<<<<< HEAD
-=======
 	struct irq_domain *ciu_domain = NULL;
 	struct octeon_irq_ciu_domain_data *dd;
 
 	dd = kzalloc(sizeof(*dd), GFP_KERNEL);
 	if (!dd)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	octeon_irq_init_ciu_percpu();
 	octeon_irq_setup_secondary = octeon_irq_setup_secondary_ciu;
 
-<<<<<<< HEAD
-	if (OCTEON_IS_MODEL(OCTEON_CN58XX_PASS2_X) ||
-	    OCTEON_IS_MODEL(OCTEON_CN56XX_PASS2_X) ||
-	    OCTEON_IS_MODEL(OCTEON_CN52XX_PASS2_X) ||
-	    OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
-		octeon_irq_ip2 = octeon_irq_ip2_v2;
-		octeon_irq_ip3 = octeon_irq_ip3_v2;
-		chip = &octeon_irq_chip_ciu_v2;
-		chip_edge = &octeon_irq_chip_ciu_edge_v2;
-		chip_mbox = &octeon_irq_chip_ciu_mbox_v2;
-		chip_wd = &octeon_irq_chip_ciu_wd_v2;
-	} else {
-		octeon_irq_ip2 = octeon_irq_ip2_v1;
-		octeon_irq_ip3 = octeon_irq_ip3_v1;
-=======
 	octeon_irq_ip2 = octeon_irq_ip2_ciu;
 	octeon_irq_ip3 = octeon_irq_ip3_ciu;
 	if ((OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3())
@@ -2008,14 +1491,10 @@ static int __init octeon_irq_init_ciu(
 		chip_wd = &octeon_irq_chip_ciu_wd_v2;
 		octeon_irq_gpio_chip = &octeon_irq_chip_ciu_gpio_v2;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip = &octeon_irq_chip_ciu;
 		chip_edge = &octeon_irq_chip_ciu_edge;
 		chip_mbox = &octeon_irq_chip_ciu_mbox;
 		chip_wd = &octeon_irq_chip_ciu_wd;
-<<<<<<< HEAD
-	}
-=======
 		octeon_irq_gpio_chip = &octeon_irq_chip_ciu_gpio;
 	}
 	octeon_irq_ciu_chip = chip;
@@ -2590,91 +2069,11 @@ static int __init octeon_irq_init_ciu2(
 	octeon_irq_gpio_chip = &octeon_irq_chip_ciu2_gpio;
 	octeon_irq_ip2 = octeon_irq_ciu2;
 	octeon_irq_ip3 = octeon_irq_ciu2_mbox;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	octeon_irq_ip4 = octeon_irq_ip4_mask;
 
 	/* Mips internal */
 	octeon_irq_init_core();
 
-<<<<<<< HEAD
-	/* CIU_0 */
-	for (i = 0; i < 16; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_WORKQ0, 0, i + 0, chip, handle_level_irq);
-	for (i = 0; i < 16; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_GPIO0, 0, i + 16, chip, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MBOX0, 0, 32, chip_mbox, handle_percpu_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MBOX1, 0, 33, chip_mbox, handle_percpu_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_UART0, 0, 34, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_UART1, 0, 35, chip, handle_level_irq);
-
-	for (i = 0; i < 4; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_PCI_INT0, 0, i + 36, chip, handle_level_irq);
-	for (i = 0; i < 4; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_PCI_MSI0, 0, i + 40, chip, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_TWSI, 0, 45, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_RML, 0, 46, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_TRACE0, 0, 47, chip, handle_level_irq);
-
-	for (i = 0; i < 2; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_GMX_DRP0, 0, i + 48, chip_edge, handle_edge_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_IPD_DRP, 0, 50, chip_edge, handle_edge_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_KEY_ZERO, 0, 51, chip_edge, handle_edge_irq);
-
-	for (i = 0; i < 4; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_TIMER0, 0, i + 52, chip_edge, handle_edge_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_USB0, 0, 56, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PCM, 0, 57, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MPI, 0, 58, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_TWSI2, 0, 59, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_POWIQ, 0, 60, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_IPDPPTHR, 0, 61, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MII0, 0, 62, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_BOOTDMA, 0, 63, chip, handle_level_irq);
-
-	/* CIU_1 */
-	for (i = 0; i < 16; i++)
-		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_WDOG0, 1, i + 0, chip_wd, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_UART2, 1, 16, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_USB1, 1, 17, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MII1, 1, 18, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_NAND, 1, 19, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_MIO, 1, 20, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_IOB, 1, 21, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_FPA, 1, 22, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_POW, 1, 23, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_L2C, 1, 24, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_IPD, 1, 25, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PIP, 1, 26, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PKO, 1, 27, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_ZIP, 1, 28, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_TIM, 1, 29, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_RAD, 1, 30, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_KEY, 1, 31, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_DFA, 1, 32, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_USBCTL, 1, 33, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_SLI, 1, 34, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_DPI, 1, 35, chip, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_AGX0, 1, 36, chip, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_AGL, 1, 46, chip, handle_level_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PTP, 1, 47, chip_edge, handle_edge_irq);
-
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PEM0, 1, 48, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_PEM1, 1, 49, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO0, 1, 50, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO1, 1, 51, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_LMC0, 1, 52, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_DFM, 1, 56, chip, handle_level_irq);
-	octeon_irq_set_ciu_mapping(OCTEON_IRQ_RST, 1, 63, chip, handle_level_irq);
-=======
 	ciu_domain = irq_domain_add_tree(
 		ciu_node, &octeon_irq_domain_ciu2_ops, NULL);
 	irq_set_default_host(ciu_domain);
@@ -2719,15 +2118,10 @@ static int __init octeon_irq_init_ciu2(
 	irq_set_chip_and_handler(OCTEON_IRQ_MBOX1, &octeon_irq_chip_ciu2_mbox, handle_percpu_irq);
 	irq_set_chip_and_handler(OCTEON_IRQ_MBOX2, &octeon_irq_chip_ciu2_mbox, handle_percpu_irq);
 	irq_set_chip_and_handler(OCTEON_IRQ_MBOX3, &octeon_irq_chip_ciu2_mbox, handle_percpu_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
 	clear_c0_status(STATUSF_IP4);
-<<<<<<< HEAD
-}
-
-=======
 	return 0;
 err:
 	return r;
@@ -3555,7 +2949,6 @@ static struct of_device_id ciu_types[] __initdata = {
 	{}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init arch_init_irq(void)
 {
 #ifdef CONFIG_SMP
@@ -3563,11 +2956,7 @@ void __init arch_init_irq(void)
 	cpumask_clear(irq_default_affinity);
 	cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
 #endif
-<<<<<<< HEAD
-	octeon_irq_init_ciu();
-=======
 	of_irq_init(ciu_types);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void plat_irq_dispatch(void)
@@ -3581,15 +2970,6 @@ asmlinkage void plat_irq_dispatch(void)
 		cop0_cause &= cop0_status;
 		cop0_cause &= ST0_IM;
 
-<<<<<<< HEAD
-		if (unlikely(cop0_cause & STATUSF_IP2))
-			octeon_irq_ip2();
-		else if (unlikely(cop0_cause & STATUSF_IP3))
-			octeon_irq_ip3();
-		else if (unlikely(cop0_cause & STATUSF_IP4))
-			octeon_irq_ip4();
-		else if (likely(cop0_cause))
-=======
 		if (cop0_cause & STATUSF_IP2)
 			octeon_irq_ip2();
 		else if (cop0_cause & STATUSF_IP3)
@@ -3597,7 +2977,6 @@ asmlinkage void plat_irq_dispatch(void)
 		else if (cop0_cause & STATUSF_IP4)
 			octeon_irq_ip4();
 		else if (cop0_cause)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			do_IRQ(fls(cop0_cause) - 9 + MIPS_CPU_IRQ_BASE);
 		else
 			break;
@@ -3606,18 +2985,12 @@ asmlinkage void plat_irq_dispatch(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 
-<<<<<<< HEAD
-void fixup_irqs(void)
-=======
 void octeon_fixup_irqs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	irq_cpu_offline();
 }
 
 #endif /* CONFIG_HOTPLUG_CPU */
-<<<<<<< HEAD
-=======
 
 struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block)
 {
@@ -3627,4 +3000,3 @@ struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block)
 	return ciu3_info->domain[block];
 }
 EXPORT_SYMBOL(octeon_irq_get_block_domain);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

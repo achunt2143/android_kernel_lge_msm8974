@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * kernel/time/timer_list.c
- *
- * List pending timers
- *
- * Copyright(C) 2006, Red Hat, Inc., Ingo Molnar
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * List pending timers
  *
  * Copyright(C) 2006, Red Hat, Inc., Ingo Molnar
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/proc_fs.h>
@@ -24,15 +11,6 @@
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 #include <linux/kallsyms.h>
-<<<<<<< HEAD
-#include <linux/tick.h>
-
-#include <asm/uaccess.h>
-
-typedef void (*print_fn_t)(struct seq_file *m, unsigned int *classes);
-
-DECLARE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases);
-=======
 #include <linux/nmi.h>
 
 #include <linux/uaccess.h>
@@ -44,30 +22,11 @@ struct timer_list_iter {
 	bool second_pass;
 	u64 now;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This allows printing both to /proc/timer_list and
  * to the console (on SysRq-Q):
  */
-<<<<<<< HEAD
-#define SEQ_printf(m, x...)			\
- do {						\
-	if (m)					\
-		seq_printf(m, x);		\
-	else					\
-		printk(x);			\
- } while (0)
-
-static void print_name_offset(struct seq_file *m, void *sym)
-{
-	char symname[KSYM_NAME_LEN];
-
-	if (lookup_symbol_name((unsigned long)sym, symname) < 0)
-		SEQ_printf(m, "<%pK>", sym);
-	else
-		SEQ_printf(m, "%s", symname);
-=======
 __printf(2, 3)
 static void SEQ_printf(struct seq_file *m, const char *fmt, ...)
 {
@@ -81,23 +40,14 @@ static void SEQ_printf(struct seq_file *m, const char *fmt, ...)
 		vprintk(fmt, args);
 
 	va_end(args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 print_timer(struct seq_file *m, struct hrtimer *taddr, struct hrtimer *timer,
 	    int idx, u64 now)
 {
-<<<<<<< HEAD
-	SEQ_printf(m, " #%d: ", idx);
-	print_name_offset(m, taddr);
-	SEQ_printf(m, ", ");
-	print_name_offset(m, timer->function);
-	SEQ_printf(m, ", S:%02lx", timer->state);
-=======
 	SEQ_printf(m, " #%d: <%pK>, %ps", idx, taddr, timer->function);
 	SEQ_printf(m, ", S:%02x", timer->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SEQ_printf(m, "\n");
 	SEQ_printf(m, " # expires at %Lu-%Lu nsecs [in %Ld to %Ld nsecs]\n",
 		(unsigned long long)ktime_to_ns(hrtimer_get_softexpires(timer)),
@@ -117,12 +67,9 @@ print_active_timers(struct seq_file *m, struct hrtimer_clock_base *base,
 
 next_one:
 	i = 0;
-<<<<<<< HEAD
-=======
 
 	touch_nmi_watchdog();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_spin_lock_irqsave(&base->cpu_base->lock, flags);
 
 	curr = timerqueue_getnext(&base->active);
@@ -152,31 +99,17 @@ static void
 print_base(struct seq_file *m, struct hrtimer_clock_base *base, u64 now)
 {
 	SEQ_printf(m, "  .base:       %pK\n", base);
-<<<<<<< HEAD
-	SEQ_printf(m, "  .index:      %d\n",
-			base->index);
-	SEQ_printf(m, "  .resolution: %Lu nsecs\n",
-			(unsigned long long)ktime_to_ns(base->resolution));
-	SEQ_printf(m,   "  .get_time:   ");
-	print_name_offset(m, base->get_time);
-	SEQ_printf(m,   "\n");
-=======
 	SEQ_printf(m, "  .index:      %d\n", base->index);
 
 	SEQ_printf(m, "  .resolution: %u nsecs\n", hrtimer_resolution);
 
 	SEQ_printf(m,   "  .get_time:   %ps\n", base->get_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HIGH_RES_TIMERS
 	SEQ_printf(m, "  .offset:     %Lu nsecs\n",
 		   (unsigned long long) ktime_to_ns(base->offset));
 #endif
 	SEQ_printf(m,   "active timers:\n");
-<<<<<<< HEAD
-	print_active_timers(m, base, now);
-=======
 	print_active_timers(m, base, now + ktime_to_ns(base->offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_cpu(struct seq_file *m, int cpu, u64 now)
@@ -184,10 +117,6 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 	struct hrtimer_cpu_base *cpu_base = &per_cpu(hrtimer_bases, cpu);
 	int i;
 
-<<<<<<< HEAD
-	SEQ_printf(m, "\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SEQ_printf(m, "cpu: %d\n", cpu);
 	for (i = 0; i < HRTIMER_MAX_CLOCK_BASES; i++) {
 		SEQ_printf(m, " clock %d:\n", i);
@@ -206,11 +135,7 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 	P(nr_events);
 	P(nr_retries);
 	P(nr_hangs);
-<<<<<<< HEAD
-	P_ns(max_hang_time);
-=======
 	P(max_hang_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #undef P
 #undef P_ns
@@ -222,13 +147,6 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 # define P_ns(x) \
 	SEQ_printf(m, "  .%-15s: %Lu nsecs\n", #x, \
 		   (unsigned long long)(ktime_to_ns(ts->x)))
-<<<<<<< HEAD
-	{
-		struct tick_sched *ts = tick_get_tick_sched(cpu);
-		P(nohz_mode);
-		P_ns(idle_tick);
-		P(tick_stopped);
-=======
 # define P_flag(x, f)			    \
 	SEQ_printf(m, "  .%-15s: %d\n", #x, !!(ts->flags & (f)))
 
@@ -238,7 +156,6 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 		P_flag(highres, TS_FLAG_HIGHRES);
 		P_ns(last_tick);
 		P_flag(tick_stopped, TS_FLAG_STOPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		P(idle_jiffies);
 		P(idle_calls);
 		P(idle_sleeps);
@@ -248,11 +165,7 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 		P_ns(idle_sleeptime);
 		P_ns(iowait_sleeptime);
 		P(last_jiffies);
-<<<<<<< HEAD
-		P(next_jiffies);
-=======
 		P(next_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		P_ns(idle_expires);
 		SEQ_printf(m, "jiffies: %Lu\n",
 			   (unsigned long long)jiffies);
@@ -261,10 +174,7 @@ static void print_cpu(struct seq_file *m, int cpu, u64 now)
 
 #undef P
 #undef P_ns
-<<<<<<< HEAD
-=======
 	SEQ_printf(m, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_GENERIC_CLOCKEVENTS
@@ -273,12 +183,8 @@ print_tickdevice(struct seq_file *m, struct tick_device *td, int cpu)
 {
 	struct clock_event_device *dev = td->evtdev;
 
-<<<<<<< HEAD
-	SEQ_printf(m, "\n");
-=======
 	touch_nmi_watchdog();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SEQ_printf(m, "Tick Device: mode:     %d\n", td->mode);
 	if (cpu < 0)
 		SEQ_printf(m, "Broadcast device\n");
@@ -297,64 +203,6 @@ print_tickdevice(struct seq_file *m, struct tick_device *td, int cpu)
 		   (unsigned long long) dev->min_delta_ns);
 	SEQ_printf(m, " mult:           %u\n", dev->mult);
 	SEQ_printf(m, " shift:          %u\n", dev->shift);
-<<<<<<< HEAD
-	SEQ_printf(m, " mode:           %d\n", dev->mode);
-	SEQ_printf(m, " next_event:     %Ld nsecs\n",
-		   (unsigned long long) ktime_to_ns(dev->next_event));
-
-	SEQ_printf(m, " set_next_event: ");
-	print_name_offset(m, dev->set_next_event);
-	SEQ_printf(m, "\n");
-
-	SEQ_printf(m, " set_mode:       ");
-	print_name_offset(m, dev->set_mode);
-	SEQ_printf(m, "\n");
-
-	SEQ_printf(m, " event_handler:  ");
-	print_name_offset(m, dev->event_handler);
-	SEQ_printf(m, "\n");
-	SEQ_printf(m, " retries:        %lu\n", dev->retries);
-}
-
-static void timer_list_show_tickdevices(struct seq_file *m)
-{
-	int cpu;
-
-#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
-	print_tickdevice(m, tick_get_broadcast_device(), -1);
-	SEQ_printf(m, "tick_broadcast_mask: %08lx\n",
-		   cpumask_bits(tick_get_broadcast_mask())[0]);
-#ifdef CONFIG_TICK_ONESHOT
-	SEQ_printf(m, "tick_broadcast_oneshot_mask: %08lx\n",
-		   cpumask_bits(tick_get_broadcast_oneshot_mask())[0]);
-#endif
-	SEQ_printf(m, "\n");
-#endif
-	for_each_online_cpu(cpu)
-		print_tickdevice(m, tick_get_device(cpu), cpu);
-	SEQ_printf(m, "\n");
-}
-#else
-static void timer_list_show_tickdevices(struct seq_file *m) { }
-#endif
-
-static int timer_list_show(struct seq_file *m, void *v)
-{
-	u64 now = ktime_to_ns(ktime_get());
-	int cpu;
-
-	SEQ_printf(m, "Timer List Version: v0.6\n");
-	SEQ_printf(m, "HRTIMER_MAX_CLOCK_BASES: %d\n", HRTIMER_MAX_CLOCK_BASES);
-	SEQ_printf(m, "now at %Ld nsecs\n", (unsigned long long)now);
-
-	for_each_online_cpu(cpu)
-		print_cpu(m, cpu, now);
-
-	SEQ_printf(m, "\n");
-	timer_list_show_tickdevices(m);
-
-	return 0;
-=======
 	SEQ_printf(m, " mode:           %d\n", clockevent_get_state(dev));
 	SEQ_printf(m, " next_event:     %Ld nsecs\n",
 		   (unsigned long long) ktime_to_ns(dev->next_event));
@@ -416,26 +264,10 @@ static inline void timer_list_header(struct seq_file *m, u64 now)
 	SEQ_printf(m, "HRTIMER_MAX_CLOCK_BASES: %d\n", HRTIMER_MAX_CLOCK_BASES);
 	SEQ_printf(m, "now at %Ld nsecs\n", (unsigned long long)now);
 	SEQ_printf(m, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sysrq_timer_list_show(void)
 {
-<<<<<<< HEAD
-	timer_list_show(NULL, NULL);
-}
-
-static int timer_list_open(struct inode *inode, struct file *filp)
-{
-	return single_open(filp, timer_list_show, NULL);
-}
-
-static const struct file_operations timer_list_fops = {
-	.open		= timer_list_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-=======
 	u64 now = ktime_to_ns(ktime_get());
 	int cpu;
 
@@ -516,25 +348,17 @@ static const struct seq_operations timer_list_sops = {
 	.next = timer_list_next,
 	.stop = timer_list_stop,
 	.show = timer_list_show,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_timer_list_procfs(void)
 {
 	struct proc_dir_entry *pe;
 
-<<<<<<< HEAD
-	pe = proc_create("timer_list", 0444, NULL, &timer_list_fops);
-=======
 	pe = proc_create_seq_private("timer_list", 0400, NULL, &timer_list_sops,
 			sizeof(struct timer_list_iter), NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pe)
 		return -ENOMEM;
 	return 0;
 }
 __initcall(init_timer_list_procfs);
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

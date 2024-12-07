@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -10,10 +7,6 @@
  *		Generic socket support routines. Memory allocators, socket lock/release
  *		handler for protocols to use and generic option handler.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
  *		Florian La Roche, <flla@stud.uni-sb.de>
@@ -88,18 +81,6 @@
  *		Arnaldo C. Melo :       cleanups, use skb_queue_purge
  *
  * To Fix:
-<<<<<<< HEAD
- *
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- */
-
-#include <linux/capability.h>
-#include <linux/errno.h>
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -108,7 +89,6 @@
 #include <linux/capability.h>
 #include <linux/errno.h>
 #include <linux/errqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/socket.h>
 #include <linux/in.h>
@@ -117,10 +97,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/string.h>
 #include <linux/sockios.h>
@@ -130,19 +107,12 @@
 #include <linux/interrupt.h>
 #include <linux/poll.h>
 #include <linux/tcp.h>
-<<<<<<< HEAD
-=======
 #include <linux/udp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/highmem.h>
 #include <linux/user_namespace.h>
 #include <linux/static_key.h>
 #include <linux/memcontrol.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/prefetch.h>
 #include <linux/compat.h>
 #include <linux/mroute.h>
@@ -150,7 +120,6 @@
 #include <linux/icmpv6.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netdevice.h>
 #include <net/protocol.h>
@@ -163,16 +132,6 @@
 #include <linux/ipsec.h>
 #include <net/cls_cgroup.h>
 #include <net/netprio_cgroup.h>
-<<<<<<< HEAD
-
-#include <linux/filter.h>
-
-#include <trace/events/sock.h>
-
-#ifdef CONFIG_INET
-#include <net/tcp.h>
-#endif
-=======
 #include <linux/sock_diag.h>
 
 #include <linux/filter.h>
@@ -188,59 +147,10 @@
 #include <linux/ethtool.h>
 
 #include "dev.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(proto_list_mutex);
 static LIST_HEAD(proto_list);
 
-<<<<<<< HEAD
-#ifdef CONFIG_CGROUP_MEM_RES_CTLR_KMEM
-int mem_cgroup_sockets_init(struct cgroup *cgrp, struct cgroup_subsys *ss)
-{
-	struct proto *proto;
-	int ret = 0;
-
-	mutex_lock(&proto_list_mutex);
-	list_for_each_entry(proto, &proto_list, node) {
-		if (proto->init_cgroup) {
-			ret = proto->init_cgroup(cgrp, ss);
-			if (ret)
-				goto out;
-		}
-	}
-
-	mutex_unlock(&proto_list_mutex);
-	return ret;
-out:
-	list_for_each_entry_continue_reverse(proto, &proto_list, node)
-		if (proto->destroy_cgroup)
-			proto->destroy_cgroup(cgrp);
-	mutex_unlock(&proto_list_mutex);
-	return ret;
-}
-
-void mem_cgroup_sockets_destroy(struct cgroup *cgrp)
-{
-	struct proto *proto;
-
-	mutex_lock(&proto_list_mutex);
-	list_for_each_entry_reverse(proto, &proto_list, node)
-		if (proto->destroy_cgroup)
-			proto->destroy_cgroup(cgrp);
-	mutex_unlock(&proto_list_mutex);
-}
-#endif
-
-/*
- * Each address family might have different locking rules, so we have
- * one slock key per address family:
- */
-static struct lock_class_key af_family_keys[AF_MAX];
-static struct lock_class_key af_family_slock_keys[AF_MAX];
-
-struct static_key memcg_socket_limit_enabled;
-EXPORT_SYMBOL(memcg_socket_limit_enabled);
-=======
 static void sock_def_write_space_wfree(struct sock *sk);
 static void sock_def_write_space(struct sock *sk);
 
@@ -301,109 +211,12 @@ static struct lock_class_key af_family_keys[AF_MAX];
 static struct lock_class_key af_family_kern_keys[AF_MAX];
 static struct lock_class_key af_family_slock_keys[AF_MAX];
 static struct lock_class_key af_family_kern_slock_keys[AF_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Make lock validator output more readable. (we pre-construct these
  * strings build-time, so that runtime initialization of socket
  * locks is fast):
  */
-<<<<<<< HEAD
-static const char *const af_family_key_strings[AF_MAX+1] = {
-  "sk_lock-AF_UNSPEC", "sk_lock-AF_UNIX"     , "sk_lock-AF_INET"     ,
-  "sk_lock-AF_AX25"  , "sk_lock-AF_IPX"      , "sk_lock-AF_APPLETALK",
-  "sk_lock-AF_NETROM", "sk_lock-AF_BRIDGE"   , "sk_lock-AF_ATMPVC"   ,
-  "sk_lock-AF_X25"   , "sk_lock-AF_INET6"    , "sk_lock-AF_ROSE"     ,
-  "sk_lock-AF_DECnet", "sk_lock-AF_NETBEUI"  , "sk_lock-AF_SECURITY" ,
-  "sk_lock-AF_KEY"   , "sk_lock-AF_NETLINK"  , "sk_lock-AF_PACKET"   ,
-  "sk_lock-AF_ASH"   , "sk_lock-AF_ECONET"   , "sk_lock-AF_ATMSVC"   ,
-  "sk_lock-AF_RDS"   , "sk_lock-AF_SNA"      , "sk_lock-AF_IRDA"     ,
-  "sk_lock-AF_PPPOX" , "sk_lock-AF_WANPIPE"  , "sk_lock-AF_LLC"      ,
-  "sk_lock-27"       , "sk_lock-28"          , "sk_lock-AF_CAN"      ,
-  "sk_lock-AF_TIPC"  , "sk_lock-AF_BLUETOOTH", "sk_lock-IUCV"        ,
-  "sk_lock-AF_RXRPC" , "sk_lock-AF_ISDN"     , "sk_lock-AF_PHONET"   ,
-  "sk_lock-AF_IEEE802154", "sk_lock-AF_CAIF" , "sk_lock-AF_ALG"      ,
-  "sk_lock-AF_NFC"   , "sk_lock-AF_MAX"
-};
-static const char *const af_family_slock_key_strings[AF_MAX+1] = {
-  "slock-AF_UNSPEC", "slock-AF_UNIX"     , "slock-AF_INET"     ,
-  "slock-AF_AX25"  , "slock-AF_IPX"      , "slock-AF_APPLETALK",
-  "slock-AF_NETROM", "slock-AF_BRIDGE"   , "slock-AF_ATMPVC"   ,
-  "slock-AF_X25"   , "slock-AF_INET6"    , "slock-AF_ROSE"     ,
-  "slock-AF_DECnet", "slock-AF_NETBEUI"  , "slock-AF_SECURITY" ,
-  "slock-AF_KEY"   , "slock-AF_NETLINK"  , "slock-AF_PACKET"   ,
-  "slock-AF_ASH"   , "slock-AF_ECONET"   , "slock-AF_ATMSVC"   ,
-  "slock-AF_RDS"   , "slock-AF_SNA"      , "slock-AF_IRDA"     ,
-  "slock-AF_PPPOX" , "slock-AF_WANPIPE"  , "slock-AF_LLC"      ,
-  "slock-27"       , "slock-28"          , "slock-AF_CAN"      ,
-  "slock-AF_TIPC"  , "slock-AF_BLUETOOTH", "slock-AF_IUCV"     ,
-  "slock-AF_RXRPC" , "slock-AF_ISDN"     , "slock-AF_PHONET"   ,
-  "slock-AF_IEEE802154", "slock-AF_CAIF" , "slock-AF_ALG"      ,
-  "slock-AF_NFC"   , "slock-AF_MAX"
-};
-static const char *const af_family_clock_key_strings[AF_MAX+1] = {
-  "clock-AF_UNSPEC", "clock-AF_UNIX"     , "clock-AF_INET"     ,
-  "clock-AF_AX25"  , "clock-AF_IPX"      , "clock-AF_APPLETALK",
-  "clock-AF_NETROM", "clock-AF_BRIDGE"   , "clock-AF_ATMPVC"   ,
-  "clock-AF_X25"   , "clock-AF_INET6"    , "clock-AF_ROSE"     ,
-  "clock-AF_DECnet", "clock-AF_NETBEUI"  , "clock-AF_SECURITY" ,
-  "clock-AF_KEY"   , "clock-AF_NETLINK"  , "clock-AF_PACKET"   ,
-  "clock-AF_ASH"   , "clock-AF_ECONET"   , "clock-AF_ATMSVC"   ,
-  "clock-AF_RDS"   , "clock-AF_SNA"      , "clock-AF_IRDA"     ,
-  "clock-AF_PPPOX" , "clock-AF_WANPIPE"  , "clock-AF_LLC"      ,
-  "clock-27"       , "clock-28"          , "clock-AF_CAN"      ,
-  "clock-AF_TIPC"  , "clock-AF_BLUETOOTH", "clock-AF_IUCV"     ,
-  "clock-AF_RXRPC" , "clock-AF_ISDN"     , "clock-AF_PHONET"   ,
-  "clock-AF_IEEE802154", "clock-AF_CAIF" , "clock-AF_ALG"      ,
-  "clock-AF_NFC"   , "clock-AF_MAX"
-};
-
-/*
- * sk_callback_lock locking rules are per-address-family,
- * so split the lock classes by using a per-AF key:
- */
-static struct lock_class_key af_callback_keys[AF_MAX];
-
-/* Take into consideration the size of the struct sk_buff overhead in the
- * determination of these values, since that is non-constant across
- * platforms.  This makes socket queueing behavior and performance
- * not depend upon such differences.
- */
-#define _SK_MEM_PACKETS		256
-#define _SK_MEM_OVERHEAD	SKB_TRUESIZE(256)
-#define SK_WMEM_MAX		(_SK_MEM_OVERHEAD * _SK_MEM_PACKETS)
-#define SK_RMEM_MAX		(_SK_MEM_OVERHEAD * _SK_MEM_PACKETS)
-
-/* Run time adjustable parameters. */
-__u32 sysctl_wmem_max __read_mostly = SK_WMEM_MAX;
-__u32 sysctl_rmem_max __read_mostly = SK_RMEM_MAX;
-__u32 sysctl_wmem_default __read_mostly = SK_WMEM_MAX;
-__u32 sysctl_rmem_default __read_mostly = SK_RMEM_MAX;
-
-/* Maximal space eaten by iovec or ancillary data plus some space */
-int sysctl_optmem_max __read_mostly = sizeof(unsigned long)*(2*UIO_MAXIOV+512);
-EXPORT_SYMBOL(sysctl_optmem_max);
-
-#if defined(CONFIG_CGROUPS)
-#if !defined(CONFIG_NET_CLS_CGROUP)
-int net_cls_subsys_id = -1;
-EXPORT_SYMBOL_GPL(net_cls_subsys_id);
-#endif
-#if !defined(CONFIG_NETPRIO_CGROUP)
-int net_prio_subsys_id = -1;
-EXPORT_SYMBOL_GPL(net_prio_subsys_id);
-#endif
-#endif
-
-static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
-{
-	struct timeval tv;
-
-	if (optlen < sizeof(tv))
-		return -EINVAL;
-	if (copy_from_user(&tv, optval, sizeof(tv)))
-		return -EFAULT;
-=======
 
 #define _sock_locks(x)						  \
   x "AF_UNSPEC",	x "AF_UNIX"     ,	x "AF_INET"     , \
@@ -619,46 +432,12 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tv.tv_usec < 0 || tv.tv_usec >= USEC_PER_SEC)
 		return -EDOM;
 
 	if (tv.tv_sec < 0) {
 		static int warned __read_mostly;
 
-<<<<<<< HEAD
-		*timeo_p = 0;
-		if (warned < 10 && net_ratelimit()) {
-			warned++;
-			printk(KERN_INFO "sock_set_timeout: `%s' (pid %d) "
-			       "tries to set negative timeout\n",
-				current->comm, task_pid_nr(current));
-		}
-		return 0;
-	}
-	*timeo_p = MAX_SCHEDULE_TIMEOUT;
-	if (tv.tv_sec == 0 && tv.tv_usec == 0)
-		return 0;
-	if (tv.tv_sec < (MAX_SCHEDULE_TIMEOUT/HZ - 1))
-		*timeo_p = tv.tv_sec*HZ + (tv.tv_usec+(1000000/HZ-1))/(1000000/HZ);
-	return 0;
-}
-
-static void sock_warn_obsolete_bsdism(const char *name)
-{
-	static int warned;
-	static char warncomm[TASK_COMM_LEN];
-	if (strcmp(warncomm, current->comm) && warned < 5) {
-		strcpy(warncomm,  current->comm);
-		printk(KERN_WARNING "process `%s' is using obsolete "
-		       "%s SO_BSDCOMPAT\n", warncomm, name);
-		warned++;
-	}
-}
-
-#define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE))
-
-=======
 		WRITE_ONCE(*timeo_p, 0);
 		if (warned < 10 && net_ratelimit()) {
 			warned++;
@@ -687,53 +466,29 @@ static bool sock_needs_netstamp(const struct sock *sk)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sock_disable_timestamp(struct sock *sk, unsigned long flags)
 {
 	if (sk->sk_flags & flags) {
 		sk->sk_flags &= ~flags;
-<<<<<<< HEAD
-		if (!(sk->sk_flags & SK_FLAGS_TIMESTAMP))
-=======
 		if (sock_needs_netstamp(sk) &&
 		    !(sk->sk_flags & SK_FLAGS_TIMESTAMP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			net_disable_timestamp();
 	}
 }
 
 
-<<<<<<< HEAD
-int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-{
-	int err;
-	int skb_len;
-	unsigned long flags;
-	struct sk_buff_head *list = &sk->sk_receive_queue;
-
-	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf) {
-=======
 int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	unsigned long flags;
 	struct sk_buff_head *list = &sk->sk_receive_queue;
 
 	if (atomic_read(&sk->sk_rmem_alloc) >= READ_ONCE(sk->sk_rcvbuf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&sk->sk_drops);
 		trace_sock_rcvqueue_full(sk, skb);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	err = sk_filter(sk, skb);
-	if (err)
-		return err;
-
-	if (!sk_rmem_schedule(sk, skb->truesize)) {
-=======
 	if (!sk_rmem_schedule(sk, skb, skb->truesize)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&sk->sk_drops);
 		return -ENOBUFS;
 	}
@@ -741,43 +496,17 @@ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	skb->dev = NULL;
 	skb_set_owner_r(skb, sk);
 
-<<<<<<< HEAD
-	/* Cache the SKB length before we tack it onto the receive
-	 * queue.  Once it is added it no longer belongs to us and
-	 * may be freed by other threads of control pulling packets
-	 * from the queue.
-	 */
-	skb_len = skb->len;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we escape from rcu protected region, make sure we dont leak
 	 * a norefcounted dst
 	 */
 	skb_dst_force(skb);
 
 	spin_lock_irqsave(&list->lock, flags);
-<<<<<<< HEAD
-	skb->dropcount = atomic_read(&sk->sk_drops);
-=======
 	sock_skb_set_dropcount(sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__skb_queue_tail(list, skb);
 	spin_unlock_irqrestore(&list->lock, flags);
 
 	if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-		sk->sk_data_ready(sk, skb_len);
-	return 0;
-}
-EXPORT_SYMBOL(sock_queue_rcv_skb);
-
-int sk_receive_skb(struct sock *sk, struct sk_buff *skb, const int nested)
-{
-	int rc = NET_RX_SUCCESS;
-
-	if (sk_filter(sk, skb))
-=======
 		sk->sk_data_ready(sk);
 	return 0;
 }
@@ -819,16 +548,11 @@ int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
 	int rc = NET_RX_SUCCESS;
 
 	if (sk_filter_trim_cap(sk, skb, trim_cap))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto discard_and_relse;
 
 	skb->dev = NULL;
 
-<<<<<<< HEAD
-	if (sk_rcvqueues_full(sk, skb)) {
-=======
 	if (sk_rcvqueues_full(sk, READ_ONCE(sk->sk_rcvbuf))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&sk->sk_drops);
 		goto discard_and_relse;
 	}
@@ -844,13 +568,8 @@ int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
 
 		rc = sk_backlog_rcv(sk, skb);
 
-<<<<<<< HEAD
-		mutex_release(&sk->sk_lock.dep_map, 1, _RET_IP_);
-	} else if (sk_add_backlog(sk, skb)) {
-=======
 		mutex_release(&sk->sk_lock.dep_map, _RET_IP_);
 	} else if (sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bh_unlock_sock(sk);
 		atomic_inc(&sk->sk_drops);
 		goto discard_and_relse;
@@ -858,48 +577,28 @@ int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
 
 	bh_unlock_sock(sk);
 out:
-<<<<<<< HEAD
-	sock_put(sk);
-=======
 	if (refcounted)
 		sock_put(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 discard_and_relse:
 	kfree_skb(skb);
 	goto out;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(sk_receive_skb);
-
-void sk_reset_txq(struct sock *sk)
-{
-	sk_tx_queue_clear(sk);
-}
-EXPORT_SYMBOL(sk_reset_txq);
-
-=======
 EXPORT_SYMBOL(__sk_receive_skb);
 
 INDIRECT_CALLABLE_DECLARE(struct dst_entry *ip6_dst_check(struct dst_entry *,
 							  u32));
 INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
 							   u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dst_entry *__sk_dst_check(struct sock *sk, u32 cookie)
 {
 	struct dst_entry *dst = __sk_dst_get(sk);
 
-<<<<<<< HEAD
-	if (dst && dst->obsolete && dst->ops->check(dst, cookie) == NULL) {
-		sk_tx_queue_clear(sk);
-=======
 	if (dst && dst->obsolete &&
 	    INDIRECT_CALL_INET(dst->ops->check, ip6_dst_check, ipv4_dst_check,
 			       dst, cookie) == NULL) {
 		sk_tx_queue_clear(sk);
 		WRITE_ONCE(sk->sk_dst_pending_confirm, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		RCU_INIT_POINTER(sk->sk_dst_cache, NULL);
 		dst_release(dst);
 		return NULL;
@@ -913,13 +612,9 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie)
 {
 	struct dst_entry *dst = sk_dst_get(sk);
 
-<<<<<<< HEAD
-	if (dst && dst->obsolete && dst->ops->check(dst, cookie) == NULL) {
-=======
 	if (dst && dst->obsolete &&
 	    INDIRECT_CALL_INET(dst->ops->check, ip6_dst_check, ipv4_dst_check,
 			       dst, cookie) == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sk_dst_reset(sk);
 		dst_release(dst);
 		return NULL;
@@ -929,9 +624,6 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie)
 }
 EXPORT_SYMBOL(sk_dst_check);
 
-<<<<<<< HEAD
-static int sock_bindtodevice(struct sock *sk, char __user *optval, int optlen)
-=======
 static int sock_bindtoindex_locked(struct sock *sk, int ifindex)
 {
 	int ret = -ENOPROTOOPT;
@@ -977,7 +669,6 @@ int sock_bindtoindex(struct sock *sk, int ifindex, bool lock_sk)
 EXPORT_SYMBOL(sock_bindtoindex);
 
 static int sock_setbindtodevice(struct sock *sk, sockptr_t optval, int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = -ENOPROTOOPT;
 #ifdef CONFIG_NETDEVICES
@@ -985,14 +676,6 @@ static int sock_setbindtodevice(struct sock *sk, sockptr_t optval, int optlen)
 	char devname[IFNAMSIZ];
 	int index;
 
-<<<<<<< HEAD
-	/* Sorry... */
-	ret = -EPERM;
-	if (!capable(CAP_NET_RAW))
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EINVAL;
 	if (optlen < 0)
 		goto out;
@@ -1007,11 +690,7 @@ static int sock_setbindtodevice(struct sock *sk, sockptr_t optval, int optlen)
 	memset(devname, 0, sizeof(devname));
 
 	ret = -EFAULT;
-<<<<<<< HEAD
-	if (copy_from_user(devname, optval, optlen))
-=======
 	if (copy_from_sockptr(devname, optval, optlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	index = 0;
@@ -1028,12 +707,6 @@ static int sock_setbindtodevice(struct sock *sk, sockptr_t optval, int optlen)
 			goto out;
 	}
 
-<<<<<<< HEAD
-	lock_sock(sk);
-	sk->sk_bound_dev_if = index;
-	sk_dst_reset(sk);
-	release_sock(sk);
-=======
 	sockopt_lock_sock(sk);
 	ret = sock_bindtoindex_locked(sk, index);
 	sockopt_release_sock(sk);
@@ -1075,7 +748,6 @@ zero:
 	ret = -EFAULT;
 	if (copy_to_sockptr(optlen, &len, sizeof(int)))
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 
@@ -1085,15 +757,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline void sock_valbool_flag(struct sock *sk, int bit, int valbool)
-{
-	if (valbool)
-		sock_set_flag(sk, bit);
-	else
-		sock_reset_flag(sk, bit);
-}
-=======
 bool sk_mc_loop(const struct sock *sk)
 {
 	if (dev_recursion_level())
@@ -1419,26 +1082,18 @@ bool sockopt_capable(int cap)
 	return has_current_bpf_ctx() || capable(cap);
 }
 EXPORT_SYMBOL(sockopt_capable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	This is meant for all protocols to use and covers goings on
  *	at the socket level. Everything here is generic.
  */
 
-<<<<<<< HEAD
-int sock_setsockopt(struct socket *sock, int level, int optname,
-		    char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-=======
 int sk_setsockopt(struct sock *sk, int level, int optname,
 		  sockptr_t optval, unsigned int optlen)
 {
 	struct so_timestamping timestamping;
 	struct socket *sock = sk->sk_socket;
 	struct sock_txtime sk_txtime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val;
 	int valbool;
 	struct linger ling;
@@ -1449,31 +1104,16 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
 	 */
 
 	if (optname == SO_BINDTODEVICE)
-<<<<<<< HEAD
-		return sock_bindtodevice(sk, optval, optlen);
-=======
 		return sock_setbindtodevice(sk, optval, optlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (get_user(val, (int __user *)optval))
-=======
 	if (copy_from_sockptr(&val, optval, sizeof(val)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	valbool = val ? 1 : 0;
 
-<<<<<<< HEAD
-	lock_sock(sk);
-
-	switch (optname) {
-	case SO_DEBUG:
-		if (val && !capable(CAP_NET_ADMIN))
-=======
 	/* handle options which do not require locking the socket. */
 	switch (optname) {
 	case SO_PRIORITY:
@@ -1567,24 +1207,11 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
 	switch (optname) {
 	case SO_DEBUG:
 		if (val && !sockopt_capable(CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EACCES;
 		else
 			sock_valbool_flag(sk, SOCK_DBG, valbool);
 		break;
 	case SO_REUSEADDR:
-<<<<<<< HEAD
-		sk->sk_reuse = valbool;
-		break;
-	case SO_TYPE:
-	case SO_PROTOCOL:
-	case SO_DOMAIN:
-	case SO_ERROR:
-		ret = -ENOPROTOOPT;
-		break;
-	case SO_DONTROUTE:
-		sock_valbool_flag(sk, SOCK_LOCALROUTE, valbool);
-=======
 		sk->sk_reuse = (valbool ? SK_CAN_REUSE : SK_NO_REUSE);
 		break;
 	case SO_REUSEPORT:
@@ -1593,7 +1220,6 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
 	case SO_DONTROUTE:
 		sock_valbool_flag(sk, SOCK_LOCALROUTE, valbool);
 		sk_dst_reset(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SO_BROADCAST:
 		sock_valbool_flag(sk, SOCK_BROADCAST, valbool);
@@ -1604,12 +1230,6 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
 		 * are treated in BSD as hints
 		 */
-<<<<<<< HEAD
-		val = min_t(u32, val, sysctl_wmem_max);
-set_sndbuf:
-		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
-		sk->sk_sndbuf = max_t(int, val * 2, SOCK_MIN_SNDBUF);
-=======
 		val = min_t(u32, val, READ_ONCE(sysctl_wmem_max));
 set_sndbuf:
 		/* Ensure val * 2 fits into an int, to prevent max_t()
@@ -1619,18 +1239,11 @@ set_sndbuf:
 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
 		WRITE_ONCE(sk->sk_sndbuf,
 			   max_t(int, val * 2, SOCK_MIN_SNDBUF));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Wake up sending tasks if we upped the value. */
 		sk->sk_write_space(sk);
 		break;
 
 	case SO_SNDBUFFORCE:
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN)) {
-			ret = -EPERM;
-			break;
-		}
-=======
 		if (!sockopt_capable(CAP_NET_ADMIN)) {
 			ret = -EPERM;
 			break;
@@ -1641,7 +1254,6 @@ set_sndbuf:
 		 */
 		if (val < 0)
 			val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto set_sndbuf;
 
 	case SO_RCVBUF:
@@ -1650,42 +1262,6 @@ set_sndbuf:
 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
 		 * are treated in BSD as hints
 		 */
-<<<<<<< HEAD
-		val = min_t(u32, val, sysctl_rmem_max);
-set_rcvbuf:
-		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-		/*
-		 * We double it on the way in to account for
-		 * "struct sk_buff" etc. overhead.   Applications
-		 * assume that the SO_RCVBUF setting they make will
-		 * allow that much actual data to be received on that
-		 * socket.
-		 *
-		 * Applications are unaware that "struct sk_buff" and
-		 * other overheads allocate from the receive buffer
-		 * during socket buffer allocation.
-		 *
-		 * And after considering the possible alternatives,
-		 * returning the value we actually used in getsockopt
-		 * is the most desirable behavior.
-		 */
-		sk->sk_rcvbuf = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-		break;
-
-	case SO_RCVBUFFORCE:
-		if (!capable(CAP_NET_ADMIN)) {
-			ret = -EPERM;
-			break;
-		}
-		goto set_rcvbuf;
-
-	case SO_KEEPALIVE:
-#ifdef CONFIG_INET
-		if (sk->sk_protocol == IPPROTO_TCP &&
-		    sk->sk_type == SOCK_STREAM)
-			tcp_set_keepalive(sk, valbool);
-#endif
-=======
 		__sock_set_rcvbuf(sk, min_t(u32, val, READ_ONCE(sysctl_rmem_max)));
 		break;
 
@@ -1704,7 +1280,6 @@ set_rcvbuf:
 	case SO_KEEPALIVE:
 		if (sk->sk_prot->keepalive)
 			sk->sk_prot->keepalive(sk, valbool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
 		break;
 
@@ -1713,18 +1288,7 @@ set_rcvbuf:
 		break;
 
 	case SO_NO_CHECK:
-<<<<<<< HEAD
-		sk->sk_no_check = valbool;
-		break;
-
-	case SO_PRIORITY:
-		if ((val >= 0 && val <= 6) || capable(CAP_NET_ADMIN))
-			sk->sk_priority = val;
-		else
-			ret = -EPERM;
-=======
 		sk->sk_no_check_tx = valbool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SO_LINGER:
@@ -1732,21 +1296,6 @@ set_rcvbuf:
 			ret = -EINVAL;	/* 1003.1g */
 			break;
 		}
-<<<<<<< HEAD
-		if (copy_from_user(&ling, optval, sizeof(ling))) {
-			ret = -EFAULT;
-			break;
-		}
-		if (!ling.l_onoff)
-			sock_reset_flag(sk, SOCK_LINGER);
-		else {
-#if (BITS_PER_LONG == 32)
-			if ((unsigned int)ling.l_linger >= MAX_SCHEDULE_TIMEOUT/HZ)
-				sk->sk_lingertime = MAX_SCHEDULE_TIMEOUT;
-			else
-#endif
-				sk->sk_lingertime = (unsigned int)ling.l_linger * HZ;
-=======
 		if (copy_from_sockptr(&ling, optval, sizeof(ling))) {
 			ret = -EFAULT;
 			break;
@@ -1760,91 +1309,11 @@ set_rcvbuf:
 				WRITE_ONCE(sk->sk_lingertime, MAX_SCHEDULE_TIMEOUT);
 			else
 				WRITE_ONCE(sk->sk_lingertime, t_sec * HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sock_set_flag(sk, SOCK_LINGER);
 		}
 		break;
 
 	case SO_BSDCOMPAT:
-<<<<<<< HEAD
-		sock_warn_obsolete_bsdism("setsockopt");
-		break;
-
-	case SO_PASSCRED:
-		if (valbool)
-			set_bit(SOCK_PASSCRED, &sock->flags);
-		else
-			clear_bit(SOCK_PASSCRED, &sock->flags);
-		break;
-
-	case SO_TIMESTAMP:
-	case SO_TIMESTAMPNS:
-		if (valbool)  {
-			if (optname == SO_TIMESTAMP)
-				sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
-			else
-				sock_set_flag(sk, SOCK_RCVTSTAMPNS);
-			sock_set_flag(sk, SOCK_RCVTSTAMP);
-			sock_enable_timestamp(sk, SOCK_TIMESTAMP);
-		} else {
-			sock_reset_flag(sk, SOCK_RCVTSTAMP);
-			sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
-		}
-		break;
-
-	case SO_TIMESTAMPING:
-		if (val & ~SOF_TIMESTAMPING_MASK) {
-			ret = -EINVAL;
-			break;
-		}
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_TX_HARDWARE,
-				  val & SOF_TIMESTAMPING_TX_HARDWARE);
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_TX_SOFTWARE,
-				  val & SOF_TIMESTAMPING_TX_SOFTWARE);
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_RX_HARDWARE,
-				  val & SOF_TIMESTAMPING_RX_HARDWARE);
-		if (val & SOF_TIMESTAMPING_RX_SOFTWARE)
-			sock_enable_timestamp(sk,
-					      SOCK_TIMESTAMPING_RX_SOFTWARE);
-		else
-			sock_disable_timestamp(sk,
-					       (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE));
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_SOFTWARE,
-				  val & SOF_TIMESTAMPING_SOFTWARE);
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_SYS_HARDWARE,
-				  val & SOF_TIMESTAMPING_SYS_HARDWARE);
-		sock_valbool_flag(sk, SOCK_TIMESTAMPING_RAW_HARDWARE,
-				  val & SOF_TIMESTAMPING_RAW_HARDWARE);
-		break;
-
-	case SO_RCVLOWAT:
-		if (val < 0)
-			val = INT_MAX;
-		sk->sk_rcvlowat = val ? : 1;
-		break;
-
-	case SO_RCVTIMEO:
-		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen);
-		break;
-
-	case SO_SNDTIMEO:
-		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen);
-		break;
-
-	case SO_ATTACH_FILTER:
-		ret = -EINVAL;
-		if (optlen == sizeof(struct sock_fprog)) {
-			struct sock_fprog fprog;
-
-			ret = -EFAULT;
-			if (copy_from_user(&fprog, optval, sizeof(fprog)))
-				break;
-
-			ret = sk_attach_filter(&fprog, sk);
-		}
-		break;
-
-=======
 		break;
 
 	case SO_TIMESTAMP_OLD:
@@ -1941,28 +1410,10 @@ set_rcvbuf:
 		ret = reuseport_detach_prog(sk);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SO_DETACH_FILTER:
 		ret = sk_detach_filter(sk);
 		break;
 
-<<<<<<< HEAD
-	case SO_PASSSEC:
-		if (valbool)
-			set_bit(SOCK_PASSSEC, &sock->flags);
-		else
-			clear_bit(SOCK_PASSSEC, &sock->flags);
-		break;
-	case SO_MARK:
-		if (!capable(CAP_NET_ADMIN))
-			ret = -EPERM;
-		else
-			sk->sk_mark = val;
-		break;
-
-		/* We implement the SO_SNDLOWAT etc to
-		   not be settable (1003.1g 5.3) */
-=======
 	case SO_LOCK_FILTER:
 		if (sock_flag(sk, SOCK_FILTER_LOCKED) && !valbool)
 			ret = -EPERM;
@@ -1983,7 +1434,6 @@ set_rcvbuf:
 		sock_valbool_flag(sk, SOCK_RCVMARK, valbool);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SO_RXQ_OVFL:
 		sock_valbool_flag(sk, SOCK_RXQ_OVFL, valbool);
 		break;
@@ -1992,28 +1442,10 @@ set_rcvbuf:
 		sock_valbool_flag(sk, SOCK_WIFI_STATUS, valbool);
 		break;
 
-<<<<<<< HEAD
-	case SO_PEEK_OFF:
-		if (sock->ops->set_peek_off)
-			ret = sock->ops->set_peek_off(sk, val);
-		else
-			ret = -EOPNOTSUPP;
-		break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SO_NOFCS:
 		sock_valbool_flag(sk, SOCK_NOFCS, valbool);
 		break;
 
-<<<<<<< HEAD
-	case SO_MAX_PACING_RATE:
-		sk->sk_max_pacing_rate = val;
-		sk->sk_pacing_rate = min(sk->sk_pacing_rate,
-					 sk->sk_max_pacing_rate);
-		break;
-
-=======
 	case SO_SELECT_ERR_QUEUE:
 		sock_valbool_flag(sk, SOCK_SELECT_ERR_QUEUE, valbool);
 		break;
@@ -2103,21 +1535,10 @@ set_rcvbuf:
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ret = -ENOPROTOOPT;
 		break;
 	}
-<<<<<<< HEAD
-	release_sock(sk);
-	return ret;
-}
-EXPORT_SYMBOL(sock_setsockopt);
-
-
-void cred_to_ucred(struct pid *pid, const struct cred *cred,
-		   struct ucred *ucred, bool use_effective)
-=======
 	sockopt_release_sock(sk);
 	return ret;
 }
@@ -2143,35 +1564,12 @@ static const struct cred *sk_get_peer_cred(struct sock *sk)
 
 static void cred_to_ucred(struct pid *pid, const struct cred *cred,
 			  struct ucred *ucred)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ucred->pid = pid_vnr(pid);
 	ucred->uid = ucred->gid = -1;
 	if (cred) {
 		struct user_namespace *current_ns = current_user_ns();
 
-<<<<<<< HEAD
-		if (use_effective) {
-			ucred->uid = user_ns_map_uid(current_ns, cred, cred->euid);
-			ucred->gid = user_ns_map_gid(current_ns, cred, cred->egid);
-		} else {
-			ucred->uid = user_ns_map_uid(current_ns, cred, cred->uid);
-			ucred->gid = user_ns_map_gid(current_ns, cred, cred->gid);
-		}
-	}
-}
-EXPORT_SYMBOL_GPL(cred_to_ucred);
-
-int sock_getsockopt(struct socket *sock, int level, int optname,
-		    char __user *optval, int __user *optlen)
-{
-	struct sock *sk = sock->sk;
-
-	union {
-		int val;
-		struct linger ling;
-		struct timeval tm;
-=======
 		ucred->uid = from_kuid_munged(current_ns, cred->euid);
 		ucred->gid = from_kgid_munged(current_ns, cred->egid);
 	}
@@ -2207,17 +1605,12 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		struct  __kernel_sock_timeval stm;
 		struct sock_txtime txtime;
 		struct so_timestamping timestamping;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} v;
 
 	int lv = sizeof(int);
 	int len;
 
-<<<<<<< HEAD
-	if (get_user(len, optlen))
-=======
 	if (copy_from_sockptr(&len, optlen, sizeof(int)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	if (len < 0)
 		return -EINVAL;
@@ -2234,17 +1627,6 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		break;
 
 	case SO_BROADCAST:
-<<<<<<< HEAD
-		v.val = !!sock_flag(sk, SOCK_BROADCAST);
-		break;
-
-	case SO_SNDBUF:
-		v.val = sk->sk_sndbuf;
-		break;
-
-	case SO_RCVBUF:
-		v.val = sk->sk_rcvbuf;
-=======
 		v.val = sock_flag(sk, SOCK_BROADCAST);
 		break;
 
@@ -2254,24 +1636,18 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 
 	case SO_RCVBUF:
 		v.val = READ_ONCE(sk->sk_rcvbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SO_REUSEADDR:
 		v.val = sk->sk_reuse;
 		break;
 
-<<<<<<< HEAD
-	case SO_KEEPALIVE:
-		v.val = !!sock_flag(sk, SOCK_KEEPOPEN);
-=======
 	case SO_REUSEPORT:
 		v.val = sk->sk_reuseport;
 		break;
 
 	case SO_KEEPALIVE:
 		v.val = sock_flag(sk, SOCK_KEEPOPEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SO_TYPE:
@@ -2293,17 +1669,6 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		break;
 
 	case SO_OOBINLINE:
-<<<<<<< HEAD
-		v.val = !!sock_flag(sk, SOCK_URGINLINE);
-		break;
-
-	case SO_NO_CHECK:
-		v.val = sk->sk_no_check;
-		break;
-
-	case SO_PRIORITY:
-		v.val = sk->sk_priority;
-=======
 		v.val = sock_flag(sk, SOCK_URGINLINE);
 		break;
 
@@ -2313,72 +1678,10 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 
 	case SO_PRIORITY:
 		v.val = READ_ONCE(sk->sk_priority);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SO_LINGER:
 		lv		= sizeof(v.ling);
-<<<<<<< HEAD
-		v.ling.l_onoff	= !!sock_flag(sk, SOCK_LINGER);
-		v.ling.l_linger	= sk->sk_lingertime / HZ;
-		break;
-
-	case SO_BSDCOMPAT:
-		sock_warn_obsolete_bsdism("getsockopt");
-		break;
-
-	case SO_TIMESTAMP:
-		v.val = sock_flag(sk, SOCK_RCVTSTAMP) &&
-				!sock_flag(sk, SOCK_RCVTSTAMPNS);
-		break;
-
-	case SO_TIMESTAMPNS:
-		v.val = sock_flag(sk, SOCK_RCVTSTAMPNS);
-		break;
-
-	case SO_TIMESTAMPING:
-		v.val = 0;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_TX_HARDWARE))
-			v.val |= SOF_TIMESTAMPING_TX_HARDWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_TX_SOFTWARE))
-			v.val |= SOF_TIMESTAMPING_TX_SOFTWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_RX_HARDWARE))
-			v.val |= SOF_TIMESTAMPING_RX_HARDWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_RX_SOFTWARE))
-			v.val |= SOF_TIMESTAMPING_RX_SOFTWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_SOFTWARE))
-			v.val |= SOF_TIMESTAMPING_SOFTWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_SYS_HARDWARE))
-			v.val |= SOF_TIMESTAMPING_SYS_HARDWARE;
-		if (sock_flag(sk, SOCK_TIMESTAMPING_RAW_HARDWARE))
-			v.val |= SOF_TIMESTAMPING_RAW_HARDWARE;
-		break;
-
-	case SO_RCVTIMEO:
-		lv = sizeof(struct timeval);
-		if (sk->sk_rcvtimeo == MAX_SCHEDULE_TIMEOUT) {
-			v.tm.tv_sec = 0;
-			v.tm.tv_usec = 0;
-		} else {
-			v.tm.tv_sec = sk->sk_rcvtimeo / HZ;
-			v.tm.tv_usec = ((sk->sk_rcvtimeo % HZ) * 1000000) / HZ;
-		}
-		break;
-
-	case SO_SNDTIMEO:
-		lv = sizeof(struct timeval);
-		if (sk->sk_sndtimeo == MAX_SCHEDULE_TIMEOUT) {
-			v.tm.tv_sec = 0;
-			v.tm.tv_usec = 0;
-		} else {
-			v.tm.tv_sec = sk->sk_sndtimeo / HZ;
-			v.tm.tv_usec = ((sk->sk_sndtimeo % HZ) * 1000000) / HZ;
-		}
-		break;
-
-	case SO_RCVLOWAT:
-		v.val = sk->sk_rcvlowat;
-=======
 		v.ling.l_onoff	= sock_flag(sk, SOCK_LINGER);
 		v.ling.l_linger	= READ_ONCE(sk->sk_lingertime) / HZ;
 		break;
@@ -2431,7 +1734,6 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 
 	case SO_RCVLOWAT:
 		v.val = READ_ONCE(sk->sk_rcvlowat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SO_SNDLOWAT:
@@ -2442,45 +1744,25 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		v.val = !!test_bit(SOCK_PASSCRED, &sock->flags);
 		break;
 
-<<<<<<< HEAD
-=======
 	case SO_PASSPIDFD:
 		v.val = !!test_bit(SOCK_PASSPIDFD, &sock->flags);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SO_PEERCRED:
 	{
 		struct ucred peercred;
 		if (len > sizeof(peercred))
 			len = sizeof(peercred);
-<<<<<<< HEAD
-		cred_to_ucred(sk->sk_peer_pid, sk->sk_peer_cred,
-			      &peercred, true);
-		if (copy_to_user(optval, &peercred, len))
-=======
 
 		spin_lock(&sk->sk_peer_lock);
 		cred_to_ucred(sk->sk_peer_pid, sk->sk_peer_cred, &peercred);
 		spin_unlock(&sk->sk_peer_lock);
 
 		if (copy_to_sockptr(optval, &peercred, len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		goto lenout;
 	}
 
-<<<<<<< HEAD
-	case SO_PEERNAME:
-	{
-		char address[128];
-
-		if (sock->ops->getname(sock, (struct sockaddr *)address, &lv, 2))
-			return -ENOTCONN;
-		if (lv < len)
-			return -EINVAL;
-		if (copy_to_user(optval, address, len))
-=======
 	case SO_PEERPIDFD:
 	{
 		struct pid *peer_pid;
@@ -2548,7 +1830,6 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		if (lv < len)
 			return -EINVAL;
 		if (copy_to_sockptr(optval, &address, len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		goto lenout;
 	}
@@ -2565,37 +1846,6 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		break;
 
 	case SO_PEERSEC:
-<<<<<<< HEAD
-		return security_socket_getpeersec_stream(sock, optval, optlen, len);
-
-	case SO_MARK:
-		v.val = sk->sk_mark;
-		break;
-
-	case SO_RXQ_OVFL:
-		v.val = !!sock_flag(sk, SOCK_RXQ_OVFL);
-		break;
-
-	case SO_WIFI_STATUS:
-		v.val = !!sock_flag(sk, SOCK_WIFI_STATUS);
-		break;
-
-	case SO_PEEK_OFF:
-		if (!sock->ops->set_peek_off)
-			return -EOPNOTSUPP;
-
-		v.val = sk->sk_peek_off;
-		break;
-	case SO_NOFCS:
-		v.val = !!sock_flag(sk, SOCK_NOFCS);
-		break;
-
-	case SO_MAX_PACING_RATE:
-		v.val = sk->sk_max_pacing_rate;
-		break;
-
-	default:
-=======
 		return security_socket_getpeersec_stream(sock,
 							 optval, optlen, len);
 
@@ -2744,23 +1994,15 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
 		/* We implement the SO_SNDLOWAT etc to not be settable
 		 * (1003.1g 7).
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOPROTOOPT;
 	}
 
 	if (len > lv)
 		len = lv;
-<<<<<<< HEAD
-	if (copy_to_user(optval, &v, len))
-		return -EFAULT;
-lenout:
-	if (put_user(len, optlen))
-=======
 	if (copy_to_sockptr(optval, &v, len))
 		return -EFAULT;
 lenout:
 	if (copy_to_sockptr(optlen, &len, sizeof(int)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 }
@@ -2772,9 +2014,6 @@ lenout:
  */
 static inline void sock_lock_init(struct sock *sk)
 {
-<<<<<<< HEAD
-	sock_lock_init_class_and_name(sk,
-=======
 	if (sk->sk_kern_sock)
 		sock_lock_init_class_and_name(
 			sk,
@@ -2785,7 +2024,6 @@ static inline void sock_lock_init(struct sock *sk)
 	else
 		sock_lock_init_class_and_name(
 			sk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			af_family_slock_key_strings[sk->sk_family],
 			af_family_slock_keys + sk->sk_family,
 			af_family_key_strings[sk->sk_family],
@@ -2799,15 +2037,6 @@ static inline void sock_lock_init(struct sock *sk)
  */
 static void sock_copy(struct sock *nsk, const struct sock *osk)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_SECURITY_NETWORK
-	void *sptr = nsk->sk_security;
-#endif
-	memcpy(nsk, osk, offsetof(struct sock, sk_dontcopy_begin));
-
-	memcpy(&nsk->sk_dontcopy_end, &osk->sk_dontcopy_end,
-	       osk->sk_prot->obj_size - offsetof(struct sock, sk_dontcopy_end));
-=======
 	const struct proto *prot = READ_ONCE(osk->sk_prot);
 #ifdef CONFIG_SECURITY_NETWORK
 	void *sptr = nsk->sk_security;
@@ -2827,7 +2056,6 @@ static void sock_copy(struct sock *nsk, const struct sock *osk)
 	unsafe_memcpy(&nsk->sk_dontcopy_end, &osk->sk_dontcopy_end,
 		      prot->obj_size - offsetof(struct sock, sk_dontcopy_end),
 		      /* alloc is larger than struct, see sk_prot_alloc() */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SECURITY_NETWORK
 	nsk->sk_security = sptr;
@@ -2835,27 +2063,6 @@ static void sock_copy(struct sock *nsk, const struct sock *osk)
 #endif
 }
 
-<<<<<<< HEAD
-void sk_prot_clear_portaddr_nulls(struct sock *sk, int size)
-{
-	unsigned long nulls1, nulls2;
-
-	nulls1 = offsetof(struct sock, __sk_common.skc_node.next);
-	nulls2 = offsetof(struct sock, __sk_common.skc_portaddr_node.next);
-	if (nulls1 > nulls2)
-		swap(nulls1, nulls2);
-
-	if (nulls1 != 0)
-		memset((char *)sk, 0, nulls1);
-	memset((char *)sk + nulls1 + sizeof(void *), 0,
-	       nulls2 - nulls1 - sizeof(void *));
-	memset((char *)sk + nulls2 + sizeof(void *), 0,
-	       size - nulls2 - sizeof(void *));
-}
-EXPORT_SYMBOL(sk_prot_clear_portaddr_nulls);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sock *sk_prot_alloc(struct proto *prot, gfp_t priority,
 		int family)
 {
@@ -2867,35 +2074,17 @@ static struct sock *sk_prot_alloc(struct proto *prot, gfp_t priority,
 		sk = kmem_cache_alloc(slab, priority & ~__GFP_ZERO);
 		if (!sk)
 			return sk;
-<<<<<<< HEAD
-		if (priority & __GFP_ZERO) {
-			if (prot->clear_sk)
-				prot->clear_sk(sk, prot->obj_size);
-			else
-				sk_prot_clear_nulls(sk, prot->obj_size);
-		}
-=======
 		if (want_init_on_alloc(priority))
 			sk_prot_clear_nulls(sk, prot->obj_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		sk = kmalloc(prot->obj_size, priority);
 
 	if (sk != NULL) {
-<<<<<<< HEAD
-		kmemcheck_annotate_bitfield(sk, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (security_sk_alloc(sk, family, priority))
 			goto out_free;
 
 		if (!try_module_get(prot->owner))
 			goto out_free_sec;
-<<<<<<< HEAD
-		sk_tx_queue_clear(sk);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sk;
@@ -2918,11 +2107,8 @@ static void sk_prot_free(struct proto *prot, struct sock *sk)
 	owner = prot->owner;
 	slab = prot->slab;
 
-<<<<<<< HEAD
-=======
 	cgroup_sk_free(&sk->sk_cgrp_data);
 	mem_cgroup_sk_free(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	security_sk_free(sk);
 	if (slab != NULL)
 		kmem_cache_free(slab, sk);
@@ -2931,48 +2117,16 @@ static void sk_prot_free(struct proto *prot, struct sock *sk)
 	module_put(owner);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_CGROUPS
-void sock_update_classid(struct sock *sk)
-{
-	u32 classid;
-
-	rcu_read_lock();  /* doing current task, which cannot vanish. */
-	classid = task_cls_classid(current);
-	rcu_read_unlock();
-	if (classid && classid != sk->sk_classid)
-		sk->sk_classid = classid;
-}
-EXPORT_SYMBOL(sock_update_classid);
-
-void sock_update_netprioidx(struct sock *sk)
-{
-	if (in_interrupt())
-		return;
-
-	sk->sk_cgrp_prioidx = task_netprioidx(current);
-}
-EXPORT_SYMBOL_GPL(sock_update_netprioidx);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	sk_alloc - All socket objects are allocated here
  *	@net: the applicable net namespace
  *	@family: protocol family
  *	@priority: for allocation (%GFP_KERNEL, %GFP_ATOMIC, etc)
  *	@prot: struct proto associated with this new sock instance
-<<<<<<< HEAD
- */
-struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
-		      struct proto *prot)
-=======
  *	@kern: is this to be a kernel socket?
  */
 struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		      struct proto *prot, int kern)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk;
 
@@ -2984,14 +2138,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		 * why we need sk_prot_creator -acme
 		 */
 		sk->sk_prot = sk->sk_prot_creator = prot;
-<<<<<<< HEAD
-		sock_lock_init(sk);
-		sock_net_set(sk, get_net(net));
-		atomic_set(&sk->sk_wmem_alloc, 1);
-
-		sock_update_classid(sk);
-		sock_update_netprioidx(sk);
-=======
 		sk->sk_kern_sock = kern;
 		sock_lock_init(sk);
 		sk->sk_net_refcnt = kern ? 0 : 1;
@@ -3011,35 +2157,25 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		sock_update_classid(&sk->sk_cgrp_data);
 		sock_update_netprioidx(&sk->sk_cgrp_data);
 		sk_tx_queue_clear(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sk;
 }
 EXPORT_SYMBOL(sk_alloc);
 
-<<<<<<< HEAD
-static void __sk_free(struct sock *sk)
-{
-=======
 /* Sockets having SOCK_RCU_FREE will call this function after one RCU
  * grace period. This is the case for UDP sockets and TCP listeners.
  */
 static void __sk_destruct(struct rcu_head *head)
 {
 	struct sock *sk = container_of(head, struct sock, sk_rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_filter *filter;
 
 	if (sk->sk_destruct)
 		sk->sk_destruct(sk);
 
 	filter = rcu_dereference_check(sk->sk_filter,
-<<<<<<< HEAD
-				       atomic_read(&sk->sk_wmem_alloc) == 0);
-=======
 				       refcount_read(&sk->sk_wmem_alloc) == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (filter) {
 		sk_filter_uncharge(sk, filter);
 		RCU_INIT_POINTER(sk->sk_filter, NULL);
@@ -3047,19 +2183,6 @@ static void __sk_destruct(struct rcu_head *head)
 
 	sock_disable_timestamp(sk, SK_FLAGS_TIMESTAMP);
 
-<<<<<<< HEAD
-	if (atomic_read(&sk->sk_omem_alloc))
-		printk(KERN_DEBUG "%s: optmem leakage (%d bytes) detected.\n",
-		       __func__, atomic_read(&sk->sk_omem_alloc));
-
-	if (sk->sk_peer_cred)
-		put_cred(sk->sk_peer_cred);
-	put_pid(sk->sk_peer_pid);
-	put_net(sock_net(sk));
-	sk_prot_free(sk->sk_prot_creator, sk);
-}
-
-=======
 #ifdef CONFIG_BPF_SYSCALL
 	bpf_sk_storage_free(sk);
 #endif
@@ -3111,7 +2234,6 @@ static void __sk_free(struct sock *sk)
 		sk_destruct(sk);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sk_free(struct sock *sk)
 {
 	/*
@@ -3119,41 +2241,11 @@ void sk_free(struct sock *sk)
 	 * some packets are still in some tx queue.
 	 * If not null, sock_wfree() will call __sk_free(sk) later
 	 */
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&sk->sk_wmem_alloc))
-=======
 	if (refcount_dec_and_test(&sk->sk_wmem_alloc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sk_free(sk);
 }
 EXPORT_SYMBOL(sk_free);
 
-<<<<<<< HEAD
-/*
- * Last sock_put should drop reference to sk->sk_net. It has already
- * been dropped in sk_change_net. Taking reference to stopping namespace
- * is not an option.
- * Take reference to a socket to remove it from hash _alive_ and after that
- * destroy it in the context of init_net.
- */
-void sk_release_kernel(struct sock *sk)
-{
-	if (sk == NULL || sk->sk_socket == NULL)
-		return;
-
-	sock_hold(sk);
-	sock_release(sk->sk_socket);
-	release_net(sock_net(sk));
-	sock_net_set(sk, get_net(&init_net));
-	sock_put(sk);
-}
-EXPORT_SYMBOL(sk_release_kernel);
-
-static void sk_update_clone(const struct sock *sk, struct sock *newsk)
-{
-	if (mem_cgroup_sockets_enabled && sk->sk_cgrp)
-		sock_update_memcg(newsk);
-=======
 static void sk_init_common(struct sock *sk)
 {
 	skb_queue_head_init(&sk->sk_receive_queue);
@@ -3173,7 +2265,6 @@ static void sk_init_common(struct sock *sk)
 	lockdep_set_class_and_name(&sk->sk_callback_lock,
 			af_callback_keys + sk->sk_family,
 			af_family_clock_key_strings[sk->sk_family]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3185,99 +2276,6 @@ static void sk_init_common(struct sock *sk)
  */
 struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 {
-<<<<<<< HEAD
-	struct sock *newsk;
-
-	newsk = sk_prot_alloc(sk->sk_prot, priority, sk->sk_family);
-	if (newsk != NULL) {
-		struct sk_filter *filter;
-
-		sock_copy(newsk, sk);
-
-		newsk->sk_prot_creator = sk->sk_prot;
-
-		/* SANITY */
-		get_net(sock_net(newsk));
-		sk_node_init(&newsk->sk_node);
-		sock_lock_init(newsk);
-		bh_lock_sock(newsk);
-		newsk->sk_backlog.head	= newsk->sk_backlog.tail = NULL;
-		newsk->sk_backlog.len = 0;
-
-		atomic_set(&newsk->sk_rmem_alloc, 0);
-		/*
-		 * sk_wmem_alloc set to one (see sk_free() and sock_wfree())
-		 */
-		atomic_set(&newsk->sk_wmem_alloc, 1);
-		atomic_set(&newsk->sk_omem_alloc, 0);
-		skb_queue_head_init(&newsk->sk_receive_queue);
-		skb_queue_head_init(&newsk->sk_write_queue);
-#ifdef CONFIG_NET_DMA
-		skb_queue_head_init(&newsk->sk_async_wait_queue);
-#endif
-
-		spin_lock_init(&newsk->sk_dst_lock);
-		rwlock_init(&newsk->sk_callback_lock);
-		lockdep_set_class_and_name(&newsk->sk_callback_lock,
-				af_callback_keys + newsk->sk_family,
-				af_family_clock_key_strings[newsk->sk_family]);
-
-		newsk->sk_dst_cache	= NULL;
-		newsk->sk_wmem_queued	= 0;
-		newsk->sk_forward_alloc = 0;
-		newsk->sk_send_head	= NULL;
-		newsk->sk_userlocks	= sk->sk_userlocks & ~SOCK_BINDPORT_LOCK;
-
-		sock_reset_flag(newsk, SOCK_DONE);
-		skb_queue_head_init(&newsk->sk_error_queue);
-
-		filter = rcu_dereference_protected(newsk->sk_filter, 1);
-		if (filter != NULL)
-			sk_filter_charge(newsk, filter);
-
-		if (unlikely(xfrm_sk_clone_policy(newsk))) {
-			/* It is still raw copy of parent, so invalidate
-			 * destructor and make plain sk_free() */
-			newsk->sk_destruct = NULL;
-			bh_unlock_sock(newsk);
-			sk_free(newsk);
-			newsk = NULL;
-			goto out;
-		}
-
-		newsk->sk_err	   = 0;
-		newsk->sk_priority = 0;
-		/*
-		 * Before updating sk_refcnt, we must commit prior changes to memory
-		 * (Documentation/RCU/rculist_nulls.txt for details)
-		 */
-		smp_wmb();
-		atomic_set(&newsk->sk_refcnt, 2);
-
-		/*
-		 * Increment the counter in the same struct proto as the master
-		 * sock (sk_refcnt_debug_inc uses newsk->sk_prot->socks, that
-		 * is the same as sk->sk_prot->socks, as this field was copied
-		 * with memcpy).
-		 *
-		 * This _changes_ the previous behaviour, where
-		 * tcp_create_openreq_child always was incrementing the
-		 * equivalent to tcp_prot->socks (inet_sock_nr), so this have
-		 * to be taken into account in all callers. -acme
-		 */
-		sk_refcnt_debug_inc(newsk);
-		sk_set_socket(newsk, NULL);
-		newsk->sk_wq = NULL;
-
-		sk_update_clone(sk, newsk);
-
-		if (newsk->sk_prot->sockets_allocated)
-			sk_sockets_allocated_inc(newsk);
-
-		if (newsk->sk_flags & SK_FLAGS_TIMESTAMP)
-			net_enable_timestamp();
-	}
-=======
 	struct proto *prot = READ_ONCE(sk->sk_prot);
 	struct sk_filter *filter;
 	bool is_charged = true;
@@ -3391,46 +2389,11 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 
 	if (sock_needs_netstamp(sk) && newsk->sk_flags & SK_FLAGS_TIMESTAMP)
 		net_enable_timestamp();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return newsk;
 }
 EXPORT_SYMBOL_GPL(sk_clone_lock);
 
-<<<<<<< HEAD
-void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
-{
-	__sk_dst_set(sk, dst);
-	sk->sk_route_caps = dst->dev->features;
-	if (sk->sk_route_caps & NETIF_F_GSO)
-		sk->sk_route_caps |= NETIF_F_GSO_SOFTWARE;
-	sk->sk_route_caps &= ~sk->sk_route_nocaps;
-	if (sk_can_gso(sk)) {
-		if (dst->header_len) {
-			sk->sk_route_caps &= ~NETIF_F_GSO_MASK;
-		} else {
-			sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
-			sk->sk_gso_max_size = dst->dev->gso_max_size;
-			sk->sk_gso_max_segs = dst->dev->gso_max_segs;
-		}
-	}
-}
-EXPORT_SYMBOL_GPL(sk_setup_caps);
-
-void __init sk_init(void)
-{
-	if (totalram_pages <= 4096) {
-		sysctl_wmem_max = 32767;
-		sysctl_rmem_max = 32767;
-		sysctl_wmem_default = 32767;
-		sysctl_rmem_default = 32767;
-	} else if (totalram_pages >= 131072) {
-		sysctl_wmem_max = 131071;
-		sysctl_rmem_max = 131071;
-	}
-}
-
-=======
 void sk_free_unlock_clone(struct sock *sk)
 {
 	/* It is still raw copy of parent, so invalidate
@@ -3485,7 +2448,6 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
 }
 EXPORT_SYMBOL_GPL(sk_setup_caps);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Simple resource managers for sockets.
  */
@@ -3498,10 +2460,6 @@ void sock_wfree(struct sk_buff *skb)
 {
 	struct sock *sk = skb->sk;
 	unsigned int len = skb->truesize;
-<<<<<<< HEAD
-
-	if (!sock_flag(sk, SOCK_USE_WRITE_QUEUE)) {
-=======
 	bool free;
 
 	if (!sock_flag(sk, SOCK_USE_WRITE_QUEUE)) {
@@ -3516,16 +2474,11 @@ void sock_wfree(struct sk_buff *skb)
 			return;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Keep a reference on sk_wmem_alloc, this will be released
 		 * after sk_write_space() call
 		 */
-<<<<<<< HEAD
-		atomic_sub(len - 1, &sk->sk_wmem_alloc);
-=======
 		WARN_ON(refcount_sub_and_test(len - 1, &sk->sk_wmem_alloc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sk->sk_write_space(sk);
 		len = 1;
 	}
@@ -3533,17 +2486,11 @@ void sock_wfree(struct sk_buff *skb)
 	 * if sk_wmem_alloc reaches 0, we must finish what sk_free()
 	 * could not do because of in-flight packets
 	 */
-<<<<<<< HEAD
-	if (atomic_sub_and_test(len, &sk->sk_wmem_alloc))
-=======
 	if (refcount_sub_and_test(len, &sk->sk_wmem_alloc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sk_free(sk);
 }
 EXPORT_SYMBOL(sock_wfree);
 
-<<<<<<< HEAD
-=======
 /* This variant of sock_wfree() is used by TCP,
  * since it sets SOCK_USE_WRITE_QUEUE.
  */
@@ -3608,7 +2555,6 @@ void skb_orphan_partial(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(skb_orphan_partial);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read buffer destructor automatically called from kfree_skb.
  */
@@ -3622,15 +2568,6 @@ void sock_rfree(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(sock_rfree);
 
-<<<<<<< HEAD
-
-int sock_i_uid(struct sock *sk)
-{
-	int uid;
-
-	read_lock_bh(&sk->sk_callback_lock);
-	uid = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_uid : 0;
-=======
 /*
  * Buffer destructor for skbs that are not used directly in read or write
  * path, e.g. for error handler skbs. Automatically called from kfree_skb.
@@ -3669,14 +2606,11 @@ kuid_t sock_i_uid(struct sock *sk)
 
 	read_lock_bh(&sk->sk_callback_lock);
 	uid = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_uid : GLOBAL_ROOT_UID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock_bh(&sk->sk_callback_lock);
 	return uid;
 }
 EXPORT_SYMBOL(sock_i_uid);
 
-<<<<<<< HEAD
-=======
 unsigned long __sock_i_ino(struct sock *sk)
 {
 	unsigned long ino;
@@ -3688,20 +2622,13 @@ unsigned long __sock_i_ino(struct sock *sk)
 }
 EXPORT_SYMBOL(__sock_i_ino);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long sock_i_ino(struct sock *sk)
 {
 	unsigned long ino;
 
-<<<<<<< HEAD
-	read_lock_bh(&sk->sk_callback_lock);
-	ino = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_ino : 0;
-	read_unlock_bh(&sk->sk_callback_lock);
-=======
 	local_bh_disable();
 	ino = __sock_i_ino(sk);
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ino;
 }
 EXPORT_SYMBOL(sock_i_ino);
@@ -3712,15 +2639,10 @@ EXPORT_SYMBOL(sock_i_ino);
 struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
 			     gfp_t priority)
 {
-<<<<<<< HEAD
-	if (force || atomic_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf) {
-		struct sk_buff *skb = alloc_skb(size, priority);
-=======
 	if (force ||
 	    refcount_read(&sk->sk_wmem_alloc) < READ_ONCE(sk->sk_sndbuf)) {
 		struct sk_buff *skb = alloc_skb(size, priority);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (skb) {
 			skb_set_owner_w(skb, sk);
 			return skb;
@@ -3730,22 +2652,6 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
 }
 EXPORT_SYMBOL(sock_wmalloc);
 
-<<<<<<< HEAD
-/*
- * Allocate a skb from the socket's receive buffer.
- */
-struct sk_buff *sock_rmalloc(struct sock *sk, unsigned long size, int force,
-			     gfp_t priority)
-{
-	if (force || atomic_read(&sk->sk_rmem_alloc) < sk->sk_rcvbuf) {
-		struct sk_buff *skb = alloc_skb(size, priority);
-		if (skb) {
-			skb_set_owner_r(skb, sk);
-			return skb;
-		}
-	}
-	return NULL;
-=======
 static void sock_ofree(struct sk_buff *skb)
 {
 	struct sock *sk = skb->sk;
@@ -3771,7 +2677,6 @@ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
 	skb->sk = sk;
 	skb->destructor = sock_ofree;
 	return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3779,15 +2684,10 @@ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
  */
 void *sock_kmalloc(struct sock *sk, int size, gfp_t priority)
 {
-<<<<<<< HEAD
-	if ((unsigned)size <= sysctl_optmem_max &&
-	    atomic_read(&sk->sk_omem_alloc) + size < sysctl_optmem_max) {
-=======
 	int optmem_max = READ_ONCE(sock_net(sk)->core.sysctl_optmem_max);
 
 	if ((unsigned int)size <= optmem_max &&
 	    atomic_read(&sk->sk_omem_alloc) + size < optmem_max) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *mem;
 		/* First do the add, to avoid the race if kmalloc
 		 * might sleep.
@@ -3802,18 +2702,6 @@ void *sock_kmalloc(struct sock *sk, int size, gfp_t priority)
 }
 EXPORT_SYMBOL(sock_kmalloc);
 
-<<<<<<< HEAD
-/*
- * Free an option memory block.
- */
-void sock_kfree_s(struct sock *sk, void *mem, int size)
-{
-	kfree(mem);
-	atomic_sub(size, &sk->sk_omem_alloc);
-}
-EXPORT_SYMBOL(sock_kfree_s);
-
-=======
 /* Free an option memory block. Note, we actually want the inline
  * here as this allows gcc to detect the nullify and fold away the
  * condition entirely.
@@ -3842,7 +2730,6 @@ void sock_kzfree_s(struct sock *sk, void *mem, int size)
 }
 EXPORT_SYMBOL(sock_kzfree_s);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* It is almost wait_for_tcp_memory minus release_sock/lock_sock.
    I think, these locks should be removed for datagram sockets.
  */
@@ -3850,11 +2737,7 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
 {
 	DEFINE_WAIT(wait);
 
-<<<<<<< HEAD
-	clear_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
-=======
 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;) {
 		if (!timeo)
 			break;
@@ -3862,19 +2745,11 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
 			break;
 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-<<<<<<< HEAD
-		if (atomic_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf)
-			break;
-		if (sk->sk_shutdown & SEND_SHUTDOWN)
-			break;
-		if (sk->sk_err)
-=======
 		if (refcount_read(&sk->sk_wmem_alloc) < READ_ONCE(sk->sk_sndbuf))
 			break;
 		if (READ_ONCE(sk->sk_shutdown) & SEND_SHUTDOWN)
 			break;
 		if (READ_ONCE(sk->sk_err))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		timeo = schedule_timeout(timeo);
 	}
@@ -3889,26 +2764,6 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
 
 struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 				     unsigned long data_len, int noblock,
-<<<<<<< HEAD
-				     int *errcode)
-{
-	struct sk_buff *skb;
-	gfp_t gfp_mask;
-	long timeo;
-	int err;
-	int npages = (data_len + (PAGE_SIZE - 1)) >> PAGE_SHIFT;
-
-	err = -EMSGSIZE;
-	if (npages > MAX_SKB_FRAGS)
-		goto failure;
-
-	gfp_mask = sk->sk_allocation;
-	if (gfp_mask & __GFP_WAIT)
-		gfp_mask |= __GFP_REPEAT;
-
-	timeo = sock_sndtimeo(sk, noblock);
-	while (1) {
-=======
 				     int *errcode, int max_page_order)
 {
 	struct sk_buff *skb;
@@ -3917,54 +2772,11 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 
 	timeo = sock_sndtimeo(sk, noblock);
 	for (;;) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = sock_error(sk);
 		if (err != 0)
 			goto failure;
 
 		err = -EPIPE;
-<<<<<<< HEAD
-		if (sk->sk_shutdown & SEND_SHUTDOWN)
-			goto failure;
-
-		if (atomic_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf) {
-			skb = alloc_skb(header_len, gfp_mask);
-			if (skb) {
-				int i;
-
-				/* No pages, we're done... */
-				if (!data_len)
-					break;
-
-				skb->truesize += data_len;
-				skb_shinfo(skb)->nr_frags = npages;
-				for (i = 0; i < npages; i++) {
-					struct page *page;
-
-					page = alloc_pages(sk->sk_allocation, 0);
-					if (!page) {
-						err = -ENOBUFS;
-						skb_shinfo(skb)->nr_frags = i;
-						kfree_skb(skb);
-						goto failure;
-					}
-
-					__skb_fill_page_desc(skb, i,
-							page, 0,
-							(data_len >= PAGE_SIZE ?
-							 PAGE_SIZE :
-							 data_len));
-					data_len -= PAGE_SIZE;
-				}
-
-				/* Full success... */
-				break;
-			}
-			err = -ENOBUFS;
-			goto failure;
-		}
-		set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
-=======
 		if (READ_ONCE(sk->sk_shutdown) & SEND_SHUTDOWN)
 			goto failure;
 
@@ -3972,7 +2784,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 			break;
 
 		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
 		err = -EAGAIN;
 		if (!timeo)
@@ -3981,15 +2792,10 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 			goto interrupted;
 		timeo = sock_wait_for_wmem(sk, timeo);
 	}
-<<<<<<< HEAD
-
-	skb_set_owner_w(skb, sk);
-=======
 	skb = alloc_skb_with_frags(header_len, data_len, max_page_order,
 				   errcode, sk->sk_allocation);
 	if (skb)
 		skb_set_owner_w(skb, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 
 interrupted:
@@ -4000,16 +2806,6 @@ failure:
 }
 EXPORT_SYMBOL(sock_alloc_send_pskb);
 
-<<<<<<< HEAD
-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
-				    int noblock, int *errcode)
-{
-	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode);
-}
-EXPORT_SYMBOL(sock_alloc_send_skb);
-
-static void __lock_sock(struct sock *sk)
-=======
 int __sock_cmsg_send(struct sock *sk, struct cmsghdr *cmsg,
 		     struct sockcm_cookie *sockc)
 {
@@ -4152,7 +2948,6 @@ bool sk_page_frag_refill(struct sock *sk, struct page_frag *pfrag)
 EXPORT_SYMBOL(sk_page_frag_refill);
 
 void __lock_sock(struct sock *sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__releases(&sk->sk_lock.slock)
 	__acquires(&sk->sk_lock.slock)
 {
@@ -4170,32 +2965,6 @@ void __lock_sock(struct sock *sk)
 	finish_wait(&sk->sk_lock.wq, &wait);
 }
 
-<<<<<<< HEAD
-static void __release_sock(struct sock *sk)
-	__releases(&sk->sk_lock.slock)
-	__acquires(&sk->sk_lock.slock)
-{
-	struct sk_buff *skb = sk->sk_backlog.head;
-
-	do {
-		sk->sk_backlog.head = sk->sk_backlog.tail = NULL;
-		bh_unlock_sock(sk);
-
-		do {
-			struct sk_buff *next = skb->next;
-
-			WARN_ON_ONCE(skb_dst_is_noref(skb));
-			skb->next = NULL;
-			sk_backlog_rcv(sk, skb);
-
-			/*
-			 * We are in process context here with softirqs
-			 * disabled, use cond_resched_softirq() to preempt.
-			 * This is safe to do because we've taken the backlog
-			 * queue private:
-			 */
-			cond_resched_softirq();
-=======
 void __release_sock(struct sock *sk)
 	__releases(&sk->sk_lock.slock)
 	__acquires(&sk->sk_lock.slock)
@@ -4215,18 +2984,12 @@ void __release_sock(struct sock *sk)
 			sk_backlog_rcv(sk, skb);
 
 			cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			skb = next;
 		} while (skb != NULL);
 
-<<<<<<< HEAD
-		bh_lock_sock(sk);
-	} while ((skb = sk->sk_backlog.head) != NULL);
-=======
 		spin_lock_bh(&sk->sk_lock.slock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Doing the zeroing here guarantee we can not loop forever
@@ -4235,8 +2998,6 @@ void __release_sock(struct sock *sk)
 	sk->sk_backlog.len = 0;
 }
 
-<<<<<<< HEAD
-=======
 void __sk_flush_backlog(struct sock *sk)
 {
 	spin_lock_bh(&sk->sk_lock.slock);
@@ -4250,33 +3011,17 @@ void __sk_flush_backlog(struct sock *sk)
 }
 EXPORT_SYMBOL_GPL(__sk_flush_backlog);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sk_wait_data - wait for data to arrive at sk_receive_queue
  * @sk:    sock to wait on
  * @timeo: for how long
-<<<<<<< HEAD
-=======
  * @skb:   last skb seen on sk_receive_queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Now socket state including sk->sk_err is changed only under lock,
  * hence we may omit checks after joining wait queue.
  * We check receive queue before schedule() only as optimization;
  * it is very likely that release_sock() added new data.
  */
-<<<<<<< HEAD
-int sk_wait_data(struct sock *sk, long *timeo)
-{
-	int rc;
-	DEFINE_WAIT(wait);
-
-	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-	set_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
-	rc = sk_wait_event(sk, timeo, !skb_queue_empty(&sk->sk_receive_queue));
-	clear_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
-	finish_wait(sk_sleep(sk), &wait);
-=======
 int sk_wait_data(struct sock *sk, long *timeo, const struct sk_buff *skb)
 {
 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
@@ -4287,37 +3032,11 @@ int sk_wait_data(struct sock *sk, long *timeo, const struct sk_buff *skb)
 	rc = sk_wait_event(sk, timeo, skb_peek_tail(&sk->sk_receive_queue) != skb, &wait);
 	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
 	remove_wait_queue(sk_sleep(sk), &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL(sk_wait_data);
 
 /**
-<<<<<<< HEAD
- *	__sk_mem_schedule - increase sk_forward_alloc and memory_allocated
- *	@sk: socket
- *	@size: memory size to allocate
- *	@kind: allocation type
- *
- *	If kind is SK_MEM_SEND, it means wmem allocation. Otherwise it means
- *	rmem allocation. This function assumes that protocols which have
- *	memory_pressure use sk_wmem_queued as write buffer accounting.
- */
-int __sk_mem_schedule(struct sock *sk, int size, int kind)
-{
-	struct proto *prot = sk->sk_prot;
-	int amt = sk_mem_pages(size);
-	long allocated;
-	int parent_status = UNDER_LIMIT;
-
-	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
-
-	allocated = sk_memory_allocated_add(sk, amt, &parent_status);
-
-	/* Under limit. */
-	if (parent_status == UNDER_LIMIT &&
-			allocated <= sk_prot_mem_limits(sk, 0)) {
-=======
  *	__sk_mem_raise_allocated - increase memory_allocated
  *	@sk: socket
  *	@size: memory size to allocate
@@ -4350,42 +3069,10 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
 
 	/* Under limit. */
 	if (allocated <= sk_prot_mem_limits(sk, 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sk_leave_memory_pressure(sk);
 		return 1;
 	}
 
-<<<<<<< HEAD
-	/* Under pressure. (we or our parents) */
-	if ((parent_status > SOFT_LIMIT) ||
-			allocated > sk_prot_mem_limits(sk, 1))
-		sk_enter_memory_pressure(sk);
-
-	/* Over hard limit (we or our parents) */
-	if ((parent_status == OVER_LIMIT) ||
-			(allocated > sk_prot_mem_limits(sk, 2)))
-		goto suppress_allocation;
-
-	/* guarantee minimum buffer size under pressure */
-	if (kind == SK_MEM_RECV) {
-		if (atomic_read(&sk->sk_rmem_alloc) < prot->sysctl_rmem[0])
-			return 1;
-
-	} else { /* SK_MEM_SEND */
-		if (sk->sk_type == SOCK_STREAM) {
-			if (sk->sk_wmem_queued < prot->sysctl_wmem[0])
-				return 1;
-		} else if (atomic_read(&sk->sk_wmem_alloc) <
-			   prot->sysctl_wmem[0])
-				return 1;
-	}
-
-	if (sk_has_memory_pressure(sk)) {
-		int alloc;
-
-		if (!sk_under_memory_pressure(sk))
-			return 1;
-=======
 	/* Under pressure. */
 	if (allocated > sk_prot_mem_limits(sk, 1))
 		sk_enter_memory_pressure(sk);
@@ -4431,7 +3118,6 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
 		 * pressure by allowing the ones that below average
 		 * usage to raise.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		alloc = sk_sockets_allocated_read_positive(sk);
 		if (sk_prot_mem_limits(sk, 2) > alloc *
 		    sk_mem_pages(sk->sk_wmem_queued +
@@ -4448,39 +3134,6 @@ suppress_allocation:
 		/* Fail only if socket is _under_ its sndbuf.
 		 * In this case we cannot block, so that we have to fail.
 		 */
-<<<<<<< HEAD
-		if (sk->sk_wmem_queued + size >= sk->sk_sndbuf)
-			return 1;
-	}
-
-	trace_sock_exceed_buf_limit(sk, prot, allocated);
-
-	/* Alas. Undo changes. */
-	sk->sk_forward_alloc -= amt * SK_MEM_QUANTUM;
-
-	sk_memory_allocated_sub(sk, amt);
-
-	return 0;
-}
-EXPORT_SYMBOL(__sk_mem_schedule);
-
-/**
- *	__sk_reclaim - reclaim memory_allocated
- *	@sk: socket
- */
-void __sk_mem_reclaim(struct sock *sk)
-{
-	sk_memory_allocated_sub(sk,
-				sk->sk_forward_alloc >> SK_MEM_QUANTUM_SHIFT);
-	sk->sk_forward_alloc &= SK_MEM_QUANTUM - 1;
-
-	if (sk_under_memory_pressure(sk) &&
-	    (sk_memory_allocated(sk) < sk_prot_mem_limits(sk, 0)))
-		sk_leave_memory_pressure(sk);
-}
-EXPORT_SYMBOL(__sk_mem_reclaim);
-
-=======
 		if (sk->sk_wmem_queued + size >= sk->sk_sndbuf) {
 			/* Force charge with __GFP_NOFAIL */
 			if (memcg && !charged) {
@@ -4562,7 +3215,6 @@ int sk_set_peek_off(struct sock *sk, int val)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sk_set_peek_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set of default routines for initialising struct proto_ops when
@@ -4590,37 +3242,20 @@ int sock_no_socketpair(struct socket *sock1, struct socket *sock2)
 }
 EXPORT_SYMBOL(sock_no_socketpair);
 
-<<<<<<< HEAD
-int sock_no_accept(struct socket *sock, struct socket *newsock, int flags)
-=======
 int sock_no_accept(struct socket *sock, struct socket *newsock, int flags,
 		   bool kern)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 EXPORT_SYMBOL(sock_no_accept);
 
 int sock_no_getname(struct socket *sock, struct sockaddr *saddr,
-<<<<<<< HEAD
-		    int *len, int peer)
-=======
 		    int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 EXPORT_SYMBOL(sock_no_getname);
 
-<<<<<<< HEAD
-unsigned int sock_no_poll(struct file *file, struct socket *sock, poll_table *pt)
-{
-	return 0;
-}
-EXPORT_SYMBOL(sock_no_poll);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sock_no_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	return -EOPNOTSUPP;
@@ -4639,35 +3274,12 @@ int sock_no_shutdown(struct socket *sock, int how)
 }
 EXPORT_SYMBOL(sock_no_shutdown);
 
-<<<<<<< HEAD
-int sock_no_setsockopt(struct socket *sock, int level, int optname,
-		    char __user *optval, unsigned int optlen)
-{
-	return -EOPNOTSUPP;
-}
-EXPORT_SYMBOL(sock_no_setsockopt);
-
-int sock_no_getsockopt(struct socket *sock, int level, int optname,
-		    char __user *optval, int __user *optlen)
-{
-	return -EOPNOTSUPP;
-}
-EXPORT_SYMBOL(sock_no_getsockopt);
-
-int sock_no_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
-		    size_t len)
-=======
 int sock_no_sendmsg(struct socket *sock, struct msghdr *m, size_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 EXPORT_SYMBOL(sock_no_sendmsg);
 
-<<<<<<< HEAD
-int sock_no_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *m,
-		    size_t len, int flags)
-=======
 int sock_no_sendmsg_locked(struct sock *sk, struct msghdr *m, size_t len)
 {
 	return -EOPNOTSUPP;
@@ -4676,7 +3288,6 @@ EXPORT_SYMBOL(sock_no_sendmsg_locked);
 
 int sock_no_recvmsg(struct socket *sock, struct msghdr *m, size_t len,
 		    int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
@@ -4689,21 +3300,6 @@ int sock_no_mmap(struct file *file, struct socket *sock, struct vm_area_struct *
 }
 EXPORT_SYMBOL(sock_no_mmap);
 
-<<<<<<< HEAD
-ssize_t sock_no_sendpage(struct socket *sock, struct page *page, int offset, size_t size, int flags)
-{
-	ssize_t res;
-	struct msghdr msg = {.msg_flags = flags};
-	struct kvec iov;
-	char *kaddr = kmap(page);
-	iov.iov_base = kaddr + offset;
-	iov.iov_len = size;
-	res = kernel_sendmsg(sock, &msg, &iov, 1, size);
-	kunmap(page);
-	return res;
-}
-EXPORT_SYMBOL(sock_no_sendpage);
-=======
 /*
  * When a file is received (via SCM_RIGHTS, etc), we must bump the
  * various sock-based usage counts.
@@ -4718,7 +3314,6 @@ void __receive_sock(struct file *file)
 		sock_update_classid(&sock->sk->sk_cgrp_data);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Default Socket Callbacks
@@ -4730,11 +3325,7 @@ static void sock_def_wakeup(struct sock *sk)
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
-<<<<<<< HEAD
-	if (wq_has_sleeper(wq))
-=======
 	if (skwq_has_sleeper(wq))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible_all(&wq->wait);
 	rcu_read_unlock();
 }
@@ -4745,28 +3336,12 @@ static void sock_def_error_report(struct sock *sk)
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
-<<<<<<< HEAD
-	if (wq_has_sleeper(wq))
-		wake_up_interruptible_poll(&wq->wait, POLLERR);
-=======
 	if (skwq_has_sleeper(wq))
 		wake_up_interruptible_poll(&wq->wait, EPOLLERR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk_wake_async(sk, SOCK_WAKE_IO, POLL_ERR);
 	rcu_read_unlock();
 }
 
-<<<<<<< HEAD
-static void sock_def_readable(struct sock *sk, int len)
-{
-	struct socket_wq *wq;
-
-	rcu_read_lock();
-	wq = rcu_dereference(sk->sk_wq);
-	if (wq_has_sleeper(wq))
-		wake_up_interruptible_sync_poll(&wq->wait, POLLIN | POLLPRI |
-						POLLRDNORM | POLLRDBAND);
-=======
 void sock_def_readable(struct sock *sk)
 {
 	struct socket_wq *wq;
@@ -4778,7 +3353,6 @@ void sock_def_readable(struct sock *sk)
 	if (skwq_has_sleeper(wq))
 		wake_up_interruptible_sync_poll(&wq->wait, EPOLLIN | EPOLLPRI |
 						EPOLLRDNORM | EPOLLRDBAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk_wake_async(sk, SOCK_WAKE_WAITD, POLL_IN);
 	rcu_read_unlock();
 }
@@ -4792,17 +3366,6 @@ static void sock_def_write_space(struct sock *sk)
 	/* Do not wake up a writer until he can make "significant"
 	 * progress.  --DaveM
 	 */
-<<<<<<< HEAD
-	if ((atomic_read(&sk->sk_wmem_alloc) << 1) <= sk->sk_sndbuf) {
-		wq = rcu_dereference(sk->sk_wq);
-		if (wq_has_sleeper(wq))
-			wake_up_interruptible_sync_poll(&wq->wait, POLLOUT |
-						POLLWRNORM | POLLWRBAND);
-
-		/* Should agree with poll, otherwise some programs break */
-		if (sock_writeable(sk))
-			sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
-=======
 	if (sock_writeable(sk)) {
 		wq = rcu_dereference(sk->sk_wq);
 		if (skwq_has_sleeper(wq))
@@ -4811,17 +3374,11 @@ static void sock_def_write_space(struct sock *sk)
 
 		/* Should agree with poll, otherwise some programs break */
 		sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_unlock();
 }
 
-<<<<<<< HEAD
-static void sock_def_destruct(struct sock *sk)
-{
-	kfree(sk->sk_protinfo);
-=======
 /* An optimised version of sock_def_write_space(), should only be called
  * for SOCK_RCU_FREE sockets under RCU read section and after putting
  * ->sk_wmem_alloc.
@@ -4847,7 +3404,6 @@ static void sock_def_write_space_wfree(struct sock *sk)
 
 static void sock_def_destruct(struct sock *sk)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sk_send_sigurg(struct sock *sk)
@@ -4868,34 +3424,11 @@ EXPORT_SYMBOL(sk_reset_timer);
 
 void sk_stop_timer(struct sock *sk, struct timer_list* timer)
 {
-<<<<<<< HEAD
-	if (timer_pending(timer) && del_timer(timer))
-=======
 	if (del_timer(timer))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sock_put(sk);
 }
 EXPORT_SYMBOL(sk_stop_timer);
 
-<<<<<<< HEAD
-void sock_init_data(struct socket *sock, struct sock *sk)
-{
-	skb_queue_head_init(&sk->sk_receive_queue);
-	skb_queue_head_init(&sk->sk_write_queue);
-	skb_queue_head_init(&sk->sk_error_queue);
-#ifdef CONFIG_NET_DMA
-	skb_queue_head_init(&sk->sk_async_wait_queue);
-#endif
-
-	sk->sk_send_head	=	NULL;
-
-	init_timer(&sk->sk_timer);
-
-	sk->sk_allocation	=	GFP_KERNEL;
-	sk->sk_rcvbuf		=	sysctl_rmem_default;
-	sk->sk_sndbuf		=	sysctl_wmem_default;
-	sk->sk_state		=	TCP_CLOSE;
-=======
 void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer)
 {
 	if (del_timer_sync(timer))
@@ -4915,26 +3448,12 @@ void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
 	sk->sk_sndbuf		=	READ_ONCE(sysctl_wmem_default);
 	sk->sk_state		=	TCP_CLOSE;
 	sk->sk_use_task_frag	=	true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk_set_socket(sk, sock);
 
 	sock_set_flag(sk, SOCK_ZAPPED);
 
 	if (sock) {
 		sk->sk_type	=	sock->type;
-<<<<<<< HEAD
-		sk->sk_wq	=	sock->wq;
-		sock->sk	=	sk;
-		sk->sk_uid	=	SOCK_INODE(sock)->i_uid;
-	} else {
-		sk->sk_wq	=	NULL;
-		sk->sk_uid	=	make_kuid(sock_net(sk)->user_ns, 0);
-	}
-
-	spin_lock_init(&sk->sk_dst_lock);
-	rwlock_init(&sk->sk_callback_lock);
-	lockdep_set_class_and_name(&sk->sk_callback_lock,
-=======
 		RCU_INIT_POINTER(sk->sk_wq, &sock->wq);
 		sock->sk	=	sk;
 	} else {
@@ -4951,7 +3470,6 @@ void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
 	else
 		lockdep_set_class_and_name(
 			&sk->sk_callback_lock,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			af_callback_keys + sk->sk_family,
 			af_family_clock_key_strings[sk->sk_family]);
 
@@ -4961,41 +3479,19 @@ void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
 	sk->sk_error_report	=	sock_def_error_report;
 	sk->sk_destruct		=	sock_def_destruct;
 
-<<<<<<< HEAD
-	sk->sk_sndmsg_page	=	NULL;
-	sk->sk_sndmsg_off	=	0;
-=======
 	sk->sk_frag.page	=	NULL;
 	sk->sk_frag.offset	=	0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_peek_off		=	-1;
 
 	sk->sk_peer_pid 	=	NULL;
 	sk->sk_peer_cred	=	NULL;
-<<<<<<< HEAD
-=======
 	spin_lock_init(&sk->sk_peer_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_write_pending	=	0;
 	sk->sk_rcvlowat		=	1;
 	sk->sk_rcvtimeo		=	MAX_SCHEDULE_TIMEOUT;
 	sk->sk_sndtimeo		=	MAX_SCHEDULE_TIMEOUT;
 
-<<<<<<< HEAD
-	sk->sk_stamp = ktime_set(-1L, 0);
-
-	sk->sk_max_pacing_rate = ~0U;
-
-	/*
-	 * Before updating sk_refcnt, we must commit prior changes to memory
-	 * (Documentation/RCU/rculist_nulls.txt for details)
-	 */
-	smp_wmb();
-	atomic_set(&sk->sk_refcnt, 1);
-	atomic_set(&sk->sk_drops, 0);
-}
-=======
 	sk->sk_stamp = SK_DEFAULT_STAMP;
 #if BITS_PER_LONG==32
 	seqlock_init(&sk->sk_stamp_seq);
@@ -5031,24 +3527,10 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 
 	sock_init_data_uid(sock, sk, uid);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(sock_init_data);
 
 void lock_sock_nested(struct sock *sk, int subclass)
 {
-<<<<<<< HEAD
-	might_sleep();
-	spin_lock_bh(&sk->sk_lock.slock);
-	if (sk->sk_lock.owned)
-		__lock_sock(sk);
-	sk->sk_lock.owned = 1;
-	spin_unlock(&sk->sk_lock.slock);
-	/*
-	 * The sk_lock has mutex_lock() semantics here:
-	 */
-	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
-	local_bh_enable();
-=======
 	/* The sk_lock has mutex_lock() semantics here. */
 	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
 
@@ -5058,23 +3540,11 @@ void lock_sock_nested(struct sock *sk, int subclass)
 		__lock_sock(sk);
 	sk->sk_lock.owned = 1;
 	spin_unlock_bh(&sk->sk_lock.slock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(lock_sock_nested);
 
 void release_sock(struct sock *sk)
 {
-<<<<<<< HEAD
-	/*
-	 * The sk_lock has mutex_unlock() semantics:
-	 */
-	mutex_release(&sk->sk_lock.dep_map, 1, _RET_IP_);
-
-	spin_lock_bh(&sk->sk_lock.slock);
-	if (sk->sk_backlog.tail)
-		__release_sock(sk);
-	sk->sk_lock.owned = 0;
-=======
 	spin_lock_bh(&sk->sk_lock.slock);
 	if (sk->sk_backlog.tail)
 		__release_sock(sk);
@@ -5084,85 +3554,17 @@ void release_sock(struct sock *sk)
 				     tcp_release_cb, sk);
 
 	sock_release_ownership(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (waitqueue_active(&sk->sk_lock.wq))
 		wake_up(&sk->sk_lock.wq);
 	spin_unlock_bh(&sk->sk_lock.slock);
 }
 EXPORT_SYMBOL(release_sock);
 
-<<<<<<< HEAD
-/**
- * lock_sock_fast - fast version of lock_sock
- * @sk: socket
- *
- * This version should be used for very small section, where process wont block
- * return false if fast path is taken
- *   sk_lock.slock locked, owned = 0, BH disabled
- * return true if slow path is taken
- *   sk_lock.slock unlocked, owned = 1, BH enabled
- */
-bool lock_sock_fast(struct sock *sk)
-=======
 bool __lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	might_sleep();
 	spin_lock_bh(&sk->sk_lock.slock);
 
-<<<<<<< HEAD
-	if (!sk->sk_lock.owned)
-		/*
-		 * Note : We must disable BH
-		 */
-		return false;
-
-	__lock_sock(sk);
-	sk->sk_lock.owned = 1;
-	spin_unlock(&sk->sk_lock.slock);
-	/*
-	 * The sk_lock has mutex_lock() semantics here:
-	 */
-	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
-	local_bh_enable();
-	return true;
-}
-EXPORT_SYMBOL(lock_sock_fast);
-
-int sock_get_timestamp(struct sock *sk, struct timeval __user *userstamp)
-{
-	struct timeval tv;
-	if (!sock_flag(sk, SOCK_TIMESTAMP))
-		sock_enable_timestamp(sk, SOCK_TIMESTAMP);
-	tv = ktime_to_timeval(sk->sk_stamp);
-	if (tv.tv_sec == -1)
-		return -ENOENT;
-	if (tv.tv_sec == 0) {
-		sk->sk_stamp = ktime_get_real();
-		tv = ktime_to_timeval(sk->sk_stamp);
-	}
-	return copy_to_user(userstamp, &tv, sizeof(tv)) ? -EFAULT : 0;
-}
-EXPORT_SYMBOL(sock_get_timestamp);
-
-int sock_get_timestampns(struct sock *sk, struct timespec __user *userstamp)
-{
-	struct timespec ts;
-	if (!sock_flag(sk, SOCK_TIMESTAMP))
-		sock_enable_timestamp(sk, SOCK_TIMESTAMP);
-	ts = ktime_to_timespec(sk->sk_stamp);
-	if (ts.tv_sec == -1)
-		return -ENOENT;
-	if (ts.tv_sec == 0) {
-		sk->sk_stamp = ktime_get_real();
-		ts = ktime_to_timespec(sk->sk_stamp);
-	}
-	return copy_to_user(userstamp, &ts, sizeof(ts)) ? -EFAULT : 0;
-}
-EXPORT_SYMBOL(sock_get_timestampns);
-
-void sock_enable_timestamp(struct sock *sk, int flag)
-=======
 	if (!sock_owned_by_user_nocheck(sk)) {
 		/*
 		 * Fast path return with bottom halves disabled and
@@ -5230,7 +3632,6 @@ int sock_gettstamp(struct socket *sock, void __user *userstamp,
 EXPORT_SYMBOL(sock_gettstamp);
 
 void sock_enable_timestamp(struct sock *sk, enum sock_flags flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!sock_flag(sk, flag)) {
 		unsigned long previous_flags = sk->sk_flags;
@@ -5241,18 +3642,12 @@ void sock_enable_timestamp(struct sock *sk, enum sock_flags flag)
 		 * time stamping, but time stamping might have been on
 		 * already because of the other one
 		 */
-<<<<<<< HEAD
-		if (!(previous_flags & SK_FLAGS_TIMESTAMP))
-=======
 		if (sock_needs_netstamp(sk) &&
 		    !(previous_flags & SK_FLAGS_TIMESTAMP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			net_enable_timestamp();
 	}
 }
 
-<<<<<<< HEAD
-=======
 int sock_recv_errqueue(struct sock *sk, struct msghdr *msg, int len,
 		       int level, int type)
 {
@@ -5289,7 +3684,6 @@ out:
 }
 EXPORT_SYMBOL(sock_recv_errqueue);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Get a socket option on an socket.
  *
@@ -5302,28 +3696,6 @@ int sock_common_getsockopt(struct socket *sock, int level, int optname,
 {
 	struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-	return sk->sk_prot->getsockopt(sk, level, optname, optval, optlen);
-}
-EXPORT_SYMBOL(sock_common_getsockopt);
-
-#ifdef CONFIG_COMPAT
-int compat_sock_common_getsockopt(struct socket *sock, int level, int optname,
-				  char __user *optval, int __user *optlen)
-{
-	struct sock *sk = sock->sk;
-
-	if (sk->sk_prot->compat_getsockopt != NULL)
-		return sk->sk_prot->compat_getsockopt(sk, level, optname,
-						      optval, optlen);
-	return sk->sk_prot->getsockopt(sk, level, optname, optval, optlen);
-}
-EXPORT_SYMBOL(compat_sock_common_getsockopt);
-#endif
-
-int sock_common_recvmsg(struct kiocb *iocb, struct socket *sock,
-			struct msghdr *msg, size_t size, int flags)
-=======
 	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
 	return READ_ONCE(sk->sk_prot)->getsockopt(sk, level, optname, optval, optlen);
 }
@@ -5331,18 +3703,12 @@ EXPORT_SYMBOL(sock_common_getsockopt);
 
 int sock_common_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 			int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int addr_len = 0;
 	int err;
 
-<<<<<<< HEAD
-	err = sk->sk_prot->recvmsg(iocb, sk, msg, size, flags & MSG_DONTWAIT,
-				   flags & ~MSG_DONTWAIT, &addr_len);
-=======
 	err = sk->sk_prot->recvmsg(sk, msg, size, flags, &addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err >= 0)
 		msg->msg_namelen = addr_len;
 	return err;
@@ -5353,30 +3719,6 @@ EXPORT_SYMBOL(sock_common_recvmsg);
  *	Set socket options on an inet socket.
  */
 int sock_common_setsockopt(struct socket *sock, int level, int optname,
-<<<<<<< HEAD
-			   char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-
-	return sk->sk_prot->setsockopt(sk, level, optname, optval, optlen);
-}
-EXPORT_SYMBOL(sock_common_setsockopt);
-
-#ifdef CONFIG_COMPAT
-int compat_sock_common_setsockopt(struct socket *sock, int level, int optname,
-				  char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-
-	if (sk->sk_prot->compat_setsockopt != NULL)
-		return sk->sk_prot->compat_setsockopt(sk, level, optname,
-						      optval, optlen);
-	return sk->sk_prot->setsockopt(sk, level, optname, optval, optlen);
-}
-EXPORT_SYMBOL(compat_sock_common_setsockopt);
-#endif
-
-=======
 			   sockptr_t optval, unsigned int optlen)
 {
 	struct sock *sk = sock->sk;
@@ -5386,18 +3728,13 @@ EXPORT_SYMBOL(compat_sock_common_setsockopt);
 }
 EXPORT_SYMBOL(sock_common_setsockopt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sk_common_release(struct sock *sk)
 {
 	if (sk->sk_prot->destroy)
 		sk->sk_prot->destroy(sk);
 
 	/*
-<<<<<<< HEAD
-	 * Observation: when sock_common_release is called, processes have
-=======
 	 * Observation: when sk_common_release is called, processes have
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * no access to socket. But net still has.
 	 * Step one, detach it from networking:
 	 *
@@ -5422,30 +3759,10 @@ void sk_common_release(struct sock *sk)
 
 	xfrm_sk_free_policy(sk);
 
-<<<<<<< HEAD
-	sk_refcnt_debug_release(sk);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_put(sk);
 }
 EXPORT_SYMBOL(sk_common_release);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-#define PROTO_INUSE_NR	64	/* should be enough for the first time */
-struct prot_inuse {
-	int val[PROTO_INUSE_NR];
-};
-
-static DECLARE_BITMAP(proto_inuse_idx, PROTO_INUSE_NR);
-
-#ifdef CONFIG_NET_NS
-void sock_prot_inuse_add(struct net *net, struct proto *prot, int val)
-{
-	__this_cpu_add(net->core.inuse->val[prot->inuse_idx], val);
-}
-EXPORT_SYMBOL_GPL(sock_prot_inuse_add);
-=======
 void sk_get_meminfo(const struct sock *sk, u32 *mem)
 {
 	memset(mem, 0, sizeof(*mem) * SK_MEMINFO_VARS);
@@ -5463,7 +3780,6 @@ void sk_get_meminfo(const struct sock *sk, u32 *mem)
 
 #ifdef CONFIG_PROC_FS
 static DECLARE_BITMAP(proto_inuse_idx, PROTO_INUSE_NR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sock_prot_inuse_get(struct net *net, struct proto *prot)
 {
@@ -5471,22 +3787,12 @@ int sock_prot_inuse_get(struct net *net, struct proto *prot)
 	int res = 0;
 
 	for_each_possible_cpu(cpu)
-<<<<<<< HEAD
-		res += per_cpu_ptr(net->core.inuse, cpu)->val[idx];
-=======
 		res += per_cpu_ptr(net->core.prot_inuse, cpu)->val[idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return res >= 0 ? res : 0;
 }
 EXPORT_SYMBOL_GPL(sock_prot_inuse_get);
 
-<<<<<<< HEAD
-static int __net_init sock_inuse_init_net(struct net *net)
-{
-	net->core.inuse = alloc_percpu(struct prot_inuse);
-	return net->core.inuse ? 0 : -ENOMEM;
-=======
 int sock_inuse_get(struct net *net)
 {
 	int cpu, res = 0;
@@ -5505,16 +3811,11 @@ static int __net_init sock_inuse_init_net(struct net *net)
 	if (net->core.prot_inuse == NULL)
 		return -ENOMEM;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit sock_inuse_exit_net(struct net *net)
 {
-<<<<<<< HEAD
-	free_percpu(net->core.inuse);
-=======
 	free_percpu(net->core.prot_inuse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations net_inuse_ops = {
@@ -5531,52 +3832,18 @@ static __init int net_inuse_init(void)
 }
 
 core_initcall(net_inuse_init);
-<<<<<<< HEAD
-#else
-static DEFINE_PER_CPU(struct prot_inuse, prot_inuse);
-
-void sock_prot_inuse_add(struct net *net, struct proto *prot, int val)
-{
-	__this_cpu_add(prot_inuse.val[prot->inuse_idx], val);
-}
-EXPORT_SYMBOL_GPL(sock_prot_inuse_add);
-
-int sock_prot_inuse_get(struct net *net, struct proto *prot)
-{
-	int cpu, idx = prot->inuse_idx;
-	int res = 0;
-
-	for_each_possible_cpu(cpu)
-		res += per_cpu(prot_inuse, cpu).val[idx];
-
-	return res >= 0 ? res : 0;
-}
-EXPORT_SYMBOL_GPL(sock_prot_inuse_get);
-#endif
-
-static void assign_proto_idx(struct proto *prot)
-=======
 
 static int assign_proto_idx(struct proto *prot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
 
 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "PROTO_INUSE_NR exhausted\n");
-		return;
-	}
-
-	set_bit(prot->inuse_idx, proto_inuse_idx);
-=======
 		pr_err("PROTO_INUSE_NR exhausted\n");
 		return -ENOSPC;
 	}
 
 	set_bit(prot->inuse_idx, proto_inuse_idx);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void release_proto_idx(struct proto *prot)
@@ -5585,91 +3852,14 @@ static void release_proto_idx(struct proto *prot)
 		clear_bit(prot->inuse_idx, proto_inuse_idx);
 }
 #else
-<<<<<<< HEAD
-static inline void assign_proto_idx(struct proto *prot)
-{
-=======
 static inline int assign_proto_idx(struct proto *prot)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void release_proto_idx(struct proto *prot)
 {
 }
-<<<<<<< HEAD
-#endif
-
-int proto_register(struct proto *prot, int alloc_slab)
-{
-	if (alloc_slab) {
-		prot->slab = kmem_cache_create(prot->name, prot->obj_size, 0,
-					SLAB_HWCACHE_ALIGN | prot->slab_flags,
-					NULL);
-
-		if (prot->slab == NULL) {
-			printk(KERN_CRIT "%s: Can't create sock SLAB cache!\n",
-			       prot->name);
-			goto out;
-		}
-
-		if (prot->rsk_prot != NULL) {
-			prot->rsk_prot->slab_name = kasprintf(GFP_KERNEL, "request_sock_%s", prot->name);
-			if (prot->rsk_prot->slab_name == NULL)
-				goto out_free_sock_slab;
-
-			prot->rsk_prot->slab = kmem_cache_create(prot->rsk_prot->slab_name,
-								 prot->rsk_prot->obj_size, 0,
-								 SLAB_HWCACHE_ALIGN, NULL);
-
-			if (prot->rsk_prot->slab == NULL) {
-				printk(KERN_CRIT "%s: Can't create request sock SLAB cache!\n",
-				       prot->name);
-				goto out_free_request_sock_slab_name;
-			}
-		}
-
-		if (prot->twsk_prot != NULL) {
-			prot->twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s", prot->name);
-
-			if (prot->twsk_prot->twsk_slab_name == NULL)
-				goto out_free_request_sock_slab;
-
-			prot->twsk_prot->twsk_slab =
-				kmem_cache_create(prot->twsk_prot->twsk_slab_name,
-						  prot->twsk_prot->twsk_obj_size,
-						  0,
-						  SLAB_HWCACHE_ALIGN |
-							prot->slab_flags,
-						  NULL);
-			if (prot->twsk_prot->twsk_slab == NULL)
-				goto out_free_timewait_sock_slab_name;
-		}
-	}
-
-	mutex_lock(&proto_list_mutex);
-	list_add(&prot->node, &proto_list);
-	assign_proto_idx(prot);
-	mutex_unlock(&proto_list_mutex);
-	return 0;
-
-out_free_timewait_sock_slab_name:
-	kfree(prot->twsk_prot->twsk_slab_name);
-out_free_request_sock_slab:
-	if (prot->rsk_prot && prot->rsk_prot->slab) {
-		kmem_cache_destroy(prot->rsk_prot->slab);
-		prot->rsk_prot->slab = NULL;
-	}
-out_free_request_sock_slab_name:
-	if (prot->rsk_prot)
-		kfree(prot->rsk_prot->slab_name);
-out_free_sock_slab:
-	kmem_cache_destroy(prot->slab);
-	prot->slab = NULL;
-out:
-	return -ENOBUFS;
-=======
 
 #endif
 
@@ -5799,7 +3989,6 @@ out_free_request_sock_slab:
 	}
 out:
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(proto_register);
 
@@ -5810,27 +3999,6 @@ void proto_unregister(struct proto *prot)
 	list_del(&prot->node);
 	mutex_unlock(&proto_list_mutex);
 
-<<<<<<< HEAD
-	if (prot->slab != NULL) {
-		kmem_cache_destroy(prot->slab);
-		prot->slab = NULL;
-	}
-
-	if (prot->rsk_prot != NULL && prot->rsk_prot->slab != NULL) {
-		kmem_cache_destroy(prot->rsk_prot->slab);
-		kfree(prot->rsk_prot->slab_name);
-		prot->rsk_prot->slab = NULL;
-	}
-
-	if (prot->twsk_prot != NULL && prot->twsk_prot->twsk_slab != NULL) {
-		kmem_cache_destroy(prot->twsk_prot->twsk_slab);
-		kfree(prot->twsk_prot->twsk_slab_name);
-		prot->twsk_prot->twsk_slab = NULL;
-	}
-}
-EXPORT_SYMBOL(proto_unregister);
-
-=======
 	kmem_cache_destroy(prot->slab);
 	prot->slab = NULL;
 
@@ -5862,7 +4030,6 @@ int sock_load_diag_module(int family, int protocol)
 }
 EXPORT_SYMBOL(sock_load_diag_module);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 static void *proto_seq_start(struct seq_file *seq, loff_t *pos)
 	__acquires(proto_list_mutex)
@@ -5888,17 +4055,10 @@ static char proto_method_implemented(const void *method)
 }
 static long sock_prot_memory_allocated(struct proto *proto)
 {
-<<<<<<< HEAD
-	return proto->memory_allocated != NULL ? proto_memory_allocated(proto): -1L;
-}
-
-static char *sock_prot_memory_pressure(struct proto *proto)
-=======
 	return proto->memory_allocated != NULL ? proto_memory_allocated(proto) : -1L;
 }
 
 static const char *sock_prot_memory_pressure(struct proto *proto)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return proto->memory_pressure != NULL ?
 	proto_memory_pressure(proto) ? "yes" : "no" : "NI";
@@ -5908,11 +4068,7 @@ static void proto_seq_printf(struct seq_file *seq, struct proto *proto)
 {
 
 	seq_printf(seq, "%-9s %4u %6d  %6ld   %-3s %6u   %-3s  %-10s "
-<<<<<<< HEAD
-			"%2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c\n",
-=======
 			"%2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c %2c\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   proto->name,
 		   proto->obj_size,
 		   sock_prot_inuse_get(seq_file_net(seq), proto),
@@ -5933,10 +4089,6 @@ static void proto_seq_printf(struct seq_file *seq, struct proto *proto)
 		   proto_method_implemented(proto->getsockopt),
 		   proto_method_implemented(proto->sendmsg),
 		   proto_method_implemented(proto->recvmsg),
-<<<<<<< HEAD
-		   proto_method_implemented(proto->sendpage),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   proto_method_implemented(proto->bind),
 		   proto_method_implemented(proto->backlog_rcv),
 		   proto_method_implemented(proto->hash),
@@ -5957,11 +4109,7 @@ static int proto_seq_show(struct seq_file *seq, void *v)
 			   "maxhdr",
 			   "slab",
 			   "module",
-<<<<<<< HEAD
-			   "cl co di ac io in de sh ss gs se re sp bi br ha uh gp em\n");
-=======
 			   "cl co di ac io in de sh ss gs se re bi br ha uh gp em\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		proto_seq_printf(seq, list_entry(v, struct proto, node));
 	return 0;
@@ -5974,30 +4122,10 @@ static const struct seq_operations proto_seq_ops = {
 	.show   = proto_seq_show,
 };
 
-<<<<<<< HEAD
-static int proto_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &proto_seq_ops,
-			    sizeof(struct seq_net_private));
-}
-
-static const struct file_operations proto_seq_fops = {
-	.owner		= THIS_MODULE,
-	.open		= proto_seq_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release_net,
-};
-
-static __net_init int proto_init_net(struct net *net)
-{
-	if (!proc_net_fops_create(net, "protocols", S_IRUGO, &proto_seq_fops))
-=======
 static __net_init int proto_init_net(struct net *net)
 {
 	if (!proc_create_net("protocols", 0444, net->proc_net, &proto_seq_ops,
 			sizeof(struct seq_net_private)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	return 0;
@@ -6005,11 +4133,7 @@ static __net_init int proto_init_net(struct net *net)
 
 static __net_exit void proto_exit_net(struct net *net)
 {
-<<<<<<< HEAD
-	proc_net_remove(net, "protocols");
-=======
 	remove_proc_entry("protocols", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -6026,8 +4150,6 @@ static int __init proto_init(void)
 subsys_initcall(proto_init);
 
 #endif /* PROC_FS */
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_NET_RX_BUSY_POLL
 bool sk_busy_loop_end(void *p, unsigned long start_time)
@@ -6175,4 +4297,3 @@ static int __init sock_struct_check(void)
 }
 
 core_initcall(sock_struct_check);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

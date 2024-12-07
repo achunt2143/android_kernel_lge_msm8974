@@ -4,20 +4,13 @@
  *	uclinux.c -- generic memory mapped MTD driver for uclinux
  *
  *	(C) Copyright 2002, Greg Ungerer (gerg@snapgear.com)
-<<<<<<< HEAD
-=======
  *
  *      License: GPL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /****************************************************************************/
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -28,19 +21,6 @@
 #include <linux/mtd/map.h>
 #include <linux/mtd/partitions.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-
-/****************************************************************************/
-
-extern char _ebss;
-
-struct map_info uclinux_ram_map = {
-	.name = "RAM",
-	.phys = (unsigned long)&_ebss,
-	.size = 0,
-};
-
-=======
 #include <asm/sections.h>
 
 /****************************************************************************/
@@ -59,16 +39,11 @@ static struct map_info uclinux_ram_map = {
 static unsigned long physaddr = -1;
 module_param(physaddr, ulong, S_IRUGO);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mtd_info *uclinux_ram_mtdinfo;
 
 /****************************************************************************/
 
-<<<<<<< HEAD
-static struct mtd_partition uclinux_romfs[] = {
-=======
 static const struct mtd_partition uclinux_romfs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "ROMfs" }
 };
 
@@ -95,28 +70,16 @@ static int __init uclinux_mtd_init(void)
 	struct map_info *mapp;
 
 	mapp = &uclinux_ram_map;
-<<<<<<< HEAD
-=======
 
 	if (physaddr == -1)
 		mapp->phys = (resource_size_t)__bss_stop;
 	else
 		mapp->phys = physaddr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mapp->size)
 		mapp->size = PAGE_ALIGN(ntohl(*((unsigned long *)(mapp->phys + 8))));
 	mapp->bankwidth = 4;
 
-<<<<<<< HEAD
-	printk("uclinux[mtd]: RAM probe address=0x%x size=0x%x\n",
-	       	(int) mapp->phys, (int) mapp->size);
-
-	mapp->virt = ioremap_nocache(mapp->phys, mapp->size);
-
-	if (mapp->virt == 0) {
-		printk("uclinux[mtd]: ioremap_nocache() failed\n");
-=======
 	printk("uclinux[mtd]: probe address=0x%x size=0x%x\n",
 	       	(int) mapp->phys, (int) mapp->size);
 
@@ -130,22 +93,14 @@ static int __init uclinux_mtd_init(void)
 
 	if (mapp->virt == 0) {
 		printk("uclinux[mtd]: no virtual mapping?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return(-EIO);
 	}
 
 	simple_map_init(mapp);
 
-<<<<<<< HEAD
-	mtd = do_map_probe("map_ram", mapp);
-	if (!mtd) {
-		printk("uclinux[mtd]: failed to find a mapping?\n");
-		iounmap(mapp->virt);
-=======
 	mtd = do_map_probe("map_" MAP_NAME, mapp);
 	if (!mtd) {
 		printk("uclinux[mtd]: failed to find a mapping?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return(-ENXIO);
 	}
 
@@ -158,33 +113,6 @@ static int __init uclinux_mtd_init(void)
 
 	return(0);
 }
-<<<<<<< HEAD
-
-/****************************************************************************/
-
-static void __exit uclinux_mtd_cleanup(void)
-{
-	if (uclinux_ram_mtdinfo) {
-		mtd_device_unregister(uclinux_ram_mtdinfo);
-		map_destroy(uclinux_ram_mtdinfo);
-		uclinux_ram_mtdinfo = NULL;
-	}
-	if (uclinux_ram_map.virt) {
-		iounmap((void *) uclinux_ram_map.virt);
-		uclinux_ram_map.virt = 0;
-	}
-}
-
-/****************************************************************************/
-
-module_init(uclinux_mtd_init);
-module_exit(uclinux_mtd_cleanup);
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Greg Ungerer <gerg@snapgear.com>");
-MODULE_DESCRIPTION("Generic RAM based MTD for uClinux");
-=======
 device_initcall(uclinux_mtd_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************************/

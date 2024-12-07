@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * f71805f.c - driver for the Fintek F71805F/FG and F71872F/FG Super-I/O
- *             chips integrated hardware monitoring features
- * Copyright (C) 2005-2006  Jean Delvare <khali@linux-fr.org>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * f71805f.c - driver for the Fintek F71805F/FG and F71872F/FG Super-I/O
  *             chips integrated hardware monitoring features
  * Copyright (C) 2005-2006  Jean Delvare <jdelvare@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The F71805F/FG is a LPC Super-I/O chip made by Fintek. It integrates
  * complete hardware monitoring features: voltage, fan and temperature
@@ -20,23 +13,6 @@
  *
  * The F71806F/FG is essentially the same as the F71872F/FG. It even has
  * the same chip ID, so the driver can't differentiate between.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -107,13 +83,6 @@ superio_select(int base, int ld)
 	outb(ld, base + 1);
 }
 
-<<<<<<< HEAD
-static inline void
-superio_enter(int base)
-{
-	outb(0x87, base);
-	outb(0x87, base);
-=======
 static inline int
 superio_enter(int base)
 {
@@ -124,17 +93,13 @@ superio_enter(int base)
 	outb(0x87, base);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
 superio_exit(int base)
 {
 	outb(0xaa, base);
-<<<<<<< HEAD
-=======
 	release_region(base, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -200,11 +165,7 @@ struct f71805f_data {
 	struct device *hwmon_dev;
 
 	struct mutex update_lock;
-<<<<<<< HEAD
-	char valid;		/* !=0 if following fields are valid */
-=======
 	bool valid;		/* true if following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 	unsigned long last_limits;	/* In jiffies */
 
@@ -443,11 +404,7 @@ static struct f71805f_data *f71805f_update_device(struct device *dev)
 			+ (f71805f_read8(data, F71805F_REG_STATUS(2)) << 16);
 
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -982,11 +939,7 @@ static ssize_t set_temp_hyst(struct device *dev, struct device_attribute
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarms_in(struct device *dev, struct device_attribute
-=======
 static ssize_t alarms_in_show(struct device *dev, struct device_attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      *devattr, char *buf)
 {
 	struct f71805f_data *data = f71805f_update_device(dev);
@@ -994,11 +947,7 @@ static ssize_t alarms_in_show(struct device *dev, struct device_attribute
 	return sprintf(buf, "%lu\n", data->alarms & 0x7ff);
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarms_fan(struct device *dev, struct device_attribute
-=======
 static ssize_t alarms_fan_show(struct device *dev, struct device_attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       *devattr, char *buf)
 {
 	struct f71805f_data *data = f71805f_update_device(dev);
@@ -1006,11 +955,7 @@ static ssize_t alarms_fan_show(struct device *dev, struct device_attribute
 	return sprintf(buf, "%lu\n", (data->alarms >> 16) & 0x07);
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarms_temp(struct device *dev, struct device_attribute
-=======
 static ssize_t alarms_temp_show(struct device *dev, struct device_attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*devattr, char *buf)
 {
 	struct f71805f_data *data = f71805f_update_device(dev);
@@ -1028,11 +973,7 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute
 	return sprintf(buf, "%lu\n", (data->alarms >> bitnr) & 1);
 }
 
-<<<<<<< HEAD
-static ssize_t show_name(struct device *dev, struct device_attribute
-=======
 static ssize_t name_show(struct device *dev, struct device_attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *devattr, char *buf)
 {
 	struct f71805f_data *data = dev_get_drvdata(dev);
@@ -1228,19 +1169,11 @@ static SENSOR_DEVICE_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL, 13);
 static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 16);
 static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 17);
 static SENSOR_DEVICE_ATTR(fan3_alarm, S_IRUGO, show_alarm, NULL, 18);
-<<<<<<< HEAD
-static DEVICE_ATTR(alarms_in, S_IRUGO, show_alarms_in, NULL);
-static DEVICE_ATTR(alarms_fan, S_IRUGO, show_alarms_fan, NULL);
-static DEVICE_ATTR(alarms_temp, S_IRUGO, show_alarms_temp, NULL);
-
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
-=======
 static DEVICE_ATTR_RO(alarms_in);
 static DEVICE_ATTR_RO(alarms_fan);
 static DEVICE_ATTR_RO(alarms_temp);
 
 static DEVICE_ATTR_RO(name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *f71805f_attributes[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
@@ -1403,23 +1336,14 @@ static struct attribute *f71805f_attr_pwm[] = {
  * Device registration and initialization
  */
 
-<<<<<<< HEAD
-static void __devinit f71805f_init_device(struct f71805f_data *data)
-=======
 static void f71805f_init_device(struct f71805f_data *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 reg;
 	int i;
 
 	reg = f71805f_read8(data, F71805F_REG_START);
 	if ((reg & 0x41) != 0x01) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG DRVNAME ": Starting monitoring "
-		       "operations\n");
-=======
 		pr_debug("Starting monitoring operations\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f71805f_write8(data, F71805F_REG_START, (reg | 0x01) & ~0x40);
 	}
 
@@ -1442,15 +1366,9 @@ static void f71805f_init_device(struct f71805f_data *data)
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit f71805f_probe(struct platform_device *pdev)
-{
-	struct f71805f_sio_data *sio_data = pdev->dev.platform_data;
-=======
 static int f71805f_probe(struct platform_device *pdev)
 {
 	struct f71805f_sio_data *sio_data = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct f71805f_data *data;
 	struct resource *res;
 	int i, err;
@@ -1460,22 +1378,6 @@ static int f71805f_probe(struct platform_device *pdev)
 		"f71872f",
 	};
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct f71805f_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		pr_err("Out of memory\n");
-		goto exit;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
-	if (!request_region(res->start + ADDR_REG_OFFSET, 2, DRVNAME)) {
-		err = -EBUSY;
-		dev_err(&pdev->dev, "Failed to request region 0x%lx-0x%lx\n",
-			(unsigned long)(res->start + ADDR_REG_OFFSET),
-			(unsigned long)(res->start + ADDR_REG_OFFSET + 1));
-		goto exit_free;
-=======
 	data = devm_kzalloc(&pdev->dev, sizeof(struct f71805f_data),
 			    GFP_KERNEL);
 	if (!data)
@@ -1488,7 +1390,6 @@ static int f71805f_probe(struct platform_device *pdev)
 			(unsigned long)(res->start + ADDR_REG_OFFSET),
 			(unsigned long)(res->start + ADDR_REG_OFFSET + 1));
 		return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	data->addr = res->start;
 	data->name = names[sio_data->kind];
@@ -1516,11 +1417,7 @@ static int f71805f_probe(struct platform_device *pdev)
 	/* Register sysfs interface files */
 	err = sysfs_create_group(&pdev->dev.kobj, &f71805f_group);
 	if (err)
-<<<<<<< HEAD
-		goto exit_release_region;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->has_in & (1 << 4)) { /* in4 */
 		err = sysfs_create_group(&pdev->dev.kobj,
 					 &f71805f_group_optin[0]);
@@ -1580,28 +1477,12 @@ exit_remove_files:
 	for (i = 0; i < 4; i++)
 		sysfs_remove_group(&pdev->dev.kobj, &f71805f_group_optin[i]);
 	sysfs_remove_group(&pdev->dev.kobj, &f71805f_group_pwm_freq);
-<<<<<<< HEAD
-exit_release_region:
-	release_region(res->start + ADDR_REG_OFFSET, 2);
-exit_free:
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-exit:
-	return err;
-}
-
-static int __devexit f71805f_remove(struct platform_device *pdev)
-{
-	struct f71805f_data *data = platform_get_drvdata(pdev);
-	struct resource *res;
-=======
 	return err;
 }
 
 static void f71805f_remove(struct platform_device *pdev)
 {
 	struct f71805f_data *data = platform_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	hwmon_device_unregister(data->hwmon_dev);
@@ -1609,32 +1490,14 @@ static void f71805f_remove(struct platform_device *pdev)
 	for (i = 0; i < 4; i++)
 		sysfs_remove_group(&pdev->dev.kobj, &f71805f_group_optin[i]);
 	sysfs_remove_group(&pdev->dev.kobj, &f71805f_group_pwm_freq);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-
-	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
-	release_region(res->start + ADDR_REG_OFFSET, 2);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver f71805f_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.name	= DRVNAME,
-	},
-	.probe		= f71805f_probe,
-	.remove		= __devexit_p(f71805f_remove),
-=======
 		.name	= DRVNAME,
 	},
 	.probe		= f71805f_probe,
 	.remove_new	= f71805f_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init f71805f_device_add(unsigned short address,
@@ -1689,11 +1552,7 @@ exit:
 static int __init f71805f_find(int sioaddr, unsigned short *address,
 			       struct f71805f_sio_data *sio_data)
 {
-<<<<<<< HEAD
-	int err = -ENODEV;
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 devid;
 
 	static const char * const names[] = {
@@ -1701,16 +1560,11 @@ static int __init f71805f_find(int sioaddr, unsigned short *address,
 		"F71872F/FG or F71806F/FG",
 	};
 
-<<<<<<< HEAD
-	superio_enter(sioaddr);
-
-=======
 	err = superio_enter(sioaddr);
 	if (err)
 		return err;
 
 	err = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devid = superio_inw(sioaddr, SIO_REG_MANID);
 	if (devid != SIO_FINTEK_ID)
 		goto exit;
@@ -1785,11 +1639,7 @@ static void __exit f71805f_exit(void)
 	platform_driver_unregister(&f71805f_driver);
 }
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Jean Delvare <khali@linux-fr>");
-=======
 MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("F71805F/F71872F hardware monitoring driver");
 

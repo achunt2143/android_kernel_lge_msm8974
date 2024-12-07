@@ -43,25 +43,12 @@
 #include "aic7xxx_inline.h"
 #include "aic7xxx_93cx6.h"
 
-<<<<<<< HEAD
-static void	copy_mem_info(struct info_str *info, char *data, int len);
-static int	copy_info(struct info_str *info, char *fmt, ...);
-static void	ahc_dump_target_state(struct ahc_softc *ahc,
-				      struct info_str *info,
-				      u_int our_id, char channel,
-				      u_int target_id, u_int target_offset);
-static void	ahc_dump_device_state(struct info_str *info,
-				      struct scsi_device *dev);
-static int	ahc_proc_write_seeprom(struct ahc_softc *ahc,
-				       char *buffer, int length);
-=======
 static void	ahc_dump_target_state(struct ahc_softc *ahc,
 				      struct seq_file *m,
 				      u_int our_id, char channel,
 				      u_int target_id, u_int target_offset);
 static void	ahc_dump_device_state(struct seq_file *m,
 				      struct scsi_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Table of syncrates that don't follow the "divisible by 4"
@@ -103,83 +90,20 @@ ahc_calc_syncsrate(u_int period_factor)
 	return (10000000 / (period_factor * 4 * 10));
 }
 
-<<<<<<< HEAD
-
-static void
-copy_mem_info(struct info_str *info, char *data, int len)
-{
-	if (info->pos + len > info->offset + info->length)
-		len = info->offset + info->length - info->pos;
-
-	if (info->pos + len < info->offset) {
-		info->pos += len;
-		return;
-	}
-
-	if (info->pos < info->offset) {
-		off_t partial;
-
-		partial = info->offset - info->pos;
-		data += partial;
-		info->pos += partial;
-		len  -= partial;
-	}
-
-	if (len > 0) {
-		memcpy(info->buffer, data, len);
-		info->pos += len;
-		info->buffer += len;
-	}
-}
-
-static int
-copy_info(struct info_str *info, char *fmt, ...)
-{
-	va_list args;
-	char buf[256];
-	int len;
-
-	va_start(args, fmt);
-	len = vsprintf(buf, fmt, args);
-	va_end(args);
-
-	copy_mem_info(info, buf, len);
-	return (len);
-}
-
-static void
-ahc_format_transinfo(struct info_str *info, struct ahc_transinfo *tinfo)
-=======
 static void
 ahc_format_transinfo(struct seq_file *m, struct ahc_transinfo *tinfo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u_int speed;
 	u_int freq;
 	u_int mb;
 
-<<<<<<< HEAD
-        speed = 3300;
-        freq = 0;
-=======
 	speed = 3300;
 	freq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tinfo->offset != 0) {
 		freq = ahc_calc_syncsrate(tinfo->period);
 		speed = freq;
 	}
 	speed *= (0x01 << tinfo->width);
-<<<<<<< HEAD
-        mb = speed / 1000;
-        if (mb > 0)
-		copy_info(info, "%d.%03dMB/s transfers", mb, speed % 1000);
-        else
-		copy_info(info, "%dKB/s transfers", speed);
-
-	if (freq != 0) {
-		copy_info(info, " (%d.%03dMHz%s, offset %d",
-=======
 	mb = speed / 1000;
 	if (mb > 0)
 		seq_printf(m, "%d.%03dMB/s transfers", mb, speed % 1000);
@@ -188,7 +112,6 @@ ahc_format_transinfo(struct seq_file *m, struct ahc_transinfo *tinfo)
 
 	if (freq != 0) {
 		seq_printf(m, " (%d.%03dMHz%s, offset %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 freq / 1000, freq % 1000,
 			 (tinfo->ppr_options & MSG_EXT_PPR_DT_REQ) != 0
 			 ? " DT" : "", tinfo->offset);
@@ -196,21 +119,6 @@ ahc_format_transinfo(struct seq_file *m, struct ahc_transinfo *tinfo)
 
 	if (tinfo->width > 0) {
 		if (freq != 0) {
-<<<<<<< HEAD
-			copy_info(info, ", ");
-		} else {
-			copy_info(info, " (");
-		}
-		copy_info(info, "%dbit)", 8 * (0x01 << tinfo->width));
-	} else if (freq != 0) {
-		copy_info(info, ")");
-	}
-	copy_info(info, "\n");
-}
-
-static void
-ahc_dump_target_state(struct ahc_softc *ahc, struct info_str *info,
-=======
 			seq_puts(m, ", ");
 		} else {
 			seq_puts(m, " (");
@@ -224,7 +132,6 @@ ahc_dump_target_state(struct ahc_softc *ahc, struct info_str *info,
 
 static void
 ahc_dump_target_state(struct ahc_softc *ahc, struct seq_file *m,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      u_int our_id, char channel, u_int target_id,
 		      u_int target_offset)
 {
@@ -236,32 +143,18 @@ ahc_dump_target_state(struct ahc_softc *ahc, struct seq_file *m,
 	tinfo = ahc_fetch_transinfo(ahc, channel, our_id,
 				    target_id, &tstate);
 	if ((ahc->features & AHC_TWIN) != 0)
-<<<<<<< HEAD
-		copy_info(info, "Channel %c ", channel);
-	copy_info(info, "Target %d Negotiation Settings\n", target_id);
-	copy_info(info, "\tUser: ");
-	ahc_format_transinfo(info, &tinfo->user);
-=======
 		seq_printf(m, "Channel %c ", channel);
 	seq_printf(m, "Target %d Negotiation Settings\n", target_id);
 	seq_puts(m, "\tUser: ");
 	ahc_format_transinfo(m, &tinfo->user);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	starget = ahc->platform_data->starget[target_offset];
 	if (!starget)
 		return;
 
-<<<<<<< HEAD
-	copy_info(info, "\tGoal: ");
-	ahc_format_transinfo(info, &tinfo->goal);
-	copy_info(info, "\tCurr: ");
-	ahc_format_transinfo(info, &tinfo->curr);
-=======
 	seq_puts(m, "\tGoal: ");
 	ahc_format_transinfo(m, &tinfo->goal);
 	seq_puts(m, "\tCurr: ");
 	ahc_format_transinfo(m, &tinfo->curr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (lun = 0; lun < AHC_NUM_LUNS; lun++) {
 		struct scsi_device *sdev;
@@ -271,35 +164,11 @@ ahc_dump_target_state(struct ahc_softc *ahc, struct seq_file *m,
 		if (sdev == NULL)
 			continue;
 
-<<<<<<< HEAD
-		ahc_dump_device_state(info, sdev);
-=======
 		ahc_dump_device_state(m, sdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void
-<<<<<<< HEAD
-ahc_dump_device_state(struct info_str *info, struct scsi_device *sdev)
-{
-	struct ahc_linux_device *dev = scsi_transport_device_data(sdev);
-
-	copy_info(info, "\tChannel %c Target %d Lun %d Settings\n",
-		  sdev->sdev_target->channel + 'A',
-		  sdev->sdev_target->id, sdev->lun);
-
-	copy_info(info, "\t\tCommands Queued %ld\n", dev->commands_issued);
-	copy_info(info, "\t\tCommands Active %d\n", dev->active);
-	copy_info(info, "\t\tCommand Openings %d\n", dev->openings);
-	copy_info(info, "\t\tMax Tagged Openings %d\n", dev->maxtags);
-	copy_info(info, "\t\tDevice Queue Frozen Count %d\n", dev->qfrozen);
-}
-
-static int
-ahc_proc_write_seeprom(struct ahc_softc *ahc, char *buffer, int length)
-{
-=======
 ahc_dump_device_state(struct seq_file *m, struct scsi_device *sdev)
 {
 	struct ahc_linux_device *dev = scsi_transport_device_data(sdev);
@@ -319,7 +188,6 @@ int
 ahc_proc_write_seeprom(struct Scsi_Host *shost, char *buffer, int length)
 {
 	struct	ahc_softc *ahc = *(struct ahc_softc **)shost->hostdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct seeprom_descriptor sd;
 	int have_seeprom;
 	u_long s;
@@ -366,11 +234,7 @@ ahc_proc_write_seeprom(struct Scsi_Host *shost, char *buffer, int length)
 	if ((ahc->chip & AHC_VL) != 0) {
 		sd.sd_control_offset = SEECTL_2840;
 		sd.sd_status_offset = STATUS_2840;
-<<<<<<< HEAD
-		sd.sd_dataout_offset = STATUS_2840;		
-=======
 		sd.sd_dataout_offset = STATUS_2840;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sd.sd_chip = C46;
 		sd.sd_MS = 0;
 		sd.sd_RDY = EEPROM_TF;
@@ -391,12 +255,8 @@ ahc_proc_write_seeprom(struct Scsi_Host *shost, char *buffer, int length)
 		u_int start_addr;
 
 		if (ahc->seep_config == NULL) {
-<<<<<<< HEAD
-			ahc->seep_config = kmalloc(sizeof(*ahc->seep_config), GFP_ATOMIC);
-=======
 			ahc->seep_config = kmalloc(sizeof(*ahc->seep_config),
 						   GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ahc->seep_config == NULL) {
 				printk("aic7xxx: Unable to allocate serial "
 				       "eeprom buffer.  Write failing\n");
@@ -427,38 +287,6 @@ done:
  * Return information to handle /proc support for the driver.
  */
 int
-<<<<<<< HEAD
-ahc_linux_proc_info(struct Scsi_Host *shost, char *buffer, char **start,
-		    off_t offset, int length, int inout)
-{
-	struct	ahc_softc *ahc = *(struct ahc_softc **)shost->hostdata;
-	struct	info_str info;
-	char	ahc_info[256];
-	u_int	max_targ;
-	u_int	i;
-	int	retval;
-
-	 /* Has data been written to the file? */ 
-	if (inout == TRUE) {
-		retval = ahc_proc_write_seeprom(ahc, buffer, length);
-		goto done;
-	}
-
-	if (start)
-		*start = buffer;
-
-	info.buffer	= buffer;
-	info.length	= length;
-	info.offset	= offset;
-	info.pos	= 0;
-
-	copy_info(&info, "Adaptec AIC7xxx driver version: %s\n",
-		  AIC7XXX_DRIVER_VERSION);
-	copy_info(&info, "%s\n", ahc->description);
-	ahc_controller_info(ahc, ahc_info);
-	copy_info(&info, "%s\n", ahc_info);
-	copy_info(&info, "Allocated SCBs: %d, SG List Length: %d\n\n",
-=======
 ahc_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 {
 	struct	ahc_softc *ahc = *(struct ahc_softc **)shost->hostdata;
@@ -472,26 +300,10 @@ ahc_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 	ahc_controller_info(ahc, ahc_info);
 	seq_printf(m, "%s\n", ahc_info);
 	seq_printf(m, "Allocated SCBs: %d, SG List Length: %d\n\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  ahc->scb_data->numscbs, AHC_NSEG);
 
 
 	if (ahc->seep_config == NULL)
-<<<<<<< HEAD
-		copy_info(&info, "No Serial EEPROM\n");
-	else {
-		copy_info(&info, "Serial EEPROM:\n");
-		for (i = 0; i < sizeof(*ahc->seep_config)/2; i++) {
-			if (((i % 8) == 0) && (i != 0)) {
-				copy_info(&info, "\n");
-			}
-			copy_info(&info, "0x%.4x ",
-				  ((uint16_t*)ahc->seep_config)[i]);
-		}
-		copy_info(&info, "\n");
-	}
-	copy_info(&info, "\n");
-=======
 		seq_puts(m, "No Serial EEPROM\n");
 	else {
 		seq_puts(m, "Serial EEPROM:\n");
@@ -505,7 +317,6 @@ ahc_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 		seq_putc(m, '\n');
 	}
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_targ = 16;
 	if ((ahc->features & (AHC_WIDE|AHC_TWIN)) == 0)
@@ -525,17 +336,8 @@ ahc_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 			target_id = i % 8;
 		}
 
-<<<<<<< HEAD
-		ahc_dump_target_state(ahc, &info, our_id,
-				      channel, target_id, i);
-	}
-	retval = info.pos > info.offset ? info.pos - info.offset : 0;
-done:
-	return (retval);
-=======
 		ahc_dump_target_state(ahc, m, our_id,
 				      channel, target_id, i);
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

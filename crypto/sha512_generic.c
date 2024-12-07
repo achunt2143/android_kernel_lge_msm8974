@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SHA-512 code by Jean-Luc Cooke <jlcooke@certainkey.com>
  *
  * Copyright (c) Jean-Luc Cooke <jlcooke@certainkey.com>
  * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
  * Copyright (c) 2003 Kyle McMartin <kyle@debian.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <crypto/internal/hash.h>
 #include <linux/kernel.h>
@@ -24,11 +12,6 @@
 #include <linux/init.h>
 #include <linux/crypto.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <crypto/sha.h>
-#include <linux/percpu.h>
-#include <asm/byteorder.h>
-=======
 #include <crypto/sha2.h>
 #include <crypto/sha512_base.h>
 #include <linux/percpu.h>
@@ -56,7 +39,6 @@ const u8 sha512_zero_message_hash[SHA512_DIGEST_SIZE] = {
 	0xa5, 0x38, 0x32, 0x7a, 0xf9, 0x27, 0xda, 0x3e
 };
 EXPORT_SYMBOL_GPL(sha512_zero_message_hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u64 Ch(u64 x, u64 y, u64 z)
 {
@@ -105,11 +87,7 @@ static const u64 sha512_K[80] = {
 
 static inline void LOAD_OP(int I, u64 *W, const u8 *input)
 {
-<<<<<<< HEAD
-	W[I] = __be64_to_cpu( ((__be64*)(input))[I] );
-=======
 	W[I] = get_unaligned_be64((__u64 *)input + I);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void BLEND_OP(int I, u64 *W)
@@ -165,45 +143,6 @@ sha512_transform(u64 *state, const u8 *input)
 
 	state[0] += a; state[1] += b; state[2] += c; state[3] += d;
 	state[4] += e; state[5] += f; state[6] += g; state[7] += h;
-<<<<<<< HEAD
-
-	/* erase our data */
-	a = b = c = d = e = f = g = h = t1 = t2 = 0;
-}
-
-static int
-sha512_init(struct shash_desc *desc)
-{
-	struct sha512_state *sctx = shash_desc_ctx(desc);
-	sctx->state[0] = SHA512_H0;
-	sctx->state[1] = SHA512_H1;
-	sctx->state[2] = SHA512_H2;
-	sctx->state[3] = SHA512_H3;
-	sctx->state[4] = SHA512_H4;
-	sctx->state[5] = SHA512_H5;
-	sctx->state[6] = SHA512_H6;
-	sctx->state[7] = SHA512_H7;
-	sctx->count[0] = sctx->count[1] = 0;
-
-	return 0;
-}
-
-static int
-sha384_init(struct shash_desc *desc)
-{
-	struct sha512_state *sctx = shash_desc_ctx(desc);
-	sctx->state[0] = SHA384_H0;
-	sctx->state[1] = SHA384_H1;
-	sctx->state[2] = SHA384_H2;
-	sctx->state[3] = SHA384_H3;
-	sctx->state[4] = SHA384_H4;
-	sctx->state[5] = SHA384_H5;
-	sctx->state[6] = SHA384_H6;
-	sctx->state[7] = SHA384_H7;
-	sctx->count[0] = sctx->count[1] = 0;
-
-	return 0;
-=======
 }
 
 static void sha512_generic_block_fn(struct sha512_state *sst, u8 const *src,
@@ -213,129 +152,11 @@ static void sha512_generic_block_fn(struct sha512_state *sst, u8 const *src,
 		sha512_transform(sst->state, src);
 		src += SHA512_BLOCK_SIZE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int crypto_sha512_update(struct shash_desc *desc, const u8 *data,
 			unsigned int len)
 {
-<<<<<<< HEAD
-	struct sha512_state *sctx = shash_desc_ctx(desc);
-
-	unsigned int i, index, part_len;
-
-	/* Compute number of bytes mod 128 */
-	index = sctx->count[0] & 0x7f;
-
-	/* Update number of bytes */
-	if ((sctx->count[0] += len) < len)
-		sctx->count[1]++;
-
-        part_len = 128 - index;
-
-	/* Transform as many times as possible. */
-	if (len >= part_len) {
-		memcpy(&sctx->buf[index], data, part_len);
-		sha512_transform(sctx->state, sctx->buf);
-
-		for (i = part_len; i + 127 < len; i+=128)
-			sha512_transform(sctx->state, &data[i]);
-
-		index = 0;
-	} else {
-		i = 0;
-	}
-
-	/* Buffer remaining input */
-	memcpy(&sctx->buf[index], &data[i], len - i);
-
-	return 0;
-}
-EXPORT_SYMBOL(crypto_sha512_update);
-
-static int
-sha512_final(struct shash_desc *desc, u8 *hash)
-{
-	struct sha512_state *sctx = shash_desc_ctx(desc);
-        static u8 padding[128] = { 0x80, };
-	__be64 *dst = (__be64 *)hash;
-	__be64 bits[2];
-	unsigned int index, pad_len;
-	int i;
-
-	/* Save number of bits */
-	bits[1] = cpu_to_be64(sctx->count[0] << 3);
-	bits[0] = cpu_to_be64(sctx->count[1] << 3 | sctx->count[0] >> 61);
-
-	/* Pad out to 112 mod 128. */
-	index = sctx->count[0] & 0x7f;
-	pad_len = (index < 112) ? (112 - index) : ((128+112) - index);
-	crypto_sha512_update(desc, padding, pad_len);
-
-	/* Append length (before padding) */
-	crypto_sha512_update(desc, (const u8 *)bits, sizeof(bits));
-
-	/* Store state in digest */
-	for (i = 0; i < 8; i++)
-		dst[i] = cpu_to_be64(sctx->state[i]);
-
-	/* Zeroize sensitive information. */
-	memset(sctx, 0, sizeof(struct sha512_state));
-
-	return 0;
-}
-
-static int sha384_final(struct shash_desc *desc, u8 *hash)
-{
-	u8 D[64];
-
-	sha512_final(desc, D);
-
-	memcpy(hash, D, 48);
-	memset(D, 0, 64);
-
-	return 0;
-}
-
-static struct shash_alg sha512 = {
-	.digestsize	=	SHA512_DIGEST_SIZE,
-	.init		=	sha512_init,
-	.update		=	crypto_sha512_update,
-	.final		=	sha512_final,
-	.descsize	=	sizeof(struct sha512_state),
-	.base		=	{
-		.cra_name	=	"sha512",
-		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
-		.cra_blocksize	=	SHA512_BLOCK_SIZE,
-		.cra_module	=	THIS_MODULE,
-	}
-};
-
-static struct shash_alg sha384 = {
-	.digestsize	=	SHA384_DIGEST_SIZE,
-	.init		=	sha384_init,
-	.update		=	crypto_sha512_update,
-	.final		=	sha384_final,
-	.descsize	=	sizeof(struct sha512_state),
-	.base		=	{
-		.cra_name	=	"sha384",
-		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
-		.cra_blocksize	=	SHA384_BLOCK_SIZE,
-		.cra_module	=	THIS_MODULE,
-	}
-};
-
-static int __init sha512_generic_mod_init(void)
-{
-        int ret = 0;
-
-        if ((ret = crypto_register_shash(&sha384)) < 0)
-                goto out;
-        if ((ret = crypto_register_shash(&sha512)) < 0)
-                crypto_unregister_shash(&sha384);
-out:
-        return ret;
-=======
 	return sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
 }
 EXPORT_SYMBOL(crypto_sha512_update);
@@ -387,34 +208,20 @@ static struct shash_alg sha512_algs[2] = { {
 static int __init sha512_generic_mod_init(void)
 {
 	return crypto_register_shashes(sha512_algs, ARRAY_SIZE(sha512_algs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit sha512_generic_mod_fini(void)
 {
-<<<<<<< HEAD
-        crypto_unregister_shash(&sha384);
-        crypto_unregister_shash(&sha512);
-}
-
-module_init(sha512_generic_mod_init);
-=======
 	crypto_unregister_shashes(sha512_algs, ARRAY_SIZE(sha512_algs));
 }
 
 subsys_initcall(sha512_generic_mod_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(sha512_generic_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA-512 and SHA-384 Secure Hash Algorithms");
 
-<<<<<<< HEAD
-MODULE_ALIAS("sha384");
-MODULE_ALIAS("sha512");
-=======
 MODULE_ALIAS_CRYPTO("sha384");
 MODULE_ALIAS_CRYPTO("sha384-generic");
 MODULE_ALIAS_CRYPTO("sha512");
 MODULE_ALIAS_CRYPTO("sha512-generic");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

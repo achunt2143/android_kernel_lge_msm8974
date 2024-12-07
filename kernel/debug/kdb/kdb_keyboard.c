@@ -11,16 +11,10 @@
 #include <linux/kdb.h>
 #include <linux/keyboard.h>
 #include <linux/ctype.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/io.h>
-
-=======
 #include <linux/io.h>
 
 #include "kdb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Keyboard Controller Registers on normal PCs. */
 
 #define KBD_STATUS_REG		0x64	/* Status register (R) */
@@ -180,19 +174,11 @@ int kdb_get_kbd_char(void)
 	case KT_LATIN:
 		if (isprint(keychar))
 			break;		/* printable characters */
-<<<<<<< HEAD
-		/* drop through */
-	case KT_SPEC:
-		if (keychar == K_ENTER)
-			break;
-		/* drop through */
-=======
 		fallthrough;
 	case KT_SPEC:
 		if (keychar == K_ENTER)
 			break;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -1;	/* ignore unprintables */
 	}

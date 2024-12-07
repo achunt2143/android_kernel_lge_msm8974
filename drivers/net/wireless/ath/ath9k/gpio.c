@@ -21,8 +21,6 @@
 /********************************/
 
 #ifdef CONFIG_MAC80211_LEDS
-<<<<<<< HEAD
-=======
 
 static void ath_fill_led_pin(struct ath_softc *sc)
 {
@@ -50,21 +48,16 @@ static void ath_fill_led_pin(struct ath_softc *sc)
 	ath9k_hw_set_gpio(ah, ah->led_pin, ah->config.led_active_high ? 0 : 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ath_led_brightness(struct led_classdev *led_cdev,
 			       enum led_brightness brightness)
 {
 	struct ath_softc *sc = container_of(led_cdev, struct ath_softc, led_cdev);
-<<<<<<< HEAD
-	ath9k_hw_set_gpio(sc->sc_ah, sc->sc_ah->led_pin, (brightness == LED_OFF));
-=======
 	u32 val = (brightness == LED_OFF);
 
 	if (sc->sc_ah->config.led_active_high)
 		val = !val;
 
 	ath9k_hw_set_gpio(sc->sc_ah, sc->sc_ah->led_pin, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath_deinit_leds(struct ath_softc *sc)
@@ -74,46 +67,20 @@ void ath_deinit_leds(struct ath_softc *sc)
 
 	ath_led_brightness(&sc->led_cdev, LED_OFF);
 	led_classdev_unregister(&sc->led_cdev);
-<<<<<<< HEAD
-=======
 
 	ath9k_hw_gpio_free(sc->sc_ah, sc->sc_ah->led_pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath_init_leds(struct ath_softc *sc)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if (sc->sc_ah->led_pin < 0) {
-		if (AR_SREV_9287(sc->sc_ah))
-			sc->sc_ah->led_pin = ATH_LED_PIN_9287;
-		else if (AR_SREV_9485(sc->sc_ah))
-			sc->sc_ah->led_pin = ATH_LED_PIN_9485;
-		else if (AR_SREV_9300(sc->sc_ah))
-			sc->sc_ah->led_pin = ATH_LED_PIN_9300;
-		else if (AR_SREV_9462(sc->sc_ah))
-			sc->sc_ah->led_pin = ATH_LED_PIN_9462;
-		else
-			sc->sc_ah->led_pin = ATH_LED_PIN_DEF;
-	}
-
-	/* Configure gpio 1 for output */
-	ath9k_hw_cfg_output(sc->sc_ah, sc->sc_ah->led_pin,
-			    AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
-	/* LED off, active low */
-	ath9k_hw_set_gpio(sc->sc_ah, sc->sc_ah->led_pin, 1);
-
-	if (!led_blink)
-=======
 	if (AR_SREV_9100(sc->sc_ah))
 		return;
 
 	ath_fill_led_pin(sc);
 
 	if (!ath9k_led_blink)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->led_cdev.default_trigger =
 			ieee80211_get_radio_led_name(sc->hw);
 
@@ -182,31 +149,18 @@ static void ath_detect_bt_priority(struct ath_softc *sc)
 
 	if (time_after(jiffies, btcoex->bt_priority_time +
 			msecs_to_jiffies(ATH_BT_PRIORITY_TIME_THRESHOLD))) {
-<<<<<<< HEAD
-		sc->sc_flags &= ~(SC_OP_BT_PRIORITY_DETECTED | SC_OP_BT_SCAN);
-=======
 		clear_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags);
 		clear_bit(BT_OP_SCAN, &btcoex->op_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Detect if colocated bt started scanning */
 		if (btcoex->bt_priority_cnt >= ATH_BT_CNT_SCAN_THRESHOLD) {
 			ath_dbg(ath9k_hw_common(sc->sc_ah), BTCOEX,
 				"BT scan detected\n");
-<<<<<<< HEAD
-			sc->sc_flags |= (SC_OP_BT_SCAN |
-					 SC_OP_BT_PRIORITY_DETECTED);
-		} else if (btcoex->bt_priority_cnt >= ATH_BT_CNT_THRESHOLD) {
-			ath_dbg(ath9k_hw_common(sc->sc_ah), BTCOEX,
-				"BT priority traffic detected\n");
-			sc->sc_flags |= SC_OP_BT_PRIORITY_DETECTED;
-=======
 			set_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags);
 			set_bit(BT_OP_SCAN, &btcoex->op_flags);
 		} else if (btcoex->bt_priority_cnt >= ATH_BT_CNT_THRESHOLD) {
 			ath_dbg(ath9k_hw_common(sc->sc_ah), BTCOEX,
 				"BT priority traffic detected\n");
 			set_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		btcoex->bt_priority_cnt = 0;
@@ -214,35 +168,6 @@ static void ath_detect_bt_priority(struct ath_softc *sc)
 	}
 }
 
-<<<<<<< HEAD
-static void ath9k_gen_timer_start(struct ath_hw *ah,
-				  struct ath_gen_timer *timer,
-				  u32 trig_timeout,
-				  u32 timer_period)
-{
-	ath9k_hw_gen_timer_start(ah, timer, trig_timeout, timer_period);
-
-	if ((ah->imask & ATH9K_INT_GENTIMER) == 0) {
-		ath9k_hw_disable_interrupts(ah);
-		ah->imask |= ATH9K_INT_GENTIMER;
-		ath9k_hw_set_interrupts(ah);
-		ath9k_hw_enable_interrupts(ah);
-	}
-}
-
-static void ath9k_gen_timer_stop(struct ath_hw *ah, struct ath_gen_timer *timer)
-{
-	struct ath_gen_timer_table *timer_table = &ah->hw_gen_timers;
-
-	ath9k_hw_gen_timer_stop(ah, timer);
-
-	/* if no timer is enabled, turn off interrupt mask */
-	if (timer_table->timer_mask.val == 0) {
-		ath9k_hw_disable_interrupts(ah);
-		ah->imask &= ~ATH9K_INT_GENTIMER;
-		ath9k_hw_set_interrupts(ah);
-		ath9k_hw_enable_interrupts(ah);
-=======
 static void ath_mci_ftp_adjust(struct ath_softc *sc)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
@@ -258,7 +183,6 @@ static void ath_mci_ftp_adjust(struct ath_softc *sc)
 			ah->btcoex_hw.mci.stomp_ftp = false;
 		btcoex->bt_wait_time = 0;
 		sc->rx.num_pkts = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -267,44 +191,6 @@ static void ath_mci_ftp_adjust(struct ath_softc *sc)
  * 45ms, bt traffic will be given priority during 55% of this
  * period while wlan gets remaining 45%
  */
-<<<<<<< HEAD
-static void ath_btcoex_period_timer(unsigned long data)
-{
-	struct ath_softc *sc = (struct ath_softc *) data;
-	struct ath_hw *ah = sc->sc_ah;
-	struct ath_btcoex *btcoex = &sc->btcoex;
-	u32 timer_period;
-	bool is_btscan;
-
-	ath9k_ps_wakeup(sc);
-	if (!(ah->caps.hw_caps & ATH9K_HW_CAP_MCI))
-		ath_detect_bt_priority(sc);
-	is_btscan = sc->sc_flags & SC_OP_BT_SCAN;
-
-	spin_lock_bh(&btcoex->btcoex_lock);
-
-	ath9k_hw_btcoex_bt_stomp(ah, is_btscan ? ATH_BTCOEX_STOMP_ALL :
-			      btcoex->bt_stomp_type);
-
-	ath9k_hw_btcoex_enable(ah);
-	spin_unlock_bh(&btcoex->btcoex_lock);
-
-	if (btcoex->btcoex_period != btcoex->btcoex_no_stomp) {
-		if (btcoex->hw_timer_enabled)
-			ath9k_gen_timer_stop(ah, btcoex->no_stomp_timer);
-
-		timer_period = is_btscan ? btcoex->btscan_no_stomp :
-					   btcoex->btcoex_no_stomp;
-		ath9k_gen_timer_start(ah, btcoex->no_stomp_timer, timer_period,
-				      timer_period * 10);
-		btcoex->hw_timer_enabled = true;
-	}
-
-	ath9k_ps_restore(sc);
-	timer_period = btcoex->btcoex_period / 1000;
-	mod_timer(&btcoex->period_timer, jiffies +
-				  msecs_to_jiffies(timer_period));
-=======
 static void ath_btcoex_period_timer(struct timer_list *t)
 {
 	struct ath_softc *sc = from_timer(sc, t, btcoex.period_timer);
@@ -360,45 +246,26 @@ static void ath_btcoex_period_timer(struct timer_list *t)
 skip_hw_wakeup:
 	mod_timer(&btcoex->period_timer,
 		  jiffies + msecs_to_jiffies(btcoex->btcoex_period));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Generic tsf based hw timer which configures weight
  * registers to time slice between wlan and bt traffic
  */
-<<<<<<< HEAD
-static void ath_btcoex_no_stomp_timer(void *arg)
-{
-	struct ath_softc *sc = (struct ath_softc *)arg;
-	struct ath_hw *ah = sc->sc_ah;
-	struct ath_btcoex *btcoex = &sc->btcoex;
-	struct ath_common *common = ath9k_hw_common(ah);
-	bool is_btscan = sc->sc_flags & SC_OP_BT_SCAN;
-
-	ath_dbg(common, BTCOEX, "no stomp timer running\n");
-=======
 static void ath_btcoex_no_stomp_timer(struct timer_list *t)
 {
 	struct ath_softc *sc = from_timer(sc, t, btcoex.no_stomp_timer);
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_btcoex *btcoex = &sc->btcoex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_ps_wakeup(sc);
 	spin_lock_bh(&btcoex->btcoex_lock);
 
-<<<<<<< HEAD
-	if (btcoex->bt_stomp_type == ATH_BTCOEX_STOMP_LOW || is_btscan)
-		ath9k_hw_btcoex_bt_stomp(ah, ATH_BTCOEX_STOMP_NONE);
-	 else if (btcoex->bt_stomp_type == ATH_BTCOEX_STOMP_ALL)
-=======
 	if (btcoex->bt_stomp_type == ATH_BTCOEX_STOMP_LOW ||
 	    (!(ah->caps.hw_caps & ATH9K_HW_CAP_MCI) &&
 	     test_bit(BT_OP_SCAN, &btcoex->op_flags)))
 		ath9k_hw_btcoex_bt_stomp(ah, ATH_BTCOEX_STOMP_NONE);
 	else if (btcoex->bt_stomp_type == ATH_BTCOEX_STOMP_ALL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath9k_hw_btcoex_bt_stomp(ah, ATH_BTCOEX_STOMP_LOW);
 
 	ath9k_hw_btcoex_enable(ah);
@@ -406,47 +273,21 @@ static void ath_btcoex_no_stomp_timer(struct timer_list *t)
 	ath9k_ps_restore(sc);
 }
 
-<<<<<<< HEAD
-static int ath_init_btcoex_timer(struct ath_softc *sc)
-{
-	struct ath_btcoex *btcoex = &sc->btcoex;
-
-	btcoex->btcoex_period = ATH_BTCOEX_DEF_BT_PERIOD * 1000;
-=======
 static void ath_init_btcoex_timer(struct ath_softc *sc)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
 
 	btcoex->btcoex_period = ATH_BTCOEX_DEF_BT_PERIOD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btcoex->btcoex_no_stomp = (100 - ATH_BTCOEX_DEF_DUTY_CYCLE) *
 		btcoex->btcoex_period / 100;
 	btcoex->btscan_no_stomp = (100 - ATH_BTCOEX_BTSCAN_DUTY_CYCLE) *
 				   btcoex->btcoex_period / 100;
-<<<<<<< HEAD
-
-	setup_timer(&btcoex->period_timer, ath_btcoex_period_timer,
-			(unsigned long) sc);
-
-	spin_lock_init(&btcoex->btcoex_lock);
-
-	btcoex->no_stomp_timer = ath_gen_timer_alloc(sc->sc_ah,
-			ath_btcoex_no_stomp_timer,
-			ath_btcoex_no_stomp_timer,
-			(void *) sc, AR_FIRST_NDP_TIMER);
-
-	if (!btcoex->no_stomp_timer)
-		return -ENOMEM;
-
-	return 0;
-=======
 	btcoex->bt_stomp_type = ATH_BTCOEX_STOMP_LOW;
 
 	timer_setup(&btcoex->period_timer, ath_btcoex_period_timer, 0);
 	timer_setup(&btcoex->no_stomp_timer, ath_btcoex_no_stomp_timer, 0);
 
 	spin_lock_init(&btcoex->btcoex_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -457,17 +298,6 @@ void ath9k_btcoex_timer_resume(struct ath_softc *sc)
 	struct ath_btcoex *btcoex = &sc->btcoex;
 	struct ath_hw *ah = sc->sc_ah;
 
-<<<<<<< HEAD
-	ath_dbg(ath9k_hw_common(ah), BTCOEX, "Starting btcoex timers\n");
-
-	/* make sure duty cycle timer is also stopped when resuming */
-	if (btcoex->hw_timer_enabled)
-		ath9k_gen_timer_stop(sc->sc_ah, btcoex->no_stomp_timer);
-
-	btcoex->bt_priority_cnt = 0;
-	btcoex->bt_priority_time = jiffies;
-	sc->sc_flags &= ~(SC_OP_BT_PRIORITY_DETECTED | SC_OP_BT_SCAN);
-=======
 	if (ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_3WIRE &&
 	    ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_MCI)
 		return;
@@ -481,15 +311,10 @@ void ath9k_btcoex_timer_resume(struct ath_softc *sc)
 	btcoex->bt_priority_time = jiffies;
 	clear_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags);
 	clear_bit(BT_OP_SCAN, &btcoex->op_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mod_timer(&btcoex->period_timer, jiffies);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pause btcoex timer and bt duty cycle timer
  */
@@ -498,14 +323,6 @@ void ath9k_btcoex_timer_pause(struct ath_softc *sc)
 	struct ath_btcoex *btcoex = &sc->btcoex;
 	struct ath_hw *ah = sc->sc_ah;
 
-<<<<<<< HEAD
-	del_timer_sync(&btcoex->period_timer);
-
-	if (btcoex->hw_timer_enabled)
-		ath9k_gen_timer_stop(ah, btcoex->no_stomp_timer);
-
-	btcoex->hw_timer_enabled = false;
-=======
 	if (ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_3WIRE &&
 	    ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_MCI)
 		return;
@@ -521,25 +338,17 @@ void ath9k_btcoex_stop_gen_timer(struct ath_softc *sc)
 	struct ath_btcoex *btcoex = &sc->btcoex;
 
 	del_timer_sync(&btcoex->no_stomp_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u16 ath9k_btcoex_aggr_limit(struct ath_softc *sc, u32 max_4ms_framelen)
 {
-<<<<<<< HEAD
-=======
 	struct ath_btcoex *btcoex = &sc->btcoex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath_mci_profile *mci = &sc->btcoex.mci;
 	u16 aggr_limit = 0;
 
 	if ((sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_MCI) && mci->aggr_limit)
 		aggr_limit = (max_4ms_framelen * mci->aggr_limit) >> 4;
-<<<<<<< HEAD
-	else if (sc->sc_flags & SC_OP_BT_PRIORITY_DETECTED)
-=======
 	else if (test_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aggr_limit = min((max_4ms_framelen * 3) / 8,
 				 (u32)ATH_AMPDU_LIMIT_MAX);
 
@@ -548,15 +357,6 @@ u16 ath9k_btcoex_aggr_limit(struct ath_softc *sc, u32 max_4ms_framelen)
 
 void ath9k_btcoex_handle_interrupt(struct ath_softc *sc, u32 status)
 {
-<<<<<<< HEAD
-	struct ath_hw *ah = sc->sc_ah;
-
-	if (ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_3WIRE)
-		if (status & ATH9K_INT_GENTIMER)
-			ath_gen_timer_isr(sc->sc_ah);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & ATH9K_INT_MCI)
 		ath_mci_intr(sc);
 }
@@ -565,18 +365,6 @@ void ath9k_start_btcoex(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
 
-<<<<<<< HEAD
-	if ((ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_NONE) &&
-	    !ah->btcoex_hw.enabled) {
-		if (!(sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_MCI))
-			ath9k_hw_btcoex_set_weight(ah, AR_BT_COEX_WGHT,
-						   AR_STOMP_LOW_WLAN_WGHT);
-		ath9k_hw_btcoex_enable(ah);
-
-		if (ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_3WIRE)
-			ath9k_btcoex_timer_resume(sc);
-	}
-=======
 	if (ah->btcoex_hw.enabled ||
 	    ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_NONE)
 		return;
@@ -589,23 +377,12 @@ void ath9k_start_btcoex(struct ath_softc *sc)
 					   ATH_BTCOEX_STOMP_NONE);
 	ath9k_hw_btcoex_enable(ah);
 	ath9k_btcoex_timer_resume(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath9k_stop_btcoex(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
 
-<<<<<<< HEAD
-	if (ah->btcoex_hw.enabled &&
-	    ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_NONE) {
-		ath9k_hw_btcoex_disable(ah);
-		if (ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_3WIRE)
-			ath9k_btcoex_timer_pause(sc);
-		if (ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_MCI)
-			ath_mci_flush_profile(&sc->btcoex.mci);
-	}
-=======
 	if (!ah->btcoex_hw.enabled ||
 	    ath9k_hw_get_btcoex_scheme(ah) == ATH_BTCOEX_CFG_NONE)
 		return;
@@ -615,19 +392,10 @@ void ath9k_stop_btcoex(struct ath_softc *sc)
 
 	if (ah->caps.hw_caps & ATH9K_HW_CAP_MCI)
 		ath_mci_flush_profile(&sc->btcoex.mci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath9k_deinit_btcoex(struct ath_softc *sc)
 {
-<<<<<<< HEAD
-        if ((sc->btcoex.no_stomp_timer) &&
-	    ath9k_hw_get_btcoex_scheme(sc->sc_ah) == ATH_BTCOEX_CFG_3WIRE)
-		ath_gen_timer_free(sc->sc_ah, sc->btcoex.no_stomp_timer);
-
-	if (ath9k_hw_get_btcoex_scheme(sc->sc_ah) == ATH_BTCOEX_CFG_MCI)
-		ath_mci_cleanup(sc);
-=======
 	struct ath_hw *ah = sc->sc_ah;
 
 	if (ath9k_hw_mci_is_enabled(ah))
@@ -639,7 +407,6 @@ void ath9k_deinit_btcoex(struct ath_softc *sc)
 		    scheme == ATH_BTCOEX_CFG_3WIRE)
 			ath9k_hw_btcoex_deinit(sc->sc_ah);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath9k_init_btcoex(struct ath_softc *sc)
@@ -658,19 +425,6 @@ int ath9k_init_btcoex(struct ath_softc *sc)
 		break;
 	case ATH_BTCOEX_CFG_3WIRE:
 		ath9k_hw_btcoex_init_3wire(sc->sc_ah);
-<<<<<<< HEAD
-		r = ath_init_btcoex_timer(sc);
-		if (r)
-			return -1;
-		txq = sc->tx.txq_map[WME_AC_BE];
-		ath9k_hw_init_btcoex_hw(sc->sc_ah, txq->axq_qnum);
-		sc->btcoex.bt_stomp_type = ATH_BTCOEX_STOMP_LOW;
-		break;
-	case ATH_BTCOEX_CFG_MCI:
-		sc->btcoex.bt_stomp_type = ATH_BTCOEX_STOMP_LOW;
-		sc->btcoex.duty_cycle = ATH_BTCOEX_DEF_DUTY_CYCLE;
-		INIT_LIST_HEAD(&sc->btcoex.mci.info);
-=======
 		ath_init_btcoex_timer(sc);
 		txq = sc->tx.txq_map[IEEE80211_AC_BE];
 		ath9k_hw_init_btcoex_hw(sc->sc_ah, txq->axq_qnum);
@@ -681,17 +435,11 @@ int ath9k_init_btcoex(struct ath_softc *sc)
 		sc->btcoex.duty_cycle = ATH_BTCOEX_DEF_DUTY_CYCLE;
 		INIT_LIST_HEAD(&sc->btcoex.mci.info);
 		ath9k_hw_btcoex_init_mci(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		r = ath_mci_setup(sc);
 		if (r)
 			return r;
 
-<<<<<<< HEAD
-		ath9k_hw_btcoex_init_mci(ah);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		WARN_ON(1);
@@ -701,8 +449,6 @@ int ath9k_init_btcoex(struct ath_softc *sc)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ath9k_dump_mci_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
@@ -770,5 +516,4 @@ int ath9k_dump_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
 		return ath9k_dump_legacy_btcoex(sc, buf, size);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */

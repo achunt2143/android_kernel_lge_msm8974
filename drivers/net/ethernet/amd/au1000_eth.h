@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Alchemy Au1x00 ethernet driver include file
@@ -9,28 +6,6 @@
  * Author: Pete Popov <ppopov@mvista.com>
  *
  * Copyright 2001 MontaVista Software Inc.
-<<<<<<< HEAD
- *
- * ########################################################################
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
- * ########################################################################
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -114,10 +89,6 @@ struct au1000_private {
 	int old_speed;
 	int old_duplex;
 
-<<<<<<< HEAD
-	struct phy_device *phy_dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mii_bus *mii_bus;
 
 	/* PHY configuration */
@@ -135,13 +106,8 @@ struct au1000_private {
 	struct mac_reg *mac;  /* mac registers                      */
 	u32 *enable;     /* address of MAC Enable Register     */
 	void __iomem *macdma;	/* base of MAC DMA port */
-<<<<<<< HEAD
-	u32 vaddr;                /* virtual address of rx/tx buffers   */
-	dma_addr_t dma_addr;      /* dma address of rx/tx buffers       */
-=======
 	void *vaddr;		/* virtual address of rx/tx buffers   */
 	dma_addr_t dma_addr;	/* dma address of rx/tx buffers       */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;       /* Serialise access to device */
 

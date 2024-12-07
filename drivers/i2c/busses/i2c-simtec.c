@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
  *
  * Simtec Generic I2C Controller
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -88,15 +65,8 @@ static int simtec_i2c_probe(struct platform_device *dev)
 	int ret;
 
 	pd = kzalloc(sizeof(struct simtec_i2c_data), GFP_KERNEL);
-<<<<<<< HEAD
-	if (pd == NULL) {
-		dev_err(&dev->dev, "cannot allocate private data\n");
-		return -ENOMEM;
-	}
-=======
 	if (pd == NULL)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(dev, pd);
 
@@ -129,11 +99,7 @@ static int simtec_i2c_probe(struct platform_device *dev)
 	pd->adap.algo_data = &pd->bit;
 	pd->adap.dev.parent = &dev->dev;
 
-<<<<<<< HEAD
-	strlcpy(pd->adap.name, "Simtec I2C", sizeof(pd->adap.name));
-=======
 	strscpy(pd->adap.name, "Simtec I2C", sizeof(pd->adap.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd->bit.data = pd;
 	pd->bit.setsda = simtec_i2c_setsda;
@@ -153,39 +119,22 @@ static int simtec_i2c_probe(struct platform_device *dev)
 	iounmap(pd->reg);
 
  err_res:
-<<<<<<< HEAD
-	release_resource(pd->ioarea);
-	kfree(pd->ioarea);
-=======
 	release_mem_region(pd->ioarea->start, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err:
 	kfree(pd);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int simtec_i2c_remove(struct platform_device *dev)
-=======
 static void simtec_i2c_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct simtec_i2c_data *pd = platform_get_drvdata(dev);
 
 	i2c_del_adapter(&pd->adap);
 
 	iounmap(pd->reg);
-<<<<<<< HEAD
-	release_resource(pd->ioarea);
-	kfree(pd->ioarea);
-	kfree(pd);
-
-	return 0;
-=======
 	release_mem_region(pd->ioarea->start, resource_size(pd->ioarea));
 	kfree(pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* device driver */
@@ -193,16 +142,9 @@ static void simtec_i2c_remove(struct platform_device *dev)
 static struct platform_driver simtec_i2c_driver = {
 	.driver		= {
 		.name		= "simtec-i2c",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-	},
-	.probe		= simtec_i2c_probe,
-	.remove		= simtec_i2c_remove,
-=======
 	},
 	.probe		= simtec_i2c_probe,
 	.remove_new	= simtec_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(simtec_i2c_driver);

@@ -1,32 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_RAWMIDI_H
 #define __SOUND_RAWMIDI_H
 
 /*
  *  Abstract layer for MIDI v1.0 stream
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/asound.h>
@@ -35,19 +13,12 @@
 #include <linux/wait.h>
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-
-#if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
-#include "seq_device.h"
-#endif
-=======
 #include <linux/device.h>
 
 #if IS_ENABLED(CONFIG_SND_SEQUENCER)
 #include <sound/seq_device.h>
 #endif
 #include <sound/info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Raw MIDI interface
@@ -77,13 +48,10 @@ struct snd_rawmidi_global_ops {
 	int (*dev_unregister) (struct snd_rawmidi * rmidi);
 	void (*get_port_info)(struct snd_rawmidi *rmidi, int number,
 			      struct snd_seq_port_info *info);
-<<<<<<< HEAD
-=======
 	long (*ioctl)(struct snd_rawmidi *rmidi, unsigned int cmd,
 		      void __user *argp);
 	void (*proc_read)(struct snd_info_entry *entry,
 			  struct snd_info_buffer *buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_rawmidi_runtime {
@@ -98,15 +66,9 @@ struct snd_rawmidi_runtime {
 	size_t avail_min;	/* min avail for wakeup */
 	size_t avail;		/* max used buffer for wakeup */
 	size_t xruns;		/* over/underruns counter */
-<<<<<<< HEAD
-	/* misc */
-	spinlock_t lock;
-	struct mutex realloc_mutex;
-=======
 	size_t align;		/* alignment (0 = byte stream, 3 = UMP) */
 	int buffer_ref;		/* buffer reference count */
 	/* misc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t sleep;
 	/* event handler (new bytes, input only) */
 	void (*event)(struct snd_rawmidi_substream *substream);
@@ -121,13 +83,6 @@ struct snd_rawmidi_substream {
 	struct list_head list;		/* list of all substream for given stream */
 	int stream;			/* direction */
 	int number;			/* substream number */
-<<<<<<< HEAD
-	unsigned int opened: 1,		/* open flag */
-		     append: 1,		/* append flag (merge more streams) */
-		     active_sensing: 1; /* send active sensing when close */
-	int use_count;			/* use counter (for output) */
-	size_t bytes;
-=======
 	bool opened;			/* open flag */
 	bool append;			/* append flag (merge more streams) */
 	bool active_sensing;		/* send active sensing when close */
@@ -136,28 +91,20 @@ struct snd_rawmidi_substream {
 	int use_count;			/* use counter (for output) */
 	size_t bytes;
 	spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_rawmidi *rmidi;
 	struct snd_rawmidi_str *pstr;
 	char name[32];
 	struct snd_rawmidi_runtime *runtime;
 	struct pid *pid;
 	/* hardware layer */
-<<<<<<< HEAD
-	struct snd_rawmidi_ops *ops;
-=======
 	const struct snd_rawmidi_ops *ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_rawmidi_file {
 	struct snd_rawmidi *rmidi;
 	struct snd_rawmidi_substream *input;
 	struct snd_rawmidi_substream *output;
-<<<<<<< HEAD
-=======
 	unsigned int user_pversion;	/* supported protocol version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_rawmidi_str {
@@ -178,11 +125,7 @@ struct snd_rawmidi {
 	int ossreg;
 #endif
 
-<<<<<<< HEAD
-	struct snd_rawmidi_global_ops *ops;
-=======
 	const struct snd_rawmidi_global_ops *ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_rawmidi_str streams[2];
 
@@ -192,18 +135,11 @@ struct snd_rawmidi {
 	struct mutex open_mutex;
 	wait_queue_head_t open_wait;
 
-<<<<<<< HEAD
-	struct snd_info_entry *dev;
-	struct snd_info_entry *proc_entry;
-
-#if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
-=======
 	struct device *dev;
 
 	struct snd_info_entry *proc_entry;
 
 #if IS_ENABLED(CONFIG_SND_SEQUENCER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_device *seq_dev;
 #endif
 };
@@ -214,16 +150,6 @@ int snd_rawmidi_new(struct snd_card *card, char *id, int device,
 		    int output_count, int input_count,
 		    struct snd_rawmidi **rmidi);
 void snd_rawmidi_set_ops(struct snd_rawmidi *rmidi, int stream,
-<<<<<<< HEAD
-			 struct snd_rawmidi_ops *ops);
-
-/* callbacks */
-
-void snd_rawmidi_receive_reset(struct snd_rawmidi_substream *substream);
-int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
-			const unsigned char *buffer, int count);
-void snd_rawmidi_transmit_reset(struct snd_rawmidi_substream *substream);
-=======
 			 const struct snd_rawmidi_ops *ops);
 
 /* internal */
@@ -237,26 +163,18 @@ int snd_rawmidi_free(struct snd_rawmidi *rmidi);
 
 int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
 			const unsigned char *buffer, int count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_rawmidi_transmit_empty(struct snd_rawmidi_substream *substream);
 int snd_rawmidi_transmit_peek(struct snd_rawmidi_substream *substream,
 			      unsigned char *buffer, int count);
 int snd_rawmidi_transmit_ack(struct snd_rawmidi_substream *substream, int count);
 int snd_rawmidi_transmit(struct snd_rawmidi_substream *substream,
 			 unsigned char *buffer, int count);
-<<<<<<< HEAD
-=======
 int snd_rawmidi_proceed(struct snd_rawmidi_substream *substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* main midi functions */
 
 int snd_rawmidi_info_select(struct snd_card *card, struct snd_rawmidi_info *info);
-<<<<<<< HEAD
-int snd_rawmidi_kernel_open(struct snd_card *card, int device, int subdevice,
-=======
 int snd_rawmidi_kernel_open(struct snd_rawmidi *rmidi, int subdevice,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    int mode, struct snd_rawmidi_file *rfile);
 int snd_rawmidi_kernel_release(struct snd_rawmidi_file *rfile);
 int snd_rawmidi_output_params(struct snd_rawmidi_substream *substream,

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_CACHE_H
 #define _ASM_X86_CACHE_H
 
@@ -11,11 +8,7 @@
 #define L1_CACHE_SHIFT	(CONFIG_X86_L1_CACHE_SHIFT)
 #define L1_CACHE_BYTES	(1 << L1_CACHE_SHIFT)
 
-<<<<<<< HEAD
-#define __read_mostly __attribute__((__section__(".data..read_mostly")))
-=======
 #define __read_mostly __section(".data..read_mostly")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INTERNODE_CACHE_SHIFT CONFIG_X86_INTERNODE_CACHE_SHIFT
 #define INTERNODE_CACHE_BYTES (1 << INTERNODE_CACHE_SHIFT)

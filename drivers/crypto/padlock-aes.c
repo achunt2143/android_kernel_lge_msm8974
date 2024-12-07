@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Cryptographic API.
  *
@@ -13,10 +10,7 @@
 
 #include <crypto/algapi.h>
 #include <crypto/aes.h>
-<<<<<<< HEAD
-=======
 #include <crypto/internal/skcipher.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <crypto/padlock.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -24,21 +18,14 @@
 #include <linux/errno.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/smp.h>
 #include <linux/slab.h>
 #include <asm/cpu_device_id.h>
 #include <asm/byteorder.h>
 #include <asm/processor.h>
-<<<<<<< HEAD
-#include <asm/i387.h>
-=======
 #include <asm/fpu/api.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Number of data blocks actually fetched for each xcrypt insn.
@@ -112,15 +99,9 @@ static inline struct aes_ctx *aes_ctx(struct crypto_tfm *tfm)
 	return aes_ctx_common(crypto_tfm_ctx(tfm));
 }
 
-<<<<<<< HEAD
-static inline struct aes_ctx *blk_aes_ctx(struct crypto_blkcipher *tfm)
-{
-	return aes_ctx_common(crypto_blkcipher_ctx(tfm));
-=======
 static inline struct aes_ctx *skcipher_aes_ctx(struct crypto_skcipher *tfm)
 {
 	return aes_ctx_common(crypto_skcipher_ctx(tfm));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
@@ -128,22 +109,11 @@ static int aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 {
 	struct aes_ctx *ctx = aes_ctx(tfm);
 	const __le32 *key = (const __le32 *)in_key;
-<<<<<<< HEAD
-	u32 *flags = &tfm->crt_flags;
-	struct crypto_aes_ctx gen_aes;
-	int cpu;
-
-	if (key_len % 8) {
-		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
-		return -EINVAL;
-	}
-=======
 	struct crypto_aes_ctx gen_aes;
 	int cpu;
 
 	if (key_len % 8)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the hardware is capable of generating the extended key
@@ -174,15 +144,8 @@ static int aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 	ctx->cword.encrypt.keygen = 1;
 	ctx->cword.decrypt.keygen = 1;
 
-<<<<<<< HEAD
-	if (crypto_aes_expand_key(&gen_aes, in_key, key_len)) {
-		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
-		return -EINVAL;
-	}
-=======
 	if (aes_expandkey(&gen_aes, in_key, key_len))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(ctx->E, gen_aes.key_enc, AES_MAX_KEYLENGTH);
 	memcpy(ctx->D, gen_aes.key_dec, AES_MAX_KEYLENGTH);
@@ -196,15 +159,12 @@ ok:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int aes_set_key_skcipher(struct crypto_skcipher *tfm, const u8 *in_key,
 				unsigned int key_len)
 {
 	return aes_set_key(crypto_skcipher_tfm(tfm), in_key, key_len);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ====== Encryption/decryption routines ====== */
 
 /* These are the real call to PadLock. */
@@ -227,13 +187,8 @@ static inline void padlock_store_cword(struct cword *cword)
 
 /*
  * While the padlock instructions don't use FP/SSE registers, they
-<<<<<<< HEAD
- * generate a spurious DNA fault when cr0.ts is '1'. These instructions
- * should be used only inside the irq_ts_save/restore() context
-=======
  * generate a spurious DNA fault when CR0.TS is '1'.  Fortunately,
  * the kernel doesn't use CR0.TS.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static inline void rep_xcrypt_ecb(const u8 *input, u8 *output, void *key,
@@ -287,11 +242,7 @@ static inline void ecb_crypt(const u8 *in, u8 *out, u32 *key,
 	/* Padlock in ECB mode fetches at least ecb_fetch_bytes of data.
 	 * We could avoid some copying here but it's probably not worth it.
 	 */
-<<<<<<< HEAD
-	if (unlikely(((unsigned long)in & ~PAGE_MASK) + ecb_fetch_bytes > PAGE_SIZE)) {
-=======
 	if (unlikely(offset_in_page(in) + ecb_fetch_bytes > PAGE_SIZE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ecb_crypt_copy(in, out, key, cword, count);
 		return;
 	}
@@ -303,11 +254,7 @@ static inline u8 *cbc_crypt(const u8 *in, u8 *out, u32 *key,
 			    u8 *iv, struct cword *cword, int count)
 {
 	/* Padlock in CBC mode fetches at least cbc_fetch_bytes of data. */
-<<<<<<< HEAD
-	if (unlikely(((unsigned long)in & ~PAGE_MASK) + cbc_fetch_bytes > PAGE_SIZE))
-=======
 	if (unlikely(offset_in_page(in) + cbc_fetch_bytes > PAGE_SIZE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cbc_crypt_copy(in, out, key, iv, cword, count);
 
 	return rep_xcrypt_cbc(in, out, key, iv, cword, count);
@@ -323,11 +270,8 @@ static inline void padlock_xcrypt_ecb(const u8 *input, u8 *output, void *key,
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	count -= initial;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (initial)
 		asm volatile (".byte 0xf3,0x0f,0xa7,0xc8"	/* rep xcryptecb */
 			      : "+S"(input), "+D"(output)
@@ -335,11 +279,7 @@ static inline void padlock_xcrypt_ecb(const u8 *input, u8 *output, void *key,
 
 	asm volatile (".byte 0xf3,0x0f,0xa7,0xc8"	/* rep xcryptecb */
 		      : "+S"(input), "+D"(output)
-<<<<<<< HEAD
-		      : "d"(control_word), "b"(key), "c"(count - initial));
-=======
 		      : "d"(control_word), "b"(key), "c"(count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u8 *padlock_xcrypt_cbc(const u8 *input, u8 *output, void *key,
@@ -350,11 +290,8 @@ static inline u8 *padlock_xcrypt_cbc(const u8 *input, u8 *output, void *key,
 	if (count < cbc_fetch_blocks)
 		return cbc_crypt(input, output, key, iv, control_word, count);
 
-<<<<<<< HEAD
-=======
 	count -= initial;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (initial)
 		asm volatile (".byte 0xf3,0x0f,0xa7,0xd0"	/* rep xcryptcbc */
 			      : "+S" (input), "+D" (output), "+a" (iv)
@@ -362,33 +299,6 @@ static inline u8 *padlock_xcrypt_cbc(const u8 *input, u8 *output, void *key,
 
 	asm volatile (".byte 0xf3,0x0f,0xa7,0xd0"	/* rep xcryptcbc */
 		      : "+S" (input), "+D" (output), "+a" (iv)
-<<<<<<< HEAD
-		      : "d" (control_word), "b" (key), "c" (count-initial));
-	return iv;
-}
-
-static void aes_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
-{
-	struct aes_ctx *ctx = aes_ctx(tfm);
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.encrypt);
-	ts_state = irq_ts_save();
-	ecb_crypt(in, out, ctx->E, &ctx->cword.encrypt, 1);
-	irq_ts_restore(ts_state);
-	padlock_store_cword(&ctx->cword.encrypt);
-}
-
-static void aes_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
-{
-	struct aes_ctx *ctx = aes_ctx(tfm);
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.encrypt);
-	ts_state = irq_ts_save();
-	ecb_crypt(in, out, ctx->D, &ctx->cword.decrypt, 1);
-	irq_ts_restore(ts_state);
-=======
 		      : "d" (control_word), "b" (key), "c" (count));
 	return iv;
 }
@@ -408,7 +318,6 @@ static void padlock_aes_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 
 	padlock_reset_key(&ctx->cword.encrypt);
 	ecb_crypt(in, out, ctx->D, &ctx->cword.decrypt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padlock_store_cword(&ctx->cword.encrypt);
 }
 
@@ -421,44 +330,17 @@ static struct crypto_alg aes_alg = {
 	.cra_ctxsize		=	sizeof(struct aes_ctx),
 	.cra_alignmask		=	PADLOCK_ALIGNMENT - 1,
 	.cra_module		=	THIS_MODULE,
-<<<<<<< HEAD
-	.cra_list		=	LIST_HEAD_INIT(aes_alg.cra_list),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{
 		.cipher = {
 			.cia_min_keysize	=	AES_MIN_KEY_SIZE,
 			.cia_max_keysize	=	AES_MAX_KEY_SIZE,
 			.cia_setkey	   	= 	aes_set_key,
-<<<<<<< HEAD
-			.cia_encrypt	 	=	aes_encrypt,
-			.cia_decrypt	  	=	aes_decrypt,
-=======
 			.cia_encrypt	 	=	padlock_aes_encrypt,
 			.cia_decrypt	  	=	padlock_aes_decrypt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 };
 
-<<<<<<< HEAD
-static int ecb_aes_encrypt(struct blkcipher_desc *desc,
-			   struct scatterlist *dst, struct scatterlist *src,
-			   unsigned int nbytes)
-{
-	struct aes_ctx *ctx = blk_aes_ctx(desc->tfm);
-	struct blkcipher_walk walk;
-	int err;
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.encrypt);
-
-	blkcipher_walk_init(&walk, dst, src, nbytes);
-	err = blkcipher_walk_virt(desc, &walk);
-
-	ts_state = irq_ts_save();
-	while ((nbytes = walk.nbytes)) {
-=======
 static int ecb_aes_encrypt(struct skcipher_request *req)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
@@ -472,43 +354,18 @@ static int ecb_aes_encrypt(struct skcipher_request *req)
 	err = skcipher_walk_virt(&walk, req, false);
 
 	while ((nbytes = walk.nbytes) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padlock_xcrypt_ecb(walk.src.virt.addr, walk.dst.virt.addr,
 				   ctx->E, &ctx->cword.encrypt,
 				   nbytes / AES_BLOCK_SIZE);
 		nbytes &= AES_BLOCK_SIZE - 1;
-<<<<<<< HEAD
-		err = blkcipher_walk_done(desc, &walk, nbytes);
-	}
-	irq_ts_restore(ts_state);
-=======
 		err = skcipher_walk_done(&walk, nbytes);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padlock_store_cword(&ctx->cword.encrypt);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int ecb_aes_decrypt(struct blkcipher_desc *desc,
-			   struct scatterlist *dst, struct scatterlist *src,
-			   unsigned int nbytes)
-{
-	struct aes_ctx *ctx = blk_aes_ctx(desc->tfm);
-	struct blkcipher_walk walk;
-	int err;
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.decrypt);
-
-	blkcipher_walk_init(&walk, dst, src, nbytes);
-	err = blkcipher_walk_virt(desc, &walk);
-
-	ts_state = irq_ts_save();
-	while ((nbytes = walk.nbytes)) {
-=======
 static int ecb_aes_decrypt(struct skcipher_request *req)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
@@ -522,65 +379,18 @@ static int ecb_aes_decrypt(struct skcipher_request *req)
 	err = skcipher_walk_virt(&walk, req, false);
 
 	while ((nbytes = walk.nbytes) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padlock_xcrypt_ecb(walk.src.virt.addr, walk.dst.virt.addr,
 				   ctx->D, &ctx->cword.decrypt,
 				   nbytes / AES_BLOCK_SIZE);
 		nbytes &= AES_BLOCK_SIZE - 1;
-<<<<<<< HEAD
-		err = blkcipher_walk_done(desc, &walk, nbytes);
-	}
-	irq_ts_restore(ts_state);
-=======
 		err = skcipher_walk_done(&walk, nbytes);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padlock_store_cword(&ctx->cword.encrypt);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static struct crypto_alg ecb_aes_alg = {
-	.cra_name		=	"ecb(aes)",
-	.cra_driver_name	=	"ecb-aes-padlock",
-	.cra_priority		=	PADLOCK_COMPOSITE_PRIORITY,
-	.cra_flags		=	CRYPTO_ALG_TYPE_BLKCIPHER,
-	.cra_blocksize		=	AES_BLOCK_SIZE,
-	.cra_ctxsize		=	sizeof(struct aes_ctx),
-	.cra_alignmask		=	PADLOCK_ALIGNMENT - 1,
-	.cra_type		=	&crypto_blkcipher_type,
-	.cra_module		=	THIS_MODULE,
-	.cra_list		=	LIST_HEAD_INIT(ecb_aes_alg.cra_list),
-	.cra_u			=	{
-		.blkcipher = {
-			.min_keysize		=	AES_MIN_KEY_SIZE,
-			.max_keysize		=	AES_MAX_KEY_SIZE,
-			.setkey	   		= 	aes_set_key,
-			.encrypt		=	ecb_aes_encrypt,
-			.decrypt		=	ecb_aes_decrypt,
-		}
-	}
-};
-
-static int cbc_aes_encrypt(struct blkcipher_desc *desc,
-			   struct scatterlist *dst, struct scatterlist *src,
-			   unsigned int nbytes)
-{
-	struct aes_ctx *ctx = blk_aes_ctx(desc->tfm);
-	struct blkcipher_walk walk;
-	int err;
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.encrypt);
-
-	blkcipher_walk_init(&walk, dst, src, nbytes);
-	err = blkcipher_walk_virt(desc, &walk);
-
-	ts_state = irq_ts_save();
-	while ((nbytes = walk.nbytes)) {
-=======
 static struct skcipher_alg ecb_aes_alg = {
 	.base.cra_name		=	"ecb(aes)",
 	.base.cra_driver_name	=	"ecb-aes-padlock",
@@ -609,45 +419,20 @@ static int cbc_aes_encrypt(struct skcipher_request *req)
 	err = skcipher_walk_virt(&walk, req, false);
 
 	while ((nbytes = walk.nbytes) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 *iv = padlock_xcrypt_cbc(walk.src.virt.addr,
 					    walk.dst.virt.addr, ctx->E,
 					    walk.iv, &ctx->cword.encrypt,
 					    nbytes / AES_BLOCK_SIZE);
 		memcpy(walk.iv, iv, AES_BLOCK_SIZE);
 		nbytes &= AES_BLOCK_SIZE - 1;
-<<<<<<< HEAD
-		err = blkcipher_walk_done(desc, &walk, nbytes);
-	}
-	irq_ts_restore(ts_state);
-=======
 		err = skcipher_walk_done(&walk, nbytes);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padlock_store_cword(&ctx->cword.decrypt);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int cbc_aes_decrypt(struct blkcipher_desc *desc,
-			   struct scatterlist *dst, struct scatterlist *src,
-			   unsigned int nbytes)
-{
-	struct aes_ctx *ctx = blk_aes_ctx(desc->tfm);
-	struct blkcipher_walk walk;
-	int err;
-	int ts_state;
-
-	padlock_reset_key(&ctx->cword.encrypt);
-
-	blkcipher_walk_init(&walk, dst, src, nbytes);
-	err = blkcipher_walk_virt(desc, &walk);
-
-	ts_state = irq_ts_save();
-	while ((nbytes = walk.nbytes)) {
-=======
 static int cbc_aes_decrypt(struct skcipher_request *req)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
@@ -661,54 +446,18 @@ static int cbc_aes_decrypt(struct skcipher_request *req)
 	err = skcipher_walk_virt(&walk, req, false);
 
 	while ((nbytes = walk.nbytes) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padlock_xcrypt_cbc(walk.src.virt.addr, walk.dst.virt.addr,
 				   ctx->D, walk.iv, &ctx->cword.decrypt,
 				   nbytes / AES_BLOCK_SIZE);
 		nbytes &= AES_BLOCK_SIZE - 1;
-<<<<<<< HEAD
-		err = blkcipher_walk_done(desc, &walk, nbytes);
-	}
-
-	irq_ts_restore(ts_state);
-
-=======
 		err = skcipher_walk_done(&walk, nbytes);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padlock_store_cword(&ctx->cword.encrypt);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static struct crypto_alg cbc_aes_alg = {
-	.cra_name		=	"cbc(aes)",
-	.cra_driver_name	=	"cbc-aes-padlock",
-	.cra_priority		=	PADLOCK_COMPOSITE_PRIORITY,
-	.cra_flags		=	CRYPTO_ALG_TYPE_BLKCIPHER,
-	.cra_blocksize		=	AES_BLOCK_SIZE,
-	.cra_ctxsize		=	sizeof(struct aes_ctx),
-	.cra_alignmask		=	PADLOCK_ALIGNMENT - 1,
-	.cra_type		=	&crypto_blkcipher_type,
-	.cra_module		=	THIS_MODULE,
-	.cra_list		=	LIST_HEAD_INIT(cbc_aes_alg.cra_list),
-	.cra_u			=	{
-		.blkcipher = {
-			.min_keysize		=	AES_MIN_KEY_SIZE,
-			.max_keysize		=	AES_MAX_KEY_SIZE,
-			.ivsize			=	AES_BLOCK_SIZE,
-			.setkey	   		= 	aes_set_key,
-			.encrypt		=	cbc_aes_encrypt,
-			.decrypt		=	cbc_aes_decrypt,
-		}
-	}
-};
-
-static struct x86_cpu_id padlock_cpu_id[] = {
-	X86_FEATURE_MATCH(X86_FEATURE_XCRYPT),
-=======
 static struct skcipher_alg cbc_aes_alg = {
 	.base.cra_name		=	"cbc(aes)",
 	.base.cra_driver_name	=	"cbc-aes-padlock",
@@ -727,7 +476,6 @@ static struct skcipher_alg cbc_aes_alg = {
 
 static const struct x86_cpu_id padlock_cpu_id[] = {
 	X86_MATCH_FEATURE(X86_FEATURE_XCRYPT, NULL),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, padlock_cpu_id);
@@ -740,24 +488,11 @@ static int __init padlock_init(void)
 	if (!x86_match_cpu(padlock_cpu_id))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (!cpu_has_xcrypt_enabled) {
-=======
 	if (!boot_cpu_has(X86_FEATURE_XCRYPT_EN)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_NOTICE PFX "VIA PadLock detected, but not enabled. Hmm, strange...\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if ((ret = crypto_register_alg(&aes_alg)))
-		goto aes_err;
-
-	if ((ret = crypto_register_alg(&ecb_aes_alg)))
-		goto ecb_aes_err;
-
-	if ((ret = crypto_register_alg(&cbc_aes_alg)))
-=======
 	if ((ret = crypto_register_alg(&aes_alg)) != 0)
 		goto aes_err;
 
@@ -765,16 +500,11 @@ static int __init padlock_init(void)
 		goto ecb_aes_err;
 
 	if ((ret = crypto_register_skcipher(&cbc_aes_alg)) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto cbc_aes_err;
 
 	printk(KERN_NOTICE PFX "Using VIA PadLock ACE for AES algorithm.\n");
 
-<<<<<<< HEAD
-	if (c->x86 == 6 && c->x86_model == 15 && c->x86_mask == 2) {
-=======
 	if (c->x86 == 6 && c->x86_model == 15 && c->x86_stepping == 2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ecb_fetch_blocks = MAX_ECB_FETCH_BLOCKS;
 		cbc_fetch_blocks = MAX_CBC_FETCH_BLOCKS;
 		printk(KERN_NOTICE PFX "VIA Nano stepping 2 detected: enabling workaround.\n");
@@ -784,11 +514,7 @@ out:
 	return ret;
 
 cbc_aes_err:
-<<<<<<< HEAD
-	crypto_unregister_alg(&ecb_aes_alg);
-=======
 	crypto_unregister_skcipher(&ecb_aes_alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ecb_aes_err:
 	crypto_unregister_alg(&aes_alg);
 aes_err:
@@ -798,13 +524,8 @@ aes_err:
 
 static void __exit padlock_fini(void)
 {
-<<<<<<< HEAD
-	crypto_unregister_alg(&cbc_aes_alg);
-	crypto_unregister_alg(&ecb_aes_alg);
-=======
 	crypto_unregister_skcipher(&cbc_aes_alg);
 	crypto_unregister_skcipher(&ecb_aes_alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	crypto_unregister_alg(&aes_alg);
 }
 
@@ -815,8 +536,4 @@ MODULE_DESCRIPTION("VIA PadLock AES algorithm support");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Michal Ludvig");
 
-<<<<<<< HEAD
-MODULE_ALIAS("aes");
-=======
 MODULE_ALIAS_CRYPTO("aes");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

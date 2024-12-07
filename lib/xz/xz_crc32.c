@@ -2,11 +2,7 @@
  * CRC32 using the polynomial from IEEE-802.3
  *
  * Authors: Lasse Collin <lasse.collin@tukaani.org>
-<<<<<<< HEAD
- *          Igor Pavlov <http://7-zip.org/>
-=======
  *          Igor Pavlov <https://7-zip.org/>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file has been put into the public domain.
  * You can do whatever you want with this file.
@@ -33,11 +29,7 @@ STATIC_RW_DATA uint32_t xz_crc32_table[256];
 
 XZ_EXTERN void xz_crc32_init(void)
 {
-<<<<<<< HEAD
-	const uint32_t poly = 0xEDB88320;
-=======
 	const uint32_t poly = CRC32_POLY_LE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t i;
 	uint32_t j;

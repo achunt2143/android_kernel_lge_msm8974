@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Expectation handling for nf_conntrack. */
 
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
  * (C) 2003,2004 USAGI/WIDE Project <http://www.linux-ipv6.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * (c) 2005-2012 Patrick McHardy <kaber@trash.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -27,17 +17,6 @@
 #include <linux/err.h>
 #include <linux/percpu.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/jhash.h>
-#include <linux/moduleparam.h>
-#include <linux/export.h>
-#include <net/net_namespace.h>
-
-#include <net/netfilter/nf_conntrack.h>
-#include <net/netfilter/nf_conntrack_core.h>
-#include <net/netfilter/nf_conntrack_expect.h>
-#include <net/netfilter/nf_conntrack_helper.h>
-=======
 #include <linux/siphash.h>
 #include <linux/moduleparam.h>
 #include <linux/export.h>
@@ -50,36 +29,12 @@
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_l4proto.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_tuple.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 
 unsigned int nf_ct_expect_hsize __read_mostly;
 EXPORT_SYMBOL_GPL(nf_ct_expect_hsize);
 
-<<<<<<< HEAD
-unsigned int nf_ct_expect_max __read_mostly;
-
-static struct kmem_cache *nf_ct_expect_cachep __read_mostly;
-
-/* nf_conntrack_expect helper functions */
-void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
-				u32 pid, int report)
-{
-	struct nf_conn_help *master_help = nfct_help(exp->master);
-	struct net *net = nf_ct_exp_net(exp);
-
-	NF_CT_ASSERT(master_help);
-	NF_CT_ASSERT(!timer_pending(&exp->timeout));
-
-	hlist_del_rcu(&exp->hnode);
-	net->ct.expect_count--;
-
-	hlist_del(&exp->lnode);
-	master_help->expecting[exp->class]--;
-
-	nf_ct_expect_event_report(IPEXP_DESTROY, exp, pid, report);
-=======
 struct hlist_head *nf_ct_expect_hash __read_mostly;
 EXPORT_SYMBOL_GPL(nf_ct_expect_hash);
 
@@ -108,54 +63,12 @@ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
 	master_help->expecting[exp->class]--;
 
 	nf_ct_expect_event_report(IPEXP_DESTROY, exp, portid, report);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nf_ct_expect_put(exp);
 
 	NF_CT_STAT_INC(net, expect_delete);
 }
 EXPORT_SYMBOL_GPL(nf_ct_unlink_expect_report);
 
-<<<<<<< HEAD
-static void nf_ct_expectation_timed_out(unsigned long ul_expect)
-{
-	struct nf_conntrack_expect *exp = (void *)ul_expect;
-
-	spin_lock_bh(&nf_conntrack_lock);
-	nf_ct_unlink_expect(exp);
-	spin_unlock_bh(&nf_conntrack_lock);
-	nf_ct_expect_put(exp);
-}
-
-static unsigned int nf_ct_expect_dst_hash(const struct nf_conntrack_tuple *tuple)
-{
-	unsigned int hash;
-
-	if (unlikely(!nf_conntrack_hash_rnd)) {
-		init_nf_conntrack_hash_rnd();
-	}
-
-	hash = jhash2(tuple->dst.u3.all, ARRAY_SIZE(tuple->dst.u3.all),
-		      (((tuple->dst.protonum ^ tuple->src.l3num) << 16) |
-		       (__force __u16)tuple->dst.u.all) ^ nf_conntrack_hash_rnd);
-	return ((u64)hash * nf_ct_expect_hsize) >> 32;
-}
-
-struct nf_conntrack_expect *
-__nf_ct_expect_find(struct net *net, u16 zone,
-		    const struct nf_conntrack_tuple *tuple)
-{
-	struct nf_conntrack_expect *i;
-	struct hlist_node *n;
-	unsigned int h;
-
-	if (!net->ct.expect_count)
-		return NULL;
-
-	h = nf_ct_expect_dst_hash(tuple);
-	hlist_for_each_entry_rcu(i, n, &net->ct.expect_hash[h], hnode) {
-		if (nf_ct_tuple_mask_cmp(tuple, &i->tuple, &i->mask) &&
-		    nf_ct_zone(i->master) == zone)
-=======
 static void nf_ct_expectation_timed_out(struct timer_list *t)
 {
 	struct nf_conntrack_expect *exp = from_timer(exp, t, timeout);
@@ -229,7 +142,6 @@ __nf_ct_expect_find(struct net *net,
 	h = nf_ct_expect_dst_hash(net, tuple);
 	hlist_for_each_entry_rcu(i, &nf_ct_expect_hash[h], hnode) {
 		if (nf_ct_exp_equal(tuple, i, zone, net))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return i;
 	}
 	return NULL;
@@ -238,23 +150,15 @@ EXPORT_SYMBOL_GPL(__nf_ct_expect_find);
 
 /* Just find a expectation corresponding to a tuple. */
 struct nf_conntrack_expect *
-<<<<<<< HEAD
-nf_ct_expect_find_get(struct net *net, u16 zone,
-=======
 nf_ct_expect_find_get(struct net *net,
 		      const struct nf_conntrack_zone *zone,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      const struct nf_conntrack_tuple *tuple)
 {
 	struct nf_conntrack_expect *i;
 
 	rcu_read_lock();
 	i = __nf_ct_expect_find(net, zone, tuple);
-<<<<<<< HEAD
-	if (i && !atomic_inc_not_zero(&i->use))
-=======
 	if (i && !refcount_inc_not_zero(&i->use))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = NULL;
 	rcu_read_unlock();
 
@@ -265,23 +169,6 @@ EXPORT_SYMBOL_GPL(nf_ct_expect_find_get);
 /* If an expectation for this connection is found, it gets delete from
  * global list then returned. */
 struct nf_conntrack_expect *
-<<<<<<< HEAD
-nf_ct_find_expectation(struct net *net, u16 zone,
-		       const struct nf_conntrack_tuple *tuple)
-{
-	struct nf_conntrack_expect *i, *exp = NULL;
-	struct hlist_node *n;
-	unsigned int h;
-
-	if (!net->ct.expect_count)
-		return NULL;
-
-	h = nf_ct_expect_dst_hash(tuple);
-	hlist_for_each_entry(i, n, &net->ct.expect_hash[h], hnode) {
-		if (!(i->flags & NF_CT_EXPECT_INACTIVE) &&
-		    nf_ct_tuple_mask_cmp(tuple, &i->tuple, &i->mask) &&
-		    nf_ct_zone(i->master) == zone) {
-=======
 nf_ct_find_expectation(struct net *net,
 		       const struct nf_conntrack_zone *zone,
 		       const struct nf_conntrack_tuple *tuple, bool unlink)
@@ -297,7 +184,6 @@ nf_ct_find_expectation(struct net *net,
 	hlist_for_each_entry(i, &nf_ct_expect_hash[h], hnode) {
 		if (!(i->flags & NF_CT_EXPECT_INACTIVE) &&
 		    nf_ct_exp_equal(tuple, i, zone, net)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			exp = i;
 			break;
 		}
@@ -313,10 +199,6 @@ nf_ct_find_expectation(struct net *net,
 	if (!nf_ct_is_confirmed(exp->master))
 		return NULL;
 
-<<<<<<< HEAD
-	if (exp->flags & NF_CT_EXPECT_PERMANENT) {
-		atomic_inc(&exp->use);
-=======
 	/* Avoid race with other CPUs, that for exp->master ct, is
 	 * about to invoke ->destroy(), or nf_ct_delete() via timeout
 	 * or early_drop().
@@ -331,17 +213,13 @@ nf_ct_find_expectation(struct net *net,
 
 	if (exp->flags & NF_CT_EXPECT_PERMANENT || !unlink) {
 		refcount_inc(&exp->use);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return exp;
 	} else if (del_timer(&exp->timeout)) {
 		nf_ct_unlink_expect(exp);
 		return exp;
 	}
-<<<<<<< HEAD
-=======
 	/* Undo exp->master refcnt increase, if del_timer() failed */
 	nf_ct_put(exp->master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -351,30 +229,17 @@ void nf_ct_remove_expectations(struct nf_conn *ct)
 {
 	struct nf_conn_help *help = nfct_help(ct);
 	struct nf_conntrack_expect *exp;
-<<<<<<< HEAD
-	struct hlist_node *n, *next;
-=======
 	struct hlist_node *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optimization: most connection never expect any others. */
 	if (!help)
 		return;
 
-<<<<<<< HEAD
-	hlist_for_each_entry_safe(exp, n, next, &help->expectations, lnode) {
-		if (del_timer(&exp->timeout)) {
-			nf_ct_unlink_expect(exp);
-			nf_ct_expect_put(exp);
-		}
-	}
-=======
 	spin_lock_bh(&nf_conntrack_expect_lock);
 	hlist_for_each_entry_safe(exp, next, &help->expectations, lnode) {
 		nf_ct_remove_expect(exp);
 	}
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(nf_ct_remove_expectations);
 
@@ -395,23 +260,13 @@ static inline int expect_clash(const struct nf_conntrack_expect *a,
 	}
 
 	return nf_ct_tuple_mask_cmp(&a->tuple, &b->tuple, &intersect_mask) &&
-<<<<<<< HEAD
-	       nf_ct_zone(a->master) == nf_ct_zone(b->master);
-=======
 	       net_eq(nf_ct_net(a->master), nf_ct_net(b->master)) &&
 	       nf_ct_zone_equal_any(a->master, nf_ct_zone(b->master));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int expect_matches(const struct nf_conntrack_expect *a,
 				 const struct nf_conntrack_expect *b)
 {
-<<<<<<< HEAD
-	return a->master == b->master && a->class == b->class &&
-		nf_ct_tuple_equal(&a->tuple, &b->tuple) &&
-		nf_ct_tuple_mask_equal(&a->mask, &b->mask) &&
-		nf_ct_zone(a->master) == nf_ct_zone(b->master);
-=======
 	return nf_ct_tuple_equal(&a->tuple, &b->tuple) &&
 	       nf_ct_tuple_mask_equal(&a->mask, &b->mask) &&
 	       net_eq(nf_ct_net(a->master), nf_ct_net(b->master)) &&
@@ -426,24 +281,14 @@ static bool master_matches(const struct nf_conntrack_expect *a,
 		return true;
 
 	return a->master == b->master;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Generally a bad idea to call this: could have matched already. */
 void nf_ct_unexpect_related(struct nf_conntrack_expect *exp)
 {
-<<<<<<< HEAD
-	spin_lock_bh(&nf_conntrack_lock);
-	if (del_timer(&exp->timeout)) {
-		nf_ct_unlink_expect(exp);
-		nf_ct_expect_put(exp);
-	}
-	spin_unlock_bh(&nf_conntrack_lock);
-=======
 	spin_lock_bh(&nf_conntrack_expect_lock);
 	nf_ct_remove_expect(exp);
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(nf_ct_unexpect_related);
 
@@ -459,11 +304,7 @@ struct nf_conntrack_expect *nf_ct_expect_alloc(struct nf_conn *me)
 		return NULL;
 
 	new->master = me;
-<<<<<<< HEAD
-	atomic_set(&new->use, 1);
-=======
 	refcount_set(&new->use, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 }
 EXPORT_SYMBOL_GPL(nf_ct_expect_alloc);
@@ -518,14 +359,11 @@ void nf_ct_expect_init(struct nf_conntrack_expect *exp, unsigned int class,
 		       sizeof(exp->tuple.dst.u3) - len);
 
 	exp->tuple.dst.u.all = *dst;
-<<<<<<< HEAD
-=======
 
 #if IS_ENABLED(CONFIG_NF_NAT)
 	memset(&exp->saved_addr, 0, sizeof(exp->saved_addr));
 	memset(&exp->saved_proto, 0, sizeof(exp->saved_proto));
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(nf_ct_expect_init);
 
@@ -539,37 +377,11 @@ static void nf_ct_expect_free_rcu(struct rcu_head *head)
 
 void nf_ct_expect_put(struct nf_conntrack_expect *exp)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&exp->use))
-=======
 	if (refcount_dec_and_test(&exp->use))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		call_rcu(&exp->rcu, nf_ct_expect_free_rcu);
 }
 EXPORT_SYMBOL_GPL(nf_ct_expect_put);
 
-<<<<<<< HEAD
-static int nf_ct_expect_insert(struct nf_conntrack_expect *exp)
-{
-	struct nf_conn_help *master_help = nfct_help(exp->master);
-	struct nf_conntrack_helper *helper;
-	struct net *net = nf_ct_exp_net(exp);
-	unsigned int h = nf_ct_expect_dst_hash(&exp->tuple);
-
-	/* two references : one for hash insert, one for the timer */
-	atomic_add(2, &exp->use);
-
-	hlist_add_head(&exp->lnode, &master_help->expectations);
-	master_help->expecting[exp->class]++;
-
-	hlist_add_head_rcu(&exp->hnode, &net->ct.expect_hash[h]);
-	net->ct.expect_count++;
-
-	setup_timer(&exp->timeout, nf_ct_expectation_timed_out,
-		    (unsigned long)exp);
-	helper = rcu_dereference_protected(master_help->helper,
-					   lockdep_is_held(&nf_conntrack_lock));
-=======
 static void nf_ct_expect_insert(struct nf_conntrack_expect *exp)
 {
 	struct nf_conntrack_net *cnet;
@@ -584,17 +396,12 @@ static void nf_ct_expect_insert(struct nf_conntrack_expect *exp)
 	timer_setup(&exp->timeout, nf_ct_expectation_timed_out, 0);
 	helper = rcu_dereference_protected(master_help->helper,
 					   lockdep_is_held(&nf_conntrack_expect_lock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (helper) {
 		exp->timeout.expires = jiffies +
 			helper->expect_policy[exp->class].timeout * HZ;
 	}
 	add_timer(&exp->timeout);
 
-<<<<<<< HEAD
-	NF_CT_STAT_INC(net, expect_create);
-	return 0;
-=======
 	hlist_add_head_rcu(&exp->lnode, &master_help->expectations);
 	master_help->expecting[exp->class]++;
 
@@ -603,7 +410,6 @@ static void nf_ct_expect_insert(struct nf_conntrack_expect *exp)
 	cnet->expect_count++;
 
 	NF_CT_STAT_INC(net, expect_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Race with expectations being used means we could have none to find; OK. */
@@ -612,30 +418,12 @@ static void evict_oldest_expect(struct nf_conn *master,
 {
 	struct nf_conn_help *master_help = nfct_help(master);
 	struct nf_conntrack_expect *exp, *last = NULL;
-<<<<<<< HEAD
-	struct hlist_node *n;
-
-	hlist_for_each_entry(exp, n, &master_help->expectations, lnode) {
-=======
 
 	hlist_for_each_entry(exp, &master_help->expectations, lnode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (exp->class == new->class)
 			last = exp;
 	}
 
-<<<<<<< HEAD
-	if (last && del_timer(&last->timeout)) {
-		nf_ct_unlink_expect(last);
-		nf_ct_expect_put(last);
-	}
-}
-
-static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect)
-{
-	const struct nf_conntrack_expect_policy *p;
-	struct nf_conntrack_expect *i;
-=======
 	if (last)
 		nf_ct_remove_expect(last);
 }
@@ -646,35 +434,18 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
 	const struct nf_conntrack_expect_policy *p;
 	struct nf_conntrack_expect *i;
 	struct nf_conntrack_net *cnet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_conn *master = expect->master;
 	struct nf_conn_help *master_help = nfct_help(master);
 	struct nf_conntrack_helper *helper;
 	struct net *net = nf_ct_exp_net(expect);
-<<<<<<< HEAD
-	struct hlist_node *n, *next;
-	unsigned int h;
-	int ret = 1;
-=======
 	struct hlist_node *next;
 	unsigned int h;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!master_help) {
 		ret = -ESHUTDOWN;
 		goto out;
 	}
-<<<<<<< HEAD
-	h = nf_ct_expect_dst_hash(&expect->tuple);
-	hlist_for_each_entry_safe(i, n, next, &net->ct.expect_hash[h], hnode) {
-		if (expect_matches(i, expect)) {
-			if (del_timer(&i->timeout)) {
-				nf_ct_unlink_expect(i);
-				nf_ct_expect_put(i);
-				break;
-			}
-=======
 	h = nf_ct_expect_dst_hash(net, &expect->tuple);
 	hlist_for_each_entry_safe(i, next, &nf_ct_expect_hash[h], hnode) {
 		if (master_matches(i, expect, flags) &&
@@ -685,7 +456,6 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
 
 			if (nf_ct_remove_expect(i))
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (expect_clash(i, expect)) {
 			ret = -EBUSY;
 			goto out;
@@ -693,11 +463,7 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
 	}
 	/* Will be over limit? */
 	helper = rcu_dereference_protected(master_help->helper,
-<<<<<<< HEAD
-					   lockdep_is_held(&nf_conntrack_lock));
-=======
 					   lockdep_is_held(&nf_conntrack_expect_lock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (helper) {
 		p = &helper->expect_policy[expect->class];
 		if (p->max_expected &&
@@ -711,42 +477,15 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
 		}
 	}
 
-<<<<<<< HEAD
-	if (net->ct.expect_count >= nf_ct_expect_max) {
-		if (net_ratelimit())
-			printk(KERN_WARNING
-			       "nf_conntrack: expectation table full\n");
-=======
 	cnet = nf_ct_pernet(net);
 	if (cnet->expect_count >= nf_ct_expect_max) {
 		net_warn_ratelimited("nf_conntrack: expectation table full\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EMFILE;
 	}
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-int nf_ct_expect_related_report(struct nf_conntrack_expect *expect, 
-				u32 pid, int report)
-{
-	int ret;
-
-	spin_lock_bh(&nf_conntrack_lock);
-	ret = __nf_ct_expect_check(expect);
-	if (ret <= 0)
-		goto out;
-
-	ret = nf_ct_expect_insert(expect);
-	if (ret < 0)
-		goto out;
-	spin_unlock_bh(&nf_conntrack_lock);
-	nf_ct_expect_event_report(IPEXP_NEW, expect, pid, report);
-	return ret;
-out:
-	spin_unlock_bh(&nf_conntrack_lock);
-=======
 int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
 				u32 portid, int report, unsigned int flags)
 {
@@ -764,13 +503,10 @@ int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
 	return 0;
 out:
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(nf_ct_expect_related_report);
 
-<<<<<<< HEAD
-=======
 void nf_ct_expect_iterate_destroy(bool (*iter)(struct nf_conntrack_expect *e, void *data),
 				  void *data)
 {
@@ -825,7 +561,6 @@ void nf_ct_expect_iterate_net(struct net *net,
 }
 EXPORT_SYMBOL_GPL(nf_ct_expect_iterate_net);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NF_CONNTRACK_PROCFS
 struct ct_expect_iter_state {
 	struct seq_net_private p;
@@ -834,19 +569,11 @@ struct ct_expect_iter_state {
 
 static struct hlist_node *ct_expect_get_first(struct seq_file *seq)
 {
-<<<<<<< HEAD
-	struct net *net = seq_file_net(seq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ct_expect_iter_state *st = seq->private;
 	struct hlist_node *n;
 
 	for (st->bucket = 0; st->bucket < nf_ct_expect_hsize; st->bucket++) {
-<<<<<<< HEAD
-		n = rcu_dereference(hlist_first_rcu(&net->ct.expect_hash[st->bucket]));
-=======
 		n = rcu_dereference(hlist_first_rcu(&nf_ct_expect_hash[st->bucket]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (n)
 			return n;
 	}
@@ -856,21 +583,13 @@ static struct hlist_node *ct_expect_get_first(struct seq_file *seq)
 static struct hlist_node *ct_expect_get_next(struct seq_file *seq,
 					     struct hlist_node *head)
 {
-<<<<<<< HEAD
-	struct net *net = seq_file_net(seq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ct_expect_iter_state *st = seq->private;
 
 	head = rcu_dereference(hlist_next_rcu(head));
 	while (head == NULL) {
 		if (++st->bucket >= nf_ct_expect_hsize)
 			return NULL;
-<<<<<<< HEAD
-		head = rcu_dereference(hlist_first_rcu(&net->ct.expect_hash[st->bucket]));
-=======
 		head = rcu_dereference(hlist_first_rcu(&nf_ct_expect_hash[st->bucket]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return head;
 }
@@ -917,28 +636,15 @@ static int exp_seq_show(struct seq_file *s, void *v)
 		seq_printf(s, "%ld ", timer_pending(&expect->timeout)
 			   ? (long)(expect->timeout.expires - jiffies)/HZ : 0);
 	else
-<<<<<<< HEAD
-		seq_printf(s, "- ");
-=======
 		seq_puts(s, "- ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(s, "l3proto = %u proto=%u ",
 		   expect->tuple.src.l3num,
 		   expect->tuple.dst.protonum);
 	print_tuple(s, &expect->tuple,
-<<<<<<< HEAD
-		    __nf_ct_l3proto_find(expect->tuple.src.l3num),
-		    __nf_ct_l4proto_find(expect->tuple.src.l3num,
-				       expect->tuple.dst.protonum));
-
-	if (expect->flags & NF_CT_EXPECT_PERMANENT) {
-		seq_printf(s, "PERMANENT");
-=======
 		    nf_ct_l4proto_find(expect->tuple.dst.protonum));
 
 	if (expect->flags & NF_CT_EXPECT_PERMANENT) {
 		seq_puts(s, "PERMANENT");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delim = ",";
 	}
 	if (expect->flags & NF_CT_EXPECT_INACTIVE) {
@@ -951,22 +657,14 @@ static int exp_seq_show(struct seq_file *s, void *v)
 	helper = rcu_dereference(nfct_help(expect->master)->helper);
 	if (helper) {
 		seq_printf(s, "%s%s", expect->flags ? " " : "", helper->name);
-<<<<<<< HEAD
-		if (helper->expect_policy[expect->class].name)
-=======
 		if (helper->expect_policy[expect->class].name[0])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq_printf(s, "/%s",
 				   helper->expect_policy[expect->class].name);
 	}
 
-<<<<<<< HEAD
-	return seq_putc(s, '\n');
-=======
 	seq_putc(s, '\n');
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct seq_operations exp_seq_ops = {
@@ -975,35 +673,12 @@ static const struct seq_operations exp_seq_ops = {
 	.stop = exp_seq_stop,
 	.show = exp_seq_show
 };
-<<<<<<< HEAD
-
-static int exp_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &exp_seq_ops,
-			sizeof(struct ct_expect_iter_state));
-}
-
-static const struct file_operations exp_file_ops = {
-	.owner   = THIS_MODULE,
-	.open    = exp_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NF_CONNTRACK_PROCFS */
 
 static int exp_proc_init(struct net *net)
 {
 #ifdef CONFIG_NF_CONNTRACK_PROCFS
 	struct proc_dir_entry *proc;
-<<<<<<< HEAD
-
-	proc = proc_net_fops_create(net, "nf_conntrack_expect", 0440, &exp_file_ops);
-	if (!proc)
-		return -ENOMEM;
-=======
 	kuid_t root_uid;
 	kgid_t root_gid;
 
@@ -1016,7 +691,6 @@ static int exp_proc_init(struct net *net)
 	root_gid = make_kgid(net->user_ns, 0);
 	if (uid_valid(root_uid) && gid_valid(root_gid))
 		proc_set_user(proc, root_uid, root_gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NF_CONNTRACK_PROCFS */
 	return 0;
 }
@@ -1024,67 +698,12 @@ static int exp_proc_init(struct net *net)
 static void exp_proc_remove(struct net *net)
 {
 #ifdef CONFIG_NF_CONNTRACK_PROCFS
-<<<<<<< HEAD
-	proc_net_remove(net, "nf_conntrack_expect");
-=======
 	remove_proc_entry("nf_conntrack_expect", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NF_CONNTRACK_PROCFS */
 }
 
 module_param_named(expect_hashsize, nf_ct_expect_hsize, uint, 0400);
 
-<<<<<<< HEAD
-int nf_conntrack_expect_init(struct net *net)
-{
-	int err = -ENOMEM;
-
-	if (net_eq(net, &init_net)) {
-		if (!nf_ct_expect_hsize) {
-			nf_ct_expect_hsize = net->ct.htable_size / 256;
-			if (!nf_ct_expect_hsize)
-				nf_ct_expect_hsize = 1;
-		}
-		nf_ct_expect_max = nf_ct_expect_hsize * 4;
-	}
-
-	net->ct.expect_count = 0;
-	net->ct.expect_hash = nf_ct_alloc_hashtable(&nf_ct_expect_hsize, 0);
-	if (net->ct.expect_hash == NULL)
-		goto err1;
-
-	if (net_eq(net, &init_net)) {
-		nf_ct_expect_cachep = kmem_cache_create("nf_conntrack_expect",
-					sizeof(struct nf_conntrack_expect),
-					0, 0, NULL);
-		if (!nf_ct_expect_cachep)
-			goto err2;
-	}
-
-	err = exp_proc_init(net);
-	if (err < 0)
-		goto err3;
-
-	return 0;
-
-err3:
-	if (net_eq(net, &init_net))
-		kmem_cache_destroy(nf_ct_expect_cachep);
-err2:
-	nf_ct_free_hashtable(net->ct.expect_hash, nf_ct_expect_hsize);
-err1:
-	return err;
-}
-
-void nf_conntrack_expect_fini(struct net *net)
-{
-	exp_proc_remove(net);
-	if (net_eq(net, &init_net)) {
-		rcu_barrier(); /* Wait for call_rcu() before destroy */
-		kmem_cache_destroy(nf_ct_expect_cachep);
-	}
-	nf_ct_free_hashtable(net->ct.expect_hash, nf_ct_expect_hsize);
-=======
 int nf_conntrack_expect_pernet_init(struct net *net)
 {
 	return exp_proc_init(net);
@@ -1121,5 +740,4 @@ void nf_conntrack_expect_fini(void)
 	rcu_barrier(); /* Wait for call_rcu() before destroy */
 	kmem_cache_destroy(nf_ct_expect_cachep);
 	kvfree(nf_ct_expect_hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

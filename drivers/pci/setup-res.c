@@ -1,36 +1,18 @@
-<<<<<<< HEAD
-/*
- *	drivers/pci/setup-res.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Support routines for initializing a PCI subsystem
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Extruded from code written by
  *      Dave Rusling (david.rusling@reo.mts.dec.com)
  *      David Mosberger (davidm@cs.arizona.edu)
  *	David Miller (davem@redhat.com)
  *
-<<<<<<< HEAD
- * Support routines for initializing a PCI subsystem.
- */
-
-/* fixed for multiple pci buses, 1999 Andrea Arcangeli <andrea@suse.de> */
-
-/*
-=======
  * Fixed for multiple PCI buses, 1999 Andrea Arcangeli <andrea@suse.de>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Nov 2000, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
  *	     Resource sorting
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/pci.h>
@@ -40,16 +22,6 @@
 #include <linux/slab.h>
 #include "pci.h"
 
-<<<<<<< HEAD
-
-void pci_update_resource(struct pci_dev *dev, int resno)
-{
-	struct pci_bus_region region;
-	u32 new, check, mask;
-	int reg;
-	enum pci_bar_type type;
-	struct resource *res = dev->resource + resno;
-=======
 static void pci_std_update_resource(struct pci_dev *dev, int resno)
 {
 	struct pci_bus_region region;
@@ -63,7 +35,6 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 	/* Per SR-IOV spec 3.4.1.11, VF BARs are RO zero */
 	if (dev->is_virtfn)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ignore resources for unimplemented BARs and unused resource slots
@@ -72,12 +43,9 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 	if (!res->flags)
 		return;
 
-<<<<<<< HEAD
-=======
 	if (res->flags & IORESOURCE_UNSET)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Ignore non-moveable resources.  This might be legacy resources for
 	 * which no functional BAR register exists or another important
@@ -87,22 +55,6 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 		return;
 
 	pcibios_resource_to_bus(dev->bus, &region, res);
-<<<<<<< HEAD
-
-	new = region.start | (res->flags & PCI_REGION_FLAG_MASK);
-	if (res->flags & IORESOURCE_IO)
-		mask = (u32)PCI_BASE_ADDRESS_IO_MASK;
-	else
-		mask = (u32)PCI_BASE_ADDRESS_MEM_MASK;
-
-	reg = pci_resource_bar(dev, resno, &type);
-	if (!reg)
-		return;
-	if (type != pci_bar_unknown) {
-		if (!(res->flags & IORESOURCE_ROM_ENABLE))
-			return;
-		new |= PCI_ROM_ADDRESS_ENABLE;
-=======
 	new = region.start;
 
 	if (res->flags & IORESOURCE_IO) {
@@ -147,20 +99,14 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 		pci_read_config_word(dev, PCI_COMMAND, &cmd);
 		pci_write_config_word(dev, PCI_COMMAND,
 				      cmd & ~PCI_COMMAND_MEMORY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_write_config_dword(dev, reg, new);
 	pci_read_config_dword(dev, reg, &check);
 
 	if ((new ^ check) & mask) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "BAR %d: error updating (%#08x != %#08x)\n",
-			resno, new, check);
-=======
 		pci_err(dev, "%s: error updating (%#010x != %#010x)\n",
 			res_name, new, check);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (res->flags & IORESOURCE_MEM_64) {
@@ -168,16 +114,6 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 		pci_write_config_dword(dev, reg + 4, new);
 		pci_read_config_dword(dev, reg + 4, &check);
 		if (check != new) {
-<<<<<<< HEAD
-			dev_err(&dev->dev, "BAR %d: error updating "
-			       "(high %#08x != %#08x)\n", resno, new, check);
-		}
-	}
-	res->flags &= ~IORESOURCE_UNSET;
-	dev_dbg(&dev->dev, "BAR %d: set to %pR (PCI address [%#llx-%#llx])\n",
-		resno, res, (unsigned long long)region.start,
-		(unsigned long long)region.end);
-=======
 			pci_err(dev, "%s: error updating (high %#010x != %#010x)\n",
 				res_name, new, check);
 		}
@@ -195,20 +131,11 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 	else if (resno >= PCI_IOV_RESOURCES && resno <= PCI_IOV_RESOURCE_END)
 		pci_iov_update_resource(dev, resno);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int pci_claim_resource(struct pci_dev *dev, int resource)
 {
 	struct resource *res = &dev->resource[resource];
-<<<<<<< HEAD
-	struct resource *root, *conflict;
-
-	root = pci_find_parent_resource(dev, res);
-	if (!root) {
-		dev_info(&dev->dev, "no compatible bridge window for %pR\n",
-			 res);
-=======
 	const char *res_name = pci_resource_name(dev, resource);
 	struct resource *root, *conflict;
 
@@ -231,21 +158,14 @@ int pci_claim_resource(struct pci_dev *dev, int resource)
 		pci_info(dev, "%s %pR: can't claim; no compatible bridge window\n",
 			 res_name, res);
 		res->flags |= IORESOURCE_UNSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	conflict = request_resource_conflict(root, res);
 	if (conflict) {
-<<<<<<< HEAD
-		dev_info(&dev->dev,
-			 "address space collision: %pR conflicts with %s %pR\n",
-			 res, conflict->name, conflict);
-=======
 		pci_info(dev, "%s %pR: can't claim; address conflict with %s %pR\n",
 			 res_name, res, conflict->name, conflict);
 		res->flags |= IORESOURCE_UNSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -255,11 +175,6 @@ EXPORT_SYMBOL(pci_claim_resource);
 
 void pci_disable_bridge_window(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	dev_info(&dev->dev, "disabling bridge mem windows\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* MMIO Base/Limit */
 	pci_write_config_dword(dev, PCI_MEMORY_BASE, 0x0000fff0);
 
@@ -269,36 +184,6 @@ void pci_disable_bridge_window(struct pci_dev *dev)
 	pci_write_config_dword(dev, PCI_PREF_BASE_UPPER32, 0xffffffff);
 }
 
-<<<<<<< HEAD
-static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
-		int resno, resource_size_t size, resource_size_t align)
-{
-	struct resource *res = dev->resource + resno;
-	resource_size_t min;
-	int ret;
-
-	min = (res->flags & IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;
-
-	/* First, try exact prefetching match.. */
-	ret = pci_bus_alloc_resource(bus, res, size, align, min,
-				     IORESOURCE_PREFETCH,
-				     pcibios_align_resource, dev);
-
-	if (ret < 0 && (res->flags & IORESOURCE_PREFETCH)) {
-		/*
-		 * That failed.
-		 *
-		 * But a prefetching area can handle a non-prefetching
-		 * window (it will just not perform as well).
-		 */
-		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
-					     pcibios_align_resource, dev);
-	}
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic function that returns a value indicating that the device's
  * original BIOS BAR address was not saved and so is not available for
@@ -313,38 +198,21 @@ resource_size_t __weak pcibios_retrieve_fw_addr(struct pci_dev *dev, int idx)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev, 
-=======
 static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int resno, resource_size_t size)
 {
 	struct resource *root, *conflict;
 	resource_size_t fw_addr, start, end;
-<<<<<<< HEAD
-	int ret = 0;
-
-	fw_addr = pcibios_retrieve_fw_addr(dev, resno);
-	if (!fw_addr)
-		return 1;
-=======
 	const char *res_name = pci_resource_name(dev, resno);
 
 	fw_addr = pcibios_retrieve_fw_addr(dev, resno);
 	if (!fw_addr)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start = res->start;
 	end = res->end;
 	res->start = fw_addr;
 	res->end = res->start + size - 1;
-<<<<<<< HEAD
-
-	root = pci_find_parent_resource(dev, res);
-	if (!root) {
-=======
 	res->flags &= ~IORESOURCE_UNSET;
 
 	root = pci_find_parent_resource(dev, res);
@@ -360,26 +228,12 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 		 * On the root bus, assume the host bridge will forward
 		 * everything.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->flags & IORESOURCE_IO)
 			root = &ioport_resource;
 		else
 			root = &iomem_resource;
 	}
 
-<<<<<<< HEAD
-	dev_info(&dev->dev, "BAR %d: trying firmware assignment %pR\n",
-		 resno, res);
-	conflict = request_resource_conflict(root, res);
-	if (conflict) {
-		dev_info(&dev->dev,
-			 "BAR %d: %pR conflicts with %s %pR\n", resno,
-			 res, conflict->name, conflict);
-		res->start = start;
-		res->end = end;
-		ret = 1;
-	}
-=======
 	pci_info(dev, "%s: trying firmware assignment %pR\n", res_name, res);
 	conflict = request_resource_conflict(root, res);
 	if (conflict) {
@@ -451,22 +305,14 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
 					     pcibios_align_resource, dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int _pci_assign_resource(struct pci_dev *dev, int resno,
 				resource_size_t size, resource_size_t min_align)
 {
-<<<<<<< HEAD
-	struct resource *res = dev->resource + resno;
 	struct pci_bus *bus;
 	int ret;
-	char *type;
-=======
-	struct pci_bus *bus;
-	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bus = dev->bus;
 	while ((ret = __pci_assign_resource(bus, dev, resno, size, min_align))) {
@@ -475,69 +321,12 @@ static int _pci_assign_resource(struct pci_dev *dev, int resno,
 		bus = bus->parent;
 	}
 
-<<<<<<< HEAD
-	if (ret) {
-		if (res->flags & IORESOURCE_MEM)
-			if (res->flags & IORESOURCE_PREFETCH)
-				type = "mem pref";
-			else
-				type = "mem";
-		else if (res->flags & IORESOURCE_IO)
-			type = "io";
-		else
-			type = "unknown";
-		dev_info(&dev->dev,
-			 "BAR %d: can't assign %s (size %#llx)\n",
-			 resno, type, (unsigned long long) resource_size(res));
-	}
-
-	return ret;
-}
-
-int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsize,
-			resource_size_t min_align)
-{
-	struct resource *res = dev->resource + resno;
-	resource_size_t new_size;
-	int ret;
-
-	if (!res->parent) {
-		dev_info(&dev->dev, "BAR %d: can't reassign an unassigned resource %pR "
-			 "\n", resno, res);
-		return -EINVAL;
-	}
-
-	/* already aligned with min_align */
-	new_size = resource_size(res) + addsize;
-	ret = _pci_assign_resource(dev, resno, new_size, min_align);
-	if (!ret) {
-		res->flags &= ~IORESOURCE_STARTALIGN;
-		dev_info(&dev->dev, "BAR %d: reassigned %pR\n", resno, res);
-		if (resno < PCI_BRIDGE_RESOURCES)
-			pci_update_resource(dev, resno);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 int pci_assign_resource(struct pci_dev *dev, int resno)
 {
 	struct resource *res = dev->resource + resno;
-<<<<<<< HEAD
-	resource_size_t align, size;
-	struct pci_bus *bus;
-	int ret;
-
-	align = pci_resource_alignment(dev, res);
-	if (!align) {
-		dev_info(&dev->dev, "BAR %d: can't assign %pR "
-			 "(bogus alignment)\n", resno, res);
-		return -EINVAL;
-	}
-
-	bus = dev->bus;
-=======
 	const char *res_name = pci_resource_name(dev, resno);
 	resource_size_t align, size;
 	int ret;
@@ -553,7 +342,6 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size = resource_size(res);
 	ret = _pci_assign_resource(dev, resno, size, align);
 
@@ -562,19 +350,6 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	 * where firmware left it.  That at least has a chance of
 	 * working, which is better than just leaving it disabled.
 	 */
-<<<<<<< HEAD
-	if (ret < 0)
-		ret = pci_revert_fw_address(res, dev, resno, size);
-
-	if (!ret) {
-		res->flags &= ~IORESOURCE_STARTALIGN;
-		dev_info(&dev->dev, "BAR %d: assigned %pR\n", resno, res);
-		if (resno < PCI_BRIDGE_RESOURCES)
-			pci_update_resource(dev, resno);
-	}
-	return ret;
-}
-=======
 	if (ret < 0) {
 		pci_info(dev, "%s %pR: can't assign; no space\n", res_name, res);
 		ret = pci_revert_fw_address(res, dev, resno, size);
@@ -704,34 +479,22 @@ error_resize:
 	return ret;
 }
 EXPORT_SYMBOL(pci_resize_resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pci_enable_resources(struct pci_dev *dev, int mask)
 {
 	u16 cmd, old_cmd;
 	int i;
 	struct resource *r;
-<<<<<<< HEAD
-=======
 	const char *r_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
 	old_cmd = cmd;
 
-<<<<<<< HEAD
-	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
-		if (!(mask & (1 << i)))
-			continue;
-
-		r = &dev->resource[i];
-=======
 	pci_dev_for_each_resource(dev, r, i) {
 		if (!(mask & (1 << i)))
 			continue;
 
 		r_name = pci_resource_name(dev, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(r->flags & (IORESOURCE_IO | IORESOURCE_MEM)))
 			continue;
@@ -739,11 +502,6 @@ int pci_enable_resources(struct pci_dev *dev, int mask)
 				(!(r->flags & IORESOURCE_ROM_ENABLE)))
 			continue;
 
-<<<<<<< HEAD
-		if (!r->parent) {
-			dev_err(&dev->dev, "device not available "
-				"(can't reserve %pR)\n", r);
-=======
 		if (r->flags & IORESOURCE_UNSET) {
 			pci_err(dev, "%s %pR: not assigned; can't enable device\n",
 				r_name, r);
@@ -753,7 +511,6 @@ int pci_enable_resources(struct pci_dev *dev, int mask)
 		if (!r->parent) {
 			pci_err(dev, "%s %pR: not claimed; can't enable device\n",
 				r_name, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -764,12 +521,7 @@ int pci_enable_resources(struct pci_dev *dev, int mask)
 	}
 
 	if (cmd != old_cmd) {
-<<<<<<< HEAD
-		dev_info(&dev->dev, "enabling device (%04x -> %04x)\n",
-			 old_cmd, cmd);
-=======
 		pci_info(dev, "enabling device (%04x -> %04x)\n", old_cmd, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
 	return 0;

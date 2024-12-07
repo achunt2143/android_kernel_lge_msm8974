@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCMCIA socket code for the Alchemy Db1xxx/Pb1xxx boards.
  *
@@ -60,10 +57,7 @@ struct db1x_pcmcia_sock {
 	int	stschg_irq;	/* card-status-change irq */
 	int	card_irq;	/* card irq */
 	int	eject_irq;	/* db1200/pb1200 have these */
-<<<<<<< HEAD
-=======
 	int	insert_gpio;	/* db1000 carddetect gpio */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BOARD_TYPE_DEFAULT	0	/* most boards */
 #define BOARD_TYPE_DB1200	1	/* IRQs aren't gpios */
@@ -91,11 +85,7 @@ static int db1200_card_inserted(struct db1x_pcmcia_sock *sock)
 /* carddetect gpio: low-active */
 static int db1000_card_inserted(struct db1x_pcmcia_sock *sock)
 {
-<<<<<<< HEAD
-	return !gpio_get_value(irq_to_gpio(sock->insert_irq));
-=======
 	return !gpio_get_value(sock->insert_gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int db1x_card_inserted(struct db1x_pcmcia_sock *sock)
@@ -142,24 +132,6 @@ static irqreturn_t db1000_pcmcia_stschgirq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static irqreturn_t db1200_pcmcia_cdirq(int irq, void *data)
-{
-	struct db1x_pcmcia_sock *sock = data;
-
-	/* Db/Pb1200 have separate per-socket insertion and ejection
-	 * interrupts which stay asserted as long as the card is
-	 * inserted/missing.  The one which caused us to be called
-	 * needs to be disabled and the other one enabled.
-	 */
-	if (irq == sock->insert_irq) {
-		disable_irq_nosync(sock->insert_irq);
-		enable_irq(sock->eject_irq);
-	} else {
-		disable_irq_nosync(sock->eject_irq);
-		enable_irq(sock->insert_irq);
-	}
-=======
 /* Db/Pb1200 have separate per-socket insertion and ejection
  * interrupts which stay asserted as long as the card is
  * inserted/missing.  The one which caused us to be called
@@ -181,7 +153,6 @@ static irqreturn_t db1200_pcmcia_cdirq_fn(int irq, void *data)
 		enable_irq(sock->eject_irq);
 	else
 		enable_irq(sock->insert_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcmcia_parse_events(&sock->socket, SS_DETECT);
 
@@ -207,15 +178,6 @@ static int db1x_pcmcia_setup_irqs(struct db1x_pcmcia_sock *sock)
 	 */
 	if ((sock->board_type == BOARD_TYPE_DB1200) ||
 	    (sock->board_type == BOARD_TYPE_DB1300)) {
-<<<<<<< HEAD
-		ret = request_irq(sock->insert_irq, db1200_pcmcia_cdirq,
-				  0, "pcmcia_insert", sock);
-		if (ret)
-			goto out1;
-
-		ret = request_irq(sock->eject_irq, db1200_pcmcia_cdirq,
-				  0, "pcmcia_eject", sock);
-=======
 		ret = request_threaded_irq(sock->insert_irq, db1200_pcmcia_cdirq,
 			db1200_pcmcia_cdirq_fn, 0, "pcmcia_insert", sock);
 		if (ret)
@@ -223,7 +185,6 @@ static int db1x_pcmcia_setup_irqs(struct db1x_pcmcia_sock *sock)
 
 		ret = request_threaded_irq(sock->eject_irq, db1200_pcmcia_cdirq,
 			db1200_pcmcia_cdirq_fn, 0, "pcmcia_eject", sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			free_irq(sock->insert_irq, sock);
 			goto out1;
@@ -294,15 +255,10 @@ static int db1x_pcmcia_configure(struct pcmcia_socket *skt,
 	switch (state->Vcc) {
 	case 50:
 		++v;
-<<<<<<< HEAD
-	case 33:
-		++v;
-=======
 		fallthrough;
 	case 33:
 		++v;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:
 		break;
 	default:
@@ -313,17 +269,11 @@ static int db1x_pcmcia_configure(struct pcmcia_socket *skt,
 	switch (state->Vpp) {
 	case 12:
 		++p;
-<<<<<<< HEAD
-	case 33:
-	case 50:
-		++p;
-=======
 		fallthrough;
 	case 33:
 	case 50:
 		++p;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:
 		break;
 	default:
@@ -406,10 +356,7 @@ static int db1x_pcmcia_get_status(struct pcmcia_socket *skt,
 	case 0:
 	case 2:
 		status |= SS_3VCARD;	/* 3V card */
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3:
 		break;			/* 5V card: set nothing */
 	default:
@@ -474,11 +421,7 @@ static struct pccard_operations db1x_pcmcia_operations = {
 	.set_mem_map		= au1x00_pcmcia_set_mem_map,
 };
 
-<<<<<<< HEAD
-static int __devinit db1x_pcmcia_socket_probe(struct platform_device *pdev)
-=======
 static int db1x_pcmcia_socket_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct db1x_pcmcia_sock *sock;
 	struct resource *r;
@@ -510,11 +453,7 @@ static int db1x_pcmcia_socket_probe(struct platform_device *pdev)
 		printk(KERN_INFO "db1xxx-ss: unknown board %d!\n", bid);
 		ret = -ENODEV;
 		goto out0;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * gather resources necessary and optional nice-to-haves to
@@ -530,11 +469,6 @@ static int db1x_pcmcia_socket_probe(struct platform_device *pdev)
 	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "card");
 	sock->card_irq = r ? r->start : 0;
 
-<<<<<<< HEAD
-	/* insert: irq which triggers on card insertion/ejection */
-	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "insert");
-	sock->insert_irq = r ? r->start : -1;
-=======
 	/* insert: irq which triggers on card insertion/ejection
 	 * BIG FAT NOTE: on DB1000/1100/1500/1550 we pass a GPIO here!
 	 */
@@ -544,7 +478,6 @@ static int db1x_pcmcia_socket_probe(struct platform_device *pdev)
 		sock->insert_gpio = r ? r->start : -1;
 		sock->insert_irq = r ? gpio_to_irq(r->start) : -1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stschg: irq which trigger on card status change (optional) */
 	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "stschg");
@@ -644,11 +577,7 @@ out0:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit db1x_pcmcia_socket_remove(struct platform_device *pdev)
-=======
 static void db1x_pcmcia_socket_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct db1x_pcmcia_sock *sock = platform_get_drvdata(pdev);
 
@@ -656,26 +585,14 @@ static void db1x_pcmcia_socket_remove(struct platform_device *pdev)
 	pcmcia_unregister_socket(&sock->socket);
 	iounmap((void *)(sock->virt_io + (u32)mips_io_port_base));
 	kfree(sock);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver db1x_pcmcia_socket_driver = {
 	.driver	= {
 		.name	= "db1xxx_pcmcia",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= db1x_pcmcia_socket_probe,
-	.remove		= __devexit_p(db1x_pcmcia_socket_remove),
-=======
 	},
 	.probe		= db1x_pcmcia_socket_probe,
 	.remove_new	= db1x_pcmcia_socket_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(db1x_pcmcia_socket_driver);

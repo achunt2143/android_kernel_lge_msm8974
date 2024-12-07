@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	G8BPQ compatible "AX.25 via ethernet" driver release 004
  *
  *	This code REQUIRES 2.0.0 or higher/ NET3.029
  *
-<<<<<<< HEAD
- *	This module:
- *		This module is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	This is a "pseudo" network driver to allow AX.25 over Ethernet
  *	using G8BPQ encapsulation. It has been extracted from the protocol
  *	implementation because
@@ -76,21 +64,13 @@
 #include <linux/if_arp.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/stat.h>
-<<<<<<< HEAD
-#include <linux/netfilter.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/rtnetlink.h>
@@ -101,19 +81,9 @@
 
 #include <linux/bpqether.h>
 
-<<<<<<< HEAD
-static const char banner[] __initdata = KERN_INFO \
-	"AX.25: bpqether driver version 004\n";
-
-static char bcast_addr[6]={0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-
-static char bpq_eth_addr[6];
-
-=======
 static const char banner[] __initconst = KERN_INFO \
 	"AX.25: bpqether driver version 004\n";
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bpq_rcv(struct sk_buff *, struct net_device *, struct packet_type *, struct net_device *);
 static int bpq_device_event(struct notifier_block *, unsigned long, void *);
 
@@ -123,11 +93,7 @@ static struct packet_type bpq_packet_type __read_mostly = {
 };
 
 static struct notifier_block bpq_dev_notifier = {
-<<<<<<< HEAD
-	.notifier_call =bpq_device_event,
-=======
 	.notifier_call = bpq_device_event,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -182,12 +148,8 @@ static inline struct net_device *bpq_get_ax25_dev(struct net_device *dev)
 {
 	struct bpqdev *bpq;
 
-<<<<<<< HEAD
-	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list) {
-=======
 	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list,
 				lockdep_rtnl_is_held()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bpq->ethdev == dev)
 			return bpq->axdev;
 	}
@@ -237,11 +199,7 @@ static int bpq_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_ty
 	eth = eth_hdr(skb);
 
 	if (!(bpq->acpt_addr[0] & 0x01) &&
-<<<<<<< HEAD
-	    memcmp(eth->h_source, bpq->acpt_addr, ETH_ALEN))
-=======
 	    !ether_addr_equal(eth->h_source, bpq->acpt_addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop_unlock;
 
 	if (skb_cow(skb, sizeof(struct ethhdr)))
@@ -284,12 +242,9 @@ static netdev_tx_t bpq_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct net_device *orig_dev;
 	int size;
 
-<<<<<<< HEAD
-=======
 	if (skb->protocol == htons(ETH_P_IP))
 		return ax25_ip_xmit(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Just to be *really* sure not to send anything if the interface
 	 * is down, the ethernet device may have gone.
@@ -347,11 +302,7 @@ static int bpq_set_mac_address(struct net_device *dev, void *addr)
 {
     struct sockaddr *sa = (struct sockaddr *)addr;
 
-<<<<<<< HEAD
-    memcpy(dev->dev_addr, sa->sa_data, dev->addr_len);
-=======
     dev_addr_set(dev, sa->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return 0;
 }
@@ -363,16 +314,10 @@ static int bpq_set_mac_address(struct net_device *dev, void *addr)
  *					source ethernet address (broadcast
  *					or multicast: accept all)
  */
-<<<<<<< HEAD
-static int bpq_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	struct bpq_ethaddr __user *ethaddr = ifr->ifr_data;
-=======
 static int bpq_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			      void __user *data, int cmd)
 {
 	struct bpq_ethaddr __user *ethaddr = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bpqdev *bpq = netdev_priv(dev);
 	struct bpq_req req;
 
@@ -381,11 +326,7 @@ static int bpq_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 
 	switch (cmd) {
 		case SIOCSBPQETHOPT:
-<<<<<<< HEAD
-			if (copy_from_user(&req, ifr->ifr_data, sizeof(struct bpq_req)))
-=======
 			if (copy_from_user(&req, data, sizeof(struct bpq_req)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EFAULT;
 			switch (req.cmd) {
 				case SIOCGBPQETHPARAM:
@@ -428,11 +369,7 @@ static int bpq_close(struct net_device *dev)
 
 /* ------------------------------------------------------------------------ */
 
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Proc filesystem
  */
@@ -504,25 +441,7 @@ static const struct seq_operations bpq_seqops = {
 	.stop = bpq_seq_stop,
 	.show = bpq_seq_show,
 };
-<<<<<<< HEAD
-
-static int bpq_info_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &bpq_seqops);
-}
-
-static const struct file_operations bpq_info_fops = {
-	.owner = THIS_MODULE,
-	.open = bpq_info_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = seq_release,
-};
-
-
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------------------ */
 
 static const struct net_device_ops bpq_netdev_ops = {
@@ -530,33 +449,18 @@ static const struct net_device_ops bpq_netdev_ops = {
 	.ndo_stop	     = bpq_close,
 	.ndo_start_xmit	     = bpq_xmit,
 	.ndo_set_mac_address = bpq_set_mac_address,
-<<<<<<< HEAD
-	.ndo_do_ioctl	     = bpq_ioctl,
-=======
 	.ndo_siocdevprivate  = bpq_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void bpq_setup(struct net_device *dev)
 {
 	dev->netdev_ops	     = &bpq_netdev_ops;
-<<<<<<< HEAD
-	dev->destructor	     = free_netdev;
-
-	memcpy(dev->broadcast, &ax25_bcast, AX25_ADDR_LEN);
-	memcpy(dev->dev_addr,  &ax25_defaddr, AX25_ADDR_LEN);
-
-	dev->flags      = 0;
-
-#if defined(CONFIG_AX25) || defined(CONFIG_AX25_MODULE)
-=======
 	dev->needs_free_netdev = true;
 
 	dev->flags      = 0;
 	dev->features	= NETIF_F_LLTX;	/* Allow recursion */
 
 #if IS_ENABLED(CONFIG_AX25)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->header_ops      = &ax25_header_ops;
 #endif
 
@@ -565,11 +469,8 @@ static void bpq_setup(struct net_device *dev)
 	dev->mtu             = AX25_DEF_PACLEN;
 	dev->addr_len        = AX25_ADDR_LEN;
 
-<<<<<<< HEAD
-=======
 	memcpy(dev->broadcast, &ax25_bcast, AX25_ADDR_LEN);
 	dev_addr_set(dev, (u8 *)&ax25_defaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -581,13 +482,8 @@ static int bpq_new_device(struct net_device *edev)
 	struct net_device *ndev;
 	struct bpqdev *bpq;
 
-<<<<<<< HEAD
-	ndev = alloc_netdev(sizeof(struct bpqdev), "bpq%d",
-			   bpq_setup);
-=======
 	ndev = alloc_netdev(sizeof(struct bpqdev), "bpq%d", NET_NAME_UNKNOWN,
 			    bpq_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ndev)
 		return -ENOMEM;
 
@@ -597,13 +493,8 @@ static int bpq_new_device(struct net_device *edev)
 	bpq->ethdev = edev;
 	bpq->axdev = ndev;
 
-<<<<<<< HEAD
-	memcpy(bpq->dest_addr, bcast_addr, sizeof(bpq_eth_addr));
-	memcpy(bpq->acpt_addr, bcast_addr, sizeof(bpq_eth_addr));
-=======
 	eth_broadcast_addr(bpq->dest_addr);
 	eth_broadcast_addr(bpq->acpt_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_netdevice(ndev);
 	if (err)
@@ -634,25 +525,15 @@ static void bpq_free_device(struct net_device *ndev)
 /*
  *	Handle device status changes.
  */
-<<<<<<< HEAD
-static int bpq_device_event(struct notifier_block *this,unsigned long event, void *ptr)
-{
-	struct net_device *dev = (struct net_device *)ptr;
-=======
 static int bpq_device_event(struct notifier_block *this,
 			    unsigned long event, void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
 
-<<<<<<< HEAD
-	if (!dev_is_ethdev(dev))
-=======
 	if (!dev_is_ethdev(dev) && !bpq_get_ax25_dev(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NOTIFY_DONE;
 
 	switch (event) {
@@ -687,11 +568,7 @@ static int bpq_device_event(struct notifier_block *this,
 static int __init bpq_init_driver(void)
 {
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-	if (!proc_net_fops_create(&init_net, "bpqether", S_IRUGO, &bpq_info_fops)) {
-=======
 	if (!proc_create_seq("bpqether", 0444, init_net.proc_net, &bpq_seqops)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR
 			"bpq: cannot create /proc/net/bpqether entry.\n");
 		return -ENOENT;
@@ -715,11 +592,7 @@ static void __exit bpq_cleanup_driver(void)
 
 	unregister_netdevice_notifier(&bpq_dev_notifier);
 
-<<<<<<< HEAD
-	proc_net_remove(&init_net, "bpqether");
-=======
 	remove_proc_entry("bpqether", init_net.proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtnl_lock();
 	while (!list_empty(&bpq_devices)) {

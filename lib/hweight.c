@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/bitops.h>
 #include <asm/types.h>
@@ -15,11 +12,7 @@
 
 unsigned int __sw_hweight32(unsigned int w)
 {
-<<<<<<< HEAD
-#ifdef ARCH_HAS_FAST_MULTIPLIER
-=======
 #ifdef CONFIG_ARCH_HAS_FAST_MULTIPLIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w -= (w >> 1) & 0x55555555;
 	w =  (w & 0x33333333) + ((w >> 2) & 0x33333333);
 	w =  (w + (w >> 4)) & 0x0f0f0f0f;
@@ -57,11 +50,7 @@ unsigned long __sw_hweight64(__u64 w)
 	return __sw_hweight32((unsigned int)(w >> 32)) +
 	       __sw_hweight32((unsigned int)w);
 #elif BITS_PER_LONG == 64
-<<<<<<< HEAD
-#ifdef ARCH_HAS_FAST_MULTIPLIER
-=======
 #ifdef CONFIG_ARCH_HAS_FAST_MULTIPLIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w -= (w >> 1) & 0x5555555555555555ul;
 	w =  (w & 0x3333333333333333ul) + ((w >> 2) & 0x3333333333333333ul);
 	w =  (w + (w >> 4)) & 0x0f0f0f0f0f0f0f0ful;

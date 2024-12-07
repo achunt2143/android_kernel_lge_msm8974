@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/ialloc.c
  *
@@ -18,10 +15,6 @@
 
 #include <linux/time.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/jbd2.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stat.h>
 #include <linux/string.h>
 #include <linux/quotaops.h>
@@ -29,11 +22,8 @@
 #include <linux/random.h>
 #include <linux/bitops.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/cred.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 #include "ext4.h"
@@ -76,40 +66,6 @@ void ext4_mark_bitmap_end(int start_bit, int end_bit, char *bitmap)
 		memset(bitmap + (i >> 3), 0xff, (end_bit - i) >> 3);
 }
 
-<<<<<<< HEAD
-/* Initializes an uninitialized inode bitmap */
-static unsigned ext4_init_inode_bitmap(struct super_block *sb,
-				       struct buffer_head *bh,
-				       ext4_group_t block_group,
-				       struct ext4_group_desc *gdp)
-{
-	J_ASSERT_BH(bh, buffer_locked(bh));
-
-	/* If checksum is bad mark all blocks and inodes use to prevent
-	 * allocation, essentially implementing a per-group read-only flag. */
-	if (!ext4_group_desc_csum_verify(sb, block_group, gdp)) {
-		ext4_error(sb, "Checksum bad for group %u", block_group);
-		ext4_free_group_clusters_set(sb, gdp, 0);
-		ext4_free_inodes_set(sb, gdp, 0);
-		ext4_itable_unused_set(sb, gdp, 0);
-		memset(bh->b_data, 0xff, sb->s_blocksize);
-		ext4_inode_bitmap_csum_set(sb, block_group, gdp, bh,
-					   EXT4_INODES_PER_GROUP(sb) / 8);
-		return 0;
-	}
-
-	memset(bh->b_data, 0, (EXT4_INODES_PER_GROUP(sb) + 7) / 8);
-	ext4_mark_bitmap_end(EXT4_INODES_PER_GROUP(sb), sb->s_blocksize * 8,
-			bh->b_data);
-	ext4_inode_bitmap_csum_set(sb, block_group, gdp, bh,
-				   EXT4_INODES_PER_GROUP(sb) / 8);
-	ext4_group_desc_csum_set(sb, block_group, gdp);
-
-	return EXT4_INODES_PER_GROUP(sb);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ext4_end_bitmap_read(struct buffer_head *bh, int uptodate)
 {
 	if (uptodate) {
@@ -120,8 +76,6 @@ void ext4_end_bitmap_read(struct buffer_head *bh, int uptodate)
 	put_bh(bh);
 }
 
-<<<<<<< HEAD
-=======
 static int ext4_validate_inode_bitmap(struct super_block *sb,
 				      struct ext4_group_desc *desc,
 				      ext4_group_t block_group,
@@ -160,16 +114,11 @@ verified:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read the inode allocation bitmap for a given block_group, reading
  * into the specified slot in the superblock's bitmap cache.
  *
-<<<<<<< HEAD
- * Return buffer_head of bitmap on success or NULL.
-=======
  * Return buffer_head of bitmap on success, or an ERR_PTR on error.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct buffer_head *
 ext4_read_inode_bitmap(struct super_block *sb, ext4_group_t block_group)
@@ -178,34 +127,17 @@ ext4_read_inode_bitmap(struct super_block *sb, ext4_group_t block_group)
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct buffer_head *bh = NULL;
 	ext4_fsblk_t bitmap_blk;
-<<<<<<< HEAD
-
-	desc = ext4_get_group_desc(sb, block_group, NULL);
-	if (!desc)
-		return NULL;
-=======
 	int err;
 
 	desc = ext4_get_group_desc(sb, block_group, NULL);
 	if (!desc)
 		return ERR_PTR(-EFSCORRUPTED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bitmap_blk = ext4_inode_bitmap(sb, desc);
 	if ((bitmap_blk <= le32_to_cpu(sbi->s_es->s_first_data_block)) ||
 	    (bitmap_blk >= ext4_blocks_count(sbi->s_es))) {
 		ext4_error(sb, "Invalid inode bitmap blk %llu in "
 			   "block_group %u", bitmap_blk, block_group);
-<<<<<<< HEAD
-		return NULL;
-	}
-	bh = sb_getblk(sb, bitmap_blk);
-	if (unlikely(!bh)) {
-		ext4_error(sb, "Cannot read inode bitmap - "
-			    "block_group = %u, inode_bitmap = %llu",
-			    block_group, bitmap_blk);
-		return NULL;
-=======
 		ext4_mark_group_bitmap_corrupted(sb, block_group,
 					EXT4_GROUP_INFO_IBITMAP_CORRUPT);
 		return ERR_PTR(-EFSCORRUPTED);
@@ -216,7 +148,6 @@ ext4_read_inode_bitmap(struct super_block *sb, ext4_group_t block_group)
 			     "block_group = %u, inode_bitmap = %llu",
 			     block_group, bitmap_blk);
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (bitmap_uptodate(bh))
 		goto verify;
@@ -235,19 +166,12 @@ ext4_read_inode_bitmap(struct super_block *sb, ext4_group_t block_group)
 			unlock_buffer(bh);
 			ext4_error(sb, "Inode bitmap for bg 0 marked "
 				   "uninitialized");
-<<<<<<< HEAD
-			put_bh(bh);
-			return NULL;
-		}
-		ext4_init_inode_bitmap(sb, bh, block_group, desc);
-=======
 			err = -EFSCORRUPTED;
 			goto out;
 		}
 		memset(bh->b_data, 0, (EXT4_INODES_PER_GROUP(sb) + 7) / 8);
 		ext4_mark_bitmap_end(EXT4_INODES_PER_GROUP(sb),
 				     sb->s_blocksize * 8, bh->b_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bitmap_uptodate(bh);
 		set_buffer_uptodate(bh);
 		set_buffer_verified(bh);
@@ -270,34 +194,6 @@ ext4_read_inode_bitmap(struct super_block *sb, ext4_group_t block_group)
 	 * submit the buffer_head for reading
 	 */
 	trace_ext4_load_inode_bitmap(sb, block_group);
-<<<<<<< HEAD
-	bh->b_end_io = ext4_end_bitmap_read;
-	get_bh(bh);
-	submit_bh(READ, bh);
-	wait_on_buffer(bh);
-	if (!buffer_uptodate(bh)) {
-		put_bh(bh);
-		ext4_error(sb, "Cannot read inode bitmap - "
-			   "block_group = %u, inode_bitmap = %llu",
-			   block_group, bitmap_blk);
-		return NULL;
-	}
-
-verify:
-	ext4_lock_group(sb, block_group);
-	if (!buffer_verified(bh) &&
-	    !ext4_inode_bitmap_csum_verify(sb, block_group, desc, bh,
-					   EXT4_INODES_PER_GROUP(sb) / 8)) {
-		ext4_unlock_group(sb, block_group);
-		put_bh(bh);
-		ext4_error(sb, "Corrupt inode bitmap - block_group = %u, "
-			   "inode_bitmap = %llu", block_group, bitmap_blk);
-		return NULL;
-	}
-	ext4_unlock_group(sb, block_group);
-	set_buffer_verified(bh);
-	return bh;
-=======
 	ext4_read_bh(bh, REQ_META | REQ_PRIO, ext4_end_bitmap_read);
 	ext4_simulate_fail_bh(sb, bh, EXT4_SIM_IBITMAP_EIO);
 	if (!buffer_uptodate(bh)) {
@@ -318,7 +214,6 @@ verify:
 out:
 	put_bh(bh);
 	return ERR_PTR(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -350,10 +245,7 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	struct ext4_super_block *es;
 	struct ext4_sb_info *sbi;
 	int fatal = 0, err, count, cleared;
-<<<<<<< HEAD
-=======
 	struct ext4_group_info *grp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sb) {
 		printk(KERN_ERR "EXT4-fs: %s:%d: inode on "
@@ -377,30 +269,15 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	ext4_debug("freeing inode %lu\n", ino);
 	trace_ext4_free_inode(inode);
 
-<<<<<<< HEAD
-	/*
-	 * Note: we must free any quota before locking the superblock,
-	 * as writing the quota to disk may need the lock as well.
-	 */
-	dquot_initialize(inode);
-	ext4_xattr_delete_inode(handle, inode);
-	dquot_free_inode(inode);
-	dquot_drop(inode);
-=======
 	dquot_initialize(inode);
 	dquot_free_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	is_directory = S_ISDIR(inode->i_mode);
 
 	/* Do this BEFORE marking the inode not in use or returning an error */
 	ext4_clear_inode(inode);
 
-<<<<<<< HEAD
-	es = EXT4_SB(sb)->s_es;
-=======
 	es = sbi->s_es;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ino < EXT4_FIRST_INO(sb) || ino > le32_to_cpu(es->s_inodes_count)) {
 		ext4_error(sb, "reserved or nonexistent inode %lu", ino);
 		goto error_return;
@@ -408,13 +285,6 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	block_group = (ino - 1) / EXT4_INODES_PER_GROUP(sb);
 	bit = (ino - 1) % EXT4_INODES_PER_GROUP(sb);
 	bitmap_bh = ext4_read_inode_bitmap(sb, block_group);
-<<<<<<< HEAD
-	if (!bitmap_bh)
-		goto error_return;
-
-	BUFFER_TRACE(bitmap_bh, "get_write_access");
-	fatal = ext4_journal_get_write_access(handle, bitmap_bh);
-=======
 	/* Don't bother if the inode bitmap is corrupt. */
 	if (IS_ERR(bitmap_bh)) {
 		fatal = PTR_ERR(bitmap_bh);
@@ -432,7 +302,6 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	BUFFER_TRACE(bitmap_bh, "get_write_access");
 	fatal = ext4_journal_get_write_access(handle, sb, bitmap_bh,
 					      EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fatal)
 		goto error_return;
 
@@ -440,12 +309,8 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	gdp = ext4_get_group_desc(sb, block_group, &bh2);
 	if (gdp) {
 		BUFFER_TRACE(bh2, "get_write_access");
-<<<<<<< HEAD
-		fatal = ext4_journal_get_write_access(handle, bh2);
-=======
 		fatal = ext4_journal_get_write_access(handle, sb, bh2,
 						      EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ext4_lock_group(sb, block_group);
 	cleared = ext4_test_and_clear_bit(bit, bitmap_bh->b_data);
@@ -459,29 +324,14 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 	if (is_directory) {
 		count = ext4_used_dirs_count(sb, gdp) - 1;
 		ext4_used_dirs_set(sb, gdp, count);
-<<<<<<< HEAD
-		percpu_counter_dec(&sbi->s_dirs_counter);
-	}
-	ext4_inode_bitmap_csum_set(sb, block_group, gdp, bitmap_bh,
-=======
 		if (percpu_counter_initialized(&sbi->s_dirs_counter))
 			percpu_counter_dec(&sbi->s_dirs_counter);
 	}
 	ext4_inode_bitmap_csum_set(sb, gdp, bitmap_bh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   EXT4_INODES_PER_GROUP(sb) / 8);
 	ext4_group_desc_csum_set(sb, block_group, gdp);
 	ext4_unlock_group(sb, block_group);
 
-<<<<<<< HEAD
-	percpu_counter_inc(&sbi->s_freeinodes_counter);
-	if (sbi->s_log_groups_per_flex) {
-		ext4_group_t f = ext4_flex_group(sbi, block_group);
-
-		atomic_inc(&sbi->s_flex_groups[f].free_inodes);
-		if (is_directory)
-			atomic_dec(&sbi->s_flex_groups[f].used_dirs);
-=======
 	if (percpu_counter_initialized(&sbi->s_freeinodes_counter))
 		percpu_counter_inc(&sbi->s_freeinodes_counter);
 	if (sbi->s_log_groups_per_flex) {
@@ -492,7 +342,6 @@ void ext4_free_inode(handle_t *handle, struct inode *inode)
 		atomic_inc(&fg->free_inodes);
 		if (is_directory)
 			atomic_dec(&fg->used_dirs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUFFER_TRACE(bh2, "call ext4_handle_dirty_metadata");
 	fatal = ext4_handle_dirty_metadata(handle, NULL, bh2);
@@ -502,17 +351,11 @@ out:
 		err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
 		if (!fatal)
 			fatal = err;
-<<<<<<< HEAD
-		ext4_mark_super_dirty(sb);
-	} else
-		ext4_error(sb, "bit already cleared for inode %lu", ino);
-=======
 	} else {
 		ext4_error(sb, "bit already cleared for inode %lu", ino);
 		ext4_mark_group_bitmap_corrupted(sb, block_group,
 					EXT4_GROUP_INFO_IBITMAP_CORRUPT);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error_return:
 	brelse(bitmap_bh);
@@ -534,14 +377,6 @@ static void get_orlov_stats(struct super_block *sb, ext4_group_t g,
 			    int flex_size, struct orlov_stats *stats)
 {
 	struct ext4_group_desc *desc;
-<<<<<<< HEAD
-	struct flex_groups *flex_group = EXT4_SB(sb)->s_flex_groups;
-
-	if (flex_size > 1) {
-		stats->free_inodes = atomic_read(&flex_group[g].free_inodes);
-		stats->free_clusters = atomic64_read(&flex_group[g].free_clusters);
-		stats->used_dirs = atomic_read(&flex_group[g].used_dirs);
-=======
 
 	if (flex_size > 1) {
 		struct flex_groups *fg = sbi_array_rcu_deref(EXT4_SB(sb),
@@ -549,7 +384,6 @@ static void get_orlov_stats(struct super_block *sb, ext4_group_t g,
 		stats->free_inodes = atomic_read(&fg->free_inodes);
 		stats->free_clusters = atomic64_read(&fg->free_clusters);
 		stats->used_dirs = atomic_read(&fg->used_dirs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -570,11 +404,7 @@ static void get_orlov_stats(struct super_block *sb, ext4_group_t g,
  *
  * We always try to spread first-level directories.
  *
-<<<<<<< HEAD
- * If there are blockgroups with both free inodes and free blocks counts
-=======
  * If there are blockgroups with both free inodes and free clusters counts
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * not worse than average we return one with smallest directory count.
  * Otherwise we simply return a random group.
  *
@@ -583,11 +413,7 @@ static void get_orlov_stats(struct super_block *sb, ext4_group_t g,
  * It's OK to put directory into a group unless
  * it has too many directories already (max_dirs) or
  * it has too few free inodes left (min_inodes) or
-<<<<<<< HEAD
- * it has too few free blocks left (min_blocks) or
-=======
  * it has too few free clusters left (min_clusters) or
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Parent's group is preferred, if it doesn't satisfy these
  * conditions we search cyclically through the rest. If none
  * of the groups look good we just look for a group with more
@@ -603,11 +429,7 @@ static int find_group_orlov(struct super_block *sb, struct inode *parent,
 	ext4_group_t real_ngroups = ext4_get_groups_count(sb);
 	int inodes_per_group = EXT4_INODES_PER_GROUP(sb);
 	unsigned int freei, avefreei, grp_free;
-<<<<<<< HEAD
-	ext4_fsblk_t freeb, avefreec;
-=======
 	ext4_fsblk_t freec, avefreec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ndirs;
 	int max_dirs, min_inodes;
 	ext4_grpblk_t min_clusters;
@@ -626,23 +448,13 @@ static int find_group_orlov(struct super_block *sb, struct inode *parent,
 
 	freei = percpu_counter_read_positive(&sbi->s_freeinodes_counter);
 	avefreei = freei / ngroups;
-<<<<<<< HEAD
-	freeb = EXT4_C2B(sbi,
-		percpu_counter_read_positive(&sbi->s_freeclusters_counter));
-	avefreec = freeb;
-=======
 	freec = percpu_counter_read_positive(&sbi->s_freeclusters_counter);
 	avefreec = freec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_div(avefreec, ngroups);
 	ndirs = percpu_counter_read_positive(&sbi->s_dirs_counter);
 
 	if (S_ISDIR(mode) &&
-<<<<<<< HEAD
-	    ((parent == sb->s_root->d_inode) ||
-=======
 	    ((parent == d_inode(sb->s_root)) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     (ext4_test_inode_flag(parent, EXT4_INODE_TOPDIR)))) {
 		int best_ndir = inodes_per_group;
 		int ret = -1;
@@ -650,18 +462,10 @@ static int find_group_orlov(struct super_block *sb, struct inode *parent,
 		if (qstr) {
 			hinfo.hash_version = DX_HASH_HALF_MD4;
 			hinfo.seed = sbi->s_hash_seed;
-<<<<<<< HEAD
-			ext4fs_dirhash(qstr->name, qstr->len, &hinfo);
-			grp = hinfo.hash;
-		} else
-			get_random_bytes(&grp, sizeof(grp));
-		parent_group = (unsigned)grp % ngroups;
-=======
 			ext4fs_dirhash(parent, qstr->name, qstr->len, &hinfo);
 			parent_group = hinfo.hash % ngroups;
 		} else
 			parent_group = get_random_u32_below(ngroups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < ngroups; i++) {
 			g = (parent_group + i) % ngroups;
 			get_orlov_stats(sb, g, flex_size, &stats);
@@ -705,11 +509,7 @@ static int find_group_orlov(struct super_block *sb, struct inode *parent,
 		goto fallback;
 	}
 
-<<<<<<< HEAD
-	max_dirs = ndirs / ngroups + inodes_per_group / 16;
-=======
 	max_dirs = ndirs / ngroups + inodes_per_group*flex_size / 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	min_inodes = avefreei - inodes_per_group*flex_size / 4;
 	if (min_inodes < 1)
 		min_inodes = 1;
@@ -863,8 +663,6 @@ static int find_group_other(struct super_block *sb, struct inode *parent,
 }
 
 /*
-<<<<<<< HEAD
-=======
  * In no journal mode, if an inode has recently been deleted, we want
  * to avoid reusing it until we're reasonably sure the inode table
  * block has been written back to disk.  (Yes, these values are
@@ -1113,7 +911,6 @@ static int ext4_xattr_credits_for_new_inode(struct inode *dir, mode_t mode,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * There are two policies for allocating an inode.  If the new inode is
  * a directory, then a forward search is made for a block group with both
  * free space and a low directory-to-inode ratio; if that fails, then of
@@ -1123,17 +920,12 @@ static int ext4_xattr_credits_for_new_inode(struct inode *dir, mode_t mode,
  * For other inodes, search forward from the parent directory's block
  * group to find a free inode.
  */
-<<<<<<< HEAD
-struct inode *ext4_new_inode(handle_t *handle, struct inode *dir, umode_t mode,
-			     const struct qstr *qstr, __u32 goal, uid_t *owner)
-=======
 struct inode *__ext4_new_inode(struct mnt_idmap *idmap,
 			       handle_t *handle, struct inode *dir,
 			       umode_t mode, const struct qstr *qstr,
 			       __u32 goal, uid_t *owner, __u32 i_flags,
 			       int handle_type, unsigned int line_no,
 			       int nblocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb;
 	struct buffer_head *inode_bitmap_bh = NULL;
@@ -1144,42 +936,29 @@ struct inode *__ext4_new_inode(struct mnt_idmap *idmap,
 	struct ext4_group_desc *gdp = NULL;
 	struct ext4_inode_info *ei;
 	struct ext4_sb_info *sbi;
-<<<<<<< HEAD
-	int ret2, err = 0;
-	struct inode *ret;
-	ext4_group_t i;
-	ext4_group_t flex_group;
-=======
 	int ret2, err;
 	struct inode *ret;
 	ext4_group_t i;
 	ext4_group_t flex_group;
 	struct ext4_group_info *grp = NULL;
 	bool encrypt = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cannot create files in a deleted directory */
 	if (!dir || !dir->i_nlink)
 		return ERR_PTR(-EPERM);
 
 	sb = dir->i_sb;
-<<<<<<< HEAD
-=======
 	sbi = EXT4_SB(sb);
 
 	if (unlikely(ext4_forced_shutdown(sb)))
 		return ERR_PTR(-EIO);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ngroups = ext4_get_groups_count(sb);
 	trace_ext4_request_inode(dir, mode);
 	inode = new_inode(sb);
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 	ei = EXT4_I(inode);
-<<<<<<< HEAD
-	sbi = EXT4_SB(sb);
-=======
 
 	/*
 	 * Initialize owners and quota early so that we don't have to account
@@ -1221,7 +1000,6 @@ struct inode *__ext4_new_inode(struct mnt_idmap *idmap,
 		}
 		nblocks += ret2;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!goal)
 		goal = sbi->s_inode_goal;
@@ -1254,32 +1032,6 @@ got_group:
 
 		gdp = ext4_get_group_desc(sb, group, &group_desc_bh);
 		if (!gdp)
-<<<<<<< HEAD
-			goto fail;
-
-		brelse(inode_bitmap_bh);
-		inode_bitmap_bh = ext4_read_inode_bitmap(sb, group);
-		if (!inode_bitmap_bh)
-			goto fail;
-
-repeat_in_this_group:
-		ino = ext4_find_next_zero_bit((unsigned long *)
-					      inode_bitmap_bh->b_data,
-					      EXT4_INODES_PER_GROUP(sb), ino);
-		if (ino >= EXT4_INODES_PER_GROUP(sb))
-			goto next_group;
-		if (group == 0 && (ino+1) < EXT4_FIRST_INO(sb)) {
-			ext4_error(sb, "reserved inode found cleared - "
-				   "inode=%lu", ino + 1);
-			continue;
-		}
-		BUFFER_TRACE(inode_bitmap_bh, "get_write_access");
-		err = ext4_journal_get_write_access(handle, inode_bitmap_bh);
-		if (err)
-			goto fail;
-		ext4_lock_group(sb, group);
-		ret2 = ext4_test_and_set_bit(ino, inode_bitmap_bh->b_data);
-=======
 			goto out;
 
 		/*
@@ -1353,15 +1105,11 @@ repeat_in_this_group:
 				ret2 = 1; /* we didn't grab the inode */
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_unlock_group(sb, group);
 		ino++;		/* the inode bitmap is zero-based */
 		if (!ret2)
 			goto got; /* we grabbed the inode! */
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ino < EXT4_INODES_PER_GROUP(sb))
 			goto repeat_in_this_group;
 next_group:
@@ -1374,10 +1122,6 @@ next_group:
 got:
 	BUFFER_TRACE(inode_bitmap_bh, "call ext4_handle_dirty_metadata");
 	err = ext4_handle_dirty_metadata(handle, NULL, inode_bitmap_bh);
-<<<<<<< HEAD
-	if (err)
-		goto fail;
-=======
 	if (err) {
 		ext4_std_error(sb, err);
 		goto out;
@@ -1390,7 +1134,6 @@ got:
 		ext4_std_error(sb, err);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We may have to initialize the block bitmap if it isn't already */
 	if (ext4_has_group_desc_csum(sb) &&
@@ -1398,17 +1141,6 @@ got:
 		struct buffer_head *block_bitmap_bh;
 
 		block_bitmap_bh = ext4_read_block_bitmap(sb, group);
-<<<<<<< HEAD
-		if (!block_bitmap_bh) {
-			err = -EIO;
-			goto out;
-		}
-		BUFFER_TRACE(block_bitmap_bh, "get block bitmap access");
-		err = ext4_journal_get_write_access(handle, block_bitmap_bh);
-		if (err) {
-			brelse(block_bitmap_bh);
-			goto fail;
-=======
 		if (IS_ERR(block_bitmap_bh)) {
 			err = PTR_ERR(block_bitmap_bh);
 			goto out;
@@ -1420,7 +1152,6 @@ got:
 			brelse(block_bitmap_bh);
 			ext4_std_error(sb, err);
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		BUFFER_TRACE(block_bitmap_bh, "dirty block bitmap");
@@ -1433,34 +1164,12 @@ got:
 			gdp->bg_flags &= cpu_to_le16(~EXT4_BG_BLOCK_UNINIT);
 			ext4_free_group_clusters_set(sb, gdp,
 				ext4_free_clusters_after_init(sb, group, gdp));
-<<<<<<< HEAD
-			ext4_block_bitmap_csum_set(sb, group, gdp,
-						   block_bitmap_bh);
-=======
 			ext4_block_bitmap_csum_set(sb, gdp, block_bitmap_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ext4_group_desc_csum_set(sb, group, gdp);
 		}
 		ext4_unlock_group(sb, group);
 		brelse(block_bitmap_bh);
 
-<<<<<<< HEAD
-		if (err)
-			goto fail;
-	}
-
-	BUFFER_TRACE(group_desc_bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, group_desc_bh);
-	if (err)
-		goto fail;
-
-	/* Update the relevant bg descriptor fields */
-	if (ext4_has_group_desc_csum(sb)) {
-		int free;
-		struct ext4_group_info *grp = ext4_get_group_info(sb, group);
-
-		down_read(&grp->alloc_sem); /* protect vs itable lazyinit */
-=======
 		if (err) {
 			ext4_std_error(sb, err);
 			goto out;
@@ -1483,7 +1192,6 @@ got:
 						     * lazyinit
 						     */
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_lock_group(sb, group); /* while we modify the bg desc */
 		free = EXT4_INODES_PER_GROUP(sb) -
 			ext4_itable_unused_count(sb, gdp);
@@ -1499,39 +1207,24 @@ got:
 		if (ino > free)
 			ext4_itable_unused_set(sb, gdp,
 					(EXT4_INODES_PER_GROUP(sb) - ino));
-<<<<<<< HEAD
-		up_read(&grp->alloc_sem);
-	} else {
-		ext4_lock_group(sb, group);
-	}
-=======
 		if (!(sbi->s_mount_state & EXT4_FC_REPLAY))
 			up_read(&grp->alloc_sem);
 	} else {
 		ext4_lock_group(sb, group);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_free_inodes_set(sb, gdp, ext4_free_inodes_count(sb, gdp) - 1);
 	if (S_ISDIR(mode)) {
 		ext4_used_dirs_set(sb, gdp, ext4_used_dirs_count(sb, gdp) + 1);
 		if (sbi->s_log_groups_per_flex) {
 			ext4_group_t f = ext4_flex_group(sbi, group);
 
-<<<<<<< HEAD
-			atomic_inc(&sbi->s_flex_groups[f].used_dirs);
-		}
-	}
-	if (ext4_has_group_desc_csum(sb)) {
-		ext4_inode_bitmap_csum_set(sb, group, gdp, inode_bitmap_bh,
-=======
 			atomic_inc(&sbi_array_rcu_deref(sbi, s_flex_groups,
 							f)->used_dirs);
 		}
 	}
 	if (ext4_has_group_desc_csum(sb)) {
 		ext4_inode_bitmap_csum_set(sb, gdp, inode_bitmap_bh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   EXT4_INODES_PER_GROUP(sb) / 8);
 		ext4_group_desc_csum_set(sb, group, gdp);
 	}
@@ -1539,55 +1232,26 @@ got:
 
 	BUFFER_TRACE(group_desc_bh, "call ext4_handle_dirty_metadata");
 	err = ext4_handle_dirty_metadata(handle, NULL, group_desc_bh);
-<<<<<<< HEAD
-	if (err)
-		goto fail;
-=======
 	if (err) {
 		ext4_std_error(sb, err);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	percpu_counter_dec(&sbi->s_freeinodes_counter);
 	if (S_ISDIR(mode))
 		percpu_counter_inc(&sbi->s_dirs_counter);
-<<<<<<< HEAD
-	ext4_mark_super_dirty(sb);
-
-	if (sbi->s_log_groups_per_flex) {
-		flex_group = ext4_flex_group(sbi, group);
-		atomic_dec(&sbi->s_flex_groups[flex_group].free_inodes);
-	}
-	if (owner) {
-		inode->i_mode = mode;
-		inode->i_uid = owner[0];
-		inode->i_gid = owner[1];
-	} else if (test_opt(sb, GRPID)) {
-		inode->i_mode = mode;
-		inode->i_uid = current_fsuid();
-		inode->i_gid = dir->i_gid;
-	} else
-		inode_init_owner(inode, dir, mode);
-=======
 
 	if (sbi->s_log_groups_per_flex) {
 		flex_group = ext4_flex_group(sbi, group);
 		atomic_dec(&sbi_array_rcu_deref(sbi, s_flex_groups,
 						flex_group)->free_inodes);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_ino = ino + group * EXT4_INODES_PER_GROUP(sb);
 	/* This is the optimal IO size (for stat), not the fs block size */
 	inode->i_blocks = 0;
-<<<<<<< HEAD
-	inode->i_mtime = inode->i_atime = inode->i_ctime = ei->i_crtime =
-						       ext4_current_time(inode);
-=======
 	simple_inode_init_ts(inode);
 	ei->i_crtime = inode_get_mtime(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(ei->i_data, 0, sizeof(ei->i_data));
 	ei->i_dir_start_lookup = 0;
@@ -1596,20 +1260,13 @@ got:
 	/* Don't inherit extent flag from directory, amongst others. */
 	ei->i_flags =
 		ext4_mask_flags(mode, EXT4_I(dir)->i_flags & EXT4_FL_INHERITED);
-<<<<<<< HEAD
-=======
 	ei->i_flags |= i_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei->i_file_acl = 0;
 	ei->i_dtime = 0;
 	ei->i_block_group = group;
 	ei->i_last_alloc_group = ~0;
 
-<<<<<<< HEAD
-	ext4_set_inode_flags(inode);
-=======
 	ext4_set_inode_flags(inode, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_DIRSYNC(inode))
 		ext4_handle_sync(handle);
 	if (insert_inode_locked(inode) < 0) {
@@ -1618,19 +1275,6 @@ got:
 		 * twice.
 		 */
 		err = -EIO;
-<<<<<<< HEAD
-		goto fail;
-	}
-	spin_lock(&sbi->s_next_gen_lock);
-	inode->i_generation = sbi->s_next_generation++;
-	spin_unlock(&sbi->s_next_gen_lock);
-
-	/* Precompute checksum seed for inode metadata */
-	if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
-			EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)) {
-		__u32 csum;
-		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
-=======
 		ext4_error(sb, "failed to insert inode %lu: doubly allocated?",
 			   inode->i_ino);
 		ext4_mark_group_bitmap_corrupted(sb, group,
@@ -1642,7 +1286,6 @@ got:
 	/* Precompute checksum seed for inode metadata */
 	if (ext4_has_metadata_csum(sb)) {
 		__u32 csum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__le32 inum = cpu_to_le32(inode->i_ino);
 		__le32 gen = cpu_to_le32(inode->i_generation);
 		csum = ext4_chksum(sbi, sbi->s_csum_seed, (__u8 *)&inum,
@@ -1654,34 +1297,16 @@ got:
 	ext4_clear_state_flags(ei); /* Only relevant on 32-bit archs */
 	ext4_set_inode_state(inode, EXT4_STATE_NEW);
 
-<<<<<<< HEAD
-	ei->i_extra_isize = EXT4_SB(sb)->s_want_extra_isize;
-
-	ret = inode;
-	dquot_initialize(inode);
-=======
 	ei->i_extra_isize = sbi->s_want_extra_isize;
 	ei->i_inline_off = 0;
 	if (ext4_has_feature_inline_data(sb) &&
 	    (!(ei->i_flags & EXT4_DAX_FL) || S_ISDIR(mode)))
 		ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
 	ret = inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = dquot_alloc_inode(inode);
 	if (err)
 		goto fail_drop;
 
-<<<<<<< HEAD
-	err = ext4_init_acl(handle, inode, dir);
-	if (err)
-		goto fail_free_drop;
-
-	err = ext4_init_security(handle, inode, dir, qstr);
-	if (err)
-		goto fail_free_drop;
-
-	if (EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_EXTENTS)) {
-=======
 	/*
 	 * Since the encryption xattr will always be unique, create it first so
 	 * that it's less likely to end up in an external xattr block and
@@ -1704,7 +1329,6 @@ got:
 	}
 
 	if (ext4_has_feature_extents(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set extent flag only for directory, file and normal symlink*/
 		if (S_ISDIR(mode) || S_ISREG(mode) || S_ISLNK(mode)) {
 			ext4_set_inode_flag(inode, EXT4_INODE_EXTENTS);
@@ -1725,36 +1349,17 @@ got:
 
 	ext4_debug("allocating inode %lu\n", inode->i_ino);
 	trace_ext4_allocate_inode(inode, dir, mode);
-<<<<<<< HEAD
-	goto really_out;
-fail:
-	ext4_std_error(sb, err);
-out:
-	iput(inode);
-	ret = ERR_PTR(err);
-really_out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(inode_bitmap_bh);
 	return ret;
 
 fail_free_drop:
 	dquot_free_inode(inode);
-<<<<<<< HEAD
-
-fail_drop:
-	dquot_drop(inode);
-	inode->i_flags |= S_NOQUOTA;
-	clear_nlink(inode);
-	unlock_new_inode(inode);
-=======
 fail_drop:
 	clear_nlink(inode);
 	unlock_new_inode(inode);
 out:
 	dquot_drop(inode);
 	inode->i_flags |= S_NOQUOTA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 	brelse(inode_bitmap_bh);
 	return ERR_PTR(err);
@@ -1766,37 +1371,18 @@ struct inode *ext4_orphan_get(struct super_block *sb, unsigned long ino)
 	unsigned long max_ino = le32_to_cpu(EXT4_SB(sb)->s_es->s_inodes_count);
 	ext4_group_t block_group;
 	int bit;
-<<<<<<< HEAD
-	struct buffer_head *bitmap_bh;
-	struct inode *inode = NULL;
-	long err = -EIO;
-
-	/* Error cases - e2fsck has already cleaned up for us */
-	if (ino > max_ino) {
-		ext4_warning(sb, "bad orphan ino %lu!  e2fsck was run?", ino);
-		goto error;
-	}
-=======
 	struct buffer_head *bitmap_bh = NULL;
 	struct inode *inode = NULL;
 	int err = -EFSCORRUPTED;
 
 	if (ino < EXT4_FIRST_INO(sb) || ino > max_ino)
 		goto bad_orphan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	block_group = (ino - 1) / EXT4_INODES_PER_GROUP(sb);
 	bit = (ino - 1) % EXT4_INODES_PER_GROUP(sb);
 	bitmap_bh = ext4_read_inode_bitmap(sb, block_group);
-<<<<<<< HEAD
-	if (!bitmap_bh) {
-		ext4_warning(sb, "inode bitmap error for orphan %lu", ino);
-		goto error;
-	}
-=======
 	if (IS_ERR(bitmap_bh))
 		return ERR_CAST(bitmap_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Having the inode bit set should be a 100% indicator that this
 	 * is a valid orphan (no e2fsck run on fs).  Orphans also include
@@ -1805,18 +1391,6 @@ struct inode *ext4_orphan_get(struct super_block *sb, unsigned long ino)
 	if (!ext4_test_bit(bit, bitmap_bh->b_data))
 		goto bad_orphan;
 
-<<<<<<< HEAD
-	inode = ext4_iget(sb, ino);
-	if (IS_ERR(inode))
-		goto iget_failed;
-
-	/*
-	 * If the orphans has i_nlinks > 0 then it should be able to be
-	 * truncated, otherwise it won't be removed from the orphan list
-	 * during processing and an infinite loop will result.
-	 */
-	if (inode->i_nlink && !ext4_can_truncate(inode))
-=======
 	inode = ext4_iget(sb, ino, EXT4_IGET_NORMAL);
 	if (IS_ERR(inode)) {
 		err = PTR_ERR(inode);
@@ -1835,7 +1409,6 @@ struct inode *ext4_orphan_get(struct super_block *sb, unsigned long ino)
 	 */
 	if ((inode->i_nlink && !ext4_can_truncate(inode)) ||
 	    is_bad_inode(inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad_orphan;
 
 	if (NEXT_ORPHAN(inode) > max_ino)
@@ -1843,24 +1416,6 @@ struct inode *ext4_orphan_get(struct super_block *sb, unsigned long ino)
 	brelse(bitmap_bh);
 	return inode;
 
-<<<<<<< HEAD
-iget_failed:
-	err = PTR_ERR(inode);
-	inode = NULL;
-bad_orphan:
-	ext4_warning(sb, "bad orphan inode %lu!  e2fsck was run?", ino);
-	printk(KERN_NOTICE "ext4_test_bit(bit=%d, block=%llu) = %d\n",
-	       bit, (unsigned long long)bitmap_bh->b_blocknr,
-	       ext4_test_bit(bit, bitmap_bh->b_data));
-	printk(KERN_NOTICE "inode=%p\n", inode);
-	if (inode) {
-		printk(KERN_NOTICE "is_bad_inode(inode)=%d\n",
-		       is_bad_inode(inode));
-		printk(KERN_NOTICE "NEXT_ORPHAN(inode)=%u\n",
-		       NEXT_ORPHAN(inode));
-		printk(KERN_NOTICE "max_ino=%lu\n", max_ino);
-		printk(KERN_NOTICE "i_nlink=%u\n", inode->i_nlink);
-=======
 bad_orphan:
 	ext4_error(sb, "bad orphan inode %lu", ino);
 	if (bitmap_bh)
@@ -1874,17 +1429,12 @@ bad_orphan:
 		       NEXT_ORPHAN(inode));
 		printk(KERN_ERR "max_ino=%lu\n", max_ino);
 		printk(KERN_ERR "i_nlink=%u\n", inode->i_nlink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Avoid freeing blocks if we got a bad deleted inode */
 		if (inode->i_nlink == 0)
 			inode->i_blocks = 0;
 		iput(inode);
 	}
 	brelse(bitmap_bh);
-<<<<<<< HEAD
-error:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 
@@ -1909,15 +1459,10 @@ unsigned long ext4_count_free_inodes(struct super_block *sb)
 		desc_count += ext4_free_inodes_count(sb, gdp);
 		brelse(bitmap_bh);
 		bitmap_bh = ext4_read_inode_bitmap(sb, i);
-<<<<<<< HEAD
-		if (!bitmap_bh)
-			continue;
-=======
 		if (IS_ERR(bitmap_bh)) {
 			bitmap_bh = NULL;
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		x = ext4_count_free(bitmap_bh->b_data,
 				    EXT4_INODES_PER_GROUP(sb) / 8);
@@ -1976,22 +1521,10 @@ int ext4_init_inode_table(struct super_block *sb, ext4_group_t group,
 	handle_t *handle;
 	ext4_fsblk_t blk;
 	int num, ret = 0, used_blks = 0;
-<<<<<<< HEAD
-
-	/* This should not happen, but just to be sure check this */
-	if (sb->s_flags & MS_RDONLY) {
-		ret = 1;
-		goto out;
-	}
-
-	gdp = ext4_get_group_desc(sb, group, &group_desc_bh);
-	if (!gdp)
-=======
 	unsigned long used_inos = 0;
 
 	gdp = ext4_get_group_desc(sb, group, &group_desc_bh);
 	if (!gdp || !grp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/*
@@ -2001,11 +1534,7 @@ int ext4_init_inode_table(struct super_block *sb, ext4_group_t group,
 	if (gdp->bg_flags & cpu_to_le16(EXT4_BG_INODE_ZEROED))
 		goto out;
 
-<<<<<<< HEAD
-	handle = ext4_journal_start_sb(sb, 1);
-=======
 	handle = ext4_journal_start_sb(sb, EXT4_HT_MISC, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
 		goto out;
@@ -2017,24 +1546,6 @@ int ext4_init_inode_table(struct super_block *sb, ext4_group_t group,
 	 * used inodes so we need to skip blocks with used inodes in
 	 * inode table.
 	 */
-<<<<<<< HEAD
-	if (!(gdp->bg_flags & cpu_to_le16(EXT4_BG_INODE_UNINIT)))
-		used_blks = DIV_ROUND_UP((EXT4_INODES_PER_GROUP(sb) -
-			    ext4_itable_unused_count(sb, gdp)),
-			    sbi->s_inodes_per_block);
-
-	if ((used_blks < 0) || (used_blks > sbi->s_itb_per_group) ||
-	    ((group == 0) && ((EXT4_INODES_PER_GROUP(sb) -
-			       ext4_itable_unused_count(sb, gdp)) <
-			      EXT4_FIRST_INO(sb)))) {
-		ext4_error(sb, "Something is wrong with group %u: "
-			   "used itable blocks: %d; "
-			   "itable unused count: %u",
-			   group, used_blks,
-			   ext4_itable_unused_count(sb, gdp));
-		ret = 1;
-		goto err_out;
-=======
 	if (!(gdp->bg_flags & cpu_to_le16(EXT4_BG_INODE_UNINIT))) {
 		used_inos = EXT4_INODES_PER_GROUP(sb) -
 			    ext4_itable_unused_count(sb, gdp);
@@ -2066,20 +1577,14 @@ int ext4_init_inode_table(struct super_block *sb, ext4_group_t group,
 			ret = 1;
 			goto err_out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	blk = ext4_inode_table(sb, gdp) + used_blks;
 	num = sbi->s_itb_per_group - used_blks;
 
 	BUFFER_TRACE(group_desc_bh, "get_write_access");
-<<<<<<< HEAD
-	ret = ext4_journal_get_write_access(handle,
-					    group_desc_bh);
-=======
 	ret = ext4_journal_get_write_access(handle, sb, group_desc_bh,
 					    EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err_out;
 
@@ -2097,11 +1602,7 @@ int ext4_init_inode_table(struct super_block *sb, ext4_group_t group,
 	if (ret < 0)
 		goto err_out;
 	if (barrier)
-<<<<<<< HEAD
-		blkdev_issue_flush(sb->s_bdev, GFP_NOFS, NULL);
-=======
 		blkdev_issue_flush(sb->s_bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 skip_zeroout:
 	ext4_lock_group(sb, group);

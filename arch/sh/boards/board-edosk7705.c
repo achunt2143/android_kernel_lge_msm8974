@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/renesas/edosk7705/setup.c
  *
@@ -17,24 +14,15 @@
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/smc91x.h>
-<<<<<<< HEAD
-#include <asm/machvec.h>
-#include <asm/sizes.h>
-=======
 #include <linux/sh_intc.h>
 #include <asm/machvec.h>
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_IOBASE	0xA2000000
 #define SMC_IO_OFFSET	0x300
 #define SMC_IOADDR	(SMC_IOBASE + SMC_IO_OFFSET)
 
-<<<<<<< HEAD
-#define ETHERNET_IRQ	0x09
-=======
 #define ETHERNET_IRQ	evt2irq(0x320)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init sh_edosk7705_init_irq(void)
 {
@@ -87,9 +75,5 @@ device_initcall(init_edosk7705_devices);
  */
 static struct sh_machine_vector mv_edosk7705 __initmv = {
 	.mv_name		= "EDOSK7705",
-<<<<<<< HEAD
-	.mv_nr_irqs		= 80,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= sh_edosk7705_init_irq,
 };

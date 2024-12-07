@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* rc5-imon-pad.c - Keytable for SoundGraph iMON PAD and Antec Veris
  * RM-200 Remote Control
  *
  * Copyright (c) 2010 by Jarod Wilson <jarod@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
@@ -139,18 +128,10 @@ static struct rc_map_table imon_pad[] = {
 
 static struct rc_map_list imon_pad_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = imon_pad,
-		.size    = ARRAY_SIZE(imon_pad),
-		/* actual protocol details unknown, hardware decoder */
-		.rc_type = RC_TYPE_OTHER,
-		.name    = RC_MAP_IMON_PAD,
-=======
 		.scan     = imon_pad,
 		.size     = ARRAY_SIZE(imon_pad),
 		.rc_proto = RC_PROTO_IMON,
 		.name     = RC_MAP_IMON_PAD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -169,7 +150,4 @@ module_exit(exit_rc_map_imon_pad)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jarod Wilson <jarod@redhat.com>");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("iMON PAD remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

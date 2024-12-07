@@ -1876,11 +1876,7 @@ movp_read_err:
 # word, or longword sized operands. Then, in the interest of		#
 # simplicity, all operands are converted to longword size whether the	#
 # operation is byte, word, or long. The bounds are sign extended	#
-<<<<<<< HEAD
-# accordingly. If Rn is a data regsiter, Rn is also sign extended. If	#
-=======
 # accordingly. If Rn is a data register, Rn is also sign extended. If	#
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Rn is an address register, it need not be sign extended since the	#
 # full register is always used.						#
 #	The comparisons are made and the condition codes calculated.	#
@@ -3818,11 +3814,7 @@ CAS2W2_FILLER:
 #	(3) Save current DFC/SFC (ASSUMED TO BE EQUAL!!!); Then set	#
 #	    SFC/DFC according to whether exception occurred in user or	#
 #	    supervisor mode.						#
-<<<<<<< HEAD
-#	(4) Use "plpaw" instruction to pre-load ATC with efective	#
-=======
 #	(4) Use "plpaw" instruction to pre-load ATC with effective	#
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	    address page(s). THIS SHOULD NOT FAULT!!! The relevant	#
 #	    page(s) should have been made resident prior to entering	#
 #	    this routine.						#

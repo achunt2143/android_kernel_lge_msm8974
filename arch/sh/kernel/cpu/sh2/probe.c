@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/sh2/probe.c
  *
  * CPU Subtype Probing for SH-2.
  *
  * Copyright (C) 2002 Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-#include <linux/init.h>
-#include <asm/processor.h>
-#include <asm/cache.h>
-
-void __cpuinit cpu_probe(void)
-=======
  */
 #include <linux/init.h>
 #include <linux/of_fdt.h>
@@ -43,7 +28,6 @@ static int __init scan_cache(unsigned long node, const char *uname,
 #endif
 
 void __ref cpu_probe(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #if defined(CONFIG_CPU_SUBTYPE_SH7619)
 	boot_cpu_data.type			= CPU_SH7619;
@@ -54,8 +38,6 @@ void __ref cpu_probe(void)
 	boot_cpu_data.dcache.linesz		= L1_CACHE_BYTES;
 	boot_cpu_data.dcache.flags		= 0;
 #endif
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_CPU_J2)
 #if defined(CONFIG_SMP)
@@ -79,15 +61,11 @@ void __ref cpu_probe(void)
 
 	boot_cpu_data.flags |= CPU_HAS_CAS_L;
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * SH-2 doesn't have separate caches
 	 */
 	boot_cpu_data.dcache.flags |= SH_CACHE_COMBINED;
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	boot_cpu_data.icache = boot_cpu_data.dcache;
 	boot_cpu_data.family = CPU_FAMILY_SH2;
 }

@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-/*
- * fam15h_power.c - AMD Family 15h processor power monitoring
- *
- * Copyright (c) 2011 Advanced Micro Devices, Inc.
- * Author: Andreas Herrmann <andreas.herrmann3@amd.com>
- *
- *
- * This driver is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This driver is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this driver; if not, see <http://www.gnu.org/licenses/>.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * fam15h_power.c - AMD Family 15h processor power monitoring
  *
  * Copyright (c) 2011-2016 Advanced Micro Devices, Inc.
  * Author: Andreas Herrmann <herrmann.der.user@googlemail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
@@ -34,17 +13,6 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <asm/processor.h>
-
-MODULE_DESCRIPTION("AMD Family 15h CPU processor power monitor");
-MODULE_AUTHOR("Andreas Herrmann <andreas.herrmann3@amd.com>");
-MODULE_LICENSE("GPL");
-
-/* Family 16h Northbridge's function 4 PCI ID */
-#define PCI_DEVICE_ID_AMD_16H_NB_F4	0x1534
-
-=======
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 #include <linux/time.h>
@@ -57,7 +25,6 @@ MODULE_DESCRIPTION("AMD Family 15h CPU processor power monitor");
 MODULE_AUTHOR("Andreas Herrmann <herrmann.der.user@googlemail.com>");
 MODULE_LICENSE("GPL");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* D18F3 */
 #define REG_NORTHBRIDGE_CAP		0xe8
 
@@ -68,17 +35,6 @@ MODULE_LICENSE("GPL");
 #define REG_TDP_RUNNING_AVERAGE		0xe0
 #define REG_TDP_LIMIT3			0xe8
 
-<<<<<<< HEAD
-struct fam15h_power_data {
-	struct device *hwmon_dev;
-	unsigned int tdp_to_watts;
-	unsigned int base_tdp;
-	unsigned int processor_pwr_watts;
-};
-
-static ssize_t show_power(struct device *dev,
-			  struct device_attribute *attr, char *buf)
-=======
 #define FAM15H_MIN_NUM_ATTRS		2
 #define FAM15H_NUM_GROUPS		2
 #define MAX_CUS				8
@@ -114,20 +70,10 @@ static bool is_carrizo_or_later(void)
 
 static ssize_t power1_input_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val, tdp_limit, running_avg_range;
 	s32 running_avg_capture;
 	u64 curr_pwr_watts;
-<<<<<<< HEAD
-	struct pci_dev *f4 = to_pci_dev(dev);
-	struct fam15h_power_data *data = dev_get_drvdata(dev);
-
-	pci_bus_read_config_dword(f4->bus, PCI_DEVFN(PCI_SLOT(f4->devfn), 5),
-				  REG_TDP_RUNNING_AVERAGE, &val);
-	running_avg_capture = (val >> 4) & 0x3fffff;
-	running_avg_capture = sign_extend32(running_avg_capture, 21);
-=======
 	struct fam15h_power_data *data = dev_get_drvdata(dev);
 	struct pci_dev *f4 = data->pdev;
 
@@ -146,16 +92,11 @@ static ssize_t power1_input_show(struct device *dev,
 		running_avg_capture = sign_extend32(running_avg_capture, 21);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	running_avg_range = (val & 0xf) + 1;
 
 	pci_bus_read_config_dword(f4->bus, PCI_DEVFN(PCI_SLOT(f4->devfn), 5),
 				  REG_TDP_LIMIT3, &val);
 
-<<<<<<< HEAD
-	tdp_limit = val >> 16;
-	curr_pwr_watts = (tdp_limit + data->base_tdp) << running_avg_range;
-=======
 	/*
 	 * On Carrizo and later platforms, ApmTdpLimit bit field
 	 * is extended to 16:31 from 16:28.
@@ -167,7 +108,6 @@ static ssize_t power1_input_show(struct device *dev,
 
 	curr_pwr_watts = ((u64)(tdp_limit +
 				data->base_tdp)) << running_avg_range;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	curr_pwr_watts -= running_avg_capture;
 	curr_pwr_watts *= data->tdp_to_watts;
 
@@ -181,45 +121,15 @@ static ssize_t power1_input_show(struct device *dev,
 	curr_pwr_watts = (curr_pwr_watts * 15625) >> (10 + running_avg_range);
 	return sprintf(buf, "%u\n", (unsigned int) curr_pwr_watts);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(power1_input, S_IRUGO, show_power, NULL);
-
-static ssize_t show_power_crit(struct device *dev,
-			       struct device_attribute *attr, char *buf)
-=======
 static DEVICE_ATTR_RO(power1_input);
 
 static ssize_t power1_crit_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fam15h_power_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%u\n", data->processor_pwr_watts);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(power1_crit, S_IRUGO, show_power_crit, NULL);
-
-static ssize_t show_name(struct device *dev,
-			 struct device_attribute *attr, char *buf)
-{
-	return sprintf(buf, "fam15h_power\n");
-}
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
-
-static struct attribute *fam15h_power_attrs[] = {
-	&dev_attr_power1_input.attr,
-	&dev_attr_power1_crit.attr,
-	&dev_attr_name.attr,
-	NULL
-};
-
-static const struct attribute_group fam15h_power_attr_group = {
-	.attrs	= fam15h_power_attrs,
-};
-
-static bool __devinit fam15h_power_is_internal_node0(struct pci_dev *f4)
-=======
 static DEVICE_ATTR_RO(power1_crit);
 
 static void do_read_registers_on_cu(void *_data)
@@ -416,7 +326,6 @@ static int fam15h_power_init_attrs(struct pci_dev *pdev,
 }
 
 static bool should_load_on_this_node(struct pci_dev *f4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -473,20 +382,12 @@ static int fam15h_power_resume(struct pci_dev *pdev)
 #define fam15h_power_resume NULL
 #endif
 
-<<<<<<< HEAD
-static void __devinit fam15h_power_init_data(struct pci_dev *f4,
-					     struct fam15h_power_data *data)
-{
-	u32 val;
-	u64 tmp;
-=======
 static int fam15h_power_init_data(struct pci_dev *f4,
 				  struct fam15h_power_data *data)
 {
 	u32 val;
 	u64 tmp;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_dword(f4, REG_PROCESSOR_TDP, &val);
 	data->base_tdp = val >> 16;
@@ -500,27 +401,12 @@ static int fam15h_power_init_data(struct pci_dev *f4,
 
 	/* result not allowed to be >= 256W */
 	if ((tmp >> 16) >= 256)
-<<<<<<< HEAD
-		dev_warn(&f4->dev, "Bogus value for ProcessorPwrWatts "
-			 "(processor_pwr_watts>=%u)\n",
-=======
 		dev_warn(&f4->dev,
 			 "Bogus value for ProcessorPwrWatts (processor_pwr_watts>=%u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (unsigned int) (tmp >> 16));
 
 	/* convert to microWatt */
 	data->processor_pwr_watts = (tmp * 15625) >> 10;
-<<<<<<< HEAD
-}
-
-static int __devinit fam15h_power_probe(struct pci_dev *pdev,
-					const struct pci_device_id *id)
-{
-	struct fam15h_power_data *data;
-	struct device *dev;
-	int err;
-=======
 
 	ret = fam15h_power_init_attrs(f4, data);
 	if (ret)
@@ -563,7 +449,6 @@ static int fam15h_power_probe(struct pci_dev *pdev,
 	struct device *dev = &pdev->dev;
 	struct device *hwmon_dev;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * though we ignore every other northbridge, we still have to
@@ -572,58 +457,6 @@ static int fam15h_power_probe(struct pci_dev *pdev,
 	 */
 	tweak_runavg_range(pdev);
 
-<<<<<<< HEAD
-	if (!fam15h_power_is_internal_node0(pdev)) {
-		err = -ENODEV;
-		goto exit;
-	}
-
-	data = kzalloc(sizeof(struct fam15h_power_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-	fam15h_power_init_data(pdev, data);
-	dev = &pdev->dev;
-
-	dev_set_drvdata(dev, data);
-	err = sysfs_create_group(&dev->kobj, &fam15h_power_attr_group);
-	if (err)
-		goto exit_free_data;
-
-	data->hwmon_dev = hwmon_device_register(dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		err = PTR_ERR(data->hwmon_dev);
-		goto exit_remove_group;
-	}
-
-	return 0;
-
-exit_remove_group:
-	sysfs_remove_group(&dev->kobj, &fam15h_power_attr_group);
-exit_free_data:
-	kfree(data);
-exit:
-	return err;
-}
-
-static void __devexit fam15h_power_remove(struct pci_dev *pdev)
-{
-	struct device *dev;
-	struct fam15h_power_data *data;
-
-	dev = &pdev->dev;
-	data = dev_get_drvdata(dev);
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&dev->kobj, &fam15h_power_attr_group);
-	dev_set_drvdata(dev, NULL);
-	kfree(data);
-}
-
-static DEFINE_PCI_DEVICE_TABLE(fam15h_power_id_table) = {
-	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) },
-	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_16H_NB_F4) },
-=======
 	if (!should_load_on_this_node(pdev))
 		return -ENODEV;
 
@@ -652,7 +485,6 @@ static const struct pci_device_id fam15h_power_id_table[] = {
 	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_M70H_NB_F4) },
 	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_16H_NB_F4) },
 	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_16H_M30H_NB_F4) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(pci, fam15h_power_id_table);
@@ -661,26 +493,7 @@ static struct pci_driver fam15h_power_driver = {
 	.name = "fam15h_power",
 	.id_table = fam15h_power_id_table,
 	.probe = fam15h_power_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(fam15h_power_remove),
-	.resume = fam15h_power_resume,
-};
-
-static int __init fam15h_power_init(void)
-{
-	return pci_register_driver(&fam15h_power_driver);
-}
-
-static void __exit fam15h_power_exit(void)
-{
-	pci_unregister_driver(&fam15h_power_driver);
-}
-
-module_init(fam15h_power_init)
-module_exit(fam15h_power_exit)
-=======
 	.resume = fam15h_power_resume,
 };
 
 module_pci_driver(fam15h_power_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

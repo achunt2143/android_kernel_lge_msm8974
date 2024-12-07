@@ -31,17 +31,11 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-#define DPRINTK(fmt, args...)				\
-	pr_debug("xenbus_probe (%s:%d) " fmt ".\n",	\
-		 __func__, __LINE__, ##args)
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #define DPRINTK(fmt, ...)				\
 	pr_debug("(%s:%d) " fmt "\n",			\
 		 __func__, __LINE__, ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -51,26 +45,15 @@
 #include <linux/mm.h>
 #include <linux/notifier.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-
-#include <asm/page.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/semaphore.h>
 
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/hypervisor.h>
 #include <asm/hypervisor.h>
 #include <xen/xenbus.h>
 #include <xen/features.h>
 
-<<<<<<< HEAD
-#include "xenbus_comms.h"
-#include "xenbus_probe.h"
-=======
 #include "xenbus.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* backend/<type>/<fe-uuid>/<id> => <type>-<fe-domid>-<id> */
 static int backend_bus_id(char bus_id[XEN_BUS_ID_SIZE], const char *nodename)
@@ -109,21 +92,12 @@ static int backend_bus_id(char bus_id[XEN_BUS_ID_SIZE], const char *nodename)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int xenbus_uevent_backend(struct device *dev,
-				 struct kobj_uevent_env *env)
-{
-	struct xenbus_device *xdev;
-	struct xenbus_driver *drv;
-	struct xen_bus_type *bus;
-=======
 static int xenbus_uevent_backend(const struct device *dev,
 				 struct kobj_uevent_env *env)
 {
 	const struct xenbus_device *xdev;
 	const struct xenbus_driver *drv;
 	const struct xen_bus_type *bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DPRINTK("");
 
@@ -206,12 +180,6 @@ static int xenbus_probe_backend(struct xen_bus_type *bus, const char *type,
 	return err;
 }
 
-<<<<<<< HEAD
-static void frontend_changed(struct xenbus_watch *watch,
-			    const char **vec, unsigned int len)
-{
-	xenbus_otherend_changed(watch, vec, len, 0);
-=======
 static bool frontend_will_handle(struct xenbus_watch *watch,
 				 const char *path, const char *token)
 {
@@ -222,7 +190,6 @@ static void frontend_changed(struct xenbus_watch *watch,
 			     const char *path, const char *token)
 {
 	xenbus_otherend_changed(watch, path, token, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xen_bus_type xenbus_backend = {
@@ -230,10 +197,7 @@ static struct xen_bus_type xenbus_backend = {
 	.levels = 3,		/* backend/type/<frontend>/<id> */
 	.get_bus_id = backend_bus_id,
 	.probe = xenbus_probe_backend,
-<<<<<<< HEAD
-=======
 	.otherend_will_handle = frontend_will_handle,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.otherend_changed = frontend_changed,
 	.bus = {
 		.name		= "xen-backend",
@@ -241,29 +205,16 @@ static struct xen_bus_type xenbus_backend = {
 		.uevent		= xenbus_uevent_backend,
 		.probe		= xenbus_dev_probe,
 		.remove		= xenbus_dev_remove,
-<<<<<<< HEAD
-		.shutdown	= xenbus_dev_shutdown,
-		.dev_attrs	= xenbus_dev_attrs,
-=======
 		.dev_groups	= xenbus_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 static void backend_changed(struct xenbus_watch *watch,
-<<<<<<< HEAD
-			    const char **vec, unsigned int len)
-{
-	DPRINTK("");
-
-	xenbus_dev_changed(vec[XS_WATCH_PATH], &xenbus_backend);
-=======
 			    const char *path, const char *token)
 {
 	DPRINTK("");
 
 	xenbus_dev_changed(path, &xenbus_backend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xenbus_watch be_watch = {
@@ -278,25 +229,6 @@ static int read_frontend_details(struct xenbus_device *xendev)
 
 int xenbus_dev_is_online(struct xenbus_device *dev)
 {
-<<<<<<< HEAD
-	int rc, val;
-
-	rc = xenbus_scanf(XBT_NIL, dev->nodename, "online", "%d", &val);
-	if (rc != 1)
-		val = 0; /* no online node present */
-
-	return val;
-}
-EXPORT_SYMBOL_GPL(xenbus_dev_is_online);
-
-int xenbus_register_backend(struct xenbus_driver *drv)
-{
-	drv->read_otherend_details = read_frontend_details;
-
-	return xenbus_register_driver_common(drv, &xenbus_backend);
-}
-EXPORT_SYMBOL_GPL(xenbus_register_backend);
-=======
 	return !!xenbus_read_unsigned(dev->nodename, "online", 0);
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_is_online);
@@ -310,7 +242,6 @@ int __xenbus_register_backend(struct xenbus_driver *drv, struct module *owner,
 					     owner, mod_name);
 }
 EXPORT_SYMBOL_GPL(__xenbus_register_backend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int backend_probe_and_watch(struct notifier_block *notifier,
 				   unsigned long event,
@@ -323,10 +254,6 @@ static int backend_probe_and_watch(struct notifier_block *notifier,
 	return NOTIFY_DONE;
 }
 
-<<<<<<< HEAD
-static int __init xenbus_probe_backend_init(void)
-{
-=======
 static int backend_reclaim_memory(struct device *dev, void *data)
 {
 	const struct xenbus_driver *drv;
@@ -360,7 +287,6 @@ static unsigned long backend_shrink_memory_count(struct shrinker *shrinker,
 static int __init xenbus_probe_backend_init(void)
 {
 	struct shrinker *backend_memory_shrinker;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static struct notifier_block xenstore_notifier = {
 		.notifier_call = backend_probe_and_watch
 	};
@@ -375,8 +301,6 @@ static int __init xenbus_probe_backend_init(void)
 
 	register_xenstore_notifier(&xenstore_notifier);
 
-<<<<<<< HEAD
-=======
 	backend_memory_shrinker = shrinker_alloc(0, "xen-backend");
 	if (!backend_memory_shrinker) {
 		pr_warn("shrinker allocation failed\n");
@@ -387,7 +311,6 @@ static int __init xenbus_probe_backend_init(void)
 
 	shrinker_register(backend_memory_shrinker);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 subsys_initcall(xenbus_probe_backend_init);

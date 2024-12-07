@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* vmu-flash.c
  * Driver for SEGA Dreamcast Visual Memory Unit
  *
  * Copyright (c) Adrian McMenamin 2002 - 2009
  * Copyright (c) Paul Mundt 2001
-<<<<<<< HEAD
- *
- * Licensed under version 2 of the
- * GNU General Public Licence
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -49,11 +40,7 @@ struct memcard {
 	u32 blocklen;
 	u32 writecnt;
 	u32 readcnt;
-<<<<<<< HEAD
-	u32 removeable;
-=======
 	u32 removable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int partition;
 	int read;
 	unsigned char *blockread;
@@ -607,11 +594,7 @@ fail_name:
 }
 
 /* Handles very basic info about the flash, queries for details */
-<<<<<<< HEAD
-static int __devinit vmu_connect(struct maple_device *mdev)
-=======
 static int vmu_connect(struct maple_device *mdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long test_flash_data, basic_flash_data;
 	int c, error;
@@ -636,11 +619,7 @@ static int vmu_connect(struct maple_device *mdev)
 	card->blocklen = ((basic_flash_data >> 16 & 0xFF) + 1) << 5;
 	card->writecnt = basic_flash_data >> 12 & 0xF;
 	card->readcnt = basic_flash_data >> 8 & 0xF;
-<<<<<<< HEAD
-	card->removeable = basic_flash_data >> 7 & 1;
-=======
 	card->removable = basic_flash_data >> 7 & 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card->partition = 0;
 
@@ -648,25 +627,15 @@ static int vmu_connect(struct maple_device *mdev)
 	* Not sure there are actually any multi-partition devices in the
 	* real world, but the hardware supports them, so, so will we
 	*/
-<<<<<<< HEAD
-	card->parts = kmalloc(sizeof(struct vmupart) * card->partitions,
-		GFP_KERNEL);
-=======
 	card->parts = kmalloc_array(card->partitions, sizeof(struct vmupart),
 				    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!card->parts) {
 		error = -ENOMEM;
 		goto fail_partitions;
 	}
 
-<<<<<<< HEAD
-	card->mtd = kmalloc(sizeof(struct mtd_info) * card->partitions,
-		GFP_KERNEL);
-=======
 	card->mtd = kmalloc_array(card->partitions, sizeof(struct mtd_info),
 				  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!card->mtd) {
 		error = -ENOMEM;
 		goto fail_mtd_info;
@@ -719,11 +688,7 @@ fail_nomem:
 	return error;
 }
 
-<<<<<<< HEAD
-static void __devexit vmu_disconnect(struct maple_device *mdev)
-=======
 static void vmu_disconnect(struct maple_device *mdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct memcard *card;
 	struct mdev_part *mpart;
@@ -754,11 +719,7 @@ static int vmu_can_unload(struct maple_device *mdev)
 	card = maple_get_drvdata(mdev);
 	for (x = 0; x < card->partitions; x++) {
 		mtd = &((card->mtd)[x]);
-<<<<<<< HEAD
-		if (mtd->usecount > 0)
-=======
 		if (kref_read(&mtd->refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 	return 1;
@@ -809,14 +770,8 @@ static void vmu_file_error(struct maple_device *mdev, void *recvbuf)
 }
 
 
-<<<<<<< HEAD
-static int __devinit probe_maple_vmu(struct device *dev)
-{
-	int error;
-=======
 static int probe_maple_vmu(struct device *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct maple_device *mdev = to_maple_dev(dev);
 	struct maple_driver *mdrv = to_maple_driver(dev->driver);
 
@@ -824,21 +779,10 @@ static int probe_maple_vmu(struct device *dev)
 	mdev->fileerr_handler = vmu_file_error;
 	mdev->driver = mdrv;
 
-<<<<<<< HEAD
-	error = vmu_connect(mdev);
-	if (error)
-		return error;
-
-	return 0;
-}
-
-static int __devexit remove_maple_vmu(struct device *dev)
-=======
 	return vmu_connect(mdev);
 }
 
 static int remove_maple_vmu(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct maple_device *mdev = to_maple_dev(dev);
 
@@ -851,11 +795,7 @@ static struct maple_driver vmu_flash_driver = {
 	.drv = {
 		.name =		"Dreamcast_visual_memory",
 		.probe =	probe_maple_vmu,
-<<<<<<< HEAD
-		.remove = 	__devexit_p(remove_maple_vmu),
-=======
 		.remove =	remove_maple_vmu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

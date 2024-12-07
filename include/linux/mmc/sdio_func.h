@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/mmc/sdio_func.h
  *
  *  Copyright 2007-2008 Pierre Ossman
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LINUX_MMC_SDIO_FUNC_H
@@ -30,28 +19,13 @@ struct sdio_func;
 typedef void (sdio_irq_handler_t)(struct sdio_func *);
 
 /*
-<<<<<<< HEAD
- * Structure used to hold embedded SDIO device data from platform layer
- */
-struct sdio_embedded_func {
-	uint8_t f_class;
-	uint32_t f_maxblksize;
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SDIO function CIS tuple (unknown to the core)
  */
 struct sdio_func_tuple {
 	struct sdio_func_tuple *next;
 	unsigned char code;
 	unsigned char size;
-<<<<<<< HEAD
-	unsigned char data[0];
-=======
 	unsigned char data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -75,15 +49,10 @@ struct sdio_func {
 	unsigned int		state;		/* function state */
 #define SDIO_STATE_PRESENT	(1<<0)		/* present in sysfs */
 
-<<<<<<< HEAD
-	u8			tmpbuf[4];	/* DMA:able scratch buffer */
-
-=======
 	u8			*tmpbuf;	/* DMA:able scratch buffer */
 
 	u8			major_rev;	/* major revision number */
 	u8			minor_rev;	/* minor revision number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		num_info;	/* number of info strings */
 	const char		**info;		/* info strings */
 
@@ -113,11 +82,6 @@ struct sdio_driver {
 	struct device_driver drv;
 };
 
-<<<<<<< HEAD
-#define to_sdio_driver(d)	container_of(d, struct sdio_driver, drv)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * SDIO_DEVICE - macro used to describe a specific SDIO device
  * @vend: the 16 bit manufacturer code
@@ -145,8 +109,6 @@ struct sdio_driver {
 extern int sdio_register_driver(struct sdio_driver *);
 extern void sdio_unregister_driver(struct sdio_driver *);
 
-<<<<<<< HEAD
-=======
 /**
  * module_sdio_driver() - Helper macro for registering a SDIO driver
  * @__sdio_driver: sdio_driver struct
@@ -159,7 +121,6 @@ extern void sdio_unregister_driver(struct sdio_driver *);
 	module_driver(__sdio_driver, sdio_register_driver, \
 		      sdio_unregister_driver)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SDIO I/O operations
  */
@@ -177,11 +138,6 @@ extern int sdio_release_irq(struct sdio_func *func);
 extern unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz);
 
 extern u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret);
-<<<<<<< HEAD
-extern u8 sdio_readb_ext(struct sdio_func *func, unsigned int addr, int *err_ret,
-	unsigned in);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern u16 sdio_readw(struct sdio_func *func, unsigned int addr, int *err_ret);
 extern u32 sdio_readl(struct sdio_func *func, unsigned int addr, int *err_ret);
 
@@ -213,13 +169,10 @@ extern void sdio_f0_writeb(struct sdio_func *func, unsigned char b,
 extern mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func);
 extern int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags);
 
-<<<<<<< HEAD
-=======
 extern void sdio_retune_crc_disable(struct sdio_func *func);
 extern void sdio_retune_crc_enable(struct sdio_func *func);
 
 extern void sdio_retune_hold_now(struct sdio_func *func);
 extern void sdio_retune_release(struct sdio_func *func);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_MMC_SDIO_FUNC_H */

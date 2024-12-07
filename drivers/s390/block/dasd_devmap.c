@@ -1,20 +1,11 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_devmap.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  *		    Horst Hummel <Horst.Hummel@de.ibm.com>
  *		    Carsten Otte <Cotte@de.ibm.com>
  *		    Martin Schwidefsky <schwidefsky@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
-<<<<<<< HEAD
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 1999-2001
-=======
  * Copyright IBM Corp. 1999,2001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Device mapping and dasd= parameter parsing functions. All devmap
  * functions may not be called from interrupt context. In particular
@@ -22,30 +13,16 @@
  *
  */
 
-<<<<<<< HEAD
-#define KMSG_COMPONENT "dasd"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 
 #include <asm/debug.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/ipl.h>
-
-/* This is ugly... */
-#define PRINTK_HEADER "dasd_devmap:"
-#define DASD_BUS_ID_SIZE 20
-=======
 #include <linux/uaccess.h>
 #include <asm/ipl.h>
 
 #define DASD_MAX_PARAMS 256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dasd_int.h"
 
@@ -68,11 +45,8 @@ struct dasd_devmap {
         unsigned int devindex;
         unsigned short features;
 	struct dasd_device *device;
-<<<<<<< HEAD
-=======
 	struct dasd_copy_relation *copy;
 	unsigned int aq_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -101,13 +75,8 @@ EXPORT_SYMBOL_GPL(dasd_nofcx);
  * it is named 'dasd' to directly be filled by insmod with the comma separated
  * strings when running as a module.
  */
-<<<<<<< HEAD
-static char *dasd[256];
-module_param_array(dasd, charp, NULL, 0);
-=======
 static char *dasd[DASD_MAX_PARAMS];
 module_param_array(dasd, charp, NULL, S_IRUGO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Single spinlock to protect devmap and servermap structures and lists.
@@ -134,20 +103,6 @@ dasd_hash_busid(const char *bus_id)
 }
 
 #ifndef MODULE
-<<<<<<< HEAD
-/*
- * The parameter parsing functions for builtin-drivers are called
- * before kmalloc works. Store the pointers to the parameters strings
- * into dasd[] for later processing.
- */
-static int __init
-dasd_call_setup(char *str)
-{
-	static int count = 0;
-
-	if (count < 256)
-		dasd[count++] = str;
-=======
 static int __init dasd_call_setup(char *opt)
 {
 	static int i __initdata;
@@ -161,7 +116,6 @@ static int __init dasd_call_setup(char *opt)
 		dasd[i++] = tmp;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -173,16 +127,6 @@ __setup ("dasd=", dasd_call_setup);
 /*
  * Read a device busid/devno from a string.
  */
-<<<<<<< HEAD
-static int
-
-dasd_busid(char **str, int *id0, int *id1, int *devno)
-{
-	int val, old_style;
-
-	/* Interpret ipldev busid */
-	if (strncmp(DASD_IPLDEV, *str, strlen(DASD_IPLDEV)) == 0) {
-=======
 static int dasd_busid(char *str, int *id0, int *id1, int *devno)
 {
 	unsigned int val;
@@ -190,7 +134,6 @@ static int dasd_busid(char *str, int *id0, int *id1, int *devno)
 
 	/* Interpret ipldev busid */
 	if (strncmp(DASD_IPLDEV, str, strlen(DASD_IPLDEV)) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ipl_info.type != IPL_TYPE_CCW) {
 			pr_err("The IPL device is not a CCW device\n");
 			return -EINVAL;
@@ -198,24 +141,6 @@ static int dasd_busid(char *str, int *id0, int *id1, int *devno)
 		*id0 = 0;
 		*id1 = ipl_info.data.ccw.dev_id.ssid;
 		*devno = ipl_info.data.ccw.dev_id.devno;
-<<<<<<< HEAD
-		*str += strlen(DASD_IPLDEV);
-
-		return 0;
-	}
-	/* check for leading '0x' */
-	old_style = 0;
-	if ((*str)[0] == '0' && (*str)[1] == 'x') {
-		*str += 2;
-		old_style = 1;
-	}
-	if (!isxdigit((*str)[0]))	/* We require at least one hex digit */
-		return -EINVAL;
-	val = simple_strtoul(*str, str, 16);
-	if (old_style || (*str)[0] != '.') {
-		*id0 = *id1 = 0;
-		if (val < 0 || val > 0xffff)
-=======
 
 		return 0;
 	}
@@ -224,30 +149,10 @@ static int dasd_busid(char *str, int *id0, int *id1, int *devno)
 	if (!kstrtouint(str, 16, &val)) {
 		*id0 = *id1 = 0;
 		if (val > 0xffff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		*devno = val;
 		return 0;
 	}
-<<<<<<< HEAD
-	/* New style x.y.z busid */
-	if (val < 0 || val > 0xff)
-		return -EINVAL;
-	*id0 = val;
-	(*str)++;
-	if (!isxdigit((*str)[0]))	/* We require at least one hex digit */
-		return -EINVAL;
-	val = simple_strtoul(*str, str, 16);
-	if (val < 0 || val > 0xff || (*str)++[0] != '.')
-		return -EINVAL;
-	*id1 = val;
-	if (!isxdigit((*str)[0]))	/* We require at least one hex digit */
-		return -EINVAL;
-	val = simple_strtoul(*str, str, 16);
-	if (val < 0 || val > 0xffff)
-		return -EINVAL;
-	*devno = val;
-=======
 
 	/* New style x.y.z busid */
 	tok = strsep(&str, ".");
@@ -265,29 +170,10 @@ static int dasd_busid(char *str, int *id0, int *id1, int *devno)
 		return -EINVAL;
 	*devno = val;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * Read colon separated list of dasd features. Currently there is
- * only one: "ro" for read-only devices. The default feature set
- * is empty (value 0).
- */
-static int
-dasd_feature_list(char *str, char **endp)
-{
-	int features, len, rc;
-
-	rc = 0;
-	if (*str != '(') {
-		*endp = str;
-		return DASD_FEATURE_DEFAULT;
-	}
-	str++;
-	features = 0;
-=======
  * Read colon separated list of dasd features.
  */
 static int __init dasd_feature_list(char *str)
@@ -299,7 +185,6 @@ static int __init dasd_feature_list(char *str)
 
 	if (!str)
 		return DASD_FEATURE_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		for (len = 0;
@@ -315,13 +200,8 @@ static int __init dasd_feature_list(char *str)
 		else if (len == 8 && !strncmp(str, "failfast", 8))
 			features |= DASD_FEATURE_FAILFAST;
 		else {
-<<<<<<< HEAD
-			pr_warning("%*s is not a supported device option\n",
-				   len, str);
-=======
 			pr_warn("%.*s is not a supported device option\n",
 				len, str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EINVAL;
 		}
 		str += len;
@@ -329,21 +209,8 @@ static int __init dasd_feature_list(char *str)
 			break;
 		str++;
 	}
-<<<<<<< HEAD
-	if (*str != ')') {
-		pr_warning("A closing parenthesis ')' is missing in the "
-			   "dasd= parameter\n");
-		rc = -EINVAL;
-	} else
-		str++;
-	*endp = str;
-	if (rc != 0)
-		return rc;
-	return features;
-=======
 
 	return rc ? : features;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -352,33 +219,6 @@ static int __init dasd_feature_list(char *str)
  * action and return a pointer to the residual string. If the first element
  * could not be matched to any keyword then return an error code.
  */
-<<<<<<< HEAD
-static char *
-dasd_parse_keyword( char *parsestring ) {
-
-	char *nextcomma, *residual_str;
-	int length;
-
-	nextcomma = strchr(parsestring,',');
-	if (nextcomma) {
-		length = nextcomma - parsestring;
-		residual_str = nextcomma + 1;
-	} else {
-		length = strlen(parsestring);
-		residual_str = parsestring + length;
-        }
-	if (strncmp("autodetect", parsestring, length) == 0) {
-		dasd_autodetect = 1;
-		pr_info("The autodetection mode has been activated\n");
-                return residual_str;
-        }
-	if (strncmp("probeonly", parsestring, length) == 0) {
-		dasd_probeonly = 1;
-		pr_info("The probeonly mode has been activated\n");
-                return residual_str;
-        }
-	if (strncmp("nopav", parsestring, length) == 0) {
-=======
 static int __init dasd_parse_keyword(char *keyword)
 {
 	int length = strlen(keyword);
@@ -394,26 +234,12 @@ static int __init dasd_parse_keyword(char *keyword)
 		return 0;
         }
 	if (strncmp("nopav", keyword, length) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (MACHINE_IS_VM)
 			pr_info("'nopav' is not supported on z/VM\n");
 		else {
 			dasd_nopav = 1;
 			pr_info("PAV support has be deactivated\n");
 		}
-<<<<<<< HEAD
-		return residual_str;
-	}
-	if (strncmp("nofcx", parsestring, length) == 0) {
-		dasd_nofcx = 1;
-		pr_info("High Performance FICON support has been "
-			"deactivated\n");
-		return residual_str;
-	}
-	if (strncmp("fixedbuffers", parsestring, length) == 0) {
-		if (dasd_page_cache)
-			return residual_str;
-=======
 		return 0;
 	}
 	if (strncmp("nofcx", keyword, length) == 0) {
@@ -425,7 +251,6 @@ static int __init dasd_parse_keyword(char *keyword)
 	if (strncmp("fixedbuffers", keyword, length) == 0) {
 		if (dasd_page_cache)
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dasd_page_cache =
 			kmem_cache_create("dasd_page_cache", PAGE_SIZE,
 					  PAGE_SIZE, SLAB_CACHE_DMA,
@@ -436,76 +261,6 @@ static int __init dasd_parse_keyword(char *keyword)
 		else
 			DBF_EVENT(DBF_INFO, "%s",
 				 "turning on fixed buffer mode");
-<<<<<<< HEAD
-                return residual_str;
-        }
-	return ERR_PTR(-EINVAL);
-}
-
-/*
- * Try to interprete the first element on the comma separated parse string
- * as a device number or a range of devices. If the interpretation is
- * successful, create the matching dasd_devmap entries and return a pointer
- * to the residual string.
- * If interpretation fails or in case of an error, return an error code.
- */
-static char *
-dasd_parse_range( char *parsestring ) {
-
-	struct dasd_devmap *devmap;
-	int from, from_id0, from_id1;
-	int to, to_id0, to_id1;
-	int features, rc;
-	char bus_id[DASD_BUS_ID_SIZE+1], *str;
-
-	str = parsestring;
-	rc = dasd_busid(&str, &from_id0, &from_id1, &from);
-	if (rc == 0) {
-		to = from;
-		to_id0 = from_id0;
-		to_id1 = from_id1;
-		if (*str == '-') {
-			str++;
-			rc = dasd_busid(&str, &to_id0, &to_id1, &to);
-		}
-	}
-	if (rc == 0 &&
-	    (from_id0 != to_id0 || from_id1 != to_id1 || from > to))
-		rc = -EINVAL;
-	if (rc) {
-		pr_err("%s is not a valid device range\n", parsestring);
-		return ERR_PTR(rc);
-	}
-	features = dasd_feature_list(str, &str);
-	if (features < 0)
-		return ERR_PTR(-EINVAL);
-	/* each device in dasd= parameter should be set initially online */
-	features |= DASD_FEATURE_INITIAL_ONLINE;
-	while (from <= to) {
-		sprintf(bus_id, "%01x.%01x.%04x",
-			from_id0, from_id1, from++);
-		devmap = dasd_add_busid(bus_id, features);
-		if (IS_ERR(devmap))
-			return (char *)devmap;
-	}
-	if (*str == ',')
-		return str + 1;
-	if (*str == '\0')
-		return str;
-	pr_warning("The dasd= parameter value %s has an invalid ending\n",
-		   str);
-	return ERR_PTR(-EINVAL);
-}
-
-static char *
-dasd_parse_next_element( char *parsestring ) {
-	char * residual_str;
-	residual_str = dasd_parse_keyword(parsestring);
-	if (!IS_ERR(residual_str))
-		return residual_str;
-	residual_str = dasd_parse_range(parsestring);
-	return residual_str;
-=======
 		return 0;
 	}
 
@@ -610,43 +365,11 @@ out:
 	kfree(tmp);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Parse parameters stored in dasd[]
  * The 'dasd=...' parameter allows to specify a comma separated list of
-<<<<<<< HEAD
- * keywords and device ranges. When the dasd driver is build into the kernel,
- * the complete list will be stored as one element of the dasd[] array.
- * When the dasd driver is build as a module, then the list is broken into
- * it's elements and each dasd[] entry contains one element.
- */
-int
-dasd_parse(void)
-{
-	int rc, i;
-	char *parsestring;
-
-	rc = 0;
-	for (i = 0; i < 256; i++) {
-		if (dasd[i] == NULL)
-			break;
-		parsestring = dasd[i];
-		/* loop over the comma separated list in the parsestring */
-		while (*parsestring) {
-			parsestring = dasd_parse_next_element(parsestring);
-			if(IS_ERR(parsestring)) {
-				rc = PTR_ERR(parsestring);
-				break;
-			}
-		}
-		if (rc) {
-			DBF_EVENT(DBF_ALERT, "%s", "invalid range found");
-			break;
-		}
-	}
-=======
  * keywords and device ranges. The parameters in that list will be stored as
  * separate elementes in dasd[].
  */
@@ -671,7 +394,6 @@ int __init dasd_parse(void)
 			break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -687,12 +409,7 @@ dasd_add_busid(const char *bus_id, int features)
 	struct dasd_devmap *devmap, *new, *tmp;
 	int hash;
 
-<<<<<<< HEAD
-	new = (struct dasd_devmap *)
-		kzalloc(sizeof(struct dasd_devmap), GFP_KERNEL);
-=======
 	new = kzalloc(sizeof(struct dasd_devmap), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new)
 		return ERR_PTR(-ENOMEM);
 	spin_lock(&dasd_devmap_lock);
@@ -706,11 +423,7 @@ dasd_add_busid(const char *bus_id, int features)
 	if (!devmap) {
 		/* This bus_id is new. */
 		new->devindex = dasd_max_devindex++;
-<<<<<<< HEAD
-		strncpy(new->bus_id, bus_id, DASD_BUS_ID_SIZE);
-=======
 		strscpy(new->bus_id, bus_id, DASD_BUS_ID_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new->features = features;
 		new->device = NULL;
 		list_add(&new->list, &dasd_hashlists[hash]);
@@ -722,24 +435,12 @@ dasd_add_busid(const char *bus_id, int features)
 	return devmap;
 }
 
-<<<<<<< HEAD
-/*
- * Find devmap for device with given bus_id.
- */
-static struct dasd_devmap *
-dasd_find_busid(const char *bus_id)
-=======
 static struct dasd_devmap *
 dasd_find_busid_locked(const char *bus_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dasd_devmap *devmap, *tmp;
 	int hash;
 
-<<<<<<< HEAD
-	spin_lock(&dasd_devmap_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devmap = ERR_PTR(-ENODEV);
 	hash = dasd_hash_busid(bus_id);
 	list_for_each_entry(tmp, &dasd_hashlists[hash], list) {
@@ -748,8 +449,6 @@ dasd_find_busid_locked(const char *bus_id)
 			break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	return devmap;
 }
 
@@ -763,7 +462,6 @@ dasd_find_busid(const char *bus_id)
 
 	spin_lock(&dasd_devmap_lock);
 	devmap = dasd_find_busid_locked(bus_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&dasd_devmap_lock);
 	return devmap;
 }
@@ -884,20 +582,15 @@ dasd_create_device(struct ccw_device *cdev)
 	dev_set_drvdata(&cdev->dev, device);
 	spin_unlock_irqrestore(get_ccwdev_lock(cdev), flags);
 
-<<<<<<< HEAD
-=======
 	device->paths_info = kset_create_and_add("paths_info", NULL,
 						 &device->cdev->dev.kobj);
 	if (!device->paths_info)
 		dev_warn(&cdev->dev, "Could not create paths_info kset\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return device;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * allocate a PPRC data structure and call the discipline function to fill
  */
 static int dasd_devmap_get_pprc_status(struct dasd_device *device,
@@ -1130,7 +823,6 @@ out:
 EXPORT_SYMBOL_GPL(dasd_devmap_set_device_copy_relation);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Wait queue for dasd_delete_device waits.
  */
 static DECLARE_WAIT_QUEUE_HEAD(dasd_delete_wq);
@@ -1163,11 +855,8 @@ dasd_delete_device(struct dasd_device *device)
 	dev_set_drvdata(&device->cdev->dev, NULL);
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
 
-<<<<<<< HEAD
-=======
 	/* Removve copy relation */
 	dasd_devmap_delete_copy_relation_device(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Drop ref_count by 3, one for the devmap reference, one for
 	 * the cdev reference and one for the passed reference.
@@ -1177,13 +866,10 @@ dasd_delete_device(struct dasd_device *device)
 	/* Wait for reference counter to drop to zero. */
 	wait_event(dasd_delete_wq, atomic_read(&device->ref_count) == 0);
 
-<<<<<<< HEAD
-=======
 	dasd_generic_free_discipline(device);
 
 	kset_unregister(device->paths_info);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disconnect dasd_device structure from ccw_device structure. */
 	cdev = device->cdev;
 	device->cdev = NULL;
@@ -1248,10 +934,7 @@ void dasd_add_link_to_gendisk(struct gendisk *gdp, struct dasd_device *device)
 	gdp->private_data = devmap;
 	spin_unlock(&dasd_devmap_lock);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(dasd_add_link_to_gendisk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dasd_device *dasd_device_from_gendisk(struct gendisk *gdp)
 {
@@ -1289,39 +972,12 @@ static ssize_t dasd_ff_show(struct device *dev, struct device_attribute *attr,
 		ff_flag = (devmap->features & DASD_FEATURE_FAILFAST) != 0;
 	else
 		ff_flag = (DASD_FEATURE_DEFAULT & DASD_FEATURE_FAILFAST) != 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, ff_flag ? "1\n" : "0\n");
-=======
 	return sysfs_emit(buf, ff_flag ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t dasd_ff_store(struct device *dev, struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct dasd_devmap *devmap;
-	int val;
-	char *endp;
-
-	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
-	if (IS_ERR(devmap))
-		return PTR_ERR(devmap);
-
-	val = simple_strtoul(buf, &endp, 0);
-	if (((endp + 1) < (buf + count)) || (val > 1))
-		return -EINVAL;
-
-	spin_lock(&dasd_devmap_lock);
-	if (val)
-		devmap->features |= DASD_FEATURE_FAILFAST;
-	else
-		devmap->features &= ~DASD_FEATURE_FAILFAST;
-	if (devmap->device)
-		devmap->device->features = devmap->features;
-	spin_unlock(&dasd_devmap_lock);
-	return count;
-=======
 	unsigned int val;
 	int rc;
 
@@ -1331,7 +987,6 @@ static ssize_t dasd_ff_store(struct device *dev, struct device_attribute *attr,
 	rc = dasd_set_feature(to_ccwdev(dev), DASD_FEATURE_FAILFAST, val);
 
 	return rc ? : count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(failfast, 0644, dasd_ff_show, dasd_ff_store);
@@ -1343,16 +998,6 @@ static ssize_t
 dasd_ro_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct dasd_devmap *devmap;
-<<<<<<< HEAD
-	int ro_flag;
-
-	devmap = dasd_find_busid(dev_name(dev));
-	if (!IS_ERR(devmap))
-		ro_flag = (devmap->features & DASD_FEATURE_READONLY) != 0;
-	else
-		ro_flag = (DASD_FEATURE_DEFAULT & DASD_FEATURE_READONLY) != 0;
-	return snprintf(buf, PAGE_SIZE, ro_flag ? "1\n" : "0\n");
-=======
 	struct dasd_device *device;
 	int ro_flag = 0;
 
@@ -1370,41 +1015,12 @@ dasd_ro_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 out:
 	return sysfs_emit(buf, ro_flag ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 dasd_ro_store(struct device *dev, struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct dasd_devmap *devmap;
-	struct dasd_device *device;
-	int val;
-	char *endp;
-
-	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
-	if (IS_ERR(devmap))
-		return PTR_ERR(devmap);
-
-	val = simple_strtoul(buf, &endp, 0);
-	if (((endp + 1) < (buf + count)) || (val > 1))
-		return -EINVAL;
-
-	spin_lock(&dasd_devmap_lock);
-	if (val)
-		devmap->features |= DASD_FEATURE_READONLY;
-	else
-		devmap->features &= ~DASD_FEATURE_READONLY;
-	device = devmap->device;
-	if (device) {
-		device->features = devmap->features;
-		val = val || test_bit(DASD_FLAG_DEVICE_RO, &device->flags);
-	}
-	spin_unlock(&dasd_devmap_lock);
-	if (device && device->block && device->block->gdp)
-		set_disk_ro(device->block->gdp, val);
-=======
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct dasd_device *device;
 	unsigned long flags;
@@ -1440,7 +1056,6 @@ dasd_ro_store(struct device *dev, struct device_attribute *attr,
 out:
 	dasd_put_device(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -1460,40 +1075,13 @@ dasd_erplog_show(struct device *dev, struct device_attribute *attr, char *buf)
 		erplog = (devmap->features & DASD_FEATURE_ERPLOG) != 0;
 	else
 		erplog = (DASD_FEATURE_DEFAULT & DASD_FEATURE_ERPLOG) != 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, erplog ? "1\n" : "0\n");
-=======
 	return sysfs_emit(buf, erplog ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 dasd_erplog_store(struct device *dev, struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct dasd_devmap *devmap;
-	int val;
-	char *endp;
-
-	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
-	if (IS_ERR(devmap))
-		return PTR_ERR(devmap);
-
-	val = simple_strtoul(buf, &endp, 0);
-	if (((endp + 1) < (buf + count)) || (val > 1))
-		return -EINVAL;
-
-	spin_lock(&dasd_devmap_lock);
-	if (val)
-		devmap->features |= DASD_FEATURE_ERPLOG;
-	else
-		devmap->features &= ~DASD_FEATURE_ERPLOG;
-	if (devmap->device)
-		devmap->device->features = devmap->features;
-	spin_unlock(&dasd_devmap_lock);
-	return count;
-=======
 	unsigned int val;
 	int rc;
 
@@ -1503,7 +1091,6 @@ dasd_erplog_store(struct device *dev, struct device_attribute *attr,
 	rc = dasd_set_feature(to_ccwdev(dev), DASD_FEATURE_ERPLOG, val);
 
 	return rc ? : count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(erplog, 0644, dasd_erplog_show, dasd_erplog_store);
@@ -1523,11 +1110,7 @@ dasd_use_diag_show(struct device *dev, struct device_attribute *attr, char *buf)
 		use_diag = (devmap->features & DASD_FEATURE_USEDIAG) != 0;
 	else
 		use_diag = (DASD_FEATURE_DEFAULT & DASD_FEATURE_USEDIAG) != 0;
-<<<<<<< HEAD
-	return sprintf(buf, use_diag ? "1\n" : "0\n");
-=======
 	return sysfs_emit(buf, use_diag ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1535,25 +1118,14 @@ dasd_use_diag_store(struct device *dev, struct device_attribute *attr,
 		    const char *buf, size_t count)
 {
 	struct dasd_devmap *devmap;
-<<<<<<< HEAD
-	ssize_t rc;
-	int val;
-	char *endp;
-=======
 	unsigned int val;
 	ssize_t rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
 	if (IS_ERR(devmap))
 		return PTR_ERR(devmap);
 
-<<<<<<< HEAD
-	val = simple_strtoul(buf, &endp, 0);
-	if (((endp + 1) < (buf + count)) || (val > 1))
-=======
 	if (kstrtouint(buf, 0, &val) || val > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	spin_lock(&dasd_devmap_lock);
@@ -1587,11 +1159,7 @@ dasd_use_raw_show(struct device *dev, struct device_attribute *attr, char *buf)
 		use_raw = (devmap->features & DASD_FEATURE_USERAW) != 0;
 	else
 		use_raw = (DASD_FEATURE_DEFAULT & DASD_FEATURE_USERAW) != 0;
-<<<<<<< HEAD
-	return sprintf(buf, use_raw ? "1\n" : "0\n");
-=======
 	return sysfs_emit(buf, use_raw ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1606,11 +1174,7 @@ dasd_use_raw_store(struct device *dev, struct device_attribute *attr,
 	if (IS_ERR(devmap))
 		return PTR_ERR(devmap);
 
-<<<<<<< HEAD
-	if ((strict_strtoul(buf, 10, &val) != 0) || val > 1)
-=======
 	if ((kstrtoul(buf, 10, &val) != 0) || val > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	spin_lock(&dasd_devmap_lock);
@@ -1631,8 +1195,6 @@ static DEVICE_ATTR(raw_track_access, 0644, dasd_use_raw_show,
 		   dasd_use_raw_store);
 
 static ssize_t
-<<<<<<< HEAD
-=======
 dasd_safe_offline_store(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count)
 {
@@ -1699,7 +1261,6 @@ dasd_access_show(struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR(host_access_count, 0444, dasd_access_show, NULL);
 
 static ssize_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 dasd_discipline_show(struct device *dev, struct device_attribute *attr,
 		     char *buf)
 {
@@ -1713,22 +1274,13 @@ dasd_discipline_show(struct device *dev, struct device_attribute *attr,
 		dasd_put_device(device);
 		goto out;
 	} else {
-<<<<<<< HEAD
-		len = snprintf(buf, PAGE_SIZE, "%s\n",
-			       device->discipline->name);
-=======
 		len = sysfs_emit(buf, "%s\n",
 				 device->discipline->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dasd_put_device(device);
 		return len;
 	}
 out:
-<<<<<<< HEAD
-	len = snprintf(buf, PAGE_SIZE, "none\n");
-=======
 	len = sysfs_emit(buf, "none\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1745,27 +1297,6 @@ dasd_device_status_show(struct device *dev, struct device_attribute *attr,
 	if (!IS_ERR(device)) {
 		switch (device->state) {
 		case DASD_STATE_NEW:
-<<<<<<< HEAD
-			len = snprintf(buf, PAGE_SIZE, "new\n");
-			break;
-		case DASD_STATE_KNOWN:
-			len = snprintf(buf, PAGE_SIZE, "detected\n");
-			break;
-		case DASD_STATE_BASIC:
-			len = snprintf(buf, PAGE_SIZE, "basic\n");
-			break;
-		case DASD_STATE_UNFMT:
-			len = snprintf(buf, PAGE_SIZE, "unformatted\n");
-			break;
-		case DASD_STATE_READY:
-			len = snprintf(buf, PAGE_SIZE, "ready\n");
-			break;
-		case DASD_STATE_ONLINE:
-			len = snprintf(buf, PAGE_SIZE, "online\n");
-			break;
-		default:
-			len = snprintf(buf, PAGE_SIZE, "no stat\n");
-=======
 			len = sysfs_emit(buf, "new\n");
 			break;
 		case DASD_STATE_KNOWN:
@@ -1785,16 +1316,11 @@ dasd_device_status_show(struct device *dev, struct device_attribute *attr,
 			break;
 		default:
 			len = sysfs_emit(buf, "no stat\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		dasd_put_device(device);
 	} else
-<<<<<<< HEAD
-		len = snprintf(buf, PAGE_SIZE, "unknown\n");
-=======
 		len = sysfs_emit(buf, "unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1808,31 +1334,19 @@ static ssize_t dasd_alias_show(struct device *dev,
 
 	device = dasd_device_from_cdev(to_ccwdev(dev));
 	if (IS_ERR(device))
-<<<<<<< HEAD
-		return sprintf(buf, "0\n");
-=======
 		return sysfs_emit(buf, "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (device->discipline && device->discipline->get_uid &&
 	    !device->discipline->get_uid(device, &uid)) {
 		if (uid.type == UA_BASE_PAV_ALIAS ||
 		    uid.type == UA_HYPER_PAV_ALIAS) {
 			dasd_put_device(device);
-<<<<<<< HEAD
-			return sprintf(buf, "1\n");
-=======
 			return sysfs_emit(buf, "1\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	dasd_put_device(device);
 
-<<<<<<< HEAD
-	return sprintf(buf, "0\n");
-=======
 	return sysfs_emit(buf, "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(alias, 0444, dasd_alias_show, NULL);
@@ -1847,11 +1361,7 @@ static ssize_t dasd_vendor_show(struct device *dev,
 	device = dasd_device_from_cdev(to_ccwdev(dev));
 	vendor = "";
 	if (IS_ERR(device))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%s\n", vendor);
-=======
 		return sysfs_emit(buf, "%s\n", vendor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (device->discipline && device->discipline->get_uid &&
 	    !device->discipline->get_uid(device, &uid))
@@ -1859,44 +1369,23 @@ static ssize_t dasd_vendor_show(struct device *dev,
 
 	dasd_put_device(device);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n", vendor);
-=======
 	return sysfs_emit(buf, "%s\n", vendor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(vendor, 0444, dasd_vendor_show, NULL);
 
-<<<<<<< HEAD
-#define UID_STRLEN ( /* vendor */ 3 + 1 + /* serial    */ 14 + 1 +\
-		     /* SSID   */ 4 + 1 + /* unit addr */ 2 + 1 +\
-		     /* vduit */ 32 + 1)
-
-static ssize_t
-dasd_uid_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	struct dasd_device *device;
-	struct dasd_uid uid;
-	char uid_string[UID_STRLEN];
-=======
 static ssize_t
 dasd_uid_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	char uid_string[DASD_UID_STRLEN];
 	struct dasd_device *device;
 	struct dasd_uid uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char ua_string[3];
 
 	device = dasd_device_from_cdev(to_ccwdev(dev));
 	uid_string[0] = 0;
 	if (IS_ERR(device))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%s\n", uid_string);
-=======
 		return sysfs_emit(buf, "%s\n", uid_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (device->discipline && device->discipline->get_uid &&
 	    !device->discipline->get_uid(device, &uid)) {
@@ -1919,21 +1408,6 @@ dasd_uid_show(struct device *dev, struct device_attribute *attr, char *buf)
 			break;
 		}
 
-<<<<<<< HEAD
-		if (strlen(uid.vduit) > 0)
-			snprintf(uid_string, sizeof(uid_string),
-				 "%s.%s.%04x.%s.%s",
-				 uid.vendor, uid.serial, uid.ssid, ua_string,
-				 uid.vduit);
-		else
-			snprintf(uid_string, sizeof(uid_string),
-				 "%s.%s.%04x.%s",
-				 uid.vendor, uid.serial, uid.ssid, ua_string);
-	}
-	dasd_put_device(device);
-
-	return snprintf(buf, PAGE_SIZE, "%s\n", uid_string);
-=======
 		snprintf(uid_string, sizeof(uid_string), "%s.%s.%04x.%s%s%s",
 			 uid.vendor, uid.serial, uid.ssid, ua_string,
 			 uid.vduit[0] ? "." : "", uid.vduit);
@@ -1941,7 +1415,6 @@ dasd_uid_show(struct device *dev, struct device_attribute *attr, char *buf)
 	dasd_put_device(device);
 
 	return sysfs_emit(buf, "%s\n", uid_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(uid, 0444, dasd_uid_show, NULL);
 
@@ -1959,22 +1432,13 @@ dasd_eer_show(struct device *dev, struct device_attribute *attr, char *buf)
 		eer_flag = dasd_eer_enabled(devmap->device);
 	else
 		eer_flag = 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, eer_flag ? "1\n" : "0\n");
-=======
 	return sysfs_emit(buf, eer_flag ? "1\n" : "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 dasd_eer_store(struct device *dev, struct device_attribute *attr,
 	       const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct dasd_devmap *devmap;
-	int val, rc;
-	char *endp;
-=======
 	struct dasd_device *device;
 	unsigned int val;
 	int rc = 0;
@@ -2023,30 +1487,10 @@ static ssize_t dasd_aq_mask_store(struct device *dev, struct device_attribute *a
 
 	if (kstrtouint(buf, 0, &val) || val > DASD_EER_VALID)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
 	if (IS_ERR(devmap))
 		return PTR_ERR(devmap);
-<<<<<<< HEAD
-	if (!devmap->device)
-		return -ENODEV;
-
-	val = simple_strtoul(buf, &endp, 0);
-	if (((endp + 1) < (buf + count)) || (val > 1))
-		return -EINVAL;
-
-	if (val) {
-		rc = dasd_eer_enable(devmap->device);
-		if (rc)
-			return rc;
-	} else
-		dasd_eer_disable(devmap->device);
-	return count;
-}
-
-static DEVICE_ATTR(eer_enabled, 0644, dasd_eer_show, dasd_eer_store);
-=======
 
 	spin_lock(&dasd_devmap_lock);
 	devmap->aq_mask = val;
@@ -2139,7 +1583,6 @@ dasd_aq_timeouts_store(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR(aq_timeouts, 0644, dasd_aq_timeouts_show,
 		   dasd_aq_timeouts_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * expiration time for default requests
@@ -2153,11 +1596,7 @@ dasd_expires_show(struct device *dev, struct device_attribute *attr, char *buf)
 	device = dasd_device_from_cdev(to_ccwdev(dev));
 	if (IS_ERR(device))
 		return -ENODEV;
-<<<<<<< HEAD
-	len = snprintf(buf, PAGE_SIZE, "%lu\n", device->default_expires);
-=======
 	len = sysfs_emit(buf, "%lu\n", device->default_expires);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(device);
 	return len;
 }
@@ -2173,11 +1612,7 @@ dasd_expires_store(struct device *dev, struct device_attribute *attr,
 	if (IS_ERR(device))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if ((strict_strtoul(buf, 10, &val) != 0) ||
-=======
 	if ((kstrtoul(buf, 10, &val) != 0) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (val > DASD_EXPIRES_MAX) || val == 0) {
 		dasd_put_device(device);
 		return -EINVAL;
@@ -2192,8 +1627,6 @@ dasd_expires_store(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR(expires, 0644, dasd_expires_show, dasd_expires_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t
 dasd_retries_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -2324,7 +1757,6 @@ static ssize_t dasd_hpf_show(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR(hpf, 0444, dasd_hpf_show, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t dasd_reservation_policy_show(struct device *dev,
 					    struct device_attribute *attr,
 					    char *buf)
@@ -2334,15 +1766,6 @@ static ssize_t dasd_reservation_policy_show(struct device *dev,
 
 	devmap = dasd_find_busid(dev_name(dev));
 	if (IS_ERR(devmap)) {
-<<<<<<< HEAD
-		rc = snprintf(buf, PAGE_SIZE, "ignore\n");
-	} else {
-		spin_lock(&dasd_devmap_lock);
-		if (devmap->features & DASD_FEATURE_FAILONSLCK)
-			rc = snprintf(buf, PAGE_SIZE, "fail\n");
-		else
-			rc = snprintf(buf, PAGE_SIZE, "ignore\n");
-=======
 		rc = sysfs_emit(buf, "ignore\n");
 	} else {
 		spin_lock(&dasd_devmap_lock);
@@ -2350,7 +1773,6 @@ static ssize_t dasd_reservation_policy_show(struct device *dev,
 			rc = sysfs_emit(buf, "fail\n");
 		else
 			rc = sysfs_emit(buf, "ignore\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&dasd_devmap_lock);
 	}
 	return rc;
@@ -2360,29 +1782,6 @@ static ssize_t dasd_reservation_policy_store(struct device *dev,
 					     struct device_attribute *attr,
 					     const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct dasd_devmap *devmap;
-	int rc;
-
-	devmap = dasd_devmap_from_cdev(to_ccwdev(dev));
-	if (IS_ERR(devmap))
-		return PTR_ERR(devmap);
-	rc = 0;
-	spin_lock(&dasd_devmap_lock);
-	if (sysfs_streq("ignore", buf))
-		devmap->features &= ~DASD_FEATURE_FAILONSLCK;
-	else if (sysfs_streq("fail", buf))
-		devmap->features |= DASD_FEATURE_FAILONSLCK;
-	else
-		rc = -EINVAL;
-	if (devmap->device)
-		devmap->device->features = devmap->features;
-	spin_unlock(&dasd_devmap_lock);
-	if (rc)
-		return rc;
-	else
-		return count;
-=======
 	struct ccw_device *cdev = to_ccwdev(dev);
 	int rc;
 
@@ -2394,7 +1793,6 @@ static ssize_t dasd_reservation_policy_store(struct device *dev,
 		rc = -EINVAL;
 
 	return rc ? : count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(reservation_policy, 0644,
@@ -2409,16 +1807,6 @@ static ssize_t dasd_reservation_state_show(struct device *dev,
 
 	device = dasd_device_from_cdev(to_ccwdev(dev));
 	if (IS_ERR(device))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "none\n");
-
-	if (test_bit(DASD_FLAG_IS_RESERVED, &device->flags))
-		rc = snprintf(buf, PAGE_SIZE, "reserved\n");
-	else if (test_bit(DASD_FLAG_LOCK_STOLEN, &device->flags))
-		rc = snprintf(buf, PAGE_SIZE, "lost\n");
-	else
-		rc = snprintf(buf, PAGE_SIZE, "none\n");
-=======
 		return sysfs_emit(buf, "none\n");
 
 	if (test_bit(DASD_FLAG_IS_RESERVED, &device->flags))
@@ -2427,7 +1815,6 @@ static ssize_t dasd_reservation_state_show(struct device *dev,
 		rc = sysfs_emit(buf, "lost\n");
 	else
 		rc = sysfs_emit(buf, "none\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(device);
 	return rc;
 }
@@ -2457,8 +1844,6 @@ static ssize_t dasd_reservation_state_store(struct device *dev,
 static DEVICE_ATTR(last_known_reservation_state, 0644,
 		   dasd_reservation_state_show, dasd_reservation_state_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t dasd_pm_show(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
@@ -3018,7 +2403,6 @@ DASD_DEFINE_ATTR(warn_threshold, device->discipline->ext_pool_warn_thrshld);
 DASD_DEFINE_ATTR(cap_at_warnlevel, device->discipline->ext_pool_cap_at_warnlevel);
 DASD_DEFINE_ATTR(pool_oos, device->discipline->ext_pool_oos);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute * dasd_attrs[] = {
 	&dev_attr_readonly.attr,
 	&dev_attr_discipline.attr,
@@ -3032,17 +2416,6 @@ static struct attribute * dasd_attrs[] = {
 	&dev_attr_erplog.attr,
 	&dev_attr_failfast.attr,
 	&dev_attr_expires.attr,
-<<<<<<< HEAD
-	&dev_attr_reservation_policy.attr,
-	&dev_attr_last_known_reservation_state.attr,
-	NULL,
-};
-
-static struct attribute_group dasd_attr_group = {
-	.attrs = dasd_attrs,
-};
-
-=======
 	&dev_attr_retries.attr,
 	&dev_attr_timeout.attr,
 	&dev_attr_reservation_policy.attr,
@@ -3104,7 +2477,6 @@ const struct attribute_group *dasd_dev_groups[] = {
 };
 EXPORT_SYMBOL_GPL(dasd_dev_groups);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return value of the specified feature.
  */
@@ -3122,22 +2494,14 @@ dasd_get_feature(struct ccw_device *cdev, int feature)
 
 /*
  * Set / reset given feature.
-<<<<<<< HEAD
- * Flag indicates wether to set (!=0) or the reset (=0) the feature.
-=======
  * Flag indicates whether to set (!=0) or the reset (=0) the feature.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int
 dasd_set_feature(struct ccw_device *cdev, int feature, int flag)
 {
 	struct dasd_devmap *devmap;
 
-<<<<<<< HEAD
-	devmap = dasd_find_busid(dev_name(&cdev->dev));
-=======
 	devmap = dasd_devmap_from_cdev(cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(devmap))
 		return PTR_ERR(devmap);
 
@@ -3151,22 +2515,6 @@ dasd_set_feature(struct ccw_device *cdev, int feature, int flag)
 	spin_unlock(&dasd_devmap_lock);
 	return 0;
 }
-<<<<<<< HEAD
-
-
-int
-dasd_add_sysfs_files(struct ccw_device *cdev)
-{
-	return sysfs_create_group(&cdev->dev.kobj, &dasd_attr_group);
-}
-
-void
-dasd_remove_sysfs_files(struct ccw_device *cdev)
-{
-	sysfs_remove_group(&cdev->dev.kobj, &dasd_attr_group);
-}
-
-=======
 EXPORT_SYMBOL(dasd_set_feature);
 
 static struct attribute *paths_info_attrs[] = {
@@ -3245,7 +2593,6 @@ void dasd_path_remove_kobjects(struct dasd_device *device)
 		dasd_path_remove_kobj(device, i);
 }
 EXPORT_SYMBOL(dasd_path_remove_kobjects);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int
 dasd_devmap_init(void)

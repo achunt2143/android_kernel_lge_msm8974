@@ -1,11 +1,7 @@
 /*
  * libcxgbi.h: Chelsio common library for T3/T4 iSCSI driver.
  *
-<<<<<<< HEAD
- * Copyright (c) 2010 Chelsio Communications, Inc.
-=======
  * Copyright (c) 2010-2015 Chelsio Communications, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +27,8 @@
 #include <scsi/scsi_device.h>
 #include <scsi/libiscsi_tcp.h>
 
-<<<<<<< HEAD
-=======
 #include <libcxgb_ppm.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum cxgbi_dbg_flag {
 	CXGBI_DBG_ISCSI,
 	CXGBI_DBG_DDP,
@@ -53,8 +46,6 @@ enum cxgbi_dbg_flag {
 			pr_info(fmt, ##__VA_ARGS__); \
 	} while (0)
 
-<<<<<<< HEAD
-=======
 #define pr_info_ipaddr(fmt_trail,					\
 			addr1, addr2, args_trail...)			\
 do {									\
@@ -64,7 +55,6 @@ do {									\
 		addr1, addr2, args_trail);				\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* max. connections per adapter */
 #define CXGBI_MAX_CONN		16384
 
@@ -85,8 +75,6 @@ do {									\
 #define ULP2_MAX_PDU_PAYLOAD	\
 	(ULP2_MAX_PKT_SIZE - ISCSI_PDU_NONPAYLOAD_LEN)
 
-<<<<<<< HEAD
-=======
 #define CXGBI_ULP2_MAX_ISO_PAYLOAD	65535
 
 #define CXGBI_MAX_ISO_DATA_IN_SKB	\
@@ -95,7 +83,6 @@ do {									\
 #define cxgbi_is_iso_config(csk)	((csk)->cdev->skb_iso_txhdr)
 #define cxgbi_is_iso_disabled(csk)	((csk)->disable_iso)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For iscsi connections HW may inserts digest bytes into the pdu. Those digest
  * bytes are not sent by the host but are part of the TCP payload and therefore
@@ -107,98 +94,11 @@ static inline unsigned int cxgbi_ulp_extra_len(int submode)
 	return ulp2_extra_len[submode & 3];
 }
 
-<<<<<<< HEAD
-/*
- * struct pagepod_hdr, pagepod - pagepod format
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPL_RX_DDP_STATUS_DDP_SHIFT	16 /* ddp'able */
 #define CPL_RX_DDP_STATUS_PAD_SHIFT	19 /* pad error */
 #define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 /* hcrc error */
 #define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 /* dcrc error */
 
-<<<<<<< HEAD
-struct cxgbi_pagepod_hdr {
-	u32 vld_tid;
-	u32 pgsz_tag_clr;
-	u32 max_offset;
-	u32 page_offset;
-	u64 rsvd;
-};
-
-#define PPOD_PAGES_MAX			4
-struct cxgbi_pagepod {
-	struct cxgbi_pagepod_hdr hdr;
-	u64 addr[PPOD_PAGES_MAX + 1];
-};
-
-struct cxgbi_tag_format {
-	unsigned char sw_bits;
-	unsigned char rsvd_bits;
-	unsigned char rsvd_shift;
-	unsigned char filler[1];
-	u32 rsvd_mask;
-};
-
-struct cxgbi_gather_list {
-	unsigned int tag;
-	unsigned int length;
-	unsigned int offset;
-	unsigned int nelem;
-	struct page **pages;
-	dma_addr_t phys_addr[0];
-};
-
-struct cxgbi_ddp_info {
-	struct kref refcnt;
-	struct cxgbi_device *cdev;
-	struct pci_dev *pdev;
-	unsigned int max_txsz;
-	unsigned int max_rxsz;
-	unsigned int llimit;
-	unsigned int ulimit;
-	unsigned int nppods;
-	unsigned int idx_last;
-	unsigned char idx_bits;
-	unsigned char filler[3];
-	unsigned int idx_mask;
-	unsigned int rsvd_tag_mask;
-	spinlock_t map_lock;
-	struct cxgbi_gather_list **gl_map;
-};
-
-#define DDP_PGIDX_MAX		4
-#define DDP_THRESHOLD		2048
-
-#define PPOD_PAGES_SHIFT	2       /*  4 pages per pod */
-
-#define PPOD_SIZE               sizeof(struct cxgbi_pagepod)  /*  64 */
-#define PPOD_SIZE_SHIFT         6
-
-#define ULPMEM_DSGL_MAX_NPPODS	16	/*  1024/PPOD_SIZE */
-#define ULPMEM_IDATA_MAX_NPPODS	4	/*  256/PPOD_SIZE */
-#define PCIE_MEMWIN_MAX_NPPODS	16	/*  1024/PPOD_SIZE */
-
-#define PPOD_COLOR_SHIFT	0
-#define PPOD_COLOR(x)		((x) << PPOD_COLOR_SHIFT)
-
-#define PPOD_IDX_SHIFT          6
-#define PPOD_IDX_MAX_SIZE       24
-
-#define PPOD_TID_SHIFT		0
-#define PPOD_TID(x)		((x) << PPOD_TID_SHIFT)
-
-#define PPOD_TAG_SHIFT		6
-#define PPOD_TAG(x)		((x) << PPOD_TAG_SHIFT)
-
-#define PPOD_VALID_SHIFT	24
-#define PPOD_VALID(x)		((x) << PPOD_VALID_SHIFT)
-#define PPOD_VALID_FLAG		PPOD_VALID(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sge_opaque_hdr -
  * Opaque version of structure the SGE stores at skb->head of TX_DATA packets
@@ -227,12 +127,9 @@ struct cxgbi_sock {
 	int wr_max_cred;
 	int wr_cred;
 	int wr_una_cred;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 	u8 dcb_priority;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char hcrc_len;
 	unsigned char dcrc_len;
 
@@ -246,10 +143,6 @@ struct cxgbi_sock {
 	spinlock_t lock;
 	struct kref refcnt;
 	unsigned int state;
-<<<<<<< HEAD
-	struct sockaddr_in saddr;
-	struct sockaddr_in daddr;
-=======
 	unsigned int csk_family;
 	union {
 		struct sockaddr_in saddr;
@@ -259,15 +152,11 @@ struct cxgbi_sock {
 		struct sockaddr_in daddr;
 		struct sockaddr_in6 daddr6;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dst_entry *dst;
 	struct sk_buff_head receive_queue;
 	struct sk_buff_head write_queue;
 	struct timer_list retry_timer;
-<<<<<<< HEAD
-=======
 	struct completion cmpl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	rwlock_t callback_lock;
 	void *user_data;
@@ -278,15 +167,12 @@ struct cxgbi_sock {
 	u32 snd_nxt;
 	u32 snd_una;
 	u32 write_seq;
-<<<<<<< HEAD
-=======
 	u32 snd_win;
 	u32 rcv_win;
 
 	bool disable_iso;
 	u32 no_tx_credits;
 	unsigned long prev_iso_ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -316,10 +202,7 @@ enum cxgbi_sock_flags {
 	CTPF_HAS_ATID,		/* reserved atid */
 	CTPF_HAS_TID,		/* reserved hw tid */
 	CTPF_OFFLOAD_DOWN,	/* offload function off */
-<<<<<<< HEAD
-=======
 	CTPF_LOGOUT_RSP_RCVD,   /* received logout response */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cxgbi_skb_rx_cb {
@@ -328,76 +211,46 @@ struct cxgbi_skb_rx_cb {
 };
 
 struct cxgbi_skb_tx_cb {
-<<<<<<< HEAD
-	void *l2t;
-	struct sk_buff *wr_next;
-=======
 	void *handle;
 	void *arp_err_handler;
 	struct sk_buff *wr_next;
 	u16 iscsi_hdr_len;
 	u8 ulp_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum cxgbi_skcb_flags {
 	SKCBF_TX_NEED_HDR,	/* packet needs a header */
-<<<<<<< HEAD
-=======
 	SKCBF_TX_MEM_WRITE,     /* memory write */
 	SKCBF_TX_FLAG_COMPL,    /* wr completion flag */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SKCBF_RX_COALESCED,	/* received whole pdu */
 	SKCBF_RX_HDR,		/* received pdu header */
 	SKCBF_RX_DATA,		/* received pdu payload */
 	SKCBF_RX_STATUS,	/* received ddp status */
-<<<<<<< HEAD
-=======
 	SKCBF_RX_ISCSI_COMPL,   /* received iscsi completion */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SKCBF_RX_DATA_DDPD,	/* pdu payload ddp'd */
 	SKCBF_RX_HCRC_ERR,	/* header digest error */
 	SKCBF_RX_DCRC_ERR,	/* data digest error */
 	SKCBF_RX_PAD_ERR,	/* padding byte error */
-<<<<<<< HEAD
-};
-
-struct cxgbi_skb_cb {
-	unsigned char ulp_mode;
-	unsigned long flags;
-	unsigned int seq;
-=======
 	SKCBF_TX_ISO,		/* iso cpl in tx skb */
 };
 
 struct cxgbi_skb_cb {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct cxgbi_skb_rx_cb rx;
 		struct cxgbi_skb_tx_cb tx;
 	};
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 	unsigned int seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define CXGBI_SKB_CB(skb)	((struct cxgbi_skb_cb *)&((skb)->cb[0]))
 #define cxgbi_skcb_flags(skb)		(CXGBI_SKB_CB(skb)->flags)
-<<<<<<< HEAD
-#define cxgbi_skcb_ulp_mode(skb)	(CXGBI_SKB_CB(skb)->ulp_mode)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cxgbi_skcb_tcp_seq(skb)		(CXGBI_SKB_CB(skb)->seq)
 #define cxgbi_skcb_rx_ddigest(skb)	(CXGBI_SKB_CB(skb)->rx.ddigest)
 #define cxgbi_skcb_rx_pdulen(skb)	(CXGBI_SKB_CB(skb)->rx.pdulen)
 #define cxgbi_skcb_tx_wr_next(skb)	(CXGBI_SKB_CB(skb)->tx.wr_next)
-<<<<<<< HEAD
-=======
 #define cxgbi_skcb_tx_iscsi_hdrlen(skb)	(CXGBI_SKB_CB(skb)->tx.iscsi_hdr_len)
 #define cxgbi_skcb_tx_ulp_mode(skb)	(CXGBI_SKB_CB(skb)->tx.ulp_mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void cxgbi_skcb_set_flag(struct sk_buff *skb,
 					enum cxgbi_skcb_flags flag)
@@ -411,13 +264,8 @@ static inline void cxgbi_skcb_clear_flag(struct sk_buff *skb,
 	__clear_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
 
-<<<<<<< HEAD
-static inline int cxgbi_skcb_test_flag(struct sk_buff *skb,
-					enum cxgbi_skcb_flags flag)
-=======
 static inline int cxgbi_skcb_test_flag(const struct sk_buff *skb,
 				       enum cxgbi_skcb_flags flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
@@ -473,11 +321,7 @@ static inline void __cxgbi_sock_put(const char *fn, struct cxgbi_sock *csk)
 {
 	log_debug(1 << CXGBI_DBG_SOCK,
 		"%s, put csk 0x%p, ref %u-1.\n",
-<<<<<<< HEAD
-		fn, csk, atomic_read(&csk->refcnt.refcount));
-=======
 		fn, csk, kref_read(&csk->refcnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_put(&csk->refcnt, cxgbi_sock_free);
 }
 #define cxgbi_sock_put(csk)	__cxgbi_sock_put(__func__, csk)
@@ -486,11 +330,7 @@ static inline void __cxgbi_sock_get(const char *fn, struct cxgbi_sock *csk)
 {
 	log_debug(1 << CXGBI_DBG_SOCK,
 		"%s, get csk 0x%p, ref %u+1.\n",
-<<<<<<< HEAD
-		fn, csk, atomic_read(&csk->refcnt.refcount));
-=======
 		fn, csk, kref_read(&csk->refcnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_get(&csk->refcnt);
 }
 #define cxgbi_sock_get(csk)	__cxgbi_sock_get(__func__, csk)
@@ -554,17 +394,9 @@ static inline void cxgbi_sock_enqueue_wr(struct cxgbi_sock *csk,
 	cxgbi_skcb_tx_wr_next(skb) = NULL;
 	/*
 	 * We want to take an extra reference since both us and the driver
-<<<<<<< HEAD
-	 * need to free the packet before it's really freed. We know there's
-	 * just one user currently so we use atomic_set rather than skb_get
-	 * to avoid the atomic op.
-	 */
-	atomic_set(&skb->users, 2);
-=======
 	 * need to free the packet before it's really freed.
 	 */
 	skb_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!csk->wr_pending_head)
 		csk->wr_pending_head = skb;
@@ -638,10 +470,6 @@ struct cxgbi_ports_map {
 #define CXGBI_FLAG_DEV_T4		0x2
 #define CXGBI_FLAG_ADAPTER_RESET	0x4
 #define CXGBI_FLAG_IPV4_SET		0x10
-<<<<<<< HEAD
-struct cxgbi_device {
-	struct list_head list_head;
-=======
 #define CXGBI_FLAG_USE_PPOD_OFLDQ       0x40
 #define CXGBI_FLAG_DDP_OFF		0x100
 #define CXGBI_FLAG_DEV_ISO_OFF		0x400
@@ -649,7 +477,6 @@ struct cxgbi_device {
 struct cxgbi_device {
 	struct list_head list_head;
 	struct list_head rcu_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int flags;
 	struct net_device **ports;
 	void *lldev;
@@ -660,31 +487,6 @@ struct cxgbi_device {
 	struct pci_dev *pdev;
 	struct dentry *debugfs_root;
 	struct iscsi_transport *itp;
-<<<<<<< HEAD
-
-	unsigned int pfvf;
-	unsigned int snd_win;
-	unsigned int rcv_win;
-	unsigned int rx_credit_thres;
-	unsigned int skb_tx_rsvd;
-	unsigned int skb_rx_extra;	/* for msg coalesced mode */
-	unsigned int tx_max_size;
-	unsigned int rx_max_size;
-	struct cxgbi_ports_map pmap;
-	struct cxgbi_tag_format tag_format;
-	struct cxgbi_ddp_info *ddp;
-
-	void (*dev_ddp_cleanup)(struct cxgbi_device *);
-	int (*csk_ddp_set)(struct cxgbi_sock *, struct cxgbi_pagepod_hdr *,
-				unsigned int, unsigned int,
-				struct cxgbi_gather_list *);
-	void (*csk_ddp_clear)(struct cxgbi_hba *,
-				unsigned int, unsigned int, unsigned int);
-	int (*csk_ddp_setup_digest)(struct cxgbi_sock *,
-				unsigned int, int, int, int);
-	int (*csk_ddp_setup_pgidx)(struct cxgbi_sock *,
-				unsigned int, int, bool);
-=======
 	struct module *owner;
 
 	unsigned int pfvf;
@@ -708,7 +510,6 @@ struct cxgbi_device {
 				    unsigned int, int, int);
 	int (*csk_ddp_setup_pgidx)(struct cxgbi_sock *,
 				   unsigned int, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*csk_release_offload_resources)(struct cxgbi_sock *);
 	int (*csk_rx_pdu_ready)(struct cxgbi_sock *, struct sk_buff *);
@@ -728,11 +529,8 @@ struct cxgbi_conn {
 	struct iscsi_conn *iconn;
 	struct cxgbi_hba *chba;
 	u32 task_idx_bits;
-<<<<<<< HEAD
-=======
 	unsigned int ddp_full;
 	unsigned int ddp_tag_full;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cxgbi_endpoint {
@@ -741,16 +539,6 @@ struct cxgbi_endpoint {
 	struct cxgbi_sock *csk;
 };
 
-<<<<<<< HEAD
-#define MAX_PDU_FRAGS	((ULP2_MAX_PDU_PAYLOAD + 512 - 1) / 512)
-struct cxgbi_task_data {
-	unsigned short nr_frags;
-	struct page_frag frags[MAX_PDU_FRAGS];
-	struct sk_buff *skb;
-	unsigned int offset;
-	unsigned int count;
-	unsigned int sgoffset;
-=======
 struct cxgbi_task_data {
 #define CXGBI_TASK_SGL_CHECKED	0x1
 #define CXGBI_TASK_SGL_COPY	0x2
@@ -766,103 +554,10 @@ struct cxgbi_task_data {
 	u32 total_offset;
 	u32 max_xmit_dlength;
 	struct cxgbi_task_tag_info ttinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define iscsi_task_cxgbi_data(task) \
 	((task)->dd_data + sizeof(struct iscsi_tcp_task))
 
-<<<<<<< HEAD
-static inline int cxgbi_is_ddp_tag(struct cxgbi_tag_format *tformat, u32 tag)
-{
-	return !(tag & (1 << (tformat->rsvd_bits + tformat->rsvd_shift - 1)));
-}
-
-static inline int cxgbi_sw_tag_usable(struct cxgbi_tag_format *tformat,
-					u32 sw_tag)
-{
-	sw_tag >>= (32 - tformat->rsvd_bits);
-	return !sw_tag;
-}
-
-static inline u32 cxgbi_set_non_ddp_tag(struct cxgbi_tag_format *tformat,
-					u32 sw_tag)
-{
-	unsigned char shift = tformat->rsvd_bits + tformat->rsvd_shift - 1;
-	u32 mask = (1 << shift) - 1;
-
-	if (sw_tag && (sw_tag & ~mask)) {
-		u32 v1 = sw_tag & ((1 << shift) - 1);
-		u32 v2 = (sw_tag >> (shift - 1)) << shift;
-
-		return v2 | v1 | 1 << shift;
-	}
-
-	return sw_tag | 1 << shift;
-}
-
-static inline u32 cxgbi_ddp_tag_base(struct cxgbi_tag_format *tformat,
-					u32 sw_tag)
-{
-	u32 mask = (1 << tformat->rsvd_shift) - 1;
-
-	if (sw_tag && (sw_tag & ~mask)) {
-		u32 v1 = sw_tag & mask;
-		u32 v2 = sw_tag >> tformat->rsvd_shift;
-
-		v2 <<= tformat->rsvd_bits + tformat->rsvd_shift;
-
-		return v2 | v1;
-	}
-
-	return sw_tag;
-}
-
-static inline u32 cxgbi_tag_rsvd_bits(struct cxgbi_tag_format *tformat,
-					u32 tag)
-{
-	if (cxgbi_is_ddp_tag(tformat, tag))
-		return (tag >> tformat->rsvd_shift) & tformat->rsvd_mask;
-
-	return 0;
-}
-
-static inline u32 cxgbi_tag_nonrsvd_bits(struct cxgbi_tag_format *tformat,
-					u32 tag)
-{
-	unsigned char shift = tformat->rsvd_bits + tformat->rsvd_shift - 1;
-	u32 v1, v2;
-
-	if (cxgbi_is_ddp_tag(tformat, tag)) {
-		v1 = tag & ((1 << tformat->rsvd_shift) - 1);
-		v2 = (tag >> (shift + 1)) << tformat->rsvd_shift;
-	} else {
-		u32 mask = (1 << shift) - 1;
-		tag &= ~(1 << shift);
-		v1 = tag & mask;
-		v2 = (tag >> 1) & ~mask;
-	}
-	return v1 | v2;
-}
-
-static inline void *cxgbi_alloc_big_mem(unsigned int size,
-					gfp_t gfp)
-{
-	void *p = kmalloc(size, gfp);
-	if (!p)
-		p = vmalloc(size);
-	if (p)
-		memset(p, 0, size);
-	return p;
-}
-
-static inline void cxgbi_free_big_mem(void *addr)
-{
-	if (is_vmalloc_addr(addr))
-		vfree(addr);
-	else
-		kfree(addr);
-}
-=======
 struct cxgbi_iso_info {
 #define CXGBI_ISO_INFO_FSLICE		0x1
 #define CXGBI_ISO_INFO_LSLICE		0x2
@@ -878,7 +573,6 @@ struct cxgbi_iso_info {
 	u32 datasn_offset;
 	u32 buffer_offset;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
 {
@@ -889,28 +583,15 @@ static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
 			chba->ndev->name);
 }
 
-<<<<<<< HEAD
-static inline __be32 cxgbi_get_iscsi_ipv4(struct cxgbi_hba *chba)
-{
-	return chba->ipv4addr;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cxgbi_device *cxgbi_device_register(unsigned int, unsigned int);
 void cxgbi_device_unregister(struct cxgbi_device *);
 void cxgbi_device_unregister_all(unsigned int flag);
 struct cxgbi_device *cxgbi_device_find_by_lldev(void *);
-<<<<<<< HEAD
-int cxgbi_hbas_add(struct cxgbi_device *, unsigned int, unsigned int,
-			struct scsi_host_template *,
-=======
 struct cxgbi_device *cxgbi_device_find_by_netdev(struct net_device *, int *);
 struct cxgbi_device *cxgbi_device_find_by_netdev_rcu(struct net_device *,
 						     int *);
 int cxgbi_hbas_add(struct cxgbi_device *, u64, unsigned int,
 			const struct scsi_host_template *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct scsi_transport_template *);
 void cxgbi_hbas_remove(struct cxgbi_device *);
 
@@ -954,11 +635,6 @@ int cxgbi_ddp_init(struct cxgbi_device *, unsigned int, unsigned int,
 			unsigned int, unsigned int);
 int cxgbi_ddp_cleanup(struct cxgbi_device *);
 void cxgbi_ddp_page_size_factor(int *);
-<<<<<<< HEAD
-void cxgbi_ddp_ppod_clear(struct cxgbi_pagepod *);
-void cxgbi_ddp_ppod_set(struct cxgbi_pagepod *, struct cxgbi_pagepod_hdr *,
-			struct cxgbi_gather_list *, unsigned int);
-=======
 void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *,
 			    struct cxgbi_task_tag_info *,
 			    struct scatterlist **sg_pp, unsigned int *sg_off);
@@ -967,5 +643,4 @@ int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
 			unsigned int iscsi_size, unsigned int llimit,
 			unsigned int start, unsigned int rsvd_factor,
 			unsigned int edram_start, unsigned int edram_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/*__LIBCXGBI_H__*/

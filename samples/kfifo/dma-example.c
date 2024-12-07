@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sample fifo dma implementation
  *
  * Copyright (C) 2010 Stefani Seibold <stefani@seibold.net>
-<<<<<<< HEAD
- *
- * Released under the GPL version 2 only.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -46,11 +37,7 @@ static int __init example_init(void)
 	kfifo_in(&fifo, "test", 4);
 
 	for (i = 0; i != 9; i++)
-<<<<<<< HEAD
-		kfifo_put(&fifo, &i);
-=======
 		kfifo_put(&fifo, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* kick away first byte */
 	kfifo_skip(&fifo);
@@ -86,13 +73,8 @@ static int __init example_init(void)
 	for (i = 0; i < nents; i++) {
 		printk(KERN_INFO
 		"sg[%d] -> "
-<<<<<<< HEAD
-		"page_link 0x%.8lx offset 0x%.8x length 0x%.8x\n",
-			i, sg[i].page_link, sg[i].offset, sg[i].length);
-=======
 		"page %p offset 0x%.8x length 0x%.8x\n",
 			i, sg_page(&sg[i]), sg[i].offset, sg[i].length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sg_is_last(&sg[i]))
 			break;
@@ -120,13 +102,8 @@ static int __init example_init(void)
 	for (i = 0; i < nents; i++) {
 		printk(KERN_INFO
 		"sg[%d] -> "
-<<<<<<< HEAD
-		"page_link 0x%.8lx offset 0x%.8x length 0x%.8x\n",
-			i, sg[i].page_link, sg[i].offset, sg[i].length);
-=======
 		"page %p offset 0x%.8x length 0x%.8x\n",
 			i, sg_page(&sg[i]), sg[i].offset, sg[i].length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sg_is_last(&sg[i]))
 			break;

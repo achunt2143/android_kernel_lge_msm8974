@@ -1,33 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Serial Attached SCSI (SAS) class internal header file
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SAS_INTERNAL_H_
@@ -38,12 +14,6 @@
 #include <scsi/scsi_transport_sas.h>
 #include <scsi/libsas.h>
 #include <scsi/sas_ata.h>
-<<<<<<< HEAD
-
-#define sas_printk(fmt, ...) printk(KERN_NOTICE "sas: " fmt, ## __VA_ARGS__)
-
-#define SAS_DPRINTK(fmt, ...) printk(KERN_DEBUG "sas: " fmt, ## __VA_ARGS__)
-=======
 #include <linux/pm_runtime.h>
 
 #ifdef pr_fmt
@@ -53,7 +23,6 @@
 #define SAS_FMT "sas: "
 
 #define pr_fmt(fmt) SAS_FMT fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TO_SAS_TASK(_scsi_cmd)  ((void *)(_scsi_cmd)->host_scribble)
 #define ASSIGN_SAS_TASK(_sc, _t) do { (_sc)->host_scribble = (void *) _t; } while (0)
@@ -70,17 +39,6 @@ struct sas_phy_data {
 	struct sas_work enable_work;
 };
 
-<<<<<<< HEAD
-void sas_scsi_recover_host(struct Scsi_Host *shost);
-
-int sas_show_class(enum sas_class class, char *buf);
-int sas_show_proto(enum sas_protocol proto, char *buf);
-int sas_show_linkrate(enum sas_linkrate linkrate, char *buf);
-int sas_show_oob_mode(enum sas_oob_mode oob_mode, char *buf);
-
-int  sas_register_phys(struct sas_ha_struct *sas_ha);
-void sas_unregister_phys(struct sas_ha_struct *sas_ha);
-=======
 void sas_hash_addr(u8 *hashed, const u8 *sas_addr);
 
 int sas_discover_root_expander(struct domain_device *dev);
@@ -103,24 +61,13 @@ void sas_free_event(struct asd_sas_event *event);
 struct sas_task *sas_alloc_task(gfp_t flags);
 struct sas_task *sas_alloc_slow_task(gfp_t flags);
 void sas_free_task(struct sas_task *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int  sas_register_ports(struct sas_ha_struct *sas_ha);
 void sas_unregister_ports(struct sas_ha_struct *sas_ha);
 
-<<<<<<< HEAD
-enum blk_eh_timer_return sas_scsi_timed_out(struct scsi_cmnd *);
-
-int  sas_init_queue(struct sas_ha_struct *sas_ha);
-int  sas_init_events(struct sas_ha_struct *sas_ha);
-void sas_shutdown_queue(struct sas_ha_struct *sas_ha);
-void sas_disable_revalidation(struct sas_ha_struct *ha);
-void sas_enable_revalidation(struct sas_ha_struct *ha);
-=======
 void sas_disable_revalidation(struct sas_ha_struct *ha);
 void sas_enable_revalidation(struct sas_ha_struct *ha);
 void sas_queue_deferred_work(struct sas_ha_struct *ha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __sas_drain_work(struct sas_ha_struct *ha);
 
 void sas_deform_port(struct asd_sas_phy *phy, int gone);
@@ -130,20 +77,13 @@ void sas_porte_broadcast_rcvd(struct work_struct *work);
 void sas_porte_link_reset_err(struct work_struct *work);
 void sas_porte_timer_event(struct work_struct *work);
 void sas_porte_hard_reset(struct work_struct *work);
-<<<<<<< HEAD
-void sas_queue_work(struct sas_ha_struct *ha, struct sas_work *sw);
-=======
 bool sas_queue_work(struct sas_ha_struct *ha, struct sas_work *sw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sas_notify_lldd_dev_found(struct domain_device *);
 void sas_notify_lldd_dev_gone(struct domain_device *);
 
-<<<<<<< HEAD
-=======
 void sas_smp_handler(struct bsg_job *job, struct Scsi_Host *shost,
 		struct sas_rphy *rphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sas_smp_phy_control(struct domain_device *dev, int phy_id,
 			enum phy_func phy_func, struct sas_phy_linkrates *);
 int sas_smp_get_phy_events(struct sas_phy *phy);
@@ -153,34 +93,6 @@ struct domain_device *sas_find_dev_by_rphy(struct sas_rphy *rphy);
 struct domain_device *sas_ex_to_ata(struct domain_device *ex_dev, int phy_id);
 int sas_ex_phy_discover(struct domain_device *dev, int single);
 int sas_get_report_phy_sata(struct domain_device *dev, int phy_id,
-<<<<<<< HEAD
-			    struct smp_resp *rps_resp);
-int sas_try_ata_reset(struct asd_sas_phy *phy);
-void sas_hae_reset(struct work_struct *work);
-
-void sas_free_device(struct kref *kref);
-
-#ifdef CONFIG_SCSI_SAS_HOST_SMP
-extern int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
-				struct request *rsp);
-#else
-static inline int sas_smp_host_handler(struct Scsi_Host *shost,
-				       struct request *req,
-				       struct request *rsp)
-{
-	shost_printk(KERN_ERR, shost,
-		"Cannot send SMP to a sas host (not enabled in CONFIG)\n");
-	return -EINVAL;
-}
-#endif
-
-static inline void sas_fail_probe(struct domain_device *dev, const char *func, int err)
-{
-	SAS_DPRINTK("%s: for %s device %16llx returned %d\n",
-		    func, dev->parent ? "exp-attached" :
-					    "direct-attached",
-		    SAS_ADDR(dev->sas_addr), err);
-=======
 			    struct smp_rps_resp *rps_resp);
 int sas_get_phy_attached_dev(struct domain_device *dev, int phy_id,
 			     u8 *sas_addr, enum sas_device_type *type);
@@ -233,7 +145,6 @@ static inline void sas_fail_probe(struct domain_device *dev, const char *func, i
 		func, dev->parent ? "exp-attached" :
 		"direct-attached",
 		SAS_ADDR(dev->sas_addr), err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_unregister_dev(dev->port, dev);
 }
 
@@ -244,18 +155,6 @@ static inline void sas_fill_in_rphy(struct domain_device *dev,
 	rphy->identify.initiator_port_protocols = dev->iproto;
 	rphy->identify.target_port_protocols = dev->tproto;
 	switch (dev->dev_type) {
-<<<<<<< HEAD
-	case SATA_DEV:
-		/* FIXME: need sata device type */
-	case SAS_END_DEV:
-	case SATA_PENDING:
-		rphy->identify.device_type = SAS_END_DEVICE;
-		break;
-	case EDGE_DEV:
-		rphy->identify.device_type = SAS_EDGE_EXPANDER_DEVICE;
-		break;
-	case FANOUT_DEV:
-=======
 	case SAS_SATA_DEV:
 		/* FIXME: need sata device type */
 	case SAS_END_DEVICE:
@@ -266,7 +165,6 @@ static inline void sas_fill_in_rphy(struct domain_device *dev,
 		rphy->identify.device_type = SAS_EDGE_EXPANDER_DEVICE;
 		break;
 	case SAS_FANOUT_EXPANDER_DEVICE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rphy->identify.device_type = SAS_FANOUT_EXPANDER_DEVICE;
 		break;
 	default:

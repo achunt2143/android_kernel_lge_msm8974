@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/plat-pxa/gpio.c
  *
@@ -10,20 +7,6 @@
  *  Author:	Nicolas Pitre
  *  Created:	Jun 15, 2001
  *  Copyright:	MontaVista Software Inc.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- */
-#include <linux/clk.h>
-#include <linux/err.h>
-#include <linux/gpio.h>
-#include <linux/gpio-pxa.h>
-#include <linux/init.h>
-#include <linux/irq.h>
-#include <linux/io.h>
-=======
  */
 #include <linux/module.h>
 #include <linux/clk.h>
@@ -38,16 +21,10 @@
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/pinctrl/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/syscore_ops.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <mach/irqs.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We handle the GPIOs by banks, each bank covers up to 32 GPIOs with
  * one set of registers. The register offsets are organized below:
@@ -61,18 +38,12 @@
  * BANK 4 - 0x0104  0x0110  0x011C  0x0128  0x0134  0x0140  0x014C
  * BANK 5 - 0x0108  0x0114  0x0120  0x012C  0x0138  0x0144  0x0150
  *
-<<<<<<< HEAD
- * NOTE:
- *   BANK 3 is only available on PXA27x and later processors.
- *   BANK 4 and 5 are only available on PXA935
-=======
  * BANK 6 - 0x0200  0x020C  0x0218  0x0224  0x0230  0x023C  0x0248
  *
  * NOTE:
  *   BANK 3 is only available on PXA27x and later processors.
  *   BANK 4 and 5 are only available on PXA935, PXA1928
  *   BANK 6 is only available on PXA1928
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define GPLR_OFFSET	0x00
@@ -85,21 +56,6 @@
 #define GAFR_OFFSET	0x54
 #define ED_MASK_OFFSET	0x9C	/* GPIO edge detection for AP side */
 
-<<<<<<< HEAD
-#define BANK_OFF(n)	(((n) < 3) ? (n) << 2 : 0x100 + (((n) - 3) << 2))
-
-int pxa_last_gpio;
-
-struct pxa_gpio_chip {
-	struct gpio_chip chip;
-	void __iomem	*regbase;
-	char label[10];
-
-	unsigned long	irq_mask;
-	unsigned long	irq_edge_rise;
-	unsigned long	irq_edge_fall;
-	int (*set_wake)(unsigned int gpio, unsigned int on);
-=======
 #define BANK_OFF(n)	(((n) / 3) << 8) + (((n) % 3) << 2)
 
 int pxa_last_gpio;
@@ -110,7 +66,6 @@ struct pxa_gpio_bank {
 	unsigned long	irq_mask;
 	unsigned long	irq_edge_rise;
 	unsigned long	irq_edge_fall;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 	unsigned long	saved_gplr;
@@ -120,9 +75,6 @@ struct pxa_gpio_bank {
 #endif
 };
 
-<<<<<<< HEAD
-enum {
-=======
 struct pxa_gpio_chip {
 	struct device *dev;
 	struct gpio_chip chip;
@@ -135,7 +87,6 @@ struct pxa_gpio_chip {
 };
 
 enum pxa_gpio_type {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PXA25X_GPIO = 0,
 	PXA26X_GPIO,
 	PXA27X_GPIO,
@@ -143,31 +94,6 @@ enum pxa_gpio_type {
 	PXA93X_GPIO,
 	MMP_GPIO = 0x10,
 	MMP2_GPIO,
-<<<<<<< HEAD
-};
-
-static DEFINE_SPINLOCK(gpio_lock);
-static struct pxa_gpio_chip *pxa_gpio_chips;
-static int gpio_type;
-static void __iomem *gpio_reg_base;
-
-#define for_each_gpio_chip(i, c)			\
-	for (i = 0, c = &pxa_gpio_chips[0]; i <= pxa_last_gpio; i += 32, c++)
-
-static inline void __iomem *gpio_chip_base(struct gpio_chip *c)
-{
-	return container_of(c, struct pxa_gpio_chip, chip)->regbase;
-}
-
-static inline struct pxa_gpio_chip *gpio_to_pxachip(unsigned gpio)
-{
-	return &pxa_gpio_chips[gpio_to_bank(gpio)];
-}
-
-static inline int gpio_is_pxa_type(int type)
-{
-	return (type & MMP_GPIO) == 0;
-=======
 	PXA1928_GPIO,
 };
 
@@ -242,7 +168,6 @@ static inline struct pxa_gpio_bank *gpio_to_pxabank(struct gpio_chip *c,
 						    unsigned gpio)
 {
 	return chip_to_pxachip(c)->banks + gpio / 32;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int gpio_is_mmp_type(int type)
@@ -266,24 +191,13 @@ static inline int __gpio_is_inverted(int gpio)
  * is attributed as "occupied" here (I know this terminology isn't
  * accurate, you are welcome to propose a better one :-)
  */
-<<<<<<< HEAD
-static inline int __gpio_is_occupied(unsigned gpio)
-{
-	struct pxa_gpio_chip *pxachip;
-=======
 static inline int __gpio_is_occupied(struct pxa_gpio_chip *pchip, unsigned gpio)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *base;
 	unsigned long gafr = 0, gpdr = 0;
 	int ret, af = 0, dir = 0;
 
-<<<<<<< HEAD
-	pxachip = gpio_to_pxachip(gpio);
-	base = gpio_chip_base(&pxachip->chip);
-=======
 	base = gpio_bank_base(&pchip->chip, gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpdr = readl_relaxed(base + GPDR_OFFSET);
 
 	switch (gpio_type) {
@@ -306,65 +220,6 @@ static inline int __gpio_is_occupied(struct pxa_gpio_chip *pchip, unsigned gpio)
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_PXA
-static inline int __pxa_gpio_to_irq(int gpio)
-{
-	if (gpio_is_pxa_type(gpio_type))
-		return PXA_GPIO_TO_IRQ(gpio);
-	return -1;
-}
-
-static inline int __pxa_irq_to_gpio(int irq)
-{
-	if (gpio_is_pxa_type(gpio_type))
-		return irq - PXA_GPIO_TO_IRQ(0);
-	return -1;
-}
-#else
-static inline int __pxa_gpio_to_irq(int gpio) { return -1; }
-static inline int __pxa_irq_to_gpio(int irq) { return -1; }
-#endif
-
-#ifdef CONFIG_ARCH_MMP
-static inline int __mmp_gpio_to_irq(int gpio)
-{
-	if (gpio_is_mmp_type(gpio_type))
-		return MMP_GPIO_TO_IRQ(gpio);
-	return -1;
-}
-
-static inline int __mmp_irq_to_gpio(int irq)
-{
-	if (gpio_is_mmp_type(gpio_type))
-		return irq - MMP_GPIO_TO_IRQ(0);
-	return -1;
-}
-#else
-static inline int __mmp_gpio_to_irq(int gpio) { return -1; }
-static inline int __mmp_irq_to_gpio(int irq) { return -1; }
-#endif
-
-static int pxa_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
-{
-	int gpio, ret;
-
-	gpio = chip->base + offset;
-	ret = __pxa_gpio_to_irq(gpio);
-	if (ret >= 0)
-		return ret;
-	return __mmp_gpio_to_irq(gpio);
-}
-
-int pxa_irq_to_gpio(int irq)
-{
-	int ret;
-
-	ret = __pxa_irq_to_gpio(irq);
-	if (ret >= 0)
-		return ret;
-	return __mmp_irq_to_gpio(irq);
-=======
 int pxa_irq_to_gpio(int irq)
 {
 	struct pxa_gpio_chip *pchip = pxa_gpio_chip;
@@ -395,16 +250,10 @@ static int pxa_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 	struct pxa_gpio_chip *pchip = chip_to_pxachip(chip);
 
 	return irq_find_mapping(pchip->irqdomain, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pxa_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	void __iomem *base = gpio_chip_base(chip);
-	uint32_t value, mask = 1 << offset;
-	unsigned long flags;
-=======
 	void __iomem *base = gpio_bank_base(chip, offset);
 	uint32_t value, mask = GPIO_bit(offset);
 	unsigned long flags;
@@ -415,7 +264,6 @@ static int pxa_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 		if (ret)
 			return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
@@ -433,14 +281,6 @@ static int pxa_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 static int pxa_gpio_direction_output(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
-<<<<<<< HEAD
-	void __iomem *base = gpio_chip_base(chip);
-	uint32_t tmp, mask = 1 << offset;
-	unsigned long flags;
-
-	writel_relaxed(mask, base + (value ? GPSR_OFFSET : GPCR_OFFSET));
-
-=======
 	void __iomem *base = gpio_bank_base(chip, offset);
 	uint32_t tmp, mask = GPIO_bit(offset);
 	unsigned long flags;
@@ -454,7 +294,6 @@ static int pxa_gpio_direction_output(struct gpio_chip *chip,
 			return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&gpio_lock, flags);
 
 	tmp = readl_relaxed(base + GPDR_OFFSET);
@@ -470,58 +309,14 @@ static int pxa_gpio_direction_output(struct gpio_chip *chip,
 
 static int pxa_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	return readl_relaxed(gpio_chip_base(chip) + GPLR_OFFSET) & (1 << offset);
-=======
 	void __iomem *base = gpio_bank_base(chip, offset);
 	u32 gplr = readl_relaxed(base + GPLR_OFFSET);
 
 	return !!(gplr & GPIO_bit(offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxa_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	writel_relaxed(1 << offset, gpio_chip_base(chip) +
-				(value ? GPSR_OFFSET : GPCR_OFFSET));
-}
-
-static int __devinit pxa_init_gpio_chip(int gpio_end,
-					int (*set_wake)(unsigned int, unsigned int))
-{
-	int i, gpio, nbanks = gpio_to_bank(gpio_end) + 1;
-	struct pxa_gpio_chip *chips;
-
-	chips = kzalloc(nbanks * sizeof(struct pxa_gpio_chip), GFP_KERNEL);
-	if (chips == NULL) {
-		pr_err("%s: failed to allocate GPIO chips\n", __func__);
-		return -ENOMEM;
-	}
-
-	for (i = 0, gpio = 0; i < nbanks; i++, gpio += 32) {
-		struct gpio_chip *c = &chips[i].chip;
-
-		sprintf(chips[i].label, "gpio-%d", i);
-		chips[i].regbase = gpio_reg_base + BANK_OFF(i);
-		chips[i].set_wake = set_wake;
-
-		c->base  = gpio;
-		c->label = chips[i].label;
-
-		c->direction_input  = pxa_gpio_direction_input;
-		c->direction_output = pxa_gpio_direction_output;
-		c->get = pxa_gpio_get;
-		c->set = pxa_gpio_set;
-		c->to_irq = pxa_gpio_to_irq;
-
-		/* number of GPIOs on last bank may be less than 32 */
-		c->ngpio = (gpio + 31 > gpio_end) ? (gpio_end - gpio + 1) : 32;
-		gpiochip_add(c);
-	}
-	pxa_gpio_chips = chips;
-	return 0;
-=======
 	void __iomem *base = gpio_bank_base(chip, offset);
 
 	writel_relaxed(GPIO_bit(offset),
@@ -575,17 +370,12 @@ static int pxa_init_gpio_chip(struct pxa_gpio_chip *pchip, int ngpio, void __iom
 	}
 
 	return gpiochip_add_data(&pchip->chip, pchip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Update only those GRERx and GFERx edge detection register bits if those
  * bits are set in c->irq_mask
  */
-<<<<<<< HEAD
-static inline void update_edge_detect(struct pxa_gpio_chip *c)
-=======
 static inline void update_edge_detect(struct pxa_gpio_bank *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t grer, gfer;
 
@@ -599,20 +389,11 @@ static inline void update_edge_detect(struct pxa_gpio_bank *c)
 
 static int pxa_gpio_irq_type(struct irq_data *d, unsigned int type)
 {
-<<<<<<< HEAD
-	struct pxa_gpio_chip *c;
-	int gpio = pxa_irq_to_gpio(d->irq);
-	unsigned long gpdr, mask = GPIO_bit(gpio);
-
-	c = gpio_to_pxachip(gpio);
-
-=======
 	struct pxa_gpio_chip *pchip = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 	struct pxa_gpio_bank *c = gpio_to_pxabank(&pchip->chip, gpio);
 	unsigned long gpdr, mask = GPIO_bit(gpio);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (type == IRQ_TYPE_PROBE) {
 		/* Don't mess with enabled GPIOs using preconfigured edges or
 		 * GPIOs set to alternate function or to output during probe
@@ -620,11 +401,7 @@ static int pxa_gpio_irq_type(struct irq_data *d, unsigned int type)
 		if ((c->irq_edge_rise | c->irq_edge_fall) & GPIO_bit(gpio))
 			return 0;
 
-<<<<<<< HEAD
-		if (__gpio_is_occupied(gpio))
-=======
 		if (__gpio_is_occupied(pchip, gpio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		type = IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING;
@@ -655,19 +432,6 @@ static int pxa_gpio_irq_type(struct irq_data *d, unsigned int type)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void pxa_gpio_demux_handler(unsigned int irq, struct irq_desc *desc)
-{
-	struct pxa_gpio_chip *c;
-	int loop, gpio, gpio_base, n;
-	unsigned long gedr;
-
-	do {
-		loop = 0;
-		for_each_gpio_chip(gpio, c) {
-			gpio_base = c->chip.base;
-
-=======
 static irqreturn_t pxa_gpio_demux_handler(int in_irq, void *d)
 {
 	int loop, gpio, n, handled = 0;
@@ -678,22 +442,10 @@ static irqreturn_t pxa_gpio_demux_handler(int in_irq, void *d)
 	do {
 		loop = 0;
 		for_each_gpio_bank(gpio, c, pchip) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gedr = readl_relaxed(c->regbase + GEDR_OFFSET);
 			gedr = gedr & c->irq_mask;
 			writel_relaxed(gedr, c->regbase + GEDR_OFFSET);
 
-<<<<<<< HEAD
-			n = find_first_bit(&gedr, BITS_PER_LONG);
-			while (n < BITS_PER_LONG) {
-				loop = 1;
-
-				generic_handle_irq(gpio_to_irq(gpio_base + n));
-				n = find_next_bit(&gedr, BITS_PER_LONG, n + 1);
-			}
-		}
-	} while (loop);
-=======
 			for_each_set_bit(n, &gedr, BITS_PER_LONG) {
 				loop = 1;
 
@@ -720,39 +472,19 @@ static irqreturn_t pxa_gpio_direct_handler(int in_irq, void *d)
 		return IRQ_NONE;
 	}
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxa_ack_muxed_gpio(struct irq_data *d)
 {
-<<<<<<< HEAD
-	int gpio = pxa_irq_to_gpio(d->irq);
-	struct pxa_gpio_chip *c = gpio_to_pxachip(gpio);
-
-	writel_relaxed(GPIO_bit(gpio), c->regbase + GEDR_OFFSET);
-=======
 	struct pxa_gpio_chip *pchip = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 	void __iomem *base = gpio_bank_base(&pchip->chip, gpio);
 
 	writel_relaxed(GPIO_bit(gpio), base + GEDR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxa_mask_muxed_gpio(struct irq_data *d)
 {
-<<<<<<< HEAD
-	int gpio = pxa_irq_to_gpio(d->irq);
-	struct pxa_gpio_chip *c = gpio_to_pxachip(gpio);
-	uint32_t grer, gfer;
-
-	c->irq_mask &= ~GPIO_bit(gpio);
-
-	grer = readl_relaxed(c->regbase + GRER_OFFSET) & ~GPIO_bit(gpio);
-	gfer = readl_relaxed(c->regbase + GFER_OFFSET) & ~GPIO_bit(gpio);
-	writel_relaxed(grer, c->regbase + GRER_OFFSET);
-	writel_relaxed(gfer, c->regbase + GFER_OFFSET);
-=======
 	struct pxa_gpio_chip *pchip = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 	struct pxa_gpio_bank *b = gpio_to_pxabank(&pchip->chip, gpio);
@@ -765,38 +497,24 @@ static void pxa_mask_muxed_gpio(struct irq_data *d)
 	gfer = readl_relaxed(base + GFER_OFFSET) & ~GPIO_bit(gpio);
 	writel_relaxed(grer, base + GRER_OFFSET);
 	writel_relaxed(gfer, base + GFER_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pxa_gpio_set_wake(struct irq_data *d, unsigned int on)
 {
-<<<<<<< HEAD
-	int gpio = pxa_irq_to_gpio(d->irq);
-	struct pxa_gpio_chip *c = gpio_to_pxachip(gpio);
-
-	if (c->set_wake)
-		return c->set_wake(gpio, on);
-=======
 	struct pxa_gpio_chip *pchip = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 
 	if (pchip->set_wake)
 		return pchip->set_wake(gpio, on);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 }
 
 static void pxa_unmask_muxed_gpio(struct irq_data *d)
 {
-<<<<<<< HEAD
-	int gpio = pxa_irq_to_gpio(d->irq);
-	struct pxa_gpio_chip *c = gpio_to_pxachip(gpio);
-=======
 	struct pxa_gpio_chip *pchip = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 	struct pxa_gpio_bank *c = gpio_to_pxabank(&pchip->chip, gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->irq_mask |= GPIO_bit(gpio);
 	update_edge_detect(c);
@@ -811,60 +529,6 @@ static struct irq_chip pxa_muxed_gpio_chip = {
 	.irq_set_wake	= pxa_gpio_set_wake,
 };
 
-<<<<<<< HEAD
-static int pxa_gpio_nums(void)
-{
-	int count = 0;
-
-#ifdef CONFIG_ARCH_PXA
-	if (cpu_is_pxa25x()) {
-#ifdef CONFIG_CPU_PXA26x
-		count = 89;
-		gpio_type = PXA26X_GPIO;
-#elif defined(CONFIG_PXA25x)
-		count = 84;
-		gpio_type = PXA26X_GPIO;
-#endif /* CONFIG_CPU_PXA26x */
-	} else if (cpu_is_pxa27x()) {
-		count = 120;
-		gpio_type = PXA27X_GPIO;
-	} else if (cpu_is_pxa93x() || cpu_is_pxa95x()) {
-		count = 191;
-		gpio_type = PXA93X_GPIO;
-	} else if (cpu_is_pxa3xx()) {
-		count = 127;
-		gpio_type = PXA3XX_GPIO;
-	}
-#endif /* CONFIG_ARCH_PXA */
-
-#ifdef CONFIG_ARCH_MMP
-	if (cpu_is_pxa168() || cpu_is_pxa910()) {
-		count = 127;
-		gpio_type = MMP_GPIO;
-	} else if (cpu_is_mmp2()) {
-		count = 191;
-		gpio_type = MMP2_GPIO;
-	}
-#endif /* CONFIG_ARCH_MMP */
-	return count;
-}
-
-static int __devinit pxa_gpio_probe(struct platform_device *pdev)
-{
-	struct pxa_gpio_chip *c;
-	struct resource *res;
-	struct clk *clk;
-	struct pxa_gpio_platform_data *info;
-	int gpio, irq, ret;
-	int irq0 = 0, irq1 = 0, irq_mux, gpio_offset = 0;
-
-	pxa_last_gpio = pxa_gpio_nums();
-	if (!pxa_last_gpio)
-		return -EINVAL;
-
-	irq0 = platform_get_irq_byname(pdev, "gpio0");
-	irq1 = platform_get_irq_byname(pdev, "gpio1");
-=======
 static int pxa_gpio_nums(struct platform_device *pdev)
 {
 	const struct platform_device_id *id = platform_get_device_id(pdev);
@@ -980,53 +644,10 @@ static int pxa_gpio_probe(struct platform_device *pdev)
 
 	irq0 = platform_get_irq_byname_optional(pdev, "gpio0");
 	irq1 = platform_get_irq_byname_optional(pdev, "gpio1");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_mux = platform_get_irq_byname(pdev, "gpio_mux");
 	if ((irq0 > 0 && irq1 <= 0) || (irq0 <= 0 && irq1 > 0)
 		|| (irq_mux <= 0))
 		return -EINVAL;
-<<<<<<< HEAD
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res)
-		return -EINVAL;
-	gpio_reg_base = ioremap(res->start, resource_size(res));
-	if (!gpio_reg_base)
-		return -EINVAL;
-
-	if (irq0 > 0)
-		gpio_offset = 2;
-
-	clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(clk)) {
-		dev_err(&pdev->dev, "Error %ld to get gpio clock\n",
-			PTR_ERR(clk));
-		iounmap(gpio_reg_base);
-		return PTR_ERR(clk);
-	}
-	ret = clk_prepare(clk);
-	if (ret) {
-		clk_put(clk);
-		iounmap(gpio_reg_base);
-		return ret;
-	}
-	ret = clk_enable(clk);
-	if (ret) {
-		clk_unprepare(clk);
-		clk_put(clk);
-		iounmap(gpio_reg_base);
-		return ret;
-	}
-
-	/* Initialize GPIO chips */
-	info = dev_get_platdata(&pdev->dev);
-	pxa_init_gpio_chip(pxa_last_gpio, info ? info->gpio_set_wake : NULL);
-
-	/* clear all GPIO edge detects */
-	for_each_gpio_chip(gpio, c) {
-		writel_relaxed(0, c->regbase + GFER_OFFSET);
-		writel_relaxed(0, c->regbase + GRER_OFFSET);
-		writel_relaxed(~0,c->regbase + GEDR_OFFSET);
-=======
 
 	pchip->irq0 = irq0;
 	pchip->irq1 = irq1;
@@ -1052,39 +673,11 @@ static int pxa_gpio_probe(struct platform_device *pdev)
 		writel_relaxed(0, c->regbase + GFER_OFFSET);
 		writel_relaxed(0, c->regbase + GRER_OFFSET);
 		writel_relaxed(~0, c->regbase + GEDR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* unmask GPIO edge detect for AP side */
 		if (gpio_is_mmp_type(gpio_type))
 			writel_relaxed(~0, c->regbase + ED_MASK_OFFSET);
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_PXA
-	irq = gpio_to_irq(0);
-	irq_set_chip_and_handler(irq, &pxa_muxed_gpio_chip,
-				 handle_edge_irq);
-	set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-	irq_set_chained_handler(IRQ_GPIO0, pxa_gpio_demux_handler);
-
-	irq = gpio_to_irq(1);
-	irq_set_chip_and_handler(irq, &pxa_muxed_gpio_chip,
-				 handle_edge_irq);
-	set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-	irq_set_chained_handler(IRQ_GPIO1, pxa_gpio_demux_handler);
-#endif
-
-	for (irq  = gpio_to_irq(gpio_offset);
-		irq <= gpio_to_irq(pxa_last_gpio); irq++) {
-		irq_set_chip_and_handler(irq, &pxa_muxed_gpio_chip,
-					 handle_edge_irq);
-		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-	}
-
-	irq_set_chained_handler(irq_mux, pxa_gpio_demux_handler);
-	return 0;
-}
-
-=======
 	if (irq0 > 0) {
 		ret = devm_request_irq(&pdev->dev,
 				       irq0, pxa_gpio_direct_handler, 0,
@@ -1125,21 +718,10 @@ static const struct platform_device_id gpio_id_table[] = {
 	{ },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_driver pxa_gpio_driver = {
 	.probe		= pxa_gpio_probe,
 	.driver		= {
 		.name	= "pxa-gpio",
-<<<<<<< HEAD
-	},
-};
-
-static int __init pxa_gpio_init(void)
-{
-	return platform_driver_register(&pxa_gpio_driver);
-}
-postcore_initcall(pxa_gpio_init);
-=======
 		.of_match_table = of_match_ptr(pxa_gpio_dt_ids),
 	},
 	.id_table	= gpio_id_table,
@@ -1162,17 +744,10 @@ static int __init pxa_gpio_dt_init(void)
 	return 0;
 }
 device_initcall(pxa_gpio_dt_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 static int pxa_gpio_suspend(void)
 {
-<<<<<<< HEAD
-	struct pxa_gpio_chip *c;
-	int gpio;
-
-	for_each_gpio_chip(gpio, c) {
-=======
 	struct pxa_gpio_chip *pchip = pxa_gpio_chip;
 	struct pxa_gpio_bank *c;
 	int gpio;
@@ -1181,7 +756,6 @@ static int pxa_gpio_suspend(void)
 		return 0;
 
 	for_each_gpio_bank(gpio, c, pchip) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->saved_gplr = readl_relaxed(c->regbase + GPLR_OFFSET);
 		c->saved_gpdr = readl_relaxed(c->regbase + GPDR_OFFSET);
 		c->saved_grer = readl_relaxed(c->regbase + GRER_OFFSET);
@@ -1195,14 +769,6 @@ static int pxa_gpio_suspend(void)
 
 static void pxa_gpio_resume(void)
 {
-<<<<<<< HEAD
-	struct pxa_gpio_chip *c;
-	int gpio;
-
-	for_each_gpio_chip(gpio, c) {
-		/* restore level with set/clear */
-		writel_relaxed( c->saved_gplr, c->regbase + GPSR_OFFSET);
-=======
 	struct pxa_gpio_chip *pchip = pxa_gpio_chip;
 	struct pxa_gpio_bank *c;
 	int gpio;
@@ -1213,7 +779,6 @@ static void pxa_gpio_resume(void)
 	for_each_gpio_bank(gpio, c, pchip) {
 		/* restore level with set/clear */
 		writel_relaxed(c->saved_gplr, c->regbase + GPSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel_relaxed(~c->saved_gplr, c->regbase + GPCR_OFFSET);
 
 		writel_relaxed(c->saved_grer, c->regbase + GRER_OFFSET);
@@ -1226,11 +791,7 @@ static void pxa_gpio_resume(void)
 #define pxa_gpio_resume		NULL
 #endif
 
-<<<<<<< HEAD
-struct syscore_ops pxa_gpio_syscore_ops = {
-=======
 static struct syscore_ops pxa_gpio_syscore_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= pxa_gpio_suspend,
 	.resume		= pxa_gpio_resume,
 };

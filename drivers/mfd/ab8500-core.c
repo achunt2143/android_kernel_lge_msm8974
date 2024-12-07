@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * License Terms: GNU General Public License v2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>
  * Author: Rabin Vincent <rabin.vincent@stericsson.com>
  * Author: Mattias Wallin <mattias.wallin@stericsson.com>
@@ -18,26 +11,16 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/interrupt.h>
-#include <linux/module.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/abx500.h>
 #include <linux/mfd/abx500/ab8500.h>
-<<<<<<< HEAD
-#include <linux/regulator/ab8500.h>
-=======
 #include <linux/mfd/dbx500-prcmu.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Interrupt register offsets
@@ -109,8 +92,6 @@
 #define AB8500_IT_MASK22_REG		0x55
 #define AB8500_IT_MASK23_REG		0x56
 #define AB8500_IT_MASK24_REG		0x57
-<<<<<<< HEAD
-=======
 #define AB8500_IT_MASK25_REG		0x58
 
 /*
@@ -123,15 +104,12 @@
 
 #define AB8500_IT_LATCHHIER_NUM		3
 #define AB8540_IT_LATCHHIER_NUM		4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AB8500_REV_REG			0x80
 #define AB8500_IC_NAME_REG		0x82
 #define AB8500_SWITCH_OFF_STATUS	0x00
 
 #define AB8500_TURN_ON_STATUS		0x00
-<<<<<<< HEAD
-=======
 #define AB8505_TURN_ON_STATUS_2		0x04
 
 #define AB8500_CH_USBCH_STAT1_REG	0x02
@@ -141,7 +119,6 @@
 static DEFINE_SPINLOCK(on_stat_lock);
 static u8 turn_on_stat_mask = 0xFF;
 static u8 turn_on_stat_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AB9540_MODEM_CTRL2_REG			0x23
 #define AB9540_MODEM_CTRL2_SWDBBRSTN_BIT	BIT(2)
@@ -159,11 +136,6 @@ static const int ab8500_irq_regoffset[AB8500_NUM_IRQ_REGS] = {
 	0, 1, 2, 3, 4, 6, 7, 8, 9, 11, 18, 19, 20, 21,
 };
 
-<<<<<<< HEAD
-/* AB9540 support */
-static const int ab9540_irq_regoffset[AB9540_NUM_IRQ_REGS] = {
-	0, 1, 2, 3, 4, 6, 7, 8, 9, 11, 18, 19, 20, 21, 12, 13, 24,
-=======
 /* AB9540 / AB8505 support */
 static const int ab9540_irq_regoffset[AB9540_NUM_IRQ_REGS] = {
 	0, 1, 2, 3, 4, 6, 7, 8, 9, 11, 18, 19, 20, 21, 12, 13, 24, 5, 22, 23
@@ -173,7 +145,6 @@ static const int ab9540_irq_regoffset[AB9540_NUM_IRQ_REGS] = {
 static const int ab8540_irq_regoffset[AB8540_NUM_IRQ_REGS] = {
 	0, 1, 2, 3, 4, -1, -1, -1, -1, 11, 18, 19, 20, 21, 12, 13, 24, 5, 22,
 	23, 25, 26, 27, 28, 29, 30, 31,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char ab8500_version_str[][7] = {
@@ -183,8 +154,6 @@ static const char ab8500_version_str[][7] = {
 	[AB8500_VERSION_AB8540] = "AB8540",
 };
 
-<<<<<<< HEAD
-=======
 static int ab8500_prcmu_write(struct ab8500 *ab8500, u16 addr, u8 data)
 {
 	int ret;
@@ -220,7 +189,6 @@ static int ab8500_prcmu_read(struct ab8500 *ab8500, u16 addr)
 	return (int)data;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ab8500_get_chip_id(struct device *dev)
 {
 	struct ab8500 *ab8500;
@@ -238,11 +206,7 @@ static int set_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	/*
 	 * Put the u8 bank and u8 register together into a an u16.
 	 * The bank on higher 8 bits and register in lower 8 bits.
-<<<<<<< HEAD
-	 * */
-=======
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	dev_vdbg(ab8500->dev, "wr: addr %#x <= %#x\n", addr, data);
@@ -261,11 +225,6 @@ static int set_register_interruptible(struct ab8500 *ab8500, u8 bank,
 static int ab8500_set_register(struct device *dev, u8 bank,
 	u8 reg, u8 value)
 {
-<<<<<<< HEAD
-	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
-
-	return set_register_interruptible(ab8500, bank, reg, value);
-=======
 	int ret;
 	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
 
@@ -273,18 +232,12 @@ static int ab8500_set_register(struct device *dev, u8 bank,
 	ret = set_register_interruptible(ab8500, bank, reg, value);
 	atomic_dec(&ab8500->transfer_ongoing);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	u8 reg, u8 *value)
 {
 	int ret;
-<<<<<<< HEAD
-	/* put the u8 bank and u8 reg together into a an u16.
-	 * bank on higher 8 bits and reg in lower */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	mutex_lock(&ab8500->lock);
@@ -299,21 +252,12 @@ static int get_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	mutex_unlock(&ab8500->lock);
 	dev_vdbg(ab8500->dev, "rd: addr %#x => data %#x\n", addr, ret);
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return (ret < 0) ? ret : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ab8500_get_register(struct device *dev, u8 bank,
 	u8 reg, u8 *value)
 {
-<<<<<<< HEAD
-	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
-
-	return get_register_interruptible(ab8500, bank, reg, value);
-=======
 	int ret;
 	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
 
@@ -321,18 +265,12 @@ static int ab8500_get_register(struct device *dev, u8 bank,
 	ret = get_register_interruptible(ab8500, bank, reg, value);
 	atomic_dec(&ab8500->transfer_ongoing);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mask_and_set_register_interruptible(struct ab8500 *ab8500, u8 bank,
 	u8 reg, u8 bitmask, u8 bitvalues)
 {
 	int ret;
-<<<<<<< HEAD
-	/* put the u8 bank and u8 reg together into a an u16.
-	 * bank on higher 8 bits and reg in lower */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 addr = ((u16)bank) << 8 | reg;
 
 	mutex_lock(&ab8500->lock);
@@ -371,13 +309,6 @@ out:
 static int ab8500_mask_and_set_register(struct device *dev,
 	u8 bank, u8 reg, u8 bitmask, u8 bitvalues)
 {
-<<<<<<< HEAD
-	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
-
-	return mask_and_set_register_interruptible(ab8500, bank, reg,
-		bitmask, bitvalues);
-
-=======
 	int ret;
 	struct ab8500 *ab8500 = dev_get_drvdata(dev->parent);
 
@@ -386,7 +317,6 @@ static int ab8500_mask_and_set_register(struct device *dev,
 						 bitmask, bitvalues);
 	atomic_dec(&ab8500->transfer_ongoing);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct abx500_ops ab8500_ops = {
@@ -398,10 +328,7 @@ static struct abx500_ops ab8500_ops = {
 	.mask_and_set_register = ab8500_mask_and_set_register,
 	.event_registers_startup_state_get = NULL,
 	.startup_irq_enabled = NULL,
-<<<<<<< HEAD
-=======
 	.dump_all_banks = ab8500_dump_all_banks,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ab8500_irq_lock(struct irq_data *data)
@@ -409,10 +336,7 @@ static void ab8500_irq_lock(struct irq_data *data)
 	struct ab8500 *ab8500 = irq_data_get_irq_chip_data(data);
 
 	mutex_lock(&ab8500->irq_lock);
-<<<<<<< HEAD
-=======
 	atomic_inc(&ab8500->transfer_ongoing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ab8500_irq_sync_unlock(struct irq_data *data)
@@ -436,39 +360,26 @@ static void ab8500_irq_sync_unlock(struct irq_data *data)
 			is_ab8500_1p1_or_earlier(ab8500))
 			continue;
 
-<<<<<<< HEAD
-=======
 		if (ab8500->irq_reg_offset[i] < 0)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ab8500->oldmask[i] = new;
 
 		reg = AB8500_IT_MASK1_REG + ab8500->irq_reg_offset[i];
 		set_register_interruptible(ab8500, AB8500_INTERRUPT, reg, new);
 	}
-<<<<<<< HEAD
-
-=======
 	atomic_dec(&ab8500->transfer_ongoing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ab8500->irq_lock);
 }
 
 static void ab8500_irq_mask(struct irq_data *data)
 {
 	struct ab8500 *ab8500 = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-	int offset = data->irq - ab8500->irq_base;
-=======
 	int offset = data->hwirq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index = offset / 8;
 	int mask = 1 << (offset % 8);
 
 	ab8500->mask[index] |= mask;
-<<<<<<< HEAD
-=======
 
 	/* The AB8500 GPIOs have two interrupts each (rising & falling). */
 	if (offset >= AB8500_INT_GPIO6R && offset <= AB8500_INT_GPIO41R)
@@ -478,19 +389,11 @@ static void ab8500_irq_mask(struct irq_data *data)
 	if (offset == AB8540_INT_GPIO43R || offset == AB8540_INT_GPIO44R)
 		/* Here the falling IRQ is one bit lower */
 		ab8500->mask[index] |= (mask << 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ab8500_irq_unmask(struct irq_data *data)
 {
 	struct ab8500 *ab8500 = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-	int offset = data->irq - ab8500->irq_base;
-	int index = offset / 8;
-	int mask = 1 << (offset % 8);
-
-	ab8500->mask[index] &= ~mask;
-=======
 	unsigned int type = irqd_get_trigger_type(data);
 	int offset = data->hwirq;
 	int index = offset / 8;
@@ -521,7 +424,6 @@ static void ab8500_irq_unmask(struct irq_data *data)
 static int ab8500_irq_set_type(struct irq_data *data, unsigned int type)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct irq_chip ab8500_irq_chip = {
@@ -531,69 +433,6 @@ static struct irq_chip ab8500_irq_chip = {
 	.irq_mask		= ab8500_irq_mask,
 	.irq_disable		= ab8500_irq_mask,
 	.irq_unmask		= ab8500_irq_unmask,
-<<<<<<< HEAD
-};
-
-static irqreturn_t ab8500_irq(int irq, void *dev)
-{
-	struct ab8500 *ab8500 = dev;
-	int i;
-
-	dev_vdbg(ab8500->dev, "interrupt\n");
-
-	for (i = 0; i < ab8500->mask_size; i++) {
-		int regoffset = ab8500->irq_reg_offset[i];
-		int status;
-		u8 value;
-
-		/*
-		 * Interrupt register 12 doesn't exist prior to AB8500 version
-		 * 2.0
-		 */
-		if (regoffset == 11 && is_ab8500_1p1_or_earlier(ab8500))
-			continue;
-
-		status = get_register_interruptible(ab8500, AB8500_INTERRUPT,
-			AB8500_IT_LATCH1_REG + regoffset, &value);
-		if (status < 0 || value == 0)
-			continue;
-
-		do {
-			int bit = __ffs(value);
-			int line = i * 8 + bit;
-
-			handle_nested_irq(ab8500->irq_base + line);
-			value &= ~(1 << bit);
-		} while (value);
-	}
-
-	return IRQ_HANDLED;
-}
-
-static int ab8500_irq_init(struct ab8500 *ab8500)
-{
-	int base = ab8500->irq_base;
-	int irq;
-	int num_irqs;
-
-	if (is_ab9540(ab8500))
-		num_irqs = AB9540_NR_IRQS;
-	else if (is_ab8505(ab8500))
-		num_irqs = AB8505_NR_IRQS;
-	else
-		num_irqs = AB8500_NR_IRQS;
-
-	for (irq = base; irq < base + num_irqs; irq++) {
-		irq_set_chip_data(irq, ab8500);
-		irq_set_chip_and_handler(irq, &ab8500_irq_chip,
-					 handle_simple_irq);
-		irq_set_nested_thread(irq, 1);
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, IRQF_VALID);
-#else
-		irq_set_noprobe(irq);
-#endif
-=======
 	.irq_set_type		= ab8500_irq_set_type,
 };
 
@@ -646,21 +485,11 @@ static int ab8500_handle_hierarchical_line(struct ab8500 *ab8500,
 			line += 1;
 
 		handle_nested_irq(irq_find_mapping(ab8500->domain, line));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void ab8500_irq_remove(struct ab8500 *ab8500)
-{
-	int base = ab8500->irq_base;
-	int irq;
-	int num_irqs;
-
-	if (is_ab9540(ab8500))
-=======
 static int ab8500_handle_hierarchical_latch(struct ab8500 *ab8500,
 					int hier_offset, u8 hier_val)
 {
@@ -744,374 +573,12 @@ static int ab8500_irq_init(struct ab8500 *ab8500, struct device_node *np)
 	if (is_ab8540(ab8500))
 		num_irqs = AB8540_NR_IRQS;
 	else if (is_ab9540(ab8500))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_irqs = AB9540_NR_IRQS;
 	else if (is_ab8505(ab8500))
 		num_irqs = AB8505_NR_IRQS;
 	else
 		num_irqs = AB8500_NR_IRQS;
 
-<<<<<<< HEAD
-	for (irq = base; irq < base + num_irqs; irq++) {
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, 0);
-#endif
-		irq_set_chip_and_handler(irq, NULL, NULL);
-		irq_set_chip_data(irq, NULL);
-	}
-}
-
-/* AB8500 GPIO Resources */
-static struct resource __devinitdata ab8500_gpio_resources[] = {
-	{
-		.name	= "GPIO_INT6",
-		.start	= AB8500_INT_GPIO6R,
-		.end	= AB8500_INT_GPIO41F,
-		.flags	= IORESOURCE_IRQ,
-	}
-};
-
-/* AB9540 GPIO Resources */
-static struct resource __devinitdata ab9540_gpio_resources[] = {
-	{
-		.name	= "GPIO_INT6",
-		.start	= AB8500_INT_GPIO6R,
-		.end	= AB8500_INT_GPIO41F,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "GPIO_INT14",
-		.start	= AB9540_INT_GPIO50R,
-		.end	= AB9540_INT_GPIO54R,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "GPIO_INT15",
-		.start	= AB9540_INT_GPIO50F,
-		.end	= AB9540_INT_GPIO54F,
-		.flags	= IORESOURCE_IRQ,
-	}
-};
-
-static struct resource __devinitdata ab8500_gpadc_resources[] = {
-	{
-		.name	= "HW_CONV_END",
-		.start	= AB8500_INT_GP_HW_ADC_CONV_END,
-		.end	= AB8500_INT_GP_HW_ADC_CONV_END,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "SW_CONV_END",
-		.start	= AB8500_INT_GP_SW_ADC_CONV_END,
-		.end	= AB8500_INT_GP_SW_ADC_CONV_END,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_rtc_resources[] = {
-	{
-		.name	= "60S",
-		.start	= AB8500_INT_RTC_60S,
-		.end	= AB8500_INT_RTC_60S,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "ALARM",
-		.start	= AB8500_INT_RTC_ALARM,
-		.end	= AB8500_INT_RTC_ALARM,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_poweronkey_db_resources[] = {
-	{
-		.name	= "ONKEY_DBF",
-		.start	= AB8500_INT_PON_KEY1DB_F,
-		.end	= AB8500_INT_PON_KEY1DB_F,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "ONKEY_DBR",
-		.start	= AB8500_INT_PON_KEY1DB_R,
-		.end	= AB8500_INT_PON_KEY1DB_R,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_av_acc_detect_resources[] = {
-	{
-	       .name = "ACC_DETECT_1DB_F",
-	       .start = AB8500_INT_ACC_DETECT_1DB_F,
-	       .end = AB8500_INT_ACC_DETECT_1DB_F,
-	       .flags = IORESOURCE_IRQ,
-	},
-	{
-	       .name = "ACC_DETECT_1DB_R",
-	       .start = AB8500_INT_ACC_DETECT_1DB_R,
-	       .end = AB8500_INT_ACC_DETECT_1DB_R,
-	       .flags = IORESOURCE_IRQ,
-	},
-	{
-	       .name = "ACC_DETECT_21DB_F",
-	       .start = AB8500_INT_ACC_DETECT_21DB_F,
-	       .end = AB8500_INT_ACC_DETECT_21DB_F,
-	       .flags = IORESOURCE_IRQ,
-	},
-	{
-	       .name = "ACC_DETECT_21DB_R",
-	       .start = AB8500_INT_ACC_DETECT_21DB_R,
-	       .end = AB8500_INT_ACC_DETECT_21DB_R,
-	       .flags = IORESOURCE_IRQ,
-	},
-	{
-	       .name = "ACC_DETECT_22DB_F",
-	       .start = AB8500_INT_ACC_DETECT_22DB_F,
-	       .end = AB8500_INT_ACC_DETECT_22DB_F,
-	       .flags = IORESOURCE_IRQ,
-	},
-	{
-	       .name = "ACC_DETECT_22DB_R",
-	       .start = AB8500_INT_ACC_DETECT_22DB_R,
-	       .end = AB8500_INT_ACC_DETECT_22DB_R,
-	       .flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_charger_resources[] = {
-	{
-		.name = "MAIN_CH_UNPLUG_DET",
-		.start = AB8500_INT_MAIN_CH_UNPLUG_DET,
-		.end = AB8500_INT_MAIN_CH_UNPLUG_DET,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "MAIN_CHARGE_PLUG_DET",
-		.start = AB8500_INT_MAIN_CH_PLUG_DET,
-		.end = AB8500_INT_MAIN_CH_PLUG_DET,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "VBUS_DET_R",
-		.start = AB8500_INT_VBUS_DET_R,
-		.end = AB8500_INT_VBUS_DET_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "VBUS_DET_F",
-		.start = AB8500_INT_VBUS_DET_F,
-		.end = AB8500_INT_VBUS_DET_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_LINK_STATUS",
-		.start = AB8500_INT_USB_LINK_STATUS,
-		.end = AB8500_INT_USB_LINK_STATUS,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "VBUS_OVV",
-		.start = AB8500_INT_VBUS_OVV,
-		.end = AB8500_INT_VBUS_OVV,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_CH_TH_PROT_R",
-		.start = AB8500_INT_USB_CH_TH_PROT_R,
-		.end = AB8500_INT_USB_CH_TH_PROT_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_CH_TH_PROT_F",
-		.start = AB8500_INT_USB_CH_TH_PROT_F,
-		.end = AB8500_INT_USB_CH_TH_PROT_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "MAIN_EXT_CH_NOT_OK",
-		.start = AB8500_INT_MAIN_EXT_CH_NOT_OK,
-		.end = AB8500_INT_MAIN_EXT_CH_NOT_OK,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "MAIN_CH_TH_PROT_R",
-		.start = AB8500_INT_MAIN_CH_TH_PROT_R,
-		.end = AB8500_INT_MAIN_CH_TH_PROT_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "MAIN_CH_TH_PROT_F",
-		.start = AB8500_INT_MAIN_CH_TH_PROT_F,
-		.end = AB8500_INT_MAIN_CH_TH_PROT_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_CHARGER_NOT_OKR",
-		.start = AB8500_INT_USB_CHARGER_NOT_OKR,
-		.end = AB8500_INT_USB_CHARGER_NOT_OKR,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "CH_WD_EXP",
-		.start = AB8500_INT_CH_WD_EXP,
-		.end = AB8500_INT_CH_WD_EXP,
-		.flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_btemp_resources[] = {
-	{
-		.name = "BAT_CTRL_INDB",
-		.start = AB8500_INT_BAT_CTRL_INDB,
-		.end = AB8500_INT_BAT_CTRL_INDB,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "BTEMP_LOW",
-		.start = AB8500_INT_BTEMP_LOW,
-		.end = AB8500_INT_BTEMP_LOW,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "BTEMP_HIGH",
-		.start = AB8500_INT_BTEMP_HIGH,
-		.end = AB8500_INT_BTEMP_HIGH,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "BTEMP_LOW_MEDIUM",
-		.start = AB8500_INT_BTEMP_LOW_MEDIUM,
-		.end = AB8500_INT_BTEMP_LOW_MEDIUM,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "BTEMP_MEDIUM_HIGH",
-		.start = AB8500_INT_BTEMP_MEDIUM_HIGH,
-		.end = AB8500_INT_BTEMP_MEDIUM_HIGH,
-		.flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_fg_resources[] = {
-	{
-		.name = "NCONV_ACCU",
-		.start = AB8500_INT_CCN_CONV_ACC,
-		.end = AB8500_INT_CCN_CONV_ACC,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "BATT_OVV",
-		.start = AB8500_INT_BATT_OVV,
-		.end = AB8500_INT_BATT_OVV,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "LOW_BAT_F",
-		.start = AB8500_INT_LOW_BAT_F,
-		.end = AB8500_INT_LOW_BAT_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "LOW_BAT_R",
-		.start = AB8500_INT_LOW_BAT_R,
-		.end = AB8500_INT_LOW_BAT_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "CC_INT_CALIB",
-		.start = AB8500_INT_CC_INT_CALIB,
-		.end = AB8500_INT_CC_INT_CALIB,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "CCEOC",
-		.start = AB8500_INT_CCEOC,
-		.end = AB8500_INT_CCEOC,
-		.flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_chargalg_resources[] = {};
-
-#ifdef CONFIG_DEBUG_FS
-static struct resource __devinitdata ab8500_debug_resources[] = {
-	{
-		.name	= "IRQ_FIRST",
-		.start	= AB8500_INT_MAIN_EXT_CH_NOT_OK,
-		.end	= AB8500_INT_MAIN_EXT_CH_NOT_OK,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.name	= "IRQ_LAST",
-		.start	= AB8500_INT_XTAL32K_KO,
-		.end	= AB8500_INT_XTAL32K_KO,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-#endif
-
-static struct resource __devinitdata ab8500_usb_resources[] = {
-	{
-		.name = "ID_WAKEUP_R",
-		.start = AB8500_INT_ID_WAKEUP_R,
-		.end = AB8500_INT_ID_WAKEUP_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "ID_WAKEUP_F",
-		.start = AB8500_INT_ID_WAKEUP_F,
-		.end = AB8500_INT_ID_WAKEUP_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "VBUS_DET_F",
-		.start = AB8500_INT_VBUS_DET_F,
-		.end = AB8500_INT_VBUS_DET_F,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "VBUS_DET_R",
-		.start = AB8500_INT_VBUS_DET_R,
-		.end = AB8500_INT_VBUS_DET_R,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_LINK_STATUS",
-		.start = AB8500_INT_USB_LINK_STATUS,
-		.end = AB8500_INT_USB_LINK_STATUS,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_ADP_PROBE_PLUG",
-		.start = AB8500_INT_ADP_PROBE_PLUG,
-		.end = AB8500_INT_ADP_PROBE_PLUG,
-		.flags = IORESOURCE_IRQ,
-	},
-	{
-		.name = "USB_ADP_PROBE_UNPLUG",
-		.start = AB8500_INT_ADP_PROBE_UNPLUG,
-		.end = AB8500_INT_ADP_PROBE_UNPLUG,
-		.flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct resource __devinitdata ab8500_temp_resources[] = {
-	{
-		.name  = "AB8500_TEMP_WARM",
-		.start = AB8500_INT_TEMP_WARM,
-		.end   = AB8500_INT_TEMP_WARM,
-		.flags = IORESOURCE_IRQ,
-	},
-};
-
-static struct mfd_cell __devinitdata abx500_common_devs[] = {
-#ifdef CONFIG_DEBUG_FS
-	{
-		.name = "ab8500-debug",
-		.num_resources = ARRAY_SIZE(ab8500_debug_resources),
-		.resources = ab8500_debug_resources,
-	},
-#endif
-=======
 	/* If ->irq_base is zero this will give a linear mapping */
 	ab8500->domain = irq_domain_add_simple(ab8500->dev->of_node,
 					       num_irqs, 0,
@@ -1180,58 +647,10 @@ static const struct mfd_cell ab8500_devs[] = {
 };
 
 static const struct mfd_cell ab9540_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "ab8500-sysctrl",
 	},
 	{
-<<<<<<< HEAD
-		.name = "ab8500-regulator",
-	},
-	{
-		.name = "ab8500-gpadc",
-		.num_resources = ARRAY_SIZE(ab8500_gpadc_resources),
-		.resources = ab8500_gpadc_resources,
-	},
-	{
-		.name = "ab8500-rtc",
-		.num_resources = ARRAY_SIZE(ab8500_rtc_resources),
-		.resources = ab8500_rtc_resources,
-	},
-	{
-		.name = "ab8500-charger",
-		.num_resources = ARRAY_SIZE(ab8500_charger_resources),
-		.resources = ab8500_charger_resources,
-	},
-	{
-		.name = "ab8500-btemp",
-		.num_resources = ARRAY_SIZE(ab8500_btemp_resources),
-		.resources = ab8500_btemp_resources,
-	},
-	{
-		.name = "ab8500-fg",
-		.num_resources = ARRAY_SIZE(ab8500_fg_resources),
-		.resources = ab8500_fg_resources,
-	},
-	{
-		.name = "ab8500-chargalg",
-		.num_resources = ARRAY_SIZE(ab8500_chargalg_resources),
-		.resources = ab8500_chargalg_resources,
-	},
-	{
-		.name = "ab8500-acc-det",
-		.num_resources = ARRAY_SIZE(ab8500_av_acc_detect_resources),
-		.resources = ab8500_av_acc_detect_resources,
-	},
-	{
-		.name = "ab8500-codec",
-	},
-
-	{
-		.name = "ab8500-poweron-key",
-		.num_resources = ARRAY_SIZE(ab8500_poweronkey_db_resources),
-		.resources = ab8500_poweronkey_db_resources,
-=======
 		.name = "ab8500-ext-regulator",
 	},
 	{
@@ -1253,61 +672,12 @@ static const struct mfd_cell ab9540_devs[] = {
 	},
 	{
 		.name = "ab8500-poweron-key",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name = "ab8500-pwm",
 		.id = 1,
 	},
 	{
-<<<<<<< HEAD
-		.name = "ab8500-pwm",
-		.id = 2,
-	},
-	{
-		.name = "ab8500-pwm",
-		.id = 3,
-	},
-	{ .name = "ab8500-leds", },
-	{
-		.name = "ab8500-denc",
-	},
-	{
-		.name = "ab8500-temp",
-		.num_resources = ARRAY_SIZE(ab8500_temp_resources),
-		.resources = ab8500_temp_resources,
-	},
-};
-
-static struct mfd_cell __devinitdata ab8500_devs[] = {
-	{
-		.name = "ab8500-gpio",
-		.num_resources = ARRAY_SIZE(ab8500_gpio_resources),
-		.resources = ab8500_gpio_resources,
-	},
-	{
-		.name = "ab8500-usb",
-		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
-		.resources = ab8500_usb_resources,
-	},
-};
-
-static struct mfd_cell __devinitdata ab9540_devs[] = {
-	{
-		.name = "ab8500-gpio",
-		.num_resources = ARRAY_SIZE(ab9540_gpio_resources),
-		.resources = ab9540_gpio_resources,
-	},
-	{
-		.name = "ab9540-usb",
-		.num_resources = ARRAY_SIZE(ab8500_usb_resources),
-		.resources = ab8500_usb_resources,
-	},
-};
-
-static ssize_t show_chip_id(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 		.name = "abx500-temp",
 	},
 	{
@@ -1438,15 +808,11 @@ static const struct mfd_cell ab8540_cut2_devs[] = {
 
 static ssize_t chip_id_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ab8500 *ab8500;
 
 	ab8500 = dev_get_drvdata(dev);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%#x\n", ab8500 ? ab8500->chip_id : -EINVAL);
 }
 
@@ -1461,13 +827,8 @@ static ssize_t chip_id_show(struct device *dev,
  * 0x40 Power on key 1 pressed longer than 10 seconds
  * 0x80 DB8500 thermal shutdown
  */
-<<<<<<< HEAD
-static ssize_t show_switch_off_status(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 static ssize_t switch_off_status_show(struct device *dev,
 				      struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	u8 value;
@@ -1481,8 +842,6 @@ static ssize_t switch_off_status_show(struct device *dev,
 	return sprintf(buf, "%#x\n", value);
 }
 
-<<<<<<< HEAD
-=======
 /* use mask and set to override the register turn_on_stat value */
 void ab8500_override_turn_on_stat(u8 mask, u8 set)
 {
@@ -1492,7 +851,6 @@ void ab8500_override_turn_on_stat(u8 mask, u8 set)
 	spin_unlock(&on_stat_lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ab8500 has turned on due to (TURN_ON_STATUS):
  * 0x01 PORnVbat
@@ -1504,13 +862,8 @@ void ab8500_override_turn_on_stat(u8 mask, u8 set)
  * 0x40 UsbIDDetect
  * 0x80 Reserved
  */
-<<<<<<< HEAD
-static ssize_t show_turn_on_status(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 static ssize_t turn_on_status_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	u8 value;
@@ -1521,13 +874,6 @@ static ssize_t turn_on_status_show(struct device *dev,
 		AB8500_TURN_ON_STATUS, &value);
 	if (ret < 0)
 		return ret;
-<<<<<<< HEAD
-	return sprintf(buf, "%#x\n", value);
-}
-
-static ssize_t show_ab9540_dbbrstn(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 
 	/*
 	 * In L9540, turn_on_status register is not updated correctly if
@@ -1562,7 +908,6 @@ static ssize_t turn_on_status_2_show(struct device *dev,
 
 static ssize_t dbbrstn_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ab8500 *ab8500;
 	int ret;
@@ -1579,11 +924,7 @@ static ssize_t dbbrstn_show(struct device *dev,
 			(value & AB9540_MODEM_CTRL2_SWDBBRSTN_BIT) ? 1 : 0);
 }
 
-<<<<<<< HEAD
-static ssize_t store_ab9540_dbbrstn(struct device *dev,
-=======
 static ssize_t dbbrstn_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct ab8500 *ab8500;
@@ -1618,19 +959,11 @@ exit:
 	return ret;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(chip_id, S_IRUGO, show_chip_id, NULL);
-static DEVICE_ATTR(switch_off_status, S_IRUGO, show_switch_off_status, NULL);
-static DEVICE_ATTR(turn_on_status, S_IRUGO, show_turn_on_status, NULL);
-static DEVICE_ATTR(dbbrstn, S_IRUGO | S_IWUSR,
-			show_ab9540_dbbrstn, store_ab9540_dbbrstn);
-=======
 static DEVICE_ATTR_RO(chip_id);
 static DEVICE_ATTR_RO(switch_off_status);
 static DEVICE_ATTR_RO(turn_on_status);
 static DEVICE_ATTR_RO(turn_on_status_2);
 static DEVICE_ATTR_RW(dbbrstn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *ab8500_sysfs_entries[] = {
 	&dev_attr_chip_id.attr,
@@ -1639,14 +972,11 @@ static struct attribute *ab8500_sysfs_entries[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-=======
 static struct attribute *ab8505_sysfs_entries[] = {
 	&dev_attr_turn_on_status_2.attr,
 	NULL,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *ab9540_sysfs_entries[] = {
 	&dev_attr_chip_id.attr,
 	&dev_attr_switch_off_status.attr,
@@ -1655,28 +985,6 @@ static struct attribute *ab9540_sysfs_entries[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group ab8500_attr_group = {
-	.attrs	= ab8500_sysfs_entries,
-};
-
-static struct attribute_group ab9540_attr_group = {
-	.attrs	= ab9540_sysfs_entries,
-};
-
-int __devinit ab8500_init(struct ab8500 *ab8500, enum ab8500_version version)
-{
-	struct ab8500_platform_data *plat = dev_get_platdata(ab8500->dev);
-	int ret;
-	int i;
-	u8 value;
-
-	if (plat)
-		ab8500->irq_base = plat->irq_base;
-
-	mutex_init(&ab8500->lock);
-	mutex_init(&ab8500->irq_lock);
-=======
 static const struct attribute_group ab8500_attr_group = {
 	.attrs	= ab8500_sysfs_entries,
 };
@@ -1742,22 +1050,16 @@ static int ab8500_probe(struct platform_device *pdev)
 
 	if (platid)
 		version = platid->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (version != AB8500_VERSION_UNDEFINED)
 		ab8500->version = version;
 	else {
 		ret = get_register_interruptible(ab8500, AB8500_MISC,
 			AB8500_IC_NAME_REG, &value);
-<<<<<<< HEAD
-		if (ret < 0)
-			return ret;
-=======
 		if (ret < 0) {
 			dev_err(&pdev->dev, "could not probe HW\n");
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ab8500->version = value;
 	}
@@ -1774,24 +1076,6 @@ static int ab8500_probe(struct platform_device *pdev)
 			ab8500->chip_id >> 4,
 			ab8500->chip_id & 0x0F);
 
-<<<<<<< HEAD
-	/* Configure AB8500 or AB9540 IRQ */
-	if (is_ab9540(ab8500) || is_ab8505(ab8500)) {
-		ab8500->mask_size = AB9540_NUM_IRQ_REGS;
-		ab8500->irq_reg_offset = ab9540_irq_regoffset;
-	} else {
-		ab8500->mask_size = AB8500_NUM_IRQ_REGS;
-		ab8500->irq_reg_offset = ab8500_irq_regoffset;
-	}
-	ab8500->mask = kzalloc(ab8500->mask_size, GFP_KERNEL);
-	if (!ab8500->mask)
-		return -ENOMEM;
-	ab8500->oldmask = kzalloc(ab8500->mask_size, GFP_KERNEL);
-	if (!ab8500->oldmask) {
-		ret = -ENOMEM;
-		goto out_freemask;
-	}
-=======
 	/* Configure AB8540 */
 	if (is_ab8540(ab8500)) {
 		ab8500->mask_size = AB8540_NUM_IRQ_REGS;
@@ -1816,7 +1100,6 @@ static int ab8500_probe(struct platform_device *pdev)
 	if (!ab8500->oldmask)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ab8500 has switched off due to (SWITCH_OFF_STATUS):
 	 * 0x01 Swoff bit programming
@@ -1833,12 +1116,6 @@ static int ab8500_probe(struct platform_device *pdev)
 		AB8500_SWITCH_OFF_STATUS, &value);
 	if (ret < 0)
 		return ret;
-<<<<<<< HEAD
-	dev_info(ab8500->dev, "switch off status: %#x", value);
-
-	if (plat && plat->init)
-		plat->init(ab8500);
-=======
 	dev_info(ab8500->dev, "switch off cause(s) (%#x): ", value);
 
 	if (value) {
@@ -1878,7 +1155,6 @@ static int ab8500_probe(struct platform_device *pdev)
 			ab8500_override_turn_on_stat(~AB8500_POW_KEY_1_ON,
 						     AB8500_VBUS_DET);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear and mask all interrupts */
 	for (i = 0; i < ab8500->mask_size; i++) {
@@ -1890,12 +1166,9 @@ static int ab8500_probe(struct platform_device *pdev)
 				is_ab8500_1p1_or_earlier(ab8500))
 			continue;
 
-<<<<<<< HEAD
-=======
 		if (ab8500->irq_reg_offset[i] < 0)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_register_interruptible(ab8500, AB8500_INTERRUPT,
 			AB8500_IT_LATCH1_REG + ab8500->irq_reg_offset[i],
 			&value);
@@ -1905,48 +1178,11 @@ static int ab8500_probe(struct platform_device *pdev)
 
 	ret = abx500_register_ops(ab8500->dev, &ab8500_ops);
 	if (ret)
-<<<<<<< HEAD
-		goto out_freeoldmask;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ab8500->mask_size; i++)
 		ab8500->mask[i] = ab8500->oldmask[i] = 0xff;
 
-<<<<<<< HEAD
-	if (ab8500->irq_base) {
-		ret = ab8500_irq_init(ab8500);
-		if (ret)
-			goto out_freeoldmask;
-
-		ret = request_threaded_irq(ab8500->irq, NULL, ab8500_irq,
-					   IRQF_ONESHOT | IRQF_NO_SUSPEND,
-					   "ab8500", ab8500);
-		if (ret)
-			goto out_removeirq;
-	}
-
-	ret = mfd_add_devices(ab8500->dev, 0, abx500_common_devs,
-			      ARRAY_SIZE(abx500_common_devs), NULL,
-			      ab8500->irq_base);
-
-	if (ret)
-		goto out_freeirq;
-
-	if (is_ab9540(ab8500))
-		ret = mfd_add_devices(ab8500->dev, 0, ab9540_devs,
-			      ARRAY_SIZE(ab9540_devs), NULL,
-			      ab8500->irq_base);
-	else
-		ret = mfd_add_devices(ab8500->dev, 0, ab8500_devs,
-			      ARRAY_SIZE(ab9540_devs), NULL,
-			      ab8500->irq_base);
-	if (ret)
-		goto out_freeirq;
-
-	if (is_ab9540(ab8500))
-=======
 	ret = ab8500_irq_init(ab8500, np);
 	if (ret)
 		return ret;
@@ -1997,29 +1233,11 @@ static int ab8500_probe(struct platform_device *pdev)
 
 	if (((is_ab8505(ab8500) || is_ab9540(ab8500)) &&
 			ab8500->chip_id >= AB8500_CUT2P0) || is_ab8540(ab8500))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = sysfs_create_group(&ab8500->dev->kobj,
 					&ab9540_attr_group);
 	else
 		ret = sysfs_create_group(&ab8500->dev->kobj,
 					&ab8500_attr_group);
-<<<<<<< HEAD
-	if (ret)
-		dev_err(ab8500->dev, "error creating sysfs entries\n");
-	else
-		return ret;
-
-out_freeirq:
-	if (ab8500->irq_base)
-		free_irq(ab8500->irq, ab8500);
-out_removeirq:
-	if (ab8500->irq_base)
-		ab8500_irq_remove(ab8500);
-out_freeoldmask:
-	kfree(ab8500->oldmask);
-out_freemask:
-	kfree(ab8500->mask);
-=======
 
 	if ((is_ab8505(ab8500) || is_ab9540(ab8500)) &&
 			ab8500->chip_id >= AB8500_CUT2P0)
@@ -2028,33 +1246,10 @@ out_freemask:
 
 	if (ret)
 		dev_err(ab8500->dev, "error creating sysfs entries\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-int __devexit ab8500_exit(struct ab8500 *ab8500)
-{
-	if (is_ab9540(ab8500))
-		sysfs_remove_group(&ab8500->dev->kobj, &ab9540_attr_group);
-	else
-		sysfs_remove_group(&ab8500->dev->kobj, &ab8500_attr_group);
-	mfd_remove_devices(ab8500->dev);
-	if (ab8500->irq_base) {
-		free_irq(ab8500->irq, ab8500);
-		ab8500_irq_remove(ab8500);
-	}
-	kfree(ab8500->oldmask);
-	kfree(ab8500->mask);
-
-	return 0;
-}
-
-MODULE_AUTHOR("Mattias Wallin, Srinidhi Kasagar, Rabin Vincent");
-MODULE_DESCRIPTION("AB8500 MFD core");
-MODULE_LICENSE("GPL v2");
-=======
 static const struct platform_device_id ab8500_id[] = {
 	{ "ab8500-core", AB8500_VERSION_AB8500 },
 	{ "ab8505-core", AB8500_VERSION_AB8505 },
@@ -2077,4 +1272,3 @@ static int __init ab8500_core_init(void)
 	return platform_driver_register(&ab8500_core_driver);
 }
 core_initcall(ab8500_core_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * Hardware monitoring driver for LTC2978 and LTC3880
- *
- * Copyright (c) 2011 Ericsson AB.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Hardware monitoring driver for LTC2978 and compatible chips.
@@ -32,26 +10,12 @@
 
 #include <linux/delay.h>
 #include <linux/jiffies.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include "pmbus.h"
-
-enum chips { ltc2978, ltc3880 };
-
-/* LTC2978 and LTC3880 */
-#define LTC2978_MFR_VOUT_PEAK		0xdd
-#define LTC2978_MFR_VIN_PEAK		0xde
-#define LTC2978_MFR_TEMPERATURE_PEAK	0xdf
-#define LTC2978_MFR_SPECIAL_ID		0xe7
-
-/* LTC2978 only */
-=======
 #include <linux/regulator/driver.h>
 #include "pmbus.h"
 
@@ -73,30 +37,19 @@ enum chips {
 #define LTC2978_MFR_COMMON		0xef
 
 /* LTC2974, LTC2975, LCT2977, LTC2980, LTC2978, and LTM2987 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LTC2978_MFR_VOUT_MIN		0xfb
 #define LTC2978_MFR_VIN_MIN		0xfc
 #define LTC2978_MFR_TEMPERATURE_MIN	0xfd
 
-<<<<<<< HEAD
-/* LTC3880 only */
-=======
 /* LTC2974, LTC2975 */
 #define LTC2974_MFR_IOUT_PEAK		0xd7
 #define LTC2974_MFR_IOUT_MIN		0xd8
 
 /* LTC3880, LTC3882, LTC3883, LTC3887, LTM4675, LTM4676, LTC7132 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LTC3880_MFR_IOUT_PEAK		0xd7
 #define LTC3880_MFR_CLEAR_PEAKS		0xe3
 #define LTC3880_MFR_TEMPERATURE2_PEAK	0xf4
 
-<<<<<<< HEAD
-#define LTC2978_ID_REV1			0x0121
-#define LTC2978_ID_REV2			0x0122
-#define LTC3880_ID			0x4000
-#define LTC3880_ID_MASK			0xff00
-=======
 /* LTC3883, LTC3884, LTC3886, LTC3889, LTC7132, LTC7880 */
 #define LTC3883_MFR_IIN_PEAK		0xe1
 
@@ -153,7 +106,6 @@ enum chips {
 
 #define LTC_NOT_BUSY			BIT(6)
 #define LTC_NOT_PENDING			BIT(5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LTC2978 clears peak data whenever the CLEAR_FAULTS command is executed, which
@@ -162,20 +114,6 @@ enum chips {
  * internal cache of measured peak data, which is only cleared if an explicit
  * "clear peak" command is executed for the sensor in question.
  */
-<<<<<<< HEAD
-struct ltc2978_data {
-	enum chips id;
-	int vin_min, vin_max;
-	int temp_min, temp_max[2];
-	int vout_min[8], vout_max[8];
-	int iout_max[2];
-	int temp2_max;
-	struct pmbus_driver_info info;
-};
-
-#define to_ltc2978_data(x)  container_of(x, struct ltc2978_data, info)
-
-=======
 
 struct ltc2978_data {
 	enum chips id;
@@ -280,7 +218,6 @@ static int ltc_write_byte(struct i2c_client *client, int page, u8 byte)
 	return pmbus_write_byte(client, page, byte);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int lin11_to_val(int data)
 {
 	s16 e = ((s16)data) >> 11;
@@ -294,8 +231,6 @@ static inline int lin11_to_val(int data)
 	return (e < 0 ? m >> -e : m << e);
 }
 
-<<<<<<< HEAD
-=======
 static int ltc_get_max(struct ltc2978_data *data, struct i2c_client *client,
 		       int page, int reg, u16 *pmax)
 {
@@ -324,7 +259,6 @@ static int ltc_get_min(struct ltc2978_data *data, struct i2c_client *client,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ltc2978_read_word_data_common(struct i2c_client *client, int page,
 					 int reg)
 {
@@ -334,24 +268,12 @@ static int ltc2978_read_word_data_common(struct i2c_client *client, int page,
 
 	switch (reg) {
 	case PMBUS_VIRT_READ_VIN_MAX:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page, LTC2978_MFR_VIN_PEAK);
-		if (ret >= 0) {
-			if (lin11_to_val(ret) > lin11_to_val(data->vin_max))
-				data->vin_max = ret;
-			ret = data->vin_max;
-		}
-		break;
-	case PMBUS_VIRT_READ_VOUT_MAX:
-		ret = pmbus_read_word_data(client, page, LTC2978_MFR_VOUT_PEAK);
-=======
 		ret = ltc_get_max(data, client, page, LTC2978_MFR_VIN_PEAK,
 				  &data->vin_max);
 		break;
 	case PMBUS_VIRT_READ_VOUT_MAX:
 		ret = ltc_read_word_data(client, page, 0xff,
 					 LTC2978_MFR_VOUT_PEAK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret >= 0) {
 			/*
 			 * VOUT is 16 bit unsigned with fixed exponent,
@@ -363,20 +285,9 @@ static int ltc2978_read_word_data_common(struct i2c_client *client, int page,
 		}
 		break;
 	case PMBUS_VIRT_READ_TEMP_MAX:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page,
-					   LTC2978_MFR_TEMPERATURE_PEAK);
-		if (ret >= 0) {
-			if (lin11_to_val(ret)
-			    > lin11_to_val(data->temp_max[page]))
-				data->temp_max[page] = ret;
-			ret = data->temp_max[page];
-		}
-=======
 		ret = ltc_get_max(data, client, page,
 				  LTC2978_MFR_TEMPERATURE_PEAK,
 				  &data->temp_max[page]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
 	case PMBUS_VIRT_RESET_VIN_HISTORY:
@@ -384,24 +295,17 @@ static int ltc2978_read_word_data_common(struct i2c_client *client, int page,
 		ret = 0;
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		ret = ltc_wait_ready(client);
 		if (ret < 0)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODATA;
 		break;
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ltc2978_read_word_data(struct i2c_client *client, int page, int reg)
-=======
 static int ltc2978_read_word_data(struct i2c_client *client, int page,
 				  int phase, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
 	struct ltc2978_data *data = to_ltc2978_data(info);
@@ -409,24 +313,12 @@ static int ltc2978_read_word_data(struct i2c_client *client, int page,
 
 	switch (reg) {
 	case PMBUS_VIRT_READ_VIN_MIN:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page, LTC2978_MFR_VIN_MIN);
-		if (ret >= 0) {
-			if (lin11_to_val(ret) < lin11_to_val(data->vin_min))
-				data->vin_min = ret;
-			ret = data->vin_min;
-		}
-		break;
-	case PMBUS_VIRT_READ_VOUT_MIN:
-		ret = pmbus_read_word_data(client, page, LTC2978_MFR_VOUT_MIN);
-=======
 		ret = ltc_get_min(data, client, page, LTC2978_MFR_VIN_MIN,
 				  &data->vin_min);
 		break;
 	case PMBUS_VIRT_READ_VOUT_MIN:
 		ret = ltc_read_word_data(client, page, phase,
 					 LTC2978_MFR_VOUT_MIN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret >= 0) {
 			/*
 			 * VOUT_MIN is known to not be supported on some lots
@@ -442,20 +334,9 @@ static int ltc2978_read_word_data(struct i2c_client *client, int page,
 		}
 		break;
 	case PMBUS_VIRT_READ_TEMP_MIN:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page,
-					   LTC2978_MFR_TEMPERATURE_MIN);
-		if (ret >= 0) {
-			if (lin11_to_val(ret)
-			    < lin11_to_val(data->temp_min))
-				data->temp_min = ret;
-			ret = data->temp_min;
-		}
-=======
 		ret = ltc_get_min(data, client, page,
 				  LTC2978_MFR_TEMPERATURE_MIN,
 				  &data->temp_min[page]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_READ_IOUT_MAX:
 	case PMBUS_VIRT_RESET_IOUT_HISTORY:
@@ -470,12 +351,8 @@ static int ltc2978_read_word_data(struct i2c_client *client, int page,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ltc3880_read_word_data(struct i2c_client *client, int page, int reg)
-=======
 static int ltc2974_read_word_data(struct i2c_client *client, int page,
 				  int phase, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
 	struct ltc2978_data *data = to_ltc2978_data(info);
@@ -483,24 +360,6 @@ static int ltc2974_read_word_data(struct i2c_client *client, int page,
 
 	switch (reg) {
 	case PMBUS_VIRT_READ_IOUT_MAX:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page, LTC3880_MFR_IOUT_PEAK);
-		if (ret >= 0) {
-			if (lin11_to_val(ret)
-			    > lin11_to_val(data->iout_max[page]))
-				data->iout_max[page] = ret;
-			ret = data->iout_max[page];
-		}
-		break;
-	case PMBUS_VIRT_READ_TEMP2_MAX:
-		ret = pmbus_read_word_data(client, page,
-					   LTC3880_MFR_TEMPERATURE2_PEAK);
-		if (ret >= 0) {
-			if (lin11_to_val(ret) > lin11_to_val(data->temp2_max))
-				data->temp2_max = ret;
-			ret = data->temp2_max;
-		}
-=======
 		ret = ltc_get_max(data, client, page, LTC2974_MFR_IOUT_PEAK,
 				  &data->iout_max[page]);
 		break;
@@ -569,7 +428,6 @@ static int ltc3880_read_word_data(struct i2c_client *client, int page,
 		ret = ltc_get_max(data, client, page,
 				  LTC3880_MFR_TEMPERATURE2_PEAK,
 				  &data->temp2_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_READ_VIN_MIN:
 	case PMBUS_VIRT_READ_VOUT_MIN:
@@ -587,17 +445,6 @@ static int ltc3880_read_word_data(struct i2c_client *client, int page,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ltc2978_clear_peaks(struct i2c_client *client, int page,
-			       enum chips id)
-{
-	int ret;
-
-	if (id == ltc2978)
-		ret = pmbus_write_byte(client, page, PMBUS_CLEAR_FAULTS);
-	else
-		ret = pmbus_write_byte(client, 0, LTC3880_MFR_CLEAR_PEAKS);
-=======
 static int ltc3883_read_word_data(struct i2c_client *client, int page,
 				  int phase, int reg)
 {
@@ -629,7 +476,6 @@ static int ltc2978_clear_peaks(struct ltc2978_data *data,
 		ret = ltc_write_byte(client, 0, LTC3880_MFR_CLEAR_PEAKS);
 	else
 		ret = ltc_write_byte(client, page, PMBUS_CLEAR_FAULTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -642,15 +488,6 @@ static int ltc2978_write_word_data(struct i2c_client *client, int page,
 	int ret;
 
 	switch (reg) {
-<<<<<<< HEAD
-	case PMBUS_VIRT_RESET_IOUT_HISTORY:
-		data->iout_max[page] = 0x7c00;
-		ret = ltc2978_clear_peaks(client, page, data->id);
-		break;
-	case PMBUS_VIRT_RESET_TEMP2_HISTORY:
-		data->temp2_max = 0x7c00;
-		ret = ltc2978_clear_peaks(client, page, data->id);
-=======
 	case PMBUS_VIRT_RESET_IIN_HISTORY:
 		data->iin_max = 0x7c00;
 		data->iin_min = 0x7bff;
@@ -669,30 +506,15 @@ static int ltc2978_write_word_data(struct i2c_client *client, int page,
 	case PMBUS_VIRT_RESET_TEMP2_HISTORY:
 		data->temp2_max = 0x7c00;
 		ret = ltc2978_clear_peaks(data, client, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
 		data->vout_min[page] = 0xffff;
 		data->vout_max[page] = 0;
-<<<<<<< HEAD
-		ret = ltc2978_clear_peaks(client, page, data->id);
-=======
 		ret = ltc2978_clear_peaks(data, client, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_RESET_VIN_HISTORY:
 		data->vin_min = 0x7bff;
 		data->vin_max = 0x7c00;
-<<<<<<< HEAD
-		ret = ltc2978_clear_peaks(client, page, data->id);
-		break;
-	case PMBUS_VIRT_RESET_TEMP_HISTORY:
-		data->temp_min = 0x7bff;
-		data->temp_max[page] = 0x7c00;
-		ret = ltc2978_clear_peaks(client, page, data->id);
-		break;
-	default:
-=======
 		ret = ltc2978_clear_peaks(data, client, page);
 		break;
 	case PMBUS_VIRT_RESET_TEMP_HISTORY:
@@ -704,7 +526,6 @@ static int ltc2978_write_word_data(struct i2c_client *client, int page,
 		ret = ltc_wait_ready(client);
 		if (ret < 0)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODATA;
 		break;
 	}
@@ -712,10 +533,6 @@ static int ltc2978_write_word_data(struct i2c_client *client, int page,
 }
 
 static const struct i2c_device_id ltc2978_id[] = {
-<<<<<<< HEAD
-	{"ltc2978", ltc2978},
-	{"ltc3880", ltc3880},
-=======
 	{"ltc2972", ltc2972},
 	{"ltc2974", ltc2974},
 	{"ltc2975", ltc2975},
@@ -741,19 +558,10 @@ static const struct i2c_device_id ltc2978_id[] = {
 	{"ltm4680", ltm4680},
 	{"ltm4686", ltm4686},
 	{"ltm4700", ltm4700},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(i2c, ltc2978_id);
 
-<<<<<<< HEAD
-static int ltc2978_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	int chip_id, i;
-	struct ltc2978_data *data;
-	struct pmbus_driver_info *info;
-=======
 #if IS_ENABLED(CONFIG_SENSORS_LTC2978_REGULATOR)
 #define LTC2978_ADC_RES	0xFFFF
 #define LTC2978_N_ADC	122
@@ -878,7 +686,6 @@ static int ltc2978_probe(struct i2c_client *client)
 	struct ltc2978_data *data;
 	struct pmbus_driver_info *info;
 	const struct i2c_device_id *id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
@@ -889,32 +696,6 @@ static int ltc2978_probe(struct i2c_client *client)
 	if (!data)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	chip_id = i2c_smbus_read_word_data(client, LTC2978_MFR_SPECIAL_ID);
-	if (chip_id < 0)
-		return chip_id;
-
-	if (chip_id == LTC2978_ID_REV1 || chip_id == LTC2978_ID_REV2) {
-		data->id = ltc2978;
-	} else if ((chip_id & LTC3880_ID_MASK) == LTC3880_ID) {
-		data->id = ltc3880;
-	} else {
-		dev_err(&client->dev, "Unsupported chip ID 0x%x\n", chip_id);
-		return -ENODEV;
-	}
-	if (data->id != id->driver_data)
-		dev_warn(&client->dev,
-			 "Device mismatch: Configured %s, detected %s\n",
-			 id->name,
-			 ltc2978_id[data->id].name);
-
-	info = &data->info;
-	info->write_word_data = ltc2978_write_word_data;
-
-	data->vin_min = 0x7bff;
-	data->vin_max = 0x7c00;
-	data->temp_min = 0x7bff;
-=======
 	chip_id = ltc2978_get_id(client);
 	if (chip_id < 0)
 		return chip_id;
@@ -945,21 +726,11 @@ static int ltc2978_probe(struct i2c_client *client)
 		data->iout_max[i] = 0x7c00;
 	for (i = 0; i < ARRAY_SIZE(data->temp_min); i++)
 		data->temp_min[i] = 0x7bff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(data->temp_max); i++)
 		data->temp_max[i] = 0x7c00;
 	data->temp2_max = 0x7c00;
 
 	switch (data->id) {
-<<<<<<< HEAD
-	case ltc2978:
-		info->read_word_data = ltc2978_read_word_data;
-		info->pages = 8;
-		info->func[0] = PMBUS_HAVE_VIN | PMBUS_HAVE_STATUS_INPUT
-		  | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT
-		  | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP;
-		for (i = 1; i < 8; i++) {
-=======
 	case ltc2972:
 		info->read_word_data = ltc2975_read_word_data;
 		info->pages = LTC2972_NUM_PAGES;
@@ -1010,16 +781,11 @@ static int ltc2978_probe(struct i2c_client *client)
 		  | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT
 		  | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP;
 		for (i = 1; i < LTC2978_NUM_PAGES; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			info->func[i] = PMBUS_HAVE_VOUT
 			  | PMBUS_HAVE_STATUS_VOUT;
 		}
 		break;
 	case ltc3880:
-<<<<<<< HEAD
-		info->read_word_data = ltc3880_read_word_data;
-		info->pages = 2;
-=======
 	case ltc3887:
 	case ltm4675:
 	case ltm4676:
@@ -1028,7 +794,6 @@ static int ltc2978_probe(struct i2c_client *client)
 		data->features |= FEAT_CLEAR_PEAKS | FEAT_NEEDS_POLLING;
 		info->read_word_data = ltc3880_read_word_data;
 		info->pages = LTC3880_NUM_PAGES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->func[0] = PMBUS_HAVE_VIN | PMBUS_HAVE_IIN
 		  | PMBUS_HAVE_STATUS_INPUT
 		  | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT
@@ -1039,10 +804,6 @@ static int ltc2978_probe(struct i2c_client *client)
 		  | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT
 		  | PMBUS_HAVE_POUT
 		  | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP;
-<<<<<<< HEAD
-		data->iout_max[0] = 0x7c00;
-		data->iout_max[1] = 0x7c00;
-=======
 		break;
 	case ltc3882:
 		data->features |= FEAT_CLEAR_PEAKS | FEAT_NEEDS_POLLING;
@@ -1092,26 +853,10 @@ static int ltc2978_probe(struct i2c_client *client)
 		  | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT
 		  | PMBUS_HAVE_POUT
 		  | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	for (i = 0; i < info->pages; i++)
-		data->vout_min[i] = 0xffff;
-
-	return pmbus_do_probe(client, id, info);
-}
-
-/* This is the driver that will be inserted */
-static struct i2c_driver ltc2978_driver = {
-	.driver = {
-		   .name = "ltc2978",
-		   },
-	.probe = ltc2978_probe,
-	.remove = pmbus_do_remove,
-=======
 
 #if IS_ENABLED(CONFIG_SENSORS_LTC2978_REGULATOR)
 	info->num_regulators = info->pages;
@@ -1183,18 +928,12 @@ static struct i2c_driver ltc2978_driver = {
 		   .of_match_table = of_match_ptr(ltc2978_of_match),
 		   },
 	.probe = ltc2978_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ltc2978_id,
 };
 
 module_i2c_driver(ltc2978_driver);
 
 MODULE_AUTHOR("Guenter Roeck");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("PMBus driver for LTC2978 and LTC3880");
-MODULE_LICENSE("GPL");
-=======
 MODULE_DESCRIPTION("PMBus driver for LTC2978 and compatible chips");
 MODULE_LICENSE("GPL");
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

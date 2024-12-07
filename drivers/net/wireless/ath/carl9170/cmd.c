@@ -120,11 +120,7 @@ struct carl9170_cmd *carl9170_cmd_buf(struct ar9170 *ar,
 {
 	struct carl9170_cmd *tmp;
 
-<<<<<<< HEAD
-	tmp = kzalloc(sizeof(struct carl9170_cmd_head) + len, GFP_ATOMIC);
-=======
 	tmp = kzalloc(sizeof(*tmp), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp) {
 		tmp->hdr.cmd = cmd;
 		tmp->hdr.len = len;
@@ -142,11 +138,7 @@ int carl9170_reboot(struct ar9170 *ar)
 	if (!cmd)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	err = __carl9170_exec_cmd(ar, (struct carl9170_cmd *)cmd, true);
-=======
 	err = __carl9170_exec_cmd(ar, cmd, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -196,21 +188,12 @@ int carl9170_collect_tally(struct ar9170 *ar)
 
 		if (ar->channel) {
 			info = &ar->survey[ar->channel->hw_value];
-<<<<<<< HEAD
-			info->channel_time = ar->tally.active;
-			info->channel_time_busy = ar->tally.cca;
-			info->channel_time_tx = ar->tally.tx_time;
-			do_div(info->channel_time, 1000);
-			do_div(info->channel_time_busy, 1000);
-			do_div(info->channel_time_tx, 1000);
-=======
 			info->time = ar->tally.active;
 			info->time_busy = ar->tally.cca;
 			info->time_tx = ar->tally.tx_time;
 			do_div(info->time, 1000);
 			do_div(info->time_busy, 1000);
 			do_div(info->time_tx, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;

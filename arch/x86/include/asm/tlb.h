@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_TLB_H
-#define _ASM_X86_TLB_H
-
-#define tlb_start_vma(tlb, vma) do { } while (0)
-#define tlb_end_vma(tlb, vma) do { } while (0)
-#define __tlb_remove_tlb_entry(tlb, ptep, address) do { } while (0)
-#define tlb_flush(tlb) flush_tlb_mm((tlb)->mm)
-
-#include <asm-generic/tlb.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_TLB_H
 #define _ASM_X86_TLB_H
@@ -46,5 +34,4 @@ static inline void __tlb_remove_table(void *table)
 	free_page_and_swap_cache(table);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_TLB_H */

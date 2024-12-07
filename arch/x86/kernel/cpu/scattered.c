@@ -1,25 +1,14 @@
 /*
-<<<<<<< HEAD
- *	Routines to indentify additional cpu features that are scattered in
-=======
  *	Routines to identify additional cpu features that are scattered in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	cpuid space.
  */
 #include <linux/cpu.h>
 
-<<<<<<< HEAD
-#include <asm/pat.h>
-#include <asm/processor.h>
-
-#include <asm/apic.h>
-=======
 #include <asm/memtype.h>
 #include <asm/apic.h>
 #include <asm/processor.h>
 
 #include "cpu.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpuid_bit {
 	u16 feature;
@@ -29,16 +18,6 @@ struct cpuid_bit {
 	u32 sub_leaf;
 };
 
-<<<<<<< HEAD
-enum cpuid_regs {
-	CR_EAX = 0,
-	CR_ECX,
-	CR_EDX,
-	CR_EBX
-};
-
-void __cpuinit init_scattered_cpuid_features(struct cpuinfo_x86 *c)
-=======
 /*
  * Please keep the leaf sorted by cpuid_bit.level for faster search.
  * X86_FEATURE_MBA is supported by both Intel and AMD. But the CPUID
@@ -76,39 +55,11 @@ static const struct cpuid_bit cpuid_bits[] = {
 };
 
 void init_scattered_cpuid_features(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 max_level;
 	u32 regs[4];
 	const struct cpuid_bit *cb;
 
-<<<<<<< HEAD
-	static const struct cpuid_bit __cpuinitconst cpuid_bits[] = {
-		{ X86_FEATURE_DTHERM,		CR_EAX, 0, 0x00000006, 0 },
-		{ X86_FEATURE_IDA,		CR_EAX, 1, 0x00000006, 0 },
-		{ X86_FEATURE_ARAT,		CR_EAX, 2, 0x00000006, 0 },
-		{ X86_FEATURE_PLN,		CR_EAX, 4, 0x00000006, 0 },
-		{ X86_FEATURE_PTS,		CR_EAX, 6, 0x00000006, 0 },
-		{ X86_FEATURE_APERFMPERF,	CR_ECX, 0, 0x00000006, 0 },
-		{ X86_FEATURE_EPB,		CR_ECX, 3, 0x00000006, 0 },
-		{ X86_FEATURE_XSAVEOPT,		CR_EAX,	0, 0x0000000d, 1 },
-		{ X86_FEATURE_CPB,		CR_EDX, 9, 0x80000007, 0 },
-		{ X86_FEATURE_HW_PSTATE,	CR_EDX, 7, 0x80000007, 0 },
-		{ X86_FEATURE_NPT,		CR_EDX, 0, 0x8000000a, 0 },
-		{ X86_FEATURE_LBRV,		CR_EDX, 1, 0x8000000a, 0 },
-		{ X86_FEATURE_SVML,		CR_EDX, 2, 0x8000000a, 0 },
-		{ X86_FEATURE_NRIPS,		CR_EDX, 3, 0x8000000a, 0 },
-		{ X86_FEATURE_TSCRATEMSR,	CR_EDX, 4, 0x8000000a, 0 },
-		{ X86_FEATURE_VMCBCLEAN,	CR_EDX, 5, 0x8000000a, 0 },
-		{ X86_FEATURE_FLUSHBYASID,	CR_EDX, 6, 0x8000000a, 0 },
-		{ X86_FEATURE_DECODEASSISTS,	CR_EDX, 7, 0x8000000a, 0 },
-		{ X86_FEATURE_PAUSEFILTER,	CR_EDX,10, 0x8000000a, 0 },
-		{ X86_FEATURE_PFTHRESHOLD,	CR_EDX,12, 0x8000000a, 0 },
-		{ 0, 0, 0, 0, 0 }
-	};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cb = cpuid_bits; cb->feature; cb++) {
 
 		/* Verify that the level is valid */
@@ -117,14 +68,9 @@ void init_scattered_cpuid_features(struct cpuinfo_x86 *c)
 		    max_level > (cb->level | 0xffff))
 			continue;
 
-<<<<<<< HEAD
-		cpuid_count(cb->level, cb->sub_leaf, &regs[CR_EAX],
-			    &regs[CR_EBX], &regs[CR_ECX], &regs[CR_EDX]);
-=======
 		cpuid_count(cb->level, cb->sub_leaf, &regs[CPUID_EAX],
 			    &regs[CPUID_EBX], &regs[CPUID_ECX],
 			    &regs[CPUID_EDX]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (regs[cb->reg] & (1 << cb->bit))
 			set_cpu_cap(c, cb->feature);

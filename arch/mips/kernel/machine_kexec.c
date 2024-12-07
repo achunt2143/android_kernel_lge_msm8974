@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * machine_kexec.c for kexec
- * Created by <nschichan@corp.free.fr> on Thu Oct 12 15:15:06 2006
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
- */
-
-#include <linux/kexec.h>
-#include <linux/mm.h>
-#include <linux/delay.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * machine_kexec.c for kexec
@@ -22,7 +9,6 @@
 #include <linux/delay.h>
 #include <linux/libfdt.h>
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/page.h>
@@ -33,11 +19,6 @@ extern const size_t relocate_new_kernel_size;
 extern unsigned long kexec_start_address;
 extern unsigned long kexec_indirection_page;
 
-<<<<<<< HEAD
-int
-machine_kexec_prepare(struct kimage *kimage)
-{
-=======
 static unsigned long reboot_code_buffer;
 
 #ifdef CONFIG_SMP
@@ -123,7 +104,6 @@ machine_kexec_prepare(struct kimage *kimage)
 	if (_machine_kexec_prepare)
 		return _machine_kexec_prepare(kimage);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -132,11 +112,6 @@ machine_kexec_cleanup(struct kimage *kimage)
 {
 }
 
-<<<<<<< HEAD
-void
-machine_shutdown(void)
-{
-=======
 #ifdef CONFIG_SMP
 static void kexec_shutdown_secondary(void *param)
 {
@@ -172,17 +147,11 @@ machine_shutdown(void)
 		mdelay(1);
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 machine_crash_shutdown(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-}
-
-typedef void (*noretfun_t)(void) __attribute__((noreturn));
-=======
 	if (_machine_crash_shutdown)
 		_machine_crash_shutdown(regs);
 	else
@@ -236,26 +205,16 @@ void kexec_reboot(void)
 	do_kexec = (void *)reboot_code_buffer;
 	do_kexec();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void
 machine_kexec(struct kimage *image)
 {
-<<<<<<< HEAD
-	unsigned long reboot_code_buffer;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long entry;
 	unsigned long *ptr;
 
 	reboot_code_buffer =
 	  (unsigned long)page_address(image->control_code_page);
 
-<<<<<<< HEAD
-	kexec_start_address = image->start;
-	kexec_indirection_page =
-		(unsigned long) phys_to_virt(image->head & PAGE_MASK);
-=======
 	kexec_start_address =
 		(unsigned long) phys_to_virt(image->start);
 
@@ -265,7 +224,6 @@ machine_kexec(struct kimage *image)
 	} else {
 		kexec_indirection_page = (unsigned long)&image->head;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy((void*)reboot_code_buffer, relocate_new_kernel,
 	       relocate_new_kernel_size);
@@ -274,11 +232,7 @@ machine_kexec(struct kimage *image)
 	 * The generic kexec code builds a page list with physical
 	 * addresses. they are directly accessible through KSEG0 (or
 	 * CKSEG0 or XPHYS if on 64bit system), hence the
-<<<<<<< HEAD
-	 * pys_to_virt() call.
-=======
 	 * phys_to_virt() call.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (ptr = &image->head; (entry = *ptr) && !(entry &IND_DONE);
 	     ptr = (entry & IND_INDIRECTION) ?
@@ -288,12 +242,9 @@ machine_kexec(struct kimage *image)
 			*ptr = (unsigned long) phys_to_virt(*ptr);
 	}
 
-<<<<<<< HEAD
-=======
 	/* Mark offline BEFORE disabling local irq. */
 	set_cpu_online(smp_processor_id(), false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * we do not want to be bothered.
 	 */
@@ -301,10 +252,6 @@ machine_kexec(struct kimage *image)
 
 	printk("Will call new kernel at %08lx\n", image->start);
 	printk("Bye ...\n");
-<<<<<<< HEAD
-	__flush_cache_all();
-	((noretfun_t) reboot_code_buffer)();
-=======
 	/* Make reboot code buffer available to the boot CPU. */
 	__flush_cache_all();
 #ifdef CONFIG_SMP
@@ -315,5 +262,4 @@ machine_kexec(struct kimage *image)
 	atomic_set(&kexec_ready_to_reboot, 1);
 #endif
 	kexec_reboot();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

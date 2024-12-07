@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* mac_esp.c: ESP front-end for Macintosh Quadra systems.
  *
  * Adapted from jazz_esp.c and the old mac_esp.c.
@@ -56,22 +53,12 @@ struct mac_esp_priv {
 	struct esp *esp;
 	void __iomem *pdma_regs;
 	void __iomem *pdma_io;
-<<<<<<< HEAD
-	int error;
-};
-static struct esp *esp_chips[2];
-
-#define MAC_ESP_GET_PRIV(esp) ((struct mac_esp_priv *) \
-			       platform_get_drvdata((struct platform_device *) \
-						    (esp->dev)))
-=======
 };
 static struct esp *esp_chips[2];
 static DEFINE_SPINLOCK(esp_chips_lock);
 
 #define MAC_ESP_GET_PRIV(esp) ((struct mac_esp_priv *) \
 			       dev_get_drvdata((esp)->dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void mac_esp_write8(struct esp *esp, u8 val, unsigned long reg)
 {
@@ -83,41 +70,6 @@ static inline u8 mac_esp_read8(struct esp *esp, unsigned long reg)
 	return nubus_readb(esp->regs + reg * 16);
 }
 
-<<<<<<< HEAD
-/* For pseudo DMA and PIO we need the virtual address
- * so this address mapping is the identity mapping.
- */
-
-static dma_addr_t mac_esp_map_single(struct esp *esp, void *buf,
-				     size_t sz, int dir)
-{
-	return (dma_addr_t)buf;
-}
-
-static int mac_esp_map_sg(struct esp *esp, struct scatterlist *sg,
-			  int num_sg, int dir)
-{
-	int i;
-
-	for (i = 0; i < num_sg; i++)
-		sg[i].dma_address = (u32)sg_virt(&sg[i]);
-	return num_sg;
-}
-
-static void mac_esp_unmap_single(struct esp *esp, dma_addr_t addr,
-				 size_t sz, int dir)
-{
-	/* Nothing to do. */
-}
-
-static void mac_esp_unmap_sg(struct esp *esp, struct scatterlist *sg,
-			     int num_sg, int dir)
-{
-	/* Nothing to do. */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mac_esp_reset_dma(struct esp *esp)
 {
 	/* Nothing to do. */
@@ -135,19 +87,11 @@ static void mac_esp_dma_invalidate(struct esp *esp)
 
 static int mac_esp_dma_error(struct esp *esp)
 {
-<<<<<<< HEAD
-	return MAC_ESP_GET_PRIV(esp)->error;
-=======
 	return esp->send_cmd_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int mac_esp_wait_for_empty_fifo(struct esp *esp)
 {
-<<<<<<< HEAD
-	struct mac_esp_priv *mep = MAC_ESP_GET_PRIV(esp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = 500000;
 
 	do {
@@ -162,11 +106,7 @@ static inline int mac_esp_wait_for_empty_fifo(struct esp *esp)
 
 	printk(KERN_ERR PFX "FIFO is not empty (sreg %02x)\n",
 	       esp_read8(ESP_STATUS));
-<<<<<<< HEAD
-	mep->error = 1;
-=======
 	esp->send_cmd_error = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -192,11 +132,7 @@ static inline int mac_esp_wait_for_dreq(struct esp *esp)
 
 	printk(KERN_ERR PFX "PDMA timeout (sreg %02x)\n",
 	       esp_read8(ESP_STATUS));
-<<<<<<< HEAD
-	mep->error = 1;
-=======
 	esp->send_cmd_error = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -263,11 +199,7 @@ static void mac_esp_send_pdma_cmd(struct esp *esp, u32 addr, u32 esp_count,
 {
 	struct mac_esp_priv *mep = MAC_ESP_GET_PRIV(esp);
 
-<<<<<<< HEAD
-	mep->error = 0;
-=======
 	esp->send_cmd_error = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!write)
 		scsi_esp_cmd(esp, ESP_CMD_FLUSH);
@@ -305,166 +237,6 @@ static void mac_esp_send_pdma_cmd(struct esp *esp, u32 addr, u32 esp_count,
 	} while (esp_count);
 }
 
-<<<<<<< HEAD
-/*
- * Programmed IO routines follow.
- */
-
-static inline unsigned int mac_esp_wait_for_fifo(struct esp *esp)
-{
-	int i = 500000;
-
-	do {
-		unsigned int fbytes = esp_read8(ESP_FFLAGS) & ESP_FF_FBYTES;
-
-		if (fbytes)
-			return fbytes;
-
-		udelay(2);
-	} while (--i);
-
-	printk(KERN_ERR PFX "FIFO is empty (sreg %02x)\n",
-	       esp_read8(ESP_STATUS));
-	return 0;
-}
-
-static inline int mac_esp_wait_for_intr(struct esp *esp)
-{
-	struct mac_esp_priv *mep = MAC_ESP_GET_PRIV(esp);
-	int i = 500000;
-
-	do {
-		esp->sreg = esp_read8(ESP_STATUS);
-		if (esp->sreg & ESP_STAT_INTR)
-			return 0;
-
-		udelay(2);
-	} while (--i);
-
-	printk(KERN_ERR PFX "IRQ timeout (sreg %02x)\n", esp->sreg);
-	mep->error = 1;
-	return 1;
-}
-
-#define MAC_ESP_PIO_LOOP(operands, reg1) \
-	asm volatile ( \
-	     "1:     moveb " operands " \n" \
-	     "       subqw #1,%1        \n" \
-	     "       jbne 1b            \n" \
-	     : "+a" (addr), "+r" (reg1) \
-	     : "a" (fifo))
-
-#define MAC_ESP_PIO_FILL(operands, reg1) \
-	asm volatile ( \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       moveb " operands " \n" \
-	     "       subqw #8,%1        \n" \
-	     "       subqw #8,%1        \n" \
-	     : "+a" (addr), "+r" (reg1) \
-	     : "a" (fifo))
-
-#define MAC_ESP_FIFO_SIZE 16
-
-static void mac_esp_send_pio_cmd(struct esp *esp, u32 addr, u32 esp_count,
-				 u32 dma_count, int write, u8 cmd)
-{
-	struct mac_esp_priv *mep = MAC_ESP_GET_PRIV(esp);
-	u8 *fifo = esp->regs + ESP_FDATA * 16;
-
-	cmd &= ~ESP_CMD_DMA;
-	mep->error = 0;
-
-	if (write) {
-		scsi_esp_cmd(esp, cmd);
-
-		while (1) {
-			unsigned int n;
-
-			n = mac_esp_wait_for_fifo(esp);
-			if (!n)
-				break;
-
-			if (n > esp_count)
-				n = esp_count;
-			esp_count -= n;
-
-			MAC_ESP_PIO_LOOP("%2@,%0@+", n);
-
-			if (!esp_count)
-				break;
-
-			if (mac_esp_wait_for_intr(esp))
-				break;
-
-			if (((esp->sreg & ESP_STAT_PMASK) != ESP_DIP) &&
-			    ((esp->sreg & ESP_STAT_PMASK) != ESP_MIP))
-				break;
-
-			esp->ireg = esp_read8(ESP_INTRPT);
-			if ((esp->ireg & (ESP_INTR_DC | ESP_INTR_BSERV)) !=
-			    ESP_INTR_BSERV)
-				break;
-
-			scsi_esp_cmd(esp, ESP_CMD_TI);
-		}
-	} else {
-		scsi_esp_cmd(esp, ESP_CMD_FLUSH);
-
-		if (esp_count >= MAC_ESP_FIFO_SIZE)
-			MAC_ESP_PIO_FILL("%0@+,%2@", esp_count);
-		else
-			MAC_ESP_PIO_LOOP("%0@+,%2@", esp_count);
-
-		scsi_esp_cmd(esp, cmd);
-
-		while (esp_count) {
-			unsigned int n;
-
-			if (mac_esp_wait_for_intr(esp))
-				break;
-
-			if (((esp->sreg & ESP_STAT_PMASK) != ESP_DOP) &&
-			    ((esp->sreg & ESP_STAT_PMASK) != ESP_MOP))
-				break;
-
-			esp->ireg = esp_read8(ESP_INTRPT);
-			if ((esp->ireg & (ESP_INTR_DC | ESP_INTR_BSERV)) !=
-			    ESP_INTR_BSERV)
-				break;
-
-			n = MAC_ESP_FIFO_SIZE -
-			    (esp_read8(ESP_FFLAGS) & ESP_FF_FBYTES);
-			if (n > esp_count)
-				n = esp_count;
-
-			if (n == MAC_ESP_FIFO_SIZE) {
-				MAC_ESP_PIO_FILL("%0@+,%2@", esp_count);
-			} else {
-				esp_count -= n;
-				MAC_ESP_PIO_LOOP("%0@+,%2@", n);
-			}
-
-			scsi_esp_cmd(esp, ESP_CMD_TI);
-		}
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mac_esp_irq_pending(struct esp *esp)
 {
 	if (esp_read8(ESP_STATUS) & ESP_STAT_INTR)
@@ -506,13 +278,6 @@ static irqreturn_t mac_scsi_esp_intr(int irq, void *dev_id)
 static struct esp_driver_ops mac_esp_ops = {
 	.esp_write8       = mac_esp_write8,
 	.esp_read8        = mac_esp_read8,
-<<<<<<< HEAD
-	.map_single       = mac_esp_map_single,
-	.map_sg           = mac_esp_map_sg,
-	.unmap_single     = mac_esp_unmap_single,
-	.unmap_sg         = mac_esp_unmap_sg,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_pending      = mac_esp_irq_pending,
 	.dma_length_limit = mac_esp_dma_length_limit,
 	.reset_dma        = mac_esp_reset_dma,
@@ -522,15 +287,9 @@ static struct esp_driver_ops mac_esp_ops = {
 	.dma_error        = mac_esp_dma_error,
 };
 
-<<<<<<< HEAD
-static int __devinit esp_mac_probe(struct platform_device *dev)
-{
-	struct scsi_host_template *tpnt = &scsi_esp_template;
-=======
 static int esp_mac_probe(struct platform_device *dev)
 {
 	const struct scsi_host_template *tpnt = &scsi_esp_template;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	struct esp *esp;
 	int err;
@@ -549,19 +308,11 @@ static int esp_mac_probe(struct platform_device *dev)
 		goto fail;
 
 	host->max_id = 8;
-<<<<<<< HEAD
-	host->use_clustering = DISABLE_CLUSTERING;
-	esp = shost_priv(host);
-
-	esp->host = host;
-	esp->dev = dev;
-=======
 	host->dma_boundary = PAGE_SIZE - 1;
 	esp = shost_priv(host);
 
 	esp->host = host;
 	esp->dev = &dev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	esp->command_block = kzalloc(16, GFP_KERNEL);
 	if (!esp->command_block)
@@ -604,44 +355,21 @@ static int esp_mac_probe(struct platform_device *dev)
 		mep->pdma_regs = NULL;
 		break;
 	}
-<<<<<<< HEAD
-
-	esp->ops = &mac_esp_ops;
-=======
 	esp->fifo_reg = esp->regs + ESP_FDATA * 16;
 
 	esp->ops = &mac_esp_ops;
 	esp->flags = ESP_FLAG_NO_DMA_MAP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mep->pdma_io == NULL) {
 		printk(KERN_INFO PFX "using PIO for controller %d\n", dev->id);
 		esp_write8(0, ESP_TCLOW);
 		esp_write8(0, ESP_TCMED);
-<<<<<<< HEAD
-		esp->flags = ESP_FLAG_DISABLE_SYNC;
-		mac_esp_ops.send_dma_cmd = mac_esp_send_pio_cmd;
-=======
 		esp->flags |= ESP_FLAG_DISABLE_SYNC;
 		mac_esp_ops.send_dma_cmd = esp_send_pio_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		printk(KERN_INFO PFX "using PDMA for controller %d\n", dev->id);
 	}
 
 	host->irq = IRQ_MAC_SCSI;
-<<<<<<< HEAD
-	esp_chips[dev->id] = esp;
-	mb();
-	if (esp_chips[!dev->id] == NULL) {
-		err = request_irq(host->irq, mac_scsi_esp_intr, 0, "ESP", NULL);
-		if (err < 0) {
-			esp_chips[dev->id] = NULL;
-			goto fail_free_priv;
-		}
-	}
-
-	err = scsi_esp_register(esp, &dev->dev);
-=======
 
 	/* The request_irq() call is intended to succeed for the first device
 	 * and fail for the second device.
@@ -656,17 +384,12 @@ static int esp_mac_probe(struct platform_device *dev)
 	spin_unlock(&esp_chips_lock);
 
 	err = scsi_esp_register(esp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto fail_free_irq;
 
 	return 0;
 
 fail_free_irq:
-<<<<<<< HEAD
-	if (esp_chips[!dev->id] == NULL)
-		free_irq(host->irq, esp);
-=======
 	spin_lock(&esp_chips_lock);
 	esp_chips[dev->id] = NULL;
 	if (esp_chips[!dev->id] == NULL) {
@@ -674,7 +397,6 @@ fail_free_irq:
 		free_irq(host->irq, NULL);
 	} else
 		spin_unlock(&esp_chips_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_free_priv:
 	kfree(mep);
 fail_free_command_block:
@@ -685,11 +407,7 @@ fail:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit esp_mac_remove(struct platform_device *dev)
-=======
 static void esp_mac_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mac_esp_priv *mep = platform_get_drvdata(dev);
 	struct esp *esp = mep->esp;
@@ -697,11 +415,6 @@ static void esp_mac_remove(struct platform_device *dev)
 
 	scsi_esp_unregister(esp);
 
-<<<<<<< HEAD
-	esp_chips[dev->id] = NULL;
-	if (!(esp_chips[0] || esp_chips[1]))
-		free_irq(irq, NULL);
-=======
 	spin_lock(&esp_chips_lock);
 	esp_chips[dev->id] = NULL;
 	if (esp_chips[!dev->id] == NULL) {
@@ -709,49 +422,16 @@ static void esp_mac_remove(struct platform_device *dev)
 		free_irq(irq, NULL);
 	} else
 		spin_unlock(&esp_chips_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(mep);
 
 	kfree(esp->command_block);
 
 	scsi_host_put(esp->host);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver esp_mac_driver = {
 	.probe    = esp_mac_probe,
-<<<<<<< HEAD
-	.remove   = __devexit_p(esp_mac_remove),
-	.driver   = {
-		.name	= DRV_MODULE_NAME,
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init mac_esp_init(void)
-{
-	return platform_driver_register(&esp_mac_driver);
-}
-
-static void __exit mac_esp_exit(void)
-{
-	platform_driver_unregister(&esp_mac_driver);
-}
-
-MODULE_DESCRIPTION("Mac ESP SCSI driver");
-MODULE_AUTHOR("Finn Thain <fthain@telegraphics.com.au>");
-MODULE_LICENSE("GPL v2");
-MODULE_VERSION(DRV_VERSION);
-MODULE_ALIAS("platform:" DRV_MODULE_NAME);
-
-module_init(mac_esp_init);
-module_exit(mac_esp_exit);
-=======
 	.remove_new = esp_mac_remove,
 	.driver   = {
 		.name	= DRV_MODULE_NAME,
@@ -764,4 +444,3 @@ MODULE_AUTHOR("Finn Thain");
 MODULE_LICENSE("GPL v2");
 MODULE_VERSION(DRV_VERSION);
 MODULE_ALIAS("platform:" DRV_MODULE_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

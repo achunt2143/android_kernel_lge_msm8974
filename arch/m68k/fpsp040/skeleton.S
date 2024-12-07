@@ -499,14 +499,6 @@ in_ea:
 	dbf	%d0,morein
 	rts
 
-<<<<<<< HEAD
-	.section .fixup,#alloc,#execinstr
-	.even
-1:
-	jbra	fpsp040_die
-
-	.section __ex_table,#alloc
-=======
 	.section .fixup,"ax"
 	.even
 1:
@@ -514,7 +506,6 @@ in_ea:
 	jbra	.Lnotkern
 
 	.section __ex_table,"a"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	4
 
 	.long	in_ea,1b

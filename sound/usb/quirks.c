@@ -1,33 +1,13 @@
-<<<<<<< HEAD
-/*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/usb.h>
 #include <linux/usb/audio.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/midi.h>
 #include <linux/bits.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/control.h>
 #include <sound/core.h>
@@ -39,10 +19,7 @@
 #include "mixer.h"
 #include "mixer_quirks.h"
 #include "midi.h"
-<<<<<<< HEAD
-=======
 #include "midi2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "quirks.h"
 #include "helper.h"
 #include "endpoint.h"
@@ -56,14 +33,6 @@
 static int create_composite_quirk(struct snd_usb_audio *chip,
 				  struct usb_interface *iface,
 				  struct usb_driver *driver,
-<<<<<<< HEAD
-				  const struct snd_usb_audio_quirk *quirk)
-{
-	int probed_ifnum = get_iface_desc(iface->altsetting)->bInterfaceNumber;
-	int err;
-
-	for (quirk = quirk->data; quirk->ifnum >= 0; ++quirk) {
-=======
 				  const struct snd_usb_audio_quirk *quirk_comp)
 {
 	int probed_ifnum = get_iface_desc(iface->altsetting)->bInterfaceNumber;
@@ -71,7 +40,6 @@ static int create_composite_quirk(struct snd_usb_audio *chip,
 	int err;
 
 	for (quirk = quirk_comp->data; quirk->ifnum >= 0; ++quirk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface = usb_ifnum_to_if(chip->dev, quirk->ifnum);
 		if (!iface)
 			continue;
@@ -81,11 +49,6 @@ static int create_composite_quirk(struct snd_usb_audio *chip,
 		err = snd_usb_create_quirk(chip, iface, driver, quirk);
 		if (err < 0)
 			return err;
-<<<<<<< HEAD
-		if (quirk->ifnum != probed_ifnum)
-			usb_driver_claim_interface(driver, iface, (void *)-1L);
-	}
-=======
 	}
 
 	for (quirk = quirk_comp->data; quirk->ifnum >= 0; ++quirk) {
@@ -101,7 +64,6 @@ static int create_composite_quirk(struct snd_usb_audio *chip,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -114,32 +76,12 @@ static int ignore_interface_quirk(struct snd_usb_audio *chip,
 }
 
 
-<<<<<<< HEAD
-/*
- * Allow alignment on audio sub-slot (channel samples) rather than
- * on audio slots (audio frames)
- */
-static int create_align_transfer_quirk(struct snd_usb_audio *chip,
-				       struct usb_interface *iface,
-				       struct usb_driver *driver,
-				       const struct snd_usb_audio_quirk *quirk)
-{
-	chip->txfr_quirk = 1;
-	return 1;	/* Continue with creating streams and mixer */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int create_any_midi_quirk(struct snd_usb_audio *chip,
 				 struct usb_interface *intf,
 				 struct usb_driver *driver,
 				 const struct snd_usb_audio_quirk *quirk)
 {
-<<<<<<< HEAD
-	return snd_usbmidi_create(chip->card, intf, &chip->midi_list, quirk);
-=======
 	return snd_usb_midi_v2_create(chip, intf, quirk, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -158,11 +100,7 @@ static int create_standard_audio_quirk(struct snd_usb_audio *chip,
 	altsd = get_iface_desc(alts);
 	err = snd_usb_parse_audio_interface(chip, altsd->bInterfaceNumber);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "cannot setup if %d: error %d\n",
-=======
 		usb_audio_err(chip, "cannot setup if %d: error %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   altsd->bInterfaceNumber, err);
 		return err;
 	}
@@ -171,8 +109,6 @@ static int create_standard_audio_quirk(struct snd_usb_audio *chip,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* create the audio stream and the corresponding endpoints from the fixed
  * audioformat object; this is used for quirks with the fixed EPs
  */
@@ -207,7 +143,6 @@ static int add_audio_stream_from_fixed_fmt(struct snd_usb_audio *chip,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * create a stream for an endpoint/altsetting without proper descriptors
  */
@@ -218,16 +153,6 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 {
 	struct audioformat *fp;
 	struct usb_host_interface *alts;
-<<<<<<< HEAD
-	int stream, err;
-	unsigned *rate_table = NULL;
-
-	fp = kmemdup(quirk->data, sizeof(*fp), GFP_KERNEL);
-	if (!fp) {
-		snd_printk(KERN_ERR "cannot memdup\n");
-		return -ENOMEM;
-	}
-=======
 	struct usb_interface_descriptor *altsd;
 	unsigned *rate_table = NULL;
 	int err;
@@ -236,7 +161,6 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	if (!fp)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&fp->list);
 	if (fp->nr_rates > MAX_NR_RATES) {
 		kfree(fp);
@@ -252,27 +176,12 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 		fp->rate_table = rate_table;
 	}
 
-<<<<<<< HEAD
-	stream = (fp->endpoint & USB_DIR_IN)
-		? SNDRV_PCM_STREAM_CAPTURE : SNDRV_PCM_STREAM_PLAYBACK;
-	err = snd_usb_add_audio_stream(chip, stream, fp);
-	if (err < 0)
-		goto error;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fp->iface != get_iface_desc(&iface->altsetting[0])->bInterfaceNumber ||
 	    fp->altset_idx >= iface->num_altsetting) {
 		err = -EINVAL;
 		goto error;
 	}
 	alts = &iface->altsetting[fp->altset_idx];
-<<<<<<< HEAD
-	fp->datainterval = snd_usb_parse_datainterval(chip, alts);
-	fp->maxpacksize = le16_to_cpu(get_endpoint(alts, 0)->wMaxPacketSize);
-	usb_set_interface(chip->dev, fp->iface, 0);
-	snd_usb_init_pitch(chip, fp->iface, alts, fp);
-	snd_usb_init_sample_rate(chip, fp->iface, alts, fp, fp->rate_max);
-=======
 	altsd = get_iface_desc(alts);
 	if (altsd->bNumEndpoints <= fp->ep_idx) {
 		err = -EINVAL;
@@ -295,7 +204,6 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	usb_set_interface(chip->dev, fp->iface, 0);
 	snd_usb_init_pitch(chip, fp);
 	snd_usb_init_sample_rate(chip, fp, fp->rate_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  error:
@@ -305,8 +213,6 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int create_auto_pcm_quirk(struct snd_usb_audio *chip,
 				 struct usb_interface *iface,
 				 struct usb_driver *driver)
@@ -482,7 +388,6 @@ static int create_autodetect_quirk(struct snd_usb_audio *chip,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Create a stream for an Edirol UA-700/UA-25/UA-4FX interface.  
  * The only way to detect the sample rate is by looking at wMaxPacketSize.
@@ -503,11 +408,7 @@ static int create_uaxx_quirk(struct snd_usb_audio *chip,
 	struct usb_host_interface *alts;
 	struct usb_interface_descriptor *altsd;
 	struct audioformat *fp;
-<<<<<<< HEAD
-	int stream, err;
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* both PCM and MIDI interfaces have 2 or more altsettings */
 	if (iface->num_altsetting < 2)
@@ -535,15 +436,10 @@ static int create_uaxx_quirk(struct snd_usb_audio *chip,
 		const struct snd_usb_audio_quirk *quirk =
 			chip->usb_id == USB_ID(0x0582, 0x002b)
 			? &ua700_quirk : &uaxx_quirk;
-<<<<<<< HEAD
-		return snd_usbmidi_create(chip->card, iface,
-					  &chip->midi_list, quirk);
-=======
 		return __snd_usbmidi_create(chip->card, iface,
 					    &chip->midi_list, quirk,
 					    chip->usb_id,
 					    &chip->num_rawmidis);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (altsd->bNumEndpoints != 1)
@@ -573,22 +469,12 @@ static int create_uaxx_quirk(struct snd_usb_audio *chip,
 		fp->rate_max = fp->rate_min = 96000;
 		break;
 	default:
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "unknown sample rate\n");
-=======
 		usb_audio_err(chip, "unknown sample rate\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(fp);
 		return -ENXIO;
 	}
 
-<<<<<<< HEAD
-	stream = (fp->endpoint & USB_DIR_IN)
-		? SNDRV_PCM_STREAM_CAPTURE : SNDRV_PCM_STREAM_PLAYBACK;
-	err = snd_usb_add_audio_stream(chip, stream, fp);
-=======
 	err = add_audio_stream_from_fixed_fmt(chip, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		list_del(&fp->list); /* unlink for avoiding double-free */
 		kfree(fp);
@@ -609,11 +495,7 @@ static int create_standard_mixer_quirk(struct snd_usb_audio *chip,
 	if (quirk->ifnum < 0)
 		return 0;
 
-<<<<<<< HEAD
-	return snd_usb_create_mixer(chip, quirk->ifnum, 0);
-=======
 	return snd_usb_create_mixer(chip, quirk->ifnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -636,17 +518,11 @@ int snd_usb_create_quirk(struct snd_usb_audio *chip,
 	static const quirk_func_t quirk_funcs[] = {
 		[QUIRK_IGNORE_INTERFACE] = ignore_interface_quirk,
 		[QUIRK_COMPOSITE] = create_composite_quirk,
-<<<<<<< HEAD
-		[QUIRK_MIDI_STANDARD_INTERFACE] = create_any_midi_quirk,
-		[QUIRK_MIDI_FIXED_ENDPOINT] = create_any_midi_quirk,
-		[QUIRK_MIDI_YAMAHA] = create_any_midi_quirk,
-=======
 		[QUIRK_AUTODETECT] = create_autodetect_quirk,
 		[QUIRK_MIDI_STANDARD_INTERFACE] = create_any_midi_quirk,
 		[QUIRK_MIDI_FIXED_ENDPOINT] = create_any_midi_quirk,
 		[QUIRK_MIDI_YAMAHA] = create_any_midi_quirk,
 		[QUIRK_MIDI_ROLAND] = create_any_midi_quirk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[QUIRK_MIDI_MIDIMAN] = create_any_midi_quirk,
 		[QUIRK_MIDI_NOVATION] = create_any_midi_quirk,
 		[QUIRK_MIDI_RAW_BYTES] = create_any_midi_quirk,
@@ -658,21 +534,13 @@ int snd_usb_create_quirk(struct snd_usb_audio *chip,
 		[QUIRK_AUDIO_STANDARD_INTERFACE] = create_standard_audio_quirk,
 		[QUIRK_AUDIO_FIXED_ENDPOINT] = create_fixed_stream_quirk,
 		[QUIRK_AUDIO_EDIROL_UAXX] = create_uaxx_quirk,
-<<<<<<< HEAD
-		[QUIRK_AUDIO_ALIGN_TRANSFER] = create_align_transfer_quirk,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[QUIRK_AUDIO_STANDARD_MIXER] = create_standard_mixer_quirk,
 	};
 
 	if (quirk->type < QUIRK_TYPE_COUNT) {
 		return quirk_funcs[quirk->type](chip, iface, driver, quirk);
 	} else {
-<<<<<<< HEAD
-		snd_printd(KERN_ERR "invalid quirk type %d\n", quirk->type);
-=======
 		usb_audio_err(chip, "invalid quirk type %d\n", quirk->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 }
@@ -691,20 +559,6 @@ static int snd_usb_extigy_boot_quirk(struct usb_device *dev, struct usb_interfac
 
 	if (le16_to_cpu(get_cfg_desc(config)->wTotalLength) == EXTIGY_FIRMWARE_SIZE_OLD ||
 	    le16_to_cpu(get_cfg_desc(config)->wTotalLength) == EXTIGY_FIRMWARE_SIZE_NEW) {
-<<<<<<< HEAD
-		snd_printdd("sending Extigy boot sequence...\n");
-		/* Send message to force it to reconnect with full interface. */
-		err = snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev,0),
-				      0x10, 0x43, 0x0001, 0x000a, NULL, 0);
-		if (err < 0) snd_printdd("error sending boot message: %d\n", err);
-		err = usb_get_descriptor(dev, USB_DT_DEVICE, 0,
-				&dev->descriptor, sizeof(dev->descriptor));
-		config = dev->actconfig;
-		if (err < 0) snd_printdd("error usb_get_descriptor: %d\n", err);
-		err = usb_reset_configuration(dev);
-		if (err < 0) snd_printdd("error usb_reset_configuration: %d\n", err);
-		snd_printdd("extigy_boot: new boot length = %d\n",
-=======
 		dev_dbg(&dev->dev, "sending Extigy boot sequence...\n");
 		/* Send message to force it to reconnect with full interface. */
 		err = snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev,0),
@@ -720,7 +574,6 @@ static int snd_usb_extigy_boot_quirk(struct usb_device *dev, struct usb_interfac
 		if (err < 0)
 			dev_dbg(&dev->dev, "error usb_reset_configuration: %d\n", err);
 		dev_dbg(&dev->dev, "extigy_boot: new boot length = %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    le16_to_cpu(get_cfg_desc(config)->wTotalLength));
 		return -ENODEV; /* quit this anyway */
 	}
@@ -748,11 +601,7 @@ static int snd_usb_fasttrackpro_boot_quirk(struct usb_device *dev)
 	int err;
 
 	if (dev->actconfig->desc.bConfigurationValue == 1) {
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "usb-audio: "
-=======
 		dev_info(&dev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "Fast Track Pro switching to config #2\n");
 		/* This function has to be available by the usb core module.
 		 * if it is not avialable the boot quirk has to be left out
@@ -761,24 +610,15 @@ static int snd_usb_fasttrackpro_boot_quirk(struct usb_device *dev)
 		 */
 		err = usb_driver_set_configuration(dev, 2);
 		if (err < 0)
-<<<<<<< HEAD
-			snd_printdd("error usb_driver_set_configuration: %d\n",
-				    err);
-=======
 			dev_dbg(&dev->dev,
 				"error usb_driver_set_configuration: %d\n",
 				err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Always return an error, so that we stop creating a device
 		   that will just be destroyed and recreated with a new
 		   configuration */
 		return -ENODEV;
 	} else
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "usb-audio: Fast Track Pro config OK\n");
-=======
 		dev_info(&dev->dev, "Fast Track Pro config OK\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -809,17 +649,6 @@ static int snd_usb_cm106_boot_quirk(struct usb_device *dev)
 }
 
 /*
-<<<<<<< HEAD
- * C-Media CM6206 is based on CM106 with two additional
- * registers that are not documented in the data sheet.
- * Values here are chosen based on sniffing USB traffic
- * under Windows.
- */
-static int snd_usb_cm6206_boot_quirk(struct usb_device *dev)
-{
-	int err  = 0, reg;
-	int val[] = {0x2004, 0x3000, 0xf800, 0x143f, 0x0000, 0x3000};
-=======
  * CM6206 registers from the CM6206 datasheet rev 2.1
  */
 #define CM6206_REG0_DMA_MASTER BIT(15)
@@ -947,7 +776,6 @@ static int snd_usb_cm6206_boot_quirk(struct usb_device *dev)
 		/* REG5: de-assert AD/DA reset signals */
 		CM6206_REG5_DA_RSTN |
 		CM6206_REG5_AD_RSTN };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (reg = 0; reg < ARRAY_SIZE(val); reg++) {
 		err = snd_usb_cm106_write_int_reg(dev, reg, val[reg]);
@@ -958,8 +786,6 @@ static int snd_usb_cm6206_boot_quirk(struct usb_device *dev)
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /* quirk for Plantronics GameCom 780 with CM6302 chip */
 static int snd_usb_gamecon780_boot_quirk(struct usb_device *dev)
 {
@@ -984,7 +810,6 @@ static int snd_usb_novation_boot_quirk(struct usb_device *dev)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This call will put the synth in "USB send" mode, i.e it will send MIDI
  * messages through USB (this is disabled at startup). The synth will
@@ -995,13 +820,6 @@ static int snd_usb_novation_boot_quirk(struct usb_device *dev)
 static int snd_usb_accessmusic_boot_quirk(struct usb_device *dev)
 {
 	int err, actual_length;
-<<<<<<< HEAD
-
-	/* "midi send" enable */
-	static const u8 seq[] = { 0x4e, 0x73, 0x52, 0x01 };
-
-	void *buf = kmemdup(seq, ARRAY_SIZE(seq), GFP_KERNEL);
-=======
 	/* "midi send" enable */
 	static const u8 seq[] = { 0x4e, 0x73, 0x52, 0x01 };
 	void *buf;
@@ -1009,7 +827,6 @@ static int snd_usb_accessmusic_boot_quirk(struct usb_device *dev)
 	if (usb_pipe_type_check(dev, usb_sndintpipe(dev, 0x05)))
 		return -EINVAL;
 	buf = kmemdup(seq, ARRAY_SIZE(seq), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return -ENOMEM;
 	err = usb_interrupt_msg(dev, usb_sndintpipe(dev, 0x05), buf,
@@ -1034,13 +851,9 @@ static int snd_usb_accessmusic_boot_quirk(struct usb_device *dev)
 
 static int snd_usb_nativeinstruments_boot_quirk(struct usb_device *dev)
 {
-<<<<<<< HEAD
-	int ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
-=======
 	int ret;
 
 	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  0xaf, USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 				  1, 0, NULL, 0, 1000);
 
@@ -1055,8 +868,6 @@ static int snd_usb_nativeinstruments_boot_quirk(struct usb_device *dev)
 	return -EAGAIN;
 }
 
-<<<<<<< HEAD
-=======
 static void mbox2_setup_48_24_magic(struct usb_device *dev)
 {
 	u8 srate[3];
@@ -1581,23 +1392,12 @@ static int snd_usb_motu_m_series_boot_quirk(struct usb_device *dev)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup quirks
  */
 #define MAUDIO_SET		0x01 /* parse device_setup */
 #define MAUDIO_SET_COMPATIBLE	0x80 /* use only "win-compatible" interfaces */
 #define MAUDIO_SET_DTS		0x02 /* enable DTS Digital Output */
-<<<<<<< HEAD
-#define MAUDIO_SET_96K		0x04 /* 48-96KHz rate if set, 8-48KHz otherwise */
-#define MAUDIO_SET_24B		0x08 /* 24bits sample if set, 16bits otherwise */
-#define MAUDIO_SET_DI		0x10 /* enable Digital Input */
-#define MAUDIO_SET_MASK		0x1f /* bit mask for setup value */
-#define MAUDIO_SET_24B_48K_DI	 0x19 /* 24bits+48KHz+Digital Input */
-#define MAUDIO_SET_24B_48K_NOTDI 0x09 /* 24bits+48KHz+No Digital Input */
-#define MAUDIO_SET_16B_48K_DI	 0x11 /* 16bits+48KHz+Digital Input */
-#define MAUDIO_SET_16B_48K_NOTDI 0x01 /* 16bits+48KHz+No Digital Input */
-=======
 #define MAUDIO_SET_96K		0x04 /* 48-96kHz rate if set, 8-48kHz otherwise */
 #define MAUDIO_SET_24B		0x08 /* 24bits sample if set, 16bits otherwise */
 #define MAUDIO_SET_DI		0x10 /* enable Digital Input */
@@ -1606,7 +1406,6 @@ static int snd_usb_motu_m_series_boot_quirk(struct usb_device *dev)
 #define MAUDIO_SET_24B_48K_NOTDI 0x09 /* 24bits+48kHz+No Digital Input */
 #define MAUDIO_SET_16B_48K_DI	 0x11 /* 16bits+48kHz+Digital Input */
 #define MAUDIO_SET_16B_48K_NOTDI 0x01 /* 16bits+48kHz+No Digital Input */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int quattro_skip_setting_quirk(struct snd_usb_audio *chip,
 				      int iface, int altno)
@@ -1634,11 +1433,7 @@ static int quattro_skip_setting_quirk(struct snd_usb_audio *chip,
 				return 1; /* skip this altsetting */
 		}
 	}
-<<<<<<< HEAD
-	snd_printdd(KERN_INFO
-=======
 	usb_audio_dbg(chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "using altsetting %d for interface %d config %d\n",
 		    altno, iface, chip->setup);
 	return 0; /* keep this altsetting */
@@ -1673,10 +1468,6 @@ static int audiophile_skip_setting_quirk(struct snd_usb_audio *chip,
 	return 0; /* keep this altsetting */
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fasttrackpro_skip_setting_quirk(struct snd_usb_audio *chip,
 					   int iface, int altno)
 {
@@ -1709,18 +1500,12 @@ static int fasttrackpro_skip_setting_quirk(struct snd_usb_audio *chip,
 			return 1;
 	}
 
-<<<<<<< HEAD
-	snd_printdd(KERN_INFO
-=======
 	usb_audio_dbg(chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "using altsetting %d for interface %d config %d\n",
 		    altno, iface, chip->setup);
 	return 0; /* keep this altsetting */
 }
 
-<<<<<<< HEAD
-=======
 static int s1810c_skip_setting_quirk(struct snd_usb_audio *chip,
 					   int iface, int altno)
 {
@@ -1753,7 +1538,6 @@ static int s1810c_skip_setting_quirk(struct snd_usb_audio *chip,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_usb_apply_interface_quirk(struct snd_usb_audio *chip,
 				  int iface,
 				  int altno)
@@ -1767,30 +1551,19 @@ int snd_usb_apply_interface_quirk(struct snd_usb_audio *chip,
 	/* fasttrackpro usb: skip altsets incompatible with device_setup */
 	if (chip->usb_id == USB_ID(0x0763, 0x2012))
 		return fasttrackpro_skip_setting_quirk(chip, iface, altno);
-<<<<<<< HEAD
-=======
 	/* presonus studio 1810c: skip altsets incompatible with device_setup */
 	if (chip->usb_id == USB_ID(0x194f, 0x010c))
 		return s1810c_skip_setting_quirk(chip, iface, altno);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 int snd_usb_apply_boot_quirk(struct usb_device *dev,
 			     struct usb_interface *intf,
-<<<<<<< HEAD
-			     const struct snd_usb_audio_quirk *quirk)
-{
-	u32 id = USB_ID(le16_to_cpu(dev->descriptor.idVendor),
-			le16_to_cpu(dev->descriptor.idProduct));
-
-=======
 			     const struct snd_usb_audio_quirk *quirk,
 			     unsigned int id)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (id) {
 	case USB_ID(0x041e, 0x3000):
 		/* SB Extigy needs special boot-up sequence */
@@ -1810,8 +1583,6 @@ int snd_usb_apply_boot_quirk(struct usb_device *dev,
 	case USB_ID(0x0ccd, 0x00b1): /* Terratec Aureon 7.1 USB */
 		return snd_usb_cm6206_boot_quirk(dev);
 
-<<<<<<< HEAD
-=======
 	case USB_ID(0x0dba, 0x3000):
 		/* Digidesign Mbox 2 */
 		return snd_usb_mbox2_boot_quirk(dev);
@@ -1824,7 +1595,6 @@ int snd_usb_apply_boot_quirk(struct usb_device *dev,
 	case USB_ID(0x1235, 0x0018): /* Focusrite Novation Twitch */
 		return snd_usb_novation_boot_quirk(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case USB_ID(0x133e, 0x0815):
 		/* Access Music VirusTI Desktop */
 		return snd_usb_accessmusic_boot_quirk(dev);
@@ -1835,8 +1605,6 @@ int snd_usb_apply_boot_quirk(struct usb_device *dev,
 		return snd_usb_nativeinstruments_boot_quirk(dev);
 	case USB_ID(0x0763, 0x2012):  /* M-Audio Fast Track Pro USB */
 		return snd_usb_fasttrackpro_boot_quirk(dev);
-<<<<<<< HEAD
-=======
 	case USB_ID(0x047f, 0xc010): /* Plantronics Gamecom 780 */
 		return snd_usb_gamecon780_boot_quirk(dev);
 	case USB_ID(0x2466, 0x8010): /* Fractal Audio Axe-Fx 3 */
@@ -1864,7 +1632,6 @@ int snd_usb_apply_boot_quirk_once(struct usb_device *dev,
 	switch (id) {
 	case USB_ID(0x07fd, 0x0008): /* MOTU M Series, 1st hardware version */
 		return snd_usb_motu_m_series_boot_quirk(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1873,16 +1640,10 @@ int snd_usb_apply_boot_quirk_once(struct usb_device *dev,
 /*
  * check if the device uses big-endian samples
  */
-<<<<<<< HEAD
-int snd_usb_is_big_endian_format(struct snd_usb_audio *chip, struct audioformat *fp)
-{
-	/* it depends on altsetting wether the device is big-endian or not */
-=======
 int snd_usb_is_big_endian_format(struct snd_usb_audio *chip,
 				 const struct audioformat *fp)
 {
 	/* it depends on altsetting whether the device is big-endian or not */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (chip->usb_id) {
 	case USB_ID(0x0763, 0x2001): /* M-Audio Quattro: captured data only */
 		if (fp->altsetting == 2 || fp->altsetting == 3 ||
@@ -1919,11 +1680,7 @@ enum {
 };
 
 static void set_format_emu_quirk(struct snd_usb_substream *subs,
-<<<<<<< HEAD
-				 struct audioformat *fmt)
-=======
 				 const struct audioformat *fmt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char emu_samplerate_id = 0;
 
@@ -1932,11 +1689,7 @@ static void set_format_emu_quirk(struct snd_usb_substream *subs,
 	 * by playback substream
 	 */
 	if (subs->direction == SNDRV_PCM_STREAM_PLAYBACK) {
-<<<<<<< HEAD
-		if (subs->stream->substream[SNDRV_PCM_STREAM_CAPTURE].interface != -1)
-=======
 		if (subs->stream->substream[SNDRV_PCM_STREAM_CAPTURE].cur_audiofmt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 	}
 
@@ -1964,10 +1717,6 @@ static void set_format_emu_quirk(struct snd_usb_substream *subs,
 	subs->pkt_offset_adj = (emu_samplerate_id >= EMU_QUIRK_SR_176400HZ) ? 4 : 0;
 }
 
-<<<<<<< HEAD
-void snd_usb_set_format_quirk(struct snd_usb_substream *subs,
-			      struct audioformat *fmt)
-=======
 static int pioneer_djm_set_format_quirk(struct snd_usb_substream *subs,
 					u16 windex)
 {
@@ -1987,7 +1736,6 @@ static int pioneer_djm_set_format_quirk(struct snd_usb_substream *subs,
 
 void snd_usb_set_format_quirk(struct snd_usb_substream *subs,
 			      const struct audioformat *fmt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (subs->stream->chip->usb_id) {
 	case USB_ID(0x041e, 0x3f02): /* E-Mu 0202 USB */
@@ -1996,11 +1744,6 @@ void snd_usb_set_format_quirk(struct snd_usb_substream *subs,
 	case USB_ID(0x041e, 0x3f19): /* E-Mu 0204 USB */
 		set_format_emu_quirk(subs, fmt);
 		break;
-<<<<<<< HEAD
-	}
-}
-
-=======
 	case USB_ID(0x534d, 0x0021): /* MacroSilicon MS2100/MS2106 */
 	case USB_ID(0x534d, 0x2109): /* MacroSilicon MS2109 */
 		subs->stream_offset_adj = 2;
@@ -2518,4 +2261,3 @@ void snd_usb_init_quirk_flags(struct snd_usb_audio *chip)
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: memchr.S,v 1.1 2000/04/14 16:49:01 mjd Exp $
  *
  * "memchr" implementation of SuperH

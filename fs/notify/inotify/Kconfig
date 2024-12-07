@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-config INOTIFY_USER
-	bool "Inotify support for userspace"
-	select ANON_INODES
-	select FSNOTIFY
-	default y
-	---help---
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config INOTIFY_USER
 	bool "Inotify support for userspace"
 	select FSNOTIFY
 	default y
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to enable inotify support for userspace, including the
 	  associated system calls.  Inotify allows monitoring of both files and
 	  directories via a single open fd.  Events are read from the file
@@ -21,10 +12,6 @@ config INOTIFY_USER
 	  new features including multiple file events, one-shot support, and
 	  unmount notification.
 
-<<<<<<< HEAD
-	  For more information, see <file:Documentation/filesystems/inotify.txt>
-=======
 	  For more information, see <file:Documentation/filesystems/inotify.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say Y.

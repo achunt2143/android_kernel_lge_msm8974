@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * ALSA SoC WM9090 driver
- *
- * Copyright 2009, 2010 Wolfson Microelectronics
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * ALSA SoC WM9090 driver
@@ -27,7 +5,6 @@
  * Copyright 2009-12 Wolfson Microelectronics
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -153,57 +130,22 @@ static bool wm9090_readable(struct device *dev, unsigned int reg)
 	}
 }
 
-<<<<<<< HEAD
-static void wait_for_dc_servo(struct snd_soc_codec *codec)
-=======
 static void wait_for_dc_servo(struct snd_soc_component *component)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int reg;
 	int count = 0;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Waiting for DC servo...\n");
-	do {
-		count++;
-		msleep(1);
-		reg = snd_soc_read(codec, WM9090_DC_SERVO_READBACK_0);
-		dev_dbg(codec->dev, "DC servo status: %x\n", reg);
-=======
 	dev_dbg(component->dev, "Waiting for DC servo...\n");
 	do {
 		count++;
 		msleep(1);
 		reg = snd_soc_component_read(component, WM9090_DC_SERVO_READBACK_0);
 		dev_dbg(component->dev, "DC servo status: %x\n", reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((reg & WM9090_DCS_CAL_COMPLETE_MASK)
 		 != WM9090_DCS_CAL_COMPLETE_MASK && count < 1000);
 
 	if ((reg & WM9090_DCS_CAL_COMPLETE_MASK)
 	    != WM9090_DCS_CAL_COMPLETE_MASK)
-<<<<<<< HEAD
-		dev_err(codec->dev, "Timed out waiting for DC Servo\n");
-}
-
-static const unsigned int in_tlv[] = {
-	TLV_DB_RANGE_HEAD(3),
-	0, 0, TLV_DB_SCALE_ITEM(-600, 0, 0),
-	1, 3, TLV_DB_SCALE_ITEM(-350, 350, 0),
-	4, 6, TLV_DB_SCALE_ITEM(600, 600, 0),
-};
-static const unsigned int mix_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0, 2, TLV_DB_SCALE_ITEM(-1200, 300, 0),
-	3, 3, TLV_DB_SCALE_ITEM(0, 0, 0),
-};
-static const DECLARE_TLV_DB_SCALE(out_tlv, -5700, 100, 0);
-static const unsigned int spkboost_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0, 6, TLV_DB_SCALE_ITEM(0, 150, 0),
-	7, 7, TLV_DB_SCALE_ITEM(1200, 0, 0),
-};
-=======
 		dev_err(component->dev, "Timed out waiting for DC Servo\n");
 }
 
@@ -221,7 +163,6 @@ static const DECLARE_TLV_DB_RANGE(spkboost_tlv,
 	0, 6, TLV_DB_SCALE_ITEM(0, 150, 0),
 	7, 7, TLV_DB_SCALE_ITEM(1200, 0, 0)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new wm9090_controls[] = {
 SOC_SINGLE_TLV("IN1A Volume", WM9090_IN1_LINE_INPUT_A_VOLUME, 0, 6, 0,
@@ -297,39 +238,22 @@ SOC_SINGLE_TLV("MIXOUTR IN2B Volume", WM9090_OUTPUT_MIXER4, 0, 3, 1,
 static int hp_ev(struct snd_soc_dapm_widget *w,
 		 struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-	unsigned int reg = snd_soc_read(codec, WM9090_ANALOGUE_HP_0);
-
-	switch (event) {
-	case SND_SOC_DAPM_POST_PMU:
-		snd_soc_update_bits(codec, WM9090_CHARGE_PUMP_1,
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	unsigned int reg = snd_soc_component_read(component, WM9090_ANALOGUE_HP_0);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		snd_soc_component_update_bits(component, WM9090_CHARGE_PUMP_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_CP_ENA, WM9090_CP_ENA);
 
 		msleep(5);
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_1,
-=======
 		snd_soc_component_update_bits(component, WM9090_POWER_MANAGEMENT_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_HPOUT1L_ENA | WM9090_HPOUT1R_ENA,
 				    WM9090_HPOUT1L_ENA | WM9090_HPOUT1R_ENA);
 
 		reg |= WM9090_HPOUT1L_DLY | WM9090_HPOUT1R_DLY;
-<<<<<<< HEAD
-		snd_soc_write(codec, WM9090_ANALOGUE_HP_0, reg);
-=======
 		snd_soc_component_write(component, WM9090_ANALOGUE_HP_0, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Start the DC servo.  We don't currently use the
 		 * ability to save the state since we don't have full
@@ -337,28 +261,16 @@ static int hp_ev(struct snd_soc_dapm_widget *w,
 		 * DC offsets; see the WM8904 driver for an example of
 		 * doing so.
 		 */
-<<<<<<< HEAD
-		snd_soc_write(codec, WM9090_DC_SERVO_0,
-=======
 		snd_soc_component_write(component, WM9090_DC_SERVO_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      WM9090_DCS_ENA_CHAN_0 |
 			      WM9090_DCS_ENA_CHAN_1 |
 			      WM9090_DCS_TRIG_STARTUP_1 |
 			      WM9090_DCS_TRIG_STARTUP_0);
-<<<<<<< HEAD
-		wait_for_dc_servo(codec);
-
-		reg |= WM9090_HPOUT1R_OUTP | WM9090_HPOUT1R_RMV_SHORT |
-			WM9090_HPOUT1L_OUTP | WM9090_HPOUT1L_RMV_SHORT;
-		snd_soc_write(codec, WM9090_ANALOGUE_HP_0, reg);
-=======
 		wait_for_dc_servo(component);
 
 		reg |= WM9090_HPOUT1R_OUTP | WM9090_HPOUT1R_RMV_SHORT |
 			WM9090_HPOUT1L_OUTP | WM9090_HPOUT1L_RMV_SHORT;
 		snd_soc_component_write(component, WM9090_ANALOGUE_HP_0, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
@@ -369,17 +281,6 @@ static int hp_ev(struct snd_soc_dapm_widget *w,
 			 WM9090_HPOUT1R_DLY |
 			 WM9090_HPOUT1R_OUTP);
 
-<<<<<<< HEAD
-		snd_soc_write(codec, WM9090_ANALOGUE_HP_0, reg);
-
-		snd_soc_write(codec, WM9090_DC_SERVO_0, 0);
-
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_1,
-				    WM9090_HPOUT1L_ENA | WM9090_HPOUT1R_ENA,
-				    0);
-
-		snd_soc_update_bits(codec, WM9090_CHARGE_PUMP_1,
-=======
 		snd_soc_component_write(component, WM9090_ANALOGUE_HP_0, reg);
 
 		snd_soc_component_write(component, WM9090_DC_SERVO_0, 0);
@@ -389,7 +290,6 @@ static int hp_ev(struct snd_soc_dapm_widget *w,
 				    0);
 
 		snd_soc_component_update_bits(component, WM9090_CHARGE_PUMP_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_CP_ENA, 0);
 		break;
 	}
@@ -506,17 +406,10 @@ static const struct snd_soc_dapm_route audio_map_in2_diff[] = {
 	{ "IN2A PGA", NULL, "IN2-" },	
 };
 
-<<<<<<< HEAD
-static int wm9090_add_controls(struct snd_soc_codec *codec)
-{
-	struct wm9090_priv *wm9090 = snd_soc_codec_get_drvdata(codec);
-	struct snd_soc_dapm_context *dapm = &codec->dapm;
-=======
 static int wm9090_add_controls(struct snd_soc_component *component)
 {
 	struct wm9090_priv *wm9090 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	snd_soc_dapm_new_controls(dapm, wm9090_dapm_widgets,
@@ -524,11 +417,7 @@ static int wm9090_add_controls(struct snd_soc_component *component)
 
 	snd_soc_dapm_add_routes(dapm, audio_map, ARRAY_SIZE(audio_map));
 
-<<<<<<< HEAD
-	snd_soc_add_codec_controls(codec, wm9090_controls,
-=======
 	snd_soc_add_component_controls(component, wm9090_controls,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     ARRAY_SIZE(wm9090_controls));
 
 	if (wm9090->pdata.lin1_diff) {
@@ -537,11 +426,7 @@ static int wm9090_add_controls(struct snd_soc_component *component)
 	} else {
 		snd_soc_dapm_add_routes(dapm, audio_map_in1_se,
 					ARRAY_SIZE(audio_map_in1_se));
-<<<<<<< HEAD
-		snd_soc_add_codec_controls(codec, wm9090_in1_se_controls,
-=======
 		snd_soc_add_component_controls(component, wm9090_in1_se_controls,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm9090_in1_se_controls));
 	}
 
@@ -551,31 +436,18 @@ static int wm9090_add_controls(struct snd_soc_component *component)
 	} else {
 		snd_soc_dapm_add_routes(dapm, audio_map_in2_se,
 					ARRAY_SIZE(audio_map_in2_se));
-<<<<<<< HEAD
-		snd_soc_add_codec_controls(codec, wm9090_in2_se_controls,
-=======
 		snd_soc_add_component_controls(component, wm9090_in2_se_controls,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm9090_in2_se_controls));
 	}
 
 	if (wm9090->pdata.agc_ena) {
 		for (i = 0; i < ARRAY_SIZE(wm9090->pdata.agc); i++)
-<<<<<<< HEAD
-			snd_soc_write(codec, WM9090_AGC_CONTROL_0 + i,
-				      wm9090->pdata.agc[i]);
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_3,
-				    WM9090_AGC_ENA, WM9090_AGC_ENA);
-	} else {
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_3,
-=======
 			snd_soc_component_write(component, WM9090_AGC_CONTROL_0 + i,
 				      wm9090->pdata.agc[i]);
 		snd_soc_component_update_bits(component, WM9090_POWER_MANAGEMENT_3,
 				    WM9090_AGC_ENA, WM9090_AGC_ENA);
 	} else {
 		snd_soc_component_update_bits(component, WM9090_POWER_MANAGEMENT_3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_AGC_ENA, 0);
 	}
 
@@ -587,32 +459,19 @@ static int wm9090_add_controls(struct snd_soc_component *component)
  * The machine driver should call this from their set_bias_level; if there
  * isn't one then this can just be set as the set_bias_level function.
  */
-<<<<<<< HEAD
-static int wm9090_set_bias_level(struct snd_soc_codec *codec,
-				 enum snd_soc_bias_level level)
-{
-	struct wm9090_priv *wm9090 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm9090_set_bias_level(struct snd_soc_component *component,
 				 enum snd_soc_bias_level level)
 {
 	struct wm9090_priv *wm9090 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM9090_ANTIPOP2, WM9090_VMID_ENA,
-				    WM9090_VMID_ENA);
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_1,
-=======
 		snd_soc_component_update_bits(component, WM9090_ANTIPOP2, WM9090_VMID_ENA,
 				    WM9090_VMID_ENA);
 		snd_soc_component_update_bits(component, WM9090_POWER_MANAGEMENT_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_BIAS_ENA |
 				    WM9090_VMID_RES_MASK,
 				    WM9090_BIAS_ENA |
@@ -621,11 +480,7 @@ static int wm9090_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-=======
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Restore the register cache */
 			regcache_sync(wm9090->regmap);
 		}
@@ -634,15 +489,9 @@ static int wm9090_set_bias_level(struct snd_soc_component *component,
 		 * ground referenced outputs and class D speaker mean that
 		 * latency is not an issue.
 		 */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM9090_POWER_MANAGEMENT_1,
-				    WM9090_BIAS_ENA | WM9090_VMID_RES_MASK, 0);
-		snd_soc_update_bits(codec, WM9090_ANTIPOP2,
-=======
 		snd_soc_component_update_bits(component, WM9090_POWER_MANAGEMENT_1,
 				    WM9090_BIAS_ENA | WM9090_VMID_RES_MASK, 0);
 		snd_soc_component_update_bits(component, WM9090_ANTIPOP2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM9090_VMID_ENA, 0);
 		break;
 
@@ -650,56 +499,6 @@ static int wm9090_set_bias_level(struct snd_soc_component *component,
 		break;
 	}
 
-<<<<<<< HEAD
-	codec->dapm.bias_level = level;
-
-	return 0;
-}
-
-static int wm9090_probe(struct snd_soc_codec *codec)
-{
-	struct wm9090_priv *wm9090 = dev_get_drvdata(codec->dev);
-	int ret;
-
-	codec->control_data = wm9090->regmap;
-	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_REGMAP);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	/* Configure some defaults; they will be written out when we
-	 * bring the bias up.
-	 */
-	snd_soc_update_bits(codec, WM9090_IN1_LINE_INPUT_A_VOLUME,
-			    WM9090_IN1_VU | WM9090_IN1A_ZC,
-			    WM9090_IN1_VU | WM9090_IN1A_ZC);
-	snd_soc_update_bits(codec, WM9090_IN1_LINE_INPUT_B_VOLUME,
-			    WM9090_IN1_VU | WM9090_IN1B_ZC,
-			    WM9090_IN1_VU | WM9090_IN1B_ZC);
-	snd_soc_update_bits(codec, WM9090_IN2_LINE_INPUT_A_VOLUME,
-			    WM9090_IN2_VU | WM9090_IN2A_ZC,
-			    WM9090_IN2_VU | WM9090_IN2A_ZC);
-	snd_soc_update_bits(codec, WM9090_IN2_LINE_INPUT_B_VOLUME,
-			    WM9090_IN2_VU | WM9090_IN2B_ZC,
-			    WM9090_IN2_VU | WM9090_IN2B_ZC);
-	snd_soc_update_bits(codec, WM9090_SPEAKER_VOLUME_LEFT,
-			    WM9090_SPKOUT_VU | WM9090_SPKOUTL_ZC,
-			    WM9090_SPKOUT_VU | WM9090_SPKOUTL_ZC);
-	snd_soc_update_bits(codec, WM9090_LEFT_OUTPUT_VOLUME,
-			    WM9090_HPOUT1_VU | WM9090_HPOUT1L_ZC,
-			    WM9090_HPOUT1_VU | WM9090_HPOUT1L_ZC);
-	snd_soc_update_bits(codec, WM9090_RIGHT_OUTPUT_VOLUME,
-			    WM9090_HPOUT1_VU | WM9090_HPOUT1R_ZC,
-			    WM9090_HPOUT1_VU | WM9090_HPOUT1R_ZC);
-
-	snd_soc_update_bits(codec, WM9090_CLOCKING_1,
-			    WM9090_TOCLK_ENA, WM9090_TOCLK_ENA);
-
-	wm9090_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	wm9090_add_controls(codec);
-=======
 	return 0;
 }
 
@@ -734,52 +533,16 @@ static int wm9090_probe(struct snd_soc_component *component)
 			    WM9090_TOCLK_ENA, WM9090_TOCLK_ENA);
 
 	wm9090_add_controls(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int wm9090_suspend(struct snd_soc_codec *codec)
-{
-	wm9090_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	return 0;
-}
-
-static int wm9090_resume(struct snd_soc_codec *codec)
-{
-	wm9090_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	return 0;
-}
-#else
-#define wm9090_suspend NULL
-#define wm9090_resume NULL
-#endif
-
-static int wm9090_remove(struct snd_soc_codec *codec)
-{
-	wm9090_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm9090 = {
-	.probe = 	wm9090_probe,
-	.remove = 	wm9090_remove,
-	.suspend = 	wm9090_suspend,
-	.resume =	wm9090_resume,
-	.set_bias_level = wm9090_set_bias_level,
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm9090 = {
 	.probe			= wm9090_probe,
 	.set_bias_level		= wm9090_set_bias_level,
 	.suspend_bias_off	= 1,
 	.idle_bias_on		= 1,
 	.use_pmdown_time	= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct regmap_config wm9090_regmap = {
@@ -790,41 +553,23 @@ static const struct regmap_config wm9090_regmap = {
 	.volatile_reg = wm9090_volatile,
 	.readable_reg = wm9090_readable,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_defaults = wm9090_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm9090_reg_defaults),
 };
 
 
-<<<<<<< HEAD
-static int wm9090_i2c_probe(struct i2c_client *i2c,
-			    const struct i2c_device_id *id)
-=======
 static int wm9090_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm9090_priv *wm9090;
 	unsigned int reg;
 	int ret;
 
 	wm9090 = devm_kzalloc(&i2c->dev, sizeof(*wm9090), GFP_KERNEL);
-<<<<<<< HEAD
-	if (wm9090 == NULL) {
-		dev_err(&i2c->dev, "Can not allocate memory\n");
-		return -ENOMEM;
-	}
-
-	wm9090->regmap = regmap_init_i2c(i2c, &wm9090_regmap);
-=======
 	if (!wm9090)
 		return -ENOMEM;
 
 	wm9090->regmap = devm_regmap_init_i2c(i2c, &wm9090_regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm9090->regmap)) {
 		ret = PTR_ERR(wm9090->regmap);
 		dev_err(&i2c->dev, "Failed to allocate regmap: %d\n", ret);
@@ -833,28 +578,16 @@ static int wm9090_i2c_probe(struct i2c_client *i2c)
 
 	ret = regmap_read(wm9090->regmap, WM9090_SOFTWARE_RESET, &reg);
 	if (ret < 0)
-<<<<<<< HEAD
-		goto err;
-	if (reg != 0x9093) {
-		dev_err(&i2c->dev, "Device is not a WM9090, ID=%x\n", reg);
-		ret = -ENODEV;
-		goto err;
-=======
 		return ret;
 
 	if (reg != 0x9093) {
 		dev_err(&i2c->dev, "Device is not a WM9090, ID=%x\n", reg);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regmap_write(wm9090->regmap, WM9090_SOFTWARE_RESET, 0);
 	if (ret < 0)
-<<<<<<< HEAD
-		goto err;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i2c->dev.platform_data)
 		memcpy(&wm9090->pdata, i2c->dev.platform_data,
@@ -862,30 +595,6 @@ static int wm9090_i2c_probe(struct i2c_client *i2c)
 
 	i2c_set_clientdata(i2c, wm9090);
 
-<<<<<<< HEAD
-	ret =  snd_soc_register_codec(&i2c->dev,
-			&soc_codec_dev_wm9090,  NULL, 0);
-	if (ret != 0) {
-		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
-		goto err;
-	}
-
-	return 0;
-
-err:
-	regmap_exit(wm9090->regmap);
-	return ret;
-}
-
-static int __devexit wm9090_i2c_remove(struct i2c_client *i2c)
-{
-	struct wm9090_priv *wm9090 = i2c_get_clientdata(i2c);
-
-	snd_soc_unregister_codec(&i2c->dev);
-	regmap_exit(wm9090->regmap);
-
-	return 0;
-=======
 	ret =  devm_snd_soc_register_component(&i2c->dev,
 			&soc_component_dev_wm9090,  NULL, 0);
 	if (ret != 0) {
@@ -894,7 +603,6 @@ static int __devexit wm9090_i2c_remove(struct i2c_client *i2c)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm9090_id[] = {
@@ -907,33 +615,12 @@ MODULE_DEVICE_TABLE(i2c, wm9090_id);
 static struct i2c_driver wm9090_i2c_driver = {
 	.driver = {
 		.name = "wm9090",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = wm9090_i2c_probe,
-	.remove = __devexit_p(wm9090_i2c_remove),
-	.id_table = wm9090_id,
-};
-
-static int __init wm9090_init(void)
-{
-	return i2c_add_driver(&wm9090_i2c_driver);
-}
-module_init(wm9090_init);
-
-static void __exit wm9090_exit(void)
-{
-	i2c_del_driver(&wm9090_i2c_driver);
-}
-module_exit(wm9090_exit);
-=======
 	},
 	.probe = wm9090_i2c_probe,
 	.id_table = wm9090_id,
 };
 
 module_i2c_driver(wm9090_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("WM9090 ASoC driver");

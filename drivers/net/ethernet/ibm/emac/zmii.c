@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/zmii.c
  *
@@ -18,25 +15,13 @@
  * Based on original work by
  *      Armin Kuster <akuster@mvista.com>
  * 	Copyright 2001 MontaVista Softare Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
-<<<<<<< HEAD
-=======
 #include <linux/mod_devicetable.h>
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include "emac.h"
@@ -61,35 +46,20 @@
  */
 static inline int zmii_valid_mode(int mode)
 {
-<<<<<<< HEAD
-	return  mode == PHY_MODE_MII ||
-		mode == PHY_MODE_RMII ||
-		mode == PHY_MODE_SMII ||
-		mode == PHY_MODE_NA;
-=======
 	return  mode == PHY_INTERFACE_MODE_MII ||
 		mode == PHY_INTERFACE_MODE_RMII ||
 		mode == PHY_INTERFACE_MODE_SMII ||
 		mode == PHY_INTERFACE_MODE_NA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline const char *zmii_mode_name(int mode)
 {
 	switch (mode) {
-<<<<<<< HEAD
-	case PHY_MODE_MII:
-		return "MII";
-	case PHY_MODE_RMII:
-		return "RMII";
-	case PHY_MODE_SMII:
-=======
 	case PHY_INTERFACE_MODE_MII:
 		return "MII";
 	case PHY_INTERFACE_MODE_RMII:
 		return "RMII";
 	case PHY_INTERFACE_MODE_SMII:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return "SMII";
 	default:
 		BUG();
@@ -99,35 +69,21 @@ static inline const char *zmii_mode_name(int mode)
 static inline u32 zmii_mode_mask(int mode, int input)
 {
 	switch (mode) {
-<<<<<<< HEAD
-	case PHY_MODE_MII:
-		return ZMII_FER_MII(input);
-	case PHY_MODE_RMII:
-		return ZMII_FER_RMII(input);
-	case PHY_MODE_SMII:
-=======
 	case PHY_INTERFACE_MODE_MII:
 		return ZMII_FER_MII(input);
 	case PHY_INTERFACE_MODE_RMII:
 		return ZMII_FER_RMII(input);
 	case PHY_INTERFACE_MODE_SMII:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ZMII_FER_SMII(input);
 	default:
 		return 0;
 	}
 }
 
-<<<<<<< HEAD
-int __devinit zmii_attach(struct platform_device *ofdev, int input, int *mode)
-{
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 int zmii_attach(struct platform_device *ofdev, int input,
 		phy_interface_t *mode)
 {
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zmii_regs __iomem *p = dev->base;
 
 	ZMII_DBG(dev, "init(%d, %d)" NL, input, *mode);
@@ -148,37 +104,13 @@ int zmii_attach(struct platform_device *ofdev, int input,
 	 * Please, always specify PHY mode in your board port to avoid
 	 * any surprises.
 	 */
-<<<<<<< HEAD
-	if (dev->mode == PHY_MODE_NA) {
-		if (*mode == PHY_MODE_NA) {
-=======
 	if (dev->mode == PHY_INTERFACE_MODE_NA) {
 		if (*mode == PHY_INTERFACE_MODE_NA) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u32 r = dev->fer_save;
 
 			ZMII_DBG(dev, "autodetecting mode, FER = 0x%08x" NL, r);
 
 			if (r & (ZMII_FER_MII(0) | ZMII_FER_MII(1)))
-<<<<<<< HEAD
-				dev->mode = PHY_MODE_MII;
-			else if (r & (ZMII_FER_RMII(0) | ZMII_FER_RMII(1)))
-				dev->mode = PHY_MODE_RMII;
-			else
-				dev->mode = PHY_MODE_SMII;
-		} else
-			dev->mode = *mode;
-
-		printk(KERN_NOTICE "%s: bridge in %s mode\n",
-		       ofdev->dev.of_node->full_name,
-		       zmii_mode_name(dev->mode));
-	} else {
-		/* All inputs must use the same mode */
-		if (*mode != PHY_MODE_NA && *mode != dev->mode) {
-			printk(KERN_ERR
-			       "%s: invalid mode %d specified for input %d\n",
-			       ofdev->dev.of_node->full_name, *mode, input);
-=======
 				dev->mode = PHY_INTERFACE_MODE_MII;
 			else if (r & (ZMII_FER_RMII(0) | ZMII_FER_RMII(1)))
 				dev->mode = PHY_INTERFACE_MODE_RMII;
@@ -196,7 +128,6 @@ int zmii_attach(struct platform_device *ofdev, int input,
 			printk(KERN_ERR
 			       "%pOF: invalid mode %d specified for input %d\n",
 			       ofdev->dev.of_node, *mode, input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&dev->lock);
 			return -EINVAL;
 		}
@@ -218,11 +149,7 @@ int zmii_attach(struct platform_device *ofdev, int input,
 
 void zmii_get_mdio(struct platform_device *ofdev, int input)
 {
-<<<<<<< HEAD
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 fer;
 
 	ZMII_DBG2(dev, "get_mdio(%d)" NL, input);
@@ -235,11 +162,7 @@ void zmii_get_mdio(struct platform_device *ofdev, int input)
 
 void zmii_put_mdio(struct platform_device *ofdev, int input)
 {
-<<<<<<< HEAD
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ZMII_DBG2(dev, "put_mdio(%d)" NL, input);
 	mutex_unlock(&dev->lock);
@@ -248,11 +171,7 @@ void zmii_put_mdio(struct platform_device *ofdev, int input)
 
 void zmii_set_speed(struct platform_device *ofdev, int input, int speed)
 {
-<<<<<<< HEAD
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ssr;
 
 	mutex_lock(&dev->lock);
@@ -273,11 +192,7 @@ void zmii_set_speed(struct platform_device *ofdev, int input, int speed)
 
 void zmii_detach(struct platform_device *ofdev, int input)
 {
-<<<<<<< HEAD
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!dev || dev->users == 0);
 
@@ -302,11 +217,7 @@ int zmii_get_regs_len(struct platform_device *ofdev)
 
 void *zmii_dump_regs(struct platform_device *ofdev, void *buf)
 {
-<<<<<<< HEAD
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-=======
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct emac_ethtool_regs_subhdr *hdr = buf;
 	struct zmii_regs *regs = (struct zmii_regs *)(hdr + 1);
 
@@ -319,11 +230,7 @@ void *zmii_dump_regs(struct platform_device *ofdev, void *buf)
 	return regs + 1;
 }
 
-<<<<<<< HEAD
-static int __devinit zmii_probe(struct platform_device *ofdev)
-=======
 static int zmii_probe(struct platform_device *ofdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np = ofdev->dev.of_node;
 	struct zmii_instance *dev;
@@ -337,20 +244,11 @@ static int zmii_probe(struct platform_device *ofdev)
 
 	mutex_init(&dev->lock);
 	dev->ofdev = ofdev;
-<<<<<<< HEAD
-	dev->mode = PHY_MODE_NA;
-
-	rc = -ENXIO;
-	if (of_address_to_resource(np, 0, &regs)) {
-		printk(KERN_ERR "%s: Can't get registers address\n",
-		       np->full_name);
-=======
 	dev->mode = PHY_INTERFACE_MODE_NA;
 
 	rc = -ENXIO;
 	if (of_address_to_resource(np, 0, &regs)) {
 		printk(KERN_ERR "%pOF: Can't get registers address\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 
@@ -358,12 +256,7 @@ static int zmii_probe(struct platform_device *ofdev)
 	dev->base = (struct zmii_regs __iomem *)ioremap(regs.start,
 						sizeof(struct zmii_regs));
 	if (dev->base == NULL) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: Can't map device registers!\n",
-		       np->full_name);
-=======
 		printk(KERN_ERR "%pOF: Can't map device registers!\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 
@@ -373,16 +266,9 @@ static int zmii_probe(struct platform_device *ofdev)
 	/* Disable all inputs by default */
 	out_be32(&dev->base->fer, 0);
 
-<<<<<<< HEAD
-	printk(KERN_INFO
-	       "ZMII %s initialized\n", ofdev->dev.of_node->full_name);
-	wmb();
-	dev_set_drvdata(&ofdev->dev, dev);
-=======
 	printk(KERN_INFO "ZMII %pOF initialized\n", ofdev->dev.of_node);
 	wmb();
 	platform_set_drvdata(ofdev, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -392,33 +278,17 @@ static int zmii_probe(struct platform_device *ofdev)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int __devexit zmii_remove(struct platform_device *ofdev)
-{
-	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
-
-	dev_set_drvdata(&ofdev->dev, NULL);
-=======
 static void zmii_remove(struct platform_device *ofdev)
 {
 	struct zmii_instance *dev = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(dev->users != 0);
 
 	iounmap(dev->base);
 	kfree(dev);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static struct of_device_id zmii_match[] =
-=======
 }
 
 static const struct of_device_id zmii_match[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.compatible	= "ibm,zmii",
@@ -433,18 +303,10 @@ static const struct of_device_id zmii_match[] =
 static struct platform_driver zmii_driver = {
 	.driver = {
 		.name = "emac-zmii",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = zmii_match,
-	},
-	.probe = zmii_probe,
-	.remove = zmii_remove,
-=======
 		.of_match_table = zmii_match,
 	},
 	.probe = zmii_probe,
 	.remove_new = zmii_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init zmii_init(void)

@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-#ifndef _SERIO_H
-#define _SERIO_H
-
-/*
- * Copyright (C) 1999-2002 Vojtech Pavlik
-*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-
-#include <linux/ioctl.h>
-
-#define SPIOCSTYPE	_IOW('q', 0x01, unsigned long)
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 1999-2002 Vojtech Pavlik
@@ -23,7 +5,6 @@
 #ifndef _SERIO_H
 #define _SERIO_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -32,33 +13,23 @@
 #include <linux/mutex.h>
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/serio.h>
 
 extern const struct bus_type serio_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct serio {
 	void *port_data;
 
 	char name[32];
 	char phys[32];
-<<<<<<< HEAD
-=======
 	char firmware_id[128];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bool manual_bind;
 
 	struct serio_device_id id;
 
-<<<<<<< HEAD
-	spinlock_t lock;		/* protects critical sections from port's interrupt handler */
-=======
 	/* Protects critical sections from port's interrupt handler */
 	spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int (*write)(struct serio *, unsigned char);
 	int (*open)(struct serio *);
@@ -67,14 +38,6 @@ struct serio {
 	void (*stop)(struct serio *);
 
 	struct serio *parent;
-<<<<<<< HEAD
-	struct list_head child_node;	/* Entry in parent->children list */
-	struct list_head children;
-	unsigned int depth;		/* level of nesting in serio hierarchy */
-
-	struct serio_driver *drv;	/* accessed from interrupt, must be protected by serio->lock and serio->sem */
-	struct mutex drv_mutex;		/* protects serio->drv so attributes can pin driver */
-=======
 	/* Entry in parent->children list */
 	struct list_head child_node;
 	struct list_head children;
@@ -88,20 +51,16 @@ struct serio {
 	struct serio_driver *drv;
 	/* Protects serio->drv so attributes can pin current driver */
 	struct mutex drv_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct device dev;
 
 	struct list_head node;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * For use by PS/2 layer when several ports share hardware and
 	 * may get indigestion when exposed to concurrent access (i8042).
 	 */
 	struct mutex *ps2_cmd_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_serio_port(d)	container_of(d, struct serio, dev)
 
@@ -115,10 +74,7 @@ struct serio_driver {
 	irqreturn_t (*interrupt)(struct serio *, unsigned char, unsigned int);
 	int  (*connect)(struct serio *, struct serio_driver *drv);
 	int  (*reconnect)(struct serio *);
-<<<<<<< HEAD
-=======
 	int  (*fast_reconnect)(struct serio *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*disconnect)(struct serio *);
 	void (*cleanup)(struct serio *);
 
@@ -150,8 +106,6 @@ int __must_check __serio_register_driver(struct serio_driver *drv,
 
 void serio_unregister_driver(struct serio_driver *drv);
 
-<<<<<<< HEAD
-=======
 /**
  * module_serio_driver() - Helper macro for registering a serio driver
  * @__serio_driver: serio_driver struct
@@ -165,7 +119,6 @@ void serio_unregister_driver(struct serio_driver *drv);
 	module_driver(__serio_driver, serio_register_driver, \
 		       serio_unregister_driver)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int serio_write(struct serio *serio, unsigned char data)
 {
 	if (serio->write)
@@ -209,71 +162,3 @@ static inline void serio_continue_rx(struct serio *serio)
 }
 
 #endif
-<<<<<<< HEAD
-
-/*
- * bit masks for use in "interrupt" flags (3rd argument)
- */
-#define SERIO_TIMEOUT	1
-#define SERIO_PARITY	2
-#define SERIO_FRAME	4
-
-/*
- * Serio types
- */
-#define SERIO_XT	0x00
-#define SERIO_8042	0x01
-#define SERIO_RS232	0x02
-#define SERIO_HIL_MLC	0x03
-#define SERIO_PS_PSTHRU	0x05
-#define SERIO_8042_XL	0x06
-
-/*
- * Serio protocols
- */
-#define SERIO_UNKNOWN	0x00
-#define SERIO_MSC	0x01
-#define SERIO_SUN	0x02
-#define SERIO_MS	0x03
-#define SERIO_MP	0x04
-#define SERIO_MZ	0x05
-#define SERIO_MZP	0x06
-#define SERIO_MZPP	0x07
-#define SERIO_VSXXXAA	0x08
-#define SERIO_SUNKBD	0x10
-#define SERIO_WARRIOR	0x18
-#define SERIO_SPACEORB	0x19
-#define SERIO_MAGELLAN	0x1a
-#define SERIO_SPACEBALL	0x1b
-#define SERIO_GUNZE	0x1c
-#define SERIO_IFORCE	0x1d
-#define SERIO_STINGER	0x1e
-#define SERIO_NEWTON	0x1f
-#define SERIO_STOWAWAY	0x20
-#define SERIO_H3600	0x21
-#define SERIO_PS2SER	0x22
-#define SERIO_TWIDKBD	0x23
-#define SERIO_TWIDJOY	0x24
-#define SERIO_HIL	0x25
-#define SERIO_SNES232	0x26
-#define SERIO_SEMTECH	0x27
-#define SERIO_LKKBD	0x28
-#define SERIO_ELO	0x29
-#define SERIO_MICROTOUCH	0x30
-#define SERIO_PENMOUNT	0x31
-#define SERIO_TOUCHRIGHT	0x32
-#define SERIO_TOUCHWIN	0x33
-#define SERIO_TAOSEVM	0x34
-#define SERIO_FUJITSU	0x35
-#define SERIO_ZHENHUA	0x36
-#define SERIO_INEXIO	0x37
-#define SERIO_TOUCHIT213	0x38
-#define SERIO_W8001	0x39
-#define SERIO_DYNAPRO	0x3a
-#define SERIO_HAMPSHIRE	0x3b
-#define SERIO_PS2MULT	0x3c
-#define SERIO_TSC40	0x3d
-
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

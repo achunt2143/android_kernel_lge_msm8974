@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -67,11 +49,7 @@
 #ifdef BFA_DRIVER_VERSION
 #define BFAD_DRIVER_VERSION    BFA_DRIVER_VERSION
 #else
-<<<<<<< HEAD
-#define BFAD_DRIVER_VERSION    "3.0.23.0"
-=======
 #define BFAD_DRIVER_VERSION    "3.2.25.1"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define BFAD_PROTO_NAME FCPI_NAME
@@ -96,11 +74,8 @@
 #define BFAD_FC4_PROBE_DONE			0x00000200
 #define BFAD_PORT_DELETE			0x00000001
 #define BFAD_INTX_ON				0x00000400
-<<<<<<< HEAD
-=======
 #define BFAD_EEH_BUSY				0x00000800
 #define BFAD_EEH_PCI_CHANNEL_IO_PERM_FAILURE	0x00001000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFAD related definition
  */
@@ -200,8 +175,6 @@ union bfad_tmp_buf {
 	wwn_t		wwn[BFA_FCS_MAX_LPORTS];
 };
 
-<<<<<<< HEAD
-=======
 /* BFAD state machine events */
 enum bfad_sm_event {
 	BFAD_E_CREATE			= 1,
@@ -218,16 +191,11 @@ enum bfad_sm_event {
 struct bfad_s;
 typedef void (*bfad_sm_t)(struct bfad_s *, enum bfad_sm_event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFAD (PCI function) data structure
  */
 struct bfad_s {
-<<<<<<< HEAD
-	bfa_sm_t	sm;	/* state machine */
-=======
 	bfad_sm_t	sm;	/* state machine */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list_entry;
 	struct bfa_s	bfa;
 	struct bfa_fcs_s bfa_fcs;
@@ -274,22 +242,6 @@ struct bfad_s {
 	struct list_head	vport_list;
 };
 
-<<<<<<< HEAD
-/* BFAD state machine events */
-enum bfad_sm_event {
-	BFAD_E_CREATE			= 1,
-	BFAD_E_KTHREAD_CREATE_FAILED	= 2,
-	BFAD_E_INIT			= 3,
-	BFAD_E_INIT_SUCCESS		= 4,
-	BFAD_E_INIT_FAILED		= 5,
-	BFAD_E_INTR_INIT_FAILED		= 6,
-	BFAD_E_FCS_EXIT_COMP		= 7,
-	BFAD_E_EXIT_COMP		= 8,
-	BFAD_E_STOP			= 9
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RPORT data structure
  */
@@ -356,11 +308,7 @@ int		bfad_setup_intr(struct bfad_s *bfad);
 void		bfad_remove_intr(struct bfad_s *bfad);
 void		bfad_update_hal_cfg(struct bfa_iocfc_cfg_s *bfa_cfg);
 bfa_status_t	bfad_hal_mem_alloc(struct bfad_s *bfad);
-<<<<<<< HEAD
-void		bfad_bfa_tmo(unsigned long data);
-=======
 void		bfad_bfa_tmo(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void		bfad_init_timer(struct bfad_s *bfad);
 int		bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad);
 void		bfad_pci_uninit(struct pci_dev *pdev, struct bfad_s *bfad);

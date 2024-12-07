@@ -18,10 +18,6 @@
 #include <linux/slab.h>
 #include <linux/input/mt.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/delay.h>
 
@@ -31,13 +27,9 @@ MODULE_AUTHOR("Jaya Kumar <jayakumar.lkml@gmail.com>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-#define W8001_MAX_LENGTH	11
-=======
 #define W8001_MAX_PHYS		42
 
 #define W8001_MAX_LENGTH	13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define W8001_LEAD_MASK		0x80
 #define W8001_LEAD_BYTE		0x80
 #define W8001_TAB_MASK		0x40
@@ -90,12 +82,8 @@ struct w8001_touch_query {
  */
 
 struct w8001 {
-<<<<<<< HEAD
-	struct input_dev *dev;
-=======
 	struct input_dev *pen_dev;
 	struct input_dev *touch_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct serio *serio;
 	struct completion cmd_done;
 	int id;
@@ -103,25 +91,17 @@ struct w8001 {
 	unsigned char response_type;
 	unsigned char response[W8001_MAX_LENGTH];
 	unsigned char data[W8001_MAX_LENGTH];
-<<<<<<< HEAD
-	char phys[32];
-=======
 	char phys[W8001_MAX_PHYS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int type;
 	unsigned int pktlen;
 	u16 max_touch_x;
 	u16 max_touch_y;
 	u16 max_pen_x;
 	u16 max_pen_y;
-<<<<<<< HEAD
-	char name[64];
-=======
 	char pen_name[64];
 	char touch_name[64];
 	int open_count;
 	struct mutex mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void parse_pen_data(u8 *data, struct w8001_coord *coord)
@@ -167,11 +147,7 @@ static void scale_touch_coordinates(struct w8001 *w8001,
 
 static void parse_multi_touch(struct w8001 *w8001)
 {
-<<<<<<< HEAD
-	struct input_dev *dev = w8001->dev;
-=======
 	struct input_dev *dev = w8001->touch_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *data = w8001->data;
 	unsigned int x, y;
 	int i;
@@ -237,11 +213,7 @@ static void parse_touchquery(u8 *data, struct w8001_touch_query *query)
 
 static void report_pen_events(struct w8001 *w8001, struct w8001_coord *coord)
 {
-<<<<<<< HEAD
-	struct input_dev *dev = w8001->dev;
-=======
 	struct input_dev *dev = w8001->pen_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We have 1 bit for proximity (rdy) and 3 bits for tip, side,
@@ -267,14 +239,6 @@ static void report_pen_events(struct w8001 *w8001, struct w8001_coord *coord)
 		break;
 
 	case BTN_TOOL_FINGER:
-<<<<<<< HEAD
-		input_report_key(dev, BTN_TOUCH, 0);
-		input_report_key(dev, BTN_TOOL_FINGER, 0);
-		input_sync(dev);
-		/* fall through */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KEY_RESERVED:
 		w8001->type = coord->f2 ? BTN_TOOL_RUBBER : BTN_TOOL_PEN;
 		break;
@@ -298,11 +262,7 @@ static void report_pen_events(struct w8001 *w8001, struct w8001_coord *coord)
 
 static void report_single_touch(struct w8001 *w8001, struct w8001_coord *coord)
 {
-<<<<<<< HEAD
-	struct input_dev *dev = w8001->dev;
-=======
 	struct input_dev *dev = w8001->touch_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int x = coord->x;
 	unsigned int y = coord->y;
 
@@ -312,10 +272,6 @@ static void report_single_touch(struct w8001 *w8001, struct w8001_coord *coord)
 	input_report_abs(dev, ABS_X, x);
 	input_report_abs(dev, ABS_Y, y);
 	input_report_key(dev, BTN_TOUCH, coord->tsw);
-<<<<<<< HEAD
-	input_report_key(dev, BTN_TOOL_FINGER, coord->tsw);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_sync(dev);
 
@@ -386,8 +342,6 @@ static irqreturn_t w8001_interrupt(struct serio *serio,
 		w8001->idx = 0;
 		parse_multi_touch(w8001);
 		break;
-<<<<<<< HEAD
-=======
 
 	default:
 		/*
@@ -397,7 +351,6 @@ static irqreturn_t w8001_interrupt(struct serio *serio,
 		 */
 		if (!w8001->touch_dev && w8001->idx > W8001_PKTLEN_TPCPEN - 1)
 			w8001->idx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
@@ -425,10 +378,6 @@ static int w8001_command(struct w8001 *w8001, unsigned char command,
 static int w8001_open(struct input_dev *dev)
 {
 	struct w8001 *w8001 = input_get_drvdata(dev);
-<<<<<<< HEAD
-
-	return w8001_command(w8001, W8001_CMD_START, false);
-=======
 	int err;
 
 	err = mutex_lock_interruptible(&w8001->mutex);
@@ -443,23 +392,12 @@ static int w8001_open(struct input_dev *dev)
 
 	mutex_unlock(&w8001->mutex);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void w8001_close(struct input_dev *dev)
 {
 	struct w8001 *w8001 = input_get_drvdata(dev);
 
-<<<<<<< HEAD
-	w8001_command(w8001, W8001_CMD_STOP, false);
-}
-
-static int w8001_setup(struct w8001 *w8001)
-{
-	struct input_dev *dev = w8001->dev;
-	struct w8001_coord coord;
-	struct w8001_touch_query touch;
-=======
 	mutex_lock(&w8001->mutex);
 
 	if (--w8001->open_count == 0)
@@ -470,7 +408,6 @@ static int w8001_setup(struct w8001 *w8001)
 
 static int w8001_detect(struct w8001 *w8001)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	error = w8001_command(w8001, W8001_CMD_STOP, false);
@@ -479,42 +416,6 @@ static int w8001_detect(struct w8001 *w8001)
 
 	msleep(250);	/* wait 250ms before querying the device */
 
-<<<<<<< HEAD
-	dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
-	strlcat(w8001->name, "Wacom Serial", sizeof(w8001->name));
-
-	__set_bit(INPUT_PROP_DIRECT, dev->propbit);
-
-	/* penabled? */
-	error = w8001_command(w8001, W8001_CMD_QUERY, true);
-	if (!error) {
-		__set_bit(BTN_TOUCH, dev->keybit);
-		__set_bit(BTN_TOOL_PEN, dev->keybit);
-		__set_bit(BTN_TOOL_RUBBER, dev->keybit);
-		__set_bit(BTN_STYLUS, dev->keybit);
-		__set_bit(BTN_STYLUS2, dev->keybit);
-
-		parse_pen_data(w8001->response, &coord);
-		w8001->max_pen_x = coord.x;
-		w8001->max_pen_y = coord.y;
-
-		input_set_abs_params(dev, ABS_X, 0, coord.x, 0, 0);
-		input_set_abs_params(dev, ABS_Y, 0, coord.y, 0, 0);
-		input_abs_set_res(dev, ABS_X, W8001_PEN_RESOLUTION);
-		input_abs_set_res(dev, ABS_Y, W8001_PEN_RESOLUTION);
-		input_set_abs_params(dev, ABS_PRESSURE, 0, coord.pen_pressure, 0, 0);
-		if (coord.tilt_x && coord.tilt_y) {
-			input_set_abs_params(dev, ABS_TILT_X, 0, coord.tilt_x, 0, 0);
-			input_set_abs_params(dev, ABS_TILT_Y, 0, coord.tilt_y, 0, 0);
-		}
-		w8001->id = 0x90;
-		strlcat(w8001->name, " Penabled", sizeof(w8001->name));
-	}
-
-	/* Touch enabled? */
-	error = w8001_command(w8001, W8001_CMD_TOUCHQUERY, true);
-
-=======
 	return 0;
 }
 
@@ -571,70 +472,10 @@ static int w8001_setup_touch(struct w8001 *w8001, char *basename,
 	error = w8001_command(w8001, W8001_CMD_TOUCHQUERY, true);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Some non-touch devices may reply to the touch query. But their
 	 * second byte is empty, which indicates touch is not supported.
 	 */
-<<<<<<< HEAD
-	if (!error && w8001->response[1]) {
-		__set_bit(BTN_TOUCH, dev->keybit);
-		__set_bit(BTN_TOOL_FINGER, dev->keybit);
-
-		parse_touchquery(w8001->response, &touch);
-		w8001->max_touch_x = touch.x;
-		w8001->max_touch_y = touch.y;
-
-		if (w8001->max_pen_x && w8001->max_pen_y) {
-			/* if pen is supported scale to pen maximum */
-			touch.x = w8001->max_pen_x;
-			touch.y = w8001->max_pen_y;
-			touch.panel_res = W8001_PEN_RESOLUTION;
-		}
-
-		input_set_abs_params(dev, ABS_X, 0, touch.x, 0, 0);
-		input_set_abs_params(dev, ABS_Y, 0, touch.y, 0, 0);
-		input_abs_set_res(dev, ABS_X, touch.panel_res);
-		input_abs_set_res(dev, ABS_Y, touch.panel_res);
-
-		switch (touch.sensor_id) {
-		case 0:
-		case 2:
-			w8001->pktlen = W8001_PKTLEN_TOUCH93;
-			w8001->id = 0x93;
-			strlcat(w8001->name, " 1FG", sizeof(w8001->name));
-			break;
-
-		case 1:
-		case 3:
-		case 4:
-			w8001->pktlen = W8001_PKTLEN_TOUCH9A;
-			strlcat(w8001->name, " 1FG", sizeof(w8001->name));
-			w8001->id = 0x9a;
-			break;
-
-		case 5:
-			w8001->pktlen = W8001_PKTLEN_TOUCH2FG;
-
-			input_mt_init_slots(dev, 2);
-			input_set_abs_params(dev, ABS_MT_POSITION_X,
-						0, touch.x, 0, 0);
-			input_set_abs_params(dev, ABS_MT_POSITION_Y,
-						0, touch.y, 0, 0);
-			input_set_abs_params(dev, ABS_MT_TOOL_TYPE,
-						0, MT_TOOL_MAX, 0, 0);
-
-			strlcat(w8001->name, " 2FG", sizeof(w8001->name));
-			if (w8001->max_pen_x && w8001->max_pen_y)
-				w8001->id = 0xE3;
-			else
-				w8001->id = 0xE2;
-			break;
-		}
-	}
-
-	strlcat(w8001->name, " Touchscreen", sizeof(w8001->name));
-=======
 	if (!w8001->response[1])
 		return -ENXIO;
 
@@ -704,13 +545,10 @@ static int w8001_setup_touch(struct w8001 *w8001, char *basename,
 	}
 
 	strlcat(basename, " Touchscreen", basename_sz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void w8001_set_devdata(struct input_dev *dev, struct w8001 *w8001,
 			      struct serio *serio)
 {
@@ -727,7 +565,6 @@ static void w8001_set_devdata(struct input_dev *dev, struct w8001 *w8001,
 	input_set_drvdata(dev, w8001);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * w8001_disconnect() is the opposite of w8001_connect()
  */
@@ -738,14 +575,10 @@ static void w8001_disconnect(struct serio *serio)
 
 	serio_close(serio);
 
-<<<<<<< HEAD
-	input_unregister_device(w8001->dev);
-=======
 	if (w8001->pen_dev)
 		input_unregister_device(w8001->pen_dev);
 	if (w8001->touch_dev)
 		input_unregister_device(w8001->touch_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(w8001);
 
 	serio_set_drvdata(serio, NULL);
@@ -760,14 +593,6 @@ static void w8001_disconnect(struct serio *serio)
 static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 {
 	struct w8001 *w8001;
-<<<<<<< HEAD
-	struct input_dev *input_dev;
-	int err;
-
-	w8001 = kzalloc(sizeof(struct w8001), GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!w8001 || !input_dev) {
-=======
 	struct input_dev *input_dev_pen;
 	struct input_dev *input_dev_touch;
 	char basename[64];
@@ -777,19 +602,14 @@ static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 	input_dev_pen = input_allocate_device();
 	input_dev_touch = input_allocate_device();
 	if (!w8001 || !input_dev_pen || !input_dev_touch) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto fail1;
 	}
 
 	w8001->serio = serio;
-<<<<<<< HEAD
-	w8001->dev = input_dev;
-=======
 	w8001->pen_dev = input_dev_pen;
 	w8001->touch_dev = input_dev_touch;
 	mutex_init(&w8001->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_completion(&w8001->cmd_done);
 	snprintf(w8001->phys, sizeof(w8001->phys), "%s/input0", serio->phys);
 
@@ -798,31 +618,6 @@ static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 	if (err)
 		goto fail2;
 
-<<<<<<< HEAD
-	err = w8001_setup(w8001);
-	if (err)
-		goto fail3;
-
-	input_dev->name = w8001->name;
-	input_dev->phys = w8001->phys;
-	input_dev->id.product = w8001->id;
-	input_dev->id.bustype = BUS_RS232;
-	input_dev->id.vendor = 0x056a;
-	input_dev->id.version = 0x0100;
-	input_dev->dev.parent = &serio->dev;
-
-	input_dev->open = w8001_open;
-	input_dev->close = w8001_close;
-
-	input_set_drvdata(input_dev, w8001);
-
-	err = input_register_device(w8001->dev);
-	if (err)
-		goto fail3;
-
-	return 0;
-
-=======
 	err = w8001_detect(w8001);
 	if (err)
 		goto fail3;
@@ -877,27 +672,18 @@ static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 fail4:
 	if (w8001->pen_dev)
 		input_unregister_device(w8001->pen_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail3:
 	serio_close(serio);
 fail2:
 	serio_set_drvdata(serio, NULL);
 fail1:
-<<<<<<< HEAD
-	input_free_device(input_dev);
-=======
 	input_free_device(input_dev_pen);
 	input_free_device(input_dev_touch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(w8001);
 	return err;
 }
 
-<<<<<<< HEAD
-static struct serio_device_id w8001_serio_ids[] = {
-=======
 static const struct serio_device_id w8001_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_W8001,
@@ -920,19 +706,4 @@ static struct serio_driver w8001_drv = {
 	.disconnect	= w8001_disconnect,
 };
 
-<<<<<<< HEAD
-static int __init w8001_init(void)
-{
-	return serio_register_driver(&w8001_drv);
-}
-
-static void __exit w8001_exit(void)
-{
-	serio_unregister_driver(&w8001_drv);
-}
-
-module_init(w8001_init);
-module_exit(w8001_exit);
-=======
 module_serio_driver(w8001_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,26 +1,4 @@
 /*
-<<<<<<< HEAD
- * Copyright (C) 2005 MIPS Technologies, Inc.  All rights reserved.
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
- */
-
-#ifndef _ASM_VPE_H
-#define _ASM_VPE_H
-
-=======
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
@@ -106,7 +84,6 @@ struct tc {
 	struct list_head list;	/* The global list of tc's */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vpe_notifications {
 	void (*start)(int vpe);
 	void (*stop)(int vpe);
@@ -114,16 +91,6 @@ struct vpe_notifications {
 	struct list_head list;
 };
 
-<<<<<<< HEAD
-
-extern int vpe_notify(int index, struct vpe_notifications *notify);
-
-extern void *vpe_get_shared(int index);
-extern int vpe_getuid(int index);
-extern int vpe_getgid(int index);
-extern char *vpe_getcwd(int index);
-
-=======
 struct vpe_control {
 	spinlock_t vpe_list_lock;
 	struct list_head vpe_list;      /* Virtual processing elements */
@@ -152,5 +119,4 @@ void cleanup_tc(struct tc *tc);
 
 int __init vpe_module_init(void);
 void __exit vpe_module_exit(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_VPE_H */

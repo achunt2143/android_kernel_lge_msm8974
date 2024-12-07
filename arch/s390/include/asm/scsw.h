@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- *  Helper functions for scsw access.
- *
- *    Copyright IBM Corp. 2008,2009
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *  Helper functions for scsw access.
  *
  *    Copyright IBM Corp. 2008, 2012
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
  */
 
@@ -17,12 +10,8 @@
 #define _ASM_S390_SCSW_H_
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/chsc.h>
-=======
 #include <asm/css_chars.h>
 #include <asm/dma-types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cio.h>
 
 /**
@@ -65,11 +54,7 @@ struct cmd_scsw {
 	__u32 fctl : 3;
 	__u32 actl : 7;
 	__u32 stctl : 5;
-<<<<<<< HEAD
-	__u32 cpa;
-=======
 	dma32_t cpa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32 dstat : 8;
 	__u32 cstat : 8;
 	__u32 count : 16;
@@ -109,19 +94,6 @@ struct tm_scsw {
 	u32 fctl:3;
 	u32 actl:7;
 	u32 stctl:5;
-<<<<<<< HEAD
-	u32 tcw;
-	u32 dstat:8;
-	u32 cstat:8;
-	u32 fcxs:8;
-	u32 schxs:8;
-} __attribute__ ((packed));
-
-/**
- * union scsw - subchannel status word
- * @cmd: command-mode SCSW
- * @tm: transport-mode SCSW
-=======
 	dma32_t tcw;
 	u32 dstat:8;
 	u32 cstat:8;
@@ -165,17 +137,12 @@ struct eadm_scsw {
  * @cmd: command-mode SCSW
  * @tm: transport-mode SCSW
  * @eadm: eadm SCSW
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 union scsw {
 	struct cmd_scsw cmd;
 	struct tm_scsw tm;
-<<<<<<< HEAD
-} __attribute__ ((packed));
-=======
 	struct eadm_scsw eadm;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SCSW_FCTL_CLEAR_FUNC	 0x1
 #define SCSW_FCTL_HALT_FUNC	 0x2
@@ -213,12 +180,9 @@ union scsw {
 #define SCHN_STAT_INTF_CTRL_CHK	 0x02
 #define SCHN_STAT_CHAIN_CHECK	 0x01
 
-<<<<<<< HEAD
-=======
 #define SCSW_SESQ_DEV_NOFCX	 3
 #define SCSW_SESQ_PATH_NOFCX	 4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * architectured values for first sense byte
  */
@@ -252,14 +216,11 @@ union scsw {
 #define SNS2_ENV_DATA_PRESENT	0x10
 #define SNS2_INPRECISE_END	0x04
 
-<<<<<<< HEAD
-=======
 /*
  * architectured values for PPRC errors
  */
 #define SNS7_INVALID_ON_SEC	0x0e
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsw_is_tm - check for transport mode scsw
  * @scsw: pointer to scsw
@@ -435,17 +396,10 @@ static inline int scsw_cmd_is_valid_key(union scsw *scsw)
 }
 
 /**
-<<<<<<< HEAD
- * scsw_cmd_is_valid_sctl - check fctl field validity
- * @scsw: pointer to scsw
- *
- * Return non-zero if the fctl field of the specified command mode scsw is
-=======
  * scsw_cmd_is_valid_sctl - check sctl field validity
  * @scsw: pointer to scsw
  *
  * Return non-zero if the sctl field of the specified command mode scsw is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * valid, zero otherwise.
  */
 static inline int scsw_cmd_is_valid_sctl(union scsw *scsw)
@@ -560,11 +514,6 @@ static inline int scsw_cmd_is_valid_zcc(union scsw *scsw)
  */
 static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
 {
-<<<<<<< HEAD
-	return (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
-	       !(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) &&
-	       (scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS);
-=======
 	/* Must be status pending. */
 	if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
 		return 0;
@@ -580,7 +529,6 @@ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
 		return 0;
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -592,13 +540,6 @@ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
  */
 static inline int scsw_cmd_is_valid_pno(union scsw *scsw)
 {
-<<<<<<< HEAD
-	return (scsw->cmd.fctl != 0) &&
-	       (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
-	       (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) ||
-		 ((scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) &&
-		  (scsw->cmd.actl & SCSW_ACTL_SUSPENDED)));
-=======
 	/* Must indicate at least one I/O function. */
 	if (!scsw->cmd.fctl)
 		return 0;
@@ -618,7 +559,6 @@ static inline int scsw_cmd_is_valid_pno(union scsw *scsw)
 		return 1;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -768,11 +708,6 @@ static inline int scsw_tm_is_valid_q(union scsw *scsw)
  */
 static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
 {
-<<<<<<< HEAD
-	return (scsw->tm.stctl & SCSW_STCTL_STATUS_PEND) &&
-	       !(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) &&
-	       (scsw->tm.stctl & SCSW_STCTL_ALERT_STATUS);
-=======
 	/* Must be status pending. */
 	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
 		return 0;
@@ -788,7 +723,6 @@ static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
 		return 0;
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -800,13 +734,6 @@ static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
  */
 static inline int scsw_tm_is_valid_pno(union scsw *scsw)
 {
-<<<<<<< HEAD
-	return (scsw->tm.fctl != 0) &&
-	       (scsw->tm.stctl & SCSW_STCTL_STATUS_PEND) &&
-	       (!(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) ||
-		 ((scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) &&
-		  (scsw->tm.actl & SCSW_ACTL_SUSPENDED)));
-=======
 	/* Must indicate at least one I/O function. */
 	if (!scsw->tm.fctl)
 		return 0;
@@ -826,7 +753,6 @@ static inline int scsw_tm_is_valid_pno(union scsw *scsw)
 		return 1;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel userspace event delivery
  *
@@ -9,11 +6,6 @@
  * Copyright (C) 2004 Novell, Inc.  All rights reserved.
  * Copyright (C) 2004 IBM, Inc. All rights reserved.
  *
-<<<<<<< HEAD
- * Licensed under the GNU GPL v2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *	Robert Love		<rml@novell.com>
  *	Kay Sievers		<kay.sievers@vrfy.org>
@@ -27,19 +19,6 @@
 #include <linux/export.h>
 #include <linux/kmod.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/user_namespace.h>
-#include <linux/socket.h>
-#include <linux/skbuff.h>
-#include <linux/netlink.h>
-#include <net/sock.h>
-#include <net/net_namespace.h>
-
-
-u64 uevent_seqnum;
-char uevent_helper[UEVENT_HELPER_PATH_LEN] = CONFIG_UEVENT_HELPER_PATH;
-#ifdef CONFIG_NET
-=======
 #include <linux/socket.h>
 #include <linux/skbuff.h>
 #include <linux/netlink.h>
@@ -56,25 +35,16 @@ atomic64_t uevent_seqnum;
 char uevent_helper[UEVENT_HELPER_PATH_LEN] = CONFIG_UEVENT_HELPER_PATH;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct uevent_sock {
 	struct list_head list;
 	struct sock *sk;
 };
-<<<<<<< HEAD
-static LIST_HEAD(uevent_sock_list);
-#endif
-
-/* This lock protects uevent_seqnum and uevent_sock_list */
-static DEFINE_MUTEX(uevent_sock_mutex);
-=======
 
 #ifdef CONFIG_NET
 static LIST_HEAD(uevent_sock_list);
 /* This lock protects uevent_sock_list */
 static DEFINE_MUTEX(uevent_sock_mutex);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* the strings here must match the enum in include/linux/kobject.h */
 static const char *kobject_actions[] = {
@@ -84,23 +54,6 @@ static const char *kobject_actions[] = {
 	[KOBJ_MOVE] =		"move",
 	[KOBJ_ONLINE] =		"online",
 	[KOBJ_OFFLINE] =	"offline",
-<<<<<<< HEAD
-};
-
-/**
- * kobject_action_type - translate action string to numeric type
- *
- * @buf: buffer containing the action string, newline is ignored
- * @len: length of buffer
- * @type: pointer to the location to store the action type
- *
- * Returns 0 if the action string was recognized.
- */
-int kobject_action_type(const char *buf, size_t count,
-			enum kobject_action *type)
-{
-	enum kobject_action action;
-=======
 	[KOBJ_BIND] =		"bind",
 	[KOBJ_UNBIND] =		"unbind",
 };
@@ -112,7 +65,6 @@ static int kobject_action_type(const char *buf, size_t count,
 	enum kobject_action action;
 	size_t count_first;
 	const char *args_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -EINVAL;
 
 	if (count && (buf[count-1] == '\n' || buf[count-1] == '\0'))
@@ -121,13 +73,6 @@ static int kobject_action_type(const char *buf, size_t count,
 	if (!count)
 		goto out;
 
-<<<<<<< HEAD
-	for (action = 0; action < ARRAY_SIZE(kobject_actions); action++) {
-		if (strncmp(kobject_actions[action], buf, count) != 0)
-			continue;
-		if (kobject_actions[action][count] != '\0')
-			continue;
-=======
 	args_start = strnchr(buf, count, ' ');
 	if (args_start) {
 		count_first = args_start - buf;
@@ -142,7 +87,6 @@ static int kobject_action_type(const char *buf, size_t count,
 			continue;
 		if (args)
 			*args = args_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*type = action;
 		ret = 0;
 		break;
@@ -151,26 +95,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET
-static int kobj_bcast_filter(struct sock *dsk, struct sk_buff *skb, void *data)
-{
-	struct kobject *kobj = data;
-	const struct kobj_ns_type_operations *ops;
-
-	ops = kobj_ns_ops(kobj);
-	if (ops) {
-		const void *sock_ns, *ns;
-		ns = kobj->ktype->namespace(kobj);
-		sock_ns = ops->netlink_ns(dsk);
-		return sock_ns != ns;
-	}
-
-	return 0;
-}
-#endif
-
-=======
 static const char *action_arg_word_end(const char *buf, const char *buf_end,
 				       char delim)
 {
@@ -308,7 +232,6 @@ out:
 }
 
 #ifdef CONFIG_UEVENT_HELPER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kobj_usermode_filter(struct kobject *kobj)
 {
 	const struct kobj_ns_type_operations *ops;
@@ -316,10 +239,7 @@ static int kobj_usermode_filter(struct kobject *kobj)
 	ops = kobj_ns_ops(kobj);
 	if (ops) {
 		const void *init_ns, *ns;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ns = kobj->ktype->namespace(kobj);
 		init_ns = ops->initial_ns();
 		return ns != init_ns;
@@ -328,13 +248,6 @@ static int kobj_usermode_filter(struct kobject *kobj)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * kobject_uevent_env - send an uevent with environmental data
- *
- * @action: action that is happening
- * @kobj: struct kobject that the action is happening to
-=======
 static int init_uevent_argv(struct kobj_uevent_env *env, const char *subsystem)
 {
 	int buffer_size = sizeof(env->buf) - env->buflen;
@@ -537,7 +450,6 @@ static void zap_modalias_env(struct kobj_uevent_env *env)
  *
  * @kobj: struct kobject that the action is happening to
  * @action: action that is happening
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @envp_ext: pointer to environmental data
  *
  * Returns 0 if kobject_uevent_env() is completed with success or the
@@ -555,11 +467,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 	const struct kset_uevent_ops *uevent_ops;
 	int i = 0;
 	int retval = 0;
-<<<<<<< HEAD
-#ifdef CONFIG_NET
-	struct uevent_sock *ue_sk;
-#endif
-=======
 
 	/*
 	 * Mark "remove" event done regardless of result, for some subsystems
@@ -567,7 +474,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 	 */
 	if (action == KOBJ_REMOVE)
 		kobj->state_remove_uevent_sent = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("kobject: '%s' (%p): %s\n",
 		 kobject_name(kobj), kobj, __func__);
@@ -596,11 +502,7 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 	}
 	/* skip the event, if the filter returns zero. */
 	if (uevent_ops && uevent_ops->filter)
-<<<<<<< HEAD
-		if (!uevent_ops->filter(kset, kobj)) {
-=======
 		if (!uevent_ops->filter(kobj)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("kobject: '%s' (%p): %s: filter function "
 				 "caused the event to drop!\n",
 				 kobject_name(kobj), kobj, __func__);
@@ -609,11 +511,7 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 
 	/* originating subsystem */
 	if (uevent_ops && uevent_ops->name)
-<<<<<<< HEAD
-		subsystem = uevent_ops->name(kset, kobj);
-=======
 		subsystem = uevent_ops->name(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		subsystem = kobject_name(&kset->kobj);
 	if (!subsystem) {
@@ -657,11 +555,7 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 
 	/* let the kset specific function add its stuff */
 	if (uevent_ops && uevent_ops->uevent) {
-<<<<<<< HEAD
-		retval = uevent_ops->uevent(kset, kobj, env);
-=======
 		retval = uevent_ops->uevent(kobj, env);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval) {
 			pr_debug("kobject: '%s' (%p): %s: uevent() returned "
 				 "%d\n", kobject_name(kobj), kobj,
@@ -670,75 +564,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Mark "add" and "remove" events in the object to ensure proper
-	 * events to userspace during automatic cleanup. If the object did
-	 * send an "add" event, "remove" will automatically generated by
-	 * the core, if not already done by the caller.
-	 */
-	if (action == KOBJ_ADD)
-		kobj->state_add_uevent_sent = 1;
-	else if (action == KOBJ_REMOVE)
-		kobj->state_remove_uevent_sent = 1;
-
-	mutex_lock(&uevent_sock_mutex);
-	/* we will send an event, so request a new sequence number */
-	retval = add_uevent_var(env, "SEQNUM=%llu", (unsigned long long)++uevent_seqnum);
-	if (retval) {
-		mutex_unlock(&uevent_sock_mutex);
-		goto exit;
-	}
-
-#if defined(CONFIG_NET)
-	/* send netlink message */
-	list_for_each_entry(ue_sk, &uevent_sock_list, list) {
-		struct sock *uevent_sock = ue_sk->sk;
-		struct sk_buff *skb;
-		size_t len;
-
-		if (!netlink_has_listeners(uevent_sock, 1))
-			continue;
-
-		/* allocate message with the maximum possible size */
-		len = strlen(action_string) + strlen(devpath) + 2;
-		skb = alloc_skb(len + env->buflen, GFP_KERNEL);
-		if (skb) {
-			char *scratch;
-
-			/* add header */
-			scratch = skb_put(skb, len);
-			sprintf(scratch, "%s@%s", action_string, devpath);
-
-			/* copy keys to our continuous event payload buffer */
-			for (i = 0; i < env->envp_idx; i++) {
-				len = strlen(env->envp[i]) + 1;
-				scratch = skb_put(skb, len);
-				strcpy(scratch, env->envp[i]);
-			}
-
-			NETLINK_CB(skb).dst_group = 1;
-			retval = netlink_broadcast_filtered(uevent_sock, skb,
-							    0, 1, GFP_KERNEL,
-							    kobj_bcast_filter,
-							    kobj);
-			/* ENOBUFS should be handled in userspace */
-			if (retval == -ENOBUFS || retval == -ESRCH)
-				retval = 0;
-		} else
-			retval = -ENOMEM;
-	}
-#endif
-	mutex_unlock(&uevent_sock_mutex);
-
-	/* call uevent_helper, usually only enabled during early boot */
-	if (uevent_helper[0] && !kobj_usermode_filter(kobj)) {
-		char *argv [3];
-
-		argv [0] = uevent_helper;
-		argv [1] = (char *)subsystem;
-		argv [2] = NULL;
-=======
 	switch (action) {
 	case KOBJ_ADD:
 		/*
@@ -773,7 +598,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 	if (uevent_helper[0] && !kobj_usermode_filter(kobj)) {
 		struct subprocess_info *info;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = add_uevent_var(env, "HOME=/");
 		if (retval)
 			goto exit;
@@ -781,12 +605,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 					"PATH=/sbin:/bin:/usr/sbin:/usr/bin");
 		if (retval)
 			goto exit;
-<<<<<<< HEAD
-
-		retval = call_usermodehelper(argv[0], argv,
-					     env->envp, UMH_WAIT_EXEC);
-	}
-=======
 		retval = init_uevent_argv(env, subsystem);
 		if (retval)
 			goto exit;
@@ -801,7 +619,6 @@ int kobject_uevent_env(struct kobject *kobj, enum kobject_action action,
 		}
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	kfree(devpath);
@@ -813,13 +630,8 @@ EXPORT_SYMBOL_GPL(kobject_uevent_env);
 /**
  * kobject_uevent - notify userspace by sending an uevent
  *
-<<<<<<< HEAD
- * @action: action that is happening
- * @kobj: struct kobject that the action is happening to
-=======
  * @kobj: struct kobject that the action is happening to
  * @action: action that is happening
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 if kobject_uevent() is completed with success or the
  * corresponding error when it fails.
@@ -866,11 +678,6 @@ int add_uevent_var(struct kobj_uevent_env *env, const char *format, ...)
 EXPORT_SYMBOL_GPL(add_uevent_var);
 
 #if defined(CONFIG_NET)
-<<<<<<< HEAD
-static int uevent_net_init(struct net *net)
-{
-	struct uevent_sock *ue_sk;
-=======
 static int uevent_net_broadcast(struct sock *usk, struct sk_buff *skb,
 				struct netlink_ext_ack *extack)
 {
@@ -953,25 +760,11 @@ static int uevent_net_init(struct net *net)
 		.input = uevent_net_rcv,
 		.flags	= NL_CFG_F_NONROOT_RECV
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ue_sk = kzalloc(sizeof(*ue_sk), GFP_KERNEL);
 	if (!ue_sk)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ue_sk->sk = netlink_kernel_create(net, NETLINK_KOBJECT_UEVENT,
-					  1, NULL, NULL, THIS_MODULE);
-	if (!ue_sk->sk) {
-		printk(KERN_ERR
-		       "kobject_uevent: unable to create netlink socket!\n");
-		kfree(ue_sk);
-		return -ENODEV;
-	}
-	mutex_lock(&uevent_sock_mutex);
-	list_add_tail(&ue_sk->list, &uevent_sock_list);
-	mutex_unlock(&uevent_sock_mutex);
-=======
 	ue_sk->sk = netlink_kernel_create(net, NETLINK_KOBJECT_UEVENT, &cfg);
 	if (!ue_sk->sk) {
 		pr_err("kobject_uevent: unable to create netlink socket!\n");
@@ -988,27 +781,11 @@ static int uevent_net_init(struct net *net)
 		mutex_unlock(&uevent_sock_mutex);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void uevent_net_exit(struct net *net)
 {
-<<<<<<< HEAD
-	struct uevent_sock *ue_sk;
-
-	mutex_lock(&uevent_sock_mutex);
-	list_for_each_entry(ue_sk, &uevent_sock_list, list) {
-		if (sock_net(ue_sk->sk) == net)
-			goto found;
-	}
-	mutex_unlock(&uevent_sock_mutex);
-	return;
-
-found:
-	list_del(&ue_sk->list);
-	mutex_unlock(&uevent_sock_mutex);
-=======
 	struct uevent_sock *ue_sk = net->uevent_sock;
 
 	if (sock_net(ue_sk->sk)->user_ns == &init_user_ns) {
@@ -1016,7 +793,6 @@ found:
 		list_del(&ue_sk->list);
 		mutex_unlock(&uevent_sock_mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netlink_kernel_release(ue_sk->sk);
 	kfree(ue_sk);
@@ -1029,10 +805,6 @@ static struct pernet_operations uevent_net_ops = {
 
 static int __init kobject_uevent_init(void)
 {
-<<<<<<< HEAD
-	netlink_set_nonroot(NETLINK_KOBJECT_UEVENT, NL_NONROOT_RECV);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_pernet_subsys(&uevent_net_ops);
 }
 

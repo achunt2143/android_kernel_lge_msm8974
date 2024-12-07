@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-#include <linux/pm.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Released under the GPLv2 only.
@@ -11,7 +8,6 @@
 
 struct usb_hub_descriptor;
 struct usb_dev_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Functions local to drivers/usb/core/ */
 
@@ -19,10 +15,7 @@ extern int usb_create_sysfs_dev_files(struct usb_device *dev);
 extern void usb_remove_sysfs_dev_files(struct usb_device *dev);
 extern void usb_create_sysfs_intf_files(struct usb_interface *intf);
 extern void usb_remove_sysfs_intf_files(struct usb_interface *intf);
-<<<<<<< HEAD
-=======
 extern int usb_update_wireless_status_attr(struct usb_interface *intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int usb_create_ep_devs(struct device *parent,
 				struct usb_host_endpoint *endpoint,
 				struct usb_device *udev);
@@ -40,21 +33,6 @@ extern void usb_release_interface_cache(struct kref *ref);
 extern void usb_disable_device(struct usb_device *dev, int skip_ep0);
 extern int usb_deauthorize_device(struct usb_device *);
 extern int usb_authorize_device(struct usb_device *);
-<<<<<<< HEAD
-extern void usb_detect_quirks(struct usb_device *udev);
-extern void usb_detect_interface_quirks(struct usb_device *udev);
-extern int usb_remove_device(struct usb_device *udev);
-
-extern int usb_get_device_descriptor(struct usb_device *dev,
-		unsigned int size);
-extern int usb_get_bos_descriptor(struct usb_device *dev);
-extern void usb_release_bos_descriptor(struct usb_device *dev);
-extern char *usb_cache_string(struct usb_device *udev, int index);
-extern int usb_set_configuration(struct usb_device *dev, int configuration);
-extern int usb_choose_configuration(struct usb_device *udev);
-
-extern void usb_kick_khubd(struct usb_device *dev);
-=======
 extern void usb_deauthorize_interface(struct usb_interface *);
 extern void usb_authorize_interface(struct usb_interface *);
 extern void usb_detect_quirks(struct usb_device *udev);
@@ -89,22 +67,11 @@ static inline unsigned usb_get_max_power(struct usb_device *udev,
 }
 
 extern void usb_kick_hub_wq(struct usb_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int usb_match_one_id_intf(struct usb_device *dev,
 				 struct usb_host_interface *intf,
 				 const struct usb_device_id *id);
 extern int usb_match_device(struct usb_device *dev,
 			    const struct usb_device_id *id);
-<<<<<<< HEAD
-extern void usb_forced_unbind_intf(struct usb_interface *intf);
-extern void usb_unbind_and_rebind_marked_interfaces(struct usb_device *udev);
-
-extern int usb_hub_claim_port(struct usb_device *hdev, unsigned port,
-		void *owner);
-extern int usb_hub_release_port(struct usb_device *hdev, unsigned port,
-		void *owner);
-extern void usb_hub_release_all_ports(struct usb_device *hdev, void *owner);
-=======
 extern const struct usb_device_id *usb_device_match_id(struct usb_device *udev,
 				const struct usb_device_id *id);
 extern bool usb_driver_applicable(struct usb_device *udev,
@@ -114,18 +81,14 @@ extern void usb_unbind_and_rebind_marked_interfaces(struct usb_device *udev);
 
 extern void usb_hub_release_all_ports(struct usb_device *hdev,
 		struct usb_dev_state *owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern bool usb_device_is_owned(struct usb_device *udev);
 
 extern int  usb_hub_init(void);
 extern void usb_hub_cleanup(void);
 extern int usb_major_init(void);
 extern void usb_major_cleanup(void);
-<<<<<<< HEAD
-=======
 extern int usb_device_supports_lpm(struct usb_device *udev);
 extern int usb_port_disable(struct usb_device *udev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef	CONFIG_PM
 
@@ -136,8 +99,6 @@ extern int usb_resume_complete(struct device *dev);
 extern int usb_port_suspend(struct usb_device *dev, pm_message_t msg);
 extern int usb_port_resume(struct usb_device *dev, pm_message_t msg);
 
-<<<<<<< HEAD
-=======
 extern void usb_autosuspend_device(struct usb_device *udev);
 extern int usb_autoresume_device(struct usb_device *udev);
 extern int usb_remote_wakeup(struct usb_device *dev);
@@ -150,7 +111,6 @@ extern int usb_disable_usb2_hardware_lpm(struct usb_device *udev);
 extern void usbfs_notify_suspend(struct usb_device *udev);
 extern void usbfs_notify_resume(struct usb_device *udev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 static inline int usb_port_suspend(struct usb_device *udev, pm_message_t msg)
@@ -163,54 +123,17 @@ static inline int usb_port_resume(struct usb_device *udev, pm_message_t msg)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif
-
-#ifdef CONFIG_USB_SUSPEND
-
-extern void usb_autosuspend_device(struct usb_device *udev);
-extern int usb_autoresume_device(struct usb_device *udev);
-extern int usb_remote_wakeup(struct usb_device *dev);
-extern int usb_runtime_suspend(struct device *dev);
-extern int usb_runtime_resume(struct device *dev);
-extern int usb_runtime_idle(struct device *dev);
-extern int usb_set_usb2_hardware_lpm(struct usb_device *udev, int enable);
-
-#else
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define usb_autosuspend_device(udev)		do {} while (0)
 static inline int usb_autoresume_device(struct usb_device *udev)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int usb_remote_wakeup(struct usb_device *udev)
-=======
 static inline int usb_enable_usb2_hardware_lpm(struct usb_device *udev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int usb_set_usb2_hardware_lpm(struct usb_device *udev, int enable)
-{
-	return 0;
-}
-#endif
-
-#ifdef CONFIG_USB_OTG
-extern void usb_hnp_polling_work(struct work_struct *work);
-#endif
-
-extern struct bus_type usb_bus_type;
-extern struct device_type usb_device_type;
-extern struct device_type usb_if_device_type;
-extern struct device_type usb_ep_device_type;
-=======
 static inline int usb_disable_usb2_hardware_lpm(struct usb_device *udev)
 {
 	return 0;
@@ -225,7 +148,6 @@ extern const struct device_type usb_device_type;
 extern const struct device_type usb_if_device_type;
 extern const struct device_type usb_ep_device_type;
 extern const struct device_type usb_port_device_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct usb_device_driver usb_generic_driver;
 
 static inline int is_usb_device(const struct device *dev)
@@ -243,16 +165,6 @@ static inline int is_usb_endpoint(const struct device *dev)
 	return dev->type == &usb_ep_device_type;
 }
 
-<<<<<<< HEAD
-/* Do the same for device drivers and interface drivers. */
-
-static inline int is_usb_device_driver(struct device_driver *drv)
-{
-	return container_of(drv, struct usbdrv_wrap, driver)->
-			for_devices;
-}
-
-=======
 static inline int is_usb_port(const struct device *dev)
 {
 	return dev->type == &usb_port_device_type;
@@ -265,7 +177,6 @@ static inline int is_root_hub(struct usb_device *udev)
 
 extern bool is_usb_device_driver(const struct device_driver *drv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* for labeling diagnostics */
 extern const char *usbcore_name;
 
@@ -274,30 +185,13 @@ extern const struct attribute_group *usb_device_groups[];
 extern const struct attribute_group *usb_interface_groups[];
 
 /* usbfs stuff */
-<<<<<<< HEAD
-extern struct mutex usbfs_mutex;
 extern struct usb_driver usbfs_driver;
 extern const struct file_operations usbfs_devices_fops;
 extern const struct file_operations usbdev_file_operations;
-extern void usbfs_conn_disc_event(void);
-=======
-extern struct usb_driver usbfs_driver;
-extern const struct file_operations usbfs_devices_fops;
-extern const struct file_operations usbdev_file_operations;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int usb_devio_init(void);
 extern void usb_devio_cleanup(void);
 
-<<<<<<< HEAD
-/* internal notify stuff */
-extern void usb_notify_add_device(struct usb_device *udev);
-extern void usb_notify_remove_device(struct usb_device *udev);
-extern void usb_notify_config_device(struct usb_device *udev);
-extern void usb_notify_add_bus(struct usb_bus *ubus);
-extern void usb_notify_remove_bus(struct usb_bus *ubus);
-
-=======
 /*
  * Firmware specific cookie identifying a port's location. '0' == no location
  * data available
@@ -321,4 +215,3 @@ extern acpi_handle usb_get_hub_port_acpi_handle(struct usb_device *hdev,
 static inline int usb_acpi_register(void) { return 0; };
 static inline void usb_acpi_unregister(void) { };
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

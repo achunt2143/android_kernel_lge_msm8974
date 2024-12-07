@@ -1,36 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2000-2001 Christoph Hellwig.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -59,11 +29,7 @@ vxfs_typdump(struct vxfs_typed *typ)
 /**
  * vxfs_bmap_ext4 - do bmap for ext4 extents
  * @ip:		pointer to the inode we do bmap for
-<<<<<<< HEAD
- * @iblock:	logical block.
-=======
  * @bn:		logical block.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *   vxfs_bmap_ext4 performs the bmap operation for inodes with
@@ -78,14 +44,9 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 {
 	struct super_block *sb = ip->i_sb;
 	struct vxfs_inode_info *vip = VXFS_INO(ip);
-<<<<<<< HEAD
-	unsigned long bsize = sb->s_blocksize;
-	u32 indsize = vip->vii_ext4.ve4_indsize;
-=======
 	struct vxfs_sb_info *sbi = VXFS_SBI(sb);
 	unsigned long bsize = sb->s_blocksize;
 	u32 indsize = fs32_to_cpu(sbi, vip->vii_ext4.ve4_indsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (indsize > sb->s_blocksize)
@@ -93,30 +54,14 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 
 	for (i = 0; i < VXFS_NDADDR; i++) {
 		struct direct *d = vip->vii_ext4.ve4_direct + i;
-<<<<<<< HEAD
-		if (bn >= 0 && bn < d->size)
-			return (bn + d->extent);
-		bn -= d->size;
-=======
 		if (bn >= 0 && bn < fs32_to_cpu(sbi, d->size))
 			return (bn + fs32_to_cpu(sbi, d->extent));
 		bn -= fs32_to_cpu(sbi, d->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((bn / (indsize * indsize * bsize / 4)) == 0) {
 		struct buffer_head *buf;
 		daddr_t	bno;
-<<<<<<< HEAD
-		u32 *indir;
-
-		buf = sb_bread(sb, vip->vii_ext4.ve4_indir[0]);
-		if (!buf || !buffer_mapped(buf))
-			goto fail_buf;
-
-		indir = (u32 *)buf->b_data;
-		bno = indir[(bn/indsize) % (indsize*bn)] + (bn%indsize);
-=======
 		__fs32 *indir;
 
 		buf = sb_bread(sb,
@@ -127,7 +72,6 @@ vxfs_bmap_ext4(struct inode *ip, long bn)
 		indir = (__fs32 *)buf->b_data;
 		bno = fs32_to_cpu(sbi, indir[(bn / indsize) % (indsize * bn)]) +
 			(bn % indsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		brelse(buf);
 		return bno;
@@ -153,11 +97,7 @@ fail_buf:
  *   vxfs_bmap_indir reads a &struct vxfs_typed at @indir
  *   and performs the type-defined action.
  *
-<<<<<<< HEAD
- * Return Value:
-=======
  * Returns:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   The physical block number on success, else Zero.
  *
  * Note:
@@ -166,10 +106,7 @@ fail_buf:
 static daddr_t
 vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 {
-<<<<<<< HEAD
-=======
 	struct vxfs_sb_info		*sbi = VXFS_SBI(ip->i_sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head		*bp = NULL;
 	daddr_t				pblock = 0;
 	int				i;
@@ -185,23 +122,13 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 
 		typ = ((struct vxfs_typed *)bp->b_data) +
 			(i % VXFS_TYPED_PER_BLOCK(ip->i_sb));
-<<<<<<< HEAD
-		off = (typ->vt_hdr & VXFS_TYPED_OFFSETMASK);
-=======
 		off = fs64_to_cpu(sbi, typ->vt_hdr) & VXFS_TYPED_OFFSETMASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (block < off) {
 			brelse(bp);
 			continue;
 		}
 
-<<<<<<< HEAD
-		switch ((u_int32_t)(typ->vt_hdr >> VXFS_TYPED_TYPESHIFT)) {
-		case VXFS_TYPED_INDIRECT:
-			pblock = vxfs_bmap_indir(ip, typ->vt_block,
-					typ->vt_size, block - off);
-=======
 		switch ((u_int32_t)(fs64_to_cpu(sbi, typ->vt_hdr) >>
 				VXFS_TYPED_TYPESHIFT)) {
 		case VXFS_TYPED_INDIRECT:
@@ -209,20 +136,13 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 					fs32_to_cpu(sbi, typ->vt_block),
 					fs32_to_cpu(sbi, typ->vt_size),
 					block - off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pblock == -2)
 				break;
 			goto out;
 		case VXFS_TYPED_DATA:
-<<<<<<< HEAD
-			if ((block - off) >= typ->vt_size)
-				break;
-			pblock = (typ->vt_block + block - off);
-=======
 			if ((block - off) >= fs32_to_cpu(sbi, typ->vt_size))
 				break;
 			pblock = fs32_to_cpu(sbi, typ->vt_block) + block - off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		case VXFS_TYPED_INDIRECT_DEV4:
 		case VXFS_TYPED_DATA_DEV4: {
@@ -230,15 +150,6 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 				(struct vxfs_typed_dev4 *)typ;
 
 			printk(KERN_INFO "\n\nTYPED_DEV4 detected!\n");
-<<<<<<< HEAD
-			printk(KERN_INFO "block: %Lu\tsize: %Ld\tdev: %d\n",
-			       (unsigned long long) typ4->vd4_block,
-			       (unsigned long long) typ4->vd4_size,
-			       typ4->vd4_dev);
-			goto fail;
-		}
-		default:
-=======
 			printk(KERN_INFO "block: %llu\tsize: %lld\tdev: %d\n",
 			       fs64_to_cpu(sbi, typ4->vd4_block),
 			       fs64_to_cpu(sbi, typ4->vd4_size),
@@ -248,7 +159,6 @@ vxfs_bmap_indir(struct inode *ip, long indir, int size, long block)
 		default:
 			printk(KERN_ERR "%s:%d vt_hdr %llu\n", __func__,
 				__LINE__, fs64_to_cpu(sbi, typ->vt_hdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BUG();
 		}
 		brelse(bp);
@@ -269,63 +179,40 @@ out:
  * Description:
  *   Performs the bmap operation for typed extents.
  *
-<<<<<<< HEAD
- * Return Value:
-=======
  * Returns:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   The physical block number on success, else Zero.
  */
 static daddr_t
 vxfs_bmap_typed(struct inode *ip, long iblock)
 {
 	struct vxfs_inode_info		*vip = VXFS_INO(ip);
-<<<<<<< HEAD
-=======
 	struct vxfs_sb_info		*sbi = VXFS_SBI(ip->i_sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	daddr_t				pblock = 0;
 	int				i;
 
 	for (i = 0; i < VXFS_NTYPED; i++) {
 		struct vxfs_typed	*typ = vip->vii_org.typed + i;
-<<<<<<< HEAD
-		int64_t			off = (typ->vt_hdr & VXFS_TYPED_OFFSETMASK);
-=======
 		u64			hdr = fs64_to_cpu(sbi, typ->vt_hdr);
 		int64_t			off = (hdr & VXFS_TYPED_OFFSETMASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DIAGNOSTIC
 		vxfs_typdump(typ);
 #endif
 		if (iblock < off)
 			continue;
-<<<<<<< HEAD
-		switch ((u_int32_t)(typ->vt_hdr >> VXFS_TYPED_TYPESHIFT)) {
-		case VXFS_TYPED_INDIRECT:
-			pblock = vxfs_bmap_indir(ip, typ->vt_block,
-					typ->vt_size, iblock - off);
-=======
 		switch ((u32)(hdr >> VXFS_TYPED_TYPESHIFT)) {
 		case VXFS_TYPED_INDIRECT:
 			pblock = vxfs_bmap_indir(ip,
 					fs32_to_cpu(sbi, typ->vt_block),
 					fs32_to_cpu(sbi, typ->vt_size),
 					iblock - off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pblock == -2)
 				break;
 			return (pblock);
 		case VXFS_TYPED_DATA:
-<<<<<<< HEAD
-			if ((iblock - off) < typ->vt_size)
-				return (typ->vt_block + iblock - off);
-=======
 			if ((iblock - off) < fs32_to_cpu(sbi, typ->vt_size))
 				return (fs32_to_cpu(sbi, typ->vt_block) +
 						iblock - off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case VXFS_TYPED_INDIRECT_DEV4:
 		case VXFS_TYPED_DATA_DEV4: {
@@ -333,17 +220,10 @@ vxfs_bmap_typed(struct inode *ip, long iblock)
 				(struct vxfs_typed_dev4 *)typ;
 
 			printk(KERN_INFO "\n\nTYPED_DEV4 detected!\n");
-<<<<<<< HEAD
-			printk(KERN_INFO "block: %Lu\tsize: %Ld\tdev: %d\n",
-			       (unsigned long long) typ4->vd4_block,
-			       (unsigned long long) typ4->vd4_size,
-			       typ4->vd4_dev);
-=======
 			printk(KERN_INFO "block: %llu\tsize: %lld\tdev: %d\n",
 			       fs64_to_cpu(sbi, typ4->vd4_block),
 			       fs64_to_cpu(sbi, typ4->vd4_size),
 			       fs32_to_cpu(sbi, typ4->vd4_dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		default:
@@ -363,11 +243,7 @@ vxfs_bmap_typed(struct inode *ip, long iblock)
  *   vxfs_bmap1 perfoms a logical to physical block mapping
  *   for vxfs-internal purposes.
  *
-<<<<<<< HEAD
- * Return Value:
-=======
  * Returns:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   The physical block number on success, else Zero.
  */
 daddr_t

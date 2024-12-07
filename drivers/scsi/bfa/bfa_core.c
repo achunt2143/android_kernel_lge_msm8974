@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -33,25 +15,6 @@
 BFA_TRC_FILE(HAL, CORE);
 
 /*
-<<<<<<< HEAD
- * BFA module list terminated by NULL
- */
-static struct bfa_module_s *hal_mods[] = {
-	&hal_mod_fcdiag,
-	&hal_mod_sgpg,
-	&hal_mod_fcport,
-	&hal_mod_fcxp,
-	&hal_mod_lps,
-	&hal_mod_uf,
-	&hal_mod_rport,
-	&hal_mod_fcp,
-	&hal_mod_dconf,
-	NULL
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Message handlers for various modules.
  */
 static bfa_isr_func_t  bfa_isrs[BFI_MC_MAX] = {
@@ -104,8 +67,6 @@ static bfa_ioc_mbox_mcfunc_t  bfa_mbox_isrs[BFI_MC_MAX] = {
 
 
 
-<<<<<<< HEAD
-=======
 void
 __bfa_trc(struct bfa_trc_mod_s *trcm, int fileno, int line, u64 data)
 {
@@ -125,7 +86,6 @@ __bfa_trc(struct bfa_trc_mod_s *trcm, int fileno, int line, u64 data)
 		trcm->head = (trcm->head + 1) & (BFA_TRC_MAX - 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_com_port_attach(struct bfa_s *bfa)
 {
@@ -201,8 +161,6 @@ bfa_com_phy_attach(struct bfa_s *bfa, bfa_boolean_t mincfg)
 	bfa_phy_memclaim(phy, phy_dma->kva_curp, phy_dma->dma_curp, mincfg);
 }
 
-<<<<<<< HEAD
-=======
 static void
 bfa_com_fru_attach(struct bfa_s *bfa, bfa_boolean_t mincfg)
 {
@@ -213,7 +171,6 @@ bfa_com_fru_attach(struct bfa_s *bfa, bfa_boolean_t mincfg)
 	bfa_fru_memclaim(fru, fru_dma->kva_curp, fru_dma->dma_curp, mincfg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFA IOC FC related definitions
  */
@@ -323,8 +280,6 @@ bfa_iocfc_sm_initing(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_IOC_ENABLED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_dconf_read);
 		break;
-<<<<<<< HEAD
-=======
 
 	case IOCFC_E_DISABLE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabling);
@@ -334,7 +289,6 @@ bfa_iocfc_sm_initing(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_stopping);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCFC_E_IOC_FAILED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_init_failed);
 		break;
@@ -359,8 +313,6 @@ bfa_iocfc_sm_dconf_read(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_DCONF_DONE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_init_cfg_wait);
 		break;
-<<<<<<< HEAD
-=======
 
 	case IOCFC_E_DISABLE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabling);
@@ -370,7 +322,6 @@ bfa_iocfc_sm_dconf_read(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_stopping);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCFC_E_IOC_FAILED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_init_failed);
 		break;
@@ -395,8 +346,6 @@ bfa_iocfc_sm_init_cfg_wait(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_CFG_DONE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_init_cfg_done);
 		break;
-<<<<<<< HEAD
-=======
 
 	case IOCFC_E_DISABLE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabling);
@@ -406,7 +355,6 @@ bfa_iocfc_sm_init_cfg_wait(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_stopping);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCFC_E_IOC_FAILED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_init_failed);
 		break;
@@ -518,15 +466,12 @@ bfa_iocfc_sm_stopping(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 		bfa_cb_queue(iocfc->bfa, &iocfc->bfa->iocfc.stop_hcb_qe,
 			     bfa_iocfc_stop_cb, iocfc->bfa);
 		break;
-<<<<<<< HEAD
-=======
 
 	case IOCFC_E_IOC_ENABLED:
 	case IOCFC_E_DCONF_DONE:
 	case IOCFC_E_CFG_DONE:
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(iocfc->bfa, event);
 		break;
@@ -548,8 +493,6 @@ bfa_iocfc_sm_enabling(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_IOC_ENABLED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_cfg_wait);
 		break;
-<<<<<<< HEAD
-=======
 
 	case IOCFC_E_DISABLE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabling);
@@ -559,7 +502,6 @@ bfa_iocfc_sm_enabling(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_dconf_write);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCFC_E_IOC_FAILED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_failed);
 
@@ -599,8 +541,6 @@ bfa_iocfc_sm_cfg_wait(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 			     bfa_iocfc_enable_cb, iocfc->bfa);
 		iocfc->bfa->iocfc.cb_reqd = BFA_FALSE;
 		break;
-<<<<<<< HEAD
-=======
 	case IOCFC_E_DISABLE:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabling);
 		break;
@@ -608,7 +548,6 @@ bfa_iocfc_sm_cfg_wait(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_STOP:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_dconf_write);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCFC_E_IOC_FAILED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_failed);
 		if (iocfc->bfa->iocfc.cb_reqd == BFA_FALSE)
@@ -640,13 +579,10 @@ bfa_iocfc_sm_disabling(struct bfa_iocfc_s *iocfc, enum iocfc_event event)
 	case IOCFC_E_IOC_DISABLED:
 		bfa_fsm_set_state(iocfc, bfa_iocfc_sm_disabled);
 		break;
-<<<<<<< HEAD
-=======
 	case IOCFC_E_IOC_ENABLED:
 	case IOCFC_E_DCONF_DONE:
 	case IOCFC_E_CFG_DONE:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(iocfc->bfa, event);
 		break;
@@ -772,11 +708,7 @@ bfa_reqq_resume(struct bfa_s *bfa, int qid)
 	}
 }
 
-<<<<<<< HEAD
-bfa_boolean_t
-=======
 static bfa_boolean_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_isr_rspq(struct bfa_s *bfa, int qid)
 {
 	struct bfi_msg_s *m;
@@ -902,12 +834,8 @@ bfa_intx(struct bfa_s *bfa)
 	if (!intr)
 		return BFA_TRUE;
 
-<<<<<<< HEAD
-	bfa_msix_lpu_err(bfa, intr);
-=======
 	if (bfa->intr_enabled)
 		bfa_msix_lpu_err(bfa, intr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return BFA_TRUE;
 }
@@ -916,57 +844,37 @@ void
 bfa_isr_enable(struct bfa_s *bfa)
 {
 	u32 umsk;
-<<<<<<< HEAD
-	int pci_func = bfa_ioc_pcifn(&bfa->ioc);
-
-	bfa_trc(bfa, pci_func);
-=======
 	int port_id = bfa_ioc_portid(&bfa->ioc);
 
 	bfa_trc(bfa, bfa_ioc_pcifn(&bfa->ioc));
 	bfa_trc(bfa, port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_msix_ctrl_install(bfa);
 
 	if (bfa_asic_id_ct2(bfa->ioc.pcidev.device_id)) {
 		umsk = __HFN_INT_ERR_MASK_CT2;
-<<<<<<< HEAD
-		umsk |= pci_func == 0 ?
-			__HFN_INT_FN0_MASK_CT2 : __HFN_INT_FN1_MASK_CT2;
-	} else {
-		umsk = __HFN_INT_ERR_MASK;
-		umsk |= pci_func == 0 ? __HFN_INT_FN0_MASK : __HFN_INT_FN1_MASK;
-=======
 		umsk |= port_id == 0 ?
 			__HFN_INT_FN0_MASK_CT2 : __HFN_INT_FN1_MASK_CT2;
 	} else {
 		umsk = __HFN_INT_ERR_MASK;
 		umsk |= port_id == 0 ? __HFN_INT_FN0_MASK : __HFN_INT_FN1_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	writel(umsk, bfa->iocfc.bfa_regs.intr_status);
 	writel(~umsk, bfa->iocfc.bfa_regs.intr_mask);
 	bfa->iocfc.intr_mask = ~umsk;
 	bfa_isr_mode_set(bfa, bfa->msix.nvecs != 0);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Set the flag indicating successful enabling of interrupts
 	 */
 	bfa->intr_enabled = BFA_TRUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 bfa_isr_disable(struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-=======
 	bfa->intr_enabled = BFA_FALSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_isr_mode_set(bfa, BFA_FALSE);
 	writel(-1L, bfa->iocfc.bfa_regs.intr_mask);
 	bfa_msix_uninstall(bfa);
@@ -1082,12 +990,8 @@ bfa_iocfc_send_cfg(void *bfa_arg)
 		cfg_info->single_msix_vec = 1;
 	cfg_info->endian_sig = BFI_IOC_ENDIAN_SIG;
 	cfg_info->num_cqs = cfg->fwcfg.num_cqs;
-<<<<<<< HEAD
-	cfg_info->num_ioim_reqs = cpu_to_be16(cfg->fwcfg.num_ioim_reqs);
-=======
 	cfg_info->num_ioim_reqs = cpu_to_be16(bfa_fcpim_get_throttle_cfg(bfa,
 					       cfg->fwcfg.num_ioim_reqs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg_info->num_fwtio_reqs = cpu_to_be16(cfg->fwcfg.num_fwtio_reqs);
 
 	bfa_dma_be_addr_set(cfg_info->cfgrsp_addr, iocfc->cfgrsp_dma.pa);
@@ -1186,11 +1090,7 @@ bfa_iocfc_mem_claim(struct bfa_s *bfa, struct bfa_iocfc_cfg_s *cfg)
 {
 	u8	*dm_kva = NULL;
 	u64	dm_pa = 0;
-<<<<<<< HEAD
-	int	i, per_reqq_sz, per_rspq_sz, dbgsz;
-=======
 	int	i, per_reqq_sz, per_rspq_sz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_iocfc_s  *iocfc = &bfa->iocfc;
 	struct bfa_mem_dma_s *ioc_dma = BFA_MEM_IOC_DMA(bfa);
 	struct bfa_mem_dma_s *iocfc_dma = BFA_MEM_IOCFC_DMA(bfa);
@@ -1251,16 +1151,8 @@ bfa_iocfc_mem_claim(struct bfa_s *bfa, struct bfa_iocfc_cfg_s *cfg)
 			BFA_CACHELINE_SZ);
 
 	/* Claim IOCFC kva memory */
-<<<<<<< HEAD
-	dbgsz = (bfa_auto_recover) ? BFA_DBG_FWTRC_LEN : 0;
-	if (dbgsz > 0) {
-		bfa_ioc_debug_memclaim(&bfa->ioc, bfa_mem_kva_curp(iocfc));
-		bfa_mem_kva_curp(iocfc) += dbgsz;
-	}
-=======
 	bfa_ioc_debug_memclaim(&bfa->ioc, bfa_mem_kva_curp(iocfc));
 	bfa_mem_kva_curp(iocfc) += BFA_DBG_FWTRC_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1275,10 +1167,6 @@ bfa_iocfc_start_submod(struct bfa_s *bfa)
 	for (i = 0; i < BFI_IOC_MAX_CQS; i++)
 		bfa_isr_rspq_ack(bfa, i, bfa_rspq_ci(bfa, i));
 
-<<<<<<< HEAD
-	for (i = 0; hal_mods[i]; i++)
-		hal_mods[i]->start(bfa);
-=======
 	bfa_fcport_start(bfa);
 	bfa_uf_start(bfa);
 	/*
@@ -1286,7 +1174,6 @@ bfa_iocfc_start_submod(struct bfa_s *bfa)
 	 * content of lun mask like unit attention, rp tag and lp tag.
 	 */
 	bfa_ioim_lm_init(BFA_FCP_MOD(bfa)->bfa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa->iocfc.submod_enabled = BFA_TRUE;
 }
@@ -1297,15 +1184,6 @@ bfa_iocfc_start_submod(struct bfa_s *bfa)
 static void
 bfa_iocfc_disable_submod(struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-	int		i;
-
-	if (bfa->iocfc.submod_enabled == BFA_FALSE)
-		return;
-
-	for (i = 0; hal_mods[i]; i++)
-		hal_mods[i]->iocdisable(bfa);
-=======
 	if (bfa->iocfc.submod_enabled == BFA_FALSE)
 		return;
 
@@ -1316,7 +1194,6 @@ bfa_iocfc_disable_submod(struct bfa_s *bfa)
 	bfa_rport_iocdisable(bfa);
 	bfa_fcp_iocdisable(bfa);
 	bfa_dconf_iocdisable(bfa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa->iocfc.submod_enabled = BFA_FALSE;
 }
@@ -1360,11 +1237,7 @@ bfa_iocfc_disable_cb(void *bfa_arg, bfa_boolean_t compl)
 		complete(&bfad->disable_comp);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * configure queue registers from firmware response
  */
 static void
@@ -1388,12 +1261,6 @@ bfa_iocfc_qreg(struct bfa_s *bfa, struct bfi_iocfc_qreg_s *qreg)
 static void
 bfa_iocfc_res_recfg(struct bfa_s *bfa, struct bfa_iocfc_fwcfg_s *fwcfg)
 {
-<<<<<<< HEAD
-	bfa_fcxp_res_recfg(bfa, fwcfg->num_fcxp_reqs);
-	bfa_uf_res_recfg(bfa, fwcfg->num_uf_bufs);
-	bfa_rport_res_recfg(bfa, fwcfg->num_rports);
-	bfa_fcp_res_recfg(bfa, fwcfg->num_ioim_reqs);
-=======
 	struct bfa_iocfc_s	*iocfc   = &bfa->iocfc;
 	struct bfi_iocfc_cfg_s	*cfg_info = iocfc->cfginfo;
 
@@ -1402,7 +1269,6 @@ bfa_iocfc_res_recfg(struct bfa_s *bfa, struct bfa_iocfc_fwcfg_s *fwcfg)
 	bfa_rport_res_recfg(bfa, fwcfg->num_rports);
 	bfa_fcp_res_recfg(bfa, cpu_to_be16(cfg_info->num_ioim_reqs),
 			  fwcfg->num_ioim_reqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_tskim_res_recfg(bfa, fwcfg->num_tskim_reqs);
 }
 
@@ -1505,13 +1371,6 @@ bfa_faa_query(struct bfa_s *bfa, struct bfa_faa_attr_s *attr,
 	struct bfa_iocfc_s      *iocfc = &bfa->iocfc;
 	bfa_status_t            status;
 
-<<<<<<< HEAD
-	iocfc->faa_args.faa_attr = attr;
-	iocfc->faa_args.faa_cb.faa_cbfn = cbfn;
-	iocfc->faa_args.faa_cb.faa_cbarg = cbarg;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = bfa_faa_validate_request(bfa);
 	if (status != BFA_STATUS_OK)
 		return status;
@@ -1519,13 +1378,10 @@ bfa_faa_query(struct bfa_s *bfa, struct bfa_faa_attr_s *attr,
 	if (iocfc->faa_args.busy == BFA_TRUE)
 		return BFA_STATUS_DEVBUSY;
 
-<<<<<<< HEAD
-=======
 	iocfc->faa_args.faa_attr = attr;
 	iocfc->faa_args.faa_cb.faa_cbfn = cbfn;
 	iocfc->faa_args.faa_cb.faa_cbarg = cbarg;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iocfc->faa_args.busy = BFA_TRUE;
 	memset(&faa_attr_req, 0, sizeof(struct bfi_faa_query_s));
 	bfi_h2i_set(faa_attr_req.mh, BFI_MC_IOCFC,
@@ -1580,10 +1436,7 @@ bfa_iocfc_disable_cbfn(void *bfa_arg)
 {
 	struct bfa_s	*bfa = bfa_arg;
 
-<<<<<<< HEAD
-=======
 	bfa->queue_process = BFA_FALSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fsm_send_event(&bfa->iocfc, IOCFC_E_IOC_DISABLED);
 }
 
@@ -1654,12 +1507,7 @@ bfa_iocfc_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 	bfa_mem_dma_setup(meminfo, iocfc_dma, dm_len);
 
 	/* kva memory setup for IOCFC */
-<<<<<<< HEAD
-	bfa_mem_kva_setup(meminfo, iocfc_kva,
-			((bfa_auto_recover) ? BFA_DBG_FWTRC_LEN : 0));
-=======
 	bfa_mem_kva_setup(meminfo, iocfc_kva, BFA_DBG_FWTRC_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1724,10 +1572,6 @@ bfa_iocfc_start(struct bfa_s *bfa)
 void
 bfa_iocfc_stop(struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-	bfa->queue_process = BFA_FALSE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fsm_send_event(&bfa->iocfc, IOCFC_E_STOP);
 }
 
@@ -1834,10 +1678,6 @@ bfa_iocfc_disable(struct bfa_s *bfa)
 	bfa_plog_str(bfa->plog, BFA_PL_MID_HAL, BFA_PL_EID_MISC, 0,
 		     "IOC Disable");
 
-<<<<<<< HEAD
-	bfa->queue_process = BFA_FALSE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fsm_send_event(&bfa->iocfc, IOCFC_E_DISABLE);
 }
 
@@ -1917,10 +1757,6 @@ void
 bfa_cfg_get_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 		struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-	int		i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_mem_dma_s *port_dma = BFA_MEM_PORT_DMA(bfa);
 	struct bfa_mem_dma_s *ablk_dma = BFA_MEM_ABLK_DMA(bfa);
 	struct bfa_mem_dma_s *cee_dma = BFA_MEM_CEE_DMA(bfa);
@@ -1928,10 +1764,7 @@ bfa_cfg_get_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 	struct bfa_mem_dma_s *flash_dma = BFA_MEM_FLASH_DMA(bfa);
 	struct bfa_mem_dma_s *diag_dma = BFA_MEM_DIAG_DMA(bfa);
 	struct bfa_mem_dma_s *phy_dma = BFA_MEM_PHY_DMA(bfa);
-<<<<<<< HEAD
-=======
 	struct bfa_mem_dma_s *fru_dma = BFA_MEM_FRU_DMA(bfa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON((cfg == NULL) || (meminfo == NULL));
 
@@ -1942,11 +1775,6 @@ bfa_cfg_get_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 	INIT_LIST_HEAD(&meminfo->kva_info.qe);
 
 	bfa_iocfc_meminfo(cfg, meminfo, bfa);
-<<<<<<< HEAD
-
-	for (i = 0; hal_mods[i]; i++)
-		hal_mods[i]->meminfo(cfg, meminfo, bfa);
-=======
 	bfa_sgpg_meminfo(cfg, meminfo, bfa);
 	bfa_fcport_meminfo(cfg, meminfo, bfa);
 	bfa_fcxp_meminfo(cfg, meminfo, bfa);
@@ -1955,7 +1783,6 @@ bfa_cfg_get_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 	bfa_rport_meminfo(cfg, meminfo, bfa);
 	bfa_fcp_meminfo(cfg, meminfo, bfa);
 	bfa_dconf_meminfo(cfg, meminfo, bfa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* dma info setup */
 	bfa_mem_dma_setup(meminfo, port_dma, bfa_port_meminfo());
@@ -1967,11 +1794,8 @@ bfa_cfg_get_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
 	bfa_mem_dma_setup(meminfo, diag_dma, bfa_diag_meminfo());
 	bfa_mem_dma_setup(meminfo, phy_dma,
 			  bfa_phy_meminfo(cfg->drvcfg.min_cfg));
-<<<<<<< HEAD
-=======
 	bfa_mem_dma_setup(meminfo, fru_dma,
 			  bfa_fru_meminfo(cfg->drvcfg.min_cfg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2004,10 +1828,6 @@ void
 bfa_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	       struct bfa_meminfo_s *meminfo, struct bfa_pcidev_s *pcidev)
 {
-<<<<<<< HEAD
-	int	i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_mem_dma_s *dma_info, *dma_elem;
 	struct bfa_mem_kva_s *kva_info, *kva_elem;
 	struct list_head *dm_qe, *km_qe;
@@ -2036,12 +1856,6 @@ bfa_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	}
 
 	bfa_iocfc_attach(bfa, bfad, cfg, pcidev);
-<<<<<<< HEAD
-
-	for (i = 0; hal_mods[i]; i++)
-		hal_mods[i]->attach(bfa, bfad, cfg, pcidev);
-
-=======
 	bfa_fcdiag_attach(bfa, bfad, cfg, pcidev);
 	bfa_sgpg_attach(bfa, bfad, cfg, pcidev);
 	bfa_fcport_attach(bfa, bfad, cfg, pcidev);
@@ -2051,7 +1865,6 @@ bfa_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_rport_attach(bfa, bfad, cfg, pcidev);
 	bfa_fcp_attach(bfa, bfad, cfg, pcidev);
 	bfa_dconf_attach(bfa, bfad, cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_com_port_attach(bfa);
 	bfa_com_ablk_attach(bfa);
 	bfa_com_cee_attach(bfa);
@@ -2059,10 +1872,7 @@ bfa_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_com_flash_attach(bfa, cfg->drvcfg.min_cfg);
 	bfa_com_diag_attach(bfa);
 	bfa_com_phy_attach(bfa, cfg->drvcfg.min_cfg);
-<<<<<<< HEAD
-=======
 	bfa_com_fru_attach(bfa, cfg->drvcfg.min_cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2081,13 +1891,6 @@ bfa_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 void
 bfa_detach(struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-	int	i;
-
-	for (i = 0; hal_mods[i]; i++)
-		hal_mods[i]->detach(bfa);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_ioc_detach(&bfa->ioc);
 }
 
@@ -2104,22 +1907,13 @@ bfa_comp_process(struct bfa_s *bfa, struct list_head *comp_q)
 	struct list_head		*qe;
 	struct list_head		*qen;
 	struct bfa_cb_qe_s	*hcb_qe;
-<<<<<<< HEAD
-	bfa_cb_cbfn_status_t	cbfn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_safe(qe, qen, comp_q) {
 		hcb_qe = (struct bfa_cb_qe_s *) qe;
 		if (hcb_qe->pre_rmv) {
 			/* qe is invalid after return, dequeue before cbfn() */
 			list_del(qe);
-<<<<<<< HEAD
-			cbfn = (bfa_cb_cbfn_status_t)(hcb_qe->cbfn);
-			cbfn(hcb_qe->cbarg, hcb_qe->fw_status);
-=======
 			hcb_qe->cbfn_status(hcb_qe->cbarg, hcb_qe->fw_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			hcb_qe->cbfn(hcb_qe->cbarg, BFA_TRUE);
 	}
@@ -2153,11 +1947,7 @@ bfa_get_pciids(struct bfa_pciid_s **pciids, int *npciids)
 		{BFA_PCI_VENDOR_ID_BROCADE, BFA_PCI_DEVICE_ID_CT_FC},
 	};
 
-<<<<<<< HEAD
-	*npciids = sizeof(__pciids) / sizeof(__pciids[0]);
-=======
 	*npciids = ARRAY_SIZE(__pciids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pciids = __pciids;
 }
 

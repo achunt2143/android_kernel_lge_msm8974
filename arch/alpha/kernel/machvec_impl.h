@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/machvec_impl.h
  *
@@ -10,11 +7,6 @@
  * This file has goodies to help simplify instantiation of machine vectors.
  */
 
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Whee.  These systems don't have an HAE:
        IRONGATE, MARVEL, POLARIS, TSUNAMI, TITAN, WILDFIRE
    Fix things up for the GENERIC kernel by defining the HAE address
@@ -50,14 +42,7 @@
 #define CAT1(x,y)  x##y
 #define CAT(x,y)   CAT1(x,y)
 
-<<<<<<< HEAD
-#define DO_DEFAULT_RTC \
-	.rtc_port = 0x70, \
-	.rtc_get_time = common_get_rtc_time, \
-	.rtc_set_time = common_set_rtc_time
-=======
 #define DO_DEFAULT_RTC			.rtc_port = 0x70
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_EV4_MMU							\
 	.max_asn =			EV4_MAX_ASN,			\
@@ -93,17 +78,11 @@
 	.mv_ioread8 =		CAT(low,_ioread8),			\
 	.mv_ioread16 =		CAT(low,_ioread16),			\
 	.mv_ioread32 =		CAT(low,_ioread32),			\
-<<<<<<< HEAD
-	.mv_iowrite8 =		CAT(low,_iowrite8),			\
-	.mv_iowrite16 =		CAT(low,_iowrite16),			\
-	.mv_iowrite32 =		CAT(low,_iowrite32),			\
-=======
 	.mv_ioread64 =		CAT(low,_ioread64),			\
 	.mv_iowrite8 =		CAT(low,_iowrite8),			\
 	.mv_iowrite16 =		CAT(low,_iowrite16),			\
 	.mv_iowrite32 =		CAT(low,_iowrite32),			\
 	.mv_iowrite64 =		CAT(low,_iowrite64),			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_readb =		CAT(low,_readb),			\
 	.mv_readw =		CAT(low,_readw),			\
 	.mv_readl =		CAT(low,_readl),			\
@@ -159,29 +138,18 @@
 #define __initmv __initdata
 #define ALIAS_MV(x)
 #else
-<<<<<<< HEAD
-#define __initmv __initdata_refok
-=======
 #define __initmv __refdata
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* GCC actually has a syntax for defining aliases, but is under some
    delusion that you shouldn't be able to declare it extern somewhere
    else beforehand.  Fine.  We'll do it ourselves.  */
 #if 0
 #define ALIAS_MV(system) \
-<<<<<<< HEAD
-  struct alpha_machine_vector alpha_mv __attribute__((alias(#system "_mv")));
-#else
-#define ALIAS_MV(system) \
-  asm(".global alpha_mv\nalpha_mv = " #system "_mv");
-=======
   struct alpha_machine_vector alpha_mv __attribute__((alias(#system "_mv"))); \
   EXPORT_SYMBOL(alpha_mv);
 #else
 #define ALIAS_MV(system) \
   asm(".global alpha_mv\nalpha_mv = " #system "_mv"); \
   EXPORT_SYMBOL(alpha_mv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif /* GENERIC */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Low-Level PCI Support for PC
  *
@@ -10,10 +7,7 @@
 
 #include <linux/sched.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-=======
 #include <linux/pci-acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/dmi.h>
@@ -24,22 +18,13 @@
 #include <asm/io.h>
 #include <asm/smp.h>
 #include <asm/pci_x86.h>
-<<<<<<< HEAD
-=======
 #include <asm/setup.h>
 #include <asm/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned int pci_probe = PCI_PROBE_BIOS | PCI_PROBE_CONF1 | PCI_PROBE_CONF2 |
 				PCI_PROBE_MMCONF;
 
-<<<<<<< HEAD
-unsigned int pci_early_dump_regs;
 static int pci_bf_sort;
-static int smbios_type_b1_flag;
-=======
-static int pci_bf_sort;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pci_routeirq;
 int noioapicquirk;
 #ifdef CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS
@@ -49,10 +34,6 @@ int noioapicreroute = 1;
 #endif
 int pcibios_last_bus = -1;
 unsigned long pirq_table_addr;
-<<<<<<< HEAD
-struct pci_bus *pci_root_bus;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct pci_raw_ops *__read_mostly raw_pci_ops;
 const struct pci_raw_ops *__read_mostly raw_pci_ext_ops;
 
@@ -94,32 +75,19 @@ struct pci_ops pci_root_ops = {
 };
 
 /*
-<<<<<<< HEAD
- * This interrupt-safe spinlock protects all accesses to PCI
- * configuration space.
- */
-DEFINE_RAW_SPINLOCK(pci_config_lock);
-
-static int __devinit can_skip_ioresource_align(const struct dmi_system_id *d)
-=======
  * This interrupt-safe spinlock protects all accesses to PCI configuration
  * space, except for the mmconfig (ECAM) based operations.
  */
 DEFINE_RAW_SPINLOCK(pci_config_lock);
 
 static int __init can_skip_ioresource_align(const struct dmi_system_id *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pci_probe |= PCI_CAN_SKIP_ISA_ALIGN;
 	printk(KERN_INFO "PCI: %s detected, can skip ISA alignment\n", d->ident);
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct dmi_system_id can_skip_pciprobe_dmi_table[] __devinitconst = {
-=======
 static const struct dmi_system_id can_skip_pciprobe_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Systems where PCI IO resource ISA alignment can be skipped
  * when the ISA enable bit in the bridge control is not set
@@ -156,11 +124,7 @@ void __init dmi_check_skip_isa_align(void)
 	dmi_check_system(can_skip_pciprobe_dmi_table);
 }
 
-<<<<<<< HEAD
-static void __devinit pcibios_fixup_device_resources(struct pci_dev *dev)
-=======
 static void pcibios_fixup_device_resources(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *rom_r = &dev->resource[PCI_ROM_RESOURCE];
 	struct resource *bar_r;
@@ -169,17 +133,10 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
 	if (pci_probe & PCI_NOASSIGN_BARS) {
 		/*
 		* If the BIOS did not assign the BAR, zero out the
-<<<<<<< HEAD
-		* resource so the kernel doesn't attmept to assign
-		* it later on in pci_assign_unassigned_resources
-		*/
-		for (bar = 0; bar <= PCI_STD_RESOURCE_END; bar++) {
-=======
 		* resource so the kernel doesn't attempt to assign
 		* it later on in pci_assign_unassigned_resources
 		*/
 		for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bar_r = &dev->resource[bar];
 			if (bar_r->start == 0 && bar_r->end != 0) {
 				bar_r->flags = 0;
@@ -204,11 +161,7 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
  *  are examined.
  */
 
-<<<<<<< HEAD
-void __devinit pcibios_fixup_bus(struct pci_bus *b)
-=======
 void pcibios_fixup_bus(struct pci_bus *b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *dev;
 
@@ -217,8 +170,6 @@ void pcibios_fixup_bus(struct pci_bus *b)
 		pcibios_fixup_device_resources(dev);
 }
 
-<<<<<<< HEAD
-=======
 void pcibios_add_bus(struct pci_bus *bus)
 {
 	acpi_pci_add_bus(bus);
@@ -229,17 +180,12 @@ void pcibios_remove_bus(struct pci_bus *bus)
 	acpi_pci_remove_bus(bus);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Only use DMI information to set this if nothing was passed
  * on the kernel command line (which was parsed earlier).
  */
 
-<<<<<<< HEAD
-static int __devinit set_bf_sort(const struct dmi_system_id *d)
-=======
 static int __init set_bf_sort(const struct dmi_system_id *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pci_bf_sort == pci_bf_sort_default) {
 		pci_bf_sort = pci_dmi_bf;
@@ -248,39 +194,6 @@ static int __init set_bf_sort(const struct dmi_system_id *d)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devinit read_dmi_type_b1(const struct dmi_header *dm,
-				       void *private_data)
-{
-	u8 *d = (u8 *)dm + 4;
-
-	if (dm->type != 0xB1)
-		return;
-	switch (((*(u32 *)d) >> 9) & 0x03) {
-	case 0x00:
-		printk(KERN_INFO "dmi type 0xB1 record - unknown flag\n");
-		break;
-	case 0x01: /* set pci=bfsort */
-		smbios_type_b1_flag = 1;
-		break;
-	case 0x02: /* do not set pci=bfsort */
-		smbios_type_b1_flag = 2;
-		break;
-	default:
-		break;
-	}
-}
-
-static int __devinit find_sort_method(const struct dmi_system_id *d)
-{
-	dmi_walk(read_dmi_type_b1, NULL);
-
-	if (smbios_type_b1_flag == 1) {
-		set_bf_sort(d);
-		return 0;
-	}
-	return -1;
-=======
 static void __init read_dmi_type_b1(const struct dmi_header *dm,
 				    void *private_data)
 {
@@ -296,18 +209,13 @@ static int __init find_sort_method(const struct dmi_system_id *d)
 {
 	dmi_walk(read_dmi_type_b1, (void *)d);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Enable renumbering of PCI bus# ranges to reach all PCI busses (Cardbus)
  */
 #ifdef __i386__
-<<<<<<< HEAD
-static int __devinit assign_all_busses(const struct dmi_system_id *d)
-=======
 static int __init assign_all_busses(const struct dmi_system_id *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pci_probe |= PCI_ASSIGN_ALL_BUSSES;
 	printk(KERN_INFO "%s detected: enabling PCI bus# renumbering"
@@ -316,9 +224,6 @@ static int __init assign_all_busses(const struct dmi_system_id *d)
 }
 #endif
 
-<<<<<<< HEAD
-static const struct dmi_system_id __devinitconst pciprobe_dmi_table[] = {
-=======
 static int __init set_scan_all(const struct dmi_system_id *d)
 {
 	printk(KERN_INFO "PCI: %s detected, enabling pci=pcie_scan_all\n",
@@ -328,7 +233,6 @@ static int __init set_scan_all(const struct dmi_system_id *d)
 }
 
 static const struct dmi_system_id pciprobe_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __i386__
 /*
  * Laptops which need pci=assign-busses to see Cardbus cards
@@ -519,8 +423,6 @@ static const struct dmi_system_id pciprobe_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "ProLiant DL585 G2"),
 		},
 	},
-<<<<<<< HEAD
-=======
 	{
 		.callback = set_scan_all,
 		.ident = "Stratus/NEC ftServer",
@@ -545,7 +447,6 @@ static const struct dmi_system_id pciprobe_dmi_table[] __initconst = {
                         DMI_MATCH(DMI_PRODUCT_NAME, "Express5800/R31"),
                 },
         },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
@@ -554,35 +455,6 @@ void __init dmi_check_pciprobe(void)
 	dmi_check_system(pciprobe_dmi_table);
 }
 
-<<<<<<< HEAD
-struct pci_bus * __devinit pcibios_scan_root(int busnum)
-{
-	LIST_HEAD(resources);
-	struct pci_bus *bus = NULL;
-	struct pci_sysdata *sd;
-
-	while ((bus = pci_find_next_bus(bus)) != NULL) {
-		if (bus->number == busnum) {
-			/* Already scanned */
-			return bus;
-		}
-	}
-
-	/* Allocate per-root-bus (not per bus) arch-specific data.
-	 * TODO: leak; this memory is never freed.
-	 * It's arguable whether it's worth the trouble to care.
-	 */
-	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
-	if (!sd) {
-		printk(KERN_ERR "PCI: OOM, not probing PCI bus %02x\n", busnum);
-		return NULL;
-	}
-
-	sd->node = get_mp_bus_to_node(busnum);
-
-	printk(KERN_DEBUG "PCI: Probing PCI hardware (bus %02x)\n", busnum);
-	x86_pci_root_bus_resources(busnum, &resources);
-=======
 void pcibios_scan_root(int busnum)
 {
 	struct pci_bus *bus;
@@ -597,23 +469,15 @@ void pcibios_scan_root(int busnum)
 	sd->node = x86_pci_root_bus_node(busnum);
 	x86_pci_root_bus_resources(busnum, &resources);
 	printk(KERN_DEBUG "PCI: Probing PCI hardware (bus %02x)\n", busnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus = pci_scan_root_bus(NULL, busnum, &pci_root_ops, sd, &resources);
 	if (!bus) {
 		pci_free_resource_list(&resources);
 		kfree(sd);
-<<<<<<< HEAD
-	}
-
-	return bus;
-}
-=======
 		return;
 	}
 	pci_bus_add_devices(bus);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init pcibios_set_cache_line_size(void)
 {
 	struct cpuinfo_x86 *c = &boot_cpu_data;
@@ -636,11 +500,7 @@ void __init pcibios_set_cache_line_size(void)
 
 int __init pcibios_init(void)
 {
-<<<<<<< HEAD
-	if (!raw_pci_ops) {
-=======
 	if (!raw_pci_ops && !raw_pci_ext_ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "PCI: System does not support PCI\n");
 		return 0;
 	}
@@ -653,11 +513,7 @@ int __init pcibios_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-char * __devinit  pcibios_setup(char *str)
-=======
 char *__init pcibios_setup(char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!strcmp(str, "off")) {
 		pci_probe = 0;
@@ -712,10 +568,6 @@ char *__init pcibios_setup(char *str)
 		pci_probe |= PCI_PROBE_NOEARLY;
 		return NULL;
 	}
-<<<<<<< HEAD
-#ifndef CONFIG_X86_VISWS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (!strcmp(str, "usepirqmask")) {
 		pci_probe |= PCI_USE_PIRQ_MASK;
 		return NULL;
@@ -725,13 +577,7 @@ char *__init pcibios_setup(char *str)
 	} else if (!strncmp(str, "lastbus=", 8)) {
 		pcibios_last_bus = simple_strtol(str+8, NULL, 0);
 		return NULL;
-<<<<<<< HEAD
-	}
-#endif
-	else if (!strcmp(str, "rom")) {
-=======
 	} else if (!strcmp(str, "rom")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_probe |= PCI_ASSIGN_ROMS;
 		return NULL;
 	} else if (!strcmp(str, "norom")) {
@@ -749,11 +595,6 @@ char *__init pcibios_setup(char *str)
 	} else if (!strcmp(str, "nocrs")) {
 		pci_probe |= PCI_ROOT_NO_CRS;
 		return NULL;
-<<<<<<< HEAD
-	} else if (!strcmp(str, "earlydump")) {
-		pci_early_dump_regs = 1;
-		return NULL;
-=======
 	} else if (!strcmp(str, "use_e820")) {
 		pci_probe |= PCI_USE_E820;
 		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
@@ -767,7 +608,6 @@ char *__init pcibios_setup(char *str)
 		pci_probe |= PCI_BIG_ROOT_WINDOW;
 		return NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!strcmp(str, "routeirq")) {
 		pci_routeirq = 1;
 		return NULL;
@@ -794,8 +634,6 @@ unsigned int pcibios_assign_all_busses(void)
 	return (pci_probe & PCI_ASSIGN_ALL_BUSSES) ? 1 : 0;
 }
 
-<<<<<<< HEAD
-=======
 static void set_dev_domain_options(struct pci_dev *pdev)
 {
 	if (is_vmd(pdev->bus))
@@ -850,7 +688,6 @@ int pcibios_device_add(struct pci_dev *dev)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pcibios_enable_device(struct pci_dev *dev, int mask)
 {
 	int err;
@@ -869,9 +706,6 @@ void pcibios_disable_device (struct pci_dev *dev)
 		pcibios_disable_irq(dev);
 }
 
-<<<<<<< HEAD
-int pci_ext_cfg_avail(struct pci_dev *dev)
-=======
 #ifdef CONFIG_ACPI_HOTPLUG_IOAPIC
 void pcibios_release_device(struct pci_dev *dev)
 {
@@ -882,7 +716,6 @@ void pcibios_release_device(struct pci_dev *dev)
 #endif
 
 int pci_ext_cfg_avail(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (raw_pci_ext_ops)
 		return 1;
@@ -890,108 +723,6 @@ int pci_ext_cfg_avail(void)
 		return 0;
 }
 
-<<<<<<< HEAD
-struct pci_bus * __devinit pci_scan_bus_on_node(int busno, struct pci_ops *ops, int node)
-{
-	LIST_HEAD(resources);
-	struct pci_bus *bus = NULL;
-	struct pci_sysdata *sd;
-
-	/*
-	 * Allocate per-root-bus (not per bus) arch-specific data.
-	 * TODO: leak; this memory is never freed.
-	 * It's arguable whether it's worth the trouble to care.
-	 */
-	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
-	if (!sd) {
-		printk(KERN_ERR "PCI: OOM, skipping PCI bus %02x\n", busno);
-		return NULL;
-	}
-	sd->node = node;
-	x86_pci_root_bus_resources(busno, &resources);
-	bus = pci_scan_root_bus(NULL, busno, ops, sd, &resources);
-	if (!bus) {
-		pci_free_resource_list(&resources);
-		kfree(sd);
-	}
-
-	return bus;
-}
-
-struct pci_bus * __devinit pci_scan_bus_with_sysdata(int busno)
-{
-	return pci_scan_bus_on_node(busno, &pci_root_ops, -1);
-}
-
-/*
- * NUMA info for PCI busses
- *
- * Early arch code is responsible for filling in reasonable values here.
- * A node id of "-1" means "use current node".  In other words, if a bus
- * has a -1 node id, it's not tightly coupled to any particular chunk
- * of memory (as is the case on some Nehalem systems).
- */
-#ifdef CONFIG_NUMA
-
-#define BUS_NR 256
-
-#ifdef CONFIG_X86_64
-
-static int mp_bus_to_node[BUS_NR] = {
-	[0 ... BUS_NR - 1] = -1
-};
-
-void set_mp_bus_to_node(int busnum, int node)
-{
-	if (busnum >= 0 &&  busnum < BUS_NR)
-		mp_bus_to_node[busnum] = node;
-}
-
-int get_mp_bus_to_node(int busnum)
-{
-	int node = -1;
-
-	if (busnum < 0 || busnum > (BUS_NR - 1))
-		return node;
-
-	node = mp_bus_to_node[busnum];
-
-	/*
-	 * let numa_node_id to decide it later in dma_alloc_pages
-	 * if there is no ram on that node
-	 */
-	if (node != -1 && !node_online(node))
-		node = -1;
-
-	return node;
-}
-
-#else /* CONFIG_X86_32 */
-
-static int mp_bus_to_node[BUS_NR] = {
-	[0 ... BUS_NR - 1] = -1
-};
-
-void set_mp_bus_to_node(int busnum, int node)
-{
-	if (busnum >= 0 &&  busnum < BUS_NR)
-	mp_bus_to_node[busnum] = (unsigned char) node;
-}
-
-int get_mp_bus_to_node(int busnum)
-{
-	int node;
-
-	if (busnum < 0 || busnum > (BUS_NR - 1))
-		return 0;
-	node = mp_bus_to_node[busnum];
-	return node;
-}
-
-#endif /* CONFIG_X86_32 */
-
-#endif /* CONFIG_NUMA */
-=======
 #if IS_ENABLED(CONFIG_VMD)
 struct pci_dev *pci_real_dma_dev(struct pci_dev *dev)
 {
@@ -1001,4 +732,3 @@ struct pci_dev *pci_real_dma_dev(struct pci_dev *dev)
 	return dev;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

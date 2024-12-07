@@ -40,10 +40,7 @@
 
 #include <linux/ip.h>
 #include <linux/tcp.h>
-<<<<<<< HEAD
-=======
 #include <rdma/ib_cache.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ipoib.h"
 
@@ -55,24 +52,13 @@ MODULE_PARM_DESC(data_debug_level,
 		 "Enable data path debug tracing if > 0");
 #endif
 
-<<<<<<< HEAD
-static DEFINE_MUTEX(pkey_mutex);
-
-struct ipoib_ah *ipoib_create_ah(struct net_device *dev,
-				 struct ib_pd *pd, struct ib_ah_attr *attr)
-=======
 struct ipoib_ah *ipoib_create_ah(struct net_device *dev,
 				 struct ib_pd *pd, struct rdma_ah_attr *attr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipoib_ah *ah;
 	struct ib_ah *vah;
 
-<<<<<<< HEAD
-	ah = kmalloc(sizeof *ah, GFP_KERNEL);
-=======
 	ah = kmalloc(sizeof(*ah), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ah)
 		return ERR_PTR(-ENOMEM);
 
@@ -80,21 +66,13 @@ struct ipoib_ah *ipoib_create_ah(struct net_device *dev,
 	ah->last_send = 0;
 	kref_init(&ah->ref);
 
-<<<<<<< HEAD
-	vah = ib_create_ah(pd, attr);
-=======
 	vah = rdma_create_ah(pd, attr, RDMA_CREATE_AH_SLEEPABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(vah)) {
 		kfree(ah);
 		ah = (struct ipoib_ah *)vah;
 	} else {
 		ah->ah = vah;
-<<<<<<< HEAD
-		ipoib_dbg(netdev_priv(dev), "Created ah %p\n", ah->ah);
-=======
 		ipoib_dbg(ipoib_priv(dev), "Created ah %p\n", ah->ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ah;
@@ -103,11 +81,7 @@ struct ipoib_ah *ipoib_create_ah(struct net_device *dev,
 void ipoib_free_ah(struct kref *kref)
 {
 	struct ipoib_ah *ah = container_of(kref, struct ipoib_ah, ref);
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(ah->dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(ah->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long flags;
 
@@ -119,55 +93,14 @@ void ipoib_free_ah(struct kref *kref)
 static void ipoib_ud_dma_unmap_rx(struct ipoib_dev_priv *priv,
 				  u64 mapping[IPOIB_UD_RX_SG])
 {
-<<<<<<< HEAD
-	if (ipoib_ud_need_sg(priv->max_ib_mtu)) {
-		ib_dma_unmap_single(priv->ca, mapping[0], IPOIB_UD_HEAD_SIZE,
-				    DMA_FROM_DEVICE);
-		ib_dma_unmap_page(priv->ca, mapping[1], PAGE_SIZE,
-				  DMA_FROM_DEVICE);
-	} else
-		ib_dma_unmap_single(priv->ca, mapping[0],
-				    IPOIB_UD_BUF_SIZE(priv->max_ib_mtu),
-				    DMA_FROM_DEVICE);
-}
-
-static void ipoib_ud_skb_put_frags(struct ipoib_dev_priv *priv,
-				   struct sk_buff *skb,
-				   unsigned int length)
-{
-	if (ipoib_ud_need_sg(priv->max_ib_mtu)) {
-		skb_frag_t *frag = &skb_shinfo(skb)->frags[0];
-		unsigned int size;
-		/*
-		 * There is only two buffers needed for max_payload = 4K,
-		 * first buf size is IPOIB_UD_HEAD_SIZE
-		 */
-		skb->tail += IPOIB_UD_HEAD_SIZE;
-		skb->len  += length;
-
-		size = length - IPOIB_UD_HEAD_SIZE;
-
-		skb_frag_size_set(frag, size);
-		skb->data_len += size;
-		skb->truesize += size;
-	} else
-		skb_put(skb, length);
-
-=======
 	ib_dma_unmap_single(priv->ca, mapping[0],
 			    IPOIB_UD_BUF_SIZE(priv->max_ib_mtu),
 			    DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipoib_ib_post_receive(struct net_device *dev, int id)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ib_recv_wr *bad_wr;
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	priv->rx_wr.wr_id   = id | IPOIB_OP_RECV;
@@ -175,11 +108,7 @@ static int ipoib_ib_post_receive(struct net_device *dev, int id)
 	priv->rx_sge[1].addr = priv->rx_ring[id].mapping[1];
 
 
-<<<<<<< HEAD
-	ret = ib_post_recv(priv->qp, &priv->rx_wr, &bad_wr);
-=======
 	ret = ib_post_recv(priv->qp, &priv->rx_wr, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(ret)) {
 		ipoib_warn(priv, "receive failed for buf %d (%d)\n", id, ret);
 		ipoib_ud_dma_unmap_rx(priv, priv->rx_ring[id].mapping);
@@ -192,43 +121,22 @@ static int ipoib_ib_post_receive(struct net_device *dev, int id)
 
 static struct sk_buff *ipoib_alloc_rx_skb(struct net_device *dev, int id)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	int buf_size;
 	u64 *mapping;
 
-<<<<<<< HEAD
-	if (ipoib_ud_need_sg(priv->max_ib_mtu))
-		buf_size = IPOIB_UD_HEAD_SIZE;
-	else
-		buf_size = IPOIB_UD_BUF_SIZE(priv->max_ib_mtu);
-
-	skb = dev_alloc_skb(buf_size + 4);
-=======
 	buf_size = IPOIB_UD_BUF_SIZE(priv->max_ib_mtu);
 
 	skb = dev_alloc_skb(buf_size + IPOIB_HARD_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!skb))
 		return NULL;
 
 	/*
-<<<<<<< HEAD
-	 * IB will leave a 40 byte gap for a GRH and IPoIB adds a 4 byte
-	 * header.  So we need 4 more bytes to get to 48 and align the
-	 * IP header to a multiple of 16.
-	 */
-	skb_reserve(skb, 4);
-=======
 	 * the IP header will be at IPOIP_HARD_LEN + IB_GRH_BYTES, that is
 	 * 64 bytes aligned
 	 */
 	skb_reserve(skb, sizeof(struct ipoib_pseudo_header));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mapping = priv->rx_ring[id].mapping;
 	mapping[0] = ib_dma_map_single(priv->ca, skb->data, buf_size,
@@ -236,28 +144,8 @@ static struct sk_buff *ipoib_alloc_rx_skb(struct net_device *dev, int id)
 	if (unlikely(ib_dma_mapping_error(priv->ca, mapping[0])))
 		goto error;
 
-<<<<<<< HEAD
-	if (ipoib_ud_need_sg(priv->max_ib_mtu)) {
-		struct page *page = alloc_page(GFP_ATOMIC);
-		if (!page)
-			goto partial_error;
-		skb_fill_page_desc(skb, 0, page, 0, PAGE_SIZE);
-		mapping[1] =
-			ib_dma_map_page(priv->ca, page,
-					0, PAGE_SIZE, DMA_FROM_DEVICE);
-		if (unlikely(ib_dma_mapping_error(priv->ca, mapping[1])))
-			goto partial_error;
-	}
-
 	priv->rx_ring[id].skb = skb;
 	return skb;
-
-partial_error:
-	ib_dma_unmap_single(priv->ca, mapping[0], buf_size, DMA_FROM_DEVICE);
-=======
-	priv->rx_ring[id].skb = skb;
-	return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error:
 	dev_kfree_skb_any(skb);
 	return NULL;
@@ -265,11 +153,7 @@ error:
 
 static int ipoib_ib_post_receives(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < ipoib_recvq_size; ++i) {
@@ -288,19 +172,12 @@ static int ipoib_ib_post_receives(struct net_device *dev)
 
 static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int wr_id = wc->wr_id & ~IPOIB_OP_RECV;
 	struct sk_buff *skb;
 	u64 mapping[IPOIB_UD_RX_SG];
 	union ib_gid *dgid;
-<<<<<<< HEAD
-=======
 	union ib_gid *sgid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipoib_dbg_data(priv, "recv completion: id %d, status: %d\n",
 		       wr_id, wc->status);
@@ -315,13 +192,8 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	if (unlikely(wc->status != IB_WC_SUCCESS)) {
 		if (wc->status != IB_WC_WR_FLUSH_ERR)
-<<<<<<< HEAD
-			ipoib_warn(priv, "failed recv event "
-				   "(status=%d, wrid=%d vend_err %x)\n",
-=======
 			ipoib_warn(priv,
 				   "failed recv event (status=%d, wrid=%d vend_err %#x)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   wc->status, wr_id, wc->vendor_err);
 		ipoib_ud_dma_unmap_rx(priv, priv->rx_ring[wr_id].mapping);
 		dev_kfree_skb_any(skb);
@@ -329,20 +201,8 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 		return;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Drop packets that this interface sent, ie multicast packets
-	 * that the HCA has replicated.
-	 */
-	if (wc->slid == priv->local_lid && wc->src_qp == priv->qp->qp_num)
-		goto repost;
-
-	memcpy(mapping, priv->rx_ring[wr_id].mapping,
-	       IPOIB_UD_RX_SG * sizeof *mapping);
-=======
 	memcpy(mapping, priv->rx_ring[wr_id].mapping,
 	       IPOIB_UD_RX_SG * sizeof(*mapping));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we can't allocate a new RX buffer, dump
@@ -357,12 +217,8 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 		       wc->byte_len, wc->slid);
 
 	ipoib_ud_dma_unmap_rx(priv, mapping);
-<<<<<<< HEAD
-	ipoib_ud_skb_put_frags(priv, skb, wc->byte_len);
-=======
 
 	skb_put(skb, wc->byte_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First byte of dgid signals multicast when 0xff */
 	dgid = &((struct ib_grh *)skb->data)->dgid;
@@ -374,16 +230,6 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 	else
 		skb->pkt_type = PACKET_MULTICAST;
 
-<<<<<<< HEAD
-	skb_pull(skb, IB_GRH_BYTES);
-
-	skb->protocol = ((struct ipoib_header *) skb->data)->proto;
-	skb_reset_mac_header(skb);
-	skb_pull(skb, IPOIB_ENCAP_LEN);
-
-	++dev->stats.rx_packets;
-	dev->stats.rx_bytes += skb->len;
-=======
 	sgid = &((struct ib_grh *)skb->data)->sgid;
 
 	/*
@@ -412,18 +258,13 @@ static void ipoib_ib_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 	dev->stats.rx_bytes += skb->len;
 	if (skb->pkt_type == PACKET_MULTICAST)
 		dev->stats.multicast++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->dev = dev;
 	if ((dev->features & NETIF_F_RXCSUM) &&
 			likely(wc->wc_flags & IB_WC_IP_CSUM_OK))
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 
-<<<<<<< HEAD
-	napi_gro_receive(&priv->napi, skb);
-=======
 	napi_gro_receive(&priv->recv_napi, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 repost:
 	if (unlikely(ipoib_ib_post_receive(dev, wr_id)))
@@ -431,12 +272,7 @@ repost:
 			   "for buf %d\n", wr_id);
 }
 
-<<<<<<< HEAD
-static int ipoib_dma_map_tx(struct ib_device *ca,
-			    struct ipoib_tx_buf *tx_req)
-=======
 int ipoib_dma_map_tx(struct ib_device *ca, struct ipoib_tx_buf *tx_req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb = tx_req->skb;
 	u64 *mapping = tx_req->mapping;
@@ -457,12 +293,8 @@ int ipoib_dma_map_tx(struct ib_device *ca, struct ipoib_tx_buf *tx_req)
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 		mapping[i + off] = ib_dma_map_page(ca,
 						 skb_frag_page(frag),
-<<<<<<< HEAD
-						 frag->page_offset, skb_frag_size(frag),
-=======
 						 skb_frag_off(frag),
 						 skb_frag_size(frag),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 DMA_TO_DEVICE);
 		if (unlikely(ib_dma_mapping_error(ca, mapping[i + off])))
 			goto partial_error;
@@ -482,13 +314,8 @@ partial_error:
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static void ipoib_dma_unmap_tx(struct ib_device *ca,
-			       struct ipoib_tx_buf *tx_req)
-=======
 void ipoib_dma_unmap_tx(struct ipoib_dev_priv *priv,
 			struct ipoib_tx_buf *tx_req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb = tx_req->skb;
 	u64 *mapping = tx_req->mapping;
@@ -496,12 +323,8 @@ void ipoib_dma_unmap_tx(struct ipoib_dev_priv *priv,
 	int off;
 
 	if (skb_headlen(skb)) {
-<<<<<<< HEAD
-		ib_dma_unmap_single(ca, mapping[0], skb_headlen(skb), DMA_TO_DEVICE);
-=======
 		ib_dma_unmap_single(priv->ca, mapping[0], skb_headlen(skb),
 				    DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		off = 1;
 	} else
 		off = 0;
@@ -509,16 +332,6 @@ void ipoib_dma_unmap_tx(struct ipoib_dev_priv *priv,
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; ++i) {
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
-<<<<<<< HEAD
-		ib_dma_unmap_page(ca, mapping[i + off], skb_frag_size(frag),
-				  DMA_TO_DEVICE);
-	}
-}
-
-static void ipoib_ib_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 		ib_dma_unmap_page(priv->ca, mapping[i + off],
 				  skb_frag_size(frag), DMA_TO_DEVICE);
 	}
@@ -572,7 +385,6 @@ free_res:
 static void ipoib_ib_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int wr_id = wc->wr_id;
 	struct ipoib_tx_buf *tx_req;
 
@@ -587,11 +399,7 @@ static void ipoib_ib_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	tx_req = &priv->tx_ring[wr_id];
 
-<<<<<<< HEAD
-	ipoib_dma_unmap_tx(priv->ca, tx_req);
-=======
 	ipoib_dma_unmap_tx(priv, tx_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	++dev->stats.tx_packets;
 	dev->stats.tx_bytes += tx_req->skb->len;
@@ -599,18 +407,6 @@ static void ipoib_ib_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 	dev_kfree_skb_any(tx_req->skb);
 
 	++priv->tx_tail;
-<<<<<<< HEAD
-	if (unlikely(--priv->tx_outstanding == ipoib_sendq_size >> 1) &&
-	    netif_queue_stopped(dev) &&
-	    test_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags))
-		netif_wake_queue(dev);
-
-	if (wc->status != IB_WC_SUCCESS &&
-	    wc->status != IB_WC_WR_FLUSH_ERR)
-		ipoib_warn(priv, "failed send event "
-			   "(status=%d, wrid=%d vend_err %x)\n",
-			   wc->status, wr_id, wc->vendor_err);
-=======
 	++priv->global_tx_tail;
 
 	if (unlikely(netif_queue_stopped(dev) &&
@@ -633,25 +429,11 @@ static void ipoib_ib_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 		qp_work->priv = priv;
 		queue_work(priv->wq, &qp_work->work);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int poll_tx(struct ipoib_dev_priv *priv)
 {
 	int n, i;
-<<<<<<< HEAD
-
-	n = ib_poll_cq(priv->send_cq, MAX_SEND_CQE, priv->send_wc);
-	for (i = 0; i < n; ++i)
-		ipoib_ib_handle_tx_wc(priv->dev, priv->send_wc + i);
-
-	return n == MAX_SEND_CQE;
-}
-
-int ipoib_poll(struct napi_struct *napi, int budget)
-{
-	struct ipoib_dev_priv *priv = container_of(napi, struct ipoib_dev_priv, napi);
-=======
 	struct ib_wc *wc;
 
 	n = ib_poll_cq(priv->send_cq, MAX_SEND_CQE, priv->send_wc);
@@ -669,7 +451,6 @@ int ipoib_rx_poll(struct napi_struct *napi, int budget)
 {
 	struct ipoib_dev_priv *priv =
 		container_of(napi, struct ipoib_dev_priv, recv_napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *dev = priv->dev;
 	int done;
 	int t;
@@ -693,14 +474,9 @@ poll_more:
 					ipoib_cm_handle_rx_wc(dev, wc);
 				else
 					ipoib_ib_handle_rx_wc(dev, wc);
-<<<<<<< HEAD
-			} else
-				ipoib_cm_handle_tx_wc(priv->dev, wc);
-=======
 			} else {
 				pr_warn("%s: Got unexpected wqe id\n", __func__);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (n != t)
@@ -712,46 +488,13 @@ poll_more:
 		if (unlikely(ib_req_notify_cq(priv->recv_cq,
 					      IB_CQ_NEXT_COMP |
 					      IB_CQ_REPORT_MISSED_EVENTS)) &&
-<<<<<<< HEAD
-		    napi_reschedule(napi))
-=======
 		    napi_schedule(napi))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto poll_more;
 	}
 
 	return done;
 }
 
-<<<<<<< HEAD
-void ipoib_ib_completion(struct ib_cq *cq, void *dev_ptr)
-{
-	struct net_device *dev = dev_ptr;
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	napi_schedule(&priv->napi);
-}
-
-static void drain_tx_cq(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	netif_tx_lock(dev);
-	while (poll_tx(priv))
-		; /* nothing */
-
-	if (netif_queue_stopped(dev))
-		mod_timer(&priv->poll_timer, jiffies + 1);
-
-	netif_tx_unlock(dev);
-}
-
-void ipoib_send_comp_handler(struct ib_cq *cq, void *dev_ptr)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev_ptr);
-
-	mod_timer(&priv->poll_timer, jiffies);
-=======
 int ipoib_tx_poll(struct napi_struct *napi, int budget)
 {
 	struct ipoib_dev_priv *priv = container_of(napi, struct ipoib_dev_priv,
@@ -817,61 +560,10 @@ void ipoib_ib_tx_completion(struct ib_cq *cq, void *ctx_ptr)
 	 */
 	if (!ret && netif_queue_stopped(priv->dev))
 		schedule_work(&priv->reschedule_napi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int post_send(struct ipoib_dev_priv *priv,
 			    unsigned int wr_id,
-<<<<<<< HEAD
-			    struct ib_ah *address, u32 qpn,
-			    struct ipoib_tx_buf *tx_req,
-			    void *head, int hlen)
-{
-	struct ib_send_wr *bad_wr;
-	int i, off;
-	struct sk_buff *skb = tx_req->skb;
-	skb_frag_t *frags = skb_shinfo(skb)->frags;
-	int nr_frags = skb_shinfo(skb)->nr_frags;
-	u64 *mapping = tx_req->mapping;
-
-	if (skb_headlen(skb)) {
-		priv->tx_sge[0].addr         = mapping[0];
-		priv->tx_sge[0].length       = skb_headlen(skb);
-		off = 1;
-	} else
-		off = 0;
-
-	for (i = 0; i < nr_frags; ++i) {
-		priv->tx_sge[i + off].addr = mapping[i + off];
-		priv->tx_sge[i + off].length = skb_frag_size(&frags[i]);
-	}
-	priv->tx_wr.num_sge	     = nr_frags + off;
-	priv->tx_wr.wr_id 	     = wr_id;
-	priv->tx_wr.wr.ud.remote_qpn = qpn;
-	priv->tx_wr.wr.ud.ah 	     = address;
-
-	if (head) {
-		priv->tx_wr.wr.ud.mss	 = skb_shinfo(skb)->gso_size;
-		priv->tx_wr.wr.ud.header = head;
-		priv->tx_wr.wr.ud.hlen	 = hlen;
-		priv->tx_wr.opcode	 = IB_WR_LSO;
-	} else
-		priv->tx_wr.opcode	 = IB_WR_SEND;
-
-	return ib_post_send(priv->qp, &priv->tx_wr, &bad_wr);
-}
-
-void ipoib_send(struct net_device *dev, struct sk_buff *skb,
-		struct ipoib_ah *address, u32 qpn)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ipoib_tx_buf *tx_req;
-	int hlen, rc;
-	void *phead;
-
-	if (skb_is_gso(skb)) {
-		hlen = skb_transport_offset(skb) + tcp_hdrlen(skb);
-=======
 			    struct ib_ah *address, u32 dqpn,
 			    struct ipoib_tx_buf *tx_req,
 			    void *head, int hlen)
@@ -906,18 +598,13 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 
 	if (skb_is_gso(skb)) {
 		hlen = skb_tcp_all_headers(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phead = skb->data;
 		if (unlikely(!skb_pull(skb, hlen))) {
 			ipoib_warn(priv, "linear data too small\n");
 			++dev->stats.tx_dropped;
 			++dev->stats.tx_errors;
 			dev_kfree_skb_any(skb);
-<<<<<<< HEAD
-			return;
-=======
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		if (unlikely(skb->len > priv->mcast_mtu + IPOIB_ENCAP_LEN)) {
@@ -926,20 +613,11 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 			++dev->stats.tx_dropped;
 			++dev->stats.tx_errors;
 			ipoib_cm_skb_too_long(dev, skb, priv->mcast_mtu);
-<<<<<<< HEAD
-			return;
-=======
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		phead = NULL;
 		hlen  = 0;
 	}
-<<<<<<< HEAD
-
-	ipoib_dbg_data(priv, "sending packet, length=%d address=%p qpn=0x%06x\n",
-		       skb->len, address, qpn);
-=======
 	if (skb_shinfo(skb)->nr_frags > usable_sge) {
 		if (skb_linearize(skb) < 0) {
 			ipoib_warn(priv, "skb could not be linearized\n");
@@ -961,7 +639,6 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 	ipoib_dbg_data(priv,
 		       "sending packet, length=%d address=%p dqpn=0x%06x\n",
 		       skb->len, address, dqpn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We put the skb into the tx_ring _before_ we call post_send()
@@ -975,55 +652,6 @@ int ipoib_send(struct net_device *dev, struct sk_buff *skb,
 	if (unlikely(ipoib_dma_map_tx(priv->ca, tx_req))) {
 		++dev->stats.tx_errors;
 		dev_kfree_skb_any(skb);
-<<<<<<< HEAD
-		return;
-	}
-
-	if (skb->ip_summed == CHECKSUM_PARTIAL)
-		priv->tx_wr.send_flags |= IB_SEND_IP_CSUM;
-	else
-		priv->tx_wr.send_flags &= ~IB_SEND_IP_CSUM;
-
-	if (++priv->tx_outstanding == ipoib_sendq_size) {
-		ipoib_dbg(priv, "TX ring full, stopping kernel net queue\n");
-		if (ib_req_notify_cq(priv->send_cq, IB_CQ_NEXT_COMP))
-			ipoib_warn(priv, "request notify on send CQ failed\n");
-		netif_stop_queue(dev);
-	}
-
-	rc = post_send(priv, priv->tx_head & (ipoib_sendq_size - 1),
-		       address->ah, qpn, tx_req, phead, hlen);
-	if (unlikely(rc)) {
-		ipoib_warn(priv, "post_send failed, error %d\n", rc);
-		++dev->stats.tx_errors;
-		--priv->tx_outstanding;
-		ipoib_dma_unmap_tx(priv->ca, tx_req);
-		dev_kfree_skb_any(skb);
-		if (netif_queue_stopped(dev))
-			netif_wake_queue(dev);
-	} else {
-		dev->trans_start = jiffies;
-
-		address->last_send = priv->tx_head;
-		++priv->tx_head;
-		skb_orphan(skb);
-
-	}
-
-	if (unlikely(priv->tx_outstanding > MAX_SEND_CQE))
-		while (poll_tx(priv))
-			; /* nothing */
-}
-
-static void __ipoib_reap_ah(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ipoib_ah *ah, *tah;
-	LIST_HEAD(remove_list);
-	unsigned long flags;
-
-	netif_tx_lock_bh(dev);
-=======
 		return -1;
 	}
 
@@ -1072,142 +700,23 @@ static void ipoib_reap_dead_ahs(struct ipoib_dev_priv *priv)
 	unsigned long flags;
 
 	netif_tx_lock_bh(priv->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->lock, flags);
 
 	list_for_each_entry_safe(ah, tah, &priv->dead_ahs, list)
 		if ((int) priv->tx_tail - (int) ah->last_send >= 0) {
 			list_del(&ah->list);
-<<<<<<< HEAD
-			ib_destroy_ah(ah->ah);
-=======
 			rdma_destroy_ah(ah->ah, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(ah);
 		}
 
 	spin_unlock_irqrestore(&priv->lock, flags);
-<<<<<<< HEAD
-	netif_tx_unlock_bh(dev);
-=======
 	netif_tx_unlock_bh(priv->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_reap_ah(struct work_struct *work)
 {
 	struct ipoib_dev_priv *priv =
 		container_of(work, struct ipoib_dev_priv, ah_reap_task.work);
-<<<<<<< HEAD
-	struct net_device *dev = priv->dev;
-
-	__ipoib_reap_ah(dev);
-
-	if (!test_bit(IPOIB_STOP_REAPER, &priv->flags))
-		queue_delayed_work(ipoib_workqueue, &priv->ah_reap_task,
-				   round_jiffies_relative(HZ));
-}
-
-static void ipoib_ib_tx_timer_func(unsigned long ctx)
-{
-	drain_tx_cq((struct net_device *)ctx);
-}
-
-int ipoib_ib_dev_open(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	int ret;
-
-	if (ib_find_pkey(priv->ca, priv->port, priv->pkey, &priv->pkey_index)) {
-		ipoib_warn(priv, "P_Key 0x%04x not found\n", priv->pkey);
-		clear_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);
-		return -1;
-	}
-	set_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);
-
-	ret = ipoib_init_qp(dev);
-	if (ret) {
-		ipoib_warn(priv, "ipoib_init_qp returned %d\n", ret);
-		return -1;
-	}
-
-	ret = ipoib_ib_post_receives(dev);
-	if (ret) {
-		ipoib_warn(priv, "ipoib_ib_post_receives returned %d\n", ret);
-		ipoib_ib_dev_stop(dev, 1);
-		return -1;
-	}
-
-	ret = ipoib_cm_dev_open(dev);
-	if (ret) {
-		ipoib_warn(priv, "ipoib_cm_dev_open returned %d\n", ret);
-		ipoib_ib_dev_stop(dev, 1);
-		return -1;
-	}
-
-	clear_bit(IPOIB_STOP_REAPER, &priv->flags);
-	queue_delayed_work(ipoib_workqueue, &priv->ah_reap_task,
-			   round_jiffies_relative(HZ));
-
-	if (!test_and_set_bit(IPOIB_FLAG_INITIALIZED, &priv->flags))
-		napi_enable(&priv->napi);
-
-	return 0;
-}
-
-static void ipoib_pkey_dev_check_presence(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	u16 pkey_index = 0;
-
-	if (ib_find_pkey(priv->ca, priv->port, priv->pkey, &pkey_index))
-		clear_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);
-	else
-		set_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);
-}
-
-int ipoib_ib_dev_up(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	ipoib_pkey_dev_check_presence(dev);
-
-	if (!test_bit(IPOIB_PKEY_ASSIGNED, &priv->flags)) {
-		ipoib_dbg(priv, "PKEY is not assigned.\n");
-		return 0;
-	}
-
-	set_bit(IPOIB_FLAG_OPER_UP, &priv->flags);
-
-	return ipoib_mcast_start_thread(dev);
-}
-
-int ipoib_ib_dev_down(struct net_device *dev, int flush)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	ipoib_dbg(priv, "downing ib_dev\n");
-
-	clear_bit(IPOIB_FLAG_OPER_UP, &priv->flags);
-	netif_carrier_off(dev);
-
-	/* Shutdown the P_Key thread if still active */
-	if (!test_bit(IPOIB_PKEY_ASSIGNED, &priv->flags)) {
-		mutex_lock(&pkey_mutex);
-		set_bit(IPOIB_PKEY_STOP, &priv->flags);
-		cancel_delayed_work(&priv->pkey_poll_task);
-		mutex_unlock(&pkey_mutex);
-		if (flush)
-			flush_workqueue(ipoib_workqueue);
-	}
-
-	ipoib_mcast_stop_thread(dev, flush);
-	ipoib_mcast_dev_flush(dev);
-
-	ipoib_flush_paths(dev);
-
-	return 0;
-=======
 
 	ipoib_reap_dead_ahs(priv);
 
@@ -1232,16 +741,11 @@ static void ipoib_stop_ah_reaper(struct ipoib_dev_priv *priv)
 	 * ipoib_reap_dead_ahs() which ensures the work is really stopped and
 	 * does a final flush out of the dead_ah's list
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int recvs_pending(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pending = 0;
 	int i;
 
@@ -1252,11 +756,6 @@ static int recvs_pending(struct net_device *dev)
 	return pending;
 }
 
-<<<<<<< HEAD
-void ipoib_drain_cq(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 static void check_qp_movement_and_print(struct ipoib_dev_priv *priv,
 					struct ib_qp *qp,
 					enum ib_qp_state new_state)
@@ -1488,7 +987,6 @@ void ipoib_ib_dev_down(struct net_device *dev)
 void ipoib_drain_cq(struct net_device *dev)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, n;
 
 	/*
@@ -1514,14 +1012,9 @@ void ipoib_drain_cq(struct net_device *dev)
 					ipoib_cm_handle_rx_wc(dev, priv->ibwc + i);
 				else
 					ipoib_ib_handle_rx_wc(dev, priv->ibwc + i);
-<<<<<<< HEAD
-			} else
-				ipoib_cm_handle_tx_wc(dev, priv->ibwc + i);
-=======
 			} else {
 				pr_warn("%s: Got unexpected wqe id\n", __func__);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} while (n == IPOIB_NUM_WC);
 
@@ -1531,136 +1024,6 @@ void ipoib_drain_cq(struct net_device *dev)
 	local_bh_enable();
 }
 
-<<<<<<< HEAD
-int ipoib_ib_dev_stop(struct net_device *dev, int flush)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ib_qp_attr qp_attr;
-	unsigned long begin;
-	struct ipoib_tx_buf *tx_req;
-	int i;
-
-	if (test_and_clear_bit(IPOIB_FLAG_INITIALIZED, &priv->flags))
-		napi_disable(&priv->napi);
-
-	ipoib_cm_dev_stop(dev);
-
-	/*
-	 * Move our QP to the error state and then reinitialize in
-	 * when all work requests have completed or have been flushed.
-	 */
-	qp_attr.qp_state = IB_QPS_ERR;
-	if (ib_modify_qp(priv->qp, &qp_attr, IB_QP_STATE))
-		ipoib_warn(priv, "Failed to modify QP to ERROR state\n");
-
-	/* Wait for all sends and receives to complete */
-	begin = jiffies;
-
-	while (priv->tx_head != priv->tx_tail || recvs_pending(dev)) {
-		if (time_after(jiffies, begin + 5 * HZ)) {
-			ipoib_warn(priv, "timing out; %d sends %d receives not completed\n",
-				   priv->tx_head - priv->tx_tail, recvs_pending(dev));
-
-			/*
-			 * assume the HW is wedged and just free up
-			 * all our pending work requests.
-			 */
-			while ((int) priv->tx_tail - (int) priv->tx_head < 0) {
-				tx_req = &priv->tx_ring[priv->tx_tail &
-							(ipoib_sendq_size - 1)];
-				ipoib_dma_unmap_tx(priv->ca, tx_req);
-				dev_kfree_skb_any(tx_req->skb);
-				++priv->tx_tail;
-				--priv->tx_outstanding;
-			}
-
-			for (i = 0; i < ipoib_recvq_size; ++i) {
-				struct ipoib_rx_buf *rx_req;
-
-				rx_req = &priv->rx_ring[i];
-				if (!rx_req->skb)
-					continue;
-				ipoib_ud_dma_unmap_rx(priv,
-						      priv->rx_ring[i].mapping);
-				dev_kfree_skb_any(rx_req->skb);
-				rx_req->skb = NULL;
-			}
-
-			goto timeout;
-		}
-
-		ipoib_drain_cq(dev);
-
-		msleep(1);
-	}
-
-	ipoib_dbg(priv, "All sends and receives done.\n");
-
-timeout:
-	del_timer_sync(&priv->poll_timer);
-	qp_attr.qp_state = IB_QPS_RESET;
-	if (ib_modify_qp(priv->qp, &qp_attr, IB_QP_STATE))
-		ipoib_warn(priv, "Failed to modify QP to RESET state\n");
-
-	/* Wait for all AHs to be reaped */
-	set_bit(IPOIB_STOP_REAPER, &priv->flags);
-	cancel_delayed_work(&priv->ah_reap_task);
-	if (flush)
-		flush_workqueue(ipoib_workqueue);
-
-	begin = jiffies;
-
-	while (!list_empty(&priv->dead_ahs)) {
-		__ipoib_reap_ah(dev);
-
-		if (time_after(jiffies, begin + HZ)) {
-			ipoib_warn(priv, "timing out; will leak address handles\n");
-			break;
-		}
-
-		msleep(1);
-	}
-
-	ib_req_notify_cq(priv->recv_cq, IB_CQ_NEXT_COMP);
-
-	return 0;
-}
-
-int ipoib_ib_dev_init(struct net_device *dev, struct ib_device *ca, int port)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	priv->ca = ca;
-	priv->port = port;
-	priv->qp = NULL;
-
-	if (ipoib_transport_dev_init(dev, ca)) {
-		printk(KERN_WARNING "%s: ipoib_transport_dev_init failed\n", ca->name);
-		return -ENODEV;
-	}
-
-	setup_timer(&priv->poll_timer, ipoib_ib_tx_timer_func,
-		    (unsigned long) dev);
-
-	if (dev->flags & IFF_UP) {
-		if (ipoib_ib_dev_open(dev)) {
-			ipoib_transport_dev_cleanup(dev);
-			return -ENODEV;
-		}
-	}
-
-	return 0;
-}
-
-static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
-				enum ipoib_flush_level level)
-{
-	struct ipoib_dev_priv *cpriv;
-	struct net_device *dev = priv->dev;
-	u16 new_index;
-
-	mutex_lock(&priv->vlan_mutex);
-=======
 /*
  * Takes whatever value which is in pkey index 0 and updates priv->pkey
  * returns 0 if the pkey value was changed.
@@ -1817,20 +1180,12 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 	int result;
 
 	down_read_nested(&priv->vlan_rwsem, nesting);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Flush any child interfaces too -- they might be up even if
 	 * the parent is down.
 	 */
 	list_for_each_entry(cpriv, &priv->child_intfs, list)
-<<<<<<< HEAD
-		__ipoib_ib_dev_flush(cpriv, level);
-
-	mutex_unlock(&priv->vlan_mutex);
-
-	if (!test_bit(IPOIB_FLAG_INITIALIZED, &priv->flags)) {
-=======
 		__ipoib_ib_dev_flush(cpriv, level, nesting + 1);
 
 	up_read(&priv->vlan_rwsem);
@@ -1840,14 +1195,11 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 		/* Make sure the dev_addr is set even if not flushing */
 		if (level == IPOIB_FLUSH_LIGHT)
 			ipoib_dev_addr_changed_valid(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipoib_dbg(priv, "Not flushing - IPOIB_FLAG_INITIALIZED not set.\n");
 		return;
 	}
 
 	if (!test_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags)) {
-<<<<<<< HEAD
-=======
 		/* interface is down. update pkey and leave. */
 		if (level == IPOIB_FLUSH_HEAVY) {
 			if (!test_bit(IPOIB_FLAG_SUBINTERFACE, &priv->flags))
@@ -1856,42 +1208,11 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 				update_child_pkey(priv);
 		} else if (level == IPOIB_FLUSH_LIGHT)
 			ipoib_dev_addr_changed_valid(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipoib_dbg(priv, "Not flushing - IPOIB_FLAG_ADMIN_UP not set.\n");
 		return;
 	}
 
 	if (level == IPOIB_FLUSH_HEAVY) {
-<<<<<<< HEAD
-		if (ib_find_pkey(priv->ca, priv->port, priv->pkey, &new_index)) {
-			clear_bit(IPOIB_PKEY_ASSIGNED, &priv->flags);
-			ipoib_ib_dev_down(dev, 0);
-			ipoib_ib_dev_stop(dev, 0);
-			if (ipoib_pkey_dev_delay_open(dev))
-				return;
-		}
-
-		/* restart QP only if P_Key index is changed */
-		if (test_and_set_bit(IPOIB_PKEY_ASSIGNED, &priv->flags) &&
-		    new_index == priv->pkey_index) {
-			ipoib_dbg(priv, "Not flushing - P_Key index not changed.\n");
-			return;
-		}
-		priv->pkey_index = new_index;
-	}
-
-	if (level == IPOIB_FLUSH_LIGHT) {
-		ipoib_mark_paths_invalid(dev);
-		ipoib_mcast_dev_flush(dev);
-	}
-
-	if (level >= IPOIB_FLUSH_NORMAL)
-		ipoib_ib_dev_down(dev, 0);
-
-	if (level == IPOIB_FLUSH_HEAVY) {
-		ipoib_ib_dev_stop(dev, 0);
-		ipoib_ib_dev_open(dev);
-=======
 		/* child devices chase their origin pkey value, while non-child
 		 * (parent) devices should always takes what present in pkey index 0
 		 */
@@ -1940,7 +1261,6 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 
 		if (netif_queue_stopped(dev))
 			netif_start_queue(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1950,12 +1270,8 @@ static void __ipoib_ib_dev_flush(struct ipoib_dev_priv *priv,
 	if (test_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags)) {
 		if (level >= IPOIB_FLUSH_NORMAL)
 			ipoib_ib_dev_up(dev);
-<<<<<<< HEAD
-		ipoib_mcast_restart_task(&priv->restart_task);
-=======
 		if (ipoib_dev_addr_changed_valid(priv))
 			ipoib_mcast_restart_task(&priv->restart_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1964,11 +1280,7 @@ void ipoib_ib_dev_flush_light(struct work_struct *work)
 	struct ipoib_dev_priv *priv =
 		container_of(work, struct ipoib_dev_priv, flush_light);
 
-<<<<<<< HEAD
-	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_LIGHT);
-=======
 	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_LIGHT, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_ib_dev_flush_normal(struct work_struct *work)
@@ -1976,11 +1288,7 @@ void ipoib_ib_dev_flush_normal(struct work_struct *work)
 	struct ipoib_dev_priv *priv =
 		container_of(work, struct ipoib_dev_priv, flush_normal);
 
-<<<<<<< HEAD
-	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_NORMAL);
-=======
 	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_NORMAL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_ib_dev_flush_heavy(struct work_struct *work)
@@ -1988,80 +1296,13 @@ void ipoib_ib_dev_flush_heavy(struct work_struct *work)
 	struct ipoib_dev_priv *priv =
 		container_of(work, struct ipoib_dev_priv, flush_heavy);
 
-<<<<<<< HEAD
-	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_HEAVY);
-=======
 	rtnl_lock();
 	__ipoib_ib_dev_flush(priv, IPOIB_FLUSH_HEAVY, 0);
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_ib_dev_cleanup(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	ipoib_dbg(priv, "cleaning up ib_dev\n");
-
-	ipoib_mcast_stop_thread(dev, 1);
-	ipoib_mcast_dev_flush(dev);
-
-	ipoib_transport_dev_cleanup(dev);
-}
-
-/*
- * Delayed P_Key Assigment Interim Support
- *
- * The following is initial implementation of delayed P_Key assigment
- * mechanism. It is using the same approach implemented for the multicast
- * group join. The single goal of this implementation is to quickly address
- * Bug #2507. This implementation will probably be removed when the P_Key
- * change async notification is available.
- */
-
-void ipoib_pkey_poll(struct work_struct *work)
-{
-	struct ipoib_dev_priv *priv =
-		container_of(work, struct ipoib_dev_priv, pkey_poll_task.work);
-	struct net_device *dev = priv->dev;
-
-	ipoib_pkey_dev_check_presence(dev);
-
-	if (test_bit(IPOIB_PKEY_ASSIGNED, &priv->flags))
-		ipoib_open(dev);
-	else {
-		mutex_lock(&pkey_mutex);
-		if (!test_bit(IPOIB_PKEY_STOP, &priv->flags))
-			queue_delayed_work(ipoib_workqueue,
-					   &priv->pkey_poll_task,
-					   HZ);
-		mutex_unlock(&pkey_mutex);
-	}
-}
-
-int ipoib_pkey_dev_delay_open(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	/* Look for the interface pkey value in the IB Port P_Key table and */
-	/* set the interface pkey assigment flag                            */
-	ipoib_pkey_dev_check_presence(dev);
-
-	/* P_Key value not assigned yet - start polling */
-	if (!test_bit(IPOIB_PKEY_ASSIGNED, &priv->flags)) {
-		mutex_lock(&pkey_mutex);
-		clear_bit(IPOIB_PKEY_STOP, &priv->flags);
-		queue_delayed_work(ipoib_workqueue,
-				   &priv->pkey_poll_task,
-				   HZ);
-		mutex_unlock(&pkey_mutex);
-		return 1;
-	}
-
-	return 0;
-}
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 
 	ipoib_dbg(priv, "cleaning up ib_dev\n");
@@ -2092,4 +1333,3 @@ int ipoib_pkey_dev_delay_open(struct net_device *dev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

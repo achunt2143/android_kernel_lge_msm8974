@@ -6,15 +6,8 @@
  * Copyright (C) 2000, 2001 Keith M Wesolowski
  */
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/types.h>
-#include <asm/pci.h>
-=======
-#include <linux/pci.h>
-#include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ip32/mace.h>
 
 #if 0

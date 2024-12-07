@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /* 57xx_hsi_bnx2fc.h: QLogic Linux FCoE offload driver.
  * Handles operations such as session offload/upload etc, and manages
  * session resources such as connection id and qp resources.
@@ -14,7 +12,6 @@
  *
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __57XX_FCOE_HSI_LINUX_LE__
 #define __57XX_FCOE_HSI_LINUX_LE__
 
@@ -816,11 +813,7 @@ struct fcoe_confqe {
 
 
 /*
-<<<<<<< HEAD
- * FCoE conection data base
-=======
  * FCoE connection data base
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fcoe_conn_db {
 #if defined(__BIG_ENDIAN)

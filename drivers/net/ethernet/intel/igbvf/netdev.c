@@ -1,57 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) 82576 Virtual Function Linux driver
-  Copyright(c) 2009 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/init.h>
-#include <linux/pci.h>
-#include <linux/vmalloc.h>
-#include <linux/pagemap.h>
-#include <linux/delay.h>
-#include <linux/netdevice.h>
-#include <linux/tcp.h>
-#include <linux/ipv6.h>
-#include <linux/slab.h>
-#include <net/checksum.h>
-#include <net/ip6_checksum.h>
-#include <linux/mii.h>
-#include <linux/ethtool.h>
-#include <linux/if_vlan.h>
-#include <linux/prefetch.h>
-
-#include "igbvf.h"
-
-#define DRV_VERSION "2.0.1-k"
-char igbvf_driver_name[] = "igbvf";
-const char igbvf_driver_version[] = DRV_VERSION;
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2009 - 2018 Intel Corporation. */
 
@@ -79,7 +25,6 @@ const char igbvf_driver_version[] = DRV_VERSION;
 #include "igbvf.h"
 
 char igbvf_driver_name[] = "igbvf";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char igbvf_driver_string[] =
 		  "Intel(R) Gigabit Virtual Function Network Driver";
 static const char igbvf_copyright[] =
@@ -96,24 +41,6 @@ static void igbvf_set_interrupt_capability(struct igbvf_adapter *);
 static void igbvf_reset_interrupt_capability(struct igbvf_adapter *);
 
 static struct igbvf_info igbvf_vf_info = {
-<<<<<<< HEAD
-	.mac                    = e1000_vfadapt,
-	.flags                  = 0,
-	.pba                    = 10,
-	.init_ops               = e1000_init_function_pointers_vf,
-};
-
-static struct igbvf_info igbvf_i350_vf_info = {
-	.mac			= e1000_vfadapt_i350,
-	.flags			= 0,
-	.pba			= 10,
-	.init_ops		= e1000_init_function_pointers_vf,
-};
-
-static const struct igbvf_info *igbvf_info_tbl[] = {
-	[board_vf]              = &igbvf_vf_info,
-	[board_i350_vf]		= &igbvf_i350_vf_info,
-=======
 	.mac		= e1000_vfadapt,
 	.flags		= 0,
 	.pba		= 10,
@@ -130,15 +57,11 @@ static struct igbvf_info igbvf_i350_vf_info = {
 static const struct igbvf_info *igbvf_info_tbl[] = {
 	[board_vf]	= &igbvf_vf_info,
 	[board_i350_vf]	= &igbvf_i350_vf_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * igbvf_desc_unused - calculate if we have unused descriptors
-<<<<<<< HEAD
-=======
  * @ring: address of receive ring structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igbvf_desc_unused(struct igbvf_ring *ring)
 {
@@ -151,32 +74,13 @@ static int igbvf_desc_unused(struct igbvf_ring *ring)
 /**
  * igbvf_receive_skb - helper function to handle Rx indications
  * @adapter: board private structure
-<<<<<<< HEAD
-=======
  * @netdev: pointer to netdev struct
  * @skb: skb to indicate to stack
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @status: descriptor status field as written by hardware
  * @vlan: descriptor vlan field as written by hardware (no le/be conversion)
  * @skb: pointer to sk_buff to be indicated to stack
  **/
 static void igbvf_receive_skb(struct igbvf_adapter *adapter,
-<<<<<<< HEAD
-                              struct net_device *netdev,
-                              struct sk_buff *skb,
-                              u32 status, u16 vlan)
-{
-	if (status & E1000_RXD_STAT_VP) {
-		u16 vid = le16_to_cpu(vlan) & E1000_RXD_SPC_VLAN_MASK;
-		if (test_bit(vid, adapter->active_vlans))
-			__vlan_hwaccel_put_tag(skb, vid);
-	}
-	netif_receive_skb(skb);
-}
-
-static inline void igbvf_rx_checksum_adv(struct igbvf_adapter *adapter,
-                                         u32 status_err, struct sk_buff *skb)
-=======
 			      struct net_device *netdev,
 			      struct sk_buff *skb,
 			      u32 status, __le16 vlan)
@@ -198,7 +102,6 @@ static inline void igbvf_rx_checksum_adv(struct igbvf_adapter *adapter,
 
 static inline void igbvf_rx_checksum_adv(struct igbvf_adapter *adapter,
 					 u32 status_err, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	skb_checksum_none_assert(skb);
 
@@ -228,11 +131,7 @@ static inline void igbvf_rx_checksum_adv(struct igbvf_adapter *adapter,
  * @cleaned_count: number of buffers to repopulate
  **/
 static void igbvf_alloc_rx_buffers(struct igbvf_ring *rx_ring,
-<<<<<<< HEAD
-                                   int cleaned_count)
-=======
 				   int cleaned_count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = rx_ring->adapter;
 	struct net_device *netdev = adapter->netdev;
@@ -267,11 +166,6 @@ static void igbvf_alloc_rx_buffers(struct igbvf_ring *rx_ring,
 			}
 			buffer_info->page_dma =
 				dma_map_page(&pdev->dev, buffer_info->page,
-<<<<<<< HEAD
-				             buffer_info->page_offset,
-				             PAGE_SIZE / 2,
-					     DMA_FROM_DEVICE);
-=======
 					     buffer_info->page_offset,
 					     PAGE_SIZE / 2,
 					     DMA_FROM_DEVICE);
@@ -282,7 +176,6 @@ static void igbvf_alloc_rx_buffers(struct igbvf_ring *rx_ring,
 				dev_err(&pdev->dev, "RX DMA map failed\n");
 				break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!buffer_info->skb) {
@@ -294,13 +187,6 @@ static void igbvf_alloc_rx_buffers(struct igbvf_ring *rx_ring,
 
 			buffer_info->skb = skb;
 			buffer_info->dma = dma_map_single(&pdev->dev, skb->data,
-<<<<<<< HEAD
-			                                  bufsz,
-							  DMA_FROM_DEVICE);
-		}
-		/* Refresh the desc even if buffer_addrs didn't change because
-		 * each write-back erases this info. */
-=======
 							  bufsz,
 							  DMA_FROM_DEVICE);
 			if (dma_mapping_error(&pdev->dev, buffer_info->dma)) {
@@ -313,18 +199,12 @@ static void igbvf_alloc_rx_buffers(struct igbvf_ring *rx_ring,
 		/* Refresh the desc even if buffer_addrs didn't change because
 		 * each write-back erases this info.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (adapter->rx_ps_hdr_size) {
 			rx_desc->read.pkt_addr =
 			     cpu_to_le64(buffer_info->page_dma);
 			rx_desc->read.hdr_addr = cpu_to_le64(buffer_info->dma);
 		} else {
-<<<<<<< HEAD
-			rx_desc->read.pkt_addr =
-			     cpu_to_le64(buffer_info->dma);
-=======
 			rx_desc->read.pkt_addr = cpu_to_le64(buffer_info->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rx_desc->read.hdr_addr = 0;
 		}
 
@@ -345,12 +225,8 @@ no_buffers:
 		/* Force memory writes to complete before letting h/w
 		 * know there are new descriptors to fetch.  (Only
 		 * applicable for weak-ordered memory model archs,
-<<<<<<< HEAD
-		 * such as IA-64). */
-=======
 		 * such as IA-64).
 		*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 		writel(i, adapter->hw.hw_addr + rx_ring->tail);
 	}
@@ -359,21 +235,14 @@ no_buffers:
 /**
  * igbvf_clean_rx_irq - Send received data up the network stack; legacy
  * @adapter: board private structure
-<<<<<<< HEAD
-=======
  * @work_done: output parameter used to indicate completed work
  * @work_to_do: input parameter setting limit of work
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * the return value indicates whether actual cleaning was done, there
  * is no guarantee that everything was cleaned
  **/
 static bool igbvf_clean_rx_irq(struct igbvf_adapter *adapter,
-<<<<<<< HEAD
-                               int *work_done, int work_to_do)
-=======
 			       int *work_done, int work_to_do)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_ring *rx_ring = adapter->rx_ring;
 	struct net_device *netdev = adapter->netdev;
@@ -404,13 +273,8 @@ static bool igbvf_clean_rx_irq(struct igbvf_adapter *adapter,
 		 * that case, it fills the header buffer and spills the rest
 		 * into the page.
 		 */
-<<<<<<< HEAD
-		hlen = (le16_to_cpu(rx_desc->wb.lower.lo_dword.hs_rss.hdr_info) &
-		  E1000_RXDADV_HDRBUFLEN_MASK) >> E1000_RXDADV_HDRBUFLEN_SHIFT;
-=======
 		hlen = le16_get_bits(rx_desc->wb.lower.lo_dword.hs_rss.hdr_info,
 				     E1000_RXDADV_HDRBUFLEN_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hlen > adapter->rx_ps_hdr_size)
 			hlen = adapter->rx_ps_hdr_size;
 
@@ -423,11 +287,7 @@ static bool igbvf_clean_rx_irq(struct igbvf_adapter *adapter,
 		buffer_info->skb = NULL;
 		if (!adapter->rx_ps_hdr_size) {
 			dma_unmap_single(&pdev->dev, buffer_info->dma,
-<<<<<<< HEAD
-			                 adapter->rx_buffer_len,
-=======
 					 adapter->rx_buffer_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 DMA_FROM_DEVICE);
 			buffer_info->dma = 0;
 			skb_put(skb, length);
@@ -436,37 +296,22 @@ static bool igbvf_clean_rx_irq(struct igbvf_adapter *adapter,
 
 		if (!skb_shinfo(skb)->nr_frags) {
 			dma_unmap_single(&pdev->dev, buffer_info->dma,
-<<<<<<< HEAD
-			                 adapter->rx_ps_hdr_size,
-					 DMA_FROM_DEVICE);
-=======
 					 adapter->rx_ps_hdr_size,
 					 DMA_FROM_DEVICE);
 			buffer_info->dma = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_put(skb, hlen);
 		}
 
 		if (length) {
 			dma_unmap_page(&pdev->dev, buffer_info->page_dma,
-<<<<<<< HEAD
-			               PAGE_SIZE / 2,
-=======
 				       PAGE_SIZE / 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       DMA_FROM_DEVICE);
 			buffer_info->page_dma = 0;
 
 			skb_fill_page_desc(skb, skb_shinfo(skb)->nr_frags,
-<<<<<<< HEAD
-			                   buffer_info->page,
-			                   buffer_info->page_offset,
-			                   length);
-=======
 					   buffer_info->page,
 					   buffer_info->page_offset,
 					   length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((adapter->rx_buffer_len > (PAGE_SIZE / 2)) ||
 			    (page_count(buffer_info->page) != 1))
@@ -507,11 +352,7 @@ send_up:
 		skb->protocol = eth_type_trans(skb, netdev);
 
 		igbvf_receive_skb(adapter, netdev, skb, staterr,
-<<<<<<< HEAD
-		                  rx_desc->wb.upper.vlan);
-=======
 				  rx_desc->wb.upper.vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 next_desc:
 		rx_desc->wb.upper.status_error = 0;
@@ -537,22 +378,13 @@ next_desc:
 
 	adapter->total_rx_packets += total_packets;
 	adapter->total_rx_bytes += total_bytes;
-<<<<<<< HEAD
-	adapter->net_stats.rx_bytes += total_bytes;
-	adapter->net_stats.rx_packets += total_packets;
-=======
 	netdev->stats.rx_bytes += total_bytes;
 	netdev->stats.rx_packets += total_packets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cleaned;
 }
 
 static void igbvf_put_txbuf(struct igbvf_adapter *adapter,
-<<<<<<< HEAD
-                            struct igbvf_buffer *buffer_info)
-=======
 			    struct igbvf_buffer *buffer_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (buffer_info->dma) {
 		if (buffer_info->mapped_as_page)
@@ -577,19 +409,12 @@ static void igbvf_put_txbuf(struct igbvf_adapter *adapter,
 /**
  * igbvf_setup_tx_resources - allocate Tx resources (Descriptors)
  * @adapter: board private structure
-<<<<<<< HEAD
-=======
  * @tx_ring: ring being initialized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return 0 on success, negative on failure
  **/
 int igbvf_setup_tx_resources(struct igbvf_adapter *adapter,
-<<<<<<< HEAD
-                             struct igbvf_ring *tx_ring)
-=======
 			     struct igbvf_ring *tx_ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = adapter->pdev;
 	int size;
@@ -605,10 +430,6 @@ int igbvf_setup_tx_resources(struct igbvf_adapter *adapter,
 
 	tx_ring->desc = dma_alloc_coherent(&pdev->dev, tx_ring->size,
 					   &tx_ring->dma, GFP_KERNEL);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tx_ring->desc)
 		goto err;
 
@@ -620,21 +441,14 @@ int igbvf_setup_tx_resources(struct igbvf_adapter *adapter,
 err:
 	vfree(tx_ring->buffer_info);
 	dev_err(&adapter->pdev->dev,
-<<<<<<< HEAD
-	        "Unable to allocate memory for the transmit descriptor ring\n");
-=======
 		"Unable to allocate memory for the transmit descriptor ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /**
  * igbvf_setup_rx_resources - allocate Rx resources (Descriptors)
  * @adapter: board private structure
-<<<<<<< HEAD
-=======
  * @rx_ring: ring being initialized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success, negative on failure
  **/
@@ -657,10 +471,6 @@ int igbvf_setup_rx_resources(struct igbvf_adapter *adapter,
 
 	rx_ring->desc = dma_alloc_coherent(&pdev->dev, rx_ring->size,
 					   &rx_ring->dma, GFP_KERNEL);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rx_ring->desc)
 		goto err;
 
@@ -675,11 +485,7 @@ err:
 	vfree(rx_ring->buffer_info);
 	rx_ring->buffer_info = NULL;
 	dev_err(&adapter->pdev->dev,
-<<<<<<< HEAD
-	        "Unable to allocate memory for the receive descriptor ring\n");
-=======
 		"Unable to allocate memory for the receive descriptor ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -739,11 +545,7 @@ void igbvf_free_tx_resources(struct igbvf_ring *tx_ring)
 
 /**
  * igbvf_clean_rx_ring - Free Rx Buffers per Queue
-<<<<<<< HEAD
- * @adapter: board private structure
-=======
  * @rx_ring: ring structure pointer to free buffers from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igbvf_clean_rx_ring(struct igbvf_ring *rx_ring)
 {
@@ -760,15 +562,6 @@ static void igbvf_clean_rx_ring(struct igbvf_ring *rx_ring)
 	for (i = 0; i < rx_ring->count; i++) {
 		buffer_info = &rx_ring->buffer_info[i];
 		if (buffer_info->dma) {
-<<<<<<< HEAD
-			if (adapter->rx_ps_hdr_size){
-				dma_unmap_single(&pdev->dev, buffer_info->dma,
-				                 adapter->rx_ps_hdr_size,
-						 DMA_FROM_DEVICE);
-			} else {
-				dma_unmap_single(&pdev->dev, buffer_info->dma,
-				                 adapter->rx_buffer_len,
-=======
 			if (adapter->rx_ps_hdr_size) {
 				dma_unmap_single(&pdev->dev, buffer_info->dma,
 						 adapter->rx_ps_hdr_size,
@@ -776,7 +569,6 @@ static void igbvf_clean_rx_ring(struct igbvf_ring *rx_ring)
 			} else {
 				dma_unmap_single(&pdev->dev, buffer_info->dma,
 						 adapter->rx_buffer_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 DMA_FROM_DEVICE);
 			}
 			buffer_info->dma = 0;
@@ -791,11 +583,7 @@ static void igbvf_clean_rx_ring(struct igbvf_ring *rx_ring)
 			if (buffer_info->page_dma)
 				dma_unmap_page(&pdev->dev,
 					       buffer_info->page_dma,
-<<<<<<< HEAD
-				               PAGE_SIZE / 2,
-=======
 					       PAGE_SIZE / 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       DMA_FROM_DEVICE);
 			put_page(buffer_info->page);
 			buffer_info->page = NULL;
@@ -834,11 +622,7 @@ void igbvf_free_rx_resources(struct igbvf_ring *rx_ring)
 	rx_ring->buffer_info = NULL;
 
 	dma_free_coherent(&pdev->dev, rx_ring->size, rx_ring->desc,
-<<<<<<< HEAD
-	                  rx_ring->dma);
-=======
 			  rx_ring->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_ring->desc = NULL;
 }
 
@@ -849,22 +633,12 @@ void igbvf_free_rx_resources(struct igbvf_ring *rx_ring)
  * @packets: the number of packets during this measurement interval
  * @bytes: the number of bytes during this measurement interval
  *
-<<<<<<< HEAD
- *      Stores a new ITR value based on packets and byte
- *      counts during the last interrupt.  The advantage of per interrupt
- *      computation is faster updates and more accurate ITR for the current
- *      traffic pattern.  Constants in this function were computed
- *      based on theoretical maximum wire speed and thresholds were set based
- *      on testing data as well as attempting to minimize response time
- *      while increasing bulk throughput.
-=======
  * Stores a new ITR value based on packets and byte counts during the last
  * interrupt.  The advantage of per interrupt computation is faster updates
  * and more accurate ITR for the current traffic pattern.  Constants in this
  * function were computed based on theoretical maximum wire speed and thresholds
  * were set based on testing data as well as attempting to minimize response
  * time while increasing bulk throughput.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static enum latency_range igbvf_update_itr(struct igbvf_adapter *adapter,
 					   enum latency_range itr_setting,
@@ -953,28 +727,15 @@ static void igbvf_set_itr(struct igbvf_adapter *adapter)
 
 	new_itr = igbvf_range_to_itr(adapter->tx_ring->itr_range);
 
-<<<<<<< HEAD
-
-	if (new_itr != adapter->tx_ring->itr_val) {
-		u32 current_itr = adapter->tx_ring->itr_val;
-		/*
-		 * this attempts to bias the interrupt rate towards Bulk
-=======
 	if (new_itr != adapter->tx_ring->itr_val) {
 		u32 current_itr = adapter->tx_ring->itr_val;
 		/* this attempts to bias the interrupt rate towards Bulk
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * by adding intermediate steps when interrupt rate is
 		 * increasing
 		 */
 		new_itr = new_itr > current_itr ?
-<<<<<<< HEAD
-			     min(current_itr + (new_itr >> 2), new_itr) :
-			     new_itr;
-=======
 			  min(current_itr + (new_itr >> 2), new_itr) :
 			  new_itr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->tx_ring->itr_val = new_itr;
 
 		adapter->tx_ring->set_itr = 1;
@@ -992,16 +753,10 @@ static void igbvf_set_itr(struct igbvf_adapter *adapter)
 
 	if (new_itr != adapter->rx_ring->itr_val) {
 		u32 current_itr = adapter->rx_ring->itr_val;
-<<<<<<< HEAD
-		new_itr = new_itr > current_itr ?
-			     min(current_itr + (new_itr >> 2), new_itr) :
-			     new_itr;
-=======
 
 		new_itr = new_itr > current_itr ?
 			  min(current_itr + (new_itr >> 2), new_itr) :
 			  new_itr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->rx_ring->itr_val = new_itr;
 
 		adapter->rx_ring->set_itr = 1;
@@ -1010,12 +765,8 @@ static void igbvf_set_itr(struct igbvf_adapter *adapter)
 
 /**
  * igbvf_clean_tx_irq - Reclaim resources after transmit completes
-<<<<<<< HEAD
- * @adapter: board private structure
-=======
  * @tx_ring: ring structure to clean descriptors from
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * returns true if ring is completely cleaned
  **/
 static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
@@ -1026,22 +777,6 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 	struct sk_buff *skb;
 	union e1000_adv_tx_desc *tx_desc, *eop_desc;
 	unsigned int total_bytes = 0, total_packets = 0;
-<<<<<<< HEAD
-	unsigned int i, eop, count = 0;
-	bool cleaned = false;
-
-	i = tx_ring->next_to_clean;
-	eop = tx_ring->buffer_info[i].next_to_watch;
-	eop_desc = IGBVF_TX_DESC_ADV(*tx_ring, eop);
-
-	while ((eop_desc->wb.status & cpu_to_le32(E1000_TXD_STAT_DD)) &&
-	       (count < tx_ring->count)) {
-		rmb();	/* read buffer_info after eop_desc status */
-		for (cleaned = false; !cleaned; count++) {
-			tx_desc = IGBVF_TX_DESC_ADV(*tx_ring, i);
-			buffer_info = &tx_ring->buffer_info[i];
-			cleaned = (i == eop);
-=======
 	unsigned int i, count = 0;
 	bool cleaned = false;
 
@@ -1067,7 +802,6 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 		for (cleaned = false; !cleaned; count++) {
 			tx_desc = IGBVF_TX_DESC_ADV(*tx_ring, i);
 			cleaned = (tx_desc == eop_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb = buffer_info->skb;
 
 			if (skb) {
@@ -1077,11 +811,7 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 				segs = skb_shinfo(skb)->gso_segs ?: 1;
 				/* multiply data chunks by size of headers */
 				bytecount = ((segs - 1) * skb_headlen(skb)) +
-<<<<<<< HEAD
-				            skb->len;
-=======
 					    skb->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				total_packets += segs;
 				total_bytes += bytecount;
 			}
@@ -1092,18 +822,6 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 			i++;
 			if (i == tx_ring->count)
 				i = 0;
-<<<<<<< HEAD
-		}
-		eop = tx_ring->buffer_info[i].next_to_watch;
-		eop_desc = IGBVF_TX_DESC_ADV(*tx_ring, eop);
-	}
-
-	tx_ring->next_to_clean = i;
-
-	if (unlikely(count &&
-	             netif_carrier_ok(netdev) &&
-	             igbvf_desc_unused(tx_ring) >= IGBVF_TX_QUEUE_WAKE)) {
-=======
 
 			buffer_info = &tx_ring->buffer_info[i];
 		}
@@ -1115,7 +833,6 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 
 	if (unlikely(count && netif_carrier_ok(netdev) &&
 	    igbvf_desc_unused(tx_ring) >= IGBVF_TX_QUEUE_WAKE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Make sure that anybody stopping the queue after this
 		 * sees the new next_to_clean.
 		 */
@@ -1127,13 +844,8 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 		}
 	}
 
-<<<<<<< HEAD
-	adapter->net_stats.tx_bytes += total_bytes;
-	adapter->net_stats.tx_packets += total_packets;
-=======
 	netdev->stats.tx_bytes += total_bytes;
 	netdev->stats.tx_packets += total_packets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count < tx_ring->count;
 }
 
@@ -1145,10 +857,6 @@ static irqreturn_t igbvf_msix_other(int irq, void *data)
 
 	adapter->int_counter1++;
 
-<<<<<<< HEAD
-	netif_carrier_off(netdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->mac.get_link_status = 1;
 	if (!test_bit(__IGBVF_DOWN, &adapter->state))
 		mod_timer(&adapter->watchdog_timer, jiffies + 1);
@@ -1174,14 +882,9 @@ static irqreturn_t igbvf_intr_msix_tx(int irq, void *data)
 	adapter->total_tx_bytes = 0;
 	adapter->total_tx_packets = 0;
 
-<<<<<<< HEAD
-	/* auto mask will automatically reenable the interrupt when we write
-	 * EICS */
-=======
 	/* auto mask will automatically re-enable the interrupt when we write
 	 * EICS
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!igbvf_clean_tx_irq(tx_ring))
 		/* Ring was not completely cleaned, so fire another interrupt */
 		ew32(EICS, tx_ring->eims_value);
@@ -1219,26 +922,16 @@ static irqreturn_t igbvf_intr_msix_rx(int irq, void *data)
 #define IGBVF_NO_QUEUE -1
 
 static void igbvf_assign_vector(struct igbvf_adapter *adapter, int rx_queue,
-<<<<<<< HEAD
-                                int tx_queue, int msix_vector)
-=======
 				int tx_queue, int msix_vector)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 ivar, index;
 
 	/* 82576 uses a table-based method for assigning vectors.
-<<<<<<< HEAD
-	   Each queue has a single entry in the table to which we write
-	   a vector number along with a "valid" bit.  Sadly, the layout
-	   of the table is somewhat counterintuitive. */
-=======
 	 * Each queue has a single entry in the table to which we write
 	 * a vector number along with a "valid" bit.  Sadly, the layout
 	 * of the table is somewhat counterintuitive.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rx_queue > IGBVF_NO_QUEUE) {
 		index = (rx_queue >> 1);
 		ivar = array_er32(IVAR0, index);
@@ -1251,11 +944,7 @@ static void igbvf_assign_vector(struct igbvf_adapter *adapter, int rx_queue,
 			ivar = ivar & 0xFFFFFF00;
 			ivar |= msix_vector | E1000_IVAR_VALID;
 		}
-<<<<<<< HEAD
-		adapter->rx_ring[rx_queue].eims_value = 1 << msix_vector;
-=======
 		adapter->rx_ring[rx_queue].eims_value = BIT(msix_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		array_ew32(IVAR0, index, ivar);
 	}
 	if (tx_queue > IGBVF_NO_QUEUE) {
@@ -1270,21 +959,14 @@ static void igbvf_assign_vector(struct igbvf_adapter *adapter, int rx_queue,
 			ivar = ivar & 0xFFFF00FF;
 			ivar |= (msix_vector | E1000_IVAR_VALID) << 8;
 		}
-<<<<<<< HEAD
-		adapter->tx_ring[tx_queue].eims_value = 1 << msix_vector;
-=======
 		adapter->tx_ring[tx_queue].eims_value = BIT(msix_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		array_ew32(IVAR0, index, ivar);
 	}
 }
 
 /**
  * igbvf_configure_msix - Configure MSI-X hardware
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * igbvf_configure_msix sets up the hardware to properly
  * generate MSI-X interrupts.
@@ -1312,13 +994,8 @@ static void igbvf_configure_msix(struct igbvf_adapter *adapter)
 
 	ew32(IVAR_MISC, tmp);
 
-<<<<<<< HEAD
-	adapter->eims_enable_mask = (1 << (vector)) - 1;
-	adapter->eims_other = 1 << (vector - 1);
-=======
 	adapter->eims_enable_mask = GENMASK(vector - 1, 0);
 	adapter->eims_other = BIT(vector - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e1e_flush();
 }
 
@@ -1333,10 +1010,7 @@ static void igbvf_reset_interrupt_capability(struct igbvf_adapter *adapter)
 
 /**
  * igbvf_set_interrupt_capability - set MSI or MSI-X if supported
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Attempt to configure interrupts using the best available
  * capabilities of the hardware and kernel.
@@ -1346,29 +1020,13 @@ static void igbvf_set_interrupt_capability(struct igbvf_adapter *adapter)
 	int err = -ENOMEM;
 	int i;
 
-<<<<<<< HEAD
-	/* we allocate 3 vectors, 1 for tx, 1 for rx, one for pf messages */
-	adapter->msix_entries = kcalloc(3, sizeof(struct msix_entry),
-	                                GFP_KERNEL);
-=======
 	/* we allocate 3 vectors, 1 for Tx, 1 for Rx, one for PF messages */
 	adapter->msix_entries = kcalloc(3, sizeof(struct msix_entry),
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->msix_entries) {
 		for (i = 0; i < 3; i++)
 			adapter->msix_entries[i].entry = i;
 
-<<<<<<< HEAD
-		err = pci_enable_msix(adapter->pdev,
-		                      adapter->msix_entries, 3);
-	}
-
-	if (err) {
-		/* MSI-X failed */
-		dev_err(&adapter->pdev->dev,
-		        "Failed to initialize MSI-X interrupts.\n");
-=======
 		err = pci_enable_msix_range(adapter->pdev,
 					    adapter->msix_entries, 3, 3);
 	}
@@ -1377,17 +1035,13 @@ static void igbvf_set_interrupt_capability(struct igbvf_adapter *adapter)
 		/* MSI-X failed */
 		dev_err(&adapter->pdev->dev,
 			"Failed to initialize MSI-X interrupts.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igbvf_reset_interrupt_capability(adapter);
 	}
 }
 
 /**
  * igbvf_request_msix - Initialize MSI-X interrupts
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * igbvf_request_msix allocates MSI-X vectors and requests interrupts from the
  * kernel.
@@ -1406,13 +1060,8 @@ static int igbvf_request_msix(struct igbvf_adapter *adapter)
 	}
 
 	err = request_irq(adapter->msix_entries[vector].vector,
-<<<<<<< HEAD
-	                  igbvf_intr_msix_tx, 0, adapter->tx_ring->name,
-	                  netdev);
-=======
 			  igbvf_intr_msix_tx, 0, adapter->tx_ring->name,
 			  netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -1421,31 +1070,16 @@ static int igbvf_request_msix(struct igbvf_adapter *adapter)
 	vector++;
 
 	err = request_irq(adapter->msix_entries[vector].vector,
-<<<<<<< HEAD
-	                  igbvf_intr_msix_rx, 0, adapter->rx_ring->name,
-	                  netdev);
-	if (err)
-		goto out;
-=======
 			  igbvf_intr_msix_rx, 0, adapter->rx_ring->name,
 			  netdev);
 	if (err)
 		goto free_irq_tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->rx_ring->itr_register = E1000_EITR(vector);
 	adapter->rx_ring->itr_val = adapter->current_itr;
 	vector++;
 
 	err = request_irq(adapter->msix_entries[vector].vector,
-<<<<<<< HEAD
-	                  igbvf_msix_other, 0, netdev->name, netdev);
-	if (err)
-		goto out;
-
-	igbvf_configure_msix(adapter);
-	return 0;
-=======
 			  igbvf_msix_other, 0, netdev->name, netdev);
 	if (err)
 		goto free_irq_rx;
@@ -1456,7 +1090,6 @@ free_irq_rx:
 	free_irq(adapter->msix_entries[--vector].vector, netdev);
 free_irq_tx:
 	free_irq(adapter->msix_entries[--vector].vector, netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
@@ -1465,11 +1098,7 @@ out:
  * igbvf_alloc_queues - Allocate memory for all rings
  * @adapter: board private structure to initialize
  **/
-<<<<<<< HEAD
-static int __devinit igbvf_alloc_queues(struct igbvf_adapter *adapter)
-=======
 static int igbvf_alloc_queues(struct igbvf_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = adapter->netdev;
 
@@ -1483,21 +1112,14 @@ static int igbvf_alloc_queues(struct igbvf_adapter *adapter)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	netif_napi_add(netdev, &adapter->rx_ring->napi, igbvf_poll, 64);
-=======
 	netif_napi_add(netdev, &adapter->rx_ring->napi, igbvf_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
  * igbvf_request_irq - initialize interrupts
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Attempts to configure interrupts using the best available
  * capabilities of the hardware and kernel.
@@ -1514,11 +1136,7 @@ static int igbvf_request_irq(struct igbvf_adapter *adapter)
 		return err;
 
 	dev_err(&adapter->pdev->dev,
-<<<<<<< HEAD
-	        "Unable to allocate interrupt, Error: %d\n", err);
-=======
 		"Unable to allocate interrupt, Error: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -1536,10 +1154,7 @@ static void igbvf_free_irq(struct igbvf_adapter *adapter)
 
 /**
  * igbvf_irq_disable - Mask off interrupt generation on the NIC
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igbvf_irq_disable(struct igbvf_adapter *adapter)
 {
@@ -1553,10 +1168,7 @@ static void igbvf_irq_disable(struct igbvf_adapter *adapter)
 
 /**
  * igbvf_irq_enable - Enable default interrupt generation settings
-<<<<<<< HEAD
-=======
  * @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igbvf_irq_enable(struct igbvf_adapter *adapter)
 {
@@ -1581,12 +1193,6 @@ static int igbvf_poll(struct napi_struct *napi, int budget)
 
 	igbvf_clean_rx_irq(adapter, &work_done, budget);
 
-<<<<<<< HEAD
-	/* If not enough Rx work done, exit the polling mode */
-	if (work_done < budget) {
-		napi_complete(napi);
-
-=======
 	if (work_done == budget)
 		return budget;
 
@@ -1594,7 +1200,6 @@ static int igbvf_poll(struct napi_struct *napi, int budget)
 	 * poll us due to busy-polling
 	 */
 	if (likely(napi_complete_done(napi, work_done))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (adapter->requested_itr & 3)
 			igbvf_set_itr(adapter);
 
@@ -1617,12 +1222,6 @@ static void igbvf_set_rlpml(struct igbvf_adapter *adapter)
 	struct e1000_hw *hw = &adapter->hw;
 
 	max_frame_size = adapter->max_frame_size + VLAN_TAG_SIZE;
-<<<<<<< HEAD
-	e1000_rlpml_set_vf(hw, max_frame_size);
-}
-
-static int igbvf_vlan_rx_add_vid(struct net_device *netdev, u16 vid)
-=======
 
 	spin_lock_bh(&hw->mbx_lock);
 
@@ -1633,17 +1232,10 @@ static int igbvf_vlan_rx_add_vid(struct net_device *netdev, u16 vid)
 
 static int igbvf_vlan_rx_add_vid(struct net_device *netdev,
 				 __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	if (hw->mac.ops.set_vfta(hw, vid, true)) {
-		dev_err(&adapter->pdev->dev, "Failed to add vlan id %d\n", vid);
-		return -EINVAL;
-	}
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	if (hw->mac.ops.set_vfta(hw, vid, true)) {
@@ -1654,28 +1246,16 @@ static int igbvf_vlan_rx_add_vid(struct net_device *netdev,
 
 	spin_unlock_bh(&hw->mbx_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(vid, adapter->active_vlans);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int igbvf_vlan_rx_kill_vid(struct net_device *netdev, u16 vid)
-=======
 static int igbvf_vlan_rx_kill_vid(struct net_device *netdev,
 				  __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	if (hw->mac.ops.set_vfta(hw, vid, false)) {
-		dev_err(&adapter->pdev->dev,
-		        "Failed to remove vlan id %d\n", vid);
-		return -EINVAL;
-	}
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	if (hw->mac.ops.set_vfta(hw, vid, false)) {
@@ -1687,7 +1267,6 @@ static int igbvf_vlan_rx_kill_vid(struct net_device *netdev,
 
 	spin_unlock_bh(&hw->mbx_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(vid, adapter->active_vlans);
 	return 0;
 }
@@ -1697,11 +1276,7 @@ static void igbvf_restore_vlan(struct igbvf_adapter *adapter)
 	u16 vid;
 
 	for_each_set_bit(vid, adapter->active_vlans, VLAN_N_VID)
-<<<<<<< HEAD
-		igbvf_vlan_rx_add_vid(adapter->netdev, vid);
-=======
 		igbvf_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1735,11 +1310,7 @@ static void igbvf_configure_tx(struct igbvf_adapter *adapter)
 
 	/* Turn off Relaxed Ordering on head write-backs.  The writebacks
 	 * MUST be delivered in order or it will completely screw up
-<<<<<<< HEAD
-	 * our bookeeping.
-=======
 	 * our bookkeeping.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	dca_txctrl = er32(DCA_TXCTRL(0));
 	dca_txctrl &= ~E1000_DCA_TXCTRL_TX_WB_RO_EN;
@@ -1766,24 +1337,15 @@ static void igbvf_setup_srrctl(struct igbvf_adapter *adapter)
 	u32 srrctl = 0;
 
 	srrctl &= ~(E1000_SRRCTL_DESCTYPE_MASK |
-<<<<<<< HEAD
-	            E1000_SRRCTL_BSIZEHDR_MASK |
-	            E1000_SRRCTL_BSIZEPKT_MASK);
-=======
 		    E1000_SRRCTL_BSIZEHDR_MASK |
 		    E1000_SRRCTL_BSIZEPKT_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable queue drop to avoid head of line blocking */
 	srrctl |= E1000_SRRCTL_DROP_EN;
 
 	/* Setup buffer sizes */
 	srrctl |= ALIGN(adapter->rx_buffer_len, 1024) >>
-<<<<<<< HEAD
-	          E1000_SRRCTL_BSIZEPKT_SHIFT;
-=======
 		  E1000_SRRCTL_BSIZEPKT_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->rx_buffer_len < 2048) {
 		adapter->rx_ps_hdr_size = 0;
@@ -1791,11 +1353,7 @@ static void igbvf_setup_srrctl(struct igbvf_adapter *adapter)
 	} else {
 		adapter->rx_ps_hdr_size = 128;
 		srrctl |= adapter->rx_ps_hdr_size <<
-<<<<<<< HEAD
-		          E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
-=======
 			  E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srrctl |= E1000_SRRCTL_DESCTYPE_HDR_SPLIT_ALWAYS;
 	}
 
@@ -1813,11 +1371,7 @@ static void igbvf_configure_rx(struct igbvf_adapter *adapter)
 	struct e1000_hw *hw = &adapter->hw;
 	struct igbvf_ring *rx_ring = adapter->rx_ring;
 	u64 rdba;
-<<<<<<< HEAD
-	u32 rdlen, rxdctl;
-=======
 	u32 rxdctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable receives */
 	rxdctl = er32(RXDCTL(0));
@@ -1825,14 +1379,7 @@ static void igbvf_configure_rx(struct igbvf_adapter *adapter)
 	e1e_flush();
 	msleep(10);
 
-<<<<<<< HEAD
-	rdlen = rx_ring->count * sizeof(union e1000_adv_rx_desc);
-
-	/*
-	 * Setup the HW Rx Head and Tail Descriptor Pointers and
-=======
 	/* Setup the HW Rx Head and Tail Descriptor Pointers and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the Base and Length of the Rx Descriptor Ring
 	 */
 	rdba = rx_ring->dma;
@@ -1874,19 +1421,10 @@ static void igbvf_set_multi(struct net_device *netdev)
 	int i;
 
 	if (!netdev_mc_empty(netdev)) {
-<<<<<<< HEAD
-		mta_list = kmalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
-		if (!mta_list) {
-			dev_err(&adapter->pdev->dev,
-			        "failed to allocate multicast filter list\n");
-			return;
-		}
-=======
 		mta_list = kmalloc_array(netdev_mc_count(netdev), ETH_ALEN,
 					 GFP_ATOMIC);
 		if (!mta_list)
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* prepare a packed array of only addresses. */
@@ -1894,21 +1432,15 @@ static void igbvf_set_multi(struct net_device *netdev)
 	netdev_for_each_mc_addr(ha, netdev)
 		memcpy(mta_list + (i++ * ETH_ALEN), ha->addr, ETH_ALEN);
 
-<<<<<<< HEAD
-	hw->mac.ops.update_mc_addr_list(hw, mta_list, i, 0, 0);
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	hw->mac.ops.update_mc_addr_list(hw, mta_list, i, 0, 0);
 
 	spin_unlock_bh(&hw->mbx_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mta_list);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * igbvf_set_uni - Configure unicast MAC filters
  * @netdev: network interface device structure
  *
@@ -1957,17 +1489,12 @@ static void igbvf_set_rx_mode(struct net_device *netdev)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * igbvf_configure - configure the hardware for Rx and Tx
  * @adapter: private board structure
  **/
 static void igbvf_configure(struct igbvf_adapter *adapter)
 {
-<<<<<<< HEAD
-	igbvf_set_multi(adapter->netdev);
-=======
 	igbvf_set_rx_mode(adapter->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	igbvf_restore_vlan(adapter);
 
@@ -1975,18 +1502,11 @@ static void igbvf_configure(struct igbvf_adapter *adapter)
 	igbvf_setup_srrctl(adapter);
 	igbvf_configure_rx(adapter);
 	igbvf_alloc_rx_buffers(adapter->rx_ring,
-<<<<<<< HEAD
-	                       igbvf_desc_unused(adapter->rx_ring));
-}
-
-/* igbvf_reset - bring the hardware into a known good state
-=======
 			       igbvf_desc_unused(adapter->rx_ring));
 }
 
 /* igbvf_reset - bring the hardware into a known good state
  * @adapter: private board structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function boots the hardware and enables some settings that
  * require a configuration cycle of the hardware - those cannot be
@@ -1999,17 +1519,6 @@ static void igbvf_reset(struct igbvf_adapter *adapter)
 	struct net_device *netdev = adapter->netdev;
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	/* Allow time for pending master requests to run */
-	if (mac->ops.reset_hw(hw))
-		dev_err(&adapter->pdev->dev, "PF still resetting\n");
-
-	mac->ops.init_hw(hw);
-
-	if (is_valid_ether_addr(adapter->hw.mac.addr)) {
-		memcpy(netdev->dev_addr, adapter->hw.mac.addr,
-		       netdev->addr_len);
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	/* Allow time for pending master requests to run */
@@ -2022,7 +1531,6 @@ static void igbvf_reset(struct igbvf_adapter *adapter)
 
 	if (is_valid_ether_addr(adapter->hw.mac.addr)) {
 		eth_hw_addr_set(netdev, adapter->hw.mac.addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(netdev->perm_addr, adapter->hw.mac.addr,
 		       netdev->addr_len);
 	}
@@ -2051,10 +1559,6 @@ int igbvf_up(struct igbvf_adapter *adapter)
 	hw->mac.get_link_status = 1;
 	mod_timer(&adapter->watchdog_timer, jiffies + 1);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2064,12 +1568,7 @@ void igbvf_down(struct igbvf_adapter *adapter)
 	struct e1000_hw *hw = &adapter->hw;
 	u32 rxdctl, txdctl;
 
-<<<<<<< HEAD
-	/*
-	 * signal that we're down so the interrupt handler does not
-=======
 	/* signal that we're down so the interrupt handler does not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * reschedule our watchdog timer
 	 */
 	set_bit(__IGBVF_DOWN, &adapter->state);
@@ -2078,10 +1577,7 @@ void igbvf_down(struct igbvf_adapter *adapter)
 	rxdctl = er32(RXDCTL(0));
 	ew32(RXDCTL(0), rxdctl & ~E1000_RXDCTL_QUEUE_ENABLE);
 
-<<<<<<< HEAD
-=======
 	netif_carrier_off(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_stop_queue(netdev);
 
 	/* disable transmits in the hardware */
@@ -2098,11 +1594,6 @@ void igbvf_down(struct igbvf_adapter *adapter)
 
 	del_timer_sync(&adapter->watchdog_timer);
 
-<<<<<<< HEAD
-	netif_carrier_off(netdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* record the stats before reset*/
 	igbvf_update_stats(adapter);
 
@@ -2118,11 +1609,7 @@ void igbvf_reinit_locked(struct igbvf_adapter *adapter)
 {
 	might_sleep();
 	while (test_and_set_bit(__IGBVF_RESETTING, &adapter->state))
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igbvf_down(adapter);
 	igbvf_up(adapter);
 	clear_bit(__IGBVF_RESETTING, &adapter->state);
@@ -2136,11 +1623,7 @@ void igbvf_reinit_locked(struct igbvf_adapter *adapter)
  * Fields are initialized based on PCI device information and
  * OS network device settings (MTU size).
  **/
-<<<<<<< HEAD
-static int __devinit igbvf_sw_init(struct igbvf_adapter *adapter)
-=======
 static int igbvf_sw_init(struct igbvf_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = adapter->netdev;
 	s32 rc;
@@ -2179,10 +1662,7 @@ static int igbvf_sw_init(struct igbvf_adapter *adapter)
 	igbvf_irq_disable(adapter);
 
 	spin_lock_init(&adapter->stats_lock);
-<<<<<<< HEAD
-=======
 	spin_lock_init(&adapter->hw.mbx_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(__IGBVF_DOWN, &adapter->state);
 	return 0;
@@ -2245,12 +1725,7 @@ static int igbvf_open(struct net_device *netdev)
 	if (err)
 		goto err_setup_rx;
 
-<<<<<<< HEAD
-	/*
-	 * before we allocate an interrupt, we must be ready to handle it.
-=======
 	/* before we allocate an interrupt, we must be ready to handle it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Setting DEBUG_SHIRQ in the kernel makes it fire an interrupt
 	 * as soon as we call pci_request_irq, so we have to setup our
 	 * clean_rx handler before we do so.
@@ -2312,10 +1787,7 @@ static int igbvf_close(struct net_device *netdev)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * igbvf_set_mac - Change the Ethernet Address of the NIC
  * @netdev: network interface device structure
@@ -2334,15 +1806,6 @@ static int igbvf_set_mac(struct net_device *netdev, void *p)
 
 	memcpy(hw->mac.addr, addr->sa_data, netdev->addr_len);
 
-<<<<<<< HEAD
-	hw->mac.ops.rar_set(hw, hw->mac.addr, 0);
-
-	if (memcmp(addr->sa_data, hw->mac.addr, 6))
-		return -EADDRNOTAVAIL;
-
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-	netdev->addr_assign_type &= ~NET_ADDR_RANDOM;
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	hw->mac.ops.rar_set(hw, hw->mac.addr, 0);
@@ -2353,22 +1816,10 @@ static int igbvf_set_mac(struct net_device *netdev, void *p)
 		return -EADDRNOTAVAIL;
 
 	eth_hw_addr_set(netdev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#define UPDATE_VF_COUNTER(reg, name)                                    \
-	{                                                               \
-		u32 current_counter = er32(reg);                        \
-		if (current_counter < adapter->stats.last_##name)       \
-			adapter->stats.name += 0x100000000LL;           \
-		adapter->stats.last_##name = current_counter;           \
-		adapter->stats.name &= 0xFFFFFFFF00000000LL;            \
-		adapter->stats.name |= current_counter;                 \
-	}
-=======
 #define UPDATE_VF_COUNTER(reg, name) \
 { \
 	u32 current_counter = er32(reg); \
@@ -2378,7 +1829,6 @@ static int igbvf_set_mac(struct net_device *netdev, void *p)
 	adapter->stats.name &= 0xFFFFFFFF00000000LL; \
 	adapter->stats.name |= current_counter; \
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * igbvf_update_stats - Update the board statistics counters
@@ -2389,12 +1839,7 @@ void igbvf_update_stats(struct igbvf_adapter *adapter)
 	struct e1000_hw *hw = &adapter->hw;
 	struct pci_dev *pdev = adapter->pdev;
 
-<<<<<<< HEAD
-	/*
-	 * Prevent stats update while adapter is being reset, link is down
-=======
 	/* Prevent stats update while adapter is being reset, link is down
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * or if the pci connection is down.
 	 */
 	if (adapter->link_speed == 0)
@@ -2417,11 +1862,7 @@ void igbvf_update_stats(struct igbvf_adapter *adapter)
 	UPDATE_VF_COUNTER(VFGPRLBC, gprlbc);
 
 	/* Fill out the OS statistics structure */
-<<<<<<< HEAD
-	adapter->net_stats.multicast = adapter->stats.mprc;
-=======
 	adapter->netdev->stats.multicast = adapter->stats.mprc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void igbvf_print_link_info(struct igbvf_adapter *adapter)
@@ -2441,16 +1882,12 @@ static bool igbvf_has_link(struct igbvf_adapter *adapter)
 	if (test_bit(__IGBVF_DOWN, &adapter->state))
 		return false;
 
-<<<<<<< HEAD
-	ret_val = hw->mac.ops.check_for_link(hw);
-=======
 	spin_lock_bh(&hw->mbx_lock);
 
 	ret_val = hw->mac.ops.check_for_link(hw);
 
 	spin_unlock_bh(&hw->mbx_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	link_active = !hw->mac.get_link_status;
 
 	/* if check for link returns error we will need to reset */
@@ -2462,19 +1899,11 @@ static bool igbvf_has_link(struct igbvf_adapter *adapter)
 
 /**
  * igbvf_watchdog - Timer Call-back
-<<<<<<< HEAD
- * @data: pointer to adapter cast into an unsigned long
- **/
-static void igbvf_watchdog(unsigned long data)
-{
-	struct igbvf_adapter *adapter = (struct igbvf_adapter *) data;
-=======
  * @t: timer list pointer containing private struct
  **/
 static void igbvf_watchdog(struct timer_list *t)
 {
 	struct igbvf_adapter *adapter = from_timer(adapter, t, watchdog_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do the rest outside of interrupt context */
 	schedule_work(&adapter->watchdog_task);
@@ -2483,13 +1912,8 @@ static void igbvf_watchdog(struct timer_list *t)
 static void igbvf_watchdog_task(struct work_struct *work)
 {
 	struct igbvf_adapter *adapter = container_of(work,
-<<<<<<< HEAD
-	                                             struct igbvf_adapter,
-	                                             watchdog_task);
-=======
 						     struct igbvf_adapter,
 						     watchdog_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev = adapter->netdev;
 	struct e1000_mac_info *mac = &adapter->hw.mac;
 	struct igbvf_ring *tx_ring = adapter->tx_ring;
@@ -2502,13 +1926,8 @@ static void igbvf_watchdog_task(struct work_struct *work)
 	if (link) {
 		if (!netif_carrier_ok(netdev)) {
 			mac->ops.get_link_up_info(&adapter->hw,
-<<<<<<< HEAD
-			                          &adapter->link_speed,
-			                          &adapter->link_duplex);
-=======
 						  &adapter->link_speed,
 						  &adapter->link_duplex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			igbvf_print_link_info(adapter);
 
 			netif_carrier_on(netdev);
@@ -2528,16 +1947,9 @@ static void igbvf_watchdog_task(struct work_struct *work)
 		igbvf_update_stats(adapter);
 	} else {
 		tx_pending = (igbvf_desc_unused(tx_ring) + 1 <
-<<<<<<< HEAD
-		              tx_ring->count);
-		if (tx_pending) {
-			/*
-			 * We've lost link, so the controller stops DMA,
-=======
 			      tx_ring->count);
 		if (tx_pending) {
 			/* We've lost link, so the controller stops DMA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * but we've got queued Tx work that's never going
 			 * to get done, so reset controller to flush Tx.
 			 * (Do the reset outside of interrupt context).
@@ -2556,155 +1968,6 @@ static void igbvf_watchdog_task(struct work_struct *work)
 			  round_jiffies(jiffies + (2 * HZ)));
 }
 
-<<<<<<< HEAD
-#define IGBVF_TX_FLAGS_CSUM             0x00000001
-#define IGBVF_TX_FLAGS_VLAN             0x00000002
-#define IGBVF_TX_FLAGS_TSO              0x00000004
-#define IGBVF_TX_FLAGS_IPV4             0x00000008
-#define IGBVF_TX_FLAGS_VLAN_MASK        0xffff0000
-#define IGBVF_TX_FLAGS_VLAN_SHIFT       16
-
-static int igbvf_tso(struct igbvf_adapter *adapter,
-                     struct igbvf_ring *tx_ring,
-                     struct sk_buff *skb, u32 tx_flags, u8 *hdr_len)
-{
-	struct e1000_adv_tx_context_desc *context_desc;
-	unsigned int i;
-	int err;
-	struct igbvf_buffer *buffer_info;
-	u32 info = 0, tu_cmd = 0;
-	u32 mss_l4len_idx, l4len;
-	*hdr_len = 0;
-
-	if (skb_header_cloned(skb)) {
-		err = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-		if (err) {
-			dev_err(&adapter->pdev->dev,
-			        "igbvf_tso returning an error\n");
-			return err;
-		}
-	}
-
-	l4len = tcp_hdrlen(skb);
-	*hdr_len += l4len;
-
-	if (skb->protocol == htons(ETH_P_IP)) {
-		struct iphdr *iph = ip_hdr(skb);
-		iph->tot_len = 0;
-		iph->check = 0;
-		tcp_hdr(skb)->check = ~csum_tcpudp_magic(iph->saddr,
-		                                         iph->daddr, 0,
-		                                         IPPROTO_TCP,
-		                                         0);
-	} else if (skb_is_gso_v6(skb)) {
-		ipv6_hdr(skb)->payload_len = 0;
-		tcp_hdr(skb)->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
-		                                       &ipv6_hdr(skb)->daddr,
-		                                       0, IPPROTO_TCP, 0);
-	}
-
-	i = tx_ring->next_to_use;
-
-	buffer_info = &tx_ring->buffer_info[i];
-	context_desc = IGBVF_TX_CTXTDESC_ADV(*tx_ring, i);
-	/* VLAN MACLEN IPLEN */
-	if (tx_flags & IGBVF_TX_FLAGS_VLAN)
-		info |= (tx_flags & IGBVF_TX_FLAGS_VLAN_MASK);
-	info |= (skb_network_offset(skb) << E1000_ADVTXD_MACLEN_SHIFT);
-	*hdr_len += skb_network_offset(skb);
-	info |= (skb_transport_header(skb) - skb_network_header(skb));
-	*hdr_len += (skb_transport_header(skb) - skb_network_header(skb));
-	context_desc->vlan_macip_lens = cpu_to_le32(info);
-
-	/* ADV DTYP TUCMD MKRLOC/ISCSIHEDLEN */
-	tu_cmd |= (E1000_TXD_CMD_DEXT | E1000_ADVTXD_DTYP_CTXT);
-
-	if (skb->protocol == htons(ETH_P_IP))
-		tu_cmd |= E1000_ADVTXD_TUCMD_IPV4;
-	tu_cmd |= E1000_ADVTXD_TUCMD_L4T_TCP;
-
-	context_desc->type_tucmd_mlhl = cpu_to_le32(tu_cmd);
-
-	/* MSS L4LEN IDX */
-	mss_l4len_idx = (skb_shinfo(skb)->gso_size << E1000_ADVTXD_MSS_SHIFT);
-	mss_l4len_idx |= (l4len << E1000_ADVTXD_L4LEN_SHIFT);
-
-	context_desc->mss_l4len_idx = cpu_to_le32(mss_l4len_idx);
-	context_desc->seqnum_seed = 0;
-
-	buffer_info->time_stamp = jiffies;
-	buffer_info->next_to_watch = i;
-	buffer_info->dma = 0;
-	i++;
-	if (i == tx_ring->count)
-		i = 0;
-
-	tx_ring->next_to_use = i;
-
-	return true;
-}
-
-static inline bool igbvf_tx_csum(struct igbvf_adapter *adapter,
-                                 struct igbvf_ring *tx_ring,
-                                 struct sk_buff *skb, u32 tx_flags)
-{
-	struct e1000_adv_tx_context_desc *context_desc;
-	unsigned int i;
-	struct igbvf_buffer *buffer_info;
-	u32 info = 0, tu_cmd = 0;
-
-	if ((skb->ip_summed == CHECKSUM_PARTIAL) ||
-	    (tx_flags & IGBVF_TX_FLAGS_VLAN)) {
-		i = tx_ring->next_to_use;
-		buffer_info = &tx_ring->buffer_info[i];
-		context_desc = IGBVF_TX_CTXTDESC_ADV(*tx_ring, i);
-
-		if (tx_flags & IGBVF_TX_FLAGS_VLAN)
-			info |= (tx_flags & IGBVF_TX_FLAGS_VLAN_MASK);
-
-		info |= (skb_network_offset(skb) << E1000_ADVTXD_MACLEN_SHIFT);
-		if (skb->ip_summed == CHECKSUM_PARTIAL)
-			info |= (skb_transport_header(skb) -
-			         skb_network_header(skb));
-
-
-		context_desc->vlan_macip_lens = cpu_to_le32(info);
-
-		tu_cmd |= (E1000_TXD_CMD_DEXT | E1000_ADVTXD_DTYP_CTXT);
-
-		if (skb->ip_summed == CHECKSUM_PARTIAL) {
-			switch (skb->protocol) {
-			case __constant_htons(ETH_P_IP):
-				tu_cmd |= E1000_ADVTXD_TUCMD_IPV4;
-				if (ip_hdr(skb)->protocol == IPPROTO_TCP)
-					tu_cmd |= E1000_ADVTXD_TUCMD_L4T_TCP;
-				break;
-			case __constant_htons(ETH_P_IPV6):
-				if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
-					tu_cmd |= E1000_ADVTXD_TUCMD_L4T_TCP;
-				break;
-			default:
-				break;
-			}
-		}
-
-		context_desc->type_tucmd_mlhl = cpu_to_le32(tu_cmd);
-		context_desc->seqnum_seed = 0;
-		context_desc->mss_l4len_idx = 0;
-
-		buffer_info->time_stamp = jiffies;
-		buffer_info->next_to_watch = i;
-		buffer_info->dma = 0;
-		i++;
-		if (i == tx_ring->count)
-			i = 0;
-		tx_ring->next_to_use = i;
-
-		return true;
-	}
-
-	return false;
-=======
 #define IGBVF_TX_FLAGS_CSUM		0x00000001
 #define IGBVF_TX_FLAGS_VLAN		0x00000002
 #define IGBVF_TX_FLAGS_TSO		0x00000004
@@ -2850,7 +2113,6 @@ no_csum:
 
 	igbvf_tx_ctxtdesc(tx_ring, vlan_macip_lens, type_tucmd, 0);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int igbvf_maybe_stop_tx(struct net_device *netdev, int size)
@@ -2863,13 +2125,10 @@ static int igbvf_maybe_stop_tx(struct net_device *netdev, int size)
 
 	netif_stop_queue(netdev);
 
-<<<<<<< HEAD
-=======
 	/* Herbert's original patch had:
 	 *  smp_mb__after_netif_stop_queue();
 	 * but since that doesn't exist yet, just open code it.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp_mb();
 
 	/* We need to check again just in case room has been made available */
@@ -2882,22 +2141,12 @@ static int igbvf_maybe_stop_tx(struct net_device *netdev, int size)
 	return 0;
 }
 
-<<<<<<< HEAD
-#define IGBVF_MAX_TXD_PWR       16
-#define IGBVF_MAX_DATA_PER_TXD  (1 << IGBVF_MAX_TXD_PWR)
-
-static inline int igbvf_tx_map_adv(struct igbvf_adapter *adapter,
-                                   struct igbvf_ring *tx_ring,
-                                   struct sk_buff *skb,
-                                   unsigned int first)
-=======
 #define IGBVF_MAX_TXD_PWR	16
 #define IGBVF_MAX_DATA_PER_TXD	(1u << IGBVF_MAX_TXD_PWR)
 
 static inline int igbvf_tx_map_adv(struct igbvf_adapter *adapter,
 				   struct igbvf_ring *tx_ring,
 				   struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_buffer *buffer_info;
 	struct pci_dev *pdev = adapter->pdev;
@@ -2912,24 +2161,14 @@ static inline int igbvf_tx_map_adv(struct igbvf_adapter *adapter,
 	buffer_info->length = len;
 	/* set time_stamp *before* dma to help avoid a possible race */
 	buffer_info->time_stamp = jiffies;
-<<<<<<< HEAD
-	buffer_info->next_to_watch = i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer_info->mapped_as_page = false;
 	buffer_info->dma = dma_map_single(&pdev->dev, skb->data, len,
 					  DMA_TO_DEVICE);
 	if (dma_mapping_error(&pdev->dev, buffer_info->dma))
 		goto dma_error;
 
-<<<<<<< HEAD
-
-	for (f = 0; f < skb_shinfo(skb)->nr_frags; f++) {
-		const struct skb_frag_struct *frag;
-=======
 	for (f = 0; f < skb_shinfo(skb)->nr_frags; f++) {
 		const skb_frag_t *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		count++;
 		i++;
@@ -2943,25 +2182,14 @@ static inline int igbvf_tx_map_adv(struct igbvf_adapter *adapter,
 		BUG_ON(len >= IGBVF_MAX_DATA_PER_TXD);
 		buffer_info->length = len;
 		buffer_info->time_stamp = jiffies;
-<<<<<<< HEAD
-		buffer_info->next_to_watch = i;
-		buffer_info->mapped_as_page = true;
-		buffer_info->dma = skb_frag_dma_map(&pdev->dev, frag, 0, len,
-						DMA_TO_DEVICE);
-=======
 		buffer_info->mapped_as_page = true;
 		buffer_info->dma = skb_frag_dma_map(&pdev->dev, frag, 0, len,
 						    DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dma_mapping_error(&pdev->dev, buffer_info->dma))
 			goto dma_error;
 	}
 
 	tx_ring->buffer_info[i].skb = skb;
-<<<<<<< HEAD
-	tx_ring->buffer_info[first].next_to_watch = i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ++count;
 
@@ -2972,21 +2200,13 @@ dma_error:
 	buffer_info->dma = 0;
 	buffer_info->time_stamp = 0;
 	buffer_info->length = 0;
-<<<<<<< HEAD
-	buffer_info->next_to_watch = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer_info->mapped_as_page = false;
 	if (count)
 		count--;
 
 	/* clear timestamp and dma mappings for remaining portion of packet */
 	while (count--) {
-<<<<<<< HEAD
-		if (i==0)
-=======
 		if (i == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i += tx_ring->count;
 		i--;
 		buffer_info = &tx_ring->buffer_info[i];
@@ -2997,16 +2217,10 @@ dma_error:
 }
 
 static inline void igbvf_tx_queue_adv(struct igbvf_adapter *adapter,
-<<<<<<< HEAD
-                                      struct igbvf_ring *tx_ring,
-                                      int tx_flags, int count, u32 paylen,
-                                      u8 hdr_len)
-=======
 				      struct igbvf_ring *tx_ring,
 				      int tx_flags, int count,
 				      unsigned int first, u32 paylen,
 				      u8 hdr_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union e1000_adv_tx_desc *tx_desc = NULL;
 	struct igbvf_buffer *buffer_info;
@@ -3014,11 +2228,7 @@ static inline void igbvf_tx_queue_adv(struct igbvf_adapter *adapter,
 	unsigned int i;
 
 	cmd_type_len = (E1000_ADVTXD_DTYP_DATA | E1000_ADVTXD_DCMD_IFCS |
-<<<<<<< HEAD
-	                E1000_ADVTXD_DCMD_DEXT);
-=======
 			E1000_ADVTXD_DCMD_DEXT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tx_flags & IGBVF_TX_FLAGS_VLAN)
 		cmd_type_len |= E1000_ADVTXD_DCMD_VLE;
@@ -3045,11 +2255,7 @@ static inline void igbvf_tx_queue_adv(struct igbvf_adapter *adapter,
 		tx_desc = IGBVF_TX_DESC_ADV(*tx_ring, i);
 		tx_desc->read.buffer_addr = cpu_to_le64(buffer_info->dma);
 		tx_desc->read.cmd_type_len =
-<<<<<<< HEAD
-		         cpu_to_le32(cmd_type_len | buffer_info->length);
-=======
 			 cpu_to_le32(cmd_type_len | buffer_info->length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_desc->read.olinfo_status = cpu_to_le32(olinfo_status);
 		i++;
 		if (i == tx_ring->count)
@@ -3060,16 +2266,6 @@ static inline void igbvf_tx_queue_adv(struct igbvf_adapter *adapter,
 	/* Force memory writes to complete before letting h/w
 	 * know there are new descriptors to fetch.  (Only
 	 * applicable for weak-ordered memory model archs,
-<<<<<<< HEAD
-	 * such as IA-64). */
-	wmb();
-
-	tx_ring->next_to_use = i;
-	writel(i, adapter->hw.hw_addr + tx_ring->tail);
-	/* we need this if more than one processor can write to our tail
-	 * at a time, it syncronizes IO on IA64/Altix systems */
-	mmiowb();
-=======
 	 * such as IA-64).
 	 */
 	wmb();
@@ -3077,7 +2273,6 @@ static inline void igbvf_tx_queue_adv(struct igbvf_adapter *adapter,
 	tx_ring->buffer_info[first].next_to_watch = tx_desc;
 	tx_ring->next_to_use = i;
 	writel(i, adapter->hw.hw_addr + tx_ring->tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
@@ -3089,10 +2284,7 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 	u8 hdr_len = 0;
 	int count = 0;
 	int tso = 0;
-<<<<<<< HEAD
-=======
 	__be16 protocol = vlan_get_protocol(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(__IGBVF_DOWN, &adapter->state)) {
 		dev_kfree_skb_any(skb);
@@ -3104,18 +2296,10 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 		return NETDEV_TX_OK;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * need: count + 4 desc gap to keep tail from touching
-         *       + 2 desc gap to keep tail from touching head,
-         *       + 1 desc for skb->data,
-         *       + 1 desc for context descriptor,
-=======
 	/* need: count + 4 desc gap to keep tail from touching
 	 *       + 2 desc gap to keep tail from touching head,
 	 *       + 1 desc for skb->data,
 	 *       + 1 desc for context descriptor,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * head, otherwise try next time
 	 */
 	if (igbvf_maybe_stop_tx(netdev, skb_shinfo(skb)->nr_frags + 4)) {
@@ -3123,14 +2307,6 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
-<<<<<<< HEAD
-	if (vlan_tx_tag_present(skb)) {
-		tx_flags |= IGBVF_TX_FLAGS_VLAN;
-		tx_flags |= (vlan_tx_tag_get(skb) << IGBVF_TX_FLAGS_VLAN_SHIFT);
-	}
-
-	if (skb->protocol == htons(ETH_P_IP))
-=======
 	if (skb_vlan_tag_present(skb)) {
 		tx_flags |= IGBVF_TX_FLAGS_VLAN;
 		tx_flags |= (skb_vlan_tag_get(skb) <<
@@ -3138,17 +2314,11 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 	}
 
 	if (protocol == htons(ETH_P_IP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_flags |= IGBVF_TX_FLAGS_IPV4;
 
 	first = tx_ring->next_to_use;
 
-<<<<<<< HEAD
-	tso = skb_is_gso(skb) ?
-		igbvf_tso(adapter, tx_ring, skb, tx_flags, &hdr_len) : 0;
-=======
 	tso = igbvf_tso(tx_ring, skb, tx_flags, &hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(tso < 0)) {
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
@@ -3156,21 +2326,6 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 
 	if (tso)
 		tx_flags |= IGBVF_TX_FLAGS_TSO;
-<<<<<<< HEAD
-	else if (igbvf_tx_csum(adapter, tx_ring, skb, tx_flags) &&
-	         (skb->ip_summed == CHECKSUM_PARTIAL))
-		tx_flags |= IGBVF_TX_FLAGS_CSUM;
-
-	/*
-	 * count reflects descriptors mapped, if 0 then mapping error
-	 * has occurred and we need to rewind the descriptor queue
-	 */
-	count = igbvf_tx_map_adv(adapter, tx_ring, skb, first);
-
-	if (count) {
-		igbvf_tx_queue_adv(adapter, tx_ring, tx_flags, count,
-		                   skb->len, hdr_len);
-=======
 	else if (igbvf_tx_csum(tx_ring, skb, tx_flags, protocol) &&
 		 (skb->ip_summed == CHECKSUM_PARTIAL))
 		tx_flags |= IGBVF_TX_FLAGS_CSUM;
@@ -3183,7 +2338,6 @@ static netdev_tx_t igbvf_xmit_frame_ring_adv(struct sk_buff *skb,
 	if (count) {
 		igbvf_tx_queue_adv(adapter, tx_ring, tx_flags, count,
 				   first, skb->len, hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Make sure there is space in the ring for the next send. */
 		igbvf_maybe_stop_tx(netdev, MAX_SKB_FRAGS + 4);
 	} else {
@@ -3214,14 +2368,9 @@ static netdev_tx_t igbvf_xmit_frame(struct sk_buff *skb,
 /**
  * igbvf_tx_timeout - Respond to a Tx Hang
  * @netdev: network interface device structure
-<<<<<<< HEAD
- **/
-static void igbvf_tx_timeout(struct net_device *netdev)
-=======
  * @txqueue: queue timing out (unused)
  **/
 static void igbvf_tx_timeout(struct net_device *netdev, unsigned int __always_unused txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
@@ -3233,34 +2382,13 @@ static void igbvf_tx_timeout(struct net_device *netdev, unsigned int __always_un
 static void igbvf_reset_task(struct work_struct *work)
 {
 	struct igbvf_adapter *adapter;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter = container_of(work, struct igbvf_adapter, reset_task);
 
 	igbvf_reinit_locked(adapter);
 }
 
 /**
-<<<<<<< HEAD
- * igbvf_get_stats - Get System Network Statistics
- * @netdev: network interface device structure
- *
- * Returns the address of the device statistics structure.
- * The statistics are actually updated from the timer callback.
- **/
-static struct net_device_stats *igbvf_get_stats(struct net_device *netdev)
-{
-	struct igbvf_adapter *adapter = netdev_priv(netdev);
-
-	/* only return the current stats */
-	return &adapter->net_stats;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * igbvf_change_mtu - Change the Maximum Transfer Unit
  * @netdev: network interface device structure
  * @new_mtu: new value for maximum frame size
@@ -3272,35 +2400,14 @@ static int igbvf_change_mtu(struct net_device *netdev, int new_mtu)
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
 
-<<<<<<< HEAD
-	if ((new_mtu < 68) || (max_frame > MAX_JUMBO_FRAME_SIZE)) {
-		dev_err(&adapter->pdev->dev, "Invalid MTU setting\n");
-		return -EINVAL;
-	}
-
-#define MAX_STD_JUMBO_FRAME_SIZE 9234
-	if (max_frame > MAX_STD_JUMBO_FRAME_SIZE) {
-		dev_err(&adapter->pdev->dev, "MTU > 9216 not supported.\n");
-		return -EINVAL;
-	}
-
-	while (test_and_set_bit(__IGBVF_RESETTING, &adapter->state))
-		msleep(1);
-=======
 	while (test_and_set_bit(__IGBVF_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* igbvf_down has a dependency on max_frame_size */
 	adapter->max_frame_size = max_frame;
 	if (netif_running(netdev))
 		igbvf_down(adapter);
 
-<<<<<<< HEAD
-	/*
-	 * NOTE: netdev_alloc_skb reserves 16 bytes, and typically NET_IP_ALIGN
-=======
 	/* NOTE: netdev_alloc_skb reserves 16 bytes, and typically NET_IP_ALIGN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * means we reserve 2 more, this pushes us to allocate from the next
 	 * larger slab size.
 	 * i.e. RXBUFFER_2048 --> size-4096 slab
@@ -3319,17 +2426,6 @@ static int igbvf_change_mtu(struct net_device *netdev, int new_mtu)
 		adapter->rx_buffer_len = PAGE_SIZE / 2;
 #endif
 
-<<<<<<< HEAD
-
-	/* adjust allocation if LPE protects us, and we aren't using SBP */
-	if ((max_frame == ETH_FRAME_LEN + ETH_FCS_LEN) ||
-	     (max_frame == ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN))
-		adapter->rx_buffer_len = ETH_FRAME_LEN + VLAN_HLEN +
-		                         ETH_FCS_LEN;
-
-	dev_info(&adapter->pdev->dev, "changing MTU from %d to %d\n",
-	         netdev->mtu, new_mtu);
-=======
 	/* adjust allocation if LPE protects us, and we aren't using SBP */
 	if ((max_frame == ETH_FRAME_LEN + ETH_FCS_LEN) ||
 	    (max_frame == ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN))
@@ -3338,7 +2434,6 @@ static int igbvf_change_mtu(struct net_device *netdev, int new_mtu)
 
 	netdev_dbg(netdev, "changing MTU from %d to %d\n",
 		   netdev->mtu, new_mtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->mtu = new_mtu;
 
 	if (netif_running(netdev))
@@ -3359,20 +2454,10 @@ static int igbvf_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	}
 }
 
-<<<<<<< HEAD
-static int igbvf_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *netdev = pci_get_drvdata(pdev);
-	struct igbvf_adapter *adapter = netdev_priv(netdev);
-#ifdef CONFIG_PM
-	int retval = 0;
-#endif
-=======
 static int igbvf_suspend(struct device *dev_d)
 {
 	struct net_device *netdev = dev_get_drvdata(dev_d);
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_device_detach(netdev);
 
@@ -3382,43 +2467,16 @@ static int igbvf_suspend(struct device *dev_d)
 		igbvf_free_irq(adapter);
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	retval = pci_save_state(pdev);
-	if (retval)
-		return retval;
-#endif
-
-	pci_disable_device(pdev);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int igbvf_resume(struct pci_dev *pdev)
-{
-=======
 	return 0;
 }
 
 static int __maybe_unused igbvf_resume(struct device *dev_d)
 {
 	struct pci_dev *pdev = to_pci_dev(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	u32 err;
 
-<<<<<<< HEAD
-	pci_restore_state(pdev);
-	err = pci_enable_device_mem(pdev);
-	if (err) {
-		dev_err(&pdev->dev, "Cannot enable PCI device from suspend\n");
-		return err;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 
 	if (netif_running(netdev)) {
@@ -3436,18 +2494,6 @@ static int __maybe_unused igbvf_resume(struct device *dev_d)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static void igbvf_shutdown(struct pci_dev *pdev)
-{
-	igbvf_suspend(pdev, PMSG_SUSPEND);
-}
-
-#ifdef CONFIG_NET_POLL_CONTROLLER
-/*
- * Polling 'interrupt' - used by things like netconsole to send skbs
-=======
 
 static void igbvf_shutdown(struct pci_dev *pdev)
 {
@@ -3456,7 +2502,6 @@ static void igbvf_shutdown(struct pci_dev *pdev)
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 /* Polling 'interrupt' - used by things like netconsole to send skbs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * without having to re-enable interrupts. It's not called while
  * the interrupt routine is executing.
  */
@@ -3481,11 +2526,7 @@ static void igbvf_netpoll(struct net_device *netdev)
  * this device has been detected.
  */
 static pci_ers_result_t igbvf_io_error_detected(struct pci_dev *pdev,
-<<<<<<< HEAD
-                                                pci_channel_state_t state)
-=======
 						pci_channel_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
@@ -3499,11 +2540,7 @@ static pci_ers_result_t igbvf_io_error_detected(struct pci_dev *pdev,
 		igbvf_down(adapter);
 	pci_disable_device(pdev);
 
-<<<<<<< HEAD
-	/* Request a slot slot reset. */
-=======
 	/* Request a slot reset. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PCI_ERS_RESULT_NEED_RESET;
 }
 
@@ -3555,8 +2592,6 @@ static void igbvf_io_resume(struct pci_dev *pdev)
 	netif_device_attach(netdev);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * igbvf_io_prepare - prepare device driver for PCI reset
  * @pdev: PCI device information struct
@@ -3584,7 +2619,6 @@ static void igbvf_io_reset_done(struct pci_dev *pdev)
 	clear_bit(__IGBVF_RESETTING, &adapter->state);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void igbvf_print_device_info(struct igbvf_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
@@ -3599,11 +2633,7 @@ static void igbvf_print_device_info(struct igbvf_adapter *adapter)
 }
 
 static int igbvf_set_features(struct net_device *netdev,
-<<<<<<< HEAD
-	netdev_features_t features)
-=======
 			      netdev_features_t features)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
@@ -3615,24 +2645,6 @@ static int igbvf_set_features(struct net_device *netdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct net_device_ops igbvf_netdev_ops = {
-	.ndo_open                       = igbvf_open,
-	.ndo_stop                       = igbvf_close,
-	.ndo_start_xmit                 = igbvf_xmit_frame,
-	.ndo_get_stats                  = igbvf_get_stats,
-	.ndo_set_rx_mode		= igbvf_set_multi,
-	.ndo_set_mac_address            = igbvf_set_mac,
-	.ndo_change_mtu                 = igbvf_change_mtu,
-	.ndo_do_ioctl                   = igbvf_ioctl,
-	.ndo_tx_timeout                 = igbvf_tx_timeout,
-	.ndo_vlan_rx_add_vid            = igbvf_vlan_rx_add_vid,
-	.ndo_vlan_rx_kill_vid           = igbvf_vlan_rx_kill_vid,
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller            = igbvf_netpoll,
-#endif
-	.ndo_set_features               = igbvf_set_features,
-=======
 #define IGBVF_MAX_MAC_HDR_LEN		127
 #define IGBVF_MAX_NETWORK_HDR_LEN	511
 
@@ -3683,7 +2695,6 @@ static const struct net_device_ops igbvf_netdev_ops = {
 #endif
 	.ndo_set_features	= igbvf_set_features,
 	.ndo_features_check	= igbvf_features_check,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -3697,55 +2708,24 @@ static const struct net_device_ops igbvf_netdev_ops = {
  * The OS initialization, configuring of the adapter private structure,
  * and a hardware reset occur.
  **/
-<<<<<<< HEAD
-static int __devinit igbvf_probe(struct pci_dev *pdev,
-                                 const struct pci_device_id *ent)
-=======
 static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct igbvf_adapter *adapter;
 	struct e1000_hw *hw;
 	const struct igbvf_info *ei = igbvf_info_tbl[ent->driver_data];
-<<<<<<< HEAD
-
-	static int cards_found;
-	int err, pci_using_dac;
-=======
 	static int cards_found;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device_mem(pdev);
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	pci_using_dac = 0;
-	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-	if (!err) {
-		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
-		if (!err)
-			pci_using_dac = 1;
-	} else {
-		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
-		if (err) {
-			err = dma_set_coherent_mask(&pdev->dev,
-						    DMA_BIT_MASK(32));
-			if (err) {
-				dev_err(&pdev->dev, "No usable DMA "
-				        "configuration, aborting\n");
-				goto err_dma;
-			}
-		}
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
 		dev_err(&pdev->dev,
 			"No usable DMA configuration, aborting\n");
 		goto err_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = pci_request_regions(pdev, igbvf_driver_name);
@@ -3783,11 +2763,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	err = -EIO;
 	adapter->hw.hw_addr = ioremap(pci_resource_start(pdev, 0),
-<<<<<<< HEAD
-	                              pci_resource_len(pdev, 0));
-=======
 				      pci_resource_len(pdev, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!adapter->hw.hw_addr)
 		goto err_ioremap;
@@ -3795,11 +2771,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ei->get_variants) {
 		err = ei->get_variants(adapter);
 		if (err)
-<<<<<<< HEAD
-			goto err_ioremap;
-=======
 			goto err_get_variants;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* setup adapter struct */
@@ -3812,36 +2784,11 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	igbvf_set_ethtool_ops(netdev);
 	netdev->watchdog_timeo = 5 * HZ;
-<<<<<<< HEAD
-	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-=======
 	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->bd_number = cards_found++;
 
 	netdev->hw_features = NETIF_F_SG |
-<<<<<<< HEAD
-	                   NETIF_F_IP_CSUM |
-			   NETIF_F_IPV6_CSUM |
-			   NETIF_F_TSO |
-			   NETIF_F_TSO6 |
-			   NETIF_F_RXCSUM;
-
-	netdev->features = netdev->hw_features |
-	                   NETIF_F_HW_VLAN_TX |
-	                   NETIF_F_HW_VLAN_RX |
-	                   NETIF_F_HW_VLAN_FILTER;
-
-	if (pci_using_dac)
-		netdev->features |= NETIF_F_HIGHDMA;
-
-	netdev->vlan_features |= NETIF_F_TSO;
-	netdev->vlan_features |= NETIF_F_TSO6;
-	netdev->vlan_features |= NETIF_F_IP_CSUM;
-	netdev->vlan_features |= NETIF_F_IPV6_CSUM;
-	netdev->vlan_features |= NETIF_F_SG;
-=======
 			      NETIF_F_TSO |
 			      NETIF_F_TSO6 |
 			      NETIF_F_RXCSUM |
@@ -3875,40 +2822,11 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
 
 	spin_lock_bh(&hw->mbx_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*reset the controller to put the device in a known good state */
 	err = hw->mac.ops.reset_hw(hw);
 	if (err) {
 		dev_info(&pdev->dev,
-<<<<<<< HEAD
-			 "PF still in reset state, assigning new address."
-			 " Is the PF interface up?\n");
-		eth_hw_addr_random(netdev);
-		memcpy(adapter->hw.mac.addr, netdev->dev_addr,
-			netdev->addr_len);
-	} else {
-		err = hw->mac.ops.read_mac_addr(hw);
-		if (err) {
-			dev_err(&pdev->dev, "Error reading MAC address\n");
-			goto err_hw_init;
-		}
-		memcpy(netdev->dev_addr, adapter->hw.mac.addr,
-			netdev->addr_len);
-	}
-
-	if (!is_valid_ether_addr(netdev->dev_addr)) {
-		dev_err(&pdev->dev, "Invalid MAC Address: %pM\n",
-		        netdev->dev_addr);
-		err = -EIO;
-		goto err_hw_init;
-	}
-
-	memcpy(netdev->perm_addr, netdev->dev_addr, netdev->addr_len);
-
-	setup_timer(&adapter->watchdog_timer, &igbvf_watchdog,
-	            (unsigned long) adapter);
-=======
 			 "PF still in reset state. Is the PF interface up?\n");
 	} else {
 		err = hw->mac.ops.read_mac_addr(hw);
@@ -3930,7 +2848,6 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	timer_setup(&adapter->watchdog_timer, igbvf_watchdog, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&adapter->reset_task, igbvf_reset_task);
 	INIT_WORK(&adapter->watchdog_task, igbvf_watchdog_task);
@@ -3942,13 +2859,10 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* reset the hardware with the new settings */
 	igbvf_reset(adapter);
 
-<<<<<<< HEAD
-=======
 	/* set hardware-specific flags */
 	if (adapter->hw.mac.type == e1000_vfadapt_i350)
 		adapter->flags |= IGBVF_FLAG_RX_LB_VLAN_BSWAP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(netdev->name, "eth%d");
 	err = register_netdev(netdev);
 	if (err)
@@ -3965,18 +2879,12 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return 0;
 
 err_hw_init:
-<<<<<<< HEAD
-=======
 	netif_napi_del(&adapter->rx_ring->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(adapter->tx_ring);
 	kfree(adapter->rx_ring);
 err_sw_init:
 	igbvf_reset_interrupt_capability(adapter);
-<<<<<<< HEAD
-=======
 err_get_variants:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(adapter->hw.hw_addr);
 err_ioremap:
 	free_netdev(netdev);
@@ -3997,22 +2905,13 @@ err_dma:
  * Hot-Plug event, or because the driver is going to be removed from
  * memory.
  **/
-<<<<<<< HEAD
-static void __devexit igbvf_remove(struct pci_dev *pdev)
-=======
 static void igbvf_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	/*
-	 * The watchdog timer may be rescheduled, so explicitly
-=======
 	/* The watchdog timer may be rescheduled, so explicitly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * disable it from being rescheduled.
 	 */
 	set_bit(__IGBVF_DOWN, &adapter->state);
@@ -4025,14 +2924,8 @@ static void igbvf_remove(struct pci_dev *pdev)
 
 	igbvf_reset_interrupt_capability(adapter);
 
-<<<<<<< HEAD
-	/*
-	 * it is important to delete the napi struct prior to freeing the
-	 * rx ring so that you do not end up with null pointer refs
-=======
 	/* it is important to delete the NAPI struct prior to freeing the
 	 * Rx ring so that you do not end up with null pointer refs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	netif_napi_del(&adapter->rx_ring->napi);
 	kfree(adapter->tx_ring);
@@ -4049,15 +2942,6 @@ static void igbvf_remove(struct pci_dev *pdev)
 }
 
 /* PCI Error Recovery (ERS) */
-<<<<<<< HEAD
-static struct pci_error_handlers igbvf_err_handler = {
-	.error_detected = igbvf_io_error_detected,
-	.slot_reset = igbvf_io_slot_reset,
-	.resume = igbvf_io_resume,
-};
-
-static DEFINE_PCI_DEVICE_TABLE(igbvf_pci_tbl) = {
-=======
 static const struct pci_error_handlers igbvf_err_handler = {
 	.error_detected = igbvf_io_error_detected,
 	.slot_reset = igbvf_io_slot_reset,
@@ -4067,28 +2951,12 @@ static const struct pci_error_handlers igbvf_err_handler = {
 };
 
 static const struct pci_device_id igbvf_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_82576_VF), board_vf },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I350_VF), board_i350_vf },
 	{ } /* terminate list */
 };
 MODULE_DEVICE_TABLE(pci, igbvf_pci_tbl);
 
-<<<<<<< HEAD
-/* PCI Device API Driver */
-static struct pci_driver igbvf_driver = {
-	.name     = igbvf_driver_name,
-	.id_table = igbvf_pci_tbl,
-	.probe    = igbvf_probe,
-	.remove   = __devexit_p(igbvf_remove),
-#ifdef CONFIG_PM
-	/* Power Management Hooks */
-	.suspend  = igbvf_suspend,
-	.resume   = igbvf_resume,
-#endif
-	.shutdown = igbvf_shutdown,
-	.err_handler = &igbvf_err_handler
-=======
 static SIMPLE_DEV_PM_OPS(igbvf_pm_ops, igbvf_suspend, igbvf_resume);
 
 /* PCI Device API Driver */
@@ -4100,7 +2968,6 @@ static struct pci_driver igbvf_driver = {
 	.driver.pm	= &igbvf_pm_ops,
 	.shutdown	= igbvf_shutdown,
 	.err_handler	= &igbvf_err_handler
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -4112,12 +2979,8 @@ static struct pci_driver igbvf_driver = {
 static int __init igbvf_init_module(void)
 {
 	int ret;
-<<<<<<< HEAD
-	pr_info("%s - version %s\n", igbvf_driver_string, igbvf_driver_version);
-=======
 
 	pr_info("%s\n", igbvf_driver_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("%s\n", igbvf_copyright);
 
 	ret = pci_register_driver(&igbvf_driver);
@@ -4138,16 +3001,8 @@ static void __exit igbvf_exit_module(void)
 }
 module_exit(igbvf_exit_module);
 
-<<<<<<< HEAD
-
-MODULE_AUTHOR("Intel Corporation, <e1000-devel@lists.sourceforge.net>");
-MODULE_DESCRIPTION("Intel(R) Gigabit Virtual Function Network Driver");
-MODULE_LICENSE("GPL");
-MODULE_VERSION(DRV_VERSION);
-=======
 MODULE_AUTHOR("Intel Corporation, <e1000-devel@lists.sourceforge.net>");
 MODULE_DESCRIPTION("Intel(R) Gigabit Virtual Function Network Driver");
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* netdev.c */

@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-config FADS
-	bool
-
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPM1
 	bool
 	select CPM
@@ -12,18 +6,10 @@ config CPM1
 choice
 	prompt "8xx Machine Type"
 	depends on PPC_8xx
-<<<<<<< HEAD
-	depends on 8xx
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default MPC885ADS
 
 config MPC8XXFADS
 	bool "FADS"
-<<<<<<< HEAD
-	select FADS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MPC86XADS
 	bool "MPC86XADS"
@@ -55,10 +41,6 @@ config PPC_EP88XC
 config PPC_ADDER875
 	bool "Analogue & Micro Adder 875"
 	select CPM1
-<<<<<<< HEAD
-	select REDBOOT
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This enables support for the Analogue & Micro Adder 875
 	  board.
@@ -110,62 +92,25 @@ endmenu
 #
 
 menu "MPC8xx CPM Options"
-<<<<<<< HEAD
-	depends on 8xx
-=======
 	depends on PPC_8xx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # This doesn't really belong here, but it is convenient to ask
 # 8xx specific questions.
 comment "Generic MPC8xx Options"
 
-<<<<<<< HEAD
-config 8xx_COPYBACK
-	bool "Copy-Back Data Cache (else Writethrough)"
-	help
-	  Saying Y here will cause the cache on an MPC8xx processor to be used
-	  in Copy-Back mode.  If you say N here, it is used in Writethrough
-	  mode.
-
-	  If in doubt, say Y here.
-
-config 8xx_GPIO
-	bool "GPIO API Support"
-	select GENERIC_GPIO
-	select ARCH_REQUIRE_GPIOLIB
-=======
 config 8xx_GPIO
 	bool "GPIO API Support"
 	select GPIOLIB
 	select OF_GPIO_MM_GPIOCHIP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Saying Y here will cause the ports on an MPC8xx processor to be used
 	  with the GPIO API.  If you say N here, the kernel needs less memory.
 
 	  If in doubt, say Y here.
 
-<<<<<<< HEAD
-config 8xx_CPU6
-	bool "CPU6 Silicon Errata (860 Pre Rev. C)"
-	help
-	  MPC860 CPUs, prior to Rev C have some bugs in the silicon, which
-	  require workarounds for Linux (and most other OSes to work).  If you
-	  get a BUG() very early in boot, this might fix the problem.  For
-	  more details read the document entitled "MPC860 Family Device Errata
-	  Reference" on Freescale's website.  This option also incurs a
-	  performance hit.
-
-	  If in doubt, say N here.
-
-config 8xx_CPU15
-	bool "CPU15 Silicon Errata"
-=======
 config 8xx_CPU15
 	bool "CPU15 Silicon Errata"
 	depends on !HUGETLB_PAGE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  This enables a workaround for erratum CPU15 on MPC8xx chips.
@@ -204,8 +149,6 @@ config I2C_SPI_SMC1_UCODE_PATCH
 	help
 	  Help not implemented yet, coming soon.
 
-<<<<<<< HEAD
-=======
 config SMC_UCODE_PATCH
 	bool "SMC relocation patch"
 	help
@@ -213,7 +156,6 @@ config SMC_UCODE_PATCH
 	  offset 0x1ec0 and 0x1fc0 to allow extended parameter RAM
 	  for SCC3 and SCC4.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endchoice
 
 config UCODE_PATCH
@@ -221,8 +163,6 @@ config UCODE_PATCH
 	default y
 	depends on !NO_UCODE_PATCH
 
-<<<<<<< HEAD
-=======
 menu "8xx advanced setup"
 	depends on PPC_8xx
 
@@ -257,5 +197,4 @@ config PIN_TLB_IMMR
 
 endmenu
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

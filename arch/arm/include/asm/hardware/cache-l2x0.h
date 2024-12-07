@@ -1,50 +1,23 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/hardware/cache-l2x0.h
  *
  * Copyright (C) 2007 ARM Limited
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_ARM_HARDWARE_L2X0_H
 #define __ASM_ARM_HARDWARE_L2X0_H
 
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/init.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define L2X0_CACHE_ID			0x000
 #define L2X0_CACHE_TYPE			0x004
 #define L2X0_CTRL			0x100
 #define L2X0_AUX_CTRL			0x104
-<<<<<<< HEAD
-#define L2X0_TAG_LATENCY_CTRL		0x108
-#define L2X0_DATA_LATENCY_CTRL		0x10C
-=======
 #define L310_TAG_LATENCY_CTRL		0x108
 #define L310_DATA_LATENCY_CTRL		0x10C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define L2X0_EVENT_CNT_CTRL		0x200
 #define L2X0_EVENT_CNT1_CFG		0x204
 #define L2X0_EVENT_CNT0_CFG		0x208
@@ -71,75 +44,12 @@
 #define L2X0_LOCKDOWN_WAY_D_BASE	0x900
 #define L2X0_LOCKDOWN_WAY_I_BASE	0x904
 #define L2X0_LOCKDOWN_STRIDE		0x08
-<<<<<<< HEAD
-#define L2X0_ADDR_FILTER_START		0xC00
-#define L2X0_ADDR_FILTER_END		0xC04
-=======
 #define L310_ADDR_FILTER_START		0xC00
 #define L310_ADDR_FILTER_END		0xC04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define L2X0_TEST_OPERATION		0xF00
 #define L2X0_LINE_DATA			0xF10
 #define L2X0_LINE_TAG			0xF30
 #define L2X0_DEBUG_CTRL			0xF40
-<<<<<<< HEAD
-#define L2X0_PREFETCH_CTRL		0xF60
-#define L2X0_POWER_CTRL			0xF80
-#define   L2X0_DYNAMIC_CLK_GATING_EN	(1 << 1)
-#define   L2X0_STNDBY_MODE_EN		(1 << 0)
-
-/* Registers shifts and masks */
-#define L2X0_CACHE_ID_REV_MASK		(0x3f)
-#define L2X0_CACHE_ID_PART_MASK		(0xf << 6)
-#define L2X0_CACHE_ID_PART_L210		(1 << 6)
-#define L2X0_CACHE_ID_PART_L310		(3 << 6)
-#define L2X0_CACHE_ID_RTL_MASK          0x3f
-#define L2X0_CACHE_ID_RTL_R0P0          0x0
-#define L2X0_CACHE_ID_RTL_R1P0          0x2
-#define L2X0_CACHE_ID_RTL_R2P0          0x4
-#define L2X0_CACHE_ID_RTL_R3P0          0x5
-#define L2X0_CACHE_ID_RTL_R3P1          0x6
-#define L2X0_CACHE_ID_RTL_R3P2          0x8
-
-#define L2X0_AUX_CTRL_MASK			0xc0000fff
-#define L2X0_AUX_CTRL_DATA_RD_LATENCY_SHIFT	0
-#define L2X0_AUX_CTRL_DATA_RD_LATENCY_MASK	0x7
-#define L2X0_AUX_CTRL_DATA_WR_LATENCY_SHIFT	3
-#define L2X0_AUX_CTRL_DATA_WR_LATENCY_MASK	(0x7 << 3)
-#define L2X0_AUX_CTRL_TAG_LATENCY_SHIFT		6
-#define L2X0_AUX_CTRL_TAG_LATENCY_MASK		(0x7 << 6)
-#define L2X0_AUX_CTRL_DIRTY_LATENCY_SHIFT	9
-#define L2X0_AUX_CTRL_DIRTY_LATENCY_MASK	(0x7 << 9)
-#define L2X0_AUX_CTRL_ASSOCIATIVITY_SHIFT	16
-#define L2X0_AUX_CTRL_WAY_SIZE_SHIFT		17
-#define L2X0_AUX_CTRL_WAY_SIZE_MASK		(0x7 << 17)
-#define L2X0_AUX_CTRL_EVNT_MON_BUS_EN_SHIFT	20
-#define L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT	22
-#define L2X0_AUX_CTRL_L2_FORCE_NWA_SHIFT	23
-#define L2X0_AUX_CTRL_NS_LOCKDOWN_SHIFT		26
-#define L2X0_AUX_CTRL_NS_INT_CTRL_SHIFT		27
-#define L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT	28
-#define L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT	29
-#define L2X0_AUX_CTRL_EARLY_BRESP_SHIFT		30
-
-#define L2X0_LATENCY_CTRL_SETUP_SHIFT	0
-#define L2X0_LATENCY_CTRL_RD_SHIFT	4
-#define L2X0_LATENCY_CTRL_WR_SHIFT	8
-
-#define L2X0_ADDR_FILTER_EN		1
-
-#define REV_PL310_R2P0				4
-
-#define L2X0_PREFETCH_CTRL_OFFSET_SHIFT		0
-#define L2X0_PREFETCH_CTRL_WRAP8_INC_SHIFT	23
-#define L2X0_PREFETCH_CTRL_WRAP8_SHIFT		30
-
-#ifndef __ASSEMBLY__
-extern void __iomem *l2x0_base;
-extern void l2cc_suspend(void);
-extern void l2cc_resume(void);
-extern void l2x0_cache_sync(void);
-=======
 #define L310_PREFETCH_CTRL		0xF60
 #define L310_POWER_CTRL			0xF80
 #define   L310_DYNAMIC_CLK_GATING_EN	(1 << 1)
@@ -238,7 +148,6 @@ extern void l2x0_cache_sync(void);
 #define L2X0_WAY_SIZE_SHIFT		3
 
 #ifndef __ASSEMBLY__
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __init l2x0_init(void __iomem *base, u32 aux_val, u32 aux_mask);
 #if defined(CONFIG_CACHE_L2X0) && defined(CONFIG_OF)
 extern int l2x0_of_init(u32 aux_val, u32 aux_mask);
@@ -249,8 +158,6 @@ static inline int l2x0_of_init(u32 aux_val, u32 aux_mask)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CACHE_L2X0_PMU
 void l2x0_pmu_register(void __iomem *base, u32 part);
 void l2x0_pmu_suspend(void);
@@ -261,7 +168,6 @@ static inline void l2x0_pmu_suspend(void) {}
 static inline void l2x0_pmu_resume(void) {}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct l2x0_regs {
 	unsigned long phy_base;
 	unsigned long aux_ctrl;
@@ -275,11 +181,8 @@ struct l2x0_regs {
 	unsigned long filter_end;
 	unsigned long prefetch_ctrl;
 	unsigned long pwr_ctrl;
-<<<<<<< HEAD
-=======
 	unsigned long ctrl;
 	unsigned long aux2_ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct l2x0_regs l2x0_saved_regs;

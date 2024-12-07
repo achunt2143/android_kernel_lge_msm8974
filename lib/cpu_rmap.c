@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * cpu_rmap.c: CPU affinity reverse-map support
- * Copyright 2011 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
-
-#include <linux/cpu_rmap.h>
-#ifdef CONFIG_GENERIC_HARDIRQS
-#include <linux/interrupt.h>
-#endif
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * cpu_rmap.c: CPU affinity reverse-map support
@@ -21,7 +6,6 @@
 
 #include <linux/cpu_rmap.h>
 #include <linux/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 
 /*
@@ -56,10 +40,7 @@ struct cpu_rmap *alloc_cpu_rmap(unsigned int size, gfp_t flags)
 	if (!rmap)
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	kref_init(&rmap->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rmap->obj = (void **)((char *)rmap + obj_offset);
 
 	/* Initially assign CPUs to objects on a rota, since we have
@@ -78,8 +59,6 @@ struct cpu_rmap *alloc_cpu_rmap(unsigned int size, gfp_t flags)
 }
 EXPORT_SYMBOL(alloc_cpu_rmap);
 
-<<<<<<< HEAD
-=======
 /**
  * cpu_rmap_release - internal reclaiming helper called from kref_put
  * @ref: kref to struct cpu_rmap
@@ -109,7 +88,6 @@ int cpu_rmap_put(struct cpu_rmap *rmap)
 }
 EXPORT_SYMBOL(cpu_rmap_put);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reevaluate nearest object for given CPU, comparing with the given
  * neighbours at the given distance.
  */
@@ -150,8 +128,6 @@ debug_print_rmap(const struct cpu_rmap *rmap, const char *prefix)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 static int get_free_index(struct cpu_rmap *rmap)
 {
 	int i;
@@ -163,22 +139,11 @@ static int get_free_index(struct cpu_rmap *rmap)
 	return -ENOSPC;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cpu_rmap_add - add object to a rmap
  * @rmap: CPU rmap allocated with alloc_cpu_rmap()
  * @obj: Object to add to rmap
  *
-<<<<<<< HEAD
- * Return index of object.
- */
-int cpu_rmap_add(struct cpu_rmap *rmap, void *obj)
-{
-	u16 index;
-
-	BUG_ON(rmap->used >= rmap->size);
-	index = rmap->used++;
-=======
  * Return index of object or -ENOSPC if no free entry was found
  */
 int cpu_rmap_add(struct cpu_rmap *rmap, void *obj)
@@ -188,7 +153,6 @@ int cpu_rmap_add(struct cpu_rmap *rmap, void *obj)
 	if (index < 0)
 		return index;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rmap->obj[index] = obj;
 	return index;
 }
@@ -236,11 +200,7 @@ int cpu_rmap_update(struct cpu_rmap *rmap, u16 index,
 	/* Update distances based on topology */
 	for_each_cpu(cpu, update_mask) {
 		if (cpu_rmap_copy_neigh(rmap, cpu,
-<<<<<<< HEAD
-					topology_thread_cpumask(cpu), 1))
-=======
 					topology_sibling_cpumask(cpu), 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (cpu_rmap_copy_neigh(rmap, cpu,
 					topology_core_cpumask(cpu), 2))
@@ -260,11 +220,6 @@ int cpu_rmap_update(struct cpu_rmap *rmap, u16 index,
 }
 EXPORT_SYMBOL(cpu_rmap_update);
 
-<<<<<<< HEAD
-#ifdef CONFIG_GENERIC_HARDIRQS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Glue between IRQ affinity notifiers and CPU rmaps */
 
 struct irq_glue {
@@ -277,12 +232,7 @@ struct irq_glue {
  * free_irq_cpu_rmap - free a CPU affinity reverse-map used for IRQs
  * @rmap: Reverse-map allocated with alloc_irq_cpu_map(), or %NULL
  *
-<<<<<<< HEAD
- * Must be called in process context, before freeing the IRQs, and
- * without holding any locks required by global workqueue items.
-=======
  * Must be called in process context, before freeing the IRQs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void free_irq_cpu_rmap(struct cpu_rmap *rmap)
 {
@@ -292,18 +242,6 @@ void free_irq_cpu_rmap(struct cpu_rmap *rmap)
 	if (!rmap)
 		return;
 
-<<<<<<< HEAD
-	for (index = 0; index < rmap->used; index++) {
-		glue = rmap->obj[index];
-		irq_set_affinity_notifier(glue->notify.irq, NULL);
-	}
-	irq_run_affinity_notifiers();
-
-	kfree(rmap);
-}
-EXPORT_SYMBOL(free_irq_cpu_rmap);
-
-=======
 	for (index = 0; index < rmap->size; index++) {
 		glue = rmap->obj[index];
 		if (glue)
@@ -321,7 +259,6 @@ EXPORT_SYMBOL(free_irq_cpu_rmap);
  *
  * This is executed in workqueue context.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 irq_cpu_rmap_notify(struct irq_affinity_notify *notify, const cpumask_t *mask)
 {
@@ -331,11 +268,6 @@ irq_cpu_rmap_notify(struct irq_affinity_notify *notify, const cpumask_t *mask)
 
 	rc = cpu_rmap_update(glue->rmap, glue->index, mask);
 	if (rc)
-<<<<<<< HEAD
-		pr_warning("irq_cpu_rmap_notify: update failed: %d\n", rc);
-}
-
-=======
 		pr_warn("irq_cpu_rmap_notify: update failed: %d\n", rc);
 }
 
@@ -343,23 +275,17 @@ irq_cpu_rmap_notify(struct irq_affinity_notify *notify, const cpumask_t *mask)
  * irq_cpu_rmap_release - reclaiming callback for IRQ subsystem
  * @ref: kref to struct irq_affinity_notify passed by irq/manage.c
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void irq_cpu_rmap_release(struct kref *ref)
 {
 	struct irq_glue *glue =
 		container_of(ref, struct irq_glue, notify.kref);
-<<<<<<< HEAD
-=======
 
 	glue->rmap->obj[glue->index] = NULL;
 	cpu_rmap_put(glue->rmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(glue);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * irq_cpu_rmap_remove - remove an IRQ from a CPU affinity reverse-map
  * @rmap: The reverse-map
  * @irq: The IRQ number
@@ -371,7 +297,6 @@ int irq_cpu_rmap_remove(struct cpu_rmap *rmap, int irq)
 EXPORT_SYMBOL(irq_cpu_rmap_remove);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * irq_cpu_rmap_add - add an IRQ to a CPU affinity reverse-map
  * @rmap: The reverse-map
  * @irq: The IRQ number
@@ -392,17 +317,6 @@ int irq_cpu_rmap_add(struct cpu_rmap *rmap, int irq)
 	glue->notify.notify = irq_cpu_rmap_notify;
 	glue->notify.release = irq_cpu_rmap_release;
 	glue->rmap = rmap;
-<<<<<<< HEAD
-	glue->index = cpu_rmap_add(rmap, glue);
-	rc = irq_set_affinity_notifier(irq, &glue->notify);
-	if (rc)
-		kfree(glue);
-	return rc;
-}
-EXPORT_SYMBOL(irq_cpu_rmap_add);
-
-#endif /* CONFIG_GENERIC_HARDIRQS */
-=======
 	cpu_rmap_get(rmap);
 	rc = cpu_rmap_add(rmap, glue);
 	if (rc < 0)
@@ -423,4 +337,3 @@ err_add:
 	return rc;
 }
 EXPORT_SYMBOL(irq_cpu_rmap_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

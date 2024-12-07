@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Convert integer string representation to an integer.
  * If an integer doesn't fit into specified type, -E is returned.
@@ -17,15 +14,6 @@
  */
 #include <linux/ctype.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/math64.h>
-#include <linux/export.h>
-#include <linux/types.h>
-#include <asm/uaccess.h>
-#include "kstrtox.h"
-
-=======
 #include <linux/export.h>
 #include <linux/kstrtox.h>
 #include <linux/math64.h>
@@ -35,7 +23,6 @@
 #include "kstrtox.h"
 
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
 {
 	if (*base == 0) {
@@ -54,35 +41,13 @@ const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
 
 /*
  * Convert non-negative integer string representation in explicitly given radix
-<<<<<<< HEAD
- * to an integer.
-=======
  * to an integer. A maximum of max_chars characters will be converted.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return number of characters consumed maybe or-ed with overflow bit.
  * If overflow occurs, result integer (incorrect) is still returned.
  *
  * Don't you dare use this function.
  */
-<<<<<<< HEAD
-unsigned int _parse_integer(const char *s, unsigned int base, unsigned long long *p)
-{
-	unsigned long long res;
-	unsigned int rv;
-	int overflow;
-
-	res = 0;
-	rv = 0;
-	overflow = 0;
-	while (*s) {
-		unsigned int val;
-
-		if ('0' <= *s && *s <= '9')
-			val = *s - '0';
-		else if ('a' <= _tolower(*s) && _tolower(*s) <= 'f')
-			val = _tolower(*s) - 'a' + 10;
-=======
 noinline
 unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
 				  size_t max_chars)
@@ -101,7 +66,6 @@ unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned lon
 			val = c - '0';
 		else if ('a' <= lc && lc <= 'f')
 			val = lc - 'a' + 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			break;
 
@@ -113,24 +77,13 @@ unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned lon
 		 */
 		if (unlikely(res & (~0ull << 60))) {
 			if (res > div_u64(ULLONG_MAX - val, base))
-<<<<<<< HEAD
-				overflow = 1;
-=======
 				rv |= KSTRTOX_OVERFLOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		res = res * base + val;
 		rv++;
 		s++;
 	}
 	*p = res;
-<<<<<<< HEAD
-	if (overflow)
-		rv |= KSTRTOX_OVERFLOW;
-	return rv;
-}
-
-=======
 	return rv;
 }
 
@@ -140,7 +93,6 @@ unsigned int _parse_integer(const char *s, unsigned int base, unsigned long long
 	return _parse_integer_limit(s, base, p, INT_MAX);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 {
 	unsigned long long _res;
@@ -150,10 +102,6 @@ static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 	rv = _parse_integer(s, base, &_res);
 	if (rv & KSTRTOX_OVERFLOW)
 		return -ERANGE;
-<<<<<<< HEAD
-	rv &= ~KSTRTOX_OVERFLOW;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rv == 0)
 		return -EINVAL;
 	s += rv;
@@ -165,8 +113,6 @@ static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * kstrtoull - convert a string to an unsigned long long
  * @s: The start of the string. The string must be null-terminated, and may also
@@ -183,7 +129,6 @@ static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
  * Preferred over simple_strtoull(). Return code must be checked.
  */
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 {
 	if (s[0] == '+')
@@ -192,8 +137,6 @@ int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 }
 EXPORT_SYMBOL(kstrtoull);
 
-<<<<<<< HEAD
-=======
 /**
  * kstrtoll - convert a string to a long long
  * @s: The start of the string. The string must be null-terminated, and may also
@@ -210,7 +153,6 @@ EXPORT_SYMBOL(kstrtoull);
  * Preferred over simple_strtoll(). Return code must be checked.
  */
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtoll(const char *s, unsigned int base, long long *res)
 {
 	unsigned long long tmp;
@@ -220,11 +162,7 @@ int kstrtoll(const char *s, unsigned int base, long long *res)
 		rv = _kstrtoull(s + 1, base, &tmp);
 		if (rv < 0)
 			return rv;
-<<<<<<< HEAD
-		if ((long long)(-tmp) >= 0)
-=======
 		if ((long long)-tmp > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ERANGE;
 		*res = -tmp;
 	} else {
@@ -248,11 +186,7 @@ int _kstrtoul(const char *s, unsigned int base, unsigned long *res)
 	rv = kstrtoull(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (unsigned long long)(unsigned long)tmp)
-=======
 	if (tmp != (unsigned long)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
@@ -268,19 +202,13 @@ int _kstrtol(const char *s, unsigned int base, long *res)
 	rv = kstrtoll(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (long long)(long)tmp)
-=======
 	if (tmp != (long)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(_kstrtol);
 
-<<<<<<< HEAD
-=======
 /**
  * kstrtouint - convert a string to an unsigned int
  * @s: The start of the string. The string must be null-terminated, and may also
@@ -297,7 +225,6 @@ EXPORT_SYMBOL(_kstrtol);
  * Preferred over simple_strtoul(). Return code must be checked.
  */
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtouint(const char *s, unsigned int base, unsigned int *res)
 {
 	unsigned long long tmp;
@@ -306,19 +233,13 @@ int kstrtouint(const char *s, unsigned int base, unsigned int *res)
 	rv = kstrtoull(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (unsigned long long)(unsigned int)tmp)
-=======
 	if (tmp != (unsigned int)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtouint);
 
-<<<<<<< HEAD
-=======
 /**
  * kstrtoint - convert a string to an int
  * @s: The start of the string. The string must be null-terminated, and may also
@@ -335,7 +256,6 @@ EXPORT_SYMBOL(kstrtouint);
  * Preferred over simple_strtol(). Return code must be checked.
  */
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtoint(const char *s, unsigned int base, int *res)
 {
 	long long tmp;
@@ -344,21 +264,14 @@ int kstrtoint(const char *s, unsigned int base, int *res)
 	rv = kstrtoll(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (long long)(int)tmp)
-=======
 	if (tmp != (int)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtoint);
 
-<<<<<<< HEAD
-=======
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtou16(const char *s, unsigned int base, u16 *res)
 {
 	unsigned long long tmp;
@@ -367,21 +280,14 @@ int kstrtou16(const char *s, unsigned int base, u16 *res)
 	rv = kstrtoull(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (unsigned long long)(u16)tmp)
-=======
 	if (tmp != (u16)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtou16);
 
-<<<<<<< HEAD
-=======
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtos16(const char *s, unsigned int base, s16 *res)
 {
 	long long tmp;
@@ -390,21 +296,14 @@ int kstrtos16(const char *s, unsigned int base, s16 *res)
 	rv = kstrtoll(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (long long)(s16)tmp)
-=======
 	if (tmp != (s16)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtos16);
 
-<<<<<<< HEAD
-=======
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtou8(const char *s, unsigned int base, u8 *res)
 {
 	unsigned long long tmp;
@@ -413,21 +312,14 @@ int kstrtou8(const char *s, unsigned int base, u8 *res)
 	rv = kstrtoull(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (unsigned long long)(u8)tmp)
-=======
 	if (tmp != (u8)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtou8);
 
-<<<<<<< HEAD
-=======
 noinline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kstrtos8(const char *s, unsigned int base, s8 *res)
 {
 	long long tmp;
@@ -436,19 +328,13 @@ int kstrtos8(const char *s, unsigned int base, s8 *res)
 	rv = kstrtoll(s, base, &tmp);
 	if (rv < 0)
 		return rv;
-<<<<<<< HEAD
-	if (tmp != (long long)(s8)tmp)
-=======
 	if (tmp != (s8)tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	*res = tmp;
 	return 0;
 }
 EXPORT_SYMBOL(kstrtos8);
 
-<<<<<<< HEAD
-=======
 /**
  * kstrtobool - convert common user inputs into boolean values
  * @s: input string
@@ -519,7 +405,6 @@ int kstrtobool_from_user(const char __user *s, size_t count, bool *res)
 }
 EXPORT_SYMBOL(kstrtobool_from_user);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define kstrto_from_user(f, g, type)					\
 int f(const char __user *s, size_t count, unsigned int base, type *res)	\
 {									\

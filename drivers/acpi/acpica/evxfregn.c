@@ -1,61 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-#include <linux/export.h>
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
 #define EXPORT_ACPI_INTERFACES
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -66,15 +20,6 @@ ACPI_MODULE_NAME("evxfregn")
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_install_address_space_handler
- *
- * PARAMETERS:  Device          - Handle for the device
- *              space_id        - The address space ID
- *              Handler         - Address of the handler
- *              Setup           - Address of the setup function
- *              Context         - Value passed to the handler on each access
-=======
  * FUNCTION:    acpi_install_address_space_handler_internal
  *
  * PARAMETERS:  device          - Handle for the device
@@ -83,7 +28,6 @@ ACPI_MODULE_NAME("evxfregn")
  *              setup           - Address of the setup function
  *              context         - Value passed to the handler on each access
  *              Run_reg         - Run _REG methods for this address space?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -94,15 +38,6 @@ ACPI_MODULE_NAME("evxfregn")
  * are executed here, and these methods can only be safely executed after
  * the default handlers have been installed and the hardware has been
  * initialized (via acpi_enable_subsystem.)
-<<<<<<< HEAD
- *
- ******************************************************************************/
-acpi_status
-acpi_install_address_space_handler(acpi_handle device,
-				   acpi_adr_space_type space_id,
-				   acpi_adr_space_handler handler,
-				   acpi_adr_space_setup setup, void *context)
-=======
  * To avoid this problem pass FALSE for Run_Reg and later on call
  * acpi_execute_reg_methods() to execute _REG.
  *
@@ -113,7 +48,6 @@ acpi_install_address_space_handler_internal(acpi_handle device,
 					    acpi_adr_space_handler handler,
 					    acpi_adr_space_setup setup,
 					    void *context, u8 run_reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
@@ -148,44 +82,6 @@ acpi_install_address_space_handler_internal(acpi_handle device,
 		goto unlock_and_exit;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * For the default space_iDs, (the IDs for which there are default region handlers
-	 * installed) Only execute the _REG methods if the global initialization _REG
-	 * methods have already been run (via acpi_initialize_objects). In other words,
-	 * we will defer the execution of the _REG methods for these space_iDs until
-	 * execution of acpi_initialize_objects. This is done because we need the handlers
-	 * for the default spaces (mem/io/pci/table) to be installed before we can run
-	 * any control methods (or _REG methods). There is known BIOS code that depends
-	 * on this.
-	 *
-	 * For all other space_iDs, we can safely execute the _REG methods immediately.
-	 * This means that for IDs like embedded_controller, this function should be called
-	 * only after acpi_enable_subsystem has been called.
-	 */
-	switch (space_id) {
-	case ACPI_ADR_SPACE_SYSTEM_MEMORY:
-	case ACPI_ADR_SPACE_SYSTEM_IO:
-	case ACPI_ADR_SPACE_PCI_CONFIG:
-	case ACPI_ADR_SPACE_DATA_TABLE:
-
-		if (!acpi_gbl_reg_methods_executed) {
-
-			/* We will defer execution of the _REG methods for this space */
-			goto unlock_and_exit;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	/* Run all _REG methods for this address space */
-
-	status = acpi_ev_execute_reg_methods(node, space_id);
-
-      unlock_and_exit:
-=======
 	/* Run all _REG methods for this address space */
 
 	if (run_reg) {
@@ -193,14 +89,10 @@ acpi_install_address_space_handler_internal(acpi_handle device,
 	}
 
 unlock_and_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
 
-<<<<<<< HEAD
-ACPI_EXPORT_SYMBOL(acpi_install_address_space_handler)
-=======
 acpi_status
 acpi_install_address_space_handler(acpi_handle device,
 				   acpi_adr_space_type space_id,
@@ -226,21 +118,14 @@ acpi_install_address_space_handler_no_reg(acpi_handle device,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_install_address_space_handler_no_reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_remove_address_space_handler
  *
-<<<<<<< HEAD
- * PARAMETERS:  Device          - Handle for the device
- *              space_id        - The address space ID
- *              Handler         - Address of the handler
-=======
  * PARAMETERS:  device          - Handle for the device
  *              space_id        - The address space ID
  *              handler         - Address of the handler
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -294,13 +179,8 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	/* Find the address handler the user requested */
 
-<<<<<<< HEAD
-	handler_obj = obj_desc->device.handler;
-	last_obj_ptr = &obj_desc->device.handler;
-=======
 	handler_obj = obj_desc->common_notify.handler;
 	last_obj_ptr = &obj_desc->common_notify.handler;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (handler_obj) {
 
 		/* We have a handler, see if user requested this one */
@@ -343,10 +223,6 @@ acpi_remove_address_space_handler(acpi_handle device,
 				 */
 				region_obj =
 				    handler_obj->address_space.region_list;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/* Remove this Handler object from the list */
@@ -355,11 +231,8 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 			/* Now we can delete the handler object */
 
-<<<<<<< HEAD
-=======
 			acpi_os_release_mutex(handler_obj->address_space.
 					      context_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			acpi_ut_remove_reference(handler_obj);
 			goto unlock_and_exit;
 		}
@@ -379,18 +252,12 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	status = AE_NOT_EXIST;
 
-<<<<<<< HEAD
-      unlock_and_exit:
-=======
 unlock_and_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
 
 ACPI_EXPORT_SYMBOL(acpi_remove_address_space_handler)
-<<<<<<< HEAD
-=======
 /*******************************************************************************
  *
  * FUNCTION:    acpi_execute_reg_methods
@@ -439,4 +306,3 @@ acpi_execute_reg_methods(acpi_handle device, acpi_adr_space_type space_id)
 }
 
 ACPI_EXPORT_SYMBOL(acpi_execute_reg_methods)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,40 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Jack abstraction layer
  *
  *  Copyright 2008 Wolfson Microelectronics
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <sound/jack.h>
-#include <sound/core.h>
-
-static int jack_switch_types[] = {
-=======
 #include <linux/ctype.h>
 #include <linux/mm.h>
 #include <linux/debugfs.h>
@@ -55,27 +28,12 @@ struct snd_jack_kctl {
 
 #ifdef CONFIG_SND_JACK_INPUT_DEV
 static const int jack_switch_types[SND_JACK_SWITCH_TYPES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SW_HEADPHONE_INSERT,
 	SW_MICROPHONE_INSERT,
 	SW_LINEOUT_INSERT,
 	SW_JACK_PHYSICAL_INSERT,
 	SW_VIDEOOUT_INSERT,
 	SW_LINEIN_INSERT,
-<<<<<<< HEAD
-	SW_HPHL_OVERCURRENT,
-	SW_HPHR_OVERCURRENT,
-	SW_UNSUPPORT_INSERT,
-	SW_MICROPHONE2_INSERT,
-};
-
-static int snd_jack_dev_free(struct snd_device *device)
-{
-	struct snd_jack *jack = device->device_data;
-
-	if (jack->private_free)
-		jack->private_free(jack);
-=======
 };
 #endif /* CONFIG_SND_JACK_INPUT_DEV */
 
@@ -87,7 +45,6 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
 	guard(mutex)(&jack->input_dev_lock);
 	if (!jack->input_dev)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the input device is registered with the input subsystem
 	 * then we need to use a different deallocator. */
@@ -95,8 +52,6 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
 		input_unregister_device(jack->input_dev);
 	else
 		input_free_device(jack->input_dev);
-<<<<<<< HEAD
-=======
 	jack->input_dev = NULL;
 #endif /* CONFIG_SND_JACK_INPUT_DEV */
 	return 0;
@@ -117,7 +72,6 @@ static int snd_jack_dev_free(struct snd_device *device)
 		jack->private_free(jack);
 
 	snd_jack_dev_disconnect(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(jack->id);
 	kfree(jack);
@@ -125,10 +79,7 @@ static int snd_jack_dev_free(struct snd_device *device)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SND_JACK_INPUT_DEV
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_jack_dev_register(struct snd_device *device)
 {
 	struct snd_jack *jack = device->device_data;
@@ -137,14 +88,11 @@ static int snd_jack_dev_register(struct snd_device *device)
 
 	snprintf(jack->name, sizeof(jack->name), "%s %s",
 		 card->shortname, jack->id);
-<<<<<<< HEAD
-=======
 
 	guard(mutex)(&jack->input_dev_lock);
 	if (!jack->input_dev)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jack->input_dev->name = jack->name;
 
 	/* Default to the sound card device. */
@@ -170,8 +118,6 @@ static int snd_jack_dev_register(struct snd_device *device)
 
 	return err;
 }
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_SND_JACK_INPUT_DEV */
 
 #ifdef CONFIG_SND_JACK_INJECTION_DEBUG
@@ -525,7 +471,6 @@ int snd_jack_add_new_kctl(struct snd_jack *jack, const char * name, int mask)
 	return 0;
 }
 EXPORT_SYMBOL(snd_jack_add_new_kctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_jack_new - Create a new jack
@@ -534,25 +479,6 @@ EXPORT_SYMBOL(snd_jack_add_new_kctl);
  * @type:  a bitmask of enum snd_jack_type values that can be detected by
  *         this jack
  * @jjack: Used to provide the allocated jack object to the caller.
-<<<<<<< HEAD
- *
- * Creates a new jack object.
- *
- * Returns zero if successful, or a negative error code on failure.
- * On success jjack will be initialised.
- */
-int snd_jack_new(struct snd_card *card, const char *id, int type,
-		 struct snd_jack **jjack)
-{
-	struct snd_jack *jack;
-	int err;
-	int i;
-	static struct snd_device_ops ops = {
-		.dev_free = snd_jack_dev_free,
-		.dev_register = snd_jack_dev_register,
-	};
-
-=======
  * @initial_kctl: if true, create a kcontrol and add it to the jack list.
  * @phantom_jack: Don't create a input device for phantom jacks.
  *
@@ -581,29 +507,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 			return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jack = kzalloc(sizeof(struct snd_jack), GFP_KERNEL);
 	if (jack == NULL)
 		return -ENOMEM;
 
 	jack->id = kstrdup(id, GFP_KERNEL);
-<<<<<<< HEAD
-
-	jack->input_dev = input_allocate_device();
-	if (jack->input_dev == NULL) {
-		err = -ENOMEM;
-		goto fail_input;
-	}
-
-	jack->input_dev->phys = "ALSA";
-
-	jack->type = type;
-
-	for (i = 0; i < ARRAY_SIZE(jack_switch_types); i++)
-		if (type & (1 << i))
-			input_set_capability(jack->input_dev, EV_SW,
-					     jack_switch_types[i]);
-=======
 	if (jack->id == NULL) {
 		kfree(jack);
 		return -ENOMEM;
@@ -633,68 +541,48 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 
 	}
 #endif /* CONFIG_SND_JACK_INPUT_DEV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
 	if (err < 0)
 		goto fail_input;
 
-<<<<<<< HEAD
-=======
 	jack->card = card;
 	INIT_LIST_HEAD(&jack->kctl_list);
 
 	if (initial_kctl)
 		snd_jack_kctl_add(jack, jack_kctl);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*jjack = jack;
 
 	return 0;
 
 fail_input:
-<<<<<<< HEAD
-	input_free_device(jack->input_dev);
-=======
 #ifdef CONFIG_SND_JACK_INPUT_DEV
 	input_free_device(jack->input_dev);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(jack->id);
 	kfree(jack);
 	return err;
 }
 EXPORT_SYMBOL(snd_jack_new);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SND_JACK_INPUT_DEV
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_jack_set_parent - Set the parent device for a jack
  *
  * @jack:   The jack to configure
  * @parent: The device to set as parent for the jack.
  *
-<<<<<<< HEAD
- * Set the parent for the jack input device in the device tree.  This
-=======
  * Set the parent for the jack devices in the device tree.  This
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * function is only valid prior to registration of the jack.  If no
  * parent is configured then the parent device will be the sound card.
  */
 void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
 {
 	WARN_ON(jack->registered);
-<<<<<<< HEAD
-
-	jack->input_dev->dev.parent = parent;
-=======
 	guard(mutex)(&jack->input_dev_lock);
 	if (jack->input_dev)
 		jack->input_dev->dev.parent = parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(snd_jack_set_parent);
 
@@ -705,21 +593,14 @@ EXPORT_SYMBOL(snd_jack_set_parent);
  * @type:    Jack report type for this key
  * @keytype: Input layer key type to be reported
  *
-<<<<<<< HEAD
- * Map a SND_JACK_BTN_ button type to an input layer key, allowing
-=======
  * Map a SND_JACK_BTN_* button type to an input layer key, allowing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * reporting of keys on accessories via the jack abstraction.  If no
  * mapping is provided but keys are enabled in the jack type then
  * BTN_n numeric buttons will be reported.
  *
-<<<<<<< HEAD
-=======
  * If jacks are not reporting via the input API this call will have no
  * effect.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note that this is intended to be use by simple devices with small
  * numbers of keys that can be reported.  It is also possible to
  * access the input device directly - devices with complex input
@@ -727,11 +608,8 @@ EXPORT_SYMBOL(snd_jack_set_parent);
  * using this abstraction.
  *
  * This function may only be called prior to registration of the jack.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_jack_set_key(struct snd_jack *jack, enum snd_jack_types type,
 		     int keytype)
@@ -745,15 +623,6 @@ int snd_jack_set_key(struct snd_jack *jack, enum snd_jack_types type,
 
 	jack->type |= type;
 	jack->key[key] = keytype;
-<<<<<<< HEAD
-
-	return 0;
-}
-EXPORT_SYMBOL(snd_jack_set_key);
-
-/**
- * snd_jack_report - Report the current status of a jack
-=======
 	return 0;
 }
 EXPORT_SYMBOL(snd_jack_set_key);
@@ -763,34 +632,22 @@ EXPORT_SYMBOL(snd_jack_set_key);
  * snd_jack_report - Report the current status of a jack
  * Note: This function uses mutexes and should be called from a
  * context which can sleep (such as a workqueue).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @jack:   The jack to report status for
  * @status: The current status of the jack
  */
 void snd_jack_report(struct snd_jack *jack, int status)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	struct snd_jack_kctl *jack_kctl;
 	unsigned int mask_bits = 0;
 #ifdef CONFIG_SND_JACK_INPUT_DEV
 	struct input_dev *idev;
 	int i;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!jack)
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
-		int testbit = SND_JACK_BTN_0 >> i;
-
-		if (jack->type & testbit)
-			input_report_key(jack->input_dev, jack->key[i],
-=======
 	jack->hw_status_cache = status;
 
 	list_for_each_entry(jack_kctl, &jack->kctl_list, list)
@@ -810,37 +667,20 @@ void snd_jack_report(struct snd_jack *jack, int status)
 
 		if (jack->type & testbit)
 			input_report_key(idev, jack->key[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 status & testbit);
 	}
 
 	for (i = 0; i < ARRAY_SIZE(jack_switch_types); i++) {
-<<<<<<< HEAD
-		int testbit = 1 << i;
-		if (jack->type & testbit)
-			input_report_switch(jack->input_dev,
-=======
 		int testbit = ((1 << i) & ~mask_bits);
 
 		if (jack->type & testbit)
 			input_report_switch(idev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    jack_switch_types[i],
 					    status & testbit);
 	}
 
-<<<<<<< HEAD
-	input_sync(jack->input_dev);
-}
-EXPORT_SYMBOL(snd_jack_report);
-
-MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
-MODULE_DESCRIPTION("Jack detection support for ALSA");
-MODULE_LICENSE("GPL");
-=======
 	input_sync(idev);
 	input_put_device(idev);
 #endif /* CONFIG_SND_JACK_INPUT_DEV */
 }
 EXPORT_SYMBOL(snd_jack_report);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

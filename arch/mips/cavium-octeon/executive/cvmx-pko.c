@@ -35,13 +35,6 @@
 #include <asm/octeon/cvmx-pko.h>
 #include <asm/octeon/cvmx-helper.h>
 
-<<<<<<< HEAD
-/**
- * Internal state of packet output
- */
-
-/**
-=======
 /*
  * Internal state of packet output
  */
@@ -184,7 +177,6 @@ static void __cvmx_pko_chip_init(void)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Call before any other calls to initialize the packet
  * output system.  This does chip global config, and should only be
  * done by one core.
@@ -192,21 +184,12 @@ static void __cvmx_pko_chip_init(void)
 
 void cvmx_pko_initialize_global(void)
 {
-<<<<<<< HEAD
-	int i;
-	uint64_t priority = 8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union cvmx_pko_reg_cmd_buf config;
 
 	/*
 	 * Set the size of the PKO command buffers to an odd number of
 	 * 64bit words. This allows the normal two word send to stay
-<<<<<<< HEAD
-	 * aligned and never span a comamnd word buffer.
-=======
 	 * aligned and never span a command word buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	config.u64 = 0;
 	config.s.pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
@@ -214,16 +197,10 @@ void cvmx_pko_initialize_global(void)
 
 	cvmx_write_csr(CVMX_PKO_REG_CMD_BUF, config.u64);
 
-<<<<<<< HEAD
-	for (i = 0; i < CVMX_PKO_MAX_OUTPUT_QUEUES; i++)
-		cvmx_pko_config_port(CVMX_PKO_MEM_QUEUE_PTRS_ILLEGAL_PID, i, 1,
-				     &priority);
-=======
 	/*
 	 * Chip-specific setup.
 	 */
 	__cvmx_pko_chip_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we aren't using all of the queues optimize PKO's
@@ -252,25 +229,7 @@ void cvmx_pko_initialize_global(void)
 	}
 }
 
-<<<<<<< HEAD
-/**
- * This function does per-core initialization required by the PKO routines.
- * This must be called on all cores that will do packet output, and must
- * be called after the FPA has been initialized and filled with pages.
- *
- * Returns 0 on success
- *         !0 on failure
- */
-int cvmx_pko_initialize_local(void)
-{
-	/* Nothing to do */
-	return 0;
-}
-
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Enables the packet output hardware. It must already be
  * configured.
  */
@@ -293,11 +252,7 @@ void cvmx_pko_enable(void)
 	cvmx_write_csr(CVMX_PKO_REG_FLAGS, flags.u64);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Disables the packet output. Does not affect any configuration.
  */
 void cvmx_pko_disable(void)
@@ -307,15 +262,9 @@ void cvmx_pko_disable(void)
 	pko_reg_flags.s.ena_pko = 0;
 	cvmx_write_csr(CVMX_PKO_REG_FLAGS, pko_reg_flags.u64);
 }
-<<<<<<< HEAD
-
-
-/**
-=======
 EXPORT_SYMBOL_GPL(cvmx_pko_disable);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Reset the packet output.
  */
 static void __cvmx_pko_reset(void)
@@ -326,11 +275,7 @@ static void __cvmx_pko_reset(void)
 	cvmx_write_csr(CVMX_PKO_REG_FLAGS, pko_reg_flags.u64);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Shutdown and free resources required by packet output.
  */
 void cvmx_pko_shutdown(void)
@@ -359,25 +304,6 @@ void cvmx_pko_shutdown(void)
 	}
 	__cvmx_pko_reset();
 }
-<<<<<<< HEAD
-
-/**
- * Configure a output port and the associated queues for use.
- *
- * @port:       Port to configure.
- * @base_queue: First queue number to associate with this port.
- * @num_queues: Number of queues to associate with this port
- * @priority:   Array of priority levels for each queue. Values are
- *                   allowed to be 0-8. A value of 8 get 8 times the traffic
- *                   of a value of 1.  A value of 0 indicates that no rounds
- *                   will be participated in. These priorities can be changed
- *                   on the fly while the pko is enabled. A priority of 9
- *                   indicates that static priority should be used.  If static
- *                   priority is used all queues with static priority must be
- *                   contiguous starting at the base_queue, and lower numbered
- *                   queues have higher priority than higher numbered queues.
- *                   There must be num_queues elements in the array.
-=======
 EXPORT_SYMBOL_GPL(cvmx_pko_shutdown);
 
 /*
@@ -396,7 +322,6 @@ EXPORT_SYMBOL_GPL(cvmx_pko_shutdown);
  *		     contiguous starting at the base_queue, and lower numbered
  *		     queues have higher priority than higher numbered queues.
  *		     There must be num_queues elements in the array.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 				       uint64_t num_queues,
@@ -409,12 +334,9 @@ cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 	int static_priority_base = -1;
 	int static_priority_end = -1;
 
-<<<<<<< HEAD
-=======
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		return CVMX_PKO_SUCCESS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((port >= CVMX_PKO_NUM_OUTPUT_PORTS)
 	    && (port != CVMX_PKO_MEM_QUEUE_PTRS_ILLEGAL_PID)) {
 		cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid port %llu\n",
@@ -455,11 +377,7 @@ cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 			/*
 			 * Check to make sure all static priority
 			 * queues are contiguous.  Also catches some
-<<<<<<< HEAD
-			 * cases of static priorites not starting at
-=======
 			 * cases of static priorities not starting at
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * queue 0.
 			 */
 			if (static_priority_end != -1
@@ -553,18 +471,11 @@ cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 			config.s.qos_mask = 0xff;
 			break;
 		case CVMX_PKO_QUEUE_STATIC_PRIORITY:
-<<<<<<< HEAD
-			/* Pass 1 will fall through to the error case */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!cvmx_octeon_is_pass1()) {
 				config.s.qos_mask = 0xff;
 				break;
 			}
-<<<<<<< HEAD
-=======
 			fallthrough;	/* to the error case, when Pass 1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid "
 				     "priority %llu\n",
@@ -623,11 +534,7 @@ cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 }
 
 #ifdef PKO_DEBUG
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Show map of ports -> queues for different cores.
  */
 void cvmx_pko_show_queue_map()
@@ -652,22 +559,14 @@ void cvmx_pko_show_queue_map()
 }
 #endif
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Rate limit a PKO port to a max packets/sec. This function is only
  * supported on CN51XX and higher, excluding CN58XX.
  *
  * @port:      Port to rate limit
  * @packets_s: Maximum packet/sec
  * @burst:     Maximum number of packets to burst in a row before rate
-<<<<<<< HEAD
- *                  limiting cuts in.
-=======
  *		    limiting cuts in.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns Zero on success, negative on failure
  */
@@ -693,22 +592,14 @@ int cvmx_pko_rate_limit_packets(int port, int packets_s, int burst)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Rate limit a PKO port to a max bits/sec. This function is only
  * supported on CN51XX and higher, excluding CN58XX.
  *
  * @port:   Port to rate limit
  * @bits_s: PKO rate limit in bits/sec
  * @burst:  Maximum number of bits to burst before rate
-<<<<<<< HEAD
- *               limiting cuts in.
-=======
  *		 limiting cuts in.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns Zero on success, negative on failure
  */
@@ -724,11 +615,7 @@ int cvmx_pko_rate_limit_bits(int port, uint64_t bits_s, int burst)
 	/*
 	 * Each packet has a 12 bytes of interframe gap, an 8 byte
 	 * preamble, and a 4 byte CRC. These are not included in the
-<<<<<<< HEAD
-	 * per word count. Multiply by 8 to covert to bits and divide
-=======
 	 * per word count. Multiply by 8 to convert to bits and divide
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * by 256 for limit granularity.
 	 */
 	pko_mem_port_rate0.s.rate_pkt = (12 + 8 + 4) * 8 * tokens_per_bit / 256;

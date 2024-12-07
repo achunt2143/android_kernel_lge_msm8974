@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (c) 2001-2003 Patrick Mochel <mochel@osdl.org>
@@ -12,7 +10,6 @@
  * shared outside of the drivers/base/ directory.
  *
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/notifier.h>
 
 /**
@@ -30,19 +27,13 @@
  *                 on this bus.
  * @bus - pointer back to the struct bus_type that this structure is associated
  *        with.
-<<<<<<< HEAD
-=======
  * @dev_root: Default device to use as the parent.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @glue_dirs - "glue" directory to put in-between the parent device to
  *              avoid namespace conflicts
  * @class - pointer back to the struct class that this structure is associated
  *          with.
-<<<<<<< HEAD
-=======
  * @lock_key:	Lock class key for use by the lock validator
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure is the one that is the actual kobject allowing struct
  * bus_type/class to be statically allocated safely.  Nothing outside of the
@@ -59,14 +50,6 @@ struct subsys_private {
 	struct klist klist_drivers;
 	struct blocking_notifier_head bus_notifier;
 	unsigned int drivers_autoprobe:1;
-<<<<<<< HEAD
-	struct bus_type *bus;
-
-	struct kset glue_dirs;
-	struct class *class;
-};
-#define to_subsys_private(obj) container_of(obj, struct subsys_private, subsys.kobj)
-=======
 	const struct bus_type *bus;
 	struct device *dev_root;
 
@@ -91,7 +74,6 @@ static inline void subsys_put(struct subsys_private *sp)
 }
 
 struct subsys_private *class_to_subsys(const struct class *class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct driver_private {
 	struct kobject kobj;
@@ -109,27 +91,17 @@ struct driver_private {
  * @knode_parent - node in sibling list
  * @knode_driver - node in driver list
  * @knode_bus - node in bus list
-<<<<<<< HEAD
-=======
  * @knode_class - node in class list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @deferred_probe - entry in deferred_probe_list which is used to retry the
  *	binding of drivers which were unable to get all the resources needed by
  *	the device; typically because it depends on another driver getting
  *	probed first.
-<<<<<<< HEAD
- * @driver_data - private pointer for driver specific info.  Will turn into a
- * list soon.
- * @device - pointer back to the struct class that this structure is
- * associated with.
-=======
  * @async_driver - pointer to device driver awaiting probe via async_probe
  * @device - pointer back to the struct device that this structure is
  * associated with.
  * @dead - This device is currently either in the process of or has been
  *	removed from the system. Any asynchronous events scheduled for this
  *	device should exit without taking any action.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Nothing outside of the driver core should ever touch these fields.
  */
@@ -138,18 +110,12 @@ struct device_private {
 	struct klist_node knode_parent;
 	struct klist_node knode_driver;
 	struct klist_node knode_bus;
-<<<<<<< HEAD
-	struct list_head deferred_probe;
-	void *driver_data;
-	struct device *device;
-=======
 	struct klist_node knode_class;
 	struct list_head deferred_probe;
 	struct device_driver *async_driver;
 	char *deferred_probe_reason;
 	struct device *device;
 	u8 dead:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_device_private_parent(obj)	\
 	container_of(obj, struct device_private, knode_parent)
@@ -157,35 +123,6 @@ struct device_private {
 	container_of(obj, struct device_private, knode_driver)
 #define to_device_private_bus(obj)	\
 	container_of(obj, struct device_private, knode_bus)
-<<<<<<< HEAD
-
-extern int device_private_init(struct device *dev);
-
-/* initialisation functions */
-extern int devices_init(void);
-extern int buses_init(void);
-extern int classes_init(void);
-extern int firmware_init(void);
-#ifdef CONFIG_SYS_HYPERVISOR
-extern int hypervisor_init(void);
-#else
-static inline int hypervisor_init(void) { return 0; }
-#endif
-extern int platform_bus_init(void);
-extern int system_bus_init(void);
-extern void cpu_dev_init(void);
-
-extern int bus_add_device(struct device *dev);
-extern void bus_probe_device(struct device *dev);
-extern void bus_remove_device(struct device *dev);
-
-extern int bus_add_driver(struct device_driver *drv);
-extern void bus_remove_driver(struct device_driver *drv);
-
-extern void driver_detach(struct device_driver *drv);
-extern int driver_probe_device(struct device_driver *drv, struct device *dev);
-extern void driver_deferred_probe_del(struct device *dev);
-=======
 #define to_device_private_class(obj)	\
 	container_of(obj, struct device_private, knode_class)
 
@@ -224,25 +161,12 @@ void device_release_driver_internal(struct device *dev, struct device_driver *dr
 void driver_detach(struct device_driver *drv);
 void driver_deferred_probe_del(struct device *dev);
 void device_set_deferred_probe_reason(const struct device *dev, struct va_format *vaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int driver_match_device(struct device_driver *drv,
 				      struct device *dev)
 {
 	return drv->bus->match ? drv->bus->match(dev, drv) : 1;
 }
 
-<<<<<<< HEAD
-extern char *make_class_name(const char *name, struct kobject *kobj);
-
-extern int devres_release_all(struct device *dev);
-
-/* /sys/devices directory */
-extern struct kset *devices_kset;
-
-#if defined(CONFIG_MODULES) && defined(CONFIG_SYSFS)
-extern void module_add_driver(struct module *mod, struct device_driver *drv);
-extern void module_remove_driver(struct device_driver *drv);
-=======
 static inline void dev_sync_state(struct device *dev)
 {
 	if (dev->bus->sync_state)
@@ -270,7 +194,6 @@ void devices_kset_move_last(struct device *dev);
 #if defined(CONFIG_MODULES) && defined(CONFIG_SYSFS)
 void module_add_driver(struct module *mod, struct device_driver *drv);
 void module_remove_driver(struct device_driver *drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void module_add_driver(struct module *mod,
 				     struct device_driver *drv) { }
@@ -278,12 +201,6 @@ static inline void module_remove_driver(struct device_driver *drv) { }
 #endif
 
 #ifdef CONFIG_DEVTMPFS
-<<<<<<< HEAD
-extern int devtmpfs_init(void);
-#else
-static inline int devtmpfs_init(void) { return 0; }
-#endif
-=======
 int devtmpfs_init(void);
 #else
 static inline int devtmpfs_init(void) { return 0; }
@@ -326,4 +243,3 @@ static inline int devtmpfs_delete_node(struct device *dev) { return 0; }
 
 void software_node_notify(struct device *dev);
 void software_node_notify_remove(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

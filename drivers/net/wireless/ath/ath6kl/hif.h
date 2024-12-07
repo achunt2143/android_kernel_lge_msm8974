@@ -35,15 +35,6 @@
 #define MAX_SCATTER_ENTRIES_PER_REQ      16
 #define MAX_SCATTER_REQ_TRANSFER_SIZE    (32 * 1024)
 
-<<<<<<< HEAD
-#define MANUFACTURER_ID_AR6003_BASE        0x300
-#define MANUFACTURER_ID_AR6004_BASE        0x400
-    /* SDIO manufacturer ID and Codes */
-#define MANUFACTURER_ID_ATH6KL_BASE_MASK     0xFF00
-#define MANUFACTURER_CODE                  0x271	/* Atheros */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mailbox address in SDIO address space */
 #define HIF_MBOX_BASE_ADDR                 0x800
 #define HIF_MBOX_WIDTH                     0x800
@@ -101,11 +92,7 @@ struct bus_request {
  *     emode - This indicates the whether the command is to be executed in a
  *             blocking or non-blocking fashion (HIF_SYNCHRONOUS/
  *             HIF_ASYNCHRONOUS). The read/write data paths in HTC have been
-<<<<<<< HEAD
- *             implemented using the asynchronous mode allowing the the bus
-=======
  *             implemented using the asynchronous mode allowing the bus
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *             driver to indicate the completion of operation through the
  *             registered callback routine. The requirement primarily comes
  *             from the contexts these operations get called from (a driver's
@@ -204,15 +191,9 @@ struct hif_scatter_req {
 	/* bounce buffer for upper layers to copy to/from */
 	u8 *virt_dma_buf;
 
-<<<<<<< HEAD
-	struct hif_scatter_item scat_list[1];
-
-	u32 scat_q_depth;
-=======
 	u32 scat_q_depth;
 
 	struct hif_scatter_item scat_list[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath6kl_irq_proc_registers {
@@ -269,15 +250,12 @@ struct ath6kl_hif_ops {
 	int (*power_on)(struct ath6kl *ar);
 	int (*power_off)(struct ath6kl *ar);
 	void (*stop)(struct ath6kl *ar);
-<<<<<<< HEAD
-=======
 	int (*pipe_send)(struct ath6kl *ar, u8 pipe, struct sk_buff *hdr_buf,
 			 struct sk_buff *buf);
 	void (*pipe_get_default)(struct ath6kl *ar, u8 *pipe_ul, u8 *pipe_dl);
 	int (*pipe_map_service)(struct ath6kl *ar, u16 service_id, u8 *pipe_ul,
 				u8 *pipe_dl);
 	u16 (*pipe_get_free_queue_number)(struct ath6kl *ar, u8 pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int ath6kl_hif_setup(struct ath6kl_device *dev);

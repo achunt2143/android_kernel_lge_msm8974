@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-/* New Hydra driver using generic 8390 core */
-/* Based on old hydra driver by Topi Kanerva (topi@susanna.oulu.fi) */
-
-/* This file is subject to the terms and conditions of the GNU General      */
-/* Public License.  See the file COPYING in the main directory of the       */
-/* Linux distribution for more details.                                     */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 
 /* New Hydra driver using generic 8390 core */
 /* Based on old hydra driver by Topi Kanerva (topi@susanna.oulu.fi) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Peter De Schrijver (p2@mind.be) */
 /* Oldenburg 2000 */
 
@@ -61,15 +51,9 @@ static const char version[] =
 #define WORDSWAP(a)     ((((a)>>8)&0xff) | ((a)<<8))
 
 
-<<<<<<< HEAD
-static int __devinit hydra_init_one(struct zorro_dev *z,
-				    const struct zorro_device_id *ent);
-static int __devinit hydra_init(struct zorro_dev *z);
-=======
 static int hydra_init_one(struct zorro_dev *z,
 				    const struct zorro_device_id *ent);
 static int hydra_init(struct zorro_dev *z);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hydra_open(struct net_device *dev);
 static int hydra_close(struct net_device *dev);
 static void hydra_reset_8390(struct net_device *dev);
@@ -79,15 +63,9 @@ static void hydra_block_input(struct net_device *dev, int count,
 			      struct sk_buff *skb, int ring_offset);
 static void hydra_block_output(struct net_device *dev, int count,
 			       const unsigned char *buf, int start_page);
-<<<<<<< HEAD
-static void __devexit hydra_remove_one(struct zorro_dev *z);
-
-static struct zorro_device_id hydra_zorro_tbl[] __devinitdata = {
-=======
 static void hydra_remove_one(struct zorro_dev *z);
 
 static struct zorro_device_id hydra_zorro_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     { ZORRO_PROD_HYDRA_SYSTEMS_AMIGANET },
     { 0 }
 };
@@ -97,19 +75,11 @@ static struct zorro_driver hydra_driver = {
     .name	= "hydra",
     .id_table	= hydra_zorro_tbl,
     .probe	= hydra_init_one,
-<<<<<<< HEAD
-    .remove	= __devexit_p(hydra_remove_one),
-};
-
-static int __devinit hydra_init_one(struct zorro_dev *z,
-				    const struct zorro_device_id *ent)
-=======
     .remove	= hydra_remove_one,
 };
 
 static int hydra_init_one(struct zorro_dev *z,
 			  const struct zorro_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     int err;
 
@@ -132,24 +102,11 @@ static const struct net_device_ops hydra_netdev_ops = {
 	.ndo_set_rx_mode	= __ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= __ei_poll,
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit hydra_init(struct zorro_dev *z)
-{
-    struct net_device *dev;
-    unsigned long board = ZTWO_VADDR(z->resource.start);
-    unsigned long ioaddr = board+HYDRA_NIC_BASE;
-    const char name[] = "NE2000";
-    int start_page, stop_page;
-=======
 static int hydra_init(struct zorro_dev *z)
 {
     struct net_device *dev;
@@ -158,7 +115,6 @@ static int hydra_init(struct zorro_dev *z)
     const char name[] = "NE2000";
     int start_page, stop_page;
     u8 macaddr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int j;
     int err;
 
@@ -172,12 +128,8 @@ static int hydra_init(struct zorro_dev *z)
 	return -ENOMEM;
 
     for (j = 0; j < ETH_ALEN; j++)
-<<<<<<< HEAD
-	dev->dev_addr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
-=======
 	macaddr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
     eth_hw_addr_set(dev, macaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* We must set the 8390 for word mode. */
     z_writeb(0x4b, ioaddr + NE_EN0_DCFG);
@@ -234,25 +186,16 @@ static int hydra_open(struct net_device *dev)
 
 static int hydra_close(struct net_device *dev)
 {
-<<<<<<< HEAD
-    if (ei_debug > 1)
-	printk(KERN_DEBUG "%s: Shutting down ethercard.\n", dev->name);
-=======
     struct ei_device *ei_local = netdev_priv(dev);
 
     netif_dbg(ei_local, ifdown, dev, "Shutting down ethercard.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     __ei_close(dev);
     return 0;
 }
 
 static void hydra_reset_8390(struct net_device *dev)
 {
-<<<<<<< HEAD
-    printk(KERN_INFO "Hydra hw reset not there\n");
-=======
     netdev_info(dev, "Hydra hw reset not there\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hydra_get_8390_hdr(struct net_device *dev,
@@ -304,11 +247,7 @@ static void hydra_block_output(struct net_device *dev, int count,
     z_memcpy_toio(mem_base+((start_page - NESM_START_PG)<<8), buf, count);
 }
 
-<<<<<<< HEAD
-static void __devexit hydra_remove_one(struct zorro_dev *z)
-=======
 static void hydra_remove_one(struct zorro_dev *z)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct net_device *dev = zorro_get_drvdata(z);
 
@@ -331,8 +270,5 @@ static void __exit hydra_cleanup_module(void)
 module_init(hydra_init_module);
 module_exit(hydra_cleanup_module);
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Zorro-II Hydra 8390 ethernet driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

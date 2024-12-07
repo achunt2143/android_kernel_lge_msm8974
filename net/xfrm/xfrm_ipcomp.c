@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IP Payload Compression Protocol (IPComp) - RFC3173.
  *
  * Copyright (c) 2003 James Morris <jmorris@intercode.com.au>
  * Copyright (c) 2003-2008 Herbert Xu <herbert@gondor.apana.org.au>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Todo:
  *   - Tunable compression parameters.
  *   - Compression stats.
@@ -52,31 +41,16 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
 	const int plen = skb->len;
 	int dlen = IPCOMP_SCRATCH_SIZE;
 	const u8 *start = skb->data;
-<<<<<<< HEAD
-	const int cpu = get_cpu();
-	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
-	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
-=======
 	u8 *scratch = *this_cpu_ptr(ipcomp_scratches);
 	struct crypto_comp *tfm = *this_cpu_ptr(ipcd->tfms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = crypto_comp_decompress(tfm, start, plen, scratch, &dlen);
 	int len;
 
 	if (err)
-<<<<<<< HEAD
-		goto out;
-
-	if (dlen < (plen + sizeof(struct ip_comp_hdr))) {
-		err = -EINVAL;
-		goto out;
-	}
-=======
 		return err;
 
 	if (dlen < (plen + sizeof(struct ip_comp_hdr)))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = dlen - plen;
 	if (len > skb_tailroom(skb))
@@ -91,39 +65,20 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
 		skb_frag_t *frag;
 		struct page *page;
 
-<<<<<<< HEAD
-		err = -EMSGSIZE;
-		if (WARN_ON(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS))
-			goto out;
-=======
 		if (WARN_ON(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS))
 			return -EMSGSIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		frag = skb_shinfo(skb)->frags + skb_shinfo(skb)->nr_frags;
 		page = alloc_page(GFP_ATOMIC);
 
-<<<<<<< HEAD
-		err = -ENOMEM;
-		if (!page)
-			goto out;
-
-		__skb_frag_set_page(frag, page);
-=======
 		if (!page)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		len = PAGE_SIZE;
 		if (dlen < len)
 			len = dlen;
 
-<<<<<<< HEAD
-		frag->page_offset = 0;
-		skb_frag_size_set(frag, len);
-=======
 		skb_frag_fill_page_desc(frag, page, 0, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(skb_frag_address(frag), scratch, len);
 
 		skb->truesize += len;
@@ -133,15 +88,7 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
 		skb_shinfo(skb)->nr_frags++;
 	}
 
-<<<<<<< HEAD
-	err = 0;
-
-out:
-	put_cpu();
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ipcomp_input(struct xfrm_state *x, struct sk_buff *skb)
@@ -178,16 +125,6 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	const int plen = skb->len;
 	int dlen = IPCOMP_SCRATCH_SIZE;
 	u8 *start = skb->data;
-<<<<<<< HEAD
-	const int cpu = get_cpu();
-	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
-	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
-	int err;
-
-	local_bh_disable();
-	err = crypto_comp_compress(tfm, start, plen, scratch, &dlen);
-	local_bh_enable();
-=======
 	struct crypto_comp *tfm;
 	u8 *scratch;
 	int err;
@@ -196,7 +133,6 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	scratch = *this_cpu_ptr(ipcomp_scratches);
 	tfm = *this_cpu_ptr(ipcd->tfms);
 	err = crypto_comp_compress(tfm, start, plen, scratch, &dlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -206,21 +142,13 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	}
 
 	memcpy(start + sizeof(struct ip_comp_hdr), scratch, dlen);
-<<<<<<< HEAD
-	put_cpu();
-=======
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pskb_trim(skb, dlen + sizeof(struct ip_comp_hdr));
 	return 0;
 
 out:
-<<<<<<< HEAD
-	put_cpu();
-=======
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -272,21 +200,13 @@ static void ipcomp_free_scratches(void)
 		vfree(*per_cpu_ptr(scratches, i));
 
 	free_percpu(scratches);
-<<<<<<< HEAD
-=======
 	ipcomp_scratches = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void * __percpu *ipcomp_alloc_scratches(void)
 {
-<<<<<<< HEAD
-	int i;
-	void * __percpu *scratches;
-=======
 	void * __percpu *scratches;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ipcomp_scratch_users++)
 		return ipcomp_scratches;
@@ -298,13 +218,9 @@ static void * __percpu *ipcomp_alloc_scratches(void)
 	ipcomp_scratches = scratches;
 
 	for_each_possible_cpu(i) {
-<<<<<<< HEAD
-		void *scratch = vmalloc(IPCOMP_SCRATCH_SIZE);
-=======
 		void *scratch;
 
 		scratch = vmalloc_node(IPCOMP_SCRATCH_SIZE, cpu_to_node(i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!scratch)
 			return NULL;
 		*per_cpu_ptr(scratches, i) = scratch;
@@ -323,11 +239,7 @@ static void ipcomp_free_tfms(struct crypto_comp * __percpu *tfms)
 			break;
 	}
 
-<<<<<<< HEAD
-	WARN_ON(!pos);
-=======
 	WARN_ON(list_entry_is_head(pos, &ipcomp_tfms_list, list));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (--pos->users)
 		return;
@@ -351,30 +263,16 @@ static struct crypto_comp * __percpu *ipcomp_alloc_tfms(const char *alg_name)
 	struct crypto_comp * __percpu *tfms;
 	int cpu;
 
-<<<<<<< HEAD
-	/* This can be any valid CPU ID so we don't need locking. */
-	cpu = raw_smp_processor_id();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(pos, &ipcomp_tfms_list, list) {
 		struct crypto_comp *tfm;
 
-<<<<<<< HEAD
-		tfms = pos->tfms;
-		tfm = *per_cpu_ptr(tfms, cpu);
-
-		if (!strcmp(crypto_comp_name(tfm), alg_name)) {
-			pos->users++;
-			return tfms;
-=======
 		/* This can be any valid CPU ID so we don't need locking. */
 		tfm = this_cpu_read(*pos->tfms);
 
 		if (!strcmp(crypto_comp_name(tfm), alg_name)) {
 			pos->users++;
 			return pos->tfms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -425,24 +323,13 @@ void ipcomp_destroy(struct xfrm_state *x)
 }
 EXPORT_SYMBOL_GPL(ipcomp_destroy);
 
-<<<<<<< HEAD
-int ipcomp_init_state(struct xfrm_state *x)
-=======
 int ipcomp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct ipcomp_data *ipcd;
 	struct xfrm_algo_desc *calg_desc;
 
 	err = -EINVAL;
-<<<<<<< HEAD
-	if (!x->calg)
-		goto out;
-
-	if (x->encap)
-		goto out;
-=======
 	if (!x->calg) {
 		NL_SET_ERR_MSG(extack, "Missing required compression algorithm");
 		goto out;
@@ -452,7 +339,6 @@ int ipcomp_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		NL_SET_ERR_MSG(extack, "IPComp is not compatible with encapsulation");
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ENOMEM;
 	ipcd = kzalloc(sizeof(*ipcd), GFP_KERNEL);

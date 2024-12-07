@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Watchdog driver for the SA11x0/PXA2xx
  *
  *	(c) Copyright 2000 Oleg Drokin <green@crimea.edu>
  *	    Based on SoftDog driver by Alan Cox <alan@lxorguk.ukuu.org.uk>
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Oleg Drokin nor iXcelerator.com admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -29,17 +18,11 @@
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/kernel.h>
-#include <linux/fs.h>
-=======
 #include <linux/clk.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/miscdevice.h>
 #include <linux/watchdog.h>
 #include <linux/init.h>
@@ -48,14 +31,6 @@
 #include <linux/uaccess.h>
 #include <linux/timex.h>
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_PXA
-#include <mach/regs-ost.h>
-#endif
-
-#include <mach/reset.h>
-#include <mach/hardware.h>
-=======
 #define REG_OSMR0  	0x0000  /* OS timer Match Reg. 0 */
 #define REG_OSMR1  	0x0004  /* OS timer Match Reg. 1 */
 #define REG_OSMR2  	0x0008  /* OS timer Match Reg. 2 */
@@ -76,14 +51,11 @@
 #define OIER_E2		(1 << 2)	/* Interrupt enable channel 2 */
 #define OIER_E1		(1 << 1)	/* Interrupt enable channel 1 */
 #define OIER_E0		(1 << 0)	/* Interrupt enable channel 0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long oscr_freq;
 static unsigned long sa1100wdt_users;
 static unsigned int pre_margin;
 static int boot_status;
-<<<<<<< HEAD
-=======
 static void __iomem *reg_base;
 
 static inline void sa1100_wr(u32 val, u32 offset)
@@ -95,7 +67,6 @@ static inline u32 sa1100_rd(u32 offset)
 {
 	return readl_relaxed(reg_base + offset);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Allow only one person to hold it open
@@ -106,30 +77,18 @@ static int sa1100dog_open(struct inode *inode, struct file *file)
 		return -EBUSY;
 
 	/* Activate SA1100 Watchdog timer */
-<<<<<<< HEAD
-	OSMR3 = OSCR + pre_margin;
-	OSSR = OSSR_M3;
-	OWER = OWER_WME;
-	OIER |= OIER_E3;
-	return nonseekable_open(inode, file);
-=======
 	sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
 	sa1100_wr(OSSR_M3, REG_OSSR);
 	sa1100_wr(OWER_WME, REG_OWER);
 	sa1100_wr(sa1100_rd(REG_OIER) | OIER_E3, REG_OIER);
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * The watchdog cannot be disabled.
  *
  * Previous comments suggested that turning off the interrupt by
-<<<<<<< HEAD
- * clearing OIER[E3] would prevent the watchdog timing out but this
-=======
  * clearing REG_OIER[E3] would prevent the watchdog timing out but this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * does not appear to be true (at least on the PXA255).
  */
 static int sa1100dog_release(struct inode *inode, struct file *file)
@@ -144,11 +103,7 @@ static ssize_t sa1100dog_write(struct file *file, const char __user *data,
 {
 	if (len)
 		/* Refresh OSMR3 timer. */
-<<<<<<< HEAD
-		OSMR3 = OSCR + pre_margin;
-=======
 		sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -182,11 +137,7 @@ static long sa1100dog_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case WDIOC_KEEPALIVE:
-<<<<<<< HEAD
-		OSMR3 = OSCR + pre_margin;
-=======
 		sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 		break;
 
@@ -201,13 +152,8 @@ static long sa1100dog_ioctl(struct file *file, unsigned int cmd,
 		}
 
 		pre_margin = oscr_freq * time;
-<<<<<<< HEAD
-		OSMR3 = OSCR + pre_margin;
-		/*fall through*/
-=======
 		sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		ret = put_user(pre_margin / oscr_freq, p);
@@ -221,10 +167,7 @@ static const struct file_operations sa1100dog_fops = {
 	.llseek		= no_llseek,
 	.write		= sa1100dog_write,
 	.unlocked_ioctl	= sa1100dog_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= sa1100dog_open,
 	.release	= sa1100dog_release,
 };
@@ -235,39 +178,6 @@ static struct miscdevice sa1100dog_miscdev = {
 	.fops		= &sa1100dog_fops,
 };
 
-<<<<<<< HEAD
-static int margin __initdata = 60;		/* (secs) Default is 1 minute */
-
-static int __init sa1100dog_init(void)
-{
-	int ret;
-
-	oscr_freq = get_clock_tick_rate();
-
-	/*
-	 * Read the reset status, and save it for later.  If
-	 * we suspend, RCSR will be cleared, and the watchdog
-	 * reset reason will be lost.
-	 */
-	boot_status = (reset_status & RESET_STATUS_WATCHDOG) ?
-				WDIOF_CARDRESET : 0;
-	pre_margin = oscr_freq * margin;
-
-	ret = misc_register(&sa1100dog_miscdev);
-	if (ret == 0)
-		pr_info("SA1100/PXA2xx Watchdog Timer: timer margin %d sec\n",
-			margin);
-	return ret;
-}
-
-static void __exit sa1100dog_exit(void)
-{
-	misc_deregister(&sa1100dog_miscdev);
-}
-
-module_init(sa1100dog_init);
-module_exit(sa1100dog_exit);
-=======
 static int margin = 60;		/* (secs) Default is 1 minute */
 static struct clk *clk;
 
@@ -332,7 +242,6 @@ static struct platform_driver sa1100dog_driver = {
 	.remove_new	  = sa1100dog_remove,
 };
 module_platform_driver(sa1100dog_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Oleg Drokin <green@crimea.edu>");
 MODULE_DESCRIPTION("SA1100/PXA2xx Watchdog");
@@ -341,7 +250,3 @@ module_param(margin, int, 0);
 MODULE_PARM_DESC(margin, "Watchdog margin in seconds (default 60s)");
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

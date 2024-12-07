@@ -11,13 +11,10 @@
 #ifndef __LINUX_MBUS_H
 #define __LINUX_MBUS_H
 
-<<<<<<< HEAD
-=======
 #include <linux/errno.h>
 
 struct resource;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mbus_dram_target_info
 {
 	/*
@@ -34,13 +31,6 @@ struct mbus_dram_target_info
 	struct mbus_dram_window {
 		u8	cs_index;
 		u8	mbus_attr;
-<<<<<<< HEAD
-		u32	base;
-		u32	size;
-	} cs[4];
-};
-
-=======
 		u64	base;
 		u64	size;
 	} cs[4];
@@ -60,28 +50,20 @@ struct mbus_dram_target_info
 /* Maximum size of a mbus window name */
 #define MVEBU_MBUS_MAX_WINNAME_SZ 32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The Marvell mbus is to be found only on SOCs from the Orion family
  * at the moment.  Provide a dummy stub for other architectures.
  */
 #ifdef CONFIG_PLAT_ORION
 extern const struct mbus_dram_target_info *mv_mbus_dram_info(void);
-<<<<<<< HEAD
-=======
 extern const struct mbus_dram_target_info *mv_mbus_dram_info_nooverlap(void);
 int mvebu_mbus_get_io_win_info(phys_addr_t phyaddr, u32 *size, u8 *target,
 			       u8 *attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline const struct mbus_dram_target_info *mv_mbus_dram_info(void)
 {
 	return NULL;
 }
-<<<<<<< HEAD
-#endif
-#endif
-=======
 static inline const struct mbus_dram_target_info *mv_mbus_dram_info_nooverlap(void)
 {
 	return NULL;
@@ -125,4 +107,3 @@ static inline int mvebu_mbus_get_dram_win_info(phys_addr_t phyaddr, u8 *target,
 #endif /* CONFIG_MVEBU_MBUS */
 
 #endif /* __LINUX_MBUS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

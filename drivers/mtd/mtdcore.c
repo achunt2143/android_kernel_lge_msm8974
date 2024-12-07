@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core registration and callback routines for MTD
  * drivers and users.
  *
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
  * Copyright © 2006      Red Hat UK Limited 
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -39,16 +18,11 @@
 #include <linux/err.h>
 #include <linux/ioctl.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/proc_fs.h>
 #include <linux/idr.h>
 #include <linux/backing-dev.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-=======
 #include <linux/random.h>
 #include <linux/slab.h>
 #include <linux/reboot.h>
@@ -57,51 +31,11 @@
 #include <linux/nvmem-provider.h>
 #include <linux/root_dev.h>
 #include <linux/error-injection.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 
 #include "mtdcore.h"
-<<<<<<< HEAD
-/*
- * backing device capabilities for non-mappable devices (such as NAND flash)
- * - permits private mappings, copies are taken of the data
- */
-static struct backing_dev_info mtd_bdi_unmappable = {
-	.capabilities	= BDI_CAP_MAP_COPY,
-};
-
-/*
- * backing device capabilities for R/O mappable devices (such as ROM)
- * - permits private mappings, copies are taken of the data
- * - permits non-writable shared mappings
- */
-static struct backing_dev_info mtd_bdi_ro_mappable = {
-	.capabilities	= (BDI_CAP_MAP_COPY | BDI_CAP_MAP_DIRECT |
-			   BDI_CAP_EXEC_MAP | BDI_CAP_READ_MAP),
-};
-
-/*
- * backing device capabilities for writable mappable devices (such as RAM)
- * - permits private mappings, copies are taken of the data
- * - permits non-writable shared mappings
- */
-static struct backing_dev_info mtd_bdi_rw_mappable = {
-	.capabilities	= (BDI_CAP_MAP_COPY | BDI_CAP_MAP_DIRECT |
-			   BDI_CAP_EXEC_MAP | BDI_CAP_READ_MAP |
-			   BDI_CAP_WRITE_MAP),
-};
-
-static int mtd_cls_suspend(struct device *dev, pm_message_t state);
-static int mtd_cls_resume(struct device *dev);
-
-static struct class mtd_class = {
-	.name = "mtd",
-	.owner = THIS_MODULE,
-	.suspend = mtd_cls_suspend,
-	.resume = mtd_cls_resume,
-=======
 
 struct backing_dev_info *mtd_bdi;
 
@@ -132,7 +66,6 @@ static SIMPLE_DEV_PM_OPS(mtd_cls_pm_ops, mtd_cls_suspend, mtd_cls_resume);
 static struct class mtd_class = {
 	.name = "mtd",
 	.pm = MTD_CLS_PM_OPS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_IDR(mtd_idr);
@@ -151,46 +84,13 @@ EXPORT_SYMBOL_GPL(__mtd_next_device);
 static LIST_HEAD(mtd_notifiers);
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_MTD_CHAR) || defined(CONFIG_MTD_CHAR_MODULE)
 #define MTD_DEVT(index) MKDEV(MTD_CHAR_MAJOR, (index)*2)
-#else
-#define MTD_DEVT(index) 0
-#endif
-=======
-#define MTD_DEVT(index) MKDEV(MTD_CHAR_MAJOR, (index)*2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* REVISIT once MTD uses the driver model better, whoever allocates
  * the mtd_info will probably want to use the release() hook...
  */
 static void mtd_release(struct device *dev)
 {
-<<<<<<< HEAD
-	struct mtd_info __maybe_unused *mtd = dev_get_drvdata(dev);
-	dev_t index = MTD_DEVT(mtd->index);
-
-	/* remove /dev/mtdXro node if needed */
-	if (index)
-		device_destroy(&mtd_class, index + 1);
-}
-
-static int mtd_cls_suspend(struct device *dev, pm_message_t state)
-{
-	struct mtd_info *mtd = dev_get_drvdata(dev);
-
-	return mtd ? mtd_suspend(mtd) : 0;
-}
-
-static int mtd_cls_resume(struct device *dev)
-{
-	struct mtd_info *mtd = dev_get_drvdata(dev);
-
-	if (mtd)
-		mtd_resume(mtd);
-	return 0;
-}
-=======
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 	dev_t index = MTD_DEVT(mtd->index);
 
@@ -232,7 +132,6 @@ static DEVICE_ATTR(name, 0444, mtd_##name##_show, NULL)
 
 #define MTD_DEVICE_ATTR_RW(name) \
 static DEVICE_ATTR(name, 0644, mtd_##name##_show, mtd_##name##_store)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_type_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -262,90 +161,52 @@ static ssize_t mtd_type_show(struct device *dev,
 	case MTD_UBIVOLUME:
 		type = "ubi";
 		break;
-<<<<<<< HEAD
-=======
 	case MTD_MLCNANDFLASH:
 		type = "mlc-nand";
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		type = "unknown";
 	}
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n", type);
-}
-static DEVICE_ATTR(type, S_IRUGO, mtd_type_show, NULL);
-=======
 	return sysfs_emit(buf, "%s\n", type);
 }
 MTD_DEVICE_ATTR_RO(type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_flags_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%lx\n", (unsigned long)mtd->flags);
-
-}
-static DEVICE_ATTR(flags, S_IRUGO, mtd_flags_show, NULL);
-=======
 	return sysfs_emit(buf, "0x%lx\n", (unsigned long)mtd->flags);
 }
 MTD_DEVICE_ATTR_RO(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_size_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%llu\n",
-		(unsigned long long)mtd->size);
-
-}
-static DEVICE_ATTR(size, S_IRUGO, mtd_size_show, NULL);
-=======
 	return sysfs_emit(buf, "%llu\n", (unsigned long long)mtd->size);
 }
 MTD_DEVICE_ATTR_RO(size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_erasesize_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%lu\n", (unsigned long)mtd->erasesize);
-
-}
-static DEVICE_ATTR(erasesize, S_IRUGO, mtd_erasesize_show, NULL);
-=======
 	return sysfs_emit(buf, "%lu\n", (unsigned long)mtd->erasesize);
 }
 MTD_DEVICE_ATTR_RO(erasesize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_writesize_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%lu\n", (unsigned long)mtd->writesize);
-
-}
-static DEVICE_ATTR(writesize, S_IRUGO, mtd_writesize_show, NULL);
-=======
 	return sysfs_emit(buf, "%lu\n", (unsigned long)mtd->writesize);
 }
 MTD_DEVICE_ATTR_RO(writesize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_subpagesize_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -353,28 +214,15 @@ static ssize_t mtd_subpagesize_show(struct device *dev,
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 	unsigned int subpagesize = mtd->writesize >> mtd->subpage_sft;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", subpagesize);
-
-}
-static DEVICE_ATTR(subpagesize, S_IRUGO, mtd_subpagesize_show, NULL);
-=======
 	return sysfs_emit(buf, "%u\n", subpagesize);
 }
 MTD_DEVICE_ATTR_RO(subpagesize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_oobsize_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%lu\n", (unsigned long)mtd->oobsize);
-
-}
-static DEVICE_ATTR(oobsize, S_IRUGO, mtd_oobsize_show, NULL);
-=======
 	return sysfs_emit(buf, "%lu\n", (unsigned long)mtd->oobsize);
 }
 MTD_DEVICE_ATTR_RO(oobsize);
@@ -387,36 +235,21 @@ static ssize_t mtd_oobavail_show(struct device *dev,
 	return sysfs_emit(buf, "%u\n", mtd->oobavail);
 }
 MTD_DEVICE_ATTR_RO(oobavail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_numeraseregions_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", mtd->numeraseregions);
-
-}
-static DEVICE_ATTR(numeraseregions, S_IRUGO, mtd_numeraseregions_show,
-	NULL);
-=======
 	return sysfs_emit(buf, "%u\n", mtd->numeraseregions);
 }
 MTD_DEVICE_ATTR_RO(numeraseregions);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mtd_name_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct mtd_info *mtd = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n", mtd->name);
-
-}
-static DEVICE_ATTR(name, S_IRUGO, mtd_name_show, NULL);
-=======
 	return sysfs_emit(buf, "%s\n", mtd->name);
 }
 MTD_DEVICE_ATTR_RO(name);
@@ -505,7 +338,6 @@ static ssize_t mtd_bbt_blocks_show(struct device *dev,
 	return sysfs_emit(buf, "%u\n", ecc_stats->bbtblocks);
 }
 MTD_DEVICE_ATTR_RO(bbt_blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *mtd_attrs[] = {
 	&dev_attr_type.attr,
@@ -515,23 +347,6 @@ static struct attribute *mtd_attrs[] = {
 	&dev_attr_writesize.attr,
 	&dev_attr_subpagesize.attr,
 	&dev_attr_oobsize.attr,
-<<<<<<< HEAD
-	&dev_attr_numeraseregions.attr,
-	&dev_attr_name.attr,
-	NULL,
-};
-
-static struct attribute_group mtd_group = {
-	.attrs		= mtd_attrs,
-};
-
-static const struct attribute_group *mtd_groups[] = {
-	&mtd_group,
-	NULL,
-};
-
-static struct device_type mtd_devtype = {
-=======
 	&dev_attr_oobavail.attr,
 	&dev_attr_numeraseregions.attr,
 	&dev_attr_name.attr,
@@ -547,14 +362,11 @@ static struct device_type mtd_devtype = {
 ATTRIBUTE_GROUPS(mtd);
 
 static const struct device_type mtd_devtype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "mtd",
 	.groups		= mtd_groups,
 	.release	= mtd_release,
 };
 
-<<<<<<< HEAD
-=======
 static bool mtd_expert_analysis_mode;
 
 #ifdef CONFIG_DEBUG_FS
@@ -819,56 +631,17 @@ exit_parent:
 	of_node_put(parent_dn);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	add_mtd_device - register an MTD device
  *	@mtd: pointer to new MTD device info structure
  *
  *	Add a device to the list of MTD devices present in the system, and
  *	notify each currently active MTD 'user' of its arrival. Returns
-<<<<<<< HEAD
- *	zero on success or 1 on failure, which currently will only happen
- *	if there is insufficient memory or a sysfs error.
-=======
  *	zero on success or non-zero on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 int add_mtd_device(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	struct mtd_notifier *not;
-	int i, error;
-
-	if (!mtd->backing_dev_info) {
-		switch (mtd->type) {
-		case MTD_RAM:
-			mtd->backing_dev_info = &mtd_bdi_rw_mappable;
-			break;
-		case MTD_ROM:
-			mtd->backing_dev_info = &mtd_bdi_ro_mappable;
-			break;
-		default:
-			mtd->backing_dev_info = &mtd_bdi_unmappable;
-			break;
-		}
-	}
-
-	BUG_ON(mtd->writesize == 0);
-	mutex_lock(&mtd_table_mutex);
-
-	do {
-		if (!idr_pre_get(&mtd_idr, GFP_KERNEL))
-			goto fail_locked;
-		error = idr_get_new(&mtd_idr, mtd, &i);
-	} while (error == -EAGAIN);
-
-	if (error)
-		goto fail_locked;
-
-	mtd->index = i;
-	mtd->usecount = 0;
-=======
 	struct device_node *np = mtd_get_of_node(mtd);
 	struct mtd_info *master = mtd_get_master(mtd);
 	struct mtd_notifier *not;
@@ -937,7 +710,6 @@ int add_mtd_device(struct mtd_info *mtd)
 		mtd->size = (u64)mtd_div_by_eb(mtd->size, master) *
 			    mtd->erasesize;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_power_of_2(mtd->erasesize))
 		mtd->erasesize_shift = ffs(mtd->erasesize) - 1;
@@ -959,34 +731,18 @@ int add_mtd_device(struct mtd_info *mtd)
 			printk(KERN_WARNING
 			       "%s: unlock failed, writes may not work\n",
 			       mtd->name);
-<<<<<<< HEAD
-	}
-
-	/* Caller should have set dev.parent to match the
-	 * physical device.
-=======
 		/* Ignore unlock failures? */
 		error = 0;
 	}
 
 	/* Caller should have set dev.parent to match the
 	 * physical device, if appropriate.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	mtd->dev.type = &mtd_devtype;
 	mtd->dev.class = &mtd_class;
 	mtd->dev.devt = MTD_DEVT(i);
 	dev_set_name(&mtd->dev, "mtd%d", i);
 	dev_set_drvdata(&mtd->dev, mtd);
-<<<<<<< HEAD
-	if (device_register(&mtd->dev) != 0)
-		goto fail_added;
-
-	if (MTD_DEVT(i))
-		device_create(&mtd_class, mtd->dev.parent,
-			      MTD_DEVT(i) + 1,
-			      NULL, "mtd%dro", i);
-=======
 	mtd_check_of_node(mtd);
 	of_node_get(mtd_get_of_node(mtd));
 	error = device_register(&mtd->dev);
@@ -1004,7 +760,6 @@ int add_mtd_device(struct mtd_info *mtd)
 
 	device_create(&mtd_class, mtd->dev.parent, MTD_DEVT(i) + 1, NULL,
 		      "mtd%dro", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("mtd: Giving out device %d to %s\n", i, mtd->name);
 	/* No need to get a refcount on the module containing
@@ -1013,8 +768,6 @@ int add_mtd_device(struct mtd_info *mtd)
 		not->add(mtd);
 
 	mutex_unlock(&mtd_table_mutex);
-<<<<<<< HEAD
-=======
 
 	if (of_property_read_bool(mtd_get_of_node(mtd), "linux,rootfs")) {
 		if (IS_BUILTIN(CONFIG_MTD)) {
@@ -1026,7 +779,6 @@ int add_mtd_device(struct mtd_info *mtd)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We _know_ we aren't being removed, because
 	   our caller is still holding us here. So none
 	   of this try_ nonsense, and no bitching about it
@@ -1034,13 +786,6 @@ int add_mtd_device(struct mtd_info *mtd)
 	__module_get(THIS_MODULE);
 	return 0;
 
-<<<<<<< HEAD
-fail_added:
-	idr_remove(&mtd_idr, i);
-fail_locked:
-	mutex_unlock(&mtd_table_mutex);
-	return 1;
-=======
 fail_nvmem_add:
 	device_unregister(&mtd->dev);
 fail_added:
@@ -1049,7 +794,6 @@ fail_added:
 fail_locked:
 	mutex_unlock(&mtd_table_mutex);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1079,31 +823,14 @@ int del_mtd_device(struct mtd_info *mtd)
 	list_for_each_entry(not, &mtd_notifiers, list)
 		not->remove(mtd);
 
-<<<<<<< HEAD
-	if (mtd->usecount) {
-		printk(KERN_NOTICE "Removing MTD device #%d (%s) with use count %d\n",
-		       mtd->index, mtd->name, mtd->usecount);
-		ret = -EBUSY;
-	} else {
-		device_unregister(&mtd->dev);
-
-		idr_remove(&mtd_idr, mtd->index);
-
-		module_put(THIS_MODULE);
-		ret = 0;
-	}
-=======
 	kref_put(&mtd->refcnt, mtd_device_release);
 	ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_error:
 	mutex_unlock(&mtd_table_mutex);
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Set a few defaults based on the parent devices, if not provided by the
  * driver
@@ -1288,7 +1015,6 @@ err:
 	return dev_err_probe(dev, err, "Failed to register OTP NVMEM device\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * mtd_device_parse_register - parse partitions and register an MTD device.
  *
@@ -1305,61 +1031,23 @@ err:
  * 'parse_mtd_partitions()') and MTD device and partitions registering. It
  * basically follows the most common pattern found in many MTD drivers:
  *
-<<<<<<< HEAD
- * * It first tries to probe partitions on MTD device @mtd using parsers
-=======
  * * If the MTD_PARTITIONED_MASTER option is set, then the device as a whole is
  *   registered first.
  * * Then It tries to probe partitions on MTD device @mtd using parsers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   specified in @types (if @types is %NULL, then the default list of parsers
  *   is used, see 'parse_mtd_partitions()' for more information). If none are
  *   found this functions tries to fallback to information specified in
  *   @parts/@nr_parts.
-<<<<<<< HEAD
- * * If any partitioning info was found, this function registers the found
- *   partitions.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * * If no partitions were found this function just registers the MTD device
  *   @mtd and exits.
  *
  * Returns zero in case of success and a negative error code in case of failure.
  */
-<<<<<<< HEAD
-int mtd_device_parse_register(struct mtd_info *mtd, const char **types,
-=======
 int mtd_device_parse_register(struct mtd_info *mtd, const char * const *types,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct mtd_part_parser_data *parser_data,
 			      const struct mtd_partition *parts,
 			      int nr_parts)
 {
-<<<<<<< HEAD
-	int err;
-	struct mtd_partition *real_parts;
-
-	err = parse_mtd_partitions(mtd, types, &real_parts, parser_data);
-	if (err <= 0 && nr_parts && parts) {
-		real_parts = kmemdup(parts, sizeof(*parts) * nr_parts,
-				     GFP_KERNEL);
-		if (!real_parts)
-			err = -ENOMEM;
-		else
-			err = nr_parts;
-	}
-
-	if (err > 0) {
-		err = add_mtd_partitions(mtd, real_parts, err);
-		kfree(real_parts);
-	} else if (err == 0) {
-		err = add_mtd_device(mtd);
-		if (err == 1)
-			err = -ENODEV;
-	}
-
-	return err;
-=======
 	int ret;
 
 	mtd_set_dev_defaults(mtd);
@@ -1416,7 +1104,6 @@ out:
 		del_mtd_device(mtd);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_device_parse_register);
 
@@ -1430,8 +1117,6 @@ int mtd_device_unregister(struct mtd_info *master)
 {
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (master->_reboot) {
 		unregister_reboot_notifier(&master->reboot_notifier);
 		memset(&master->reboot_notifier, 0, sizeof(master->reboot_notifier));
@@ -1440,7 +1125,6 @@ int mtd_device_unregister(struct mtd_info *master)
 	nvmem_unregister(master->otp_user_nvmem);
 	nvmem_unregister(master->otp_factory_nvmem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = del_mtd_partitions(master);
 	if (err)
 		return err;
@@ -1551,22 +1235,6 @@ EXPORT_SYMBOL_GPL(get_mtd_device);
 
 int __get_mtd_device(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	int err;
-
-	if (!try_module_get(mtd->owner))
-		return -ENODEV;
-
-	if (mtd->_get_device) {
-		err = mtd->_get_device(mtd);
-
-		if (err) {
-			module_put(mtd->owner);
-			return err;
-		}
-	}
-	mtd->usecount++;
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 	int err;
 
@@ -1591,14 +1259,11 @@ int __get_mtd_device(struct mtd_info *mtd)
 	if (IS_ENABLED(CONFIG_MTD_PARTITIONED_MASTER))
 		kref_get(&master->refcnt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(__get_mtd_device);
 
 /**
-<<<<<<< HEAD
-=======
  * of_get_mtd_device_by_node - obtain an MTD device associated with a given node
  *
  * @np: device tree node
@@ -1627,7 +1292,6 @@ struct mtd_info *of_get_mtd_device_by_node(struct device_node *np)
 EXPORT_SYMBOL_GPL(of_get_mtd_device_by_node);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	get_mtd_device_nm - obtain a validated handle for an MTD device by
  *	device name
  *	@name: MTD device name to open
@@ -1676,15 +1340,6 @@ EXPORT_SYMBOL_GPL(put_mtd_device);
 
 void __put_mtd_device(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	--mtd->usecount;
-	BUG_ON(mtd->usecount < 0);
-
-	if (mtd->_put_device)
-		mtd->_put_device(mtd);
-
-	module_put(mtd->owner);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	while (mtd) {
@@ -1704,34 +1359,10 @@ void __put_mtd_device(struct mtd_info *mtd)
 	/* must be the last as master can be freed in the _put_device */
 	if (master->_put_device)
 		master->_put_device(master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__put_mtd_device);
 
 /*
-<<<<<<< HEAD
- * Erase is an asynchronous operation.  Device drivers are supposed
- * to call instr->callback() whenever the operation completes, even
- * if it completes with a failure.
- * Callers are supposed to pass a callback function and wait for it
- * to be called before writing to the block.
- */
-int mtd_erase(struct mtd_info *mtd, struct erase_info *instr)
-{
-	if (instr->addr > mtd->size || instr->len > mtd->size - instr->addr)
-		return -EINVAL;
-	if (!(mtd->flags & MTD_WRITEABLE))
-		return -EROFS;
-	instr->fail_addr = MTD_FAIL_ADDR_UNKNOWN;
-	if (!instr->len) {
-		instr->state = MTD_ERASE_DONE;
-		mtd_erase_callback(instr);
-		return 0;
-	}
-	return mtd->_erase(mtd, instr);
-}
-EXPORT_SYMBOL_GPL(mtd_erase);
-=======
  * Erase is an synchronous operation. Device drivers are epected to return a
  * negative error code if the operation failed and update instr->fail_addr
  * to point the portion that was not properly erased.
@@ -1784,7 +1415,6 @@ int mtd_erase(struct mtd_info *mtd, struct erase_info *instr)
 }
 EXPORT_SYMBOL_GPL(mtd_erase);
 ALLOW_ERROR_INJECTION(mtd_erase, ERRNO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This stuff for eXecute-In-Place. phys is optional and may be set to NULL.
@@ -1792,24 +1422,12 @@ ALLOW_ERROR_INJECTION(mtd_erase, ERRNO);
 int mtd_point(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen,
 	      void **virt, resource_size_t *phys)
 {
-<<<<<<< HEAD
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*retlen = 0;
 	*virt = NULL;
 	if (phys)
 		*phys = 0;
-<<<<<<< HEAD
-	if (!mtd->_point)
-		return -EOPNOTSUPP;
-	if (from < 0 || from > mtd->size || len > mtd->size - from)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_point(mtd, from, len, retlen, virt, phys);
-=======
 	if (!master->_point)
 		return -EOPNOTSUPP;
 	if (from < 0 || from >= mtd->size || len > mtd->size - from)
@@ -1819,22 +1437,12 @@ int mtd_point(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen,
 
 	from = mtd_get_master_ofs(mtd, from);
 	return master->_point(master, from, len, retlen, virt, phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_point);
 
 /* We probably shouldn't allow XIP if the unpoint isn't a NULL */
 int mtd_unpoint(struct mtd_info *mtd, loff_t from, size_t len)
 {
-<<<<<<< HEAD
-	if (!mtd->_point)
-		return -EOPNOTSUPP;
-	if (from < 0 || from > mtd->size || len > mtd->size - from)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_unpoint(mtd, from, len);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (!master->_unpoint)
@@ -1844,7 +1452,6 @@ int mtd_unpoint(struct mtd_info *mtd, loff_t from, size_t len)
 	if (!len)
 		return 0;
 	return master->_unpoint(master, mtd_get_master_ofs(mtd, from), len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_unpoint);
 
@@ -1856,27 +1463,6 @@ EXPORT_SYMBOL_GPL(mtd_unpoint);
 unsigned long mtd_get_unmapped_area(struct mtd_info *mtd, unsigned long len,
 				    unsigned long offset, unsigned long flags)
 {
-<<<<<<< HEAD
-	if (!mtd->_get_unmapped_area)
-		return -EOPNOTSUPP;
-	if (offset > mtd->size || len > mtd->size - offset)
-		return -EINVAL;
-	return mtd->_get_unmapped_area(mtd, len, offset, flags);
-}
-EXPORT_SYMBOL_GPL(mtd_get_unmapped_area);
-
-int mtd_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen,
-	     u_char *buf)
-{
-	*retlen = 0;
-	if (from < 0 || from > mtd->size || len > mtd->size - from)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_read(mtd, from, len, retlen, buf);
-}
-EXPORT_SYMBOL_GPL(mtd_read);
-=======
 	size_t retlen;
 	void *virt;
 	int ret;
@@ -1929,23 +1515,10 @@ int mtd_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen,
 }
 EXPORT_SYMBOL_GPL(mtd_read);
 ALLOW_ERROR_INJECTION(mtd_read, ERRNO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int mtd_write(struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen,
 	      const u_char *buf)
 {
-<<<<<<< HEAD
-	*retlen = 0;
-	if (to < 0 || to > mtd->size || len > mtd->size - to)
-		return -EINVAL;
-	if (!mtd->_write || !(mtd->flags & MTD_WRITEABLE))
-		return -EROFS;
-	if (!len)
-		return 0;
-	return mtd->_write(mtd, to, len, retlen, buf);
-}
-EXPORT_SYMBOL_GPL(mtd_write);
-=======
 	struct mtd_oob_ops ops = {
 		.len = len,
 		.datbuf = (u8 *)buf,
@@ -1959,7 +1532,6 @@ EXPORT_SYMBOL_GPL(mtd_write);
 }
 EXPORT_SYMBOL_GPL(mtd_write);
 ALLOW_ERROR_INJECTION(mtd_write, ERRNO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In blackbox flight recorder like scenarios we want to make successful writes
@@ -1971,30 +1543,17 @@ ALLOW_ERROR_INJECTION(mtd_write, ERRNO);
 int mtd_panic_write(struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen,
 		    const u_char *buf)
 {
-<<<<<<< HEAD
-	*retlen = 0;
-	if (!mtd->_panic_write)
-		return -EOPNOTSUPP;
-	if (to < 0 || to > mtd->size || len > mtd->size - to)
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	*retlen = 0;
 	if (!master->_panic_write)
 		return -EOPNOTSUPP;
 	if (to < 0 || to >= mtd->size || len > mtd->size - to)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (!(mtd->flags & MTD_WRITEABLE))
 		return -EROFS;
 	if (!len)
 		return 0;
-<<<<<<< HEAD
-	return mtd->_panic_write(mtd, to, len, retlen, buf);
-}
-EXPORT_SYMBOL_GPL(mtd_panic_write);
-
-=======
 	if (!master->oops_panic_write)
 		master->oops_panic_write = true;
 
@@ -2567,22 +2126,11 @@ int mtd_ooblayout_count_eccbytes(struct mtd_info *mtd)
 }
 EXPORT_SYMBOL_GPL(mtd_ooblayout_count_eccbytes);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Method to access the protection register area, present in some flash
  * devices. The user data is one time programmable but the factory data is read
  * only.
  */
-<<<<<<< HEAD
-int mtd_get_fact_prot_info(struct mtd_info *mtd, struct otp_info *buf,
-			   size_t len)
-{
-	if (!mtd->_get_fact_prot_info)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_get_fact_prot_info(mtd, buf, len);
-=======
 int mtd_get_fact_prot_info(struct mtd_info *mtd, size_t len, size_t *retlen,
 			   struct otp_info *buf)
 {
@@ -2593,32 +2141,12 @@ int mtd_get_fact_prot_info(struct mtd_info *mtd, size_t len, size_t *retlen,
 	if (!len)
 		return 0;
 	return master->_get_fact_prot_info(master, len, retlen, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_get_fact_prot_info);
 
 int mtd_read_fact_prot_reg(struct mtd_info *mtd, loff_t from, size_t len,
 			   size_t *retlen, u_char *buf)
 {
-<<<<<<< HEAD
-	*retlen = 0;
-	if (!mtd->_read_fact_prot_reg)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_read_fact_prot_reg(mtd, from, len, retlen, buf);
-}
-EXPORT_SYMBOL_GPL(mtd_read_fact_prot_reg);
-
-int mtd_get_user_prot_info(struct mtd_info *mtd, struct otp_info *buf,
-			   size_t len)
-{
-	if (!mtd->_get_user_prot_info)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_get_user_prot_info(mtd, buf, len);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	*retlen = 0;
@@ -2640,21 +2168,12 @@ int mtd_get_user_prot_info(struct mtd_info *mtd, size_t len, size_t *retlen,
 	if (!len)
 		return 0;
 	return master->_get_user_prot_info(master, len, retlen, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_get_user_prot_info);
 
 int mtd_read_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len,
 			   size_t *retlen, u_char *buf)
 {
-<<<<<<< HEAD
-	*retlen = 0;
-	if (!mtd->_read_user_prot_reg)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_read_user_prot_reg(mtd, from, len, retlen, buf);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	*retlen = 0;
@@ -2663,21 +2182,10 @@ int mtd_read_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len,
 	if (!len)
 		return 0;
 	return master->_read_user_prot_reg(master, from, len, retlen, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_read_user_prot_reg);
 
 int mtd_write_user_prot_reg(struct mtd_info *mtd, loff_t to, size_t len,
-<<<<<<< HEAD
-			    size_t *retlen, u_char *buf)
-{
-	*retlen = 0;
-	if (!mtd->_write_user_prot_reg)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_write_user_prot_reg(mtd, to, len, retlen, buf);
-=======
 			    size_t *retlen, const u_char *buf)
 {
 	struct mtd_info *master = mtd_get_master(mtd);
@@ -2697,32 +2205,11 @@ int mtd_write_user_prot_reg(struct mtd_info *mtd, loff_t to, size_t len,
 	 * must return -ENOSPC.
 	 */
 	return (*retlen) ? 0 : -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_write_user_prot_reg);
 
 int mtd_lock_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len)
 {
-<<<<<<< HEAD
-	if (!mtd->_lock_user_prot_reg)
-		return -EOPNOTSUPP;
-	if (!len)
-		return 0;
-	return mtd->_lock_user_prot_reg(mtd, from, len);
-}
-EXPORT_SYMBOL_GPL(mtd_lock_user_prot_reg);
-
-/* Chip-supported device locking */
-int mtd_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
-{
-	if (!mtd->_lock)
-		return -EOPNOTSUPP;
-	if (ofs < 0 || ofs > mtd->size || len > mtd->size - ofs)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_lock(mtd, ofs, len);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (!master->_lock_user_prot_reg)
@@ -2763,21 +2250,11 @@ int mtd_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	}
 
 	return master->_lock(master, mtd_get_master_ofs(mtd, ofs), len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_lock);
 
 int mtd_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 {
-<<<<<<< HEAD
-	if (!mtd->_unlock)
-		return -EOPNOTSUPP;
-	if (ofs < 0 || ofs > mtd->size || len > mtd->size - ofs)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_unlock(mtd, ofs, len);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (!master->_unlock)
@@ -2793,31 +2270,11 @@ int mtd_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	}
 
 	return master->_unlock(master, mtd_get_master_ofs(mtd, ofs), len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_unlock);
 
 int mtd_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 {
-<<<<<<< HEAD
-	if (!mtd->_is_locked)
-		return -EOPNOTSUPP;
-	if (ofs < 0 || ofs > mtd->size || len > mtd->size - ofs)
-		return -EINVAL;
-	if (!len)
-		return 0;
-	return mtd->_is_locked(mtd, ofs, len);
-}
-EXPORT_SYMBOL_GPL(mtd_is_locked);
-
-int mtd_block_isbad(struct mtd_info *mtd, loff_t ofs)
-{
-	if (!mtd->_block_isbad)
-		return 0;
-	if (ofs < 0 || ofs > mtd->size)
-		return -EINVAL;
-	return mtd->_block_isbad(mtd, ofs);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (!master->_is_locked)
@@ -2865,23 +2322,11 @@ int mtd_block_isbad(struct mtd_info *mtd, loff_t ofs)
 		ofs = (loff_t)mtd_div_by_eb(ofs, mtd) * master->erasesize;
 
 	return master->_block_isbad(master, mtd_get_master_ofs(mtd, ofs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_block_isbad);
 
 int mtd_block_markbad(struct mtd_info *mtd, loff_t ofs)
 {
-<<<<<<< HEAD
-	if (!mtd->_block_markbad)
-		return -EOPNOTSUPP;
-	if (ofs < 0 || ofs > mtd->size)
-		return -EINVAL;
-	if (!(mtd->flags & MTD_WRITEABLE))
-		return -EROFS;
-	return mtd->_block_markbad(mtd, ofs);
-}
-EXPORT_SYMBOL_GPL(mtd_block_markbad);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 	int ret;
 
@@ -2908,7 +2353,6 @@ EXPORT_SYMBOL_GPL(mtd_block_markbad);
 }
 EXPORT_SYMBOL_GPL(mtd_block_markbad);
 ALLOW_ERROR_INJECTION(mtd_block_markbad, ERRNO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * default_mtd_writev - the default writev method
@@ -2956,14 +2400,6 @@ static int default_mtd_writev(struct mtd_info *mtd, const struct kvec *vecs,
 int mtd_writev(struct mtd_info *mtd, const struct kvec *vecs,
 	       unsigned long count, loff_t to, size_t *retlen)
 {
-<<<<<<< HEAD
-	*retlen = 0;
-	if (!(mtd->flags & MTD_WRITEABLE))
-		return -EROFS;
-	if (!mtd->_writev)
-		return default_mtd_writev(mtd, vecs, count, to, retlen);
-	return mtd->_writev(mtd, vecs, count, to, retlen);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	*retlen = 0;
@@ -2975,7 +2411,6 @@ int mtd_writev(struct mtd_info *mtd, const struct kvec *vecs,
 
 	return master->_writev(master, vecs, count,
 			       mtd_get_master_ofs(mtd, to), retlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mtd_writev);
 
@@ -3005,12 +2440,7 @@ EXPORT_SYMBOL_GPL(mtd_writev);
  */
 void *mtd_kmalloc_up_to(const struct mtd_info *mtd, size_t *size)
 {
-<<<<<<< HEAD
-	gfp_t flags = __GFP_NOWARN | __GFP_WAIT |
-		       __GFP_NORETRY | __GFP_NO_KSWAPD;
-=======
 	gfp_t flags = __GFP_NOWARN | __GFP_DIRECT_RECLAIM | __GFP_NORETRY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t min_alloc = max_t(size_t, mtd->writesize, PAGE_SIZE);
 	void *kbuf;
 
@@ -3038,11 +2468,6 @@ EXPORT_SYMBOL_GPL(mtd_kmalloc_up_to);
 /*====================================================================*/
 /* Support for /proc/mtd */
 
-<<<<<<< HEAD
-static struct proc_dir_entry *proc_mtd;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mtd_proc_show(struct seq_file *m, void *v)
 {
 	struct mtd_info *mtd;
@@ -3057,42 +2482,11 @@ static int mtd_proc_show(struct seq_file *m, void *v)
 	mutex_unlock(&mtd_table_mutex);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int mtd_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, mtd_proc_show, NULL);
-}
-
-static const struct file_operations mtd_proc_ops = {
-	.open		= mtd_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */
 
 /*====================================================================*/
 /* Init code */
 
-<<<<<<< HEAD
-static int __init mtd_bdi_init(struct backing_dev_info *bdi, const char *name)
-{
-	int ret;
-
-	ret = bdi_init(bdi);
-	if (!ret)
-		ret = bdi_register(bdi, NULL, name);
-
-	if (ret)
-		bdi_destroy(bdi);
-
-	return ret;
-}
-
-=======
 static struct backing_dev_info * __init mtd_bdi_init(const char *name)
 {
 	struct backing_dev_info *bdi;
@@ -3117,7 +2511,6 @@ static struct backing_dev_info * __init mtd_bdi_init(const char *name)
 
 static struct proc_dir_entry *proc_mtd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_mtd(void)
 {
 	int ret;
@@ -3126,30 +2519,6 @@ static int __init init_mtd(void)
 	if (ret)
 		goto err_reg;
 
-<<<<<<< HEAD
-	ret = mtd_bdi_init(&mtd_bdi_unmappable, "mtd-unmap");
-	if (ret)
-		goto err_bdi1;
-
-	ret = mtd_bdi_init(&mtd_bdi_ro_mappable, "mtd-romap");
-	if (ret)
-		goto err_bdi2;
-
-	ret = mtd_bdi_init(&mtd_bdi_rw_mappable, "mtd-rwmap");
-	if (ret)
-		goto err_bdi3;
-
-#ifdef CONFIG_PROC_FS
-	proc_mtd = proc_create("mtd", 0, NULL, &mtd_proc_ops);
-#endif /* CONFIG_PROC_FS */
-	return 0;
-
-err_bdi3:
-	bdi_destroy(&mtd_bdi_ro_mappable);
-err_bdi2:
-	bdi_destroy(&mtd_bdi_unmappable);
-err_bdi1:
-=======
 	mtd_bdi = mtd_bdi_init("mtd");
 	if (IS_ERR(mtd_bdi)) {
 		ret = PTR_ERR(mtd_bdi);
@@ -3174,7 +2543,6 @@ out_procfs:
 	bdi_unregister(mtd_bdi);
 	bdi_put(mtd_bdi);
 err_bdi:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	class_unregister(&mtd_class);
 err_reg:
 	pr_err("Error registering mtd class or bdi: %d\n", ret);
@@ -3183,16 +2551,6 @@ err_reg:
 
 static void __exit cleanup_mtd(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-	if (proc_mtd)
-		remove_proc_entry( "mtd", NULL);
-#endif /* CONFIG_PROC_FS */
-	class_unregister(&mtd_class);
-	bdi_destroy(&mtd_bdi_unmappable);
-	bdi_destroy(&mtd_bdi_ro_mappable);
-	bdi_destroy(&mtd_bdi_rw_mappable);
-=======
 	debugfs_remove_recursive(dfs_dir_mtd);
 	cleanup_mtdchar();
 	if (proc_mtd)
@@ -3201,7 +2559,6 @@ static void __exit cleanup_mtd(void)
 	bdi_unregister(mtd_bdi);
 	bdi_put(mtd_bdi);
 	idr_destroy(&mtd_idr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(init_mtd);

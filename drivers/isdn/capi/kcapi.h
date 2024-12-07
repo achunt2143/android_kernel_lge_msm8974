@@ -30,30 +30,11 @@ enum {
 	CAPI_CTR_RUNNING  = 3,
 };
 
-<<<<<<< HEAD
-extern struct list_head capi_drivers;
-extern struct mutex capi_drivers_lock;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct capi_ctr *capi_controller[CAPI_MAXCONTR];
 extern struct mutex capi_controller_lock;
 
 extern struct capi20_appl *capi_applications[CAPI_MAXAPPL];
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-
-void kcapi_proc_init(void);
-void kcapi_proc_exit(void);
-
-#else
-
-static inline void kcapi_proc_init(void) { };
-static inline void kcapi_proc_exit(void) { };
-
-#endif
-=======
 void kcapi_proc_init(void);
 void kcapi_proc_exit(void);
 
@@ -199,4 +180,3 @@ int cdebug_init(void);
 void cdebug_exit(void);
 
 _cdebbuf *capi_message2str(__u8 *msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

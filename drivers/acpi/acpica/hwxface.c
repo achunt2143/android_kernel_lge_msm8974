@@ -1,61 +1,14 @@
-<<<<<<< HEAD
-
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: hwxface - Public ACPICA hardware interfaces
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-#include <linux/export.h>
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
 #define EXPORT_ACPI_INTERFACES
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -94,16 +47,6 @@ acpi_status acpi_reset(void)
 
 	if (reset_reg->space_id == ACPI_ADR_SPACE_SYSTEM_IO) {
 		/*
-<<<<<<< HEAD
-		 * For I/O space, write directly to the OSL. This
-		 * bypasses the port validation mechanism, which may
-		 * block a valid write to the reset register. Spec
-		 * section 4.7.3.6 requires register width to be 8.
-		 */
-		status =
-		    acpi_os_write_port((acpi_io_address) reset_reg->address,
-				       acpi_gbl_FADT.reset_value, 8);
-=======
 		 * For I/O space, write directly to the OSL. This bypasses the port
 		 * validation mechanism, which may block a valid write to the reset
 		 * register.
@@ -117,7 +60,6 @@ acpi_status acpi_reset(void)
 		status = acpi_os_write_port((acpi_io_address)reset_reg->address,
 					    acpi_gbl_FADT.reset_value,
 					    ACPI_RESET_REGISTER_WIDTH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Write the reset value to the reset register */
 
@@ -133,13 +75,8 @@ ACPI_EXPORT_SYMBOL(acpi_reset)
  *
  * FUNCTION:    acpi_read
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - Where the value is returned
- *              Reg                 - GAS register structure
-=======
  * PARAMETERS:  value               - Where the value is returned
  *              reg                 - GAS register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -147,91 +84,18 @@ ACPI_EXPORT_SYMBOL(acpi_reset)
  *
  * LIMITATIONS: <These limitations also apply to acpi_write>
  *      bit_width must be exactly 8, 16, 32, or 64.
-<<<<<<< HEAD
- *      space_iD must be system_memory or system_iO.
-=======
  *      space_ID must be system_memory or system_IO.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      bit_offset and access_width are currently ignored, as there has
  *          not been a need to implement these.
  *
  ******************************************************************************/
 acpi_status acpi_read(u64 *return_value, struct acpi_generic_address *reg)
 {
-<<<<<<< HEAD
-	u32 value;
-	u32 width;
-	u64 address;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	ACPI_FUNCTION_NAME(acpi_read);
 
-<<<<<<< HEAD
-	if (!return_value) {
-		return (AE_BAD_PARAMETER);
-	}
-
-	/* Validate contents of the GAS register. Allow 64-bit transfers */
-
-	status = acpi_hw_validate_register(reg, 64, &address);
-	if (ACPI_FAILURE(status)) {
-		return (status);
-	}
-
-	/* Initialize entire 64-bit return value to zero */
-
-	*return_value = 0;
-	value = 0;
-
-	/*
-	 * Two address spaces supported: Memory or IO. PCI_Config is
-	 * not supported here because the GAS structure is insufficient
-	 */
-	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
-		status = acpi_os_read_memory((acpi_physical_address)
-					     address, return_value,
-					     reg->bit_width);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-	} else {		/* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-
-		width = reg->bit_width;
-		if (width == 64) {
-			width = 32;	/* Break into two 32-bit transfers */
-		}
-
-		status = acpi_hw_read_port((acpi_io_address)
-					   address, &value, width);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-		*return_value = value;
-
-		if (reg->bit_width == 64) {
-
-			/* Read the top 32 bits */
-
-			status = acpi_hw_read_port((acpi_io_address)
-						   (address + 4), &value, 32);
-			if (ACPI_FAILURE(status)) {
-				return (status);
-			}
-			*return_value |= ((u64)value << 32);
-		}
-	}
-
-	ACPI_DEBUG_PRINT((ACPI_DB_IO,
-			  "Read:  %8.8X%8.8X width %2d from %8.8X%8.8X (%s)\n",
-			  ACPI_FORMAT_UINT64(*return_value), reg->bit_width,
-			  ACPI_FORMAT_UINT64(address),
-			  acpi_ut_get_region_name(reg->space_id)));
-
-=======
 	status = acpi_hw_read(return_value, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (status);
 }
 
@@ -241,13 +105,8 @@ ACPI_EXPORT_SYMBOL(acpi_read)
  *
  * FUNCTION:    acpi_write
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - Value to be written
- *              Reg                 - GAS register structure
-=======
  * PARAMETERS:  value               - Value to be written
  *              reg                 - GAS register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -256,66 +115,11 @@ ACPI_EXPORT_SYMBOL(acpi_read)
  ******************************************************************************/
 acpi_status acpi_write(u64 value, struct acpi_generic_address *reg)
 {
-<<<<<<< HEAD
-	u32 width;
-	u64 address;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	ACPI_FUNCTION_NAME(acpi_write);
 
-<<<<<<< HEAD
-	/* Validate contents of the GAS register. Allow 64-bit transfers */
-
-	status = acpi_hw_validate_register(reg, 64, &address);
-	if (ACPI_FAILURE(status)) {
-		return (status);
-	}
-
-	/*
-	 * Two address spaces supported: Memory or IO. PCI_Config is
-	 * not supported here because the GAS structure is insufficient
-	 */
-	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
-		status = acpi_os_write_memory((acpi_physical_address)
-					      address, value, reg->bit_width);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-	} else {		/* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-
-		width = reg->bit_width;
-		if (width == 64) {
-			width = 32;	/* Break into two 32-bit transfers */
-		}
-
-		status = acpi_hw_write_port((acpi_io_address)
-					    address, ACPI_LODWORD(value),
-					    width);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-
-		if (reg->bit_width == 64) {
-			status = acpi_hw_write_port((acpi_io_address)
-						    (address + 4),
-						    ACPI_HIDWORD(value), 32);
-			if (ACPI_FAILURE(status)) {
-				return (status);
-			}
-		}
-	}
-
-	ACPI_DEBUG_PRINT((ACPI_DB_IO,
-			  "Wrote: %8.8X%8.8X width %2d   to %8.8X%8.8X (%s)\n",
-			  ACPI_FORMAT_UINT64(value), reg->bit_width,
-			  ACPI_FORMAT_UINT64(address),
-			  acpi_ut_get_region_name(reg->space_id)));
-
-=======
 	status = acpi_hw_write(value, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (status);
 }
 
@@ -391,11 +195,7 @@ ACPI_EXPORT_SYMBOL(acpi_read_bit_register)
  * FUNCTION:    acpi_write_bit_register
  *
  * PARAMETERS:  register_id     - ID of ACPI Bit Register to access
-<<<<<<< HEAD
- *              Value           - Value to write to the register, in bit
-=======
  *              value           - Value to write to the register, in bit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                position zero. The bit is automatically
  *                                shifted to the correct position.
  *
@@ -427,11 +227,7 @@ acpi_status acpi_write_bit_register(u32 register_id, u32 value)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
-<<<<<<< HEAD
-	lock_flags = acpi_os_acquire_lock(acpi_gbl_hardware_lock);
-=======
 	lock_flags = acpi_os_acquire_raw_lock(acpi_gbl_hardware_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point, we know that the parent register is one of the
@@ -492,11 +288,7 @@ acpi_status acpi_write_bit_register(u32 register_id, u32 value)
 
 unlock_and_exit:
 
-<<<<<<< HEAD
-	acpi_os_release_lock(acpi_gbl_hardware_lock, lock_flags);
-=======
 	acpi_os_release_raw_lock(acpi_gbl_hardware_lock, lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -510,12 +302,6 @@ ACPI_EXPORT_SYMBOL(acpi_write_bit_register)
  *              *sleep_type_a        - Where SLP_TYPa is returned
  *              *sleep_type_b        - Where SLP_TYPb is returned
  *
-<<<<<<< HEAD
- * RETURN:      Status - ACPI status
- *
- * DESCRIPTION: Obtain the SLP_TYPa and SLP_TYPb values for the requested sleep
- *              state.
-=======
  * RETURN:      Status
  *
  * DESCRIPTION: Obtain the SLP_TYPa and SLP_TYPb values for the requested
@@ -543,20 +329,14 @@ ACPI_EXPORT_SYMBOL(acpi_write_bit_register)
  *  The dual integer format is as follows:
  *      Integer 0 - Value for the PM1A SLP_TYP register
  *      Integer 1 - Value for the PM1A SLP_TYP register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 acpi_status
 acpi_get_sleep_type_data(u8 sleep_state, u8 *sleep_type_a, u8 *sleep_type_b)
 {
-<<<<<<< HEAD
-	acpi_status status = AE_OK;
-	struct acpi_evaluate_info *info;
-=======
 	acpi_status status;
 	struct acpi_evaluate_info *info;
 	union acpi_operand_object **elements;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(acpi_get_sleep_type_data);
 
@@ -573,21 +353,6 @@ acpi_get_sleep_type_data(u8 sleep_state, u8 *sleep_type_a, u8 *sleep_type_b)
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
-<<<<<<< HEAD
-	info->pathname =
-	    ACPI_CAST_PTR(char, acpi_gbl_sleep_state_names[sleep_state]);
-
-	/* Evaluate the namespace object containing the values for this state */
-
-	status = acpi_ns_evaluate(info);
-	if (ACPI_FAILURE(status)) {
-		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
-				  "%s while evaluating SleepState [%s]\n",
-				  acpi_format_exception(status),
-				  info->pathname));
-
-		goto cleanup;
-=======
 	/*
 	 * Evaluate the \_Sx namespace object containing the register values
 	 * for this state
@@ -604,74 +369,12 @@ acpi_get_sleep_type_data(u8 sleep_state, u8 *sleep_type_a, u8 *sleep_type_b)
 		}
 
 		goto warning_cleanup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Must have a return object */
 
 	if (!info->return_object) {
 		ACPI_ERROR((AE_INFO, "No Sleep State object returned from [%s]",
-<<<<<<< HEAD
-			    info->pathname));
-		status = AE_NOT_EXIST;
-	}
-
-	/* It must be of type Package */
-
-	else if (info->return_object->common.type != ACPI_TYPE_PACKAGE) {
-		ACPI_ERROR((AE_INFO,
-			    "Sleep State return object is not a Package"));
-		status = AE_AML_OPERAND_TYPE;
-	}
-
-	/*
-	 * The package must have at least two elements. NOTE (March 2005): This
-	 * goes against the current ACPI spec which defines this object as a
-	 * package with one encoded DWORD element. However, existing practice
-	 * by BIOS vendors seems to be to have 2 or more elements, at least
-	 * one per sleep type (A/B).
-	 */
-	else if (info->return_object->package.count < 2) {
-		ACPI_ERROR((AE_INFO,
-			    "Sleep State return package does not have at least two elements"));
-		status = AE_AML_NO_OPERAND;
-	}
-
-	/* The first two elements must both be of type Integer */
-
-	else if (((info->return_object->package.elements[0])->common.type
-		  != ACPI_TYPE_INTEGER) ||
-		 ((info->return_object->package.elements[1])->common.type
-		  != ACPI_TYPE_INTEGER)) {
-		ACPI_ERROR((AE_INFO,
-			    "Sleep State return package elements are not both Integers "
-			    "(%s, %s)",
-			    acpi_ut_get_object_type_name(info->return_object->
-							 package.elements[0]),
-			    acpi_ut_get_object_type_name(info->return_object->
-							 package.elements[1])));
-		status = AE_AML_OPERAND_TYPE;
-	} else {
-		/* Valid _Sx_ package size, type, and value */
-
-		*sleep_type_a = (u8)
-		    (info->return_object->package.elements[0])->integer.value;
-		*sleep_type_b = (u8)
-		    (info->return_object->package.elements[1])->integer.value;
-	}
-
-	if (ACPI_FAILURE(status)) {
-		ACPI_EXCEPTION((AE_INFO, status,
-				"While evaluating SleepState [%s], bad Sleep object %p type %s",
-				info->pathname, info->return_object,
-				acpi_ut_get_object_type_name(info->
-							     return_object)));
-	}
-
-	acpi_ut_remove_reference(info->return_object);
-
-      cleanup:
-=======
 			    info->relative_pathname));
 		status = AE_AML_NO_RETURN_VALUE;
 		goto warning_cleanup;
@@ -738,7 +441,6 @@ warning_cleanup:
 	}
 
 final_cleanup:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_FREE(info);
 	return_ACPI_STATUS(status);
 }

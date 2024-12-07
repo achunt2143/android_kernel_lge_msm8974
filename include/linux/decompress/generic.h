@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef DECOMPRESS_GENERIC_H
-#define DECOMPRESS_GENERIC_H
-
-typedef int (*decompress_fn) (unsigned char *inbuf, int len,
-			      int(*fill)(void*, unsigned int),
-			      int(*flush)(void*, unsigned int),
-			      unsigned char *outbuf,
-			      int *posp,
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef DECOMPRESS_GENERIC_H
 #define DECOMPRESS_GENERIC_H
@@ -17,7 +7,6 @@ typedef int (*decompress_fn) (unsigned char *inbuf, long len,
 			      long (*flush)(void*, unsigned long),
 			      unsigned char *outbuf,
 			      long *posp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      void(*error)(char *x));
 
 /* inbuf   - input buffer
@@ -45,11 +34,7 @@ typedef int (*decompress_fn) (unsigned char *inbuf, long len,
 
 
 /* Utility routine to detect the decompression method */
-<<<<<<< HEAD
-decompress_fn decompress_method(const unsigned char *inbuf, int len,
-=======
 decompress_fn decompress_method(const unsigned char *inbuf, long len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const char **name);
 
 #endif

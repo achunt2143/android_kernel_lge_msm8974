@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Soundfont generic routines.
  *	It is intended that these should be used by any driver that is willing
@@ -9,34 +6,13 @@
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * Deal with reading in of a soundfont.  Code follows the OSS way
  * of doing things so that the old sfxload utility can be used.
  * Everything may change when there is an alsa way of doing things.
  */
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <sound/core.h>
@@ -132,11 +108,7 @@ snd_soundfont_close_check(struct snd_sf_list *sflist, int client)
  * Deal with a soundfont patch.  Any driver could use these routines
  * although it was designed for the AWE64.
  *
-<<<<<<< HEAD
- * The sample_write and callargs pararameters allow a callback into
-=======
  * The sample_write and callargs parameters allow a callback into
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the actual driver to write sample data to the board or whatever
  * it wants to do with it.
  */
@@ -377,12 +349,8 @@ sf_zone_new(struct snd_sf_list *sflist, struct snd_soundfont *sf)
 {
 	struct snd_sf_zone *zp;
 
-<<<<<<< HEAD
-	if ((zp = kzalloc(sizeof(*zp), GFP_KERNEL)) == NULL)
-=======
 	zp = kzalloc(sizeof(*zp), GFP_KERNEL);
 	if (!zp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	zp->next = sf->zones;
 	sf->zones = zp;
@@ -414,12 +382,8 @@ sf_sample_new(struct snd_sf_list *sflist, struct snd_soundfont *sf)
 {
 	struct snd_sf_sample *sp;
 
-<<<<<<< HEAD
-	if ((sp = kzalloc(sizeof(*sp), GFP_KERNEL)) == NULL)
-=======
 	sp = kzalloc(sizeof(*sp), GFP_KERNEL);
 	if (!sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	sp->next = sf->samples;
@@ -489,12 +453,8 @@ load_map(struct snd_sf_list *sflist, const void __user *data, int count)
 	}
 
 	/* create a new zone */
-<<<<<<< HEAD
-	if ((zp = sf_zone_new(sflist, sf)) == NULL)
-=======
 	zp = sf_zone_new(sflist, sf);
 	if (!zp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	zp->bank = map.map_bank;
@@ -557,12 +517,8 @@ load_info(struct snd_sf_list *sflist, const void __user *data, long count)
 	int i;
 
 	/* patch must be opened */
-<<<<<<< HEAD
-	if ((sf = sflist->currsf) == NULL)
-=======
 	sf = sflist->currsf;
 	if (!sf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (is_special_type(sf->type))
@@ -627,15 +583,9 @@ load_info(struct snd_sf_list *sflist, const void __user *data, long count)
 			init_voice_parm(&tmpzone.v.parm);
 
 		/* create a new zone */
-<<<<<<< HEAD
-		if ((zone = sf_zone_new(sflist, sf)) == NULL) {
-			return -ENOMEM;
-		}
-=======
 		zone = sf_zone_new(sflist, sf);
 		if (!zone)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* copy the temporary data */
 		zone->bank = tmpzone.bank;
@@ -754,12 +704,8 @@ load_data(struct snd_sf_list *sflist, const void __user *data, long count)
 	long off;
 
 	/* patch must be opened */
-<<<<<<< HEAD
-	if ((sf = sflist->currsf) == NULL)
-=======
 	sf = sflist->currsf;
 	if (!sf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (is_special_type(sf->type))
@@ -782,12 +728,8 @@ load_data(struct snd_sf_list *sflist, const void __user *data, long count)
 	}
 
 	/* Allocate a new sample structure */
-<<<<<<< HEAD
-	if ((sp = sf_sample_new(sflist, sf)) == NULL)
-=======
 	sp = sf_sample_new(sflist, sf);
 	if (!sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	sp->v = sample_info;
@@ -815,11 +757,7 @@ load_data(struct snd_sf_list *sflist, const void __user *data, long count)
 
 
 /* log2_tbl[i] = log2(i+128) * 0x10000 */
-<<<<<<< HEAD
-static int log_tbl[129] = {
-=======
 static const int log_tbl[129] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x70000, 0x702df, 0x705b9, 0x7088e, 0x70b5d, 0x70e26, 0x710eb, 0x713aa,
 	0x71663, 0x71918, 0x71bc8, 0x71e72, 0x72118, 0x723b9, 0x72655, 0x728ed,
 	0x72b80, 0x72e0e, 0x73098, 0x7331d, 0x7359e, 0x7381b, 0x73a93, 0x73d08,
@@ -861,11 +799,7 @@ snd_sf_linear_to_log(unsigned int amount, int offset, int ratio)
 		amount <<= 1;
 	s = (amount >> 24) & 0x7f;
 	low = (amount >> 16) & 0xff;
-<<<<<<< HEAD
-	/* linear approxmimation by lower 8 bit */
-=======
 	/* linear approximation by lower 8 bit */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = (log_tbl[s + 1] * low + log_tbl[s] * (0x100 - low)) >> 8;
 	v -= offset;
 	v = (v * ratio) >> 16;
@@ -915,11 +849,8 @@ calc_gus_envelope_time(int rate, int start, int end)
 	int r, p, t;
 	r = (3 - ((rate >> 6) & 3)) * 3;
 	p = rate & 0x3f;
-<<<<<<< HEAD
-=======
 	if (!p)
 		p = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t = end - start;
 	if (t < 0) t = -t;
 	if (13 > r)
@@ -932,11 +863,7 @@ calc_gus_envelope_time(int rate, int start, int end)
 /* convert envelope time parameter to soundfont parameters */
 
 /* attack & decay/release time table (msec) */
-<<<<<<< HEAD
-static short attack_time_tbl[128] = {
-=======
 static const short attack_time_tbl[128] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 32767, 32767, 5989, 4235, 2994, 2518, 2117, 1780, 1497, 1373, 1259, 1154, 1058, 970, 890, 816,
 707, 691, 662, 634, 607, 581, 557, 533, 510, 489, 468, 448, 429, 411, 393, 377,
 361, 345, 331, 317, 303, 290, 278, 266, 255, 244, 234, 224, 214, 205, 196, 188,
@@ -947,11 +874,7 @@ static const short attack_time_tbl[128] = {
 11, 11, 10, 10, 10, 9, 9, 8, 8, 8, 8, 7, 7, 7, 6, 0,
 };
 
-<<<<<<< HEAD
-static short decay_time_tbl[128] = {
-=======
 static const short decay_time_tbl[128] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 32767, 32767, 22614, 15990, 11307, 9508, 7995, 6723, 5653, 5184, 4754, 4359, 3997, 3665, 3361, 3082,
 2828, 2765, 2648, 2535, 2428, 2325, 2226, 2132, 2042, 1955, 1872, 1793, 1717, 1644, 1574, 1507,
 1443, 1382, 1324, 1267, 1214, 1162, 1113, 1066, 978, 936, 897, 859, 822, 787, 754, 722,
@@ -974,11 +897,7 @@ snd_sf_calc_parm_hold(int msec)
 
 /* search an index for specified time from given time table */
 static int
-<<<<<<< HEAD
-calc_parm_search(int msec, short *table)
-=======
 calc_parm_search(int msec, const short *table)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int left = 1, right = 127, mid;
 	while (left < right) {
@@ -1045,12 +964,8 @@ load_guspatch(struct snd_sf_list *sflist, const char __user *data,
 	sf = newsf(sflist, SNDRV_SFNT_PAT_TYPE_GUS|SNDRV_SFNT_PAT_SHARED, NULL);
 	if (sf == NULL)
 		return -ENOMEM;
-<<<<<<< HEAD
-	if ((smp = sf_sample_new(sflist, sf)) == NULL)
-=======
 	smp = sf_sample_new(sflist, sf);
 	if (!smp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	sample_id = sflist->sample_counter;
 	smp->v.sample = sample_id;
@@ -1088,12 +1003,8 @@ load_guspatch(struct snd_sf_list *sflist, const char __user *data,
 	smp->v.sf_id = sf->id;
 
 	/* set up voice info */
-<<<<<<< HEAD
-	if ((zone = sf_zone_new(sflist, sf)) == NULL) {
-=======
 	zone = sf_zone_new(sflist, sf);
 	if (!zone) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sf_sample_delete(sflist, sf, smp);
 		return -ENOMEM;
 	}
@@ -1107,10 +1018,7 @@ load_guspatch(struct snd_sf_list *sflist, const char __user *data,
 			 data, count);
 		if (rc < 0) {
 			sf_sample_delete(sflist, sf, smp);
-<<<<<<< HEAD
-=======
 			kfree(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 		/* memory offset is updated after */
@@ -1281,12 +1189,8 @@ add_preset(struct snd_sf_list *sflist, struct snd_sf_zone *cur)
 	}
 
 	/* prepend this zone */
-<<<<<<< HEAD
-	if ((index = get_index(cur->bank, cur->instr, cur->v.low)) < 0)
-=======
 	index = get_index(cur->bank, cur->instr, cur->v.low);
 	if (index < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	cur->next_zone = zone; /* zone link */
 	cur->next_instr = sflist->presets[index]; /* preset table link */
@@ -1302,12 +1206,8 @@ delete_preset(struct snd_sf_list *sflist, struct snd_sf_zone *zp)
 	int index;
 	struct snd_sf_zone *p;
 
-<<<<<<< HEAD
-	if ((index = get_index(zp->bank, zp->instr, zp->v.low)) < 0)
-=======
 	index = get_index(zp->bank, zp->instr, zp->v.low);
 	if (index < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	for (p = sflist->presets[index]; p; p = p->next_instr) {
 		while (p->next_instr == zp) {
@@ -1367,12 +1267,8 @@ search_first_zone(struct snd_sf_list *sflist, int bank, int preset, int key)
 	int index;
 	struct snd_sf_zone *zp;
 
-<<<<<<< HEAD
-	if ((index = get_index(bank, preset, key)) < 0)
-=======
 	index = get_index(bank, preset, key);
 	if (index < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	for (zp = sflist->presets[index]; zp; zp = zp->next_instr) {
 		if (zp->instr == preset && zp->bank == bank)
@@ -1501,12 +1397,8 @@ snd_sf_new(struct snd_sf_callback *callback, struct snd_util_memhdr *hdr)
 {
 	struct snd_sf_list *sflist;
 
-<<<<<<< HEAD
-	if ((sflist = kzalloc(sizeof(*sflist), GFP_KERNEL)) == NULL)
-=======
 	sflist = kzalloc(sizeof(*sflist), GFP_KERNEL);
 	if (!sflist)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	mutex_init(&sflist->presets_mutex);
@@ -1541,11 +1433,7 @@ snd_sf_free(struct snd_sf_list *sflist)
 
 /*
  * Remove all samples
-<<<<<<< HEAD
- * The soundcard should be silet before calling this function.
-=======
  * The soundcard should be silent before calling this function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int
 snd_soundfont_remove_samples(struct snd_sf_list *sflist)

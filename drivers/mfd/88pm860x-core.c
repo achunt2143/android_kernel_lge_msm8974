@@ -1,82 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Base driver for Marvell 88PM8607
  *
  * Copyright (C) 2009 Marvell International Ltd.
-<<<<<<< HEAD
- * 	Haojian Zhuang <haojian.zhuang@marvell.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  *
  * Author: Haojian Zhuang <haojian.zhuang@marvell.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/i2c.h>
-#include <linux/irq.h>
-#include <linux/interrupt.h>
-#include <linux/platform_device.h>
-#include <linux/mfd/core.h>
-#include <linux/mfd/88pm860x.h>
-#include <linux/regulator/machine.h>
-
-#define INT_STATUS_NUM			3
-
-static struct resource bk_resources[] __devinitdata = {
-	{PM8606_BACKLIGHT1, PM8606_BACKLIGHT1, "backlight-0", IORESOURCE_IO,},
-	{PM8606_BACKLIGHT2, PM8606_BACKLIGHT2, "backlight-1", IORESOURCE_IO,},
-	{PM8606_BACKLIGHT3, PM8606_BACKLIGHT3, "backlight-2", IORESOURCE_IO,},
-};
-
-static struct resource led_resources[] __devinitdata = {
-	{PM8606_LED1_RED,   PM8606_LED1_RED,   "led0-red",   IORESOURCE_IO,},
-	{PM8606_LED1_GREEN, PM8606_LED1_GREEN, "led0-green", IORESOURCE_IO,},
-	{PM8606_LED1_BLUE,  PM8606_LED1_BLUE,  "led0-blue",  IORESOURCE_IO,},
-	{PM8606_LED2_RED,   PM8606_LED2_RED,   "led1-red",   IORESOURCE_IO,},
-	{PM8606_LED2_GREEN, PM8606_LED2_GREEN, "led1-green", IORESOURCE_IO,},
-	{PM8606_LED2_BLUE,  PM8606_LED2_BLUE,  "led1-blue",  IORESOURCE_IO,},
-};
-
-static struct resource regulator_resources[] __devinitdata = {
-	{PM8607_ID_BUCK1, PM8607_ID_BUCK1, "buck-1", IORESOURCE_IO,},
-	{PM8607_ID_BUCK2, PM8607_ID_BUCK2, "buck-2", IORESOURCE_IO,},
-	{PM8607_ID_BUCK3, PM8607_ID_BUCK3, "buck-3", IORESOURCE_IO,},
-	{PM8607_ID_LDO1,  PM8607_ID_LDO1,  "ldo-01", IORESOURCE_IO,},
-	{PM8607_ID_LDO2,  PM8607_ID_LDO2,  "ldo-02", IORESOURCE_IO,},
-	{PM8607_ID_LDO3,  PM8607_ID_LDO3,  "ldo-03", IORESOURCE_IO,},
-	{PM8607_ID_LDO4,  PM8607_ID_LDO4,  "ldo-04", IORESOURCE_IO,},
-	{PM8607_ID_LDO5,  PM8607_ID_LDO5,  "ldo-05", IORESOURCE_IO,},
-	{PM8607_ID_LDO6,  PM8607_ID_LDO6,  "ldo-06", IORESOURCE_IO,},
-	{PM8607_ID_LDO7,  PM8607_ID_LDO7,  "ldo-07", IORESOURCE_IO,},
-	{PM8607_ID_LDO8,  PM8607_ID_LDO8,  "ldo-08", IORESOURCE_IO,},
-	{PM8607_ID_LDO9,  PM8607_ID_LDO9,  "ldo-09", IORESOURCE_IO,},
-	{PM8607_ID_LDO10, PM8607_ID_LDO10, "ldo-10", IORESOURCE_IO,},
-	{PM8607_ID_LDO11, PM8607_ID_LDO11, "ldo-11", IORESOURCE_IO,},
-	{PM8607_ID_LDO12, PM8607_ID_LDO12, "ldo-12", IORESOURCE_IO,},
-	{PM8607_ID_LDO13, PM8607_ID_LDO13, "ldo-13", IORESOURCE_IO,},
-	{PM8607_ID_LDO14, PM8607_ID_LDO14, "ldo-14", IORESOURCE_IO,},
-	{PM8607_ID_LDO15, PM8607_ID_LDO15, "ldo-15", IORESOURCE_IO,},
-};
-
-static struct resource touch_resources[] __devinitdata = {
-	{PM8607_IRQ_PEN, PM8607_IRQ_PEN, "touch", IORESOURCE_IRQ,},
-};
-
-static struct resource onkey_resources[] __devinitdata = {
-	{PM8607_IRQ_ONKEY, PM8607_IRQ_ONKEY, "onkey", IORESOURCE_IRQ,},
-};
-
-static struct resource codec_resources[] __devinitdata = {
-=======
 #include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/irq.h>
@@ -199,7 +131,6 @@ static struct resource onkey_resources[] = {
 };
 
 static struct resource codec_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Headset microphone insertion or removal */
 	{PM8607_IRQ_MICIN,   PM8607_IRQ_MICIN,   "micin",   IORESOURCE_IRQ,},
 	/* Hook-switch press or release */
@@ -207,29 +138,15 @@ static struct resource codec_resources[] = {
 	/* Headset insertion or removal */
 	{PM8607_IRQ_HEADSET, PM8607_IRQ_HEADSET, "headset", IORESOURCE_IRQ,},
 	/* Audio short */
-<<<<<<< HEAD
-	{PM8607_IRQ_AUDIO_SHORT, PM8607_IRQ_AUDIO_SHORT, "audio-short", IORESOURCE_IRQ,},
-};
-
-static struct resource battery_resources[] __devinitdata = {
-=======
 	{PM8607_IRQ_AUDIO_SHORT, PM8607_IRQ_AUDIO_SHORT, "audio-short",
 	 IORESOURCE_IRQ,},
 };
 
 static struct resource battery_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PM8607_IRQ_CC,  PM8607_IRQ_CC,  "columb counter", IORESOURCE_IRQ,},
 	{PM8607_IRQ_BAT, PM8607_IRQ_BAT, "battery",        IORESOURCE_IRQ,},
 };
 
-<<<<<<< HEAD
-static struct resource charger_resources[] __devinitdata = {
-	{PM8607_IRQ_CHG,  PM8607_IRQ_CHG,  "charger detect",  IORESOURCE_IRQ,},
-	{PM8607_IRQ_CHG_DONE,  PM8607_IRQ_CHG_DONE,  "charging done",       IORESOURCE_IRQ,},
-	{PM8607_IRQ_CHG_FAULT, PM8607_IRQ_CHG_FAULT, "charging timeout",    IORESOURCE_IRQ,},
-	{PM8607_IRQ_GPADC1,    PM8607_IRQ_GPADC1,    "battery temperature", IORESOURCE_IRQ,},
-=======
 static struct resource charger_resources[] = {
 	{PM8607_IRQ_CHG,  PM8607_IRQ_CHG,  "charger detect",  IORESOURCE_IRQ,},
 	{PM8607_IRQ_CHG_DONE,  PM8607_IRQ_CHG_DONE,  "charging done",
@@ -240,55 +157,15 @@ static struct resource charger_resources[] = {
 	 IORESOURCE_IRQ,},
 	{PM8607_IRQ_GPADC1,    PM8607_IRQ_GPADC1,    "battery temperature",
 	 IORESOURCE_IRQ,},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PM8607_IRQ_VBAT, PM8607_IRQ_VBAT, "battery voltage", IORESOURCE_IRQ,},
 	{PM8607_IRQ_VCHG, PM8607_IRQ_VCHG, "vchg voltage",    IORESOURCE_IRQ,},
 };
 
-<<<<<<< HEAD
-static struct resource rtc_resources[] __devinitdata = {
-=======
 static struct resource rtc_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PM8607_IRQ_RTC, PM8607_IRQ_RTC, "rtc", IORESOURCE_IRQ,},
 };
 
 static struct mfd_cell bk_devs[] = {
-<<<<<<< HEAD
-	{"88pm860x-backlight", 0,},
-	{"88pm860x-backlight", 1,},
-	{"88pm860x-backlight", 2,},
-};
-
-static struct mfd_cell led_devs[] = {
-	{"88pm860x-led", 0,},
-	{"88pm860x-led", 1,},
-	{"88pm860x-led", 2,},
-	{"88pm860x-led", 3,},
-	{"88pm860x-led", 4,},
-	{"88pm860x-led", 5,},
-};
-
-static struct mfd_cell regulator_devs[] = {
-	{"88pm860x-regulator", 0,},
-	{"88pm860x-regulator", 1,},
-	{"88pm860x-regulator", 2,},
-	{"88pm860x-regulator", 3,},
-	{"88pm860x-regulator", 4,},
-	{"88pm860x-regulator", 5,},
-	{"88pm860x-regulator", 6,},
-	{"88pm860x-regulator", 7,},
-	{"88pm860x-regulator", 8,},
-	{"88pm860x-regulator", 9,},
-	{"88pm860x-regulator", 10,},
-	{"88pm860x-regulator", 11,},
-	{"88pm860x-regulator", 12,},
-	{"88pm860x-regulator", 13,},
-	{"88pm860x-regulator", 14,},
-	{"88pm860x-regulator", 15,},
-	{"88pm860x-regulator", 16,},
-	{"88pm860x-regulator", 17,},
-=======
 	{
 		.name = "88pm860x-backlight",
 		.id = 0,
@@ -423,7 +300,6 @@ static struct mfd_cell reg_devs[] = {
 		.num_resources = ARRAY_SIZE(ldo14_resources),
 		.resources = ldo14_resources,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct mfd_cell touch_devs[] = {
@@ -438,11 +314,6 @@ static struct mfd_cell codec_devs[] = {
 	{"88pm860x-codec", -1,},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell power_devs[] = {
-	{"88pm860x-battery", -1,},
-	{"88pm860x-charger", -1,},
-=======
 static struct regulator_consumer_supply preg_supply[] = {
 	REGULATOR_SUPPLY("preg", "charger-manager"),
 };
@@ -461,7 +332,6 @@ static struct mfd_cell power_devs[] = {
 	{"88pm860x-charger", -1,},
 	{"88pm860x-preg",    -1,},
 	{"charger-manager", -1,},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct mfd_cell rtc_devs[] = {
@@ -663,23 +533,12 @@ static void pm860x_irq_sync_unlock(struct irq_data *data)
 
 static void pm860x_irq_enable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct pm860x_chip *chip = irq_data_get_irq_chip_data(data);
-	pm860x_irqs[data->irq - chip->irq_base].enable
-		= pm860x_irqs[data->irq - chip->irq_base].offs;
-=======
 	pm860x_irqs[data->hwirq].enable = pm860x_irqs[data->hwirq].offs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pm860x_irq_disable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct pm860x_chip *chip = irq_data_get_irq_chip_data(data);
-	pm860x_irqs[data->irq - chip->irq_base].enable = 0;
-=======
 	pm860x_irqs[data->hwirq].enable = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct irq_chip pm860x_irq_chip = {
@@ -690,69 +549,6 @@ static struct irq_chip pm860x_irq_chip = {
 	.irq_disable	= pm860x_irq_disable,
 };
 
-<<<<<<< HEAD
-static int __devinit device_gpadc_init(struct pm860x_chip *chip,
-				       struct pm860x_platform_data *pdata)
-{
-	struct i2c_client *i2c = (chip->id == CHIP_PM8607) ? chip->client \
-				: chip->companion;
-	int data;
-	int ret;
-
-	/* initialize GPADC without activating it */
-
-	if (!pdata || !pdata->touch)
-		return -EINVAL;
-
-	/* set GPADC MISC1 register */
-	data = 0;
-	data |= (pdata->touch->gpadc_prebias << 1) & PM8607_GPADC_PREBIAS_MASK;
-	data |= (pdata->touch->slot_cycle << 3) & PM8607_GPADC_SLOT_CYCLE_MASK;
-	data |= (pdata->touch->off_scale << 5) & PM8607_GPADC_OFF_SCALE_MASK;
-	data |= (pdata->touch->sw_cal << 7) & PM8607_GPADC_SW_CAL_MASK;
-	if (data) {
-		ret = pm860x_reg_write(i2c, PM8607_GPADC_MISC1, data);
-		if (ret < 0)
-			goto out;
-	}
-	/* set tsi prebias time */
-	if (pdata->touch->tsi_prebias) {
-		data = pdata->touch->tsi_prebias;
-		ret = pm860x_reg_write(i2c, PM8607_TSI_PREBIAS, data);
-		if (ret < 0)
-			goto out;
-	}
-	/* set prebias & prechg time of pen detect */
-	data = 0;
-	data |= pdata->touch->pen_prebias & PM8607_PD_PREBIAS_MASK;
-	data |= (pdata->touch->pen_prechg << 5) & PM8607_PD_PRECHG_MASK;
-	if (data) {
-		ret = pm860x_reg_write(i2c, PM8607_PD_PREBIAS, data);
-		if (ret < 0)
-			goto out;
-	}
-
-	ret = pm860x_set_bits(i2c, PM8607_GPADC_MISC1,
-			      PM8607_GPADC_EN, PM8607_GPADC_EN);
-out:
-	return ret;
-}
-
-static int __devinit device_irq_init(struct pm860x_chip *chip,
-				     struct pm860x_platform_data *pdata)
-{
-	struct i2c_client *i2c = (chip->id == CHIP_PM8607) ? chip->client \
-				: chip->companion;
-	unsigned char status_buf[INT_STATUS_NUM];
-	unsigned long flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT;
-	int i, data, mask, ret = -EINVAL;
-	int __irq;
-
-	if (!pdata || !pdata->irq_base) {
-		dev_warn(chip->dev, "No interrupt support on IRQ base\n");
-		return -EINVAL;
-	}
-=======
 static int pm860x_irq_domain_map(struct irq_domain *d, unsigned int virq,
 				 irq_hw_number_t hw)
 {
@@ -778,7 +574,6 @@ static int device_irq_init(struct pm860x_chip *chip,
 	int data, mask, ret = -EINVAL;
 	int nr_irqs, irq_base = -1;
 	struct device_node *node = i2c->dev.of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mask = PM8607_B0_MISC1_INV_INT | PM8607_B0_MISC1_INT_CLEAR
 		| PM8607_B0_MISC1_INT_MASK;
@@ -818,9 +613,6 @@ static int device_irq_init(struct pm860x_chip *chip,
 		goto out;
 
 	mutex_init(&chip->irq_lock);
-<<<<<<< HEAD
-	chip->irq_base = pdata->irq_base;
-=======
 
 	if (pdata && pdata->irq_base)
 		irq_base = pdata->irq_base;
@@ -834,32 +626,12 @@ static int device_irq_init(struct pm860x_chip *chip,
 	}
 	irq_domain_add_legacy(node, nr_irqs, chip->irq_base, 0,
 			      &pm860x_irq_domain_ops, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->core_irq = i2c->irq;
 	if (!chip->core_irq)
 		goto out;
 
-<<<<<<< HEAD
-	/* register IRQ by genirq */
-	for (i = 0; i < ARRAY_SIZE(pm860x_irqs); i++) {
-		__irq = i + chip->irq_base;
-		irq_set_chip_data(__irq, chip);
-		irq_set_chip_and_handler(__irq, &pm860x_irq_chip,
-					 handle_edge_irq);
-		irq_set_nested_thread(__irq, 1);
-#ifdef CONFIG_ARM
-		set_irq_flags(__irq, IRQF_VALID);
-#else
-		irq_set_noprobe(__irq);
-#endif
-	}
-
-	ret = request_threaded_irq(chip->core_irq, NULL, pm860x_irq, flags,
-				   "88pm860x", chip);
-=======
 	ret = request_threaded_irq(chip->core_irq, NULL, pm860x_irq,
 				   flags | IRQF_ONESHOT, "88pm860x", chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(chip->dev, "Failed to request IRQ: %d\n", ret);
 		chip->core_irq = 0;
@@ -930,19 +702,12 @@ int pm8606_osc_disable(struct pm860x_chip *chip, unsigned short client)
 			chip->osc_status);
 
 	mutex_lock(&chip->osc_lock);
-<<<<<<< HEAD
-	/*Update voting status */
-	chip->osc_vote &= ~(client);
-	/* If reference group is off and this is the last client to release
-	 * - turn off */
-=======
 	/* Update voting status */
 	chip->osc_vote &= ~(client);
 	/*
 	 * If reference group is off and this is the last client to release
 	 * - turn off
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((chip->osc_status != PM8606_REF_GP_OSC_OFF) &&
 			(chip->osc_vote == REF_GP_NO_CLIENTS)) {
 		chip->osc_status = PM8606_REF_GP_OSC_UNKNOWN;
@@ -966,11 +731,7 @@ out:
 }
 EXPORT_SYMBOL(pm8606_osc_disable);
 
-<<<<<<< HEAD
-static void __devinit device_osc_init(struct i2c_client *i2c)
-=======
 static void device_osc_init(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pm860x_chip *chip = i2c_get_clientdata(i2c);
 
@@ -985,116 +746,6 @@ static void device_osc_init(struct i2c_client *i2c)
 	chip->osc_status = PM8606_REF_GP_OSC_OFF;
 }
 
-<<<<<<< HEAD
-static void __devinit device_bk_init(struct pm860x_chip *chip,
-				     struct pm860x_platform_data *pdata)
-{
-	int ret;
-	int i, j, id;
-
-	if ((pdata == NULL) || (pdata->backlight == NULL))
-		return;
-
-	if (pdata->num_backlights > ARRAY_SIZE(bk_devs))
-		pdata->num_backlights = ARRAY_SIZE(bk_devs);
-
-	for (i = 0; i < pdata->num_backlights; i++) {
-		bk_devs[i].platform_data = &pdata->backlight[i];
-		bk_devs[i].pdata_size = sizeof(struct pm860x_backlight_pdata);
-
-		for (j = 0; j < ARRAY_SIZE(bk_devs); j++) {
-			id = bk_resources[j].start;
-			if (pdata->backlight[i].flags != id)
-				continue;
-
-			bk_devs[i].num_resources = 1;
-			bk_devs[i].resources = &bk_resources[j];
-			ret = mfd_add_devices(chip->dev, 0,
-					      &bk_devs[i], 1,
-					      &bk_resources[j], 0);
-			if (ret < 0) {
-				dev_err(chip->dev, "Failed to add "
-					"backlight subdev\n");
-				return;
-			}
-		}
-	}
-}
-
-static void __devinit device_led_init(struct pm860x_chip *chip,
-				      struct pm860x_platform_data *pdata)
-{
-	int ret;
-	int i, j, id;
-
-	if ((pdata == NULL) || (pdata->led == NULL))
-		return;
-
-	if (pdata->num_leds > ARRAY_SIZE(led_devs))
-		pdata->num_leds = ARRAY_SIZE(led_devs);
-
-	for (i = 0; i < pdata->num_leds; i++) {
-		led_devs[i].platform_data = &pdata->led[i];
-		led_devs[i].pdata_size = sizeof(struct pm860x_led_pdata);
-
-		for (j = 0; j < ARRAY_SIZE(led_devs); j++) {
-			id = led_resources[j].start;
-			if (pdata->led[i].flags != id)
-				continue;
-
-			led_devs[i].num_resources = 1;
-			led_devs[i].resources = &led_resources[j],
-			ret = mfd_add_devices(chip->dev, 0,
-					      &led_devs[i], 1,
-					      &led_resources[j], 0);
-			if (ret < 0) {
-				dev_err(chip->dev, "Failed to add "
-					"led subdev\n");
-				return;
-			}
-		}
-	}
-}
-
-static void __devinit device_regulator_init(struct pm860x_chip *chip,
-					    struct pm860x_platform_data *pdata)
-{
-	struct regulator_init_data *initdata;
-	int ret;
-	int i, seq;
-
-	if ((pdata == NULL) || (pdata->regulator == NULL))
-		return;
-
-	if (pdata->num_regulators > ARRAY_SIZE(regulator_devs))
-		pdata->num_regulators = ARRAY_SIZE(regulator_devs);
-
-	for (i = 0, seq = -1; i < pdata->num_regulators; i++) {
-		initdata = &pdata->regulator[i];
-		seq = *(unsigned int *)initdata->driver_data;
-		if ((seq < 0) || (seq > PM8607_ID_RG_MAX)) {
-			dev_err(chip->dev, "Wrong ID(%d) on regulator(%s)\n",
-				seq, initdata->constraints.name);
-			goto out;
-		}
-		regulator_devs[i].platform_data = &pdata->regulator[i];
-		regulator_devs[i].pdata_size = sizeof(struct regulator_init_data);
-		regulator_devs[i].num_resources = 1;
-		regulator_devs[i].resources = &regulator_resources[seq];
-
-		ret = mfd_add_devices(chip->dev, 0, &regulator_devs[i], 1,
-				      &regulator_resources[seq], 0);
-		if (ret < 0) {
-			dev_err(chip->dev, "Failed to add regulator subdev\n");
-			goto out;
-		}
-	}
-out:
-	return;
-}
-
-static void __devinit device_rtc_init(struct pm860x_chip *chip,
-=======
 static void device_bk_init(struct pm860x_chip *chip,
 				     struct pm860x_platform_data *pdata)
 {
@@ -1217,16 +868,11 @@ static void device_regulator_init(struct pm860x_chip *chip,
 }
 
 static void device_rtc_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct pm860x_platform_data *pdata)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if ((pdata == NULL))
-=======
 	if (!pdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	rtc_devs[0].platform_data = pdata->rtc;
@@ -1235,20 +881,12 @@ static void device_rtc_init(struct pm860x_chip *chip,
 	rtc_devs[0].resources = &rtc_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &rtc_devs[0],
 			      ARRAY_SIZE(rtc_devs), &rtc_resources[0],
-<<<<<<< HEAD
-			      chip->irq_base);
-=======
 			      chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add rtc subdev\n");
 }
 
-<<<<<<< HEAD
-static void __devinit device_touch_init(struct pm860x_chip *chip,
-=======
 static void device_touch_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct pm860x_platform_data *pdata)
 {
 	int ret;
@@ -1262,20 +900,12 @@ static void device_touch_init(struct pm860x_chip *chip,
 	touch_devs[0].resources = &touch_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &touch_devs[0],
 			      ARRAY_SIZE(touch_devs), &touch_resources[0],
-<<<<<<< HEAD
-			      chip->irq_base);
-=======
 			      chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add touch subdev\n");
 }
 
-<<<<<<< HEAD
-static void __devinit device_power_init(struct pm860x_chip *chip,
-=======
 static void device_power_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct pm860x_platform_data *pdata)
 {
 	int ret;
@@ -1288,11 +918,7 @@ static void device_power_init(struct pm860x_chip *chip,
 	power_devs[0].num_resources = ARRAY_SIZE(battery_resources);
 	power_devs[0].resources = &battery_resources[0],
 	ret = mfd_add_devices(chip->dev, 0, &power_devs[0], 1,
-<<<<<<< HEAD
-			      &battery_resources[0], chip->irq_base);
-=======
 			      &battery_resources[0], chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add battery subdev\n");
 
@@ -1301,14 +927,6 @@ static void device_power_init(struct pm860x_chip *chip,
 	power_devs[1].num_resources = ARRAY_SIZE(charger_resources);
 	power_devs[1].resources = &charger_resources[0],
 	ret = mfd_add_devices(chip->dev, 0, &power_devs[1], 1,
-<<<<<<< HEAD
-			      &charger_resources[0], chip->irq_base);
-	if (ret < 0)
-		dev_err(chip->dev, "Failed to add charger subdev\n");
-}
-
-static void __devinit device_onkey_init(struct pm860x_chip *chip,
-=======
 			      &charger_resources[0], chip->irq_base, NULL);
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add charger subdev\n");
@@ -1335,7 +953,6 @@ static void __devinit device_onkey_init(struct pm860x_chip *chip,
 }
 
 static void device_onkey_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct pm860x_platform_data *pdata)
 {
 	int ret;
@@ -1344,20 +961,12 @@ static void device_onkey_init(struct pm860x_chip *chip,
 	onkey_devs[0].resources = &onkey_resources[0],
 	ret = mfd_add_devices(chip->dev, 0, &onkey_devs[0],
 			      ARRAY_SIZE(onkey_devs), &onkey_resources[0],
-<<<<<<< HEAD
-			      chip->irq_base);
-=======
 			      chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add onkey subdev\n");
 }
 
-<<<<<<< HEAD
-static void __devinit device_codec_init(struct pm860x_chip *chip,
-=======
 static void device_codec_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct pm860x_platform_data *pdata)
 {
 	int ret;
@@ -1365,21 +974,13 @@ static void device_codec_init(struct pm860x_chip *chip,
 	codec_devs[0].num_resources = ARRAY_SIZE(codec_resources);
 	codec_devs[0].resources = &codec_resources[0],
 	ret = mfd_add_devices(chip->dev, 0, &codec_devs[0],
-<<<<<<< HEAD
-			      ARRAY_SIZE(codec_devs), &codec_resources[0], 0);
-=======
 			      ARRAY_SIZE(codec_devs), &codec_resources[0], 0,
 			      NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add codec subdev\n");
 }
 
-<<<<<<< HEAD
-static void __devinit device_8607_init(struct pm860x_chip *chip,
-=======
 static void device_8607_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       struct i2c_client *i2c,
 				       struct pm860x_platform_data *pdata)
 {
@@ -1397,14 +998,9 @@ static void device_8607_init(struct pm860x_chip *chip,
 			 ret);
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(chip->dev, "Failed to detect Marvell 88PM8607. "
-			"Chip ID: %02x\n", ret);
-=======
 		dev_err(chip->dev,
 			"Failed to detect Marvell 88PM8607. Chip ID: %02x\n",
 			ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1432,13 +1028,6 @@ static void device_8607_init(struct pm860x_chip *chip,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = device_gpadc_init(chip, pdata);
-	if (ret < 0)
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = device_irq_init(chip, pdata);
 	if (ret < 0)
 		goto out;
@@ -1453,11 +1042,7 @@ out:
 	return;
 }
 
-<<<<<<< HEAD
-static void __devinit device_8606_init(struct pm860x_chip *chip,
-=======
 static void device_8606_init(struct pm860x_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       struct i2c_client *i2c,
 				       struct pm860x_platform_data *pdata)
 {
@@ -1466,13 +1051,8 @@ static void device_8606_init(struct pm860x_chip *chip,
 	device_led_init(chip, pdata);
 }
 
-<<<<<<< HEAD
-int __devinit pm860x_device_init(struct pm860x_chip *chip,
-		       struct pm860x_platform_data *pdata)
-=======
 static int pm860x_device_init(struct pm860x_chip *chip,
 					struct pm860x_platform_data *pdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	chip->core_irq = 0;
 
@@ -1499,21 +1079,12 @@ static int pm860x_device_init(struct pm860x_chip *chip,
 	return 0;
 }
 
-<<<<<<< HEAD
-void __devexit pm860x_device_exit(struct pm860x_chip *chip)
-=======
 static void pm860x_device_exit(struct pm860x_chip *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	device_irq_exit(chip);
 	mfd_remove_devices(chip->dev);
 }
 
-<<<<<<< HEAD
-MODULE_DESCRIPTION("PMIC Driver for Marvell 88PM860x");
-MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com>");
-MODULE_LICENSE("GPL");
-=======
 static int verify_addr(struct i2c_client *i2c)
 {
 	unsigned short addr_8607[] = {0x30, 0x34};
@@ -1703,4 +1274,3 @@ module_exit(pm860x_i2c_exit);
 
 MODULE_DESCRIPTION("PMIC Driver for Marvell 88PM860x");
 MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

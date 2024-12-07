@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helper functions for HDMI models (Xonar HDAV1.3/HDAV1.3 Slim)
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, version 2.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this driver; if not, see <http://www.gnu.org/licenses/>.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
@@ -127,11 +109,7 @@ void xonar_hdmi_uart_input(struct oxygen *chip)
 	if (chip->uart_input_count >= 2 &&
 	    chip->uart_input[chip->uart_input_count - 2] == 'O' &&
 	    chip->uart_input[chip->uart_input_count - 1] == 'K') {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "message from HDMI chip received:\n");
-=======
 		dev_dbg(chip->card->dev, "message from HDMI chip received:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		print_hex_dump_bytes("", DUMP_PREFIX_OFFSET,
 				     chip->uart_input, chip->uart_input_count);
 		chip->uart_input_count = 0;

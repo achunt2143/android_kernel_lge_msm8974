@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ptrace.c */
 /* By Ross Biro 1/23/92 */
 /* edited by Linus Torvalds */
@@ -10,10 +7,7 @@
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/errno.h>
@@ -21,15 +15,9 @@
 #include <linux/user.h>
 #include <linux/security.h>
 #include <linux/signal.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/audit.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fpu.h>
 
 #include "proto.h"
@@ -90,11 +78,8 @@ enum {
  (PAGE_SIZE*2 - sizeof(struct pt_regs) - sizeof(struct switch_stack) \
   + offsetof(struct switch_stack, reg))
 
-<<<<<<< HEAD
-=======
 #define FP_REG(reg) (offsetof(struct thread_info, reg))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int regoff[] = {
 	PT_REG(	   r0), PT_REG(	   r1), PT_REG(	   r2), PT_REG(	  r3),
 	PT_REG(	   r4), PT_REG(	   r5), PT_REG(	   r6), PT_REG(	  r7),
@@ -104,16 +89,6 @@ static int regoff[] = {
 	PT_REG(	  r20), PT_REG(	  r21), PT_REG(	  r22), PT_REG(	 r23),
 	PT_REG(	  r24), PT_REG(	  r25), PT_REG(	  r26), PT_REG(	 r27),
 	PT_REG(	  r28), PT_REG(	   gp),		   -1,		   -1,
-<<<<<<< HEAD
-	SW_REG(fp[ 0]), SW_REG(fp[ 1]), SW_REG(fp[ 2]), SW_REG(fp[ 3]),
-	SW_REG(fp[ 4]), SW_REG(fp[ 5]), SW_REG(fp[ 6]), SW_REG(fp[ 7]),
-	SW_REG(fp[ 8]), SW_REG(fp[ 9]), SW_REG(fp[10]), SW_REG(fp[11]),
-	SW_REG(fp[12]), SW_REG(fp[13]), SW_REG(fp[14]), SW_REG(fp[15]),
-	SW_REG(fp[16]), SW_REG(fp[17]), SW_REG(fp[18]), SW_REG(fp[19]),
-	SW_REG(fp[20]), SW_REG(fp[21]), SW_REG(fp[22]), SW_REG(fp[23]),
-	SW_REG(fp[24]), SW_REG(fp[25]), SW_REG(fp[26]), SW_REG(fp[27]),
-	SW_REG(fp[28]), SW_REG(fp[29]), SW_REG(fp[30]), SW_REG(fp[31]),
-=======
 	FP_REG(fp[ 0]), FP_REG(fp[ 1]), FP_REG(fp[ 2]), FP_REG(fp[ 3]),
 	FP_REG(fp[ 4]), FP_REG(fp[ 5]), FP_REG(fp[ 6]), FP_REG(fp[ 7]),
 	FP_REG(fp[ 8]), FP_REG(fp[ 9]), FP_REG(fp[10]), FP_REG(fp[11]),
@@ -122,7 +97,6 @@ static int regoff[] = {
 	FP_REG(fp[20]), FP_REG(fp[21]), FP_REG(fp[22]), FP_REG(fp[23]),
 	FP_REG(fp[24]), FP_REG(fp[25]), FP_REG(fp[26]), FP_REG(fp[27]),
 	FP_REG(fp[28]), FP_REG(fp[29]), FP_REG(fp[30]), FP_REG(fp[31]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PT_REG(	   pc)
 };
 
@@ -185,24 +159,16 @@ put_reg(struct task_struct *task, unsigned long regno, unsigned long data)
 static inline int
 read_int(struct task_struct *task, unsigned long addr, int * data)
 {
-<<<<<<< HEAD
-	int copied = access_process_vm(task, addr, data, sizeof(int), 0);
-=======
 	int copied = access_process_vm(task, addr, data, sizeof(int),
 			FOLL_FORCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (copied == sizeof(int)) ? 0 : -EIO;
 }
 
 static inline int
 write_int(struct task_struct *task, unsigned long addr, int data)
 {
-<<<<<<< HEAD
-	int copied = access_process_vm(task, addr, &data, sizeof(int), 1);
-=======
 	int copied = access_process_vm(task, addr, &data, sizeof(int),
 			FOLL_FORCE | FOLL_WRITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (copied == sizeof(int)) ? 0 : -EIO;
 }
 
@@ -319,12 +285,8 @@ long arch_ptrace(struct task_struct *child, long request,
 	/* When I and D space are separate, these will need to be fixed.  */
 	case PTRACE_PEEKTEXT: /* read word at location addr. */
 	case PTRACE_PEEKDATA:
-<<<<<<< HEAD
-		copied = access_process_vm(child, addr, &tmp, sizeof(tmp), 0);
-=======
 		copied = ptrace_access_vm(child, addr, &tmp, sizeof(tmp),
 				FOLL_FORCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EIO;
 		if (copied != sizeof(tmp))
 			break;
@@ -357,29 +319,6 @@ long arch_ptrace(struct task_struct *child, long request,
 	return ret;
 }
 
-<<<<<<< HEAD
-asmlinkage void
-syscall_trace(void)
-{
-	if (!test_thread_flag(TIF_SYSCALL_TRACE))
-		return;
-	if (!(current->ptrace & PT_PTRACED))
-		return;
-	/* The 0x80 provides a way for the tracing parent to distinguish
-	   between a syscall stop and SIGTRAP delivery */
-	ptrace_notify(SIGTRAP | ((current->ptrace & PT_TRACESYSGOOD)
-				 ? 0x80 : 0));
-
-	/*
-	 * This isn't the same as continuing with a signal, but it will do
-	 * for normal use.  strace only continues with a signal if the
-	 * stopping signal is not SIGTRAP.  -brl
-	 */
-	if (current->exit_code) {
-		send_sig(current->exit_code, current, 1);
-		current->exit_code = 0;
-	}
-=======
 asmlinkage unsigned long syscall_trace_enter(void)
 {
 	unsigned long ret = 0;
@@ -397,5 +336,4 @@ syscall_trace_leave(void)
 	audit_syscall_exit(current_pt_regs());
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		ptrace_report_syscall_exit(current_pt_regs(), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

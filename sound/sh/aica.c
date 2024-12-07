@@ -1,35 +1,11 @@
-<<<<<<< HEAD
-/*
-* This code is licenced under 
-* the General Public Licence
-* version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *
 * Copyright Adrian McMenamin 2005, 2006, 2007
 * <adrian@mcmen.demon.co.uk>
 * Requires firmware (BSD licenced) available from:
 * http://linuxdc.cvs.sourceforge.net/linuxdc/linux-sh-dc/sound/oss/aica/firmware/
 * or the maintainer
-<<<<<<< HEAD
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of version 2 of the GNU General Public License as published by
-* the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/init.h>
@@ -43,19 +19,12 @@
 #include <linux/timer.h>
 #include <linux/delay.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
 #include <sound/initval.h>
 #include <sound/info.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <mach/sysasic.h>
 #include "aica.h"
@@ -63,10 +32,6 @@
 MODULE_AUTHOR("Adrian McMenamin <adrian@mcmen.demon.co.uk>");
 MODULE_DESCRIPTION("Dreamcast AICA sound (pcm) driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Yamaha/SEGA, AICA}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("aica_firmware.bin");
 
 /* module parameters */
@@ -81,12 +46,6 @@ MODULE_PARM_DESC(id, "ID string for " CARD_NAME " soundcard.");
 module_param(enable, bool, 0644);
 MODULE_PARM_DESC(enable, "Enable " CARD_NAME " soundcard.");
 
-<<<<<<< HEAD
-/* Use workqueue */
-static struct workqueue_struct *aica_queue;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Simple platform device */
 static struct platform_device *pd;
 static struct resource aica_memory_space[2] = {
@@ -141,17 +100,10 @@ static void spu_memset(u32 toi, u32 what, int length)
 }
 
 /* spu_memload - write to SPU address space */
-<<<<<<< HEAD
-static void spu_memload(u32 toi, void *from, int length)
-{
-	unsigned long flags;
-	u32 *froml = from;
-=======
 static void spu_memload(u32 toi, const void *from, int length)
 {
 	unsigned long flags;
 	const u32 *froml = from;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 __iomem *to = (u32 __iomem *) (SPU_MEMORY_BASE + toi);
 	int i;
 	u32 val;
@@ -242,11 +194,7 @@ static void aica_chn_halt(void)
 }
 
 /* ALSA code below */
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_pcm_aica_playback_hw = {
-=======
 static const struct snd_pcm_hardware snd_pcm_aica_playback_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_NONINTERLEAVED),
 	.formats =
 	    (SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE |
@@ -330,20 +278,6 @@ static void run_spu_dma(struct work_struct *work)
 		dreamcastcard->clicks++;
 		if (unlikely(dreamcastcard->clicks >= AICA_PERIOD_NUMBER))
 			dreamcastcard->clicks %= AICA_PERIOD_NUMBER;
-<<<<<<< HEAD
-		mod_timer(&dreamcastcard->timer, jiffies + 1);
-	}
-}
-
-static void aica_period_elapsed(unsigned long timer_var)
-{
-	/*timer function - so cannot sleep */
-	int play_period;
-	struct snd_pcm_runtime *runtime;
-	struct snd_pcm_substream *substream;
-	struct snd_card_aica *dreamcastcard;
-	substream = (struct snd_pcm_substream *) timer_var;
-=======
 		if (snd_pcm_running(dreamcastcard->substream))
 			mod_timer(&dreamcastcard->timer, jiffies + 1);
 	}
@@ -359,7 +293,6 @@ static void aica_period_elapsed(struct timer_list *t)
 	struct snd_pcm_runtime *runtime;
 	if (!snd_pcm_running(substream))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime = substream->runtime;
 	dreamcastcard = substream->pcm->private_data;
 	/* Have we played out an additional period? */
@@ -377,11 +310,7 @@ static void aica_period_elapsed(struct timer_list *t)
 		dreamcastcard->current_period = play_period;
 	if (unlikely(dreamcastcard->dma_check == 0))
 		dreamcastcard->dma_check = 1;
-<<<<<<< HEAD
-	queue_work(aica_queue, &(dreamcastcard->spu_dma_work));
-=======
 	schedule_work(&(dreamcastcard->spu_dma_work));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void spu_begin_dma(struct snd_pcm_substream *substream)
@@ -391,22 +320,8 @@ static void spu_begin_dma(struct snd_pcm_substream *substream)
 	runtime = substream->runtime;
 	dreamcastcard = substream->pcm->private_data;
 	/*get the queue to do the work */
-<<<<<<< HEAD
-	queue_work(aica_queue, &(dreamcastcard->spu_dma_work));
-	/* Timer may already be running */
-	if (unlikely(dreamcastcard->timer.data)) {
-		mod_timer(&dreamcastcard->timer, jiffies + 4);
-		return;
-	}
-	init_timer(&(dreamcastcard->timer));
-	dreamcastcard->timer.data = (unsigned long) substream;
-	dreamcastcard->timer.function = aica_period_elapsed;
-	dreamcastcard->timer.expires = jiffies + 4;
-	add_timer(&(dreamcastcard->timer));
-=======
 	schedule_work(&(dreamcastcard->spu_dma_work));
 	mod_timer(&dreamcastcard->timer, jiffies + 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_aicapcm_pcm_open(struct snd_pcm_substream
@@ -438,8 +353,6 @@ static int snd_aicapcm_pcm_open(struct snd_pcm_substream
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int snd_aicapcm_pcm_sync_stop(struct snd_pcm_substream *substream)
 {
 	struct snd_card_aica *dreamcastcard = substream->pcm->private_data;
@@ -449,43 +362,16 @@ static int snd_aicapcm_pcm_sync_stop(struct snd_pcm_substream *substream)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_aicapcm_pcm_close(struct snd_pcm_substream
 				 *substream)
 {
 	struct snd_card_aica *dreamcastcard = substream->pcm->private_data;
-<<<<<<< HEAD
-	flush_workqueue(aica_queue);
-	if (dreamcastcard->timer.data)
-		del_timer(&dreamcastcard->timer);
-=======
 	dreamcastcard->substream = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dreamcastcard->channel);
 	spu_disable();
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_aicapcm_pcm_hw_free(struct snd_pcm_substream
-				   *substream)
-{
-	/* Free the DMA buffer */
-	return snd_pcm_lib_free_pages(substream);
-}
-
-static int snd_aicapcm_pcm_hw_params(struct snd_pcm_substream
-				     *substream, struct snd_pcm_hw_params
-				     *hw_params)
-{
-	/* Allocate a DMA buffer using ALSA built-ins */
-	return
-	    snd_pcm_lib_malloc_pages(substream,
-				     params_buffer_bytes(hw_params));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_aicapcm_pcm_prepare(struct snd_pcm_substream
 				   *substream)
 {
@@ -519,17 +405,6 @@ static unsigned long snd_aicapcm_pcm_pointer(struct snd_pcm_substream
 	return readl(AICA_CONTROL_CHANNEL_SAMPLE_NUMBER);
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_aicapcm_playback_ops = {
-	.open = snd_aicapcm_pcm_open,
-	.close = snd_aicapcm_pcm_close,
-	.ioctl = snd_pcm_lib_ioctl,
-	.hw_params = snd_aicapcm_pcm_hw_params,
-	.hw_free = snd_aicapcm_pcm_hw_free,
-	.prepare = snd_aicapcm_pcm_prepare,
-	.trigger = snd_aicapcm_pcm_trigger,
-	.pointer = snd_aicapcm_pcm_pointer,
-=======
 static const struct snd_pcm_ops snd_aicapcm_playback_ops = {
 	.open = snd_aicapcm_pcm_open,
 	.close = snd_aicapcm_pcm_close,
@@ -537,7 +412,6 @@ static const struct snd_pcm_ops snd_aicapcm_playback_ops = {
 	.trigger = snd_aicapcm_pcm_trigger,
 	.pointer = snd_aicapcm_pcm_pointer,
 	.sync_stop = snd_aicapcm_pcm_sync_stop,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* TO DO: set up to handle more than one pcm instance */
@@ -557,23 +431,12 @@ static int __init snd_aicapcmchip(struct snd_card_aica
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_aicapcm_playback_ops);
 	/* Allocate the DMA buffers */
-<<<<<<< HEAD
-	err =
-	    snd_pcm_lib_preallocate_pages_for_all(pcm,
-						  SNDRV_DMA_TYPE_CONTINUOUS,
-						  snd_dma_continuous_data
-						  (GFP_KERNEL),
-						  AICA_BUFFER_SIZE,
-						  AICA_BUFFER_SIZE);
-	return err;
-=======
 	snd_pcm_set_managed_buffer_all(pcm,
 				       SNDRV_DMA_TYPE_CONTINUOUS,
 				       NULL,
 				       AICA_BUFFER_SIZE,
 				       AICA_BUFFER_SIZE);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Mixer controls */
@@ -637,11 +500,7 @@ static int aica_pcmvolume_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_aica_pcmswitch_control __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_aica_pcmswitch_control = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "PCM Playback Switch",
 	.index = 0,
@@ -650,11 +509,7 @@ static const struct snd_kcontrol_new snd_aica_pcmswitch_control = {
 	.put = aica_pcmswitch_put
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_aica_pcmvolume_control __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_aica_pcmvolume_control = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "PCM Playback Volume",
 	.index = 0,
@@ -679,12 +534,7 @@ static int load_aica_firmware(void)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit add_aicamixer_controls(struct snd_card_aica
-					    *dreamcastcard)
-=======
 static int add_aicamixer_controls(struct snd_card_aica *dreamcastcard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	err = snd_ctl_add
@@ -700,29 +550,6 @@ static int add_aicamixer_controls(struct snd_card_aica *dreamcastcard)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit snd_aica_remove(struct platform_device *devptr)
-{
-	struct snd_card_aica *dreamcastcard;
-	dreamcastcard = platform_get_drvdata(devptr);
-	if (unlikely(!dreamcastcard))
-		return -ENODEV;
-	snd_card_free(dreamcastcard->card);
-	kfree(dreamcastcard);
-	platform_set_drvdata(devptr, NULL);
-	return 0;
-}
-
-static int __devinit snd_aica_probe(struct platform_device *devptr)
-{
-	int err;
-	struct snd_card_aica *dreamcastcard;
-	dreamcastcard = kmalloc(sizeof(struct snd_card_aica), GFP_KERNEL);
-	if (unlikely(!dreamcastcard))
-		return -ENOMEM;
-	err = snd_card_create(index, SND_AICA_DRIVER, THIS_MODULE, 0,
-			      &dreamcastcard->card);
-=======
 static void snd_aica_remove(struct platform_device *devptr)
 {
 	struct snd_card_aica *dreamcastcard;
@@ -740,7 +567,6 @@ static int snd_aica_probe(struct platform_device *devptr)
 		return -ENOMEM;
 	err = snd_card_new(&devptr->dev, index, SND_AICA_DRIVER,
 			   THIS_MODULE, 0, &dreamcastcard->card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(err < 0)) {
 		kfree(dreamcastcard);
 		return err;
@@ -751,20 +577,11 @@ static int snd_aica_probe(struct platform_device *devptr)
 	       "Yamaha AICA Super Intelligent Sound Processor for SEGA Dreamcast");
 	/* Prepare to use the queue */
 	INIT_WORK(&(dreamcastcard->spu_dma_work), run_spu_dma);
-<<<<<<< HEAD
-=======
 	timer_setup(&dreamcastcard->timer, aica_period_elapsed, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Load the PCM 'chip' */
 	err = snd_aicapcmchip(dreamcastcard, 0);
 	if (unlikely(err < 0))
 		goto freedreamcast;
-<<<<<<< HEAD
-	snd_card_set_dev(dreamcastcard->card, &devptr->dev);
-	dreamcastcard->timer.data = 0;
-	dreamcastcard->channel = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add basic controls */
 	err = add_aicamixer_controls(dreamcastcard);
 	if (unlikely(err < 0))
@@ -774,12 +591,6 @@ static int snd_aica_probe(struct platform_device *devptr)
 	if (unlikely(err < 0))
 		goto freedreamcast;
 	platform_set_drvdata(devptr, dreamcastcard);
-<<<<<<< HEAD
-	aica_queue = create_workqueue(CARD_NAME);
-	if (unlikely(!aica_queue))
-		goto freedreamcast;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_printk
 	    ("ALSA Driver for Yamaha AICA Super Intelligent Sound Processor\n");
 	return 0;
@@ -791,16 +602,10 @@ static int snd_aica_probe(struct platform_device *devptr)
 
 static struct platform_driver snd_aica_driver = {
 	.probe = snd_aica_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(snd_aica_remove),
-	.driver = {
-		   .name = SND_AICA_DRIVER},
-=======
 	.remove_new = snd_aica_remove,
 	.driver = {
 		.name = SND_AICA_DRIVER,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init aica_init(void)
@@ -821,13 +626,6 @@ static int __init aica_init(void)
 
 static void __exit aica_exit(void)
 {
-<<<<<<< HEAD
-	/* Destroy the aica kernel thread            *
-	 * being extra cautious to check if it exists*/
-	if (likely(aica_queue))
-		destroy_workqueue(aica_queue);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_unregister(pd);
 	platform_driver_unregister(&snd_aica_driver);
 	/* Kill any sound still playing and reset ARM7 to safe state */

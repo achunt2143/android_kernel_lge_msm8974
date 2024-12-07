@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Smp timebase synchronization for ppc.
  *
@@ -13,10 +10,6 @@
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/unistd.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/atomic.h>
 #include <asm/smp.h>
@@ -43,21 +36,13 @@ static struct {
 
 static volatile int		running;
 
-<<<<<<< HEAD
-static void __devinit enter_contest(u64 mark, long add)
-=======
 static void enter_contest(u64 mark, long add)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (get_tb() < mark)
 		tbsync->race_result = add;
 }
 
-<<<<<<< HEAD
-void __devinit smp_generic_take_timebase(void)
-=======
 void smp_generic_take_timebase(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cmd;
 	u64 tb;
@@ -90,11 +75,7 @@ void smp_generic_take_timebase(void)
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-static int __devinit start_contest(int cmd, long offset, int num)
-=======
 static int start_contest(int cmd, long offset, int num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, score=0;
 	u64 tb;
@@ -129,11 +110,7 @@ static int start_contest(int cmd, long offset, int num)
 	return score;
 }
 
-<<<<<<< HEAD
-void __devinit smp_generic_give_timebase(void)
-=======
 void smp_generic_give_timebase(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, score, score2, old, min=0, max=5000, offset=1000;
 

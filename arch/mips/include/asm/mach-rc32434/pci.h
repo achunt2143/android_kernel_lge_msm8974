@@ -151,19 +151,11 @@ struct pci_msu {
 #define	 PCI_CFGA_REG_PBA2	(0x18 >> 2)	/* use PCIPBA_ */
 #define	 PCI_CFGA_REG_PBA3	(0x1c >> 2)	/* use PCIPBA_ */
 #define	 PCI_CFGA_REG_SUBSYS	(0x2c >> 2)	/* use PCFGSS_ */
-<<<<<<< HEAD
-#define  PCI_CFGA_REG_3C	(0x3C >> 2)	/* use PCFG3C_ */
-#define	 PCI_CFGA_REG_PBBA0C	(0x44 >> 2)	/* use PCIPBAC_ */
-#define  PCI_CFGA_REG_PBA0M	(0x48 >> 2)
-#define	 PCI_CFGA_REG_PBA1C	(0x4c >> 2)	/* use PCIPBAC_ */
-#define  PCI_CFGA_REG_PBA1M	(0x50 >> 2)
-=======
 #define	 PCI_CFGA_REG_3C	(0x3C >> 2)	/* use PCFG3C_ */
 #define	 PCI_CFGA_REG_PBBA0C	(0x44 >> 2)	/* use PCIPBAC_ */
 #define	 PCI_CFGA_REG_PBA0M	(0x48 >> 2)
 #define	 PCI_CFGA_REG_PBA1C	(0x4c >> 2)	/* use PCIPBAC_ */
 #define	 PCI_CFGA_REG_PBA1M	(0x50 >> 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	 PCI_CFGA_REG_PBA2C	(0x54 >> 2)	/* use PCIPBAC_ */
 #define	 PCI_CFGA_REG_PBA2M	(0x58 >> 2)
 #define	 PCI_CFGA_REG_PBA3C	(0x5c >> 2)	/* use PCIPBAC_ */
@@ -172,15 +164,9 @@ struct pci_msu {
 #define PCI_CFGA_FUNC_BIT	8
 #define PCI_CFGA_FUNC		0x00000700
 #define PCI_CFGA_DEV_BIT	11
-<<<<<<< HEAD
-#define	PCI_CFGA_DEV		0x0000f800
-#define	PCI_CFGA_DEV_INTERN	0
-#define	PCI_CFGA_BUS_BIT	16
-=======
 #define PCI_CFGA_DEV		0x0000f800
 #define PCI_CFGA_DEV_INTERN	0
 #define PCI_CFGA_BUS_BIT	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI CFGA_BUS		0x00ff0000
 #define PCI_CFGA_BUS_TYPE0	0
 #define PCI_CFGA_EN		(1 << 31)
@@ -215,22 +201,13 @@ struct pci_msu {
 #define PCI_PBAC_P		(1 << 1)
 #define PCI_PBAC_SIZE_BIT	2
 #define PCI_PBAC_SIZE		0x0000007c
-<<<<<<< HEAD
-#define	PCI_PBAC_SB		(1 << 7)
-#define	PCI_PBAC_PP		(1 << 8)
-=======
 #define PCI_PBAC_SB		(1 << 7)
 #define PCI_PBAC_PP		(1 << 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_PBAC_MR_BIT		9
 #define PCI_PBAC_MR		0x00000600
 #define	 PCI_PBAC_MR_RD		0
 #define	 PCI_PBAC_MR_RD_LINE	1
-<<<<<<< HEAD
-#define  PCI_PBAC_MR_RD_MULT	2
-=======
 #define	 PCI_PBAC_MR_RD_MULT	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_PBAC_MRL		(1 << 11)
 #define PCI_PBAC_MRM		(1 << 12)
 #define PCI_PBAC_TRP		(1 << 13)
@@ -250,24 +227,14 @@ struct pci_msu {
  */
 
 #define PCI_LBAC_MSI		(1 << 0)
-<<<<<<< HEAD
-#define  PCI_LBAC_MSI_MEM	0
-#define  PCI_LBAC_MSI_IO	1
-=======
 #define	 PCI_LBAC_MSI_MEM	0
 #define	 PCI_LBAC_MSI_IO	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_LBAC_SIZE_BIT	2
 #define PCI_LBAC_SIZE		0x0000007c
 #define PCI_LBAC_SB		(1 << 7)
 #define PCI_LBAC_RT		(1 << 8)
-<<<<<<< HEAD
-#define  PCI_LBAC_RT_NO_PREF	0
-#define  PCI_LBAC_RT_PREF	1
-=======
 #define	 PCI_LBAC_RT_NO_PREF	0
 #define	 PCI_LBAC_RT_PREF	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PCI Local Base Address [0|1|2|3] Mapping Register
@@ -312,18 +279,6 @@ struct pci_msu {
 #define PCI_DMAD_PT		0x00c00000	/* preferred transaction field */
 /* These are for reads (DMA channel 8) */
 #define PCI_DMAD_DEVCMD_MR	0		/* memory read */
-<<<<<<< HEAD
-#define	PCI_DMAD_DEVCMD_MRL	1		/* memory read line */
-#define	PCI_DMAD_DEVCMD_MRM	2		/* memory read multiple */
-#define	PCI_DMAD_DEVCMD_IOR	3		/* I/O read */
-/* These are for writes (DMA channel 9) */
-#define PCI_DMAD_DEVCMD_MW	0		/* memory write */
-#define	PCI_DMAD_DEVCMD_MWI	1		/* memory write invalidate */
-#define	PCI_DMAD_DEVCMD_IOW	3		/* I/O write */
-
-/* Swap byte field applies to both DMA channel 8 and 9 */
-#define	PCI_DMAD_SB		(1 << 24)	/* swap byte field */
-=======
 #define PCI_DMAD_DEVCMD_MRL	1		/* memory read line */
 #define PCI_DMAD_DEVCMD_MRM	2		/* memory read multiple */
 #define PCI_DMAD_DEVCMD_IOR	3		/* I/O read */
@@ -334,7 +289,6 @@ struct pci_msu {
 
 /* Swap byte field applies to both DMA channel 8 and 9 */
 #define PCI_DMAD_SB		(1 << 24)	/* swap byte field */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -355,11 +309,7 @@ struct pci_msu {
 #define PCI_MSU_M1		(1 << 1)
 #define PCI_MSU_DB		(1 << 2)
 
-<<<<<<< HEAD
-#define PCI_MSG_ADDR	     	0xB8088010
-=======
 #define PCI_MSG_ADDR		0xB8088010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI0_ADDR		0xB8080000
 #define rc32434_pci ((struct pci_reg *) PCI0_ADDR)
 #define rc32434_pci_msg ((struct pci_msu *) PCI_MSG_ADDR)
@@ -369,12 +319,6 @@ struct pci_msu {
 #define PCIM_H_EA		0x3
 #define PCIM_H_IA_FIX		0x4
 #define PCIM_H_IA_RR		0x5
-<<<<<<< HEAD
-#if 0
-#define PCI_ADDR_START		0x13000000
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_ADDR_START		0x50000000
 
@@ -384,15 +328,9 @@ struct pci_msu {
 #define PCILBA_SIZE_MASK	0x1F
 #define SIZE_256MB		0x1C
 #define SIZE_128MB		0x1B
-<<<<<<< HEAD
-#define SIZE_64MB               0x1A
-#define SIZE_32MB		0x19
-#define SIZE_16MB               0x18
-=======
 #define SIZE_64MB		0x1A
 #define SIZE_32MB		0x19
 #define SIZE_16MB		0x18
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SIZE_4MB		0x16
 #define SIZE_2MB		0x15
 #define SIZE_1MB		0x14
@@ -422,11 +360,7 @@ struct pci_msu {
 #define KORINA_CONFIG23_ADDR	0x8000005C
 #define KORINA_CONFIG24_ADDR	0x80000060
 #define KORINA_CONFIG25_ADDR	0x80000064
-<<<<<<< HEAD
-#define KORINA_CMD 		(PCI_CFG04_CMD_IO_ENA | \
-=======
 #define KORINA_CMD		(PCI_CFG04_CMD_IO_ENA | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 PCI_CFG04_CMD_MEM_ENA | \
 				 PCI_CFG04_CMD_BM_ENA | \
 				 PCI_CFG04_CMD_MW_INV | \
@@ -440,11 +374,7 @@ struct pci_msu {
 				 PCI_CFG04_STAT_SSE | \
 				 PCI_CFG04_STAT_PE)
 
-<<<<<<< HEAD
-#define KORINA_CNFG1		((KORINA_STAT<<16)|KORINA_CMD)
-=======
 #define KORINA_CNFG1		(KORINA_STAT | KORINA_CMD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KORINA_REVID		0
 #define KORINA_CLASS_CODE	0
@@ -468,13 +398,8 @@ struct pci_msu {
 #define KORINA_BAR3	0x48000008	/* Spare 128 MB Memory */
 
 #define KORINA_CNFG4	KORINA_BAR0
-<<<<<<< HEAD
-#define KORINA_CNFG5    KORINA_BAR1
-#define KORINA_CNFG6 	KORINA_BAR2
-=======
 #define KORINA_CNFG5	KORINA_BAR1
 #define KORINA_CNFG6	KORINA_BAR2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KORINA_CNFG7	KORINA_BAR3
 
 #define KORINA_SUBSYS_VENDOR_ID 0x011d
@@ -482,32 +407,20 @@ struct pci_msu {
 #define KORINA_CNFG8		0
 #define KORINA_CNFG9		0
 #define KORINA_CNFG10		0
-<<<<<<< HEAD
-#define KORINA_CNFG11 	((KORINA_SUBSYS_VENDOR_ID<<16) | \
-=======
 #define KORINA_CNFG11	((KORINA_SUBSYS_VENDOR_ID<<16) | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  KORINA_SUBSYSTEM_ID)
 #define KORINA_INT_LINE		1
 #define KORINA_INT_PIN		1
 #define KORINA_MIN_GNT		8
 #define KORINA_MAX_LAT		0x38
 #define KORINA_CNFG12		0
-<<<<<<< HEAD
-#define KORINA_CNFG13 		0
-=======
 #define KORINA_CNFG13		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KORINA_CNFG14		0
 #define KORINA_CNFG15	((KORINA_MAX_LAT<<24) | \
 			 (KORINA_MIN_GNT<<16) | \
 			 (KORINA_INT_PIN<<8)  | \
 			  KORINA_INT_LINE)
-<<<<<<< HEAD
-#define	KORINA_RETRY_LIMIT	0x80
-=======
 #define KORINA_RETRY_LIMIT	0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KORINA_TRDY_LIMIT	0x80
 #define KORINA_CNFG16 ((KORINA_RETRY_LIMIT<<8) | \
 			KORINA_TRDY_LIMIT)
@@ -559,14 +472,7 @@ struct pci_msu {
 #define KORINA_PBA3M	0
 #define KORINA_CNFG24	KORINA_PBA3M
 
-<<<<<<< HEAD
-#define	PCITC_DTIMER_VAL	8
-#define PCITC_RTIMER_VAL	0x10
-
-#endif  /* __ASM_RC32434_PCI_H */
-=======
 #define PCITC_DTIMER_VAL	8
 #define PCITC_RTIMER_VAL	0x10
 
 #endif	/* __ASM_RC32434_PCI_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

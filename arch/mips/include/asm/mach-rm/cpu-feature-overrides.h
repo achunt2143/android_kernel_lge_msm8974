@@ -10,26 +10,14 @@
 #ifndef __ASM_MACH_RM200_CPU_FEATURE_OVERRIDES_H
 #define __ASM_MACH_RM200_CPU_FEATURE_OVERRIDES_H
 
-<<<<<<< HEAD
-#include <cpu-feature-overrides.h>
-
 #define cpu_has_tlb		1
 #define cpu_has_4kex		1
 #define cpu_has_4k_cache	1
-#define cpu_has_fpu		1
-=======
-#define cpu_has_tlb		1
-#define cpu_has_4kex		1
-#define cpu_has_4k_cache	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_has_32fpr		1
 #define cpu_has_counter		1
 #define cpu_has_watch		0
 #define cpu_has_mips16		0
-<<<<<<< HEAD
-=======
 #define cpu_has_mips16e2	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_has_divec		0
 #define cpu_has_cache_cdex_p	1
 #define cpu_has_prefetch	0
@@ -40,10 +28,7 @@
 #define cpu_has_dc_aliases	(PAGE_SIZE < 0x4000)
 #define cpu_has_ic_fills_f_dc	0
 #define cpu_has_dsp		0
-<<<<<<< HEAD
-=======
 #define cpu_has_dsp2		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_has_nofpuex		0
 #define cpu_has_64bits		1
 #define cpu_has_mipsmt		0

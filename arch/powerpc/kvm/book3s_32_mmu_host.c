@@ -1,46 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 SUSE Linux Products GmbH. All rights reserved.
  *
  * Authors:
  *     Alexander Graf <agraf@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kvm_host.h>
 
 #include <asm/kvm_ppc.h>
 #include <asm/kvm_book3s.h>
-<<<<<<< HEAD
-#include <asm/mmu-hash32.h>
-#include <asm/machdep.h>
-#include <asm/mmu_context.h>
-#include <asm/hw_irq.h>
-=======
 #include <asm/book3s/32/mmu-hash.h>
 #include <asm/machdep.h>
 #include <asm/mmu_context.h>
 #include <asm/hw_irq.h>
 #include "book3s.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* #define DEBUG_MMU */
 /* #define DEBUG_SR */
@@ -107,11 +81,7 @@ static struct kvmppc_sid_map *find_sid_vsid(struct kvm_vcpu *vcpu, u64 gvsid)
 	struct kvmppc_sid_map *map;
 	u16 sid_map_mask;
 
-<<<<<<< HEAD
-	if (vcpu->arch.shared->msr & MSR_PR)
-=======
 	if (kvmppc_get_msr(vcpu) & MSR_PR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gvsid |= VSID_PR;
 
 	sid_map_mask = kvmppc_sid_hash(vcpu, gvsid);
@@ -157,18 +127,11 @@ static u32 *kvmppc_mmu_get_pteg(struct kvm_vcpu *vcpu, u32 vsid, u32 eaddr,
 
 extern char etext[];
 
-<<<<<<< HEAD
-int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte)
-{
-	pfn_t hpaddr;
-	u64 va;
-=======
 int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 			bool iswrite)
 {
 	kvm_pfn_t hpaddr;
 	u64 vpn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 vsid;
 	struct kvmppc_sid_map *map;
 	volatile u32 *pteg;
@@ -179,14 +142,6 @@ int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 	bool evict = false;
 	struct hpte_cache *pte;
 	int r = 0;
-<<<<<<< HEAD
-
-	/* Get host physical address for gpa */
-	hpaddr = kvmppc_gfn_to_pfn(vcpu, orig_pte->raddr >> PAGE_SHIFT);
-	if (is_error_pfn(hpaddr)) {
-		printk(KERN_INFO "Couldn't get guest page for gfn %lx!\n",
-				 orig_pte->eaddr);
-=======
 	bool writable;
 
 	/* Get host physical address for gpa */
@@ -194,7 +149,6 @@ int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 	if (is_error_noslot_pfn(hpaddr)) {
 		printk(KERN_INFO "Couldn't get guest page for gpa %lx!\n",
 				 orig_pte->raddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 		goto out;
 	}
@@ -210,13 +164,8 @@ int kvmppc_mmu_map_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *orig_pte,
 	BUG_ON(!map);
 
 	vsid = map->host_vsid;
-<<<<<<< HEAD
-	va = (vsid << SID_SHIFT) | (eaddr & ~ESID_MASK);
-
-=======
 	vpn = (vsid << (SID_SHIFT - VPN_SHIFT)) |
 		((eaddr & ~ESID_MASK) >> VPN_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 next_pteg:
 	if (rr == 16) {
 		primary = !primary;
@@ -246,23 +195,16 @@ next_pteg:
 		(primary ? 0 : PTE_SEC);
 	pteg1 = hpaddr | PTE_M | PTE_R | PTE_C;
 
-<<<<<<< HEAD
-	if (orig_pte->may_write) {
-=======
 	if (orig_pte->may_write && writable) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pteg1 |= PP_RWRW;
 		mark_page_dirty(vcpu->kvm, orig_pte->raddr >> PAGE_SHIFT);
 	} else {
 		pteg1 |= PP_RWRX;
 	}
 
-<<<<<<< HEAD
-=======
 	if (orig_pte->may_execute)
 		kvmppc_mmu_flush_icache(hpaddr >> PAGE_SHIFT);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_disable();
 
 	if (pteg[rr]) {
@@ -289,52 +231,35 @@ next_pteg:
 	/* Now tell our Shadow PTE code about the new page */
 
 	pte = kvmppc_mmu_hpte_cache_next(vcpu);
-<<<<<<< HEAD
-=======
 	if (!pte) {
 		kvm_release_pfn_clean(hpaddr >> PAGE_SHIFT);
 		r = -EAGAIN;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk_mmu("KVM: %c%c Map 0x%llx: [%lx] 0x%llx (0x%llx) -> %lx\n",
 		    orig_pte->may_write ? 'w' : '-',
 		    orig_pte->may_execute ? 'x' : '-',
-<<<<<<< HEAD
-		    orig_pte->eaddr, (ulong)pteg, va,
-		    orig_pte->vpage, hpaddr);
-
-	pte->slot = (ulong)&pteg[rr];
-	pte->host_va = va;
-=======
 		    orig_pte->eaddr, (ulong)pteg, vpn,
 		    orig_pte->vpage, hpaddr);
 
 	pte->slot = (ulong)&pteg[rr];
 	pte->host_vpn = vpn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pte->pte = *orig_pte;
 	pte->pfn = hpaddr >> PAGE_SHIFT;
 
 	kvmppc_mmu_hpte_cache_map(vcpu, pte);
 
-<<<<<<< HEAD
-=======
 	kvm_release_pfn_clean(hpaddr >> PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 void kvmppc_mmu_unmap_page(struct kvm_vcpu *vcpu, struct kvmppc_pte *pte)
 {
 	kvmppc_mmu_pte_vflush(vcpu, pte->vpage, 0xfffffffffULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kvmppc_sid_map *create_sid_map(struct kvm_vcpu *vcpu, u64 gvsid)
 {
 	struct kvmppc_sid_map *map;
@@ -342,11 +267,7 @@ static struct kvmppc_sid_map *create_sid_map(struct kvm_vcpu *vcpu, u64 gvsid)
 	u16 sid_map_mask;
 	static int backwards_map = 0;
 
-<<<<<<< HEAD
-	if (vcpu->arch.shared->msr & MSR_PR)
-=======
 	if (kvmppc_get_msr(vcpu) & MSR_PR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gvsid |= VSID_PR;
 
 	/* We might get collisions that trap in preceding order, so let's
@@ -421,11 +342,7 @@ void kvmppc_mmu_flush_segments(struct kvm_vcpu *vcpu)
 	svcpu_put(svcpu);
 }
 
-<<<<<<< HEAD
-void kvmppc_mmu_destroy(struct kvm_vcpu *vcpu)
-=======
 void kvmppc_mmu_destroy_pr(struct kvm_vcpu *vcpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -436,14 +353,7 @@ void kvmppc_mmu_destroy_pr(struct kvm_vcpu *vcpu)
 	preempt_enable();
 }
 
-<<<<<<< HEAD
-/* From mm/mmu_context_hash32.c */
-#define CTX_TO_VSID(c, id)	((((c) * (897 * 16)) + (id * 0x111)) & 0xffffff)
-
-int kvmppc_mmu_init(struct kvm_vcpu *vcpu)
-=======
 int kvmppc_mmu_init_pr(struct kvm_vcpu *vcpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvmppc_vcpu_book3s *vcpu3s = to_book3s(vcpu);
 	int err;

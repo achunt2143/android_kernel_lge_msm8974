@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	ASP Device Driver
  *
  *	(c) Copyright 2000 The Puffin Group Inc.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation; either version 2 of the License, or
- *      (at your option) any later version.
- *
- *	by Helge Deller <deller@gmx.de>
-=======
  *	(c) 2000-2023 by Helge Deller <deller@gmx.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -126,14 +114,6 @@ static int __init asp_init_chip(struct parisc_device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct parisc_device_id asp_tbl[] = {
-	{ HPHW_BA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00070 },
-	{ 0, }
-};
-
-struct parisc_driver asp_driver = {
-=======
 static const struct parisc_device_id asp_tbl[] __initconst = {
 	{ HPHW_BA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00070 },
 	{ 0, }
@@ -141,17 +121,13 @@ static const struct parisc_device_id asp_tbl[] __initconst = {
 MODULE_DEVICE_TABLE(parisc, asp_tbl);
 
 static struct parisc_driver asp_driver __refdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"asp",
 	.id_table =	asp_tbl,
 	.probe =	asp_init_chip,
 };
-<<<<<<< HEAD
-=======
 
 static int __init asp_init(void)
 {
 	return register_parisc_driver(&asp_driver);
 }
 arch_initcall(asp_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

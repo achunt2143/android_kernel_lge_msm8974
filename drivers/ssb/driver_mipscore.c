@@ -8,25 +8,15 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-#include <linux/ssb/ssb.h>
-
-=======
 #include "ssb_private.h"
 
 #include <linux/ssb/ssb.h>
 
 #include <linux/mtd/physmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-
-#include "ssb_private.h"
-
-=======
 #ifdef CONFIG_BCM47XX
 #include <linux/bcm47xx_nvram.h>
 #endif
@@ -50,7 +40,6 @@ struct platform_device ssb_pflash_dev = {
 	.resource	= &ssb_pflash_resource,
 	.num_resources	= 1,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 mips_read32(struct ssb_mipscore *mcore,
 			      u16 offset)
@@ -181,28 +170,12 @@ static void set_irq(struct ssb_device *dev, unsigned int irq)
 		irqflag |= (ipsflag & ~ipsflag_irq_mask[irq]);
 		ssb_write32(mdev, SSB_IPSFLAG, irqflag);
 	}
-<<<<<<< HEAD
-	ssb_dprintk(KERN_INFO PFX
-		    "set_irq: core 0x%04x, irq %d => %d\n",
-		    dev->id.coreid, oldirq+2, irq+2);
-=======
 	dev_dbg(dev->dev, "set_irq: core 0x%04x, irq %d => %d\n",
 		dev->id.coreid, oldirq+2, irq+2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_irq(struct ssb_device *dev, unsigned int irq)
 {
-<<<<<<< HEAD
-	int i;
-	static const char *irq_name[] = {"2(S)", "3", "4", "5", "6", "D", "I"};
-	ssb_dprintk(KERN_INFO PFX
-		"core 0x%04x, irq :", dev->id.coreid);
-	for (i = 0; i <= 6; i++) {
-		ssb_dprintk(" %s%s", irq_name[i], i==irq?"*":" ");
-	}
-	ssb_dprintk("\n");
-=======
 	static const char *irq_name[] = {"2(S)", "3", "4", "5", "6", "D", "I"};
 	dev_dbg(dev->dev,
 		"core 0x%04x, irq : %s%s %s%s %s%s %s%s %s%s %s%s %s%s\n",
@@ -214,7 +187,6 @@ static void print_irq(struct ssb_device *dev, unsigned int irq)
 		irq_name[4], irq == 4 ? "*" : " ",
 		irq_name[5], irq == 5 ? "*" : " ",
 		irq_name[6], irq == 6 ? "*" : " ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dump_irq(struct ssb_bus *bus)
@@ -231,15 +203,9 @@ static void ssb_mips_serial_init(struct ssb_mipscore *mcore)
 {
 	struct ssb_bus *bus = mcore->dev->bus;
 
-<<<<<<< HEAD
-	if (bus->extif.dev)
-		mcore->nr_serial_ports = ssb_extif_serial_init(&bus->extif, mcore->serial_ports);
-	else if (bus->chipco.dev)
-=======
 	if (ssb_extif_available(&bus->extif))
 		mcore->nr_serial_ports = ssb_extif_serial_init(&bus->extif, mcore->serial_ports);
 	else if (ssb_chipco_available(&bus->chipco))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcore->nr_serial_ports = ssb_chipco_serial_init(&bus->chipco, mcore->serial_ports);
 	else
 		mcore->nr_serial_ports = 0;
@@ -248,19 +214,6 @@ static void ssb_mips_serial_init(struct ssb_mipscore *mcore)
 static void ssb_mips_flash_detect(struct ssb_mipscore *mcore)
 {
 	struct ssb_bus *bus = mcore->dev->bus;
-<<<<<<< HEAD
-
-	mcore->flash_buswidth = 2;
-	if (bus->chipco.dev) {
-		mcore->flash_window = 0x1c000000;
-		mcore->flash_window_size = 0x02000000;
-		if ((ssb_read32(bus->chipco.dev, SSB_CHIPCO_FLASH_CFG)
-		               & SSB_CHIPCO_CFG_DS16) == 0)
-			mcore->flash_buswidth = 1;
-	} else {
-		mcore->flash_window = 0x1fc00000;
-		mcore->flash_window_size = 0x00400000;
-=======
 	struct ssb_sflash *sflash = &mcore->sflash;
 	struct ssb_pflash *pflash = &mcore->pflash;
 
@@ -306,7 +259,6 @@ ssb_pflash:
 		ssb_pflash_data.width = pflash->buswidth;
 		ssb_pflash_resource.start = pflash->window;
 		ssb_pflash_resource.end = pflash->window + pflash->window_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -318,15 +270,9 @@ u32 ssb_cpu_clock(struct ssb_mipscore *mcore)
 	if (bus->chipco.capabilities & SSB_CHIPCO_CAP_PMU)
 		return ssb_pmu_get_cpu_clock(&bus->chipco);
 
-<<<<<<< HEAD
-	if (bus->extif.dev) {
-		ssb_extif_get_clockcontrol(&bus->extif, &pll_type, &n, &m);
-	} else if (bus->chipco.dev) {
-=======
 	if (ssb_extif_available(&bus->extif)) {
 		ssb_extif_get_clockcontrol(&bus->extif, &pll_type, &n, &m);
 	} else if (ssb_chipco_available(&bus->chipco)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ssb_chipco_get_clockcpu(&bus->chipco, &pll_type, &n, &m);
 	} else
 		return 0;
@@ -354,11 +300,7 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 	if (!mcore->dev)
 		return; /* We don't have a MIPS core */
 
-<<<<<<< HEAD
-	ssb_dprintk(KERN_INFO PFX "Initializing MIPS core...\n");
-=======
 	dev_dbg(mcore->dev->dev, "Initializing MIPS core...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bus = mcore->dev->bus;
 	hz = ssb_clockspeed(bus);
@@ -366,15 +308,9 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 		hz = 100000000;
 	ns = 1000000000 / hz;
 
-<<<<<<< HEAD
-	if (bus->extif.dev)
-		ssb_extif_timing_init(&bus->extif, ns);
-	else if (bus->chipco.dev)
-=======
 	if (ssb_extif_available(&bus->extif))
 		ssb_extif_timing_init(&bus->extif, ns);
 	else if (ssb_chipco_available(&bus->chipco))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ssb_chipco_timing_init(&bus->chipco, ns);
 
 	/* Assign IRQs to all cores on the bus, start with irq line 2, because serial usually takes 1 */
@@ -406,21 +342,13 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 				set_irq(dev, irq++);
 				break;
 			}
-<<<<<<< HEAD
-			/* fallthrough */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SSB_DEV_EXTIF:
 			set_irq(dev, 0);
 			break;
 		}
 	}
-<<<<<<< HEAD
-	ssb_dprintk(KERN_INFO PFX "after irq reconfiguration\n");
-=======
 	dev_dbg(mcore->dev->dev, "after irq reconfiguration\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_irq(bus);
 
 	ssb_mips_serial_init(mcore);

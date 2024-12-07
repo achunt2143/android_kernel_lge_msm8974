@@ -13,8 +13,6 @@
  * Copyright (C) 2009 Jason Wessel <jason.wessel@windriver.com>
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/list.h>
 
 /* Shifted versions of the command enable bits are be used if the command
@@ -79,7 +77,6 @@ typedef struct _kdbtab {
 	struct list_head list_node;	/* Command list */
 } kdbtab_t;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_KGDB_KDB
 #include <linux/init.h>
 #include <linux/sched.h>
@@ -93,26 +90,11 @@ extern int kdb_poll_idx;
  * number whenever the kernel debugger is entered.
  */
 extern int kdb_initial_cpu;
-<<<<<<< HEAD
-extern atomic_t kdb_event;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Types and messages used for dynamically added kdb shell commands */
 
 #define KDB_MAXARGS    16 /* Maximum number of arguments to a function  */
 
-<<<<<<< HEAD
-typedef enum {
-	KDB_REPEAT_NONE = 0,	/* Do not repeat this command */
-	KDB_REPEAT_NO_ARGS,	/* Repeat the command without arguments */
-	KDB_REPEAT_WITH_ARGS,	/* Repeat the command including its arguments */
-} kdb_repeat_t;
-
-typedef int (*kdb_func_t)(int, const char **);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* KDB return codes from a command or internal kdb function */
 #define KDB_NOTFOUND	(-1)
 #define KDB_ARGCOUNT	(-2)
@@ -135,10 +117,7 @@ typedef int (*kdb_func_t)(int, const char **);
 #define KDB_BADLENGTH	(-19)
 #define KDB_NOBP	(-20)
 #define KDB_BADADDR	(-21)
-<<<<<<< HEAD
-=======
 #define KDB_NOPERM	(-22)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kdb_diemsg
@@ -152,11 +131,6 @@ extern const char *kdb_diemsg;
 #define KDB_FLAG_CATASTROPHIC	(1 << 1) /* A catastrophic event has occurred */
 #define KDB_FLAG_CMD_INTERRUPT	(1 << 2) /* Previous command was interrupted */
 #define KDB_FLAG_NOIPI		(1 << 3) /* Do not send IPIs */
-<<<<<<< HEAD
-#define KDB_FLAG_ONLY_DO_DUMP	(1 << 4) /* Only do a dump, used when
-					  * kdb is off */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KDB_FLAG_NO_CONSOLE	(1 << 5) /* No console is available,
 					  * kdb is disabled */
 #define KDB_FLAG_NO_VT_CONSOLE	(1 << 6) /* No VT console is available, do
@@ -164,11 +138,7 @@ extern const char *kdb_diemsg;
 #define KDB_FLAG_NO_I8042	(1 << 7) /* No i8042 chip is available, do
 					  * not use keyboard */
 
-<<<<<<< HEAD
-extern int kdb_flags;	/* Global flags, see kdb_state for per cpu state */
-=======
 extern unsigned int kdb_flags;	/* Global flags, see kdb_state for per cpu state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void kdb_save_flags(void);
 extern void kdb_restore_flags(void);
@@ -195,12 +165,6 @@ typedef enum {
 	KDB_REASON_RECURSE,	/* Recursive entry to kdb;
 				 * regs probably valid */
 	KDB_REASON_SSTEP,	/* Single Step trap. - regs valid */
-<<<<<<< HEAD
-} kdb_reason_t;
-
-extern int kdb_trap_printk;
-extern __printf(1, 0) int vkdb_printf(const char *fmt, va_list args);
-=======
 	KDB_REASON_SYSTEM_NMI,	/* In NMI due to SYSTEM cmd; regs valid */
 } kdb_reason_t;
 
@@ -213,7 +177,6 @@ extern int kdb_trap_printk;
 extern int kdb_printf_cpu;
 extern __printf(2, 0) int vkdb_printf(enum kdb_msgsrc src, const char *fmt,
 				      va_list args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern __printf(1, 2) int kdb_printf(const char *, ...);
 typedef __printf(1, 2) int (*kdb_printf_t)(const char *, ...);
 
@@ -227,23 +190,14 @@ extern int kdb_get_kbd_char(void);
 static inline
 int kdb_process_cpu(const struct task_struct *p)
 {
-<<<<<<< HEAD
-	unsigned int cpu = task_thread_info(p)->cpu;
-=======
 	unsigned int cpu = task_cpu(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu > num_possible_cpus())
 		cpu = 0;
 	return cpu;
 }
 
-<<<<<<< HEAD
-/* kdb access to register set for stack dumping */
-extern struct pt_regs *kdb_current_regs;
-=======
 extern void kdb_send_sig(struct task_struct *p, int sig);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KALLSYMS
 extern const char *kdb_walk_kallsyms(loff_t *pos);
 #else /* ! CONFIG_KALLSYMS */
@@ -254,18 +208,6 @@ static inline const char *kdb_walk_kallsyms(loff_t *pos)
 #endif /* ! CONFIG_KALLSYMS */
 
 /* Dynamic kdb shell command registration */
-<<<<<<< HEAD
-extern int kdb_register(char *, kdb_func_t, char *, char *, short);
-extern int kdb_register_repeat(char *, kdb_func_t, char *, char *,
-			       short, kdb_repeat_t);
-extern int kdb_unregister(char *);
-#else /* ! CONFIG_KGDB_KDB */
-#define kdb_printf(...)
-#define kdb_init(x)
-#define kdb_register(...)
-#define kdb_register_repeat(...)
-#define kdb_uregister(x)
-=======
 extern int kdb_register(kdbtab_t *cmd);
 extern void kdb_unregister(kdbtab_t *cmd);
 #else /* ! CONFIG_KGDB_KDB */
@@ -273,7 +215,6 @@ static inline __printf(1, 2) int kdb_printf(const char *fmt, ...) { return 0; }
 static inline void kdb_init(int level) {}
 static inline int kdb_register(kdbtab_t *cmd) { return 0; }
 static inline void kdb_unregister(kdbtab_t *cmd) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_KGDB_KDB */
 enum {
 	KDB_NOT_INITIALIZED,
@@ -283,9 +224,6 @@ enum {
 
 extern int kdbgetintenv(const char *, int *);
 extern int kdb_set(int, const char **);
-<<<<<<< HEAD
-=======
 int kdb_lsmod(int argc, const char **argv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* !_KDB_H */

@@ -1,33 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE64xx/88SE94xx main function head file
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of the
- * License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef _MV_SAS_H_
@@ -46,10 +23,7 @@
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-=======
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/libsas.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_tcq.h>
@@ -66,11 +40,7 @@
 #define mv_dprintk(format, arg...)	\
 	printk(KERN_DEBUG"%s %d:" format, __FILE__, __LINE__, ## arg)
 #else
-<<<<<<< HEAD
-#define mv_dprintk(format, arg...)
-=======
 #define mv_dprintk(format, arg...) no_printk(format, ## arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #define MV_MAX_U32			0xffffffff
 
@@ -79,13 +49,6 @@ extern struct mvs_tgt_initiator mvs_tgt;
 extern struct mvs_info *tgt_mvi;
 extern const struct mvs_dispatch mvs_64xx_dispatch;
 extern const struct mvs_dispatch mvs_94xx_dispatch;
-<<<<<<< HEAD
-extern struct kmem_cache *mvs_task_list_cache;
-
-#define DEV_IS_EXPANDER(type)	\
-	((type == EDGE_DEV) || (type == FANOUT_DEV))
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define bit(n) ((u64)1 << n)
 
@@ -94,10 +57,7 @@ extern struct kmem_cache *mvs_task_list_cache;
 					(__mc) != 0 ;		\
 					(++__lseq), (__mc) >>= 1)
 
-<<<<<<< HEAD
-=======
 #define MVS_PHY_ID (1U << sas_phy->id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MV_INIT_DELAYED_WORK(w, f, d)	INIT_DELAYED_WORK(w, f)
 #define UNASSOC_D2H_FIS(id)		\
 	((void *) mvi->rx_fis + 0x100 * id)
@@ -124,10 +84,7 @@ enum dev_reset {
 };
 
 struct mvs_info;
-<<<<<<< HEAD
-=======
 struct mvs_prv_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mvs_dispatch {
 	char *name;
@@ -197,11 +154,8 @@ struct mvs_dispatch {
 				int buf_len, int from, void *prd);
 	void (*tune_interrupt)(struct mvs_info *mvi, u32 time);
 	void (*non_spec_ncq_error)(struct mvs_info *mvi);
-<<<<<<< HEAD
-=======
 	int (*gpio_write)(struct mvs_prv_info *mvs_prv, u8 reg_type,
 			u8 reg_index, u8 reg_count, u8 *write_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 };
 
@@ -271,16 +225,9 @@ struct mvs_phy {
 
 struct mvs_device {
 	struct list_head		dev_entry;
-<<<<<<< HEAD
-	enum sas_dev_type dev_type;
-	struct mvs_info *mvi_info;
-	struct domain_device *sas_device;
-	struct timer_list timer;
-=======
 	enum sas_device_type dev_type;
 	struct mvs_info *mvi_info;
 	struct domain_device *sas_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 attached_phy;
 	u32 device_id;
 	u32 running_req;
@@ -423,12 +370,7 @@ struct mvs_info {
 	u32 chip_id;
 	const struct mvs_chip_info *chip;
 
-<<<<<<< HEAD
-	int tags_num;
-	unsigned long *tags;
-=======
 	unsigned long *rsvd_tags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* further per-slot information */
 	struct mvs_phy phy[MVS_MAX_PHYS];
 	struct mvs_port port[MVS_MAX_PHYS];
@@ -451,11 +393,7 @@ struct mvs_info {
 	dma_addr_t bulk_buffer_dma1;
 #define TRASH_BUCKET_SIZE    	0x20000
 	void *dma_pool;
-<<<<<<< HEAD
-	struct mvs_slot_info slot_info[0];
-=======
 	struct mvs_slot_info slot_info[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mvs_prv_info{
@@ -483,48 +421,19 @@ struct mvs_task_exec_info {
 	int n_elem;
 };
 
-<<<<<<< HEAD
-struct mvs_task_list {
-	struct sas_task *task;
-	struct list_head list;
-};
-
-
 /******************** function prototype *********************/
 void mvs_get_sas_addr(void *buf, u32 buflen);
-void mvs_tag_clear(struct mvs_info *mvi, u32 tag);
-void mvs_tag_free(struct mvs_info *mvi, u32 tag);
-void mvs_tag_set(struct mvs_info *mvi, unsigned int tag);
-int mvs_tag_alloc(struct mvs_info *mvi, u32 *tag_out);
-void mvs_tag_init(struct mvs_info *mvi);
-=======
-/******************** function prototype *********************/
-void mvs_get_sas_addr(void *buf, u32 buflen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mvs_iounmap(void __iomem *regs);
 int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex);
 void mvs_phys_reset(struct mvs_info *mvi, u32 phy_mask, int hard);
 int mvs_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 			void *funcdata);
-<<<<<<< HEAD
-void __devinit mvs_set_sas_addr(struct mvs_info *mvi, int port_id,
-				u32 off_lo, u32 off_hi, u64 sas_addr);
-void mvs_scan_start(struct Scsi_Host *shost);
-int mvs_scan_finished(struct Scsi_Host *shost, unsigned long time);
-int mvs_queue_command(struct sas_task *task, const int num,
-			gfp_t gfp_flags);
-int mvs_abort_task(struct sas_task *task);
-int mvs_abort_task_set(struct domain_device *dev, u8 *lun);
-int mvs_clear_aca(struct domain_device *dev, u8 *lun);
-int mvs_clear_task_set(struct domain_device *dev, u8 * lun);
-=======
 void mvs_set_sas_addr(struct mvs_info *mvi, int port_id, u32 off_lo,
 		      u32 off_hi, u64 sas_addr);
 void mvs_scan_start(struct Scsi_Host *shost);
 int mvs_scan_finished(struct Scsi_Host *shost, unsigned long time);
 int mvs_queue_command(struct sas_task *task, gfp_t gfp_flags);
 int mvs_abort_task(struct sas_task *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mvs_port_formed(struct asd_sas_phy *sas_phy);
 void mvs_port_deformed(struct asd_sas_phy *sas_phy);
 int mvs_dev_found(struct domain_device *dev);
@@ -541,10 +450,7 @@ void mvs_int_port(struct mvs_info *mvi, int phy_no, u32 events);
 void mvs_update_phyinfo(struct mvs_info *mvi, int i, int get_st);
 int mvs_int_rx(struct mvs_info *mvi, bool self_clear);
 struct mvs_device *mvs_find_dev_by_reg_set(struct mvs_info *mvi, u8 reg_set);
-<<<<<<< HEAD
-=======
 int mvs_gpio_write(struct sas_ha_struct *, u8 reg_type, u8 reg_index,
 			u8 reg_count, u8 *write_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 

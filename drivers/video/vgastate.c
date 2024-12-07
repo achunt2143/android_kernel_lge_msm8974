@@ -2,11 +2,7 @@
  * linux/drivers/video/vgastate.c -- VGA state save/restore
  *
  * Copyright 2002 James Simmons
-<<<<<<< HEAD
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright history from vga16fb.c:
  *	Copyright 1999 Ben Pfaff and Petr Vandrovec
  *	Based on VGA info at http://www.goodnet.com/~tinara/FreeVGA/home.htm
@@ -14,11 +10,7 @@
  *
  * This file is subject to the terms and conditions of the GNU General
  * Public License.  See the file COPYING in the main directory of this
-<<<<<<< HEAD
- * archive for more details.  
-=======
  * archive for more details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #include <linux/module.h>
@@ -37,26 +29,16 @@ struct regstate {
 	__u8 *gfx;
 	__u8 *seq;
 	__u8 misc;
-<<<<<<< HEAD
-};	
-
-static inline unsigned char vga_rcrtcs(void __iomem *regbase, unsigned short iobase, 
-=======
 };
 
 static inline unsigned char vga_rcrtcs(void __iomem *regbase, unsigned short iobase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       unsigned char reg)
 {
 	vga_w(regbase, iobase + 0x4, reg);
 	return vga_r(regbase, iobase + 0x5);
 }
 
-<<<<<<< HEAD
-static inline void vga_wcrtcs(void __iomem *regbase, unsigned short iobase, 
-=======
 static inline void vga_wcrtcs(void __iomem *regbase, unsigned short iobase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      unsigned char reg, unsigned char val)
 {
 	vga_w(regbase, iobase + 0x4, reg);
@@ -89,11 +71,7 @@ static void save_vga_text(struct vgastate *state, void __iomem *fbbase)
 	gr6 = vga_rgfx(state->vgabase, VGA_GFX_MISC);
 	seq2 = vga_rseq(state->vgabase, VGA_SEQ_PLANE_WRITE);
 	seq4 = vga_rseq(state->vgabase, VGA_SEQ_MEMORY_MODE);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* blank screen */
 	seq1 = vga_rseq(state->vgabase, VGA_SEQ_CLOCK_MODE);
 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x1);
@@ -107,11 +85,7 @@ static void save_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x2);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 4 * 8192; i++) 
-=======
 		for (i = 0; i < 4 * 8192; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			saved->vga_font0[i] = vga_r(fbbase, i);
 	}
 
@@ -122,17 +96,10 @@ static void save_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x3);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < state->memsize; i++) 
-			saved->vga_font1[i] = vga_r(fbbase, i);
-	}
-	
-=======
 		for (i = 0; i < state->memsize; i++)
 			saved->vga_font1[i] = vga_r(fbbase, i);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* save font at plane 0/1 */
 	if (state->flags & VGA_SAVE_TEXT) {
 		vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x1);
@@ -140,11 +107,7 @@ static void save_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 8192; i++) 
-=======
 		for (i = 0; i < 8192; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			saved->vga_text[i] = vga_r(fbbase, i);
 
 		vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x2);
@@ -152,13 +115,8 @@ static void save_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x1);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 8192; i++) 
-			saved->vga_text[8192+i] = vga_r(fbbase + 2 * 8192, i); 
-=======
 		for (i = 0; i < 8192; i++)
 			saved->vga_text[8192+i] = vga_r(fbbase + 2 * 8192, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* restore regs */
@@ -193,11 +151,7 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 	gr8 = vga_rgfx(state->vgabase, VGA_GFX_BIT_MASK);
 	seq2 = vga_rseq(state->vgabase, VGA_SEQ_PLANE_WRITE);
 	seq4 = vga_rseq(state->vgabase, VGA_SEQ_MEMORY_MODE);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* blank screen */
 	seq1 = vga_rseq(state->vgabase, VGA_SEQ_CLOCK_MODE);
 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x1);
@@ -209,11 +163,7 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_BIT_MASK, 0xff);
 		vga_wgfx(state->vgabase, VGA_GFX_SR_ENABLE, 0x00);
 	}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* restore font at plane 2 */
 	if (state->flags & VGA_SAVE_FONT0) {
 		vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x4);
@@ -221,11 +171,7 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x2);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 4 * 8192; i++) 
-=======
 		for (i = 0; i < 4 * 8192; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vga_w(fbbase, i, saved->vga_font0[i]);
 	}
 
@@ -236,17 +182,10 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x3);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < state->memsize; i++) 
-			vga_w(fbbase, i, saved->vga_font1[i]);
-	}
-	
-=======
 		for (i = 0; i < state->memsize; i++)
 			vga_w(fbbase, i, saved->vga_font1[i]);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* restore font at plane 0/1 */
 	if (state->flags & VGA_SAVE_TEXT) {
 		vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x1);
@@ -254,27 +193,16 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 8192; i++) 
-			vga_w(fbbase, i, saved->vga_text[i]);
-		
-=======
 		for (i = 0; i < 8192; i++)
 			vga_w(fbbase, i, saved->vga_text[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x2);
 		vga_wseq(state->vgabase, VGA_SEQ_MEMORY_MODE, 0x6);
 		vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x1);
 		vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x0);
 		vga_wgfx(state->vgabase, VGA_GFX_MISC, 0x5);
-<<<<<<< HEAD
-		for (i = 0; i < 8192; i++) 
-			vga_w(fbbase, i, saved->vga_text[8192+i]); 
-=======
 		for (i = 0; i < 8192; i++)
 			vga_w(fbbase, i, saved->vga_text[8192+i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* unblank screen */
@@ -294,11 +222,7 @@ static void restore_vga_text(struct vgastate *state, void __iomem *fbbase)
 	vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, seq2);
 	vga_wseq(state->vgabase, VGA_SEQ_MEMORY_MODE, seq4);
 }
-<<<<<<< HEAD
-			      
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void save_vga_mode(struct vgastate *state)
 {
 	struct regstate *saved = (struct regstate *) state->vidstate;
@@ -311,17 +235,10 @@ static void save_vga_mode(struct vgastate *state)
 	else
 		iobase = 0x3b0;
 
-<<<<<<< HEAD
-	for (i = 0; i < state->num_crtc; i++) 
-		saved->crtc[i] = vga_rcrtcs(state->vgabase, iobase, i);
-	
-	vga_r(state->vgabase, iobase + 0xa); 
-=======
 	for (i = 0; i < state->num_crtc; i++)
 		saved->crtc[i] = vga_rcrtcs(state->vgabase, iobase, i);
 
 	vga_r(state->vgabase, iobase + 0xa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vga_w(state->vgabase, VGA_ATT_W, 0x00);
 	for (i = 0; i < state->num_attr; i++) {
 		vga_r(state->vgabase, iobase + 0xa);
@@ -330,17 +247,10 @@ static void save_vga_mode(struct vgastate *state)
 	vga_r(state->vgabase, iobase + 0xa);
 	vga_w(state->vgabase, VGA_ATT_W, 0x20);
 
-<<<<<<< HEAD
-	for (i = 0; i < state->num_gfx; i++) 
-		saved->gfx[i] = vga_rgfx(state->vgabase, i);
-
-	for (i = 0; i < state->num_seq; i++) 
-=======
 	for (i = 0; i < state->num_gfx; i++)
 		saved->gfx[i] = vga_rgfx(state->vgabase, i);
 
 	for (i = 0; i < state->num_seq; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		saved->seq[i] = vga_rseq(state->vgabase, i);
 }
 
@@ -358,45 +268,26 @@ static void restore_vga_mode(struct vgastate *state)
 		iobase = 0x3b0;
 
 	/* turn off display */
-<<<<<<< HEAD
-	vga_wseq(state->vgabase, VGA_SEQ_CLOCK_MODE, 
-=======
 	vga_wseq(state->vgabase, VGA_SEQ_CLOCK_MODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 saved->seq[VGA_SEQ_CLOCK_MODE] | 0x20);
 
 	/* disable sequencer */
 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x01);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable palette addressing */
 	vga_r(state->vgabase, iobase + 0xa);
 	vga_w(state->vgabase, VGA_ATT_W, 0x00);
 
-<<<<<<< HEAD
-	for (i = 2; i < state->num_seq; i++) 
-=======
 	for (i = 2; i < state->num_seq; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vga_wseq(state->vgabase, i, saved->seq[i]);
 
 
 	/* unprotect vga regs */
 	vga_wcrtcs(state->vgabase, iobase, 17, saved->crtc[17] & ~0x80);
-<<<<<<< HEAD
-	for (i = 0; i < state->num_crtc; i++) 
-		vga_wcrtcs(state->vgabase, iobase, i, saved->crtc[i]);
-	
-	for (i = 0; i < state->num_gfx; i++) 
-=======
 	for (i = 0; i < state->num_crtc; i++)
 		vga_wcrtcs(state->vgabase, iobase, i, saved->crtc[i]);
 
 	for (i = 0; i < state->num_gfx; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vga_wgfx(state->vgabase, i, saved->gfx[i]);
 
 	for (i = 0; i < state->num_attr; i++) {
@@ -407,11 +298,7 @@ static void restore_vga_mode(struct vgastate *state)
 	/* reenable sequencer */
 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x03);
 	/* turn display on */
-<<<<<<< HEAD
-	vga_wseq(state->vgabase, VGA_SEQ_CLOCK_MODE, 
-=======
 	vga_wseq(state->vgabase, VGA_SEQ_CLOCK_MODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 saved->seq[VGA_SEQ_CLOCK_MODE] & ~(1 << 5));
 
 	/* disable video/palette source */
@@ -425,11 +312,7 @@ static void save_vga_cmap(struct vgastate *state)
 	int i;
 
 	vga_w(state->vgabase, VGA_PEL_MSK, 0xff);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* assumes DAC is readable and writable */
 	vga_w(state->vgabase, VGA_PEL_IR, 0x00);
 	for (i = 0; i < 768; i++)
@@ -463,11 +346,7 @@ static void vga_cleanup(struct vgastate *state)
 		state->vidstate = NULL;
 	}
 }
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int save_vga(struct vgastate *state)
 {
 	struct regstate *saved;
@@ -478,11 +357,7 @@ int save_vga(struct vgastate *state)
 		return 1;
 
 	state->vidstate = (void *)saved;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (state->flags & VGA_SAVE_CMAP) {
 		saved->vga_cmap = vmalloc(768);
 		if (!saved->vga_cmap) {
@@ -528,11 +403,7 @@ int save_vga(struct vgastate *state)
 		}
 		if (!state->memsize)
 			state->memsize = 8 * 8192;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!state->membase)
 			state->membase = 0xA0000;
 
@@ -543,11 +414,7 @@ int save_vga(struct vgastate *state)
 			return 1;
 		}
 
-<<<<<<< HEAD
-		/* 
-=======
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * save only first 32K used by vgacon
 		 */
 		if (state->flags & VGA_SAVE_FONT0) {
@@ -558,11 +425,7 @@ int save_vga(struct vgastate *state)
 				return 1;
 			}
 		}
-<<<<<<< HEAD
-		/* 
-=======
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * largely unused, but if required by the caller
 		 * we'll just save everything.
 		 */
@@ -585,22 +448,14 @@ int save_vga(struct vgastate *state)
 				return 1;
 			}
 		}
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		save_vga_text(state, fbbase);
 		iounmap(fbbase);
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-int restore_vga (struct vgastate *state)
-=======
 int restore_vga(struct vgastate *state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (state->vidstate == NULL)
 		return 1;

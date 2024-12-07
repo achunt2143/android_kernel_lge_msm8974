@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _FNIC_H_
 #define _FNIC_H_
@@ -33,11 +14,8 @@
 #include <scsi/libfcoe.h>
 #include "fnic_io.h"
 #include "fnic_res.h"
-<<<<<<< HEAD
-=======
 #include "fnic_trace.h"
 #include "fnic_stats.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vnic_dev.h"
 #include "vnic_wq.h"
 #include "vnic_rq.h"
@@ -49,26 +27,16 @@
 
 #define DRV_NAME		"fnic"
 #define DRV_DESCRIPTION		"Cisco FCoE HBA Driver"
-<<<<<<< HEAD
-#define DRV_VERSION		"1.5.0.2"
-=======
 #define DRV_VERSION		"1.7.0.0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PFX			DRV_NAME ": "
 #define DFX                     DRV_NAME "%d: "
 
 #define DESC_CLEAN_LOW_WATERMARK 8
-<<<<<<< HEAD
-#define FNIC_MAX_IO_REQ		2048 /* scsi_cmnd tag map entries */
-#define	FNIC_IO_LOCKS		64 /* IO locks: power of 2 */
-#define FNIC_DFLT_QUEUE_DEPTH	32
-=======
 #define FNIC_UCSM_DFLT_THROTTLE_CNT_BLD	16 /* UCSM default throttle count */
 #define FNIC_MIN_IO_REQ			256 /* Min IO throttle count */
 #define FNIC_MAX_IO_REQ		1024 /* scsi_cmnd tag map entries */
 #define FNIC_DFLT_IO_REQ        256 /* Default scsi_cmnd tag map entries */
 #define FNIC_DFLT_QUEUE_DEPTH	256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	FNIC_STATS_RATE_LIMIT	4 /* limit rate at which stats are pulled up */
 
 /*
@@ -80,16 +48,6 @@
 #define FNIC_NO_TAG             -1
 
 /*
-<<<<<<< HEAD
- * Usage of the scsi_cmnd scratchpad.
- * These fields are locked by the hashed io_req_lock.
- */
-#define CMD_SP(Cmnd)		((Cmnd)->SCp.ptr)
-#define CMD_STATE(Cmnd)		((Cmnd)->SCp.phase)
-#define CMD_ABTS_STATUS(Cmnd)	((Cmnd)->SCp.Message)
-#define CMD_LR_STATUS(Cmnd)	((Cmnd)->SCp.have_data_in)
-#define CMD_TAG(Cmnd)           ((Cmnd)->SCp.sent_command)
-=======
  * Command flags to identify the type of command and for other future
  * use.
  */
@@ -140,7 +98,6 @@ static inline u64 fnic_flags_and_state(struct scsi_cmnd *cmd)
 
 	return ((u64)fcmd->flags << 32) | fcmd->state;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FCPIO_INVALID_CODE 0x100 /* hdr_status value unused by firmware */
 
@@ -148,12 +105,6 @@ static inline u64 fnic_flags_and_state(struct scsi_cmnd *cmd)
 #define FNIC_HOST_RESET_TIMEOUT	     10000	/* mSec */
 #define FNIC_RMDEVICE_TIMEOUT        1000       /* mSec */
 #define FNIC_HOST_RESET_SETTLE_TIME  30         /* Sec */
-<<<<<<< HEAD
-
-#define FNIC_MAX_FCP_TARGET     256
-
-extern unsigned int fnic_log_level;
-=======
 #define FNIC_ABT_TERM_DELAY_TIMEOUT  500        /* mSec */
 
 #define FNIC_MAX_FCP_TARGET     256
@@ -178,7 +129,6 @@ extern unsigned int fnic_log_level;
 
 extern unsigned int fnic_log_level;
 extern unsigned int io_completions;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FNIC_MAIN_LOGGING 0x01
 #define FNIC_FCS_LOGGING 0x02
@@ -193,23 +143,6 @@ do {								\
 		} while (0);					\
 } while (0)
 
-<<<<<<< HEAD
-#define FNIC_MAIN_DBG(kern_level, host, fmt, args...)		\
-	FNIC_CHECK_LOGGING(FNIC_MAIN_LOGGING,			\
-			 shost_printk(kern_level, host, fmt, ##args);)
-
-#define FNIC_FCS_DBG(kern_level, host, fmt, args...)		\
-	FNIC_CHECK_LOGGING(FNIC_FCS_LOGGING,			\
-			 shost_printk(kern_level, host, fmt, ##args);)
-
-#define FNIC_SCSI_DBG(kern_level, host, fmt, args...)		\
-	FNIC_CHECK_LOGGING(FNIC_SCSI_LOGGING,			\
-			 shost_printk(kern_level, host, fmt, ##args);)
-
-#define FNIC_ISR_DBG(kern_level, host, fmt, args...)		\
-	FNIC_CHECK_LOGGING(FNIC_ISR_LOGGING,			\
-			 shost_printk(kern_level, host, fmt, ##args);)
-=======
 #define FNIC_MAIN_DBG(kern_level, host, fnic_num, fmt, args...)		\
 	FNIC_CHECK_LOGGING(FNIC_MAIN_LOGGING,			\
 			 shost_printk(kern_level, host,			\
@@ -244,20 +177,14 @@ do {								\
 #define FNIC_DFLT_IO_COMPLETIONS 256
 
 #define FNIC_MQ_CQ_INDEX        2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const char *fnic_state_str[];
 
 enum fnic_intx_intr_index {
 	FNIC_INTX_WQ_RQ_COPYWQ,
-<<<<<<< HEAD
-	FNIC_INTX_ERR,
-	FNIC_INTX_NOTIFY,
-=======
 	FNIC_INTX_DUMMY,
 	FNIC_INTX_NOTIFY,
 	FNIC_INTX_ERR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FNIC_INTX_INTR_MAX,
 };
 
@@ -265,26 +192,16 @@ enum fnic_msix_intr_index {
 	FNIC_MSIX_RQ,
 	FNIC_MSIX_WQ,
 	FNIC_MSIX_WQ_COPY,
-<<<<<<< HEAD
-	FNIC_MSIX_ERR_NOTIFY,
-=======
 	FNIC_MSIX_ERR_NOTIFY = FNIC_MSIX_WQ_COPY + FNIC_WQ_COPY_MAX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FNIC_MSIX_INTR_MAX,
 };
 
 struct fnic_msix_entry {
 	int requested;
-<<<<<<< HEAD
-	char devname[IFNAMSIZ];
-	irqreturn_t (*isr)(int, void *);
-	void *devid;
-=======
 	char devname[IFNAMSIZ + 11];
 	irqreturn_t (*isr)(int, void *);
 	void *devid;
 	int irq_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum fnic_state {
@@ -294,17 +211,6 @@ enum fnic_state {
 	FNIC_IN_ETH_TRANS_FC_MODE,
 };
 
-<<<<<<< HEAD
-#define FNIC_WQ_COPY_MAX 1
-#define FNIC_WQ_MAX 1
-#define FNIC_RQ_MAX 1
-#define FNIC_CQ_MAX (FNIC_WQ_COPY_MAX + FNIC_WQ_MAX + FNIC_RQ_MAX)
-
-struct mempool;
-
-/* Per-instance private data structure */
-struct fnic {
-=======
 struct mempool;
 
 enum fnic_evt {
@@ -329,45 +235,26 @@ struct fnic_cpy_wq {
 /* Per-instance private data structure */
 struct fnic {
 	int fnic_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 	struct fcoe_ctlr ctlr;		/* FIP FCoE controller structure */
 	struct vnic_dev_bar bar0;
 
-<<<<<<< HEAD
-	struct msix_entry msix_entry[FNIC_MSIX_INTR_MAX];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fnic_msix_entry msix[FNIC_MSIX_INTR_MAX];
 
 	struct vnic_stats *stats;
 	unsigned long stats_time;	/* time of stats update */
-<<<<<<< HEAD
-=======
 	unsigned long stats_reset_time; /* time of stats reset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vnic_nic_cfg *nic_cfg;
 	char name[IFNAMSIZ];
 	struct timer_list notify_timer; /* used for MSI interrupts */
 
-<<<<<<< HEAD
-=======
 	unsigned int fnic_max_tag_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int err_intr_offset;
 	unsigned int link_intr_offset;
 
 	unsigned int wq_count;
 	unsigned int cq_count;
 
-<<<<<<< HEAD
-	u32 vlan_hw_insert:1;	        /* let hw insert the tag */
-	u32 in_remove:1;                /* fnic device in removal */
-	u32 stop_rx_link_events:1;      /* stop proc. rx frames, link events */
-
-	struct completion *remove_wait; /* device remove thread blocks */
-
-=======
 	struct mutex sgreset_mutex;
 	spinlock_t sgreset_lock; /* lock for sgreset */
 	struct scsi_cmnd *sgreset_sc;
@@ -389,7 +276,6 @@ struct fnic {
 	bool internal_reset_inprogress;
 	u32 _reserved;			/* fill hole */
 	unsigned long state_flags;	/* protected by host lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum fnic_state state;
 	spinlock_t fnic_lock;
 
@@ -415,17 +301,6 @@ struct fnic {
 	struct fnic_host_tag *tags;
 	mempool_t *io_req_pool;
 	mempool_t *io_sgl_pool[FNIC_SGL_NUM_CACHES];
-<<<<<<< HEAD
-	spinlock_t io_req_lock[FNIC_IO_LOCKS];	/* locks for scsi cmnds */
-
-	struct work_struct link_work;
-	struct work_struct frame_work;
-	struct sk_buff_head frame_queue;
-	struct sk_buff_head tx_queue;
-
-	/* copy work queue cache line section */
-	____cacheline_aligned struct vnic_wq_copy wq_copy[FNIC_WQ_COPY_MAX];
-=======
 
 	unsigned int copy_wq_base;
 	struct work_struct link_work;
@@ -450,7 +325,6 @@ struct fnic {
 	____cacheline_aligned struct vnic_wq_copy hw_copy_wq[FNIC_WQ_COPY_MAX];
 	____cacheline_aligned struct fnic_cpy_wq sw_copy_wq[FNIC_WQ_COPY_MAX];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* completion queue cache line section */
 	____cacheline_aligned struct vnic_cq cq[FNIC_CQ_MAX];
 
@@ -473,19 +347,12 @@ static inline struct fnic *fnic_from_ctlr(struct fcoe_ctlr *fip)
 }
 
 extern struct workqueue_struct *fnic_event_queue;
-<<<<<<< HEAD
-extern struct device_attribute *fnic_attrs[];
-
-void fnic_clear_intr_mode(struct fnic *fnic);
-int fnic_set_intr_mode(struct fnic *fnic);
-=======
 extern struct workqueue_struct *fnic_fip_queue;
 extern const struct attribute_group *fnic_host_groups[];
 
 void fnic_clear_intr_mode(struct fnic *fnic);
 int fnic_set_intr_mode(struct fnic *fnic);
 int fnic_set_intr_mode_msix(struct fnic *fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fnic_free_intr(struct fnic *fnic);
 int fnic_request_intr(struct fnic *fnic);
 
@@ -493,18 +360,11 @@ int fnic_send(struct fc_lport *, struct fc_frame *);
 void fnic_free_wq_buf(struct vnic_wq *wq, struct vnic_wq_buf *buf);
 void fnic_handle_frame(struct work_struct *work);
 void fnic_handle_link(struct work_struct *work);
-<<<<<<< HEAD
-int fnic_rq_cmpl_handler(struct fnic *fnic, int);
-int fnic_alloc_rq_frame(struct vnic_rq *rq);
-void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf);
-void fnic_flush_tx(struct fnic *);
-=======
 void fnic_handle_event(struct work_struct *work);
 int fnic_rq_cmpl_handler(struct fnic *fnic, int);
 int fnic_alloc_rq_frame(struct vnic_rq *rq);
 void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf);
 void fnic_flush_tx(struct work_struct *work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fnic_eth_send(struct fcoe_ctlr *, struct sk_buff *skb);
 void fnic_set_port_id(struct fc_lport *, u32, struct fc_frame *);
 void fnic_update_mac(struct fc_lport *, u8 *new);
@@ -519,11 +379,7 @@ void fnic_scsi_cleanup(struct fc_lport *);
 void fnic_scsi_abort_io(struct fc_lport *);
 void fnic_empty_scsi_cleanup(struct fc_lport *);
 void fnic_exch_mgr_reset(struct fc_lport *, u32, u32);
-<<<<<<< HEAD
-int fnic_wq_copy_cmpl_handler(struct fnic *fnic, int);
-=======
 int fnic_wq_copy_cmpl_handler(struct fnic *fnic, int copy_work_to_do, unsigned int cq_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fnic_wq_cmpl_handler(struct fnic *fnic, int);
 int fnic_flogi_reg_handler(struct fnic *fnic, u32);
 void fnic_wq_copy_cleanup_handler(struct vnic_wq_copy *wq,
@@ -531,12 +387,6 @@ void fnic_wq_copy_cleanup_handler(struct vnic_wq_copy *wq,
 int fnic_fw_reset_handler(struct fnic *fnic);
 void fnic_terminate_rport_io(struct fc_rport *);
 const char *fnic_state_to_str(unsigned int state);
-<<<<<<< HEAD
-
-void fnic_log_q_error(struct fnic *fnic);
-void fnic_handle_link_event(struct fnic *fnic);
-
-=======
 void fnic_mq_map_queues_cpus(struct Scsi_Host *host);
 void fnic_log_q_error(struct fnic *fnic);
 void fnic_handle_link_event(struct fnic *fnic);
@@ -556,5 +406,4 @@ fnic_chk_state_flags_locked(struct fnic *fnic, unsigned long st_flags)
 }
 void __fnic_set_state_flags(struct fnic *, unsigned long, unsigned long);
 void fnic_dump_fchost_stats(struct Scsi_Host *, struct fc_host_statistics *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _FNIC_H_ */

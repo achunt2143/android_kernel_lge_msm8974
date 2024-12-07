@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-#ifndef _LINUX_STDDEF_H
-#define _LINUX_STDDEF_H
-
-#include <linux/compiler.h>
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_STDDEF_H
 #define _LINUX_STDDEF_H
 
 #include <uapi/linux/stddef.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef NULL
 #define NULL ((void *)0)
@@ -22,14 +13,6 @@ enum {
 };
 
 #undef offsetof
-<<<<<<< HEAD
-#ifdef __compiler_offsetof
-#define offsetof(TYPE,MEMBER) __compiler_offsetof(TYPE,MEMBER)
-#else
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#endif
-#endif /* __KERNEL__ */
-=======
 #define offsetof(TYPE, MEMBER)	__builtin_offsetof(TYPE, MEMBER)
 
 /**
@@ -109,6 +92,5 @@ enum {
  */
 #define DECLARE_FLEX_ARRAY(TYPE, NAME) \
 	__DECLARE_FLEX_ARRAY(TYPE, NAME)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

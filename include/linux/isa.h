@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ISA bus.
  */
@@ -10,20 +7,13 @@
 #define __LINUX_ISA_H
 
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 
 struct isa_driver {
 	int (*match)(struct device *, unsigned int);
 	int (*probe)(struct device *, unsigned int);
-<<<<<<< HEAD
-	int (*remove)(struct device *, unsigned int);
-=======
 	void (*remove)(struct device *, unsigned int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*shutdown)(struct device *, unsigned int);
 	int (*suspend)(struct device *, unsigned int, pm_message_t);
 	int (*resume)(struct device *, unsigned int);
@@ -34,21 +24,13 @@ struct isa_driver {
 
 #define to_isa_driver(x) container_of((x), struct isa_driver, driver)
 
-<<<<<<< HEAD
-#ifdef CONFIG_ISA
-=======
 #ifdef CONFIG_ISA_BUS_API
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int isa_register_driver(struct isa_driver *, unsigned int);
 void isa_unregister_driver(struct isa_driver *);
 #else
 static inline int isa_register_driver(struct isa_driver *d, unsigned int i)
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void isa_unregister_driver(struct isa_driver *d)
@@ -56,8 +38,6 @@ static inline void isa_unregister_driver(struct isa_driver *d)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #define module_isa_driver_init(__isa_driver, __num_isa_dev) \
 static int __init __isa_driver##_init(void) \
 { \
@@ -122,5 +102,4 @@ module_isa_driver_exit(__isa_driver)
  */
 #define max_num_isa_dev(__isa_dev_ext) (1024 / __isa_dev_ext)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_ISA_H */

@@ -1,20 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NF_CONNTRACK_TFTP_H
 #define _NF_CONNTRACK_TFTP_H
 
 #define TFTP_PORT 69
 
-<<<<<<< HEAD
-=======
 #include <linux/netfilter.h>
 #include <linux/skbuff.h>
 #include <linux/types.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tftphdr {
 	__be16 opcode;
 };

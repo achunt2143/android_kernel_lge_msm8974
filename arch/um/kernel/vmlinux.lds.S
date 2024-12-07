@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-
-=======
 #define RUNTIME_DISCARD_EXIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 KERNEL_STACK_SIZE = 4096 * (1 << CONFIG_KERNEL_STACK_ORDER);
 
 #ifdef CONFIG_LD_SCRIPT_STATIC

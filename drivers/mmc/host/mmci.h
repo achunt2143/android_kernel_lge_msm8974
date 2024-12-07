@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/host/mmci.h - ARM PrimeCell MMCI PL180/1 driver
  *
  *  Copyright (C) 2003 Deep Blue Solutions, Ltd, All Rights Reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MMCIPOWER		0x000
 #define MCI_PWR_OFF		0x00
@@ -20,8 +10,6 @@
 #define MCI_PWR_ON		0x03
 #define MCI_OD			(1 << 6)
 #define MCI_ROD			(1 << 7)
-<<<<<<< HEAD
-=======
 /*
  * The ST Micro version does not have ROD and reuse the voltage registers for
  * direction settings.
@@ -40,7 +28,6 @@
 #define MCI_STM32_VSWITCH	BIT(2)
 #define MCI_STM32_VSWITCHEN	BIT(3)
 #define MCI_STM32_DIRPOL	BIT(4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMCICLOCK		0x004
 #define MCI_CLK_ENABLE		(1 << 8)
@@ -56,20 +43,6 @@
 #define MCI_ST_UX500_NEG_EDGE	(1 << 13)
 #define MCI_ST_UX500_HWFCEN	(1 << 14)
 #define MCI_ST_UX500_CLK_INV	(1 << 15)
-<<<<<<< HEAD
-
-#define MMCIARGUMENT		0x008
-#define MMCICOMMAND		0x00c
-#define MCI_CPSM_RESPONSE	(1 << 6)
-#define MCI_CPSM_LONGRSP	(1 << 7)
-#define MCI_CPSM_INTERRUPT	(1 << 8)
-#define MCI_CPSM_PENDING	(1 << 9)
-#define MCI_CPSM_ENABLE		(1 << 10)
-#define MCI_SDIO_SUSP		(1 << 11)
-#define MCI_ENCMD_COMPL		(1 << 12)
-#define MCI_NIEN		(1 << 13)
-#define MCI_CE_ATACMD		(1 << 14)
-=======
 /* Modified PL180 on Versatile Express platform */
 #define MCI_ARM_HWFCEN		(1 << 12)
 
@@ -126,7 +99,6 @@
 #define MCI_CPSM_STM32_SRSP		(2 << 8)
 #define MCI_CPSM_STM32_LRSP_CRC		(3 << 8)
 #define MCI_CPSM_STM32_ENABLE		BIT(12)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMCIRESPCMD		0x010
 #define MMCIRESPONSE0		0x014
@@ -135,24 +107,6 @@
 #define MMCIRESPONSE3		0x020
 #define MMCIDATATIMER		0x024
 #define MMCIDATALENGTH		0x028
-<<<<<<< HEAD
-#define MMCIDATACTRL		0x02c
-#define MCI_DPSM_ENABLE		(1 << 0)
-#define MCI_DPSM_DIRECTION	(1 << 1)
-#define MCI_DPSM_MODE		(1 << 2)
-#define MCI_DPSM_DMAENABLE	(1 << 3)
-#define MCI_DPSM_BLOCKSIZE	(1 << 4)
-/* Control register extensions in the ST Micro U300 and Ux500 versions */
-#define MCI_ST_DPSM_RWSTART	(1 << 8)
-#define MCI_ST_DPSM_RWSTOP	(1 << 9)
-#define MCI_ST_DPSM_RWMOD	(1 << 10)
-#define MCI_ST_DPSM_SDIOEN	(1 << 11)
-/* Control register extensions in the ST Micro Ux500 versions */
-#define MCI_ST_DPSM_DMAREQCTL	(1 << 12)
-#define MCI_ST_DPSM_DBOOTMODEEN	(1 << 13)
-#define MCI_ST_DPSM_BUSYMODE	(1 << 14)
-#define MCI_ST_DPSM_DDRMODE	(1 << 15)
-=======
 
 /* The data control register controls the Data Path State Machine (DPSM) */
 #define MMCIDATACTRL		0x02c
@@ -179,7 +133,6 @@
 #define MCI_DPSM_STM32_MODE_SDIO	(1 << 2)
 #define MCI_DPSM_STM32_MODE_STREAM	(2 << 2)
 #define MCI_DPSM_STM32_MODE_BLOCK_STOP	(3 << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMCIDATACNT		0x030
 #define MMCISTATUS		0x034
@@ -208,14 +161,11 @@
 /* Extended status bits for the ST Micro variants */
 #define MCI_ST_SDIOIT		(1 << 22)
 #define MCI_ST_CEATAEND		(1 << 23)
-<<<<<<< HEAD
-=======
 #define MCI_ST_CARDBUSY		(1 << 24)
 /* Extended status bits for the STM32 variants */
 #define MCI_STM32_BUSYD0	BIT(20)
 #define MCI_STM32_BUSYD0END	BIT(21)
 #define MCI_STM32_VSWEND	BIT(25)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMCICLEAR		0x038
 #define MCI_CMDCRCFAILCLR	(1 << 0)
@@ -232,13 +182,10 @@
 /* Extended status bits for the ST Micro variants */
 #define MCI_ST_SDIOITC		(1 << 22)
 #define MCI_ST_CEATAENDC	(1 << 23)
-<<<<<<< HEAD
-=======
 #define MCI_ST_BUSYENDC		(1 << 24)
 /* Extended clear bits for the STM32 variants */
 #define MCI_STM32_VSWENDC	BIT(25)
 #define MCI_STM32_CKSTOPC	BIT(26)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMCIMASK0		0x03c
 #define MCI_CMDCRCFAILMASK	(1 << 0)
@@ -266,33 +213,6 @@
 /* Extended status bits for the ST Micro variants */
 #define MCI_ST_SDIOITMASK	(1 << 22)
 #define MCI_ST_CEATAENDMASK	(1 << 23)
-<<<<<<< HEAD
-
-#define MMCIMASK1		0x040
-#define MMCIFIFOCNT		0x048
-#define MMCIFIFO		0x080 /* to 0x0bc */
-
-#define MCI_IRQENABLE	\
-	(MCI_CMDCRCFAILMASK|MCI_DATACRCFAILMASK|MCI_CMDTIMEOUTMASK|	\
-	MCI_DATATIMEOUTMASK|MCI_TXUNDERRUNMASK|MCI_RXOVERRUNMASK|	\
-	MCI_CMDRESPENDMASK|MCI_CMDSENTMASK|MCI_STARTBITERRMASK)
-
-/* These interrupts are directed to IRQ1 when two IRQ lines are available */
-#define MCI_IRQ1MASK \
-	(MCI_RXFIFOHALFFULLMASK | MCI_RXDATAAVLBLMASK | \
-	 MCI_TXFIFOHALFEMPTYMASK)
-
-#define NR_SG		128
-
-struct clk;
-struct variant_data;
-struct dma_chan;
-
-struct mmci_host_next {
-	struct dma_async_tx_descriptor	*dma_desc;
-	struct dma_chan			*dma_chan;
-	s32				cookie;
-=======
 #define MCI_ST_BUSYENDMASK	(1 << 24)
 /* Extended status bits for the STM32 variants */
 #define MCI_STM32_BUSYD0ENDMASK	BIT(21)
@@ -484,7 +404,6 @@ struct mmci_host_ops {
 	bool (*busy_complete)(struct mmci_host *host, struct mmc_command *cmd, u32 status, u32 err_msk);
 	void (*pre_sig_volt_switch)(struct mmci_host *host);
 	int (*post_sig_volt_switch)(struct mmci_host *host, struct mmc_ios *ios);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mmci_host {
@@ -492,15 +411,6 @@ struct mmci_host {
 	void __iomem		*base;
 	struct mmc_request	*mrq;
 	struct mmc_command	*cmd;
-<<<<<<< HEAD
-	struct mmc_data		*data;
-	struct mmc_host		*mmc;
-	struct clk		*clk;
-	int			gpio_cd;
-	int			gpio_wp;
-	int			gpio_cd_irq;
-	bool			singleirq;
-=======
 	struct mmc_command	stop_abort;
 	struct mmc_data		*data;
 	struct mmc_host		*mmc;
@@ -508,18 +418,10 @@ struct mmci_host {
 	u8			singleirq:1;
 
 	struct reset_control	*rst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t		lock;
 
 	unsigned int		mclk;
-<<<<<<< HEAD
-	unsigned int		cclk;
-	u32			pwr_reg;
-	u32			clk_reg;
-	struct mmci_platform_data *plat;
-	struct variant_data	*variant;
-=======
 	/* cached value of requested clk in set_ios */
 	unsigned int		clock_cache;
 	unsigned int		cclk;
@@ -539,39 +441,17 @@ struct mmci_host {
 	void			*variant_priv;
 	struct pinctrl		*pinctrl;
 	struct pinctrl_state	*pins_opendrain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8			hw_designer;
 	u8			hw_revision:4;
 
 	struct timer_list	timer;
 	unsigned int		oldstat;
-<<<<<<< HEAD
-=======
 	u32			irq_action;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pio stuff */
 	struct sg_mapping_iter	sg_miter;
 	unsigned int		size;
-<<<<<<< HEAD
-	struct regulator	*vcc;
-
-#ifdef CONFIG_DMA_ENGINE
-	/* DMA stuff */
-	struct dma_chan		*dma_current;
-	struct dma_chan		*dma_rx_channel;
-	struct dma_chan		*dma_tx_channel;
-	struct dma_async_tx_descriptor	*dma_desc_current;
-	struct mmci_host_next	next_data;
-
-#define dma_inprogress(host)	((host)->dma_current)
-#else
-#define dma_inprogress(host)	(0)
-#endif
-};
-
-=======
 	int (*get_rx_fifocnt)(struct mmci_host *h, u32 status, int remain);
 
 	u8			use_dma:1;
@@ -616,4 +496,3 @@ void sdmmc_variant_init(struct mmci_host *host);
 #else
 static inline void sdmmc_variant_init(struct mmci_host *host) {}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Miscellaneous definitions for VIA chipsets
    Currently used only by drivers/parport/parport_pc.c */
 

@@ -25,35 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include <linux/seq_file.h>
-#include <linux/slab.h>
-#include "drmP.h"
-#include "rv515d.h"
-#include "radeon.h"
-#include "radeon_asic.h"
-#include "atom.h"
-#include "rv515_reg_safe.h"
-
-/* This files gather functions specifics to: rv515 */
-int rv515_debugfs_pipes_info_init(struct radeon_device *rdev);
-int rv515_debugfs_ga_info_init(struct radeon_device *rdev);
-void rv515_gpu_init(struct radeon_device *rdev);
-int rv515_mc_wait_for_idle(struct radeon_device *rdev);
-
-void rv515_debugfs(struct radeon_device *rdev)
-{
-	if (r100_debugfs_rbbm_init(rdev)) {
-		DRM_ERROR("Failed to register debugfs file for RBBM !\n");
-	}
-	if (rv515_debugfs_pipes_info_init(rdev)) {
-		DRM_ERROR("Failed to register debugfs file for pipes !\n");
-	}
-	if (rv515_debugfs_ga_info_init(rdev)) {
-		DRM_ERROR("Failed to register debugfs file for pipes !\n");
-	}
-}
-=======
 
 #include <linux/seq_file.h>
 #include <linux/slab.h>
@@ -75,7 +46,6 @@ static const u32 crtc_offsets[2] = {
 	0,
 	AVIVO_D2CRTC_H_TOTAL - AVIVO_D1CRTC_H_TOTAL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void rv515_ring_start(struct radeon_device *rdev, struct radeon_ring *ring)
 {
@@ -142,11 +112,7 @@ void rv515_ring_start(struct radeon_device *rdev, struct radeon_ring *ring)
 	radeon_ring_write(ring, GEOMETRY_ROUND_NEAREST | COLOR_ROUND_NEAREST);
 	radeon_ring_write(ring, PACKET0(0x20C8, 0));
 	radeon_ring_write(ring, 0);
-<<<<<<< HEAD
-	radeon_ring_unlock_commit(rdev, ring);
-=======
 	radeon_ring_unlock_commit(rdev, ring, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int rv515_mc_wait_for_idle(struct radeon_device *rdev)
@@ -160,11 +126,7 @@ int rv515_mc_wait_for_idle(struct radeon_device *rdev)
 		if (tmp & MC_STATUS_IDLE) {
 			return 0;
 		}
-<<<<<<< HEAD
-		DRM_UDELAY(1);
-=======
 		udelay(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -1;
 }
@@ -175,21 +137,12 @@ void rv515_vga_render_disable(struct radeon_device *rdev)
 		RREG32(R_000300_VGA_RENDER_CONTROL) & C_000300_VGA_VSTATUS_CNTL);
 }
 
-<<<<<<< HEAD
-void rv515_gpu_init(struct radeon_device *rdev)
-=======
 static void rv515_gpu_init(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned pipe_select_current, gb_pipe_select, tmp;
 
 	if (r100_gui_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait GUI idle while "
-		       "resetting GPU. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait GUI idle while resetting GPU. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rv515_vga_render_disable(rdev);
 	r420_pipes_init(rdev);
@@ -200,19 +153,10 @@ static void rv515_gpu_init(struct radeon_device *rdev)
 	      (((gb_pipe_select >> 8) & 0xF) << 4);
 	WREG32_PLL(0x000D, tmp);
 	if (r100_gui_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait GUI idle while "
-		       "resetting GPU. Bad things might happen.\n");
-	}
-	if (rv515_mc_wait_for_idle(rdev)) {
-		printk(KERN_WARNING "Failed to wait MC idle while "
-		       "programming pipes. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait GUI idle while resetting GPU. Bad things might happen.\n");
 	}
 	if (rv515_mc_wait_for_idle(rdev)) {
 		pr_warn("Failed to wait MC idle while programming pipes. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -236,11 +180,7 @@ static void rv515_vram_get_type(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-void rv515_mc_init(struct radeon_device *rdev)
-=======
 static void rv515_mc_init(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	rv515_vram_get_type(rdev);
@@ -254,13 +194,6 @@ static void rv515_mc_init(struct radeon_device *rdev)
 
 uint32_t rv515_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 {
-<<<<<<< HEAD
-	uint32_t r;
-
-	WREG32(MC_IND_INDEX, 0x7f0000 | (reg & 0xffff));
-	r = RREG32(MC_IND_DATA);
-	WREG32(MC_IND_INDEX, 0);
-=======
 	unsigned long flags;
 	uint32_t r;
 
@@ -270,25 +203,11 @@ uint32_t rv515_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 	WREG32(MC_IND_INDEX, 0);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 void rv515_mc_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
 {
-<<<<<<< HEAD
-	WREG32(MC_IND_INDEX, 0xff0000 | ((reg) & 0xffff));
-	WREG32(MC_IND_DATA, (v));
-	WREG32(MC_IND_INDEX, 0);
-}
-
-#if defined(CONFIG_DEBUG_FS)
-static int rv515_debugfs_pipes_info(struct seq_file *m, void *data)
-{
-	struct drm_info_node *node = (struct drm_info_node *) m->private;
-	struct drm_device *dev = node->minor->dev;
-	struct radeon_device *rdev = dev->dev_private;
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
@@ -302,7 +221,6 @@ static int rv515_debugfs_pipes_info(struct seq_file *m, void *data)
 static int rv515_debugfs_pipes_info_show(struct seq_file *m, void *unused)
 {
 	struct radeon_device *rdev = m->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tmp;
 
 	tmp = RREG32(GB_PIPE_SELECT);
@@ -316,17 +234,9 @@ static int rv515_debugfs_pipes_info_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rv515_debugfs_ga_info(struct seq_file *m, void *data)
-{
-	struct drm_info_node *node = (struct drm_info_node *) m->private;
-	struct drm_device *dev = node->minor->dev;
-	struct radeon_device *rdev = dev->dev_private;
-=======
 static int rv515_debugfs_ga_info_show(struct seq_file *m, void *unused)
 {
 	struct radeon_device *rdev = m->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tmp;
 
 	tmp = RREG32(0x2140);
@@ -337,33 +247,6 @@ static int rv515_debugfs_ga_info_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct drm_info_list rv515_pipes_info_list[] = {
-	{"rv515_pipes_info", rv515_debugfs_pipes_info, 0, NULL},
-};
-
-static struct drm_info_list rv515_ga_info_list[] = {
-	{"rv515_ga_info", rv515_debugfs_ga_info, 0, NULL},
-};
-#endif
-
-int rv515_debugfs_pipes_info_init(struct radeon_device *rdev)
-{
-#if defined(CONFIG_DEBUG_FS)
-	return radeon_debugfs_add_files(rdev, rv515_pipes_info_list, 1);
-#else
-	return 0;
-#endif
-}
-
-int rv515_debugfs_ga_info_init(struct radeon_device *rdev)
-{
-#if defined(CONFIG_DEBUG_FS)
-	return radeon_debugfs_add_files(rdev, rv515_ga_info_list, 1);
-#else
-	return 0;
-#endif
-=======
 DEFINE_SHOW_ATTRIBUTE(rv515_debugfs_pipes_info);
 DEFINE_SHOW_ATTRIBUTE(rv515_debugfs_ga_info);
 #endif
@@ -379,27 +262,10 @@ void rv515_debugfs(struct radeon_device *rdev)
 			    &rv515_debugfs_ga_info_fops);
 #endif
 	r100_debugfs_rbbm_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 {
-<<<<<<< HEAD
-	save->vga_render_control = RREG32(R_000300_VGA_RENDER_CONTROL);
-	save->vga_hdp_control = RREG32(R_000328_VGA_HDP_CONTROL);
-
-	/* Stop all video */
-	WREG32(R_0068E8_D2CRTC_UPDATE_LOCK, 0);
-	WREG32(R_000300_VGA_RENDER_CONTROL, 0);
-	WREG32(R_0060E8_D1CRTC_UPDATE_LOCK, 1);
-	WREG32(R_0068E8_D2CRTC_UPDATE_LOCK, 1);
-	WREG32(R_006080_D1CRTC_CONTROL, 0);
-	WREG32(R_006880_D2CRTC_CONTROL, 0);
-	WREG32(R_0060E8_D1CRTC_UPDATE_LOCK, 0);
-	WREG32(R_0068E8_D2CRTC_UPDATE_LOCK, 0);
-	WREG32(R_000330_D1VGA_CONTROL, 0);
-	WREG32(R_000338_D2VGA_CONTROL, 0);
-=======
 	u32 crtc_enabled, tmp, frame_count, blackout;
 	int i, j;
 
@@ -478,19 +344,10 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 {
-<<<<<<< HEAD
-	WREG32(R_006110_D1GRPH_PRIMARY_SURFACE_ADDRESS, rdev->mc.vram_start);
-	WREG32(R_006118_D1GRPH_SECONDARY_SURFACE_ADDRESS, rdev->mc.vram_start);
-	WREG32(R_006910_D2GRPH_PRIMARY_SURFACE_ADDRESS, rdev->mc.vram_start);
-	WREG32(R_006918_D2GRPH_SECONDARY_SURFACE_ADDRESS, rdev->mc.vram_start);
-	WREG32(R_000310_VGA_MEMORY_BASE_ADDRESS, rdev->mc.vram_start);
-	/* Unlock host access */
-=======
 	u32 tmp, frame_count;
 	int i, j;
 
@@ -574,17 +431,12 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 		}
 	}
 	/* Unlock vga access */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(R_000328_VGA_HDP_CONTROL, save->vga_hdp_control);
 	mdelay(1);
 	WREG32(R_000300_VGA_RENDER_CONTROL, save->vga_render_control);
 }
 
-<<<<<<< HEAD
-void rv515_mc_program(struct radeon_device *rdev)
-=======
 static void rv515_mc_program(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rv515_mc_save save;
 
@@ -675,25 +527,12 @@ static int rv515_startup(struct radeon_device *rdev)
 		return r;
 	}
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_start(rdev);
-	if (r)
-		return r;
-
-	r = radeon_ib_test(rdev, RADEON_RING_TYPE_GFX_INDEX, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
-	if (r) {
-		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
-		rdev->accel_working = false;
-		return r;
-	}
-=======
 	r = radeon_ib_pool_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
 		return r;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -729,10 +568,7 @@ int rv515_resume(struct radeon_device *rdev)
 
 int rv515_suspend(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	radeon_pm_suspend(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
 	rs600_irq_disable(rdev);
@@ -749,16 +585,10 @@ void rv515_set_safe_registers(struct radeon_device *rdev)
 
 void rv515_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	r100_cp_fini(rdev);
-	radeon_wb_fini(rdev);
-	r100_ib_fini(rdev);
-=======
 	radeon_pm_fini(rdev);
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	rv370_pcie_gart_fini(rdev);
 	radeon_agp_fini(rdev);
@@ -817,13 +647,7 @@ int rv515_init(struct radeon_device *rdev)
 	rv515_mc_init(rdev);
 	rv515_debugfs(rdev);
 	/* Fence driver */
-<<<<<<< HEAD
-	r = radeon_fence_driver_init(rdev);
-	if (r)
-		return r;
-=======
 	radeon_fence_driver_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -833,31 +657,17 @@ int rv515_init(struct radeon_device *rdev)
 		return r;
 	rv515_set_safe_registers(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_init(rdev);
-	rdev->accel_working = true;
-	if (r) {
-		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
-		rdev->accel_working = false;
-	}
-
-=======
 	/* Initialize power management */
 	radeon_pm_init(rdev);
 
 	rdev->accel_working = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rv515_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
-<<<<<<< HEAD
-		r100_ib_fini(rdev);
-=======
 		radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		rv370_pcie_gart_fini(rdev);
 		radeon_agp_fini(rdev);
@@ -1109,26 +919,17 @@ struct rv515_watermark {
 	fixed20_12 sclk;
 };
 
-<<<<<<< HEAD
-void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
-				  struct radeon_crtc *crtc,
-				  struct rv515_watermark *wm)
-=======
 static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 					 struct radeon_crtc *crtc,
 					 struct rv515_watermark *wm,
 					 bool low)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_display_mode *mode = &crtc->base.mode;
 	fixed20_12 a, b, c;
 	fixed20_12 pclk, request_fifo_depth, tolerable_latency, estimated_width;
 	fixed20_12 consumption_time, line_time, chunk_time, read_delay_latency;
-<<<<<<< HEAD
-=======
 	fixed20_12 sclk;
 	u32 selected_sclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!crtc->base.enabled) {
 		/* FIXME: wouldn't it better to set priority mark to maximum */
@@ -1136,8 +937,6 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	/* rv6xx, rv7xx */
 	if ((rdev->family >= CHIP_RV610) &&
 	    (rdev->pm.pm_method == PM_METHOD_DPM) && rdev->pm.dpm_enabled)
@@ -1150,7 +949,6 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	sclk.full = dfixed_const(selected_sclk);
 	sclk.full = dfixed_div(sclk, a);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (crtc->vsc.full > dfixed_const(2))
 		wm->num_line_pair.full = dfixed_const(2);
 	else
@@ -1216,11 +1014,7 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	 * sclk = system clock(Mhz)
 	 */
 	a.full = dfixed_const(600 * 1000);
-<<<<<<< HEAD
-	chunk_time.full = dfixed_div(a, rdev->pm.sclk);
-=======
 	chunk_time.full = dfixed_div(a, sclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_delay_latency.full = dfixed_const(1000);
 
 	/* Determine the worst case latency
@@ -1281,8 +1075,6 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void rv515_compute_mode_priority(struct radeon_device *rdev,
 					struct rv515_watermark *wm0,
 					struct rv515_watermark *wm1,
@@ -1407,26 +1199,15 @@ static void rv515_compute_mode_priority(struct radeon_device *rdev,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rv515_bandwidth_avivo_update(struct radeon_device *rdev)
 {
 	struct drm_display_mode *mode0 = NULL;
 	struct drm_display_mode *mode1 = NULL;
-<<<<<<< HEAD
-	struct rv515_watermark wm0;
-	struct rv515_watermark wm1;
-	u32 tmp;
-	u32 d1mode_priority_a_cnt = MODE_PRIORITY_OFF;
-	u32 d2mode_priority_a_cnt = MODE_PRIORITY_OFF;
-	fixed20_12 priority_mark02, priority_mark12, fill_rate;
-	fixed20_12 a, b;
-=======
 	struct rv515_watermark wm0_high, wm0_low;
 	struct rv515_watermark wm1_high, wm1_low;
 	u32 tmp;
 	u32 d1mode_priority_a_cnt, d1mode_priority_b_cnt;
 	u32 d2mode_priority_a_cnt, d2mode_priority_b_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdev->mode_info.crtcs[0]->base.enabled)
 		mode0 = &rdev->mode_info.crtcs[0]->base.mode;
@@ -1434,136 +1215,6 @@ void rv515_bandwidth_avivo_update(struct radeon_device *rdev)
 		mode1 = &rdev->mode_info.crtcs[1]->base.mode;
 	rs690_line_buffer_adjust(rdev, mode0, mode1);
 
-<<<<<<< HEAD
-	rv515_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[0], &wm0);
-	rv515_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[1], &wm1);
-
-	tmp = wm0.lb_request_fifo_depth;
-	tmp |= wm1.lb_request_fifo_depth << 16;
-	WREG32(LB_MAX_REQ_OUTSTANDING, tmp);
-
-	if (mode0 && mode1) {
-		if (dfixed_trunc(wm0.dbpp) > 64)
-			a.full = dfixed_div(wm0.dbpp, wm0.num_line_pair);
-		else
-			a.full = wm0.num_line_pair.full;
-		if (dfixed_trunc(wm1.dbpp) > 64)
-			b.full = dfixed_div(wm1.dbpp, wm1.num_line_pair);
-		else
-			b.full = wm1.num_line_pair.full;
-		a.full += b.full;
-		fill_rate.full = dfixed_div(wm0.sclk, a);
-		if (wm0.consumption_rate.full > fill_rate.full) {
-			b.full = wm0.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm0.active_time);
-			a.full = dfixed_const(16);
-			b.full = dfixed_div(b, a);
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			priority_mark02.full = a.full + b.full;
-		} else {
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark02.full = dfixed_div(a, b);
-		}
-		if (wm1.consumption_rate.full > fill_rate.full) {
-			b.full = wm1.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm1.active_time);
-			a.full = dfixed_const(16);
-			b.full = dfixed_div(b, a);
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			priority_mark12.full = a.full + b.full;
-		} else {
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		}
-		if (wm0.priority_mark.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark.full;
-		if (dfixed_trunc(priority_mark02) < 0)
-			priority_mark02.full = 0;
-		if (wm0.priority_mark_max.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark_max.full;
-		if (wm1.priority_mark.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark.full;
-		if (dfixed_trunc(priority_mark12) < 0)
-			priority_mark12.full = 0;
-		if (wm1.priority_mark_max.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark_max.full;
-		d1mode_priority_a_cnt = dfixed_trunc(priority_mark02);
-		d2mode_priority_a_cnt = dfixed_trunc(priority_mark12);
-		if (rdev->disp_priority == 2) {
-			d1mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
-			d2mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
-		}
-	} else if (mode0) {
-		if (dfixed_trunc(wm0.dbpp) > 64)
-			a.full = dfixed_div(wm0.dbpp, wm0.num_line_pair);
-		else
-			a.full = wm0.num_line_pair.full;
-		fill_rate.full = dfixed_div(wm0.sclk, a);
-		if (wm0.consumption_rate.full > fill_rate.full) {
-			b.full = wm0.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm0.active_time);
-			a.full = dfixed_const(16);
-			b.full = dfixed_div(b, a);
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			priority_mark02.full = a.full + b.full;
-		} else {
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			b.full = dfixed_const(16);
-			priority_mark02.full = dfixed_div(a, b);
-		}
-		if (wm0.priority_mark.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark.full;
-		if (dfixed_trunc(priority_mark02) < 0)
-			priority_mark02.full = 0;
-		if (wm0.priority_mark_max.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark_max.full;
-		d1mode_priority_a_cnt = dfixed_trunc(priority_mark02);
-		if (rdev->disp_priority == 2)
-			d1mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
-	} else if (mode1) {
-		if (dfixed_trunc(wm1.dbpp) > 64)
-			a.full = dfixed_div(wm1.dbpp, wm1.num_line_pair);
-		else
-			a.full = wm1.num_line_pair.full;
-		fill_rate.full = dfixed_div(wm1.sclk, a);
-		if (wm1.consumption_rate.full > fill_rate.full) {
-			b.full = wm1.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm1.active_time);
-			a.full = dfixed_const(16);
-			b.full = dfixed_div(b, a);
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			priority_mark12.full = a.full + b.full;
-		} else {
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		}
-		if (wm1.priority_mark.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark.full;
-		if (dfixed_trunc(priority_mark12) < 0)
-			priority_mark12.full = 0;
-		if (wm1.priority_mark_max.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark_max.full;
-		d2mode_priority_a_cnt = dfixed_trunc(priority_mark12);
-		if (rdev->disp_priority == 2)
-			d2mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
-	}
-
-	WREG32(D1MODE_PRIORITY_A_CNT, d1mode_priority_a_cnt);
-	WREG32(D1MODE_PRIORITY_B_CNT, d1mode_priority_a_cnt);
-	WREG32(D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
-	WREG32(D2MODE_PRIORITY_B_CNT, d2mode_priority_a_cnt);
-=======
 	rv515_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[0], &wm0_high, false);
 	rv515_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[1], &wm1_high, false);
 
@@ -1587,7 +1238,6 @@ void rv515_bandwidth_avivo_update(struct radeon_device *rdev)
 	WREG32(D1MODE_PRIORITY_B_CNT, d1mode_priority_b_cnt);
 	WREG32(D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
 	WREG32(D2MODE_PRIORITY_B_CNT, d2mode_priority_b_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rv515_bandwidth_update(struct radeon_device *rdev)
@@ -1596,12 +1246,9 @@ void rv515_bandwidth_update(struct radeon_device *rdev)
 	struct drm_display_mode *mode0 = NULL;
 	struct drm_display_mode *mode1 = NULL;
 
-<<<<<<< HEAD
-=======
 	if (!rdev->mode_info.mode_config_initialized)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_update_display_priority(rdev);
 
 	if (rdev->mode_info.crtcs[0]->base.enabled)

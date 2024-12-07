@@ -1,42 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
   STMMAC Common Header File
 
   Copyright (C) 2007-2009  STMicroelectronics Ltd
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 *******************************************************************************/
 
-<<<<<<< HEAD
-#include <linux/etherdevice.h>
-#include <linux/netdevice.h>
-#include <linux/phy.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
-=======
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
@@ -47,25 +18,11 @@
 #include <linux/pcs/pcs-xpcs.h>
 #include <linux/module.h>
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define STMMAC_VLAN_TAG_USED
 #include <linux/if_vlan.h>
 #endif
 
 #include "descs.h"
-<<<<<<< HEAD
-#include "mmc.h"
-
-#undef CHIP_DEBUG_PRINT
-/* Turn-on extra printk debug for MAC core, dma and descriptors */
-/* #define CHIP_DEBUG_PRINT */
-
-#ifdef CHIP_DEBUG_PRINT
-#define CHIP_DBG(fmt, args...)  printk(fmt, ## args)
-#else
-#define CHIP_DBG(fmt, args...)  do { } while (0)
-#endif
-=======
 #include "hwif.h"
 #include "mmc.h"
 
@@ -98,13 +55,10 @@
 #define DMA_MAX_RX_SIZE		1024
 #define DMA_DEFAULT_RX_SIZE	512
 #define STMMAC_GET_ENTRY(x, size)	((x + 1) & (size - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef FRAME_FILTER_DEBUG
 /* #define FRAME_FILTER_DEBUG */
 
-<<<<<<< HEAD
-=======
 struct stmmac_q_tx_stats {
 	u64_stats_t tx_bytes;
 	u64_stats_t tx_set_ic_bit;
@@ -151,7 +105,6 @@ struct stmmac_pcpu_stats {
 };
 
 /* Extra statistic and debug information exposed by ethtool */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct stmmac_extra_stats {
 	/* Transmit errors */
 	unsigned long tx_underflow ____cacheline_aligned;
@@ -164,21 +117,14 @@ struct stmmac_extra_stats {
 	unsigned long tx_frame_flushed;
 	unsigned long tx_payload_error;
 	unsigned long tx_ip_header_error;
-<<<<<<< HEAD
-=======
 	unsigned long tx_collision;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Receive errors */
 	unsigned long rx_desc;
 	unsigned long sa_filter_fail;
 	unsigned long overflow_error;
 	unsigned long ipc_csum_error;
 	unsigned long rx_collision;
-<<<<<<< HEAD
-	unsigned long rx_crc;
-=======
 	unsigned long rx_crc_errors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long dribbling_bit;
 	unsigned long rx_length;
 	unsigned long rx_mii;
@@ -190,12 +136,8 @@ struct stmmac_extra_stats {
 	unsigned long rx_missed_cntr;
 	unsigned long rx_overflow_cntr;
 	unsigned long rx_vlan;
-<<<<<<< HEAD
-	/* Tx/Rx IRQ errors */
-=======
 	unsigned long rx_split_hdr_pkt_n;
 	/* Tx/Rx IRQ error info */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long tx_undeflow_irq;
 	unsigned long tx_process_stopped_irq;
 	unsigned long tx_jabber_irq;
@@ -205,19 +147,6 @@ struct stmmac_extra_stats {
 	unsigned long rx_watchdog_irq;
 	unsigned long tx_early_irq;
 	unsigned long fatal_bus_error_irq;
-<<<<<<< HEAD
-	/* Extra info */
-	unsigned long threshold;
-	unsigned long tx_pkt_n;
-	unsigned long rx_pkt_n;
-	unsigned long poll_n;
-	unsigned long sched_timer_n;
-	unsigned long normal_irq_n;
-};
-
-#define HASH_TABLE_SIZE 64
-#define PAUSE_TIME 0x200
-=======
 	/* Tx/Rx IRQ Events */
 	unsigned long rx_early_irq;
 	unsigned long threshold;
@@ -332,7 +261,6 @@ struct stmmac_safety_stats {
 
 #define HASH_TABLE_SIZE 64
 #define PAUSE_TIME 0xffff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flow Control defines */
 #define FLOW_OFF	0
@@ -340,53 +268,6 @@ struct stmmac_safety_stats {
 #define FLOW_TX		2
 #define FLOW_AUTO	(FLOW_TX | FLOW_RX)
 
-<<<<<<< HEAD
-#define SF_DMA_MODE 1 /* DMA STORE-AND-FORWARD Operation Mode */
-
-/* DAM HW feature register fields */
-#define DMA_HW_FEAT_MIISEL	0x00000001 /* 10/100 Mbps Support */
-#define DMA_HW_FEAT_GMIISEL	0x00000002 /* 1000 Mbps Support */
-#define DMA_HW_FEAT_HDSEL	0x00000004 /* Half-Duplex Support */
-#define DMA_HW_FEAT_EXTHASHEN	0x00000008 /* Expanded DA Hash Filter */
-#define DMA_HW_FEAT_HASHSEL	0x00000010 /* HASH Filter */
-#define DMA_HW_FEAT_ADDMACADRSEL	0x00000020 /* Multiple MAC Addr Reg */
-#define DMA_HW_FEAT_PCSSEL	0x00000040 /* PCS registers */
-#define DMA_HW_FEAT_L3L4FLTREN	0x00000080 /* Layer 3 & Layer 4 Feature */
-#define DMA_HW_FEAT_SMASEL	0x00000100 /* SMA(MDIO) Interface */
-#define DMA_HW_FEAT_RWKSEL	0x00000200 /* PMT Remote Wakeup */
-#define DMA_HW_FEAT_MGKSEL	0x00000400 /* PMT Magic Packet */
-#define DMA_HW_FEAT_MMCSEL	0x00000800 /* RMON Module */
-#define DMA_HW_FEAT_TSVER1SEL	0x00001000 /* Only IEEE 1588-2002 Timestamp */
-#define DMA_HW_FEAT_TSVER2SEL	0x00002000 /* IEEE 1588-2008 Adv Timestamp */
-#define DMA_HW_FEAT_EEESEL	0x00004000 /* Energy Efficient Ethernet */
-#define DMA_HW_FEAT_AVSEL	0x00008000 /* AV Feature */
-#define DMA_HW_FEAT_TXCOESEL	0x00010000 /* Checksum Offload in Tx */
-#define DMA_HW_FEAT_RXTYP1COE	0x00020000 /* IP csum Offload(Type 1) in Rx */
-#define DMA_HW_FEAT_RXTYP2COE	0x00040000 /* IP csum Offload(Type 2) in Rx */
-#define DMA_HW_FEAT_RXFIFOSIZE	0x00080000 /* Rx FIFO > 2048 Bytes */
-#define DMA_HW_FEAT_RXCHCNT	0x00300000 /* No. of additional Rx Channels */
-#define DMA_HW_FEAT_TXCHCNT	0x00c00000 /* No. of additional Tx Channels */
-#define DMA_HW_FEAT_ENHDESSEL	0x01000000 /* Alternate (Enhanced Descriptor) */
-#define DMA_HW_FEAT_INTTSEN	0x02000000 /* Timestamping with Internal
-					      System Time */
-#define DMA_HW_FEAT_FLEXIPPSEN	0x04000000 /* Flexible PPS Output */
-#define DMA_HW_FEAT_SAVLANINS	0x08000000 /* Source Addr or VLAN Insertion */
-#define DMA_HW_FEAT_ACTPHYIF	0x70000000 /* Active/selected PHY interface */
-
-enum rx_frame_status { /* IPC status */
-	good_frame = 0,
-	discard_frame = 1,
-	csum_none = 2,
-	llc_snap = 4,
-};
-
-enum tx_dma_irq_status {
-	tx_hard_error = 1,
-	tx_hard_error_bump_tc = 2,
-	handle_tx_rx = 3,
-};
-
-=======
 /* PCS defines */
 #define STMMAC_PCS_RGMII	(1 << 0)
 #define STMMAC_PCS_SGMII	(1 << 1)
@@ -525,7 +406,6 @@ struct rgmii_adv {
 #define STMMAC_PCS_PAUSE	1
 #define STMMAC_PCS_ASYM_PAUSE	2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DMA HW capabilities */
 struct dma_features {
 	unsigned int mbps_10_100;
@@ -538,44 +418,24 @@ struct dma_features {
 	unsigned int pmt_remote_wake_up;
 	unsigned int pmt_magic_frame;
 	unsigned int rmon;
-<<<<<<< HEAD
-	/* IEEE 1588-2002*/
-	unsigned int time_stamp;
-	/* IEEE 1588-2008*/
-=======
 	/* IEEE 1588-2002 */
 	unsigned int time_stamp;
 	/* IEEE 1588-2008 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int atime_stamp;
 	/* 802.3az - Energy-Efficient Ethernet (EEE) */
 	unsigned int eee;
 	unsigned int av;
-<<<<<<< HEAD
-	/* TX and RX csum */
-	unsigned int tx_coe;
-=======
 	unsigned int hash_tb_sz;
 	unsigned int tsoen;
 	/* TX and RX csum */
 	unsigned int tx_coe;
 	unsigned int rx_coe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rx_coe_type1;
 	unsigned int rx_coe_type2;
 	unsigned int rxfifo_over_2048;
 	/* TX and RX number of channels */
 	unsigned int number_rx_channel;
 	unsigned int number_tx_channel;
-<<<<<<< HEAD
-	/* Alternate (enhanced) DESC mode*/
-	unsigned int enh_desc;
-};
-
-/* GMAC TX FIFO is 8K, Rx FIFO is 16K */
-#define BUF_SIZE_16KiB 16384
-#define BUF_SIZE_8KiB 8192
-=======
 	/* TX and RX number of queues */
 	unsigned int number_rx_queues;
 	unsigned int number_tx_queues;
@@ -652,7 +512,6 @@ struct dma_features {
 /* RX Buffer size must be multiple of 4/8/16 bytes */
 #define BUF_SIZE_16KiB 16368
 #define BUF_SIZE_8KiB 8188
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BUF_SIZE_4KiB 4096
 #define BUF_SIZE_2KiB 2048
 
@@ -663,98 +522,6 @@ struct dma_features {
 /* Common MAC defines */
 #define MAC_CTRL_REG		0x00000000	/* MAC Control */
 #define MAC_ENABLE_TX		0x00000008	/* Transmitter Enable */
-<<<<<<< HEAD
-#define MAC_RNABLE_RX		0x00000004	/* Receiver Enable */
-
-struct stmmac_desc_ops {
-	/* DMA RX descriptor ring initialization */
-	void (*init_rx_desc) (struct dma_desc *p, unsigned int ring_size,
-			      int disable_rx_ic);
-	/* DMA TX descriptor ring initialization */
-	void (*init_tx_desc) (struct dma_desc *p, unsigned int ring_size);
-
-	/* Invoked by the xmit function to prepare the tx descriptor */
-	void (*prepare_tx_desc) (struct dma_desc *p, int is_fs, int len,
-				 int csum_flag);
-	/* Set/get the owner of the descriptor */
-	void (*set_tx_owner) (struct dma_desc *p);
-	int (*get_tx_owner) (struct dma_desc *p);
-	/* Invoked by the xmit function to close the tx descriptor */
-	void (*close_tx_desc) (struct dma_desc *p);
-	/* Clean the tx descriptor as soon as the tx irq is received */
-	void (*release_tx_desc) (struct dma_desc *p);
-	/* Clear interrupt on tx frame completion. When this bit is
-	 * set an interrupt happens as soon as the frame is transmitted */
-	void (*clear_tx_ic) (struct dma_desc *p);
-	/* Last tx segment reports the transmit status */
-	int (*get_tx_ls) (struct dma_desc *p);
-	/* Return the transmit status looking at the TDES1 */
-	int (*tx_status) (void *data, struct stmmac_extra_stats *x,
-			  struct dma_desc *p, void __iomem *ioaddr);
-	/* Get the buffer size from the descriptor */
-	int (*get_tx_len) (struct dma_desc *p);
-	/* Handle extra events on specific interrupts hw dependent */
-	int (*get_rx_owner) (struct dma_desc *p);
-	void (*set_rx_owner) (struct dma_desc *p);
-	/* Get the receive frame size */
-	int (*get_rx_frame_len) (struct dma_desc *p);
-	/* Return the reception status looking at the RDES1 */
-	int (*rx_status) (void *data, struct stmmac_extra_stats *x,
-			  struct dma_desc *p);
-};
-
-struct stmmac_dma_ops {
-	/* DMA core initialization */
-	int (*init) (void __iomem *ioaddr, int pbl, u32 dma_tx, u32 dma_rx);
-	/* Dump DMA registers */
-	void (*dump_regs) (void __iomem *ioaddr);
-	/* Set tx/rx threshold in the csr6 register
-	 * An invalid value enables the store-and-forward mode */
-	void (*dma_mode) (void __iomem *ioaddr, int txmode, int rxmode);
-	/* To track extra statistic (if supported) */
-	void (*dma_diagnostic_fr) (void *data, struct stmmac_extra_stats *x,
-				   void __iomem *ioaddr);
-	void (*enable_dma_transmission) (void __iomem *ioaddr);
-	void (*enable_dma_irq) (void __iomem *ioaddr);
-	void (*disable_dma_irq) (void __iomem *ioaddr);
-	void (*start_tx) (void __iomem *ioaddr);
-	void (*stop_tx) (void __iomem *ioaddr);
-	void (*start_rx) (void __iomem *ioaddr);
-	void (*stop_rx) (void __iomem *ioaddr);
-	int (*dma_interrupt) (void __iomem *ioaddr,
-			      struct stmmac_extra_stats *x);
-	/* If supported then get the optional core features */
-	unsigned int (*get_hw_feature) (void __iomem *ioaddr);
-};
-
-struct stmmac_ops {
-	/* MAC core initialization */
-	void (*core_init) (void __iomem *ioaddr) ____cacheline_aligned;
-	/* Support checksum offload engine */
-	int  (*rx_coe) (void __iomem *ioaddr);
-	/* Dump MAC registers */
-	void (*dump_regs) (void __iomem *ioaddr);
-	/* Handle extra events on specific interrupts hw dependent */
-	void (*host_irq_status) (void __iomem *ioaddr);
-	/* Multicast filter setting */
-	void (*set_filter) (struct net_device *dev);
-	/* Flow control setting */
-	void (*flow_ctrl) (void __iomem *ioaddr, unsigned int duplex,
-			   unsigned int fc, unsigned int pause_time);
-	/* Set power management mode (e.g. magic frame) */
-	void (*pmt) (void __iomem *ioaddr, unsigned long mode);
-	/* Set/Get Unicast MAC addresses */
-	void (*set_umac_addr) (void __iomem *ioaddr, unsigned char *addr,
-			       unsigned int reg_n);
-	void (*get_umac_addr) (void __iomem *ioaddr, unsigned char *addr,
-			       unsigned int reg_n);
-};
-
-struct mac_link {
-	int port;
-	int duplex;
-	int speed;
-=======
 #define MAC_ENABLE_RX		0x00000004	/* Receiver Enable */
 
 /* Default LPI timers */
@@ -804,49 +571,11 @@ struct mac_link {
 		u32 speed50000;
 		u32 speed100000;
 	} xlgmii;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mii_regs {
 	unsigned int addr;	/* MII Address */
 	unsigned int data;	/* MII Data */
-<<<<<<< HEAD
-};
-
-struct stmmac_ring_mode_ops {
-	unsigned int (*is_jumbo_frm) (int len, int ehn_desc);
-	unsigned int (*jumbo_frm) (void *priv, struct sk_buff *skb, int csum);
-	void (*refill_desc3) (int bfsize, struct dma_desc *p);
-	void (*init_desc3) (int des3_as_data_buf, struct dma_desc *p);
-	void (*init_dma_chain) (struct dma_desc *des, dma_addr_t phy_addr,
-				unsigned int size);
-	void (*clean_desc3) (struct dma_desc *p);
-	int (*set_16kib_bfsize) (int mtu);
-};
-
-struct mac_device_info {
-	const struct stmmac_ops		*mac;
-	const struct stmmac_desc_ops	*desc;
-	const struct stmmac_dma_ops	*dma;
-	const struct stmmac_ring_mode_ops	*ring;
-	struct mii_regs mii;	/* MII register Addresses */
-	struct mac_link link;
-	unsigned int synopsys_uid;
-};
-
-struct mac_device_info *dwmac1000_setup(void __iomem *ioaddr);
-struct mac_device_info *dwmac100_setup(void __iomem *ioaddr);
-
-extern void stmmac_set_mac_addr(void __iomem *ioaddr, u8 addr[6],
-				unsigned int high, unsigned int low);
-extern void stmmac_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
-				unsigned int high, unsigned int low);
-
-extern void stmmac_set_mac(void __iomem *ioaddr, bool enable);
-
-extern void dwmac_dma_flush_tx_fifo(void __iomem *ioaddr);
-extern const struct stmmac_ring_mode_ops ring_mode_ops;
-=======
 	unsigned int addr_shift;	/* MII address shift */
 	unsigned int reg_shift;		/* MII reg shift */
 	unsigned int addr_mask;		/* MII address mask */
@@ -914,4 +643,3 @@ extern const struct stmmac_mode_ops chain_mode_ops;
 extern const struct stmmac_desc_ops dwmac4_desc_ops;
 
 #endif /* __COMMON_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

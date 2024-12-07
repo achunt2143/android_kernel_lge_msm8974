@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_CHECKSUM_64_H
 #define _ASM_X86_CHECKSUM_64_H
 
@@ -12,10 +9,6 @@
  */
 
 #include <linux/compiler.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 /**
@@ -91,13 +84,8 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
  * 32bit unfolded.
  */
 static inline __wsum
-<<<<<<< HEAD
-csum_tcpudp_nofold(__be32 saddr, __be32 daddr, unsigned short len,
-		   unsigned short proto, __wsum sum)
-=======
 csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
 		   __u8 proto, __wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm("  addl %1, %0\n"
 	    "  adcl %2, %0\n"
@@ -122,13 +110,8 @@ csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
  * complemented and ready to be filled in.
  */
 static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
-<<<<<<< HEAD
-					unsigned short len,
-					unsigned short proto, __wsum sum)
-=======
 					__u32 len, __u8 proto,
 					__wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
 }
@@ -145,35 +128,12 @@ static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
  */
 extern __wsum csum_partial(const void *buff, int len, __wsum sum);
 
-<<<<<<< HEAD
-#define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
-#define HAVE_CSUM_COPY_USER 1
-
-
-/* Do not call this directly. Use the wrappers below */
-extern __wsum csum_partial_copy_generic(const void *src, const void *dst,
-					int len, __wsum sum,
-					int *src_err_ptr, int *dst_err_ptr);
-
-
-extern __wsum csum_partial_copy_from_user(const void __user *src, void *dst,
-					  int len, __wsum isum, int *errp);
-extern __wsum csum_partial_copy_to_user(const void *src, void __user *dst,
-					int len, __wsum isum, int *errp);
-extern __wsum csum_partial_copy_nocheck(const void *src, void *dst,
-					int len, __wsum sum);
-
-/* Old names. To be removed. */
-#define csum_and_copy_to_user csum_partial_copy_to_user
-#define csum_and_copy_from_user csum_partial_copy_from_user
-=======
 /* Do not call this directly. Use the wrappers below */
 extern __visible __wsum csum_partial_copy_generic(const void *src, void *dst, int len);
 
 extern __wsum csum_and_copy_from_user(const void __user *src, void *dst, int len);
 extern __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len);
 extern __wsum csum_partial_copy_nocheck(const void *src, void *dst, int len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ip_compute_csum - Compute an 16bit IP checksum.
@@ -203,23 +163,13 @@ struct in6_addr;
 #define _HAVE_ARCH_IPV6_CSUM 1
 extern __sum16
 csum_ipv6_magic(const struct in6_addr *saddr, const struct in6_addr *daddr,
-<<<<<<< HEAD
-		__u32 len, unsigned short proto, __wsum sum);
-=======
 		__u32 len, __u8 proto, __wsum sum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned add32_with_carry(unsigned a, unsigned b)
 {
 	asm("addl %2,%0\n\t"
 	    "adcl $0,%0"
 	    : "=r" (a)
-<<<<<<< HEAD
-	    : "0" (a), "r" (b));
-	return a;
-}
-
-=======
 	    : "0" (a), "rm" (b));
 	return a;
 }
@@ -231,5 +181,4 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
 						(__force unsigned)addend);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_CHECKSUM_64_H */

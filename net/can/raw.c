@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- * raw.c - Raw sockets for protocol family CAN
-=======
 // SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
 /* raw.c - Raw sockets for protocol family CAN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
  * All rights reserved.
@@ -55,39 +50,22 @@
 #include <linux/skbuff.h>
 #include <linux/can.h>
 #include <linux/can/core.h>
-<<<<<<< HEAD
-=======
 #include <linux/can/dev.h> /* for can_is_canxl_dev_mtu() */
 #include <linux/can/skb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/can/raw.h>
 #include <net/sock.h>
 #include <net/net_namespace.h>
 
-<<<<<<< HEAD
-#define CAN_RAW_VERSION CAN_VERSION
-static __initdata const char banner[] =
-	KERN_INFO "can: raw protocol (rev " CAN_RAW_VERSION ")\n";
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("PF_CAN raw protocol");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
 MODULE_ALIAS("can-proto-1");
 
-<<<<<<< HEAD
-#define MASK_ALL 0
-
-/*
- * A raw socket has a list of can_filters attached to it, each receiving
-=======
 #define RAW_MIN_NAMELEN CAN_REQUIRED_SIZE(struct sockaddr_can, can_ifindex)
 
 #define MASK_ALL 0
 
 /* A raw socket has a list of can_filters attached to it, each receiving
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the CAN frames matching that filter.  If the filter list is empty,
  * no CAN frames will be received by the socket.  The default after
  * opening the socket, is to have one filter which receives all frames.
@@ -96,24 +74,16 @@ MODULE_ALIAS("can-proto-1");
  * storing the single filter in dfilter, to avoid using dynamic memory.
  */
 
-<<<<<<< HEAD
-=======
 struct uniqframe {
 	int skbcnt;
 	const struct sk_buff *skb;
 	unsigned int join_rx_count;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct raw_sock {
 	struct sock sk;
 	int bound;
 	int ifindex;
-<<<<<<< HEAD
-	struct notifier_block notifier;
-	int loopback;
-	int recv_own_msgs;
-=======
 	struct net_device *dev;
 	netdevice_tracker dev_tracker;
 	struct list_head notifier;
@@ -126,17 +96,10 @@ struct raw_sock {
 	canid_t rx_vcid_shifted;
 	canid_t rx_vcid_mask_shifted;
 	int join_filters;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count;                 /* number of active filters */
 	struct can_filter dfilter; /* default/single filter */
 	struct can_filter *filter; /* pointer to filter(s) */
 	can_err_mask_t err_mask;
-<<<<<<< HEAD
-};
-
-/*
- * Return pointer to store the extra msg flags for raw_recvmsg().
-=======
 	struct uniqframe __percpu *uniq;
 };
 
@@ -145,19 +108,13 @@ static DEFINE_SPINLOCK(raw_notifier_lock);
 static struct raw_sock *raw_busy_notifier;
 
 /* Return pointer to store the extra msg flags for raw_recvmsg().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We use the space of one unsigned int beyond the 'struct sockaddr_can'
  * in skb->cb.
  */
 static inline unsigned int *raw_flags(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	BUILD_BUG_ON(sizeof(skb->cb) <= (sizeof(struct sockaddr_can) +
-					 sizeof(unsigned int)));
-=======
 	sock_skb_cb_check_size(sizeof(struct sockaddr_can) +
 			       sizeof(unsigned int));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* return pointer after struct sockaddr_can */
 	return (unsigned int *)(&((struct sockaddr_can *)skb->cb)[1]);
@@ -180,8 +137,6 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 	if (!ro->recv_own_msgs && oskb->sk == sk)
 		return;
 
-<<<<<<< HEAD
-=======
 	/* make sure to not pass oversized frames to the socket */
 	if (!ro->fd_frames && can_is_canfd_skb(oskb))
 		return;
@@ -225,25 +180,11 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 			return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clone the given skb to be able to enqueue it into the rcv queue */
 	skb = skb_clone(oskb, GFP_ATOMIC);
 	if (!skb)
 		return;
 
-<<<<<<< HEAD
-	/*
-	 *  Put the datagram to the queue so that raw_recvmsg() can
-	 *  get it from there.  We need to pass the interface index to
-	 *  raw_recvmsg().  We pass a whole struct sockaddr_can in skb->cb
-	 *  containing the interface index.
-	 */
-
-	BUILD_BUG_ON(sizeof(skb->cb) < sizeof(struct sockaddr_can));
-	addr = (struct sockaddr_can *)skb->cb;
-	memset(addr, 0, sizeof(*addr));
-	addr->can_family  = AF_CAN;
-=======
 	/* Put the datagram to the queue so that raw_recvmsg() can get
 	 * it from there. We need to pass the interface index to
 	 * raw_recvmsg(). We pass a whole struct sockaddr_can in
@@ -254,7 +195,6 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 	addr = (struct sockaddr_can *)skb->cb;
 	memset(addr, 0, sizeof(*addr));
 	addr->can_family = AF_CAN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr->can_ifindex = skb->dev->ifindex;
 
 	/* add CAN specific message flags for raw_recvmsg() */
@@ -269,28 +209,14 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 		kfree_skb(skb);
 }
 
-<<<<<<< HEAD
-static int raw_enable_filters(struct net_device *dev, struct sock *sk,
-			      struct can_filter *filter, int count)
-=======
 static int raw_enable_filters(struct net *net, struct net_device *dev,
 			      struct sock *sk, struct can_filter *filter,
 			      int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	int i;
 
 	for (i = 0; i < count; i++) {
-<<<<<<< HEAD
-		err = can_rx_register(dev, filter[i].can_id,
-				      filter[i].can_mask,
-				      raw_rcv, sk, "raw");
-		if (err) {
-			/* clean up successfully registered filters */
-			while (--i >= 0)
-				can_rx_unregister(dev, filter[i].can_id,
-=======
 		err = can_rx_register(net, dev, filter[i].can_id,
 				      filter[i].can_mask,
 				      raw_rcv, sk, "raw", sk);
@@ -298,7 +224,6 @@ static int raw_enable_filters(struct net *net, struct net_device *dev,
 			/* clean up successfully registered filters */
 			while (--i >= 0)
 				can_rx_unregister(net, dev, filter[i].can_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  filter[i].can_mask,
 						  raw_rcv, sk);
 			break;
@@ -308,139 +233,67 @@ static int raw_enable_filters(struct net *net, struct net_device *dev,
 	return err;
 }
 
-<<<<<<< HEAD
-static int raw_enable_errfilter(struct net_device *dev, struct sock *sk,
-				can_err_mask_t err_mask)
-=======
 static int raw_enable_errfilter(struct net *net, struct net_device *dev,
 				struct sock *sk, can_err_mask_t err_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
 	if (err_mask)
-<<<<<<< HEAD
-		err = can_rx_register(dev, 0, err_mask | CAN_ERR_FLAG,
-				      raw_rcv, sk, "raw");
-=======
 		err = can_rx_register(net, dev, 0, err_mask | CAN_ERR_FLAG,
 				      raw_rcv, sk, "raw", sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static void raw_disable_filters(struct net_device *dev, struct sock *sk,
-			      struct can_filter *filter, int count)
-=======
 static void raw_disable_filters(struct net *net, struct net_device *dev,
 				struct sock *sk, struct can_filter *filter,
 				int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 0; i < count; i++)
-<<<<<<< HEAD
-		can_rx_unregister(dev, filter[i].can_id, filter[i].can_mask,
-				  raw_rcv, sk);
-}
-
-static inline void raw_disable_errfilter(struct net_device *dev,
-=======
 		can_rx_unregister(net, dev, filter[i].can_id,
 				  filter[i].can_mask, raw_rcv, sk);
 }
 
 static inline void raw_disable_errfilter(struct net *net,
 					 struct net_device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 struct sock *sk,
 					 can_err_mask_t err_mask)
 
 {
 	if (err_mask)
-<<<<<<< HEAD
-		can_rx_unregister(dev, 0, err_mask | CAN_ERR_FLAG,
-				  raw_rcv, sk);
-}
-
-static inline void raw_disable_allfilters(struct net_device *dev,
-=======
 		can_rx_unregister(net, dev, 0, err_mask | CAN_ERR_FLAG,
 				  raw_rcv, sk);
 }
 
 static inline void raw_disable_allfilters(struct net *net,
 					  struct net_device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  struct sock *sk)
 {
 	struct raw_sock *ro = raw_sk(sk);
 
-<<<<<<< HEAD
-	raw_disable_filters(dev, sk, ro->filter, ro->count);
-	raw_disable_errfilter(dev, sk, ro->err_mask);
-}
-
-static int raw_enable_allfilters(struct net_device *dev, struct sock *sk)
-=======
 	raw_disable_filters(net, dev, sk, ro->filter, ro->count);
 	raw_disable_errfilter(net, dev, sk, ro->err_mask);
 }
 
 static int raw_enable_allfilters(struct net *net, struct net_device *dev,
 				 struct sock *sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw_sock *ro = raw_sk(sk);
 	int err;
 
-<<<<<<< HEAD
-	err = raw_enable_filters(dev, sk, ro->filter, ro->count);
-	if (!err) {
-		err = raw_enable_errfilter(dev, sk, ro->err_mask);
-		if (err)
-			raw_disable_filters(dev, sk, ro->filter, ro->count);
-=======
 	err = raw_enable_filters(net, dev, sk, ro->filter, ro->count);
 	if (!err) {
 		err = raw_enable_errfilter(net, dev, sk, ro->err_mask);
 		if (err)
 			raw_disable_filters(net, dev, sk, ro->filter,
 					    ro->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int raw_notifier(struct notifier_block *nb,
-			unsigned long msg, void *data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct raw_sock *ro = container_of(nb, struct raw_sock, notifier);
-	struct sock *sk = &ro->sk;
-
-	if (!net_eq(dev_net(dev), &init_net))
-		return NOTIFY_DONE;
-
-	if (dev->type != ARPHRD_CAN)
-		return NOTIFY_DONE;
-
-	if (ro->ifindex != dev->ifindex)
-		return NOTIFY_DONE;
-
-	switch (msg) {
-
-	case NETDEV_UNREGISTER:
-		lock_sock(sk);
-		/* remove current filters & unregister */
-		if (ro->bound)
-			raw_disable_allfilters(dev, sk);
-=======
 static void raw_notify(struct raw_sock *ro, unsigned long msg,
 		       struct net_device *dev)
 {
@@ -460,40 +313,24 @@ static void raw_notify(struct raw_sock *ro, unsigned long msg,
 			raw_disable_allfilters(dev_net(dev), dev, sk);
 			netdev_put(dev, &ro->dev_tracker);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ro->count > 1)
 			kfree(ro->filter);
 
 		ro->ifindex = 0;
-<<<<<<< HEAD
-		ro->bound   = 0;
-		ro->count   = 0;
-=======
 		ro->bound = 0;
 		ro->dev = NULL;
 		ro->count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_sock(sk);
 
 		sk->sk_err = ENODEV;
 		if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-			sk->sk_error_report(sk);
-=======
 			sk_error_report(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NETDEV_DOWN:
 		sk->sk_err = ENETDOWN;
 		if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-			sk->sk_error_report(sk);
-		break;
-	}
-
-=======
 			sk_error_report(sk);
 		break;
 	}
@@ -519,7 +356,6 @@ static int raw_notifier(struct notifier_block *nb, unsigned long msg,
 	}
 	raw_busy_notifier = NULL;
 	spin_unlock(&raw_notifier_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NOTIFY_DONE;
 }
 
@@ -529,10 +365,7 @@ static int raw_init(struct sock *sk)
 
 	ro->bound            = 0;
 	ro->ifindex          = 0;
-<<<<<<< HEAD
-=======
 	ro->dev              = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set default filter to single entry dfilter */
 	ro->dfilter.can_id   = 0;
@@ -543,13 +376,6 @@ static int raw_init(struct sock *sk)
 	/* set default loopback behaviour */
 	ro->loopback         = 1;
 	ro->recv_own_msgs    = 0;
-<<<<<<< HEAD
-
-	/* set notifier */
-	ro->notifier.notifier_call = raw_notifier;
-
-	register_netdevice_notifier(&ro->notifier);
-=======
 	ro->fd_frames        = 0;
 	ro->xl_frames        = 0;
 	ro->join_filters     = 0;
@@ -563,7 +389,6 @@ static int raw_init(struct sock *sk)
 	spin_lock(&raw_notifier_lock);
 	list_add_tail(&ro->notifier, &raw_notifier_list);
 	spin_unlock(&raw_notifier_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -578,10 +403,6 @@ static int raw_release(struct socket *sock)
 
 	ro = raw_sk(sk);
 
-<<<<<<< HEAD
-	unregister_netdevice_notifier(&ro->notifier);
-
-=======
 	spin_lock(&raw_notifier_lock);
 	while (raw_busy_notifier == ro) {
 		spin_unlock(&raw_notifier_lock);
@@ -592,55 +413,33 @@ static int raw_release(struct socket *sock)
 	spin_unlock(&raw_notifier_lock);
 
 	rtnl_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	/* remove current filters & unregister */
 	if (ro->bound) {
-<<<<<<< HEAD
-		if (ro->ifindex) {
-			struct net_device *dev;
-
-			dev = dev_get_by_index(&init_net, ro->ifindex);
-			if (dev) {
-				raw_disable_allfilters(dev, sk);
-				dev_put(dev);
-			}
-		} else
-			raw_disable_allfilters(NULL, sk);
-=======
 		if (ro->dev) {
 			raw_disable_allfilters(dev_net(ro->dev), ro->dev, sk);
 			netdev_put(ro->dev, &ro->dev_tracker);
 		} else {
 			raw_disable_allfilters(sock_net(sk), NULL, sk);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ro->count > 1)
 		kfree(ro->filter);
 
 	ro->ifindex = 0;
-<<<<<<< HEAD
-	ro->bound   = 0;
-	ro->count   = 0;
-=======
 	ro->bound = 0;
 	ro->dev = NULL;
 	ro->count = 0;
 	free_percpu(ro->uniq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_orphan(sk);
 	sock->sk = NULL;
 
 	release_sock(sk);
-<<<<<<< HEAD
-=======
 	rtnl_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_put(sk);
 
 	return 0;
@@ -651,103 +450,53 @@ static int raw_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 	struct sockaddr_can *addr = (struct sockaddr_can *)uaddr;
 	struct sock *sk = sock->sk;
 	struct raw_sock *ro = raw_sk(sk);
-<<<<<<< HEAD
-=======
 	struct net_device *dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ifindex;
 	int err = 0;
 	int notify_enetdown = 0;
 
-<<<<<<< HEAD
-	if (len < sizeof(*addr))
-		return -EINVAL;
-
-=======
 	if (len < RAW_MIN_NAMELEN)
 		return -EINVAL;
 	if (addr->can_family != AF_CAN)
 		return -EINVAL;
 
 	rtnl_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	if (ro->bound && addr->can_ifindex == ro->ifindex)
 		goto out;
 
 	if (addr->can_ifindex) {
-<<<<<<< HEAD
-		struct net_device *dev;
-
-		dev = dev_get_by_index(&init_net, addr->can_ifindex);
-=======
 		dev = dev_get_by_index(sock_net(sk), addr->can_ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dev) {
 			err = -ENODEV;
 			goto out;
 		}
 		if (dev->type != ARPHRD_CAN) {
-<<<<<<< HEAD
-			dev_put(dev);
-			err = -ENODEV;
-			goto out;
-		}
-=======
 			err = -ENODEV;
 			goto out_put_dev;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(dev->flags & IFF_UP))
 			notify_enetdown = 1;
 
 		ifindex = dev->ifindex;
 
 		/* filters set by default/setsockopt */
-<<<<<<< HEAD
-		err = raw_enable_allfilters(dev, sk);
-		dev_put(dev);
-=======
 		err = raw_enable_allfilters(sock_net(sk), dev, sk);
 		if (err)
 			goto out_put_dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ifindex = 0;
 
 		/* filters set by default/setsockopt */
-<<<<<<< HEAD
-		err = raw_enable_allfilters(NULL, sk);
-=======
 		err = raw_enable_allfilters(sock_net(sk), NULL, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!err) {
 		if (ro->bound) {
 			/* unregister old filters */
-<<<<<<< HEAD
-			if (ro->ifindex) {
-				struct net_device *dev;
-
-				dev = dev_get_by_index(&init_net, ro->ifindex);
-				if (dev) {
-					raw_disable_allfilters(dev, sk);
-					dev_put(dev);
-				}
-			} else
-				raw_disable_allfilters(NULL, sk);
-		}
-		ro->ifindex = ifindex;
-		ro->bound = 1;
-	}
-
- out:
-	release_sock(sk);
-=======
 			if (ro->dev) {
 				raw_disable_allfilters(dev_net(ro->dev),
 						       ro->dev, sk);
@@ -771,27 +520,18 @@ out_put_dev:
 out:
 	release_sock(sk);
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_enetdown) {
 		sk->sk_err = ENETDOWN;
 		if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-			sk->sk_error_report(sk);
-=======
 			sk_error_report(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
 static int raw_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-		       int *len, int peer)
-=======
 		       int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_can *addr = (struct sockaddr_can *)uaddr;
 	struct sock *sk = sock->sk;
@@ -800,19 +540,6 @@ static int raw_getname(struct socket *sock, struct sockaddr *uaddr,
 	if (peer)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	memset(addr, 0, sizeof(*addr));
-	addr->can_family  = AF_CAN;
-	addr->can_ifindex = ro->ifindex;
-
-	*len = sizeof(*addr);
-
-	return 0;
-}
-
-static int raw_setsockopt(struct socket *sock, int level, int optname,
-			  char __user *optval, unsigned int optlen)
-=======
 	memset(addr, 0, RAW_MIN_NAMELEN);
 	addr->can_family  = AF_CAN;
 	addr->can_ifindex = ro->ifindex;
@@ -822,7 +549,6 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 
 static int raw_setsockopt(struct socket *sock, int level, int optname,
 			  sockptr_t optval, unsigned int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct raw_sock *ro = raw_sk(sk);
@@ -830,10 +556,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 	struct can_filter sfilter;         /* single filter */
 	struct net_device *dev = NULL;
 	can_err_mask_t err_mask = 0;
-<<<<<<< HEAD
-=======
 	int fd_frames;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count = 0;
 	int err = 0;
 
@@ -841,38 +564,17 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		return -EINVAL;
 
 	switch (optname) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAN_RAW_FILTER:
 		if (optlen % sizeof(struct can_filter) != 0)
 			return -EINVAL;
 
-<<<<<<< HEAD
-=======
 		if (optlen > CAN_RAW_FILTER_MAX * sizeof(struct can_filter))
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = optlen / sizeof(struct can_filter);
 
 		if (count > 1) {
 			/* filter does not fit into dfilter => alloc space */
-<<<<<<< HEAD
-			filter = memdup_user(optval, optlen);
-			if (IS_ERR(filter))
-				return PTR_ERR(filter);
-		} else if (count == 1) {
-			if (copy_from_user(&sfilter, optval, sizeof(sfilter)))
-				return -EFAULT;
-		}
-
-		lock_sock(sk);
-
-		if (ro->bound && ro->ifindex)
-			dev = dev_get_by_index(&init_net, ro->ifindex);
-=======
 			filter = memdup_sockptr(optval, optlen);
 			if (IS_ERR(filter))
 				return PTR_ERR(filter);
@@ -893,23 +595,15 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 				goto out_fil;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ro->bound) {
 			/* (try to) register the new filters */
 			if (count == 1)
-<<<<<<< HEAD
-				err = raw_enable_filters(dev, sk, &sfilter, 1);
-			else
-				err = raw_enable_filters(dev, sk, filter,
-							 count);
-=======
 				err = raw_enable_filters(sock_net(sk), dev, sk,
 							 &sfilter, 1);
 			else
 				err = raw_enable_filters(sock_net(sk), dev, sk,
 							 filter, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err) {
 				if (count > 1)
 					kfree(filter);
@@ -917,12 +611,8 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 			}
 
 			/* remove old filter registrations */
-<<<<<<< HEAD
-			raw_disable_filters(dev, sk, ro->filter, ro->count);
-=======
 			raw_disable_filters(sock_net(sk), dev, sk, ro->filter,
 					    ro->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* remove old filter space */
@@ -939,15 +629,8 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		ro->count  = count;
 
  out_fil:
-<<<<<<< HEAD
-		if (dev)
-			dev_put(dev);
-
-		release_sock(sk);
-=======
 		release_sock(sk);
 		rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
@@ -955,21 +638,11 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		if (optlen != sizeof(err_mask))
 			return -EINVAL;
 
-<<<<<<< HEAD
-		if (copy_from_user(&err_mask, optval, optlen))
-=======
 		if (copy_from_sockptr(&err_mask, optval, optlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		err_mask &= CAN_ERR_MASK;
 
-<<<<<<< HEAD
-		lock_sock(sk);
-
-		if (ro->bound && ro->ifindex)
-			dev = dev_get_by_index(&init_net, ro->ifindex);
-=======
 		rtnl_lock();
 		lock_sock(sk);
 
@@ -980,43 +653,27 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 				goto out_err;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* remove current error mask */
 		if (ro->bound) {
 			/* (try to) register the new err_mask */
-<<<<<<< HEAD
-			err = raw_enable_errfilter(dev, sk, err_mask);
-=======
 			err = raw_enable_errfilter(sock_net(sk), dev, sk,
 						   err_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (err)
 				goto out_err;
 
 			/* remove old err_mask registration */
-<<<<<<< HEAD
-			raw_disable_errfilter(dev, sk, ro->err_mask);
-=======
 			raw_disable_errfilter(sock_net(sk), dev, sk,
 					      ro->err_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* link new err_mask to the socket */
 		ro->err_mask = err_mask;
 
  out_err:
-<<<<<<< HEAD
-		if (dev)
-			dev_put(dev);
-
-		release_sock(sk);
-=======
 		release_sock(sk);
 		rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
@@ -1024,11 +681,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		if (optlen != sizeof(ro->loopback))
 			return -EINVAL;
 
-<<<<<<< HEAD
-		if (copy_from_user(&ro->loopback, optval, optlen))
-=======
 		if (copy_from_sockptr(&ro->loopback, optval, optlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		break;
@@ -1037,9 +690,6 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		if (optlen != sizeof(ro->recv_own_msgs))
 			return -EINVAL;
 
-<<<<<<< HEAD
-		if (copy_from_user(&ro->recv_own_msgs, optval, optlen))
-=======
 		if (copy_from_sockptr(&ro->recv_own_msgs, optval, optlen))
 			return -EFAULT;
 
@@ -1089,7 +739,6 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 			return -EINVAL;
 
 		if (copy_from_sockptr(&ro->join_filters, optval, optlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		break;
@@ -1107,10 +756,6 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 	struct raw_sock *ro = raw_sk(sk);
 	int len;
 	void *val;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (level != SOL_CAN_RAW)
 		return -EINVAL;
@@ -1120,19 +765,6 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 		return -EINVAL;
 
 	switch (optname) {
-<<<<<<< HEAD
-
-	case CAN_RAW_FILTER:
-		lock_sock(sk);
-		if (ro->count > 0) {
-			int fsize = ro->count * sizeof(struct can_filter);
-			if (len > fsize)
-				len = fsize;
-			if (copy_to_user(optval, ro->filter, len))
-				err = -EFAULT;
-		} else
-			len = 0;
-=======
 	case CAN_RAW_FILTER: {
 		int err = 0;
 
@@ -1155,17 +787,12 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 		} else {
 			len = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_sock(sk);
 
 		if (!err)
 			err = put_user(len, optlen);
 		return err;
-<<<<<<< HEAD
-
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAN_RAW_ERR_FILTER:
 		if (len > sizeof(can_err_mask_t))
 			len = sizeof(can_err_mask_t);
@@ -1184,8 +811,6 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 		val = &ro->recv_own_msgs;
 		break;
 
-<<<<<<< HEAD
-=======
 	case CAN_RAW_FD_FRAMES:
 		if (len > sizeof(int))
 			len = sizeof(int);
@@ -1223,7 +848,6 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 		val = &ro->join_filters;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOPROTOOPT;
 	}
@@ -1235,23 +859,6 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int raw_sendmsg(struct kiocb *iocb, struct socket *sock,
-		       struct msghdr *msg, size_t size)
-{
-	struct sock *sk = sock->sk;
-	struct raw_sock *ro = raw_sk(sk);
-	struct sk_buff *skb;
-	struct net_device *dev;
-	int ifindex;
-	int err;
-
-	if (msg->msg_name) {
-		struct sockaddr_can *addr =
-			(struct sockaddr_can *)msg->msg_name;
-
-		if (msg->msg_namelen < sizeof(*addr))
-=======
 static void raw_put_canxl_vcid(struct raw_sock *ro, struct sk_buff *skb)
 {
 	struct canxl_frame *cxl = (struct canxl_frame *)skb->data;
@@ -1308,39 +915,12 @@ static int raw_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 		DECLARE_SOCKADDR(struct sockaddr_can *, addr, msg->msg_name);
 
 		if (msg->msg_namelen < RAW_MIN_NAMELEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		if (addr->can_family != AF_CAN)
 			return -EINVAL;
 
 		ifindex = addr->can_ifindex;
-<<<<<<< HEAD
-	} else
-		ifindex = ro->ifindex;
-
-	if (size != sizeof(struct can_frame))
-		return -EINVAL;
-
-	dev = dev_get_by_index(&init_net, ifindex);
-	if (!dev)
-		return -ENXIO;
-
-	skb = sock_alloc_send_skb(sk, size, msg->msg_flags & MSG_DONTWAIT,
-				  &err);
-	if (!skb)
-		goto put_dev;
-
-	err = memcpy_fromiovec(skb_put(skb, size), msg->msg_iov, size);
-	if (err < 0)
-		goto free_skb;
-	err = sock_tx_timestamp(sk, &skb_shinfo(skb)->tx_flags);
-	if (err < 0)
-		goto free_skb;
-
-	skb->dev = dev;
-	skb->sk  = sk;
-=======
 	} else {
 		ifindex = ro->ifindex;
 	}
@@ -1387,7 +967,6 @@ static int raw_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	skb->tstamp = sockc.transmit_time;
 
 	skb_setup_tx_timestamp(skb, sockc.tsflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = can_send(skb, ro->loopback);
 
@@ -1406,32 +985,18 @@ send_failed:
 	return err;
 }
 
-<<<<<<< HEAD
-static int raw_recvmsg(struct kiocb *iocb, struct socket *sock,
-		       struct msghdr *msg, size_t size, int flags)
-=======
 static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		       int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct sk_buff *skb;
 	int err = 0;
-<<<<<<< HEAD
-	int noblock;
-
-	noblock =  flags & MSG_DONTWAIT;
-	flags   &= ~MSG_DONTWAIT;
-
-	skb = skb_recv_datagram(sk, flags, noblock, &err);
-=======
 
 	if (flags & MSG_ERRQUEUE)
 		return sock_recv_errqueue(sk, msg, size,
 					  SOL_CAN_RAW, SCM_CAN_RAW_ERRQUEUE);
 
 	skb = skb_recv_datagram(sk, flags, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		return err;
 
@@ -1440,28 +1005,17 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	else
 		size = skb->len;
 
-<<<<<<< HEAD
-	err = memcpy_toiovec(msg->msg_iov, skb->data, size);
-=======
 	err = memcpy_to_msg(msg, skb->data, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		skb_free_datagram(sk, skb);
 		return err;
 	}
 
-<<<<<<< HEAD
-	sock_recv_ts_and_drops(msg, sk, skb);
-
-	if (msg->msg_name) {
-		msg->msg_namelen = sizeof(struct sockaddr_can);
-=======
 	sock_recv_cmsgs(msg, sk, skb);
 
 	if (msg->msg_name) {
 		__sockaddr_check_size(RAW_MIN_NAMELEN);
 		msg->msg_namelen = RAW_MIN_NAMELEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
 	}
 
@@ -1473,8 +1027,6 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	return size;
 }
 
-<<<<<<< HEAD
-=======
 static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
 				unsigned long arg)
 {
@@ -1482,7 +1034,6 @@ static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
 	return -ENOIOCTLCMD;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct proto_ops raw_ops = {
 	.family        = PF_CAN,
 	.release       = raw_release,
@@ -1492,12 +1043,8 @@ static const struct proto_ops raw_ops = {
 	.accept        = sock_no_accept,
 	.getname       = raw_getname,
 	.poll          = datagram_poll,
-<<<<<<< HEAD
-	.ioctl         = can_ioctl,	/* use can_ioctl() from af_can.c */
-=======
 	.ioctl         = raw_sock_no_ioctlcmd,
 	.gettstamp     = sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen        = sock_no_listen,
 	.shutdown      = sock_no_shutdown,
 	.setsockopt    = raw_setsockopt,
@@ -1505,10 +1052,6 @@ static const struct proto_ops raw_ops = {
 	.sendmsg       = raw_sendmsg,
 	.recvmsg       = raw_recvmsg,
 	.mmap          = sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage      = sock_no_sendpage,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct proto raw_proto __read_mostly = {
@@ -1525,25 +1068,14 @@ static const struct can_proto raw_can_proto = {
 	.prot       = &raw_proto,
 };
 
-<<<<<<< HEAD
-=======
 static struct notifier_block canraw_notifier = {
 	.notifier_call = raw_notifier
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init int raw_module_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	printk(banner);
-
-	err = can_proto_register(&raw_can_proto);
-	if (err < 0)
-		printk(KERN_ERR "can: registration of raw protocol failed\n");
-
-=======
 	pr_info("can: raw protocol\n");
 
 	err = register_netdevice_notifier(&canraw_notifier);
@@ -1560,17 +1092,13 @@ static __init int raw_module_init(void)
 
 register_proto_failed:
 	unregister_netdevice_notifier(&canraw_notifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static __exit void raw_module_exit(void)
 {
 	can_proto_unregister(&raw_can_proto);
-<<<<<<< HEAD
-=======
 	unregister_netdevice_notifier(&canraw_notifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(raw_module_init);

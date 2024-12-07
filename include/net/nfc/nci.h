@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
  *
-<<<<<<< HEAD
-=======
  *  Copyright (C) 2014 Marvell International Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (C) 2011 Texas Instruments, Inc.
  *
  *  Written by Ilan Elias <ilane@ti.com>
@@ -17,45 +11,22 @@
  *  Acknowledgements:
  *  This file is based on hci.h, which was written
  *  by Maxim Krasnyansky.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __NCI_H
 #define __NCI_H
 
-<<<<<<< HEAD
-=======
 #include <net/nfc/nfc.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NCI constants */
 #define NCI_MAX_NUM_MAPPING_CONFIGS				10
 #define NCI_MAX_NUM_RF_CONFIGS					10
 #define NCI_MAX_NUM_CONN					10
-<<<<<<< HEAD
-=======
 #define NCI_MAX_PARAM_LEN					251
 #define NCI_MAX_PAYLOAD_SIZE					255
 #define NCI_MAX_PACKET_SIZE					258
 #define NCI_MAX_LARGE_PARAMS_NCI_v2				15
 #define NCI_VER_2_MASK						0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI Status Codes */
 #define NCI_STATUS_OK						0x00
@@ -83,8 +54,6 @@
 #define NCI_STATUS_NFCEE_PROTOCOL_ERROR				0xc2
 #define NCI_STATUS_NFCEE_TIMEOUT_ERROR				0xc3
 
-<<<<<<< HEAD
-=======
 /* NFCEE Interface/Protocols */
 #define NCI_NFCEE_INTERFACE_APDU           0x00
 #define NCI_NFCEE_INTERFACE_HCI_ACCESS     0x01
@@ -104,39 +73,26 @@
 #define NCI_NFCEE_DISCOVERY_ACTION_DISABLE			0x00
 #define NCI_NFCEE_DISCOVERY_ACTION_ENABLE			0x01
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NCI RF Technology and Mode */
 #define NCI_NFC_A_PASSIVE_POLL_MODE				0x00
 #define NCI_NFC_B_PASSIVE_POLL_MODE				0x01
 #define NCI_NFC_F_PASSIVE_POLL_MODE				0x02
 #define NCI_NFC_A_ACTIVE_POLL_MODE				0x03
 #define NCI_NFC_F_ACTIVE_POLL_MODE				0x05
-<<<<<<< HEAD
-#define NCI_NFC_15693_PASSIVE_POLL_MODE				0x06
-=======
 #define NCI_NFC_V_PASSIVE_POLL_MODE				0x06
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NCI_NFC_A_PASSIVE_LISTEN_MODE				0x80
 #define NCI_NFC_B_PASSIVE_LISTEN_MODE				0x81
 #define NCI_NFC_F_PASSIVE_LISTEN_MODE				0x82
 #define NCI_NFC_A_ACTIVE_LISTEN_MODE				0x83
 #define NCI_NFC_F_ACTIVE_LISTEN_MODE				0x85
-<<<<<<< HEAD
-#define NCI_NFC_15693_PASSIVE_LISTEN_MODE			0x86
-=======
 
 #define NCI_RF_TECH_MODE_LISTEN_MASK				0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI RF Technologies */
 #define NCI_NFC_RF_TECHNOLOGY_A					0x00
 #define NCI_NFC_RF_TECHNOLOGY_B					0x01
 #define NCI_NFC_RF_TECHNOLOGY_F					0x02
-<<<<<<< HEAD
-#define NCI_NFC_RF_TECHNOLOGY_15693				0x03
-=======
 #define NCI_NFC_RF_TECHNOLOGY_V					0x03
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI Bit Rates */
 #define NCI_NFC_BIT_RATE_106					0x00
@@ -146,10 +102,7 @@
 #define NCI_NFC_BIT_RATE_1695					0x04
 #define NCI_NFC_BIT_RATE_3390					0x05
 #define NCI_NFC_BIT_RATE_6780					0x06
-<<<<<<< HEAD
-=======
 #define NCI_NFC_BIT_RATE_26					0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI RF Protocols */
 #define NCI_RF_PROTOCOL_UNKNOWN					0x00
@@ -158,10 +111,7 @@
 #define NCI_RF_PROTOCOL_T3T					0x03
 #define NCI_RF_PROTOCOL_ISO_DEP					0x04
 #define NCI_RF_PROTOCOL_NFC_DEP					0x05
-<<<<<<< HEAD
-=======
 #define NCI_RF_PROTOCOL_T5T					0x06
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI RF Interfaces */
 #define NCI_RF_INTERFACE_NFCEE_DIRECT				0x00
@@ -169,8 +119,6 @@
 #define NCI_RF_INTERFACE_ISO_DEP				0x02
 #define NCI_RF_INTERFACE_NFC_DEP				0x03
 
-<<<<<<< HEAD
-=======
 /* NCI Configuration Parameter Tags */
 #define NCI_PN_ATR_REQ_GEN_BYTES				0x29
 #define NCI_LN_ATR_RES_GEN_BYTES				0x61
@@ -188,7 +136,6 @@
 /* NCI 2.x Feature Enable Bit */
 #define NCI_FEATURE_DISABLE					0x00
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NCI Reset types */
 #define NCI_RESET_TYPE_KEEP_CONFIG				0x00
 #define NCI_RESET_TYPE_RESET_CONFIG				0x01
@@ -249,13 +196,10 @@
 #define NCI_GID_NFCEE_MGMT					0x2
 #define NCI_GID_PROPRIETARY					0xf
 
-<<<<<<< HEAD
-=======
 /* ----- NCI over SPI head/crc(tail) room needed for outgoing frames ----- */
 #define NCI_SPI_HDR_LEN						4
 #define NCI_SPI_CRC_LEN						2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ---- NCI Packet structures ---- */
 #define NCI_CTRL_HDR_SIZE					3
 #define NCI_DATA_HDR_SIZE					3
@@ -281,8 +225,6 @@ struct nci_core_reset_cmd {
 } __packed;
 
 #define NCI_OP_CORE_INIT_CMD		nci_opcode_pack(NCI_GID_CORE, 0x01)
-<<<<<<< HEAD
-=======
 /* To support NCI 2.x */
 struct nci_core_init_v2_cmd {
 	u8	feature1;
@@ -322,7 +264,6 @@ struct nci_core_conn_create_cmd {
 } __packed;
 
 #define NCI_OP_CORE_CONN_CLOSE_CMD	nci_opcode_pack(NCI_GID_CORE, 0x05)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NCI_OP_RF_DISCOVER_MAP_CMD	nci_opcode_pack(NCI_GID_RF_MGMT, 0x00)
 struct disc_map_config {
@@ -360,8 +301,6 @@ struct nci_rf_deactivate_cmd {
 	__u8	type;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define NCI_OP_NFCEE_DISCOVER_CMD nci_opcode_pack(NCI_GID_NFCEE_MGMT, 0x00)
 struct nci_nfcee_discover_cmd {
 	__u8	discovery_action;
@@ -377,7 +316,6 @@ struct nci_nfcee_mode_set_cmd {
 
 #define NCI_OP_CORE_GET_CONFIG_CMD	nci_opcode_pack(NCI_GID_CORE, 0x03)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------- */
 /* ---- NCI Responses ---- */
 /* ----------------------- */
@@ -393,11 +331,7 @@ struct nci_core_init_rsp_1 {
 	__u8	status;
 	__le32	nfcc_features;
 	__u8	num_supported_rf_interfaces;
-<<<<<<< HEAD
-	__u8	supported_rf_interfaces[0];	/* variable size array */
-=======
 	__u8	supported_rf_interfaces[];	/* variable size array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* continuted in nci_core_init_rsp_2 */
 } __packed;
 
@@ -410,8 +344,6 @@ struct nci_core_init_rsp_2 {
 	__le32	manufact_specific_info;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* To support NCI ver 2.x */
 struct nci_core_init_rsp_nci_ver2 {
 	u8	status;
@@ -443,7 +375,6 @@ struct nci_core_conn_create_rsp {
 
 #define NCI_OP_CORE_CONN_CLOSE_RSP	nci_opcode_pack(NCI_GID_CORE, 0x05)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NCI_OP_RF_DISCOVER_MAP_RSP	nci_opcode_pack(NCI_GID_RF_MGMT, 0x00)
 
 #define NCI_OP_RF_DISCOVER_RSP		nci_opcode_pack(NCI_GID_RF_MGMT, 0x03)
@@ -452,11 +383,6 @@ struct nci_core_conn_create_rsp {
 
 #define NCI_OP_RF_DEACTIVATE_RSP	nci_opcode_pack(NCI_GID_RF_MGMT, 0x06)
 
-<<<<<<< HEAD
-/* --------------------------- */
-/* ---- NCI Notifications ---- */
-/* --------------------------- */
-=======
 #define NCI_OP_NFCEE_DISCOVER_RSP nci_opcode_pack(NCI_GID_NFCEE_MGMT, 0x00)
 struct nci_nfcee_discover_rsp {
 	__u8	status;
@@ -480,7 +406,6 @@ struct nci_core_reset_ntf {
 	__le32	manufact_specific_info;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NCI_OP_CORE_CONN_CREDITS_NTF	nci_opcode_pack(NCI_GID_CORE, 0x06)
 struct conn_credit_entry {
 	__u8	conn_id;
@@ -504,30 +429,19 @@ struct nci_core_intf_error_ntf {
 struct rf_tech_specific_params_nfca_poll {
 	__u16	sens_res;
 	__u8	nfcid1_len;	/* 0, 4, 7, or 10 Bytes */
-<<<<<<< HEAD
-	__u8	nfcid1[10];
-=======
 	__u8	nfcid1[NFC_NFCID1_MAXSIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8	sel_res_len;	/* 0 or 1 Bytes */
 	__u8	sel_res;
 } __packed;
 
 struct rf_tech_specific_params_nfcb_poll {
 	__u8	sensb_res_len;
-<<<<<<< HEAD
-	__u8	sensb_res[12];	/* 11 or 12 Bytes */
-=======
 	__u8	sensb_res[NFC_SENSB_RES_MAXSIZE];	/* 11 or 12 Bytes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct rf_tech_specific_params_nfcf_poll {
 	__u8	bit_rate;
 	__u8	sensf_res_len;
-<<<<<<< HEAD
-	__u8	sensf_res[18];	/* 16 or 18 Bytes */
-=======
 	__u8	sensf_res[NFC_SENSF_RES_MAXSIZE];	/* 16 or 18 Bytes */
 } __packed;
 
@@ -540,7 +454,6 @@ struct rf_tech_specific_params_nfcv_poll {
 struct rf_tech_specific_params_nfcf_listen {
 	__u8	local_nfcid2_len;
 	__u8	local_nfcid2[NFC_NFCID2_MAXSIZE];	/* 0 or 8 Bytes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct nci_rf_discover_ntf {
@@ -553,10 +466,7 @@ struct nci_rf_discover_ntf {
 		struct rf_tech_specific_params_nfca_poll nfca_poll;
 		struct rf_tech_specific_params_nfcb_poll nfcb_poll;
 		struct rf_tech_specific_params_nfcf_poll nfcf_poll;
-<<<<<<< HEAD
-=======
 		struct rf_tech_specific_params_nfcv_poll nfcv_poll;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} rf_tech_specific_params;
 
 	__u8	ntf_type;
@@ -573,8 +483,6 @@ struct activation_params_nfcb_poll_iso_dep {
 	__u8	attrib_res[50];
 };
 
-<<<<<<< HEAD
-=======
 struct activation_params_poll_nfc_dep {
 	__u8	atr_res_len;
 	__u8	atr_res[NFC_ATR_RES_MAXSIZE - 2]; /* ATR_RES from byte 3 */
@@ -585,7 +493,6 @@ struct activation_params_listen_nfc_dep {
 	__u8	atr_req[NFC_ATR_REQ_MAXSIZE - 2]; /* ATR_REQ from byte 3 */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nci_rf_intf_activated_ntf {
 	__u8	rf_discovery_id;
 	__u8	rf_interface;
@@ -599,11 +506,8 @@ struct nci_rf_intf_activated_ntf {
 		struct rf_tech_specific_params_nfca_poll nfca_poll;
 		struct rf_tech_specific_params_nfcb_poll nfcb_poll;
 		struct rf_tech_specific_params_nfcf_poll nfcf_poll;
-<<<<<<< HEAD
-=======
 		struct rf_tech_specific_params_nfcv_poll nfcv_poll;
 		struct rf_tech_specific_params_nfcf_listen nfcf_listen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} rf_tech_specific_params;
 
 	__u8	data_exch_rf_tech_and_mode;
@@ -614,11 +518,8 @@ struct nci_rf_intf_activated_ntf {
 	union {
 		struct activation_params_nfca_poll_iso_dep nfca_poll_iso_dep;
 		struct activation_params_nfcb_poll_iso_dep nfcb_poll_iso_dep;
-<<<<<<< HEAD
-=======
 		struct activation_params_poll_nfc_dep poll_nfc_dep;
 		struct activation_params_listen_nfc_dep listen_nfc_dep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} activation_params;
 
 } __packed;
@@ -629,8 +530,6 @@ struct nci_rf_deactivate_ntf {
 	__u8	reason;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define NCI_OP_RF_NFCEE_ACTION_NTF	nci_opcode_pack(NCI_GID_RF_MGMT, 0x09)
 struct nci_rf_nfcee_action_ntf {
 	__u8 nfcee_id;
@@ -659,5 +558,4 @@ struct nci_nfcee_discover_ntf {
 
 #define NCI_OP_CORE_RESET_NTF		nci_opcode_pack(NCI_GID_CORE, 0x00)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __NCI_H */

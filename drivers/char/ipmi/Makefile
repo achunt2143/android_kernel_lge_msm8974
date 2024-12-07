@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the ipmi drivers.
 #
 
-<<<<<<< HEAD
-ipmi_si-y := ipmi_si_intf.o ipmi_kcs_sm.o ipmi_smic_sm.o ipmi_bt_sm.o
-=======
 ipmi_si-y := ipmi_si_intf.o ipmi_kcs_sm.o ipmi_smic_sm.o ipmi_bt_sm.o \
 	ipmi_si_hotmod.o ipmi_si_hardcode.o ipmi_si_platform.o \
 	ipmi_si_port_io.o ipmi_si_mem_io.o
@@ -18,15 +12,10 @@ endif
 ifdef CONFIG_PARISC
 ipmi_si-y += ipmi_si_parisc.o
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_IPMI_HANDLER) += ipmi_msghandler.o
 obj-$(CONFIG_IPMI_DEVICE_INTERFACE) += ipmi_devintf.o
 obj-$(CONFIG_IPMI_SI) += ipmi_si.o
-<<<<<<< HEAD
-obj-$(CONFIG_IPMI_WATCHDOG) += ipmi_watchdog.o
-obj-$(CONFIG_IPMI_POWEROFF) += ipmi_poweroff.o
-=======
 obj-$(CONFIG_IPMI_DMI_DECODE) += ipmi_dmi.o
 obj-$(CONFIG_IPMI_PLAT_DATA) += ipmi_plat_data.o
 obj-$(CONFIG_IPMI_SSIF) += ipmi_ssif.o
@@ -42,4 +31,3 @@ obj-$(CONFIG_ASPEED_KCS_IPMI_BMC) += kcs_bmc_aspeed.o
 obj-$(CONFIG_NPCM7XX_KCS_IPMI_BMC) += kcs_bmc_npcm7xx.o
 obj-$(CONFIG_IPMB_DEVICE_INTERFACE) += ipmb_dev_int.o
 obj-$(CONFIG_SSIF_IPMI_BMC) += ssif_bmc.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

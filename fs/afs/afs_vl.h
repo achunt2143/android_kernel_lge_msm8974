@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AFS Volume Location Service client interface
  *
  * Copyright (C) 2002, 2007 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef AFS_VL_H
@@ -23,13 +12,6 @@
 
 #define AFS_VL_PORT		7003	/* volume location service port */
 #define VL_SERVICE		52	/* RxRPC service ID for the Volume Location service */
-<<<<<<< HEAD
-
-enum AFSVL_Operations {
-	VLGETENTRYBYID		= 503,	/* AFS Get Cache Entry By ID operation ID */
-	VLGETENTRYBYNAME	= 504,	/* AFS Get Cache Entry By Name operation ID */
-	VLPROBE			= 514,	/* AFS Probe Volume Location Service operation ID */
-=======
 #define YFS_VL_SERVICE		2503	/* Service ID for AuriStor upgraded VL service */
 
 enum AFSVL_Operations {
@@ -42,7 +24,6 @@ enum AFSVL_Operations {
 	YVLGETENDPOINTS		= 64002, /* YFS Get endpoints for file/volume server */
 	YVLGETCELLNAME		= 64014, /* YFS Get actual cell name */
 	VLGETCAPABILITIES	= 65537, /* AFS Get server capabilities */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum AFSVL_Errors {
@@ -76,8 +57,6 @@ enum AFSVL_Errors {
 	AFSVL_NOMEM 		= 363547,	/* malloc/realloc failed to alloc enough memory */
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	YFS_SERVER_INDEX	= 0,
 	YFS_SERVER_UUID		= 1,
@@ -91,7 +70,6 @@ enum {
 
 #define YFS_MAXENDPOINTS	16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * maps to "struct vldbentry" in vvl-spec.pdf
  */
@@ -112,15 +90,6 @@ struct afs_vldbentry {
 		struct in_addr	addr;		/* server address */
 		unsigned	partition;	/* partition ID on this server */
 		unsigned	flags;		/* server specific flags */
-<<<<<<< HEAD
-#define AFS_VLSF_NEWREPSITE	0x0001	/* unused */
-#define AFS_VLSF_ROVOL		0x0002	/* this server holds a R/O instance of the volume */
-#define AFS_VLSF_RWVOL		0x0004	/* this server holds a R/W instance of the volume */
-#define AFS_VLSF_BACKVOL	0x0008	/* this server holds a backup instance of the volume */
-	} servers[8];
-};
-
-=======
 #define AFS_VLSF_NEWREPSITE	0x0001	/* Ignore all 'non-new' servers */
 #define AFS_VLSF_ROVOL		0x0002	/* this server holds a R/O instance of the volume */
 #define AFS_VLSF_RWVOL		0x0004	/* this server holds a R/W instance of the volume */
@@ -174,5 +143,4 @@ struct afs_address_list {
 
 extern void afs_put_address_list(struct afs_address_list *alist);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* AFS_VL_H */

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  LEDs driver for the Cobalt Raq series.
  *
  *  Copyright (C) 2007  Yoichi Yuasa <yuasa@linux-mips.org>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/io.h>
@@ -83,11 +63,7 @@ static struct led_classdev raq_power_off_led = {
 	.default_trigger	= "power-off",
 };
 
-<<<<<<< HEAD
-static int __devinit cobalt_raq_led_probe(struct platform_device *pdev)
-=======
 static int cobalt_raq_led_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int retval;
@@ -96,21 +72,13 @@ static int cobalt_raq_led_probe(struct platform_device *pdev)
 	if (!res)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	led_port = ioremap(res->start, resource_size(res));
-=======
 	led_port = devm_ioremap(&pdev->dev, res->start, resource_size(res));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!led_port)
 		return -ENOMEM;
 
 	retval = led_classdev_register(&pdev->dev, &raq_power_off_led);
 	if (retval)
-<<<<<<< HEAD
-		goto err_iounmap;
-=======
 		goto err_null;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = led_classdev_register(&pdev->dev, &raq_web_led);
 	if (retval)
@@ -121,47 +89,12 @@ static int cobalt_raq_led_probe(struct platform_device *pdev)
 err_unregister:
 	led_classdev_unregister(&raq_power_off_led);
 
-<<<<<<< HEAD
-err_iounmap:
-	iounmap(led_port);
-=======
 err_null:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led_port = NULL;
 
 	return retval;
 }
 
-<<<<<<< HEAD
-static int __devexit cobalt_raq_led_remove(struct platform_device *pdev)
-{
-	led_classdev_unregister(&raq_power_off_led);
-	led_classdev_unregister(&raq_web_led);
-
-	if (led_port) {
-		iounmap(led_port);
-		led_port = NULL;
-	}
-
-	return 0;
-}
-
-static struct platform_driver cobalt_raq_led_driver = {
-	.probe	= cobalt_raq_led_probe,
-	.remove	= __devexit_p(cobalt_raq_led_remove),
-	.driver = {
-		.name	= "cobalt-raq-leds",
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init cobalt_raq_led_init(void)
-{
-	return platform_driver_register(&cobalt_raq_led_driver);
-}
-
-module_init(cobalt_raq_led_init);
-=======
 static struct platform_driver cobalt_raq_led_driver = {
 	.probe	= cobalt_raq_led_probe,
 	.driver = {
@@ -170,4 +103,3 @@ static struct platform_driver cobalt_raq_led_driver = {
 };
 
 builtin_platform_driver(cobalt_raq_led_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

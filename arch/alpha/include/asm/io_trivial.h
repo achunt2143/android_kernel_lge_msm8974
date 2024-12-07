@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Trivial implementations of basic i/o routines.  Assumes that all
    of the hard work has been done by ioremap and ioportmap, and that
    access to i/o space is linear.  */
@@ -9,18 +6,6 @@
 /* This file may be included multiple times.  */
 
 #if IO_CONCAT(__IO_PREFIX,trivial_io_bw)
-<<<<<<< HEAD
-__EXTERN_INLINE unsigned int
-IO_CONCAT(__IO_PREFIX,ioread8)(void __iomem *a)
-{
-	return __kernel_ldbu(*(volatile u8 __force *)a);
-}
-
-__EXTERN_INLINE unsigned int
-IO_CONCAT(__IO_PREFIX,ioread16)(void __iomem *a)
-{
-	return __kernel_ldwu(*(volatile u16 __force *)a);
-=======
 __EXTERN_INLINE u8
 IO_CONCAT(__IO_PREFIX,ioread8)(const void __iomem *a)
 {
@@ -31,7 +16,6 @@ __EXTERN_INLINE u16
 IO_CONCAT(__IO_PREFIX,ioread16)(const void __iomem *a)
 {
 	return __kernel_ldwu(*(const volatile u16 __force *)a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __EXTERN_INLINE void
@@ -48,17 +32,10 @@ IO_CONCAT(__IO_PREFIX,iowrite16)(u16 b, void __iomem *a)
 #endif
 
 #if IO_CONCAT(__IO_PREFIX,trivial_io_lq)
-<<<<<<< HEAD
-__EXTERN_INLINE unsigned int
-IO_CONCAT(__IO_PREFIX,ioread32)(void __iomem *a)
-{
-	return *(volatile u32 __force *)a;
-=======
 __EXTERN_INLINE u32
 IO_CONCAT(__IO_PREFIX,ioread32)(const void __iomem *a)
 {
 	return *(const volatile u32 __force *)a;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __EXTERN_INLINE void
@@ -66,8 +43,6 @@ IO_CONCAT(__IO_PREFIX,iowrite32)(u32 b, void __iomem *a)
 {
 	*(volatile u32 __force *)a = b;
 }
-<<<<<<< HEAD
-=======
 
 __EXTERN_INLINE u64
 IO_CONCAT(__IO_PREFIX,ioread64)(const void __iomem *a)
@@ -80,7 +55,6 @@ IO_CONCAT(__IO_PREFIX,iowrite64)(u64 b, void __iomem *a)
 {
 	*(volatile u64 __force *)a = b;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if IO_CONCAT(__IO_PREFIX,trivial_rw_bw) == 1
@@ -111,22 +85,14 @@ IO_CONCAT(__IO_PREFIX,writew)(u16 b, volatile void __iomem *a)
 __EXTERN_INLINE u8
 IO_CONCAT(__IO_PREFIX,readb)(const volatile void __iomem *a)
 {
-<<<<<<< HEAD
-	void __iomem *addr = (void __iomem *)a;
-=======
 	const void __iomem *addr = (const void __iomem *)a;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IO_CONCAT(__IO_PREFIX,ioread8)(addr);
 }
 
 __EXTERN_INLINE u16
 IO_CONCAT(__IO_PREFIX,readw)(const volatile void __iomem *a)
 {
-<<<<<<< HEAD
-	void __iomem *addr = (void __iomem *)a;
-=======
 	const void __iomem *addr = (const void __iomem *)a;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IO_CONCAT(__IO_PREFIX,ioread16)(addr);
 }
 

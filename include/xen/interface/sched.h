@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * sched.h
  *
@@ -13,18 +10,6 @@
 #ifndef __XEN_PUBLIC_SCHED_H__
 #define __XEN_PUBLIC_SCHED_H__
 
-<<<<<<< HEAD
-#include "event_channel.h"
-
-/*
- * The prototype for this hypercall is:
- *  long sched_op_new(int cmd, void *arg)
- * @cmd == SCHEDOP_??? (scheduler operation).
- * @arg == Operation-specific extra argument(s), as described below.
- *
- * **NOTE**:
- * Versions of Xen prior to 3.0.2 provide only the following legacy version
-=======
 #include <xen/interface/event_channel.h>
 
 /*
@@ -44,18 +29,14 @@
  * ...  == Additional Operation-specific extra arguments, described below.
  *
  * Versions of Xen prior to 3.0.2 provided only the following legacy version
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of this hypercall, supporting only the commands yield, block and shutdown:
  *  long sched_op(int cmd, unsigned long arg)
  * @cmd == SCHEDOP_??? (scheduler operation).
  * @arg == 0               (SCHEDOP_yield and SCHEDOP_block)
  *      == SHUTDOWN_* code (SCHEDOP_shutdown)
-<<<<<<< HEAD
-=======
  *
  * This legacy version is available to new guests as:
  * long HYPERVISOR_sched_op_compat(enum sched_op cmd, unsigned long arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -76,14 +57,6 @@
 /*
  * Halt execution of this domain (all VCPUs) and notify the system controller.
  * @arg == pointer to sched_shutdown structure.
-<<<<<<< HEAD
- */
-#define SCHEDOP_shutdown    2
-struct sched_shutdown {
-    unsigned int reason; /* SHUTDOWN_* */
-};
-DEFINE_GUEST_HANDLE_STRUCT(sched_shutdown);
-=======
  *
  * If the sched_shutdown_t reason is SHUTDOWN_suspend then
  * x86 PV guests must also set RDX (EDX for 32-bit guests) to the MFN
@@ -95,7 +68,6 @@ DEFINE_GUEST_HANDLE_STRUCT(sched_shutdown);
  * checkpointed, and 0 if it is resuming in a new domain.
  */
 #define SCHEDOP_shutdown    2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Poll a set of event-channel ports. Return when one or more are pending. An
@@ -103,15 +75,6 @@ DEFINE_GUEST_HANDLE_STRUCT(sched_shutdown);
  * @arg == pointer to sched_poll structure.
  */
 #define SCHEDOP_poll        3
-<<<<<<< HEAD
-struct sched_poll {
-    GUEST_HANDLE(evtchn_port_t) ports;
-    unsigned int nr_ports;
-    uint64_t timeout;
-};
-DEFINE_GUEST_HANDLE_STRUCT(sched_poll);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Declare a shutdown for another domain. The main use of this function is
@@ -120,22 +83,11 @@ DEFINE_GUEST_HANDLE_STRUCT(sched_poll);
  * @arg == pointer to sched_remote_shutdown structure.
  */
 #define SCHEDOP_remote_shutdown        4
-<<<<<<< HEAD
-struct sched_remote_shutdown {
-    domid_t domain_id;         /* Remote domain ID */
-    unsigned int reason;       /* SHUTDOWN_xxx reason */
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Latch a shutdown code, so that when the domain later shuts down it
  * reports this code to the control tools.
-<<<<<<< HEAD
- * @arg == as for SCHEDOP_shutdown.
-=======
  * @arg == sched_shutdown, as for SCHEDOP_shutdown.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define SCHEDOP_shutdown_code 5
 
@@ -148,8 +100,6 @@ struct sched_remote_shutdown {
  * With id != 0 and timeout != 0, poke watchdog timer and set new timeout.
  */
 #define SCHEDOP_watchdog    6
-<<<<<<< HEAD
-=======
 
 /*
  * Override the current vcpu affinity by pinning it to one physical cpu or
@@ -181,20 +131,16 @@ struct sched_remote_shutdown {
 };
 DEFINE_GUEST_HANDLE_STRUCT(sched_remote_shutdown);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sched_watchdog {
     uint32_t id;                /* watchdog ID */
     uint32_t timeout;           /* timeout */
 };
-<<<<<<< HEAD
-=======
 DEFINE_GUEST_HANDLE_STRUCT(sched_watchdog);
 
 struct sched_pin_override {
     int32_t pcpu;
 };
 DEFINE_GUEST_HANDLE_STRUCT(sched_pin_override);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reason codes for SCHEDOP_shutdown. These may be interpreted by control
@@ -207,8 +153,6 @@ DEFINE_GUEST_HANDLE_STRUCT(sched_pin_override);
 #define SHUTDOWN_crash      3  /* Tell controller we've crashed.             */
 #define SHUTDOWN_watchdog   4  /* Restart because watchdog time expired.     */
 
-<<<<<<< HEAD
-=======
 /*
  * Domain asked to perform 'soft reset' for it. The expected behavior is to
  * reset internal Xen state for the domain returning it to the point where it
@@ -219,5 +163,4 @@ DEFINE_GUEST_HANDLE_STRUCT(sched_pin_override);
 #define SHUTDOWN_soft_reset 5
 #define SHUTDOWN_MAX        5  /* Maximum valid shutdown reason.             */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XEN_PUBLIC_SCHED_H__ */

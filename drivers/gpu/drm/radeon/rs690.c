@@ -25,12 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon.h"
-#include "radeon_asic.h"
-#include "atom.h"
-=======
 
 #include <linux/pci.h>
 
@@ -38,7 +32,6 @@
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "radeon_audio.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rs690d.h"
 
 int rs690_mc_wait_for_idle(struct radeon_device *rdev)
@@ -61,12 +54,7 @@ static void rs690_gpu_init(struct radeon_device *rdev)
 	/* FIXME: is this correct ? */
 	r420_pipes_init(rdev);
 	if (rs690_mc_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait MC idle while "
-		       "programming pipes. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait MC idle while programming pipes. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -159,17 +147,11 @@ void rs690_pm_info(struct radeon_device *rdev)
 	rdev->pm.sideport_bandwidth.full = dfixed_div(rdev->pm.sideport_bandwidth, tmp);
 }
 
-<<<<<<< HEAD
-void rs690_mc_init(struct radeon_device *rdev)
-{
-	u64 base;
-=======
 static void rs690_mc_init(struct radeon_device *rdev)
 {
 	u64 base;
 	uint32_t h_addr, l_addr;
 	unsigned long long k8_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rs400_gart_adjust_size(rdev);
 	rdev->mc.vram_is_ddr = true;
@@ -182,8 +164,6 @@ static void rs690_mc_init(struct radeon_device *rdev)
 	base = RREG32_MC(R_000100_MCCFG_FB_LOCATION);
 	base = G_000100_MC_FB_START(base) << 16;
 	rdev->mc.igp_sideport_enabled = radeon_atombios_sideport_present(rdev);
-<<<<<<< HEAD
-=======
 	/* Some boards seem to be configured for 128MB of sideport memory,
 	 * but really only have 64MB.  Just skip the sideport and use
 	 * UMA memory.
@@ -215,7 +195,6 @@ static void rs690_mc_init(struct radeon_device *rdev)
 		}
 	}  
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rs690_pm_info(rdev);
 	radeon_vram_location(rdev, &rdev->mc, base);
 	rdev->mc.gtt_base_align = rdev->mc.gtt_size - 1;
@@ -229,12 +208,9 @@ void rs690_line_buffer_adjust(struct radeon_device *rdev,
 {
 	u32 tmp;
 
-<<<<<<< HEAD
-=======
 	/* Guess line buffer size to be 8192 pixels */
 	u32 lb_size = 8192;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Line Buffer Setup
 	 * There is a single line buffer shared by both display controllers.
@@ -271,8 +247,6 @@ void rs690_line_buffer_adjust(struct radeon_device *rdev,
 		tmp |= V_006520_DC_LB_MEMORY_SPLIT_D1_1Q_D2_3Q;
 	}
 	WREG32(R_006520_DC_LB_MEMORY_SPLIT, tmp);
-<<<<<<< HEAD
-=======
 
 	/* Save number of lines the linebuffer leads before the scanout */
 	if (mode1)
@@ -280,7 +254,6 @@ void rs690_line_buffer_adjust(struct radeon_device *rdev,
 
 	if (mode2)
 		rdev->mode_info.crtcs[1]->lb_vblank_lead_lines = DIV_ROUND_UP(lb_size, mode2->crtc_hdisplay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct rs690_watermark {
@@ -296,26 +269,17 @@ struct rs690_watermark {
 	fixed20_12 sclk;
 };
 
-<<<<<<< HEAD
-void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
-				  struct radeon_crtc *crtc,
-				  struct rs690_watermark *wm)
-=======
 static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 					 struct radeon_crtc *crtc,
 					 struct rs690_watermark *wm,
 					 bool low)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_display_mode *mode = &crtc->base.mode;
 	fixed20_12 a, b, c;
 	fixed20_12 pclk, request_fifo_depth, tolerable_latency, estimated_width;
 	fixed20_12 consumption_time, line_time, chunk_time, read_delay_latency;
-<<<<<<< HEAD
-=======
 	fixed20_12 sclk, core_bandwidth, max_bandwidth;
 	u32 selected_sclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!crtc->base.enabled) {
 		/* FIXME: wouldn't it better to set priority mark to maximum */
@@ -323,8 +287,6 @@ static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	if (((rdev->family == CHIP_RS780) || (rdev->family == CHIP_RS880)) &&
 	    (rdev->pm.pm_method == PM_METHOD_DPM) && rdev->pm.dpm_enabled)
 		selected_sclk = radeon_dpm_get_sclk(rdev, low);
@@ -340,7 +302,6 @@ static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 	a.full = dfixed_const(16);
 	core_bandwidth.full = dfixed_div(rdev->pm.sclk, a);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (crtc->vsc.full > dfixed_const(2))
 		wm->num_line_pair.full = dfixed_const(2);
 	else
@@ -401,23 +362,6 @@ static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 	wm->active_time.full = dfixed_div(wm->active_time, a);
 
 	/* Maximun bandwidth is the minimun bandwidth of all component */
-<<<<<<< HEAD
-	rdev->pm.max_bandwidth = rdev->pm.core_bandwidth;
-	if (rdev->mc.igp_sideport_enabled) {
-		if (rdev->pm.max_bandwidth.full > rdev->pm.sideport_bandwidth.full &&
-			rdev->pm.sideport_bandwidth.full)
-			rdev->pm.max_bandwidth = rdev->pm.sideport_bandwidth;
-		read_delay_latency.full = dfixed_const(370 * 800 * 1000);
-		read_delay_latency.full = dfixed_div(read_delay_latency,
-			rdev->pm.igp_sideport_mclk);
-	} else {
-		if (rdev->pm.max_bandwidth.full > rdev->pm.k8_bandwidth.full &&
-			rdev->pm.k8_bandwidth.full)
-			rdev->pm.max_bandwidth = rdev->pm.k8_bandwidth;
-		if (rdev->pm.max_bandwidth.full > rdev->pm.ht_bandwidth.full &&
-			rdev->pm.ht_bandwidth.full)
-			rdev->pm.max_bandwidth = rdev->pm.ht_bandwidth;
-=======
 	max_bandwidth = core_bandwidth;
 	if (rdev->mc.igp_sideport_enabled) {
 		if (max_bandwidth.full > rdev->pm.sideport_bandwidth.full &&
@@ -435,32 +379,21 @@ static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 		if (max_bandwidth.full > rdev->pm.ht_bandwidth.full &&
 			rdev->pm.ht_bandwidth.full)
 			max_bandwidth = rdev->pm.ht_bandwidth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read_delay_latency.full = dfixed_const(5000);
 	}
 
 	/* sclk = system clocks(ns) = 1000 / max_bandwidth / 16 */
 	a.full = dfixed_const(16);
-<<<<<<< HEAD
-	rdev->pm.sclk.full = dfixed_mul(rdev->pm.max_bandwidth, a);
-	a.full = dfixed_const(1000);
-	rdev->pm.sclk.full = dfixed_div(a, rdev->pm.sclk);
-=======
 	sclk.full = dfixed_mul(max_bandwidth, a);
 	a.full = dfixed_const(1000);
 	sclk.full = dfixed_div(a, sclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Determine chunk time
 	 * ChunkTime = the time it takes the DCP to send one chunk of data
 	 * to the LB which consists of pipeline delay and inter chunk gap
 	 * sclk = system clock(ns)
 	 */
 	a.full = dfixed_const(256 * 13);
-<<<<<<< HEAD
-	chunk_time.full = dfixed_mul(rdev->pm.sclk, a);
-=======
 	chunk_time.full = dfixed_mul(sclk, a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	a.full = dfixed_const(10);
 	chunk_time.full = dfixed_div(chunk_time, a);
 
@@ -524,8 +457,6 @@ static void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void rs690_compute_mode_priority(struct radeon_device *rdev,
 					struct rs690_watermark *wm0,
 					struct rs690_watermark *wm1,
@@ -650,20 +581,10 @@ static void rs690_compute_mode_priority(struct radeon_device *rdev,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rs690_bandwidth_update(struct radeon_device *rdev)
 {
 	struct drm_display_mode *mode0 = NULL;
 	struct drm_display_mode *mode1 = NULL;
-<<<<<<< HEAD
-	struct rs690_watermark wm0;
-	struct rs690_watermark wm1;
-	u32 tmp;
-	u32 d1mode_priority_a_cnt = S_006548_D1MODE_PRIORITY_A_OFF(1);
-	u32 d2mode_priority_a_cnt = S_006548_D1MODE_PRIORITY_A_OFF(1);
-	fixed20_12 priority_mark02, priority_mark12, fill_rate;
-	fixed20_12 a, b;
-=======
 	struct rs690_watermark wm0_high, wm0_low;
 	struct rs690_watermark wm1_high, wm1_low;
 	u32 tmp;
@@ -672,7 +593,6 @@ void rs690_bandwidth_update(struct radeon_device *rdev)
 
 	if (!rdev->mode_info.mode_config_initialized)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	radeon_update_display_priority(rdev);
 
@@ -703,136 +623,6 @@ void rs690_bandwidth_update(struct radeon_device *rdev)
 	if ((rdev->family == CHIP_RS780) || (rdev->family == CHIP_RS880))
 		WREG32(R_006C9C_DCP_CONTROL, 2);
 
-<<<<<<< HEAD
-	rs690_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[0], &wm0);
-	rs690_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[1], &wm1);
-
-	tmp = (wm0.lb_request_fifo_depth - 1);
-	tmp |= (wm1.lb_request_fifo_depth - 1) << 16;
-	WREG32(R_006D58_LB_MAX_REQ_OUTSTANDING, tmp);
-
-	if (mode0 && mode1) {
-		if (dfixed_trunc(wm0.dbpp) > 64)
-			a.full = dfixed_mul(wm0.dbpp, wm0.num_line_pair);
-		else
-			a.full = wm0.num_line_pair.full;
-		if (dfixed_trunc(wm1.dbpp) > 64)
-			b.full = dfixed_mul(wm1.dbpp, wm1.num_line_pair);
-		else
-			b.full = wm1.num_line_pair.full;
-		a.full += b.full;
-		fill_rate.full = dfixed_div(wm0.sclk, a);
-		if (wm0.consumption_rate.full > fill_rate.full) {
-			b.full = wm0.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm0.active_time);
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			a.full = a.full + b.full;
-			b.full = dfixed_const(16 * 1000);
-			priority_mark02.full = dfixed_div(a, b);
-		} else {
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark02.full = dfixed_div(a, b);
-		}
-		if (wm1.consumption_rate.full > fill_rate.full) {
-			b.full = wm1.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm1.active_time);
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			a.full = a.full + b.full;
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		} else {
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		}
-		if (wm0.priority_mark.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark.full;
-		if (dfixed_trunc(priority_mark02) < 0)
-			priority_mark02.full = 0;
-		if (wm0.priority_mark_max.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark_max.full;
-		if (wm1.priority_mark.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark.full;
-		if (dfixed_trunc(priority_mark12) < 0)
-			priority_mark12.full = 0;
-		if (wm1.priority_mark_max.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark_max.full;
-		d1mode_priority_a_cnt = dfixed_trunc(priority_mark02);
-		d2mode_priority_a_cnt = dfixed_trunc(priority_mark12);
-		if (rdev->disp_priority == 2) {
-			d1mode_priority_a_cnt |= S_006548_D1MODE_PRIORITY_A_ALWAYS_ON(1);
-			d2mode_priority_a_cnt |= S_006D48_D2MODE_PRIORITY_A_ALWAYS_ON(1);
-		}
-	} else if (mode0) {
-		if (dfixed_trunc(wm0.dbpp) > 64)
-			a.full = dfixed_mul(wm0.dbpp, wm0.num_line_pair);
-		else
-			a.full = wm0.num_line_pair.full;
-		fill_rate.full = dfixed_div(wm0.sclk, a);
-		if (wm0.consumption_rate.full > fill_rate.full) {
-			b.full = wm0.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm0.active_time);
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			a.full = a.full + b.full;
-			b.full = dfixed_const(16 * 1000);
-			priority_mark02.full = dfixed_div(a, b);
-		} else {
-			a.full = dfixed_mul(wm0.worst_case_latency,
-						wm0.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark02.full = dfixed_div(a, b);
-		}
-		if (wm0.priority_mark.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark.full;
-		if (dfixed_trunc(priority_mark02) < 0)
-			priority_mark02.full = 0;
-		if (wm0.priority_mark_max.full > priority_mark02.full)
-			priority_mark02.full = wm0.priority_mark_max.full;
-		d1mode_priority_a_cnt = dfixed_trunc(priority_mark02);
-		if (rdev->disp_priority == 2)
-			d1mode_priority_a_cnt |= S_006548_D1MODE_PRIORITY_A_ALWAYS_ON(1);
-	} else if (mode1) {
-		if (dfixed_trunc(wm1.dbpp) > 64)
-			a.full = dfixed_mul(wm1.dbpp, wm1.num_line_pair);
-		else
-			a.full = wm1.num_line_pair.full;
-		fill_rate.full = dfixed_div(wm1.sclk, a);
-		if (wm1.consumption_rate.full > fill_rate.full) {
-			b.full = wm1.consumption_rate.full - fill_rate.full;
-			b.full = dfixed_mul(b, wm1.active_time);
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			a.full = a.full + b.full;
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		} else {
-			a.full = dfixed_mul(wm1.worst_case_latency,
-						wm1.consumption_rate);
-			b.full = dfixed_const(16 * 1000);
-			priority_mark12.full = dfixed_div(a, b);
-		}
-		if (wm1.priority_mark.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark.full;
-		if (dfixed_trunc(priority_mark12) < 0)
-			priority_mark12.full = 0;
-		if (wm1.priority_mark_max.full > priority_mark12.full)
-			priority_mark12.full = wm1.priority_mark_max.full;
-		d2mode_priority_a_cnt = dfixed_trunc(priority_mark12);
-		if (rdev->disp_priority == 2)
-			d2mode_priority_a_cnt |= S_006D48_D2MODE_PRIORITY_A_ALWAYS_ON(1);
-	}
-
-	WREG32(R_006548_D1MODE_PRIORITY_A_CNT, d1mode_priority_a_cnt);
-	WREG32(R_00654C_D1MODE_PRIORITY_B_CNT, d1mode_priority_a_cnt);
-	WREG32(R_006D48_D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
-	WREG32(R_006D4C_D2MODE_PRIORITY_B_CNT, d2mode_priority_a_cnt);
-=======
 	rs690_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[0], &wm0_high, false);
 	rs690_crtc_bandwidth_compute(rdev, rdev->mode_info.crtcs[1], &wm1_high, false);
 
@@ -856,18 +646,10 @@ void rs690_bandwidth_update(struct radeon_device *rdev)
 	WREG32(R_00654C_D1MODE_PRIORITY_B_CNT, d1mode_priority_b_cnt);
 	WREG32(R_006D48_D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
 	WREG32(R_006D4C_D2MODE_PRIORITY_B_CNT, d2mode_priority_b_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint32_t rs690_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 {
-<<<<<<< HEAD
-	uint32_t r;
-
-	WREG32(R_000078_MC_INDEX, S_000078_MC_IND_ADDR(reg));
-	r = RREG32(R_00007C_MC_DATA);
-	WREG32(R_000078_MC_INDEX, ~C_000078_MC_IND_ADDR);
-=======
 	unsigned long flags;
 	uint32_t r;
 
@@ -876,32 +658,22 @@ uint32_t rs690_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 	r = RREG32(R_00007C_MC_DATA);
 	WREG32(R_000078_MC_INDEX, ~C_000078_MC_IND_ADDR);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 void rs690_mc_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
 {
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(R_000078_MC_INDEX, S_000078_MC_IND_ADDR(reg) |
 		S_000078_MC_IND_WR_EN(1));
 	WREG32(R_00007C_MC_DATA, v);
 	WREG32(R_000078_MC_INDEX, 0x7F);
-<<<<<<< HEAD
-}
-
-void rs690_mc_program(struct radeon_device *rdev)
-=======
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
 }
 
 static void rs690_mc_program(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rv515_mc_save save;
 
@@ -963,22 +735,6 @@ static int rs690_startup(struct radeon_device *rdev)
 		return r;
 	}
 
-<<<<<<< HEAD
-	r = r600_audio_init(rdev);
-	if (r) {
-		dev_err(rdev->dev, "failed initializing audio\n");
-		return r;
-	}
-
-	r = radeon_ib_pool_start(rdev);
-	if (r)
-		return r;
-
-	r = radeon_ib_test(rdev, RADEON_RING_TYPE_GFX_INDEX, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
-	if (r) {
-		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
-		rdev->accel_working = false;
-=======
 	r = radeon_ib_pool_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
@@ -988,7 +744,6 @@ static int rs690_startup(struct radeon_device *rdev)
 	r = radeon_audio_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "failed initializing audio\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -1026,13 +781,8 @@ int rs690_resume(struct radeon_device *rdev)
 
 int rs690_suspend(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	radeon_ib_pool_suspend(rdev);
-	r600_audio_fini(rdev);
-=======
 	radeon_pm_suspend(rdev);
 	radeon_audio_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
 	rs600_irq_disable(rdev);
@@ -1042,18 +792,11 @@ int rs690_suspend(struct radeon_device *rdev)
 
 void rs690_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	r600_audio_fini(rdev);
-	r100_cp_fini(rdev);
-	radeon_wb_fini(rdev);
-	r100_ib_fini(rdev);
-=======
 	radeon_pm_fini(rdev);
 	radeon_audio_fini(rdev);
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	rs400_gart_fini(rdev);
 	radeon_irq_kms_fini(rdev);
@@ -1107,13 +850,7 @@ int rs690_init(struct radeon_device *rdev)
 	rs690_mc_init(rdev);
 	rv515_debugfs(rdev);
 	/* Fence driver */
-<<<<<<< HEAD
-	r = radeon_fence_driver_init(rdev);
-	if (r)
-		return r;
-=======
 	radeon_fence_driver_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -1123,31 +860,17 @@ int rs690_init(struct radeon_device *rdev)
 		return r;
 	rs600_set_safe_registers(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_init(rdev);
-	rdev->accel_working = true;
-	if (r) {
-		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
-		rdev->accel_working = false;
-	}
-
-=======
 	/* Initialize power management */
 	radeon_pm_init(rdev);
 
 	rdev->accel_working = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rs690_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
-<<<<<<< HEAD
-		r100_ib_fini(rdev);
-=======
 		radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rs400_gart_fini(rdev);
 		radeon_irq_kms_fini(rdev);
 		rdev->accel_working = false;

@@ -1,55 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: hwxfsleep.c - ACPI Hardware Sleep/Wake External Interfaces
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-#include <acpi/acpi.h>
-#include "accommon.h"
-#include <linux/module.h>
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
@@ -58,71 +11,27 @@
 
 #include <acpi/acpi.h>
 #include "accommon.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_HARDWARE
 ACPI_MODULE_NAME("hwxfsleep")
 
 /* Local prototypes */
-<<<<<<< HEAD
-static acpi_status
-acpi_hw_sleep_dispatch(u8 sleep_state, u8 flags, u32 function_id);
-
-/*
- * Dispatch table used to efficiently branch to the various sleep
- * functions.
- */
-#define ACPI_SLEEP_FUNCTION_ID         0
-#define ACPI_WAKE_PREP_FUNCTION_ID     1
-#define ACPI_WAKE_FUNCTION_ID          2
-
-/* Legacy functions are optional, based upon ACPI_REDUCED_HARDWARE */
-
-static struct acpi_sleep_functions acpi_sleep_dispatch[] = {
-	{ACPI_HW_OPTIONAL_FUNCTION(acpi_hw_legacy_sleep),
-	 acpi_hw_extended_sleep},
-	{ACPI_HW_OPTIONAL_FUNCTION(acpi_hw_legacy_wake_prep),
-	 acpi_hw_extended_wake_prep},
-	{ACPI_HW_OPTIONAL_FUNCTION(acpi_hw_legacy_wake), acpi_hw_extended_wake}
-};
-=======
 #if (!ACPI_REDUCED_HARDWARE)
 static acpi_status
 acpi_hw_set_firmware_waking_vector(struct acpi_table_facs *facs,
 				   acpi_physical_address physical_address,
 				   acpi_physical_address physical_address64);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These functions are removed for the ACPI_REDUCED_HARDWARE case:
  *      acpi_set_firmware_waking_vector
-<<<<<<< HEAD
- *      acpi_set_firmware_waking_vector64
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      acpi_enter_sleep_state_s4bios
  */
 
 #if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_set_firmware_waking_vector
- *
- * PARAMETERS:  physical_address    - 32-bit physical address of ACPI real mode
- *                                    entry point.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Sets the 32-bit firmware_waking_vector field of the FACS
- *
- ******************************************************************************/
-
-acpi_status acpi_set_firmware_waking_vector(u32 physical_address)
-{
-	ACPI_FUNCTION_TRACE(acpi_set_firmware_waking_vector);
-=======
  * FUNCTION:    acpi_hw_set_firmware_waking_vector
  *
  * PARAMETERS:  facs                - Pointer to FACS table
@@ -143,7 +52,6 @@ acpi_hw_set_firmware_waking_vector(struct acpi_table_facs *facs,
 				   acpi_physical_address physical_address64)
 {
 	ACPI_FUNCTION_TRACE(acpi_hw_set_firmware_waking_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/*
@@ -156,14 +64,6 @@ acpi_hw_set_firmware_waking_vector(struct acpi_table_facs *facs,
 
 	/* Set the 32-bit vector */
 
-<<<<<<< HEAD
-	acpi_gbl_FACS->firmware_waking_vector = physical_address;
-
-	/* Clear the 64-bit vector if it exists */
-
-	if ((acpi_gbl_FACS->length > 32) && (acpi_gbl_FACS->version >= 1)) {
-		acpi_gbl_FACS->xfirmware_waking_vector = 0;
-=======
 	facs->firmware_waking_vector = (u32)physical_address;
 
 	if (facs->length > 32) {
@@ -208,7 +108,6 @@ acpi_set_firmware_waking_vector(acpi_physical_address physical_address,
 		(void)acpi_hw_set_firmware_waking_vector(acpi_gbl_FACS,
 							 physical_address,
 							 physical_address64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return_ACPI_STATUS(AE_OK);
@@ -216,45 +115,6 @@ acpi_set_firmware_waking_vector(acpi_physical_address physical_address,
 
 ACPI_EXPORT_SYMBOL(acpi_set_firmware_waking_vector)
 
-<<<<<<< HEAD
-#if ACPI_MACHINE_WIDTH == 64
-/*******************************************************************************
- *
- * FUNCTION:    acpi_set_firmware_waking_vector64
- *
- * PARAMETERS:  physical_address    - 64-bit physical address of ACPI protected
- *                                    mode entry point.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Sets the 64-bit X_firmware_waking_vector field of the FACS, if
- *              it exists in the table. This function is intended for use with
- *              64-bit host operating systems.
- *
- ******************************************************************************/
-acpi_status acpi_set_firmware_waking_vector64(u64 physical_address)
-{
-	ACPI_FUNCTION_TRACE(acpi_set_firmware_waking_vector64);
-
-
-	/* Determine if the 64-bit vector actually exists */
-
-	if ((acpi_gbl_FACS->length <= 32) || (acpi_gbl_FACS->version < 1)) {
-		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
-
-	/* Clear 32-bit vector, set the 64-bit X_ vector */
-
-	acpi_gbl_FACS->firmware_waking_vector = 0;
-	acpi_gbl_FACS->xfirmware_waking_vector = physical_address;
-	return_ACPI_STATUS(AE_OK);
-}
-
-ACPI_EXPORT_SYMBOL(acpi_set_firmware_waking_vector64)
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_enter_sleep_state_s4bios
@@ -267,11 +127,7 @@ ACPI_EXPORT_SYMBOL(acpi_set_firmware_waking_vector64)
  *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
-<<<<<<< HEAD
-acpi_status asmlinkage acpi_enter_sleep_state_s4bios(void)
-=======
 acpi_status acpi_enter_sleep_state_s4bios(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 in_value;
 	acpi_status status;
@@ -292,11 +148,7 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
 	}
 
 	/*
-<<<<<<< HEAD
-	 * 1) Disable/Clear all GPEs
-=======
 	 * 1) Disable all GPEs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 2) Enable all wakeup GPEs
 	 */
 	status = acpi_hw_disable_all_gpes();
@@ -310,15 +162,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
 		return_ACPI_STATUS(status);
 	}
 
-<<<<<<< HEAD
-	ACPI_FLUSH_CPU_CACHE();
-
-	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
-				    (u32)acpi_gbl_FADT.S4bios_request, 8);
-
-	do {
-		acpi_os_stall(1000);
-=======
 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
 	if (ACPI_FAILURE(status)) {
@@ -327,16 +170,12 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
 
 	do {
 		acpi_os_stall(ACPI_USEC_PER_MSEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status =
 		    acpi_read_bit_register(ACPI_BITREG_WAKE_STATUS, &in_value);
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (!in_value);
 
 	return_ACPI_STATUS(AE_OK);
@@ -344,55 +183,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
 
 ACPI_EXPORT_SYMBOL(acpi_enter_sleep_state_s4bios)
 #endif				/* !ACPI_REDUCED_HARDWARE */
-<<<<<<< HEAD
-/*******************************************************************************
- *
- * FUNCTION:    acpi_hw_sleep_dispatch
- *
- * PARAMETERS:  sleep_state         - Which sleep state to enter/exit
- *              function_id         - Sleep, wake_prep, or Wake
- *
- * RETURN:      Status from the invoked sleep handling function.
- *
- * DESCRIPTION: Dispatch a sleep/wake request to the appropriate handling
- *              function.
- *
- ******************************************************************************/
-static acpi_status
-acpi_hw_sleep_dispatch(u8 sleep_state, u8 flags, u32 function_id)
-{
-	acpi_status status;
-	struct acpi_sleep_functions *sleep_functions =
-	    &acpi_sleep_dispatch[function_id];
-
-#if (!ACPI_REDUCED_HARDWARE)
-
-	/*
-	 * If the Hardware Reduced flag is set (from the FADT), we must
-	 * use the extended sleep registers
-	 */
-	if (acpi_gbl_reduced_hardware || acpi_gbl_FADT.sleep_control.address) {
-		status = sleep_functions->extended_function(sleep_state, flags);
-	} else {
-		/* Legacy sleep */
-
-		status = sleep_functions->legacy_function(sleep_state, flags);
-	}
-
-	return (status);
-
-#else
-	/*
-	 * For the case where reduced-hardware-only code is being generated,
-	 * we know that only the extended sleep registers are available
-	 */
-	status = sleep_functions->extended_function(sleep_state, flags);
-	return (status);
-
-#endif				/* !ACPI_REDUCED_HARDWARE */
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
@@ -425,8 +215,6 @@ acpi_status acpi_enter_sleep_state_prep(u8 sleep_state)
 		return_ACPI_STATUS(status);
 	}
 
-<<<<<<< HEAD
-=======
 	status = acpi_get_sleep_type_data(ACPI_STATE_S0,
 					  &acpi_gbl_sleep_type_a_s0,
 					  &acpi_gbl_sleep_type_b_s0);
@@ -434,7 +222,6 @@ acpi_status acpi_enter_sleep_state_prep(u8 sleep_state)
 		acpi_gbl_sleep_type_a_s0 = ACPI_SLEEP_TYPE_INVALID;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Execute the _PTS method (Prepare To Sleep) */
 
 	arg_list.count = 1;
@@ -452,36 +239,24 @@ acpi_status acpi_enter_sleep_state_prep(u8 sleep_state)
 
 	switch (sleep_state) {
 	case ACPI_STATE_S0:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sst_value = ACPI_SST_WORKING;
 		break;
 
 	case ACPI_STATE_S1:
 	case ACPI_STATE_S2:
 	case ACPI_STATE_S3:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sst_value = ACPI_SST_SLEEPING;
 		break;
 
 	case ACPI_STATE_S4:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sst_value = ACPI_SST_SLEEP_CONTEXT;
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sst_value = ACPI_SST_INDICATOR_OFF;	/* Default is off */
 		break;
 	}
@@ -501,17 +276,6 @@ ACPI_EXPORT_SYMBOL(acpi_enter_sleep_state_prep)
  * FUNCTION:    acpi_enter_sleep_state
  *
  * PARAMETERS:  sleep_state         - Which sleep state to enter
-<<<<<<< HEAD
- *              Flags               - ACPI_EXECUTE_GTS to run optional method
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Enter a system sleep state (see ACPI 2.0 spec p 231)
- *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
- *
- ******************************************************************************/
-acpi_status asmlinkage acpi_enter_sleep_state(u8 sleep_state, u8 flags)
-=======
  *
  * RETURN:      Status
  *
@@ -520,7 +284,6 @@ acpi_status asmlinkage acpi_enter_sleep_state(u8 sleep_state, u8 flags)
  *
  ******************************************************************************/
 acpi_status acpi_enter_sleep_state(u8 sleep_state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -533,17 +296,12 @@ acpi_status acpi_enter_sleep_state(u8 sleep_state)
 		return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
 	}
 
-<<<<<<< HEAD
-	status =
-	    acpi_hw_sleep_dispatch(sleep_state, flags, ACPI_SLEEP_FUNCTION_ID);
-=======
 #if !ACPI_REDUCED_HARDWARE
 	if (!acpi_gbl_reduced_hardware)
 		status = acpi_hw_legacy_sleep(sleep_state);
 	else
 #endif
 		status = acpi_hw_extended_sleep(sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -554,45 +312,27 @@ ACPI_EXPORT_SYMBOL(acpi_enter_sleep_state)
  * FUNCTION:    acpi_leave_sleep_state_prep
  *
  * PARAMETERS:  sleep_state         - Which sleep state we are exiting
-<<<<<<< HEAD
- *              Flags               - ACPI_EXECUTE_BFS to run optional method
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Perform the first state of OS-independent ACPI cleanup after a
-<<<<<<< HEAD
- *              sleep.
- *              Called with interrupts DISABLED.
- *
- ******************************************************************************/
-acpi_status acpi_leave_sleep_state_prep(u8 sleep_state, u8 flags)
-=======
  *              sleep. Called with interrupts DISABLED.
  *              We break wake/resume into 2 stages so that OSPM can handle
  *              various OS-specific tasks between the two steps.
  *
  ******************************************************************************/
 acpi_status acpi_leave_sleep_state_prep(u8 sleep_state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(acpi_leave_sleep_state_prep);
 
-<<<<<<< HEAD
-	status =
-	    acpi_hw_sleep_dispatch(sleep_state, flags,
-				   ACPI_WAKE_PREP_FUNCTION_ID);
-=======
 #if !ACPI_REDUCED_HARDWARE
 	if (!acpi_gbl_reduced_hardware)
 		status = acpi_hw_legacy_wake_prep(sleep_state);
 	else
 #endif
 		status = acpi_hw_extended_wake_prep(sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -616,17 +356,12 @@ acpi_status acpi_leave_sleep_state(u8 sleep_state)
 
 	ACPI_FUNCTION_TRACE(acpi_leave_sleep_state);
 
-<<<<<<< HEAD
-
-	status = acpi_hw_sleep_dispatch(sleep_state, 0, ACPI_WAKE_FUNCTION_ID);
-=======
 #if !ACPI_REDUCED_HARDWARE
 	if (!acpi_gbl_reduced_hardware)
 		status = acpi_hw_legacy_wake(sleep_state);
 	else
 #endif
 		status = acpi_hw_extended_wake(sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 

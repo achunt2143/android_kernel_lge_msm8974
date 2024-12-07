@@ -1,49 +1,10 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mmc
 
 #if !defined(_TRACE_MMC_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_MMC_H
 
-<<<<<<< HEAD
-#include <linux/tracepoint.h>
-
-TRACE_EVENT(mmc_clk,
-		TP_PROTO(char *print_info),
-
-		TP_ARGS(print_info),
-
-		TP_STRUCT__entry(
-			__string(print_info, print_info)
-		),
-
-		TP_fast_assign(
-			__assign_str(print_info, print_info);
-		),
-
-		TP_printk("%s",
-			__get_str(print_info)
-		)
-);
-
-#endif /* if !defined(_TRACE_MMC_H) || defined(TRACE_HEADER_MULTI_READ) */
-=======
 #include <linux/blkdev.h>
 #include <linux/mmc/core.h>
 #include <linux/mmc/host.h>
@@ -227,7 +188,6 @@ TRACE_EVENT(mmc_request_done,
 );
 
 #endif /* _TRACE_MMC_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This part must be outside protection */
 #include <trace/define_trace.h>

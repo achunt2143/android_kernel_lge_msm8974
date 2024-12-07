@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An I2C driver for the Epson RX8581 RTC
  *
  * Author: Martyn Welch <martyn.welch@ge.com>
  * Copyright 2008 GE Intelligent Platforms Embedded Systems, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on: rtc-pcf8563.c (An I2C driver for the Philips PCF8563 RTC)
  * Copyright 2005-06 Tower Technologies
  */
@@ -22,19 +12,11 @@
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/bcd.h>
-<<<<<<< HEAD
-#include <linux/rtc.h>
-#include <linux/log2.h>
-
-#define DRV_VERSION "0.1"
-
-=======
 #include <linux/of.h>
 #include <linux/regmap.h>
 #include <linux/rtc.h>
 #include <linux/log2.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RX8581_REG_SC		0x00 /* Second in BCD */
 #define RX8581_REG_MN		0x01 /* Minute in BCD */
 #define RX8581_REG_HR		0x02 /* Hour in BCD */
@@ -67,9 +49,6 @@
 #define RX8581_CTRL_STOP	0x02 /* STOP bit */
 #define RX8581_CTRL_RESET	0x01 /* RESET bit */
 
-<<<<<<< HEAD
-static struct i2c_driver rx8581_driver;
-=======
 #define RX8571_USER_RAM		0x10
 #define RX8571_NVRAM_SIZE	0x10
 
@@ -82,18 +61,11 @@ struct rx85x1_config {
 	struct regmap_config regmap;
 	unsigned int num_nvram;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In the routines that deal directly with the rx8581 hardware, we use
  * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
  */
-<<<<<<< HEAD
-static int rx8581_get_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	unsigned char date[7];
-	int data, err;
-=======
 static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -101,19 +73,12 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned int data;
 	int err;
 	struct rx8581 *rx8581 = i2c_get_clientdata(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First we ensure that the "update flag" is not set, we read the
 	 * time and date then re-read the "update flag". If the update flag
 	 * has been set, we know that the time has changed during the read so
 	 * we repeat the whole process again.
 	 */
-<<<<<<< HEAD
-	data = i2c_smbus_read_byte_data(client, RX8581_REG_FLAG);
-	if (data < 0) {
-		dev_err(&client->dev, "Unable to read device flags\n");
-		return -EIO;
-=======
 	err = regmap_read(rx8581->regmap, RX8581_REG_FLAG, &data);
 	if (err < 0)
 		return err;
@@ -122,45 +87,11 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		dev_warn(dev,
 			 "low voltage detected, date/time is not reliable.\n");
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	do {
 		/* If update flag set, clear it */
 		if (data & RX8581_FLAG_UF) {
-<<<<<<< HEAD
-			err = i2c_smbus_write_byte_data(client,
-				RX8581_REG_FLAG, (data & ~RX8581_FLAG_UF));
-			if (err != 0) {
-				dev_err(&client->dev, "Unable to write device "
-					"flags\n");
-				return -EIO;
-			}
-		}
-
-		/* Now read time and date */
-		err = i2c_smbus_read_i2c_block_data(client, RX8581_REG_SC,
-			7, date);
-		if (err < 0) {
-			dev_err(&client->dev, "Unable to read date\n");
-			return -EIO;
-		}
-
-		/* Check flag register */
-		data = i2c_smbus_read_byte_data(client, RX8581_REG_FLAG);
-		if (data < 0) {
-			dev_err(&client->dev, "Unable to read device flags\n");
-			return -EIO;
-		}
-	} while (data & RX8581_FLAG_UF);
-
-	if (data & RX8581_FLAG_VLF)
-		dev_info(&client->dev,
-			"low voltage detected, date/time is not reliable.\n");
-
-	dev_dbg(&client->dev,
-		"%s: raw data is sec=%02x, min=%02x, hr=%02x, "
-=======
 			err = regmap_write(rx8581->regmap, RX8581_REG_FLAG,
 					  data & ~RX8581_FLAG_UF);
 			if (err < 0)
@@ -180,7 +111,6 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	} while (data & RX8581_FLAG_UF);
 
 	dev_dbg(dev, "%s: raw data is sec=%02x, min=%02x, hr=%02x, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"wday=%02x, mday=%02x, mon=%02x, year=%02x\n",
 		__func__,
 		date[0], date[1], date[2], date[3], date[4], date[5], date[6]);
@@ -191,38 +121,14 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_wday = ilog2(date[RX8581_REG_DW] & 0x7F);
 	tm->tm_mday = bcd2bin(date[RX8581_REG_DM] & 0x3F);
 	tm->tm_mon = bcd2bin(date[RX8581_REG_MO] & 0x1F) - 1; /* rtc mn 1-12 */
-<<<<<<< HEAD
-	tm->tm_year = bcd2bin(date[RX8581_REG_YR]);
-	if (tm->tm_year < 70)
-		tm->tm_year += 100;	/* assume we are in 1970...2069 */
-
-
-	dev_dbg(&client->dev, "%s: tm is secs=%d, mins=%d, hours=%d, "
-=======
 	tm->tm_year = bcd2bin(date[RX8581_REG_YR]) + 100;
 
 	dev_dbg(dev, "%s: tm is secs=%d, mins=%d, hours=%d, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"mday=%d, mon=%d, year=%d, wday=%d\n",
 		__func__,
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-<<<<<<< HEAD
-	err = rtc_valid_tm(tm);
-	if (err < 0)
-		dev_err(&client->dev, "retrieved date/time is not valid.\n");
-
-	return err;
-}
-
-static int rx8581_set_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	int data, err;
-	unsigned char buf[7];
-
-	dev_dbg(&client->dev, "%s: secs=%d, mins=%d, hours=%d, "
-=======
 	return 0;
 }
 
@@ -234,7 +140,6 @@ static int rx8581_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	struct rx8581 *rx8581 = i2c_get_clientdata(client);
 
 	dev_dbg(dev, "%s: secs=%d, mins=%d, hours=%d, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"mday=%d, mon=%d, year=%d, wday=%d\n",
 		__func__,
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
@@ -251,71 +156,6 @@ static int rx8581_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	buf[RX8581_REG_MO] = bin2bcd(tm->tm_mon + 1);
 
 	/* year and century */
-<<<<<<< HEAD
-	buf[RX8581_REG_YR] = bin2bcd(tm->tm_year % 100);
-	buf[RX8581_REG_DW] = (0x1 << tm->tm_wday);
-
-	/* Stop the clock */
-	data = i2c_smbus_read_byte_data(client, RX8581_REG_CTRL);
-	if (data < 0) {
-		dev_err(&client->dev, "Unable to read control register\n");
-		return -EIO;
-	}
-
-	err = i2c_smbus_write_byte_data(client, RX8581_REG_CTRL,
-		(data | RX8581_CTRL_STOP));
-	if (err < 0) {
-		dev_err(&client->dev, "Unable to write control register\n");
-		return -EIO;
-	}
-
-	/* write register's data */
-	err = i2c_smbus_write_i2c_block_data(client, RX8581_REG_SC, 7, buf);
-	if (err < 0) {
-		dev_err(&client->dev, "Unable to write to date registers\n");
-		return -EIO;
-	}
-
-	/* get VLF and clear it */
-	data = i2c_smbus_read_byte_data(client, RX8581_REG_FLAG);
-	if (data < 0) {
-		dev_err(&client->dev, "Unable to read flag register\n");
-		return -EIO;
-	}
-
-	err = i2c_smbus_write_byte_data(client, RX8581_REG_FLAG,
-		(data & ~(RX8581_FLAG_VLF)));
-	if (err != 0) {
-		dev_err(&client->dev, "Unable to write flag register\n");
-		return -EIO;
-	}
-
-	/* Restart the clock */
-	data = i2c_smbus_read_byte_data(client, RX8581_REG_CTRL);
-	if (data < 0) {
-		dev_err(&client->dev, "Unable to read control register\n");
-		return -EIO;
-	}
-
-	err = i2c_smbus_write_byte_data(client, RX8581_REG_CTRL,
-		(data & ~(RX8581_CTRL_STOP)));
-	if (err != 0) {
-		dev_err(&client->dev, "Unable to write control register\n");
-		return -EIO;
-	}
-
-	return 0;
-}
-
-static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
-{
-	return rx8581_get_datetime(to_i2c_client(dev), tm);
-}
-
-static int rx8581_rtc_set_time(struct device *dev, struct rtc_time *tm)
-{
-	return rx8581_set_datetime(to_i2c_client(dev), tm);
-=======
 	buf[RX8581_REG_YR] = bin2bcd(tm->tm_year - 100);
 	buf[RX8581_REG_DW] = (0x1 << tm->tm_wday);
 
@@ -340,7 +180,6 @@ static int rx8581_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	/* Restart the clock */
 	return regmap_update_bits(rx8581->regmap, RX8581_REG_CTRL,
 				 RX8581_CTRL_STOP, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rtc_class_ops rx8581_rtc_ops = {
@@ -348,38 +187,6 @@ static const struct rtc_class_ops rx8581_rtc_ops = {
 	.set_time	= rx8581_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static int __devinit rx8581_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
-{
-	struct rtc_device *rtc;
-
-	dev_dbg(&client->dev, "%s\n", __func__);
-
-	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
-		return -ENODEV;
-
-	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
-
-	rtc = rtc_device_register(rx8581_driver.driver.name,
-				&client->dev, &rx8581_rtc_ops, THIS_MODULE);
-
-	if (IS_ERR(rtc))
-		return PTR_ERR(rtc);
-
-	i2c_set_clientdata(client, rtc);
-
-	return 0;
-}
-
-static int __devexit rx8581_remove(struct i2c_client *client)
-{
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-
-	rtc_device_unregister(rtc);
-
-	return 0;
-=======
 static int rx8571_nvram_read(void *priv, unsigned int offset, void *val,
 			     size_t bytes)
 {
@@ -497,7 +304,6 @@ static int rx8581_probe(struct i2c_client *client)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id rx8581_id[] = {
@@ -506,15 +312,6 @@ static const struct i2c_device_id rx8581_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, rx8581_id);
 
-<<<<<<< HEAD
-static struct i2c_driver rx8581_driver = {
-	.driver		= {
-		.name	= "rtc-rx8581",
-		.owner	= THIS_MODULE,
-	},
-	.probe		= rx8581_probe,
-	.remove		= __devexit_p(rx8581_remove),
-=======
 static const __maybe_unused struct of_device_id rx8581_of_match[] = {
 	{ .compatible = "epson,rx8571", .data = &rx8571_config },
 	{ .compatible = "epson,rx8581", .data = &rx8581_config },
@@ -528,18 +325,11 @@ static struct i2c_driver rx8581_driver = {
 		.of_match_table = of_match_ptr(rx8581_of_match),
 	},
 	.probe		= rx8581_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= rx8581_id,
 };
 
 module_i2c_driver(rx8581_driver);
 
 MODULE_AUTHOR("Martyn Welch <martyn.welch@ge.com>");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Epson RX-8581 RTC driver");
-MODULE_LICENSE("GPL");
-MODULE_VERSION(DRV_VERSION);
-=======
 MODULE_DESCRIPTION("Epson RX-8571/RX-8581 RTC driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

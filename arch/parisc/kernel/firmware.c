@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/parisc/kernel/firmware.c  - safe PDC access routines
  *
  *	PDC == Processor Dependent Code
  *
-<<<<<<< HEAD
- * See http://www.parisc-linux.org/documentation/index.html
-=======
  * See PDC documentation at
  * https://parisc.wiki.kernel.org/index.php/Technical_Documentation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * for documentation describing the entry points and calling
  * conventions defined below.
  *
@@ -21,15 +14,6 @@
  * Copyright 2003 Grant Grundler <grundler parisc-linux org>
  * Copyright 2003,2004 Ryan Bradetich <rbrad@parisc-linux.org>
  * Copyright 2004,2006 Thibaut VARENE <varenet@parisc-linux.org>
-<<<<<<< HEAD
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*	I think it would be in everyone's best interest to follow this
@@ -67,11 +51,7 @@
  *					prumpf	991016	
  */
 
-<<<<<<< HEAD
-#include <stdarg.h>
-=======
 #include <linux/stdarg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -85,19 +65,6 @@
 #include <asm/pdcpat.h>
 #include <asm/processor.h>	/* for boot_cpu_data */
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(pdc_lock);
-extern unsigned long pdc_result[NUM_PDC_RESULT];
-extern unsigned long pdc_result2[NUM_PDC_RESULT];
-
-#ifdef CONFIG_64BIT
-#define WIDE_FIRMWARE 0x1
-#define NARROW_FIRMWARE 0x2
-
-/* Firmware needs to be initially set to narrow to determine the 
- * actual firmware width. */
-int parisc_narrow_firmware __read_mostly = 1;
-=======
 #if defined(BOOTLOADER)
 # undef  spin_lock_irqsave
 # define spin_lock_irqsave(a, b) { b = 1; }
@@ -117,7 +84,6 @@ static unsigned long pdc_result2[NUM_PDC_RESULT] __aligned(8);
 /* Firmware needs to be initially set to narrow to determine the
  * actual firmware width. */
 int parisc_narrow_firmware __ro_after_init = NARROW_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* On most currently-supported platforms, IODC I/O calls are 32-bit calls
@@ -157,17 +123,10 @@ static unsigned long f_extend(unsigned long address)
 #ifdef CONFIG_64BIT
 	if(unlikely(parisc_narrow_firmware)) {
 		if((address & 0xff000000) == 0xf0000000)
-<<<<<<< HEAD
-			return 0xf0f0f0f000000000UL | (u32)address;
-
-		if((address & 0xf0000000) == 0xf0000000)
-			return 0xffffffff00000000UL | (u32)address;
-=======
 			return (0xfffffff0UL << 32) | (u32)address;
 
 		if((address & 0xf0000000) == 0xf0000000)
 			return (0xffffffffUL << 32) | (u32)address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	return address;
@@ -175,11 +134,7 @@ static unsigned long f_extend(unsigned long address)
 
 /**
  * convert_to_wide - Convert the return buffer addresses into kernel addresses.
-<<<<<<< HEAD
- * @address: The return buffer from PDC.
-=======
  * @addr: The return buffer from PDC.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is used to convert the return buffer addresses retrieved from PDC
  * into kernel addresses when the PDC address size and kernel address size are
@@ -191,50 +146,26 @@ static void convert_to_wide(unsigned long *addr)
 	int i;
 	unsigned int *p = (unsigned int *)addr;
 
-<<<<<<< HEAD
-	if(unlikely(parisc_narrow_firmware)) {
-		for(i = 31; i >= 0; --i)
-=======
 	if (unlikely(parisc_narrow_firmware)) {
 		for (i = (NUM_PDC_RESULT-1); i >= 0; --i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr[i] = p[i];
 	}
 #endif
 }
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-void __cpuinit set_firmware_width_unlocked(void)
-=======
 void set_firmware_width_unlocked(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	ret = mem_pdc_call(PDC_MODEL, PDC_MODEL_CAPABILITIES,
 		__pa(pdc_result), 0);
-<<<<<<< HEAD
-=======
 	if (ret < 0)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	convert_to_wide(pdc_result);
 	if (pdc_result[0] != NARROW_FIRMWARE)
 		parisc_narrow_firmware = 0;
 }
-<<<<<<< HEAD
-	
-/**
- * set_firmware_width - Determine if the firmware is wide or narrow.
- * 
- * This function must be called before any pdc_* function that uses the
- * convert_to_wide function.
- */
-void __cpuinit set_firmware_width(void)
-{
-	unsigned long flags;
-=======
 
 /**
  * set_firmware_width - Determine if the firmware is wide or narrow.
@@ -250,19 +181,11 @@ void set_firmware_width(void)
 	if (parisc_narrow_firmware != NARROW_FIRMWARE)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pdc_lock, flags);
 	set_firmware_width_unlocked();
 	spin_unlock_irqrestore(&pdc_lock, flags);
 }
 #else
-<<<<<<< HEAD
-void __cpuinit set_firmware_width_unlocked(void) {
-	return;
-}
-
-void __cpuinit set_firmware_width(void) {
-=======
 void set_firmware_width_unlocked(void)
 {
 	return;
@@ -270,16 +193,12 @@ void set_firmware_width_unlocked(void)
 
 void set_firmware_width(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 #endif /*CONFIG_64BIT*/
 
-<<<<<<< HEAD
-=======
 
 #if !defined(BOOTLOADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pdc_emergency_unlock - Unlock the linux pdc lock
  *
@@ -317,11 +236,6 @@ int pdc_add_valid(unsigned long address)
 EXPORT_SYMBOL(pdc_add_valid);
 
 /**
-<<<<<<< HEAD
- * pdc_chassis_info - Return chassis information.
- * @result: The return buffer.
- * @chassis_info: The memory buffer address.
-=======
  * pdc_instr - Get instruction that invokes PDCE_CHECK in HPMC handler.
  * @instr: Pointer to variable which will get instruction opcode.
  *
@@ -345,7 +259,6 @@ int __init pdc_instr(unsigned int *instr)
  * pdc_chassis_info - Return chassis information.
  * @chassis_info: The memory buffer address.
  * @led_info: The size of the memory buffer address.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: The size of the memory buffer address.
  *
  * An HVERSION dependent call for returning the chassis information.
@@ -369,12 +282,8 @@ int __init pdc_chassis_info(struct pdc_chassis_info *chassis_info, void *led_inf
 
 /**
  * pdc_pat_chassis_send_log - Sends a PDC PAT CHASSIS log message.
-<<<<<<< HEAD
- * @retval: -1 on error, 0 on success. Other value are PDC errors
-=======
  * @state: state of the machine
  * @data: value for that state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 
  * Must be correctly formatted or expect system crash
  */
@@ -397,11 +306,7 @@ int pdc_pat_chassis_send_log(unsigned long state, unsigned long data)
 
 /**
  * pdc_chassis_disp - Updates chassis code
-<<<<<<< HEAD
- * @retval: -1 on error, 0 on success
-=======
  * @disp: value to show on display
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pdc_chassis_disp(unsigned long disp)
 {
@@ -416,10 +321,6 @@ int pdc_chassis_disp(unsigned long disp)
 }
 
 /**
-<<<<<<< HEAD
- * pdc_chassis_warn - Fetches chassis warnings
- * @retval: -1 on error, 0 on success
-=======
  * __pdc_cpu_rendezvous - Stop currently executing CPU and do not return.
  */
 int __pdc_cpu_rendezvous(void)
@@ -471,7 +372,6 @@ int pdc_pat_get_PDC_entrypoint(unsigned long *pdc_entry)
 /**
  * pdc_chassis_warn - Fetches chassis warnings
  * @warn: The warning value to be shown
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pdc_chassis_warn(unsigned long *warn)
 {
@@ -486,11 +386,7 @@ int pdc_chassis_warn(unsigned long *warn)
 	return retval;
 }
 
-<<<<<<< HEAD
-int __cpuinit pdc_coproc_cfg_unlocked(struct pdc_coproc_cfg *pdc_coproc_info)
-=======
 int pdc_coproc_cfg_unlocked(struct pdc_coproc_cfg *pdc_coproc_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -511,11 +407,7 @@ int pdc_coproc_cfg_unlocked(struct pdc_coproc_cfg *pdc_coproc_info)
  * This PDC call returns the presence and status of all the coprocessors
  * attached to the processor.
  */
-<<<<<<< HEAD
-int __cpuinit pdc_coproc_cfg(struct pdc_coproc_cfg *pdc_coproc_info)
-=======
 int pdc_coproc_cfg(struct pdc_coproc_cfg *pdc_coproc_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	unsigned long flags;
@@ -631,32 +523,21 @@ int pdc_model_info(struct pdc_model *model)
 
 /**
  * pdc_model_sysmodel - Get the system model name.
-<<<<<<< HEAD
-=======
  * @os_id: The operating system ID asked for (an OS_ID_* value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: A char array of at least 81 characters.
  *
  * Get system model name from PDC ROM (e.g. 9000/715 or 9000/778/B160L).
  * Using OS_ID_HPUX will return the equivalent of the 'modelname' command
  * on HP/UX.
  */
-<<<<<<< HEAD
-int pdc_model_sysmodel(char *name)
-=======
 int pdc_model_sysmodel(unsigned int os_id, char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         int retval;
 	unsigned long flags;
 
         spin_lock_irqsave(&pdc_lock, flags);
         retval = mem_pdc_call(PDC_MODEL, PDC_MODEL_SYSMODEL, __pa(pdc_result),
-<<<<<<< HEAD
-                              OS_ID_HPUX, __pa(name));
-=======
                               os_id, __pa(name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         convert_to_wide(pdc_result);
 
         if (retval == PDC_OK) {
@@ -671,11 +552,7 @@ int pdc_model_sysmodel(unsigned int os_id, char *name)
 
 /**
  * pdc_model_versions - Identify the version number of each processor.
-<<<<<<< HEAD
- * @cpu_id: The return buffer.
-=======
  * @versions: The return buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @id: The id of the processor to check.
  *
  * Returns the version number for each processor component.
@@ -746,8 +623,6 @@ int pdc_model_capabilities(unsigned long *capabilities)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pdc_model_platform_info - Returns machine product and serial number.
  * @orig_prod_num: Return buffer for original product number.
  * @current_prod_num: Return buffer for current product number.
@@ -772,7 +647,6 @@ int pdc_model_platform_info(char *orig_prod_num, char *current_prod_num,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pdc_cache_info - Return cache and TLB information.
  * @cache_info: The return buffer.
  *
@@ -813,10 +687,6 @@ int pdc_spaceid_bits(unsigned long *space_bits)
 	return retval;
 }
 
-<<<<<<< HEAD
-#ifndef CONFIG_PA20
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pdc_btlb_info - Return block TLB information.
  * @btlb: The return buffer.
@@ -825,20 +695,6 @@ int pdc_spaceid_bits(unsigned long *space_bits)
  */
 int pdc_btlb_info(struct pdc_btlb_info *btlb) 
 {
-<<<<<<< HEAD
-        int retval;
-	unsigned long flags;
-
-        spin_lock_irqsave(&pdc_lock, flags);
-        retval = mem_pdc_call(PDC_BLOCK_TLB, PDC_BTLB_INFO, __pa(pdc_result), 0);
-        memcpy(btlb, pdc_result, sizeof(*btlb));
-        spin_unlock_irqrestore(&pdc_lock, flags);
-
-        if(retval < 0) {
-                btlb->max_size = 0;
-        }
-        return retval;
-=======
 	int retval;
 	unsigned long flags;
 
@@ -884,7 +740,6 @@ int pdc_btlb_purge_all(void)
 	retval = mem_pdc_call(PDC_BLOCK_TLB, PDC_BTLB_PURGE_ALL);
 	spin_unlock_irqrestore(&pdc_lock, flags);
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -905,12 +760,9 @@ int pdc_mem_map_hpa(struct pdc_memory_map *address,
         int retval;
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	if (IS_ENABLED(CONFIG_PA20))
 		return PDC_BAD_PROC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         spin_lock_irqsave(&pdc_lock, flags);
         memcpy(pdc_result2, mod_path, sizeof(*mod_path));
         retval = mem_pdc_call(PDC_MEM_MAP, PDC_MEM_MAP_HPA, __pa(pdc_result),
@@ -920,10 +772,6 @@ int pdc_mem_map_hpa(struct pdc_memory_map *address,
 
         return retval;
 }
-<<<<<<< HEAD
-#endif	/* !CONFIG_PA20 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pdc_lan_station_id - Get the LAN address.
@@ -1185,13 +1033,8 @@ int pdc_pci_irt(unsigned long num_entries, unsigned long hpa, void *tbl)
 
 /** 
  * pdc_pci_config_read - read PCI config space.
-<<<<<<< HEAD
- * @hpa		token from PDC to indicate which PCI device
- * @pci_addr	configuration space address to read from
-=======
  * @hpa: Token from PDC to indicate which PCI device
  * @cfg_addr: Configuration space address to read from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Read PCI Configuration space *before* linux PCI subsystem is running.
  */
@@ -1213,15 +1056,9 @@ unsigned int pdc_pci_config_read(void *hpa, unsigned long cfg_addr)
 
 /** 
  * pdc_pci_config_write - read PCI config space.
-<<<<<<< HEAD
- * @hpa		token from PDC to indicate which PCI device
- * @pci_addr	configuration space address to write
- * @val		value we want in the 32-bit register
-=======
  * @hpa: Token from PDC to indicate which PCI device
  * @cfg_addr: Configuration space address to write
  * @val: Value we want in the 32-bit register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Write PCI Configuration space *before* linux PCI subsystem is running.
  */
@@ -1262,8 +1099,6 @@ int pdc_tod_read(struct pdc_tod *tod)
 }
 EXPORT_SYMBOL(pdc_tod_read);
 
-<<<<<<< HEAD
-=======
 int pdc_mem_pdt_info(struct pdc_mem_retinfo *rinfo)
 {
 	int retval;
@@ -1337,7 +1172,6 @@ int pdc_pim_toc20(struct pdc_toc_pim_20 *ret)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pdc_tod_set - Set the Time-Of-Day clock.
  * @sec: The number of seconds since epoch.
@@ -1435,29 +1269,18 @@ int __init pdc_soft_power_info(unsigned long *power_reg)
 }
 
 /*
-<<<<<<< HEAD
- * pdc_soft_power_button - Control the soft power button behaviour
- * @sw_control: 0 for hardware control, 1 for software control 
-=======
  * pdc_soft_power_button{_panic} - Control the soft power button behaviour
  * @sw_control: 0 for hardware control, 1 for software control
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *
  * This PDC function places the soft power button under software or
  * hardware control.
-<<<<<<< HEAD
- * Under software control the OS may control to when to allow to shut 
- * down the system. Under hardware control pressing the power button 
- * powers off the system immediately.
-=======
  * Under software control the OS may control to when to allow to shut
  * down the system. Under hardware control pressing the power button
  * powers off the system immediately.
  *
  * The _panic version relies on spin_trylock to prevent deadlock
  * on panic path.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pdc_soft_power_button(int sw_control)
 {
@@ -1471,8 +1294,6 @@ int pdc_soft_power_button(int sw_control)
 	return retval;
 }
 
-<<<<<<< HEAD
-=======
 int pdc_soft_power_button_panic(int sw_control)
 {
 	int retval;
@@ -1489,7 +1310,6 @@ int pdc_soft_power_button_panic(int sw_control)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pdc_io_reset - Hack to avoid overlapping range registers of Bridges devices.
  * Primarily a problem on T600 (which parisc-linux doesn't support) but
@@ -1522,16 +1342,10 @@ void pdc_io_reset_devices(void)
 	spin_unlock_irqrestore(&pdc_lock, flags);
 }
 
-<<<<<<< HEAD
-/* locked by pdc_console_lock */
-static int __attribute__((aligned(8)))   iodc_retbuf[32];
-static char __attribute__((aligned(64))) iodc_dbuf[4096];
-=======
 #endif /* defined(BOOTLOADER) */
 
 /* locked by pdc_lock */
 static char iodc_dbuf[4096] __page_aligned_bss;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pdc_iodc_print - Console print using IODC.
@@ -1545,28 +1359,19 @@ static char iodc_dbuf[4096] __page_aligned_bss;
  */
 int pdc_iodc_print(const unsigned char *str, unsigned count)
 {
-<<<<<<< HEAD
-	unsigned int i;
-	unsigned long flags;
-
-=======
 	unsigned int i, found = 0;
 	unsigned long flags;
 
 	count = min_t(unsigned int, count, sizeof(iodc_dbuf));
 
 	spin_lock_irqsave(&pdc_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < count;) {
 		switch(str[i]) {
 		case '\n':
 			iodc_dbuf[i+0] = '\r';
 			iodc_dbuf[i+1] = '\n';
 			i += 2;
-<<<<<<< HEAD
-=======
 			found = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto print;
 		default:
 			iodc_dbuf[i] = str[i];
@@ -1576,18 +1381,6 @@ int pdc_iodc_print(const unsigned char *str, unsigned count)
 	}
 
 print:
-<<<<<<< HEAD
-        spin_lock_irqsave(&pdc_lock, flags);
-        real32_call(PAGE0->mem_cons.iodc_io,
-                    (unsigned long)PAGE0->mem_cons.hpa, ENTRY_IO_COUT,
-                    PAGE0->mem_cons.spa, __pa(PAGE0->mem_cons.dp.layers),
-                    __pa(iodc_retbuf), 0, __pa(iodc_dbuf), i, 0);
-        spin_unlock_irqrestore(&pdc_lock, flags);
-
-	return i;
-}
-
-=======
 	real32_call(PAGE0->mem_cons.iodc_io,
 		(unsigned long)PAGE0->mem_cons.hpa, ENTRY_IO_COUT,
 		PAGE0->mem_cons.spa, __pa(PAGE0->mem_cons.dp.layers),
@@ -1598,7 +1391,6 @@ print:
 }
 
 #if !defined(BOOTLOADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pdc_iodc_getc - Read a character (non-blocking) from the PDC console.
  *
@@ -1620,18 +1412,11 @@ int pdc_iodc_getc(void)
 	real32_call(PAGE0->mem_kbd.iodc_io,
 		    (unsigned long)PAGE0->mem_kbd.hpa, ENTRY_IO_CIN,
 		    PAGE0->mem_kbd.spa, __pa(PAGE0->mem_kbd.dp.layers), 
-<<<<<<< HEAD
-		    __pa(iodc_retbuf), 0, __pa(iodc_dbuf), 1, 0);
-
-	ch = *iodc_dbuf;
-	status = *iodc_retbuf;
-=======
 		    __pa(pdc_result), 0, __pa(iodc_dbuf), 1, 0);
 
 	ch = *iodc_dbuf;
 	/* like convert_to_wide() but for first return value only: */
 	status = *(int *)&pdc_result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&pdc_lock, flags);
 
 	if (status == 0)
@@ -1641,19 +1426,6 @@ int pdc_iodc_getc(void)
 }
 
 int pdc_sti_call(unsigned long func, unsigned long flags,
-<<<<<<< HEAD
-                 unsigned long inptr, unsigned long outputr,
-                 unsigned long glob_cfg)
-{
-        int retval;
-	unsigned long irqflags;
-
-        spin_lock_irqsave(&pdc_lock, irqflags);  
-        retval = real32_call(func, flags, inptr, outputr, glob_cfg);
-        spin_unlock_irqrestore(&pdc_lock, irqflags);
-
-        return retval;
-=======
 		unsigned long inptr, unsigned long outputr,
 		unsigned long glob_cfg, int do_call64)
 {
@@ -1673,7 +1445,6 @@ int pdc_sti_call(unsigned long func, unsigned long flags,
 	spin_unlock_irqrestore(&pdc_lock, irqflags);
 
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pdc_sti_call);
 
@@ -1729,8 +1500,6 @@ int pdc_pat_cell_module(unsigned long *actcnt, unsigned long ploc, unsigned long
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pdc_pat_cell_info - Retrieve the cell's information.
  * @info: The pointer to a struct pdc_pat_cell_info_rtn_block.
  * @actcnt: The number of bytes which should be written to info.
@@ -1761,18 +1530,13 @@ int pdc_pat_cell_info(struct pdc_pat_cell_info_rtn_block *info,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pdc_pat_cpu_get_number - Retrieve the cpu number.
  * @cpu_info: The return buffer.
  * @hpa: The Hard Physical Address of the CPU.
  *
  * Retrieve the cpu number for the cpu at the specified HPA.
  */
-<<<<<<< HEAD
-int pdc_pat_cpu_get_number(struct pdc_pat_cpu_num *cpu_info, void *hpa)
-=======
 int pdc_pat_cpu_get_number(struct pdc_pat_cpu_num *cpu_info, unsigned long hpa)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	unsigned long flags;
@@ -1830,11 +1594,7 @@ int pdc_pat_get_irt(void *r_addr, unsigned long cell_num)
 
 /**
  * pdc_pat_pd_get_addr_map - Retrieve information about memory address ranges.
-<<<<<<< HEAD
- * @actlen: The return buffer.
-=======
  * @actual_len: The return buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mem_addr: Pointer to the memory buffer.
  * @count: The number of bytes to read from the buffer.
  * @offset: The offset with respect to the beginning of the buffer.
@@ -1857,8 +1617,6 @@ int pdc_pat_pd_get_addr_map(unsigned long *actual_len, void *mem_addr,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pdc_pat_pd_get_pdc_revisions - Retrieve PDC interface revisions.
  * @legacy_rev: The legacy revision.
  * @pat_rev: The PAT revision.
@@ -1886,7 +1644,6 @@ int pdc_pat_pd_get_pdc_revisions(unsigned long *legacy_rev,
 
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pdc_pat_io_pci_cfg_read - Read PCI configuration space.
  * @pci_addr: PCI configuration space address for which the read request is being made.
  * @pci_size: Size of read in bytes. Valid values are 1, 2, and 4. 
@@ -1902,15 +1659,9 @@ int pdc_pat_io_pci_cfg_read(unsigned long pci_addr, int pci_size, u32 *mem_addr)
 	retval = mem_pdc_call(PDC_PAT_IO, PDC_PAT_IO_PCI_CONFIG_READ,
 					__pa(pdc_result), pci_addr, pci_size);
 	switch(pci_size) {
-<<<<<<< HEAD
-		case 1: *(u8 *) mem_addr =  (u8)  pdc_result[0];
-		case 2: *(u16 *)mem_addr =  (u16) pdc_result[0];
-		case 4: *(u32 *)mem_addr =  (u32) pdc_result[0];
-=======
 		case 1: *(u8 *) mem_addr =  (u8)  pdc_result[0]; break;
 		case 2: *(u16 *)mem_addr =  (u16) pdc_result[0]; break;
 		case 4: *(u32 *)mem_addr =  (u32) pdc_result[0]; break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&pdc_lock, flags);
 
@@ -1921,11 +1672,7 @@ int pdc_pat_io_pci_cfg_read(unsigned long pci_addr, int pci_size, u32 *mem_addr)
  * pdc_pat_io_pci_cfg_write - Retrieve information about memory address ranges.
  * @pci_addr: PCI configuration space address for which the write  request is being made.
  * @pci_size: Size of write in bytes. Valid values are 1, 2, and 4. 
-<<<<<<< HEAD
- * @value: Pointer to 1, 2, or 4 byte value in low order end of argument to be 
-=======
  * @val: Pointer to 1, 2, or 4 byte value in low order end of argument to be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *         written to PCI Config space.
  *
  */
@@ -1941,9 +1688,6 @@ int pdc_pat_io_pci_cfg_write(unsigned long pci_addr, int pci_size, u32 val)
 
 	return retval;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_64BIT */
-=======
 
 /**
  * pdc_pat_mem_pdt_info - Retrieve information about page deallocation table
@@ -2076,7 +1820,6 @@ int pdc_pat_mem_get_dimm_phys_location(
 }
 #endif /* CONFIG_64BIT */
 #endif /* defined(BOOTLOADER) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /***************** 32-bit real-mode calls ***********/
@@ -2186,7 +1929,3 @@ long real64_call(unsigned long fn, ...)
 }
 
 #endif /* CONFIG_64BIT */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

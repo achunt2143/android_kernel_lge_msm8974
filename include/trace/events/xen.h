@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xen
 
@@ -9,32 +6,13 @@
 #define _TRACE_XEN_H
 
 #include <linux/tracepoint.h>
-<<<<<<< HEAD
-#include <asm/paravirt_types.h>
-=======
 #include <asm/xen/hypervisor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/trace_types.h>
 
 struct multicall_entry;
 
 /* Multicalls */
 DECLARE_EVENT_CLASS(xen_mc__batch,
-<<<<<<< HEAD
-	    TP_PROTO(enum paravirt_lazy_mode mode),
-	    TP_ARGS(mode),
-	    TP_STRUCT__entry(
-		    __field(enum paravirt_lazy_mode, mode)
-		    ),
-	    TP_fast_assign(__entry->mode = mode),
-	    TP_printk("start batch LAZY_%s",
-		      (__entry->mode == PARAVIRT_LAZY_MMU) ? "MMU" :
-		      (__entry->mode == PARAVIRT_LAZY_CPU) ? "CPU" : "NONE")
-	);
-#define DEFINE_XEN_MC_BATCH(name)			\
-	DEFINE_EVENT(xen_mc__batch, name,		\
-		TP_PROTO(enum paravirt_lazy_mode mode),	\
-=======
 	    TP_PROTO(enum xen_lazy_mode mode),
 	    TP_ARGS(mode),
 	    TP_STRUCT__entry(
@@ -48,17 +26,13 @@ DECLARE_EVENT_CLASS(xen_mc__batch,
 #define DEFINE_XEN_MC_BATCH(name)			\
 	DEFINE_EVENT(xen_mc__batch, name,		\
 		TP_PROTO(enum xen_lazy_mode mode),	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     TP_ARGS(mode))
 
 DEFINE_XEN_MC_BATCH(xen_mc_batch);
 DEFINE_XEN_MC_BATCH(xen_mc_issue);
 
-<<<<<<< HEAD
-=======
 TRACE_DEFINE_SIZEOF(ulong);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(xen_mc_entry,
 	    TP_PROTO(struct multicall_entry *mc, unsigned nargs),
 	    TP_ARGS(mc, nargs),
@@ -69,13 +43,8 @@ TRACE_EVENT(xen_mc_entry,
 		    ),
 	    TP_fast_assign(__entry->op = mc->op;
 			   __entry->nargs = nargs;
-<<<<<<< HEAD
-			   memcpy(__entry->args, mc->args, sizeof(unsigned long) * nargs);
-			   memset(__entry->args + nargs, 0, sizeof(unsigned long) * (6 - nargs));
-=======
 			   memcpy(__entry->args, mc->args, sizeof(ulong) * nargs);
 			   memset(__entry->args + nargs, 0, sizeof(ulong) * (6 - nargs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ),
 	    TP_printk("op %u%s args [%lx, %lx, %lx, %lx, %lx, %lx]",
 		      __entry->op, xen_hypercall_name(__entry->op),
@@ -97,26 +66,18 @@ TRACE_EVENT(xen_mc_callback,
 	    TP_PROTO(xen_mc_callback_fn_t fn, void *data),
 	    TP_ARGS(fn, data),
 	    TP_STRUCT__entry(
-<<<<<<< HEAD
-		    __field(xen_mc_callback_fn_t, fn)
-=======
 		    /*
 		     * Use field_struct to avoid is_signed_type()
 		     * comparison of a function pointer.
 		     */
 		    __field_struct(xen_mc_callback_fn_t, fn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    __field(void *, data)
 		    ),
 	    TP_fast_assign(
 		    __entry->fn = fn;
 		    __entry->data = data;
 		    ),
-<<<<<<< HEAD
-	    TP_printk("callback %pf, data %p",
-=======
 	    TP_printk("callback %ps, data %p",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      __entry->fn, __entry->data)
 	);
 
@@ -168,10 +129,7 @@ TRACE_EVENT(xen_mc_extend_args,
 		      __entry->res == XEN_MC_XE_NO_SPACE ? "NO_SPACE" : "???")
 	);
 
-<<<<<<< HEAD
-=======
 TRACE_DEFINE_SIZEOF(pteval_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* mmu */
 DECLARE_EVENT_CLASS(xen_mmu__set_pte,
 	    TP_PROTO(pte_t *ptep, pte_t pteval),
@@ -194,65 +152,8 @@ DECLARE_EVENT_CLASS(xen_mmu__set_pte,
 		     TP_ARGS(ptep, pteval))
 
 DEFINE_XEN_MMU_SET_PTE(xen_mmu_set_pte);
-<<<<<<< HEAD
-DEFINE_XEN_MMU_SET_PTE(xen_mmu_set_pte_atomic);
-
-TRACE_EVENT(xen_mmu_set_domain_pte,
-	    TP_PROTO(pte_t *ptep, pte_t pteval, unsigned domid),
-	    TP_ARGS(ptep, pteval, domid),
-	    TP_STRUCT__entry(
-		    __field(pte_t *, ptep)
-		    __field(pteval_t, pteval)
-		    __field(unsigned, domid)
-		    ),
-	    TP_fast_assign(__entry->ptep = ptep;
-			   __entry->pteval = pteval.pte;
-			   __entry->domid = domid),
-	    TP_printk("ptep %p pteval %0*llx (raw %0*llx) domid %u",
-		      __entry->ptep,
-		      (int)sizeof(pteval_t) * 2, (unsigned long long)pte_val(native_make_pte(__entry->pteval)),
-		      (int)sizeof(pteval_t) * 2, (unsigned long long)__entry->pteval,
-		      __entry->domid)
-	);
-
-TRACE_EVENT(xen_mmu_set_pte_at,
-	    TP_PROTO(struct mm_struct *mm, unsigned long addr,
-		     pte_t *ptep, pte_t pteval),
-	    TP_ARGS(mm, addr, ptep, pteval),
-	    TP_STRUCT__entry(
-		    __field(struct mm_struct *, mm)
-		    __field(unsigned long, addr)
-		    __field(pte_t *, ptep)
-		    __field(pteval_t, pteval)
-		    ),
-	    TP_fast_assign(__entry->mm = mm;
-			   __entry->addr = addr;
-			   __entry->ptep = ptep;
-			   __entry->pteval = pteval.pte),
-	    TP_printk("mm %p addr %lx ptep %p pteval %0*llx (raw %0*llx)",
-		      __entry->mm, __entry->addr, __entry->ptep,
-		      (int)sizeof(pteval_t) * 2, (unsigned long long)pte_val(native_make_pte(__entry->pteval)),
-		      (int)sizeof(pteval_t) * 2, (unsigned long long)__entry->pteval)
-	);
-
-TRACE_EVENT(xen_mmu_pte_clear,
-	    TP_PROTO(struct mm_struct *mm, unsigned long addr, pte_t *ptep),
-	    TP_ARGS(mm, addr, ptep),
-	    TP_STRUCT__entry(
-		    __field(struct mm_struct *, mm)
-		    __field(unsigned long, addr)
-		    __field(pte_t *, ptep)
-		    ),
-	    TP_fast_assign(__entry->mm = mm;
-			   __entry->addr = addr;
-			   __entry->ptep = ptep),
-	    TP_printk("mm %p addr %lx ptep %p",
-		      __entry->mm, __entry->addr, __entry->ptep)
-	);
-=======
 
 TRACE_DEFINE_SIZEOF(pmdval_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(xen_mmu_set_pmd,
 	    TP_PROTO(pmd_t *pmdp, pmd_t pmdval),
@@ -269,8 +170,6 @@ TRACE_EVENT(xen_mmu_set_pmd,
 		      (int)sizeof(pmdval_t) * 2, (unsigned long long)__entry->pmdval)
 	);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_X86_PAE
 DEFINE_XEN_MMU_SET_PTE(xen_mmu_set_pte_atomic);
 
@@ -289,7 +188,6 @@ TRACE_EVENT(xen_mmu_pte_clear,
 		      __entry->mm, __entry->addr, __entry->ptep)
 	);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(xen_mmu_pmd_clear,
 	    TP_PROTO(pmd_t *pmdp),
 	    TP_ARGS(pmdp),
@@ -299,16 +197,11 @@ TRACE_EVENT(xen_mmu_pmd_clear,
 	    TP_fast_assign(__entry->pmdp = pmdp),
 	    TP_printk("pmdp %p", __entry->pmdp)
 	);
-<<<<<<< HEAD
-
-#if PAGETABLE_LEVELS >= 4
-=======
 #endif
 
 #if CONFIG_PGTABLE_LEVELS >= 4
 
 TRACE_DEFINE_SIZEOF(pudval_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(xen_mmu_set_pud,
 	    TP_PROTO(pud_t *pudp, pud_t pudval),
@@ -325,33 +218,6 @@ TRACE_EVENT(xen_mmu_set_pud,
 		      (int)sizeof(pudval_t) * 2, (unsigned long long)__entry->pudval)
 	);
 
-<<<<<<< HEAD
-TRACE_EVENT(xen_mmu_set_pgd,
-	    TP_PROTO(pgd_t *pgdp, pgd_t *user_pgdp, pgd_t pgdval),
-	    TP_ARGS(pgdp, user_pgdp, pgdval),
-	    TP_STRUCT__entry(
-		    __field(pgd_t *, pgdp)
-		    __field(pgd_t *, user_pgdp)
-		    __field(pgdval_t, pgdval)
-		    ),
-	    TP_fast_assign(__entry->pgdp = pgdp;
-			   __entry->user_pgdp = user_pgdp;
-			   __entry->pgdval = pgdval.pgd),
-	    TP_printk("pgdp %p user_pgdp %p pgdval %0*llx (raw %0*llx)",
-		      __entry->pgdp, __entry->user_pgdp,
-		      (int)sizeof(pgdval_t) * 2, (unsigned long long)pgd_val(native_make_pgd(__entry->pgdval)),
-		      (int)sizeof(pgdval_t) * 2, (unsigned long long)__entry->pgdval)
-	);
-
-TRACE_EVENT(xen_mmu_pud_clear,
-	    TP_PROTO(pud_t *pudp),
-	    TP_ARGS(pudp),
-	    TP_STRUCT__entry(
-		    __field(pud_t *, pudp)
-		    ),
-	    TP_fast_assign(__entry->pudp = pudp),
-	    TP_printk("pudp %p", __entry->pudp)
-=======
 TRACE_DEFINE_SIZEOF(p4dval_t);
 
 TRACE_EVENT(xen_mmu_set_p4d,
@@ -369,7 +235,6 @@ TRACE_EVENT(xen_mmu_set_p4d,
 		      __entry->p4dp, __entry->user_p4dp,
 		      (int)sizeof(p4dval_t) * 2, (unsigned long long)pgd_val(native_make_pgd(__entry->p4dval)),
 		      (int)sizeof(p4dval_t) * 2, (unsigned long long)__entry->p4dval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	);
 #else
 
@@ -390,19 +255,6 @@ TRACE_EVENT(xen_mmu_set_pud,
 
 #endif
 
-<<<<<<< HEAD
-TRACE_EVENT(xen_mmu_pgd_clear,
-	    TP_PROTO(pgd_t *pgdp),
-	    TP_ARGS(pgdp),
-	    TP_STRUCT__entry(
-		    __field(pgd_t *, pgdp)
-		    ),
-	    TP_fast_assign(__entry->pgdp = pgdp),
-	    TP_printk("pgdp %p", __entry->pgdp)
-	);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(xen_mmu_ptep_modify_prot,
 	    TP_PROTO(struct mm_struct *mm, unsigned long addr,
 		     pte_t *ptep, pte_t pteval),
@@ -484,27 +336,7 @@ DECLARE_EVENT_CLASS(xen_mmu_pgd,
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_pin);
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_unpin);
 
-<<<<<<< HEAD
-TRACE_EVENT(xen_mmu_flush_tlb_all,
-	    TP_PROTO(int x),
-	    TP_ARGS(x),
-	    TP_STRUCT__entry(__array(char, x, 0)),
-	    TP_fast_assign((void)x),
-	    TP_printk("%s", "")
-	);
-
-TRACE_EVENT(xen_mmu_flush_tlb,
-	    TP_PROTO(int x),
-	    TP_ARGS(x),
-	    TP_STRUCT__entry(__array(char, x, 0)),
-	    TP_fast_assign((void)x),
-	    TP_printk("%s", "")
-	);
-
-TRACE_EVENT(xen_mmu_flush_tlb_single,
-=======
 TRACE_EVENT(xen_mmu_flush_tlb_one_user,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TP_PROTO(unsigned long addr),
 	    TP_ARGS(addr),
 	    TP_STRUCT__entry(
@@ -514,29 +346,14 @@ TRACE_EVENT(xen_mmu_flush_tlb_one_user,
 	    TP_printk("addr %lx", __entry->addr)
 	);
 
-<<<<<<< HEAD
-TRACE_EVENT(xen_mmu_flush_tlb_others,
-	    TP_PROTO(const struct cpumask *cpus, struct mm_struct *mm,
-		     unsigned long addr),
-	    TP_ARGS(cpus, mm, addr),
-=======
 TRACE_EVENT(xen_mmu_flush_tlb_multi,
 	    TP_PROTO(const struct cpumask *cpus, struct mm_struct *mm,
 		     unsigned long addr, unsigned long end),
 	    TP_ARGS(cpus, mm, addr, end),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TP_STRUCT__entry(
 		    __field(unsigned, ncpus)
 		    __field(struct mm_struct *, mm)
 		    __field(unsigned long, addr)
-<<<<<<< HEAD
-		    ),
-	    TP_fast_assign(__entry->ncpus = cpumask_weight(cpus);
-			   __entry->mm = mm;
-			   __entry->addr = addr),
-	    TP_printk("ncpus %d mm %p addr %lx",
-		      __entry->ncpus, __entry->mm, __entry->addr)
-=======
 		    __field(unsigned long, end)
 		    ),
 	    TP_fast_assign(__entry->ncpus = cpumask_weight(cpus);
@@ -545,7 +362,6 @@ TRACE_EVENT(xen_mmu_flush_tlb_multi,
 			   __entry->end = end),
 	    TP_printk("ncpus %d mm %p addr %lx, end %lx",
 		      __entry->ncpus, __entry->mm, __entry->addr, __entry->end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	);
 
 TRACE_EVENT(xen_mmu_write_cr3,

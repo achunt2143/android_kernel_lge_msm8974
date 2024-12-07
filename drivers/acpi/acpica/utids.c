@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-/******************************************************************************
- *
- * Module Name: utids - support for device IDs - HID, UID, CID
- *
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
 /******************************************************************************
  *
@@ -52,7 +7,6 @@
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -79,17 +33,10 @@ ACPI_MODULE_NAME("utids")
  ******************************************************************************/
 acpi_status
 acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
-<<<<<<< HEAD
-		    struct acpica_device_id **return_id)
-{
-	union acpi_operand_object *obj_desc;
-	struct acpica_device_id *hid;
-=======
 		    struct acpi_pnp_device_id **return_id)
 {
 	union acpi_operand_object *obj_desc;
 	struct acpi_pnp_device_id *hid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 length;
 	acpi_status status;
 
@@ -113,39 +60,24 @@ acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
 	/* Allocate a buffer for the HID */
 
 	hid =
-<<<<<<< HEAD
-	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpica_device_id) +
-				 (acpi_size) length);
-=======
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
 				 (acpi_size)length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	/* Area for the string starts after DEVICE_ID struct */
-
-	hid->string = ACPI_ADD_PTR(char, hid, sizeof(struct acpica_device_id));
-=======
 	/* Area for the string starts after PNP_DEVICE_ID struct */
 
 	hid->string =
 	    ACPI_ADD_PTR(char, hid, sizeof(struct acpi_pnp_device_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Convert EISAID to a string or simply copy existing string */
 
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_eisa_id_to_string(hid->string, obj_desc->integer.value);
 	} else {
-<<<<<<< HEAD
-		ACPI_STRCPY(hid->string, obj_desc->string.pointer);
-=======
 		strcpy(hid->string, obj_desc->string.pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hid->length = length;
@@ -179,17 +111,10 @@ cleanup:
 
 acpi_status
 acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
-<<<<<<< HEAD
-		    struct acpica_device_id **return_id)
-{
-	union acpi_operand_object *obj_desc;
-	struct acpica_device_id *uid;
-=======
 		    struct acpi_pnp_device_id **return_id)
 {
 	union acpi_operand_object *obj_desc;
 	struct acpi_pnp_device_id *uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 length;
 	acpi_status status;
 
@@ -213,39 +138,24 @@ acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
 	/* Allocate a buffer for the UID */
 
 	uid =
-<<<<<<< HEAD
-	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpica_device_id) +
-				 (acpi_size) length);
-=======
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
 				 (acpi_size)length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!uid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	/* Area for the string starts after DEVICE_ID struct */
-
-	uid->string = ACPI_ADD_PTR(char, uid, sizeof(struct acpica_device_id));
-=======
 	/* Area for the string starts after PNP_DEVICE_ID struct */
 
 	uid->string =
 	    ACPI_ADD_PTR(char, uid, sizeof(struct acpi_pnp_device_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Convert an Integer to string, or just copy an existing string */
 
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_integer_to_string(uid->string, obj_desc->integer.value);
 	} else {
-<<<<<<< HEAD
-		ACPI_STRCPY(uid->string, obj_desc->string.pointer);
-=======
 		strcpy(uid->string, obj_desc->string.pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	uid->length = length;
@@ -284,19 +194,11 @@ cleanup:
 
 acpi_status
 acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
-<<<<<<< HEAD
-		    struct acpica_device_id_list **return_cid_list)
-{
-	union acpi_operand_object **cid_objects;
-	union acpi_operand_object *obj_desc;
-	struct acpica_device_id_list *cid_list;
-=======
 		    struct acpi_pnp_device_id_list **return_cid_list)
 {
 	union acpi_operand_object **cid_objects;
 	union acpi_operand_object *obj_desc;
 	struct acpi_pnp_device_id_list *cid_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *next_id_string;
 	u32 string_area_size;
 	u32 length;
@@ -338,26 +240,17 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 
 		switch (cid_objects[i]->common.type) {
 		case ACPI_TYPE_INTEGER:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			string_area_size += ACPI_EISAID_STRING_SIZE;
 			break;
 
 		case ACPI_TYPE_STRING:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			string_area_size += cid_objects[i]->string.length + 1;
 			break;
 
 		default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_TYPE;
 			goto cleanup;
 		}
@@ -366,19 +259,11 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 	/*
 	 * Now that we know the length of the CIDs, allocate return buffer:
 	 * 1) Size of the base structure +
-<<<<<<< HEAD
-	 * 2) Size of the CID DEVICE_ID array +
-	 * 3) Size of the actual CID strings
-	 */
-	cid_list_size = sizeof(struct acpica_device_id_list) +
-	    ((count - 1) * sizeof(struct acpica_device_id)) + string_area_size;
-=======
 	 * 2) Size of the CID PNP_DEVICE_ID array +
 	 * 3) Size of the actual CID strings
 	 */
 	cid_list_size = sizeof(struct acpi_pnp_device_id_list) +
 	    (count * sizeof(struct acpi_pnp_device_id)) + string_area_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cid_list = ACPI_ALLOCATE_ZEROED(cid_list_size);
 	if (!cid_list) {
@@ -386,17 +271,10 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	/* Area for CID strings starts after the CID DEVICE_ID array */
-
-	next_id_string = ACPI_CAST_PTR(char, cid_list->ids) +
-	    ((acpi_size) count * sizeof(struct acpica_device_id));
-=======
 	/* Area for CID strings starts after the CID PNP_DEVICE_ID array */
 
 	next_id_string = ACPI_CAST_PTR(char, cid_list->ids) +
 	    ((acpi_size)count * sizeof(struct acpi_pnp_device_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy/convert the CIDs to the return buffer */
 
@@ -410,16 +288,8 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 						  value);
 			length = ACPI_EISAID_STRING_SIZE;
 		} else {	/* ACPI_TYPE_STRING */
-<<<<<<< HEAD
-
-			/* Copy the String CID from the returned object */
-
-			ACPI_STRCPY(next_id_string,
-				    cid_objects[i]->string.pointer);
-=======
 			/* Copy the String CID from the returned object */
 			strcpy(next_id_string, cid_objects[i]->string.pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			length = cid_objects[i]->string.length + 1;
 		}
 
@@ -441,8 +311,6 @@ cleanup:
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
-<<<<<<< HEAD
-=======
 
 /*******************************************************************************
  *
@@ -532,4 +400,3 @@ cleanup:
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

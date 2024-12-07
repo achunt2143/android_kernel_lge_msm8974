@@ -30,11 +30,7 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#define pr_fmt(fmt) PFX fmt
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -44,22 +40,16 @@
 #include <linux/parser.h>
 #include <linux/random.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-=======
 #include <linux/lockdep.h>
 #include <linux/inet.h>
 #include <rdma/ib_cache.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atomic.h>
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_dbg.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_tcq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/srp.h>
 #include <scsi/scsi_transport_srp.h>
 
@@ -67,29 +57,17 @@
 
 #define DRV_NAME	"ib_srp"
 #define PFX		DRV_NAME ": "
-<<<<<<< HEAD
-#define DRV_VERSION	"0.2"
-#define DRV_RELDATE	"November 1, 2005"
-
-MODULE_AUTHOR("Roland Dreier");
-MODULE_DESCRIPTION("InfiniBand SCSI RDMA Protocol initiator "
-		   "v" DRV_VERSION " (" DRV_RELDATE ")");
-=======
 
 MODULE_AUTHOR("Roland Dreier");
 MODULE_DESCRIPTION("InfiniBand SCSI RDMA Protocol initiator");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("Dual BSD/GPL");
 
 static unsigned int srp_sg_tablesize;
 static unsigned int cmd_sg_entries;
 static unsigned int indirect_sg_entries;
 static bool allow_ext_sg;
-<<<<<<< HEAD
-=======
 static bool register_always = true;
 static bool never_register;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int topspin_workarounds = 1;
 
 module_param(srp_sg_tablesize, uint, 0444);
@@ -101,11 +79,7 @@ MODULE_PARM_DESC(cmd_sg_entries,
 
 module_param(indirect_sg_entries, uint, 0444);
 MODULE_PARM_DESC(indirect_sg_entries,
-<<<<<<< HEAD
-		 "Default max number of gather/scatter entries (default is 12, max is " __stringify(SCSI_MAX_SG_CHAIN_SEGMENTS) ")");
-=======
 		 "Default max number of gather/scatter entries (default is 12, max is " __stringify(SG_MAX_SEGMENTS) ")");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(allow_ext_sg, bool, 0444);
 MODULE_PARM_DESC(allow_ext_sg,
@@ -115,15 +89,6 @@ module_param(topspin_workarounds, int, 0444);
 MODULE_PARM_DESC(topspin_workarounds,
 		 "Enable workarounds for Topspin/Cisco SRP target bugs if != 0");
 
-<<<<<<< HEAD
-static void srp_add_one(struct ib_device *device);
-static void srp_remove_one(struct ib_device *device);
-static void srp_recv_completion(struct ib_cq *cq, void *target_ptr);
-static void srp_send_completion(struct ib_cq *cq, void *target_ptr);
-static int srp_cm_handler(struct ib_cm_id *cm_id, struct ib_cm_event *event);
-
-static struct scsi_transport_template *ib_srp_transport_template;
-=======
 module_param(register_always, bool, 0444);
 MODULE_PARM_DESC(register_always,
 		 "Use memory registration even for contiguous memory regions");
@@ -184,23 +149,16 @@ static int srp_rdma_cm_handler(struct rdma_cm_id *cm_id,
 
 static struct scsi_transport_template *ib_srp_transport_template;
 static struct workqueue_struct *srp_remove_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ib_client srp_client = {
 	.name   = "srp",
 	.add    = srp_add_one,
-<<<<<<< HEAD
-	.remove = srp_remove_one
-=======
 	.remove = srp_remove_one,
 	.rename = srp_rename_dev
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ib_sa_client srp_sa_client;
 
-<<<<<<< HEAD
-=======
 static int srp_tmo_get(char *buffer, const struct kernel_param *kp)
 {
 	int tmo = *(int *)kp->arg;
@@ -240,7 +198,6 @@ static const struct kernel_param_ops srp_tmo_ops = {
 	.set = srp_tmo_set,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct srp_target_port *host_to_target(struct Scsi_Host *host)
 {
 	return (struct srp_target_port *) host->hostdata;
@@ -306,20 +263,12 @@ static void srp_free_iu(struct srp_host *host, struct srp_iu *iu)
 
 static void srp_qp_event(struct ib_event *event, void *context)
 {
-<<<<<<< HEAD
-	pr_debug("QP event %d\n", event->event);
-}
-
-static int srp_init_qp(struct srp_target_port *target,
-		       struct ib_qp *qp)
-=======
 	pr_debug("QP event %s (%d)\n",
 		 ib_event_msg(event->event), event->event);
 }
 
 static int srp_init_ib_qp(struct srp_target_port *target,
 			  struct ib_qp *qp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_qp_attr *attr;
 	int ret;
@@ -328,17 +277,10 @@ static int srp_init_ib_qp(struct srp_target_port *target,
 	if (!attr)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ret = ib_find_pkey(target->srp_host->srp_dev->dev,
-			   target->srp_host->port,
-			   be16_to_cpu(target->path.pkey),
-			   &attr->pkey_index);
-=======
 	ret = ib_find_cached_pkey(target->srp_host->srp_dev->dev,
 				  target->srp_host->port,
 				  be16_to_cpu(target->ib_cm.pkey),
 				  &attr->pkey_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -358,20 +300,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int srp_new_cm_id(struct srp_target_port *target)
-{
-	struct ib_cm_id *new_cm_id;
-
-	new_cm_id = ib_create_cm_id(target->srp_host->srp_dev->dev,
-				    srp_cm_handler, target);
-	if (IS_ERR(new_cm_id))
-		return PTR_ERR(new_cm_id);
-
-	if (target->cm_id)
-		ib_destroy_cm_id(target->cm_id);
-	target->cm_id = new_cm_id;
-=======
 static int srp_new_ib_cm_id(struct srp_rdma_ch *ch)
 {
 	struct srp_target_port *target = ch->target;
@@ -394,16 +322,10 @@ static int srp_new_ib_cm_id(struct srp_rdma_ch *ch)
 	ch->ib_cm.path.dgid = target->ib_cm.orig_dgid;
 	ch->ib_cm.path.pkey = target->ib_cm.pkey;
 	ch->ib_cm.path.service_id = target->ib_cm.service_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int srp_create_target_ib(struct srp_target_port *target)
-{
-	struct ib_qp_init_attr *init_attr;
-=======
 static int srp_new_rdma_cm_id(struct srp_rdma_ch *ch)
 {
 	struct srp_target_port *target = ch->target;
@@ -608,50 +530,12 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
 	struct ib_qp *qp;
 	struct srp_fr_pool *fr_pool = NULL;
 	const int m = 1 + dev->use_fast_reg * target->mr_per_cmd * 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	init_attr = kzalloc(sizeof *init_attr, GFP_KERNEL);
 	if (!init_attr)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	target->recv_cq = ib_create_cq(target->srp_host->srp_dev->dev,
-				       srp_recv_completion, NULL, target, SRP_RQ_SIZE, 0);
-	if (IS_ERR(target->recv_cq)) {
-		ret = PTR_ERR(target->recv_cq);
-		goto err;
-	}
-
-	target->send_cq = ib_create_cq(target->srp_host->srp_dev->dev,
-				       srp_send_completion, NULL, target, SRP_SQ_SIZE, 0);
-	if (IS_ERR(target->send_cq)) {
-		ret = PTR_ERR(target->send_cq);
-		goto err_recv_cq;
-	}
-
-	ib_req_notify_cq(target->recv_cq, IB_CQ_NEXT_COMP);
-
-	init_attr->event_handler       = srp_qp_event;
-	init_attr->cap.max_send_wr     = SRP_SQ_SIZE;
-	init_attr->cap.max_recv_wr     = SRP_RQ_SIZE;
-	init_attr->cap.max_recv_sge    = 1;
-	init_attr->cap.max_send_sge    = 1;
-	init_attr->sq_sig_type         = IB_SIGNAL_ALL_WR;
-	init_attr->qp_type             = IB_QPT_RC;
-	init_attr->send_cq             = target->send_cq;
-	init_attr->recv_cq             = target->recv_cq;
-
-	target->qp = ib_create_qp(target->srp_host->srp_dev->pd, init_attr);
-	if (IS_ERR(target->qp)) {
-		ret = PTR_ERR(target->qp);
-		goto err_send_cq;
-	}
-
-	ret = srp_init_qp(target, target->qp);
-	if (ret)
-		goto err_qp;
-=======
 	/* queue_size + 1 for ib_drain_rq() */
 	recv_cq = ib_alloc_cq(dev->dev, ch, target->queue_size + 1,
 				ch->comp_vector, IB_POLL_SOFTIRQ);
@@ -724,21 +608,11 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
 			srp_destroy_fr_pool(ch->fr_pool);
 		ch->fr_pool = fr_pool;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(init_attr);
 	return 0;
 
 err_qp:
-<<<<<<< HEAD
-	ib_destroy_qp(target->qp);
-
-err_send_cq:
-	ib_destroy_cq(target->send_cq);
-
-err_recv_cq:
-	ib_destroy_cq(target->recv_cq);
-=======
 	if (target->using_rdma_cm)
 		rdma_destroy_qp(ch->rdma_cm.cm_id);
 	else
@@ -749,36 +623,12 @@ err_send_cq:
 
 err_recv_cq:
 	ib_free_cq(recv_cq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err:
 	kfree(init_attr);
 	return ret;
 }
 
-<<<<<<< HEAD
-static void srp_free_target_ib(struct srp_target_port *target)
-{
-	int i;
-
-	ib_destroy_qp(target->qp);
-	ib_destroy_cq(target->send_cq);
-	ib_destroy_cq(target->recv_cq);
-
-	for (i = 0; i < SRP_RQ_SIZE; ++i)
-		srp_free_iu(target->srp_host, target->rx_ring[i]);
-	for (i = 0; i < SRP_SQ_SIZE; ++i)
-		srp_free_iu(target->srp_host, target->tx_ring[i]);
-}
-
-static void srp_path_rec_completion(int status,
-				    struct ib_sa_path_rec *pathrec,
-				    void *target_ptr)
-{
-	struct srp_target_port *target = target_ptr;
-
-	target->status = status;
-=======
 /*
  * Note: this function may be called without srp_alloc_iu_bufs() having been
  * invoked. Hence the ch->[rt]x_ring checks.
@@ -850,54 +700,10 @@ static void srp_path_rec_completion(int status,
 	struct srp_target_port *target = ch->target;
 
 	ch->status = status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		shost_printk(KERN_ERR, target->scsi_host,
 			     PFX "Got failed path rec status %d\n", status);
 	else
-<<<<<<< HEAD
-		target->path = *pathrec;
-	complete(&target->done);
-}
-
-static int srp_lookup_path(struct srp_target_port *target)
-{
-	target->path.numb_path = 1;
-
-	init_completion(&target->done);
-
-	target->path_query_id = ib_sa_path_rec_get(&srp_sa_client,
-						   target->srp_host->srp_dev->dev,
-						   target->srp_host->port,
-						   &target->path,
-						   IB_SA_PATH_REC_SERVICE_ID	|
-						   IB_SA_PATH_REC_DGID		|
-						   IB_SA_PATH_REC_SGID		|
-						   IB_SA_PATH_REC_NUMB_PATH	|
-						   IB_SA_PATH_REC_PKEY,
-						   SRP_PATH_REC_TIMEOUT_MS,
-						   GFP_KERNEL,
-						   srp_path_rec_completion,
-						   target, &target->path_query);
-	if (target->path_query_id < 0)
-		return target->path_query_id;
-
-	wait_for_completion(&target->done);
-
-	if (target->status < 0)
-		shost_printk(KERN_WARNING, target->scsi_host,
-			     PFX "Path record query failed\n");
-
-	return target->status;
-}
-
-static int srp_send_req(struct srp_target_port *target)
-{
-	struct {
-		struct ib_cm_req_param param;
-		struct srp_login_req   priv;
-	} *req = NULL;
-=======
 		ch->ib_cm.path = *pathrec;
 	complete(&ch->done);
 }
@@ -997,48 +803,19 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		struct srp_login_req	  ib_req;
 	} *req = NULL;
 	char *ipi, *tpi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	req = kzalloc(sizeof *req, GFP_KERNEL);
 	if (!req)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	req->param.primary_path 	      = &target->path;
-	req->param.alternate_path 	      = NULL;
-	req->param.service_id 		      = target->service_id;
-	req->param.qp_num 		      = target->qp->qp_num;
-	req->param.qp_type 		      = target->qp->qp_type;
-	req->param.private_data 	      = &req->priv;
-	req->param.private_data_len 	      = sizeof req->priv;
-	req->param.flow_control 	      = 1;
-
-	get_random_bytes(&req->param.starting_psn, 4);
-	req->param.starting_psn 	     &= 0xffffff;
-=======
 	req->ib_param.flow_control = 1;
 	req->ib_param.retry_count = target->tl_retry_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Pick some arbitrary defaults here; we could make these
 	 * module parameters if anyone cared about setting them.
 	 */
-<<<<<<< HEAD
-	req->param.responder_resources	      = 4;
-	req->param.remote_cm_response_timeout = 20;
-	req->param.local_cm_response_timeout  = 20;
-	req->param.retry_count 		      = 7;
-	req->param.rnr_retry_count 	      = 7;
-	req->param.max_cm_retries 	      = 15;
-
-	req->priv.opcode     	= SRP_LOGIN_REQ;
-	req->priv.tag        	= 0;
-	req->priv.req_it_iu_len = cpu_to_be32(target->max_iu_len);
-	req->priv.req_buf_fmt 	= cpu_to_be16(SRP_BUF_FORMAT_DIRECT |
-					      SRP_BUF_FORMAT_INDIRECT);
-=======
 	req->ib_param.responder_resources = 4;
 	req->ib_param.rnr_retry_count = 7;
 	req->ib_param.max_cm_retries = 15;
@@ -1095,7 +872,6 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		tpi = req->ib_req.target_port_id;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * In the published SRP specification (draft rev. 16a), the
 	 * port identifier format is 8 bytes of ID extension followed
@@ -1106,21 +882,6 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 	 * recognized by the I/O Class they report.
 	 */
 	if (target->io_class == SRP_REV10_IB_IO_CLASS) {
-<<<<<<< HEAD
-		memcpy(req->priv.initiator_port_id,
-		       &target->path.sgid.global.interface_id, 8);
-		memcpy(req->priv.initiator_port_id + 8,
-		       &target->initiator_ext, 8);
-		memcpy(req->priv.target_port_id,     &target->ioc_guid, 8);
-		memcpy(req->priv.target_port_id + 8, &target->id_ext, 8);
-	} else {
-		memcpy(req->priv.initiator_port_id,
-		       &target->initiator_ext, 8);
-		memcpy(req->priv.initiator_port_id + 8,
-		       &target->path.sgid.global.interface_id, 8);
-		memcpy(req->priv.target_port_id,     &target->id_ext, 8);
-		memcpy(req->priv.target_port_id + 8, &target->ioc_guid, 8);
-=======
 		memcpy(ipi,     &target->sgid.global.interface_id, 8);
 		memcpy(ipi + 8, &target->initiator_ext, 8);
 		memcpy(tpi,     &target->ioc_guid, 8);
@@ -1130,7 +891,6 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		memcpy(ipi + 8, &target->sgid.global.interface_id, 8);
 		memcpy(tpi,     &target->id_ext, 8);
 		memcpy(tpi + 8, &target->ioc_guid, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1142,15 +902,6 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		shost_printk(KERN_DEBUG, target->scsi_host,
 			     PFX "Topspin/Cisco initiator port ID workaround "
 			     "activated for target GUID %016llx\n",
-<<<<<<< HEAD
-			     (unsigned long long) be64_to_cpu(target->ioc_guid));
-		memset(req->priv.initiator_port_id, 0, 8);
-		memcpy(req->priv.initiator_port_id + 8,
-		       &target->srp_host->srp_dev->dev->node_guid, 8);
-	}
-
-	status = ib_send_cm_req(target->cm_id, &req->param);
-=======
 			     be64_to_cpu(target->ioc_guid));
 		memset(ipi, 0, 8);
 		memcpy(ipi + 8, &target->srp_host->srp_dev->dev->node_guid, 8);
@@ -1160,65 +911,17 @@ static int srp_send_req(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		status = rdma_connect(ch->rdma_cm.cm_id, &req->rdma_param);
 	else
 		status = ib_send_cm_req(ch->ib_cm.cm_id, &req->ib_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(req);
 
 	return status;
 }
 
-<<<<<<< HEAD
-static void srp_disconnect_target(struct srp_target_port *target)
-{
-	/* XXX should send SRP_I_LOGOUT request */
-
-	init_completion(&target->done);
-	if (ib_send_cm_dreq(target->cm_id, NULL, 0)) {
-		shost_printk(KERN_DEBUG, target->scsi_host,
-			     PFX "Sending CM DREQ failed\n");
-		return;
-	}
-	wait_for_completion(&target->done);
-}
-
-static bool srp_change_state(struct srp_target_port *target,
-			    enum srp_target_state old,
-			    enum srp_target_state new)
-=======
 static bool srp_queue_remove_work(struct srp_target_port *target)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool changed = false;
 
 	spin_lock_irq(&target->lock);
-<<<<<<< HEAD
-	if (target->state == old) {
-		target->state = new;
-		changed = true;
-	}
-	spin_unlock_irq(&target->lock);
-	return changed;
-}
-
-static void srp_free_req_data(struct srp_target_port *target)
-{
-	struct ib_device *ibdev = target->srp_host->srp_dev->dev;
-	struct srp_request *req;
-	int i;
-
-	for (i = 0, req = target->req_ring; i < SRP_CMD_SQ_SIZE; ++i, ++req) {
-		kfree(req->fmr_list);
-		kfree(req->map_page);
-		if (req->indirect_dma_addr) {
-			ib_dma_unmap_single(ibdev, req->indirect_dma_addr,
-					    target->indirect_size,
-					    DMA_TO_DEVICE);
-		}
-		kfree(req->indirect_desc);
-	}
-}
-
-=======
 	if (target->state != SRP_TARGET_REMOVED) {
 		target->state = SRP_TARGET_REMOVED;
 		changed = true;
@@ -1309,7 +1012,6 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * srp_del_scsi_host_attr() - Remove attributes defined in the host template.
  * @shost: SCSI host whose attributes to remove from sysfs.
@@ -1319,21 +1021,6 @@ out:
  */
 static void srp_del_scsi_host_attr(struct Scsi_Host *shost)
 {
-<<<<<<< HEAD
-	struct device_attribute **attr;
-
-	for (attr = shost->hostt->shost_attrs; attr && *attr; ++attr)
-		device_remove_file(&shost->shost_dev, *attr);
-}
-
-static void srp_remove_work(struct work_struct *work)
-{
-	struct srp_target_port *target =
-		container_of(work, struct srp_target_port, work);
-
-	if (!srp_change_state(target, SRP_TARGET_DEAD, SRP_TARGET_REMOVED))
-		return;
-=======
 	const struct attribute_group **g;
 	struct attribute **attr;
 
@@ -1369,38 +1056,11 @@ static void srp_remove_target(struct srp_target_port *target)
 	srp_rport_put(target->rport);
 	kfree(target->ch);
 	target->ch = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&target->srp_host->target_lock);
 	list_del(&target->list);
 	spin_unlock(&target->srp_host->target_lock);
 
-<<<<<<< HEAD
-	srp_del_scsi_host_attr(target->scsi_host);
-	srp_remove_host(target->scsi_host);
-	scsi_remove_host(target->scsi_host);
-	ib_destroy_cm_id(target->cm_id);
-	srp_free_target_ib(target);
-	srp_free_req_data(target);
-	scsi_host_put(target->scsi_host);
-}
-
-static int srp_connect_target(struct srp_target_port *target)
-{
-	int retries = 3;
-	int ret;
-
-	ret = srp_lookup_path(target);
-	if (ret)
-		return ret;
-
-	while (1) {
-		init_completion(&target->done);
-		ret = srp_send_req(target);
-		if (ret)
-			return ret;
-		wait_for_completion(&target->done);
-=======
 	scsi_host_put(target->scsi_host);
 }
 
@@ -1455,7 +1115,6 @@ static int srp_connect_ch(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		ret = wait_for_completion_interruptible(&ch->done);
 		if (ret < 0)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The CM event handling code will set status to
@@ -1463,16 +1122,6 @@ static int srp_connect_ch(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 		 * back, or SRP_DLID_REDIRECT if we get a lid/qp
 		 * redirect REJ back.
 		 */
-<<<<<<< HEAD
-		switch (target->status) {
-		case 0:
-			return 0;
-
-		case SRP_PORT_REDIRECT:
-			ret = srp_lookup_path(target);
-			if (ret)
-				return ret;
-=======
 		ret = ch->status;
 		switch (ret) {
 		case 0:
@@ -1483,41 +1132,12 @@ static int srp_connect_ch(struct srp_rdma_ch *ch, uint32_t max_iu_len,
 			ret = srp_lookup_path(ch);
 			if (ret)
 				goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case SRP_DLID_REDIRECT:
 			break;
 
 		case SRP_STALE_CONN:
-<<<<<<< HEAD
-			/* Our current CM id was stale, and is now in timewait.
-			 * Try to reconnect with a new one.
-			 */
-			if (!retries-- || srp_new_cm_id(target)) {
-				shost_printk(KERN_ERR, target->scsi_host, PFX
-					     "giving up on stale connection\n");
-				target->status = -ECONNRESET;
-				return target->status;
-			}
-
-			shost_printk(KERN_ERR, target->scsi_host, PFX
-				     "retrying stale connection\n");
-			break;
-
-		default:
-			return target->status;
-		}
-	}
-}
-
-static void srp_unmap_data(struct scsi_cmnd *scmnd,
-			   struct srp_target_port *target,
-			   struct srp_request *req)
-{
-	struct ib_device *ibdev = target->srp_host->srp_dev->dev;
-	struct ib_pool_fmr **pfmr;
-=======
 			shost_printk(KERN_ERR, target->scsi_host, PFX
 				     "giving up on stale connection\n");
 			ret = -ECONNRESET;
@@ -1561,18 +1181,12 @@ static void srp_unmap_data(struct scsi_cmnd *scmnd,
 	struct srp_device *dev = target->srp_host->srp_dev;
 	struct ib_device *ibdev = dev->dev;
 	int i, res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!scsi_sglist(scmnd) ||
 	    (scmnd->sc_data_direction != DMA_TO_DEVICE &&
 	     scmnd->sc_data_direction != DMA_FROM_DEVICE))
 		return;
 
-<<<<<<< HEAD
-	pfmr = req->fmr_list;
-	while (req->nfmr--)
-		ib_fmr_pool_unmap(*pfmr++);
-=======
 	if (dev->use_fast_reg) {
 		struct srp_fr_desc **pfr;
 
@@ -1590,7 +1204,6 @@ static void srp_unmap_data(struct scsi_cmnd *scmnd,
 			srp_fr_pool_put(ch->fr_pool, req->fr_list,
 					req->nmdesc);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ib_dma_unmap_sg(ibdev, scsi_sglist(scmnd), scsi_sg_count(scmnd),
 			scmnd->sc_data_direction);
@@ -1598,44 +1211,22 @@ static void srp_unmap_data(struct scsi_cmnd *scmnd,
 
 /**
  * srp_claim_req - Take ownership of the scmnd associated with a request.
-<<<<<<< HEAD
- * @target: SRP target port.
- * @req: SRP request.
-=======
  * @ch: SRP RDMA channel.
  * @req: SRP request.
  * @sdev: If not NULL, only take ownership for this SCSI device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scmnd: If NULL, take ownership of @req->scmnd. If not NULL, only take
  *         ownership of @req->scmnd if it equals @scmnd.
  *
  * Return value:
  * Either NULL or a pointer to the SCSI command the caller became owner of.
  */
-<<<<<<< HEAD
-static struct scsi_cmnd *srp_claim_req(struct srp_target_port *target,
-				       struct srp_request *req,
-=======
 static struct scsi_cmnd *srp_claim_req(struct srp_rdma_ch *ch,
 				       struct srp_request *req,
 				       struct scsi_device *sdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       struct scsi_cmnd *scmnd)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&target->lock, flags);
-	if (!scmnd) {
-		scmnd = req->scmnd;
-		req->scmnd = NULL;
-	} else if (req->scmnd == scmnd) {
-		req->scmnd = NULL;
-	} else {
-		scmnd = NULL;
-	}
-	spin_unlock_irqrestore(&target->lock, flags);
-=======
 	spin_lock_irqsave(&ch->lock, flags);
 	if (req->scmnd &&
 	    (!sdev || req->scmnd->device == sdev) &&
@@ -1646,113 +1237,11 @@ static struct scsi_cmnd *srp_claim_req(struct srp_rdma_ch *ch,
 		scmnd = NULL;
 	}
 	spin_unlock_irqrestore(&ch->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return scmnd;
 }
 
 /**
-<<<<<<< HEAD
- * srp_free_req() - Unmap data and add request to the free request list.
- */
-static void srp_free_req(struct srp_target_port *target,
-			 struct srp_request *req, struct scsi_cmnd *scmnd,
-			 s32 req_lim_delta)
-{
-	unsigned long flags;
-
-	srp_unmap_data(scmnd, target, req);
-
-	spin_lock_irqsave(&target->lock, flags);
-	target->req_lim += req_lim_delta;
-	list_add_tail(&req->list, &target->free_reqs);
-	spin_unlock_irqrestore(&target->lock, flags);
-}
-
-static void srp_reset_req(struct srp_target_port *target, struct srp_request *req)
-{
-	struct scsi_cmnd *scmnd = srp_claim_req(target, req, NULL);
-
-	if (scmnd) {
-		srp_free_req(target, req, scmnd, 0);
-		scmnd->result = DID_RESET << 16;
-		scmnd->scsi_done(scmnd);
-	}
-}
-
-static int srp_reconnect_target(struct srp_target_port *target)
-{
-	struct ib_qp_attr qp_attr;
-	struct ib_wc wc;
-	int i, ret;
-
-	if (!srp_change_state(target, SRP_TARGET_LIVE, SRP_TARGET_CONNECTING))
-		return -EAGAIN;
-
-	srp_disconnect_target(target);
-	/*
-	 * Now get a new local CM ID so that we avoid confusing the
-	 * target in case things are really fouled up.
-	 */
-	ret = srp_new_cm_id(target);
-	if (ret)
-		goto err;
-
-	qp_attr.qp_state = IB_QPS_RESET;
-	ret = ib_modify_qp(target->qp, &qp_attr, IB_QP_STATE);
-	if (ret)
-		goto err;
-
-	ret = srp_init_qp(target, target->qp);
-	if (ret)
-		goto err;
-
-	while (ib_poll_cq(target->recv_cq, 1, &wc) > 0)
-		; /* nothing */
-	while (ib_poll_cq(target->send_cq, 1, &wc) > 0)
-		; /* nothing */
-
-	for (i = 0; i < SRP_CMD_SQ_SIZE; ++i) {
-		struct srp_request *req = &target->req_ring[i];
-		if (req->scmnd)
-			srp_reset_req(target, req);
-	}
-
-	INIT_LIST_HEAD(&target->free_tx);
-	for (i = 0; i < SRP_SQ_SIZE; ++i)
-		list_add(&target->tx_ring[i]->list, &target->free_tx);
-
-	target->qp_in_error = 0;
-	ret = srp_connect_target(target);
-	if (ret)
-		goto err;
-
-	if (!srp_change_state(target, SRP_TARGET_CONNECTING, SRP_TARGET_LIVE))
-		ret = -EAGAIN;
-
-	return ret;
-
-err:
-	shost_printk(KERN_ERR, target->scsi_host,
-		     PFX "reconnect failed (%d), removing target port.\n", ret);
-
-	/*
-	 * We couldn't reconnect, so kill our target port off.
-	 * However, we have to defer the real removal because we
-	 * are in the context of the SCSI error handler now, which
-	 * will deadlock if we call scsi_remove_host().
-	 *
-	 * Schedule our work inside the lock to avoid a race with
-	 * the flush_scheduled_work() in srp_remove_one().
-	 */
-	spin_lock_irq(&target->lock);
-	if (target->state == SRP_TARGET_CONNECTING) {
-		target->state = SRP_TARGET_DEAD;
-		INIT_WORK(&target->work, srp_remove_work);
-		queue_work(ib_wq, &target->work);
-	}
-	spin_unlock_irq(&target->lock);
-=======
  * srp_free_req() - Unmap data and adjust ch->req_lim.
  * @ch:     SRP RDMA channel.
  * @req:    Request to be freed.
@@ -1897,7 +1386,6 @@ static int srp_rport_reconnect(struct srp_rport *rport)
 	if (ret == 0)
 		shost_printk(KERN_INFO, target->scsi_host,
 			     PFX "reconnect succeeded\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1907,11 +1395,8 @@ static void srp_map_desc(struct srp_map_state *state, dma_addr_t dma_addr,
 {
 	struct srp_direct_buf *desc = state->desc;
 
-<<<<<<< HEAD
-=======
 	WARN_ON_ONCE(!dma_len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->va = cpu_to_be64(dma_addr);
 	desc->key = cpu_to_be32(rkey);
 	desc->len = cpu_to_be32(dma_len);
@@ -1921,133 +1406,6 @@ static void srp_map_desc(struct srp_map_state *state, dma_addr_t dma_addr,
 	state->ndesc++;
 }
 
-<<<<<<< HEAD
-static int srp_map_finish_fmr(struct srp_map_state *state,
-			      struct srp_target_port *target)
-{
-	struct srp_device *dev = target->srp_host->srp_dev;
-	struct ib_pool_fmr *fmr;
-	u64 io_addr = 0;
-
-	if (!state->npages)
-		return 0;
-
-	if (state->npages == 1) {
-		srp_map_desc(state, state->base_dma_addr, state->fmr_len,
-			     target->rkey);
-		state->npages = state->fmr_len = 0;
-		return 0;
-	}
-
-	fmr = ib_fmr_pool_map_phys(dev->fmr_pool, state->pages,
-				   state->npages, io_addr);
-	if (IS_ERR(fmr))
-		return PTR_ERR(fmr);
-
-	*state->next_fmr++ = fmr;
-	state->nfmr++;
-
-	srp_map_desc(state, 0, state->fmr_len, fmr->fmr->rkey);
-	state->npages = state->fmr_len = 0;
-	return 0;
-}
-
-static void srp_map_update_start(struct srp_map_state *state,
-				 struct scatterlist *sg, int sg_index,
-				 dma_addr_t dma_addr)
-{
-	state->unmapped_sg = sg;
-	state->unmapped_index = sg_index;
-	state->unmapped_addr = dma_addr;
-}
-
-static int srp_map_sg_entry(struct srp_map_state *state,
-			    struct srp_target_port *target,
-			    struct scatterlist *sg, int sg_index,
-			    int use_fmr)
-{
-	struct srp_device *dev = target->srp_host->srp_dev;
-	struct ib_device *ibdev = dev->dev;
-	dma_addr_t dma_addr = ib_sg_dma_address(ibdev, sg);
-	unsigned int dma_len = ib_sg_dma_len(ibdev, sg);
-	unsigned int len;
-	int ret;
-
-	if (!dma_len)
-		return 0;
-
-	if (use_fmr == SRP_MAP_NO_FMR) {
-		/* Once we're in direct map mode for a request, we don't
-		 * go back to FMR mode, so no need to update anything
-		 * other than the descriptor.
-		 */
-		srp_map_desc(state, dma_addr, dma_len, target->rkey);
-		return 0;
-	}
-
-	/* If we start at an offset into the FMR page, don't merge into
-	 * the current FMR. Finish it out, and use the kernel's MR for this
-	 * sg entry. This is to avoid potential bugs on some SRP targets
-	 * that were never quite defined, but went away when the initiator
-	 * avoided using FMR on such page fragments.
-	 */
-	if (dma_addr & ~dev->fmr_page_mask || dma_len > dev->fmr_max_size) {
-		ret = srp_map_finish_fmr(state, target);
-		if (ret)
-			return ret;
-
-		srp_map_desc(state, dma_addr, dma_len, target->rkey);
-		srp_map_update_start(state, NULL, 0, 0);
-		return 0;
-	}
-
-	/* If this is the first sg to go into the FMR, save our position.
-	 * We need to know the first unmapped entry, its index, and the
-	 * first unmapped address within that entry to be able to restart
-	 * mapping after an error.
-	 */
-	if (!state->unmapped_sg)
-		srp_map_update_start(state, sg, sg_index, dma_addr);
-
-	while (dma_len) {
-		if (state->npages == SRP_FMR_SIZE) {
-			ret = srp_map_finish_fmr(state, target);
-			if (ret)
-				return ret;
-
-			srp_map_update_start(state, sg, sg_index, dma_addr);
-		}
-
-		len = min_t(unsigned int, dma_len, dev->fmr_page_size);
-
-		if (!state->npages)
-			state->base_dma_addr = dma_addr;
-		state->pages[state->npages++] = dma_addr;
-		state->fmr_len += len;
-		dma_addr += len;
-		dma_len -= len;
-	}
-
-	/* If the last entry of the FMR wasn't a full page, then we need to
-	 * close it out and start a new one -- we can only merge at page
-	 * boundries.
-	 */
-	ret = 0;
-	if (len != dev->fmr_page_size) {
-		ret = srp_map_finish_fmr(state, target);
-		if (!ret)
-			srp_map_update_start(state, NULL, 0, 0);
-	}
-	return ret;
-}
-
-static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_target_port *target,
-			struct srp_request *req)
-{
-	struct scatterlist *scat, *sg;
-	struct srp_cmd *cmd = req->cmd->buf;
-	int i, len, nents, count, use_fmr;
-=======
 static void srp_reg_mr_err_done(struct ib_cq *cq, struct ib_wc *wc)
 {
 	srp_handle_qp_err(cq, wc, "FAST REG");
@@ -2266,18 +1624,10 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 	struct scatterlist *scat, *sg;
 	struct srp_cmd *cmd = req->cmd->buf;
 	int i, len, nents, count, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srp_device *dev;
 	struct ib_device *ibdev;
 	struct srp_map_state state;
 	struct srp_indirect_buf *indirect_hdr;
-<<<<<<< HEAD
-	u32 table_len;
-	u8 fmt;
-
-	if (!scsi_sglist(scmnd) || scmnd->sc_data_direction == DMA_NONE)
-		return sizeof (struct srp_cmd);
-=======
 	u64 data_len;
 	u32 idb_len, table_len;
 	__be32 idb_rkey;
@@ -2287,7 +1637,6 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 
 	if (!scsi_sglist(scmnd) || scmnd->sc_data_direction == DMA_NONE)
 		return sizeof(struct srp_cmd) + cmd->add_cdb_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (scmnd->sc_data_direction != DMA_FROM_DEVICE &&
 	    scmnd->sc_data_direction != DMA_TO_DEVICE) {
@@ -2299,10 +1648,7 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 
 	nents = scsi_sg_count(scmnd);
 	scat  = scsi_sglist(scmnd);
-<<<<<<< HEAD
-=======
 	data_len = scsi_bufflen(scmnd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = target->srp_host->srp_dev;
 	ibdev = dev->dev;
@@ -2311,12 +1657,6 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 	if (unlikely(count == 0))
 		return -EIO;
 
-<<<<<<< HEAD
-	fmt = SRP_DATA_DESC_DIRECT;
-	len = sizeof (struct srp_cmd) +	sizeof (struct srp_direct_buf);
-
-	if (count == 1) {
-=======
 	if (ch->use_imm_data &&
 	    count <= ch->max_imm_sge &&
 	    SRP_IMM_DATA_OFFSET + data_len <= ch->max_it_iu_len &&
@@ -2344,30 +1684,12 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 		sizeof(struct srp_direct_buf);
 
 	if (count == 1 && target->global_rkey) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The midlayer only generated a single gather/scatter
 		 * entry, or DMA mapping coalesced everything to a
 		 * single entry.  So a direct descriptor along with
 		 * the DMA MR suffices.
 		 */
-<<<<<<< HEAD
-		struct srp_direct_buf *buf = (void *) cmd->add_data;
-
-		buf->va  = cpu_to_be64(ib_sg_dma_address(ibdev, scat));
-		buf->key = cpu_to_be32(target->rkey);
-		buf->len = cpu_to_be32(ib_sg_dma_len(ibdev, scat));
-
-		req->nfmr = 0;
-		goto map_complete;
-	}
-
-	/* We have more than one scatter/gather entry, so build our indirect
-	 * descriptor table, trying to merge as many entries with FMR as we
-	 * can.
-	 */
-	indirect_hdr = (void *) cmd->add_data;
-=======
 		struct srp_direct_buf *buf;
 
 		buf = (void *)cmd->add_data + cmd->add_cdb_len;
@@ -2384,44 +1706,11 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
 	 * descriptor table, trying to merge as many entries as we can.
 	 */
 	indirect_hdr = (void *)cmd->add_data + cmd->add_cdb_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ib_dma_sync_single_for_cpu(ibdev, req->indirect_dma_addr,
 				   target->indirect_size, DMA_TO_DEVICE);
 
 	memset(&state, 0, sizeof(state));
-<<<<<<< HEAD
-	state.desc	= req->indirect_desc;
-	state.pages	= req->map_page;
-	state.next_fmr	= req->fmr_list;
-
-	use_fmr = dev->fmr_pool ? SRP_MAP_ALLOW_FMR : SRP_MAP_NO_FMR;
-
-	for_each_sg(scat, sg, count, i) {
-		if (srp_map_sg_entry(&state, target, sg, i, use_fmr)) {
-			/* FMR mapping failed, so backtrack to the first
-			 * unmapped entry and continue on without using FMR.
-			 */
-			dma_addr_t dma_addr;
-			unsigned int dma_len;
-
-backtrack:
-			sg = state.unmapped_sg;
-			i = state.unmapped_index;
-
-			dma_addr = ib_sg_dma_address(ibdev, sg);
-			dma_len = ib_sg_dma_len(ibdev, sg);
-			dma_len -= (state.unmapped_addr - dma_addr);
-			dma_addr = state.unmapped_addr;
-			use_fmr = SRP_MAP_NO_FMR;
-			srp_map_desc(&state, dma_addr, dma_len, target->rkey);
-		}
-	}
-
-	if (use_fmr == SRP_MAP_ALLOW_FMR && srp_map_finish_fmr(&state, target))
-		goto backtrack;
-
-=======
 	state.desc = req->indirect_desc;
 	if (dev->use_fast_reg)
 		ret = srp_map_sg_fr(&state, ch, req, scat, count);
@@ -2438,22 +1727,12 @@ backtrack:
 			srp_check_mapping(&state, ch, req, scat, count);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We've mapped the request, now pull as much of the indirect
 	 * descriptor table as we can into the command buffer. If this
 	 * target is not using an external indirect table, we are
 	 * guaranteed to fit into the command, as the SCSI layer won't
 	 * give us more S/G entries than we allow.
 	 */
-<<<<<<< HEAD
-	req->nfmr = state.nfmr;
-	if (state.ndesc == 1) {
-		/* FMR mapping was able to collapse this to one entry,
-		 * so use a direct descriptor.
-		 */
-		struct srp_direct_buf *buf = (void *) cmd->add_data;
-
-=======
 	if (state.ndesc == 1) {
 		/*
 		 * Memory registration collapsed the sg-list into one entry,
@@ -2462,7 +1741,6 @@ backtrack:
 		struct srp_direct_buf *buf;
 
 		buf = (void *)cmd->add_data + cmd->add_cdb_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*buf = req->indirect_desc[0];
 		goto map_complete;
 	}
@@ -2471,36 +1749,22 @@ backtrack:
 						!target->allow_ext_sg)) {
 		shost_printk(KERN_ERR, target->scsi_host,
 			     "Could not fit S/G list into SRP_CMD\n");
-<<<<<<< HEAD
-		return -EIO;
-=======
 		ret = -EIO;
 		goto unmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	count = min(state.ndesc, target->cmd_sg_cnt);
 	table_len = state.ndesc * sizeof (struct srp_direct_buf);
-<<<<<<< HEAD
-
-	fmt = SRP_DATA_DESC_INDIRECT;
-	len = sizeof(struct srp_cmd) + sizeof (struct srp_indirect_buf);
-=======
 	idb_len = sizeof(struct srp_indirect_buf) + table_len;
 
 	fmt = SRP_DATA_DESC_INDIRECT;
 	len = sizeof(struct srp_cmd) + cmd->add_cdb_len +
 		sizeof(struct srp_indirect_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len += count * sizeof (struct srp_direct_buf);
 
 	memcpy(indirect_hdr->desc_list, req->indirect_desc,
 	       count * sizeof (struct srp_direct_buf));
 
-<<<<<<< HEAD
-	indirect_hdr->table_desc.va = cpu_to_be64(req->indirect_dma_addr);
-	indirect_hdr->table_desc.key = cpu_to_be32(target->rkey);
-=======
 	if (!target->global_rkey) {
 		ret = srp_map_idb(ch, req, state.gen.next, state.gen.end,
 				  idb_len, &idb_rkey);
@@ -2513,7 +1777,6 @@ backtrack:
 
 	indirect_hdr->table_desc.va = cpu_to_be64(req->indirect_dma_addr);
 	indirect_hdr->table_desc.key = idb_rkey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	indirect_hdr->table_desc.len = cpu_to_be32(table_len);
 	indirect_hdr->len = cpu_to_be32(state.total_len);
 
@@ -2532,40 +1795,22 @@ map_complete:
 		cmd->buf_fmt = fmt;
 
 	return len;
-<<<<<<< HEAD
-=======
 
 unmap:
 	srp_unmap_data(scmnd, ch, req);
 	if (ret == -ENOMEM && req->nmdesc >= target->mr_pool_size)
 		ret = -E2BIG;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Return an IU and possible credit to the free pool
  */
-<<<<<<< HEAD
-static void srp_put_tx_iu(struct srp_target_port *target, struct srp_iu *iu,
-=======
 static void srp_put_tx_iu(struct srp_rdma_ch *ch, struct srp_iu *iu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  enum srp_iu_type iu_type)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&target->lock, flags);
-	list_add(&iu->list, &target->free_tx);
-	if (iu_type != SRP_IU_RSP)
-		++target->req_lim;
-	spin_unlock_irqrestore(&target->lock, flags);
-}
-
-/*
- * Must be called with target->lock held to protect req_lim and free_tx.
-=======
 	spin_lock_irqsave(&ch->lock, flags);
 	list_add(&iu->list, &ch->free_tx);
 	if (iu_type != SRP_IU_RSP)
@@ -2575,7 +1820,6 @@ static void srp_put_tx_iu(struct srp_rdma_ch *ch, struct srp_iu *iu,
 
 /*
  * Must be called with ch->lock held to protect req_lim and free_tx.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If IU is not sent, it must be returned using srp_put_tx_iu().
  *
  * Note:
@@ -2587,17 +1831,6 @@ static void srp_put_tx_iu(struct srp_rdma_ch *ch, struct srp_iu *iu,
  * - SRP_IU_RSP: 1, since a conforming SRP target never sends more than
  *   one unanswered SRP request to an initiator.
  */
-<<<<<<< HEAD
-static struct srp_iu *__srp_get_tx_iu(struct srp_target_port *target,
-				      enum srp_iu_type iu_type)
-{
-	s32 rsv = (iu_type == SRP_IU_TSK_MGMT) ? 0 : SRP_TSK_MGMT_SQ_SIZE;
-	struct srp_iu *iu;
-
-	srp_send_completion(target->send_cq, target);
-
-	if (list_empty(&target->free_tx))
-=======
 static struct srp_iu *__srp_get_tx_iu(struct srp_rdma_ch *ch,
 				      enum srp_iu_type iu_type)
 {
@@ -2610,60 +1843,23 @@ static struct srp_iu *__srp_get_tx_iu(struct srp_rdma_ch *ch,
 	ib_process_cq_direct(ch->send_cq, -1);
 
 	if (list_empty(&ch->free_tx))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	/* Initiator responses to target requests do not consume credits */
 	if (iu_type != SRP_IU_RSP) {
-<<<<<<< HEAD
-		if (target->req_lim <= rsv) {
-=======
 		if (ch->req_lim <= rsv) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			++target->zero_req_lim;
 			return NULL;
 		}
 
-<<<<<<< HEAD
-		--target->req_lim;
-	}
-
-	iu = list_first_entry(&target->free_tx, struct srp_iu, list);
-=======
 		--ch->req_lim;
 	}
 
 	iu = list_first_entry(&ch->free_tx, struct srp_iu, list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&iu->list);
 	return iu;
 }
 
-<<<<<<< HEAD
-static int srp_post_send(struct srp_target_port *target,
-			 struct srp_iu *iu, int len)
-{
-	struct ib_sge list;
-	struct ib_send_wr wr, *bad_wr;
-
-	list.addr   = iu->dma;
-	list.length = len;
-	list.lkey   = target->lkey;
-
-	wr.next       = NULL;
-	wr.wr_id      = (uintptr_t) iu;
-	wr.sg_list    = &list;
-	wr.num_sge    = 1;
-	wr.opcode     = IB_WR_SEND;
-	wr.send_flags = IB_SEND_SIGNALED;
-
-	return ib_post_send(target->qp, &wr, &bad_wr);
-}
-
-static int srp_post_recv(struct srp_target_port *target, struct srp_iu *iu)
-{
-	struct ib_recv_wr wr, *bad_wr;
-=======
 /*
  * Note: if this function is called from inside ib_drain_sq() then it will
  * be called without ch->lock being held. If ib_drain_sq() dequeues a WQE
@@ -2718,25 +1914,12 @@ static int srp_post_recv(struct srp_rdma_ch *ch, struct srp_iu *iu)
 {
 	struct srp_target_port *target = ch->target;
 	struct ib_recv_wr wr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_sge list;
 
 	list.addr   = iu->dma;
 	list.length = iu->size;
 	list.lkey   = target->lkey;
 
-<<<<<<< HEAD
-	wr.next     = NULL;
-	wr.wr_id    = (uintptr_t) iu;
-	wr.sg_list  = &list;
-	wr.num_sge  = 1;
-
-	return ib_post_recv(target->qp, &wr, &bad_wr);
-}
-
-static void srp_process_rsp(struct srp_target_port *target, struct srp_rsp *rsp)
-{
-=======
 	iu->cqe.done = srp_recv_done;
 
 	wr.next     = NULL;
@@ -2750,33 +1933,11 @@ static void srp_process_rsp(struct srp_target_port *target, struct srp_rsp *rsp)
 static void srp_process_rsp(struct srp_rdma_ch *ch, struct srp_rsp *rsp)
 {
 	struct srp_target_port *target = ch->target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srp_request *req;
 	struct scsi_cmnd *scmnd;
 	unsigned long flags;
 
 	if (unlikely(rsp->tag & SRP_TAG_TSK_MGMT)) {
-<<<<<<< HEAD
-		spin_lock_irqsave(&target->lock, flags);
-		target->req_lim += be32_to_cpu(rsp->req_lim_delta);
-		spin_unlock_irqrestore(&target->lock, flags);
-
-		target->tsk_mgmt_status = -1;
-		if (be32_to_cpu(rsp->resp_data_len) >= 4)
-			target->tsk_mgmt_status = rsp->data[3];
-		complete(&target->tsk_mgmt_done);
-	} else {
-		req = &target->req_ring[rsp->tag];
-		scmnd = srp_claim_req(target, req, NULL);
-		if (!scmnd) {
-			shost_printk(KERN_ERR, target->scsi_host,
-				     "Null scmnd for RSP w/tag %016llx\n",
-				     (unsigned long long) rsp->tag);
-
-			spin_lock_irqsave(&target->lock, flags);
-			target->req_lim += be32_to_cpu(rsp->req_lim_delta);
-			spin_unlock_irqrestore(&target->lock, flags);
-=======
 		spin_lock_irqsave(&ch->lock, flags);
 		ch->req_lim += be32_to_cpu(rsp->req_lim_delta);
 		if (rsp->tag == ch->tsk_mgmt_tag) {
@@ -2804,7 +1965,6 @@ static void srp_process_rsp(struct srp_rdma_ch *ch, struct srp_rsp *rsp)
 			spin_lock_irqsave(&ch->lock, flags);
 			ch->req_lim += be32_to_cpu(rsp->req_lim_delta);
 			spin_unlock_irqrestore(&ch->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return;
 		}
@@ -2817,24 +1977,6 @@ static void srp_process_rsp(struct srp_rdma_ch *ch, struct srp_rsp *rsp)
 				     SCSI_SENSE_BUFFERSIZE));
 		}
 
-<<<<<<< HEAD
-		if (rsp->flags & (SRP_RSP_FLAG_DOOVER | SRP_RSP_FLAG_DOUNDER))
-			scsi_set_resid(scmnd, be32_to_cpu(rsp->data_out_res_cnt));
-		else if (rsp->flags & (SRP_RSP_FLAG_DIOVER | SRP_RSP_FLAG_DIUNDER))
-			scsi_set_resid(scmnd, be32_to_cpu(rsp->data_in_res_cnt));
-
-		srp_free_req(target, req, scmnd,
-			     be32_to_cpu(rsp->req_lim_delta));
-
-		scmnd->host_scribble = NULL;
-		scmnd->scsi_done(scmnd);
-	}
-}
-
-static int srp_response_common(struct srp_target_port *target, s32 req_delta,
-			       void *rsp, int len)
-{
-=======
 		if (unlikely(rsp->flags & SRP_RSP_FLAG_DIUNDER))
 			scsi_set_resid(scmnd, be32_to_cpu(rsp->data_in_res_cnt));
 		else if (unlikely(rsp->flags & SRP_RSP_FLAG_DOUNDER))
@@ -2851,23 +1993,15 @@ static int srp_response_common(struct srp_rdma_ch *ch, s32 req_delta,
 			       void *rsp, int len)
 {
 	struct srp_target_port *target = ch->target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_device *dev = target->srp_host->srp_dev->dev;
 	unsigned long flags;
 	struct srp_iu *iu;
 	int err;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&target->lock, flags);
-	target->req_lim += req_delta;
-	iu = __srp_get_tx_iu(target, SRP_IU_RSP);
-	spin_unlock_irqrestore(&target->lock, flags);
-=======
 	spin_lock_irqsave(&ch->lock, flags);
 	ch->req_lim += req_delta;
 	iu = __srp_get_tx_iu(ch, SRP_IU_RSP);
 	spin_unlock_irqrestore(&ch->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!iu) {
 		shost_printk(KERN_ERR, target->scsi_host, PFX
@@ -2875,37 +2009,22 @@ static int srp_response_common(struct srp_rdma_ch *ch, s32 req_delta,
 		return 1;
 	}
 
-<<<<<<< HEAD
-=======
 	iu->num_sge = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_dma_sync_single_for_cpu(dev, iu->dma, len, DMA_TO_DEVICE);
 	memcpy(iu->buf, rsp, len);
 	ib_dma_sync_single_for_device(dev, iu->dma, len, DMA_TO_DEVICE);
 
-<<<<<<< HEAD
-	err = srp_post_send(target, iu, len);
-	if (err) {
-		shost_printk(KERN_ERR, target->scsi_host, PFX
-			     "unable to post response: %d\n", err);
-		srp_put_tx_iu(target, iu, SRP_IU_RSP);
-=======
 	err = srp_post_send(ch, iu, len);
 	if (err) {
 		shost_printk(KERN_ERR, target->scsi_host, PFX
 			     "unable to post response: %d\n", err);
 		srp_put_tx_iu(ch, iu, SRP_IU_RSP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
-<<<<<<< HEAD
-static void srp_process_cred_req(struct srp_target_port *target,
-=======
 static void srp_process_cred_req(struct srp_rdma_ch *ch,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct srp_cred_req *req)
 {
 	struct srp_cred_rsp rsp = {
@@ -2914,16 +2033,6 @@ static void srp_process_cred_req(struct srp_rdma_ch *ch,
 	};
 	s32 delta = be32_to_cpu(req->req_lim_delta);
 
-<<<<<<< HEAD
-	if (srp_response_common(target, delta, &rsp, sizeof rsp))
-		shost_printk(KERN_ERR, target->scsi_host, PFX
-			     "problems processing SRP_CRED_REQ\n");
-}
-
-static void srp_process_aer_req(struct srp_target_port *target,
-				struct srp_aer_req *req)
-{
-=======
 	if (srp_response_common(ch, delta, &rsp, sizeof(rsp)))
 		shost_printk(KERN_ERR, ch->target->scsi_host, PFX
 			     "problems processing SRP_CRED_REQ\n");
@@ -2933,7 +2042,6 @@ static void srp_process_aer_req(struct srp_rdma_ch *ch,
 				struct srp_aer_req *req)
 {
 	struct srp_target_port *target = ch->target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srp_aer_rsp rsp = {
 		.opcode = SRP_AER_RSP,
 		.tag = req->tag,
@@ -2941,29 +2049,13 @@ static void srp_process_aer_req(struct srp_rdma_ch *ch,
 	s32 delta = be32_to_cpu(req->req_lim_delta);
 
 	shost_printk(KERN_ERR, target->scsi_host, PFX
-<<<<<<< HEAD
-		     "ignoring AER for LUN %llu\n", be64_to_cpu(req->lun));
-
-	if (srp_response_common(target, delta, &rsp, sizeof rsp))
-=======
 		     "ignoring AER for LUN %llu\n", scsilun_to_int(&req->lun));
 
 	if (srp_response_common(ch, delta, &rsp, sizeof(rsp)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shost_printk(KERN_ERR, target->scsi_host, PFX
 			     "problems processing SRP_AER_REQ\n");
 }
 
-<<<<<<< HEAD
-static void srp_handle_recv(struct srp_target_port *target, struct ib_wc *wc)
-{
-	struct ib_device *dev = target->srp_host->srp_dev->dev;
-	struct srp_iu *iu = (struct srp_iu *) (uintptr_t) wc->wr_id;
-	int res;
-	u8 opcode;
-
-	ib_dma_sync_single_for_cpu(dev, iu->dma, target->max_ti_iu_len,
-=======
 static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 {
 	struct srp_iu *iu = container_of(wc->wr_cqe, struct srp_iu, cqe);
@@ -2979,7 +2071,6 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 	}
 
 	ib_dma_sync_single_for_cpu(dev, iu->dma, ch->max_ti_iu_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   DMA_FROM_DEVICE);
 
 	opcode = *(u8 *) iu->buf;
@@ -2993,17 +2084,6 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 
 	switch (opcode) {
 	case SRP_RSP:
-<<<<<<< HEAD
-		srp_process_rsp(target, iu->buf);
-		break;
-
-	case SRP_CRED_REQ:
-		srp_process_cred_req(target, iu->buf);
-		break;
-
-	case SRP_AER_REQ:
-		srp_process_aer_req(target, iu->buf);
-=======
 		srp_process_rsp(ch, iu->buf);
 		break;
 
@@ -3013,7 +2093,6 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 
 	case SRP_AER_REQ:
 		srp_process_aer_req(ch, iu->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SRP_T_LOGOUT:
@@ -3028,61 +2107,15 @@ static void srp_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 		break;
 	}
 
-<<<<<<< HEAD
-	ib_dma_sync_single_for_device(dev, iu->dma, target->max_ti_iu_len,
-				      DMA_FROM_DEVICE);
-
-	res = srp_post_recv(target, iu);
-=======
 	ib_dma_sync_single_for_device(dev, iu->dma, ch->max_ti_iu_len,
 				      DMA_FROM_DEVICE);
 
 	res = srp_post_recv(ch, iu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res != 0)
 		shost_printk(KERN_ERR, target->scsi_host,
 			     PFX "Recv failed with error code %d\n", res);
 }
 
-<<<<<<< HEAD
-static void srp_recv_completion(struct ib_cq *cq, void *target_ptr)
-{
-	struct srp_target_port *target = target_ptr;
-	struct ib_wc wc;
-
-	ib_req_notify_cq(cq, IB_CQ_NEXT_COMP);
-	while (ib_poll_cq(cq, 1, &wc) > 0) {
-		if (wc.status) {
-			shost_printk(KERN_ERR, target->scsi_host,
-				     PFX "failed receive status %d\n",
-				     wc.status);
-			target->qp_in_error = 1;
-			break;
-		}
-
-		srp_handle_recv(target, &wc);
-	}
-}
-
-static void srp_send_completion(struct ib_cq *cq, void *target_ptr)
-{
-	struct srp_target_port *target = target_ptr;
-	struct ib_wc wc;
-	struct srp_iu *iu;
-
-	while (ib_poll_cq(cq, 1, &wc) > 0) {
-		if (wc.status) {
-			shost_printk(KERN_ERR, target->scsi_host,
-				     PFX "failed send status %d\n",
-				     wc.status);
-			target->qp_in_error = 1;
-			break;
-		}
-
-		iu = (struct srp_iu *) (uintptr_t) wc.wr_id;
-		list_add(&iu->list, &target->free_tx);
-	}
-=======
 /**
  * srp_tl_err_work() - handle a transport layer error
  * @work: Work structure embedded in an SRP target port.
@@ -3113,54 +2146,18 @@ static void srp_handle_qp_err(struct ib_cq *cq, struct ib_wc *wc,
 		queue_work(system_long_wq, &target->tl_err_work);
 	}
 	target->qp_in_error = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int srp_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scmnd)
 {
-<<<<<<< HEAD
-	struct srp_target_port *target = host_to_target(shost);
-	struct srp_request *req;
-=======
 	struct request *rq = scsi_cmd_to_rq(scmnd);
 	struct srp_target_port *target = host_to_target(shost);
 	struct srp_rdma_ch *ch;
 	struct srp_request *req = scsi_cmd_priv(scmnd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srp_iu *iu;
 	struct srp_cmd *cmd;
 	struct ib_device *dev;
 	unsigned long flags;
-<<<<<<< HEAD
-	int len;
-
-	if (target->state == SRP_TARGET_CONNECTING)
-		goto err;
-
-	if (target->state == SRP_TARGET_DEAD ||
-	    target->state == SRP_TARGET_REMOVED) {
-		scmnd->result = DID_BAD_TARGET << 16;
-		scmnd->scsi_done(scmnd);
-		return 0;
-	}
-
-	spin_lock_irqsave(&target->lock, flags);
-	iu = __srp_get_tx_iu(target, SRP_IU_CMD);
-	if (!iu)
-		goto err_unlock;
-
-	req = list_first_entry(&target->free_reqs, struct srp_request, list);
-	list_del(&req->list);
-	spin_unlock_irqrestore(&target->lock, flags);
-
-	dev = target->srp_host->srp_dev->dev;
-	ib_dma_sync_single_for_cpu(dev, iu->dma, target->max_iu_len,
-				   DMA_TO_DEVICE);
-
-	scmnd->result        = 0;
-	scmnd->host_scribble = (void *) req;
-
-=======
 	u32 tag;
 	int len, ret;
 
@@ -3183,16 +2180,10 @@ static int srp_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scmnd)
 	ib_dma_sync_single_for_cpu(dev, iu->dma, ch->max_it_iu_len,
 				   DMA_TO_DEVICE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd = iu->buf;
 	memset(cmd, 0, sizeof *cmd);
 
 	cmd->opcode = SRP_CMD;
-<<<<<<< HEAD
-	cmd->lun    = cpu_to_be64((u64) scmnd->device->lun << 48);
-	cmd->tag    = req->index;
-	memcpy(cmd->cdb, scmnd->cmnd, scmnd->cmd_len);
-=======
 	int_to_scsilun(scmnd->device->lun, &cmd->lun);
 	cmd->tag    = tag;
 	memcpy(cmd->cdb, scmnd->cmnd, scmnd->cmd_len);
@@ -3202,25 +2193,10 @@ static int srp_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scmnd)
 		if (WARN_ON_ONCE(cmd->add_cdb_len > SRP_MAX_ADD_CDB_LEN))
 			goto err_iu;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->scmnd    = scmnd;
 	req->cmd      = iu;
 
-<<<<<<< HEAD
-	len = srp_map_data(scmnd, target, req);
-	if (len < 0) {
-		shost_printk(KERN_ERR, target->scsi_host,
-			     PFX "Failed to map data\n");
-		goto err_iu;
-	}
-
-	ib_dma_sync_single_for_device(dev, iu->dma, target->max_iu_len,
-				      DMA_TO_DEVICE);
-
-	if (srp_post_send(target, iu, len)) {
-		shost_printk(KERN_ERR, target->scsi_host, PFX "Send failed\n");
-=======
 	len = srp_map_data(scmnd, ch, req);
 	if (len < 0) {
 		shost_printk(KERN_ERR, target->scsi_host,
@@ -3242,24 +2218,16 @@ static int srp_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scmnd)
 	if (srp_post_send(ch, iu, len)) {
 		shost_printk(KERN_ERR, target->scsi_host, PFX "Send failed\n");
 		scmnd->result = DID_ERROR << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap;
 	}
 
 	return 0;
 
 err_unmap:
-<<<<<<< HEAD
-	srp_unmap_data(scmnd, target, req);
-
-err_iu:
-	srp_put_tx_iu(target, iu, SRP_IU_CMD);
-=======
 	srp_unmap_data(scmnd, ch, req);
 
 err_iu:
 	srp_put_tx_iu(ch, iu, SRP_IU_CMD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Avoid that the loops that iterate over the request ring can
@@ -3267,38 +2235,6 @@ err_iu:
 	 */
 	req->scmnd = NULL;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&target->lock, flags);
-	list_add(&req->list, &target->free_reqs);
-
-err_unlock:
-	spin_unlock_irqrestore(&target->lock, flags);
-
-err:
-	return SCSI_MLQUEUE_HOST_BUSY;
-}
-
-static int srp_alloc_iu_bufs(struct srp_target_port *target)
-{
-	int i;
-
-	for (i = 0; i < SRP_RQ_SIZE; ++i) {
-		target->rx_ring[i] = srp_alloc_iu(target->srp_host,
-						  target->max_ti_iu_len,
-						  GFP_KERNEL, DMA_FROM_DEVICE);
-		if (!target->rx_ring[i])
-			goto err;
-	}
-
-	for (i = 0; i < SRP_SQ_SIZE; ++i) {
-		target->tx_ring[i] = srp_alloc_iu(target->srp_host,
-						  target->max_iu_len,
-						  GFP_KERNEL, DMA_TO_DEVICE);
-		if (!target->tx_ring[i])
-			goto err;
-
-		list_add(&target->tx_ring[i]->list, &target->free_tx);
-=======
 err:
 	if (scmnd->result) {
 		scsi_done(scmnd);
@@ -3344,23 +2280,11 @@ static int srp_alloc_iu_bufs(struct srp_rdma_ch *ch)
 			goto err;
 
 		list_add(&ch->tx_ring[i]->list, &ch->free_tx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
 err:
-<<<<<<< HEAD
-	for (i = 0; i < SRP_RQ_SIZE; ++i) {
-		srp_free_iu(target->srp_host, target->rx_ring[i]);
-		target->rx_ring[i] = NULL;
-	}
-
-	for (i = 0; i < SRP_SQ_SIZE; ++i) {
-		srp_free_iu(target->srp_host, target->tx_ring[i]);
-		target->tx_ring[i] = NULL;
-	}
-=======
 	for (i = 0; i < target->queue_size; ++i) {
 		srp_free_iu(target->srp_host, ch->rx_ring[i]);
 		srp_free_iu(target->srp_host, ch->tx_ring[i]);
@@ -3372,25 +2296,10 @@ err_no_ring:
 	ch->tx_ring = NULL;
 	kfree(ch->rx_ring);
 	ch->rx_ring = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-static void srp_cm_rep_handler(struct ib_cm_id *cm_id,
-			       struct srp_login_rsp *lrsp,
-			       struct srp_target_port *target)
-{
-	struct ib_qp_attr *qp_attr = NULL;
-	int attr_mask = 0;
-	int ret;
-	int i;
-
-	if (lrsp->opcode == SRP_LOGIN_RSP) {
-		target->max_ti_iu_len = be32_to_cpu(lrsp->max_ti_iu_len);
-		target->req_lim       = be32_to_cpu(lrsp->req_lim_delta);
-=======
 static uint32_t srp_compute_rq_tmo(struct ib_qp_attr *qp_attr, int attr_mask)
 {
 	uint64_t T_tr_ns, max_compl_time_ms;
@@ -3442,23 +2351,17 @@ static void srp_cm_rep_handler(struct ib_cm_id *cm_id,
 		if (ch->use_imm_data)
 			shost_printk(KERN_DEBUG, target->scsi_host,
 				     PFX "using immediate data\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Reserve credits for task management so we don't
 		 * bounce requests back to the SCSI mid-layer.
 		 */
 		target->scsi_host->can_queue
-<<<<<<< HEAD
-			= min(target->req_lim - SRP_TSK_MGMT_SQ_SIZE,
-			      target->scsi_host->can_queue);
-=======
 			= min(ch->req_lim - SRP_TSK_MGMT_SQ_SIZE,
 			      target->scsi_host->can_queue);
 		target->scsi_host->cmd_per_lun
 			= min_t(int, target->scsi_host->can_queue,
 				target->scsi_host->cmd_per_lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		shost_printk(KERN_WARNING, target->scsi_host,
 			     PFX "Unhandled RSP opcode %#x\n", lrsp->opcode);
@@ -3466,50 +2369,12 @@ static void srp_cm_rep_handler(struct ib_cm_id *cm_id,
 		goto error;
 	}
 
-<<<<<<< HEAD
-	if (!target->rx_ring[0]) {
-		ret = srp_alloc_iu_bufs(target);
-=======
 	if (!ch->rx_ring) {
 		ret = srp_alloc_iu_bufs(ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto error;
 	}
 
-<<<<<<< HEAD
-	ret = -ENOMEM;
-	qp_attr = kmalloc(sizeof *qp_attr, GFP_KERNEL);
-	if (!qp_attr)
-		goto error;
-
-	qp_attr->qp_state = IB_QPS_RTR;
-	ret = ib_cm_init_qp_attr(cm_id, qp_attr, &attr_mask);
-	if (ret)
-		goto error_free;
-
-	ret = ib_modify_qp(target->qp, qp_attr, attr_mask);
-	if (ret)
-		goto error_free;
-
-	for (i = 0; i < SRP_RQ_SIZE; i++) {
-		struct srp_iu *iu = target->rx_ring[i];
-		ret = srp_post_recv(target, iu);
-		if (ret)
-			goto error_free;
-	}
-
-	qp_attr->qp_state = IB_QPS_RTS;
-	ret = ib_cm_init_qp_attr(cm_id, qp_attr, &attr_mask);
-	if (ret)
-		goto error_free;
-
-	ret = ib_modify_qp(target->qp, qp_attr, attr_mask);
-	if (ret)
-		goto error_free;
-
-	ret = ib_send_cm_rtu(cm_id, NULL, 0);
-=======
 	for (i = 0; i < target->queue_size; i++) {
 		struct srp_iu *iu = ch->rx_ring[i];
 
@@ -3546,24 +2411,11 @@ static void srp_cm_rep_handler(struct ib_cm_id *cm_id,
 
 		ret = ib_send_cm_rtu(cm_id, NULL, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error_free:
 	kfree(qp_attr);
 
 error:
-<<<<<<< HEAD
-	target->status = ret;
-}
-
-static void srp_cm_rej_handler(struct ib_cm_id *cm_id,
-			       struct ib_cm_event *event,
-			       struct srp_target_port *target)
-{
-	struct Scsi_Host *shost = target->scsi_host;
-	struct ib_class_port_info *cpi;
-	int opcode;
-=======
 	ch->status = ret;
 }
 
@@ -3576,20 +2428,10 @@ static void srp_ib_cm_rej_handler(struct ib_cm_id *cm_id,
 	struct ib_class_port_info *cpi;
 	int opcode;
 	u16 dlid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event->param.rej_rcvd.reason) {
 	case IB_CM_REJ_PORT_CM_REDIRECT:
 		cpi = event->param.rej_rcvd.ari;
-<<<<<<< HEAD
-		target->path.dlid = cpi->redirect_lid;
-		target->path.pkey = cpi->redirect_pkey;
-		cm_id->remote_cm_qpn = be32_to_cpu(cpi->redirect_qp) & 0x00ffffff;
-		memcpy(target->path.dgid.raw, cpi->redirect_gid, 16);
-
-		target->status = target->path.dlid ?
-			SRP_DLID_REDIRECT : SRP_PORT_REDIRECT;
-=======
 		dlid = be16_to_cpu(cpi->redirect_lid);
 		sa_path_set_dlid(&ch->ib_cm.path, dlid);
 		ch->ib_cm.path.pkey = cpi->redirect_pkey;
@@ -3597,36 +2439,17 @@ static void srp_ib_cm_rej_handler(struct ib_cm_id *cm_id,
 		memcpy(ch->ib_cm.path.dgid.raw, cpi->redirect_gid, 16);
 
 		ch->status = dlid ? SRP_DLID_REDIRECT : SRP_PORT_REDIRECT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_REJ_PORT_REDIRECT:
 		if (srp_target_is_topspin(target)) {
-<<<<<<< HEAD
-=======
 			union ib_gid *dgid = &ch->ib_cm.path.dgid;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Topspin/Cisco SRP gateways incorrectly send
 			 * reject reason code 25 when they mean 24
 			 * (port redirect).
 			 */
-<<<<<<< HEAD
-			memcpy(target->path.dgid.raw,
-			       event->param.rej_rcvd.ari, 16);
-
-			shost_printk(KERN_DEBUG, shost,
-				     PFX "Topspin/Cisco redirect to target port GID %016llx%016llx\n",
-				     (unsigned long long) be64_to_cpu(target->path.dgid.global.subnet_prefix),
-				     (unsigned long long) be64_to_cpu(target->path.dgid.global.interface_id));
-
-			target->status = SRP_PORT_REDIRECT;
-		} else {
-			shost_printk(KERN_WARNING, shost,
-				     "  REJ reason: IB_CM_REJ_PORT_REDIRECT\n");
-			target->status = -ECONNRESET;
-=======
 			memcpy(dgid->raw, event->param.rej_rcvd.ari, 16);
 
 			shost_printk(KERN_DEBUG, shost,
@@ -3639,18 +2462,13 @@ static void srp_ib_cm_rej_handler(struct ib_cm_id *cm_id,
 			shost_printk(KERN_WARNING, shost,
 				     "  REJ reason: IB_CM_REJ_PORT_REDIRECT\n");
 			ch->status = -ECONNRESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case IB_CM_REJ_DUPLICATE_LOCAL_COMM_ID:
 		shost_printk(KERN_WARNING, shost,
 			    "  REJ reason: IB_CM_REJ_DUPLICATE_LOCAL_COMM_ID\n");
-<<<<<<< HEAD
-		target->status = -ECONNRESET;
-=======
 		ch->status = -ECONNRESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_REJ_CONSUMER_DEFINED:
@@ -3663,48 +2481,26 @@ static void srp_ib_cm_rej_handler(struct ib_cm_id *cm_id,
 				shost_printk(KERN_WARNING, shost,
 					     PFX "SRP_LOGIN_REJ: requested max_it_iu_len too large\n");
 			else
-<<<<<<< HEAD
-				shost_printk(KERN_WARNING, shost,
-					    PFX "SRP LOGIN REJECTED, reason 0x%08x\n", reason);
-=======
 				shost_printk(KERN_WARNING, shost, PFX
 					     "SRP LOGIN from %pI6 to %pI6 REJECTED, reason 0x%08x\n",
 					     target->sgid.raw,
 					     target->ib_cm.orig_dgid.raw,
 					     reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			shost_printk(KERN_WARNING, shost,
 				     "  REJ reason: IB_CM_REJ_CONSUMER_DEFINED,"
 				     " opcode 0x%02x\n", opcode);
-<<<<<<< HEAD
-		target->status = -ECONNRESET;
-=======
 		ch->status = -ECONNRESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_REJ_STALE_CONN:
 		shost_printk(KERN_WARNING, shost, "  REJ reason: stale connection\n");
-<<<<<<< HEAD
-		target->status = SRP_STALE_CONN;
-=======
 		ch->status = SRP_STALE_CONN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		shost_printk(KERN_WARNING, shost, "  REJ reason 0x%x\n",
 			     event->param.rej_rcvd.reason);
-<<<<<<< HEAD
-		target->status = -ECONNRESET;
-	}
-}
-
-static int srp_cm_handler(struct ib_cm_id *cm_id, struct ib_cm_event *event)
-{
-	struct srp_target_port *target = cm_id->context;
-=======
 		ch->status = -ECONNRESET;
 	}
 }
@@ -3714,7 +2510,6 @@ static int srp_ib_cm_handler(struct ib_cm_id *cm_id,
 {
 	struct srp_rdma_ch *ch = cm_id->context;
 	struct srp_target_port *target = ch->target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int comp = 0;
 
 	switch (event->event) {
@@ -3722,61 +2517,37 @@ static int srp_ib_cm_handler(struct ib_cm_id *cm_id,
 		shost_printk(KERN_DEBUG, target->scsi_host,
 			     PFX "Sending CM REQ failed\n");
 		comp = 1;
-<<<<<<< HEAD
-		target->status = -ECONNRESET;
-=======
 		ch->status = -ECONNRESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_REP_RECEIVED:
 		comp = 1;
-<<<<<<< HEAD
-		srp_cm_rep_handler(cm_id, event->private_data, target);
-=======
 		srp_cm_rep_handler(cm_id, event->private_data, ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_REJ_RECEIVED:
 		shost_printk(KERN_DEBUG, target->scsi_host, PFX "REJ received\n");
 		comp = 1;
 
-<<<<<<< HEAD
-		srp_cm_rej_handler(cm_id, event, target);
-=======
 		srp_ib_cm_rej_handler(cm_id, event, ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_DREQ_RECEIVED:
 		shost_printk(KERN_WARNING, target->scsi_host,
 			     PFX "DREQ received - connection closed\n");
-<<<<<<< HEAD
-		if (ib_send_cm_drep(cm_id, NULL, 0))
-			shost_printk(KERN_ERR, target->scsi_host,
-				     PFX "Sending CM DREP failed\n");
-=======
 		ch->connected = false;
 		if (ib_send_cm_drep(cm_id, NULL, 0))
 			shost_printk(KERN_ERR, target->scsi_host,
 				     PFX "Sending CM DREP failed\n");
 		queue_work(system_long_wq, &target->tl_err_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_TIMEWAIT_EXIT:
 		shost_printk(KERN_ERR, target->scsi_host,
 			     PFX "connection closed\n");
-<<<<<<< HEAD
-
-		comp = 1;
-		target->status = 0;
-=======
 		comp = 1;
 
 		ch->status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IB_CM_MRA_RECEIVED:
@@ -3791,36 +2562,11 @@ static int srp_ib_cm_handler(struct ib_cm_id *cm_id,
 	}
 
 	if (comp)
-<<<<<<< HEAD
-		complete(&target->done);
-=======
 		complete(&ch->done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int srp_send_tsk_mgmt(struct srp_target_port *target,
-			     u64 req_tag, unsigned int lun, u8 func)
-{
-	struct ib_device *dev = target->srp_host->srp_dev->dev;
-	struct srp_iu *iu;
-	struct srp_tsk_mgmt *tsk_mgmt;
-
-	if (target->state == SRP_TARGET_DEAD ||
-	    target->state == SRP_TARGET_REMOVED)
-		return -1;
-
-	init_completion(&target->tsk_mgmt_done);
-
-	spin_lock_irq(&target->lock);
-	iu = __srp_get_tx_iu(target, SRP_IU_TSK_MGMT);
-	spin_unlock_irq(&target->lock);
-
-	if (!iu)
-		return -1;
-=======
 static void srp_rdma_cm_rej_handler(struct srp_rdma_ch *ch,
 				    struct rdma_cm_event *event)
 {
@@ -3994,7 +2740,6 @@ static int srp_send_tsk_mgmt(struct srp_rdma_ch *ch, u64 req_tag, u64 lun,
 	}
 
 	iu->num_sge = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ib_dma_sync_single_for_cpu(dev, iu->dma, sizeof *tsk_mgmt,
 				   DMA_TO_DEVICE);
@@ -4002,25 +2747,6 @@ static int srp_send_tsk_mgmt(struct srp_rdma_ch *ch, u64 req_tag, u64 lun,
 	memset(tsk_mgmt, 0, sizeof *tsk_mgmt);
 
 	tsk_mgmt->opcode 	= SRP_TSK_MGMT;
-<<<<<<< HEAD
-	tsk_mgmt->lun		= cpu_to_be64((u64) lun << 48);
-	tsk_mgmt->tag		= req_tag | SRP_TAG_TSK_MGMT;
-	tsk_mgmt->tsk_mgmt_func = func;
-	tsk_mgmt->task_tag	= req_tag;
-
-	ib_dma_sync_single_for_device(dev, iu->dma, sizeof *tsk_mgmt,
-				      DMA_TO_DEVICE);
-	if (srp_post_send(target, iu, sizeof *tsk_mgmt)) {
-		srp_put_tx_iu(target, iu, SRP_IU_TSK_MGMT);
-		return -1;
-	}
-
-	if (!wait_for_completion_timeout(&target->tsk_mgmt_done,
-					 msecs_to_jiffies(SRP_ABORT_TIMEOUT_MS)))
-		return -1;
-
-	return 0;
-=======
 	int_to_scsilun(lun, &tsk_mgmt->lun);
 	tsk_mgmt->tsk_mgmt_func = func;
 	tsk_mgmt->task_tag	= req_tag;
@@ -4049,27 +2775,11 @@ static int srp_send_tsk_mgmt(struct srp_rdma_ch *ch, u64 req_tag, u64 lun,
 	WARN_ON_ONCE(res < 0);
 
 	return res > 0 ? 0 : -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int srp_abort(struct scsi_cmnd *scmnd)
 {
 	struct srp_target_port *target = host_to_target(scmnd->device->host);
-<<<<<<< HEAD
-	struct srp_request *req = (struct srp_request *) scmnd->host_scribble;
-
-	shost_printk(KERN_ERR, target->scsi_host, "SRP abort called\n");
-
-	if (!req || target->qp_in_error || !srp_claim_req(target, req, scmnd))
-		return FAILED;
-	srp_send_tsk_mgmt(target, req->index, scmnd->device->lun,
-			  SRP_TSK_ABORT_TASK);
-	srp_free_req(target, req, scmnd, 0);
-	scmnd->result = DID_ABORT << 16;
-	scmnd->scsi_done(scmnd);
-
-	return SUCCESS;
-=======
 	struct srp_request *req = scsi_cmd_priv(scmnd);
 	u32 tag;
 	u16 ch_idx;
@@ -4095,31 +2805,11 @@ static int srp_abort(struct scsi_cmnd *scmnd)
 		return FAST_IO_FAIL;
 
 	return FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int srp_reset_device(struct scsi_cmnd *scmnd)
 {
 	struct srp_target_port *target = host_to_target(scmnd->device->host);
-<<<<<<< HEAD
-	int i;
-
-	shost_printk(KERN_ERR, target->scsi_host, "SRP reset_device called\n");
-
-	if (target->qp_in_error)
-		return FAILED;
-	if (srp_send_tsk_mgmt(target, SRP_TAG_NO_REQ, scmnd->device->lun,
-			      SRP_TSK_LUN_RESET))
-		return FAILED;
-	if (target->tsk_mgmt_status)
-		return FAILED;
-
-	for (i = 0; i < SRP_CMD_SQ_SIZE; ++i) {
-		struct srp_request *req = &target->req_ring[i];
-		if (req->scmnd && req->scmnd->device == scmnd->device)
-			srp_reset_req(target, req);
-	}
-=======
 	struct srp_rdma_ch *ch;
 	u8 status;
 
@@ -4131,7 +2821,6 @@ static int srp_reset_device(struct scsi_cmnd *scmnd)
 		return FAILED;
 	if (status)
 		return FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return SUCCESS;
 }
@@ -4139,19 +2828,6 @@ static int srp_reset_device(struct scsi_cmnd *scmnd)
 static int srp_reset_host(struct scsi_cmnd *scmnd)
 {
 	struct srp_target_port *target = host_to_target(scmnd->device->host);
-<<<<<<< HEAD
-	int ret = FAILED;
-
-	shost_printk(KERN_ERR, target->scsi_host, PFX "SRP reset_host called\n");
-
-	if (!srp_reconnect_target(target))
-		ret = SUCCESS;
-
-	return ret;
-}
-
-static ssize_t show_id_ext(struct device *dev, struct device_attribute *attr,
-=======
 
 	shost_printk(KERN_ERR, target->scsi_host, PFX "SRP reset_host called\n");
 
@@ -4184,54 +2860,30 @@ static int srp_slave_configure(struct scsi_device *sdev)
 }
 
 static ssize_t id_ext_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "0x%016llx\n",
-		       (unsigned long long) be64_to_cpu(target->id_ext));
-}
-
-static ssize_t show_ioc_guid(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "0x%016llx\n", be64_to_cpu(target->id_ext));
 }
 
 static DEVICE_ATTR_RO(id_ext);
 
 static ssize_t ioc_guid_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "0x%016llx\n",
-		       (unsigned long long) be64_to_cpu(target->ioc_guid));
-}
-
-static ssize_t show_service_id(struct device *dev,
-=======
 	return sysfs_emit(buf, "0x%016llx\n", be64_to_cpu(target->ioc_guid));
 }
 
 static DEVICE_ATTR_RO(ioc_guid);
 
 static ssize_t service_id_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "0x%016llx\n",
-		       (unsigned long long) be64_to_cpu(target->service_id));
-}
-
-static ssize_t show_pkey(struct device *dev, struct device_attribute *attr,
-=======
 	if (target->using_rdma_cm)
 		return -ENOENT;
 	return sysfs_emit(buf, "0x%016llx\n",
@@ -4241,17 +2893,10 @@ static ssize_t show_pkey(struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR_RO(service_id);
 
 static ssize_t pkey_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "0x%04x\n", be16_to_cpu(target->path.pkey));
-}
-
-static ssize_t show_dgid(struct device *dev, struct device_attribute *attr,
-=======
 	if (target->using_rdma_cm)
 		return -ENOENT;
 
@@ -4261,33 +2906,10 @@ static ssize_t show_dgid(struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR_RO(pkey);
 
 static ssize_t sgid_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%pI6\n", target->path.dgid.raw);
-}
-
-static ssize_t show_orig_dgid(struct device *dev,
-			      struct device_attribute *attr, char *buf)
-{
-	struct srp_target_port *target = host_to_target(class_to_shost(dev));
-
-	return sprintf(buf, "%pI6\n", target->orig_dgid);
-}
-
-static ssize_t show_req_lim(struct device *dev,
-			    struct device_attribute *attr, char *buf)
-{
-	struct srp_target_port *target = host_to_target(class_to_shost(dev));
-
-	return sprintf(buf, "%d\n", target->req_lim);
-}
-
-static ssize_t show_zero_req_lim(struct device *dev,
-=======
 	return sysfs_emit(buf, "%pI6\n", target->sgid.raw);
 }
 
@@ -4338,51 +2960,30 @@ static ssize_t req_lim_show(struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR_RO(req_lim);
 
 static ssize_t zero_req_lim_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%d\n", target->zero_req_lim);
-}
-
-static ssize_t show_local_ib_port(struct device *dev,
-=======
 	return sysfs_emit(buf, "%d\n", target->zero_req_lim);
 }
 
 static DEVICE_ATTR_RO(zero_req_lim);
 
 static ssize_t local_ib_port_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%d\n", target->srp_host->port);
-}
-
-static ssize_t show_local_ib_device(struct device *dev,
-=======
 	return sysfs_emit(buf, "%u\n", target->srp_host->port);
 }
 
 static DEVICE_ATTR_RO(local_ib_port);
 
 static ssize_t local_ib_device_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", target->srp_host->srp_dev->dev->name);
-}
-
-static ssize_t show_cmd_sg_entries(struct device *dev,
-=======
 	return sysfs_emit(buf, "%s\n",
 			  dev_name(&target->srp_host->srp_dev->dev->dev));
 }
@@ -4410,17 +3011,10 @@ static ssize_t comp_vector_show(struct device *dev,
 static DEVICE_ATTR_RO(comp_vector);
 
 static ssize_t tl_retry_count_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%u\n", target->cmd_sg_cnt);
-}
-
-static ssize_t show_allow_ext_sg(struct device *dev,
-=======
 	return sysfs_emit(buf, "%d\n", target->tl_retry_count);
 }
 
@@ -4437,62 +3031,10 @@ static ssize_t cmd_sg_entries_show(struct device *dev,
 static DEVICE_ATTR_RO(cmd_sg_entries);
 
 static ssize_t allow_ext_sg_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr, char *buf)
 {
 	struct srp_target_port *target = host_to_target(class_to_shost(dev));
 
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", target->allow_ext_sg ? "true" : "false");
-}
-
-static DEVICE_ATTR(id_ext,	    S_IRUGO, show_id_ext,	   NULL);
-static DEVICE_ATTR(ioc_guid,	    S_IRUGO, show_ioc_guid,	   NULL);
-static DEVICE_ATTR(service_id,	    S_IRUGO, show_service_id,	   NULL);
-static DEVICE_ATTR(pkey,	    S_IRUGO, show_pkey,		   NULL);
-static DEVICE_ATTR(dgid,	    S_IRUGO, show_dgid,		   NULL);
-static DEVICE_ATTR(orig_dgid,	    S_IRUGO, show_orig_dgid,	   NULL);
-static DEVICE_ATTR(req_lim,         S_IRUGO, show_req_lim,         NULL);
-static DEVICE_ATTR(zero_req_lim,    S_IRUGO, show_zero_req_lim,	   NULL);
-static DEVICE_ATTR(local_ib_port,   S_IRUGO, show_local_ib_port,   NULL);
-static DEVICE_ATTR(local_ib_device, S_IRUGO, show_local_ib_device, NULL);
-static DEVICE_ATTR(cmd_sg_entries,  S_IRUGO, show_cmd_sg_entries,  NULL);
-static DEVICE_ATTR(allow_ext_sg,    S_IRUGO, show_allow_ext_sg,    NULL);
-
-static struct device_attribute *srp_host_attrs[] = {
-	&dev_attr_id_ext,
-	&dev_attr_ioc_guid,
-	&dev_attr_service_id,
-	&dev_attr_pkey,
-	&dev_attr_dgid,
-	&dev_attr_orig_dgid,
-	&dev_attr_req_lim,
-	&dev_attr_zero_req_lim,
-	&dev_attr_local_ib_port,
-	&dev_attr_local_ib_device,
-	&dev_attr_cmd_sg_entries,
-	&dev_attr_allow_ext_sg,
-	NULL
-};
-
-static struct scsi_host_template srp_template = {
-	.module				= THIS_MODULE,
-	.name				= "InfiniBand SRP initiator",
-	.proc_name			= DRV_NAME,
-	.info				= srp_target_info,
-	.queuecommand			= srp_queuecommand,
-	.eh_abort_handler		= srp_abort,
-	.eh_device_reset_handler	= srp_reset_device,
-	.eh_host_reset_handler		= srp_reset_host,
-	.sg_tablesize			= SRP_DEF_SG_TABLESIZE,
-	.can_queue			= SRP_CMD_SQ_SIZE,
-	.this_id			= -1,
-	.cmd_per_lun			= SRP_CMD_SQ_SIZE,
-	.use_clustering			= ENABLE_CLUSTERING,
-	.shost_attrs			= srp_host_attrs
-};
-
-=======
 	return sysfs_emit(buf, "%s\n", target->allow_ext_sg ? "true" : "false");
 }
 
@@ -4563,24 +3105,16 @@ static int srp_sdev_count(struct Scsi_Host *host)
  *    removal has been scheduled.
  * 0 and target->state != SRP_TARGET_REMOVED upon success.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int srp_add_target(struct srp_host *host, struct srp_target_port *target)
 {
 	struct srp_rport_identifiers ids;
 	struct srp_rport *rport;
 
-<<<<<<< HEAD
-	sprintf(target->target_name, "SRP.T10:%016llX",
-		 (unsigned long long) be64_to_cpu(target->id_ext));
-
-	if (scsi_add_host(target->scsi_host, host->srp_dev->dev->dma_device))
-=======
 	target->state = SRP_TARGET_SCANNING;
 	sprintf(target->target_name, "SRP.T10:%016llX",
 		be64_to_cpu(target->id_ext));
 
 	if (scsi_add_host(target->scsi_host, host->srp_dev->dev->dev.parent))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	memcpy(ids.port_id, &target->id_ext, 8);
@@ -4592,23 +3126,13 @@ static int srp_add_target(struct srp_host *host, struct srp_target_port *target)
 		return PTR_ERR(rport);
 	}
 
-<<<<<<< HEAD
-=======
 	rport->lld_data = target;
 	target->rport = rport;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&host->target_lock);
 	list_add_tail(&target->list, &host->target_list);
 	spin_unlock(&host->target_lock);
 
-<<<<<<< HEAD
-	target->state = SRP_TARGET_LIVE;
-
-	scsi_scan_target(&target->scsi_host->shost_gendev,
-			 0, target->scsi_id, SCAN_WILD_CARD, 0);
-
-=======
 	scsi_scan_target(&target->scsi_host->shost_gendev,
 			 0, target->scsi_id, SCAN_WILD_CARD, SCSI_SCAN_INITIAL);
 
@@ -4630,7 +3154,6 @@ static int srp_add_target(struct srp_host *host, struct srp_target_port *target)
 	spin_unlock_irq(&target->lock);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4639,16 +3162,6 @@ static void srp_release_dev(struct device *dev)
 	struct srp_host *host =
 		container_of(dev, struct srp_host, dev);
 
-<<<<<<< HEAD
-	complete(&host->released);
-}
-
-static struct class srp_class = {
-	.name    = "infiniband_srp",
-	.dev_release = srp_release_dev
-};
-
-=======
 	kfree(host);
 }
 
@@ -4694,18 +3207,14 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Target ports are added by writing
  *
  *     id_ext=<SRP ID ext>,ioc_guid=<SRP IOC GUID>,dgid=<dest GID>,
  *     pkey=<P_Key>,service_id=<service ID>
-<<<<<<< HEAD
-=======
  * or
  *     id_ext=<SRP ID ext>,ioc_guid=<SRP IOC GUID>,
  *     [src=<IPv4 address>,]dest=<IPv4 address>:<port number>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * to the add_target sysfs attribute.
  */
@@ -4723,13 +3232,6 @@ enum {
 	SRP_OPT_CMD_SG_ENTRIES	= 1 << 9,
 	SRP_OPT_ALLOW_EXT_SG	= 1 << 10,
 	SRP_OPT_SG_TABLESIZE	= 1 << 11,
-<<<<<<< HEAD
-	SRP_OPT_ALL		= (SRP_OPT_ID_EXT	|
-				   SRP_OPT_IOC_GUID	|
-				   SRP_OPT_DGID		|
-				   SRP_OPT_PKEY		|
-				   SRP_OPT_SERVICE_ID),
-=======
 	SRP_OPT_COMP_VECTOR	= 1 << 12,
 	SRP_OPT_TL_RETRY_COUNT	= 1 << 13,
 	SRP_OPT_QUEUE_SIZE	= 1 << 14,
@@ -4749,7 +3251,6 @@ static unsigned int srp_opt_mandatory[] = {
 	SRP_OPT_ID_EXT		|
 	SRP_OPT_IOC_GUID	|
 	SRP_OPT_IP_DEST,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const match_table_t srp_opt_tokens = {
@@ -4760,26 +3261,12 @@ static const match_table_t srp_opt_tokens = {
 	{ SRP_OPT_SERVICE_ID,		"service_id=%s"		},
 	{ SRP_OPT_MAX_SECT,		"max_sect=%d" 		},
 	{ SRP_OPT_MAX_CMD_PER_LUN,	"max_cmd_per_lun=%d" 	},
-<<<<<<< HEAD
-=======
 	{ SRP_OPT_TARGET_CAN_QUEUE,	"target_can_queue=%d"	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ SRP_OPT_IO_CLASS,		"io_class=%x"		},
 	{ SRP_OPT_INITIATOR_EXT,	"initiator_ext=%s"	},
 	{ SRP_OPT_CMD_SG_ENTRIES,	"cmd_sg_entries=%u"	},
 	{ SRP_OPT_ALLOW_EXT_SG,		"allow_ext_sg=%u"	},
 	{ SRP_OPT_SG_TABLESIZE,		"sg_tablesize=%u"	},
-<<<<<<< HEAD
-	{ SRP_OPT_ERR,			NULL 			}
-};
-
-static int srp_parse_options(const char *buf, struct srp_target_port *target)
-{
-	char *options, *sep_opt;
-	char *p;
-	char dgid[3];
-	substring_t args[MAX_OPT_ARGS];
-=======
 	{ SRP_OPT_COMP_VECTOR,		"comp_vector=%u"	},
 	{ SRP_OPT_TL_RETRY_COUNT,	"tl_retry_count=%u"	},
 	{ SRP_OPT_QUEUE_SIZE,		"queue_size=%d"		},
@@ -4839,7 +3326,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 	substring_t args[MAX_OPT_ARGS];
 	unsigned long long ull;
 	bool has_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int opt_mask = 0;
 	int token;
 	int ret = -EINVAL;
@@ -4850,11 +3336,7 @@ static int srp_parse_options(struct net *net, const char *buf,
 		return -ENOMEM;
 
 	sep_opt = options;
-<<<<<<< HEAD
-	while ((p = strsep(&sep_opt, ",")) != NULL) {
-=======
 	while ((p = strsep(&sep_opt, ",\n")) != NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*p)
 			continue;
 
@@ -4868,9 +3350,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				ret = -ENOMEM;
 				goto out;
 			}
-<<<<<<< HEAD
-			target->id_ext = cpu_to_be64(simple_strtoull(p, NULL, 16));
-=======
 			ret = kstrtoull(p, 16, &ull);
 			if (ret) {
 				pr_warn("invalid id_ext parameter '%s'\n", p);
@@ -4878,7 +3357,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 			target->id_ext = cpu_to_be64(ull);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(p);
 			break;
 
@@ -4888,9 +3366,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				ret = -ENOMEM;
 				goto out;
 			}
-<<<<<<< HEAD
-			target->ioc_guid = cpu_to_be64(simple_strtoull(p, NULL, 16));
-=======
 			ret = kstrtoull(p, 16, &ull);
 			if (ret) {
 				pr_warn("invalid ioc_guid parameter '%s'\n", p);
@@ -4898,7 +3373,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 			target->ioc_guid = cpu_to_be64(ull);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(p);
 			break;
 
@@ -4914,22 +3388,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 
-<<<<<<< HEAD
-			for (i = 0; i < 16; ++i) {
-				strlcpy(dgid, p + i * 2, 3);
-				target->path.dgid.raw[i] = simple_strtoul(dgid, NULL, 16);
-			}
-			kfree(p);
-			memcpy(target->orig_dgid, target->path.dgid.raw, 16);
-			break;
-
-		case SRP_OPT_PKEY:
-			if (match_hex(args, &token)) {
-				pr_warn("bad P_Key parameter '%s'\n", p);
-				goto out;
-			}
-			target->path.pkey = cpu_to_be16(token);
-=======
 			ret = hex2bin(target->ib_cm.orig_dgid.raw, p, 16);
 			kfree(p);
 			if (ret < 0)
@@ -4943,7 +3401,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 			target->ib_cm.pkey = cpu_to_be16(token);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case SRP_OPT_SERVICE_ID:
@@ -4952,10 +3409,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				ret = -ENOMEM;
 				goto out;
 			}
-<<<<<<< HEAD
-			target->service_id = cpu_to_be64(simple_strtoull(p, NULL, 16));
-			target->path.service_id = target->service_id;
-=======
 			ret = kstrtoull(p, 16, &ull);
 			if (ret) {
 				pr_warn("bad service_id parameter '%s'\n", p);
@@ -4999,36 +3452,18 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 			target->using_rdma_cm = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(p);
 			break;
 
 		case SRP_OPT_MAX_SECT:
-<<<<<<< HEAD
-			if (match_int(args, &token)) {
-=======
 			ret = match_int(args, &token);
 			if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_warn("bad max sect parameter '%s'\n", p);
 				goto out;
 			}
 			target->scsi_host->max_sectors = token;
 			break;
 
-<<<<<<< HEAD
-		case SRP_OPT_MAX_CMD_PER_LUN:
-			if (match_int(args, &token)) {
-				pr_warn("bad max cmd_per_lun parameter '%s'\n",
-					p);
-				goto out;
-			}
-			target->scsi_host->cmd_per_lun = min(token, SRP_CMD_SQ_SIZE);
-			break;
-
-		case SRP_OPT_IO_CLASS:
-			if (match_hex(args, &token)) {
-=======
 		case SRP_OPT_QUEUE_SIZE:
 			ret = match_int(args, &token);
 			if (ret) {
@@ -5083,7 +3518,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 		case SRP_OPT_IO_CLASS:
 			ret = match_hex(args, &token);
 			if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_warn("bad IO class parameter '%s'\n", p);
 				goto out;
 			}
@@ -5092,10 +3526,7 @@ static int srp_parse_options(struct net *net, const char *buf,
 				pr_warn("unknown IO class parameter value %x specified (use %x or %x).\n",
 					token, SRP_REV10_IB_IO_CLASS,
 					SRP_REV16A_IB_IO_CLASS);
-<<<<<<< HEAD
-=======
 				ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 			target->io_class = token;
@@ -5107,9 +3538,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 				ret = -ENOMEM;
 				goto out;
 			}
-<<<<<<< HEAD
-			target->initiator_ext = cpu_to_be64(simple_strtoull(p, NULL, 16));
-=======
 			ret = kstrtoull(p, 16, &ull);
 			if (ret) {
 				pr_warn("bad initiator_ext value '%s'\n", p);
@@ -5117,16 +3545,10 @@ static int srp_parse_options(struct net *net, const char *buf,
 				goto out;
 			}
 			target->initiator_ext = cpu_to_be64(ull);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(p);
 			break;
 
 		case SRP_OPT_CMD_SG_ENTRIES:
-<<<<<<< HEAD
-			if (match_int(args, &token) || token < 1 || token > 255) {
-				pr_warn("bad max cmd_sg_entries parameter '%s'\n",
-					p);
-=======
 			ret = match_int(args, &token);
 			if (ret) {
 				pr_warn("match_int() failed for max cmd_sg_entries parameter '%s', Error %d\n",
@@ -5137,19 +3559,14 @@ static int srp_parse_options(struct net *net, const char *buf,
 				pr_warn("bad max cmd_sg_entries parameter '%s'\n",
 					p);
 				ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 			target->cmd_sg_cnt = token;
 			break;
 
 		case SRP_OPT_ALLOW_EXT_SG:
-<<<<<<< HEAD
-			if (match_int(args, &token)) {
-=======
 			ret = match_int(args, &token);
 			if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_warn("bad allow_ext_sg parameter '%s'\n", p);
 				goto out;
 			}
@@ -5157,12 +3574,6 @@ static int srp_parse_options(struct net *net, const char *buf,
 			break;
 
 		case SRP_OPT_SG_TABLESIZE:
-<<<<<<< HEAD
-			if (match_int(args, &token) || token < 1 ||
-					token > SCSI_MAX_SG_CHAIN_SEGMENTS) {
-				pr_warn("bad max sg_tablesize parameter '%s'\n",
-					p);
-=======
 			ret = match_int(args, &token);
 			if (ret) {
 				pr_warn("match_int() failed for max sg_tablesize parameter '%s', Error %d\n",
@@ -5173,17 +3584,11 @@ static int srp_parse_options(struct net *net, const char *buf,
 				pr_warn("bad max sg_tablesize parameter '%s'\n",
 					p);
 				ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 			target->sg_tablesize = token;
 			break;
 
-<<<<<<< HEAD
-		default:
-			pr_warn("unknown parameter or missing value '%s' in target creation request\n",
-				p);
-=======
 		case SRP_OPT_COMP_VECTOR:
 			ret = match_int(args, &token);
 			if (ret) {
@@ -5249,21 +3654,10 @@ static int srp_parse_options(struct net *net, const char *buf,
 			pr_warn("unknown parameter or missing value '%s' in target creation request\n",
 				p);
 			ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
 
-<<<<<<< HEAD
-	if ((opt_mask & SRP_OPT_ALL) == SRP_OPT_ALL)
-		ret = 0;
-	else
-		for (i = 0; i < ARRAY_SIZE(srp_opt_tokens); ++i)
-			if ((srp_opt_tokens[i].token & SRP_OPT_ALL) &&
-			    !(srp_opt_tokens[i].token & opt_mask))
-				pr_warn("target creation request is missing parameter '%s'\n",
-					srp_opt_tokens[i].pattern);
-=======
 	for (i = 0; i < ARRAY_SIZE(srp_opt_mandatory); i++) {
 		if ((opt_mask & srp_opt_mandatory[i]) == srp_opt_mandatory[i]) {
 			ret = 0;
@@ -5278,32 +3672,20 @@ static int srp_parse_options(struct net *net, const char *buf,
 		pr_warn("cmd_per_lun = %d > queue_size = %d\n",
 			target->scsi_host->cmd_per_lun,
 			target->scsi_host->can_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	kfree(options);
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t srp_create_target(struct device *dev,
-				 struct device_attribute *attr,
-				 const char *buf, size_t count)
-=======
 static ssize_t add_target_store(struct device *dev,
 				struct device_attribute *attr, const char *buf,
 				size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct srp_host *host =
 		container_of(dev, struct srp_host, dev);
 	struct Scsi_Host *target_host;
 	struct srp_target_port *target;
-<<<<<<< HEAD
-	struct ib_device *ibdev = host->srp_dev->dev;
-	dma_addr_t dma_addr;
-	int i, ret;
-=======
 	struct srp_rdma_ch *ch;
 	struct srp_device *srp_dev = host->srp_dev;
 	struct ib_device *ibdev = srp_dev->dev;
@@ -5311,7 +3693,6 @@ static ssize_t add_target_store(struct device *dev,
 	unsigned int max_sectors_per_mr, mr_per_cmd = 0;
 	bool multich = false;
 	uint32_t max_iu_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	target_host = scsi_host_alloc(&srp_template,
 				      sizeof (struct srp_target_port));
@@ -5321,91 +3702,6 @@ static ssize_t add_target_store(struct device *dev,
 	target_host->transportt  = ib_srp_transport_template;
 	target_host->max_channel = 0;
 	target_host->max_id      = 1;
-<<<<<<< HEAD
-	target_host->max_lun     = SRP_MAX_LUN;
-	target_host->max_cmd_len = sizeof ((struct srp_cmd *) (void *) 0L)->cdb;
-
-	target = host_to_target(target_host);
-
-	target->io_class	= SRP_REV16A_IB_IO_CLASS;
-	target->scsi_host	= target_host;
-	target->srp_host	= host;
-	target->lkey		= host->srp_dev->mr->lkey;
-	target->rkey		= host->srp_dev->mr->rkey;
-	target->cmd_sg_cnt	= cmd_sg_entries;
-	target->sg_tablesize	= indirect_sg_entries ? : cmd_sg_entries;
-	target->allow_ext_sg	= allow_ext_sg;
-
-	ret = srp_parse_options(buf, target);
-	if (ret)
-		goto err;
-
-	if (!host->srp_dev->fmr_pool && !target->allow_ext_sg &&
-				target->cmd_sg_cnt < target->sg_tablesize) {
-		pr_warn("No FMR pool and no external indirect descriptors, limiting sg_tablesize to cmd_sg_cnt\n");
-		target->sg_tablesize = target->cmd_sg_cnt;
-	}
-
-	target_host->sg_tablesize = target->sg_tablesize;
-	target->indirect_size = target->sg_tablesize *
-				sizeof (struct srp_direct_buf);
-	target->max_iu_len = sizeof (struct srp_cmd) +
-			     sizeof (struct srp_indirect_buf) +
-			     target->cmd_sg_cnt * sizeof (struct srp_direct_buf);
-
-	spin_lock_init(&target->lock);
-	INIT_LIST_HEAD(&target->free_tx);
-	INIT_LIST_HEAD(&target->free_reqs);
-	for (i = 0; i < SRP_CMD_SQ_SIZE; ++i) {
-		struct srp_request *req = &target->req_ring[i];
-
-		req->fmr_list = kmalloc(target->cmd_sg_cnt * sizeof (void *),
-					GFP_KERNEL);
-		req->map_page = kmalloc(SRP_FMR_SIZE * sizeof (void *),
-					GFP_KERNEL);
-		req->indirect_desc = kmalloc(target->indirect_size, GFP_KERNEL);
-		if (!req->fmr_list || !req->map_page || !req->indirect_desc)
-			goto err_free_mem;
-
-		dma_addr = ib_dma_map_single(ibdev, req->indirect_desc,
-					     target->indirect_size,
-					     DMA_TO_DEVICE);
-		if (ib_dma_mapping_error(ibdev, dma_addr))
-			goto err_free_mem;
-
-		req->indirect_dma_addr = dma_addr;
-		req->index = i;
-		list_add_tail(&req->list, &target->free_reqs);
-	}
-
-	ib_query_gid(ibdev, host->port, 0, &target->path.sgid);
-
-	shost_printk(KERN_DEBUG, target->scsi_host, PFX
-		     "new target: id_ext %016llx ioc_guid %016llx pkey %04x "
-		     "service_id %016llx dgid %pI6\n",
-	       (unsigned long long) be64_to_cpu(target->id_ext),
-	       (unsigned long long) be64_to_cpu(target->ioc_guid),
-	       be16_to_cpu(target->path.pkey),
-	       (unsigned long long) be64_to_cpu(target->service_id),
-	       target->path.dgid.raw);
-
-	ret = srp_create_target_ib(target);
-	if (ret)
-		goto err_free_mem;
-
-	ret = srp_new_cm_id(target);
-	if (ret)
-		goto err_free_ib;
-
-	target->qp_in_error = 0;
-	ret = srp_connect_target(target);
-	if (ret) {
-		shost_printk(KERN_ERR, target->scsi_host,
-			     PFX "Connection failed\n");
-		goto err_cm_id;
-	}
-
-=======
 	target_host->max_lun     = -1LL;
 	target_host->max_cmd_len = sizeof ((struct srp_cmd *) (void *) 0L)->cdb;
 	target_host->max_segment_size = ib_dma_max_seg_size(ibdev);
@@ -5571,14 +3867,10 @@ static ssize_t add_target_store(struct device *dev,
 connected:
 	target->scsi_host->nr_hw_queues = target->ch_count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = srp_add_target(host, target);
 	if (ret)
 		goto err_disconnect;
 
-<<<<<<< HEAD
-	return count;
-=======
 	if (target->state != SRP_TARGET_REMOVED) {
 		if (target->using_rdma_cm) {
 			shost_printk(KERN_DEBUG, target->scsi_host, PFX
@@ -5617,31 +3909,10 @@ put:
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_disconnect:
 	srp_disconnect_target(target);
 
-<<<<<<< HEAD
-err_cm_id:
-	ib_destroy_cm_id(target->cm_id);
-
-err_free_ib:
-	srp_free_target_ib(target);
-
-err_free_mem:
-	srp_free_req_data(target);
-
-err:
-	scsi_host_put(target_host);
-
-	return ret;
-}
-
-static DEVICE_ATTR(add_target, S_IWUSR, NULL, srp_create_target);
-
-static ssize_t show_ibdev(struct device *dev, struct device_attribute *attr,
-=======
 free_ch:
 	for (i = 0; i < target->ch_count; i++) {
 		ch = &target->ch[i];
@@ -5655,38 +3926,20 @@ free_ch:
 static DEVICE_ATTR_WO(add_target);
 
 static ssize_t ibdev_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	struct srp_host *host = container_of(dev, struct srp_host, dev);
 
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", host->srp_dev->dev->name);
-}
-
-static DEVICE_ATTR(ibdev, S_IRUGO, show_ibdev, NULL);
-
-static ssize_t show_port(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "%s\n", dev_name(&host->srp_dev->dev->dev));
 }
 
 static DEVICE_ATTR_RO(ibdev);
 
 static ssize_t port_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct srp_host *host = container_of(dev, struct srp_host, dev);
 
-<<<<<<< HEAD
-	return sprintf(buf, "%d\n", host->port);
-}
-
-static DEVICE_ATTR(port, S_IRUGO, show_port, NULL);
-
-static struct srp_host *srp_add_port(struct srp_device *device, u8 port)
-=======
 	return sysfs_emit(buf, "%u\n", host->port);
 }
 
@@ -5700,7 +3953,6 @@ static struct attribute *srp_class_attrs[] = {
 };
 
 static struct srp_host *srp_add_port(struct srp_device *device, u32 port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct srp_host *host;
 
@@ -5710,56 +3962,6 @@ static struct srp_host *srp_add_port(struct srp_device *device, u32 port)
 
 	INIT_LIST_HEAD(&host->target_list);
 	spin_lock_init(&host->target_lock);
-<<<<<<< HEAD
-	init_completion(&host->released);
-	host->srp_dev = device;
-	host->port = port;
-
-	host->dev.class = &srp_class;
-	host->dev.parent = device->dev->dma_device;
-	dev_set_name(&host->dev, "srp-%s-%d", device->dev->name, port);
-
-	if (device_register(&host->dev))
-		goto free_host;
-	if (device_create_file(&host->dev, &dev_attr_add_target))
-		goto err_class;
-	if (device_create_file(&host->dev, &dev_attr_ibdev))
-		goto err_class;
-	if (device_create_file(&host->dev, &dev_attr_port))
-		goto err_class;
-
-	return host;
-
-err_class:
-	device_unregister(&host->dev);
-
-free_host:
-	kfree(host);
-
-	return NULL;
-}
-
-static void srp_add_one(struct ib_device *device)
-{
-	struct srp_device *srp_dev;
-	struct ib_device_attr *dev_attr;
-	struct ib_fmr_pool_param fmr_param;
-	struct srp_host *host;
-	int max_pages_per_fmr, fmr_page_shift, s, e, p;
-
-	dev_attr = kmalloc(sizeof *dev_attr, GFP_KERNEL);
-	if (!dev_attr)
-		return;
-
-	if (ib_query_device(device, dev_attr)) {
-		pr_warn("Query device failed for %s\n", device->name);
-		goto free_attr;
-	}
-
-	srp_dev = kmalloc(sizeof *srp_dev, GFP_KERNEL);
-	if (!srp_dev)
-		goto free_attr;
-=======
 	mutex_init(&host->add_target_mutex);
 	host->srp_dev = device;
 	host->port = port;
@@ -5808,19 +4010,12 @@ static int srp_add_one(struct ib_device *device)
 	srp_dev = kzalloc(sizeof(*srp_dev), GFP_KERNEL);
 	if (!srp_dev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Use the smallest page size supported by the HCA, down to a
 	 * minimum of 4096 bytes. We're unlikely to build large sglists
 	 * out of smaller entries.
 	 */
-<<<<<<< HEAD
-	fmr_page_shift		= max(12, ffs(dev_attr->page_size_cap) - 1);
-	srp_dev->fmr_page_size	= 1 << fmr_page_shift;
-	srp_dev->fmr_page_mask	= ~((u64) srp_dev->fmr_page_size - 1);
-	srp_dev->fmr_max_size	= srp_dev->fmr_page_size * SRP_FMR_SIZE;
-=======
 	mr_page_shift		= max(12, ffs(attr->page_size_cap) - 1);
 	srp_dev->mr_page_size	= 1 << mr_page_shift;
 	srp_dev->mr_page_mask	= ~((u64) srp_dev->mr_page_size - 1);
@@ -5854,54 +4049,10 @@ static int srp_add_one(struct ib_device *device)
 		 dev_name(&device->dev), mr_page_shift, attr->max_mr_size,
 		 attr->max_fast_reg_page_list_len,
 		 srp_dev->max_pages_per_mr, srp_dev->mr_max_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&srp_dev->dev_list);
 
 	srp_dev->dev = device;
-<<<<<<< HEAD
-	srp_dev->pd  = ib_alloc_pd(device);
-	if (IS_ERR(srp_dev->pd))
-		goto free_dev;
-
-	srp_dev->mr = ib_get_dma_mr(srp_dev->pd,
-				    IB_ACCESS_LOCAL_WRITE |
-				    IB_ACCESS_REMOTE_READ |
-				    IB_ACCESS_REMOTE_WRITE);
-	if (IS_ERR(srp_dev->mr))
-		goto err_pd;
-
-	for (max_pages_per_fmr = SRP_FMR_SIZE;
-			max_pages_per_fmr >= SRP_FMR_MIN_SIZE;
-			max_pages_per_fmr /= 2, srp_dev->fmr_max_size /= 2) {
-		memset(&fmr_param, 0, sizeof fmr_param);
-		fmr_param.pool_size	    = SRP_FMR_POOL_SIZE;
-		fmr_param.dirty_watermark   = SRP_FMR_DIRTY_SIZE;
-		fmr_param.cache		    = 1;
-		fmr_param.max_pages_per_fmr = max_pages_per_fmr;
-		fmr_param.page_shift	    = fmr_page_shift;
-		fmr_param.access	    = (IB_ACCESS_LOCAL_WRITE |
-					       IB_ACCESS_REMOTE_WRITE |
-					       IB_ACCESS_REMOTE_READ);
-
-		srp_dev->fmr_pool = ib_create_fmr_pool(srp_dev->pd, &fmr_param);
-		if (!IS_ERR(srp_dev->fmr_pool))
-			break;
-	}
-
-	if (IS_ERR(srp_dev->fmr_pool))
-		srp_dev->fmr_pool = NULL;
-
-	if (device->node_type == RDMA_NODE_IB_SWITCH) {
-		s = 0;
-		e = 0;
-	} else {
-		s = 1;
-		e = device->phys_port_cnt;
-	}
-
-	for (p = s; p <= e; ++p) {
-=======
 	srp_dev->pd  = ib_alloc_pd(device, flags);
 	if (IS_ERR(srp_dev->pd)) {
 		int ret = PTR_ERR(srp_dev->pd);
@@ -5916,82 +4067,12 @@ static int srp_add_one(struct ib_device *device)
 	}
 
 	rdma_for_each_port (device, p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host = srp_add_port(srp_dev, p);
 		if (host)
 			list_add_tail(&host->list, &srp_dev->dev_list);
 	}
 
 	ib_set_client_data(device, &srp_client, srp_dev);
-<<<<<<< HEAD
-
-	goto free_attr;
-
-err_pd:
-	ib_dealloc_pd(srp_dev->pd);
-
-free_dev:
-	kfree(srp_dev);
-
-free_attr:
-	kfree(dev_attr);
-}
-
-static void srp_remove_one(struct ib_device *device)
-{
-	struct srp_device *srp_dev;
-	struct srp_host *host, *tmp_host;
-	LIST_HEAD(target_list);
-	struct srp_target_port *target, *tmp_target;
-
-	srp_dev = ib_get_client_data(device, &srp_client);
-
-	list_for_each_entry_safe(host, tmp_host, &srp_dev->dev_list, list) {
-		device_unregister(&host->dev);
-		/*
-		 * Wait for the sysfs entry to go away, so that no new
-		 * target ports can be created.
-		 */
-		wait_for_completion(&host->released);
-
-		/*
-		 * Mark all target ports as removed, so we stop queueing
-		 * commands and don't try to reconnect.
-		 */
-		spin_lock(&host->target_lock);
-		list_for_each_entry(target, &host->target_list, list) {
-			spin_lock_irq(&target->lock);
-			target->state = SRP_TARGET_REMOVED;
-			spin_unlock_irq(&target->lock);
-		}
-		spin_unlock(&host->target_lock);
-
-		/*
-		 * Wait for any reconnection tasks that may have
-		 * started before we marked our target ports as
-		 * removed, and any target port removal tasks.
-		 */
-		flush_workqueue(ib_wq);
-
-		list_for_each_entry_safe(target, tmp_target,
-					 &host->target_list, list) {
-			srp_del_scsi_host_attr(target->scsi_host);
-			srp_remove_host(target->scsi_host);
-			scsi_remove_host(target->scsi_host);
-			srp_disconnect_target(target);
-			ib_destroy_cm_id(target->cm_id);
-			srp_free_target_ib(target);
-			srp_free_req_data(target);
-			scsi_host_put(target->scsi_host);
-		}
-
-		kfree(host);
-	}
-
-	if (srp_dev->fmr_pool)
-		ib_destroy_fmr_pool(srp_dev->fmr_pool);
-	ib_dereg_mr(srp_dev->mr);
-=======
 	return 0;
 }
 
@@ -6029,15 +4110,12 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
 		put_device(&host->dev);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_dealloc_pd(srp_dev->pd);
 
 	kfree(srp_dev);
 }
 
 static struct srp_function_template ib_srp_transport_functions = {
-<<<<<<< HEAD
-=======
 	.has_rport_state	 = true,
 	.reset_timer_if_blocked	 = true,
 	.reconnect_delay	 = &srp_reconnect_delay,
@@ -6046,16 +4124,12 @@ static struct srp_function_template ib_srp_transport_functions = {
 	.reconnect		 = srp_rport_reconnect,
 	.rport_delete		 = srp_rport_delete,
 	.terminate_rport_io	 = srp_terminate_io,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init srp_init_module(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(FIELD_SIZEOF(struct ib_wc, wr_id) < sizeof(void *));
-=======
 	BUILD_BUG_ON(sizeof(struct srp_aer_req) != 36);
 	BUILD_BUG_ON(sizeof(struct srp_cmd) != 48);
 	BUILD_BUG_ON(sizeof(struct srp_imm_buf) != 4);
@@ -6063,7 +4137,6 @@ static int __init srp_init_module(void)
 	BUILD_BUG_ON(sizeof(struct srp_login_req) != 64);
 	BUILD_BUG_ON(sizeof(struct srp_login_req_rdma) != 56);
 	BUILD_BUG_ON(sizeof(struct srp_rsp) != 36);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (srp_sg_tablesize) {
 		pr_warn("srp_sg_tablesize is deprecated, please use cmd_sg_entries\n");
@@ -6087,12 +4160,6 @@ static int __init srp_init_module(void)
 		indirect_sg_entries = cmd_sg_entries;
 	}
 
-<<<<<<< HEAD
-	ib_srp_transport_template =
-		srp_attach_transport(&ib_srp_transport_functions);
-	if (!ib_srp_transport_template)
-		return -ENOMEM;
-=======
 	if (indirect_sg_entries > SG_MAX_SEGMENTS) {
 		pr_warn("Clamping indirect_sg_entries to %u\n",
 			SG_MAX_SEGMENTS);
@@ -6110,17 +4177,11 @@ static int __init srp_init_module(void)
 		srp_attach_transport(&ib_srp_transport_functions);
 	if (!ib_srp_transport_template)
 		goto destroy_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = class_register(&srp_class);
 	if (ret) {
 		pr_err("couldn't register class infiniband_srp\n");
-<<<<<<< HEAD
-		srp_release_transport(ib_srp_transport_template);
-		return ret;
-=======
 		goto release_tr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ib_sa_register_client(&srp_sa_client);
@@ -6128,15 +4189,6 @@ static int __init srp_init_module(void)
 	ret = ib_register_client(&srp_client);
 	if (ret) {
 		pr_err("couldn't register IB client\n");
-<<<<<<< HEAD
-		srp_release_transport(ib_srp_transport_template);
-		ib_sa_unregister_client(&srp_sa_client);
-		class_unregister(&srp_class);
-		return ret;
-	}
-
-	return 0;
-=======
 		goto unreg_sa;
 	}
 
@@ -6153,7 +4205,6 @@ release_tr:
 destroy_wq:
 	destroy_workqueue(srp_remove_wq);
 	goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit srp_cleanup_module(void)
@@ -6162,10 +4213,7 @@ static void __exit srp_cleanup_module(void)
 	ib_sa_unregister_client(&srp_sa_client);
 	class_unregister(&srp_class);
 	srp_release_transport(ib_srp_transport_template);
-<<<<<<< HEAD
-=======
 	destroy_workqueue(srp_remove_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(srp_init_module);

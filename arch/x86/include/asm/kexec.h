@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_KEXEC_H
 #define _ASM_X86_KEXEC_H
 
@@ -24,19 +21,13 @@
 #ifndef __ASSEMBLY__
 
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/page.h>
 #include <asm/ptrace.h>
 
-<<<<<<< HEAD
-=======
 struct kimage;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * KEXEC_SOURCE_MEMORY_LIMIT maximum page get_free_page can return.
  * I.e. Maximum page that is mapped directly into kernel memory,
@@ -61,19 +52,11 @@ struct kimage;
 # define vmcore_elf_check_arch_cross(x) ((x)->e_machine == EM_X86_64)
 #else
 /* Maximum physical address we can use pages from */
-<<<<<<< HEAD
-# define KEXEC_SOURCE_MEMORY_LIMIT      (0xFFFFFFFFFFUL)
-/* Maximum address we can reach in physical address mode */
-# define KEXEC_DESTINATION_MEMORY_LIMIT (0xFFFFFFFFFFUL)
-/* Maximum address we can use for the control pages */
-# define KEXEC_CONTROL_MEMORY_LIMIT     (0xFFFFFFFFFFUL)
-=======
 # define KEXEC_SOURCE_MEMORY_LIMIT      (MAXMEM-1)
 /* Maximum address we can reach in physical address mode */
 # define KEXEC_DESTINATION_MEMORY_LIMIT (MAXMEM-1)
 /* Maximum address we can use for the control pages */
 # define KEXEC_CONTROL_MEMORY_LIMIT     (MAXMEM-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Allocate one page for the pdp and the second for the code */
 # define KEXEC_CONTROL_PAGE_SIZE  (4096UL + 4096UL)
@@ -83,25 +66,6 @@ struct kimage;
 #endif
 
 /*
-<<<<<<< HEAD
- * CPU does not save ss and sp on stack if execution is already
- * running in kernel mode at the time of NMI occurrence. This code
- * fixes it.
- */
-static inline void crash_fixup_ss_esp(struct pt_regs *newregs,
-				      struct pt_regs *oldregs)
-{
-#ifdef CONFIG_X86_32
-	newregs->sp = (unsigned long)&(oldregs->sp);
-	asm volatile("xorl %%eax, %%eax\n\t"
-		     "movw %%ss, %%ax\n\t"
-		     :"=a"(newregs->ss));
-#endif
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is responsible for capturing register states if coming
  * via panic otherwise just fix up the ss and sp if coming via kernel
  * mode exception.
@@ -111,10 +75,6 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 {
 	if (oldregs) {
 		memcpy(newregs, oldregs, sizeof(*newregs));
-<<<<<<< HEAD
-		crash_fixup_ss_esp(newregs, oldregs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 #ifdef CONFIG_X86_32
 		asm volatile("movl %%ebx,%0" : "=m"(newregs->bx));
@@ -151,11 +111,7 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 		asm volatile("movl %%cs, %%eax;" :"=a"(newregs->cs));
 		asm volatile("pushfq; popq %0" :"=m"(newregs->flags));
 #endif
-<<<<<<< HEAD
-		newregs->ip = (unsigned long)current_text_addr();
-=======
 		newregs->ip = _THIS_IP_;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -171,12 +127,8 @@ unsigned long
 relocate_kernel(unsigned long indirection_page,
 		unsigned long page_list,
 		unsigned long start_address,
-<<<<<<< HEAD
-		unsigned int preserve_context);
-=======
 		unsigned int preserve_context,
 		unsigned int host_mem_enc_active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define ARCH_HAS_KIMAGE_ARCH
@@ -193,16 +145,11 @@ struct kimage_arch {
 };
 #else
 struct kimage_arch {
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
 };
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_X86_32 */
 
 #ifdef CONFIG_X86_64
@@ -275,7 +222,6 @@ int arch_crash_hotplug_memory_support(void);
 
 unsigned int arch_crash_get_elfcorehdr_size(void);
 #define crash_get_elfcorehdr_size arch_crash_get_elfcorehdr_size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __ASSEMBLY__ */

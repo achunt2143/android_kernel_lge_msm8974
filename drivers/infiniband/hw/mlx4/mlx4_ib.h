@@ -37,14 +37,6 @@
 #include <linux/compiler.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-
-#include <rdma/ib_verbs.h>
-#include <rdma/ib_umem.h>
-
-#include <linux/mlx4/device.h>
-#include <linux/mlx4/doorbell.h>
-=======
 #include <linux/idr.h>
 #include <linux/notifier.h>
 
@@ -88,18 +80,14 @@ enum hw_bar_type {
 	HW_BAR_CLOCK,
 	HW_BAR_COUNT
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mlx4_ib_ucontext {
 	struct ib_ucontext	ibucontext;
 	struct mlx4_uar		uar;
 	struct list_head	db_page_list;
 	struct mutex		db_page_mutex;
-<<<<<<< HEAD
-=======
 	struct list_head	wqn_ranges_list;
 	struct mutex		wqn_ranges_mutex; /* protect wqn_ranges_list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_pd {
@@ -117,10 +105,7 @@ struct mlx4_ib_xrcd {
 struct mlx4_ib_cq_buf {
 	struct mlx4_buf		buf;
 	struct mlx4_mtt		mtt;
-<<<<<<< HEAD
-=======
 	int			entry_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_cq_resize {
@@ -138,25 +123,6 @@ struct mlx4_ib_cq {
 	struct mutex		resize_mutex;
 	struct ib_umem	       *umem;
 	struct ib_umem	       *resize_umem;
-<<<<<<< HEAD
-};
-
-struct mlx4_ib_mr {
-	struct ib_mr		ibmr;
-	struct mlx4_mr		mmr;
-	struct ib_umem	       *umem;
-};
-
-struct mlx4_ib_fast_reg_page_list {
-	struct ib_fast_reg_page_list	ibfrpl;
-	__be64			       *mapped_page_list;
-	dma_addr_t			map;
-};
-
-struct mlx4_ib_fmr {
-	struct ib_fmr           ibfmr;
-	struct mlx4_fmr         mfmr;
-=======
 	int			create_flags;
 	/* List of qps that it serves.*/
 	struct list_head		send_qp_list;
@@ -192,7 +158,6 @@ struct mlx4_ib_flow {
 	struct ib_flow ibflow;
 	/* translating DMFS verbs sniffer rule to FW API requires two reg IDs */
 	struct mlx4_flow_reg_id reg_id[MAX_REGS_PER_FLOW];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_wq {
@@ -207,11 +172,6 @@ struct mlx4_ib_wq {
 	unsigned		tail;
 };
 
-<<<<<<< HEAD
-enum mlx4_ib_qp_flags {
-	MLX4_IB_QP_LSO				= 1 << 0,
-	MLX4_IB_QP_BLOCK_MULTICAST_LOOPBACK	= 1 << 1,
-=======
 enum {
 	MLX4_IB_QP_CREATE_ROCE_V2_GSI = IB_QP_CREATE_RESERVED_START
 };
@@ -226,7 +186,6 @@ enum mlx4_ib_qp_flags {
 	MLX4_IB_ROCE_V2_GSI_QP = MLX4_IB_QP_CREATE_ROCE_V2_GSI,
 	MLX4_IB_SRIOV_TUNNEL_QP = 1 << 30,
 	MLX4_IB_SRIOV_SQP = 1 << 31,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_gid_entry {
@@ -236,10 +195,6 @@ struct mlx4_ib_gid_entry {
 	u8			port;
 };
 
-<<<<<<< HEAD
-struct mlx4_ib_qp {
-	struct ib_qp		ibqp;
-=======
 enum mlx4_ib_qp_type {
 	/*
 	 * IB_QPT_SMI and IB_QPT_GSI have to be the first two entries
@@ -370,7 +325,6 @@ struct mlx4_ib_qp {
 		struct ib_qp	ibqp;
 		struct ib_wq	ibwq;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_qp		mqp;
 	struct mlx4_buf		buf;
 
@@ -380,17 +334,10 @@ struct mlx4_ib_qp {
 	u32			doorbell_qpn;
 	__be32			sq_signal_bits;
 	unsigned		sq_next_wqe;
-<<<<<<< HEAD
-	int			sq_max_wqes_per_wr;
-	int			sq_spare_wqes;
-	struct mlx4_ib_wq	sq;
-
-=======
 	int			sq_spare_wqes;
 	struct mlx4_ib_wq	sq;
 
 	enum mlx4_ib_qp_type	mlx4_ib_qp_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_umem	       *umem;
 	struct mlx4_mtt		mtt;
 	int			buf_size;
@@ -404,9 +351,6 @@ struct mlx4_ib_qp {
 	u8			sq_no_prefetch;
 	u8			state;
 	int			mlx_type;
-<<<<<<< HEAD
-	struct list_head	gid_list;
-=======
 	u32			inl_recv_sz;
 	struct list_head	gid_list;
 	struct list_head	steering_rules;
@@ -425,7 +369,6 @@ struct mlx4_ib_qp {
 		struct mlx4_ib_rss *rss_ctx;
 		struct mlx4_ib_sqp *sqp;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_srq {
@@ -448,13 +391,6 @@ struct mlx4_ib_ah {
 	union mlx4_ext_av       av;
 };
 
-<<<<<<< HEAD
-struct mlx4_ib_iboe {
-	spinlock_t		lock;
-	struct net_device      *netdevs[MLX4_MAX_PORTS];
-	struct notifier_block 	nb;
-	union ib_gid		gid_table[MLX4_MAX_PORTS][128];
-=======
 struct mlx4_ib_rwq_ind_table {
 	struct ib_rwq_ind_table ib_rwq_ind_tbl;
 };
@@ -669,7 +605,6 @@ struct mlx4_ib_diag_counters {
 	struct rdma_stat_desc *descs;
 	u32 *offset;
 	u32 num_counters;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_ib_dev {
@@ -685,18 +620,12 @@ struct mlx4_ib_dev {
 	struct ib_mad_agent    *send_agent[MLX4_MAX_PORTS][2];
 	struct ib_ah	       *sm_ah[MLX4_MAX_PORTS];
 	spinlock_t		sm_lock;
-<<<<<<< HEAD
-=======
 	atomic64_t		sl2vl[MLX4_MAX_PORTS];
 	struct mlx4_ib_sriov	sriov;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex		cap_mask_mutex;
 	bool			ib_active;
 	struct mlx4_ib_iboe	iboe;
-<<<<<<< HEAD
-	int			counters[MLX4_MAX_PORTS];
-=======
 	struct mlx4_ib_counters counters_table[MLX4_MAX_PORTS];
 	int		       *eq_table;
 	struct kobject	       *iov_parent;
@@ -736,7 +665,6 @@ struct mlx4_ib_qp_tunnel_init_attr {
 struct mlx4_uverbs_ex_query_device {
 	__u32 comp_mask;
 	__u32 reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct mlx4_ib_dev *to_mdev(struct ib_device *ibdev)
@@ -774,17 +702,6 @@ static inline struct mlx4_ib_mr *to_mmr(struct ib_mr *ibmr)
 	return container_of(ibmr, struct mlx4_ib_mr, ibmr);
 }
 
-<<<<<<< HEAD
-static inline struct mlx4_ib_fast_reg_page_list *to_mfrpl(struct ib_fast_reg_page_list *ibfrpl)
-{
-	return container_of(ibfrpl, struct mlx4_ib_fast_reg_page_list, ibfrpl);
-}
-
-static inline struct mlx4_ib_fmr *to_mfmr(struct ib_fmr *ibfmr)
-{
-	return container_of(ibfmr, struct mlx4_ib_fmr, ibfmr);
-}
-=======
 static inline struct mlx4_ib_mw *to_mmw(struct ib_mw *ibmw)
 {
 	return container_of(ibmw, struct mlx4_ib_mw, ibmw);
@@ -795,7 +712,6 @@ static inline struct mlx4_ib_flow *to_mflow(struct ib_flow *ibflow)
 	return container_of(ibflow, struct mlx4_ib_flow, ibflow);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct mlx4_ib_qp *to_mqp(struct ib_qp *ibqp)
 {
 	return container_of(ibqp, struct mlx4_ib_qp, ibqp);
@@ -821,9 +737,6 @@ static inline struct mlx4_ib_ah *to_mah(struct ib_ah *ibah)
 	return container_of(ibah, struct mlx4_ib_ah, ibah);
 }
 
-<<<<<<< HEAD
-int mlx4_ib_db_map_user(struct mlx4_ib_ucontext *context, unsigned long virt,
-=======
 static inline u8 mlx4_ib_bond_next_port(struct mlx4_ib_dev *dev)
 {
 	dev->bond_next_port = (dev->bond_next_port + 1) % dev->num_ports;
@@ -835,7 +748,6 @@ int mlx4_ib_init_sriov(struct mlx4_ib_dev *dev);
 void mlx4_ib_close_sriov(struct mlx4_ib_dev *dev);
 
 int mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct mlx4_db *db);
 void mlx4_ib_db_unmap_user(struct mlx4_ib_ucontext *context, struct mlx4_db *db);
 
@@ -845,21 +757,6 @@ int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 struct ib_mr *mlx4_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 				  u64 virt_addr, int access_flags,
 				  struct ib_udata *udata);
-<<<<<<< HEAD
-int mlx4_ib_dereg_mr(struct ib_mr *mr);
-struct ib_mr *mlx4_ib_alloc_fast_reg_mr(struct ib_pd *pd,
-					int max_page_list_len);
-struct ib_fast_reg_page_list *mlx4_ib_alloc_fast_reg_page_list(struct ib_device *ibdev,
-							       int page_list_len);
-void mlx4_ib_free_fast_reg_page_list(struct ib_fast_reg_page_list *page_list);
-
-int mlx4_ib_modify_cq(struct ib_cq *cq, u16 cq_count, u16 cq_period);
-int mlx4_ib_resize_cq(struct ib_cq *ibcq, int entries, struct ib_udata *udata);
-struct ib_cq *mlx4_ib_create_cq(struct ib_device *ibdev, int entries, int vector,
-				struct ib_ucontext *context,
-				struct ib_udata *udata);
-int mlx4_ib_destroy_cq(struct ib_cq *cq);
-=======
 int mlx4_ib_dereg_mr(struct ib_mr *mr, struct ib_udata *udata);
 int mlx4_ib_alloc_mw(struct ib_mw *mw, struct ib_udata *udata);
 int mlx4_ib_dealloc_mw(struct ib_mw *mw);
@@ -872,33 +769,11 @@ int mlx4_ib_resize_cq(struct ib_cq *ibcq, int entries, struct ib_udata *udata);
 int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		      struct ib_udata *udata);
 int mlx4_ib_destroy_cq(struct ib_cq *cq, struct ib_udata *udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_ib_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc);
 int mlx4_ib_arm_cq(struct ib_cq *cq, enum ib_cq_notify_flags flags);
 void __mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq);
 void mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq);
 
-<<<<<<< HEAD
-struct ib_ah *mlx4_ib_create_ah(struct ib_pd *pd, struct ib_ah_attr *ah_attr);
-int mlx4_ib_query_ah(struct ib_ah *ibah, struct ib_ah_attr *ah_attr);
-int mlx4_ib_destroy_ah(struct ib_ah *ah);
-
-struct ib_srq *mlx4_ib_create_srq(struct ib_pd *pd,
-				  struct ib_srq_init_attr *init_attr,
-				  struct ib_udata *udata);
-int mlx4_ib_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
-		       enum ib_srq_attr_mask attr_mask, struct ib_udata *udata);
-int mlx4_ib_query_srq(struct ib_srq *srq, struct ib_srq_attr *srq_attr);
-int mlx4_ib_destroy_srq(struct ib_srq *srq);
-void mlx4_ib_free_srq_wqe(struct mlx4_ib_srq *srq, int wqe_index);
-int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, struct ib_recv_wr *wr,
-			  struct ib_recv_wr **bad_wr);
-
-struct ib_qp *mlx4_ib_create_qp(struct ib_pd *pd,
-				struct ib_qp_init_attr *init_attr,
-				struct ib_udata *udata);
-int mlx4_ib_destroy_qp(struct ib_qp *qp);
-=======
 int mlx4_ib_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
 		      struct ib_udata *udata);
 int mlx4_ib_create_ah_slave(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
@@ -924,43 +799,10 @@ int mlx4_ib_create_qp(struct ib_qp *qp, struct ib_qp_init_attr *init_attr,
 int mlx4_ib_destroy_qp(struct ib_qp *qp, struct ib_udata *udata);
 void mlx4_ib_drain_sq(struct ib_qp *qp);
 void mlx4_ib_drain_rq(struct ib_qp *qp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		      int attr_mask, struct ib_udata *udata);
 int mlx4_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *qp_attr, int qp_attr_mask,
 		     struct ib_qp_init_attr *qp_init_attr);
-<<<<<<< HEAD
-int mlx4_ib_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
-		      struct ib_send_wr **bad_wr);
-int mlx4_ib_post_recv(struct ib_qp *ibqp, struct ib_recv_wr *wr,
-		      struct ib_recv_wr **bad_wr);
-
-int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int ignore_mkey, int ignore_bkey,
-		 int port, struct ib_wc *in_wc, struct ib_grh *in_grh,
-		 void *in_mad, void *response_mad);
-int mlx4_ib_process_mad(struct ib_device *ibdev, int mad_flags,	u8 port_num,
-			struct ib_wc *in_wc, struct ib_grh *in_grh,
-			struct ib_mad *in_mad, struct ib_mad *out_mad);
-int mlx4_ib_mad_init(struct mlx4_ib_dev *dev);
-void mlx4_ib_mad_cleanup(struct mlx4_ib_dev *dev);
-
-struct ib_fmr *mlx4_ib_fmr_alloc(struct ib_pd *pd, int mr_access_flags,
-				  struct ib_fmr_attr *fmr_attr);
-int mlx4_ib_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list, int npages,
-			 u64 iova);
-int mlx4_ib_unmap_fmr(struct list_head *fmr_list);
-int mlx4_ib_fmr_dealloc(struct ib_fmr *fmr);
-
-int mlx4_ib_resolve_grh(struct mlx4_ib_dev *dev, const struct ib_ah_attr *ah_attr,
-			u8 *mac, int *is_mcast, u8 port);
-
-static inline int mlx4_ib_ah_grh_present(struct mlx4_ib_ah *ah)
-{
-	u8 port = be32_to_cpu(ah->av.ib.port_pd) >> 24 & 3;
-
-	if (rdma_port_get_link_layer(ah->ibah.device, port) == IB_LINK_LAYER_ETHERNET)
-		return 1;
-=======
 int mlx4_ib_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		      const struct ib_send_wr **bad_wr);
 int mlx4_ib_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
@@ -990,16 +832,10 @@ static inline bool mlx4_ib_ah_grh_present(struct mlx4_ib_ah *ah)
 
 	if (rdma_port_get_link_layer(ah->ibah.device, port) == IB_LINK_LAYER_ETHERNET)
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return !!(ah->av.ib.g_slid & 0x80);
 }
 
-<<<<<<< HEAD
-int mlx4_ib_add_mc(struct mlx4_ib_dev *mdev, struct mlx4_ib_qp *mqp,
-		   union ib_gid *gid);
-
-=======
 int mlx4_ib_mcg_port_init(struct mlx4_ib_demux_ctx *ctx);
 void mlx4_ib_mcg_port_cleanup(struct mlx4_ib_demux_ctx *ctx, int destroy_wq);
 void clean_vf_mcast(struct mlx4_ib_demux_ctx *ctx, int slave);
@@ -1109,5 +945,4 @@ void mlx4_ib_cm_destroy(void);
 int mlx4_ib_qp_event_init(void);
 void mlx4_ib_qp_event_cleanup(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* MLX4_IB_H */

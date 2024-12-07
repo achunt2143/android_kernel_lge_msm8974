@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Universal interface for Audio Codec '97
@@ -9,25 +6,6 @@
  *  For more details look to AC '97 component specification revision 2.2
  *  by Intel Corporation (http://developer.intel.com) and to datasheets
  *  for specific codecs.
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ac97_local.h"
@@ -40,12 +18,8 @@
 static struct snd_kcontrol *snd_ac97_find_mixer_ctl(struct snd_ac97 *ac97,
 						    const char *name);
 static int snd_ac97_add_vmaster(struct snd_ac97 *ac97, char *name,
-<<<<<<< HEAD
-				const unsigned int *tlv, const char **slaves);
-=======
 				const unsigned int *tlv,
 				const char * const *followers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Chip specific initialization
@@ -55,17 +29,11 @@ static int patch_build_controls(struct snd_ac97 * ac97, const struct snd_kcontro
 {
 	int idx, err;
 
-<<<<<<< HEAD
-	for (idx = 0; idx < count; idx++)
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&controls[idx], ac97))) < 0)
-			return err;
-=======
 	for (idx = 0; idx < count; idx++) {
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&controls[idx], ac97));
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -73,18 +41,9 @@ static int patch_build_controls(struct snd_ac97 * ac97, const struct snd_kcontro
 static void reset_tlv(struct snd_ac97 *ac97, const char *name,
 		      const unsigned int *tlv)
 {
-<<<<<<< HEAD
-	struct snd_ctl_elem_id sid;
-	struct snd_kcontrol *kctl;
-	memset(&sid, 0, sizeof(sid));
-	strcpy(sid.name, name);
-	sid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-	kctl = snd_ctl_find_id(ac97->bus->card, &sid);
-=======
 	struct snd_kcontrol *kctl;
 
 	kctl = snd_ctl_find_id_mixer(ac97->bus->card, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kctl && kctl->tlv.p)
 		kctl->tlv.p = tlv;
 }
@@ -107,30 +66,11 @@ static int ac97_update_bits_page(struct snd_ac97 *ac97, unsigned short reg, unsi
 /*
  * shared line-in/mic controls
  */
-<<<<<<< HEAD
-static int ac97_enum_text_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo,
-			       const char **texts, unsigned int nums)
-{
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = nums;
-	if (uinfo->value.enumerated.item > nums - 1)
-		uinfo->value.enumerated.item = nums - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-}
-
-static int ac97_surround_jack_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
-{
-	static const char *texts[] = { "Shared", "Independent" };
-	return ac97_enum_text_info(kcontrol, uinfo, texts, 2);
-=======
 static int ac97_surround_jack_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
 	static const char * const texts[] = { "Shared", "Independent" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ac97_surround_jack_mode_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -157,15 +97,9 @@ static int ac97_surround_jack_mode_put(struct snd_kcontrol *kcontrol, struct snd
 
 static int ac97_channel_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static const char *texts[] = { "2ch", "4ch", "6ch", "8ch" };
-	return ac97_enum_text_info(kcontrol, uinfo, texts,
-		kcontrol->private_value);
-=======
 	static const char * const texts[] = { "2ch", "4ch", "6ch", "8ch" };
 
 	return snd_ctl_enum_info(uinfo, 1, kcontrol->private_value, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ac97_channel_mode_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -280,25 +214,11 @@ static inline int alc850_is_aux_back_surround(struct snd_ac97 *ac97)
 static int snd_ac97_ymf7x3_info_speaker(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = {
-		"Standard", "Small", "Smaller"
-	};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[3] = {
 		"Standard", "Small", "Smaller"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ymf7x3_get_speaker(struct snd_kcontrol *kcontrol,
@@ -341,21 +261,9 @@ static const struct snd_kcontrol_new snd_ac97_ymf7x3_controls_speaker =
 static int snd_ac97_ymf7x3_spdif_source_info(struct snd_kcontrol *kcontrol,
 					     struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[2] = { "AC-Link", "A/D Converter" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item > 1)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[2] = { "AC-Link", "A/D Converter" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ymf7x3_spdif_source_get(struct snd_kcontrol *kcontrol,
@@ -455,21 +363,9 @@ static int patch_yamaha_ymf743(struct snd_ac97 *ac97)
    There is also a bit to mute S/PDIF output in a vendor-specific register. */
 static int snd_ac97_ymf753_spdif_output_pin_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = { "Disabled", "Pin 43", "Pin 48" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[3] = { "Disabled", "Pin 43", "Pin 48" };
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ymf753_spdif_output_pin_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -519,12 +415,8 @@ static int patch_yamaha_ymf753_post_spdif(struct snd_ac97 * ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_ymf753_controls_spdif, ARRAY_SIZE(snd_ac97_ymf753_controls_spdif))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_ymf753_controls_spdif, ARRAY_SIZE(snd_ac97_ymf753_controls_spdif));
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
@@ -569,12 +461,8 @@ static int patch_wolfson_wm9703_specific(struct snd_ac97 * ac97)
 	int err, i;
 	
 	for (i = 0; i < ARRAY_SIZE(wm97xx_snd_ac97_controls); i++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm97xx_snd_ac97_controls[i], ac97))) < 0)
-=======
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm97xx_snd_ac97_controls[i], ac97));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	snd_ac97_write_cache(ac97,  AC97_WM97XX_FMIXER_VOL, 0x0808);
@@ -604,12 +492,8 @@ static int patch_wolfson_wm9704_specific(struct snd_ac97 * ac97)
 {
 	int err, i;
 	for (i = 0; i < ARRAY_SIZE(wm9704_snd_ac97_controls); i++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm9704_snd_ac97_controls[i], ac97))) < 0)
-=======
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm9704_snd_ac97_controls[i], ac97));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	/* patch for DVD noise */
@@ -749,12 +633,8 @@ static int patch_wolfson_wm9711_specific(struct snd_ac97 * ac97)
 	int err, i;
 	
 	for (i = 0; i < ARRAY_SIZE(wm9711_snd_ac97_controls); i++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm9711_snd_ac97_controls[i], ac97))) < 0)
-=======
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm9711_snd_ac97_controls[i], ac97));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	snd_ac97_write_cache(ac97,  AC97_CODEC_CLASS_REV, 0x0808);
@@ -921,12 +801,8 @@ static int patch_wolfson_wm9713_3d (struct snd_ac97 * ac97)
 	int err, i;
     
 	for (i = 0; i < ARRAY_SIZE(wm13_snd_ac97_controls_3d); i++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm13_snd_ac97_controls_3d[i], ac97))) < 0)
-=======
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm13_snd_ac97_controls_3d[i], ac97));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;
@@ -937,12 +813,8 @@ static int patch_wolfson_wm9713_specific(struct snd_ac97 * ac97)
 	int err, i;
 	
 	for (i = 0; i < ARRAY_SIZE(wm13_snd_ac97_controls); i++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm13_snd_ac97_controls[i], ac97))) < 0)
-=======
 		err = snd_ctl_add(ac97->bus->card, snd_ac97_cnew(&wm13_snd_ac97_controls[i], ac97));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	snd_ac97_write_cache(ac97, AC97_PC_BEEP, 0x0808);
@@ -1016,12 +888,8 @@ static int patch_sigmatel_stac9700_3d(struct snd_ac97 * ac97)
 	struct snd_kcontrol *kctl;
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_ctl_add(ac97->bus->card, kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97))) < 0)
-=======
 	err = snd_ctl_add(ac97->bus->card, kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97));
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(kctl->id.name, "3D Control Sigmatel - Depth");
 	kctl->private_value = AC97_SINGLE_VALUE(AC97_3D_CONTROL, 2, 3, 0);
@@ -1034,13 +902,6 @@ static int patch_sigmatel_stac9708_3d(struct snd_ac97 * ac97)
 	struct snd_kcontrol *kctl;
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_ctl_add(ac97->bus->card, kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97))) < 0)
-		return err;
-	strcpy(kctl->id.name, "3D Control Sigmatel - Depth");
-	kctl->private_value = AC97_SINGLE_VALUE(AC97_3D_CONTROL, 0, 3, 0);
-	if ((err = snd_ctl_add(ac97->bus->card, kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97))) < 0)
-=======
 	kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97);
 	err = snd_ctl_add(ac97->bus->card, kctl);
 	if (err < 0)
@@ -1050,7 +911,6 @@ static int patch_sigmatel_stac9708_3d(struct snd_ac97 * ac97)
 	kctl = snd_ac97_cnew(&snd_ac97_controls_3d[0], ac97);
 	err = snd_ctl_add(ac97->bus->card, kctl);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(kctl->id.name, "3D Control Sigmatel - Rear Depth");
 	kctl->private_value = AC97_SINGLE_VALUE(AC97_3D_CONTROL, 2, 3, 0);
@@ -1077,20 +937,6 @@ static int patch_sigmatel_stac97xx_specific(struct snd_ac97 * ac97)
 	int err;
 
 	snd_ac97_write_cache(ac97, AC97_SIGMATEL_ANALOG, snd_ac97_read(ac97, AC97_SIGMATEL_ANALOG) & ~0x0003);
-<<<<<<< HEAD
-	if (snd_ac97_try_bit(ac97, AC97_SIGMATEL_ANALOG, 1))
-		if ((err = patch_build_controls(ac97, &snd_ac97_sigmatel_controls[0], 1)) < 0)
-			return err;
-	if (snd_ac97_try_bit(ac97, AC97_SIGMATEL_ANALOG, 0))
-		if ((err = patch_build_controls(ac97, &snd_ac97_sigmatel_controls[1], 1)) < 0)
-			return err;
-	if (snd_ac97_try_bit(ac97, AC97_SIGMATEL_DAC2INVERT, 2))
-		if ((err = patch_build_controls(ac97, &snd_ac97_sigmatel_4speaker, 1)) < 0)
-			return err;
-	if (snd_ac97_try_bit(ac97, AC97_SIGMATEL_DAC2INVERT, 3))
-		if ((err = patch_build_controls(ac97, &snd_ac97_sigmatel_phaseinvert, 1)) < 0)
-			return err;
-=======
 	if (snd_ac97_try_bit(ac97, AC97_SIGMATEL_ANALOG, 1)) {
 		err = patch_build_controls(ac97, &snd_ac97_sigmatel_controls[0], 1);
 		if (err < 0)
@@ -1111,7 +957,6 @@ static int patch_sigmatel_stac97xx_specific(struct snd_ac97 * ac97)
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1157,12 +1002,8 @@ static int patch_sigmatel_stac9708_specific(struct snd_ac97 *ac97)
 	snd_ac97_remove_ctl(ac97, "PCM Out Path & Mute", NULL);
 
 	snd_ac97_rename_vol_ctl(ac97, "Headphone Playback", "Sigmatel Surround Playback");
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_stac9708_bias_control, 1)) < 0)
-=======
 	err = patch_build_controls(ac97, &snd_ac97_stac9708_bias_control, 1);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return patch_sigmatel_stac97xx_specific(ac97);
 }
@@ -1238,24 +1079,11 @@ static int patch_sigmatel_stac9756(struct snd_ac97 * ac97)
 
 static int snd_ac97_stac9758_output_jack_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[5] = { "Input/Disabled", "Front Output",
-		"Rear Output", "Center/LFE Output", "Mixer Output" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 5;
-	if (uinfo->value.enumerated.item > 4)
-		uinfo->value.enumerated.item = 4;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[5] = {
 		"Input/Disabled", "Front Output",
 		"Rear Output", "Center/LFE Output", "Mixer Output" };
 
 	return snd_ctl_enum_info(uinfo, 1, 5, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_stac9758_output_jack_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1290,24 +1118,11 @@ static int snd_ac97_stac9758_output_jack_put(struct snd_kcontrol *kcontrol, stru
 
 static int snd_ac97_stac9758_input_jack_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[7] = { "Mic2 Jack", "Mic1 Jack", "Line In Jack",
-		"Front Jack", "Rear Jack", "Center/LFE Jack", "Mute" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 7;
-	if (uinfo->value.enumerated.item > 6)
-		uinfo->value.enumerated.item = 6;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[7] = {
 		"Mic2 Jack", "Mic1 Jack", "Line In Jack",
 		"Front Jack", "Rear Jack", "Center/LFE Jack", "Mute" };
 
 	return snd_ctl_enum_info(uinfo, 1, 7, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_stac9758_input_jack_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1332,23 +1147,11 @@ static int snd_ac97_stac9758_input_jack_put(struct snd_kcontrol *kcontrol, struc
 
 static int snd_ac97_stac9758_phonesel_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = { "None", "Front Jack", "Rear Jack" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[3] = {
 		"None", "Front Jack", "Rear Jack"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_stac9758_phonesel_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1427,41 +1230,25 @@ static const struct snd_ac97_build_ops patch_sigmatel_stac9758_ops = {
 
 static int patch_sigmatel_stac9758(struct snd_ac97 * ac97)
 {
-<<<<<<< HEAD
-	static unsigned short regs[4] = {
-=======
 	static const unsigned short regs[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AC97_SIGMATEL_OUTSEL,
 		AC97_SIGMATEL_IOMISC,
 		AC97_SIGMATEL_INSEL,
 		AC97_SIGMATEL_VARIOUS
 	};
-<<<<<<< HEAD
-	static unsigned short def_regs[4] = {
-=======
 	static const unsigned short def_regs[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* OUTSEL */ 0xd794, /* CL:CL, SR:SR, LO:MX, LI:DS, MI:DS */
 		/* IOMISC */ 0x2001,
 		/* INSEL */ 0x0201, /* LI:LI, MI:M1 */
 		/* VARIOUS */ 0x0040
 	};
-<<<<<<< HEAD
-	static unsigned short m675_regs[4] = {
-=======
 	static const unsigned short m675_regs[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* OUTSEL */ 0xfc70, /* CL:MX, SR:MX, LO:DS, LI:MX, MI:DS */
 		/* IOMISC */ 0x2102, /* HP amp on */
 		/* INSEL */ 0x0203, /* LI:LI, MI:FR */
 		/* VARIOUS */ 0x0041 /* stereo mic */
 	};
-<<<<<<< HEAD
-	unsigned short *pregs = def_regs;
-=======
 	const unsigned short *pregs = def_regs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* Gateway M675 notebook */
@@ -1494,16 +1281,6 @@ static int patch_cirrus_build_spdif(struct snd_ac97 * ac97)
 	int err;
 
 	/* con mask, pro mask, default */
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_controls_spdif[0], 3)) < 0)
-		return err;
-	/* switch, spsa */
-	if ((err = patch_build_controls(ac97, &snd_ac97_cirrus_controls_spdif[0], 1)) < 0)
-		return err;
-	switch (ac97->id & AC97_ID_CS_MASK) {
-	case AC97_ID_CS4205:
-		if ((err = patch_build_controls(ac97, &snd_ac97_cirrus_controls_spdif[1], 1)) < 0)
-=======
 	err = patch_build_controls(ac97, &snd_ac97_controls_spdif[0], 3);
 	if (err < 0)
 		return err;
@@ -1515,7 +1292,6 @@ static int patch_cirrus_build_spdif(struct snd_ac97 * ac97)
 	case AC97_ID_CS4205:
 		err = patch_build_controls(ac97, &snd_ac97_cirrus_controls_spdif[1], 1);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		break;
 	}
@@ -1570,19 +1346,12 @@ static int patch_conexant_build_spdif(struct snd_ac97 * ac97)
 	int err;
 
 	/* con mask, pro mask, default */
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_controls_spdif[0], 3)) < 0)
-		return err;
-	/* switch */
-	if ((err = patch_build_controls(ac97, &snd_ac97_conexant_controls_spdif[0], 1)) < 0)
-=======
 	err = patch_build_controls(ac97, &snd_ac97_controls_spdif[0], 3);
 	if (err < 0)
 		return err;
 	/* switch */
 	err = patch_build_controls(ac97, &snd_ac97_conexant_controls_spdif[0], 1);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	/* set default PCM S/PDIF params */
 	/* consumer,PCM audio,no copyright,no preemphasis,PCM coder,original,48000Hz */
@@ -1611,20 +1380,12 @@ static int patch_cx20551(struct snd_ac97 *ac97)
 }
 
 /*
-<<<<<<< HEAD
- * Analog Device AD18xx, AD19xx codecs
-=======
  * Analog Devices AD18xx, AD19xx codecs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifdef CONFIG_PM
 static void ad18xx_resume(struct snd_ac97 *ac97)
 {
-<<<<<<< HEAD
-	static unsigned short setup_regs[] = {
-=======
 	static const unsigned short setup_regs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AC97_AD_MISC, AC97_AD_SERIAL_CFG, AC97_AD_JACK_SPDIF,
 	};
 	int i, codec;
@@ -1733,11 +1494,7 @@ static unsigned short patch_ad1881_unchained(struct snd_ac97 * ac97, int idx, un
 
 static int patch_ad1881_chained1(struct snd_ac97 * ac97, int idx, unsigned short codec_bits)
 {
-<<<<<<< HEAD
-	static int cfg_bits[3] = { 1<<12, 1<<14, 1<<13 };
-=======
 	static const int cfg_bits[3] = { 1<<12, 1<<14, 1<<13 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short val;
 	
 	snd_ac97_update_bits(ac97, AC97_AD_SERIAL_CFG, 0x7000, cfg_bits[idx]);
@@ -1859,12 +1616,8 @@ static int patch_ad1885_specific(struct snd_ac97 * ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_controls_ad1885, ARRAY_SIZE(snd_ac97_controls_ad1885))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_controls_ad1885, ARRAY_SIZE(snd_ac97_controls_ad1885));
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	reset_tlv(ac97, "Headphone Playback Volume",
 		  db_scale_6bit_6db_max);
@@ -2019,21 +1772,9 @@ static int patch_ad1886(struct snd_ac97 * ac97)
 
 static int snd_ac97_ad198x_spdif_source_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[2] = { "AC-Link", "A/D Converter" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item > 1)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[2] = { "AC-Link", "A/D Converter" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ad198x_spdif_source_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2075,17 +1816,10 @@ static const struct snd_kcontrol_new snd_ac97_ad1981x_jack_sense[] = {
 	AC97_SINGLE("Line Jack Sense", AC97_AD_JACK_SPDIF, 12, 1, 0),
 };
 
-<<<<<<< HEAD
-/* black list to avoid HP/Line jack-sense controls
- * (SS vendor << 16 | device)
- */
-static unsigned int ad1981_jacks_blacklist[] = {
-=======
 /* deny list to avoid HP/Line jack-sense controls
  * (SS vendor << 16 | device)
  */
 static const unsigned int ad1981_jacks_denylist[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x10140523, /* Thinkpad R40 */
 	0x10140534, /* Thinkpad X31 */
 	0x10140537, /* Thinkpad T41p */
@@ -2112,11 +1846,7 @@ static int check_list(struct snd_ac97 *ac97, const unsigned int *list)
 
 static int patch_ad1981a_specific(struct snd_ac97 * ac97)
 {
-<<<<<<< HEAD
-	if (check_list(ac97, ad1981_jacks_blacklist))
-=======
 	if (check_list(ac97, ad1981_jacks_denylist))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return patch_build_controls(ac97, snd_ac97_ad1981x_jack_sense,
 				    ARRAY_SIZE(snd_ac97_ad1981x_jack_sense));
@@ -2130,17 +1860,10 @@ static const struct snd_ac97_build_ops patch_ad1981a_build_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-/* white list to enable HP jack-sense bits
- * (SS vendor << 16 | device)
- */
-static unsigned int ad1981_jacks_whitelist[] = {
-=======
 /* allow list to enable HP jack-sense bits
  * (SS vendor << 16 | device)
  */
 static const unsigned int ad1981_jacks_allowlist[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0e11005a, /* HP nc4000/4010 */
 	0x103c0890, /* HP nc6000 */
 	0x103c0938, /* HP nc4220 */
@@ -2155,11 +1878,7 @@ static const unsigned int ad1981_jacks_allowlist[] = {
 
 static void check_ad1981_hp_jack_sense(struct snd_ac97 *ac97)
 {
-<<<<<<< HEAD
-	if (check_list(ac97, ad1981_jacks_whitelist))
-=======
 	if (check_list(ac97, ad1981_jacks_allowlist))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable headphone jack sense */
 		snd_ac97_update_bits(ac97, AC97_AD_JACK_SPDIF, 1<<11, 1<<11);
 }
@@ -2181,16 +1900,10 @@ static int patch_ad1981b_specific(struct snd_ac97 *ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1)) < 0)
-		return err;
-	if (check_list(ac97, ad1981_jacks_blacklist))
-=======
 	err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1);
 	if (err < 0)
 		return err;
 	if (check_list(ac97, ad1981_jacks_denylist))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return patch_build_controls(ac97, snd_ac97_ad1981x_jack_sense,
 				    ARRAY_SIZE(snd_ac97_ad1981x_jack_sense));
@@ -2244,21 +1957,9 @@ static int snd_ac97_ad1888_lohpsel_put(struct snd_kcontrol *kcontrol, struct snd
 
 static int snd_ac97_ad1888_downmix_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = {"Off", "6 -> 4", "6 -> 2"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[3] = {"Off", "6 -> 4", "6 -> 2"};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ad1888_downmix_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2385,12 +2086,8 @@ static int patch_ad1980_specific(struct snd_ac97 *ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_ad1888_specific(ac97)) < 0)
-=======
 	err = patch_ad1888_specific(ac97);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1);
 }
@@ -2414,24 +2111,11 @@ static int patch_ad1980(struct snd_ac97 * ac97)
 static int snd_ac97_ad1985_vrefout_info(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[4] = {"High-Z", "3.7 V", "2.25 V", "0 V"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 4;
-	if (uinfo->value.enumerated.item > 3)
-		uinfo->value.enumerated.item = 3;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[4] = {
 		"High-Z", "3.7 V", "2.25 V", "0 V"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 4, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_ad1985_vrefout_get(struct snd_kcontrol *kcontrol,
@@ -2511,12 +2195,8 @@ static int patch_ad1985_specific(struct snd_ac97 *ac97)
 				"Master Surround Playback");
 	snd_ac97_rename_vol_ctl(ac97, "Headphone Playback", "Master Playback");
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1)) < 0)
-=======
 	err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return patch_build_controls(ac97, snd_ac97_ad1985_controls,
@@ -2808,12 +2488,8 @@ static int patch_ad1986_specific(struct snd_ac97 *ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1)) < 0)
-=======
 	err = patch_build_controls(ac97, &snd_ac97_ad198x_2cmic, 1);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return patch_build_controls(ac97, snd_ac97_ad1986_controls,
@@ -2874,8 +2550,6 @@ static void alc650_update_jacks(struct snd_ac97 *ac97)
 			     shared ? 0 : 0x100);
 }
 
-<<<<<<< HEAD
-=======
 static int alc650_swap_surround_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
@@ -2891,7 +2565,6 @@ static int alc650_swap_surround_put(struct snd_kcontrol *kcontrol,
 	return snd_ac97_put_volsw(kcontrol, ucontrol);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_kcontrol_new snd_ac97_controls_alc650[] = {
 	AC97_SINGLE("Duplicate Front", AC97_ALC650_MULTICH, 0, 1, 0),
 	AC97_SINGLE("Surround Down Mix", AC97_ALC650_MULTICH, 1, 1, 0),
@@ -2905,9 +2578,6 @@ static const struct snd_kcontrol_new snd_ac97_controls_alc650[] = {
 	/* 9: Line-In/Surround share */
 	/* 10: Mic/CLFE share */
 	/* 11-13: in IEC958 controls */
-<<<<<<< HEAD
-	AC97_SINGLE("Swap Surround Slot", AC97_ALC650_MULTICH, 14, 1, 0),
-=======
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Swap Surround Slot",
@@ -2916,7 +2586,6 @@ static const struct snd_kcontrol_new snd_ac97_controls_alc650[] = {
 		.put = alc650_swap_surround_put,
 		.private_value =  AC97_SINGLE_VALUE(AC97_ALC650_MULTICH, 14, 1, 0),
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0 /* always set in patch_alc650 */
 	AC97_SINGLE("IEC958 Input Clock Enable", AC97_ALC650_CLOCK, 0, 1, 0),
 	AC97_SINGLE("IEC958 Input Pin Enable", AC97_ALC650_CLOCK, 1, 1, 0),
@@ -2942,19 +2611,12 @@ static int patch_alc650_specific(struct snd_ac97 * ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_controls_alc650, ARRAY_SIZE(snd_ac97_controls_alc650))) < 0)
-		return err;
-	if (ac97->ext_id & AC97_EI_SPDIF) {
-		if ((err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc650, ARRAY_SIZE(snd_ac97_spdif_controls_alc650))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_controls_alc650, ARRAY_SIZE(snd_ac97_controls_alc650));
 	if (err < 0)
 		return err;
 	if (ac97->ext_id & AC97_EI_SPDIF) {
 		err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc650, ARRAY_SIZE(snd_ac97_spdif_controls_alc650));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	if (ac97->id != AC97_ID_ALC650F)
@@ -3051,22 +2713,6 @@ static const struct snd_kcontrol_new snd_ac97_controls_alc655[] = {
 
 static int alc655_iec958_route_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts_655[3] = { "PCM", "Analog In", "IEC958 In" };
-	static char *texts_658[4] = { "PCM", "Analog1 In", "Analog2 In", "IEC958 In" };
-	struct snd_ac97 *ac97 = snd_kcontrol_chip(kcontrol);
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = ac97->spec.dev_flags ? 4 : 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       ac97->spec.dev_flags ?
-	       texts_658[uinfo->value.enumerated.item] :
-	       texts_655[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts_655[3] = {
 		"PCM", "Analog In", "IEC958 In"
 	};
@@ -3079,7 +2725,6 @@ static int alc655_iec958_route_info(struct snd_kcontrol *kcontrol, struct snd_ct
 		return snd_ctl_enum_info(uinfo, 1, 4, texts_658);
 	else
 		return snd_ctl_enum_info(uinfo, 1, 3, texts_655);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int alc655_iec958_route_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -3121,19 +2766,12 @@ static int patch_alc655_specific(struct snd_ac97 * ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_controls_alc655, ARRAY_SIZE(snd_ac97_controls_alc655))) < 0)
-		return err;
-	if (ac97->ext_id & AC97_EI_SPDIF) {
-		if ((err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc655, ARRAY_SIZE(snd_ac97_spdif_controls_alc655))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_controls_alc655, ARRAY_SIZE(snd_ac97_controls_alc655));
 	if (err < 0)
 		return err;
 	if (ac97->ext_id & AC97_EI_SPDIF) {
 		err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc655, ARRAY_SIZE(snd_ac97_spdif_controls_alc655));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;
@@ -3242,19 +2880,12 @@ static int patch_alc850_specific(struct snd_ac97 *ac97)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_controls_alc850, ARRAY_SIZE(snd_ac97_controls_alc850))) < 0)
-		return err;
-	if (ac97->ext_id & AC97_EI_SPDIF) {
-		if ((err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc655, ARRAY_SIZE(snd_ac97_spdif_controls_alc655))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_controls_alc850, ARRAY_SIZE(snd_ac97_controls_alc850));
 	if (err < 0)
 		return err;
 	if (ac97->ext_id & AC97_EI_SPDIF) {
 		err = patch_build_controls(ac97, snd_ac97_spdif_controls_alc655, ARRAY_SIZE(snd_ac97_spdif_controls_alc655));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;
@@ -3383,21 +3014,9 @@ static int patch_cm9738(struct snd_ac97 * ac97)
 
 static int snd_ac97_cmedia_spdif_playback_source_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "Analog", "Digital" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item > 1)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = { "Analog", "Digital" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_cmedia_spdif_playback_source_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -3494,11 +3113,7 @@ static int patch_cm9739(struct snd_ac97 * ac97)
 	/* set-up multi channel */
 	/* bit 14: 0 = SPDIF, 1 = EAPD */
 	/* bit 13: enable internal vref output for mic */
-<<<<<<< HEAD
-	/* bit 12: disable center/lfe (swithable) */
-=======
 	/* bit 12: disable center/lfe (switchable) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* bit 10: disable surround/line (switchable) */
 	/* bit 9: mix 2 surround off */
 	/* bit 4: undocumented; 0 mutes the CM9739A, which defaults to 1 */
@@ -3536,38 +3151,22 @@ static void cm9761_update_jacks(struct snd_ac97 *ac97)
 	/* FIXME: check the bits for each model
 	 *        model 83 is confirmed to work
 	 */
-<<<<<<< HEAD
-	static unsigned short surr_on[3][2] = {
-=======
 	static const unsigned short surr_on[3][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ 0x0008, 0x0000 }, /* 9761-78 & 82 */
 		{ 0x0000, 0x0008 }, /* 9761-82 rev.B */
 		{ 0x0000, 0x0008 }, /* 9761-83 */
 	};
-<<<<<<< HEAD
-	static unsigned short clfe_on[3][2] = {
-=======
 	static const unsigned short clfe_on[3][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ 0x0000, 0x1000 }, /* 9761-78 & 82 */
 		{ 0x1000, 0x0000 }, /* 9761-82 rev.B */
 		{ 0x0000, 0x1000 }, /* 9761-83 */
 	};
-<<<<<<< HEAD
-	static unsigned short surr_shared[3][2] = {
-=======
 	static const unsigned short surr_shared[3][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ 0x0000, 0x0400 }, /* 9761-78 & 82 */
 		{ 0x0000, 0x0400 }, /* 9761-82 rev.B */
 		{ 0x0000, 0x0400 }, /* 9761-83 */
 	};
-<<<<<<< HEAD
-	static unsigned short clfe_shared[3][2] = {
-=======
 	static const unsigned short clfe_shared[3][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ 0x2000, 0x0880 }, /* 9761-78 & 82 */
 		{ 0x0000, 0x2880 }, /* 9761-82 rev.B */
 		{ 0x2000, 0x0800 }, /* 9761-83 */
@@ -3589,21 +3188,9 @@ static const struct snd_kcontrol_new snd_ac97_cm9761_controls[] = {
 
 static int cm9761_spdif_out_source_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "AC-Link", "ADC", "SPDIF-In" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = { "AC-Link", "ADC", "SPDIF-In" };
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm9761_spdif_out_source_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -3630,13 +3217,9 @@ static int cm9761_spdif_out_source_put(struct snd_kcontrol *kcontrol, struct snd
 				    ucontrol->value.enumerated.item[0] == 1 ? 0x2 : 0);
 }
 
-<<<<<<< HEAD
-static const char *cm9761_dac_clock[] = { "AC-Link", "SPDIF-In", "Both" };
-=======
 static const char * const cm9761_dac_clock[] = {
 	"AC-Link", "SPDIF-In", "Both"
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ac97_enum cm9761_dac_clock_enum =
 	AC97_ENUM_SINGLE(AC97_CM9761_SPDIF_CTRL, 9, 3, cm9761_dac_clock);
 
@@ -3750,13 +3333,9 @@ static int patch_cm9761(struct snd_ac97 *ac97)
 #define AC97_CM9780_MULTI_CHAN	0x66
 #define AC97_CM9780_SPDIF	0x6c
 
-<<<<<<< HEAD
-static const char *cm9780_ch_select[] = { "Front", "Side", "Center/LFE", "Rear" };
-=======
 static const char * const cm9780_ch_select[] = {
 	"Front", "Side", "Center/LFE", "Rear"
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ac97_enum cm9780_ch_select_enum =
 	AC97_ENUM_SINGLE(AC97_CM9780_MULTI_CHAN, 6, 4, cm9780_ch_select);
 static const struct snd_kcontrol_new cm9780_controls[] = {
@@ -3793,8 +3372,6 @@ static int patch_cm9780(struct snd_ac97 *ac97)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * VIA VT1613 codec
  */
 static const struct snd_kcontrol_new snd_ac97_controls_vt1613[] = {
@@ -3822,7 +3399,6 @@ static int patch_vt1613(struct snd_ac97 *ac97)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * VIA VT1616 codec
  */
 static const struct snd_kcontrol_new snd_ac97_controls_vt1616[] = {
@@ -3832,11 +3408,7 @@ AC97_SINGLE("Downmix LFE and Center to Front", 0x5a, 12, 1, 0),
 AC97_SINGLE("Downmix Surround to Front", 0x5a, 11, 1, 0),
 };
 
-<<<<<<< HEAD
-static const char *slave_vols_vt1616[] = {
-=======
 static const char * const follower_vols_vt1616[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Front Playback Volume",
 	"Surround Playback Volume",
 	"Center Playback Volume",
@@ -3844,11 +3416,7 @@ static const char * const follower_vols_vt1616[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static const char *slave_sws_vt1616[] = {
-=======
 static const char * const follower_sws_vt1616[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Front Playback Switch",
 	"Surround Playback Switch",
 	"Center Playback Switch",
@@ -3860,21 +3428,6 @@ static const char * const follower_sws_vt1616[] = {
 static struct snd_kcontrol *snd_ac97_find_mixer_ctl(struct snd_ac97 *ac97,
 						    const char *name)
 {
-<<<<<<< HEAD
-	struct snd_ctl_elem_id id;
-	memset(&id, 0, sizeof(id));
-	id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-	strcpy(id.name, name);
-	return snd_ctl_find_id(ac97->bus->card, &id);
-}
-
-/* create a virtual master control and add slaves */
-static int snd_ac97_add_vmaster(struct snd_ac97 *ac97, char *name,
-				const unsigned int *tlv, const char **slaves)
-{
-	struct snd_kcontrol *kctl;
-	const char **s;
-=======
 	return snd_ctl_find_id_mixer(ac97->bus->card, name);
 }
 
@@ -3884,7 +3437,6 @@ static int snd_ac97_add_vmaster(struct snd_ac97 *ac97, char *name,
 				const char * const *followers)
 {
 	struct snd_kcontrol *kctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	kctl = snd_ctl_make_virtual_master(name, tlv);
@@ -3894,23 +3446,7 @@ static int snd_ac97_add_vmaster(struct snd_ac97 *ac97, char *name,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	for (s = slaves; *s; s++) {
-		struct snd_kcontrol *sctl;
-
-		sctl = snd_ac97_find_mixer_ctl(ac97, *s);
-		if (!sctl) {
-			snd_printdd("Cannot find slave %s, skipped\n", *s);
-			continue;
-		}
-		err = snd_ctl_add_slave(kctl, sctl);
-		if (err < 0)
-			return err;
-	}
-	return 0;
-=======
 	return snd_ctl_add_followers(ac97->bus->card, kctl, followers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int patch_vt1616_specific(struct snd_ac97 * ac97)
@@ -3918,12 +3454,6 @@ static int patch_vt1616_specific(struct snd_ac97 * ac97)
 	struct snd_kcontrol *kctl;
 	int err;
 
-<<<<<<< HEAD
-	if (snd_ac97_try_bit(ac97, 0x5a, 9))
-		if ((err = patch_build_controls(ac97, &snd_ac97_controls_vt1616[0], 1)) < 0)
-			return err;
-	if ((err = patch_build_controls(ac97, &snd_ac97_controls_vt1616[1], ARRAY_SIZE(snd_ac97_controls_vt1616) - 1)) < 0)
-=======
 	if (snd_ac97_try_bit(ac97, 0x5a, 9)) {
 		err = patch_build_controls(ac97, &snd_ac97_controls_vt1616[0], 1);
 		if (err < 0)
@@ -3931,7 +3461,6 @@ static int patch_vt1616_specific(struct snd_ac97 * ac97)
 	}
 	err = patch_build_controls(ac97, &snd_ac97_controls_vt1616[1], ARRAY_SIZE(snd_ac97_controls_vt1616) - 1);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* There is already a misnamed master switch.  Rename it.  */
@@ -3942,20 +3471,12 @@ static int patch_vt1616_specific(struct snd_ac97 * ac97)
 	snd_ac97_rename_vol_ctl(ac97, "Master Playback", "Front Playback");
 
 	err = snd_ac97_add_vmaster(ac97, "Master Playback Volume",
-<<<<<<< HEAD
-				   kctl->tlv.p, slave_vols_vt1616);
-=======
 				   kctl->tlv.p, follower_vols_vt1616);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	err = snd_ac97_add_vmaster(ac97, "Master Playback Switch",
-<<<<<<< HEAD
-				   NULL, slave_sws_vt1616);
-=======
 				   NULL, follower_sws_vt1616);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -3995,20 +3516,12 @@ static int snd_ac97_vt1617a_smart51_info(struct snd_kcontrol *kcontrol,
 	 * is SM51EN *AND* it's Bit14, not Bit15 so the table is very
 	 * counter-intuitive */ 
 
-<<<<<<< HEAD
-	static const char* texts[] = { "LineIn Mic1", "LineIn Mic1 Mic3",
-				       "Surr LFE/C Mic3", "LineIn LFE/C Mic3",
-				       "LineIn Mic2", "LineIn Mic2 Mic1",
-				       "Surr LFE Mic1", "Surr LFE Mic1 Mic2"};
-	return ac97_enum_text_info(kcontrol, uinfo, texts, 8);
-=======
 	static const char * const texts[] = {"LineIn Mic1", "LineIn Mic1 Mic3",
 				       "Surr LFE/C Mic3", "LineIn LFE/C Mic3",
 				       "LineIn Mic2", "LineIn Mic2 Mic1",
 				       "Surr LFE Mic1", "Surr LFE Mic1 Mic2"};
 
 	return snd_ctl_enum_info(uinfo, 1, 8, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_vt1617a_smart51_get(struct snd_kcontrol *kcontrol,
@@ -4137,20 +3650,12 @@ static int patch_vt1617a(struct snd_ac97 * ac97)
 struct vt1618_uaj_item {
 	unsigned short mask;
 	unsigned short shift;
-<<<<<<< HEAD
-	const char *items[4];
-=======
 	const char * const items[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* This list reflects the vt1618 docs for Vendor Defined Register 0x60. */
 
-<<<<<<< HEAD
-static struct vt1618_uaj_item vt1618_uaj[3] = {
-=======
 static const struct vt1618_uaj_item vt1618_uaj[3] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/* speaker jack */
 		.mask  = 0x03,
@@ -4180,14 +3685,8 @@ static const struct vt1618_uaj_item vt1618_uaj[3] = {
 static int snd_ac97_vt1618_UAJ_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	return ac97_enum_text_info(kcontrol, uinfo,
-				   vt1618_uaj[kcontrol->private_value].items,
-				   4);
-=======
 	return snd_ctl_enum_info(uinfo, 1, 4,
 				 vt1618_uaj[kcontrol->private_value].items);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* All of the vt1618 Universal Audio Jack twiddlers are on
@@ -4232,15 +3731,9 @@ static int snd_ac97_vt1618_UAJ_put(struct snd_kcontrol *kcontrol,
 static int snd_ac97_vt1618_aux_info(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static const char *txt_aux[] = {"Aux In", "Back Surr Out"};
-
-	return ac97_enum_text_info(kcontrol, uinfo, txt_aux, 2);
-=======
 	static const char * const txt_aux[] = {"Aux In", "Back Surr Out"};
 
 	return snd_ctl_enum_info(uinfo, 1, 2, txt_aux);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ac97_vt1618_aux_get(struct snd_kcontrol *kcontrol,
@@ -4337,17 +3830,11 @@ static const struct snd_kcontrol_new snd_ac97_spdif_controls_it2646[] = {
 static int patch_it2646_specific(struct snd_ac97 * ac97)
 {
 	int err;
-<<<<<<< HEAD
-	if ((err = patch_build_controls(ac97, snd_ac97_controls_it2646, ARRAY_SIZE(snd_ac97_controls_it2646))) < 0)
-		return err;
-	if ((err = patch_build_controls(ac97, snd_ac97_spdif_controls_it2646, ARRAY_SIZE(snd_ac97_spdif_controls_it2646))) < 0)
-=======
 	err = patch_build_controls(ac97, snd_ac97_controls_it2646, ARRAY_SIZE(snd_ac97_controls_it2646));
 	if (err < 0)
 		return err;
 	err = patch_build_controls(ac97, snd_ac97_spdif_controls_it2646, ARRAY_SIZE(snd_ac97_spdif_controls_it2646));
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
@@ -4380,17 +3867,11 @@ AC97_DOUBLE("Modem Speaker Volume", 0x5c, 14, 12, 3, 1)
 static int patch_si3036_specific(struct snd_ac97 * ac97)
 {
 	int idx, err;
-<<<<<<< HEAD
-	for (idx = 0; idx < ARRAY_SIZE(snd_ac97_controls_si3036); idx++)
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ctl_new1(&snd_ac97_controls_si3036[idx], ac97))) < 0)
-			return err;
-=======
 	for (idx = 0; idx < ARRAY_SIZE(snd_ac97_controls_si3036); idx++) {
 		err = snd_ctl_add(ac97->bus->card, snd_ctl_new1(&snd_ac97_controls_si3036[idx], ac97));
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4414,11 +3895,7 @@ static int mpatch_si3036(struct snd_ac97 * ac97)
  * check_volume_resolution().
  */
 
-<<<<<<< HEAD
-static struct snd_ac97_res_table lm4550_restbl[] = {
-=======
 static const struct snd_ac97_res_table lm4550_restbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ AC97_MASTER, 0x1f1f },
 	{ AC97_HEADPHONE, 0x1f1f },
 	{ AC97_MASTER_MONO, 0x001f },
@@ -4439,44 +3916,3 @@ static int patch_lm4550(struct snd_ac97 *ac97)
 	ac97->res_table = lm4550_restbl;
 	return 0;
 }
-<<<<<<< HEAD
-
-/* 
- *  UCB1400 codec (http://www.semiconductors.philips.com/acrobat_download/datasheets/UCB1400-02.pdf)
- */
-static const struct snd_kcontrol_new snd_ac97_controls_ucb1400[] = {
-/* enable/disable headphone driver which allows direct connection to
-   stereo headphone without the use of external DC blocking
-   capacitors */
-AC97_SINGLE("Headphone Driver", 0x6a, 6, 1, 0),
-/* Filter used to compensate the DC offset is added in the ADC to remove idle
-   tones from the audio band. */
-AC97_SINGLE("DC Filter", 0x6a, 4, 1, 0),
-/* Control smart-low-power mode feature. Allows automatic power down
-   of unused blocks in the ADC analog front end and the PLL. */
-AC97_SINGLE("Smart Low Power Mode", 0x6c, 4, 3, 0),
-};
-
-static int patch_ucb1400_specific(struct snd_ac97 * ac97)
-{
-	int idx, err;
-	for (idx = 0; idx < ARRAY_SIZE(snd_ac97_controls_ucb1400); idx++)
-		if ((err = snd_ctl_add(ac97->bus->card, snd_ctl_new1(&snd_ac97_controls_ucb1400[idx], ac97))) < 0)
-			return err;
-	return 0;
-}
-
-static const struct snd_ac97_build_ops patch_ucb1400_ops = {
-	.build_specific	= patch_ucb1400_specific,
-};
-
-static int patch_ucb1400(struct snd_ac97 * ac97)
-{
-	ac97->build_ops = &patch_ucb1400_ops;
-	/* enable headphone driver and smart low power mode by default */
-	snd_ac97_write_cache(ac97, 0x6a, 0x0050);
-	snd_ac97_write_cache(ac97, 0x6c, 0x0030);
-	return 0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

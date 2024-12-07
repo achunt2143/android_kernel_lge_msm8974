@@ -36,21 +36,12 @@
 #define REMOTEPROC_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/kref.h>
-#include <linux/klist.h>
-#include <linux/mutex.h>
-#include <linux/virtio.h>
-#include <linux/completion.h>
-#include <linux/idr.h>
-=======
 #include <linux/mutex.h>
 #include <linux/virtio.h>
 #include <linux/cdev.h>
 #include <linux/completion.h>
 #include <linux/idr.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct resource_table - firmware resource table header
@@ -83,11 +74,7 @@ struct resource_table {
 	u32 ver;
 	u32 num;
 	u32 reserved[2];
-<<<<<<< HEAD
-	u32 offset[0];
-=======
 	u32 offset[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /**
@@ -101,11 +88,7 @@ struct resource_table {
  */
 struct fw_rsc_hdr {
 	u32 type;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /**
@@ -118,13 +101,9 @@ struct fw_rsc_hdr {
  *		    the remote processor will be writing logs.
  * @RSC_VDEV:       declare support for a virtio device, and serve as its
  *		    virtio header.
-<<<<<<< HEAD
- * @RSC_LAST:       just keep this one at the end
-=======
  * @RSC_LAST:       just keep this one at the end of standard resources
  * @RSC_VENDOR_START:	start of the vendor specific resource types range
  * @RSC_VENDOR_END:	end of the vendor specific resource types range
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For more details regarding a specific resource type, please see its
  * dedicated structure below.
@@ -135,16 +114,6 @@ struct fw_rsc_hdr {
  * please update it as needed.
  */
 enum fw_resource_type {
-<<<<<<< HEAD
-	RSC_CARVEOUT	= 0,
-	RSC_DEVMEM	= 1,
-	RSC_TRACE	= 2,
-	RSC_VDEV	= 3,
-	RSC_LAST	= 4,
-};
-
-#define FW_RSC_ADDR_ANY (0xFFFFFFFFFFFFFFFF)
-=======
 	RSC_CARVEOUT		= 0,
 	RSC_DEVMEM		= 1,
 	RSC_TRACE		= 2,
@@ -155,7 +124,6 @@ enum fw_resource_type {
 };
 
 #define FW_RSC_ADDR_ANY (-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct fw_rsc_carveout - physically contiguous memory request
@@ -275,17 +243,10 @@ struct fw_rsc_trace {
  * @da: device address
  * @align: the alignment between the consumer and producer parts of the vring
  * @num: num of buffers supported by this vring (must be power of two)
-<<<<<<< HEAD
- * @notifyid is a unique rproc-wide notify index for this vring. This notify
- * index is used when kicking a remote processor, to let it know that this
- * vring is triggered.
- * @reserved: reserved (must be zero)
-=======
  * @notifyid: a unique rproc-wide notify index for this vring. This notify
  * index is used when kicking a remote processor, to let it know that this
  * vring is triggered.
  * @pa: physical address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This descriptor is not a resource entry by itself; it is part of the
  * vdev resource type (see below).
@@ -299,30 +260,12 @@ struct fw_rsc_vdev_vring {
 	u32 align;
 	u32 num;
 	u32 notifyid;
-<<<<<<< HEAD
-	u32 reserved;
-=======
 	u32 pa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /**
  * struct fw_rsc_vdev - virtio device header
  * @id: virtio device id (as in virtio_ids.h)
-<<<<<<< HEAD
- * @notifyid is a unique rproc-wide notify index for this vdev. This notify
- * index is used when kicking a remote processor, to let it know that the
- * status/features of this vdev have changes.
- * @dfeatures specifies the virtio device features supported by the firmware
- * @gfeatures is a place holder used by the host to write back the
- * negotiated features that are supported by both sides.
- * @config_len is the size of the virtio config space of this vdev. The config
- * space lies in the resource table immediate after this vdev header.
- * @status is a place holder where the host will indicate its virtio progress.
- * @num_of_vrings indicates how many vrings are described in this vdev header
- * @reserved: reserved (must be zero)
- * @vring is an array of @num_of_vrings entries of 'struct fw_rsc_vdev_vring'.
-=======
  * @notifyid: a unique rproc-wide notify index for this vdev. This notify
  * index is used when kicking a remote processor, to let it know that the
  * status/features of this vdev have changes.
@@ -335,7 +278,6 @@ struct fw_rsc_vdev_vring {
  * @num_of_vrings: indicates how many vrings are described in this vdev header
  * @reserved: reserved (must be zero)
  * @vring: an array of @num_of_vrings entries of 'struct fw_rsc_vdev_vring'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This resource is a virtio device header: it provides information about
  * the vdev, and is then used by the host and its peer remote processors
@@ -345,18 +287,6 @@ struct fw_rsc_vdev_vring {
  * to statically allocate a vdev upon registration of the rproc (dynamic vdev
  * allocation is not yet supported).
  *
-<<<<<<< HEAD
- * Note: unlike virtualization systems, the term 'host' here means
- * the Linux side which is running remoteproc to control the remote
- * processors. We use the name 'gfeatures' to comply with virtio's terms,
- * though there isn't really any virtualized guest OS here: it's the host
- * which is responsible for negotiating the final features.
- * Yeah, it's a bit confusing.
- *
- * Note: immediately following this structure is the virtio config space for
- * this vdev (which is specific to the vdev; for more info, read the virtio
- * spec). the size of the config space is specified by @config_len.
-=======
  * Note:
  * 1. unlike virtualization systems, the term 'host' here means
  *    the Linux side which is running remoteproc to control the remote
@@ -368,7 +298,6 @@ struct fw_rsc_vdev_vring {
  * 2. immediately following this structure is the virtio config space for
  *    this vdev (which is specific to the vdev; for more info, read the virtio
  *    spec). The size of the config space is specified by @config_len.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fw_rsc_vdev {
 	u32 id;
@@ -379,41 +308,6 @@ struct fw_rsc_vdev {
 	u8 status;
 	u8 num_of_vrings;
 	u8 reserved[2];
-<<<<<<< HEAD
-	struct fw_rsc_vdev_vring vring[0];
-} __packed;
-
-/**
- * struct rproc_mem_entry - memory entry descriptor
- * @va:	virtual address
- * @dma: dma address
- * @len: length, in bytes
- * @da: device address
- * @priv: associated data
- * @node: list node
- */
-struct rproc_mem_entry {
-	void *va;
-	dma_addr_t dma;
-	int len;
-	u32 da;
-	void *priv;
-	struct list_head node;
-};
-
-struct rproc;
-
-/**
- * struct rproc_ops - platform-specific device handlers
- * @start:	power on the device and boot it
- * @stop:	power off the device
- * @kick:	kick a virtqueue (virtqueue id given as a parameter)
- */
-struct rproc_ops {
-	int (*start)(struct rproc *rproc);
-	int (*stop)(struct rproc *rproc);
-	void (*kick)(struct rproc *rproc, int vqid);
-=======
 	struct fw_rsc_vdev_vring vring[];
 } __packed;
 
@@ -509,7 +403,6 @@ struct rproc_ops {
 	u64 (*get_boot_addr)(struct rproc *rproc, const struct firmware *fw);
 	unsigned long (*panic)(struct rproc *rproc);
 	void (*coredump)(struct rproc *rproc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -519,14 +412,11 @@ struct rproc_ops {
  *			a message.
  * @RPROC_RUNNING:	device is up and running
  * @RPROC_CRASHED:	device has crashed; need to start recovery
-<<<<<<< HEAD
-=======
  * @RPROC_DELETED:	device is deleted
  * @RPROC_ATTACHED:	device has been booted by another entity and the core
  *			has attached to it
  * @RPROC_DETACHED:	device has been booted by another entity and waiting
  *			for the core to attach to it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @RPROC_LAST:		just keep this one at the end
  *
  * Please note that the values of these states are used as indices
@@ -540,9 +430,6 @@ enum rproc_state {
 	RPROC_SUSPENDED	= 1,
 	RPROC_RUNNING	= 2,
 	RPROC_CRASHED	= 3,
-<<<<<<< HEAD
-	RPROC_LAST	= 4,
-=======
 	RPROC_DELETED	= 4,
 	RPROC_ATTACHED	= 5,
 	RPROC_DETACHED	= 6,
@@ -614,47 +501,26 @@ struct rproc_dump_segment {
 enum rproc_features {
 	RPROC_FEAT_ATTACH_ON_RECOVERY,
 	RPROC_MAX_FEATURES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct rproc - represents a physical remote processor device
-<<<<<<< HEAD
- * @node: klist node of this rproc object
-=======
  * @node: list node of this rproc object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @domain: iommu domain
  * @name: human readable name of the rproc
  * @firmware: name of firmware file to be loaded
  * @priv: private data which belongs to the platform-specific rproc module
  * @ops: platform-specific start/stop rproc handlers
-<<<<<<< HEAD
- * @dev: underlying device
- * @refcount: refcount of users that have a valid pointer to this rproc
- * @power: refcount of users who need this rproc powered up
- * @state: state of the device
-=======
  * @dev: virtual device for refcounting and common remoteproc behavior
  * @power: refcount of users who need this rproc powered up
  * @state: state of the device
  * @dump_conf: Currently selected coredump configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lock: lock which protects concurrent manipulations of the rproc
  * @dbg_dir: debugfs directory of this rproc device
  * @traces: list of trace buffers
  * @num_traces: number of trace buffers
  * @carveouts: list of physically contiguous memory allocations
  * @mappings: list of iommu mappings we initiated, needed on shutdown
-<<<<<<< HEAD
- * @firmware_loading_complete: marks e/o asynchronous firmware loading
- * @bootaddr: address of first instruction to boot rproc with (optional)
- * @rvdevs: list of remote virtio devices
- * @notifyids: idr for dynamically assigning rproc-wide unique notify ids
- */
-struct rproc {
-	struct klist_node node;
-=======
  * @bootaddr: address of first instruction to boot rproc with (optional)
  * @rvdevs: list of remote virtio devices
  * @subdevs: list of subdevices, to following the running state
@@ -682,39 +548,21 @@ struct rproc {
  */
 struct rproc {
 	struct list_head node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iommu_domain *domain;
 	const char *name;
 	const char *firmware;
 	void *priv;
-<<<<<<< HEAD
-	const struct rproc_ops *ops;
-	struct device *dev;
-	struct kref refcount;
-	atomic_t power;
-	unsigned int state;
-=======
 	struct rproc_ops *ops;
 	struct device dev;
 	atomic_t power;
 	unsigned int state;
 	enum rproc_dump_mechanism dump_conf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex lock;
 	struct dentry *dbg_dir;
 	struct list_head traces;
 	int num_traces;
 	struct list_head carveouts;
 	struct list_head mappings;
-<<<<<<< HEAD
-	struct completion firmware_loading_complete;
-	u32 bootaddr;
-	struct list_head rvdevs;
-	struct idr notifyids;
-};
-
-/* we currently support only two vrings per rvdev */
-=======
 	u64 bootaddr;
 	struct list_head rvdevs;
 	struct list_head subdevs;
@@ -760,18 +608,12 @@ struct rproc_subdev {
 
 /* we currently support only two vrings per rvdev */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RVDEV_NUM_VRINGS 2
 
 /**
  * struct rproc_vring - remoteproc vring state
  * @va:	virtual address
-<<<<<<< HEAD
- * @dma: dma address
- * @len: length, in bytes
-=======
  * @num: vring size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @da: device address
  * @align: vring alignment
  * @notifyid: rproc-specific unique vring index
@@ -780,12 +622,7 @@ struct rproc_subdev {
  */
 struct rproc_vring {
 	void *va;
-<<<<<<< HEAD
-	dma_addr_t dma;
-	int len;
-=======
 	int num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 da;
 	u32 align;
 	int notifyid;
@@ -795,48 +632,6 @@ struct rproc_vring {
 
 /**
  * struct rproc_vdev - remoteproc state for a supported virtio device
-<<<<<<< HEAD
- * @node: list node
- * @rproc: the rproc handle
- * @vdev: the virio device
- * @vring: the vrings for this vdev
- * @dfeatures: virtio device features
- * @gfeatures: virtio guest features
- */
-struct rproc_vdev {
-	struct list_head node;
-	struct rproc *rproc;
-	struct virtio_device vdev;
-	struct rproc_vring vring[RVDEV_NUM_VRINGS];
-	unsigned long dfeatures;
-	unsigned long gfeatures;
-};
-
-struct rproc *rproc_get_by_name(const char *name);
-void rproc_put(struct rproc *rproc);
-
-struct rproc *rproc_alloc(struct device *dev, const char *name,
-				const struct rproc_ops *ops,
-				const char *firmware, int len);
-void rproc_free(struct rproc *rproc);
-int rproc_register(struct rproc *rproc);
-int rproc_unregister(struct rproc *rproc);
-
-int rproc_boot(struct rproc *rproc);
-void rproc_shutdown(struct rproc *rproc);
-
-static inline struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
-{
-	return container_of(vdev, struct rproc_vdev, vdev);
-}
-
-static inline struct rproc *vdev_to_rproc(struct virtio_device *vdev)
-{
-	struct rproc_vdev *rvdev = vdev_to_rvdev(vdev);
-
-	return rvdev->rproc;
-}
-=======
  * @subdev: handle for registering the vdev as a rproc subdevice
  * @pdev: remoteproc virtio platform device
  * @id: virtio device id (as in virtio_ids.h)
@@ -913,6 +708,5 @@ int rproc_coredump_set_elf_info(struct rproc *rproc, u8 class, u16 machine);
 void rproc_add_subdev(struct rproc *rproc, struct rproc_subdev *subdev);
 
 void rproc_remove_subdev(struct rproc *rproc, struct rproc_subdev *subdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* REMOTEPROC_H */

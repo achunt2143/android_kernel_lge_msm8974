@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/iomap.c
  *
@@ -13,11 +10,8 @@
 #include <linux/ioport.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-=======
 #include <asm/vga.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long vga_base;
 EXPORT_SYMBOL(vga_base);
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/amiga/amiflop.c
  *
@@ -64,28 +61,15 @@
 #include <linux/hdreg.h>
 #include <linux/delay.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-#include <linux/amifdreg.h>
-#include <linux/amifd.h>
-#include <linux/fs.h>
-#include <linux/blkdev.h>
-#include <linux/elevator.h>
-=======
 #include <linux/major.h>
 #include <linux/mutex.h>
 #include <linux/fs.h>
 #include <linux/blk-mq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 
 #include <asm/setup.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
 #include <asm/irq.h>
@@ -102,8 +86,6 @@
  */
 
 /*
-<<<<<<< HEAD
-=======
  * CIAAPRA bits (read only)
  */
 
@@ -224,7 +206,6 @@ struct amiga_floppy_struct {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Error codes
  */
 #define FD_OK		0	/* operation succeeded */
@@ -284,10 +265,7 @@ static struct amiga_floppy_struct unit[FD_MAX_UNITS];
 
 static struct timer_list flush_track_timer[FD_MAX_UNITS];
 static struct timer_list post_write_timer;
-<<<<<<< HEAD
-=======
 static unsigned long post_write_timer_drive;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct timer_list motor_on_timer;
 static struct timer_list motor_off_timer[FD_MAX_UNITS];
 static int on_attempts;
@@ -305,10 +283,6 @@ static volatile int selected = -1;	/* currently selected drive */
 static int writepending;
 static int writefromint;
 static char *raw_buf;
-<<<<<<< HEAD
-static int fdc_queue;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(amiflop_lock);
 
@@ -468,11 +442,7 @@ static void fd_deselect (int drive)
 
 }
 
-<<<<<<< HEAD
-static void motor_on_callback(unsigned long nr)
-=======
 static void motor_on_callback(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!(ciaa.pra & DSKRDY) || --on_attempts == 0) {
 		complete_all(&motor_on_completion);
@@ -492,12 +462,7 @@ static int fd_motor_on(int nr)
 		unit[nr].motor = 1;
 		fd_select(nr);
 
-<<<<<<< HEAD
-		INIT_COMPLETION(motor_on_completion);
-		motor_on_timer.data = nr;
-=======
 		reinit_completion(&motor_on_completion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&motor_on_timer, jiffies + HZ/2);
 
 		on_attempts = 10;
@@ -509,11 +474,7 @@ static int fd_motor_on(int nr)
 		on_attempts = -1;
 #if 0
 		printk (KERN_ERR "motor_on failed, turning motor off\n");
-<<<<<<< HEAD
-		fd_motor_off (nr);
-=======
 		fd_motor_off (motor_off_timer + nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 #else
 		printk (KERN_WARNING "DSKRDY not set after 1.5 seconds - assuming drive is spinning notwithstanding\n");
@@ -523,22 +484,6 @@ static int fd_motor_on(int nr)
 	return 1;
 }
 
-<<<<<<< HEAD
-static void fd_motor_off(unsigned long drive)
-{
-	long calledfromint;
-#ifdef MODULE
-	long decusecount;
-
-	decusecount = drive & 0x40000000;
-#endif
-	calledfromint = drive & 0x80000000;
-	drive&=3;
-	if (calledfromint && !try_fdc(drive)) {
-		/* We would be blocked in an interrupt, so try again later */
-		motor_off_timer[drive].expires = jiffies + 1;
-		add_timer(motor_off_timer + drive);
-=======
 static void fd_motor_off(struct timer_list *timer)
 {
 	unsigned long drive = ((unsigned long)timer -
@@ -550,7 +495,6 @@ static void fd_motor_off(struct timer_list *timer)
 		/* We would be blocked in an interrupt, so try again later */
 		timer->expires = jiffies + 1;
 		add_timer(timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	unit[drive].motor = 0;
@@ -564,11 +508,6 @@ static void floppy_off (unsigned int nr)
 	int drive;
 
 	drive = nr & 3;
-<<<<<<< HEAD
-	/* called this way it is always from interrupt */
-	motor_off_timer[drive].data = nr | 0x80000000;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(motor_off_timer + drive, jiffies + 3*HZ);
 }
 
@@ -610,11 +549,7 @@ static int fd_calibrate(int drive)
 			break;
 		if (--n == 0) {
 			printk (KERN_ERR "fd%d: calibrate failed, turning motor off\n", drive);
-<<<<<<< HEAD
-			fd_motor_off (drive);
-=======
 			fd_motor_off (motor_off_timer + drive);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unit[drive].track = -1;
 			rel_fdc();
 			return 0;
@@ -743,11 +678,7 @@ static irqreturn_t fd_block_done(int irq, void *dummy)
 	if (block_flag == 2) { /* writing */
 		writepending = 2;
 		post_write_timer.expires = jiffies + 1; /* at least 2 ms */
-<<<<<<< HEAD
-		post_write_timer.data = selected;
-=======
 		post_write_timer_drive = selected;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&post_write_timer);
 	}
 	else {                /* reading */
@@ -834,13 +765,10 @@ static void post_write (unsigned long drive)
 	rel_fdc(); /* corresponds to get_fdc() in raw_write */
 }
 
-<<<<<<< HEAD
-=======
 static void post_write_callback(struct timer_list *timer)
 {
 	post_write(post_write_timer_drive);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following functions are to convert the block contents into raw data
@@ -1434,17 +1362,12 @@ static void dos_write(int disk)
 /* FIXME: this assumes the drive is still spinning -
  * which is only true if we complete writing a track within three seconds
  */
-<<<<<<< HEAD
-static void flush_track_callback(unsigned long nr)
-{
-=======
 static void flush_track_callback(struct timer_list *timer)
 {
 	unsigned long nr = ((unsigned long)timer -
 			       (unsigned long)&flush_track_timer[0]) /
 					sizeof(flush_track_timer[0]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr&=3;
 	writefromint = 1;
 	if (!try_fdc(nr)) {
@@ -1532,67 +1455,6 @@ static int get_track(int drive, int track)
 	return -1;
 }
 
-<<<<<<< HEAD
-/*
- * Round-robin between our available drives, doing one request from each
- */
-static struct request *set_next_request(void)
-{
-	struct request_queue *q;
-	int cnt = FD_MAX_UNITS;
-	struct request *rq = NULL;
-
-	/* Find next queue we can dispatch from */
-	fdc_queue = fdc_queue + 1;
-	if (fdc_queue == FD_MAX_UNITS)
-		fdc_queue = 0;
-
-	for(cnt = FD_MAX_UNITS; cnt > 0; cnt--) {
-
-		if (unit[fdc_queue].type->code == FD_NODRIVE) {
-			if (++fdc_queue == FD_MAX_UNITS)
-				fdc_queue = 0;
-			continue;
-		}
-
-		q = unit[fdc_queue].gendisk->queue;
-		if (q) {
-			rq = blk_fetch_request(q);
-			if (rq)
-				break;
-		}
-
-		if (++fdc_queue == FD_MAX_UNITS)
-			fdc_queue = 0;
-	}
-
-	return rq;
-}
-
-static void redo_fd_request(void)
-{
-	struct request *rq;
-	unsigned int cnt, block, track, sector;
-	int drive;
-	struct amiga_floppy_struct *floppy;
-	char *data;
-	unsigned long flags;
-	int err;
-
-next_req:
-	rq = set_next_request();
-	if (!rq) {
-		/* Nothing left to do */
-		return;
-	}
-
-	floppy = rq->rq_disk->private_data;
-	drive = floppy - unit;
-
-next_segment:
-	/* Here someone could investigate to be more efficient */
-	for (cnt = 0, err = 0; cnt < blk_rq_cur_sectors(rq); cnt++) {
-=======
 static blk_status_t amiflop_rw_cur_segment(struct amiga_floppy_struct *floppy,
 					   struct request *rq)
 {
@@ -1601,41 +1463,22 @@ static blk_status_t amiflop_rw_cur_segment(struct amiga_floppy_struct *floppy,
 	char *data;
 
 	for (cnt = 0; cnt < blk_rq_cur_sectors(rq); cnt++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 		printk("fd: sector %ld + %d requested for %s\n",
 		       blk_rq_pos(rq), cnt,
 		       (rq_data_dir(rq) == READ) ? "read" : "write");
 #endif
 		block = blk_rq_pos(rq) + cnt;
-<<<<<<< HEAD
-		if ((int)block > floppy->blocks) {
-			err = -EIO;
-			break;
-		}
-
-		track = block / (floppy->dtype->sects * floppy->type->sect_mult);
-		sector = block % (floppy->dtype->sects * floppy->type->sect_mult);
-		data = rq->buffer + 512 * cnt;
-=======
 		track = block / (floppy->dtype->sects * floppy->type->sect_mult);
 		sector = block % (floppy->dtype->sects * floppy->type->sect_mult);
 		data = bio_data(rq->bio) + 512 * cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 		printk("access to track %d, sector %d, with buffer at "
 		       "0x%08lx\n", track, sector, data);
 #endif
 
-<<<<<<< HEAD
-		if (get_track(drive, track) == -1) {
-			err = -EIO;
-			break;
-		}
-=======
 		if (get_track(drive, track) == -1)
 			return BLK_STS_IOERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rq_data_dir(rq) == READ) {
 			memcpy(data, floppy->trackbuf + sector * 512, 512);
@@ -1643,38 +1486,12 @@ static blk_status_t amiflop_rw_cur_segment(struct amiga_floppy_struct *floppy,
 			memcpy(floppy->trackbuf + sector * 512, data, 512);
 
 			/* keep the drive spinning while writes are scheduled */
-<<<<<<< HEAD
-			if (!fd_motor_on(drive)) {
-				err = -EIO;
-				break;
-			}
-=======
 			if (!fd_motor_on(drive))
 				return BLK_STS_IOERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * setup a callback to write the track buffer
 			 * after a short (1 tick) delay.
 			 */
-<<<<<<< HEAD
-			local_irq_save(flags);
-
-			floppy->dirty = 1;
-		        /* reset the timer */
-			mod_timer (flush_track_timer + drive, jiffies + 1);
-			local_irq_restore(flags);
-		}
-	}
-
-	if (__blk_end_request_cur(rq, err))
-		goto next_segment;
-	goto next_req;
-}
-
-static void do_fd_request(struct request_queue * q)
-{
-	redo_fd_request();
-=======
 			floppy->dirty = 1;
 		        /* reset the timer */
 			mod_timer (flush_track_timer + drive, jiffies + 1);
@@ -1703,7 +1520,6 @@ static blk_status_t amiflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 
 	spin_unlock_irq(&amiflop_lock);
 	return BLK_STS_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -1716,11 +1532,7 @@ static int fd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int cmd, unsigned long param)
 {
 	struct amiga_floppy_struct *p = bdev->bd_disk->private_data;
@@ -1735,10 +1547,6 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 			rel_fdc();
 			return -EBUSY;
 		}
-<<<<<<< HEAD
-		fsync_bdev(bdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fd_motor_on(drive) == 0) {
 			rel_fdc();
 			return -ENODEV;
@@ -1793,21 +1601,12 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 			return p->type->read_size;
 #endif
 	default:
-<<<<<<< HEAD
-		printk(KERN_DEBUG "fd_ioctl: unknown cmd %d for drive %d.",
-		       cmd, drive);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int fd_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int fd_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned int cmd, unsigned long param)
 {
 	int ret;
@@ -1854,17 +1653,10 @@ static void fd_probe(int dev)
  * /dev/PS0 etc), and disallows simultaneous access to the same
  * drive with different device numbers.
  */
-<<<<<<< HEAD
-static int floppy_open(struct block_device *bdev, fmode_t mode)
-{
-	int drive = MINOR(bdev->bd_dev) & 3;
-	int system =  (MINOR(bdev->bd_dev) & 4) >> 2;
-=======
 static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 {
 	int drive = disk->first_minor & 3;
 	int system = (disk->first_minor & 4) >> 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_dev;
 	unsigned long flags;
 
@@ -1876,11 +1668,6 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 		return -EBUSY;
 	}
 
-<<<<<<< HEAD
-	if (mode & (FMODE_READ|FMODE_WRITE)) {
-		check_disk_change(bdev);
-		if (mode & FMODE_WRITE) {
-=======
 	if (unit[drive].type->code == FD_NODRIVE) {
 		mutex_unlock(&amiflop_mutex);
 		return -ENXIO;
@@ -1888,7 +1675,6 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 	if (mode & (BLK_OPEN_READ | BLK_OPEN_WRITE)) {
 		disk_check_media_change(disk);
 		if (mode & BLK_OPEN_WRITE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int wrprot;
 
 			get_fdc(drive);
@@ -1903,10 +1689,6 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 			}
 		}
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_save(flags);
 	fd_ref[drive]++;
 	fd_device[drive] = system;
@@ -1915,11 +1697,7 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 	unit[drive].dtype=&data_types[system];
 	unit[drive].blocks=unit[drive].type->heads*unit[drive].type->tracks*
 		data_types[system].sects*unit[drive].type->sect_mult;
-<<<<<<< HEAD
-	set_capacity(unit[drive].gendisk, unit[drive].blocks);
-=======
 	set_capacity(unit[drive].gendisk[system], unit[drive].blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "fd%d: accessing %s-disk with %s-layout\n",drive,
 	       unit[drive].type->name, data_types[system].name);
@@ -1928,11 +1706,7 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int floppy_release(struct gendisk *disk, fmode_t mode)
-=======
 static void floppy_release(struct gendisk *disk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct amiga_floppy_struct *p = disk->private_data;
 	int drive = p - unit;
@@ -1948,17 +1722,9 @@ static void floppy_release(struct gendisk *disk)
 		fd_ref[drive] = 0;
 	}
 #ifdef MODULE
-<<<<<<< HEAD
-/* the mod_use counter is handled this way */
-	floppy_off (drive | 0x40000000);
-#endif
-	mutex_unlock(&amiflop_mutex);
-	return 0;
-=======
 	floppy_off (drive);
 #endif
 	mutex_unlock(&amiflop_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2004,8 +1770,6 @@ static const struct block_device_operations floppy_fops = {
 	.check_events	= amiga_check_events,
 };
 
-<<<<<<< HEAD
-=======
 static const struct blk_mq_ops amiflop_mq_ops = {
 	.queue_rq = amiflop_queue_rq,
 };
@@ -2070,69 +1834,10 @@ out:
 	return -ENOMEM;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init fd_probe_drives(void)
 {
 	int drive,drives,nomem;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "FD: probing units\nfound ");
-	drives=0;
-	nomem=0;
-	for(drive=0;drive<FD_MAX_UNITS;drive++) {
-		struct gendisk *disk;
-		fd_probe(drive);
-		if (unit[drive].type->code == FD_NODRIVE)
-			continue;
-		disk = alloc_disk(1);
-		if (!disk) {
-			unit[drive].type->code = FD_NODRIVE;
-			continue;
-		}
-		unit[drive].gendisk = disk;
-
-		disk->queue = blk_init_queue(do_fd_request, &amiflop_lock);
-		if (!disk->queue) {
-			unit[drive].type->code = FD_NODRIVE;
-			continue;
-		}
-
-		drives++;
-		if ((unit[drive].trackbuf = kmalloc(FLOPPY_MAX_SECTORS * 512, GFP_KERNEL)) == NULL) {
-			printk("no mem for ");
-			unit[drive].type = &drive_types[num_dr_types - 1]; /* FD_NODRIVE */
-			drives--;
-			nomem = 1;
-		}
-		printk("fd%d ",drive);
-		disk->major = FLOPPY_MAJOR;
-		disk->first_minor = drive;
-		disk->fops = &floppy_fops;
-		sprintf(disk->disk_name, "fd%d", drive);
-		disk->private_data = &unit[drive];
-		set_capacity(disk, 880*2);
-		add_disk(disk);
-	}
-	if ((drives > 0) || (nomem == 0)) {
-		if (drives == 0)
-			printk("no drives");
-		printk("\n");
-		return drives;
-	}
-	printk("\n");
-	return -ENOMEM;
-}
- 
-static struct kobject *floppy_find(dev_t dev, int *part, void *data)
-{
-	int drive = *part & 3;
-	if (unit[drive].type->code == FD_NODRIVE)
-		return NULL;
-	*part = 0;
-	return get_disk(unit[drive].gendisk);
-}
-
-=======
 	pr_info("FD: probing units\nfound");
 	drives=0;
 	nomem=0;
@@ -2158,7 +1863,6 @@ static struct kobject *floppy_find(dev_t dev, int *part, void *data)
 	return -ENOMEM;
 }
  
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init amiga_floppy_probe(struct platform_device *pdev)
 {
 	int i, ret;
@@ -2188,25 +1892,6 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 	if (fd_probe_drives() < 1) /* No usable drives */
 		goto out_probe;
 
-<<<<<<< HEAD
-	blk_register_region(MKDEV(FLOPPY_MAJOR, 0), 256, THIS_MODULE,
-				floppy_find, NULL, NULL);
-
-	/* initialize variables */
-	init_timer(&motor_on_timer);
-	motor_on_timer.expires = 0;
-	motor_on_timer.data = 0;
-	motor_on_timer.function = motor_on_callback;
-	for (i = 0; i < FD_MAX_UNITS; i++) {
-		init_timer(&motor_off_timer[i]);
-		motor_off_timer[i].expires = 0;
-		motor_off_timer[i].data = i|0x80000000;
-		motor_off_timer[i].function = fd_motor_off;
-		init_timer(&flush_track_timer[i]);
-		flush_track_timer[i].expires = 0;
-		flush_track_timer[i].data = i;
-		flush_track_timer[i].function = flush_track_callback;
-=======
 	/* initialize variables */
 	timer_setup(&motor_on_timer, motor_on_callback, 0);
 	motor_on_timer.expires = 0;
@@ -2215,20 +1900,12 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 		motor_off_timer[i].expires = 0;
 		timer_setup(&flush_track_timer[i], flush_track_callback, 0);
 		flush_track_timer[i].expires = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		unit[i].track = -1;
 	}
 
-<<<<<<< HEAD
-	init_timer(&post_write_timer);
-	post_write_timer.expires = 0;
-	post_write_timer.data = 0;
-	post_write_timer.function = post_write;
-=======
 	timer_setup(&post_write_timer, post_write_callback, 0);
 	post_write_timer.expires = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   
 	for (i = 0; i < 128; i++)
 		mfmdecode[i]=255;
@@ -2253,40 +1930,9 @@ out_blkdev:
 	return ret;
 }
 
-<<<<<<< HEAD
-#if 0 /* not safe to unload */
-static int __exit amiga_floppy_remove(struct platform_device *pdev)
-{
-	int i;
-
-	for( i = 0; i < FD_MAX_UNITS; i++) {
-		if (unit[i].type->code != FD_NODRIVE) {
-			struct request_queue *q = unit[i].gendisk->queue;
-			del_gendisk(unit[i].gendisk);
-			put_disk(unit[i].gendisk);
-			kfree(unit[i].trackbuf);
-			if (q)
-				blk_cleanup_queue(q);
-		}
-	}
-	blk_unregister_region(MKDEV(FLOPPY_MAJOR, 0), 256);
-	free_irq(IRQ_AMIGA_CIAA_TB, NULL);
-	free_irq(IRQ_AMIGA_DSKBLK, NULL);
-	custom.dmacon = DMAF_DISK; /* disable DMA */
-	amiga_chip_free(raw_buf);
-	unregister_blkdev(FLOPPY_MAJOR, "fd");
-}
-#endif
-
 static struct platform_driver amiga_floppy_driver = {
 	.driver   = {
 		.name	= "amiga-floppy",
-		.owner	= THIS_MODULE,
-=======
-static struct platform_driver amiga_floppy_driver = {
-	.driver   = {
-		.name	= "amiga-floppy",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

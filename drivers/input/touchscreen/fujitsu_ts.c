@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fujitsu serial touchscreen driver
  *
  * Copyright (c) Dmitry Torokhov <dtor@mail.ru>
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -23,10 +12,6 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Fujitsu serial touchscreen driver"
 
@@ -162,11 +147,7 @@ static int fujitsu_connect(struct serio *serio, struct serio_driver *drv)
 /*
  * The serio driver structure.
  */
-<<<<<<< HEAD
-static struct serio_device_id fujitsu_serio_ids[] = {
-=======
 static const struct serio_device_id fujitsu_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_FUJITSU,
@@ -189,19 +170,4 @@ static struct serio_driver fujitsu_drv = {
 	.disconnect	= fujitsu_disconnect,
 };
 
-<<<<<<< HEAD
-static int __init fujitsu_init(void)
-{
-	return serio_register_driver(&fujitsu_drv);
-}
-
-static void __exit fujitsu_exit(void)
-{
-	serio_unregister_driver(&fujitsu_drv);
-}
-
-module_init(fujitsu_init);
-module_exit(fujitsu_exit);
-=======
 module_serio_driver(fujitsu_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

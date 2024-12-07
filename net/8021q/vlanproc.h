@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __BEN_VLAN_PROC_INC__
 #define __BEN_VLAN_PROC_INC__
 
@@ -9,11 +6,7 @@
 struct net;
 
 int vlan_proc_init(struct net *net);
-<<<<<<< HEAD
-int vlan_proc_rem_dev(struct net_device *vlandev);
-=======
 void vlan_proc_rem_dev(struct net_device *vlandev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vlan_proc_add_dev(struct net_device *vlandev);
 void vlan_proc_cleanup(struct net *net);
 
@@ -22,11 +15,7 @@ void vlan_proc_cleanup(struct net *net);
 #define vlan_proc_init(net)	(0)
 #define vlan_proc_cleanup(net)	do {} while (0)
 #define vlan_proc_add_dev(dev)	({(void)(dev), 0; })
-<<<<<<< HEAD
-#define vlan_proc_rem_dev(dev)	({(void)(dev), 0; })
-=======
 #define vlan_proc_rem_dev(dev)	do {} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* !(__BEN_VLAN_PROC_INC__) */

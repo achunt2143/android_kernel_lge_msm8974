@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_CMP_H
 #define _ASM_CMP_H
 
@@ -14,10 +11,6 @@ extern void cmp_smp_setup(void);
 extern void cmp_smp_finish(void);
 extern void cmp_boot_secondary(int cpu, struct task_struct *t);
 extern void cmp_init_secondary(void);
-<<<<<<< HEAD
-extern void cmp_cpus_done(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void cmp_prepare_cpus(unsigned int max_cpus);
 
 /* This is platform specific */

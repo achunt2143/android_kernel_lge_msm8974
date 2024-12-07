@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#
-# Generated files
-#
-conmakehash
-kallsyms
-pnmtologo
-bin2c
-unifdef
-ihex2fw
-recordmcount
-docproc
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 /asn1_compiler
 /generate_rust_target
@@ -24,4 +11,3 @@ docproc
 /sorttable
 /target.json
 /unifdef
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

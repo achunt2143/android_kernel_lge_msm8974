@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * viking.h:  Defines specific to the GNU/Viking MBUS module.
  *            This is SRMMU stuff.
@@ -13,10 +10,7 @@
 
 #include <asm/asi.h>
 #include <asm/mxcc.h>
-<<<<<<< HEAD
-=======
 #include <asm/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgtsrmmu.h>
 
 /* Bits in the SRMMU control register for GNU/Viking modules.
@@ -234,11 +228,7 @@ static inline unsigned long viking_hwprobe(unsigned long vaddr)
 			     : "=r" (val)
 			     : "r" (vaddr | 0x200), "i" (ASI_M_FLUSH_PROBE));
 	if ((val & SRMMU_ET_MASK) == SRMMU_ET_PTE) {
-<<<<<<< HEAD
-		vaddr &= ~SRMMU_PGDIR_MASK;
-=======
 		vaddr &= ~PGDIR_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vaddr >>= PAGE_SHIFT;
 		return val | (vaddr << 8);
 	}
@@ -248,11 +238,7 @@ static inline unsigned long viking_hwprobe(unsigned long vaddr)
 			     : "=r" (val)
 			     : "r" (vaddr | 0x100), "i" (ASI_M_FLUSH_PROBE));
 	if ((val & SRMMU_ET_MASK) == SRMMU_ET_PTE) {
-<<<<<<< HEAD
-		vaddr &= ~SRMMU_REAL_PMD_MASK;
-=======
 		vaddr &= ~PMD_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vaddr >>= PAGE_SHIFT;
 		return val | (vaddr << 8);
 	}

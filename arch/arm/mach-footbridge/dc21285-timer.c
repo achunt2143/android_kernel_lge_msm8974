@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-footbridge/dc21285-timer.c
  *
@@ -13,10 +10,7 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched_clock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 
@@ -26,11 +20,7 @@
 
 #include "common.h"
 
-<<<<<<< HEAD
-static cycle_t cksrc_dc21285_read(struct clocksource *cs)
-=======
 static u64 cksrc_dc21285_read(struct clocksource *cs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return cs->mask - *CSR_TIMER2_VALUE;
 }
@@ -58,32 +48,6 @@ static struct clocksource cksrc_dc21285 = {
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
-<<<<<<< HEAD
-static void ckevt_dc21285_set_mode(enum clock_event_mode mode,
-	struct clock_event_device *c)
-{
-	switch (mode) {
-	case CLOCK_EVT_MODE_RESUME:
-	case CLOCK_EVT_MODE_PERIODIC:
-		*CSR_TIMER1_CLR = 0;
-		*CSR_TIMER1_LOAD = (mem_fclk_21285 + 8 * HZ) / (16 * HZ);
-		*CSR_TIMER1_CNTL = TIMER_CNTL_ENABLE | TIMER_CNTL_AUTORELOAD |
-				   TIMER_CNTL_DIV16;
-		break;
-
-	default:
-		*CSR_TIMER1_CNTL = 0;
-		break;
-	}
-}
-
-static struct clock_event_device ckevt_dc21285 = {
-	.name		= "dc21285_timer1",
-	.features	= CLOCK_EVT_FEAT_PERIODIC,
-	.rating		= 200,
-	.irq		= IRQ_TIMER1,
-	.set_mode	= ckevt_dc21285_set_mode,
-=======
 static int ckevt_dc21285_set_next_event(unsigned long delta,
 	struct clock_event_device *c)
 {
@@ -120,7 +84,6 @@ static struct clock_event_device ckevt_dc21285 = {
 	.set_state_periodic	= ckevt_dc21285_set_periodic,
 	.set_state_oneshot	= ckevt_dc21285_shutdown,
 	.tick_resume		= ckevt_dc21285_set_periodic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t timer1_interrupt(int irq, void *dev_id)
@@ -129,49 +92,15 @@ static irqreturn_t timer1_interrupt(int irq, void *dev_id)
 
 	*CSR_TIMER1_CLR = 0;
 
-<<<<<<< HEAD
-=======
 	/* Stop the timer if in one-shot mode */
 	if (clockevent_state_oneshot(ce))
 		*CSR_TIMER1_CNTL = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ce->event_handler(ce);
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static struct irqaction footbridge_timer_irq = {
-	.name		= "dc21285_timer1",
-	.handler	= timer1_interrupt,
-	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
-	.dev_id		= &ckevt_dc21285,
-};
-
-/*
- * Set up timer interrupt.
- */
-static void __init footbridge_timer_init(void)
-{
-	struct clock_event_device *ce = &ckevt_dc21285;
-
-	clocksource_register_hz(&cksrc_dc21285, (mem_fclk_21285 + 8) / 16);
-
-	setup_irq(ce->irq, &footbridge_timer_irq);
-
-	clockevents_calc_mult_shift(ce, mem_fclk_21285, 5);
-	ce->max_delta_ns = clockevent_delta2ns(0xffffff, ce);
-	ce->min_delta_ns = clockevent_delta2ns(0x000004, ce);
-	ce->cpumask = cpumask_of(smp_processor_id());
-
-	clockevents_register_device(ce);
-}
-
-struct sys_timer footbridge_timer = {
-	.init		= footbridge_timer_init,
-};
-=======
 /*
  * Set up timer interrupt.
  */
@@ -205,4 +134,3 @@ void __init footbridge_sched_clock(void)
 
 	sched_clock_register(footbridge_read_sched_clock, 24, rate);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

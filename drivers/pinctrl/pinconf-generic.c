@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for the generic pin config portions of the pin control subsystem
  *
@@ -9,71 +6,10 @@
  * Written on behalf of Linaro for ST-Ericsson
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "generic pinconfig core: " fmt
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/device.h>
-#include <linux/slab.h>
-#include <linux/debugfs.h>
-#include <linux/seq_file.h>
-#include <linux/pinctrl/pinctrl.h>
-#include <linux/pinctrl/pinconf.h>
-#include <linux/pinctrl/pinconf-generic.h>
-#include <linux/of.h>
-#include "core.h"
-#include "pinconf.h"
-
-#ifdef CONFIG_DEBUG_FS
-
-struct pin_config_item {
-	const enum pin_config_param param;
-	const char * const display;
-	const char * const format;
-};
-
-#define PCONFDUMP(a, b, c) { .param = a, .display = b, .format = c }
-
-struct pin_config_item conf_items[] = {
-	PCONFDUMP(PIN_CONFIG_BIAS_DISABLE, "input bias disabled", NULL),
-	PCONFDUMP(PIN_CONFIG_BIAS_HIGH_IMPEDANCE, "input bias high impedance", NULL),
-	PCONFDUMP(PIN_CONFIG_BIAS_BUS_HOLD, "input bias bus hold", NULL),
-	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", NULL),
-	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", NULL),
-	PCONFDUMP(PIN_CONFIG_BIAS_PULL_PIN_DEFAULT,
-				"input bias pull to pin specific state", NULL),
-	PCONFDUMP(PIN_CONFIG_DRIVE_PUSH_PULL, "output drive push pull", NULL),
-	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_DRAIN, "output drive open drain", NULL),
-	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_SOURCE, "output drive open source", NULL),
-	PCONFDUMP(PIN_CONFIG_DRIVE_STRENGTH, "output drive strength", "mA"),
-	PCONFDUMP(PIN_CONFIG_INPUT_SCHMITT_ENABLE, "input schmitt enabled", NULL),
-	PCONFDUMP(PIN_CONFIG_INPUT_SCHMITT, "input schmitt trigger", NULL),
-	PCONFDUMP(PIN_CONFIG_INPUT_DEBOUNCE, "input debounce", "time units"),
-	PCONFDUMP(PIN_CONFIG_POWER_SOURCE, "pin power source", "selector"),
-	PCONFDUMP(PIN_CONFIG_SLEW_RATE, "slew rate", NULL),
-	PCONFDUMP(PIN_CONFIG_LOW_POWER_MODE, "pin low power", "mode"),
-	PCONFDUMP(PIN_CONFIG_OUTPUT, "pin output", "level"),
-};
-
-void pinconf_generic_dump_pin(struct pinctrl_dev *pctldev,
-			      struct seq_file *s, unsigned pin)
-{
-	const struct pinconf_ops *ops = pctldev->desc->confops;
-	int i;
-
-	if (!ops->is_generic)
-		return;
-
-	for(i = 0; i < ARRAY_SIZE(conf_items); i++) {
-=======
 #include <linux/array_size.h>
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -128,22 +64,16 @@ static void pinconf_generic_dump_one(struct pinctrl_dev *pctldev,
 	int i;
 
 	for (i = 0; i < nitems; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long config;
 		int ret;
 
 		/* We want to check out this parameter */
-<<<<<<< HEAD
-		config = pinconf_to_config_packed(conf_items[i].param, 0);
-		ret = pin_config_get_for_pin(pctldev, pin, &config);
-=======
 		config = pinconf_to_config_packed(items[i].param, 0);
 		if (gname)
 			ret = pin_config_group_get(dev_name(pctldev->dev),
 						   gname, &config);
 		else
 			ret = pin_config_get_for_pin(pctldev, pin, &config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* These are legal errors */
 		if (ret == -EINVAL || ret == -ENOTSUPP)
 			continue;
@@ -151,25 +81,6 @@ static void pinconf_generic_dump_one(struct pinctrl_dev *pctldev,
 			seq_printf(s, "ERROR READING CONFIG SETTING %d ", i);
 			continue;
 		}
-<<<<<<< HEAD
-		/* Space between multiple configs */
-		seq_puts(s, " ");
-		seq_puts(s, conf_items[i].display);
-		/* Print unit if available */
-		if (conf_items[i].format &&
-		    pinconf_to_config_argument(config) != 0)
-			seq_printf(s, " (%u %s)",
-				   pinconf_to_config_argument(config),
-				   conf_items[i].format);
-	}
-}
-
-void pinconf_generic_dump_group(struct pinctrl_dev *pctldev,
-			      struct seq_file *s, const char *gname)
-{
-	const struct pinconf_ops *ops = pctldev->desc->confops;
-	int i;
-=======
 		/* comma between multiple configs */
 		if (*print_sep)
 			seq_puts(s, ", ");
@@ -203,98 +114,10 @@ void pinconf_generic_dump_pins(struct pinctrl_dev *pctldev, struct seq_file *s,
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 	int print_sep = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ops->is_generic)
 		return;
 
-<<<<<<< HEAD
-	for(i = 0; i < ARRAY_SIZE(conf_items); i++) {
-		unsigned long config;
-		int ret;
-
-		/* We want to check out this parameter */
-		config = pinconf_to_config_packed(conf_items[i].param, 0);
-		ret = pin_config_group_get(dev_name(pctldev->dev), gname,
-					   &config);
-		/* These are legal errors */
-		if (ret == -EINVAL || ret == -ENOTSUPP)
-			continue;
-		if (ret) {
-			seq_printf(s, "ERROR READING CONFIG SETTING %d ", i);
-			continue;
-		}
-		/* Space between multiple configs */
-		seq_puts(s, " ");
-		seq_puts(s, conf_items[i].display);
-		/* Print unit if available */
-		if (conf_items[i].format && config != 0)
-			seq_printf(s, " (%u %s)",
-				   pinconf_to_config_argument(config),
-				   conf_items[i].format);
-	}
-}
-
-#endif
-
-#ifdef CONFIG_OF
-struct pinconf_generic_dt_params {
-	const char * const property;
-	enum pin_config_param param;
-	u32 default_value;
-};
-
-static struct pinconf_generic_dt_params dt_params[] = {
-	{ "bias-disable", PIN_CONFIG_BIAS_DISABLE, 0 },
-	{ "bias-high-impedance", PIN_CONFIG_BIAS_HIGH_IMPEDANCE, 0 },
-	{ "bias-bus-hold", PIN_CONFIG_BIAS_BUS_HOLD, 0 },
-	{ "bias-pull-up", PIN_CONFIG_BIAS_PULL_UP, 1 },
-	{ "bias-pull-down", PIN_CONFIG_BIAS_PULL_DOWN, 1 },
-	{ "bias-pull-pin-default", PIN_CONFIG_BIAS_PULL_PIN_DEFAULT, 1 },
-	{ "drive-push-pull", PIN_CONFIG_DRIVE_PUSH_PULL, 0 },
-	{ "drive-open-drain", PIN_CONFIG_DRIVE_OPEN_DRAIN, 0 },
-	{ "drive-open-source", PIN_CONFIG_DRIVE_OPEN_SOURCE, 0 },
-	{ "drive-strength", PIN_CONFIG_DRIVE_STRENGTH, 0 },
-	{ "input-schmitt-enable", PIN_CONFIG_INPUT_SCHMITT_ENABLE, 1 },
-	{ "input-schmitt-disable", PIN_CONFIG_INPUT_SCHMITT_ENABLE, 0 },
-	{ "input-schmitt", PIN_CONFIG_INPUT_SCHMITT, 0 },
-	{ "input-debounce", PIN_CONFIG_INPUT_DEBOUNCE, 0 },
-	{ "power-source", PIN_CONFIG_POWER_SOURCE, 0 },
-	{ "slew-rate", PIN_CONFIG_SLEW_RATE, 0 },
-	{ "low-power-enable", PIN_CONFIG_LOW_POWER_MODE, 1 },
-	{ "low-power-disable", PIN_CONFIG_LOW_POWER_MODE, 0 },
-	{ "output-low", PIN_CONFIG_OUTPUT, 0, },
-	{ "output-high", PIN_CONFIG_OUTPUT, 1, },
-};
-
-/**
- * pinconf_generic_parse_dt_config()
- * parse the config properties into generic pinconfig values.
- * @np: node containing the pinconfig properties
- * @configs: array with nconfigs entries containing the generic pinconf values
- * @nconfigs: umber of configurations
- */
-int pinconf_generic_parse_dt_config(struct device_node *np,
-				    unsigned long **configs,
-				    unsigned int *nconfigs)
-{
-	unsigned long *cfg;
-	unsigned int ncfg = 0;
-	int ret;
-	int i;
-	u32 val;
-
-	if (!np)
-		return -EINVAL;
-
-	/* allocate a temporary array big enough to hold one of each option */
-	cfg = kzalloc(sizeof(*cfg) * ARRAY_SIZE(dt_params), GFP_KERNEL);
-	if (!cfg)
-		return -ENOMEM;
-
-	for (i = 0; i < ARRAY_SIZE(dt_params); i++) {
-		struct pinconf_generic_dt_params *par = &dt_params[i];
-=======
 	/* generic parameters */
 	pinconf_generic_dump_one(pctldev, s, gname, pin, conf_items,
 				 ARRAY_SIZE(conf_items), &print_sep);
@@ -392,7 +215,6 @@ static void parse_dt_cfg(struct device_node *np,
 		int ret;
 		const struct pinconf_generic_params *par = &params[i];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = of_property_read_u32(np, par->property, &val);
 
 		/* property not found */
@@ -404,11 +226,6 @@ static void parse_dt_cfg(struct device_node *np,
 			val = par->default_value;
 
 		pr_debug("found %s with value %u\n", par->property, val);
-<<<<<<< HEAD
-		cfg[ncfg] = pinconf_to_config_packed(par->param, val);
-		ncfg++;
-	}
-=======
 		cfg[*ncfg] = pinconf_to_config_packed(par->param, val);
 		(*ncfg)++;
 	}
@@ -448,7 +265,6 @@ int pinconf_generic_parse_dt_config(struct device_node *np,
 		pctldev->desc->custom_params)
 		parse_dt_cfg(np, pctldev->desc->custom_params,
 			     pctldev->desc->num_custom_params, cfg, &ncfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 
@@ -463,28 +279,18 @@ int pinconf_generic_parse_dt_config(struct device_node *np,
 	 * Now limit the number of configs to the real number of
 	 * found properties.
 	 */
-<<<<<<< HEAD
-	*configs = kzalloc(ncfg * sizeof(unsigned long), GFP_KERNEL);
-=======
 	*configs = kmemdup(cfg, ncfg * sizeof(unsigned long), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*configs) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	memcpy(*configs, cfg, ncfg * sizeof(unsigned long));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*nconfigs = ncfg;
 
 out:
 	kfree(cfg);
 	return ret;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(pinconf_generic_parse_dt_config);
 
 int pinconf_generic_dt_subnode_to_map(struct pinctrl_dev *pctldev,
@@ -612,5 +418,4 @@ void pinconf_generic_dt_free_map(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinconf_generic_dt_free_map);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

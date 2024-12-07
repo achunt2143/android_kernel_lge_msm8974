@@ -36,12 +36,8 @@
 	#address-cells = <2>;
 	#size-cells = <1>;
 	compatible = "fsl,p1020-elbc", "fsl,elbc", "simple-bus";
-<<<<<<< HEAD
-	interrupts = <19 2 0 0>;
-=======
 	interrupts = <19 2 0 0>,
 		     <16 2 0 0>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* controller at 0x9000 */

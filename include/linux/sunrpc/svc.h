@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/svc.h
  *
@@ -20,28 +17,10 @@
 #include <linux/sunrpc/xdr.h>
 #include <linux/sunrpc/auth.h>
 #include <linux/sunrpc/svcauth.h>
-<<<<<<< HEAD
-#include <linux/wait.h>
-#include <linux/mm.h>
-
-/*
- * This is the RPC server thread function prototype
- */
-typedef int		(*svc_thread_fn)(void *);
-
-/* statistics for svc_pool structures */
-struct svc_pool_stats {
-	unsigned long	packets;
-	unsigned long	sockets_queued;
-	unsigned long	threads_woken;
-	unsigned long	threads_timedout;
-};
-=======
 #include <linux/lwq.h>
 #include <linux/wait.h>
 #include <linux/mm.h>
 #include <linux/pagevec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *
@@ -55,16 +34,6 @@ struct svc_pool_stats {
  */
 struct svc_pool {
 	unsigned int		sp_id;	    	/* pool id; also node id on NUMA */
-<<<<<<< HEAD
-	spinlock_t		sp_lock;	/* protects all fields */
-	struct list_head	sp_threads;	/* idle server threads */
-	struct list_head	sp_sockets;	/* pending sockets */
-	unsigned int		sp_nrthreads;	/* # of threads in pool */
-	struct list_head	sp_all_threads;	/* all server threads */
-	struct svc_pool_stats	sp_stats;	/* statistics on pool operation */
-} ____cacheline_aligned_in_smp;
-
-=======
 	struct lwq		sp_xprts;	/* pending transports */
 	atomic_t		sp_nrthreads;	/* # of threads in pool */
 	struct list_head	sp_all_threads;	/* all server threads */
@@ -86,7 +55,6 @@ enum {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RPC service.
  *
@@ -118,39 +86,6 @@ struct svc_serv {
 
 	unsigned int		sv_nrpools;	/* number of thread pools */
 	struct svc_pool *	sv_pools;	/* array of thread pools */
-<<<<<<< HEAD
-
-	void			(*sv_shutdown)(struct svc_serv *serv,
-					       struct net *net);
-						/* Callback to use when last thread
-						 * exits.
-						 */
-
-	struct module *		sv_module;	/* optional module to count when
-						 * adding threads */
-	svc_thread_fn		sv_function;	/* main function for threads */
-#if defined(CONFIG_SUNRPC_BACKCHANNEL)
-	struct list_head	sv_cb_list;	/* queue for callback requests
-						 * that arrive over the same
-						 * connection */
-	spinlock_t		sv_cb_lock;	/* protects the svc_cb_list */
-	wait_queue_head_t	sv_cb_waitq;	/* sleep here if there are no
-						 * entries in the svc_cb_list */
-	struct svc_xprt		*sv_bc_xprt;	/* callback on fore channel */
-#endif /* CONFIG_SUNRPC_BACKCHANNEL */
-};
-
-/*
- * We use sv_nrthreads as a reference count.  svc_destroy() drops
- * this refcount, so we need to bump it up around operations that
- * change the number of threads.  Horrible, but there it is.
- * Should be called with the BKL held.
- */
-static inline void svc_get(struct svc_serv *serv)
-{
-	serv->sv_nrthreads++;
-}
-=======
 	int			(*sv_threadfn)(void *data);
 
 #if defined(CONFIG_SUNRPC_BACKCHANNEL)
@@ -168,7 +103,6 @@ struct svc_info {
 };
 
 void svc_destroy(struct svc_serv **svcp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Maximum payload size supported by a kernel RPC server.
@@ -177,11 +111,7 @@ void svc_destroy(struct svc_serv **svcp);
  *
  * These happen to all be powers of 2, which is not strictly
  * necessary but helps enforce the real limitation, which is
-<<<<<<< HEAD
- * that they should be multiples of PAGE_CACHE_SIZE.
-=======
  * that they should be multiples of PAGE_SIZE.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For UDP transports, a block plus NFS,RPC, and UDP headers
  * has to fit into the IP datagram limit of 64K.  The largest
@@ -202,27 +132,15 @@ void svc_destroy(struct svc_serv **svcp);
 extern u32 svc_max_payload(const struct svc_rqst *rqstp);
 
 /*
-<<<<<<< HEAD
- * RPC Requsts and replies are stored in one or more pages.
-=======
  * RPC Requests and replies are stored in one or more pages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We maintain an array of pages for each server thread.
  * Requests are copied into these pages as they arrive.  Remaining
  * pages are available to write the reply into.
  *
-<<<<<<< HEAD
- * Pages are sent using ->sendpage so each server thread needs to
- * allocate more to replace those used in sending.  To help keep track
- * of these pages we have a receive list where all pages initialy live,
- * and a send list where pages are moved to when there are to be part
- * of a reply.
-=======
  * Pages are sent using ->sendmsg with MSG_SPLICE_PAGES so each server thread
  * needs to allocate more to replace those used in sending.  To help keep track
  * of these pages we have a receive list where all pages initialy live, and a
  * send list where pages are moved to when there are to be part of a reply.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We use xdr_buf for holding responses as it fits well with NFS
  * read responses (that have a header, and some data pages, and possibly
@@ -242,63 +160,14 @@ extern u32 svc_max_payload(const struct svc_rqst *rqstp);
 #define RPCSVC_MAXPAGES		((RPCSVC_MAXPAYLOAD+PAGE_SIZE-1)/PAGE_SIZE \
 				+ 2 + 1)
 
-<<<<<<< HEAD
-static inline u32 svc_getnl(struct kvec *iov)
-{
-	__be32 val, *vp;
-	vp = iov->iov_base;
-	val = *vp++;
-	iov->iov_base = (void*)vp;
-	iov->iov_len -= sizeof(__be32);
-	return ntohl(val);
-}
-
-static inline void svc_putnl(struct kvec *iov, u32 val)
-{
-	__be32 *vp = iov->iov_base + iov->iov_len;
-	*vp = htonl(val);
-	iov->iov_len += sizeof(__be32);
-}
-
-static inline __be32 svc_getu32(struct kvec *iov)
-{
-	__be32 val, *vp;
-	vp = iov->iov_base;
-	val = *vp++;
-	iov->iov_base = (void*)vp;
-	iov->iov_len -= sizeof(__be32);
-	return val;
-}
-
-static inline void svc_ungetu32(struct kvec *iov)
-{
-	__be32 *vp = (__be32 *)iov->iov_base;
-	iov->iov_base = (void *)(vp - 1);
-	iov->iov_len += sizeof(*vp);
-}
-
-static inline void svc_putu32(struct kvec *iov, __be32 val)
-{
-	__be32 *vp = iov->iov_base + iov->iov_len;
-	*vp = val;
-	iov->iov_len += sizeof(__be32);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The context of a single thread, including the request currently being
  * processed.
  */
 struct svc_rqst {
-<<<<<<< HEAD
-	struct list_head	rq_list;	/* idle list */
-	struct list_head	rq_all;		/* all threads list */
-=======
 	struct list_head	rq_all;		/* all threads list */
 	struct llist_node	rq_idle;	/* On the idle list */
 	struct rcu_head		rq_rcu_head;	/* for RCU deferred kfree */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct svc_xprt *	rq_xprt;	/* transport ptr */
 
 	struct sockaddr_storage	rq_addr;	/* peer address */
@@ -309,24 +178,6 @@ struct svc_rqst {
 
 	struct svc_serv *	rq_server;	/* RPC service definition */
 	struct svc_pool *	rq_pool;	/* thread pool */
-<<<<<<< HEAD
-	struct svc_procedure *	rq_procinfo;	/* procedure info */
-	struct auth_ops *	rq_authop;	/* authentication flavour */
-	u32			rq_flavor;	/* pseudoflavor */
-	struct svc_cred		rq_cred;	/* auth info */
-	void *			rq_xprt_ctxt;	/* transport specific context ptr */
-	struct svc_deferred_req*rq_deferred;	/* deferred request we are replaying */
-	int			rq_usedeferral;	/* use deferral */
-
-	size_t			rq_xprt_hlen;	/* xprt header len */
-	struct xdr_buf		rq_arg;
-	struct xdr_buf		rq_res;
-	struct page *		rq_pages[RPCSVC_MAXPAGES];
-	struct page *		*rq_respages;	/* points into rq_pages */
-	int			rq_resused;	/* number of pages used for result */
-
-	struct kvec		rq_vec[RPCSVC_MAXPAGES]; /* generally useful.. */
-=======
 	const struct svc_procedure *rq_procinfo;/* procedure info */
 	struct auth_ops *	rq_authop;	/* authentication flavour */
 	struct svc_cred		rq_cred;	/* auth info */
@@ -346,25 +197,12 @@ struct svc_rqst {
 	struct folio_batch	rq_fbatch;
 	struct kvec		rq_vec[RPCSVC_MAXPAGES]; /* generally useful.. */
 	struct bio_vec		rq_bvec[RPCSVC_MAXPAGES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__be32			rq_xid;		/* transmission id */
 	u32			rq_prog;	/* program number */
 	u32			rq_vers;	/* program version */
 	u32			rq_proc;	/* procedure number */
 	u32			rq_prot;	/* IP protocol */
-<<<<<<< HEAD
-	unsigned short
-				rq_secure  : 1;	/* secure port */
-
-	void *			rq_argp;	/* decoded arguments */
-	void *			rq_resp;	/* xdr'd results */
-	void *			rq_auth_data;	/* flavor-specific data */
-
-	int			rq_reserved;	/* space on socket outq
-						 * reserved for this request
-						 */
-=======
 	int			rq_cachetype;	/* catering to nfsd */
 	unsigned long		rq_flags;	/* flags field */
 	ktime_t			rq_qtime;	/* enqueue time */
@@ -382,26 +220,10 @@ struct svc_rqst {
 						 * reserved for this request
 						 */
 	ktime_t			rq_stime;	/* start time */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct cache_req	rq_chandle;	/* handle passed to caches for 
 						 * request delaying 
 						 */
-<<<<<<< HEAD
-	bool			rq_dropme;
-	/* Catering to nfsd */
-	struct auth_domain *	rq_client;	/* RPC peer info */
-	struct auth_domain *	rq_gssclient;	/* "gss/"-style peer info */
-	int			rq_cachetype;
-	struct svc_cacherep *	rq_cacherep;	/* cache info */
-	int			rq_splice_ok;   /* turned off in gss privacy
-						 * to prevent encrypting page
-						 * cache pages */
-	wait_queue_head_t	rq_wait;	/* synchronization */
-	struct task_struct	*rq_task;	/* service thread */
-};
-
-=======
 	/* Catering to nfsd */
 	struct auth_domain *	rq_client;	/* RPC peer info */
 	struct auth_domain *	rq_gssclient;	/* "gss/"-style peer info */
@@ -427,7 +249,6 @@ enum {
 
 #define SVC_NET(rqst) (rqst->rq_xprt ? rqst->rq_xprt->xpt_net : rqst->rq_bc_net)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Rigorous type checking on sockaddr type conversions
  */
@@ -461,41 +282,6 @@ static inline struct sockaddr *svc_daddr(const struct svc_rqst *rqst)
 	return (struct sockaddr *) &rqst->rq_daddr;
 }
 
-<<<<<<< HEAD
-/*
- * Check buffer bounds after decoding arguments
- */
-static inline int
-xdr_argsize_check(struct svc_rqst *rqstp, __be32 *p)
-{
-	char *cp = (char *)p;
-	struct kvec *vec = &rqstp->rq_arg.head[0];
-	return cp >= (char*)vec->iov_base
-		&& cp <= (char*)vec->iov_base + vec->iov_len;
-}
-
-static inline int
-xdr_ressize_check(struct svc_rqst *rqstp, __be32 *p)
-{
-	struct kvec *vec = &rqstp->rq_res.head[0];
-	char *cp = (char*)p;
-
-	vec->iov_len = cp - (char*)vec->iov_base;
-
-	return vec->iov_len <= PAGE_SIZE;
-}
-
-static inline void svc_free_res_pages(struct svc_rqst *rqstp)
-{
-	while (rqstp->rq_resused) {
-		struct page **pp = (rqstp->rq_respages +
-				    --rqstp->rq_resused);
-		if (*pp) {
-			put_page(*pp);
-			*pp = NULL;
-		}
-	}
-=======
 /**
  * svc_thread_should_stop - check if this thread should stop
  * @rqstp: the thread that might need to stop
@@ -516,7 +302,6 @@ static inline bool svc_thread_should_stop(struct svc_rqst *rqstp)
 		set_bit(RQ_VICTIM, &rqstp->rq_flags);
 
 	return test_bit(RQ_VICTIM, &rqstp->rq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct svc_deferred_req {
@@ -526,12 +311,6 @@ struct svc_deferred_req {
 	size_t			addrlen;
 	struct sockaddr_storage	daddr;	/* where reply must come from */
 	size_t			daddrlen;
-<<<<<<< HEAD
-	struct cache_deferred_req handle;
-	size_t			xprt_hlen;
-	int			argslen;
-	__be32			args[0];
-=======
 	void			*xprt_ctxt;
 	struct cache_deferred_req handle;
 	int			argslen;
@@ -546,7 +325,6 @@ struct svc_process_info {
 			unsigned int hivers;
 		} mismatch;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -556,15 +334,6 @@ struct svc_program {
 	struct svc_program *	pg_next;	/* other programs (same xprt) */
 	u32			pg_prog;	/* program number */
 	unsigned int		pg_lovers;	/* lowest version */
-<<<<<<< HEAD
-	unsigned int		pg_hivers;	/* lowest version */
-	unsigned int		pg_nvers;	/* number of versions */
-	struct svc_version **	pg_vers;	/* version array */
-	char *			pg_name;	/* service name */
-	char *			pg_class;	/* class name: services sharing authentication */
-	struct svc_stat *	pg_stats;	/* rpc statistics */
-	int			(*pg_authenticate)(struct svc_rqst *);
-=======
 	unsigned int		pg_hivers;	/* highest version */
 	unsigned int		pg_nvers;	/* number of versions */
 	const struct svc_version **pg_vers;	/* version array */
@@ -579,7 +348,6 @@ struct svc_program {
 						  u32 version, int family,
 						  unsigned short proto,
 						  unsigned short port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -588,19 +356,6 @@ struct svc_program {
 struct svc_version {
 	u32			vs_vers;	/* version number */
 	u32			vs_nproc;	/* number of procedures */
-<<<<<<< HEAD
-	struct svc_procedure *	vs_proc;	/* per-procedure info */
-	u32			vs_xdrsize;	/* xdrsize needed for this version */
-
-	unsigned int		vs_hidden : 1;	/* Don't register with portmapper.
-						 * Only used for nfsacl so far. */
-
-	/* Override dispatch function (e.g. when caching replies).
-	 * A return value of 0 means drop the request. 
-	 * vs_dispatch == NULL means use default dispatcher.
-	 */
-	int			(*vs_dispatch)(struct svc_rqst *, __be32 *);
-=======
 	const struct svc_procedure *vs_proc;	/* per-procedure info */
 	unsigned long __percpu	*vs_count;	/* call counts */
 	u32			vs_xdrsize;	/* xdrsize needed for this version */
@@ -616,25 +371,11 @@ struct svc_version {
 
 	/* Dispatch function */
 	int			(*vs_dispatch)(struct svc_rqst *rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * RPC procedure info
  */
-<<<<<<< HEAD
-typedef __be32	(*svc_procfunc)(struct svc_rqst *, void *argp, void *resp);
-struct svc_procedure {
-	svc_procfunc		pc_func;	/* process the request */
-	kxdrproc_t		pc_decode;	/* XDR decode args */
-	kxdrproc_t		pc_encode;	/* XDR encode result */
-	kxdrproc_t		pc_release;	/* XDR free result */
-	unsigned int		pc_argsize;	/* argument struct size */
-	unsigned int		pc_ressize;	/* result struct size */
-	unsigned int		pc_count;	/* call count */
-	unsigned int		pc_cachetype;	/* cache info (NFS) */
-	unsigned int		pc_xdrressize;	/* maximum size of XDR reply */
-=======
 struct svc_procedure {
 	/* process the request: */
 	__be32			(*pc_func)(struct svc_rqst *);
@@ -652,7 +393,6 @@ struct svc_procedure {
 	unsigned int		pc_cachetype;	/* cache info (NFS) */
 	unsigned int		pc_xdrressize;	/* maximum size of XDR reply */
 	const char *		pc_name;	/* for display */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -662,22 +402,6 @@ int svc_rpcb_setup(struct svc_serv *serv, struct net *net);
 void svc_rpcb_cleanup(struct svc_serv *serv, struct net *net);
 int svc_bind(struct svc_serv *serv, struct net *net);
 struct svc_serv *svc_create(struct svc_program *, unsigned int,
-<<<<<<< HEAD
-			    void (*shutdown)(struct svc_serv *, struct net *net));
-struct svc_rqst *svc_prepare_thread(struct svc_serv *serv,
-					struct svc_pool *pool, int node);
-void		   svc_exit_thread(struct svc_rqst *);
-struct svc_serv *  svc_create_pooled(struct svc_program *, unsigned int,
-			void (*shutdown)(struct svc_serv *, struct net *net),
-			svc_thread_fn, struct module *);
-int		   svc_set_num_threads(struct svc_serv *, struct svc_pool *, int);
-int		   svc_pool_stats_open(struct svc_serv *serv, struct file *file);
-void		   svc_destroy(struct svc_serv *);
-void		   svc_shutdown_net(struct svc_serv *, struct net *);
-int		   svc_process(struct svc_rqst *);
-int		   bc_svc_process(struct svc_serv *, struct rpc_rqst *,
-			struct svc_rqst *);
-=======
 			    int (*threadfn)(void *data));
 struct svc_rqst *svc_rqst_alloc(struct svc_serv *serv,
 					struct svc_pool *pool, int node);
@@ -694,16 +418,11 @@ int		   svc_set_num_threads(struct svc_serv *, struct svc_pool *, int);
 int		   svc_pool_stats_open(struct svc_info *si, struct file *file);
 void		   svc_process(struct svc_rqst *rqstp);
 void		   svc_process_bc(struct rpc_rqst *req, struct svc_rqst *rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int		   svc_register(const struct svc_serv *, struct net *, const int,
 				const unsigned short, const unsigned short);
 
 void		   svc_wake_up(struct svc_serv *);
 void		   svc_reserve(struct svc_rqst *rqstp, int space);
-<<<<<<< HEAD
-struct svc_pool *  svc_pool_for_cpu(struct svc_serv *serv, int cpu);
-char *		   svc_print_addr(struct svc_rqst *, char *, size_t);
-=======
 void		   svc_pool_wake_idle_thread(struct svc_pool *pool);
 struct svc_pool   *svc_pool_for_cpu(struct svc_serv *serv);
 char *		   svc_print_addr(struct svc_rqst *, char *, size_t);
@@ -729,7 +448,6 @@ int		   svc_rpcbind_set_version(struct net *net,
 					   u32 version, int family,
 					   unsigned short proto,
 					   unsigned short port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	RPC_MAX_ADDRBUFLEN	(63U)
 
@@ -742,13 +460,6 @@ int		   svc_rpcbind_set_version(struct net *net,
  */
 static inline void svc_reserve_auth(struct svc_rqst *rqstp, int space)
 {
-<<<<<<< HEAD
-	int added_space = 0;
-
-	if (rqstp->rq_authop->flavour)
-		added_space = RPC_MAX_AUTH_SIZE;
-	svc_reserve(rqstp, space + added_space);
-=======
 	svc_reserve(rqstp, space + rqstp->rq_auth_slack);
 }
 
@@ -854,7 +565,6 @@ static inline bool svcxdr_set_accept_stat(struct svc_rqst *rqstp)
 		return false;
 	*rqstp->rq_accept_statp = rpc_success;
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* SUNRPC_SVC_H */

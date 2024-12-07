@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
  *	mcf.c -- Freescale ColdFire UART driver
  *
-<<<<<<< HEAD
- *	(C) Copyright 2003-2007, Greg Ungerer <gerg@snapgear.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
  *	(C) Copyright 2003-2007, Greg Ungerer <gerg@uclinux.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /****************************************************************************/
@@ -31,11 +19,8 @@
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/uaccess.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/coldfire.h>
 #include <asm/mcfsim.h>
 #include <asm/mcfuart.h>
@@ -114,15 +99,12 @@ static void mcf_start_tx(struct uart_port *port)
 {
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
 
-<<<<<<< HEAD
-=======
 	if (port->rs485.flags & SER_RS485_ENABLED) {
 		/* Enable Transmitter */
 		writeb(MCFUART_UCR_TXENABLE, port->membase + MCFUART_UCR);
 		/* Manually assert RTS */
 		writeb(MCFUART_UOP_RTS, port->membase + MCFUART_UOP1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp->imr |= MCFUART_UIR_TXREADY;
 	writeb(pp->imr, port->membase + MCFUART_UIMR);
 }
@@ -153,26 +135,12 @@ static void mcf_break_ctl(struct uart_port *port, int break_state)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (break_state == -1)
 		writeb(MCFUART_UCR_CMDBREAKSTART, port->membase + MCFUART_UCR);
 	else
 		writeb(MCFUART_UCR_CMDBREAKSTOP, port->membase + MCFUART_UCR);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-}
-
-/****************************************************************************/
-
-static void mcf_enable_ms(struct uart_port *port)
-{
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -182,11 +150,7 @@ static int mcf_startup(struct uart_port *port)
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset UART, get it into known state... */
 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
@@ -200,11 +164,7 @@ static int mcf_startup(struct uart_port *port)
 	pp->imr = MCFUART_UIR_RXREADY;
 	writeb(pp->imr, port->membase + MCFUART_UIMR);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -216,11 +176,7 @@ static void mcf_shutdown(struct uart_port *port)
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable all interrupts now */
 	pp->imr = 0;
@@ -230,21 +186,13 @@ static void mcf_shutdown(struct uart_port *port)
 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
 
 static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-	struct ktermios *old)
-=======
 			    const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int baud, baudclk;
@@ -288,15 +236,12 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 		mr1 |= MCFUART_MR1_PARITYNONE;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * FIXME: port->read_status_mask and port->ignore_status_mask
 	 * need to be initialized based on termios settings for
 	 * INPCK, IGNBRK, IGNPAR, PARMRK, BRKINT
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (termios->c_cflag & CSTOPB)
 		mr2 |= MCFUART_MR2_STOP2;
 	else
@@ -307,16 +252,12 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 		mr2 |= MCFUART_MR2_TXCTS;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
 	if (port->rs485.flags & SER_RS485_ENABLED) {
 		dev_dbg(port->dev, "Setting UART to RS485\n");
 		mr2 |= MCFUART_MR2_TXRTS;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uart_update_timeout(port, termios->c_cflag, baud);
 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
@@ -332,11 +273,7 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 		port->membase + MCFUART_UCSR);
 	writeb(MCFUART_UCR_RXENABLE | MCFUART_UCR_TXENABLE,
 		port->membase + MCFUART_UCR);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -344,11 +281,7 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 static void mcf_rx_chars(struct mcf_uart *pp)
 {
 	struct uart_port *port = &pp->port;
-<<<<<<< HEAD
-	unsigned char status, ch, flag;
-=======
 	u8 status, ch, flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((status = readb(port->membase + MCFUART_USR)) & MCFUART_USR_RXREADY) {
 		ch = readb(port->membase + MCFUART_URB);
@@ -386,11 +319,7 @@ static void mcf_rx_chars(struct mcf_uart *pp)
 		uart_insert_char(port, status, MCFUART_USR_RXOVERRUN, ch, flag);
 	}
 
-<<<<<<< HEAD
-	tty_flip_buffer_push(port->state->port.tty);
-=======
 	tty_flip_buffer_push(&port->state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -398,33 +327,6 @@ static void mcf_rx_chars(struct mcf_uart *pp)
 static void mcf_tx_chars(struct mcf_uart *pp)
 {
 	struct uart_port *port = &pp->port;
-<<<<<<< HEAD
-	struct circ_buf *xmit = &port->state->xmit;
-
-	if (port->x_char) {
-		/* Send special char - probably flow control */
-		writeb(port->x_char, port->membase + MCFUART_UTB);
-		port->x_char = 0;
-		port->icount.tx++;
-		return;
-	}
-
-	while (readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY) {
-		if (xmit->head == xmit->tail)
-			break;
-		writeb(xmit->buf[xmit->tail], port->membase + MCFUART_UTB);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE -1);
-		port->icount.tx++;
-	}
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(port);
-
-	if (xmit->head == xmit->tail) {
-		pp->imr &= ~MCFUART_UIR_TXREADY;
-		writeb(pp->imr, port->membase + MCFUART_UIMR);
-	}
-=======
 	bool pending;
 	u8 ch;
 
@@ -435,7 +337,6 @@ static void mcf_tx_chars(struct mcf_uart *pp)
 	/* Disable TX to negate RTS automatically */
 	if (!pending && (port->rs485.flags & SER_RS485_ENABLED))
 		writeb(MCFUART_UCR_TXDISABLE, port->membase + MCFUART_UCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -449,11 +350,7 @@ static irqreturn_t mcf_interrupt(int irq, void *data)
 
 	isr = readb(port->membase + MCFUART_UISR) & pp->imr;
 
-<<<<<<< HEAD
-	spin_lock(&port->lock);
-=======
 	uart_port_lock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (isr & MCFUART_UIR_RXREADY) {
 		mcf_rx_chars(pp);
 		ret = IRQ_HANDLED;
@@ -462,11 +359,7 @@ static irqreturn_t mcf_interrupt(int irq, void *data)
 		mcf_tx_chars(pp);
 		ret = IRQ_HANDLED;
 	}
-<<<<<<< HEAD
-	spin_unlock(&port->lock);
-=======
 	uart_port_unlock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -519,8 +412,6 @@ static int mcf_verify_port(struct uart_port *port, struct serial_struct *ser)
 
 /****************************************************************************/
 
-<<<<<<< HEAD
-=======
 /* Enable or disable the RS485 support */
 static int mcf_config_rs485(struct uart_port *port, struct ktermios *termios,
 			    struct serial_rs485 *rs485)
@@ -550,7 +441,6 @@ static const struct serial_rs485 mcf_rs485_supported = {
 
 /****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Define the basic serial functions we support.
  */
@@ -561,10 +451,6 @@ static const struct uart_ops mcf_uart_ops = {
 	.start_tx	= mcf_start_tx,
 	.stop_tx	= mcf_stop_tx,
 	.stop_rx	= mcf_stop_rx,
-<<<<<<< HEAD
-	.enable_ms	= mcf_enable_ms,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= mcf_break_ctl,
 	.startup	= mcf_startup,
 	.shutdown	= mcf_shutdown,
@@ -584,34 +470,6 @@ static struct mcf_uart mcf_ports[4];
 #if defined(CONFIG_SERIAL_MCF_CONSOLE)
 /****************************************************************************/
 
-<<<<<<< HEAD
-int __init early_mcf_setup(struct mcf_platform_uart *platp)
-{
-	struct uart_port *port;
-	int i;
-
-	for (i = 0; ((i < MCF_MAXPORTS) && (platp[i].mapbase)); i++) {
-		port = &mcf_ports[i].port;
-
-		port->line = i;
-		port->type = PORT_MCF;
-		port->mapbase = platp[i].mapbase;
-		port->membase = (platp[i].membase) ? platp[i].membase :
-			(unsigned char __iomem *) port->mapbase;
-		port->iotype = SERIAL_IO_MEM;
-		port->irq = platp[i].irq;
-		port->uartclk = MCF_BUSCLK;
-		port->flags = ASYNC_BOOT_AUTOCONF;
-		port->ops = &mcf_uart_ops;
-	}
-
-	return 0;
-}
-
-/****************************************************************************/
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mcf_console_putc(struct console *co, const char c)
 {
 	struct uart_port *port = &(mcf_ports + co->index)->port;
@@ -692,11 +550,7 @@ console_initcall(mcf_console_init);
 #define	MCF_CONSOLE	NULL
 
 /****************************************************************************/
-<<<<<<< HEAD
-#endif /* CONFIG_MCF_CONSOLE */
-=======
 #endif /* CONFIG_SERIAL_MCF_CONSOLE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -714,15 +568,9 @@ static struct uart_driver mcf_driver = {
 
 /****************************************************************************/
 
-<<<<<<< HEAD
-static int __devinit mcf_probe(struct platform_device *pdev)
-{
-	struct mcf_platform_uart *platp = pdev->dev.platform_data;
-=======
 static int mcf_probe(struct platform_device *pdev)
 {
 	struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_port *port;
 	int i;
 
@@ -734,22 +582,15 @@ static int mcf_probe(struct platform_device *pdev)
 		port->mapbase = platp[i].mapbase;
 		port->membase = (platp[i].membase) ? platp[i].membase :
 			(unsigned char __iomem *) platp[i].mapbase;
-<<<<<<< HEAD
-=======
 		port->dev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port->iotype = SERIAL_IO_MEM;
 		port->irq = platp[i].irq;
 		port->uartclk = MCF_BUSCLK;
 		port->ops = &mcf_uart_ops;
-<<<<<<< HEAD
-		port->flags = ASYNC_BOOT_AUTOCONF;
-=======
 		port->flags = UPF_BOOT_AUTOCONF;
 		port->rs485_config = mcf_config_rs485;
 		port->rs485_supported = mcf_rs485_supported;
 		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		uart_add_one_port(&mcf_driver, port);
 	}
@@ -759,11 +600,7 @@ static int mcf_probe(struct platform_device *pdev)
 
 /****************************************************************************/
 
-<<<<<<< HEAD
-static int __devexit mcf_remove(struct platform_device *pdev)
-=======
 static void mcf_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_port *port;
 	int i;
@@ -773,27 +610,15 @@ static void mcf_remove(struct platform_device *pdev)
 		if (port)
 			uart_remove_one_port(&mcf_driver, port);
 	}
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
 
 static struct platform_driver mcf_platform_driver = {
 	.probe		= mcf_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(mcf_remove),
-	.driver		= {
-		.name	= "mcfuart",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= mcf_remove,
 	.driver		= {
 		.name	= "mcfuart",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -809,15 +634,10 @@ static int __init mcf_init(void)
 	if (rc)
 		return rc;
 	rc = platform_driver_register(&mcf_platform_driver);
-<<<<<<< HEAD
-	if (rc)
-		return rc;
-=======
 	if (rc) {
 		uart_unregister_driver(&mcf_driver);
 		return rc;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -834,11 +654,7 @@ static void __exit mcf_exit(void)
 module_init(mcf_init);
 module_exit(mcf_exit);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Greg Ungerer <gerg@snapgear.com>");
-=======
 MODULE_AUTHOR("Greg Ungerer <gerg@uclinux.org>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Freescale ColdFire UART driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:mcfuart");

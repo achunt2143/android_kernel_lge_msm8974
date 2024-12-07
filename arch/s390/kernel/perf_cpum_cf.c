@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Performance event support for s390x - CPU-measurement Counter Facility
- *
- *  Copyright IBM Corp. 2012
- *  Author(s): Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (version 2 only)
- * as published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Performance event support for s390x - CPU-measurement Counter Facility
@@ -16,40 +5,16 @@
  *  Copyright IBM Corp. 2012, 2023
  *  Author(s): Hendrik Brueckner <brueckner@linux.ibm.com>
  *	       Thomas Richter <tmricht@linux.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define KMSG_COMPONENT	"cpum_cf"
 #define pr_fmt(fmt)	KMSG_COMPONENT ": " fmt
 
 #include <linux/kernel.h>
 #include <linux/kernel_stat.h>
-<<<<<<< HEAD
-#include <linux/perf_event.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/notifier.h>
 #include <linux/init.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <asm/ctl_reg.h>
-#include <asm/irq.h>
-#include <asm/cpu_mf.h>
-
-/* CPU-measurement counter facility supports these CPU counter sets:
- * For CPU counter sets:
- *    Basic counter set:	     0-31
- *    Problem-state counter set:    32-63
- *    Crypto-activity counter set:  64-127
- *    Extented counter set:	   128-159
- */
-enum cpumf_ctr_set {
-	/* CPU counter sets */
-	CPUMF_CTR_SET_BASIC   = 0,
-	CPUMF_CTR_SET_USER    = 1,
-	CPUMF_CTR_SET_CRYPTO  = 2,
-	CPUMF_CTR_SET_EXT     = 3,
-=======
 #include <linux/miscdevice.h>
 #include <linux/perf_event.h>
 
@@ -63,7 +28,6 @@ enum cpumf_ctr_set {
 	CPUMF_CTR_SET_CRYPTO  = 2,    /* Crypto-Activity Counter Set */
 	CPUMF_CTR_SET_EXT     = 3,    /* Extended Counter Set */
 	CPUMF_CTR_SET_MT_DIAG = 4,    /* MT-diagnostic Counter Set */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Maximum number of counter sets */
 	CPUMF_CTR_SET_MAX,
@@ -71,9 +35,6 @@ enum cpumf_ctr_set {
 
 #define CPUMF_LCCTL_ENABLE_SHIFT    16
 #define CPUMF_LCCTL_ACTCTL_SHIFT     0
-<<<<<<< HEAD
-static const u64 cpumf_state_ctl[CPUMF_CTR_SET_MAX] = {
-=======
 
 static inline void ctr_set_enable(u64 *state, u64 ctrsets)
 {
@@ -541,53 +502,10 @@ static size_t cfdiag_getctrset(struct cf_ctrset_entry *ctrdata, int ctrset,
 }
 
 static const u64 cpumf_ctr_ctl[CPUMF_CTR_SET_MAX] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[CPUMF_CTR_SET_BASIC]	= 0x02,
 	[CPUMF_CTR_SET_USER]	= 0x04,
 	[CPUMF_CTR_SET_CRYPTO]	= 0x08,
 	[CPUMF_CTR_SET_EXT]	= 0x01,
-<<<<<<< HEAD
-};
-
-static void ctr_set_enable(u64 *state, int ctr_set)
-{
-	*state |= cpumf_state_ctl[ctr_set] << CPUMF_LCCTL_ENABLE_SHIFT;
-}
-static void ctr_set_disable(u64 *state, int ctr_set)
-{
-	*state &= ~(cpumf_state_ctl[ctr_set] << CPUMF_LCCTL_ENABLE_SHIFT);
-}
-static void ctr_set_start(u64 *state, int ctr_set)
-{
-	*state |= cpumf_state_ctl[ctr_set] << CPUMF_LCCTL_ACTCTL_SHIFT;
-}
-static void ctr_set_stop(u64 *state, int ctr_set)
-{
-	*state &= ~(cpumf_state_ctl[ctr_set] << CPUMF_LCCTL_ACTCTL_SHIFT);
-}
-
-/* Local CPUMF event structure */
-struct cpu_hw_events {
-	struct cpumf_ctr_info	info;
-	atomic_t		ctr_set[CPUMF_CTR_SET_MAX];
-	u64			state, tx_state;
-	unsigned int		flags;
-};
-static DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events) = {
-	.ctr_set = {
-		[CPUMF_CTR_SET_BASIC]  = ATOMIC_INIT(0),
-		[CPUMF_CTR_SET_USER]   = ATOMIC_INIT(0),
-		[CPUMF_CTR_SET_CRYPTO] = ATOMIC_INIT(0),
-		[CPUMF_CTR_SET_EXT]    = ATOMIC_INIT(0),
-	},
-	.state = 0,
-	.flags = 0,
-};
-
-static int get_counter_set(u64 event)
-{
-	int set = -1;
-=======
 	[CPUMF_CTR_SET_MT_DIAG] = 0x20,
 };
 
@@ -669,7 +587,6 @@ static int cfdiag_diffctr(struct cpu_cf_events *cpuhw, unsigned long auth)
 static enum cpumf_ctr_set get_counter_set(u64 event)
 {
 	int set = CPUMF_CTR_SET_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event < 32)
 		set = CPUMF_CTR_SET_BASIC;
@@ -677,80 +594,14 @@ static enum cpumf_ctr_set get_counter_set(u64 event)
 		set = CPUMF_CTR_SET_USER;
 	else if (event < 128)
 		set = CPUMF_CTR_SET_CRYPTO;
-<<<<<<< HEAD
-	else if (event < 160)
-		set = CPUMF_CTR_SET_EXT;
-=======
 	else if (event < 288)
 		set = CPUMF_CTR_SET_EXT;
 	else if (event >= 448 && event < 496)
 		set = CPUMF_CTR_SET_MT_DIAG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return set;
 }
 
-<<<<<<< HEAD
-static int validate_event(const struct hw_perf_event *hwc)
-{
-	switch (hwc->config_base) {
-	case CPUMF_CTR_SET_BASIC:
-	case CPUMF_CTR_SET_USER:
-	case CPUMF_CTR_SET_CRYPTO:
-	case CPUMF_CTR_SET_EXT:
-		/* check for reserved counters */
-		if ((hwc->config >=  6 && hwc->config <=  31) ||
-		    (hwc->config >= 38 && hwc->config <=  63) ||
-		    (hwc->config >= 80 && hwc->config <= 127))
-			return -EOPNOTSUPP;
-		break;
-	default:
-		return -EINVAL;
-	}
-
-	return 0;
-}
-
-static int validate_ctr_version(const struct hw_perf_event *hwc)
-{
-	struct cpu_hw_events *cpuhw;
-	int err = 0;
-
-	cpuhw = &get_cpu_var(cpu_hw_events);
-
-	/* check required version for counter sets */
-	switch (hwc->config_base) {
-	case CPUMF_CTR_SET_BASIC:
-	case CPUMF_CTR_SET_USER:
-		if (cpuhw->info.cfvn < 1)
-			err = -EOPNOTSUPP;
-		break;
-	case CPUMF_CTR_SET_CRYPTO:
-	case CPUMF_CTR_SET_EXT:
-		if (cpuhw->info.csvn < 1)
-			err = -EOPNOTSUPP;
-		break;
-	}
-
-	put_cpu_var(cpu_hw_events);
-	return err;
-}
-
-static int validate_ctr_auth(const struct hw_perf_event *hwc)
-{
-	struct cpu_hw_events *cpuhw;
-	u64 ctrs_state;
-	int err = 0;
-
-	cpuhw = &get_cpu_var(cpu_hw_events);
-
-	/* check authorization for cpu counter sets */
-	ctrs_state = cpumf_state_ctl[hwc->config_base];
-	if (!(ctrs_state & cpuhw->info.auth_ctl))
-		err = -EPERM;
-
-	put_cpu_var(cpu_hw_events);
-=======
 static int validate_ctr_version(const u64 config, enum cpumf_ctr_set set)
 {
 	u16 mtdiag_ctl;
@@ -803,7 +654,6 @@ static int validate_ctr_version(const u64 config, enum cpumf_ctr_set set)
 		err = -EOPNOTSUPP;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -814,22 +664,6 @@ static int validate_ctr_version(const u64 config, enum cpumf_ctr_set set)
  */
 static void cpumf_pmu_enable(struct pmu *pmu)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	int err;
-
-	if (cpuhw->flags & PMU_F_ENABLED)
-		return;
-
-	err = lcctl(cpuhw->state);
-	if (err) {
-		pr_err("Enabling the performance measuring unit "
-		       "failed with rc=%x\n", err);
-		return;
-	}
-
-	cpuhw->flags |= PMU_F_ENABLED;
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
 	int err;
 
@@ -841,7 +675,6 @@ static void cpumf_pmu_enable(struct pmu *pmu)
 		pr_err("Enabling the performance measuring unit failed with rc=%x\n", err);
 	else
 		cpuhw->flags |= PMU_F_ENABLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -851,98 +684,6 @@ static void cpumf_pmu_enable(struct pmu *pmu)
  */
 static void cpumf_pmu_disable(struct pmu *pmu)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	int err;
-	u64 inactive;
-
-	if (!(cpuhw->flags & PMU_F_ENABLED))
-		return;
-
-	inactive = cpuhw->state & ~((1 << CPUMF_LCCTL_ENABLE_SHIFT) - 1);
-	err = lcctl(inactive);
-	if (err) {
-		pr_err("Disabling the performance measuring unit "
-		       "failed with rc=%x\n", err);
-		return;
-	}
-
-	cpuhw->flags &= ~PMU_F_ENABLED;
-}
-
-
-/* Number of perf events counting hardware events */
-static atomic_t num_events = ATOMIC_INIT(0);
-/* Used to avoid races in calling reserve/release_cpumf_hardware */
-static DEFINE_MUTEX(pmc_reserve_mutex);
-
-/* CPU-measurement alerts for the counter facility */
-static void cpumf_measurement_alert(struct ext_code ext_code,
-				    unsigned int alert, unsigned long unused)
-{
-	struct cpu_hw_events *cpuhw;
-
-	if (!(alert & CPU_MF_INT_CF_MASK))
-		return;
-
-	kstat_cpu(smp_processor_id()).irqs[EXTINT_CPM]++;
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	/* Measurement alerts are shared and might happen when the PMU
-	 * is not reserved.  Ignore these alerts in this case. */
-	if (!(cpuhw->flags & PMU_F_RESERVED))
-		return;
-
-	/* counter authorization change alert */
-	if (alert & CPU_MF_INT_CF_CACA)
-		qctri(&cpuhw->info);
-
-	/* loss of counter data alert */
-	if (alert & CPU_MF_INT_CF_LCDA)
-		pr_err("CPU[%i] Counter data was lost\n", smp_processor_id());
-}
-
-#define PMC_INIT      0
-#define PMC_RELEASE   1
-static void setup_pmc_cpu(void *flags)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	switch (*((int *) flags)) {
-	case PMC_INIT:
-		memset(&cpuhw->info, 0, sizeof(cpuhw->info));
-		qctri(&cpuhw->info);
-		cpuhw->flags |= PMU_F_RESERVED;
-		break;
-
-	case PMC_RELEASE:
-		cpuhw->flags &= ~PMU_F_RESERVED;
-		break;
-	}
-
-	/* Disable CPU counter sets */
-	lcctl(0);
-}
-
-/* Initialize the CPU-measurement facility */
-static int reserve_pmc_hardware(void)
-{
-	int flags = PMC_INIT;
-
-	on_each_cpu(setup_pmc_cpu, &flags, 1);
-	measurement_alert_subclass_register();
-
-	return 0;
-}
-
-/* Release the CPU-measurement facility */
-static void release_pmc_hardware(void)
-{
-	int flags = PMC_RELEASE;
-
-	on_each_cpu(setup_pmc_cpu, &flags, 1);
-	measurement_alert_subclass_unregister();
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
 	u64 inactive;
 	int err;
@@ -957,22 +698,12 @@ static void release_pmc_hardware(void)
 		pr_err("Disabling the performance measuring unit failed with rc=%x\n", err);
 	else
 		cpuhw->flags &= ~PMU_F_ENABLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Release the PMU if event is the last perf event */
 static void hw_perf_event_destroy(struct perf_event *event)
 {
-<<<<<<< HEAD
-	if (!atomic_add_unless(&num_events, -1, 1)) {
-		mutex_lock(&pmc_reserve_mutex);
-		if (atomic_dec_return(&num_events) == 0)
-			release_pmc_hardware();
-		mutex_unlock(&pmc_reserve_mutex);
-	}
-=======
 	cpum_cf_free(event->cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* CPUMF <-> perf event mappings for kernel+userspace (basic set) */
@@ -996,16 +727,6 @@ static const int cpumf_generic_events_user[] = {
 	[PERF_COUNT_HW_BUS_CYCLES]	    = -1,
 };
 
-<<<<<<< HEAD
-static int __hw_perf_event_init(struct perf_event *event)
-{
-	struct perf_event_attr *attr = &event->attr;
-	struct hw_perf_event *hwc = &event->hw;
-	int err;
-	u64 ev;
-
-	switch (attr->type) {
-=======
 static int is_userspace_event(u64 ev)
 {
 	return cpumf_generic_events_user[PERF_COUNT_HW_CPU_CYCLES] == ev ||
@@ -1020,7 +741,6 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
 	u64 ev;
 
 	switch (type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PERF_TYPE_RAW:
 		/* Raw events are used to access counters directly,
 		 * hence do not permit excludes */
@@ -1031,24 +751,6 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
 		break;
 
 	case PERF_TYPE_HARDWARE:
-<<<<<<< HEAD
-		ev = attr->config;
-		/* Count user space (problem-state) only */
-		if (!attr->exclude_user && attr->exclude_kernel) {
-			if (ev >= ARRAY_SIZE(cpumf_generic_events_user))
-				return -EOPNOTSUPP;
-			ev = cpumf_generic_events_user[ev];
-
-		/* No support for kernel space counters only */
-		} else if (!attr->exclude_kernel && attr->exclude_user) {
-			return -EOPNOTSUPP;
-
-		/* Count user and kernel space */
-		} else {
-			if (ev >= ARRAY_SIZE(cpumf_generic_events_basic))
-				return -EOPNOTSUPP;
-			ev = cpumf_generic_events_basic[ev];
-=======
 		if (is_sampling_event(event))	/* No sampling support */
 			return -ENOENT;
 		ev = attr->config;
@@ -1072,7 +774,6 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
 					return -EOPNOTSUPP;
 				ev = cpumf_generic_events_basic[ev];
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1083,52 +784,6 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
 	if (ev == -1)
 		return -ENOENT;
 
-<<<<<<< HEAD
-	if (ev >= PERF_CPUM_CF_MAX_CTR)
-		return -EINVAL;
-
-	/* The CPU measurement counter facility does not have any interrupts
-	 * to do sampling.  Sampling must be provided by external means,
-	 * for example, by timers.
-	 */
-	if (hwc->sample_period)
-		return -EINVAL;
-
-	/* Use the hardware perf event structure to store the counter number
-	 * in 'config' member and the counter set to which the counter belongs
-	 * in the 'config_base'.  The counter set (config_base) is then used
-	 * to enable/disable the counters.
-	 */
-	hwc->config = ev;
-	hwc->config_base = get_counter_set(ev);
-
-	/* Validate the counter that is assigned to this event.
-	 * Because the counter facility can use numerous counters at the
-	 * same time without constraints, it is not necessary to explicity
-	 * validate event groups (event->group_leader != event).
-	 */
-	err = validate_event(hwc);
-	if (err)
-		return err;
-
-	/* Initialize for using the CPU-measurement counter facility */
-	if (!atomic_inc_not_zero(&num_events)) {
-		mutex_lock(&pmc_reserve_mutex);
-		if (atomic_read(&num_events) == 0 && reserve_pmc_hardware())
-			err = -EBUSY;
-		else
-			atomic_inc(&num_events);
-		mutex_unlock(&pmc_reserve_mutex);
-	}
-	event->destroy = hw_perf_event_destroy;
-
-	/* Finally, validate version and authorization of the counter set */
-	err = validate_ctr_auth(hwc);
-	if (!err)
-		err = validate_ctr_version(hwc);
-
-	return err;
-=======
 	if (ev > PERF_CPUM_CF_MAX_CTR)
 		return -ENOENT;
 
@@ -1188,24 +843,10 @@ static int cpumf_pmu_event_type(struct perf_event *event)
 	    cpumf_generic_events_user[PERF_COUNT_HW_INSTRUCTIONS] == ev)
 		return PERF_TYPE_HARDWARE;
 	return PERF_TYPE_RAW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cpumf_pmu_event_init(struct perf_event *event)
 {
-<<<<<<< HEAD
-	int err;
-
-	switch (event->attr.type) {
-	case PERF_TYPE_HARDWARE:
-	case PERF_TYPE_HW_CACHE:
-	case PERF_TYPE_RAW:
-		err = __hw_perf_event_init(event);
-		break;
-	default:
-		return -ENOENT;
-	}
-=======
 	unsigned int type = event->attr.type;
 	int err;
 
@@ -1216,7 +857,6 @@ static int cpumf_pmu_event_init(struct perf_event *event)
 		err = __hw_perf_event_init(event, cpumf_pmu_event_type(event));
 	else
 		return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(err) && event->destroy)
 		event->destroy(event);
@@ -1247,11 +887,7 @@ static int hw_perf_event_reset(struct perf_event *event)
 	return err;
 }
 
-<<<<<<< HEAD
-static int hw_perf_event_update(struct perf_event *event)
-=======
 static void hw_perf_event_update(struct perf_event *event)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 prev, new, delta;
 	int err;
@@ -1260,21 +896,12 @@ static void hw_perf_event_update(struct perf_event *event)
 		prev = local64_read(&event->hw.prev_count);
 		err = ecctr(event->hw.config, &new);
 		if (err)
-<<<<<<< HEAD
-			goto out;
-=======
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (local64_cmpxchg(&event->hw.prev_count, prev, new) != prev);
 
 	delta = (prev <= new) ? new - prev
 			      : (-1ULL - prev) + new + 1;	 /* overflow */
 	local64_add(delta, &event->count);
-<<<<<<< HEAD
-out:
-	return err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cpumf_pmu_read(struct perf_event *event)
@@ -1287,20 +914,6 @@ static void cpumf_pmu_read(struct perf_event *event)
 
 static void cpumf_pmu_start(struct perf_event *event, int flags)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	struct hw_perf_event *hwc = &event->hw;
-
-	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
-		return;
-
-	if (WARN_ON_ONCE(hwc->config == -1))
-		return;
-
-	if (flags & PERF_EF_RELOAD)
-		WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
-
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
 	struct hw_perf_event *hwc = &event->hw;
 	int i;
@@ -1308,7 +921,6 @@ static void cpumf_pmu_start(struct perf_event *event, int flags)
 	if (!(hwc->state & PERF_HES_STOPPED))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hwc->state = 0;
 
 	/* (Re-)enable and activate the counter set */
@@ -1320,12 +932,6 @@ static void cpumf_pmu_start(struct perf_event *event, int flags)
 	 * needs to be synchronized.  At this point, the counter set can be in
 	 * the inactive or disabled state.
 	 */
-<<<<<<< HEAD
-	hw_perf_event_reset(event);
-
-	/* increment refcount for this counter set */
-	atomic_inc(&cpuhw->ctr_set[hwc->config_base]);
-=======
 	if (hwc->config == PERF_EVENT_CPUM_CF_DIAG) {
 		cpuhw->usedss = cfdiag_getctr(cpuhw->start,
 					      sizeof(cpuhw->start),
@@ -1374,35 +980,19 @@ static int cfdiag_push_sample(struct perf_event *event,
 
 	perf_event_update_userpage(event);
 	return overflow;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cpumf_pmu_stop(struct perf_event *event, int flags)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	struct hw_perf_event *hwc = &event->hw;
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
 	struct hw_perf_event *hwc = &event->hw;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(hwc->state & PERF_HES_STOPPED)) {
 		/* Decrement reference count for this counter set and if this
 		 * is the last used counter in the set, clear activation
 		 * control and set the counter set state to inactive.
 		 */
-<<<<<<< HEAD
-		if (!atomic_dec_return(&cpuhw->ctr_set[hwc->config_base]))
-			ctr_set_stop(&cpuhw->state, hwc->config_base);
-		event->hw.state |= PERF_HES_STOPPED;
-	}
-
-	if ((flags & PERF_EF_UPDATE) && !(hwc->state & PERF_HES_UPTODATE)) {
-		hw_perf_event_update(event);
-		event->hw.state |= PERF_HES_UPTODATE;
-=======
 		for (i = CPUMF_CTR_SET_BASIC; i < CPUMF_CTR_SET_MAX; ++i) {
 			if (!(hwc->config_base & cpumf_ctr_ctl[i]))
 				continue;
@@ -1425,26 +1015,12 @@ static void cpumf_pmu_stop(struct perf_event *event, int flags)
 			hw_perf_event_update(event);
 		}
 		hwc->state |= PERF_HES_UPTODATE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int cpumf_pmu_add(struct perf_event *event, int flags)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	/* Check authorization for the counter set to which this
-	 * counter belongs.
-	 * For group events transaction, the authorization check is
-	 * done in cpumf_pmu_commit_txn().
-	 */
-	if (!(cpuhw->flags & PERF_EVENT_TXN))
-		if (validate_ctr_auth(&event->hw))
-			return -EPERM;
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctr_set_enable(&cpuhw->state, event->hw.config_base);
 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
@@ -1452,22 +1028,13 @@ static int cpumf_pmu_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		cpumf_pmu_start(event, PERF_EF_RELOAD);
 
-<<<<<<< HEAD
-	perf_event_update_userpage(event);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void cpumf_pmu_del(struct perf_event *event, int flags)
 {
-<<<<<<< HEAD
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-=======
 	struct cpu_cf_events *cpuhw = this_cpu_cfhw();
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpumf_pmu_stop(event, PERF_EF_UPDATE);
 
@@ -1479,74 +1046,15 @@ static void cpumf_pmu_del(struct perf_event *event, int flags)
 	 * clear enable control and resets all counters in a set.  Therefore,
 	 * cpumf_pmu_start() always has to reenable a counter set.
 	 */
-<<<<<<< HEAD
-	if (!atomic_read(&cpuhw->ctr_set[event->hw.config_base]))
-		ctr_set_disable(&cpuhw->state, event->hw.config_base);
-
-	perf_event_update_userpage(event);
-}
-
-/*
- * Start group events scheduling transaction.
- * Set flags to perform a single test at commit time.
- */
-static void cpumf_pmu_start_txn(struct pmu *pmu)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	perf_pmu_disable(pmu);
-	cpuhw->flags |= PERF_EVENT_TXN;
-	cpuhw->tx_state = cpuhw->state;
-}
-
-/*
- * Stop and cancel a group events scheduling tranctions.
- * Assumes cpumf_pmu_del() is called for each successful added
- * cpumf_pmu_add() during the transaction.
- */
-static void cpumf_pmu_cancel_txn(struct pmu *pmu)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	WARN_ON(cpuhw->tx_state != cpuhw->state);
-
-	cpuhw->flags &= ~PERF_EVENT_TXN;
-	perf_pmu_enable(pmu);
-}
-
-/*
- * Commit the group events scheduling transaction.  On success, the
- * transaction is closed.   On error, the transaction is kept open
- * until cpumf_pmu_cancel_txn() is called.
- */
-static int cpumf_pmu_commit_txn(struct pmu *pmu)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	u64 state;
-
-	/* check if the updated state can be scheduled */
-	state = cpuhw->state & ~((1 << CPUMF_LCCTL_ENABLE_SHIFT) - 1);
-	state >>= CPUMF_LCCTL_ENABLE_SHIFT;
-	if ((state & cpuhw->info.auth_ctl) != state)
-		return -EPERM;
-
-	cpuhw->flags &= ~PERF_EVENT_TXN;
-	perf_pmu_enable(pmu);
-	return 0;
-=======
 	for (i = CPUMF_CTR_SET_BASIC; i < CPUMF_CTR_SET_MAX; ++i)
 		if (!atomic_read(&cpuhw->ctr_set[i]))
 			ctr_set_disable(&cpuhw->state, cpumf_ctr_ctl[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Performance monitoring unit for s390x */
 static struct pmu cpumf_pmu = {
-<<<<<<< HEAD
-=======
 	.task_ctx_nr  = perf_sw_context,
 	.capabilities = PERF_PMU_CAP_NO_INTERRUPT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pmu_enable   = cpumf_pmu_enable,
 	.pmu_disable  = cpumf_pmu_disable,
 	.event_init   = cpumf_pmu_event_init,
@@ -1555,35 +1063,6 @@ static struct pmu cpumf_pmu = {
 	.start	      = cpumf_pmu_start,
 	.stop	      = cpumf_pmu_stop,
 	.read	      = cpumf_pmu_read,
-<<<<<<< HEAD
-	.start_txn    = cpumf_pmu_start_txn,
-	.commit_txn   = cpumf_pmu_commit_txn,
-	.cancel_txn   = cpumf_pmu_cancel_txn,
-};
-
-static int __cpuinit cpumf_pmu_notifier(struct notifier_block *self,
-					unsigned long action, void *hcpu)
-{
-	unsigned int cpu = (long) hcpu;
-	int flags;
-
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_ONLINE:
-		flags = PMC_INIT;
-		smp_call_function_single(cpu, setup_pmc_cpu, &flags, 1);
-		break;
-	case CPU_DOWN_PREPARE:
-		flags = PMC_RELEASE;
-		smp_call_function_single(cpu, setup_pmc_cpu, &flags, 1);
-		break;
-	default:
-		break;
-	}
-
-	return NOTIFY_OK;
-}
-
-=======
 };
 
 static struct cfset_session {		/* CPUs and counter set bit mask */
@@ -1698,39 +1177,10 @@ static void cpumf_measurement_alert(struct ext_code ext_code,
 }
 
 static int cfset_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init cpumf_pmu_init(void)
 {
 	int rc;
 
-<<<<<<< HEAD
-	if (!cpum_cf_avail())
-		return -ENODEV;
-
-	/* clear bit 15 of cr0 to unauthorize problem-state to
-	 * extract measurement counters */
-	ctl_clear_bit(0, 48);
-
-	/* register handler for measurement-alert interruptions */
-	rc = register_external_interrupt(0x1407, cpumf_measurement_alert);
-	if (rc) {
-		pr_err("Registering for CPU-measurement alerts "
-		       "failed with rc=%i\n", rc);
-		goto out;
-	}
-
-	rc = perf_pmu_register(&cpumf_pmu, "cpum_cf", PERF_TYPE_RAW);
-	if (rc) {
-		pr_err("Registering the cpum_cf PMU failed with rc=%i\n", rc);
-		unregister_external_interrupt(0x1407, cpumf_measurement_alert);
-		goto out;
-	}
-	perf_cpu_notifier(cpumf_pmu_notifier);
-out:
-	return rc;
-}
-early_initcall(cpumf_pmu_init);
-=======
 	/* Extract counter measurement facility information */
 	if (!cpum_cf_avail() || qctri(&cpumf_ctr_info))
 		return -ENODEV;
@@ -2498,4 +1948,3 @@ out:
 }
 
 device_initcall(cpumf_pmu_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

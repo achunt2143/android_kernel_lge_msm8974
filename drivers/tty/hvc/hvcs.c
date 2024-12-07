@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM eServer Hypervisor Virtual Console Server Device Driver
  * Copyright (C) 2003, 2004 IBM Corp.
  *  Ryan S. Arnold (rsa@us.ibm.com)
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s) :  Ryan S. Arnold <rsa@us.ibm.com>
  *
  * This is the device driver for the IBM Hypervisor Virtual Console Server,
@@ -67,19 +47,12 @@
  * using the 2.6 Linux kernel kref construct.
  *
  * For direction on installation and usage of this driver please reference
-<<<<<<< HEAD
- * Documentation/powerpc/hvcs.txt.
-=======
  * Documentation/arch/powerpc/hvcs.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/completion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/kref.h>
@@ -96,12 +69,8 @@
 #include <linux/tty_flip.h>
 #include <asm/hvconsole.h>
 #include <asm/hvcserver.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/termios_internal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/vio.h>
 
 /*
@@ -209,11 +178,7 @@ MODULE_VERSION(HVCS_DRIVER_VERSION);
  * that will cause echoing or we'll go into recursive loop echoing chars back
  * and forth with the console drivers.
  */
-<<<<<<< HEAD
-static struct ktermios hvcs_tty_termios = {
-=======
 static const struct ktermios hvcs_tty_termios = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_iflag = IGNBRK | IGNPAR,
 	.c_oflag = OPOST,
 	.c_cflag = B38400 | CS8 | CREAD | HUPCL,
@@ -233,11 +198,6 @@ module_param(hvcs_parm_num_devs, int, 0);
 
 static const char hvcs_driver_name[] = "hvcs";
 static const char hvcs_device_node[] = "hvcs";
-<<<<<<< HEAD
-static const char hvcs_driver_string[]
-	= "IBM hvcs (Hypervisor Virtual Console Server) Driver";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Status of partner info rescan triggered via sysfs. */
 static int hvcs_rescan_status;
@@ -288,10 +248,7 @@ static DEFINE_SPINLOCK(hvcs_pi_lock);
 
 /* One vty-server per hvcs_struct */
 struct hvcs_struct {
-<<<<<<< HEAD
-=======
 	struct tty_port port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 
 	/*
@@ -300,12 +257,6 @@ struct hvcs_struct {
 	 */
 	unsigned int index;
 
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	int open_count;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Used to tell the driver kernel_thread what operations need to take
 	 * place upon this hvcs_struct instance.
@@ -324,80 +275,30 @@ struct hvcs_struct {
 	int chars_in_buffer;
 
 	/*
-<<<<<<< HEAD
-	 * Any variable below the kref is valid before a tty is connected and
-=======
 	 * Any variable below is valid before a tty is connected and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * stays valid after the tty is disconnected.  These shouldn't be
 	 * whacked until the kobject refcount reaches zero though some entries
 	 * may be changed via sysfs initiatives.
 	 */
-<<<<<<< HEAD
-	struct kref kref; /* ref count & hvcs_struct lifetime */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int connected; /* is the vty-server currently connected to a vty? */
 	uint32_t p_unit_address; /* partner unit address */
 	uint32_t p_partition_ID; /* partner partition ID */
 	char p_location_code[HVCS_CLC_LENGTH + 1]; /* CLC + Null Term */
 	struct list_head next; /* list management */
 	struct vio_dev *vdev;
-<<<<<<< HEAD
-};
-
-/* Required to back map a kref to its containing object */
-#define from_kref(k) container_of(k, struct hvcs_struct, kref)
-
-=======
 	struct completion *destroyed;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(hvcs_structs);
 static DEFINE_SPINLOCK(hvcs_structs_lock);
 static DEFINE_MUTEX(hvcs_init_mutex);
 
-<<<<<<< HEAD
-static void hvcs_unthrottle(struct tty_struct *tty);
-static void hvcs_throttle(struct tty_struct *tty);
-static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance);
-
-static int hvcs_write(struct tty_struct *tty,
-		const unsigned char *buf, int count);
-static int hvcs_write_room(struct tty_struct *tty);
-static int hvcs_chars_in_buffer(struct tty_struct *tty);
-
-static int hvcs_has_pi(struct hvcs_struct *hvcsd);
-static void hvcs_set_pi(struct hvcs_partner_info *pi,
-		struct hvcs_struct *hvcsd);
-static int hvcs_get_pi(struct hvcs_struct *hvcsd);
-static int hvcs_rescan_devices_list(void);
-
-static int hvcs_partner_connect(struct hvcs_struct *hvcsd);
-static void hvcs_partner_free(struct hvcs_struct *hvcsd);
-
-static int hvcs_enable_device(struct hvcs_struct *hvcsd,
-		uint32_t unit_address, unsigned int irq, struct vio_dev *dev);
-
-static int hvcs_open(struct tty_struct *tty, struct file *filp);
-static void hvcs_close(struct tty_struct *tty, struct file *filp);
-static void hvcs_hangup(struct tty_struct * tty);
-
-static int __devinit hvcs_probe(struct vio_dev *dev,
-		const struct vio_device_id *id);
-static int __devexit hvcs_remove(struct vio_dev *dev);
-static int __init hvcs_module_init(void);
-static void __exit hvcs_module_exit(void);
-static int __devinit hvcs_initialize(void);
-=======
 static int hvcs_get_pi(struct hvcs_struct *hvcsd);
 static int hvcs_rescan_devices_list(void);
 
 static void hvcs_partner_free(struct hvcs_struct *hvcsd);
 
 static int hvcs_initialize(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HVCS_SCHED_READ	0x00000001
 #define HVCS_QUICK_READ	0x00000002
@@ -478,11 +379,7 @@ static ssize_t hvcs_vterm_state_store(struct device *dev, struct device_attribut
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-<<<<<<< HEAD
-	if (hvcsd->open_count > 0) {
-=======
 	if (hvcsd->port.count > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 		printk(KERN_INFO "HVCS: vterm state unchanged.  "
 				"The hvcs device node is still in use.\n");
@@ -537,11 +434,7 @@ static ssize_t hvcs_index_show(struct device *dev, struct device_attribute *attr
 
 static DEVICE_ATTR(index, S_IRUGO, hvcs_index_show, NULL);
 
-<<<<<<< HEAD
-static struct attribute *hvcs_attrs[] = {
-=======
 static struct attribute *hvcs_dev_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_partner_vtys.attr,
 	&dev_attr_partner_clcs.attr,
 	&dev_attr_current_vty.attr,
@@ -550,27 +443,15 @@ static struct attribute *hvcs_dev_attrs[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group hvcs_attr_group = {
-	.attrs = hvcs_attrs,
-};
-
-static ssize_t hvcs_rescan_show(struct device_driver *ddp, char *buf)
-=======
 ATTRIBUTE_GROUPS(hvcs_dev);
 
 static ssize_t rescan_show(struct device_driver *ddp, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* A 1 means it is updating, a 0 means it is done updating */
 	return snprintf(buf, PAGE_SIZE, "%d\n", hvcs_rescan_status);
 }
 
-<<<<<<< HEAD
-static ssize_t hvcs_rescan_store(struct device_driver *ddp, const char * buf,
-=======
 static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size_t count)
 {
 	if ((simple_strtol(buf, NULL, 0) != 1)
@@ -585,10 +466,6 @@ static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
 	return count;
 }
 
-<<<<<<< HEAD
-static DRIVER_ATTR(rescan,
-	S_IRUGO | S_IWUSR, hvcs_rescan_show, hvcs_rescan_store);
-=======
 static DRIVER_ATTR_RW(rescan);
 
 static struct attribute *hvcs_attrs[] = {
@@ -597,7 +474,6 @@ static struct attribute *hvcs_attrs[] = {
 };
 
 ATTRIBUTE_GROUPS(hvcs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hvcs_kick(void)
 {
@@ -649,11 +525,7 @@ static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance)
 static void hvcs_try_write(struct hvcs_struct *hvcsd)
 {
 	uint32_t unit_address = hvcsd->vdev->unit_address;
-<<<<<<< HEAD
-	struct tty_struct *tty = hvcsd->tty;
-=======
 	struct tty_struct *tty = hvcsd->port.tty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sent;
 
 	if (hvcsd->todo_mask & HVCS_TRY_WRITE) {
@@ -691,19 +563,11 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
 	unit_address = hvcsd->vdev->unit_address;
-<<<<<<< HEAD
-	tty = hvcsd->tty;
-
-	hvcs_try_write(hvcsd);
-
-	if (!tty || test_bit(TTY_THROTTLED, &tty->flags)) {
-=======
 	tty = hvcsd->port.tty;
 
 	hvcs_try_write(hvcsd);
 
 	if (!tty || tty_throttled(tty)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hvcsd->todo_mask &= ~(HVCS_READ_MASK);
 		goto bail;
 	} else if (!(hvcsd->todo_mask & (HVCS_READ_MASK)))
@@ -712,19 +576,11 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 	/* remove the read masks */
 	hvcsd->todo_mask &= ~(HVCS_READ_MASK);
 
-<<<<<<< HEAD
-	if (tty_buffer_request_room(tty, HVCS_BUFF_LEN) >= HVCS_BUFF_LEN) {
-		got = hvc_get_chars(unit_address,
-				&buf[0],
-				HVCS_BUFF_LEN);
-		tty_insert_flip_string(tty, buf, got);
-=======
 	if (tty_buffer_request_room(&hvcsd->port, HVCS_BUFF_LEN) >= HVCS_BUFF_LEN) {
 		got = hvc_get_chars(unit_address,
 				&buf[0],
 				HVCS_BUFF_LEN);
 		tty_insert_flip_string(&hvcsd->port, buf, got);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Give the TTY time to process the data we just sent. */
@@ -732,18 +588,10 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 		hvcsd->todo_mask |= HVCS_QUICK_READ;
 
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
-<<<<<<< HEAD
-	/* This is synch because tty->low_latency == 1 */
-	if(got)
-		tty_flip_buffer_push(tty);
-
-	if (!got) {
-=======
 	/* This is synch -- FIXME :js: it is not! */
 	if (got)
 		tty_flip_buffer_push(&hvcsd->port);
 	else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Do this _after_ the flip_buffer_push */
 		spin_lock_irqsave(&hvcsd->lock, flags);
 		vio_enable_interrupts(hvcsd->vdev);
@@ -794,11 +642,7 @@ static int khvcsd(void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct vio_device_id hvcs_driver_table[] __devinitdata= {
-=======
 static const struct vio_device_id hvcs_driver_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"serial-server", "hvterm2"},
 	{ "", "" }
 };
@@ -817,27 +661,16 @@ static void hvcs_return_index(int index)
 		hvcs_index_list[index] = -1;
 }
 
-<<<<<<< HEAD
-/* callback when the kref ref count reaches zero */
-static void destroy_hvcs_struct(struct kref *kref)
-{
-	struct hvcs_struct *hvcsd = from_kref(kref);
-	struct vio_dev *vdev;
-=======
 static void hvcs_destruct_port(struct tty_port *p)
 {
 	struct hvcs_struct *hvcsd = container_of(p, struct hvcs_struct, port);
 	struct completion *comp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock(&hvcs_structs_lock);
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-<<<<<<< HEAD
-=======
 	comp = hvcsd->destroyed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the list_del poisons the pointers */
 	list_del(&(hvcsd->next));
 
@@ -852,31 +685,17 @@ static void hvcs_destruct_port(struct tty_port *p)
 	printk(KERN_INFO "HVCS: Destroyed hvcs_struct for vty-server@%X.\n",
 			hvcsd->vdev->unit_address);
 
-<<<<<<< HEAD
-	vdev = hvcsd->vdev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvcsd->vdev = NULL;
 
 	hvcsd->p_unit_address = 0;
 	hvcsd->p_partition_ID = 0;
-<<<<<<< HEAD
-=======
 	hvcsd->destroyed = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvcs_return_index(hvcsd->index);
 	memset(&hvcsd->p_location_code[0], 0x00, HVCS_CLC_LENGTH + 1);
 
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 	spin_unlock(&hvcs_structs_lock);
 
-<<<<<<< HEAD
-	sysfs_remove_group(&vdev->dev.kobj, &hvcs_attr_group);
-
-	kfree(hvcsd);
-}
-
-=======
 	kfree(hvcsd);
 	if (comp)
 		complete(comp);
@@ -886,7 +705,6 @@ static const struct tty_port_operations hvcs_port_ops = {
 	.destruct = hvcs_destruct_port,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hvcs_get_index(void)
 {
 	int i;
@@ -905,20 +723,12 @@ static int hvcs_get_index(void)
 	return -1;
 }
 
-<<<<<<< HEAD
-static int __devinit hvcs_probe(
-=======
 static int hvcs_probe(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vio_dev *dev,
 	const struct vio_device_id *id)
 {
 	struct hvcs_struct *hvcsd;
 	int index, rc;
-<<<<<<< HEAD
-	int retval;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev || !id) {
 		printk(KERN_ERR "HVCS: probed with invalid parameter.\n");
@@ -942,16 +752,9 @@ static int hvcs_probe(
 	if (!hvcsd)
 		return -ENODEV;
 
-<<<<<<< HEAD
-
-	spin_lock_init(&hvcsd->lock);
-	/* Automatically incs the refcount the first time */
-	kref_init(&hvcsd->kref);
-=======
 	tty_port_init(&hvcsd->port);
 	hvcsd->port.ops = &hvcs_port_ops;
 	spin_lock_init(&hvcsd->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hvcsd->vdev = dev;
 	dev_set_drvdata(&dev->dev, hvcsd);
@@ -982,16 +785,6 @@ static int hvcs_probe(
 	list_add_tail(&(hvcsd->next), &hvcs_structs);
 	spin_unlock(&hvcs_structs_lock);
 
-<<<<<<< HEAD
-	retval = sysfs_create_group(&dev->dev.kobj, &hvcs_attr_group);
-	if (retval) {
-		printk(KERN_ERR "HVCS: Can't create sysfs attrs for vty-server@%X\n",
-		       hvcsd->vdev->unit_address);
-		return retval;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "HVCS: vty-server@%X added to the vio bus.\n", dev->unit_address);
 
 	/*
@@ -1001,17 +794,6 @@ static int hvcs_probe(
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit hvcs_remove(struct vio_dev *dev)
-{
-	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
-	unsigned long flags;
-	struct tty_struct *tty;
-
-	if (!hvcsd)
-		return -ENODEV;
-
-=======
 static void hvcs_remove(struct vio_dev *dev)
 {
 	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
@@ -1019,39 +801,16 @@ static void hvcs_remove(struct vio_dev *dev)
 	unsigned long flags;
 	struct tty_struct *tty;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* By this time the vty-server won't be getting any more interrupts */
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-<<<<<<< HEAD
-	tty = hvcsd->tty;
-=======
 	hvcsd->destroyed = &comp;
 	tty = tty_port_tty_get(&hvcsd->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 
 	/*
-<<<<<<< HEAD
-	 * Let the last holder of this object cause it to be removed, which
-	 * would probably be tty_hangup below.
-	 */
-	kref_put(&hvcsd->kref, destroy_hvcs_struct);
-
-	/*
-	 * The hangup is a scheduled function which will auto chain call
-	 * hvcs_hangup.  The tty should always be valid at this time unless a
-	 * simultaneous tty close already cleaned up the hvcs_struct.
-	 */
-	if (tty)
-		tty_hangup(tty);
-
-	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
-			" vio bus.\n", dev->unit_address);
-	return 0;
-=======
 	 * The tty should always be valid at this time unless a
 	 * simultaneous tty close already cleaned up the hvcs_struct.
 	 */
@@ -1064,48 +823,28 @@ static void hvcs_remove(struct vio_dev *dev)
 	wait_for_completion(&comp);
 	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
 			" vio bus.\n", dev->unit_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct vio_driver hvcs_vio_driver = {
 	.id_table	= hvcs_driver_table,
 	.probe		= hvcs_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(hvcs_remove),
-	.name		= hvcs_driver_name,
-=======
 	.remove		= hvcs_remove,
 	.name		= hvcs_driver_name,
 	.driver = {
 		.groups = hvcs_groups,
 		.dev_groups = hvcs_dev_groups,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Only called from hvcs_get_pi please */
 static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
 {
-<<<<<<< HEAD
-	int clclength;
-
-	hvcsd->p_unit_address = pi->unit_address;
-	hvcsd->p_partition_ID  = pi->partition_ID;
-	clclength = strlen(&pi->location_code[0]);
-	if (clclength > HVCS_CLC_LENGTH)
-		clclength = HVCS_CLC_LENGTH;
-
-	/* copy the null-term char too */
-	strncpy(&hvcsd->p_location_code[0],
-			&pi->location_code[0], clclength + 1);
-=======
 	hvcsd->p_unit_address = pi->unit_address;
 	hvcsd->p_partition_ID  = pi->partition_ID;
 
 	/* copy the null-term char too */
 	strscpy(hvcsd->p_location_code, pi->location_code,
 		sizeof(hvcsd->p_location_code));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1263,13 +1002,8 @@ static int hvcs_enable_device(struct hvcs_struct *hvcsd, uint32_t unit_address,
 	 * It is possible that the vty-server was removed between the time that
 	 * the conn was registered and now.
 	 */
-<<<<<<< HEAD
-	if (!(rc = request_irq(irq, &hvcs_handle_interrupt,
-				0, "ibmhvcs", hvcsd))) {
-=======
 	rc = request_irq(irq, &hvcs_handle_interrupt, 0, "ibmhvcs", hvcsd);
 	if (!rc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * It is possible the vty-server was removed after the irq was
 		 * requested but before we have time to enable interrupts.
@@ -1309,11 +1043,7 @@ static struct hvcs_struct *hvcs_get_by_index(int index)
 	list_for_each_entry(hvcsd, &hvcs_structs, next) {
 		spin_lock_irqsave(&hvcsd->lock, flags);
 		if (hvcsd->index == index) {
-<<<<<<< HEAD
-			kref_get(&hvcsd->kref);
-=======
 			tty_port_get(&hvcsd->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&hvcsd->lock, flags);
 			spin_unlock(&hvcs_structs_lock);
 			return hvcsd;
@@ -1325,23 +1055,6 @@ static struct hvcs_struct *hvcs_get_by_index(int index)
 	return NULL;
 }
 
-<<<<<<< HEAD
-/*
- * This is invoked via the tty_open interface when a user app connects to the
- * /dev node.
- */
-static int hvcs_open(struct tty_struct *tty, struct file *filp)
-{
-	struct hvcs_struct *hvcsd;
-	int rc, retval = 0;
-	unsigned long flags;
-	unsigned int irq;
-	struct vio_dev *vdev;
-	unsigned long unit_address;
-
-	if (tty->driver_data)
-		goto fast_open;
-=======
 static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 {
 	struct hvcs_struct *hvcsd;
@@ -1349,18 +1062,13 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 	unsigned long unit_address, flags;
 	unsigned int irq;
 	int retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Is there a vty-server that shares the same index?
 	 * This function increments the kref index.
 	 */
-<<<<<<< HEAD
-	if (!(hvcsd = hvcs_get_by_index(tty->index))) {
-=======
 	hvcsd = hvcs_get_by_index(tty->index);
 	if (!hvcsd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "HVCS: open failed, no device associated"
 				" with tty->index %d.\n", tty->index);
 		return -ENODEV;
@@ -1368,14 +1076,6 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-<<<<<<< HEAD
-	if (hvcsd->connected == 0)
-		if ((retval = hvcs_partner_connect(hvcsd)))
-			goto error_release;
-
-	hvcsd->open_count = 1;
-	hvcsd->tty = tty;
-=======
 	if (hvcsd->connected == 0) {
 		retval = hvcs_partner_connect(hvcsd);
 		if (retval) {
@@ -1387,7 +1087,6 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 
 	hvcsd->port.count = 0;
 	hvcsd->port.tty = tty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty->driver_data = hvcsd;
 
 	memset(&hvcsd->buffer[0], 0x00, HVCS_BUFF_LEN);
@@ -1407,26 +1106,6 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 	 * This must be done outside of the spinlock because it requests irqs
 	 * and will grab the spinlock and free the connection if it fails.
 	 */
-<<<<<<< HEAD
-	if (((rc = hvcs_enable_device(hvcsd, unit_address, irq, vdev)))) {
-		kref_put(&hvcsd->kref, destroy_hvcs_struct);
-		printk(KERN_WARNING "HVCS: enable device failed.\n");
-		return rc;
-	}
-
-	goto open_success;
-
-fast_open:
-	hvcsd = tty->driver_data;
-
-	spin_lock_irqsave(&hvcsd->lock, flags);
-	kref_get(&hvcsd->kref);
-	hvcsd->open_count++;
-	hvcsd->todo_mask |= HVCS_SCHED_READ;
-	spin_unlock_irqrestore(&hvcsd->lock, flags);
-
-open_success:
-=======
 	retval = hvcs_enable_device(hvcsd, unit_address, irq, vdev);
 	if (retval) {
 		printk(KERN_WARNING "HVCS: enable device failed.\n");
@@ -1463,23 +1142,12 @@ static int hvcs_open(struct tty_struct *tty, struct file *filp)
 	hvcsd->todo_mask |= HVCS_SCHED_READ;
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvcs_kick();
 
 	printk(KERN_INFO "HVCS: vty-server@%X connection opened.\n",
 		hvcsd->vdev->unit_address );
 
 	return 0;
-<<<<<<< HEAD
-
-error_release:
-	spin_unlock_irqrestore(&hvcsd->lock, flags);
-	kref_put(&hvcsd->kref, destroy_hvcs_struct);
-
-	printk(KERN_WARNING "HVCS: partner connect failed.\n");
-	return retval;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hvcs_close(struct tty_struct *tty, struct file *filp)
@@ -1506,14 +1174,10 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 	hvcsd = tty->driver_data;
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
-<<<<<<< HEAD
-	if (--hvcsd->open_count == 0) {
-=======
 	if (hvcsd->port.count == 0) {
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 		return;
 	} else if (--hvcsd->port.count == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		vio_disable_interrupts(hvcsd->vdev);
 
@@ -1522,37 +1186,11 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 		 * execute any operations on the TTY even though it is obligated
 		 * to deliver any pending I/O to the hypervisor.
 		 */
-<<<<<<< HEAD
-		hvcsd->tty = NULL;
-=======
 		hvcsd->port.tty = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		irq = hvcsd->vdev->irq;
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 
-<<<<<<< HEAD
-		tty_wait_until_sent_from_close(tty, HVCS_CLOSE_WAIT);
-
-		/*
-		 * This line is important because it tells hvcs_open that this
-		 * device needs to be re-configured the next time hvcs_open is
-		 * called.
-		 */
-		tty->driver_data = NULL;
-
-		free_irq(irq, hvcsd);
-		kref_put(&hvcsd->kref, destroy_hvcs_struct);
-		return;
-	} else if (hvcsd->open_count < 0) {
-		printk(KERN_ERR "HVCS: vty-server@%X open_count: %d"
-				" is missmanaged.\n",
-		hvcsd->vdev->unit_address, hvcsd->open_count);
-	}
-
-	spin_unlock_irqrestore(&hvcsd->lock, flags);
-	kref_put(&hvcsd->kref, destroy_hvcs_struct);
-=======
 		tty_wait_until_sent(tty, HVCS_CLOSE_WAIT);
 
 		free_irq(irq, hvcsd);
@@ -1577,25 +1215,15 @@ static void hvcs_cleanup(struct tty_struct * tty)
 	tty->driver_data = NULL;
 
 	tty_port_put(&hvcsd->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hvcs_hangup(struct tty_struct * tty)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 	unsigned long flags;
-<<<<<<< HEAD
-	int temp_open_count;
 	int irq;
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
-	/* Preserve this so that we know how many kref refs to put */
-	temp_open_count = hvcsd->open_count;
-=======
-	int irq;
-
-	spin_lock_irqsave(&hvcsd->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Don't kref put inside the spinlock because the destruction
@@ -1605,17 +1233,8 @@ static void hvcs_hangup(struct tty_struct * tty)
 	vio_disable_interrupts(hvcsd->vdev);
 
 	hvcsd->todo_mask = 0;
-<<<<<<< HEAD
-
-	/* I don't think the tty needs the hvcs_struct pointer after a hangup */
-	hvcsd->tty->driver_data = NULL;
-	hvcsd->tty = NULL;
-
-	hvcsd->open_count = 0;
-=======
 	hvcsd->port.tty = NULL;
 	hvcsd->port.count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This will drop any buffered data on the floor which is OK in a hangup
 	 * scenario. */
@@ -1627,24 +1246,6 @@ static void hvcs_hangup(struct tty_struct * tty)
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 
 	free_irq(irq, hvcsd);
-<<<<<<< HEAD
-
-	/*
-	 * We need to kref_put() for every open_count we have since the
-	 * tty_hangup() function doesn't invoke a close per open connection on a
-	 * non-console device.
-	 */
-	while(temp_open_count) {
-		--temp_open_count;
-		/*
-		 * The final put will trigger destruction of the hvcs_struct.
-		 * NOTE:  If this hangup was signaled from user space then the
-		 * final put will never happen.
-		 */
-		kref_put(&hvcsd->kref, destroy_hvcs_struct);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1654,24 +1255,14 @@ static void hvcs_hangup(struct tty_struct * tty)
  * tty_hangup will allow hvcs_write time to complete execution before it
  * terminates our device.
  */
-<<<<<<< HEAD
-static int hvcs_write(struct tty_struct *tty,
-		const unsigned char *buf, int count)
-=======
 static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 	unsigned int unit_address;
 	const unsigned char *charbuf;
 	unsigned long flags;
-<<<<<<< HEAD
-	int total_sent = 0;
-	int tosend = 0;
-=======
 	size_t total_sent = 0;
 	size_t tosend = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 
 	/*
@@ -1698,11 +1289,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	 * the middle of a write operation?  This is a crummy place to do this
 	 * but we want to keep it all in the spinlock.
 	 */
-<<<<<<< HEAD
-	if (hvcsd->open_count <= 0) {
-=======
 	if (hvcsd->port.count <= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 		return -ENODEV;
 	}
@@ -1710,12 +1297,8 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	unit_address = hvcsd->vdev->unit_address;
 
 	while (count > 0) {
-<<<<<<< HEAD
-		tosend = min(count, (HVCS_BUFF_LEN - hvcsd->chars_in_buffer));
-=======
 		tosend = min_t(size_t, count,
 			       (HVCS_BUFF_LEN - hvcsd->chars_in_buffer));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * No more space, this probably means that the last call to
 		 * hvcs_write() didn't succeed and the buffer was filled up.
@@ -1777,29 +1360,17 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
  * absolutely WILL BUFFER if we can't send it.  This driver MUST honor the
  * return value, hence the reason for hvcs_struct buffering.
  */
-<<<<<<< HEAD
-static int hvcs_write_room(struct tty_struct *tty)
-{
-	struct hvcs_struct *hvcsd = tty->driver_data;
-
-	if (!hvcsd || hvcsd->open_count <= 0)
-=======
 static unsigned int hvcs_write_room(struct tty_struct *tty)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 
 	if (!hvcsd || hvcsd->port.count <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return HVCS_BUFF_LEN - hvcsd->chars_in_buffer;
 }
 
-<<<<<<< HEAD
-static int hvcs_chars_in_buffer(struct tty_struct *tty)
-=======
 static unsigned int hvcs_chars_in_buffer(struct tty_struct *tty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 
@@ -1807,15 +1378,10 @@ static unsigned int hvcs_chars_in_buffer(struct tty_struct *tty)
 }
 
 static const struct tty_operations hvcs_ops = {
-<<<<<<< HEAD
-	.open = hvcs_open,
-	.close = hvcs_close,
-=======
 	.install = hvcs_install,
 	.open = hvcs_open,
 	.close = hvcs_close,
 	.cleanup = hvcs_cleanup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hangup = hvcs_hangup,
 	.write = hvcs_write,
 	.write_room = hvcs_write_room,
@@ -1828,12 +1394,8 @@ static int hvcs_alloc_index_list(int n)
 {
 	int i;
 
-<<<<<<< HEAD
-	hvcs_index_list = kmalloc(n * sizeof(hvcs_index_count),GFP_KERNEL);
-=======
 	hvcs_index_list = kmalloc_array(n, sizeof(hvcs_index_count),
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hvcs_index_list)
 		return -ENOMEM;
 	hvcs_index_count = n;
@@ -1850,11 +1412,7 @@ static void hvcs_free_index_list(void)
 	hvcs_index_count = 0;
 }
 
-<<<<<<< HEAD
-static int __devinit hvcs_initialize(void)
-=======
 static int hvcs_initialize(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, num_ttys_to_alloc;
 
@@ -1871,18 +1429,12 @@ static int hvcs_initialize(void)
 	} else
 		num_ttys_to_alloc = hvcs_parm_num_devs;
 
-<<<<<<< HEAD
-	hvcs_tty_driver = alloc_tty_driver(num_ttys_to_alloc);
-	if (!hvcs_tty_driver)
-		return -ENOMEM;
-=======
 	hvcs_tty_driver = tty_alloc_driver(num_ttys_to_alloc,
 			TTY_DRIVER_REAL_RAW);
 	if (IS_ERR(hvcs_tty_driver)) {
 		mutex_unlock(&hvcs_init_mutex);
 		return PTR_ERR(hvcs_tty_driver);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hvcs_alloc_index_list(num_ttys_to_alloc)) {
 		rc = -ENOMEM;
@@ -1906,10 +1458,6 @@ static int hvcs_initialize(void)
 	 * throw us into a horrible recursive echo-echo-echo loop.
 	 */
 	hvcs_tty_driver->init_termios = hvcs_tty_termios;
-<<<<<<< HEAD
-	hvcs_tty_driver->flags = TTY_DRIVER_REAL_RAW;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tty_set_operations(hvcs_tty_driver, &hvcs_ops);
 
@@ -1945,11 +1493,7 @@ buff_alloc_fail:
 register_fail:
 	hvcs_free_index_list();
 index_fail:
-<<<<<<< HEAD
-	put_tty_driver(hvcs_tty_driver);
-=======
 	tty_driver_kref_put(hvcs_tty_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvcs_tty_driver = NULL;
 	mutex_unlock(&hvcs_init_mutex);
 	return rc;
@@ -1965,16 +1509,6 @@ static int __init hvcs_module_init(void)
 
 	pr_info("HVCS: Driver registered.\n");
 
-<<<<<<< HEAD
-	/* This needs to be done AFTER the vio_register_driver() call or else
-	 * the kobjects won't be initialized properly.
-	 */
-	rc = driver_create_file(&(hvcs_vio_driver.driver), &driver_attr_rescan);
-	if (rc)
-		pr_warning(KERN_ERR "HVCS: Failed to create rescan file (err %d)\n", rc);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1999,20 +1533,11 @@ static void __exit hvcs_module_exit(void)
 	hvcs_pi_buff = NULL;
 	spin_unlock(&hvcs_pi_lock);
 
-<<<<<<< HEAD
-	driver_remove_file(&hvcs_vio_driver.driver, &driver_attr_rescan);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty_unregister_driver(hvcs_tty_driver);
 
 	hvcs_free_index_list();
 
-<<<<<<< HEAD
-	put_tty_driver(hvcs_tty_driver);
-=======
 	tty_driver_kref_put(hvcs_tty_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "HVCS: driver module removed.\n");
 }

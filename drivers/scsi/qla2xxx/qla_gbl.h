@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2014 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __QLA_GBL_H
 #define	__QLA_GBL_H
@@ -20,73 +12,37 @@
  * Global Function Prototypes in qla_init.c source file.
  */
 extern int qla2x00_initialize_adapter(scsi_qla_host_t *);
-<<<<<<< HEAD
-=======
 extern int qla24xx_post_prli_work(struct scsi_qla_host *vha, fc_port_t *fcport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int qla2100_pci_config(struct scsi_qla_host *);
 extern int qla2300_pci_config(struct scsi_qla_host *);
 extern int qla24xx_pci_config(scsi_qla_host_t *);
 extern int qla25xx_pci_config(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern void qla2x00_reset_chip(struct scsi_qla_host *);
-extern void qla24xx_reset_chip(struct scsi_qla_host *);
-=======
 extern int qla2x00_reset_chip(struct scsi_qla_host *);
 extern int qla24xx_reset_chip(struct scsi_qla_host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_chip_diag(struct scsi_qla_host *);
 extern int qla24xx_chip_diag(struct scsi_qla_host *);
 extern void qla2x00_config_rings(struct scsi_qla_host *);
 extern void qla24xx_config_rings(struct scsi_qla_host *);
-<<<<<<< HEAD
-extern void qla2x00_reset_adapter(struct scsi_qla_host *);
-extern void qla24xx_reset_adapter(struct scsi_qla_host *);
-=======
 extern int qla2x00_reset_adapter(struct scsi_qla_host *);
 extern int qla24xx_reset_adapter(struct scsi_qla_host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_nvram_config(struct scsi_qla_host *);
 extern int qla24xx_nvram_config(struct scsi_qla_host *);
 extern int qla81xx_nvram_config(struct scsi_qla_host *);
 extern void qla2x00_update_fw_options(struct scsi_qla_host *);
 extern void qla24xx_update_fw_options(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern void qla81xx_update_fw_options(scsi_qla_host_t *);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_load_risc(struct scsi_qla_host *, uint32_t *);
 extern int qla24xx_load_risc(scsi_qla_host_t *, uint32_t *);
 extern int qla81xx_load_risc(scsi_qla_host_t *, uint32_t *);
 
 extern int qla2x00_perform_loop_resync(scsi_qla_host_t *);
 extern int qla2x00_loop_resync(scsi_qla_host_t *);
-<<<<<<< HEAD
-
-extern int qla2x00_find_new_loop_id(scsi_qla_host_t *, fc_port_t *);
-=======
 extern void qla2x00_clear_loop_id(fc_port_t *fcport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int qla2x00_fabric_login(scsi_qla_host_t *, fc_port_t *, uint16_t *);
 extern int qla2x00_local_device_login(scsi_qla_host_t *, fc_port_t *);
 
-<<<<<<< HEAD
-extern void qla2x00_update_fcports(scsi_qla_host_t *);
-
-extern int qla2x00_abort_isp(scsi_qla_host_t *);
-extern void qla2x00_abort_isp_cleanup(scsi_qla_host_t *);
-extern void qla82xx_quiescent_state_cleanup(scsi_qla_host_t *);
-
-extern void qla2x00_update_fcport(scsi_qla_host_t *, fc_port_t *);
-
-extern void qla2x00_alloc_fw_dump(scsi_qla_host_t *);
-extern void qla2x00_try_to_stop_firmware(scsi_qla_host_t *);
-
-extern int qla2x00_get_thermal_temp(scsi_qla_host_t *, uint16_t *, uint16_t *);
-=======
 extern int qla24xx_els_dcmd_iocb(scsi_qla_host_t *, int, port_id_t);
 extern int qla24xx_els_dcmd2_iocb(scsi_qla_host_t *, int, fc_port_t *);
 extern void qla2x00_els_dcmd2_free(scsi_qla_host_t *vha,
@@ -102,29 +58,12 @@ extern void qla2x00_alloc_fw_dump(scsi_qla_host_t *);
 extern void qla2x00_try_to_stop_firmware(scsi_qla_host_t *);
 
 extern int qla2x00_get_thermal_temp(scsi_qla_host_t *, uint16_t *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void qla84xx_put_chip(struct scsi_qla_host *);
 
 extern int qla2x00_async_login(struct scsi_qla_host *, fc_port_t *,
     uint16_t *);
 extern int qla2x00_async_logout(struct scsi_qla_host *, fc_port_t *);
-<<<<<<< HEAD
-extern int qla2x00_async_adisc(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern int qla2x00_async_tm_cmd(fc_port_t *, uint32_t, uint32_t, uint32_t);
-extern void qla2x00_async_login_done(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern void qla2x00_async_logout_done(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern void qla2x00_async_adisc_done(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern void *qla2x00_alloc_iocbs(struct scsi_qla_host *, srb_t *);
-extern int qla24xx_update_fcport_fcp_prio(scsi_qla_host_t *, fc_port_t *);
-
-extern fc_port_t *
-qla2x00_alloc_fcport(scsi_qla_host_t *, gfp_t );
-=======
 extern int qla2x00_async_prlo(struct scsi_qla_host *, fc_port_t *);
 extern int qla2x00_async_adisc(struct scsi_qla_host *, fc_port_t *,
     uint16_t *);
@@ -204,30 +143,19 @@ void qla_edif_clear_appdata(struct scsi_qla_host *vha,
 const char *sc_to_str(uint16_t cmd);
 void qla_adjust_iocb_limit(scsi_qla_host_t *vha);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global Data in qla_os.c source file.
  */
 extern char qla2x00_version_str[];
 
-<<<<<<< HEAD
-=======
 extern struct kmem_cache *srb_cachep;
 extern struct kmem_cache *qla_tgt_plogi_cachep;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ql2xlogintimeout;
 extern int qlport_down_retry;
 extern int ql2xplogiabsentdevice;
 extern int ql2xloginretrycount;
 extern int ql2xfdmienable;
-<<<<<<< HEAD
-extern int ql2xallocfwdump;
-extern int ql2xextended_error_logging;
-extern int ql2xiidmaenable;
-extern int ql2xmaxqueues;
-extern int ql2xmultique_tag;
-=======
 extern int ql2xrdpenable;
 extern int ql2xsmartsan;
 extern int ql2xallocfwdump;
@@ -235,7 +163,6 @@ extern int ql2xextended_error_logging;
 extern int ql2xextended_error_logging_ktrace;
 extern int ql2xiidmaenable;
 extern int ql2xmqsupport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ql2xfwloadbin;
 extern int ql2xetsenable;
 extern int ql2xshiftctondsd;
@@ -244,13 +171,6 @@ extern int ql2xasynctmfenable;
 extern int ql2xgffidenable;
 extern int ql2xenabledif;
 extern int ql2xenablehba_err_chk;
-<<<<<<< HEAD
-extern int ql2xtargetreset;
-extern int ql2xdontresethba;
-extern unsigned int ql2xmaxlun;
-extern int ql2xmdcapmask;
-extern int ql2xmdenable;
-=======
 extern int ql2xdontresethba;
 extern uint64_t ql2xmaxlun;
 extern int ql2xmdcapmask;
@@ -272,7 +192,6 @@ extern int ql2xenforce_iocb_limit;
 extern int ql2xabts_wait_nvme;
 extern u32 ql2xnvme_queues;
 extern int ql2xfc2target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int qla2x00_loop_reset(scsi_qla_host_t *);
 extern void qla2x00_abort_all_cmds(scsi_qla_host_t *, int);
@@ -281,28 +200,6 @@ extern int qla2x00_post_aen_work(struct scsi_qla_host *, enum
 extern int qla2x00_post_idc_ack_work(struct scsi_qla_host *, uint16_t *);
 extern int qla2x00_post_async_login_work(struct scsi_qla_host *, fc_port_t *,
     uint16_t *);
-<<<<<<< HEAD
-extern int qla2x00_post_async_login_done_work(struct scsi_qla_host *,
-    fc_port_t *, uint16_t *);
-extern int qla2x00_post_async_logout_work(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern int qla2x00_post_async_logout_done_work(struct scsi_qla_host *,
-    fc_port_t *, uint16_t *);
-extern int qla2x00_post_async_adisc_work(struct scsi_qla_host *, fc_port_t *,
-    uint16_t *);
-extern int qla2x00_post_async_adisc_done_work(struct scsi_qla_host *,
-    fc_port_t *, uint16_t *);
-extern int qla2x00_post_uevent_work(struct scsi_qla_host *, u32);
-
-extern int qla81xx_restart_mpi_firmware(scsi_qla_host_t *);
-
-extern struct scsi_qla_host *qla2x00_create_host(struct scsi_host_template *,
-	struct qla_hw_data *);
-extern void qla2x00_free_host(struct scsi_qla_host *);
-extern void qla2x00_relogin(struct scsi_qla_host *);
-extern void qla2x00_do_work(struct scsi_qla_host *);
-extern void qla2x00_free_fcports(struct scsi_qla_host *);
-=======
 extern int qla2x00_post_async_logout_work(struct scsi_qla_host *, fc_port_t *,
     uint16_t *);
 extern int qla2x00_post_async_adisc_work(struct scsi_qla_host *, fc_port_t *,
@@ -350,23 +247,15 @@ void qla_pci_set_eeh_busy(struct scsi_qla_host *);
 void qla_schedule_eeh_work(struct scsi_qla_host *);
 struct edif_sa_ctl *qla_edif_find_sa_ctl_by_index(fc_port_t *fcport,
 						  int index, int dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Global Functions in qla_mid.c source file.
  */
-<<<<<<< HEAD
-extern struct scsi_host_template qla2xxx_driver_template;
-extern struct scsi_transport_template *qla2xxx_transport_vport_template;
-extern void qla2x00_timer(scsi_qla_host_t *);
-extern void qla2x00_start_timer(scsi_qla_host_t *, void *, unsigned long);
-=======
 extern void qla_update_vp_map(struct scsi_qla_host *, int);
 extern struct scsi_host_template qla2xxx_driver_template;
 extern struct scsi_transport_template *qla2xxx_transport_vport_template;
 extern void qla2x00_timer(struct timer_list *);
 extern void qla2x00_start_timer(scsi_qla_host_t *, unsigned long);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void qla24xx_deallocate_vp_id(scsi_qla_host_t *);
 extern int qla24xx_disable_vp (scsi_qla_host_t *);
 extern int qla24xx_enable_vp (scsi_qla_host_t *);
@@ -379,15 +268,6 @@ extern void qla24xx_report_id_acquisition(scsi_qla_host_t *,
     struct vp_rpt_id_entry_24xx *);
 extern void qla2x00_do_dpc_all_vps(scsi_qla_host_t *);
 extern int qla24xx_vport_create_req_sanity_check(struct fc_vport *);
-<<<<<<< HEAD
-extern scsi_qla_host_t * qla24xx_create_vhost(struct fc_vport *);
-
-extern void qla2x00_sp_free_dma(void *, void *);
-extern char *qla2x00_get_fw_version_str(struct scsi_qla_host *, char *);
-
-extern void qla2x00_mark_device_lost(scsi_qla_host_t *, fc_port_t *, int, int);
-extern void qla2x00_mark_all_devices_lost(scsi_qla_host_t *, int);
-=======
 extern scsi_qla_host_t *qla24xx_create_vhost(struct fc_vport *);
 
 extern void qla2x00_sp_free_dma(srb_t *sp);
@@ -395,7 +275,6 @@ extern void qla2x00_sp_free_dma(srb_t *sp);
 extern void qla2x00_mark_device_lost(scsi_qla_host_t *, fc_port_t *, int);
 extern void qla2x00_mark_all_devices_lost(scsi_qla_host_t *);
 extern int qla24xx_async_abort_cmd(srb_t *, bool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct fw_blob *qla2x00_request_firmware(scsi_qla_host_t *);
 
@@ -408,36 +287,19 @@ extern void qla2x00_alert_all_vps(struct rsp_que *, uint16_t *);
 extern void qla2x00_async_event(scsi_qla_host_t *, struct rsp_que *,
 	uint16_t *);
 extern int  qla2x00_vp_abort_isp(scsi_qla_host_t *);
-<<<<<<< HEAD
-=======
 void qla_adjust_buf(struct scsi_qla_host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Global Function Prototypes in qla_iocb.c source file.
  */
-<<<<<<< HEAD
-=======
 void qla_els_pt_iocb(struct scsi_qla_host *vha,
 	struct els_entry_24xx *pkt, struct qla_els_pt_arg *a);
 cont_a64_entry_t *qla2x00_prep_cont_type1_iocb(scsi_qla_host_t *vha,
 		struct req_que *que);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern uint16_t qla2x00_calc_iocbs_32(uint16_t);
 extern uint16_t qla2x00_calc_iocbs_64(uint16_t);
 extern void qla2x00_build_scsi_iocbs_32(srb_t *, cmd_entry_t *, uint16_t);
 extern void qla2x00_build_scsi_iocbs_64(srb_t *, cmd_entry_t *, uint16_t);
-<<<<<<< HEAD
-extern int qla2x00_start_scsi(srb_t *sp);
-extern int qla24xx_start_scsi(srb_t *sp);
-int qla2x00_marker(struct scsi_qla_host *, struct req_que *, struct rsp_que *,
-						uint16_t, uint16_t, uint8_t);
-extern int qla2x00_start_sp(srb_t *);
-extern uint16_t qla24xx_calc_iocbs(scsi_qla_host_t *, uint16_t);
-extern void qla24xx_build_scsi_iocbs(srb_t *, struct cmd_type_7 *, uint16_t);
-extern int qla24xx_dif_start_scsi(srb_t *);
-
-=======
 extern void qla24xx_build_scsi_iocbs(srb_t *, struct cmd_type_7 *,
 	uint16_t, struct req_que *);
 extern uint32_t qla2xxx_get_next_handle(struct req_que *req);
@@ -468,7 +330,6 @@ extern int qla24xx_issue_sa_replace_iocb(scsi_qla_host_t *vha,
 	struct qla_work_evt *e);
 void qla2x00_sp_release(struct kref *kref);
 void qla2x00_els_dcmd2_iocb_timeout(void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Global Function Prototypes in qla_mbx.c source file.
@@ -504,17 +365,10 @@ extern int
 qla2x00_abort_command(srb_t *);
 
 extern int
-<<<<<<< HEAD
-qla2x00_abort_target(struct fc_port *, unsigned int, int);
-
-extern int
-qla2x00_lun_reset(struct fc_port *, unsigned int, int);
-=======
 qla2x00_abort_target(struct fc_port *, uint64_t, int);
 
 extern int
 qla2x00_lun_reset(struct fc_port *, uint64_t, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int
 qla2x00_get_adapter_id(scsi_qla_host_t *, uint16_t *, uint8_t *, uint8_t *,
@@ -530,24 +384,18 @@ extern int
 qla2x00_get_port_database(scsi_qla_host_t *, fc_port_t *, uint8_t);
 
 extern int
-<<<<<<< HEAD
-=======
 qla24xx_get_port_database(scsi_qla_host_t *, u16, struct port_database_24xx *);
 
 extern int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_get_firmware_state(scsi_qla_host_t *, uint16_t *);
 
 extern int
 qla2x00_get_port_name(scsi_qla_host_t *, uint16_t, uint8_t *, uint8_t);
 
 extern int
-<<<<<<< HEAD
-=======
 qla24xx_link_initialize(scsi_qla_host_t *);
 
 extern int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_lip_reset(scsi_qla_host_t *);
 
 extern int
@@ -577,19 +425,11 @@ extern int
 qla2x00_get_id_list(scsi_qla_host_t *, void *, dma_addr_t, uint16_t *);
 
 extern int
-<<<<<<< HEAD
-qla2x00_get_resource_cnts(scsi_qla_host_t *, uint16_t *, uint16_t *,
-    uint16_t *, uint16_t *, uint16_t *, uint16_t *);
-
-extern int
-qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
-=======
 qla2x00_get_resource_cnts(scsi_qla_host_t *);
 
 extern int
 qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
 		u8 *num_entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int
 qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
@@ -597,18 +437,6 @@ qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
 
 extern int
 qla24xx_get_isp_stats(scsi_qla_host_t *, struct link_statistics *,
-<<<<<<< HEAD
-    dma_addr_t);
-
-extern int qla24xx_abort_command(srb_t *);
-extern int
-qla24xx_abort_target(struct fc_port *, unsigned int, int);
-extern int
-qla24xx_lun_reset(struct fc_port *, unsigned int, int);
-extern int
-qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *, unsigned int,
-	unsigned int, enum nexus_wait_type);
-=======
     dma_addr_t, uint16_t);
 
 extern int qla24xx_abort_command(srb_t *);
@@ -620,13 +448,10 @@ qla24xx_lun_reset(struct fc_port *, uint64_t, int);
 extern int
 qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *, unsigned int,
 	uint64_t, enum nexus_wait_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int
 qla2x00_system_error(scsi_qla_host_t *);
 
 extern int
-<<<<<<< HEAD
-=======
 qla2x00_write_serdes_word(scsi_qla_host_t *, uint16_t, uint16_t);
 extern int
 qla2x00_read_serdes_word(scsi_qla_host_t *, uint16_t, uint16_t *);
@@ -637,7 +462,6 @@ extern int
 qla8044_read_serdes_word(scsi_qla_host_t *, uint32_t, uint32_t *);
 
 extern int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_set_serdes_params(scsi_qla_host_t *, uint16_t, uint16_t, uint16_t);
 
 extern int
@@ -656,8 +480,6 @@ extern int
 qla2x00_disable_fce_trace(scsi_qla_host_t *, uint64_t *, uint64_t *);
 
 extern int
-<<<<<<< HEAD
-=======
 qla82xx_set_driver_version(scsi_qla_host_t *, char *);
 
 extern int
@@ -671,7 +493,6 @@ qla24xx_get_buffer_credits(scsi_qla_host_t *, struct buffer_credit_24xx *,
 	dma_addr_t);
 
 extern int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_read_sfp(scsi_qla_host_t *, dma_addr_t, uint8_t *,
 	uint16_t, uint16_t, uint16_t, uint16_t);
 
@@ -695,11 +516,8 @@ qla81xx_fac_do_write_enable(scsi_qla_host_t *, int);
 extern int
 qla81xx_fac_erase_sector(scsi_qla_host_t *, uint32_t, uint32_t);
 
-<<<<<<< HEAD
-=======
 extern int qla81xx_fac_semaphore_access(scsi_qla_host_t *, int);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int
 qla2x00_get_xgmac_stats(scsi_qla_host_t *, dma_addr_t, uint16_t, uint16_t *);
 
@@ -726,8 +544,6 @@ qla81xx_set_port_config(scsi_qla_host_t *, uint16_t *);
 extern int
 qla2x00_port_logout(scsi_qla_host_t *, struct fc_port *);
 
-<<<<<<< HEAD
-=======
 extern int
 qla2x00_dump_mctp_data(scsi_qla_host_t *, dma_addr_t, uint32_t, uint32_t);
 
@@ -760,7 +576,6 @@ extern int qla2xxx_write_remote_register(scsi_qla_host_t *, uint32_t,
     uint32_t);
 void qla_no_op_mb(struct scsi_qla_host *vha);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global Function Prototypes in qla_isr.c source file.
  */
@@ -774,27 +589,6 @@ extern int qla2x00_request_irqs(struct qla_hw_data *, struct rsp_que *);
 extern void qla2x00_free_irqs(scsi_qla_host_t *);
 
 extern int qla2x00_get_data_rate(scsi_qla_host_t *);
-<<<<<<< HEAD
-/*
- * Global Function Prototypes in qla_sup.c source file.
- */
-extern void qla2x00_release_nvram_protection(scsi_qla_host_t *);
-extern uint32_t *qla24xx_read_flash_data(scsi_qla_host_t *, uint32_t *,
-    uint32_t, uint32_t);
-extern uint8_t *qla2x00_read_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-extern uint8_t *qla24xx_read_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-extern int qla2x00_write_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-extern int qla24xx_write_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-extern uint8_t *qla25xx_read_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-extern int qla25xx_write_nvram_data(scsi_qla_host_t *, uint8_t *, uint32_t,
-    uint32_t);
-
-=======
 extern const char *qla2x00_get_link_speed_str(struct qla_hw_data *, uint16_t);
 extern srb_t *
 qla2x00_get_sp_from_handle(scsi_qla_host_t *, const char *, struct req_que *,
@@ -837,7 +631,6 @@ extern int qla2x00_is_a_vp_did(scsi_qla_host_t *, uint32_t);
 bool qla2x00_check_reg32_for_disconnect(scsi_qla_host_t *, uint32_t);
 bool qla2x00_check_reg16_for_disconnect(scsi_qla_host_t *, uint16_t);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_beacon_on(struct scsi_qla_host *);
 extern int qla2x00_beacon_off(struct scsi_qla_host *);
 extern void qla2x00_beacon_blink(struct scsi_qla_host *);
@@ -847,23 +640,6 @@ extern void qla24xx_beacon_blink(struct scsi_qla_host *);
 extern void qla83xx_beacon_blink(struct scsi_qla_host *);
 extern int qla82xx_beacon_on(struct scsi_qla_host *);
 extern int qla82xx_beacon_off(struct scsi_qla_host *);
-<<<<<<< HEAD
-extern int qla83xx_write_remote_reg(struct scsi_qla_host *, uint32_t, uint32_t);
-
-extern uint8_t *qla2x00_read_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-extern int qla2x00_write_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-extern uint8_t *qla24xx_read_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-extern int qla24xx_write_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-extern uint8_t *qla25xx_read_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-
-extern int qla2x00_get_flash_version(scsi_qla_host_t *, void *);
-extern int qla24xx_get_flash_version(scsi_qla_host_t *, void *);
-=======
 extern int qla83xx_wr_reg(scsi_qla_host_t *, uint32_t, uint32_t);
 extern int qla83xx_rd_reg(scsi_qla_host_t *, uint32_t, uint32_t *);
 extern int qla83xx_restart_nic_firmware(scsi_qla_host_t *);
@@ -887,15 +663,12 @@ extern void qla8044_watchdog(struct scsi_qla_host *vha);
 extern int qla2x00_get_flash_version(scsi_qla_host_t *, void *);
 extern int qla24xx_get_flash_version(scsi_qla_host_t *, void *);
 extern int qla82xx_get_flash_version(scsi_qla_host_t *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int qla2xxx_get_flash_info(scsi_qla_host_t *);
 extern int qla2xxx_get_vpd_field(scsi_qla_host_t *, char *, char *, size_t);
 
 extern void qla2xxx_flash_npiv_conf(scsi_qla_host_t *);
 extern int qla24xx_read_fcp_prio_cfg(scsi_qla_host_t *);
-<<<<<<< HEAD
-=======
 extern int qla2x00_mailbox_passthru(struct bsg_job *bsg_job);
 int qla2x00_sys_ld_info(struct bsg_job *bsg_job);
 int __qla_copy_purex_to_buffer(struct scsi_qla_host *, void **,
@@ -904,31 +677,10 @@ struct purex_item *qla27xx_copy_multiple_pkt(struct scsi_qla_host *vha,
 	void **pkt, struct rsp_que **rsp, bool is_purls, bool byte_order);
 int qla_mailbox_passthru(scsi_qla_host_t *vha, uint16_t *mbx_in,
 			 uint16_t *mbx_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Global Function Prototypes in qla_dbg.c source file.
  */
-<<<<<<< HEAD
-extern void qla2100_fw_dump(scsi_qla_host_t *, int);
-extern void qla2300_fw_dump(scsi_qla_host_t *, int);
-extern void qla24xx_fw_dump(scsi_qla_host_t *, int);
-extern void qla25xx_fw_dump(scsi_qla_host_t *, int);
-extern void qla81xx_fw_dump(scsi_qla_host_t *, int);
-extern void qla2x00_dump_regs(scsi_qla_host_t *);
-extern void qla2x00_dump_buffer(uint8_t *, uint32_t);
-extern void qla2x00_dump_buffer_zipped(uint8_t *, uint32_t);
-extern void ql_dump_regs(uint32_t, scsi_qla_host_t *, int32_t);
-extern void ql_dump_buffer(uint32_t, scsi_qla_host_t *, int32_t,
-	uint8_t *, uint32_t);
-extern void qla2xxx_dump_post_process(scsi_qla_host_t *, int);
-
-/*
- * Global Function Prototypes in qla_gs.c source file.
- */
-extern void *qla2x00_prep_ms_iocb(scsi_qla_host_t *, uint32_t, uint32_t);
-extern void *qla24xx_prep_ms_iocb(scsi_qla_host_t *, uint32_t, uint32_t);
-=======
 void qla2xxx_dump_fw(scsi_qla_host_t *vha);
 void qla2100_fw_dump(scsi_qla_host_t *vha);
 void qla2300_fw_dump(scsi_qla_host_t *vha);
@@ -952,18 +704,13 @@ extern void ql_dump_buffer(uint, scsi_qla_host_t *, uint, const void *, uint);
  */
 extern void *qla2x00_prep_ms_iocb(scsi_qla_host_t *, struct ct_arg *);
 extern void *qla24xx_prep_ms_iocb(scsi_qla_host_t *, struct ct_arg *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_ga_nxt(scsi_qla_host_t *, fc_port_t *);
 extern int qla2x00_gid_pt(scsi_qla_host_t *, sw_info_t *);
 extern int qla2x00_gpn_id(scsi_qla_host_t *, sw_info_t *);
 extern int qla2x00_gnn_id(scsi_qla_host_t *, sw_info_t *);
 extern void qla2x00_gff_id(scsi_qla_host_t *, sw_info_t *);
 extern int qla2x00_rft_id(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern int qla2x00_rff_id(scsi_qla_host_t *);
-=======
 extern int qla2x00_rff_id(scsi_qla_host_t *, u8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_rnn_id(scsi_qla_host_t *);
 extern int qla2x00_rsnn_nn(scsi_qla_host_t *);
 extern void *qla2x00_prep_ms_fdmi_iocb(scsi_qla_host_t *, uint32_t, uint32_t);
@@ -971,9 +718,6 @@ extern void *qla24xx_prep_ms_fdmi_iocb(scsi_qla_host_t *, uint32_t, uint32_t);
 extern int qla2x00_fdmi_register(scsi_qla_host_t *);
 extern int qla2x00_gfpn_id(scsi_qla_host_t *, sw_info_t *);
 extern int qla2x00_gpsc(scsi_qla_host_t *, sw_info_t *);
-<<<<<<< HEAD
-extern void qla2x00_get_sym_node_name(scsi_qla_host_t *, uint8_t *);
-=======
 extern size_t qla2x00_get_sym_node_name(scsi_qla_host_t *, uint8_t *, size_t);
 extern int qla2x00_chk_ms_status(scsi_qla_host_t *, ms_iocb_entry_t *,
 	struct ct_sns_rsp *, const char *);
@@ -994,41 +738,25 @@ void qla24xx_sp_unmap(scsi_qla_host_t *, srb_t *);
 void qla_scan_work_fn(struct work_struct *);
 uint qla25xx_fdmi_port_speed_capability(struct qla_hw_data *);
 uint qla25xx_fdmi_port_speed_currently(struct qla_hw_data *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Global Function Prototypes in qla_attr.c source file.
  */
 struct device_attribute;
-<<<<<<< HEAD
-extern struct device_attribute *qla2x00_host_attrs[];
-=======
 extern const struct attribute_group *qla2x00_host_groups[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fc_function_template;
 extern struct fc_function_template qla2xxx_transport_functions;
 extern struct fc_function_template qla2xxx_transport_vport_functions;
 extern void qla2x00_alloc_sysfs_attr(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern void qla2x00_free_sysfs_attr(scsi_qla_host_t *);
-extern void qla2x00_init_host_attr(scsi_qla_host_t *);
-extern void qla2x00_alloc_sysfs_attr(scsi_qla_host_t *);
-extern void qla2x00_free_sysfs_attr(scsi_qla_host_t *);
-=======
 extern void qla2x00_free_sysfs_attr(scsi_qla_host_t *, bool);
 extern void qla2x00_init_host_attr(scsi_qla_host_t *);
 extern void qla2x00_alloc_sysfs_attr(scsi_qla_host_t *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla2x00_loopback_test(scsi_qla_host_t *, struct msg_echo_lb *, uint16_t *);
 extern int qla2x00_echo_test(scsi_qla_host_t *,
 	struct msg_echo_lb *, uint16_t *);
 extern int qla24xx_update_all_fcp_prio(scsi_qla_host_t *);
 extern int qla24xx_fcp_prio_cfg_valid(scsi_qla_host_t *,
 	struct qla_fcp_prio_cfg *, uint8_t);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global Function Prototypes in qla_dfs.c source file.
  */
@@ -1036,24 +764,6 @@ extern int qla2x00_dfs_setup(scsi_qla_host_t *);
 extern int qla2x00_dfs_remove(scsi_qla_host_t *);
 
 /* Globa function prototypes for multi-q */
-<<<<<<< HEAD
-extern int qla25xx_request_irq(struct rsp_que *);
-extern int qla25xx_init_req_que(struct scsi_qla_host *, struct req_que *);
-extern int qla25xx_init_rsp_que(struct scsi_qla_host *, struct rsp_que *);
-extern int qla25xx_create_req_que(struct qla_hw_data *, uint16_t, uint8_t,
-	uint16_t, int, uint8_t);
-extern int qla25xx_create_rsp_que(struct qla_hw_data *, uint16_t, uint8_t,
-	uint16_t, int);
-extern void qla2x00_init_response_q_entries(struct rsp_que *);
-extern int qla25xx_delete_req_que(struct scsi_qla_host *, struct req_que *);
-extern int qla25xx_delete_queues(struct scsi_qla_host *);
-extern uint16_t qla24xx_rd_req_reg(struct qla_hw_data *, uint16_t);
-extern uint16_t qla25xx_rd_req_reg(struct qla_hw_data *, uint16_t);
-extern void qla24xx_wrt_req_reg(struct qla_hw_data *, uint16_t, uint16_t);
-extern void qla25xx_wrt_req_reg(struct qla_hw_data *, uint16_t, uint16_t);
-extern void qla25xx_wrt_rsp_reg(struct qla_hw_data *, uint16_t, uint16_t);
-extern void qla24xx_wrt_rsp_reg(struct qla_hw_data *, uint16_t, uint16_t);
-=======
 extern int qla25xx_request_irq(struct qla_hw_data *, struct qla_qpair *,
 	struct qla_msix_entry *, int);
 extern int qla25xx_init_req_que(struct scsi_qla_host *, struct req_que *);
@@ -1103,43 +813,27 @@ extern void qlafx00_abort_iocb(srb_t *, struct abort_iocb_entry_fx00 *);
 extern void qlafx00_fxdisc_iocb(srb_t *, struct fxdisc_entry_fx00 *);
 extern void qlafx00_timer_routine(scsi_qla_host_t *);
 extern int qlafx00_rescan_isp(scsi_qla_host_t *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* qla82xx related functions */
 
 /* PCI related functions */
 extern int qla82xx_pci_config(struct scsi_qla_host *);
 extern int qla82xx_pci_mem_read_2M(struct qla_hw_data *, u64, void *, int);
-<<<<<<< HEAD
-extern char *qla82xx_pci_info_str(struct scsi_qla_host *, char *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla82xx_pci_region_offset(struct pci_dev *, int);
 extern int qla82xx_iospace_config(struct qla_hw_data *);
 
 /* Initialization related functions */
-<<<<<<< HEAD
-extern void qla82xx_reset_chip(struct scsi_qla_host *);
-=======
 extern int qla82xx_reset_chip(struct scsi_qla_host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void qla82xx_config_rings(struct scsi_qla_host *);
 extern void qla82xx_watchdog(scsi_qla_host_t *);
 extern int qla82xx_start_firmware(scsi_qla_host_t *);
 
 /* Firmware and flash related functions */
 extern int qla82xx_load_risc(scsi_qla_host_t *, uint32_t *);
-<<<<<<< HEAD
-extern uint8_t *qla82xx_read_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-extern int qla82xx_write_optrom_data(struct scsi_qla_host *, uint8_t *,
-    uint32_t, uint32_t);
-=======
 extern void *qla82xx_read_optrom_data(struct scsi_qla_host *, void *,
 					 uint32_t, uint32_t);
 extern int qla82xx_write_optrom_data(struct scsi_qla_host *, void *,
 				     uint32_t, uint32_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mailbox related functions */
 extern int qla82xx_abort_isp(scsi_qla_host_t *);
@@ -1147,16 +841,6 @@ extern int qla82xx_restart_isp(scsi_qla_host_t *);
 
 /* IOCB related functions */
 extern int qla82xx_start_scsi(srb_t *);
-<<<<<<< HEAD
-extern void qla2x00_sp_free(void *, void *);
-extern void qla2x00_sp_timeout(unsigned long);
-extern void qla2x00_bsg_job_done(void *, void *, int);
-extern void qla2x00_bsg_sp_free(void *, void *);
-
-/* Interrupt related */
-extern irqreturn_t qla82xx_intr_handler(int, void *);
-extern irqreturn_t qla82xx_msi_handler(int, void *);
-=======
 extern void qla2x00_sp_free(srb_t *sp);
 extern void qla2x00_sp_timeout(struct timer_list *);
 extern void qla2x00_bsg_job_done(srb_t *sp, int);
@@ -1165,7 +849,6 @@ extern void qla2x00_start_iocbs(struct scsi_qla_host *, struct req_que *);
 
 /* Interrupt related */
 extern irqreturn_t qla82xx_intr_handler(int, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern irqreturn_t qla82xx_msix_default(int, void *);
 extern irqreturn_t qla82xx_msix_rsp_q(int, void *);
 extern void qla82xx_enable_intrs(struct qla_hw_data *);
@@ -1175,16 +858,8 @@ extern void qla82xx_init_flags(struct qla_hw_data *);
 
 /* ISP 8021 hardware related */
 extern void qla82xx_set_drv_active(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern void qla82xx_crb_win_unlock(struct qla_hw_data *);
 extern int qla82xx_wr_32(struct qla_hw_data *, ulong, u32);
 extern int qla82xx_rd_32(struct qla_hw_data *, ulong);
-extern int qla82xx_rdmem(struct qla_hw_data *, u64, void *, int);
-extern int qla82xx_wrmem(struct qla_hw_data *, u64, void *, int);
-=======
-extern int qla82xx_wr_32(struct qla_hw_data *, ulong, u32);
-extern int qla82xx_rd_32(struct qla_hw_data *, ulong);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ISP 8021 IDC */
 extern void qla82xx_clear_drv_active(struct qla_hw_data *);
@@ -1192,18 +867,11 @@ extern uint32_t  qla82xx_wait_for_state_change(scsi_qla_host_t *, uint32_t);
 extern int qla82xx_idc_lock(struct qla_hw_data *);
 extern void qla82xx_idc_unlock(struct qla_hw_data *);
 extern int qla82xx_device_state_handler(scsi_qla_host_t *);
-<<<<<<< HEAD
-extern void qla82xx_clear_qsnt_ready(scsi_qla_host_t *);
-
-extern void qla2x00_set_model_info(scsi_qla_host_t *, uint8_t *,
-    size_t, char *);
-=======
 extern void qla8xxx_dev_failed_handler(scsi_qla_host_t *);
 extern void qla82xx_clear_qsnt_ready(scsi_qla_host_t *);
 
 extern void qla2x00_set_model_info(scsi_qla_host_t *, uint8_t *, size_t,
 				   const char *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla82xx_mbx_intr_enable(scsi_qla_host_t *);
 extern int qla82xx_mbx_intr_disable(scsi_qla_host_t *);
 extern void qla82xx_start_iocbs(scsi_qla_host_t *);
@@ -1213,14 +881,6 @@ extern void qla82xx_chip_reset_cleanup(scsi_qla_host_t *);
 extern int qla81xx_set_led_config(scsi_qla_host_t *, uint16_t *);
 extern int qla81xx_get_led_config(scsi_qla_host_t *, uint16_t *);
 extern int qla82xx_mbx_beacon_ctl(scsi_qla_host_t *, int);
-<<<<<<< HEAD
-extern char *qdev_state(uint32_t);
-extern void qla82xx_clear_pending_mbx(scsi_qla_host_t *);
-
-/* BSG related functions */
-extern int qla24xx_bsg_request(struct fc_bsg_job *);
-extern int qla24xx_bsg_timeout(struct fc_bsg_job *);
-=======
 extern const char *qdev_state(uint32_t);
 extern void qla82xx_clear_pending_mbx(scsi_qla_host_t *);
 extern int qla82xx_read_temperature(scsi_qla_host_t *);
@@ -1231,24 +891,17 @@ extern int ql26xx_led_config(scsi_qla_host_t *, uint16_t, uint16_t *);
 /* BSG related functions */
 extern int qla24xx_bsg_request(struct bsg_job *);
 extern int qla24xx_bsg_timeout(struct bsg_job *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qla84xx_reset_chip(scsi_qla_host_t *, uint16_t);
 extern int qla2x00_issue_iocb_timeout(scsi_qla_host_t *, void *,
 	dma_addr_t, size_t, uint32_t);
 extern int qla2x00_get_idma_speed(scsi_qla_host_t *, uint16_t,
 	uint16_t *, uint16_t *);
-<<<<<<< HEAD
-
-/* 83xx related functions */
-extern void qla83xx_fw_dump(scsi_qla_host_t *, int);
-=======
 extern int qla24xx_sadb_update(struct bsg_job *bsg_job);
 extern int qla_post_sa_replace_work(struct scsi_qla_host *vha,
 	 fc_port_t *fcport, uint16_t nport_handle, struct edif_sa_ctl *sa_ctl);
 
 /* 83xx related functions */
 void qla83xx_fw_dump(scsi_qla_host_t *vha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Minidump related functions */
 extern int qla82xx_md_get_template_size(scsi_qla_host_t *);
@@ -1258,9 +911,6 @@ extern void qla82xx_md_free(scsi_qla_host_t *);
 extern int qla82xx_md_collect(scsi_qla_host_t *);
 extern void qla82xx_md_prep(scsi_qla_host_t *);
 extern void qla82xx_set_reset_owner(scsi_qla_host_t *);
-<<<<<<< HEAD
-
-=======
 extern int qla82xx_validate_template_chksum(scsi_qla_host_t *vha);
 
 /* Function declarations for ISP8044 */
@@ -1368,5 +1018,4 @@ int qla_create_buf_pool(struct scsi_qla_host *, struct qla_qpair *);
 void qla_free_buf_pool(struct qla_qpair *);
 int qla_get_buf(struct scsi_qla_host *, struct qla_qpair *, struct qla_buf_dsc *);
 void qla_put_buf(struct qla_qpair *, struct qla_buf_dsc *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _QLA_GBL_H */

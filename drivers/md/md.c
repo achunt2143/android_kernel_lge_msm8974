@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/*
-   md.c : Multiple Devices driver for Linux
-	  Copyright (C) 1998, 1999, 2000 Ingo Molnar
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
    md.c : Multiple Devices driver for Linux
      Copyright (C) 1998, 1999, 2000 Ingo Molnar
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
      completely rewritten, based on the MD driver code from Marc Zyngier
 
@@ -29,20 +23,6 @@
    - persistent bitmap code
      Copyright (C) 2003-2004, Paul Clements, SteelEye Technology, Inc.
 
-<<<<<<< HEAD
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   You should have received a copy of the GNU General Public License
-   (for example /usr/src/linux/COPYING); if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#include <linux/kthread.h>
-#include <linux/blkdev.h>
-=======
 
    Errors, Warnings, etc.
    Please use:
@@ -63,7 +43,6 @@
 #include <linux/blkdev.h>
 #include <linux/blk-integrity.h>
 #include <linux/badblocks.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sysctl.h>
 #include <linux/seq_file.h>
 #include <linux/fs.h>
@@ -73,10 +52,7 @@
 #include <linux/hdreg.h>
 #include <linux/proc_fs.h>
 #include <linux/random.h>
-<<<<<<< HEAD
-=======
 #include <linux/major.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/reboot.h>
 #include <linux/file.h>
@@ -84,31 +60,6 @@
 #include <linux/delay.h>
 #include <linux/raid/md_p.h>
 #include <linux/raid/md_u.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include "md.h"
-#include "bitmap.h"
-
-#ifndef MODULE
-static void autostart_arrays(int part);
-#endif
-
-/* pers_list is a list of registered personalities protected
- * by pers_lock.
- * pers_lock does extra service to protect accesses to
- * mddev->thread when the mutex cannot be held.
- */
-static LIST_HEAD(pers_list);
-static DEFINE_SPINLOCK(pers_lock);
-
-static void md_print_devices(void);
-
-static DECLARE_WAIT_QUEUE_HEAD(resync_wait);
-static struct workqueue_struct *md_wq;
-static struct workqueue_struct *md_misc_wq;
-
-#define MD_BUG(x...) { printk("md: bug in file %s, line %d\n", __FILE__, __LINE__); md_print_devices(); }
-=======
 #include <linux/raid/detect.h>
 #include <linux/slab.h>
 #include <linux/percpu-refcount.h>
@@ -146,7 +97,6 @@ static int remove_and_add_spares(struct mddev *mddev,
 static void mddev_detach(struct mddev *mddev);
 static void export_rdev(struct md_rdev *rdev, struct mddev *mddev);
 static void md_wakeup_thread_directly(struct md_thread __rcu *thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Default number of read corrections we'll attempt on an rdev
@@ -154,11 +104,8 @@ static void md_wakeup_thread_directly(struct md_thread __rcu *thread);
  * count by 2 for every hour elapsed between read errors.
  */
 #define MD_DEFAULT_MAX_CORRECTED_READ_ERRORS 20
-<<<<<<< HEAD
-=======
 /* Default safemode delay: 200 msec */
 #define DEFAULT_SAFEMODE_DELAY ((200 * HZ)/1000 +1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Current RAID-1,4,5 parallel reconstruction 'guaranteed speed limit'
  * is 1000 KB/sec, so the extra system load does not show up that much.
@@ -186,11 +133,6 @@ static inline int speed_max(struct mddev *mddev)
 		mddev->sync_speed_max : sysctl_speed_limit_max;
 }
 
-<<<<<<< HEAD
-static struct ctl_table_header *raid_table_header;
-
-static ctl_table raid_table[] = {
-=======
 static void rdev_uninit_serial(struct md_rdev *rdev)
 {
 	if (!test_and_clear_bit(CollisionCheck, &rdev->flags))
@@ -343,7 +285,6 @@ void mddev_destroy_serial_pool(struct mddev *mddev, struct md_rdev *rdev)
 static struct ctl_table_header *raid_table_header;
 
 static struct ctl_table raid_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "speed_limit_min",
 		.data		= &sysctl_speed_limit_min,
@@ -358,149 +299,6 @@ static struct ctl_table raid_table[] = {
 		.mode		= S_IRUGO|S_IWUSR,
 		.proc_handler	= proc_dointvec,
 	},
-<<<<<<< HEAD
-	{ }
-};
-
-static ctl_table raid_dir_table[] = {
-	{
-		.procname	= "raid",
-		.maxlen		= 0,
-		.mode		= S_IRUGO|S_IXUGO,
-		.child		= raid_table,
-	},
-	{ }
-};
-
-static ctl_table raid_root_table[] = {
-	{
-		.procname	= "dev",
-		.maxlen		= 0,
-		.mode		= 0555,
-		.child		= raid_dir_table,
-	},
-	{  }
-};
-
-static const struct block_device_operations md_fops;
-
-static int start_readonly;
-
-/* bio_clone_mddev
- * like bio_clone, but with a local bio set
- */
-
-static void mddev_bio_destructor(struct bio *bio)
-{
-	struct mddev *mddev, **mddevp;
-
-	mddevp = (void*)bio;
-	mddev = mddevp[-1];
-
-	bio_free(bio, mddev->bio_set);
-}
-
-struct bio *bio_alloc_mddev(gfp_t gfp_mask, int nr_iovecs,
-			    struct mddev *mddev)
-{
-	struct bio *b;
-	struct mddev **mddevp;
-
-	if (!mddev || !mddev->bio_set)
-		return bio_alloc(gfp_mask, nr_iovecs);
-
-	b = bio_alloc_bioset(gfp_mask, nr_iovecs,
-			     mddev->bio_set);
-	if (!b)
-		return NULL;
-	mddevp = (void*)b;
-	mddevp[-1] = mddev;
-	b->bi_destructor = mddev_bio_destructor;
-	return b;
-}
-EXPORT_SYMBOL_GPL(bio_alloc_mddev);
-
-struct bio *bio_clone_mddev(struct bio *bio, gfp_t gfp_mask,
-			    struct mddev *mddev)
-{
-	struct bio *b;
-	struct mddev **mddevp;
-
-	if (!mddev || !mddev->bio_set)
-		return bio_clone(bio, gfp_mask);
-
-	b = bio_alloc_bioset(gfp_mask, bio->bi_max_vecs,
-			     mddev->bio_set);
-	if (!b)
-		return NULL;
-	mddevp = (void*)b;
-	mddevp[-1] = mddev;
-	b->bi_destructor = mddev_bio_destructor;
-	__bio_clone(b, bio);
-	if (bio_integrity(bio)) {
-		int ret;
-
-		ret = bio_integrity_clone(b, bio, gfp_mask, mddev->bio_set);
-
-		if (ret < 0) {
-			bio_put(b);
-			return NULL;
-		}
-	}
-
-	return b;
-}
-EXPORT_SYMBOL_GPL(bio_clone_mddev);
-
-void md_trim_bio(struct bio *bio, int offset, int size)
-{
-	/* 'bio' is a cloned bio which we need to trim to match
-	 * the given offset and size.
-	 * This requires adjusting bi_sector, bi_size, and bi_io_vec
-	 */
-	int i;
-	struct bio_vec *bvec;
-	int sofar = 0;
-
-	size <<= 9;
-	if (offset == 0 && size == bio->bi_size)
-		return;
-
-	bio->bi_sector += offset;
-	bio->bi_size = size;
-	offset <<= 9;
-	clear_bit(BIO_SEG_VALID, &bio->bi_flags);
-
-	while (bio->bi_idx < bio->bi_vcnt &&
-	       bio->bi_io_vec[bio->bi_idx].bv_len <= offset) {
-		/* remove this whole bio_vec */
-		offset -= bio->bi_io_vec[bio->bi_idx].bv_len;
-		bio->bi_idx++;
-	}
-	if (bio->bi_idx < bio->bi_vcnt) {
-		bio->bi_io_vec[bio->bi_idx].bv_offset += offset;
-		bio->bi_io_vec[bio->bi_idx].bv_len -= offset;
-	}
-	/* avoid any complications with bi_idx being non-zero*/
-	if (bio->bi_idx) {
-		memmove(bio->bi_io_vec, bio->bi_io_vec+bio->bi_idx,
-			(bio->bi_vcnt - bio->bi_idx) * sizeof(struct bio_vec));
-		bio->bi_vcnt -= bio->bi_idx;
-		bio->bi_idx = 0;
-	}
-	/* Make sure vcnt and last bv are not too big */
-	bio_for_each_segment(bvec, bio, i) {
-		if (sofar + bvec->bv_len > size)
-			bvec->bv_len = size - sofar;
-		if (bvec->bv_len == 0) {
-			bio->bi_vcnt = i;
-			break;
-		}
-		sofar += bvec->bv_len;
-	}
-}
-EXPORT_SYMBOL_GPL(md_trim_bio);
-=======
 };
 
 static int start_readonly;
@@ -514,7 +312,6 @@ static int start_readonly;
  * so all the races disappear.
  */
 static bool create_on_open = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We have a system wide 'event count' that is incremented
@@ -528,29 +325,13 @@ static bool create_on_open = true;
  */
 static DECLARE_WAIT_QUEUE_HEAD(md_event_waiters);
 static atomic_t md_event_count;
-<<<<<<< HEAD
-void md_new_event(struct mddev *mddev)
-=======
 void md_new_event(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	atomic_inc(&md_event_count);
 	wake_up(&md_event_waiters);
 }
 EXPORT_SYMBOL_GPL(md_new_event);
 
-<<<<<<< HEAD
-/* Alternate version that can be called from interrupts
- * when calling sysfs_notify isn't needed.
- */
-static void md_new_event_inintr(struct mddev *mddev)
-{
-	atomic_inc(&md_event_count);
-	wake_up(&md_event_waiters);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enables to iterate over all existing md arrays
  * all_mddevs_lock protects this list.
@@ -558,37 +339,10 @@ static void md_new_event_inintr(struct mddev *mddev)
 static LIST_HEAD(all_mddevs);
 static DEFINE_SPINLOCK(all_mddevs_lock);
 
-<<<<<<< HEAD
-
-/*
- * iterates through all used mddevs in the system.
- * We take care to grab the all_mddevs_lock whenever navigating
- * the list, and to always hold a refcount when unlocked.
- * Any code which breaks out of this loop while own
- * a reference to the current mddev and must mddev_put it.
- */
-#define for_each_mddev(_mddev,_tmp)					\
-									\
-	for (({ spin_lock(&all_mddevs_lock); 				\
-		_tmp = all_mddevs.next;					\
-		_mddev = NULL;});					\
-	     ({ if (_tmp != &all_mddevs)				\
-			mddev_get(list_entry(_tmp, struct mddev, all_mddevs));\
-		spin_unlock(&all_mddevs_lock);				\
-		if (_mddev) mddev_put(_mddev);				\
-		_mddev = list_entry(_tmp, struct mddev, all_mddevs);	\
-		_tmp != &all_mddevs;});					\
-	     ({ spin_lock(&all_mddevs_lock);				\
-		_tmp = _tmp->next;})					\
-		)
-
-
-=======
 static bool is_md_suspended(struct mddev *mddev)
 {
 	return percpu_ref_is_dying(&mddev->active_io);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Rather than calling directly into the personality make_request function,
  * IO requests come here first so that we can check if the device is
  * being suspended pending a reconfiguration.
@@ -596,92 +350,6 @@ static bool is_md_suspended(struct mddev *mddev)
  * call has finished, the bio has been linked into some internal structure
  * and so is visible to ->quiesce(), so we don't need the refcount any more.
  */
-<<<<<<< HEAD
-static void md_make_request(struct request_queue *q, struct bio *bio)
-{
-	const int rw = bio_data_dir(bio);
-	struct mddev *mddev = q->queuedata;
-	int cpu;
-	unsigned int sectors;
-
-	if (mddev == NULL || mddev->pers == NULL
-	    || !mddev->ready) {
-		bio_io_error(bio);
-		return;
-	}
-	if (mddev->ro == 1 && unlikely(rw == WRITE)) {
-		bio_endio(bio, bio_sectors(bio) == 0 ? 0 : -EROFS);
-		return;
-	}
-	smp_rmb(); /* Ensure implications of  'active' are visible */
-	rcu_read_lock();
-	if (mddev->suspended) {
-		DEFINE_WAIT(__wait);
-		for (;;) {
-			prepare_to_wait(&mddev->sb_wait, &__wait,
-					TASK_UNINTERRUPTIBLE);
-			if (!mddev->suspended)
-				break;
-			rcu_read_unlock();
-			schedule();
-			rcu_read_lock();
-		}
-		finish_wait(&mddev->sb_wait, &__wait);
-	}
-	atomic_inc(&mddev->active_io);
-	rcu_read_unlock();
-
-	/*
-	 * save the sectors now since our bio can
-	 * go away inside make_request
-	 */
-	sectors = bio_sectors(bio);
-	mddev->pers->make_request(mddev, bio);
-
-	cpu = part_stat_lock();
-	part_stat_inc(cpu, &mddev->gendisk->part0, ios[rw]);
-	part_stat_add(cpu, &mddev->gendisk->part0, sectors[rw], sectors);
-	part_stat_unlock();
-
-	if (atomic_dec_and_test(&mddev->active_io) && mddev->suspended)
-		wake_up(&mddev->sb_wait);
-}
-
-/* mddev_suspend makes sure no new requests are submitted
- * to the device, and that any requests that have been submitted
- * are completely handled.
- * Once ->stop is called and completes, the module will be completely
- * unused.
- */
-void mddev_suspend(struct mddev *mddev)
-{
-	BUG_ON(mddev->suspended);
-	mddev->suspended = 1;
-	synchronize_rcu();
-	wait_event(mddev->sb_wait, atomic_read(&mddev->active_io) == 0);
-	mddev->pers->quiesce(mddev, 1);
-
-	del_timer_sync(&mddev->safemode_timer);
-}
-EXPORT_SYMBOL_GPL(mddev_suspend);
-
-void mddev_resume(struct mddev *mddev)
-{
-	mddev->suspended = 0;
-	wake_up(&mddev->sb_wait);
-	mddev->pers->quiesce(mddev, 0);
-
-	md_wakeup_thread(mddev->thread);
-	md_wakeup_thread(mddev->sync_thread); /* possibly kick off a reshape */
-}
-EXPORT_SYMBOL_GPL(mddev_resume);
-
-int mddev_congested(struct mddev *mddev, int bits)
-{
-	return mddev->suspended;
-}
-EXPORT_SYMBOL(mddev_congested);
-=======
 static bool is_suspended(struct mddev *mddev, struct bio *bio)
 {
 	if (is_md_suspended(mddev))
@@ -868,30 +536,16 @@ static int mddev_set_closing_and_sync_blockdev(struct mddev *mddev, int opener_n
 	sync_blockdev(mddev->gendisk->part0);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic flush handling for md
  */
 
-<<<<<<< HEAD
-static void md_end_flush(struct bio *bio, int err)
-=======
 static void md_end_flush(struct bio *bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev = bio->bi_private;
 	struct mddev *mddev = rdev->mddev;
 
-<<<<<<< HEAD
-	rdev_dec_pending(rdev, mddev);
-
-	if (atomic_dec_and_test(&mddev->flush_pending)) {
-		/* The pre-request flush has finished */
-		queue_work(md_wq, &mddev->flush_work);
-	}
-	bio_put(bio);
-=======
 	bio_put(bio);
 
 	rdev_dec_pending(rdev, mddev);
@@ -903,7 +557,6 @@ static void md_end_flush(struct bio *bio)
 		/* The pre-request flush has finished */
 		queue_work(md_wq, &mddev->flush_work);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void md_submit_flush_data(struct work_struct *ws);
@@ -913,38 +566,13 @@ static void submit_flushes(struct work_struct *ws)
 	struct mddev *mddev = container_of(ws, struct mddev, flush_work);
 	struct md_rdev *rdev;
 
-<<<<<<< HEAD
-=======
 	mddev->start_flush = ktime_get_boottime();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&mddev->flush_work, md_submit_flush_data);
 	atomic_set(&mddev->flush_pending, 1);
 	rcu_read_lock();
 	rdev_for_each_rcu(rdev, mddev)
 		if (rdev->raid_disk >= 0 &&
 		    !test_bit(Faulty, &rdev->flags)) {
-<<<<<<< HEAD
-			/* Take two references, one is dropped
-			 * when request finishes, one after
-			 * we reclaim rcu_read_lock
-			 */
-			struct bio *bi;
-			atomic_inc(&rdev->nr_pending);
-			atomic_inc(&rdev->nr_pending);
-			rcu_read_unlock();
-			bi = bio_alloc_mddev(GFP_NOIO, 0, mddev);
-			bi->bi_end_io = md_end_flush;
-			bi->bi_private = rdev;
-			bi->bi_bdev = rdev->bdev;
-			atomic_inc(&mddev->flush_pending);
-			submit_bio(WRITE_FLUSH, bi);
-			rcu_read_lock();
-			rdev_dec_pending(rdev, mddev);
-		}
-	rcu_read_unlock();
-	if (atomic_dec_and_test(&mddev->flush_pending))
-		queue_work(md_wq, &mddev->flush_work);
-=======
 			struct bio *bi;
 
 			atomic_inc(&rdev->nr_pending);
@@ -965,7 +593,6 @@ static void submit_flushes(struct work_struct *ws)
 
 		queue_work(md_wq, &mddev->flush_work);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void md_submit_flush_data(struct work_struct *ws)
@@ -973,92 +600,6 @@ static void md_submit_flush_data(struct work_struct *ws)
 	struct mddev *mddev = container_of(ws, struct mddev, flush_work);
 	struct bio *bio = mddev->flush_bio;
 
-<<<<<<< HEAD
-	if (bio->bi_size == 0)
-		/* an empty barrier - all done */
-		bio_endio(bio, 0);
-	else {
-		bio->bi_rw &= ~REQ_FLUSH;
-		mddev->pers->make_request(mddev, bio);
-	}
-
-	mddev->flush_bio = NULL;
-	wake_up(&mddev->sb_wait);
-}
-
-void md_flush_request(struct mddev *mddev, struct bio *bio)
-{
-	spin_lock_irq(&mddev->write_lock);
-	wait_event_lock_irq(mddev->sb_wait,
-			    !mddev->flush_bio,
-			    mddev->write_lock, /*nothing*/);
-	mddev->flush_bio = bio;
-	spin_unlock_irq(&mddev->write_lock);
-
-	INIT_WORK(&mddev->flush_work, submit_flushes);
-	queue_work(md_wq, &mddev->flush_work);
-}
-EXPORT_SYMBOL(md_flush_request);
-
-/* Support for plugging.
- * This mirrors the plugging support in request_queue, but does not
- * require having a whole queue or request structures.
- * We allocate an md_plug_cb for each md device and each thread it gets
- * plugged on.  This links tot the private plug_handle structure in the
- * personality data where we keep a count of the number of outstanding
- * plugs so other code can see if a plug is active.
- */
-struct md_plug_cb {
-	struct blk_plug_cb cb;
-	struct mddev *mddev;
-};
-
-static void plugger_unplug(struct blk_plug_cb *cb)
-{
-	struct md_plug_cb *mdcb = container_of(cb, struct md_plug_cb, cb);
-	if (atomic_dec_and_test(&mdcb->mddev->plug_cnt))
-		md_wakeup_thread(mdcb->mddev->thread);
-	kfree(mdcb);
-}
-
-/* Check that an unplug wakeup will come shortly.
- * If not, wakeup the md thread immediately
- */
-int mddev_check_plugged(struct mddev *mddev)
-{
-	struct blk_plug *plug = current->plug;
-	struct md_plug_cb *mdcb;
-
-	if (!plug)
-		return 0;
-
-	list_for_each_entry(mdcb, &plug->cb_list, cb.list) {
-		if (mdcb->cb.callback == plugger_unplug &&
-		    mdcb->mddev == mddev) {
-			/* Already on the list, move to top */
-			if (mdcb != list_first_entry(&plug->cb_list,
-						    struct md_plug_cb,
-						    cb.list))
-				list_move(&mdcb->cb.list, &plug->cb_list);
-			return 1;
-		}
-	}
-	/* Not currently on the callback list */
-	mdcb = kmalloc(sizeof(*mdcb), GFP_ATOMIC);
-	if (!mdcb)
-		return 0;
-
-	mdcb->mddev = mddev;
-	mdcb->cb.callback = plugger_unplug;
-	atomic_inc(&mddev->plug_cnt);
-	list_add(&mdcb->cb.list, &plug->cb_list);
-	return 1;
-}
-EXPORT_SYMBOL_GPL(mddev_check_plugged);
-
-static inline struct mddev *mddev_get(struct mddev *mddev)
-{
-=======
 	/*
 	 * must reset flush_bio before calling into md_handle_request to avoid a
 	 * deadlock, because other bios passed md_handle_request suspend check
@@ -1140,57 +681,12 @@ static inline struct mddev *mddev_get(struct mddev *mddev)
 
 	if (test_bit(MD_DELETED, &mddev->flags))
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&mddev->active);
 	return mddev;
 }
 
 static void mddev_delayed_delete(struct work_struct *ws);
 
-<<<<<<< HEAD
-static void mddev_put(struct mddev *mddev)
-{
-	struct bio_set *bs = NULL;
-
-	if (!atomic_dec_and_lock(&mddev->active, &all_mddevs_lock))
-		return;
-	if (!mddev->raid_disks && list_empty(&mddev->disks) &&
-	    mddev->ctime == 0 && !mddev->hold_active) {
-		/* Array is not configured at all, and not held active,
-		 * so destroy it */
-		list_del_init(&mddev->all_mddevs);
-		bs = mddev->bio_set;
-		mddev->bio_set = NULL;
-		if (mddev->gendisk) {
-			/* We did a probe so need to clean up.  Call
-			 * queue_work inside the spinlock so that
-			 * flush_workqueue() after mddev_find will
-			 * succeed in waiting for the work to be done.
-			 */
-			INIT_WORK(&mddev->del_work, mddev_delayed_delete);
-			queue_work(md_misc_wq, &mddev->del_work);
-		} else
-			kfree(mddev);
-	}
-	spin_unlock(&all_mddevs_lock);
-	if (bs)
-		bioset_free(bs);
-}
-
-void mddev_init(struct mddev *mddev)
-{
-	mutex_init(&mddev->open_mutex);
-	mutex_init(&mddev->reconfig_mutex);
-	mutex_init(&mddev->bitmap_info.mutex);
-	INIT_LIST_HEAD(&mddev->disks);
-	INIT_LIST_HEAD(&mddev->all_mddevs);
-	init_timer(&mddev->safemode_timer);
-	atomic_set(&mddev->active, 1);
-	atomic_set(&mddev->openers, 0);
-	atomic_set(&mddev->active_io, 0);
-	atomic_set(&mddev->plug_cnt, 0);
-	spin_lock_init(&mddev->write_lock);
-=======
 static void __mddev_put(struct mddev *mddev)
 {
 	if (mddev->raid_disks || !list_empty(&mddev->disks) ||
@@ -1257,112 +753,10 @@ int mddev_init(struct mddev *mddev)
 	atomic_set(&mddev->openers, 0);
 	atomic_set(&mddev->sync_seq, 0);
 	spin_lock_init(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&mddev->flush_pending, 0);
 	init_waitqueue_head(&mddev->sb_wait);
 	init_waitqueue_head(&mddev->recovery_wait);
 	mddev->reshape_position = MaxSector;
-<<<<<<< HEAD
-	mddev->resync_min = 0;
-	mddev->resync_max = MaxSector;
-	mddev->level = LEVEL_NONE;
-}
-EXPORT_SYMBOL_GPL(mddev_init);
-
-static struct mddev * mddev_find(dev_t unit)
-{
-	struct mddev *mddev, *new = NULL;
-
-	if (unit && MAJOR(unit) != MD_MAJOR)
-		unit &= ~((1<<MdpMinorShift)-1);
-
- retry:
-	spin_lock(&all_mddevs_lock);
-
-	if (unit) {
-		list_for_each_entry(mddev, &all_mddevs, all_mddevs)
-			if (mddev->unit == unit) {
-				mddev_get(mddev);
-				spin_unlock(&all_mddevs_lock);
-				kfree(new);
-				return mddev;
-			}
-
-		if (new) {
-			list_add(&new->all_mddevs, &all_mddevs);
-			spin_unlock(&all_mddevs_lock);
-			new->hold_active = UNTIL_IOCTL;
-			return new;
-		}
-	} else if (new) {
-		/* find an unused unit number */
-		static int next_minor = 512;
-		int start = next_minor;
-		int is_free = 0;
-		int dev = 0;
-		while (!is_free) {
-			dev = MKDEV(MD_MAJOR, next_minor);
-			next_minor++;
-			if (next_minor > MINORMASK)
-				next_minor = 0;
-			if (next_minor == start) {
-				/* Oh dear, all in use. */
-				spin_unlock(&all_mddevs_lock);
-				kfree(new);
-				return NULL;
-			}
-				
-			is_free = 1;
-			list_for_each_entry(mddev, &all_mddevs, all_mddevs)
-				if (mddev->unit == dev) {
-					is_free = 0;
-					break;
-				}
-		}
-		new->unit = dev;
-		new->md_minor = MINOR(dev);
-		new->hold_active = UNTIL_STOP;
-		list_add(&new->all_mddevs, &all_mddevs);
-		spin_unlock(&all_mddevs_lock);
-		return new;
-	}
-	spin_unlock(&all_mddevs_lock);
-
-	new = kzalloc(sizeof(*new), GFP_KERNEL);
-	if (!new)
-		return NULL;
-
-	new->unit = unit;
-	if (MAJOR(unit) == MD_MAJOR)
-		new->md_minor = MINOR(unit);
-	else
-		new->md_minor = MINOR(unit) >> MdpMinorShift;
-
-	mddev_init(new);
-
-	goto retry;
-}
-
-static inline int mddev_lock(struct mddev * mddev)
-{
-	return mutex_lock_interruptible(&mddev->reconfig_mutex);
-}
-
-static inline int mddev_is_locked(struct mddev *mddev)
-{
-	return mutex_is_locked(&mddev->reconfig_mutex);
-}
-
-static inline int mddev_trylock(struct mddev * mddev)
-{
-	return mutex_trylock(&mddev->reconfig_mutex);
-}
-
-static struct attribute_group md_redundancy_group;
-
-static void mddev_unlock(struct mddev * mddev)
-{
-=======
 	mddev->reshape_backwards = 0;
 	mddev->last_sync_action = "none";
 	mddev->resync_min = 0;
@@ -1484,7 +878,6 @@ void mddev_unlock(struct mddev *mddev)
 	if (!list_empty(&mddev->deleting))
 		list_splice_init(&mddev->deleting, &delete);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mddev->to_remove) {
 		/* These cannot be removed under reconfig_mutex as
 		 * an access to the files will try to take reconfig_mutex
@@ -1498,11 +891,7 @@ void mddev_unlock(struct mddev *mddev)
 		 * test it under the same mutex to ensure its correct value
 		 * is seen.
 		 */
-<<<<<<< HEAD
-		struct attribute_group *to_remove = mddev->to_remove;
-=======
 		const struct attribute_group *to_remove = mddev->to_remove;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->to_remove = NULL;
 		mddev->sysfs_active = 1;
 		mutex_unlock(&mddev->reconfig_mutex);
@@ -1515,9 +904,6 @@ void mddev_unlock(struct mddev *mddev)
 				sysfs_remove_group(&mddev->kobj, &md_redundancy_group);
 				if (mddev->sysfs_action)
 					sysfs_put(mddev->sysfs_action);
-<<<<<<< HEAD
-				mddev->sysfs_action = NULL;
-=======
 				if (mddev->sysfs_completed)
 					sysfs_put(mddev->sysfs_completed);
 				if (mddev->sysfs_degraded)
@@ -1525,28 +911,12 @@ void mddev_unlock(struct mddev *mddev)
 				mddev->sysfs_action = NULL;
 				mddev->sysfs_completed = NULL;
 				mddev->sysfs_degraded = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		mddev->sysfs_active = 0;
 	} else
 		mutex_unlock(&mddev->reconfig_mutex);
 
-<<<<<<< HEAD
-	/* As we've dropped the mutex we need a spinlock to
-	 * make sure the thread doesn't disappear
-	 */
-	spin_lock(&pers_lock);
-	md_wakeup_thread(mddev->thread);
-	spin_unlock(&pers_lock);
-}
-
-static struct md_rdev * find_rdev_nr(struct mddev *mddev, int nr)
-{
-	struct md_rdev *rdev;
-
-	rdev_for_each(rdev, mddev)
-=======
 	md_wakeup_thread(mddev->thread);
 	wake_up(&mddev->sb_wait);
 
@@ -1563,20 +933,14 @@ struct md_rdev *md_find_rdev_nr_rcu(struct mddev *mddev, int nr)
 	struct md_rdev *rdev;
 
 	rdev_for_each_rcu(rdev, mddev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rdev->desc_nr == nr)
 			return rdev;
 
 	return NULL;
 }
-<<<<<<< HEAD
-
-static struct md_rdev * find_rdev(struct mddev * mddev, dev_t dev)
-=======
 EXPORT_SYMBOL_GPL(md_find_rdev_nr_rcu);
 
 static struct md_rdev *find_rdev(struct mddev *mddev, dev_t dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev;
 
@@ -1587,8 +951,6 @@ static struct md_rdev *find_rdev(struct mddev *mddev, dev_t dev)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 struct md_rdev *md_find_rdev_rcu(struct mddev *mddev, dev_t dev)
 {
 	struct md_rdev *rdev;
@@ -1601,7 +963,6 @@ struct md_rdev *md_find_rdev_rcu(struct mddev *mddev, dev_t dev)
 }
 EXPORT_SYMBOL_GPL(md_find_rdev_rcu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct md_personality *find_pers(int level, char *clevel)
 {
 	struct md_personality *pers;
@@ -1617,27 +978,6 @@ static struct md_personality *find_pers(int level, char *clevel)
 /* return the offset of the super block in 512byte sectors */
 static inline sector_t calc_dev_sboffset(struct md_rdev *rdev)
 {
-<<<<<<< HEAD
-	sector_t num_sectors = i_size_read(rdev->bdev->bd_inode) / 512;
-	return MD_NEW_SIZE_SECTORS(num_sectors);
-}
-
-static int alloc_disk_sb(struct md_rdev * rdev)
-{
-	if (rdev->sb_page)
-		MD_BUG();
-
-	rdev->sb_page = alloc_page(GFP_KERNEL);
-	if (!rdev->sb_page) {
-		printk(KERN_ALERT "md: out of memory.\n");
-		return -ENOMEM;
-	}
-
-	return 0;
-}
-
-static void free_disk_sb(struct md_rdev * rdev)
-=======
 	return MD_NEW_SIZE_SECTORS(bdev_nr_sectors(rdev->bdev));
 }
 
@@ -1650,7 +990,6 @@ static int alloc_disk_sb(struct md_rdev *rdev)
 }
 
 void md_rdev_clear(struct md_rdev *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (rdev->sb_page) {
 		put_page(rdev->sb_page);
@@ -1663,34 +1002,15 @@ void md_rdev_clear(struct md_rdev *rdev)
 		put_page(rdev->bb_page);
 		rdev->bb_page = NULL;
 	}
-<<<<<<< HEAD
-}
-
-
-static void super_written(struct bio *bio, int error)
-=======
 	badblocks_exit(&rdev->badblocks);
 }
 EXPORT_SYMBOL_GPL(md_rdev_clear);
 
 static void super_written(struct bio *bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev = bio->bi_private;
 	struct mddev *mddev = rdev->mddev;
 
-<<<<<<< HEAD
-	if (error || !test_bit(BIO_UPTODATE, &bio->bi_flags)) {
-		printk("md: super_written gets error=%d, uptodate=%d\n",
-		       error, test_bit(BIO_UPTODATE, &bio->bi_flags));
-		WARN_ON(test_bit(BIO_UPTODATE, &bio->bi_flags));
-		md_error(mddev, rdev);
-	}
-
-	if (atomic_dec_and_test(&mddev->pending_writes))
-		wake_up(&mddev->sb_wait);
-	bio_put(bio);
-=======
 	if (bio->bi_status) {
 		pr_err("md: %s gets error=%d\n", __func__,
 		       blk_status_to_errno(bio->bi_status));
@@ -1709,7 +1029,6 @@ static void super_written(struct bio *bio)
 
 	if (atomic_dec_and_test(&mddev->pending_writes))
 		wake_up(&mddev->sb_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void md_super_write(struct mddev *mddev, struct md_rdev *rdev,
@@ -1721,78 +1040,6 @@ void md_super_write(struct mddev *mddev, struct md_rdev *rdev,
 	 * if zero is reached.
 	 * If an error occurred, call md_error
 	 */
-<<<<<<< HEAD
-	struct bio *bio = bio_alloc_mddev(GFP_NOIO, 1, mddev);
-
-	bio->bi_bdev = rdev->meta_bdev ? rdev->meta_bdev : rdev->bdev;
-	bio->bi_sector = sector;
-	bio_add_page(bio, page, size, 0);
-	bio->bi_private = rdev;
-	bio->bi_end_io = super_written;
-
-	atomic_inc(&mddev->pending_writes);
-	submit_bio(WRITE_FLUSH_FUA, bio);
-}
-
-void md_super_wait(struct mddev *mddev)
-{
-	/* wait for all superblock writes that were scheduled to complete */
-	DEFINE_WAIT(wq);
-	for(;;) {
-		prepare_to_wait(&mddev->sb_wait, &wq, TASK_UNINTERRUPTIBLE);
-		if (atomic_read(&mddev->pending_writes)==0)
-			break;
-		schedule();
-	}
-	finish_wait(&mddev->sb_wait, &wq);
-}
-
-static void bi_complete(struct bio *bio, int error)
-{
-	complete((struct completion*)bio->bi_private);
-}
-
-int sync_page_io(struct md_rdev *rdev, sector_t sector, int size,
-		 struct page *page, int rw, bool metadata_op)
-{
-	struct bio *bio = bio_alloc_mddev(GFP_NOIO, 1, rdev->mddev);
-	struct completion event;
-	int ret;
-
-	rw |= REQ_SYNC;
-
-	bio->bi_bdev = (metadata_op && rdev->meta_bdev) ?
-		rdev->meta_bdev : rdev->bdev;
-	if (metadata_op)
-		bio->bi_sector = sector + rdev->sb_start;
-	else
-		bio->bi_sector = sector + rdev->data_offset;
-	bio_add_page(bio, page, size, 0);
-	init_completion(&event);
-	bio->bi_private = &event;
-	bio->bi_end_io = bi_complete;
-	submit_bio(rw, bio);
-	wait_for_completion(&event);
-
-	ret = test_bit(BIO_UPTODATE, &bio->bi_flags);
-	bio_put(bio);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(sync_page_io);
-
-static int read_disk_sb(struct md_rdev * rdev, int size)
-{
-	char b[BDEVNAME_SIZE];
-	if (!rdev->sb_page) {
-		MD_BUG();
-		return -EINVAL;
-	}
-	if (rdev->sb_loaded)
-		return 0;
-
-
-	if (!sync_page_io(rdev, 0, size, rdev->sb_page, READ, true))
-=======
 	struct bio *bio;
 
 	if (!page)
@@ -1865,22 +1112,11 @@ static int read_disk_sb(struct md_rdev *rdev, int size)
 		return 0;
 
 	if (!sync_page_io(rdev, 0, size, rdev->sb_page, REQ_OP_READ, true))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	rdev->sb_loaded = 1;
 	return 0;
 
 fail:
-<<<<<<< HEAD
-	printk(KERN_WARNING "md: disabled device %s, could not read superblock.\n",
-		bdevname(rdev->bdev,b));
-	return -EINVAL;
-}
-
-static int uuid_equal(mdp_super_t *sb1, mdp_super_t *sb2)
-{
-	return 	sb1->set_uuid0 == sb2->set_uuid0 &&
-=======
 	pr_err("md: disabled device %pg, could not read superblock.\n",
 	       rdev->bdev);
 	return -EINVAL;
@@ -1889,17 +1125,12 @@ static int uuid_equal(mdp_super_t *sb1, mdp_super_t *sb2)
 static int md_uuid_equal(mdp_super_t *sb1, mdp_super_t *sb2)
 {
 	return	sb1->set_uuid0 == sb2->set_uuid0 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sb1->set_uuid1 == sb2->set_uuid1 &&
 		sb1->set_uuid2 == sb2->set_uuid2 &&
 		sb1->set_uuid3 == sb2->set_uuid3;
 }
 
-<<<<<<< HEAD
-static int sb_equal(mdp_super_t *sb1, mdp_super_t *sb2)
-=======
 static int md_sb_equal(mdp_super_t *sb1, mdp_super_t *sb2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	mdp_super_t *tmp1, *tmp2;
@@ -1909,10 +1140,6 @@ static int md_sb_equal(mdp_super_t *sb1, mdp_super_t *sb2)
 
 	if (!tmp1 || !tmp2) {
 		ret = 0;
-<<<<<<< HEAD
-		printk(KERN_INFO "md.c sb_equal(): failed to allocate memory!\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 
@@ -1932,21 +1159,13 @@ abort:
 	return ret;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 md_csum_fold(u32 csum)
 {
 	csum = (csum & 0xffff) + (csum >> 16);
 	return (csum & 0xffff) + (csum >> 16);
 }
 
-<<<<<<< HEAD
-static unsigned int calc_sb_csum(mdp_super_t * sb)
-=======
 static unsigned int calc_sb_csum(mdp_super_t *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 newcsum = 0;
 	u32 *sb32 = (u32*)sb;
@@ -1960,10 +1179,6 @@ static unsigned int calc_sb_csum(mdp_super_t *sb)
 		newcsum += sb32[i];
 	csum = (newcsum & 0xffffffff) + (newcsum>>32);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ALPHA
 	/* This used to use csum_partial, which was wrong for several
 	 * reasons including that different results are returned on
@@ -1980,10 +1195,6 @@ static unsigned int calc_sb_csum(mdp_super_t *sb)
 	return csum;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handle superblock details.
  * We want to be able to handle multiple superblock formats
@@ -2017,14 +1228,6 @@ static unsigned int calc_sb_csum(mdp_super_t *sb)
 struct super_type  {
 	char		    *name;
 	struct module	    *owner;
-<<<<<<< HEAD
-	int		    (*load_super)(struct md_rdev *rdev, struct md_rdev *refdev,
-					  int minor_version);
-	int		    (*validate_super)(struct mddev *mddev, struct md_rdev *rdev);
-	void		    (*sync_super)(struct mddev *mddev, struct md_rdev *rdev);
-	unsigned long long  (*rdev_size_change)(struct md_rdev *rdev,
-						sector_t num_sectors);
-=======
 	int		    (*load_super)(struct md_rdev *rdev,
 					  struct md_rdev *refdev,
 					  int minor_version);
@@ -2037,7 +1240,6 @@ struct super_type  {
 						sector_t num_sectors);
 	int		    (*allow_new_offset)(struct md_rdev *rdev,
 						unsigned long long new_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2052,26 +1254,13 @@ int md_check_no_bitmap(struct mddev *mddev)
 {
 	if (!mddev->bitmap_info.file && !mddev->bitmap_info.offset)
 		return 0;
-<<<<<<< HEAD
-	printk(KERN_ERR "%s: bitmaps are not supported for %s\n",
-=======
 	pr_warn("%s: bitmaps are not supported for %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdname(mddev), mddev->pers->name);
 	return 1;
 }
 EXPORT_SYMBOL(md_check_no_bitmap);
 
 /*
-<<<<<<< HEAD
- * load_super for 0.90.0 
- */
-static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_version)
-{
-	char b[BDEVNAME_SIZE], b2[BDEVNAME_SIZE];
-	mdp_super_t *sb;
-	int ret;
-=======
  * load_super for 0.90.0
  */
 static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_version)
@@ -2079,7 +1268,6 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 	mdp_super_t *sb;
 	int ret;
 	bool spare_disk = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Calculate the position of the superblock (512byte sectors),
@@ -2090,18 +1278,6 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 	rdev->sb_start = calc_dev_sboffset(rdev);
 
 	ret = read_disk_sb(rdev, MD_SB_BYTES);
-<<<<<<< HEAD
-	if (ret) return ret;
-
-	ret = -EINVAL;
-
-	bdevname(rdev->bdev, b);
-	sb = page_address(rdev->sb_page);
-
-	if (sb->md_magic != MD_SB_MAGIC) {
-		printk(KERN_ERR "md: invalid raid superblock magic on %s\n",
-		       b);
-=======
 	if (ret)
 		return ret;
 
@@ -2112,21 +1288,14 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 	if (sb->md_magic != MD_SB_MAGIC) {
 		pr_warn("md: invalid raid superblock magic on %pg\n",
 			rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 
 	if (sb->major_version != 0 ||
 	    sb->minor_version < 90 ||
 	    sb->minor_version > 91) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Bad version number %d.%d on %s\n",
-			sb->major_version, sb->minor_version,
-			b);
-=======
 		pr_warn("Bad version number %d.%d on %pg\n",
 			sb->major_version, sb->minor_version, rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 
@@ -2134,41 +1303,12 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 		goto abort;
 
 	if (md_csum_fold(calc_sb_csum(sb)) != md_csum_fold(sb->sb_csum)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "md: invalid superblock checksum on %s\n",
-			b);
-=======
 		pr_warn("md: invalid superblock checksum on %pg\n", rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 
 	rdev->preferred_minor = sb->md_minor;
 	rdev->data_offset = 0;
-<<<<<<< HEAD
-	rdev->sb_size = MD_SB_BYTES;
-	rdev->badblocks.shift = -1;
-
-	if (sb->level == LEVEL_MULTIPATH)
-		rdev->desc_nr = -1;
-	else
-		rdev->desc_nr = sb->this_disk.number;
-
-	if (!refdev) {
-		ret = 1;
-	} else {
-		__u64 ev1, ev2;
-		mdp_super_t *refsb = page_address(refdev->sb_page);
-		if (!uuid_equal(refsb, sb)) {
-			printk(KERN_WARNING "md: %s has different UUID to %s\n",
-				b, bdevname(refdev->bdev,b2));
-			goto abort;
-		}
-		if (!sb_equal(refsb, sb)) {
-			printk(KERN_WARNING "md: %s has same UUID"
-			       " but different superblock to %s\n",
-			       b, bdevname(refdev->bdev, b2));
-=======
 	rdev->new_data_offset = 0;
 	rdev->sb_size = MD_SB_BYTES;
 	rdev->badblocks.shift = -1;
@@ -2196,21 +1336,14 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 		if (!md_sb_equal(refsb, sb)) {
 			pr_warn("md: %pg has same UUID but different superblock to %pg\n",
 				rdev->bdev, refdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto abort;
 		}
 		ev1 = md_event(sb);
 		ev2 = md_event(refsb);
-<<<<<<< HEAD
-		if (ev1 > ev2)
-			ret = 1;
-		else 
-=======
 
 		if (!spare_disk && ev1 > ev2)
 			ret = 1;
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 	}
 	rdev->sectors = rdev->sb_start;
@@ -2218,13 +1351,8 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 	 * (not needed for Linear and RAID0 as metadata doesn't
 	 * record this size)
 	 */
-<<<<<<< HEAD
-	if (rdev->sectors >= (2ULL << 32) && sb->level >= 1)
-		rdev->sectors = (2ULL << 32) - 2;
-=======
 	if ((u64)rdev->sectors >= (2ULL << 32) && sb->level >= 1)
 		rdev->sectors = (sector_t)(2ULL << 32) - 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdev->sectors < ((sector_t)sb->size) * 2 && sb->level >= 1)
 		/* "this cannot possibly happen" ... */
@@ -2236,14 +1364,9 @@ static int super_90_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor
 
 /*
  * validate_super for 0.90.0
-<<<<<<< HEAD
- */
-static int super_90_validate(struct mddev *mddev, struct md_rdev *rdev)
-=======
  * note: we are not using "freshest" for 0.9 superblock
  */
 static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, struct md_rdev *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mdp_disk_t *desc;
 	mdp_super_t *sb = page_address(rdev->sb_page);
@@ -2252,10 +1375,7 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 	rdev->raid_disk = -1;
 	clear_bit(Faulty, &rdev->flags);
 	clear_bit(In_sync, &rdev->flags);
-<<<<<<< HEAD
-=======
 	clear_bit(Bitmap_sync, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(WriteMostly, &rdev->flags);
 
 	if (mddev->raid_disks == 0) {
@@ -2273,15 +1393,11 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 		mddev->dev_sectors = ((sector_t)sb->size) * 2;
 		mddev->events = ev1;
 		mddev->bitmap_info.offset = 0;
-<<<<<<< HEAD
-		mddev->bitmap_info.default_offset = MD_SB_BYTES >> 9;
-=======
 		mddev->bitmap_info.space = 0;
 		/* bitmap can use 60 K after the 4K superblocks */
 		mddev->bitmap_info.default_offset = MD_SB_BYTES >> 9;
 		mddev->bitmap_info.default_space = 64*2 - (MD_SB_BYTES >> 9);
 		mddev->reshape_backwards = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (mddev->minor_version >= 91) {
 			mddev->reshape_position = sb->reshape_position;
@@ -2289,11 +1405,8 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 			mddev->new_level = sb->new_level;
 			mddev->new_layout = sb->new_layout;
 			mddev->new_chunk_sectors = sb->new_chunk >> 9;
-<<<<<<< HEAD
-=======
 			if (mddev->delta_disks < 0)
 				mddev->reshape_backwards = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			mddev->reshape_position = MaxSector;
 			mddev->delta_disks = 0;
@@ -2301,20 +1414,13 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 			mddev->new_layout = mddev->layout;
 			mddev->new_chunk_sectors = mddev->chunk_sectors;
 		}
-<<<<<<< HEAD
-=======
 		if (mddev->level == 0)
 			mddev->layout = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sb->state & (1<<MD_SB_CLEAN))
 			mddev->recovery_cp = MaxSector;
 		else {
-<<<<<<< HEAD
-			if (sb->events_hi == sb->cp_events_hi && 
-=======
 			if (sb->events_hi == sb->cp_events_hi &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sb->events_lo == sb->cp_events_lo) {
 				mddev->recovery_cp = sb->recovery_cp;
 			} else
@@ -2329,18 +1435,12 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 		mddev->max_disks = MD_SB_DISKS;
 
 		if (sb->state & (1<<MD_SB_BITMAP_PRESENT) &&
-<<<<<<< HEAD
-		    mddev->bitmap_info.file == NULL)
-			mddev->bitmap_info.offset =
-				mddev->bitmap_info.default_offset;
-=======
 		    mddev->bitmap_info.file == NULL) {
 			mddev->bitmap_info.offset =
 				mddev->bitmap_info.default_offset;
 			mddev->bitmap_info.space =
 				mddev->bitmap_info.default_space;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (mddev->pers == NULL) {
 		/* Insist on good event counter while assembling, except
@@ -2348,11 +1448,7 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 		++ev1;
 		if (sb->disks[rdev->desc_nr].state & (
 			    (1<<MD_DISK_SYNC) | (1 << MD_DISK_ACTIVE)))
-<<<<<<< HEAD
-			if (ev1 < mddev->events) 
-=======
 			if (ev1 < mddev->events)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 	} else if (mddev->bitmap) {
 		/* if adding to array with a bitmap, then we can accept an
@@ -2360,41 +1456,14 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 		 */
 		if (ev1 < mddev->bitmap->events_cleared)
 			return 0;
-<<<<<<< HEAD
-=======
 		if (ev1 < mddev->events)
 			set_bit(Bitmap_sync, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (ev1 < mddev->events)
 			/* just a hot-add of a new device, leave raid_disk at -1 */
 			return 0;
 	}
 
-<<<<<<< HEAD
-	if (mddev->level != LEVEL_MULTIPATH) {
-		desc = sb->disks + rdev->desc_nr;
-
-		if (desc->state & (1<<MD_DISK_FAULTY))
-			set_bit(Faulty, &rdev->flags);
-		else if (desc->state & (1<<MD_DISK_SYNC) /* &&
-			    desc->raid_disk < mddev->raid_disks */) {
-			set_bit(In_sync, &rdev->flags);
-			rdev->raid_disk = desc->raid_disk;
-		} else if (desc->state & (1<<MD_DISK_ACTIVE)) {
-			/* active but not in sync implies recovery up to
-			 * reshape position.  We don't know exactly where
-			 * that is, so set to zero for now */
-			if (mddev->minor_version >= 91) {
-				rdev->recovery_offset = 0;
-				rdev->raid_disk = desc->raid_disk;
-			}
-		}
-		if (desc->state & (1<<MD_DISK_WRITEMOSTLY))
-			set_bit(WriteMostly, &rdev->flags);
-	} else /* MULTIPATH are always insync */
-		set_bit(In_sync, &rdev->flags);
-=======
 	desc = sb->disks + rdev->desc_nr;
 
 	if (desc->state & (1<<MD_DISK_FAULTY))
@@ -2417,7 +1486,6 @@ static int super_90_validate(struct mddev *mddev, struct md_rdev *freshest, stru
 		set_bit(WriteMostly, &rdev->flags);
 	if (desc->state & (1<<MD_DISK_FAILFAST))
 		set_bit(FailFast, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2430,10 +1498,6 @@ static void super_90_sync(struct mddev *mddev, struct md_rdev *rdev)
 	struct md_rdev *rdev2;
 	int next_spare = mddev->raid_disks;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make rdev->sb match mddev data..
 	 *
 	 * 1/ zero out disks
@@ -2462,21 +1526,13 @@ static void super_90_sync(struct mddev *mddev, struct md_rdev *rdev)
 	memcpy(&sb->set_uuid2, mddev->uuid+8, 4);
 	memcpy(&sb->set_uuid3, mddev->uuid+12,4);
 
-<<<<<<< HEAD
-	sb->ctime = mddev->ctime;
-=======
 	sb->ctime = clamp_t(time64_t, mddev->ctime, 0, U32_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->level = mddev->level;
 	sb->size = mddev->dev_sectors / 2;
 	sb->raid_disks = mddev->raid_disks;
 	sb->md_minor = mddev->md_minor;
 	sb->not_persistent = 0;
-<<<<<<< HEAD
-	sb->utime = mddev->utime;
-=======
 	sb->utime = clamp_t(time64_t, mddev->utime, 0, U32_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->state = 0;
 	sb->events_hi = (mddev->events>>32);
 	sb->events_lo = (u32)mddev->events;
@@ -2553,11 +1609,8 @@ static void super_90_sync(struct mddev *mddev, struct md_rdev *rdev)
 		}
 		if (test_bit(WriteMostly, &rdev2->flags))
 			d->state |= (1<<MD_DISK_WRITEMOSTLY);
-<<<<<<< HEAD
-=======
 		if (test_bit(FailFast, &rdev2->flags))
 			d->state |= (1<<MD_DISK_FAILFAST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* now set the "removed" and "faulty" bits on any missing devices */
 	for (i=0 ; i < mddev->raid_disks ; i++) {
@@ -2596,16 +1649,6 @@ super_90_rdev_size_change(struct md_rdev *rdev, sector_t num_sectors)
 	/* Limit to 4TB as metadata cannot record more than that.
 	 * 4TB == 2^32 KB, or 2*2^32 sectors.
 	 */
-<<<<<<< HEAD
-	if (num_sectors >= (2ULL << 32) && rdev->mddev->level >= 1)
-		num_sectors = (2ULL << 32) - 2;
-	md_super_write(rdev->mddev, rdev, rdev->sb_start, rdev->sb_size,
-		       rdev->sb_page);
-	md_super_wait(rdev->mddev);
-	return num_sectors;
-}
-
-=======
 	if ((u64)num_sectors >= (2ULL << 32) && rdev->mddev->level >= 1)
 		num_sectors = (sector_t)(2ULL << 32) - 2;
 	do {
@@ -2621,36 +1664,23 @@ super_90_allow_new_offset(struct md_rdev *rdev, unsigned long long new_offset)
 	/* non-zero offset changes not possible with v0.90 */
 	return new_offset == 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * version 1 superblock
  */
 
-<<<<<<< HEAD
-static __le32 calc_sb_1_csum(struct mdp_superblock_1 * sb)
-=======
 static __le32 calc_sb_1_csum(struct mdp_superblock_1 *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le32 disk_csum;
 	u32 csum;
 	unsigned long long newcsum;
 	int size = 256 + le32_to_cpu(sb->max_dev)*2;
 	__le32 *isuper = (__le32*)sb;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	disk_csum = sb->sb_csum;
 	sb->sb_csum = 0;
 	newcsum = 0;
-<<<<<<< HEAD
-	for (i=0; size>=4; size -= 4 )
-=======
 	for (; size >= 4; size -= 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		newcsum += le32_to_cpu(*isuper++);
 
 	if (size == 2)
@@ -2661,24 +1691,14 @@ static __le32 calc_sb_1_csum(struct mdp_superblock_1 *sb)
 	return cpu_to_le32(csum);
 }
 
-<<<<<<< HEAD
-static int md_set_badblocks(struct badblocks *bb, sector_t s, int sectors,
-			    int acknowledged);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_version)
 {
 	struct mdp_superblock_1 *sb;
 	int ret;
 	sector_t sb_start;
-<<<<<<< HEAD
-	char b[BDEVNAME_SIZE], b2[BDEVNAME_SIZE];
-	int bmask;
-=======
 	sector_t sectors;
 	int bmask;
 	bool spare_disk = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Calculate the position of the superblock in 512byte sectors.
@@ -2690,12 +1710,7 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 	 */
 	switch(minor_version) {
 	case 0:
-<<<<<<< HEAD
-		sb_start = i_size_read(rdev->bdev->bd_inode) >> 9;
-		sb_start -= 8*2;
-=======
 		sb_start = bdev_nr_sectors(rdev->bdev) - 8 * 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sb_start &= ~(sector_t)(4*2-1);
 		break;
 	case 1:
@@ -2715,10 +1730,6 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 	ret = read_disk_sb(rdev, 4096);
 	if (ret) return ret;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb = page_address(rdev->sb_page);
 
 	if (sb->magic != cpu_to_le32(MD_SB_MAGIC) ||
@@ -2729,20 +1740,6 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 		return -EINVAL;
 
 	if (calc_sb_1_csum(sb) != sb->sb_csum) {
-<<<<<<< HEAD
-		printk("md: invalid superblock checksum on %s\n",
-			bdevname(rdev->bdev,b));
-		return -EINVAL;
-	}
-	if (le64_to_cpu(sb->data_size) < 10) {
-		printk("md: data_size too small on %s\n",
-		       bdevname(rdev->bdev,b));
-		return -EINVAL;
-	}
-
-	rdev->preferred_minor = 0xffff;
-	rdev->data_offset = le64_to_cpu(sb->data_offset);
-=======
 		pr_warn("md: invalid superblock checksum on %pg\n",
 			rdev->bdev);
 		return -EINVAL;
@@ -2764,7 +1761,6 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 	if ((le32_to_cpu(sb->feature_map) & MD_FEATURE_RESHAPE_ACTIVE) &&
 	    (le32_to_cpu(sb->feature_map) & MD_FEATURE_NEW_OFFSET))
 		rdev->new_data_offset += (s32)le32_to_cpu(sb->new_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&rdev->corrected_errors, le32_to_cpu(sb->cnt_corrected_read));
 
 	rdev->sb_size = le32_to_cpu(sb->max_dev) * 2 + 256;
@@ -2775,19 +1771,11 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 	if (minor_version
 	    && rdev->data_offset < sb_start + (rdev->sb_size/512))
 		return -EINVAL;
-<<<<<<< HEAD
-
-	if (sb->level == cpu_to_le32(LEVEL_MULTIPATH))
-		rdev->desc_nr = -1;
-	else
-		rdev->desc_nr = le32_to_cpu(sb->dev_number);
-=======
 	if (minor_version
 	    && rdev->new_data_offset < sb_start + (rdev->sb_size/512))
 		return -EINVAL;
 
 	rdev->desc_nr = le32_to_cpu(sb->dev_number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rdev->bb_page) {
 		rdev->bb_page = alloc_page(GFP_KERNEL);
@@ -2801,11 +1789,7 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 		 */
 		s32 offset;
 		sector_t bb_sector;
-<<<<<<< HEAD
-		u64 *bbp;
-=======
 		__le64 *bbp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int i;
 		int sectors = le16_to_cpu(sb->bblog_size);
 		if (sectors > (PAGE_SIZE / 512))
@@ -2815,15 +1799,9 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 			return -EINVAL;
 		bb_sector = (long long)offset;
 		if (!sync_page_io(rdev, bb_sector, sectors << 9,
-<<<<<<< HEAD
-				  rdev->bb_page, READ, true))
-			return -EIO;
-		bbp = (u64 *)page_address(rdev->bb_page);
-=======
 				  rdev->bb_page, REQ_OP_READ, true))
 			return -EIO;
 		bbp = (__le64 *)page_address(rdev->bb_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdev->badblocks.shift = sb->bblog_shift;
 		for (i = 0 ; i < (sectors << (9-3)) ; i++, bbp++) {
 			u64 bb = le64_to_cpu(*bbp);
@@ -2833,21 +1811,12 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 			count <<= sb->bblog_shift;
 			if (bb + 1 == 0)
 				break;
-<<<<<<< HEAD
-			if (md_set_badblocks(&rdev->badblocks,
-					     sector, count, 1) == 0)
-=======
 			if (badblocks_set(&rdev->badblocks, sector, count, 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 		}
 	} else if (sb->bblog_offset != 0)
 		rdev->badblocks.shift = 0;
 
-<<<<<<< HEAD
-	if (!refdev) {
-		ret = 1;
-=======
 	if ((le32_to_cpu(sb->feature_map) &
 	    (MD_FEATURE_PPL | MD_FEATURE_MULTIPLE_PPLS))) {
 		rdev->ppl.offset = (__s16)le16_to_cpu(sb->ppl.offset);
@@ -2870,7 +1839,6 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 			ret = 1;
 		else
 			ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		__u64 ev1, ev2;
 		struct mdp_superblock_1 *refsb = page_address(refdev->sb_page);
@@ -2879,49 +1847,20 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
 		    sb->level != refsb->level ||
 		    sb->layout != refsb->layout ||
 		    sb->chunksize != refsb->chunksize) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "md: %s has strangely different"
-				" superblock to %s\n",
-				bdevname(rdev->bdev,b),
-				bdevname(refdev->bdev,b2));
-=======
 			pr_warn("md: %pg has strangely different superblock to %pg\n",
 				rdev->bdev,
 				refdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		ev1 = le64_to_cpu(sb->events);
 		ev2 = le64_to_cpu(refsb->events);
 
-<<<<<<< HEAD
-		if (ev1 > ev2)
-=======
 		if (!spare_disk && ev1 > ev2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 1;
 		else
 			ret = 0;
 	}
 	if (minor_version)
-<<<<<<< HEAD
-		rdev->sectors = (i_size_read(rdev->bdev->bd_inode) >> 9) -
-			le64_to_cpu(sb->data_offset);
-	else
-		rdev->sectors = rdev->sb_start;
-	if (rdev->sectors < le64_to_cpu(sb->data_size))
-		return -EINVAL;
-	rdev->sectors = le64_to_cpu(sb->data_size);
-	if (le64_to_cpu(sb->size) > rdev->sectors)
-		return -EINVAL;
-	return ret;
-}
-
-static int super_1_validate(struct mddev *mddev, struct md_rdev *rdev)
-{
-	struct mdp_superblock_1 *sb = page_address(rdev->sb_page);
-	__u64 ev1 = le64_to_cpu(sb->events);
-=======
 		sectors = bdev_nr_sectors(rdev->bdev) - rdev->data_offset;
 	else
 		sectors = rdev->sb_start;
@@ -2936,15 +1875,11 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 	struct mdp_superblock_1 *sb = page_address(rdev->sb_page);
 	__u64 ev1 = le64_to_cpu(sb->events);
 	int role;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev->raid_disk = -1;
 	clear_bit(Faulty, &rdev->flags);
 	clear_bit(In_sync, &rdev->flags);
-<<<<<<< HEAD
-=======
 	clear_bit(Bitmap_sync, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(WriteMostly, &rdev->flags);
 
 	if (mddev->raid_disks == 0) {
@@ -2952,13 +1887,8 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		mddev->patch_version = 0;
 		mddev->external = 0;
 		mddev->chunk_sectors = le32_to_cpu(sb->chunksize);
-<<<<<<< HEAD
-		mddev->ctime = le64_to_cpu(sb->ctime) & ((1ULL << 32)-1);
-		mddev->utime = le64_to_cpu(sb->utime) & ((1ULL << 32)-1);
-=======
 		mddev->ctime = le64_to_cpu(sb->ctime);
 		mddev->utime = le64_to_cpu(sb->utime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->level = le32_to_cpu(sb->level);
 		mddev->clevel[0] = 0;
 		mddev->layout = le32_to_cpu(sb->layout);
@@ -2966,10 +1896,6 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		mddev->dev_sectors = le64_to_cpu(sb->size);
 		mddev->events = ev1;
 		mddev->bitmap_info.offset = 0;
-<<<<<<< HEAD
-		mddev->bitmap_info.default_offset = 1024 >> 9;
-		
-=======
 		mddev->bitmap_info.space = 0;
 		/* Default location for bitmap is 1K after superblock
 		 * using 3K - total of 4K
@@ -2978,18 +1904,12 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		mddev->bitmap_info.default_space = (4096-1024) >> 9;
 		mddev->reshape_backwards = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->recovery_cp = le64_to_cpu(sb->resync_offset);
 		memcpy(mddev->uuid, sb->set_uuid, 16);
 
 		mddev->max_disks =  (4096-256)/2;
 
 		if ((le32_to_cpu(sb->feature_map) & MD_FEATURE_BITMAP_OFFSET) &&
-<<<<<<< HEAD
-		    mddev->bitmap_info.file == NULL )
-			mddev->bitmap_info.offset =
-				(__s32)le32_to_cpu(sb->bitmap_offset);
-=======
 		    mddev->bitmap_info.file == NULL) {
 			mddev->bitmap_info.offset =
 				(__s32)le32_to_cpu(sb->bitmap_offset);
@@ -3007,7 +1927,6 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 				mddev->bitmap_info.space =
 					-mddev->bitmap_info.offset;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((le32_to_cpu(sb->feature_map) & MD_FEATURE_RESHAPE_ACTIVE)) {
 			mddev->reshape_position = le64_to_cpu(sb->reshape_position);
@@ -3015,14 +1934,11 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 			mddev->new_level = le32_to_cpu(sb->new_level);
 			mddev->new_layout = le32_to_cpu(sb->new_layout);
 			mddev->new_chunk_sectors = le32_to_cpu(sb->new_chunk);
-<<<<<<< HEAD
-=======
 			if (mddev->delta_disks < 0 ||
 			    (mddev->delta_disks == 0 &&
 			     (le32_to_cpu(sb->feature_map)
 			      & MD_FEATURE_RESHAPE_BACKWARDS)))
 				mddev->reshape_backwards = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			mddev->reshape_position = MaxSector;
 			mddev->delta_disks = 0;
@@ -3031,16 +1947,6 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 			mddev->new_chunk_sectors = mddev->chunk_sectors;
 		}
 
-<<<<<<< HEAD
-	} else if (mddev->pers == NULL) {
-		/* Insist of good event counter while assembling, except for
-		 * spares (which don't need an event count) */
-		++ev1;
-		if (rdev->desc_nr >= 0 &&
-		    rdev->desc_nr < le32_to_cpu(sb->max_dev) &&
-		    le16_to_cpu(sb->dev_roles[rdev->desc_nr]) < 0xfffe)
-			if (ev1 < mddev->events)
-=======
 		if (mddev->level == 0 &&
 		    !(le32_to_cpu(sb->feature_map) & MD_FEATURE_RAID0_LAYOUT))
 			mddev->layout = -1;
@@ -3070,7 +1976,6 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		    (le16_to_cpu(sb->dev_roles[rdev->desc_nr]) < MD_DISK_ROLE_MAX ||
 		     le16_to_cpu(sb->dev_roles[rdev->desc_nr]) == MD_DISK_ROLE_JOURNAL))
 			if (ev1 + 1 < mddev->events)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 	} else if (mddev->bitmap) {
 		/* If adding to array with a bitmap, then we can accept an
@@ -3078,47 +1983,13 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		 */
 		if (ev1 < mddev->bitmap->events_cleared)
 			return 0;
-<<<<<<< HEAD
-=======
 		if (ev1 < mddev->events)
 			set_bit(Bitmap_sync, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (ev1 < mddev->events)
 			/* just a hot-add of a new device, leave raid_disk at -1 */
 			return 0;
 	}
-<<<<<<< HEAD
-	if (mddev->level != LEVEL_MULTIPATH) {
-		int role;
-		if (rdev->desc_nr < 0 ||
-		    rdev->desc_nr >= le32_to_cpu(sb->max_dev)) {
-			role = 0xffff;
-			rdev->desc_nr = -1;
-		} else
-			role = le16_to_cpu(sb->dev_roles[rdev->desc_nr]);
-		switch(role) {
-		case 0xffff: /* spare */
-			break;
-		case 0xfffe: /* faulty */
-			set_bit(Faulty, &rdev->flags);
-			break;
-		default:
-			if ((le32_to_cpu(sb->feature_map) &
-			     MD_FEATURE_RECOVERY_OFFSET))
-				rdev->recovery_offset = le64_to_cpu(sb->recovery_offset);
-			else
-				set_bit(In_sync, &rdev->flags);
-			rdev->raid_disk = role;
-			break;
-		}
-		if (sb->devflags & WriteMostly1)
-			set_bit(WriteMostly, &rdev->flags);
-		if (le32_to_cpu(sb->feature_map) & MD_FEATURE_REPLACEMENT)
-			set_bit(Replacement, &rdev->flags);
-	} else /* MULTIPATH are always insync */
-		set_bit(In_sync, &rdev->flags);
-=======
 
 	if (rdev->desc_nr < 0 ||
 	    rdev->desc_nr >= le32_to_cpu(sb->max_dev)) {
@@ -3198,7 +2069,6 @@ static int super_1_validate(struct mddev *mddev, struct md_rdev *freshest, struc
 		set_bit(FailFast, &rdev->flags);
 	if (le32_to_cpu(sb->feature_map) & MD_FEATURE_REPLACEMENT)
 		set_bit(Replacement, &rdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3215,21 +2085,14 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 	sb->feature_map = 0;
 	sb->pad0 = 0;
 	sb->recovery_offset = cpu_to_le64(0);
-<<<<<<< HEAD
-	memset(sb->pad1, 0, sizeof(sb->pad1));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(sb->pad3, 0, sizeof(sb->pad3));
 
 	sb->utime = cpu_to_le64((__u64)mddev->utime);
 	sb->events = cpu_to_le64(mddev->events);
 	if (mddev->in_sync)
 		sb->resync_offset = cpu_to_le64(mddev->recovery_cp);
-<<<<<<< HEAD
-=======
 	else if (test_bit(MD_JOURNAL_CLEAN, &mddev->flags))
 		sb->resync_offset = cpu_to_le64(MaxSector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		sb->resync_offset = cpu_to_le64(0);
 
@@ -3240,42 +2103,29 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 	sb->chunksize = cpu_to_le32(mddev->chunk_sectors);
 	sb->level = cpu_to_le32(mddev->level);
 	sb->layout = cpu_to_le32(mddev->layout);
-<<<<<<< HEAD
-=======
 	if (test_bit(FailFast, &rdev->flags))
 		sb->devflags |= FailFast1;
 	else
 		sb->devflags &= ~FailFast1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(WriteMostly, &rdev->flags))
 		sb->devflags |= WriteMostly1;
 	else
 		sb->devflags &= ~WriteMostly1;
-<<<<<<< HEAD
-=======
 	sb->data_offset = cpu_to_le64(rdev->data_offset);
 	sb->data_size = cpu_to_le64(rdev->sectors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mddev->bitmap && mddev->bitmap_info.file == NULL) {
 		sb->bitmap_offset = cpu_to_le32((__u32)mddev->bitmap_info.offset);
 		sb->feature_map = cpu_to_le32(MD_FEATURE_BITMAP_OFFSET);
 	}
 
-<<<<<<< HEAD
-	if (rdev->raid_disk >= 0 &&
-=======
 	if (rdev->raid_disk >= 0 && !test_bit(Journal, &rdev->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !test_bit(In_sync, &rdev->flags)) {
 		sb->feature_map |=
 			cpu_to_le32(MD_FEATURE_RECOVERY_OFFSET);
 		sb->recovery_offset =
 			cpu_to_le64(rdev->recovery_offset);
-<<<<<<< HEAD
-	}
-=======
 		if (rdev->saved_raid_disk >= 0 && mddev->bitmap)
 			sb->feature_map |=
 				cpu_to_le32(MD_FEATURE_RECOVERY_BITMAP);
@@ -3283,7 +2133,6 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 	/* Note: recovery_offset and journal_tail share space  */
 	if (test_bit(Journal, &rdev->flags))
 		sb->journal_tail = cpu_to_le64(rdev->journal_tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(Replacement, &rdev->flags))
 		sb->feature_map |=
 			cpu_to_le32(MD_FEATURE_REPLACEMENT);
@@ -3295,10 +2144,6 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 		sb->delta_disks = cpu_to_le32(mddev->delta_disks);
 		sb->new_level = cpu_to_le32(mddev->new_level);
 		sb->new_chunk = cpu_to_le32(mddev->new_chunk_sectors);
-<<<<<<< HEAD
-	}
-
-=======
 		if (mddev->delta_disks == 0 &&
 		    mddev->reshape_backwards)
 			sb->feature_map
@@ -3314,7 +2159,6 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 	if (mddev_is_clustered(mddev))
 		sb->feature_map |= cpu_to_le32(MD_FEATURE_CLUSTERED);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->badblocks.count == 0)
 		/* Nothing to do for bad blocks*/ ;
 	else if (sb->bblog_offset == 0)
@@ -3322,11 +2166,7 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
 		md_error(mddev, rdev);
 	else {
 		struct badblocks *bb = &rdev->badblocks;
-<<<<<<< HEAD
-		u64 *bbp = (u64 *)page_address(rdev->bb_page);
-=======
 		__le64 *bbp = (__le64 *)page_address(rdev->bb_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 *p = bb->page;
 		sb->feature_map |= cpu_to_le32(MD_FEATURE_BAD_BLOCKS);
 		if (bb->changed) {
@@ -3369,20 +2209,6 @@ retry:
 		max_dev = le32_to_cpu(sb->max_dev);
 
 	for (i=0; i<max_dev;i++)
-<<<<<<< HEAD
-		sb->dev_roles[i] = cpu_to_le16(0xfffe);
-	
-	rdev_for_each(rdev2, mddev) {
-		i = rdev2->desc_nr;
-		if (test_bit(Faulty, &rdev2->flags))
-			sb->dev_roles[i] = cpu_to_le16(0xfffe);
-		else if (test_bit(In_sync, &rdev2->flags))
-			sb->dev_roles[i] = cpu_to_le16(rdev2->raid_disk);
-		else if (rdev2->raid_disk >= 0)
-			sb->dev_roles[i] = cpu_to_le16(rdev2->raid_disk);
-		else
-			sb->dev_roles[i] = cpu_to_le16(0xffff);
-=======
 		sb->dev_roles[i] = cpu_to_le16(MD_DISK_ROLE_SPARE);
 
 	if (test_bit(MD_HAS_JOURNAL, &mddev->flags))
@@ -3410,14 +2236,11 @@ retry:
 			sb->dev_roles[i] = cpu_to_le16(rdev2->raid_disk);
 		else
 			sb->dev_roles[i] = cpu_to_le16(MD_DISK_ROLE_SPARE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sb->sb_csum = calc_sb_1_csum(sb);
 }
 
-<<<<<<< HEAD
-=======
 static sector_t super_1_choose_bm_space(sector_t dev_size)
 {
 	sector_t bm_space;
@@ -3436,7 +2259,6 @@ static sector_t super_1_choose_bm_space(sector_t dev_size)
 	return bm_space;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long long
 super_1_rdev_size_change(struct md_rdev *rdev, sector_t num_sectors)
 {
@@ -3444,18 +2266,11 @@ super_1_rdev_size_change(struct md_rdev *rdev, sector_t num_sectors)
 	sector_t max_sectors;
 	if (num_sectors && num_sectors < rdev->mddev->dev_sectors)
 		return 0; /* component must fit device */
-<<<<<<< HEAD
-	if (rdev->sb_start < rdev->data_offset) {
-		/* minor versions 1 and 2; superblock before data */
-		max_sectors = i_size_read(rdev->bdev->bd_inode) >> 9;
-		max_sectors -= rdev->data_offset;
-=======
 	if (rdev->data_offset != rdev->new_data_offset)
 		return 0; /* too confusing */
 	if (rdev->sb_start < rdev->data_offset) {
 		/* minor versions 1 and 2; superblock before data */
 		max_sectors = bdev_nr_sectors(rdev->bdev) - rdev->data_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!num_sectors || num_sectors > max_sectors)
 			num_sectors = max_sectors;
 	} else if (rdev->mddev->bitmap_info.offset) {
@@ -3463,12 +2278,6 @@ super_1_rdev_size_change(struct md_rdev *rdev, sector_t num_sectors)
 		return 0;
 	} else {
 		/* minor version 0; superblock after data */
-<<<<<<< HEAD
-		sector_t sb_start;
-		sb_start = (i_size_read(rdev->bdev->bd_inode) >> 9) - 8*2;
-		sb_start &= ~(sector_t)(4*2 - 1);
-		max_sectors = rdev->sectors + sb_start - rdev->sb_start;
-=======
 		sector_t sb_start, bm_space;
 		sector_t dev_size = bdev_nr_sectors(rdev->bdev);
 
@@ -3483,21 +2292,12 @@ super_1_rdev_size_change(struct md_rdev *rdev, sector_t num_sectors)
 		 */
 		max_sectors = sb_start - bm_space - 4*2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!num_sectors || num_sectors > max_sectors)
 			num_sectors = max_sectors;
 		rdev->sb_start = sb_start;
 	}
 	sb = page_address(rdev->sb_page);
 	sb->data_size = cpu_to_le64(num_sectors);
-<<<<<<< HEAD
-	sb->super_offset = rdev->sb_start;
-	sb->sb_csum = calc_sb_1_csum(sb);
-	md_super_write(rdev->mddev, rdev, rdev->sb_start, rdev->sb_size,
-		       rdev->sb_page);
-	md_super_wait(rdev->mddev);
-	return num_sectors;
-=======
 	sb->super_offset = cpu_to_le64(rdev->sb_start);
 	sb->sb_csum = calc_sb_1_csum(sb);
 	do {
@@ -3539,7 +2339,6 @@ super_1_allow_new_offset(struct md_rdev *rdev,
 		return 0;
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct super_type super_types[] = {
@@ -3550,10 +2349,7 @@ static struct super_type super_types[] = {
 		.validate_super	    = super_90_validate,
 		.sync_super	    = super_90_sync,
 		.rdev_size_change   = super_90_rdev_size_change,
-<<<<<<< HEAD
-=======
 		.allow_new_offset   = super_90_allow_new_offset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[1] = {
 		.name	= "md-1",
@@ -3562,10 +2358,7 @@ static struct super_type super_types[] = {
 		.validate_super	    = super_1_validate,
 		.sync_super	    = super_1_sync,
 		.rdev_size_change   = super_1_rdev_size_change,
-<<<<<<< HEAD
-=======
 		.allow_new_offset   = super_1_allow_new_offset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -3586,15 +2379,6 @@ static int match_mddev_units(struct mddev *mddev1, struct mddev *mddev2)
 	struct md_rdev *rdev, *rdev2;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	rdev_for_each_rcu(rdev, mddev1)
-		rdev_for_each_rcu(rdev2, mddev2)
-			if (rdev->bdev->bd_contains ==
-			    rdev2->bdev->bd_contains) {
-				rcu_read_unlock();
-				return 1;
-			}
-=======
 	rdev_for_each_rcu(rdev, mddev1) {
 		if (test_bit(Faulty, &rdev->flags) ||
 		    test_bit(Journal, &rdev->flags) ||
@@ -3611,7 +2395,6 @@ static int match_mddev_units(struct mddev *mddev1, struct mddev *mddev2)
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	return 0;
 }
@@ -3631,11 +2414,7 @@ int md_integrity_register(struct mddev *mddev)
 
 	if (list_empty(&mddev->disks))
 		return 0; /* nothing to do */
-<<<<<<< HEAD
-	if (!mddev->gendisk || blk_get_integrity(mddev->gendisk))
-=======
 	if (mddev_is_dm(mddev) || blk_get_integrity(mddev->gendisk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0; /* shouldn't register, or already is */
 	rdev_for_each(rdev, mddev) {
 		/* skip spares and non-functional disks */
@@ -3659,17 +2438,6 @@ int md_integrity_register(struct mddev *mddev)
 	 * All component devices are integrity capable and have matching
 	 * profiles, register the common profile for the md device.
 	 */
-<<<<<<< HEAD
-	if (blk_integrity_register(mddev->gendisk,
-			bdev_get_integrity(reference->bdev)) != 0) {
-		printk(KERN_ERR "md: failed to register integrity for %s\n",
-			mdname(mddev));
-		return -EINVAL;
-	}
-	printk(KERN_NOTICE "md: data integrity enabled on %s\n", mdname(mddev));
-	if (bioset_integrity_create(mddev->bio_set, BIO_POOL_SIZE)) {
-		printk(KERN_ERR "md: failed to create integrity pool for %s\n",
-=======
 	blk_integrity_register(mddev->gendisk,
 			       bdev_get_integrity(reference->bdev));
 
@@ -3684,7 +2452,6 @@ int md_integrity_register(struct mddev *mddev)
 		 * of failure case.
 		 */
 		pr_err("md: failed to create integrity pool for %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       mdname(mddev));
 		return -EINVAL;
 	}
@@ -3692,38 +2459,6 @@ int md_integrity_register(struct mddev *mddev)
 }
 EXPORT_SYMBOL(md_integrity_register);
 
-<<<<<<< HEAD
-/* Disable data integrity if non-capable/non-matching disk is being added */
-void md_integrity_add_rdev(struct md_rdev *rdev, struct mddev *mddev)
-{
-	struct blk_integrity *bi_rdev = bdev_get_integrity(rdev->bdev);
-	struct blk_integrity *bi_mddev = blk_get_integrity(mddev->gendisk);
-
-	if (!bi_mddev) /* nothing to do */
-		return;
-	if (rdev->raid_disk < 0) /* skip spares */
-		return;
-	if (bi_rdev && blk_integrity_compare(mddev->gendisk,
-					     rdev->bdev->bd_disk) >= 0)
-		return;
-	printk(KERN_NOTICE "disabling data integrity on %s\n", mdname(mddev));
-	blk_integrity_unregister(mddev->gendisk);
-}
-EXPORT_SYMBOL(md_integrity_add_rdev);
-
-static int bind_rdev_to_array(struct md_rdev * rdev, struct mddev * mddev)
-{
-	char b[BDEVNAME_SIZE];
-	struct kobject *ko;
-	char *s;
-	int err;
-
-	if (rdev->mddev) {
-		MD_BUG();
-		return -EINVAL;
-	}
-
-=======
 /*
  * Attempt to add an rdev, but only if it is consistent with the current
  * integrity profile
@@ -3761,16 +2496,10 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 	char b[BDEVNAME_SIZE];
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* prevent duplicates */
 	if (find_rdev(mddev, rdev->bdev->bd_dev))
 		return -EEXIST;
 
-<<<<<<< HEAD
-	/* make sure rdev->sectors exceeds mddev->dev_sectors */
-	if (rdev->sectors && (mddev->dev_sectors == 0 ||
-			rdev->sectors < mddev->dev_sectors)) {
-=======
 	if (rdev_read_only(rdev) && mddev->pers)
 		return -EROFS;
 
@@ -3778,7 +2507,6 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 	if (!test_bit(Journal, &rdev->flags) &&
 	    rdev->sectors &&
 	    (mddev->dev_sectors == 0 || rdev->sectors < mddev->dev_sectors)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mddev->pers) {
 			/* Cannot change size, so fail
 			 * If mddev->level <= 0, then we don't care
@@ -3794,29 +2522,6 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 	 * If it is -1, assign a free number, else
 	 * check number is not in use
 	 */
-<<<<<<< HEAD
-	if (rdev->desc_nr < 0) {
-		int choice = 0;
-		if (mddev->pers) choice = mddev->raid_disks;
-		while (find_rdev_nr(mddev, choice))
-			choice++;
-		rdev->desc_nr = choice;
-	} else {
-		if (find_rdev_nr(mddev, rdev->desc_nr))
-			return -EBUSY;
-	}
-	if (mddev->max_disks && rdev->desc_nr >= mddev->max_disks) {
-		printk(KERN_WARNING "md: %s: array is limited to %d devices\n",
-		       mdname(mddev), mddev->max_disks);
-		return -EBUSY;
-	}
-	bdevname(rdev->bdev,b);
-	while ( (s=strchr(b, '/')) != NULL)
-		*s = '!';
-
-	rdev->mddev = mddev;
-	printk(KERN_INFO "md: bind<%s>\n", b);
-=======
 	rcu_read_lock();
 	if (rdev->desc_nr < 0) {
 		int choice = 0;
@@ -3846,17 +2551,10 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 
 	if (mddev->raid_disks)
 		mddev_create_serial_pool(mddev, rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((err = kobject_add(&rdev->kobj, &mddev->kobj, "dev-%s", b)))
 		goto fail;
 
-<<<<<<< HEAD
-	ko = &part_to_dev(rdev->bdev->bd_part)->kobj;
-	if (sysfs_create_link(&rdev->kobj, ko, "block"))
-		/* failure here is OK */;
-	rdev->sysfs_state = sysfs_get_dirent_safe(rdev->kobj.sd, "state");
-=======
 	/* failure here is OK */
 	err = sysfs_create_link(&rdev->kobj, bdev_kobj(rdev->bdev), "block");
 	rdev->sysfs_state = sysfs_get_dirent_safe(rdev->kobj.sd, "state");
@@ -3864,7 +2562,6 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 		sysfs_get_dirent_safe(rdev->kobj.sd, "unacknowledged_bad_blocks");
 	rdev->sysfs_badblocks =
 		sysfs_get_dirent_safe(rdev->kobj.sd, "bad_blocks");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_rcu(&rdev->same_set, &mddev->disks);
 	bd_link_disk_holder(rdev->bdev, mddev->gendisk);
@@ -3875,88 +2572,6 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 	return 0;
 
  fail:
-<<<<<<< HEAD
-	printk(KERN_WARNING "md: failed to register dev-%s for %s\n",
-	       b, mdname(mddev));
-	return err;
-}
-
-static void md_delayed_delete(struct work_struct *ws)
-{
-	struct md_rdev *rdev = container_of(ws, struct md_rdev, del_work);
-	kobject_del(&rdev->kobj);
-	kobject_put(&rdev->kobj);
-}
-
-static void unbind_rdev_from_array(struct md_rdev * rdev)
-{
-	char b[BDEVNAME_SIZE];
-	if (!rdev->mddev) {
-		MD_BUG();
-		return;
-	}
-	bd_unlink_disk_holder(rdev->bdev, rdev->mddev->gendisk);
-	list_del_rcu(&rdev->same_set);
-	printk(KERN_INFO "md: unbind<%s>\n", bdevname(rdev->bdev,b));
-	rdev->mddev = NULL;
-	sysfs_remove_link(&rdev->kobj, "block");
-	sysfs_put(rdev->sysfs_state);
-	rdev->sysfs_state = NULL;
-	kfree(rdev->badblocks.page);
-	rdev->badblocks.count = 0;
-	rdev->badblocks.page = NULL;
-	/* We need to delay this, otherwise we can deadlock when
-	 * writing to 'remove' to "dev/state".  We also need
-	 * to delay it due to rcu usage.
-	 */
-	synchronize_rcu();
-	INIT_WORK(&rdev->del_work, md_delayed_delete);
-	kobject_get(&rdev->kobj);
-	queue_work(md_misc_wq, &rdev->del_work);
-}
-
-/*
- * prevent the device from being mounted, repartitioned or
- * otherwise reused by a RAID array (or any other kernel
- * subsystem), by bd_claiming the device.
- */
-static int lock_rdev(struct md_rdev *rdev, dev_t dev, int shared)
-{
-	int err = 0;
-	struct block_device *bdev;
-	char b[BDEVNAME_SIZE];
-
-	bdev = blkdev_get_by_dev(dev, FMODE_READ|FMODE_WRITE|FMODE_EXCL,
-				 shared ? (struct md_rdev *)lock_rdev : rdev);
-	if (IS_ERR(bdev)) {
-		printk(KERN_ERR "md: could not open %s.\n",
-			__bdevname(dev, b));
-		return PTR_ERR(bdev);
-	}
-	rdev->bdev = bdev;
-	return err;
-}
-
-static void unlock_rdev(struct md_rdev *rdev)
-{
-	struct block_device *bdev = rdev->bdev;
-	rdev->bdev = NULL;
-	if (!bdev)
-		MD_BUG();
-	blkdev_put(bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
-}
-
-void md_autodetect_dev(dev_t dev);
-
-static void export_rdev(struct md_rdev * rdev)
-{
-	char b[BDEVNAME_SIZE];
-	printk(KERN_INFO "md: export_rdev(%s)\n",
-		bdevname(rdev->bdev,b));
-	if (rdev->mddev)
-		MD_BUG();
-	free_disk_sb(rdev);
-=======
 	pr_warn("md: failed to register dev-%s for %s\n",
 		b, mdname(mddev));
 	mddev_destroy_serial_pool(mddev, rdev);
@@ -3972,21 +2587,10 @@ static void export_rdev(struct md_rdev *rdev, struct mddev *mddev)
 {
 	pr_debug("md: export_rdev(%pg)\n", rdev->bdev);
 	md_rdev_clear(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MODULE
 	if (test_bit(AutoDetected, &rdev->flags))
 		md_autodetect_dev(rdev->bdev->bd_dev);
 #endif
-<<<<<<< HEAD
-	unlock_rdev(rdev);
-	kobject_put(&rdev->kobj);
-}
-
-static void kick_rdev_from_array(struct md_rdev * rdev)
-{
-	unbind_rdev_from_array(rdev);
-	export_rdev(rdev);
-=======
 	fput(rdev->bdev_file);
 	rdev->bdev = NULL;
 	kobject_put(&rdev->kobj);
@@ -4018,24 +2622,10 @@ static void md_kick_rdev_from_array(struct md_rdev *rdev)
 	 * reconfig_mutex and it's delayed to mddev_unlock().
 	 */
 	list_add(&rdev->same_set, &mddev->deleting);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void export_array(struct mddev *mddev)
 {
-<<<<<<< HEAD
-	struct md_rdev *rdev, *tmp;
-
-	rdev_for_each_safe(rdev, tmp, mddev) {
-		if (!rdev->mddev) {
-			MD_BUG();
-			continue;
-		}
-		kick_rdev_from_array(rdev);
-	}
-	if (!list_empty(&mddev->disks))
-		MD_BUG();
-=======
 	struct md_rdev *rdev;
 
 	while (!list_empty(&mddev->disks)) {
@@ -4043,145 +2633,10 @@ static void export_array(struct mddev *mddev)
 					same_set);
 		md_kick_rdev_from_array(rdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->raid_disks = 0;
 	mddev->major_version = 0;
 }
 
-<<<<<<< HEAD
-static void print_desc(mdp_disk_t *desc)
-{
-	printk(" DISK<N:%d,(%d,%d),R:%d,S:%d>\n", desc->number,
-		desc->major,desc->minor,desc->raid_disk,desc->state);
-}
-
-static void print_sb_90(mdp_super_t *sb)
-{
-	int i;
-
-	printk(KERN_INFO 
-		"md:  SB: (V:%d.%d.%d) ID:<%08x.%08x.%08x.%08x> CT:%08x\n",
-		sb->major_version, sb->minor_version, sb->patch_version,
-		sb->set_uuid0, sb->set_uuid1, sb->set_uuid2, sb->set_uuid3,
-		sb->ctime);
-	printk(KERN_INFO "md:     L%d S%08d ND:%d RD:%d md%d LO:%d CS:%d\n",
-		sb->level, sb->size, sb->nr_disks, sb->raid_disks,
-		sb->md_minor, sb->layout, sb->chunk_size);
-	printk(KERN_INFO "md:     UT:%08x ST:%d AD:%d WD:%d"
-		" FD:%d SD:%d CSUM:%08x E:%08lx\n",
-		sb->utime, sb->state, sb->active_disks, sb->working_disks,
-		sb->failed_disks, sb->spare_disks,
-		sb->sb_csum, (unsigned long)sb->events_lo);
-
-	printk(KERN_INFO);
-	for (i = 0; i < MD_SB_DISKS; i++) {
-		mdp_disk_t *desc;
-
-		desc = sb->disks + i;
-		if (desc->number || desc->major || desc->minor ||
-		    desc->raid_disk || (desc->state && (desc->state != 4))) {
-			printk("     D %2d: ", i);
-			print_desc(desc);
-		}
-	}
-	printk(KERN_INFO "md:     THIS: ");
-	print_desc(&sb->this_disk);
-}
-
-static void print_sb_1(struct mdp_superblock_1 *sb)
-{
-	__u8 *uuid;
-
-	uuid = sb->set_uuid;
-	printk(KERN_INFO
-	       "md:  SB: (V:%u) (F:0x%08x) Array-ID:<%pU>\n"
-	       "md:    Name: \"%s\" CT:%llu\n",
-		le32_to_cpu(sb->major_version),
-		le32_to_cpu(sb->feature_map),
-		uuid,
-		sb->set_name,
-		(unsigned long long)le64_to_cpu(sb->ctime)
-		       & MD_SUPERBLOCK_1_TIME_SEC_MASK);
-
-	uuid = sb->device_uuid;
-	printk(KERN_INFO
-	       "md:       L%u SZ%llu RD:%u LO:%u CS:%u DO:%llu DS:%llu SO:%llu"
-			" RO:%llu\n"
-	       "md:     Dev:%08x UUID: %pU\n"
-	       "md:       (F:0x%08x) UT:%llu Events:%llu ResyncOffset:%llu CSUM:0x%08x\n"
-	       "md:         (MaxDev:%u) \n",
-		le32_to_cpu(sb->level),
-		(unsigned long long)le64_to_cpu(sb->size),
-		le32_to_cpu(sb->raid_disks),
-		le32_to_cpu(sb->layout),
-		le32_to_cpu(sb->chunksize),
-		(unsigned long long)le64_to_cpu(sb->data_offset),
-		(unsigned long long)le64_to_cpu(sb->data_size),
-		(unsigned long long)le64_to_cpu(sb->super_offset),
-		(unsigned long long)le64_to_cpu(sb->recovery_offset),
-		le32_to_cpu(sb->dev_number),
-		uuid,
-		sb->devflags,
-		(unsigned long long)le64_to_cpu(sb->utime) & MD_SUPERBLOCK_1_TIME_SEC_MASK,
-		(unsigned long long)le64_to_cpu(sb->events),
-		(unsigned long long)le64_to_cpu(sb->resync_offset),
-		le32_to_cpu(sb->sb_csum),
-		le32_to_cpu(sb->max_dev)
-		);
-}
-
-static void print_rdev(struct md_rdev *rdev, int major_version)
-{
-	char b[BDEVNAME_SIZE];
-	printk(KERN_INFO "md: rdev %s, Sect:%08llu F:%d S:%d DN:%u\n",
-		bdevname(rdev->bdev, b), (unsigned long long)rdev->sectors,
-	        test_bit(Faulty, &rdev->flags), test_bit(In_sync, &rdev->flags),
-	        rdev->desc_nr);
-	if (rdev->sb_loaded) {
-		printk(KERN_INFO "md: rdev superblock (MJ:%d):\n", major_version);
-		switch (major_version) {
-		case 0:
-			print_sb_90(page_address(rdev->sb_page));
-			break;
-		case 1:
-			print_sb_1(page_address(rdev->sb_page));
-			break;
-		}
-	} else
-		printk(KERN_INFO "md: no rdev superblock!\n");
-}
-
-static void md_print_devices(void)
-{
-	struct list_head *tmp;
-	struct md_rdev *rdev;
-	struct mddev *mddev;
-	char b[BDEVNAME_SIZE];
-
-	printk("\n");
-	printk("md:	**********************************\n");
-	printk("md:	* <COMPLETE RAID STATE PRINTOUT> *\n");
-	printk("md:	**********************************\n");
-	for_each_mddev(mddev, tmp) {
-
-		if (mddev->bitmap)
-			bitmap_print_sb(mddev->bitmap);
-		else
-			printk("%s: ", mdname(mddev));
-		rdev_for_each(rdev, mddev)
-			printk("<%s>", bdevname(rdev->bdev,b));
-		printk("\n");
-
-		rdev_for_each(rdev, mddev)
-			print_rdev(rdev, mddev->major_version);
-	}
-	printk("md:	**********************************\n");
-	printk("\n");
-}
-
-
-static void sync_sbs(struct mddev * mddev, int nospares)
-=======
 static bool set_in_sync(struct mddev *mddev)
 {
 	lockdep_assert_held(&mddev->lock);
@@ -4210,7 +2665,6 @@ static bool set_in_sync(struct mddev *mddev)
 }
 
 static void sync_sbs(struct mddev *mddev, int nospares)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Update each superblock (in-memory image), but
 	 * if we are allowed to, skip spares which already
@@ -4233,9 +2687,6 @@ static void sync_sbs(struct mddev *mddev, int nospares)
 	}
 }
 
-<<<<<<< HEAD
-static void md_update_sb(struct mddev * mddev, int force_change)
-=======
 static bool does_sb_need_changing(struct mddev *mddev)
 {
 	struct md_rdev *rdev = NULL, *iter;
@@ -4278,20 +2729,11 @@ static bool does_sb_need_changing(struct mddev *mddev)
 }
 
 void md_update_sb(struct mddev *mddev, int force_change)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev;
 	int sync_req;
 	int nospares = 0;
 	int any_badblocks_changed = 0;
-<<<<<<< HEAD
-
-repeat:
-	/* First make sure individual recovery_offsets are correct */
-	rdev_for_each(rdev, mddev) {
-		if (rdev->raid_disk >= 0 &&
-		    mddev->delta_disks >= 0 &&
-=======
 	int ret = -1;
 
 	if (!md_is_rdwr(mddev)) {
@@ -4331,23 +2773,10 @@ repeat:
 		    test_bit(MD_RECOVERY_RECOVER, &mddev->recovery) &&
 		    !test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery) &&
 		    !test_bit(Journal, &rdev->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !test_bit(In_sync, &rdev->flags) &&
 		    mddev->curr_resync_completed > rdev->recovery_offset)
 				rdev->recovery_offset = mddev->curr_resync_completed;
 
-<<<<<<< HEAD
-	}	
-	if (!mddev->persistent) {
-		clear_bit(MD_CHANGE_CLEAN, &mddev->flags);
-		clear_bit(MD_CHANGE_DEVS, &mddev->flags);
-		if (!mddev->external) {
-			clear_bit(MD_CHANGE_PENDING, &mddev->flags);
-			rdev_for_each(rdev, mddev) {
-				if (rdev->badblocks.changed) {
-					rdev->badblocks.changed = 0;
-					md_ack_all_badblocks(&rdev->badblocks);
-=======
 	}
 	if (!mddev->persistent) {
 		clear_bit(MD_SB_CHANGE_CLEAN, &mddev->sb_flags);
@@ -4358,7 +2787,6 @@ repeat:
 				if (rdev->badblocks.changed) {
 					rdev->badblocks.changed = 0;
 					ack_all_badblocks(&rdev->badblocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					md_error(mddev, rdev);
 				}
 				clear_bit(Blocked, &rdev->flags);
@@ -4370,15 +2798,6 @@ repeat:
 		return;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irq(&mddev->write_lock);
-
-	mddev->utime = get_seconds();
-
-	if (test_and_clear_bit(MD_CHANGE_DEVS, &mddev->flags))
-		force_change = 1;
-	if (test_and_clear_bit(MD_CHANGE_CLEAN, &mddev->flags))
-=======
 	spin_lock(&mddev->lock);
 
 	mddev->utime = ktime_get_real_seconds();
@@ -4386,7 +2805,6 @@ repeat:
 	if (test_and_clear_bit(MD_SB_CHANGE_DEVS, &mddev->sb_flags))
 		force_change = 1;
 	if (test_and_clear_bit(MD_SB_CHANGE_CLEAN, &mddev->sb_flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* just a clean<-> dirty transition, possibly leave spares alone,
 		 * though if events isn't the right even/odd, we will have to do
 		 * spares after all
@@ -4422,24 +2840,12 @@ repeat:
 		mddev->can_decrease_events = nospares;
 	}
 
-<<<<<<< HEAD
-	if (!mddev->events) {
-		/*
-		 * oops, this 64-bit counter should never wrap.
-		 * Either we are in around ~1 trillion A.C., assuming
-		 * 1 reboot per second, or we have a bug:
-		 */
-		MD_BUG();
-		mddev->events --;
-	}
-=======
 	/*
 	 * This 64-bit counter should never wrap.
 	 * Either we are in around ~1 trillion A.C., assuming
 	 * 1 reboot per second, or we have a bug...
 	 */
 	WARN_ON(mddev->events == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev_for_each(rdev, mddev) {
 		if (rdev->badblocks.changed)
@@ -4449,31 +2855,11 @@ repeat:
 	}
 
 	sync_sbs(mddev, nospares);
-<<<<<<< HEAD
-	spin_unlock_irq(&mddev->write_lock);
-=======
 	spin_unlock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("md: updating %s RAID superblock on device (in sync %d)\n",
 		 mdname(mddev), mddev->in_sync);
 
-<<<<<<< HEAD
-	bitmap_update_sb(mddev->bitmap);
-	rdev_for_each(rdev, mddev) {
-		char b[BDEVNAME_SIZE];
-
-		if (rdev->sb_loaded != 1)
-			continue; /* no noise on spare devices */
-
-		if (!test_bit(Faulty, &rdev->flags) &&
-		    rdev->saved_raid_disk == -1) {
-			md_super_write(mddev,rdev,
-				       rdev->sb_start, rdev->sb_size,
-				       rdev->sb_page);
-			pr_debug("md: (write) %s's sb offset: %llu\n",
-				 bdevname(rdev->bdev, b),
-=======
 	mddev_add_trace_msg(mddev, "md md_update_sb");
 rewrite:
 	md_bitmap_update_sb(mddev->bitmap);
@@ -4487,7 +2873,6 @@ rewrite:
 				       rdev->sb_page);
 			pr_debug("md: (write) %pg's sb offset: %llu\n",
 				 rdev->bdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 (unsigned long long)rdev->sb_start);
 			rdev->sb_events = mddev->events;
 			if (rdev->badblocks.size) {
@@ -4498,33 +2883,6 @@ rewrite:
 				rdev->badblocks.size = 0;
 			}
 
-<<<<<<< HEAD
-		} else if (test_bit(Faulty, &rdev->flags))
-			pr_debug("md: %s (skipping faulty)\n",
-				 bdevname(rdev->bdev, b));
-		else
-			pr_debug("(skipping incremental s/r ");
-
-		if (mddev->level == LEVEL_MULTIPATH)
-			/* only need to write one superblock... */
-			break;
-	}
-	md_super_wait(mddev);
-	/* if there was a failure, MD_CHANGE_DEVS was set, and we re-write super */
-
-	spin_lock_irq(&mddev->write_lock);
-	if (mddev->in_sync != sync_req ||
-	    test_bit(MD_CHANGE_DEVS, &mddev->flags)) {
-		/* have to write it out again */
-		spin_unlock_irq(&mddev->write_lock);
-		goto repeat;
-	}
-	clear_bit(MD_CHANGE_PENDING, &mddev->flags);
-	spin_unlock_irq(&mddev->write_lock);
-	wake_up(&mddev->sb_wait);
-	if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
-		sysfs_notify(&mddev->kobj, NULL, "sync_completed");
-=======
 		} else
 			pr_debug("md: %pg (skipping faulty)\n",
 				 rdev->bdev);
@@ -4544,24 +2902,17 @@ rewrite:
 	wake_up(&mddev->sb_wait);
 	if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
 		sysfs_notify_dirent_safe(mddev->sysfs_completed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev_for_each(rdev, mddev) {
 		if (test_and_clear_bit(FaultRecorded, &rdev->flags))
 			clear_bit(Blocked, &rdev->flags);
 
 		if (any_badblocks_changed)
-<<<<<<< HEAD
-			md_ack_all_badblocks(&rdev->badblocks);
-=======
 			ack_all_badblocks(&rdev->badblocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_bit(BlockedBadBlocks, &rdev->flags);
 		wake_up(&rdev->blocked_wait);
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(md_update_sb);
 
 static int add_bound_rdev(struct md_rdev *rdev)
@@ -4592,7 +2943,6 @@ static int add_bound_rdev(struct md_rdev *rdev)
 	md_new_event();
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* words written to sysfs files may, or may not, be \n terminated.
  * We want to accept with case. For this we use cmd_match.
@@ -4623,47 +2973,6 @@ struct rdev_sysfs_entry {
 static ssize_t
 state_show(struct md_rdev *rdev, char *page)
 {
-<<<<<<< HEAD
-	char *sep = "";
-	size_t len = 0;
-
-	if (test_bit(Faulty, &rdev->flags) ||
-	    rdev->badblocks.unacked_exist) {
-		len+= sprintf(page+len, "%sfaulty",sep);
-		sep = ",";
-	}
-	if (test_bit(In_sync, &rdev->flags)) {
-		len += sprintf(page+len, "%sin_sync",sep);
-		sep = ",";
-	}
-	if (test_bit(WriteMostly, &rdev->flags)) {
-		len += sprintf(page+len, "%swrite_mostly",sep);
-		sep = ",";
-	}
-	if (test_bit(Blocked, &rdev->flags) ||
-	    (rdev->badblocks.unacked_exist
-	     && !test_bit(Faulty, &rdev->flags))) {
-		len += sprintf(page+len, "%sblocked", sep);
-		sep = ",";
-	}
-	if (!test_bit(Faulty, &rdev->flags) &&
-	    !test_bit(In_sync, &rdev->flags)) {
-		len += sprintf(page+len, "%sspare", sep);
-		sep = ",";
-	}
-	if (test_bit(WriteErrorSeen, &rdev->flags)) {
-		len += sprintf(page+len, "%swrite_error", sep);
-		sep = ",";
-	}
-	if (test_bit(WantReplacement, &rdev->flags)) {
-		len += sprintf(page+len, "%swant_replacement", sep);
-		sep = ",";
-	}
-	if (test_bit(Replacement, &rdev->flags)) {
-		len += sprintf(page+len, "%sreplacement", sep);
-		sep = ",";
-	}
-=======
 	char *sep = ",";
 	size_t len = 0;
 	unsigned long flags = READ_ONCE(rdev->flags);
@@ -4699,7 +3008,6 @@ state_show(struct md_rdev *rdev, char *page)
 
 	if (len)
 		len -= strlen(sep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len+sprintf(page+len, "\n");
 }
@@ -4715,34 +3023,6 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 	 *  blocked - sets the Blocked flags
 	 *  -blocked - clears the Blocked and possibly simulates an error
 	 *  insync - sets Insync providing device isn't active
-<<<<<<< HEAD
-	 *  write_error - sets WriteErrorSeen
-	 *  -write_error - clears WriteErrorSeen
-	 */
-	int err = -EINVAL;
-	if (cmd_match(buf, "faulty") && rdev->mddev->pers) {
-		md_error(rdev->mddev, rdev);
-		if (test_bit(Faulty, &rdev->flags))
-			err = 0;
-		else
-			err = -EBUSY;
-	} else if (cmd_match(buf, "remove")) {
-		if (rdev->raid_disk >= 0)
-			err = -EBUSY;
-		else {
-			struct mddev *mddev = rdev->mddev;
-			kick_rdev_from_array(rdev);
-			if (mddev->pers)
-				md_update_sb(mddev, 1);
-			md_new_event(mddev);
-			err = 0;
-		}
-	} else if (cmd_match(buf, "writemostly")) {
-		set_bit(WriteMostly, &rdev->flags);
-		err = 0;
-	} else if (cmd_match(buf, "-writemostly")) {
-		clear_bit(WriteMostly, &rdev->flags);
-=======
 	 *  -insync - clear Insync for a device with a slot assigned,
 	 *            so that it gets rebuilt based on bitmap
 	 *  write_error - sets WriteErrorSeen
@@ -4789,17 +3069,13 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 		mddev_destroy_serial_pool(rdev->mddev, rdev);
 		clear_bit(WriteMostly, &rdev->flags);
 		need_update_sb = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 	} else if (cmd_match(buf, "blocked")) {
 		set_bit(Blocked, &rdev->flags);
 		err = 0;
 	} else if (cmd_match(buf, "-blocked")) {
 		if (!test_bit(Faulty, &rdev->flags) &&
-<<<<<<< HEAD
-=======
 		    !test_bit(ExternalBbl, &rdev->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rdev->badblocks.unacked_exist) {
 			/* metadata handler doesn't understand badblocks,
 			 * so we need to fail the device
@@ -4810,17 +3086,11 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 		clear_bit(BlockedBadBlocks, &rdev->flags);
 		wake_up(&rdev->blocked_wait);
 		set_bit(MD_RECOVERY_NEEDED, &rdev->mddev->recovery);
-<<<<<<< HEAD
-		md_wakeup_thread(rdev->mddev->thread);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = 0;
 	} else if (cmd_match(buf, "insync") && rdev->raid_disk == -1) {
 		set_bit(In_sync, &rdev->flags);
 		err = 0;
-<<<<<<< HEAD
-=======
 	} else if (cmd_match(buf, "failfast")) {
 		set_bit(FailFast, &rdev->flags);
 		need_update_sb = true;
@@ -4837,7 +3107,6 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 			rdev->raid_disk = -1;
 			err = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (cmd_match(buf, "write_error")) {
 		set_bit(WriteErrorSeen, &rdev->flags);
 		err = 0;
@@ -4850,17 +3119,10 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 		 * check if recovery is needed.
 		 */
 		if (rdev->raid_disk >= 0 &&
-<<<<<<< HEAD
-		    !test_bit(Replacement, &rdev->flags))
-			set_bit(WantReplacement, &rdev->flags);
-		set_bit(MD_RECOVERY_NEEDED, &rdev->mddev->recovery);
-		md_wakeup_thread(rdev->mddev->thread);
-=======
 		    !test_bit(Journal, &rdev->flags) &&
 		    !test_bit(Replacement, &rdev->flags))
 			set_bit(WantReplacement, &rdev->flags);
 		set_bit(MD_RECOVERY_NEEDED, &rdev->mddev->recovery);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 	} else if (cmd_match(buf, "-want_replacement")) {
 		/* Clearing 'want_replacement' is always allowed.
@@ -4887,9 +3149,6 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 			clear_bit(Replacement, &rdev->flags);
 			err = 0;
 		}
-<<<<<<< HEAD
-	}
-=======
 	} else if (cmd_match(buf, "re-add")) {
 		if (!rdev->mddev->pers)
 			err = -EINVAL;
@@ -4918,17 +3177,12 @@ state_store(struct md_rdev *rdev, const char *buf, size_t len)
 	}
 	if (need_update_sb)
 		md_update_sb(mddev, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		sysfs_notify_dirent_safe(rdev->sysfs_state);
 	return err ? err : len;
 }
 static struct rdev_sysfs_entry rdev_state =
-<<<<<<< HEAD
-__ATTR(state, S_IRUGO|S_IWUSR, state_show, state_store);
-=======
 __ATTR_PREALLOC(state, S_IRUGO|S_IWUSR, state_show, state_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 errors_show(struct md_rdev *rdev, char *page)
@@ -4939,15 +3193,6 @@ errors_show(struct md_rdev *rdev, char *page)
 static ssize_t
 errors_store(struct md_rdev *rdev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long n = simple_strtoul(buf, &e, 10);
-	if (*buf && (*e == 0 || *e == '\n')) {
-		atomic_set(&rdev->corrected_errors, n);
-		return len;
-	}
-	return -EINVAL;
-=======
 	unsigned int n;
 	int rv;
 
@@ -4956,7 +3201,6 @@ errors_store(struct md_rdev *rdev, const char *buf, size_t len)
 		return rv;
 	atomic_set(&rdev->corrected_errors, n);
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static struct rdev_sysfs_entry rdev_errors =
 __ATTR(errors, S_IRUGO|S_IWUSR, errors_show, errors_store);
@@ -4964,13 +3208,9 @@ __ATTR(errors, S_IRUGO|S_IWUSR, errors_show, errors_store);
 static ssize_t
 slot_show(struct md_rdev *rdev, char *page)
 {
-<<<<<<< HEAD
-	if (rdev->raid_disk < 0)
-=======
 	if (test_bit(Journal, &rdev->flags))
 		return sprintf(page, "journal\n");
 	else if (rdev->raid_disk < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sprintf(page, "none\n");
 	else
 		return sprintf(page, "%d\n", rdev->raid_disk);
@@ -4979,15 +3219,6 @@ slot_show(struct md_rdev *rdev, char *page)
 static ssize_t
 slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	int err;
-	int slot = simple_strtoul(buf, &e, 10);
-	if (strncmp(buf, "none", 4)==0)
-		slot = -1;
-	else if (e==buf || (*e && *e!= '\n'))
-		return -EINVAL;
-=======
 	int slot;
 	int err;
 
@@ -5003,7 +3234,6 @@ slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 			/* overflow */
 			return -ENOSPC;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->mddev->pers && slot == -1) {
 		/* Setting 'slot' on an active array requires also
 		 * updating the 'rd%d' link, and communicating
@@ -5017,30 +3247,16 @@ slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 		/* personality does all needed checks */
 		if (rdev->mddev->pers->hot_remove_disk == NULL)
 			return -EINVAL;
-<<<<<<< HEAD
-		err = rdev->mddev->pers->
-			hot_remove_disk(rdev->mddev, rdev);
-		if (err)
-			return err;
-		sysfs_unlink_rdev(rdev->mddev, rdev);
-		rdev->raid_disk = -1;
-		set_bit(MD_RECOVERY_NEEDED, &rdev->mddev->recovery);
-		md_wakeup_thread(rdev->mddev->thread);
-=======
 		clear_bit(Blocked, &rdev->flags);
 		remove_and_add_spares(rdev->mddev, rdev);
 		if (rdev->raid_disk >= 0)
 			return -EBUSY;
 		set_bit(MD_RECOVERY_NEEDED, &rdev->mddev->recovery);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (rdev->mddev->pers) {
 		/* Activating a spare .. or possibly reactivating
 		 * if we ever get bitmaps working here.
 		 */
-<<<<<<< HEAD
-=======
 		int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rdev->raid_disk != -1)
 			return -EBUSY;
@@ -5061,25 +3277,15 @@ slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 		else
 			rdev->saved_raid_disk = -1;
 		clear_bit(In_sync, &rdev->flags);
-<<<<<<< HEAD
-		err = rdev->mddev->pers->
-			hot_add_disk(rdev->mddev, rdev);
-=======
 		clear_bit(Bitmap_sync, &rdev->flags);
 		err = rdev->mddev->pers->hot_add_disk(rdev->mddev, rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			rdev->raid_disk = -1;
 			return err;
 		} else
 			sysfs_notify_dirent_safe(rdev->sysfs_state);
-<<<<<<< HEAD
-		if (sysfs_link_rdev(rdev->mddev, rdev))
-			/* failure here is OK */;
-=======
 		/* failure here is OK */;
 		sysfs_link_rdev(rdev->mddev, rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't wakeup anyone, leave that to userspace. */
 	} else {
 		if (slot >= rdev->mddev->raid_disks &&
@@ -5095,10 +3301,6 @@ slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 	return len;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rdev_sysfs_entry rdev_slot =
 __ATTR(slot, S_IRUGO|S_IWUSR, slot_show, slot_store);
 
@@ -5111,14 +3313,8 @@ offset_show(struct md_rdev *rdev, char *page)
 static ssize_t
 offset_store(struct md_rdev *rdev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long long offset = simple_strtoull(buf, &e, 10);
-	if (e==buf || (*e && *e != '\n'))
-=======
 	unsigned long long offset;
 	if (kstrtoull(buf, 10, &offset) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (rdev->mddev->pers && rdev->raid_disk >= 0)
 		return -EBUSY;
@@ -5127,18 +3323,13 @@ offset_store(struct md_rdev *rdev, const char *buf, size_t len)
 		 * can be sane */
 		return -EBUSY;
 	rdev->data_offset = offset;
-<<<<<<< HEAD
-=======
 	rdev->new_data_offset = offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
 static struct rdev_sysfs_entry rdev_offset =
 __ATTR(offset, S_IRUGO|S_IWUSR, offset_show, offset_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t new_offset_show(struct md_rdev *rdev, char *page)
 {
 	return sprintf(page, "%llu\n",
@@ -5196,23 +3387,12 @@ static ssize_t new_offset_store(struct md_rdev *rdev,
 static struct rdev_sysfs_entry rdev_new_offset =
 __ATTR(new_offset, S_IRUGO|S_IWUSR, new_offset_show, new_offset_store);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 rdev_size_show(struct md_rdev *rdev, char *page)
 {
 	return sprintf(page, "%llu\n", (unsigned long long)rdev->sectors / 2);
 }
 
-<<<<<<< HEAD
-static int overlaps(sector_t s1, sector_t l1, sector_t s2, sector_t l2)
-{
-	/* check if two start/length pairs overlap */
-	if (s1+l1 <= s2)
-		return 0;
-	if (s2+l2 <= s1)
-		return 0;
-	return 1;
-=======
 static int md_rdevs_overlap(struct md_rdev *a, struct md_rdev *b)
 {
 	/* check if two start/length pairs overlap */
@@ -5242,7 +3422,6 @@ static bool md_rdev_overlaps(struct md_rdev *rdev)
 	}
 	spin_unlock(&all_mddevs_lock);
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int strict_blocks_to_sectors(const char *buf, sector_t *sectors)
@@ -5250,11 +3429,7 @@ static int strict_blocks_to_sectors(const char *buf, sector_t *sectors)
 	unsigned long long blocks;
 	sector_t new;
 
-<<<<<<< HEAD
-	if (strict_strtoull(buf, 10, &blocks) < 0)
-=======
 	if (kstrtoull(buf, 10, &blocks) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (blocks & 1ULL << (8 * sizeof(blocks) - 1))
@@ -5275,17 +3450,12 @@ rdev_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 	sector_t oldsectors = rdev->sectors;
 	sector_t sectors;
 
-<<<<<<< HEAD
-	if (strict_blocks_to_sectors(buf, &sectors) < 0)
-		return -EINVAL;
-=======
 	if (test_bit(Journal, &rdev->flags))
 		return -EBUSY;
 	if (strict_blocks_to_sectors(buf, &sectors) < 0)
 		return -EINVAL;
 	if (rdev->data_offset != rdev->new_data_offset)
 		return -EINVAL; /* too confusing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (my_mddev->pers && rdev->raid_disk >= 0) {
 		if (my_mddev->persistent) {
 			sectors = super_types[my_mddev->major_version].
@@ -5293,11 +3463,7 @@ rdev_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 			if (!sectors)
 				return -EBUSY;
 		} else if (!sectors)
-<<<<<<< HEAD
-			sectors = (i_size_read(rdev->bdev->bd_inode) >> 9) -
-=======
 			sectors = bdev_nr_sectors(rdev->bdev) -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rdev->data_offset;
 		if (!my_mddev->pers->resize)
 			/* Cannot change size for RAID0 or Linear etc */
@@ -5307,49 +3473,6 @@ rdev_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 		return -EINVAL; /* component must fit device */
 
 	rdev->sectors = sectors;
-<<<<<<< HEAD
-	if (sectors > oldsectors && my_mddev->external) {
-		/* need to check that all other rdevs with the same ->bdev
-		 * do not overlap.  We need to unlock the mddev to avoid
-		 * a deadlock.  We have already changed rdev->sectors, and if
-		 * we have to change it back, we will have the lock again.
-		 */
-		struct mddev *mddev;
-		int overlap = 0;
-		struct list_head *tmp;
-
-		mddev_unlock(my_mddev);
-		for_each_mddev(mddev, tmp) {
-			struct md_rdev *rdev2;
-
-			mddev_lock(mddev);
-			rdev_for_each(rdev2, mddev)
-				if (rdev->bdev == rdev2->bdev &&
-				    rdev != rdev2 &&
-				    overlaps(rdev->data_offset, rdev->sectors,
-					     rdev2->data_offset,
-					     rdev2->sectors)) {
-					overlap = 1;
-					break;
-				}
-			mddev_unlock(mddev);
-			if (overlap) {
-				mddev_put(mddev);
-				break;
-			}
-		}
-		mddev_lock(my_mddev);
-		if (overlap) {
-			/* Someone else could have slipped in a size
-			 * change here, but doing so is just silly.
-			 * We put oldsectors back because we *know* it is
-			 * safe, and trust userspace not to race with
-			 * itself
-			 */
-			rdev->sectors = oldsectors;
-			return -EBUSY;
-		}
-=======
 
 	/*
 	 * Check that all other rdevs with the same bdev do not overlap.  This
@@ -5365,7 +3488,6 @@ rdev_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 		 */
 		rdev->sectors = oldsectors;
 		return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return len;
 }
@@ -5373,10 +3495,6 @@ rdev_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 static struct rdev_sysfs_entry rdev_size =
 __ATTR(size, S_IRUGO|S_IWUSR, rdev_size_show, rdev_size_store);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t recovery_start_show(struct md_rdev *rdev, char *page)
 {
 	unsigned long long recovery_start = rdev->recovery_offset;
@@ -5394,11 +3512,7 @@ static ssize_t recovery_start_store(struct md_rdev *rdev, const char *buf, size_
 
 	if (cmd_match(buf, "none"))
 		recovery_start = MaxSector;
-<<<<<<< HEAD
-	else if (strict_strtoull(buf, 10, &recovery_start))
-=======
 	else if (kstrtoull(buf, 10, &recovery_start))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (rdev->mddev->pers &&
@@ -5416,14 +3530,6 @@ static ssize_t recovery_start_store(struct md_rdev *rdev, const char *buf, size_
 static struct rdev_sysfs_entry rdev_recovery_start =
 __ATTR(recovery_start, S_IRUGO|S_IWUSR, recovery_start_show, recovery_start_store);
 
-<<<<<<< HEAD
-
-static ssize_t
-badblocks_show(struct badblocks *bb, char *page, int unack);
-static ssize_t
-badblocks_store(struct badblocks *bb, const char *page, size_t len, int unack);
-
-=======
 /* sysfs access to bad-blocks list.
  * We present two files.
  * 'bad-blocks' lists sector numbers and lengths of ranges that
@@ -5435,7 +3541,6 @@ badblocks_store(struct badblocks *bb, const char *page, size_t len, int unack);
  *    been acknowledged.  Writing to this file adds bad blocks
  *    without acknowledging them.  This is largely for testing.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t bb_show(struct md_rdev *rdev, char *page)
 {
 	return badblocks_show(&rdev->badblocks, page, 0);
@@ -5451,10 +3556,6 @@ static ssize_t bb_store(struct md_rdev *rdev, const char *page, size_t len)
 static struct rdev_sysfs_entry rdev_bad_blocks =
 __ATTR(bad_blocks, S_IRUGO|S_IWUSR, bb_show, bb_store);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t ubb_show(struct md_rdev *rdev, char *page)
 {
 	return badblocks_show(&rdev->badblocks, page, 1);
@@ -5466,8 +3567,6 @@ static ssize_t ubb_store(struct md_rdev *rdev, const char *page, size_t len)
 static struct rdev_sysfs_entry rdev_unack_bad_blocks =
 __ATTR(unacknowledged_bad_blocks, S_IRUGO|S_IWUSR, ubb_show, ubb_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t
 ppl_sector_show(struct md_rdev *rdev, char *page)
 {
@@ -5540,59 +3639,32 @@ ppl_size_store(struct md_rdev *rdev, const char *buf, size_t len)
 static struct rdev_sysfs_entry rdev_ppl_size =
 __ATTR(ppl_size, S_IRUGO|S_IWUSR, ppl_size_show, ppl_size_store);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *rdev_default_attrs[] = {
 	&rdev_state.attr,
 	&rdev_errors.attr,
 	&rdev_slot.attr,
 	&rdev_offset.attr,
-<<<<<<< HEAD
-=======
 	&rdev_new_offset.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&rdev_size.attr,
 	&rdev_recovery_start.attr,
 	&rdev_bad_blocks.attr,
 	&rdev_unack_bad_blocks.attr,
-<<<<<<< HEAD
-	NULL,
-};
-=======
 	&rdev_ppl_sector.attr,
 	&rdev_ppl_size.attr,
 	NULL,
 };
 ATTRIBUTE_GROUPS(rdev_default);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 rdev_attr_show(struct kobject *kobj, struct attribute *attr, char *page)
 {
 	struct rdev_sysfs_entry *entry = container_of(attr, struct rdev_sysfs_entry, attr);
 	struct md_rdev *rdev = container_of(kobj, struct md_rdev, kobj);
-<<<<<<< HEAD
-	struct mddev *mddev = rdev->mddev;
-	ssize_t rv;
-
-	if (!entry->show)
-		return -EIO;
-
-	rv = mddev ? mddev_lock(mddev) : -EBUSY;
-	if (!rv) {
-		if (rdev->mddev == NULL)
-			rv = -EBUSY;
-		else
-			rv = entry->show(rdev, page);
-		mddev_unlock(mddev);
-	}
-	return rv;
-=======
 
 	if (!entry->show)
 		return -EIO;
 	if (!rdev->mddev)
 		return -ENODEV;
 	return entry->show(rdev, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -5601,30 +3673,15 @@ rdev_attr_store(struct kobject *kobj, struct attribute *attr,
 {
 	struct rdev_sysfs_entry *entry = container_of(attr, struct rdev_sysfs_entry, attr);
 	struct md_rdev *rdev = container_of(kobj, struct md_rdev, kobj);
-<<<<<<< HEAD
-	ssize_t rv;
-	struct mddev *mddev = rdev->mddev;
-=======
 	struct kernfs_node *kn = NULL;
 	bool suspend = false;
 	ssize_t rv;
 	struct mddev *mddev = READ_ONCE(rdev->mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!entry->store)
 		return -EIO;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
-<<<<<<< HEAD
-	rv = mddev ? mddev_lock(mddev): -EBUSY;
-	if (!rv) {
-		if (rdev->mddev == NULL)
-			rv = -EBUSY;
-		else
-			rv = entry->store(rdev, page, length);
-		mddev_unlock(mddev);
-	}
-=======
 	if (!mddev)
 		return -ENODEV;
 
@@ -5649,7 +3706,6 @@ rdev_attr_store(struct kobject *kobj, struct attribute *attr,
 	if (kn)
 		sysfs_unbreak_active_protection(kn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
@@ -5662,17 +3718,10 @@ static const struct sysfs_ops rdev_sysfs_ops = {
 	.show		= rdev_attr_show,
 	.store		= rdev_attr_store,
 };
-<<<<<<< HEAD
-static struct kobj_type rdev_ktype = {
-	.release	= rdev_free,
-	.sysfs_ops	= &rdev_sysfs_ops,
-	.default_attrs	= rdev_default_attrs,
-=======
 static const struct kobj_type rdev_ktype = {
 	.release	= rdev_free,
 	.sysfs_ops	= &rdev_sysfs_ops,
 	.default_groups	= rdev_default_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int md_rdev_init(struct md_rdev *rdev)
@@ -5682,15 +3731,9 @@ int md_rdev_init(struct md_rdev *rdev)
 	rdev->raid_disk = -1;
 	rdev->flags = 0;
 	rdev->data_offset = 0;
-<<<<<<< HEAD
-	rdev->sb_events = 0;
-	rdev->last_read_error.tv_sec  = 0;
-	rdev->last_read_error.tv_nsec = 0;
-=======
 	rdev->new_data_offset = 0;
 	rdev->sb_events = 0;
 	rdev->last_read_error = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->sb_loaded = 0;
 	rdev->bb_page = NULL;
 	atomic_set(&rdev->nr_pending, 0);
@@ -5704,23 +3747,10 @@ int md_rdev_init(struct md_rdev *rdev)
 	 * This reserves the space even on arrays where it cannot
 	 * be used - I wonder if that matters
 	 */
-<<<<<<< HEAD
-	rdev->badblocks.count = 0;
-	rdev->badblocks.shift = -1; /* disabled until explicitly enabled */
-	rdev->badblocks.page = kmalloc(PAGE_SIZE, GFP_KERNEL);
-	seqlock_init(&rdev->badblocks.lock);
-	if (rdev->badblocks.page == NULL)
-		return -ENOMEM;
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(md_rdev_init);
-=======
 	return badblocks_init(&rdev->badblocks, 0);
 }
 EXPORT_SYMBOL_GPL(md_rdev_init);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Import a device. If 'super_format' >= 0, then sanity check the superblock
  *
@@ -5733,39 +3763,6 @@ EXPORT_SYMBOL_GPL(md_rdev_init);
  */
 static struct md_rdev *md_import_device(dev_t newdev, int super_format, int super_minor)
 {
-<<<<<<< HEAD
-	char b[BDEVNAME_SIZE];
-	int err;
-	struct md_rdev *rdev;
-	sector_t size;
-
-	rdev = kzalloc(sizeof(*rdev), GFP_KERNEL);
-	if (!rdev) {
-		printk(KERN_ERR "md: could not alloc mem for new device!\n");
-		return ERR_PTR(-ENOMEM);
-	}
-
-	err = md_rdev_init(rdev);
-	if (err)
-		goto abort_free;
-	err = alloc_disk_sb(rdev);
-	if (err)
-		goto abort_free;
-
-	err = lock_rdev(rdev, newdev, super_format == -2);
-	if (err)
-		goto abort_free;
-
-	kobject_init(&rdev->kobj, &rdev_ktype);
-
-	size = i_size_read(rdev->bdev->bd_inode) >> BLOCK_SIZE_BITS;
-	if (!size) {
-		printk(KERN_WARNING 
-			"md: %s has zero or unknown size, marking faulty!\n",
-			bdevname(rdev->bdev,b));
-		err = -EINVAL;
-		goto abort_free;
-=======
 	struct md_rdev *rdev;
 	sector_t size;
 	int err;
@@ -5800,27 +3797,12 @@ static struct md_rdev *md_import_device(dev_t newdev, int super_format, int supe
 			rdev->bdev);
 		err = -EINVAL;
 		goto out_blkdev_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (super_format >= 0) {
 		err = super_types[super_format].
 			load_super(rdev, NULL, super_minor);
 		if (err == -EINVAL) {
-<<<<<<< HEAD
-			printk(KERN_WARNING
-				"md: %s does not have a valid v%d.%d "
-			       "superblock, not importing!\n",
-				bdevname(rdev->bdev,b),
-			       super_format, super_minor);
-			goto abort_free;
-		}
-		if (err < 0) {
-			printk(KERN_WARNING 
-				"md: could not read %s's sb, not importing!\n",
-				bdevname(rdev->bdev,b));
-			goto abort_free;
-=======
 			pr_warn("md: %pg does not have a valid v%d.%d superblock, not importing!\n",
 				rdev->bdev,
 				super_format, super_minor);
@@ -5830,25 +3812,16 @@ static struct md_rdev *md_import_device(dev_t newdev, int super_format, int supe
 			pr_warn("md: could not read %pg's sb, not importing!\n",
 				rdev->bdev);
 			goto out_blkdev_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return rdev;
 
-<<<<<<< HEAD
-abort_free:
-	if (rdev->bdev)
-		unlock_rdev(rdev);
-	free_disk_sb(rdev);
-	kfree(rdev->badblocks.page);
-=======
 out_blkdev_put:
 	fput(rdev->bdev_file);
 out_clear_rdev:
 	md_rdev_clear(rdev);
 out_free_rdev:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rdev);
 	return ERR_PTR(err);
 }
@@ -5857,19 +3830,10 @@ out_free_rdev:
  * Check a full RAID array for plausibility
  */
 
-<<<<<<< HEAD
-
-static void analyze_sbs(struct mddev * mddev)
-{
-	int i;
-	struct md_rdev *rdev, *freshest, *tmp;
-	char b[BDEVNAME_SIZE];
-=======
 static int analyze_sbs(struct mddev *mddev)
 {
 	int i;
 	struct md_rdev *rdev, *freshest, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	freshest = NULL;
 	rdev_for_each_safe(rdev, tmp, mddev)
@@ -5881,18 +3845,6 @@ static int analyze_sbs(struct mddev *mddev)
 		case 0:
 			break;
 		default:
-<<<<<<< HEAD
-			printk( KERN_ERR \
-				"md: fatal superblock inconsistency in %s"
-				" -- removing from array\n", 
-				bdevname(rdev->bdev,b));
-			kick_rdev_from_array(rdev);
-		}
-
-
-	super_types[mddev->major_version].
-		validate_super(mddev, freshest);
-=======
 			pr_warn("md: fatal superblock inconsistency in %pg -- removing from array\n",
 				rdev->bdev);
 			md_kick_rdev_from_array(rdev);
@@ -5906,36 +3858,12 @@ static int analyze_sbs(struct mddev *mddev)
 
 	super_types[mddev->major_version].
 		validate_super(mddev, NULL/*freshest*/, freshest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = 0;
 	rdev_for_each_safe(rdev, tmp, mddev) {
 		if (mddev->max_disks &&
 		    (rdev->desc_nr >= mddev->max_disks ||
 		     i > mddev->max_disks)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING
-			       "md: %s: %s: only %d devices permitted\n",
-			       mdname(mddev), bdevname(rdev->bdev, b),
-			       mddev->max_disks);
-			kick_rdev_from_array(rdev);
-			continue;
-		}
-		if (rdev != freshest)
-			if (super_types[mddev->major_version].
-			    validate_super(mddev, rdev)) {
-				printk(KERN_WARNING "md: kicking non-fresh %s"
-					" from array!\n",
-					bdevname(rdev->bdev,b));
-				kick_rdev_from_array(rdev);
-				continue;
-			}
-		if (mddev->level == LEVEL_MULTIPATH) {
-			rdev->desc_nr = i++;
-			rdev->raid_disk = rdev->desc_nr;
-			set_bit(In_sync, &rdev->flags);
-		} else if (rdev->raid_disk >= (mddev->raid_disks - min(0, mddev->delta_disks))) {
-=======
 			pr_warn("md: %s: %pg: only %d devices permitted\n",
 				mdname(mddev), rdev->bdev,
 				mddev->max_disks);
@@ -5953,26 +3881,18 @@ static int analyze_sbs(struct mddev *mddev)
 		}
 		if (rdev->raid_disk >= (mddev->raid_disks - min(0, mddev->delta_disks)) &&
 		    !test_bit(Journal, &rdev->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rdev->raid_disk = -1;
 			clear_bit(In_sync, &rdev->flags);
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Read a fixed-point number.
  * Numbers in sysfs attributes should be in "standard" units where
  * possible, so time should be in seconds.
-<<<<<<< HEAD
- * However we internally use a a much smaller unit such as 
-=======
  * However we internally use a a much smaller unit such as
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * milliseconds or jiffies.
  * This function takes a decimal number with a possible fractional
  * component, and produces an integer which is the result of
@@ -6001,24 +3921,6 @@ int strict_strtoul_scaled(const char *cp, unsigned long *res, int scale)
 		return -EINVAL;
 	if (decimals < 0)
 		decimals = 0;
-<<<<<<< HEAD
-	while (decimals < scale) {
-		result *= 10;
-		decimals ++;
-	}
-	*res = result;
-	return 0;
-}
-
-
-static void md_safemode_timeout(unsigned long data);
-
-static ssize_t
-safe_delay_show(struct mddev *mddev, char *page)
-{
-	int msec = (mddev->safemode_delay*1000)/HZ;
-	return sprintf(page, "%d.%03d\n", msec/1000, msec%1000);
-=======
 	*res = result * int_pow(10, scale - decimals);
 	return 0;
 }
@@ -6029,35 +3931,23 @@ safe_delay_show(struct mddev *mddev, char *page)
 	unsigned int msec = ((unsigned long)mddev->safemode_delay*1000)/HZ;
 
 	return sprintf(page, "%u.%03u\n", msec/1000, msec%1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static ssize_t
 safe_delay_store(struct mddev *mddev, const char *cbuf, size_t len)
 {
 	unsigned long msec;
 
-<<<<<<< HEAD
-	if (strict_strtoul_scaled(cbuf, &msec, 3) < 0)
-=======
 	if (mddev_is_clustered(mddev)) {
 		pr_warn("md: Safemode is disabled for clustered mode\n");
 		return -EINVAL;
 	}
 
 	if (strict_strtoul_scaled(cbuf, &msec, 3) < 0 || msec > UINT_MAX / HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (msec == 0)
 		mddev->safemode_delay = 0;
 	else {
 		unsigned long old_delay = mddev->safemode_delay;
-<<<<<<< HEAD
-		mddev->safemode_delay = (msec*HZ)/1000;
-		if (mddev->safemode_delay == 0)
-			mddev->safemode_delay = 1;
-		if (mddev->safemode_delay < old_delay)
-			md_safemode_timeout((unsigned long)mddev);
-=======
 		unsigned long new_delay = (msec*HZ)/1000;
 
 		if (new_delay == 0)
@@ -6065,7 +3955,6 @@ safe_delay_store(struct mddev *mddev, const char *cbuf, size_t len)
 		mddev->safemode_delay = new_delay;
 		if (new_delay < old_delay || old_delay == 0)
 			mod_timer(&mddev->safemode_timer, jiffies+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return len;
 }
@@ -6075,17 +3964,6 @@ __ATTR(safe_mode_delay, S_IRUGO|S_IWUSR,safe_delay_show, safe_delay_store);
 static ssize_t
 level_show(struct mddev *mddev, char *page)
 {
-<<<<<<< HEAD
-	struct md_personality *p = mddev->pers;
-	if (p)
-		return sprintf(page, "%s\n", p->name);
-	else if (mddev->clevel[0])
-		return sprintf(page, "%s\n", mddev->clevel);
-	else if (mddev->level != LEVEL_NONE)
-		return sprintf(page, "%d\n", mddev->level);
-	else
-		return 0;
-=======
 	struct md_personality *p;
 	int ret;
 	spin_lock(&mddev->lock);
@@ -6100,33 +3978,12 @@ level_show(struct mddev *mddev, char *page)
 		ret = 0;
 	spin_unlock(&mddev->lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 level_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	char clevel[16];
-<<<<<<< HEAD
-	ssize_t rv = len;
-	struct md_personality *pers;
-	long level;
-	void *priv;
-	struct md_rdev *rdev;
-
-	if (mddev->pers == NULL) {
-		if (len == 0)
-			return 0;
-		if (len >= sizeof(mddev->clevel))
-			return -ENOSPC;
-		strncpy(mddev->clevel, buf, len);
-		if (mddev->clevel[len-1] == '\n')
-			len--;
-		mddev->clevel[len] = 0;
-		mddev->level = LEVEL_NONE;
-		return rv;
-	}
-=======
 	ssize_t rv;
 	size_t slen = len;
 	struct md_personality *pers, *oldpers;
@@ -6153,7 +4010,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 	rv = -EROFS;
 	if (!md_is_rdwr(mddev))
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* request to change the personality.  Need to ensure:
 	 *  - array is not engaged in resync/recovery/reshape
@@ -6161,27 +4017,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 	 *  - new personality will access other array.
 	 */
 
-<<<<<<< HEAD
-	if (mddev->sync_thread ||
-	    mddev->reshape_position != MaxSector ||
-	    mddev->sysfs_active)
-		return -EBUSY;
-
-	if (!mddev->pers->quiesce) {
-		printk(KERN_WARNING "md: %s: %s does not support online personality change\n",
-		       mdname(mddev), mddev->pers->name);
-		return -EINVAL;
-	}
-
-	/* Now find the new personality */
-	if (len == 0 || len >= sizeof(clevel))
-		return -EINVAL;
-	strncpy(clevel, buf, len);
-	if (clevel[len-1] == '\n')
-		len--;
-	clevel[len] = 0;
-	if (strict_strtol(clevel, 10, &level))
-=======
 	rv = -EBUSY;
 	if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery) ||
 	    mddev->reshape_position != MaxSector ||
@@ -6201,7 +4036,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 		slen--;
 	clevel[slen] = 0;
 	if (kstrtol(clevel, 10, &level))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		level = LEVEL_NONE;
 
 	if (request_module("md-%s", clevel) != 0)
@@ -6210,29 +4044,15 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 	pers = find_pers(level, clevel);
 	if (!pers || !try_module_get(pers->owner)) {
 		spin_unlock(&pers_lock);
-<<<<<<< HEAD
-		printk(KERN_WARNING "md: personality %s not loaded\n", clevel);
-		return -EINVAL;
-=======
 		pr_warn("md: personality %s not loaded\n", clevel);
 		rv = -EINVAL;
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&pers_lock);
 
 	if (pers == mddev->pers) {
 		/* Nothing to do! */
 		module_put(pers->owner);
-<<<<<<< HEAD
-		return rv;
-	}
-	if (!pers->takeover) {
-		module_put(pers->owner);
-		printk(KERN_WARNING "md: %s: %s does not support personality takeover\n",
-		       mdname(mddev), clevel);
-		return -EINVAL;
-=======
 		rv = len;
 		goto out_unlock;
 	}
@@ -6242,7 +4062,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 			mdname(mddev), clevel);
 		rv = -EINVAL;
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rdev_for_each(rdev, mddev)
@@ -6258,35 +4077,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 		mddev->new_chunk_sectors = mddev->chunk_sectors;
 		mddev->raid_disks -= mddev->delta_disks;
 		mddev->delta_disks = 0;
-<<<<<<< HEAD
-		module_put(pers->owner);
-		printk(KERN_WARNING "md: %s: %s would not accept array\n",
-		       mdname(mddev), clevel);
-		return PTR_ERR(priv);
-	}
-
-	/* Looks like we have a winner */
-	mddev_suspend(mddev);
-	mddev->pers->stop(mddev);
-	
-	if (mddev->pers->sync_request == NULL &&
-	    pers->sync_request != NULL) {
-		/* need to add the md_redundancy_group */
-		if (sysfs_create_group(&mddev->kobj, &md_redundancy_group))
-			printk(KERN_WARNING
-			       "md: cannot register extra attributes for %s\n",
-			       mdname(mddev));
-		mddev->sysfs_action = sysfs_get_dirent(mddev->kobj.sd, NULL, "sync_action");
-	}		
-	if (mddev->pers->sync_request != NULL &&
-	    pers->sync_request == NULL) {
-		/* need to remove the md_redundancy_group */
-		if (mddev->to_remove == NULL)
-			mddev->to_remove = &md_redundancy_group;
-	}
-
-	if (mddev->pers->sync_request == NULL &&
-=======
 		mddev->reshape_backwards = 0;
 		module_put(pers->owner);
 		pr_warn("md: %s: %s would not accept array\n",
@@ -6313,7 +4103,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 	spin_unlock(&mddev->lock);
 
 	if (oldpers->sync_request == NULL &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    mddev->external) {
 		/* We are converting from a no-redundancy array
 		 * to a redundancy array and metadata is managed
@@ -6327,8 +4116,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 		mddev->safemode = 0;
 	}
 
-<<<<<<< HEAD
-=======
 	oldpers->free(mddev, oldpriv);
 
 	if (oldpers->sync_request == NULL &&
@@ -6350,7 +4137,6 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 
 	module_put(oldpers->owner);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev_for_each(rdev, mddev) {
 		if (rdev->raid_disk < 0)
 			continue;
@@ -6370,47 +4156,18 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 			clear_bit(In_sync, &rdev->flags);
 		else {
 			if (sysfs_link_rdev(mddev, rdev))
-<<<<<<< HEAD
-				printk(KERN_WARNING "md: cannot register rd%d"
-				       " for %s after level change\n",
-				       rdev->raid_disk, mdname(mddev));
-		}
-	}
-
-	module_put(mddev->pers->owner);
-	mddev->pers = pers;
-	mddev->private = priv;
-	strlcpy(mddev->clevel, pers->name, sizeof(mddev->clevel));
-	mddev->level = mddev->new_level;
-	mddev->layout = mddev->new_layout;
-	mddev->chunk_sectors = mddev->new_chunk_sectors;
-	mddev->delta_disks = 0;
-	mddev->degraded = 0;
-	if (mddev->pers->sync_request == NULL) {
-=======
 				pr_warn("md: cannot register rd%d for %s after level change\n",
 					rdev->raid_disk, mdname(mddev));
 		}
 	}
 
 	if (pers->sync_request == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this is now an array without redundancy, so
 		 * it must always be in_sync
 		 */
 		mddev->in_sync = 1;
 		del_timer_sync(&mddev->safemode_timer);
 	}
-<<<<<<< HEAD
-	blk_set_stacking_limits(&mddev->queue->limits);
-	pers->run(mddev);
-	mddev_resume(mddev);
-	set_bit(MD_CHANGE_DEVS, &mddev->flags);
-	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	md_wakeup_thread(mddev->thread);
-	sysfs_notify(&mddev->kobj, NULL, "level");
-	md_new_event(mddev);
-=======
 	pers->run(mddev);
 	set_bit(MD_SB_CHANGE_DEVS, &mddev->sb_flags);
 	if (!mddev->thread)
@@ -6420,17 +4177,12 @@ level_store(struct mddev *mddev, const char *buf, size_t len)
 	rv = len;
 out_unlock:
 	mddev_unlock_and_resume(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
 static struct md_sysfs_entry md_level =
 __ATTR(level, S_IRUGO|S_IWUSR, level_show, level_store);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 layout_show(struct mddev *mddev, char *page)
 {
@@ -6445,23 +4197,6 @@ layout_show(struct mddev *mddev, char *page)
 static ssize_t
 layout_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long n = simple_strtoul(buf, &e, 10);
-
-	if (!*buf || (*e && *e != '\n'))
-		return -EINVAL;
-
-	if (mddev->pers) {
-		int err;
-		if (mddev->pers->check_reshape == NULL)
-			return -EBUSY;
-		mddev->new_layout = n;
-		err = mddev->pers->check_reshape(mddev);
-		if (err) {
-			mddev->new_layout = mddev->layout;
-			return err;
-=======
 	unsigned int n;
 	int err;
 
@@ -6482,27 +4217,18 @@ layout_store(struct mddev *mddev, const char *buf, size_t len)
 			err = mddev->pers->check_reshape(mddev);
 			if (err)
 				mddev->new_layout = mddev->layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		mddev->new_layout = n;
 		if (mddev->reshape_position == MaxSector)
 			mddev->layout = n;
 	}
-<<<<<<< HEAD
-	return len;
-=======
 	mddev_unlock(mddev);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static struct md_sysfs_entry md_layout =
 __ATTR(layout, S_IRUGO|S_IWUSR, layout_show, layout_store);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 raid_disks_show(struct mddev *mddev, char *page)
 {
@@ -6520,24 +4246,6 @@ static int update_raid_disks(struct mddev *mddev, int raid_disks);
 static ssize_t
 raid_disks_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	int rv = 0;
-	unsigned long n = simple_strtoul(buf, &e, 10);
-
-	if (!*buf || (*e && *e != '\n'))
-		return -EINVAL;
-
-	if (mddev->pers)
-		rv = update_raid_disks(mddev, n);
-	else if (mddev->reshape_position != MaxSector) {
-		int olddisks = mddev->raid_disks - mddev->delta_disks;
-		mddev->delta_disks = n - olddisks;
-		mddev->raid_disks = n;
-	} else
-		mddev->raid_disks = n;
-	return rv ? rv : len;
-=======
 	unsigned int n;
 	int err;
 
@@ -6572,14 +4280,11 @@ raid_disks_store(struct mddev *mddev, const char *buf, size_t len)
 out_unlock:
 	mddev_unlock(mddev);
 	return err ? err : len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static struct md_sysfs_entry md_raid_disks =
 __ATTR(raid_disks, S_IRUGO|S_IWUSR, raid_disks_show, raid_disks_store);
 
 static ssize_t
-<<<<<<< HEAD
-=======
 uuid_show(struct mddev *mddev, char *page)
 {
 	return sprintf(page, "%pU\n", mddev->uuid);
@@ -6588,7 +4293,6 @@ static struct md_sysfs_entry md_uuid =
 __ATTR(uuid, S_IRUGO, uuid_show, NULL);
 
 static ssize_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 chunk_size_show(struct mddev *mddev, char *page)
 {
 	if (mddev->reshape_position != MaxSector &&
@@ -6602,23 +4306,6 @@ chunk_size_show(struct mddev *mddev, char *page)
 static ssize_t
 chunk_size_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long n = simple_strtoul(buf, &e, 10);
-
-	if (!*buf || (*e && *e != '\n'))
-		return -EINVAL;
-
-	if (mddev->pers) {
-		int err;
-		if (mddev->pers->check_reshape == NULL)
-			return -EBUSY;
-		mddev->new_chunk_sectors = n >> 9;
-		err = mddev->pers->check_reshape(mddev);
-		if (err) {
-			mddev->new_chunk_sectors = mddev->chunk_sectors;
-			return err;
-=======
 	unsigned long n;
 	int err;
 
@@ -6639,19 +4326,14 @@ chunk_size_store(struct mddev *mddev, const char *buf, size_t len)
 			err = mddev->pers->check_reshape(mddev);
 			if (err)
 				mddev->new_chunk_sectors = mddev->chunk_sectors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		mddev->new_chunk_sectors = n >> 9;
 		if (mddev->reshape_position == MaxSector)
 			mddev->chunk_sectors = n >> 9;
 	}
-<<<<<<< HEAD
-	return len;
-=======
 	mddev_unlock(mddev);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static struct md_sysfs_entry md_chunk_size =
 __ATTR(chunk_size, S_IRUGO|S_IWUSR, chunk_size_show, chunk_size_store);
@@ -6667,23 +4349,6 @@ resync_start_show(struct mddev *mddev, char *page)
 static ssize_t
 resync_start_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long long n = simple_strtoull(buf, &e, 10);
-
-	if (mddev->pers && !test_bit(MD_RECOVERY_FROZEN, &mddev->recovery))
-		return -EBUSY;
-	if (cmd_match(buf, "none"))
-		n = MaxSector;
-	else if (!*buf || (*e && *e != '\n'))
-		return -EINVAL;
-
-	mddev->recovery_cp = n;
-	return len;
-}
-static struct md_sysfs_entry md_resync_start =
-__ATTR(resync_start, S_IRUGO|S_IWUSR, resync_start_show, resync_start_store);
-=======
 	unsigned long long n;
 	int err;
 
@@ -6714,7 +4379,6 @@ __ATTR(resync_start, S_IRUGO|S_IWUSR, resync_start_show, resync_start_store);
 static struct md_sysfs_entry md_resync_start =
 __ATTR_PREALLOC(resync_start, S_IRUGO|S_IWUSR,
 		resync_start_show, resync_start_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The array state can be:
@@ -6751,14 +4415,6 @@ __ATTR_PREALLOC(resync_start, S_IRUGO|S_IWUSR,
  * active-idle
  *     like active, but no writes have been seen for a while (100msec).
  *
-<<<<<<< HEAD
- */
-enum array_state { clear, inactive, suspended, readonly, read_auto, clean, active,
-		   write_pending, active_idle, bad_word};
-static char *array_states[] = {
-	"clear", "inactive", "suspended", "readonly", "read-auto", "clean", "active",
-	"write-pending", "active-idle", NULL };
-=======
  * broken
 *     Array is failed. It's useful because mounted-arrays aren't stopped
 *     when array is failed, so this state will at least alert the user that
@@ -6769,7 +4425,6 @@ enum array_state { clear, inactive, suspended, readonly, read_auto, clean, activ
 static char *array_states[] = {
 	"clear", "inactive", "suspended", "readonly", "read-auto", "clean", "active",
 	"write-pending", "active-idle", "broken", NULL };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int match_word(const char *word, char **list)
 {
@@ -6785,21 +4440,6 @@ array_state_show(struct mddev *mddev, char *page)
 {
 	enum array_state st = inactive;
 
-<<<<<<< HEAD
-	if (mddev->pers)
-		switch(mddev->ro) {
-		case 1:
-			st = readonly;
-			break;
-		case 2:
-			st = read_auto;
-			break;
-		case 0:
-			if (mddev->in_sync)
-				st = clean;
-			else if (test_bit(MD_CHANGE_PENDING, &mddev->flags))
-				st = write_pending;
-=======
 	if (mddev->pers && !test_bit(MD_NOT_READY, &mddev->flags)) {
 		switch(mddev->ro) {
 		case MD_RDONLY:
@@ -6814,22 +4454,16 @@ array_state_show(struct mddev *mddev, char *page)
 				st = write_pending;
 			else if (mddev->in_sync)
 				st = clean;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else if (mddev->safemode)
 				st = active_idle;
 			else
 				st = active;
-<<<<<<< HEAD
-		}
-	else {
-=======
 			spin_unlock(&mddev->lock);
 		}
 
 		if (test_bit(MD_BROKEN, &mddev->flags) && st == clean)
 			st = broken;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (list_empty(&mddev->disks) &&
 		    mddev->raid_disks == 0 &&
 		    mddev->dev_sectors == 0)
@@ -6840,48 +4474,13 @@ array_state_show(struct mddev *mddev, char *page)
 	return sprintf(page, "%s\n", array_states[st]);
 }
 
-<<<<<<< HEAD
-static int do_md_stop(struct mddev * mddev, int ro, struct block_device *bdev);
-static int md_set_readonly(struct mddev * mddev, struct block_device *bdev);
-static int do_md_run(struct mddev * mddev);
-=======
 static int do_md_stop(struct mddev *mddev, int ro);
 static int md_set_readonly(struct mddev *mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int restart_array(struct mddev *mddev);
 
 static ssize_t
 array_state_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	int err = -EINVAL;
-	enum array_state st = match_word(buf, array_states);
-	switch(st) {
-	case bad_word:
-		break;
-	case clear:
-		/* stopping an active array */
-		if (atomic_read(&mddev->openers) > 0)
-			return -EBUSY;
-		err = do_md_stop(mddev, 0, NULL);
-		break;
-	case inactive:
-		/* stopping an active array */
-		if (mddev->pers) {
-			if (atomic_read(&mddev->openers) > 0)
-				return -EBUSY;
-			err = do_md_stop(mddev, 2, NULL);
-		} else
-			err = 0; /* already inactive */
-		break;
-	case suspended:
-		break; /* not supported yet */
-	case readonly:
-		if (mddev->pers)
-			err = md_set_readonly(mddev, NULL);
-		else {
-			mddev->ro = 1;
-=======
 	int err = 0;
 	enum array_state st = match_word(buf, array_states);
 
@@ -6947,25 +4546,12 @@ array_state_store(struct mddev *mddev, const char *buf, size_t len)
 			err = md_set_readonly(mddev);
 		else {
 			mddev->ro = MD_RDONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_disk_ro(mddev->gendisk, 1);
 			err = do_md_run(mddev);
 		}
 		break;
 	case read_auto:
 		if (mddev->pers) {
-<<<<<<< HEAD
-			if (mddev->ro == 0)
-				err = md_set_readonly(mddev, NULL);
-			else if (mddev->ro == 1)
-				err = restart_array(mddev);
-			if (err == 0) {
-				mddev->ro = 2;
-				set_disk_ro(mddev->gendisk, 0);
-			}
-		} else {
-			mddev->ro = 2;
-=======
 			if (md_is_rdwr(mddev))
 				err = md_set_readonly(mddev);
 			else if (mddev->ro == MD_RDONLY)
@@ -6976,27 +4562,11 @@ array_state_store(struct mddev *mddev, const char *buf, size_t len)
 			}
 		} else {
 			mddev->ro = MD_AUTO_READ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = do_md_run(mddev);
 		}
 		break;
 	case clean:
 		if (mddev->pers) {
-<<<<<<< HEAD
-			restart_array(mddev);
-			spin_lock_irq(&mddev->write_lock);
-			if (atomic_read(&mddev->writes_pending) == 0) {
-				if (mddev->in_sync == 0) {
-					mddev->in_sync = 1;
-					if (mddev->safemode == 1)
-						mddev->safemode = 0;
-					set_bit(MD_CHANGE_CLEAN, &mddev->flags);
-				}
-				err = 0;
-			} else
-				err = -EBUSY;
-			spin_unlock_irq(&mddev->write_lock);
-=======
 			err = restart_array(mddev);
 			if (err)
 				break;
@@ -7004,20 +4574,11 @@ array_state_store(struct mddev *mddev, const char *buf, size_t len)
 			if (!set_in_sync(mddev))
 				err = -EBUSY;
 			spin_unlock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			err = -EINVAL;
 		break;
 	case active:
 		if (mddev->pers) {
-<<<<<<< HEAD
-			restart_array(mddev);
-			clear_bit(MD_CHANGE_PENDING, &mddev->flags);
-			wake_up(&mddev->sb_wait);
-			err = 0;
-		} else {
-			mddev->ro = 0;
-=======
 			err = restart_array(mddev);
 			if (err)
 				break;
@@ -7026,29 +4587,10 @@ array_state_store(struct mddev *mddev, const char *buf, size_t len)
 			err = 0;
 		} else {
 			mddev->ro = MD_RDWR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_disk_ro(mddev->gendisk, 0);
 			err = do_md_run(mddev);
 		}
 		break;
-<<<<<<< HEAD
-	case write_pending:
-	case active_idle:
-		/* these cannot be set */
-		break;
-	}
-	if (err)
-		return err;
-	else {
-		if (mddev->hold_active == UNTIL_IOCTL)
-			mddev->hold_active = 0;
-		sysfs_notify_dirent_safe(mddev->sysfs_state);
-		return len;
-	}
-}
-static struct md_sysfs_entry md_array_state =
-__ATTR(array_state, S_IRUGO|S_IWUSR, array_state_show, array_state_store);
-=======
 	default:
 		err = -EINVAL;
 		break;
@@ -7069,7 +4611,6 @@ __ATTR(array_state, S_IRUGO|S_IWUSR, array_state_show, array_state_store);
 }
 static struct md_sysfs_entry md_array_state =
 __ATTR_PREALLOC(array_state, S_IRUGO|S_IWUSR, array_state_show, array_state_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 max_corrected_read_errors_show(struct mddev *mddev, char *page) {
@@ -7080,16 +4621,6 @@ max_corrected_read_errors_show(struct mddev *mddev, char *page) {
 static ssize_t
 max_corrected_read_errors_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long n = simple_strtoul(buf, &e, 10);
-
-	if (*buf && (*e == 0 || *e == '\n')) {
-		atomic_set(&mddev->max_corr_read_errors, n);
-		return len;
-	}
-	return -EINVAL;
-=======
 	unsigned int n;
 	int rv;
 
@@ -7100,7 +4631,6 @@ max_corrected_read_errors_store(struct mddev *mddev, const char *buf, size_t len
 		return -EINVAL;
 	atomic_set(&mddev->max_corr_read_errors, n);
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct md_sysfs_entry max_corr_read_errors =
@@ -7140,13 +4670,9 @@ new_dev_store(struct mddev *mddev, const char *buf, size_t len)
 	    minor != MINOR(dev))
 		return -EOVERFLOW;
 
-<<<<<<< HEAD
-
-=======
 	err = mddev_suspend_and_lock(mddev);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mddev->persistent) {
 		rdev = md_import_device(dev, mddev->major_version,
 					mddev->minor_version);
@@ -7164,14 +4690,6 @@ new_dev_store(struct mddev *mddev, const char *buf, size_t len)
 	else
 		rdev = md_import_device(dev, -1, -1);
 
-<<<<<<< HEAD
-	if (IS_ERR(rdev))
-		return PTR_ERR(rdev);
-	err = bind_rdev_to_array(rdev, mddev);
- out:
-	if (err)
-		export_rdev(rdev);
-=======
 	if (IS_ERR(rdev)) {
 		mddev_unlock_and_resume(mddev);
 		return PTR_ERR(rdev);
@@ -7183,7 +4701,6 @@ new_dev_store(struct mddev *mddev, const char *buf, size_t len)
 	mddev_unlock_and_resume(mddev);
 	if (!err)
 		md_new_event();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err ? err : len;
 }
 
@@ -7195,15 +4712,11 @@ bitmap_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	char *end;
 	unsigned long chunk, end_chunk;
-<<<<<<< HEAD
-
-=======
 	int err;
 
 	err = mddev_lock(mddev);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mddev->bitmap)
 		goto out;
 	/* buf should be <chunk> <chunk> ... or <chunk>-<chunk> ... (range) */
@@ -7216,20 +4729,12 @@ bitmap_store(struct mddev *mddev, const char *buf, size_t len)
 			if (buf == end) break;
 		}
 		if (*end && !isspace(*end)) break;
-<<<<<<< HEAD
-		bitmap_dirty_bits(mddev->bitmap, chunk, end_chunk);
-		buf = skip_spaces(end);
-	}
-	bitmap_unplug(mddev->bitmap); /* flush the bits to disk */
-out:
-=======
 		md_bitmap_dirty_bits(mddev->bitmap, chunk, end_chunk);
 		buf = skip_spaces(end);
 	}
 	md_bitmap_unplug(mddev->bitmap); /* flush the bits to disk */
 out:
 	mddev_unlock(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -7257,11 +4762,6 @@ size_store(struct mddev *mddev, const char *buf, size_t len)
 
 	if (err < 0)
 		return err;
-<<<<<<< HEAD
-	if (mddev->pers) {
-		err = update_size(mddev, sectors);
-		md_update_sb(mddev, 1);
-=======
 	err = mddev_lock(mddev);
 	if (err)
 		return err;
@@ -7269,7 +4769,6 @@ size_store(struct mddev *mddev, const char *buf, size_t len)
 		err = update_size(mddev, sectors);
 		if (err == 0)
 			md_update_sb(mddev, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (mddev->dev_sectors == 0 ||
 		    mddev->dev_sectors > sectors)
@@ -7277,22 +4776,14 @@ size_store(struct mddev *mddev, const char *buf, size_t len)
 		else
 			err = -ENOSPC;
 	}
-<<<<<<< HEAD
-=======
 	mddev_unlock(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err ? err : len;
 }
 
 static struct md_sysfs_entry md_size =
 __ATTR(component_size, S_IRUGO|S_IWUSR, size_show, size_store);
 
-<<<<<<< HEAD
-
-/* Metdata version.
-=======
 /* Metadata version.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is one of
  *   'none' for arrays with no metadata (good luck...)
  *   'external' for arrays with externally managed metadata,
@@ -7315,21 +4806,11 @@ metadata_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	int major, minor;
 	char *e;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Changing the details of 'external' metadata is
 	 * always permitted.  Otherwise there must be
 	 * no devices attached to the array.
 	 */
-<<<<<<< HEAD
-	if (mddev->external && strncmp(buf, "external:", 9) == 0)
-		;
-	else if (!list_empty(&mddev->disks))
-		return -EBUSY;
-
-=======
 
 	err = mddev_lock(mddev);
 	if (err)
@@ -7341,27 +4822,18 @@ metadata_store(struct mddev *mddev, const char *buf, size_t len)
 		goto out_unlock;
 
 	err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd_match(buf, "none")) {
 		mddev->persistent = 0;
 		mddev->external = 0;
 		mddev->major_version = 0;
 		mddev->minor_version = 90;
-<<<<<<< HEAD
-		return len;
-=======
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (strncmp(buf, "external:", 9) == 0) {
 		size_t namelen = len-9;
 		if (namelen >= sizeof(mddev->metadata_type))
 			namelen = sizeof(mddev->metadata_type)-1;
-<<<<<<< HEAD
-		strncpy(mddev->metadata_type, buf+9, namelen);
-=======
 		memcpy(mddev->metadata_type, buf+9, namelen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->metadata_type[namelen] = 0;
 		if (namelen && mddev->metadata_type[namelen-1] == '\n')
 			mddev->metadata_type[--namelen] = 0;
@@ -7369,19 +4841,6 @@ metadata_store(struct mddev *mddev, const char *buf, size_t len)
 		mddev->external = 1;
 		mddev->major_version = 0;
 		mddev->minor_version = 90;
-<<<<<<< HEAD
-		return len;
-	}
-	major = simple_strtoul(buf, &e, 10);
-	if (e==buf || *e != '.')
-		return -EINVAL;
-	buf = e+1;
-	minor = simple_strtoul(buf, &e, 10);
-	if (e==buf || (*e && *e != '\n') )
-		return -EINVAL;
-	if (major >= ARRAY_SIZE(super_types) || super_types[major].name == NULL)
-		return -ENOENT;
-=======
 		goto out_unlock;
 	}
 	major = simple_strtoul(buf, &e, 10);
@@ -7395,18 +4854,10 @@ metadata_store(struct mddev *mddev, const char *buf, size_t len)
 	err = -ENOENT;
 	if (major >= ARRAY_SIZE(super_types) || super_types[major].name == NULL)
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->major_version = major;
 	mddev->minor_version = minor;
 	mddev->persistent = 1;
 	mddev->external = 0;
-<<<<<<< HEAD
-	return len;
-}
-
-static struct md_sysfs_entry md_metadata =
-__ATTR(metadata_version, S_IRUGO|S_IWUSR, metadata_show, metadata_store);
-=======
 	err = 0;
 out_unlock:
 	mddev_unlock(mddev);
@@ -7415,29 +4866,11 @@ out_unlock:
 
 static struct md_sysfs_entry md_metadata =
 __ATTR_PREALLOC(metadata_version, S_IRUGO|S_IWUSR, metadata_show, metadata_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 action_show(struct mddev *mddev, char *page)
 {
 	char *type = "idle";
-<<<<<<< HEAD
-	if (test_bit(MD_RECOVERY_FROZEN, &mddev->recovery))
-		type = "frozen";
-	else if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery) ||
-	    (!mddev->ro && test_bit(MD_RECOVERY_NEEDED, &mddev->recovery))) {
-		if (test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery))
-			type = "reshape";
-		else if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery)) {
-			if (!test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
-				type = "resync";
-			else if (test_bit(MD_RECOVERY_CHECK, &mddev->recovery))
-				type = "check";
-			else
-				type = "repair";
-		} else if (test_bit(MD_RECOVERY_RECOVER, &mddev->recovery))
-			type = "recover";
-=======
 	unsigned long recovery = mddev->recovery;
 	if (test_bit(MD_RECOVERY_FROZEN, &recovery))
 		type = "frozen";
@@ -7456,14 +4889,10 @@ action_show(struct mddev *mddev, char *page)
 			type = "recover";
 		else if (mddev->reshape_position != MaxSector)
 			type = "reshape";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return sprintf(page, "%s\n", type);
 }
 
-<<<<<<< HEAD
-static void reap_sync_thread(struct mddev *mddev);
-=======
 /**
  * stop_sync_thread() - wait for sync_thread to stop if it's running.
  * @mddev:	the array.
@@ -7561,7 +4990,6 @@ static void frozen_sync_thread(struct mddev *mddev)
 	stop_sync_thread(mddev, false, false);
 	mutex_unlock(&mddev->sync_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 action_store(struct mddev *mddev, const char *page, size_t len)
@@ -7569,26 +4997,6 @@ action_store(struct mddev *mddev, const char *page, size_t len)
 	if (!mddev->pers || !mddev->pers->sync_request)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (cmd_match(page, "frozen"))
-		set_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-	else
-		clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-
-	if (cmd_match(page, "idle") || cmd_match(page, "frozen")) {
-		if (mddev->sync_thread) {
-			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-			reap_sync_thread(mddev);
-		}
-	} else if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery) ||
-		   test_bit(MD_RECOVERY_NEEDED, &mddev->recovery))
-		return -EBUSY;
-	else if (cmd_match(page, "resync"))
-		set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	else if (cmd_match(page, "recover")) {
-		set_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-		set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-=======
 
 	if (cmd_match(page, "idle"))
 		idle_sync_thread(mddev);
@@ -7601,17 +5009,10 @@ action_store(struct mddev *mddev, const char *page, size_t len)
 	else if (cmd_match(page, "recover")) {
 		clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
 		set_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (cmd_match(page, "reshape")) {
 		int err;
 		if (mddev->pers->start_reshape == NULL)
 			return -EINVAL;
-<<<<<<< HEAD
-		err = mddev->pers->start_reshape(mddev);
-		if (err)
-			return err;
-		sysfs_notify(&mddev->kobj, NULL, "degraded");
-=======
 		err = mddev_lock(mddev);
 		if (!err) {
 			if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery)) {
@@ -7635,17 +5036,11 @@ action_store(struct mddev *mddev, const char *page, size_t len)
 		if (err)
 			return err;
 		sysfs_notify_dirent_safe(mddev->sysfs_degraded);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (cmd_match(page, "check"))
 			set_bit(MD_RECOVERY_CHECK, &mddev->recovery);
 		else if (!cmd_match(page, "repair"))
 			return -EINVAL;
-<<<<<<< HEAD
-		set_bit(MD_RECOVERY_REQUESTED, &mddev->recovery);
-		set_bit(MD_RECOVERY_SYNC, &mddev->recovery);
-	}
-=======
 		clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
 		set_bit(MD_RECOVERY_REQUESTED, &mddev->recovery);
 		set_bit(MD_RECOVERY_SYNC, &mddev->recovery);
@@ -7658,15 +5053,12 @@ action_store(struct mddev *mddev, const char *page, size_t len)
 		mddev->ro = MD_RDWR;
 		md_wakeup_thread(mddev->sync_thread);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
 	md_wakeup_thread(mddev->thread);
 	sysfs_notify_dirent_safe(mddev->sysfs_action);
 	return len;
 }
 
-<<<<<<< HEAD
-=======
 static struct md_sysfs_entry md_scan_mode =
 __ATTR_PREALLOC(sync_action, S_IRUGO|S_IWUSR, action_show, action_store);
 
@@ -7678,25 +5070,14 @@ last_sync_action_show(struct mddev *mddev, char *page)
 
 static struct md_sysfs_entry md_last_scan_mode = __ATTR_RO(last_sync_action);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 mismatch_cnt_show(struct mddev *mddev, char *page)
 {
 	return sprintf(page, "%llu\n",
-<<<<<<< HEAD
-		       (unsigned long long) mddev->resync_mismatches);
-}
-
-static struct md_sysfs_entry md_scan_mode =
-__ATTR(sync_action, S_IRUGO|S_IWUSR, action_show, action_store);
-
-
-=======
 		       (unsigned long long)
 		       atomic64_read(&mddev->resync_mismatches));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct md_sysfs_entry md_mismatches = __ATTR_RO(mismatch_cnt);
 
 static ssize_t
@@ -7709,17 +5090,6 @@ sync_min_show(struct mddev *mddev, char *page)
 static ssize_t
 sync_min_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	int min;
-	char *e;
-	if (strncmp(buf, "system", 6)==0) {
-		mddev->sync_speed_min = 0;
-		return len;
-	}
-	min = simple_strtoul(buf, &e, 10);
-	if (buf == e || (*e && *e != '\n') || min <= 0)
-		return -EINVAL;
-=======
 	unsigned int min;
 	int rv;
 
@@ -7732,7 +5102,6 @@ sync_min_store(struct mddev *mddev, const char *buf, size_t len)
 		if (min == 0)
 			return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->sync_speed_min = min;
 	return len;
 }
@@ -7750,17 +5119,6 @@ sync_max_show(struct mddev *mddev, char *page)
 static ssize_t
 sync_max_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	int max;
-	char *e;
-	if (strncmp(buf, "system", 6)==0) {
-		mddev->sync_speed_max = 0;
-		return len;
-	}
-	max = simple_strtoul(buf, &e, 10);
-	if (buf == e || (*e && *e != '\n') || max <= 0)
-		return -EINVAL;
-=======
 	unsigned int max;
 	int rv;
 
@@ -7773,7 +5131,6 @@ sync_max_store(struct mddev *mddev, const char *buf, size_t len)
 		if (max == 0)
 			return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->sync_speed_max = max;
 	return len;
 }
@@ -7799,11 +5156,7 @@ sync_force_parallel_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	long n;
 
-<<<<<<< HEAD
-	if (strict_strtol(buf, 10, &n))
-=======
 	if (kstrtol(buf, 10, &n))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (n != 0 && n != 1)
@@ -7826,11 +5179,7 @@ static ssize_t
 sync_speed_show(struct mddev *mddev, char *page)
 {
 	unsigned long resync, dt, db;
-<<<<<<< HEAD
-	if (mddev->curr_resync == 0)
-=======
 	if (mddev->curr_resync == MD_RESYNC_NONE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sprintf(page, "none\n");
 	resync = mddev->curr_mark_cnt - atomic_read(&mddev->recovery_active);
 	dt = (jiffies - mddev->resync_mark) / HZ;
@@ -7849,16 +5198,12 @@ sync_completed_show(struct mddev *mddev, char *page)
 	if (!test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
 		return sprintf(page, "none\n");
 
-<<<<<<< HEAD
-	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery))
-=======
 	if (mddev->curr_resync == MD_RESYNC_YIELDED ||
 	    mddev->curr_resync == MD_RESYNC_DELAYED)
 		return sprintf(page, "delayed\n");
 
 	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery) ||
 	    test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_sectors = mddev->resync_max_sectors;
 	else
 		max_sectors = mddev->dev_sectors;
@@ -7867,12 +5212,8 @@ sync_completed_show(struct mddev *mddev, char *page)
 	return sprintf(page, "%llu / %llu\n", resync, max_sectors);
 }
 
-<<<<<<< HEAD
-static struct md_sysfs_entry md_sync_completed = __ATTR_RO(sync_completed);
-=======
 static struct md_sysfs_entry md_sync_completed =
 	__ATTR_PREALLOC(sync_completed, S_IRUGO, sync_completed_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 min_sync_show(struct mddev *mddev, char *page)
@@ -7884,24 +5225,6 @@ static ssize_t
 min_sync_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	unsigned long long min;
-<<<<<<< HEAD
-	if (strict_strtoull(buf, 10, &min))
-		return -EINVAL;
-	if (min > mddev->resync_max)
-		return -EINVAL;
-	if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
-		return -EBUSY;
-
-	/* Must be a multiple of chunk_size */
-	if (mddev->chunk_sectors) {
-		sector_t temp = min;
-		if (sector_div(temp, mddev->chunk_sectors))
-			return -EINVAL;
-	}
-	mddev->resync_min = min;
-
-	return len;
-=======
 	int err;
 
 	if (kstrtoull(buf, 10, &min))
@@ -7923,7 +5246,6 @@ min_sync_store(struct mddev *mddev, const char *buf, size_t len)
 out_unlock:
 	spin_unlock(&mddev->lock);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct md_sysfs_entry md_min_sync =
@@ -7941,31 +5263,12 @@ max_sync_show(struct mddev *mddev, char *page)
 static ssize_t
 max_sync_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-=======
 	int err;
 	spin_lock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strncmp(buf, "max", 3) == 0)
 		mddev->resync_max = MaxSector;
 	else {
 		unsigned long long max;
-<<<<<<< HEAD
-		if (strict_strtoull(buf, 10, &max))
-			return -EINVAL;
-		if (max < mddev->resync_min)
-			return -EINVAL;
-		if (max < mddev->resync_max &&
-		    mddev->ro == 0 &&
-		    test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
-			return -EBUSY;
-
-		/* Must be a multiple of chunk_size */
-		if (mddev->chunk_sectors) {
-			sector_t temp = max;
-			if (sector_div(temp, mddev->chunk_sectors))
-				return -EINVAL;
-=======
 		int chunk;
 
 		err = -EINVAL;
@@ -7987,19 +5290,14 @@ max_sync_store(struct mddev *mddev, const char *buf, size_t len)
 			err = -EINVAL;
 			if (sector_div(temp, chunk))
 				goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		mddev->resync_max = max;
 	}
 	wake_up(&mddev->recovery_wait);
-<<<<<<< HEAD
-	return len;
-=======
 	err = 0;
 out_unlock:
 	spin_unlock(&mddev->lock);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct md_sysfs_entry md_max_sync =
@@ -8008,38 +5306,13 @@ __ATTR(sync_max, S_IRUGO|S_IWUSR, max_sync_show, max_sync_store);
 static ssize_t
 suspend_lo_show(struct mddev *mddev, char *page)
 {
-<<<<<<< HEAD
-	return sprintf(page, "%llu\n", (unsigned long long)mddev->suspend_lo);
-=======
 	return sprintf(page, "%llu\n",
 		       (unsigned long long)READ_ONCE(mddev->suspend_lo));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 suspend_lo_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long long new = simple_strtoull(buf, &e, 10);
-	unsigned long long old = mddev->suspend_lo;
-
-	if (mddev->pers == NULL || 
-	    mddev->pers->quiesce == NULL)
-		return -EINVAL;
-	if (buf == e || (*e && *e != '\n'))
-		return -EINVAL;
-
-	mddev->suspend_lo = new;
-	if (new >= old)
-		/* Shrinking suspended region */
-		mddev->pers->quiesce(mddev, 2);
-	else {
-		/* Expanding suspended region - need to wait */
-		mddev->pers->quiesce(mddev, 1);
-		mddev->pers->quiesce(mddev, 0);
-	}
-=======
 	unsigned long long new;
 	int err;
 
@@ -8056,51 +5329,21 @@ suspend_lo_store(struct mddev *mddev, const char *buf, size_t len)
 	WRITE_ONCE(mddev->suspend_lo, new);
 	mddev_resume(mddev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 static struct md_sysfs_entry md_suspend_lo =
 __ATTR(suspend_lo, S_IRUGO|S_IWUSR, suspend_lo_show, suspend_lo_store);
 
-<<<<<<< HEAD
-
-static ssize_t
-suspend_hi_show(struct mddev *mddev, char *page)
-{
-	return sprintf(page, "%llu\n", (unsigned long long)mddev->suspend_hi);
-=======
 static ssize_t
 suspend_hi_show(struct mddev *mddev, char *page)
 {
 	return sprintf(page, "%llu\n",
 		       (unsigned long long)READ_ONCE(mddev->suspend_hi));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 suspend_hi_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long long new = simple_strtoull(buf, &e, 10);
-	unsigned long long old = mddev->suspend_hi;
-
-	if (mddev->pers == NULL ||
-	    mddev->pers->quiesce == NULL)
-		return -EINVAL;
-	if (buf == e || (*e && *e != '\n'))
-		return -EINVAL;
-
-	mddev->suspend_hi = new;
-	if (new <= old)
-		/* Shrinking suspended region */
-		mddev->pers->quiesce(mddev, 2);
-	else {
-		/* Expanding suspended region - need to wait */
-		mddev->pers->quiesce(mddev, 1);
-		mddev->pers->quiesce(mddev, 0);
-	}
-=======
 	unsigned long long new;
 	int err;
 
@@ -8117,7 +5360,6 @@ suspend_hi_store(struct mddev *mddev, const char *buf, size_t len)
 	WRITE_ONCE(mddev->suspend_hi, new);
 	mddev_resume(mddev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 static struct md_sysfs_entry md_suspend_hi =
@@ -8136,20 +5378,6 @@ reshape_position_show(struct mddev *mddev, char *page)
 static ssize_t
 reshape_position_store(struct mddev *mddev, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	char *e;
-	unsigned long long new = simple_strtoull(buf, &e, 10);
-	if (mddev->pers)
-		return -EBUSY;
-	if (buf == e || (*e && *e != '\n'))
-		return -EINVAL;
-	mddev->reshape_position = new;
-	mddev->delta_disks = 0;
-	mddev->new_level = mddev->level;
-	mddev->new_layout = mddev->layout;
-	mddev->new_chunk_sectors = mddev->chunk_sectors;
-	return len;
-=======
 	struct md_rdev *rdev;
 	unsigned long long new;
 	int err;
@@ -8177,7 +5405,6 @@ reshape_position_store(struct mddev *mddev, const char *buf, size_t len)
 unlock:
 	mddev_unlock(mddev);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct md_sysfs_entry md_reshape_position =
@@ -8185,8 +5412,6 @@ __ATTR(reshape_position, S_IRUGO|S_IWUSR, reshape_position_show,
        reshape_position_store);
 
 static ssize_t
-<<<<<<< HEAD
-=======
 reshape_direction_show(struct mddev *mddev, char *page)
 {
 	return sprintf(page, "%s\n",
@@ -8228,7 +5453,6 @@ __ATTR(reshape_direction, S_IRUGO|S_IWUSR, reshape_direction_show,
        reshape_direction_store);
 
 static ssize_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 array_size_show(struct mddev *mddev, char *page)
 {
 	if (mddev->external_size)
@@ -8242,8 +5466,6 @@ static ssize_t
 array_size_store(struct mddev *mddev, const char *buf, size_t len)
 {
 	sector_t sectors;
-<<<<<<< HEAD
-=======
 	int err;
 
 	err = mddev_lock(mddev);
@@ -8255,7 +5477,6 @@ array_size_store(struct mddev *mddev, const char *buf, size_t len)
 		mddev_unlock(mddev);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strncmp(buf, "default", 7) == 0) {
 		if (mddev->pers)
@@ -8266,21 +5487,6 @@ array_size_store(struct mddev *mddev, const char *buf, size_t len)
 		mddev->external_size = 0;
 	} else {
 		if (strict_blocks_to_sectors(buf, &sectors) < 0)
-<<<<<<< HEAD
-			return -EINVAL;
-		if (mddev->pers && mddev->pers->size(mddev, 0, 0) < sectors)
-			return -E2BIG;
-
-		mddev->external_size = 1;
-	}
-
-	mddev->array_sectors = sectors;
-	if (mddev->pers) {
-		set_capacity(mddev->gendisk, mddev->array_sectors);
-		revalidate_disk(mddev->gendisk);
-	}
-	return len;
-=======
 			err = -EINVAL;
 		else if (mddev->pers && mddev->pers->size(mddev, 0, 0) < sectors)
 			err = -E2BIG;
@@ -8296,15 +5502,12 @@ array_size_store(struct mddev *mddev, const char *buf, size_t len)
 	}
 	mddev_unlock(mddev);
 	return err ?: len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct md_sysfs_entry md_array_size =
 __ATTR(array_size, S_IRUGO|S_IWUSR, array_size_show,
        array_size_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t
 consistency_policy_show(struct mddev *mddev, char *page)
 {
@@ -8428,15 +5631,11 @@ __ATTR(serialize_policy, S_IRUGO | S_IWUSR, serialize_policy_show,
        serialize_policy_store);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *md_default_attrs[] = {
 	&md_level.attr,
 	&md_layout.attr,
 	&md_raid_disks.attr,
-<<<<<<< HEAD
-=======
 	&md_uuid.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&md_chunk_size.attr,
 	&md_size.attr,
 	&md_resync_start.attr,
@@ -8445,15 +5644,6 @@ static struct attribute *md_default_attrs[] = {
 	&md_safe_delay.attr,
 	&md_array_state.attr,
 	&md_reshape_position.attr,
-<<<<<<< HEAD
-	&md_array_size.attr,
-	&max_corr_read_errors.attr,
-	NULL,
-};
-
-static struct attribute *md_redundancy_attrs[] = {
-	&md_scan_mode.attr,
-=======
 	&md_reshape_direction.attr,
 	&md_array_size.attr,
 	&max_corr_read_errors.attr,
@@ -8470,7 +5660,6 @@ static const struct attribute_group md_default_group = {
 static struct attribute *md_redundancy_attrs[] = {
 	&md_scan_mode.attr,
 	&md_last_scan_mode.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&md_mismatches.attr,
 	&md_sync_min.attr,
 	&md_sync_max.attr,
@@ -8485,23 +5674,16 @@ static struct attribute *md_redundancy_attrs[] = {
 	&md_degraded.attr,
 	NULL,
 };
-<<<<<<< HEAD
-static struct attribute_group md_redundancy_group = {
-=======
 static const struct attribute_group md_redundancy_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = NULL,
 	.attrs = md_redundancy_attrs,
 };
 
-<<<<<<< HEAD
-=======
 static const struct attribute_group *md_attr_groups[] = {
 	&md_default_group,
 	&md_bitmap_group,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 md_attr_show(struct kobject *kobj, struct attribute *attr, char *page)
@@ -8513,20 +5695,6 @@ md_attr_show(struct kobject *kobj, struct attribute *attr, char *page)
 	if (!entry->show)
 		return -EIO;
 	spin_lock(&all_mddevs_lock);
-<<<<<<< HEAD
-	if (list_empty(&mddev->all_mddevs)) {
-		spin_unlock(&all_mddevs_lock);
-		return -EBUSY;
-	}
-	mddev_get(mddev);
-	spin_unlock(&all_mddevs_lock);
-
-	rv = mddev_lock(mddev);
-	if (!rv) {
-		rv = entry->show(mddev, page);
-		mddev_unlock(mddev);
-	}
-=======
 	if (!mddev_get(mddev)) {
 		spin_unlock(&all_mddevs_lock);
 		return -EBUSY;
@@ -8534,7 +5702,6 @@ md_attr_show(struct kobject *kobj, struct attribute *attr, char *page)
 	spin_unlock(&all_mddevs_lock);
 
 	rv = entry->show(mddev, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev_put(mddev);
 	return rv;
 }
@@ -8552,80 +5719,41 @@ md_attr_store(struct kobject *kobj, struct attribute *attr,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 	spin_lock(&all_mddevs_lock);
-<<<<<<< HEAD
-	if (list_empty(&mddev->all_mddevs)) {
-		spin_unlock(&all_mddevs_lock);
-		return -EBUSY;
-	}
-	mddev_get(mddev);
-	spin_unlock(&all_mddevs_lock);
-	rv = mddev_lock(mddev);
-	if (!rv) {
-		rv = entry->store(mddev, page, length);
-		mddev_unlock(mddev);
-	}
-=======
 	if (!mddev_get(mddev)) {
 		spin_unlock(&all_mddevs_lock);
 		return -EBUSY;
 	}
 	spin_unlock(&all_mddevs_lock);
 	rv = entry->store(mddev, page, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev_put(mddev);
 	return rv;
 }
 
-<<<<<<< HEAD
-static void md_free(struct kobject *ko)
-=======
 static void md_kobj_release(struct kobject *ko)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mddev *mddev = container_of(ko, struct mddev, kobj);
 
 	if (mddev->sysfs_state)
 		sysfs_put(mddev->sysfs_state);
-<<<<<<< HEAD
-
-	if (mddev->gendisk) {
-		del_gendisk(mddev->gendisk);
-		put_disk(mddev->gendisk);
-	}
-	if (mddev->queue)
-		blk_cleanup_queue(mddev->queue);
-
-	kfree(mddev);
-=======
 	if (mddev->sysfs_level)
 		sysfs_put(mddev->sysfs_level);
 
 	del_gendisk(mddev->gendisk);
 	put_disk(mddev->gendisk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct sysfs_ops md_sysfs_ops = {
 	.show	= md_attr_show,
 	.store	= md_attr_store,
 };
-<<<<<<< HEAD
-static struct kobj_type md_ktype = {
-	.release	= md_free,
-	.sysfs_ops	= &md_sysfs_ops,
-	.default_attrs	= md_default_attrs,
-=======
 static const struct kobj_type md_ktype = {
 	.release	= md_kobj_release,
 	.sysfs_ops	= &md_sysfs_ops,
 	.default_groups	= md_attr_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int mdp_major = 0;
 
-<<<<<<< HEAD
-=======
 /* stack the limit for all rdevs into lim */
 void mddev_stack_rdev_limits(struct mddev *mddev, struct queue_limits *lim)
 {
@@ -8671,22 +5799,10 @@ void mddev_update_io_opt(struct mddev *mddev, unsigned int nr_stripes)
 }
 EXPORT_SYMBOL_GPL(mddev_update_io_opt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mddev_delayed_delete(struct work_struct *ws)
 {
 	struct mddev *mddev = container_of(ws, struct mddev, del_work);
 
-<<<<<<< HEAD
-	sysfs_remove_group(&mddev->kobj, &md_bitmap_group);
-	kobject_del(&mddev->kobj);
-	kobject_put(&mddev->kobj);
-}
-
-static int md_alloc(dev_t dev, char *name)
-{
-	static DEFINE_MUTEX(disks_mutex);
-	struct mddev *mddev = mddev_find(dev);
-=======
 	kobject_put(&mddev->kobj);
 }
 
@@ -8703,17 +5819,10 @@ struct mddev *md_alloc(dev_t dev, char *name)
 	 */
 	static DEFINE_MUTEX(disks_mutex);
 	struct mddev *mddev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gendisk *disk;
 	int partitioned;
 	int shift;
 	int unit;
-<<<<<<< HEAD
-	int error;
-
-	if (!mddev)
-		return -ENODEV;
-=======
 	int error ;
 
 	/*
@@ -8728,27 +5837,12 @@ struct mddev *md_alloc(dev_t dev, char *name)
 		error = PTR_ERR(mddev);
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	partitioned = (MAJOR(mddev->unit) != MD_MAJOR);
 	shift = partitioned ? MdpMinorShift : 0;
 	unit = MINOR(mddev->unit) >> shift;
 
-<<<<<<< HEAD
-	/* wait for any previous instance of this device to be
-	 * completely removed (mddev_delayed_delete).
-	 */
-	flush_workqueue(md_misc_wq);
-
-	mutex_lock(&disks_mutex);
-	error = -EEXIST;
-	if (mddev->gendisk)
-		goto abort;
-
-	if (name) {
-=======
 	if (name && !dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Need to ensure that 'name' is not a duplicate.
 		 */
 		struct mddev *mddev2;
@@ -8758,30 +5852,6 @@ struct mddev *md_alloc(dev_t dev, char *name)
 			if (mddev2->gendisk &&
 			    strcmp(mddev2->gendisk->disk_name, name) == 0) {
 				spin_unlock(&all_mddevs_lock);
-<<<<<<< HEAD
-				goto abort;
-			}
-		spin_unlock(&all_mddevs_lock);
-	}
-
-	error = -ENOMEM;
-	mddev->queue = blk_alloc_queue(GFP_KERNEL);
-	if (!mddev->queue)
-		goto abort;
-	mddev->queue->queuedata = mddev;
-
-	blk_queue_make_request(mddev->queue, md_make_request);
-	blk_set_stacking_limits(&mddev->queue->limits);
-
-	disk = alloc_disk(1 << shift);
-	if (!disk) {
-		blk_cleanup_queue(mddev->queue);
-		mddev->queue = NULL;
-		goto abort;
-	}
-	disk->major = MAJOR(mddev->unit);
-	disk->first_minor = unit << shift;
-=======
 				error = -EEXIST;
 				goto out_free_mddev;
 			}
@@ -8802,7 +5872,6 @@ struct mddev *md_alloc(dev_t dev, char *name)
 	disk->major = MAJOR(mddev->unit);
 	disk->first_minor = unit << shift;
 	disk->minors = 1 << shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (name)
 		strcpy(disk->disk_name, name);
 	else if (partitioned)
@@ -8811,60 +5880,6 @@ struct mddev *md_alloc(dev_t dev, char *name)
 		sprintf(disk->disk_name, "md%d", unit);
 	disk->fops = &md_fops;
 	disk->private_data = mddev;
-<<<<<<< HEAD
-	disk->queue = mddev->queue;
-	blk_queue_flush(mddev->queue, REQ_FLUSH | REQ_FUA);
-	/* Allow extended partitions.  This makes the
-	 * 'mdp' device redundant, but we can't really
-	 * remove it now.
-	 */
-	disk->flags |= GENHD_FL_EXT_DEVT;
-	mddev->gendisk = disk;
-	/* As soon as we call add_disk(), another thread could get
-	 * through to md_open, so make sure it doesn't get too far
-	 */
-	mutex_lock(&mddev->open_mutex);
-	add_disk(disk);
-
-	error = kobject_init_and_add(&mddev->kobj, &md_ktype,
-				     &disk_to_dev(disk)->kobj, "%s", "md");
-	if (error) {
-		/* This isn't possible, but as kobject_init_and_add is marked
-		 * __must_check, we must do something with the result
-		 */
-		printk(KERN_WARNING "md: cannot register %s/md - name in use\n",
-		       disk->disk_name);
-		error = 0;
-	}
-	if (mddev->kobj.sd &&
-	    sysfs_create_group(&mddev->kobj, &md_bitmap_group))
-		printk(KERN_DEBUG "pointless warning\n");
-	mutex_unlock(&mddev->open_mutex);
- abort:
-	mutex_unlock(&disks_mutex);
-	if (!error && mddev->kobj.sd) {
-		kobject_uevent(&mddev->kobj, KOBJ_ADD);
-		mddev->sysfs_state = sysfs_get_dirent_safe(mddev->kobj.sd, "array_state");
-	}
-	mddev_put(mddev);
-	return error;
-}
-
-static struct kobject *md_probe(dev_t dev, int *part, void *data)
-{
-	md_alloc(dev, NULL);
-	return NULL;
-}
-
-static int add_named_array(const char *val, struct kernel_param *kp)
-{
-	/* val must be "md_*" where * is not all digits.
-	 * We allocate an array with a large free minor number, and
-	 * set the name to val.  val must not already be an active name.
-	 */
-	int len = strlen(val);
-	char buf[DISK_NAME_LEN];
-=======
 
 	blk_queue_write_cache(disk->queue, true, true);
 	disk->events |= DISK_EVENT_MEDIA_CHANGE;
@@ -8932,29 +5947,11 @@ static int add_named_array(const char *val, const struct kernel_param *kp)
 	int len = strlen(val);
 	char buf[DISK_NAME_LEN];
 	unsigned long devnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len && val[len-1] == '\n')
 		len--;
 	if (len >= DISK_NAME_LEN)
 		return -E2BIG;
-<<<<<<< HEAD
-	strlcpy(buf, val, len+1);
-	if (strncmp(buf, "md_", 3) != 0)
-		return -EINVAL;
-	return md_alloc(0, buf);
-}
-
-static void md_safemode_timeout(unsigned long data)
-{
-	struct mddev *mddev = (struct mddev *) data;
-
-	if (!atomic_read(&mddev->writes_pending)) {
-		mddev->safemode = 1;
-		if (mddev->external)
-			sysfs_notify_dirent_safe(mddev->sysfs_state);
-	}
-=======
 	strscpy(buf, val, len+1);
 	if (strncmp(buf, "md_", 3) == 0)
 		return md_alloc_and_put(0, buf);
@@ -8975,7 +5972,6 @@ static void md_safemode_timeout(struct timer_list *t)
 	if (mddev->external)
 		sysfs_notify_dirent_safe(mddev->sysfs_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	md_wakeup_thread(mddev->thread);
 }
 
@@ -8986,10 +5982,7 @@ int md_run(struct mddev *mddev)
 	int err;
 	struct md_rdev *rdev;
 	struct md_personality *pers;
-<<<<<<< HEAD
-=======
 	bool nowait = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(&mddev->disks))
 		/* cannot run an array with no devices.. */
@@ -9007,13 +6000,9 @@ int md_run(struct mddev *mddev)
 	if (!mddev->raid_disks) {
 		if (!mddev->persistent)
 			return -EINVAL;
-<<<<<<< HEAD
-		analyze_sbs(mddev);
-=======
 		err = analyze_sbs(mddev);
 		if (err)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mddev->level != LEVEL_NONE)
@@ -9026,17 +6015,12 @@ int md_run(struct mddev *mddev)
 	 * the only valid external interface is through the md
 	 * device.
 	 */
-<<<<<<< HEAD
-=======
 	mddev->has_superblocks = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev_for_each(rdev, mddev) {
 		if (test_bit(Faulty, &rdev->flags))
 			continue;
 		sync_blockdev(rdev->bdev);
 		invalidate_bdev(rdev->bdev);
-<<<<<<< HEAD
-=======
 		if (mddev->ro != MD_RDONLY && rdev_read_only(rdev)) {
 			mddev->ro = MD_RDONLY;
 			if (!mddev_is_dm(mddev))
@@ -9045,7 +6029,6 @@ int md_run(struct mddev *mddev)
 
 		if (rdev->sb_page)
 			mddev->has_superblocks = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* perform some consistency tests on the device.
 		 * We don't want the data to overlap the metadata,
@@ -9057,36 +6040,19 @@ int md_run(struct mddev *mddev)
 			if (mddev->dev_sectors &&
 			    rdev->data_offset + mddev->dev_sectors
 			    > rdev->sb_start) {
-<<<<<<< HEAD
-				printk("md: %s: data overlaps metadata\n",
-				       mdname(mddev));
-=======
 				pr_warn("md: %s: data overlaps metadata\n",
 					mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 		} else {
 			if (rdev->sb_start + rdev->sb_size/512
 			    > rdev->data_offset) {
-<<<<<<< HEAD
-				printk("md: %s: metadata overlaps data\n",
-				       mdname(mddev));
-=======
 				pr_warn("md: %s: metadata overlaps data\n",
 					mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 		}
 		sysfs_notify_dirent_safe(rdev->sysfs_state);
-<<<<<<< HEAD
-	}
-
-	if (mddev->bio_set == NULL)
-		mddev->bio_set = bioset_create(BIO_POOL_SIZE,
-					       sizeof(struct mddev *));
-=======
 		nowait = nowait && bdev_nowait(rdev->bdev);
 	}
 
@@ -9107,23 +6073,12 @@ int md_run(struct mddev *mddev)
 		if (err)
 			goto exit_sync_set;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&pers_lock);
 	pers = find_pers(mddev->level, mddev->clevel);
 	if (!pers || !try_module_get(pers->owner)) {
 		spin_unlock(&pers_lock);
 		if (mddev->level != LEVEL_NONE)
-<<<<<<< HEAD
-			printk(KERN_WARNING "md: personality for level %d is not loaded!\n",
-			       mddev->level);
-		else
-			printk(KERN_WARNING "md: personality for level %s is not loaded!\n",
-			       mddev->clevel);
-		return -EINVAL;
-	}
-	mddev->pers = pers;
-=======
 			pr_warn("md: personality for level %d is not loaded!\n",
 				mddev->level);
 		else
@@ -9132,77 +6087,42 @@ int md_run(struct mddev *mddev)
 		err = -EINVAL;
 		goto abort;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&pers_lock);
 	if (mddev->level != pers->level) {
 		mddev->level = pers->level;
 		mddev->new_level = pers->level;
 	}
-<<<<<<< HEAD
-	strlcpy(mddev->clevel, pers->name, sizeof(mddev->clevel));
-=======
 	strscpy(mddev->clevel, pers->name, sizeof(mddev->clevel));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mddev->reshape_position != MaxSector &&
 	    pers->start_reshape == NULL) {
 		/* This personality cannot handle reshaping... */
-<<<<<<< HEAD
-		mddev->pers = NULL;
-		module_put(pers->owner);
-		return -EINVAL;
-=======
 		module_put(pers->owner);
 		err = -EINVAL;
 		goto abort;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pers->sync_request) {
 		/* Warn if this is a potentially silly
 		 * configuration.
 		 */
-<<<<<<< HEAD
-		char b[BDEVNAME_SIZE], b2[BDEVNAME_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct md_rdev *rdev2;
 		int warned = 0;
 
 		rdev_for_each(rdev, mddev)
 			rdev_for_each(rdev2, mddev) {
 				if (rdev < rdev2 &&
-<<<<<<< HEAD
-				    rdev->bdev->bd_contains ==
-				    rdev2->bdev->bd_contains) {
-					printk(KERN_WARNING
-					       "%s: WARNING: %s appears to be"
-					       " on the same physical disk as"
-					       " %s.\n",
-					       mdname(mddev),
-					       bdevname(rdev->bdev,b),
-					       bdevname(rdev2->bdev,b2));
-=======
 				    rdev->bdev->bd_disk ==
 				    rdev2->bdev->bd_disk) {
 					pr_warn("%s: WARNING: %pg appears to be on the same physical disk as %pg.\n",
 						mdname(mddev),
 						rdev->bdev,
 						rdev2->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					warned = 1;
 				}
 			}
 
 		if (warned)
-<<<<<<< HEAD
-			printk(KERN_WARNING
-			       "True protection against single-disk"
-			       " failure might be compromised.\n");
-	}
-
-	mddev->recovery = 0;
-=======
 			pr_warn("True protection against single-disk failure might be compromised.\n");
 	}
 
@@ -9210,109 +6130,11 @@ int md_run(struct mddev *mddev)
 	if (mddev->gendisk)
 		mddev->recovery = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* may be over-ridden by personality */
 	mddev->resync_max_sectors = mddev->dev_sectors;
 
 	mddev->ok_start_degraded = start_dirty_degraded;
 
-<<<<<<< HEAD
-	if (start_readonly && mddev->ro == 0)
-		mddev->ro = 2; /* read-only, but switch on first write */
-
-	err = mddev->pers->run(mddev);
-	if (err)
-		printk(KERN_ERR "md: pers->run() failed ...\n");
-	else if (mddev->pers->size(mddev, 0, 0) < mddev->array_sectors) {
-		WARN_ONCE(!mddev->external_size, "%s: default size too small,"
-			  " but 'external_size' not in effect?\n", __func__);
-		printk(KERN_ERR
-		       "md: invalid array_size %llu > default size %llu\n",
-		       (unsigned long long)mddev->array_sectors / 2,
-		       (unsigned long long)mddev->pers->size(mddev, 0, 0) / 2);
-		err = -EINVAL;
-		mddev->pers->stop(mddev);
-	}
-	if (err == 0 && mddev->pers->sync_request) {
-		err = bitmap_create(mddev);
-		if (err) {
-			printk(KERN_ERR "%s: failed to create bitmap (%d)\n",
-			       mdname(mddev), err);
-			mddev->pers->stop(mddev);
-		}
-	}
-	if (err) {
-		module_put(mddev->pers->owner);
-		mddev->pers = NULL;
-		bitmap_destroy(mddev);
-		return err;
-	}
-	if (mddev->pers->sync_request) {
-		if (mddev->kobj.sd &&
-		    sysfs_create_group(&mddev->kobj, &md_redundancy_group))
-			printk(KERN_WARNING
-			       "md: cannot register extra attributes for %s\n",
-			       mdname(mddev));
-		mddev->sysfs_action = sysfs_get_dirent_safe(mddev->kobj.sd, "sync_action");
-	} else if (mddev->ro == 2) /* auto-readonly not meaningful */
-		mddev->ro = 0;
-
- 	atomic_set(&mddev->writes_pending,0);
-	atomic_set(&mddev->max_corr_read_errors,
-		   MD_DEFAULT_MAX_CORRECTED_READ_ERRORS);
-	mddev->safemode = 0;
-	mddev->safemode_timer.function = md_safemode_timeout;
-	mddev->safemode_timer.data = (unsigned long) mddev;
-	mddev->safemode_delay = (200 * HZ)/1000 +1; /* 200 msec delay */
-	mddev->in_sync = 1;
-	smp_wmb();
-	mddev->ready = 1;
-	rdev_for_each(rdev, mddev)
-		if (rdev->raid_disk >= 0)
-			if (sysfs_link_rdev(mddev, rdev))
-				/* failure here is OK */;
-	
-	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	
-	if (mddev->flags)
-		md_update_sb(mddev, 0);
-
-	md_new_event(mddev);
-	sysfs_notify_dirent_safe(mddev->sysfs_state);
-	sysfs_notify_dirent_safe(mddev->sysfs_action);
-	sysfs_notify(&mddev->kobj, NULL, "degraded");
-	return 0;
-}
-EXPORT_SYMBOL_GPL(md_run);
-
-static int do_md_run(struct mddev *mddev)
-{
-	int err;
-
-	err = md_run(mddev);
-	if (err)
-		goto out;
-	err = bitmap_load(mddev);
-	if (err) {
-		bitmap_destroy(mddev);
-		goto out;
-	}
-
-	md_wakeup_thread(mddev->thread);
-	md_wakeup_thread(mddev->sync_thread); /* possibly kick off a reshape */
-
-	set_capacity(mddev->gendisk, mddev->array_sectors);
-	revalidate_disk(mddev->gendisk);
-	mddev->changed = 1;
-	kobject_uevent(&disk_to_dev(mddev->gendisk)->kobj, KOBJ_CHANGE);
-out:
-	return err;
-}
-
-static int restart_array(struct mddev *mddev)
-{
-	struct gendisk *disk = mddev->gendisk;
-=======
 	if (start_readonly && md_is_rdwr(mddev))
 		mddev->ro = MD_AUTO_READ; /* read-only, but switch on first write */
 
@@ -9496,25 +6318,12 @@ static int restart_array(struct mddev *mddev)
 	struct md_rdev *rdev;
 	bool has_journal = false;
 	bool has_readonly = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Complain if it has no devices */
 	if (list_empty(&mddev->disks))
 		return -ENXIO;
 	if (!mddev->pers)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (!mddev->ro)
-		return -EBUSY;
-	mddev->safemode = 0;
-	mddev->ro = 0;
-	set_disk_ro(disk, 0);
-	printk(KERN_INFO "md: %s switched to read-write mode.\n",
-		mdname(mddev));
-	/* Kick recovery or resync if necessary */
-	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	md_wakeup_thread(mddev->thread);
-=======
 	if (md_is_rdwr(mddev))
 		return -EBUSY;
 
@@ -9539,41 +6348,11 @@ static int restart_array(struct mddev *mddev)
 	pr_debug("md: %s switched to read-write mode.\n", mdname(mddev));
 	/* Kick recovery or resync if necessary */
 	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	md_wakeup_thread(mddev->sync_thread);
 	sysfs_notify_dirent_safe(mddev->sysfs_state);
 	return 0;
 }
 
-<<<<<<< HEAD
-/* similar to deny_write_access, but accounts for our holding a reference
- * to the file ourselves */
-static int deny_bitmap_write_access(struct file * file)
-{
-	struct inode *inode = file->f_mapping->host;
-
-	spin_lock(&inode->i_lock);
-	if (atomic_read(&inode->i_writecount) > 1) {
-		spin_unlock(&inode->i_lock);
-		return -ETXTBSY;
-	}
-	atomic_set(&inode->i_writecount, -1);
-	spin_unlock(&inode->i_lock);
-
-	return 0;
-}
-
-void restore_bitmap_write_access(struct file *file)
-{
-	struct inode *inode = file->f_mapping->host;
-
-	spin_lock(&inode->i_lock);
-	atomic_set(&inode->i_writecount, 1);
-	spin_unlock(&inode->i_lock);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void md_clean(struct mddev *mddev)
 {
 	mddev->array_sectors = 0;
@@ -9584,14 +6363,6 @@ static void md_clean(struct mddev *mddev)
 	mddev->resync_min = 0;
 	mddev->resync_max = MaxSector;
 	mddev->reshape_position = MaxSector;
-<<<<<<< HEAD
-	mddev->external = 0;
-	mddev->persistent = 0;
-	mddev->level = LEVEL_NONE;
-	mddev->clevel[0] = 0;
-	mddev->flags = 0;
-	mddev->ro = 0;
-=======
 	/* we still need mddev->external in export_rdev, do not clear it yet */
 	mddev->persistent = 0;
 	mddev->level = LEVEL_NONE;
@@ -9607,7 +6378,6 @@ static void md_clean(struct mddev *mddev)
 		mddev->flags &= BIT_ULL_MASK(MD_CLOSING);
 	mddev->sb_flags = 0;
 	mddev->ro = MD_RDWR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->metadata_type[0] = 0;
 	mddev->chunk_sectors = 0;
 	mddev->ctime = mddev->utime = 0;
@@ -9616,20 +6386,12 @@ static void md_clean(struct mddev *mddev)
 	mddev->events = 0;
 	mddev->can_decrease_events = 0;
 	mddev->delta_disks = 0;
-<<<<<<< HEAD
-	mddev->new_level = LEVEL_NONE;
-	mddev->new_layout = 0;
-	mddev->new_chunk_sectors = 0;
-	mddev->curr_resync = 0;
-	mddev->resync_mismatches = 0;
-=======
 	mddev->reshape_backwards = 0;
 	mddev->new_level = LEVEL_NONE;
 	mddev->new_layout = 0;
 	mddev->new_chunk_sectors = 0;
 	mddev->curr_resync = MD_RESYNC_NONE;
 	atomic64_set(&mddev->resync_mismatches, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->suspend_lo = mddev->suspend_hi = 0;
 	mddev->sync_speed_min = mddev->sync_speed_max = 0;
 	mddev->recovery = 0;
@@ -9637,14 +6399,6 @@ static void md_clean(struct mddev *mddev)
 	mddev->changed = 0;
 	mddev->degraded = 0;
 	mddev->safemode = 0;
-<<<<<<< HEAD
-	mddev->merge_check_needed = 0;
-	mddev->bitmap_info.offset = 0;
-	mddev->bitmap_info.default_offset = 0;
-	mddev->bitmap_info.chunksize = 0;
-	mddev->bitmap_info.daemon_sleep = 0;
-	mddev->bitmap_info.max_write_behind = 0;
-=======
 	mddev->private = NULL;
 	mddev->cluster_info = NULL;
 	mddev->bitmap_info.offset = 0;
@@ -9654,29 +6408,10 @@ static void md_clean(struct mddev *mddev)
 	mddev->bitmap_info.daemon_sleep = 0;
 	mddev->bitmap_info.max_write_behind = 0;
 	mddev->bitmap_info.nodes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __md_stop_writes(struct mddev *mddev)
 {
-<<<<<<< HEAD
-	if (mddev->sync_thread) {
-		set_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-		reap_sync_thread(mddev);
-	}
-
-	del_timer_sync(&mddev->safemode_timer);
-
-	bitmap_flush(mddev);
-	md_super_wait(mddev);
-
-	if (!mddev->in_sync || mddev->flags) {
-		/* mark array as shutdown cleanly */
-		mddev->in_sync = 1;
-		md_update_sb(mddev, 1);
-	}
-=======
 	del_timer_sync(&mddev->safemode_timer);
 
 	if (mddev->pers && mddev->pers->quiesce) {
@@ -9696,36 +6431,18 @@ static void __md_stop_writes(struct mddev *mddev)
 	/* disable policy to guarantee rdevs free resources for serialization */
 	mddev->serialize_policy = 0;
 	mddev_destroy_serial_pool(mddev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void md_stop_writes(struct mddev *mddev)
 {
-<<<<<<< HEAD
-	mddev_lock(mddev);
-=======
 	mddev_lock_nointr(mddev);
 	set_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
 	stop_sync_thread(mddev, true, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__md_stop_writes(mddev);
 	mddev_unlock(mddev);
 }
 EXPORT_SYMBOL_GPL(md_stop_writes);
 
-<<<<<<< HEAD
-static void __md_stop(struct mddev *mddev)
-{
-	mddev->ready = 0;
-	mddev->pers->stop(mddev);
-	if (mddev->pers->sync_request && mddev->to_remove == NULL)
-		mddev->to_remove = &md_redundancy_group;
-	module_put(mddev->pers->owner);
-	/* Ensure ->event_work is done */
-	flush_workqueue(md_misc_wq);
-	mddev->pers = NULL;
-	clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-=======
 static void mddev_detach(struct mddev *mddev)
 {
 	md_bitmap_wait_behind_writes(mddev);
@@ -9759,20 +6476,10 @@ static void __md_stop(struct mddev *mddev)
 	bioset_exit(&mddev->bio_set);
 	bioset_exit(&mddev->sync_set);
 	bioset_exit(&mddev->io_clone_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void md_stop(struct mddev *mddev)
 {
-<<<<<<< HEAD
-	/* stop the array and free an attached data structures.
-	 * This is called from dm-raid
-	 */
-	__md_stop(mddev);
-	bitmap_destroy(mddev);
-	if (mddev->bio_set)
-		bioset_free(mddev->bio_set);
-=======
 	lockdep_assert_held(&mddev->reconfig_mutex);
 
 	/* stop the array and free an attached data structures.
@@ -9780,38 +6487,10 @@ void md_stop(struct mddev *mddev)
 	 */
 	__md_stop_writes(mddev);
 	__md_stop(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(md_stop);
 
-<<<<<<< HEAD
-static int md_set_readonly(struct mddev *mddev, struct block_device *bdev)
-{
-	int err = 0;
-	mutex_lock(&mddev->open_mutex);
-	if (atomic_read(&mddev->openers) > !!bdev) {
-		printk("md: %s still in use.\n",mdname(mddev));
-		err = -EBUSY;
-		goto out;
-	}
-	if (bdev)
-		sync_blockdev(bdev);
-	if (mddev->pers) {
-		__md_stop_writes(mddev);
-
-		err  = -ENXIO;
-		if (mddev->ro==1)
-			goto out;
-		mddev->ro = 1;
-		set_disk_ro(mddev->gendisk, 1);
-		clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-		sysfs_notify_dirent_safe(mddev->sysfs_state);
-		err = 0;	
-	}
-out:
-	mutex_unlock(&mddev->open_mutex);
-=======
 /* ensure 'mddev->pers' exist before calling md_set_readonly() */
 static int md_set_readonly(struct mddev *mddev)
 {
@@ -9854,7 +6533,6 @@ out:
 		sysfs_notify_dirent_safe(mddev->sysfs_state);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -9862,31 +6540,6 @@ out:
  *   0 - completely stop and dis-assemble array
  *   2 - stop but do not disassemble array
  */
-<<<<<<< HEAD
-static int do_md_stop(struct mddev * mddev, int mode,
-		      struct block_device *bdev)
-{
-	struct gendisk *disk = mddev->gendisk;
-	struct md_rdev *rdev;
-
-	mutex_lock(&mddev->open_mutex);
-	if (atomic_read(&mddev->openers) > !!bdev ||
-	    mddev->sysfs_active) {
-		printk("md: %s still in use.\n",mdname(mddev));
-		mutex_unlock(&mddev->open_mutex);
-		return -EBUSY;
-	}
-	if (bdev)
-		/* It is possible IO was issued on some other
-		 * open file which was closed before we took ->open_mutex.
-		 * As that was not the last close __blkdev_put will not
-		 * have called sync_blockdev, so we must.
-		 */
-		sync_blockdev(bdev);
-
-	if (mddev->pers) {
-		if (mddev->ro)
-=======
 static int do_md_stop(struct mddev *mddev, int mode)
 {
 	struct gendisk *disk = mddev->gendisk;
@@ -9911,16 +6564,10 @@ static int do_md_stop(struct mddev *mddev, int mode)
 	}
 	if (mddev->pers) {
 		if (!md_is_rdwr(mddev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_disk_ro(disk, 0);
 
 		__md_stop_writes(mddev);
 		__md_stop(mddev);
-<<<<<<< HEAD
-		mddev->queue->merge_bvec_fn = NULL;
-		mddev->queue->backing_dev_info.congested_fn = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* tell userspace to handle 'inactive' */
 		sysfs_notify_dirent_safe(mddev->sysfs_state);
@@ -9929,37 +6576,16 @@ static int do_md_stop(struct mddev *mddev, int mode)
 			if (rdev->raid_disk >= 0)
 				sysfs_unlink_rdev(mddev, rdev);
 
-<<<<<<< HEAD
-		set_capacity(disk, 0);
-		mutex_unlock(&mddev->open_mutex);
-		mddev->changed = 1;
-		revalidate_disk(disk);
-
-		if (mddev->ro)
-			mddev->ro = 0;
-	} else
-		mutex_unlock(&mddev->open_mutex);
-=======
 		set_capacity_and_notify(disk, 0);
 		mddev->changed = 1;
 
 		if (!md_is_rdwr(mddev))
 			mddev->ro = MD_RDWR;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Free resources if final stop
 	 */
 	if (mode == 0) {
-<<<<<<< HEAD
-		printk(KERN_INFO "md: %s stopped.\n", mdname(mddev));
-
-		bitmap_destroy(mddev);
-		if (mddev->bitmap_info.file) {
-			restore_bitmap_write_access(mddev->bitmap_info.file);
-			fput(mddev->bitmap_info.file);
-			mddev->bitmap_info.file = NULL;
-=======
 		pr_info("md: %s stopped.\n", mdname(mddev));
 
 		if (mddev->bitmap_info.file) {
@@ -9968,26 +6594,16 @@ static int do_md_stop(struct mddev *mddev, int mode)
 			mddev->bitmap_info.file = NULL;
 			spin_unlock(&mddev->lock);
 			fput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		mddev->bitmap_info.offset = 0;
 
 		export_array(mddev);
 
 		md_clean(mddev);
-<<<<<<< HEAD
-		kobject_uevent(&disk_to_dev(mddev->gendisk)->kobj, KOBJ_CHANGE);
-		if (mddev->hold_active == UNTIL_STOP)
-			mddev->hold_active = 0;
-	}
-	blk_integrity_unregister(disk);
-	md_new_event(mddev);
-=======
 		if (mddev->hold_active == UNTIL_STOP)
 			mddev->hold_active = 0;
 	}
 	md_new_event();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sysfs_notify_dirent_safe(mddev->sysfs_state);
 	return 0;
 }
@@ -10001,20 +6617,6 @@ static void autorun_array(struct mddev *mddev)
 	if (list_empty(&mddev->disks))
 		return;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "md: running: ");
-
-	rdev_for_each(rdev, mddev) {
-		char b[BDEVNAME_SIZE];
-		printk("<%s>", bdevname(rdev->bdev,b));
-	}
-	printk("\n");
-
-	err = do_md_run(mddev);
-	if (err) {
-		printk(KERN_WARNING "md: do_md_run() returned %d\n", err);
-		do_md_stop(mddev, 0, NULL);
-=======
 	pr_info("md: running: ");
 
 	rdev_for_each(rdev, mddev) {
@@ -10026,7 +6628,6 @@ static void autorun_array(struct mddev *mddev)
 	if (err) {
 		pr_warn("md: do_md_run() returned %d\n", err);
 		do_md_stop(mddev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -10046,14 +6647,8 @@ static void autorun_devices(int part)
 {
 	struct md_rdev *rdev0, *rdev, *tmp;
 	struct mddev *mddev;
-<<<<<<< HEAD
-	char b[BDEVNAME_SIZE];
-
-	printk(KERN_INFO "md: autorun ...\n");
-=======
 
 	pr_info("md: autorun ...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&pending_raid_disks)) {
 		int unit;
 		dev_t dev;
@@ -10061,22 +6656,12 @@ static void autorun_devices(int part)
 		rdev0 = list_entry(pending_raid_disks.next,
 					 struct md_rdev, same_set);
 
-<<<<<<< HEAD
-		printk(KERN_INFO "md: considering %s ...\n",
-			bdevname(rdev0->bdev,b));
-		INIT_LIST_HEAD(&candidates);
-		rdev_for_each_list(rdev, tmp, &pending_raid_disks)
-			if (super_90_load(rdev, rdev0, 0) >= 0) {
-				printk(KERN_INFO "md:  adding %s ...\n",
-					bdevname(rdev->bdev,b));
-=======
 		pr_debug("md: considering %pg ...\n", rdev0->bdev);
 		INIT_LIST_HEAD(&candidates);
 		rdev_for_each_list(rdev, tmp, &pending_raid_disks)
 			if (super_90_load(rdev, rdev0, 0) >= 0) {
 				pr_debug("md:  adding %pg ...\n",
 					 rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				list_move(&rdev->same_set, &candidates);
 			}
 		/*
@@ -10093,33 +6678,6 @@ static void autorun_devices(int part)
 			unit = MINOR(dev);
 		}
 		if (rdev0->preferred_minor != unit) {
-<<<<<<< HEAD
-			printk(KERN_INFO "md: unit number in %s is bad: %d\n",
-			       bdevname(rdev0->bdev, b), rdev0->preferred_minor);
-			break;
-		}
-
-		md_probe(dev, NULL, NULL);
-		mddev = mddev_find(dev);
-		if (!mddev || !mddev->gendisk) {
-			if (mddev)
-				mddev_put(mddev);
-			printk(KERN_ERR
-				"md: cannot allocate memory for md drive.\n");
-			break;
-		}
-		if (mddev_lock(mddev)) 
-			printk(KERN_WARNING "md: %s locked, cannot run\n",
-			       mdname(mddev));
-		else if (mddev->raid_disks || mddev->major_version
-			 || !list_empty(&mddev->disks)) {
-			printk(KERN_WARNING 
-				"md: %s already running, cannot run %s\n",
-				mdname(mddev), bdevname(rdev0->bdev,b));
-			mddev_unlock(mddev);
-		} else {
-			printk(KERN_INFO "md: created %s\n", mdname(mddev));
-=======
 			pr_warn("md: unit number in %pg is bad: %d\n",
 				rdev0->bdev, rdev0->preferred_minor);
 			break;
@@ -10138,39 +6696,20 @@ static void autorun_devices(int part)
 			mddev_unlock_and_resume(mddev);
 		} else {
 			pr_debug("md: created %s\n", mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mddev->persistent = 1;
 			rdev_for_each_list(rdev, tmp, &candidates) {
 				list_del_init(&rdev->same_set);
 				if (bind_rdev_to_array(rdev, mddev))
-<<<<<<< HEAD
-					export_rdev(rdev);
-			}
-			autorun_array(mddev);
-			mddev_unlock(mddev);
-=======
 					export_rdev(rdev, mddev);
 			}
 			autorun_array(mddev);
 			mddev_unlock_and_resume(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* on success, candidates will be empty, on error
 		 * it won't...
 		 */
 		rdev_for_each_list(rdev, tmp, &candidates) {
 			list_del_init(&rdev->same_set);
-<<<<<<< HEAD
-			export_rdev(rdev);
-		}
-		mddev_put(mddev);
-	}
-	printk(KERN_INFO "md: ... autorun DONE.\n");
-}
-#endif /* !MODULE */
-
-static int get_version(void __user * arg)
-=======
 			export_rdev(rdev, mddev);
 		}
 		mddev_put(mddev);
@@ -10180,7 +6719,6 @@ static int get_version(void __user * arg)
 #endif /* !MODULE */
 
 static int get_version(void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mdu_version_t ver;
 
@@ -10194,55 +6732,35 @@ static int get_version(void __user *arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_array_info(struct mddev * mddev, void __user * arg)
-=======
 static int get_array_info(struct mddev *mddev, void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mdu_array_info_t info;
 	int nr,working,insync,failed,spare;
 	struct md_rdev *rdev;
 
-<<<<<<< HEAD
-	nr=working=insync=failed=spare=0;
-	rdev_for_each(rdev, mddev) {
-=======
 	nr = working = insync = failed = spare = 0;
 	rcu_read_lock();
 	rdev_for_each_rcu(rdev, mddev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr++;
 		if (test_bit(Faulty, &rdev->flags))
 			failed++;
 		else {
 			working++;
 			if (test_bit(In_sync, &rdev->flags))
-<<<<<<< HEAD
-				insync++;	
-=======
 				insync++;
 			else if (test_bit(Journal, &rdev->flags))
 				/* TODO: add journal count to md_u.h */
 				;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				spare++;
 		}
 	}
-<<<<<<< HEAD
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info.major_version = mddev->major_version;
 	info.minor_version = mddev->minor_version;
 	info.patch_version = MD_PATCHLEVEL_VERSION;
-<<<<<<< HEAD
-	info.ctime         = mddev->ctime;
-=======
 	info.ctime         = clamp_t(time64_t, mddev->ctime, 0, U32_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.level         = mddev->level;
 	info.size          = mddev->dev_sectors / 2;
 	if (info.size != mddev->dev_sectors / 2) /* overflow */
@@ -10252,22 +6770,14 @@ static int get_array_info(struct mddev *mddev, void __user *arg)
 	info.md_minor      = mddev->md_minor;
 	info.not_persistent= !mddev->persistent;
 
-<<<<<<< HEAD
-	info.utime         = mddev->utime;
-=======
 	info.utime         = clamp_t(time64_t, mddev->utime, 0, U32_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.state         = 0;
 	if (mddev->in_sync)
 		info.state = (1<<MD_SB_CLEAN);
 	if (mddev->bitmap && mddev->bitmap_info.offset)
-<<<<<<< HEAD
-		info.state = (1<<MD_SB_BITMAP_PRESENT);
-=======
 		info.state |= (1<<MD_SB_BITMAP_PRESENT);
 	if (mddev_is_clustered(mddev))
 		info.state |= (1<<MD_SB_CLUSTERED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.active_disks  = insync;
 	info.working_disks = working;
 	info.failed_disks  = failed;
@@ -10282,44 +6792,6 @@ static int get_array_info(struct mddev *mddev, void __user *arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_bitmap_file(struct mddev * mddev, void __user * arg)
-{
-	mdu_bitmap_file_t *file = NULL; /* too big for stack allocation */
-	char *ptr, *buf = NULL;
-	int err = -ENOMEM;
-
-	if (md_allow_write(mddev))
-		file = kzalloc(sizeof(*file), GFP_NOIO);
-	else
-		file = kzalloc(sizeof(*file), GFP_KERNEL);
-
-	if (!file)
-		goto out;
-
-	/* bitmap disabled, zero the first byte and copy out */
-	if (!mddev->bitmap || !mddev->bitmap->file) {
-		file->pathname[0] = '\0';
-		goto copy_out;
-	}
-
-	buf = kmalloc(sizeof(file->pathname), GFP_KERNEL);
-	if (!buf)
-		goto out;
-
-	ptr = d_path(&mddev->bitmap->file->f_path, buf, sizeof(file->pathname));
-	if (IS_ERR(ptr))
-		goto out;
-
-	strcpy(file->pathname, ptr);
-
-copy_out:
-	err = 0;
-	if (copy_to_user(arg, file, sizeof(*file)))
-		err = -EFAULT;
-out:
-	kfree(buf);
-=======
 static int get_bitmap_file(struct mddev *mddev, void __user * arg)
 {
 	mdu_bitmap_file_t *file = NULL; /* too big for stack allocation */
@@ -10348,16 +6820,11 @@ static int get_bitmap_file(struct mddev *mddev, void __user * arg)
 	    copy_to_user(arg, file, sizeof(*file)))
 		err = -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(file);
 	return err;
 }
 
-<<<<<<< HEAD
-static int get_disk_info(struct mddev * mddev, void __user * arg)
-=======
 static int get_disk_info(struct mddev *mddev, void __user * arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mdu_disk_info_t info;
 	struct md_rdev *rdev;
@@ -10365,12 +6832,8 @@ static int get_disk_info(struct mddev *mddev, void __user * arg)
 	if (copy_from_user(&info, arg, sizeof(info)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	rdev = find_rdev_nr(mddev, info.number);
-=======
 	rcu_read_lock();
 	rdev = md_find_rdev_nr_rcu(mddev, info.number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev) {
 		info.major = MAJOR(rdev->bdev->bd_dev);
 		info.minor = MINOR(rdev->bdev->bd_dev);
@@ -10382,26 +6845,18 @@ static int get_disk_info(struct mddev *mddev, void __user * arg)
 			info.state |= (1<<MD_DISK_ACTIVE);
 			info.state |= (1<<MD_DISK_SYNC);
 		}
-<<<<<<< HEAD
-		if (test_bit(WriteMostly, &rdev->flags))
-			info.state |= (1<<MD_DISK_WRITEMOSTLY);
-=======
 		if (test_bit(Journal, &rdev->flags))
 			info.state |= (1<<MD_DISK_JOURNAL);
 		if (test_bit(WriteMostly, &rdev->flags))
 			info.state |= (1<<MD_DISK_WRITEMOSTLY);
 		if (test_bit(FailFast, &rdev->flags))
 			info.state |= (1<<MD_DISK_FAILFAST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		info.major = info.minor = 0;
 		info.raid_disk = -1;
 		info.state = (1<<MD_DISK_REMOVED);
 	}
-<<<<<<< HEAD
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
@@ -10409,14 +6864,6 @@ static int get_disk_info(struct mddev *mddev, void __user * arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int add_new_disk(struct mddev * mddev, mdu_disk_info_t *info)
-{
-	char b[BDEVNAME_SIZE], b2[BDEVNAME_SIZE];
-	struct md_rdev *rdev;
-	dev_t dev = MKDEV(info->major,info->minor);
-
-=======
 int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 {
 	struct md_rdev *rdev;
@@ -10429,7 +6876,6 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->major != MAJOR(dev) || info->minor != MINOR(dev))
 		return -EOVERFLOW;
 
@@ -10438,12 +6884,7 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 		/* expecting a device which has a superblock */
 		rdev = md_import_device(dev, mddev->major_version, mddev->minor_version);
 		if (IS_ERR(rdev)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING 
-				"md: md_import_device returned %ld\n",
-=======
 			pr_warn("md: md_import_device returned %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PTR_ERR(rdev));
 			return PTR_ERR(rdev);
 		}
@@ -10454,51 +6895,29 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 			err = super_types[mddev->major_version]
 				.load_super(rdev, rdev0, mddev->minor_version);
 			if (err < 0) {
-<<<<<<< HEAD
-				printk(KERN_WARNING 
-					"md: %s has different UUID to %s\n",
-					bdevname(rdev->bdev,b), 
-					bdevname(rdev0->bdev,b2));
-				export_rdev(rdev);
-=======
 				pr_warn("md: %pg has different UUID to %pg\n",
 					rdev->bdev,
 					rdev0->bdev);
 				export_rdev(rdev, mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 		}
 		err = bind_rdev_to_array(rdev, mddev);
 		if (err)
-<<<<<<< HEAD
-			export_rdev(rdev);
-=======
 			export_rdev(rdev, mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * add_new_disk can be used once the array is assembled
-=======
 	 * md_add_new_disk can be used once the array is assembled
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to add "hot spares".  They must already have a superblock
 	 * written
 	 */
 	if (mddev->pers) {
 		int err;
 		if (!mddev->pers->hot_add_disk) {
-<<<<<<< HEAD
-			printk(KERN_WARNING 
-				"%s: personality does not support diskops!\n",
-			       mdname(mddev));
-=======
 			pr_warn("%s: personality does not support diskops!\n",
 				mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		if (mddev->persistent)
@@ -10507,12 +6926,7 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 		else
 			rdev = md_import_device(dev, -1, -1);
 		if (IS_ERR(rdev)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING 
-				"md: md_import_device returned %ld\n",
-=======
 			pr_warn("md: md_import_device returned %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PTR_ERR(rdev));
 			return PTR_ERR(rdev);
 		}
@@ -10521,29 +6935,6 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 			if (info->state & (1<<MD_DISK_SYNC)  &&
 			    info->raid_disk < mddev->raid_disks) {
 				rdev->raid_disk = info->raid_disk;
-<<<<<<< HEAD
-				set_bit(In_sync, &rdev->flags);
-			} else
-				rdev->raid_disk = -1;
-		} else
-			super_types[mddev->major_version].
-				validate_super(mddev, rdev);
-		if ((info->state & (1<<MD_DISK_SYNC)) &&
-		    (!test_bit(In_sync, &rdev->flags) ||
-		     rdev->raid_disk != info->raid_disk)) {
-			/* This was a hot-add request, but events doesn't
-			 * match, so reject it.
-			 */
-			export_rdev(rdev);
-			return -EINVAL;
-		}
-
-		if (test_bit(In_sync, &rdev->flags))
-			rdev->saved_raid_disk = rdev->raid_disk;
-		else
-			rdev->saved_raid_disk = -1;
-
-=======
 				clear_bit(Bitmap_sync, &rdev->flags);
 			} else
 				rdev->raid_disk = -1;
@@ -10560,49 +6951,11 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 			return -EINVAL;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_bit(In_sync, &rdev->flags); /* just to be sure */
 		if (info->state & (1<<MD_DISK_WRITEMOSTLY))
 			set_bit(WriteMostly, &rdev->flags);
 		else
 			clear_bit(WriteMostly, &rdev->flags);
-<<<<<<< HEAD
-
-		rdev->raid_disk = -1;
-		err = bind_rdev_to_array(rdev, mddev);
-		if (!err && !mddev->pers->hot_remove_disk) {
-			/* If there is hot_add_disk but no hot_remove_disk
-			 * then added disks for geometry changes,
-			 * and should be added immediately.
-			 */
-			super_types[mddev->major_version].
-				validate_super(mddev, rdev);
-			err = mddev->pers->hot_add_disk(mddev, rdev);
-			if (err)
-				unbind_rdev_from_array(rdev);
-		}
-		if (err)
-			export_rdev(rdev);
-		else
-			sysfs_notify_dirent_safe(rdev->sysfs_state);
-
-		md_update_sb(mddev, 1);
-		if (mddev->degraded)
-			set_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-		set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-		if (!err)
-			md_new_event(mddev);
-		md_wakeup_thread(mddev->thread);
-		return err;
-	}
-
-	/* otherwise, add_new_disk is only allowed
-	 * for major_version==0 superblocks
-	 */
-	if (mddev->major_version != 0) {
-		printk(KERN_WARNING "%s: ADD_NEW_DISK not supported\n",
-		       mdname(mddev));
-=======
 		if (info->state & (1<<MD_DISK_FAILFAST))
 			set_bit(FailFast, &rdev->flags);
 		else
@@ -10673,7 +7026,6 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 	 */
 	if (mddev->major_version != 0) {
 		pr_warn("%s: ADD_NEW_DISK not supported\n", mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -10681,12 +7033,7 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 		int err;
 		rdev = md_import_device(dev, -1, 0);
 		if (IS_ERR(rdev)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING 
-				"md: error, md_import_device() returned %ld\n",
-=======
 			pr_warn("md: error, md_import_device() returned %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PTR_ERR(rdev));
 			return PTR_ERR(rdev);
 		}
@@ -10702,30 +7049,19 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 
 		if (info->state & (1<<MD_DISK_WRITEMOSTLY))
 			set_bit(WriteMostly, &rdev->flags);
-<<<<<<< HEAD
-
-		if (!mddev->persistent) {
-			printk(KERN_INFO "md: nonpersistent superblock ...\n");
-			rdev->sb_start = i_size_read(rdev->bdev->bd_inode) / 512;
-=======
 		if (info->state & (1<<MD_DISK_FAILFAST))
 			set_bit(FailFast, &rdev->flags);
 
 		if (!mddev->persistent) {
 			pr_debug("md: nonpersistent superblock ...\n");
 			rdev->sb_start = bdev_nr_sectors(rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			rdev->sb_start = calc_dev_sboffset(rdev);
 		rdev->sectors = rdev->sb_start;
 
 		err = bind_rdev_to_array(rdev, mddev);
 		if (err) {
-<<<<<<< HEAD
-			export_rdev(rdev);
-=======
 			export_rdev(rdev, mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
@@ -10733,13 +7069,6 @@ int md_add_new_disk(struct mddev *mddev, struct mdu_disk_info_s *info)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hot_remove_disk(struct mddev * mddev, dev_t dev)
-{
-	char b[BDEVNAME_SIZE];
-	struct md_rdev *rdev;
-
-=======
 static int hot_remove_disk(struct mddev *mddev, dev_t dev)
 {
 	struct md_rdev *rdev;
@@ -10747,30 +7076,10 @@ static int hot_remove_disk(struct mddev *mddev, dev_t dev)
 	if (!mddev->pers)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev = find_rdev(mddev, dev);
 	if (!rdev)
 		return -ENXIO;
 
-<<<<<<< HEAD
-	if (rdev->raid_disk >= 0)
-		goto busy;
-
-	kick_rdev_from_array(rdev);
-	md_update_sb(mddev, 1);
-	md_new_event(mddev);
-
-	return 0;
-busy:
-	printk(KERN_WARNING "md: cannot remove active disk %s from %s ...\n",
-		bdevname(rdev->bdev,b), mdname(mddev));
-	return -EBUSY;
-}
-
-static int hot_add_disk(struct mddev * mddev, dev_t dev)
-{
-	char b[BDEVNAME_SIZE];
-=======
 	if (rdev->raid_disk < 0)
 		goto kick_rdev;
 
@@ -10801,7 +7110,6 @@ busy:
 
 static int hot_add_disk(struct mddev *mddev, dev_t dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct md_rdev *rdev;
 
@@ -10809,34 +7117,19 @@ static int hot_add_disk(struct mddev *mddev, dev_t dev)
 		return -ENODEV;
 
 	if (mddev->major_version != 0) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s: HOT_ADD may only be used with"
-			" version-0 superblocks.\n",
-=======
 		pr_warn("%s: HOT_ADD may only be used with version-0 superblocks.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdname(mddev));
 		return -EINVAL;
 	}
 	if (!mddev->pers->hot_add_disk) {
-<<<<<<< HEAD
-		printk(KERN_WARNING 
-			"%s: personality does not support diskops!\n",
-=======
 		pr_warn("%s: personality does not support diskops!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdname(mddev));
 		return -EINVAL;
 	}
 
 	rdev = md_import_device(dev, -1, 0);
 	if (IS_ERR(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING 
-			"md: error, md_import_device() returned %ld\n",
-=======
 		pr_warn("md: error, md_import_device() returned %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PTR_ERR(rdev));
 		return -EINVAL;
 	}
@@ -10844,30 +7137,17 @@ static int hot_add_disk(struct mddev *mddev, dev_t dev)
 	if (mddev->persistent)
 		rdev->sb_start = calc_dev_sboffset(rdev);
 	else
-<<<<<<< HEAD
-		rdev->sb_start = i_size_read(rdev->bdev->bd_inode) / 512;
-=======
 		rdev->sb_start = bdev_nr_sectors(rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev->sectors = rdev->sb_start;
 
 	if (test_bit(Faulty, &rdev->flags)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING 
-			"md: can not hot-add faulty %s disk to %s!\n",
-			bdevname(rdev->bdev,b), mdname(mddev));
-		err = -EINVAL;
-		goto abort_export;
-	}
-=======
 		pr_warn("md: can not hot-add faulty %pg disk to %s!\n",
 			rdev->bdev, mdname(mddev));
 		err = -EINVAL;
 		goto abort_export;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(In_sync, &rdev->flags);
 	rdev->desc_nr = -1;
 	rdev->saved_raid_disk = -1;
@@ -10882,10 +7162,6 @@ static int hot_add_disk(struct mddev *mddev, dev_t dev)
 
 	rdev->raid_disk = -1;
 
-<<<<<<< HEAD
-	md_update_sb(mddev, 1);
-
-=======
 	set_bit(MD_SB_CHANGE_DEVS, &mddev->sb_flags);
 	if (!mddev->thread)
 		md_update_sb(mddev, 1);
@@ -10898,70 +7174,31 @@ static int hot_add_disk(struct mddev *mddev, dev_t dev)
 			mdname(mddev), rdev->bdev);
 		blk_queue_flag_clear(QUEUE_FLAG_NOWAIT, mddev->gendisk->queue);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Kick recovery, maybe this spare has to be added to the
 	 * array immediately.
 	 */
 	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-<<<<<<< HEAD
-	md_wakeup_thread(mddev->thread);
-	md_new_event(mddev);
-	return 0;
-
-abort_export:
-	export_rdev(rdev);
-=======
 	md_new_event();
 	return 0;
 
 abort_export:
 	export_rdev(rdev, mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int set_bitmap_file(struct mddev *mddev, int fd)
 {
-<<<<<<< HEAD
-	int err;
-
-	if (mddev->pers) {
-		if (!mddev->pers->quiesce)
-=======
 	int err = 0;
 
 	if (mddev->pers) {
 		if (!mddev->pers->quiesce || !mddev->thread)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EBUSY;
 		if (mddev->recovery || mddev->sync_thread)
 			return -EBUSY;
 		/* we should be able to change the bitmap.. */
 	}
 
-<<<<<<< HEAD
-
-	if (fd >= 0) {
-		if (mddev->bitmap)
-			return -EEXIST; /* cannot add when bitmap is present */
-		mddev->bitmap_info.file = fget(fd);
-
-		if (mddev->bitmap_info.file == NULL) {
-			printk(KERN_ERR "%s: error: failed to get bitmap file\n",
-			       mdname(mddev));
-			return -EBADF;
-		}
-
-		err = deny_bitmap_write_access(mddev->bitmap_info.file);
-		if (err) {
-			printk(KERN_ERR "%s: error: bitmap file is already in use\n",
-			       mdname(mddev));
-			fput(mddev->bitmap_info.file);
-			mddev->bitmap_info.file = NULL;
-			return err;
-		}
-=======
 	if (fd >= 0) {
 		struct inode *inode;
 		struct file *f;
@@ -11004,32 +7241,11 @@ static int set_bitmap_file(struct mddev *mddev, int fd)
 			return err;
 		}
 		mddev->bitmap_info.file = f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->bitmap_info.offset = 0; /* file overrides offset */
 	} else if (mddev->bitmap == NULL)
 		return -ENOENT; /* cannot remove what isn't there */
 	err = 0;
 	if (mddev->pers) {
-<<<<<<< HEAD
-		mddev->pers->quiesce(mddev, 1);
-		if (fd >= 0) {
-			err = bitmap_create(mddev);
-			if (!err)
-				err = bitmap_load(mddev);
-		}
-		if (fd < 0 || err) {
-			bitmap_destroy(mddev);
-			fd = -1; /* make sure to put the file */
-		}
-		mddev->pers->quiesce(mddev, 0);
-	}
-	if (fd < 0) {
-		if (mddev->bitmap_info.file) {
-			restore_bitmap_write_access(mddev->bitmap_info.file);
-			fput(mddev->bitmap_info.file);
-		}
-		mddev->bitmap_info.file = NULL;
-=======
 		if (fd >= 0) {
 			struct bitmap *bitmap;
 
@@ -11055,18 +7271,13 @@ static int set_bitmap_file(struct mddev *mddev, int fd)
 			spin_unlock(&mddev->lock);
 			fput(f);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
 /*
-<<<<<<< HEAD
- * set_array_info is used two different ways
-=======
  * md_set_array_info is used two different ways
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The original usage is when creating a new array.
  * In this usage, raid_disks is > 0 and it together with
  *  level, size, not_persistent,layout,chunksize determine the
@@ -11078,26 +7289,15 @@ static int set_bitmap_file(struct mddev *mddev, int fd)
  *  The minor and patch _version numbers are also kept incase the
  *  super_block handler wishes to interpret them.
  */
-<<<<<<< HEAD
-static int set_array_info(struct mddev * mddev, mdu_array_info_t *info)
-{
-
-=======
 int md_set_array_info(struct mddev *mddev, struct mdu_array_info_s *info)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->raid_disks == 0) {
 		/* just setting version number for superblock loading */
 		if (info->major_version < 0 ||
 		    info->major_version >= ARRAY_SIZE(super_types) ||
 		    super_types[info->major_version].name == NULL) {
 			/* maybe try to auto-load a module? */
-<<<<<<< HEAD
-			printk(KERN_INFO 
-				"md: superblock version %d not known\n",
-=======
 			pr_warn("md: superblock version %d not known\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				info->major_version);
 			return -EINVAL;
 		}
@@ -11108,21 +7308,13 @@ int md_set_array_info(struct mddev *mddev, struct mdu_array_info_s *info)
 		/* ensure mddev_put doesn't delete this now that there
 		 * is some minimal configuration.
 		 */
-<<<<<<< HEAD
-		mddev->ctime         = get_seconds();
-=======
 		mddev->ctime         = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	mddev->major_version = MD_MAJOR_VERSION;
 	mddev->minor_version = MD_MINOR_VERSION;
 	mddev->patch_version = MD_PATCHLEVEL_VERSION;
-<<<<<<< HEAD
-	mddev->ctime         = get_seconds();
-=======
 	mddev->ctime         = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mddev->level         = info->level;
 	mddev->clevel[0]     = 0;
@@ -11139,17 +7331,6 @@ int md_set_array_info(struct mddev *mddev, struct mdu_array_info_s *info)
 	mddev->external	     = 0;
 
 	mddev->layout        = info->layout;
-<<<<<<< HEAD
-	mddev->chunk_sectors = info->chunk_size >> 9;
-
-	mddev->max_disks     = MD_SB_DISKS;
-
-	if (mddev->persistent)
-		mddev->flags         = 0;
-	set_bit(MD_CHANGE_DEVS, &mddev->flags);
-
-	mddev->bitmap_info.default_offset = MD_SB_BYTES >> 9;
-=======
 	if (mddev->level == 0)
 		/* Cannot trust RAID0 layout info here */
 		mddev->layout = -1;
@@ -11164,7 +7345,6 @@ int md_set_array_info(struct mddev *mddev, struct mdu_array_info_s *info)
 
 	mddev->bitmap_info.default_offset = MD_SB_BYTES >> 9;
 	mddev->bitmap_info.default_space = 64*2 - (MD_SB_BYTES >> 9);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mddev->bitmap_info.offset = 0;
 
 	mddev->reshape_position = MaxSector;
@@ -11178,21 +7358,14 @@ int md_set_array_info(struct mddev *mddev, struct mdu_array_info_s *info)
 	mddev->new_chunk_sectors = mddev->chunk_sectors;
 	mddev->new_layout = mddev->layout;
 	mddev->delta_disks = 0;
-<<<<<<< HEAD
-=======
 	mddev->reshape_backwards = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void md_set_array_sectors(struct mddev *mddev, sector_t array_sectors)
 {
-<<<<<<< HEAD
-	WARN(!mddev_is_locked(mddev), "%s: unlocked mddev!\n", __func__);
-=======
 	lockdep_assert_held(&mddev->reconfig_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mddev->external_size)
 		return;
@@ -11206,10 +7379,7 @@ static int update_size(struct mddev *mddev, sector_t num_sectors)
 	struct md_rdev *rdev;
 	int rv;
 	int fit = (num_sectors == 0);
-<<<<<<< HEAD
-=======
 	sector_t old_dev_sectors = mddev->dev_sectors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mddev->pers->resize == NULL)
 		return -EINVAL;
@@ -11222,21 +7392,11 @@ static int update_size(struct mddev *mddev, sector_t num_sectors)
 	 * of each device.  If num_sectors is zero, we find the largest size
 	 * that fits.
 	 */
-<<<<<<< HEAD
-	if (mddev->sync_thread)
-		return -EBUSY;
-	if (mddev->bitmap)
-		/* Sorry, cannot grow a bitmap yet, just remove it,
-		 * grow, and re-add.
-		 */
-		return -EBUSY;
-=======
 	if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
 		return -EBUSY;
 	if (!md_is_rdwr(mddev))
 		return -EROFS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev_for_each(rdev, mddev) {
 		sector_t avail = rdev->sectors;
 
@@ -11246,10 +7406,6 @@ static int update_size(struct mddev *mddev, sector_t num_sectors)
 			return -ENOSPC;
 	}
 	rv = mddev->pers->resize(mddev, num_sectors);
-<<<<<<< HEAD
-	if (!rv)
-		revalidate_disk(mddev->gendisk);
-=======
 	if (!rv) {
 		if (mddev_is_clustered(mddev))
 			md_cluster_ops->update_size(mddev, old_dev_sectors);
@@ -11257,32 +7413,12 @@ static int update_size(struct mddev *mddev, sector_t num_sectors)
 			set_capacity_and_notify(mddev->gendisk,
 						mddev->array_sectors);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
 static int update_raid_disks(struct mddev *mddev, int raid_disks)
 {
 	int rv;
-<<<<<<< HEAD
-	/* change the number of raid disks */
-	if (mddev->pers->check_reshape == NULL)
-		return -EINVAL;
-	if (raid_disks <= 0 ||
-	    (mddev->max_disks && raid_disks >= mddev->max_disks))
-		return -EINVAL;
-	if (mddev->sync_thread || mddev->reshape_position != MaxSector)
-		return -EBUSY;
-	mddev->delta_disks = raid_disks - mddev->raid_disks;
-
-	rv = mddev->pers->check_reshape(mddev);
-	if (rv < 0)
-		mddev->delta_disks = 0;
-	return rv;
-}
-
-
-=======
 	struct md_rdev *rdev;
 	/* change the number of raid disks */
 	if (mddev->pers->check_reshape == NULL)
@@ -11320,7 +7456,6 @@ static int update_raid_disks(struct mddev *mddev, int raid_disks)
 	return rv;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * update_array_info is used to change the configuration of an
  * on-line array.
@@ -11345,11 +7480,7 @@ static int update_array_info(struct mddev *mddev, mdu_array_info_t *info)
 	    mddev->ctime         != info->ctime         ||
 	    mddev->level         != info->level         ||
 /*	    mddev->layout        != info->layout        || */
-<<<<<<< HEAD
-	    !mddev->persistent	 != info->not_persistent||
-=======
 	    mddev->persistent	 != !info->not_persistent ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    mddev->chunk_sectors != info->chunk_size >> 9 ||
 	    /* ignore bottom 8 bits of state, and allow SB_BITMAP_PRESENT to change */
 	    ((state^info->state) & 0xfffffe00)
@@ -11391,36 +7522,6 @@ static int update_array_info(struct mddev *mddev, mdu_array_info_t *info)
 		rv = update_raid_disks(mddev, info->raid_disks);
 
 	if ((state ^ info->state) & (1<<MD_SB_BITMAP_PRESENT)) {
-<<<<<<< HEAD
-		if (mddev->pers->quiesce == NULL)
-			return -EINVAL;
-		if (mddev->recovery || mddev->sync_thread)
-			return -EBUSY;
-		if (info->state & (1<<MD_SB_BITMAP_PRESENT)) {
-			/* add the bitmap */
-			if (mddev->bitmap)
-				return -EEXIST;
-			if (mddev->bitmap_info.default_offset == 0)
-				return -EINVAL;
-			mddev->bitmap_info.offset =
-				mddev->bitmap_info.default_offset;
-			mddev->pers->quiesce(mddev, 1);
-			rv = bitmap_create(mddev);
-			if (!rv)
-				rv = bitmap_load(mddev);
-			if (rv)
-				bitmap_destroy(mddev);
-			mddev->pers->quiesce(mddev, 0);
-		} else {
-			/* remove the bitmap */
-			if (!mddev->bitmap)
-				return -ENOENT;
-			if (mddev->bitmap->file)
-				return -EINVAL;
-			mddev->pers->quiesce(mddev, 1);
-			bitmap_destroy(mddev);
-			mddev->pers->quiesce(mddev, 0);
-=======
 		if (mddev->pers->quiesce == NULL || mddev->thread == NULL) {
 			rv = -EINVAL;
 			goto err;
@@ -11477,40 +7578,23 @@ static int update_array_info(struct mddev *mddev, mdu_array_info_t *info)
 				mddev->safemode_delay = DEFAULT_SAFEMODE_DELAY;
 			}
 			md_bitmap_destroy(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mddev->bitmap_info.offset = 0;
 		}
 	}
 	md_update_sb(mddev, 1);
 	return rv;
-<<<<<<< HEAD
-=======
 err:
 	return rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_disk_faulty(struct mddev *mddev, dev_t dev)
 {
 	struct md_rdev *rdev;
-<<<<<<< HEAD
-=======
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mddev->pers == NULL)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	rdev = find_rdev(mddev, dev);
-	if (!rdev)
-		return -ENODEV;
-
-	md_error(mddev, rdev);
-	if (!test_bit(Faulty, &rdev->flags))
-		return -EBUSY;
-	return 0;
-=======
 	rcu_read_lock();
 	rdev = md_find_rdev_rcu(mddev, dev);
 	if (!rdev)
@@ -11522,7 +7606,6 @@ static int set_disk_faulty(struct mddev *mddev, dev_t dev)
 	}
 	rcu_read_unlock();
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -11541,9 +7624,6 @@ static int md_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int md_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static inline int md_ioctl_valid(unsigned int cmd)
 {
 	switch (cmd) {
@@ -11620,59 +7700,22 @@ static int __md_set_array_info(struct mddev *mddev, void __user *argp)
 }
 
 static int md_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int cmd, unsigned long arg)
 {
 	int err = 0;
 	void __user *argp = (void __user *)arg;
 	struct mddev *mddev = NULL;
-<<<<<<< HEAD
-	int ro;
-
-	switch (cmd) {
-	case RAID_VERSION:
-	case GET_ARRAY_INFO:
-	case GET_DISK_INFO:
-		break;
-	default:
-		if (!capable(CAP_SYS_ADMIN))
-			return -EACCES;
-	}
-=======
 
 	err = md_ioctl_valid(cmd);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Commands dealing with the RAID driver but not any
 	 * particular array:
 	 */
-<<<<<<< HEAD
-	switch (cmd)
-	{
-		case RAID_VERSION:
-			err = get_version(argp);
-			goto done;
-
-		case PRINT_RAID_DEBUG:
-			err = 0;
-			md_print_devices();
-			goto done;
-
-#ifndef MODULE
-		case RAID_AUTORUN:
-			err = 0;
-			autostart_arrays(arg);
-			goto done;
-#endif
-		default:;
-	}
-=======
 	if (cmd == RAID_VERSION)
 		return get_version(argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Commands creating/starting a new array:
@@ -11680,65 +7723,6 @@ static int md_ioctl(struct block_device *bdev, blk_mode_t mode,
 
 	mddev = bdev->bd_disk->private_data;
 
-<<<<<<< HEAD
-	if (!mddev) {
-		BUG();
-		goto abort;
-	}
-
-	err = mddev_lock(mddev);
-	if (err) {
-		printk(KERN_INFO 
-			"md: ioctl lock interrupted, reason %d, cmd %d\n",
-			err, cmd);
-		goto abort;
-	}
-
-	switch (cmd)
-	{
-		case SET_ARRAY_INFO:
-			{
-				mdu_array_info_t info;
-				if (!arg)
-					memset(&info, 0, sizeof(info));
-				else if (copy_from_user(&info, argp, sizeof(info))) {
-					err = -EFAULT;
-					goto abort_unlock;
-				}
-				if (mddev->pers) {
-					err = update_array_info(mddev, &info);
-					if (err) {
-						printk(KERN_WARNING "md: couldn't update"
-						       " array info. %d\n", err);
-						goto abort_unlock;
-					}
-					goto done_unlock;
-				}
-				if (!list_empty(&mddev->disks)) {
-					printk(KERN_WARNING
-					       "md: array %s already has disks!\n",
-					       mdname(mddev));
-					err = -EBUSY;
-					goto abort_unlock;
-				}
-				if (mddev->raid_disks) {
-					printk(KERN_WARNING
-					       "md: array %s already initialised!\n",
-					       mdname(mddev));
-					err = -EBUSY;
-					goto abort_unlock;
-				}
-				err = set_array_info(mddev, &info);
-				if (err) {
-					printk(KERN_WARNING "md: couldn't set"
-					       " array info. %d\n", err);
-					goto abort_unlock;
-				}
-			}
-			goto done_unlock;
-
-		default:;
-=======
 	/* Some actions do not requires the mutex */
 	switch (cmd) {
 	case GET_ARRAY_INFO:
@@ -11787,7 +7771,6 @@ static int md_ioctl(struct block_device *bdev, blk_mode_t mode,
 	if (cmd == SET_ARRAY_INFO) {
 		err = __md_set_array_info(mddev, argp);
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -11800,72 +7783,12 @@ static int md_ioctl(struct block_device *bdev, blk_mode_t mode,
 	    && cmd != RUN_ARRAY && cmd != SET_BITMAP_FILE
 	    && cmd != GET_BITMAP_FILE) {
 		err = -ENODEV;
-<<<<<<< HEAD
-		goto abort_unlock;
-=======
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Commands even a read-only array can execute:
 	 */
-<<<<<<< HEAD
-	switch (cmd)
-	{
-		case GET_ARRAY_INFO:
-			err = get_array_info(mddev, argp);
-			goto done_unlock;
-
-		case GET_BITMAP_FILE:
-			err = get_bitmap_file(mddev, argp);
-			goto done_unlock;
-
-		case GET_DISK_INFO:
-			err = get_disk_info(mddev, argp);
-			goto done_unlock;
-
-		case RESTART_ARRAY_RW:
-			err = restart_array(mddev);
-			goto done_unlock;
-
-		case STOP_ARRAY:
-			err = do_md_stop(mddev, 0, bdev);
-			goto done_unlock;
-
-		case STOP_ARRAY_RO:
-			err = md_set_readonly(mddev, bdev);
-			goto done_unlock;
-
-		case BLKROSET:
-			if (get_user(ro, (int __user *)(arg))) {
-				err = -EFAULT;
-				goto done_unlock;
-			}
-			err = -EINVAL;
-
-			/* if the bdev is going readonly the value of mddev->ro
-			 * does not matter, no writes are coming
-			 */
-			if (ro)
-				goto done_unlock;
-
-			/* are we are already prepared for writes? */
-			if (mddev->ro != 1)
-				goto done_unlock;
-
-			/* transitioning to readauto need only happen for
-			 * arrays that call md_write_start
-			 */
-			if (mddev->pers) {
-				err = restart_array(mddev);
-				if (err == 0) {
-					mddev->ro = 2;
-					set_disk_ro(mddev->gendisk, 0);
-				}
-			}
-			goto done_unlock;
-=======
 	switch (cmd) {
 	case RESTART_ARRAY_RW:
 		err = restart_array(mddev);
@@ -11901,83 +7824,11 @@ static int md_ioctl(struct block_device *bdev, blk_mode_t mode,
 			goto unlock;
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * The remaining ioctls are changing the state of the
 	 * superblock, so we do not allow them on read-only arrays.
-<<<<<<< HEAD
-	 * However non-MD ioctls (e.g. get-size) will still come through
-	 * here and hit the 'default' below, so only disallow
-	 * 'md' ioctls, and switch to rw mode if started auto-readonly.
-	 */
-	if (_IOC_TYPE(cmd) == MD_MAJOR && mddev->ro && mddev->pers) {
-		if (mddev->ro == 2) {
-			mddev->ro = 0;
-			sysfs_notify_dirent_safe(mddev->sysfs_state);
-			set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-			md_wakeup_thread(mddev->thread);
-		} else {
-			err = -EROFS;
-			goto abort_unlock;
-		}
-	}
-
-	switch (cmd)
-	{
-		case ADD_NEW_DISK:
-		{
-			mdu_disk_info_t info;
-			if (copy_from_user(&info, argp, sizeof(info)))
-				err = -EFAULT;
-			else
-				err = add_new_disk(mddev, &info);
-			goto done_unlock;
-		}
-
-		case HOT_REMOVE_DISK:
-			err = hot_remove_disk(mddev, new_decode_dev(arg));
-			goto done_unlock;
-
-		case HOT_ADD_DISK:
-			err = hot_add_disk(mddev, new_decode_dev(arg));
-			goto done_unlock;
-
-		case SET_DISK_FAULTY:
-			err = set_disk_faulty(mddev, new_decode_dev(arg));
-			goto done_unlock;
-
-		case RUN_ARRAY:
-			err = do_md_run(mddev);
-			goto done_unlock;
-
-		case SET_BITMAP_FILE:
-			err = set_bitmap_file(mddev, (int)arg);
-			goto done_unlock;
-
-		default:
-			err = -EINVAL;
-			goto abort_unlock;
-	}
-
-done_unlock:
-abort_unlock:
-	if (mddev->hold_active == UNTIL_IOCTL &&
-	    err != -EINVAL)
-		mddev->hold_active = 0;
-	mddev_unlock(mddev);
-
-	return err;
-done:
-	if (err)
-		MD_BUG();
-abort:
-	return err;
-}
-#ifdef CONFIG_COMPAT
-static int md_compat_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 	 */
 	if (!md_is_rdwr(mddev) && mddev->pers) {
 		if (mddev->ro != MD_AUTO_READ) {
@@ -12050,7 +7901,6 @@ out:
 }
 #ifdef CONFIG_COMPAT
 static int md_compat_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
@@ -12069,44 +7919,6 @@ static int md_compat_ioctl(struct block_device *bdev, blk_mode_t mode,
 }
 #endif /* CONFIG_COMPAT */
 
-<<<<<<< HEAD
-static int md_open(struct block_device *bdev, fmode_t mode)
-{
-	/*
-	 * Succeed if we can lock the mddev, which confirms that
-	 * it isn't being stopped right now.
-	 */
-	struct mddev *mddev = mddev_find(bdev->bd_dev);
-	int err;
-
-	if (mddev->gendisk != bdev->bd_disk) {
-		/* we are racing with mddev_put which is discarding this
-		 * bd_disk.
-		 */
-		mddev_put(mddev);
-		/* Wait until bdev->bd_disk is definitely gone */
-		flush_workqueue(md_misc_wq);
-		/* Then retry the open from the top */
-		return -ERESTARTSYS;
-	}
-	BUG_ON(mddev != bdev->bd_disk->private_data);
-
-	if ((err = mutex_lock_interruptible(&mddev->open_mutex)))
-		goto out;
-
-	err = 0;
-	atomic_inc(&mddev->openers);
-	mutex_unlock(&mddev->open_mutex);
-
-	check_disk_change(bdev);
- out:
-	return err;
-}
-
-static int md_release(struct gendisk *disk, fmode_t mode)
-{
- 	struct mddev *mddev = disk->private_data;
-=======
 static int md_set_read_only(struct block_device *bdev, bool ro)
 {
 	struct mddev *mddev = bdev->bd_disk->private_data;
@@ -12172,34 +7984,10 @@ out:
 static void md_release(struct gendisk *disk)
 {
 	struct mddev *mddev = disk->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!mddev);
 	atomic_dec(&mddev->openers);
 	mddev_put(mddev);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static int md_media_changed(struct gendisk *disk)
-{
-	struct mddev *mddev = disk->private_data;
-
-	return mddev->changed;
-}
-
-static int md_revalidate(struct gendisk *disk)
-{
-	struct mddev *mddev = disk->private_data;
-
-	mddev->changed = 0;
-	return 0;
-}
-static const struct block_device_operations md_fops =
-{
-	.owner		= THIS_MODULE,
-=======
 }
 
 static unsigned int md_check_events(struct gendisk *disk, unsigned int clearing)
@@ -12224,7 +8012,6 @@ const struct block_device_operations md_fops =
 {
 	.owner		= THIS_MODULE,
 	.submit_bio	= md_submit_bio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= md_open,
 	.release	= md_release,
 	.ioctl		= md_ioctl,
@@ -12232,20 +8019,12 @@ const struct block_device_operations md_fops =
 	.compat_ioctl	= md_compat_ioctl,
 #endif
 	.getgeo		= md_getgeo,
-<<<<<<< HEAD
-	.media_changed  = md_media_changed,
-	.revalidate_disk= md_revalidate,
-};
-
-static int md_thread(void * arg)
-=======
 	.check_events	= md_check_events,
 	.set_read_only	= md_set_read_only,
 	.free_disk	= md_free_disk,
 };
 
 static int md_thread(void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_thread *thread = arg;
 
@@ -12275,14 +8054,6 @@ static int md_thread(void *arg)
 		wait_event_interruptible_timeout
 			(thread->wqueue,
 			 test_bit(THREAD_WAKEUP, &thread->flags)
-<<<<<<< HEAD
-			 || kthread_should_stop(),
-			 thread->timeout);
-
-		clear_bit(THREAD_WAKEUP, &thread->flags);
-		if (!kthread_should_stop())
-			thread->run(thread->mddev);
-=======
 			 || kthread_should_stop() || kthread_should_park(),
 			 thread->timeout);
 
@@ -12291,25 +8062,11 @@ static int md_thread(void *arg)
 			kthread_parkme();
 		if (!kthread_should_stop())
 			thread->run(thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-void md_wakeup_thread(struct md_thread *thread)
-{
-	if (thread) {
-		pr_debug("md: waking up MD thread %s.\n", thread->tsk->comm);
-		set_bit(THREAD_WAKEUP, &thread->flags);
-		wake_up(&thread->wqueue);
-	}
-}
-
-struct md_thread *md_register_thread(void (*run) (struct mddev *), struct mddev *mddev,
-				 const char *name)
-=======
 static void md_wakeup_thread_directly(struct md_thread __rcu *thread)
 {
 	struct md_thread *t;
@@ -12338,7 +8095,6 @@ EXPORT_SYMBOL(md_wakeup_thread);
 
 struct md_thread *md_register_thread(void (*run) (struct md_thread *),
 		struct mddev *mddev, const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_thread *thread;
 
@@ -12354,44 +8110,13 @@ struct md_thread *md_register_thread(void (*run) (struct md_thread *),
 	thread->tsk = kthread_run(md_thread, thread,
 				  "%s_%s",
 				  mdname(thread->mddev),
-<<<<<<< HEAD
-				  name ?: mddev->pers->name);
-=======
 				  name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(thread->tsk)) {
 		kfree(thread);
 		return NULL;
 	}
 	return thread;
 }
-<<<<<<< HEAD
-
-void md_unregister_thread(struct md_thread **threadp)
-{
-	struct md_thread *thread = *threadp;
-	if (!thread)
-		return;
-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
-	/* Locking ensures that mddev_unlock does not wake_up a
-	 * non-existent thread
-	 */
-	spin_lock(&pers_lock);
-	*threadp = NULL;
-	spin_unlock(&pers_lock);
-
-	kthread_stop(thread->tsk);
-	kfree(thread);
-}
-
-void md_error(struct mddev *mddev, struct md_rdev *rdev)
-{
-	if (!mddev) {
-		MD_BUG();
-		return;
-	}
-
-=======
 EXPORT_SYMBOL(md_register_thread);
 
 void md_unregister_thread(struct mddev *mddev, struct md_thread __rcu **threadp)
@@ -12413,25 +8138,11 @@ EXPORT_SYMBOL(md_unregister_thread);
 
 void md_error(struct mddev *mddev, struct md_rdev *rdev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdev || test_bit(Faulty, &rdev->flags))
 		return;
 
 	if (!mddev->pers || !mddev->pers->error_handler)
 		return;
-<<<<<<< HEAD
-	mddev->pers->error_handler(mddev,rdev);
-	if (mddev->degraded)
-		set_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-	sysfs_notify_dirent_safe(rdev->sysfs_state);
-	set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	md_wakeup_thread(mddev->thread);
-	if (mddev->event_work.func)
-		queue_work(md_misc_wq, &mddev->event_work);
-	md_new_event_inintr(mddev);
-}
-=======
 	mddev->pers->error_handler(mddev, rdev);
 
 	if (mddev->pers->level == 0)
@@ -12450,7 +8161,6 @@ void md_error(struct mddev *mddev, struct md_rdev *rdev)
 	md_new_event();
 }
 EXPORT_SYMBOL(md_error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* seq_file implementation /proc/mdstat */
 
@@ -12462,15 +8172,8 @@ static void status_unused(struct seq_file *seq)
 	seq_printf(seq, "unused devices: ");
 
 	list_for_each_entry(rdev, &pending_raid_disks, same_set) {
-<<<<<<< HEAD
-		char b[BDEVNAME_SIZE];
-		i++;
-		seq_printf(seq, "%s ",
-			      bdevname(rdev->bdev,b));
-=======
 		i++;
 		seq_printf(seq, "%pg ", rdev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!i)
 		seq_printf(seq, "<none>");
@@ -12478,20 +8181,6 @@ static void status_unused(struct seq_file *seq)
 	seq_printf(seq, "\n");
 }
 
-<<<<<<< HEAD
-
-static void status_resync(struct seq_file *seq, struct mddev * mddev)
-{
-	sector_t max_sectors, resync, res;
-	unsigned long dt, db;
-	sector_t rt;
-	int scale;
-	unsigned int per_milli;
-
-	resync = mddev->curr_resync - atomic_read(&mddev->recovery_active);
-
-	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery))
-=======
 static void status_personalities(struct seq_file *seq)
 {
 	struct md_personality *pers;
@@ -12515,20 +8204,10 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
 
 	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery) ||
 	    test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_sectors = mddev->resync_max_sectors;
 	else
 		max_sectors = mddev->dev_sectors;
 
-<<<<<<< HEAD
-	/*
-	 * Should not happen.
-	 */
-	if (!max_sectors) {
-		MD_BUG();
-		return;
-	}
-=======
 	resync = mddev->curr_resync;
 	if (resync < MD_RESYNC_ACTIVE) {
 		if (test_bit(MD_RECOVERY_DONE, &mddev->recovery))
@@ -12579,7 +8258,6 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
 	}
 
 	WARN_ON(max_sectors == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Pick 'scale' such that (resync>>scale)*1000 will fit
 	 * in a sector_t, and (max_sectors>>scale) will fit in a
 	 * u32, as those are the requirements for sector_div.
@@ -12620,24 +8298,6 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
 	 * db: blocks written from mark until now
 	 * rt: remaining time
 	 *
-<<<<<<< HEAD
-	 * rt is a sector_t, so could be 32bit or 64bit.
-	 * So we divide before multiply in case it is 32bit and close
-	 * to the limit.
-	 * We scale the divisor (db) by 32 to avoid losing precision
-	 * near the end of resync when the number of remaining sectors
-	 * is close to 'db'.
-	 * We then divide rt by 32 after multiplying by db to compensate.
-	 * The '+1' avoids division by zero if db is very small.
-	 */
-	dt = ((jiffies - mddev->resync_mark) / HZ);
-	if (!dt) dt++;
-	db = (mddev->curr_mark_cnt - atomic_read(&mddev->recovery_active))
-		- mddev->resync_mark_cnt;
-
-	rt = max_sectors - resync;    /* number of remaining sectors */
-	sector_div(rt, db/32+1);
-=======
 	 * rt is a sector_t, which is always 64bit now. We are keeping
 	 * the original algorithm, but it is not really necessary.
 	 *
@@ -12662,7 +8322,6 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
 
 	rt = max_sectors - resync;    /* number of remaining sectors */
 	rt = div64_u64(rt, db/32+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rt *= dt;
 	rt >>= 5;
 
@@ -12670,34 +8329,6 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
 		   ((unsigned long)rt % 60)/6);
 
 	seq_printf(seq, " speed=%ldK/sec", db/2/dt);
-<<<<<<< HEAD
-}
-
-static void *md_seq_start(struct seq_file *seq, loff_t *pos)
-{
-	struct list_head *tmp;
-	loff_t l = *pos;
-	struct mddev *mddev;
-
-	if (l >= 0x10000)
-		return NULL;
-	if (!l--)
-		/* header */
-		return (void*)1;
-
-	spin_lock(&all_mddevs_lock);
-	list_for_each(tmp,&all_mddevs)
-		if (!l--) {
-			mddev = list_entry(tmp, struct mddev, all_mddevs);
-			mddev_get(mddev);
-			spin_unlock(&all_mddevs_lock);
-			return mddev;
-		}
-	spin_unlock(&all_mddevs_lock);
-	if (!l--)
-		return (void*)2;/* tail */
-	return NULL;
-=======
 	return 1;
 }
 
@@ -12708,45 +8339,10 @@ static void *md_seq_start(struct seq_file *seq, loff_t *pos)
 	spin_lock(&all_mddevs_lock);
 
 	return seq_list_start_head(&all_mddevs, *pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *md_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct list_head *tmp;
-	struct mddev *next_mddev, *mddev = v;
-	
-	++*pos;
-	if (v == (void*)2)
-		return NULL;
-
-	spin_lock(&all_mddevs_lock);
-	if (v == (void*)1)
-		tmp = all_mddevs.next;
-	else
-		tmp = mddev->all_mddevs.next;
-	if (tmp != &all_mddevs)
-		next_mddev = mddev_get(list_entry(tmp,struct mddev,all_mddevs));
-	else {
-		next_mddev = (void*)2;
-		*pos = 0x10000;
-	}		
-	spin_unlock(&all_mddevs_lock);
-
-	if (v != (void*)1)
-		mddev_put(mddev);
-	return next_mddev;
-
-}
-
-static void md_seq_stop(struct seq_file *seq, void *v)
-{
-	struct mddev *mddev = v;
-
-	if (mddev && v != (void*)1 && v != (void*)2)
-		mddev_put(mddev);
-=======
 	return seq_list_next(v, &all_mddevs, pos);
 }
 
@@ -12754,37 +8350,10 @@ static void md_seq_stop(struct seq_file *seq, void *v)
 	__releases(&all_mddevs_lock)
 {
 	spin_unlock(&all_mddevs_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int md_seq_show(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-	struct mddev *mddev = v;
-	sector_t sectors;
-	struct md_rdev *rdev;
-
-	if (v == (void*)1) {
-		struct md_personality *pers;
-		seq_printf(seq, "Personalities : ");
-		spin_lock(&pers_lock);
-		list_for_each_entry(pers, &pers_list, list)
-			seq_printf(seq, "[%s] ", pers->name);
-
-		spin_unlock(&pers_lock);
-		seq_printf(seq, "\n");
-		seq->poll_event = atomic_read(&md_event_count);
-		return 0;
-	}
-	if (v == (void*)2) {
-		status_unused(seq);
-		return 0;
-	}
-
-	if (mddev_lock(mddev) < 0)
-		return -EINTR;
-
-=======
 	struct mddev *mddev;
 	sector_t sectors;
 	struct md_rdev *rdev;
@@ -12802,33 +8371,18 @@ static int md_seq_show(struct seq_file *seq, void *v)
 
 	spin_unlock(&all_mddevs_lock);
 	spin_lock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mddev->pers || mddev->raid_disks || !list_empty(&mddev->disks)) {
 		seq_printf(seq, "%s : %sactive", mdname(mddev),
 						mddev->pers ? "" : "in");
 		if (mddev->pers) {
-<<<<<<< HEAD
-			if (mddev->ro==1)
-				seq_printf(seq, " (read-only)");
-			if (mddev->ro==2)
-=======
 			if (mddev->ro == MD_RDONLY)
 				seq_printf(seq, " (read-only)");
 			if (mddev->ro == MD_AUTO_READ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				seq_printf(seq, " (auto-read-only)");
 			seq_printf(seq, " %s", mddev->pers->name);
 		}
 
 		sectors = 0;
-<<<<<<< HEAD
-		rdev_for_each(rdev, mddev) {
-			char b[BDEVNAME_SIZE];
-			seq_printf(seq, " %s[%d]",
-				bdevname(rdev->bdev,b), rdev->desc_nr);
-			if (test_bit(WriteMostly, &rdev->flags))
-				seq_printf(seq, "(W)");
-=======
 		rcu_read_lock();
 		rdev_for_each_rcu(rdev, mddev) {
 			seq_printf(seq, " %pg[%d]", rdev->bdev, rdev->desc_nr);
@@ -12837,7 +8391,6 @@ static int md_seq_show(struct seq_file *seq, void *v)
 				seq_printf(seq, "(W)");
 			if (test_bit(Journal, &rdev->flags))
 				seq_printf(seq, "(J)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (test_bit(Faulty, &rdev->flags)) {
 				seq_printf(seq, "(F)");
 				continue;
@@ -12848,10 +8401,7 @@ static int md_seq_show(struct seq_file *seq, void *v)
 				seq_printf(seq, "(R)");
 			sectors += rdev->sectors;
 		}
-<<<<<<< HEAD
-=======
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!list_empty(&mddev->disks)) {
 			if (mddev->pers)
@@ -12877,34 +8427,14 @@ static int md_seq_show(struct seq_file *seq, void *v)
 
 		if (mddev->pers) {
 			mddev->pers->status(seq, mddev);
-<<<<<<< HEAD
-	 		seq_printf(seq, "\n      ");
-			if (mddev->pers->sync_request) {
-				if (mddev->curr_resync > 2) {
-					status_resync(seq, mddev);
-					seq_printf(seq, "\n      ");
-				} else if (mddev->curr_resync == 1 || mddev->curr_resync == 2)
-					seq_printf(seq, "\tresync=DELAYED\n      ");
-				else if (mddev->recovery_cp < MaxSector)
-					seq_printf(seq, "\tresync=PENDING\n      ");
-=======
 			seq_printf(seq, "\n      ");
 			if (mddev->pers->sync_request) {
 				if (status_resync(seq, mddev))
 					seq_printf(seq, "\n      ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else
 			seq_printf(seq, "\n       ");
 
-<<<<<<< HEAD
-		bitmap_status(seq, mddev->bitmap);
-
-		seq_printf(seq, "\n");
-	}
-	mddev_unlock(mddev);
-	
-=======
 		md_bitmap_status(seq, mddev->bitmap);
 
 		seq_printf(seq, "\n");
@@ -12918,7 +8448,6 @@ static int md_seq_show(struct seq_file *seq, void *v)
 	if (atomic_dec_and_test(&mddev->active))
 		__mddev_put(mddev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -12943,30 +8472,6 @@ static int md_seq_open(struct inode *inode, struct file *file)
 	return error;
 }
 
-<<<<<<< HEAD
-static unsigned int mdstat_poll(struct file *filp, poll_table *wait)
-{
-	struct seq_file *seq = filp->private_data;
-	int mask;
-
-	poll_wait(filp, &md_event_waiters, wait);
-
-	/* always allow read */
-	mask = POLLIN | POLLRDNORM;
-
-	if (seq->poll_event != atomic_read(&md_event_count))
-		mask |= POLLERR | POLLPRI;
-	return mask;
-}
-
-static const struct file_operations md_seq_fops = {
-	.owner		= THIS_MODULE,
-	.open           = md_seq_open,
-	.read           = seq_read,
-	.llseek         = seq_lseek,
-	.release	= seq_release_private,
-	.poll		= mdstat_poll,
-=======
 static int md_unloading;
 static __poll_t mdstat_poll(struct file *filp, poll_table *wait)
 {
@@ -12991,23 +8496,10 @@ static const struct proc_ops mdstat_proc_ops = {
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release,
 	.proc_poll	= mdstat_poll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int register_md_personality(struct md_personality *p)
 {
-<<<<<<< HEAD
-	spin_lock(&pers_lock);
-	list_add_tail(&p->list, &pers_list);
-	printk(KERN_INFO "md: %s personality registered for level %d\n", p->name, p->level);
-	spin_unlock(&pers_lock);
-	return 0;
-}
-
-int unregister_md_personality(struct md_personality *p)
-{
-	printk(KERN_INFO "md: %s personality unregistered\n", p->name);
-=======
 	pr_debug("md: %s personality registered for level %d\n",
 		 p->name, p->level);
 	spin_lock(&pers_lock);
@@ -13020,18 +8512,11 @@ EXPORT_SYMBOL(register_md_personality);
 int unregister_md_personality(struct md_personality *p)
 {
 	pr_debug("md: %s personality unregistered\n", p->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&pers_lock);
 	list_del_init(&p->list);
 	spin_unlock(&pers_lock);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int is_mddev_idle(struct mddev *mddev, int init)
-{
-	struct md_rdev * rdev;
-=======
 EXPORT_SYMBOL(unregister_md_personality);
 
 int register_md_cluster_operations(struct md_cluster_operations *ops,
@@ -13090,21 +8575,14 @@ void md_cluster_stop(struct mddev *mddev)
 static int is_mddev_idle(struct mddev *mddev, int init)
 {
 	struct md_rdev *rdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idle;
 	int curr_events;
 
 	idle = 1;
 	rcu_read_lock();
 	rdev_for_each_rcu(rdev, mddev) {
-<<<<<<< HEAD
-		struct gendisk *disk = rdev->bdev->bd_contains->bd_disk;
-		curr_events = (int)part_stat_read(&disk->part0, sectors[0]) +
-			      (int)part_stat_read(&disk->part0, sectors[1]) -
-=======
 		struct gendisk *disk = rdev->bdev->bd_disk;
 		curr_events = (int)part_stat_read_accum(disk->part0, sectors) -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      atomic_read(&disk->sync_io);
 		/* sync IO will cause sync_io to increase before the disk_stats
 		 * as sync_io is counted when a request starts, and
@@ -13144,37 +8622,17 @@ void md_done_sync(struct mddev *mddev, int blocks, int ok)
 	wake_up(&mddev->recovery_wait);
 	if (!ok) {
 		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-<<<<<<< HEAD
-=======
 		set_bit(MD_RECOVERY_ERROR, &mddev->recovery);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		md_wakeup_thread(mddev->thread);
 		// stop recovery, signal do_sync ....
 	}
 }
-<<<<<<< HEAD
-
-=======
 EXPORT_SYMBOL(md_done_sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* md_write_start(mddev, bi)
  * If we need to update some array metadata (e.g. 'active' flag
  * in superblock) before writing, schedule a superblock update
  * and wait for it to complete.
-<<<<<<< HEAD
- */
-void md_write_start(struct mddev *mddev, struct bio *bi)
-{
-	int did_change = 0;
-	if (bio_data_dir(bi) != WRITE)
-		return;
-
-	BUG_ON(mddev->ro == 1);
-	if (mddev->ro == 2) {
-		/* need to switch to read/write */
-		mddev->ro = 0;
-=======
  * A return value of 'false' means that the write wasn't recorded
  * and cannot proceed as the array is being suspend.
  */
@@ -13190,44 +8648,11 @@ bool md_write_start(struct mddev *mddev, struct bio *bi)
 		/* need to switch to read/write */
 		flush_work(&mddev->sync_work);
 		mddev->ro = MD_RDWR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
 		md_wakeup_thread(mddev->thread);
 		md_wakeup_thread(mddev->sync_thread);
 		did_change = 1;
 	}
-<<<<<<< HEAD
-	atomic_inc(&mddev->writes_pending);
-	if (mddev->safemode == 1)
-		mddev->safemode = 0;
-	if (mddev->in_sync) {
-		spin_lock_irq(&mddev->write_lock);
-		if (mddev->in_sync) {
-			mddev->in_sync = 0;
-			set_bit(MD_CHANGE_CLEAN, &mddev->flags);
-			set_bit(MD_CHANGE_PENDING, &mddev->flags);
-			md_wakeup_thread(mddev->thread);
-			did_change = 1;
-		}
-		spin_unlock_irq(&mddev->write_lock);
-	}
-	if (did_change)
-		sysfs_notify_dirent_safe(mddev->sysfs_state);
-	wait_event(mddev->sb_wait,
-		   !test_bit(MD_CHANGE_PENDING, &mddev->flags));
-}
-
-void md_write_end(struct mddev *mddev)
-{
-	if (atomic_dec_and_test(&mddev->writes_pending)) {
-		if (mddev->safemode == 2)
-			md_wakeup_thread(mddev->thread);
-		else if (mddev->safemode_delay)
-			mod_timer(&mddev->safemode_timer, jiffies + mddev->safemode_delay);
-	}
-}
-
-=======
 	rcu_read_lock();
 	percpu_ref_get(&mddev->writes_pending);
 	smp_mb(); /* Match smp_mb in set_in_sync() */
@@ -13371,45 +8796,11 @@ void md_free_cloned_bio(struct bio *bio)
 }
 EXPORT_SYMBOL_GPL(md_free_cloned_bio);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* md_allow_write(mddev)
  * Calling this ensures that the array is marked 'active' so that writes
  * may proceed without blocking.  It is important to call this before
  * attempting a GFP_KERNEL allocation while holding the mddev lock.
  * Must be called with mddev_lock held.
-<<<<<<< HEAD
- *
- * In the ->external case MD_CHANGE_CLEAN can not be cleared until mddev->lock
- * is dropped, so return -EAGAIN after notifying userspace.
- */
-int md_allow_write(struct mddev *mddev)
-{
-	if (!mddev->pers)
-		return 0;
-	if (mddev->ro)
-		return 0;
-	if (!mddev->pers->sync_request)
-		return 0;
-
-	spin_lock_irq(&mddev->write_lock);
-	if (mddev->in_sync) {
-		mddev->in_sync = 0;
-		set_bit(MD_CHANGE_CLEAN, &mddev->flags);
-		set_bit(MD_CHANGE_PENDING, &mddev->flags);
-		if (mddev->safemode_delay &&
-		    mddev->safemode == 0)
-			mddev->safemode = 1;
-		spin_unlock_irq(&mddev->write_lock);
-		md_update_sb(mddev, 0);
-		sysfs_notify_dirent_safe(mddev->sysfs_state);
-	} else
-		spin_unlock_irq(&mddev->write_lock);
-
-	if (test_bit(MD_CHANGE_PENDING, &mddev->flags))
-		return -EAGAIN;
-	else
-		return 0;
-=======
  */
 void md_allow_write(struct mddev *mddev)
 {
@@ -13436,28 +8827,11 @@ void md_allow_write(struct mddev *mddev)
 			   !test_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags));
 	} else
 		spin_unlock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(md_allow_write);
 
 #define SYNC_MARKS	10
 #define	SYNC_MARK_STEP	(3*HZ)
-<<<<<<< HEAD
-void md_do_sync(struct mddev *mddev)
-{
-	struct mddev *mddev2;
-	unsigned int currspeed = 0,
-		 window;
-	sector_t max_sectors,j, io_sectors;
-	unsigned long mark[SYNC_MARKS];
-	sector_t mark_cnt[SYNC_MARKS];
-	int last_mark,m;
-	struct list_head *tmp;
-	sector_t last_check;
-	int skipped = 0;
-	struct md_rdev *rdev;
-	char *desc;
-=======
 #define UPDATE_FREQUENCY (5*60*HZ)
 void md_do_sync(struct md_thread *thread)
 {
@@ -13475,24 +8849,10 @@ void md_do_sync(struct md_thread *thread)
 	char *desc, *action = NULL;
 	struct blk_plug plug;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* just incase thread restarts... */
 	if (test_bit(MD_RECOVERY_DONE, &mddev->recovery))
 		return;
-<<<<<<< HEAD
-	if (mddev->ro) {/* never try to sync a read-only array */
-		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-		return;
-	}
-
-	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery)) {
-		if (test_bit(MD_RECOVERY_CHECK, &mddev->recovery))
-			desc = "data-check";
-		else if (test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
-			desc = "requested-resync";
-		else
-=======
 
 	if (test_bit(MD_RECOVERY_INTR, &mddev->recovery))
 		goto skip;
@@ -13525,26 +8885,15 @@ void md_do_sync(struct md_thread *thread)
 			desc = "requested-resync";
 			action = "repair";
 		} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			desc = "resync";
 	} else if (test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery))
 		desc = "reshape";
 	else
 		desc = "recovery";
 
-<<<<<<< HEAD
-	/* we overload curr_resync somewhat here.
-	 * 0 == not engaged in resync at all
-	 * 2 == checking that there is no conflict with another sync
-	 * 1 == like 2, but have yielded to allow conflicting resync to
-	 *		commense
-	 * other == active in resync - this many blocks
-	 *
-=======
 	mddev->last_sync_action = action ?: desc;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Before starting a resync we must have set curr_resync to
 	 * 2, and then checked that every "conflicting" array has curr_resync
 	 * less than ours.  When we find one that is the same or higher
@@ -13555,17 +8904,6 @@ void md_do_sync(struct md_thread *thread)
 	 */
 
 	do {
-<<<<<<< HEAD
-		mddev->curr_resync = 2;
-
-	try_again:
-		if (kthread_should_stop())
-			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-
-		if (test_bit(MD_RECOVERY_INTR, &mddev->recovery))
-			goto skip;
-		for_each_mddev(mddev2, tmp) {
-=======
 		int mddev2_minor = -1;
 		mddev->curr_resync = MD_RESYNC_DELAYED;
 
@@ -13576,21 +8914,12 @@ void md_do_sync(struct md_thread *thread)
 		list_for_each_entry(mddev2, &all_mddevs, all_mddevs) {
 			if (test_bit(MD_DELETED, &mddev2->flags))
 				continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (mddev2 == mddev)
 				continue;
 			if (!mddev->parallel_resync
 			&&  mddev2->curr_resync
 			&&  match_mddev_units(mddev, mddev2)) {
 				DEFINE_WAIT(wq);
-<<<<<<< HEAD
-				if (mddev < mddev2 && mddev->curr_resync == 2) {
-					/* arbitrarily yield */
-					mddev->curr_resync = 1;
-					wake_up(&resync_wait);
-				}
-				if (mddev > mddev2 && mddev->curr_resync == 1)
-=======
 				if (mddev < mddev2 &&
 				    mddev->curr_resync == MD_RESYNC_DELAYED) {
 					/* arbitrarily yield */
@@ -13599,7 +8928,6 @@ void md_do_sync(struct md_thread *thread)
 				}
 				if (mddev > mddev2 &&
 				    mddev->curr_resync == MD_RESYNC_YIELDED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* no need to wait here, we can wait the next
 					 * time 'round when curr_resync == 2
 					 */
@@ -13609,15 +8937,6 @@ void md_do_sync(struct md_thread *thread)
 				 * be caught by 'softlockup'
 				 */
 				prepare_to_wait(&resync_wait, &wq, TASK_INTERRUPTIBLE);
-<<<<<<< HEAD
-				if (!kthread_should_stop() &&
-				    mddev2->curr_resync >= mddev->curr_resync) {
-					printk(KERN_INFO "md: delaying %s of %s"
-					       " until %s has finished (they"
-					       " share one or more physical units)\n",
-					       desc, mdname(mddev), mdname(mddev2));
-					mddev_put(mddev2);
-=======
 				if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
 				    mddev2->curr_resync >= mddev->curr_resync) {
 					if (mddev2_minor != mddev2->md_minor) {
@@ -13628,7 +8947,6 @@ void md_do_sync(struct md_thread *thread)
 					}
 					spin_unlock(&all_mddevs_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (signal_pending(current))
 						flush_signals(current);
 					schedule();
@@ -13638,12 +8956,8 @@ void md_do_sync(struct md_thread *thread)
 				finish_wait(&resync_wait, &wq);
 			}
 		}
-<<<<<<< HEAD
-	} while (mddev->curr_resync < 2);
-=======
 		spin_unlock(&all_mddevs_lock);
 	} while (mddev->curr_resync < MD_RESYNC_DELAYED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	j = 0;
 	if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery)) {
@@ -13651,22 +8965,13 @@ void md_do_sync(struct md_thread *thread)
 		 * which defaults to physical size, but can be virtual size
 		 */
 		max_sectors = mddev->resync_max_sectors;
-<<<<<<< HEAD
-		mddev->resync_mismatches = 0;
-=======
 		atomic64_set(&mddev->resync_mismatches, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* we don't use the checkpoint if there's a bitmap */
 		if (test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
 			j = mddev->resync_min;
 		else if (!mddev->bitmap)
 			j = mddev->recovery_cp;
 
-<<<<<<< HEAD
-	} else if (test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery))
-		max_sectors = mddev->dev_sectors;
-	else {
-=======
 	} else if (test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery)) {
 		max_sectors = mddev->resync_max_sectors;
 		/*
@@ -13678,17 +8983,13 @@ void md_do_sync(struct md_thread *thread)
 		    mddev->reshape_position != MaxSector)
 			j = mddev->reshape_position;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* recovery follows the physical size of devices */
 		max_sectors = mddev->dev_sectors;
 		j = MaxSector;
 		rcu_read_lock();
 		rdev_for_each_rcu(rdev, mddev)
 			if (rdev->raid_disk >= 0 &&
-<<<<<<< HEAD
-=======
 			    !test_bit(Journal, &rdev->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !test_bit(Faulty, &rdev->flags) &&
 			    !test_bit(In_sync, &rdev->flags) &&
 			    rdev->recovery_offset < j)
@@ -13709,19 +9010,10 @@ void md_do_sync(struct md_thread *thread)
 		}
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO "md: %s of RAID array %s\n", desc, mdname(mddev));
-	printk(KERN_INFO "md: minimum _guaranteed_  speed:"
-		" %d KB/sec/disk.\n", speed_min(mddev));
-	printk(KERN_INFO "md: using maximum available idle IO bandwidth "
-	       "(but not more than %d KB/sec) for %s.\n",
-	       speed_max(mddev), desc);
-=======
 	pr_info("md: %s of RAID array %s\n", desc, mdname(mddev));
 	pr_debug("md: minimum _guaranteed_  speed: %d KB/sec/disk.\n", speed_min(mddev));
 	pr_debug("md: using maximum available idle IO bandwidth (but not more than %d KB/sec) for %s.\n",
 		 speed_max(mddev), desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	is_mddev_idle(mddev, 1); /* this initializes IO event counters */
 
@@ -13737,29 +9029,13 @@ void md_do_sync(struct md_thread *thread)
 	/*
 	 * Tune reconstruction:
 	 */
-<<<<<<< HEAD
-	window = 32*(PAGE_SIZE/512);
-	printk(KERN_INFO "md: using %dk window, over a total of %lluk.\n",
-		window/2, (unsigned long long)max_sectors/2);
-=======
 	window = 32 * (PAGE_SIZE / 512);
 	pr_debug("md: using %dk window, over a total of %lluk.\n",
 		 window/2, (unsigned long long)max_sectors/2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_set(&mddev->recovery_active, 0);
 	last_check = 0;
 
-<<<<<<< HEAD
-	if (j>2) {
-		printk(KERN_INFO 
-		       "md: resuming %s of %s from checkpoint.\n",
-		       desc, mdname(mddev));
-		mddev->curr_resync = j;
-	}
-	mddev->curr_resync_completed = j;
-
-=======
 	if (j >= MD_RESYNC_ACTIVE) {
 		pr_debug("md: resuming %s of %s from checkpoint.\n",
 			 desc, mdname(mddev));
@@ -13772,7 +9048,6 @@ void md_do_sync(struct md_thread *thread)
 	update_time = jiffies;
 
 	blk_start_plug(&plug);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (j < max_sectors) {
 		sector_t sectors;
 
@@ -13782,27 +9057,15 @@ void md_do_sync(struct md_thread *thread)
 		    ((mddev->curr_resync > mddev->curr_resync_completed &&
 		      (mddev->curr_resync - mddev->curr_resync_completed)
 		      > (max_sectors >> 4)) ||
-<<<<<<< HEAD
-		     (j - mddev->curr_resync_completed)*2
-		     >= mddev->resync_max - mddev->curr_resync_completed
-=======
 		     time_after_eq(jiffies, update_time + UPDATE_FREQUENCY) ||
 		     (j - mddev->curr_resync_completed)*2
 		     >= mddev->resync_max - mddev->curr_resync_completed ||
 		     mddev->curr_resync_completed > mddev->resync_max
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    )) {
 			/* time to update curr_resync_completed */
 			wait_event(mddev->recovery_wait,
 				   atomic_read(&mddev->recovery_active) == 0);
 			mddev->curr_resync_completed = j;
-<<<<<<< HEAD
-			set_bit(MD_CHANGE_CLEAN, &mddev->flags);
-			sysfs_notify(&mddev->kobj, NULL, "sync_completed");
-		}
-
-		while (j >= mddev->resync_max && !kthread_should_stop()) {
-=======
 			if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery) &&
 			    j > mddev->recovery_cp)
 				mddev->recovery_cp = j;
@@ -13813,7 +9076,6 @@ void md_do_sync(struct md_thread *thread)
 
 		while (j >= mddev->resync_max &&
 		       !test_bit(MD_RECOVERY_INTR, &mddev->recovery)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* As this condition is controlled by user-space,
 			 * we can block indefinitely, so use '_interruptible'
 			 * to avoid triggering warnings.
@@ -13821,19 +9083,6 @@ void md_do_sync(struct md_thread *thread)
 			flush_signals(current); /* just in case */
 			wait_event_interruptible(mddev->recovery_wait,
 						 mddev->resync_max > j
-<<<<<<< HEAD
-						 || kthread_should_stop());
-		}
-
-		if (kthread_should_stop())
-			goto interrupted;
-
-		sectors = mddev->pers->sync_request(mddev, j, &skipped,
-						  currspeed < speed_min(mddev));
-		if (sectors == 0) {
-			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-			goto out;
-=======
 						 || test_bit(MD_RECOVERY_INTR,
 							     &mddev->recovery));
 		}
@@ -13845,7 +9094,6 @@ void md_do_sync(struct md_thread *thread)
 		if (sectors == 0) {
 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!skipped) { /* actual IO requested */
@@ -13857,25 +9105,17 @@ void md_do_sync(struct md_thread *thread)
 			break;
 
 		j += sectors;
-<<<<<<< HEAD
-		if (j>1) mddev->curr_resync = j;
-=======
 		if (j > max_sectors)
 			/* when skipping, extra large numbers can be returned. */
 			j = max_sectors;
 		if (j >= MD_RESYNC_ACTIVE)
 			mddev->curr_resync = j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mddev->curr_mark_cnt = io_sectors;
 		if (last_check == 0)
 			/* this is the earliest that rebuild will be
 			 * visible in /proc/mdstat
 			 */
-<<<<<<< HEAD
-			md_new_event(mddev);
-=======
 			md_new_event();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (last_check + window > io_sectors || j == max_sectors)
 			continue;
@@ -13893,15 +9133,8 @@ void md_do_sync(struct md_thread *thread)
 			last_mark = next;
 		}
 
-<<<<<<< HEAD
-
-		if (kthread_should_stop())
-			goto interrupted;
-
-=======
 		if (test_bit(MD_RECOVERY_INTR, &mddev->recovery))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * this loop exits only if either when we are slower than
@@ -13913,39 +9146,6 @@ void md_do_sync(struct md_thread *thread)
 		 */
 		cond_resched();
 
-<<<<<<< HEAD
-		currspeed = ((unsigned long)(io_sectors-mddev->resync_mark_cnt))/2
-			/((jiffies-mddev->resync_mark)/HZ +1) +1;
-
-		if (currspeed > speed_min(mddev)) {
-			if ((currspeed > speed_max(mddev)) ||
-					!is_mddev_idle(mddev, 0)) {
-				msleep(500);
-				goto repeat;
-			}
-		}
-	}
-	printk(KERN_INFO "md: %s: %s done.\n",mdname(mddev), desc);
-	/*
-	 * this also signals 'finished resyncing' to md_stop
-	 */
- out:
-	wait_event(mddev->recovery_wait, !atomic_read(&mddev->recovery_active));
-
-	/* tell personality that we are finished */
-	mddev->pers->sync_request(mddev, max_sectors, &skipped, 1);
-
-	if (!test_bit(MD_RECOVERY_CHECK, &mddev->recovery) &&
-	    mddev->curr_resync > 2) {
-		if (test_bit(MD_RECOVERY_SYNC, &mddev->recovery)) {
-			if (test_bit(MD_RECOVERY_INTR, &mddev->recovery)) {
-				if (mddev->curr_resync >= mddev->recovery_cp) {
-					printk(KERN_INFO
-					       "md: checkpointing %s of %s.\n",
-					       desc, mdname(mddev));
-					mddev->recovery_cp =
-						mddev->curr_resync_completed;
-=======
 		recovery_done = io_sectors - atomic_read(&mddev->recovery_active);
 		currspeed = ((unsigned long)(recovery_done - mddev->resync_mark_cnt))/2
 			/((jiffies-mddev->resync_mark)/HZ +1) +1;
@@ -13996,29 +9196,12 @@ void md_do_sync(struct md_thread *thread)
 					else
 						mddev->recovery_cp =
 							mddev->curr_resync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			} else
 				mddev->recovery_cp = MaxSector;
 		} else {
 			if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery))
 				mddev->curr_resync = MaxSector;
-<<<<<<< HEAD
-			rcu_read_lock();
-			rdev_for_each_rcu(rdev, mddev)
-				if (rdev->raid_disk >= 0 &&
-				    mddev->delta_disks >= 0 &&
-				    !test_bit(Faulty, &rdev->flags) &&
-				    !test_bit(In_sync, &rdev->flags) &&
-				    rdev->recovery_offset < mddev->curr_resync)
-					rdev->recovery_offset = mddev->curr_resync;
-			rcu_read_unlock();
-		}
-	}
- skip:
-	set_bit(MD_CHANGE_DEVS, &mddev->flags);
-
-=======
 			if (!test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery) &&
 			    test_bit(MD_RECOVERY_RECOVER, &mddev->recovery)) {
 				rcu_read_lock();
@@ -14056,7 +9239,6 @@ void md_do_sync(struct md_thread *thread)
 	}
 
 	spin_lock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery)) {
 		/* We completed so min/max setting can be forgotten if used. */
 		if (test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
@@ -14064,27 +9246,6 @@ void md_do_sync(struct md_thread *thread)
 		mddev->resync_max = MaxSector;
 	} else if (test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
 		mddev->resync_min = mddev->curr_resync_completed;
-<<<<<<< HEAD
-	mddev->curr_resync = 0;
-	wake_up(&resync_wait);
-	set_bit(MD_RECOVERY_DONE, &mddev->recovery);
-	md_wakeup_thread(mddev->thread);
-	return;
-
- interrupted:
-	/*
-	 * got a signal, exit.
-	 */
-	printk(KERN_INFO
-	       "md: md_do_sync() got signal ... exiting\n");
-	set_bit(MD_RECOVERY_INTR, &mddev->recovery);
-	goto out;
-
-}
-EXPORT_SYMBOL_GPL(md_do_sync);
-
-static int remove_and_add_spares(struct mddev *mddev)
-=======
 	set_bit(MD_RECOVERY_DONE, &mddev->recovery);
 	mddev->curr_resync = MD_RESYNC_NONE;
 	spin_unlock(&mddev->lock);
@@ -14181,90 +9342,11 @@ static bool md_spares_need_change(struct mddev *mddev)
 
 static int remove_and_add_spares(struct mddev *mddev,
 				 struct md_rdev *this)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev;
 	int spares = 0;
 	int removed = 0;
 
-<<<<<<< HEAD
-	mddev->curr_resync_completed = 0;
-
-	rdev_for_each(rdev, mddev)
-		if (rdev->raid_disk >= 0 &&
-		    !test_bit(Blocked, &rdev->flags) &&
-		    (test_bit(Faulty, &rdev->flags) ||
-		     ! test_bit(In_sync, &rdev->flags)) &&
-		    atomic_read(&rdev->nr_pending)==0) {
-			if (mddev->pers->hot_remove_disk(
-				    mddev, rdev) == 0) {
-				sysfs_unlink_rdev(mddev, rdev);
-				rdev->raid_disk = -1;
-				removed++;
-			}
-		}
-	if (removed)
-		sysfs_notify(&mddev->kobj, NULL,
-			     "degraded");
-
-
-	rdev_for_each(rdev, mddev) {
-		if (rdev->raid_disk >= 0 &&
-		    !test_bit(In_sync, &rdev->flags) &&
-		    !test_bit(Faulty, &rdev->flags))
-			spares++;
-		if (rdev->raid_disk < 0
-		    && !test_bit(Faulty, &rdev->flags)) {
-			rdev->recovery_offset = 0;
-			if (mddev->pers->
-			    hot_add_disk(mddev, rdev) == 0) {
-				if (sysfs_link_rdev(mddev, rdev))
-					/* failure here is OK */;
-				spares++;
-				md_new_event(mddev);
-				set_bit(MD_CHANGE_DEVS, &mddev->flags);
-			}
-		}
-	}
-	if (removed)
-		set_bit(MD_CHANGE_DEVS, &mddev->flags);
-	return spares;
-}
-
-static void reap_sync_thread(struct mddev *mddev)
-{
-	struct md_rdev *rdev;
-
-	/* resync has finished, collect result */
-	md_unregister_thread(&mddev->sync_thread);
-	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
-	    !test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery)) {
-		/* success...*/
-		/* activate any spares */
-		if (mddev->pers->spare_active(mddev)) {
-			sysfs_notify(&mddev->kobj, NULL,
-				     "degraded");
-			set_bit(MD_CHANGE_DEVS, &mddev->flags);
-		}
-	}
-	if (test_bit(MD_RECOVERY_RESHAPE, &mddev->recovery) &&
-	    mddev->pers->finish_reshape)
-		mddev->pers->finish_reshape(mddev);
-
-	/* If array is no-longer degraded, then any saved_raid_disk
-	 * information must be scrapped.  Also if any device is now
-	 * In_sync we must scrape the saved_raid_disk for that device
-	 * do the superblock for an incrementally recovered device
-	 * written out.
-	 */
-	rdev_for_each(rdev, mddev)
-		if (!mddev->degraded ||
-		    test_bit(In_sync, &rdev->flags))
-			rdev->saved_raid_disk = -1;
-
-	md_update_sb(mddev, 1);
-	clear_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
-=======
 	if (this && test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
 		/* Mustn't remove devices when resync thread is running */
 		return 0;
@@ -14422,19 +9504,10 @@ static void md_start_sync(struct work_struct *ws)
 	return;
 
 not_running:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(MD_RECOVERY_SYNC, &mddev->recovery);
 	clear_bit(MD_RECOVERY_RESHAPE, &mddev->recovery);
 	clear_bit(MD_RECOVERY_REQUESTED, &mddev->recovery);
 	clear_bit(MD_RECOVERY_CHECK, &mddev->recovery);
-<<<<<<< HEAD
-	/* flag recovery needed just to double check */
-	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-	sysfs_notify_dirent_safe(mddev->sysfs_action);
-	md_new_event(mddev);
-	if (mddev->event_work.func)
-		queue_work(md_misc_wq, &mddev->event_work);
-=======
 	clear_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
 	mddev_unlock(mddev);
 	/*
@@ -14464,7 +9537,6 @@ static void unregister_sync_thread(struct mddev *mddev)
 		return;
 
 	md_reap_sync_thread(mddev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -14491,18 +9563,6 @@ static void unregister_sync_thread(struct mddev *mddev)
  */
 void md_check_recovery(struct mddev *mddev)
 {
-<<<<<<< HEAD
-	if (mddev->suspended)
-		return;
-
-	if (mddev->bitmap)
-		bitmap_daemon_work(mddev);
-
-	if (signal_pending(current)) {
-		if (mddev->pers->sync_request && !mddev->external) {
-			printk(KERN_INFO "md: %s in immediate safe mode\n",
-			       mdname(mddev));
-=======
 	if (mddev->bitmap)
 		md_bitmap_daemon_work(mddev);
 
@@ -14510,22 +9570,11 @@ void md_check_recovery(struct mddev *mddev)
 		if (mddev->pers->sync_request && !mddev->external) {
 			pr_debug("md: %s in immediate safe mode\n",
 				 mdname(mddev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mddev->safemode = 2;
 		}
 		flush_signals(current);
 	}
 
-<<<<<<< HEAD
-	if (mddev->ro && !test_bit(MD_RECOVERY_NEEDED, &mddev->recovery))
-		return;
-	if ( ! (
-		(mddev->flags & ~ (1<<MD_CHANGE_PENDING)) ||
-		test_bit(MD_RECOVERY_NEEDED, &mddev->recovery) ||
-		test_bit(MD_RECOVERY_DONE, &mddev->recovery) ||
-		(mddev->external == 0 && mddev->safemode == 1) ||
-		(mddev->safemode == 2 && ! atomic_read(&mddev->writes_pending)
-=======
 	if (!md_is_rdwr(mddev) &&
 	    !test_bit(MD_RECOVERY_NEEDED, &mddev->recovery) &&
 	    !test_bit(MD_RECOVERY_DONE, &mddev->recovery))
@@ -14536,71 +9585,11 @@ void md_check_recovery(struct mddev *mddev)
 		test_bit(MD_RECOVERY_DONE, &mddev->recovery) ||
 		(mddev->external == 0 && mddev->safemode == 1) ||
 		(mddev->safemode == 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 && !mddev->in_sync && mddev->recovery_cp == MaxSector)
 		))
 		return;
 
 	if (mddev_trylock(mddev)) {
-<<<<<<< HEAD
-		int spares = 0;
-
-		if (mddev->ro) {
-			/* Only thing we do on a ro array is remove
-			 * failed devices.
-			 */
-			struct md_rdev *rdev;
-			rdev_for_each(rdev, mddev)
-				if (rdev->raid_disk >= 0 &&
-				    !test_bit(Blocked, &rdev->flags) &&
-				    test_bit(Faulty, &rdev->flags) &&
-				    atomic_read(&rdev->nr_pending)==0) {
-					if (mddev->pers->hot_remove_disk(
-						    mddev, rdev) == 0) {
-						sysfs_unlink_rdev(mddev, rdev);
-						rdev->raid_disk = -1;
-					}
-				}
-			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-			goto unlock;
-		}
-
-		if (!mddev->external) {
-			int did_change = 0;
-			spin_lock_irq(&mddev->write_lock);
-			if (mddev->safemode &&
-			    !atomic_read(&mddev->writes_pending) &&
-			    !mddev->in_sync &&
-			    mddev->recovery_cp == MaxSector) {
-				mddev->in_sync = 1;
-				did_change = 1;
-				set_bit(MD_CHANGE_CLEAN, &mddev->flags);
-			}
-			if (mddev->safemode == 1)
-				mddev->safemode = 0;
-			spin_unlock_irq(&mddev->write_lock);
-			if (did_change)
-				sysfs_notify_dirent_safe(mddev->sysfs_state);
-		}
-
-		if (mddev->flags)
-			md_update_sb(mddev, 0);
-
-		if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery) &&
-		    !test_bit(MD_RECOVERY_DONE, &mddev->recovery)) {
-			/* resync/recovery still happening */
-			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
-			goto unlock;
-		}
-		if (mddev->sync_thread) {
-			reap_sync_thread(mddev);
-			goto unlock;
-		}
-		/* Set RUNNING before clearing NEEDED to avoid
-		 * any transients in the value of "sync_action".
-		 */
-		set_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
-=======
 		bool try_set_sync = mddev->safemode != 0;
 
 		if (!mddev->external && mddev->safemode == 1)
@@ -14684,81 +9673,12 @@ void md_check_recovery(struct mddev *mddev)
 		spin_lock(&mddev->lock);
 		set_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
 		spin_unlock(&mddev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear some bits that don't mean anything, but
 		 * might be left set
 		 */
 		clear_bit(MD_RECOVERY_INTR, &mddev->recovery);
 		clear_bit(MD_RECOVERY_DONE, &mddev->recovery);
 
-<<<<<<< HEAD
-		if (!test_and_clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery) ||
-		    test_bit(MD_RECOVERY_FROZEN, &mddev->recovery))
-			goto unlock;
-		/* no recovery is running.
-		 * remove any failed drives, then
-		 * add spares if possible.
-		 * Spare are also removed and re-added, to allow
-		 * the personality to fail the re-add.
-		 */
-
-		if (mddev->reshape_position != MaxSector) {
-			if (mddev->pers->check_reshape == NULL ||
-			    mddev->pers->check_reshape(mddev) != 0)
-				/* Cannot proceed */
-				goto unlock;
-			set_bit(MD_RECOVERY_RESHAPE, &mddev->recovery);
-			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-		} else if ((spares = remove_and_add_spares(mddev))) {
-			clear_bit(MD_RECOVERY_SYNC, &mddev->recovery);
-			clear_bit(MD_RECOVERY_CHECK, &mddev->recovery);
-			clear_bit(MD_RECOVERY_REQUESTED, &mddev->recovery);
-			set_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-		} else if (mddev->recovery_cp < MaxSector) {
-			set_bit(MD_RECOVERY_SYNC, &mddev->recovery);
-			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
-		} else if (!test_bit(MD_RECOVERY_SYNC, &mddev->recovery))
-			/* nothing to be done ... */
-			goto unlock;
-
-		if (mddev->pers->sync_request) {
-			if (spares && mddev->bitmap && ! mddev->bitmap->file) {
-				/* We are adding a device or devices to an array
-				 * which has the bitmap stored on all devices.
-				 * So make sure all bitmap pages get written
-				 */
-				bitmap_write_all(mddev->bitmap);
-			}
-			mddev->sync_thread = md_register_thread(md_do_sync,
-								mddev,
-								"resync");
-			if (!mddev->sync_thread) {
-				printk(KERN_ERR "%s: could not start resync"
-					" thread...\n", 
-					mdname(mddev));
-				/* leave the spares where they are, it shouldn't hurt */
-				clear_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
-				clear_bit(MD_RECOVERY_SYNC, &mddev->recovery);
-				clear_bit(MD_RECOVERY_RESHAPE, &mddev->recovery);
-				clear_bit(MD_RECOVERY_REQUESTED, &mddev->recovery);
-				clear_bit(MD_RECOVERY_CHECK, &mddev->recovery);
-			} else
-				md_wakeup_thread(mddev->sync_thread);
-			sysfs_notify_dirent_safe(mddev->sysfs_action);
-			md_new_event(mddev);
-		}
-	unlock:
-		if (!mddev->sync_thread) {
-			clear_bit(MD_RECOVERY_RUNNING, &mddev->recovery);
-			if (test_and_clear_bit(MD_RECOVERY_RECOVER,
-					       &mddev->recovery))
-				if (mddev->sysfs_action)
-					sysfs_notify_dirent_safe(mddev->sysfs_action);
-		}
-		mddev_unlock(mddev);
-	}
-}
-=======
 		if (test_and_clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery) &&
 		    !test_bit(MD_RECOVERY_FROZEN, &mddev->recovery)) {
 			queue_work(md_misc_wq, &mddev->sync_work);
@@ -14838,7 +9758,6 @@ void md_reap_sync_thread(struct mddev *mddev)
 	wake_up(&resync_wait);
 }
 EXPORT_SYMBOL(md_reap_sync_thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void md_wait_for_blocked_rdev(struct md_rdev *rdev, struct mddev *mddev)
 {
@@ -14851,505 +9770,6 @@ void md_wait_for_blocked_rdev(struct md_rdev *rdev, struct mddev *mddev)
 }
 EXPORT_SYMBOL(md_wait_for_blocked_rdev);
 
-<<<<<<< HEAD
-
-/* Bad block management.
- * We can record which blocks on each device are 'bad' and so just
- * fail those blocks, or that stripe, rather than the whole device.
- * Entries in the bad-block table are 64bits wide.  This comprises:
- * Length of bad-range, in sectors: 0-511 for lengths 1-512
- * Start of bad-range, sector offset, 54 bits (allows 8 exbibytes)
- *  A 'shift' can be set so that larger blocks are tracked and
- *  consequently larger devices can be covered.
- * 'Acknowledged' flag - 1 bit. - the most significant bit.
- *
- * Locking of the bad-block table uses a seqlock so md_is_badblock
- * might need to retry if it is very unlucky.
- * We will sometimes want to check for bad blocks in a bi_end_io function,
- * so we use the write_seqlock_irq variant.
- *
- * When looking for a bad block we specify a range and want to
- * know if any block in the range is bad.  So we binary-search
- * to the last range that starts at-or-before the given endpoint,
- * (or "before the sector after the target range")
- * then see if it ends after the given start.
- * We return
- *  0 if there are no known bad blocks in the range
- *  1 if there are known bad block which are all acknowledged
- * -1 if there are bad blocks which have not yet been acknowledged in metadata.
- * plus the start/length of the first bad section we overlap.
- */
-int md_is_badblock(struct badblocks *bb, sector_t s, int sectors,
-		   sector_t *first_bad, int *bad_sectors)
-{
-	int hi;
-	int lo;
-	u64 *p = bb->page;
-	int rv;
-	sector_t target = s + sectors;
-	unsigned seq;
-
-	if (bb->shift > 0) {
-		/* round the start down, and the end up */
-		s >>= bb->shift;
-		target += (1<<bb->shift) - 1;
-		target >>= bb->shift;
-		sectors = target - s;
-	}
-	/* 'target' is now the first block after the bad range */
-
-retry:
-	seq = read_seqbegin(&bb->lock);
-	lo = 0;
-	rv = 0;
-	hi = bb->count;
-
-	/* Binary search between lo and hi for 'target'
-	 * i.e. for the last range that starts before 'target'
-	 */
-	/* INVARIANT: ranges before 'lo' and at-or-after 'hi'
-	 * are known not to be the last range before target.
-	 * VARIANT: hi-lo is the number of possible
-	 * ranges, and decreases until it reaches 1
-	 */
-	while (hi - lo > 1) {
-		int mid = (lo + hi) / 2;
-		sector_t a = BB_OFFSET(p[mid]);
-		if (a < target)
-			/* This could still be the one, earlier ranges
-			 * could not. */
-			lo = mid;
-		else
-			/* This and later ranges are definitely out. */
-			hi = mid;
-	}
-	/* 'lo' might be the last that started before target, but 'hi' isn't */
-	if (hi > lo) {
-		/* need to check all range that end after 's' to see if
-		 * any are unacknowledged.
-		 */
-		while (lo >= 0 &&
-		       BB_OFFSET(p[lo]) + BB_LEN(p[lo]) > s) {
-			if (BB_OFFSET(p[lo]) < target) {
-				/* starts before the end, and finishes after
-				 * the start, so they must overlap
-				 */
-				if (rv != -1 && BB_ACK(p[lo]))
-					rv = 1;
-				else
-					rv = -1;
-				*first_bad = BB_OFFSET(p[lo]);
-				*bad_sectors = BB_LEN(p[lo]);
-			}
-			lo--;
-		}
-	}
-
-	if (read_seqretry(&bb->lock, seq))
-		goto retry;
-
-	return rv;
-}
-EXPORT_SYMBOL_GPL(md_is_badblock);
-
-/*
- * Add a range of bad blocks to the table.
- * This might extend the table, or might contract it
- * if two adjacent ranges can be merged.
- * We binary-search to find the 'insertion' point, then
- * decide how best to handle it.
- */
-static int md_set_badblocks(struct badblocks *bb, sector_t s, int sectors,
-			    int acknowledged)
-{
-	u64 *p;
-	int lo, hi;
-	int rv = 1;
-
-	if (bb->shift < 0)
-		/* badblocks are disabled */
-		return 0;
-
-	if (bb->shift) {
-		/* round the start down, and the end up */
-		sector_t next = s + sectors;
-		s >>= bb->shift;
-		next += (1<<bb->shift) - 1;
-		next >>= bb->shift;
-		sectors = next - s;
-	}
-
-	write_seqlock_irq(&bb->lock);
-
-	p = bb->page;
-	lo = 0;
-	hi = bb->count;
-	/* Find the last range that starts at-or-before 's' */
-	while (hi - lo > 1) {
-		int mid = (lo + hi) / 2;
-		sector_t a = BB_OFFSET(p[mid]);
-		if (a <= s)
-			lo = mid;
-		else
-			hi = mid;
-	}
-	if (hi > lo && BB_OFFSET(p[lo]) > s)
-		hi = lo;
-
-	if (hi > lo) {
-		/* we found a range that might merge with the start
-		 * of our new range
-		 */
-		sector_t a = BB_OFFSET(p[lo]);
-		sector_t e = a + BB_LEN(p[lo]);
-		int ack = BB_ACK(p[lo]);
-		if (e >= s) {
-			/* Yes, we can merge with a previous range */
-			if (s == a && s + sectors >= e)
-				/* new range covers old */
-				ack = acknowledged;
-			else
-				ack = ack && acknowledged;
-
-			if (e < s + sectors)
-				e = s + sectors;
-			if (e - a <= BB_MAX_LEN) {
-				p[lo] = BB_MAKE(a, e-a, ack);
-				s = e;
-			} else {
-				/* does not all fit in one range,
-				 * make p[lo] maximal
-				 */
-				if (BB_LEN(p[lo]) != BB_MAX_LEN)
-					p[lo] = BB_MAKE(a, BB_MAX_LEN, ack);
-				s = a + BB_MAX_LEN;
-			}
-			sectors = e - s;
-		}
-	}
-	if (sectors && hi < bb->count) {
-		/* 'hi' points to the first range that starts after 's'.
-		 * Maybe we can merge with the start of that range */
-		sector_t a = BB_OFFSET(p[hi]);
-		sector_t e = a + BB_LEN(p[hi]);
-		int ack = BB_ACK(p[hi]);
-		if (a <= s + sectors) {
-			/* merging is possible */
-			if (e <= s + sectors) {
-				/* full overlap */
-				e = s + sectors;
-				ack = acknowledged;
-			} else
-				ack = ack && acknowledged;
-
-			a = s;
-			if (e - a <= BB_MAX_LEN) {
-				p[hi] = BB_MAKE(a, e-a, ack);
-				s = e;
-			} else {
-				p[hi] = BB_MAKE(a, BB_MAX_LEN, ack);
-				s = a + BB_MAX_LEN;
-			}
-			sectors = e - s;
-			lo = hi;
-			hi++;
-		}
-	}
-	if (sectors == 0 && hi < bb->count) {
-		/* we might be able to combine lo and hi */
-		/* Note: 's' is at the end of 'lo' */
-		sector_t a = BB_OFFSET(p[hi]);
-		int lolen = BB_LEN(p[lo]);
-		int hilen = BB_LEN(p[hi]);
-		int newlen = lolen + hilen - (s - a);
-		if (s >= a && newlen < BB_MAX_LEN) {
-			/* yes, we can combine them */
-			int ack = BB_ACK(p[lo]) && BB_ACK(p[hi]);
-			p[lo] = BB_MAKE(BB_OFFSET(p[lo]), newlen, ack);
-			memmove(p + hi, p + hi + 1,
-				(bb->count - hi - 1) * 8);
-			bb->count--;
-		}
-	}
-	while (sectors) {
-		/* didn't merge (it all).
-		 * Need to add a range just before 'hi' */
-		if (bb->count >= MD_MAX_BADBLOCKS) {
-			/* No room for more */
-			rv = 0;
-			break;
-		} else {
-			int this_sectors = sectors;
-			memmove(p + hi + 1, p + hi,
-				(bb->count - hi) * 8);
-			bb->count++;
-
-			if (this_sectors > BB_MAX_LEN)
-				this_sectors = BB_MAX_LEN;
-			p[hi] = BB_MAKE(s, this_sectors, acknowledged);
-			sectors -= this_sectors;
-			s += this_sectors;
-		}
-	}
-
-	bb->changed = 1;
-	if (!acknowledged)
-		bb->unacked_exist = 1;
-	write_sequnlock_irq(&bb->lock);
-
-	return rv;
-}
-
-int rdev_set_badblocks(struct md_rdev *rdev, sector_t s, int sectors,
-		       int acknowledged)
-{
-	int rv = md_set_badblocks(&rdev->badblocks,
-				  s + rdev->data_offset, sectors, acknowledged);
-	if (rv) {
-		/* Make sure they get written out promptly */
-		sysfs_notify_dirent_safe(rdev->sysfs_state);
-		set_bit(MD_CHANGE_CLEAN, &rdev->mddev->flags);
-		set_bit(MD_CHANGE_PENDING, &rdev->mddev->flags);
-		md_wakeup_thread(rdev->mddev->thread);
-	}
-	return rv;
-}
-EXPORT_SYMBOL_GPL(rdev_set_badblocks);
-
-/*
- * Remove a range of bad blocks from the table.
- * This may involve extending the table if we spilt a region,
- * but it must not fail.  So if the table becomes full, we just
- * drop the remove request.
- */
-static int md_clear_badblocks(struct badblocks *bb, sector_t s, int sectors)
-{
-	u64 *p;
-	int lo, hi;
-	sector_t target = s + sectors;
-	int rv = 0;
-
-	if (bb->shift > 0) {
-		/* When clearing we round the start up and the end down.
-		 * This should not matter as the shift should align with
-		 * the block size and no rounding should ever be needed.
-		 * However it is better the think a block is bad when it
-		 * isn't than to think a block is not bad when it is.
-		 */
-		s += (1<<bb->shift) - 1;
-		s >>= bb->shift;
-		target >>= bb->shift;
-		sectors = target - s;
-	}
-
-	write_seqlock_irq(&bb->lock);
-
-	p = bb->page;
-	lo = 0;
-	hi = bb->count;
-	/* Find the last range that starts before 'target' */
-	while (hi - lo > 1) {
-		int mid = (lo + hi) / 2;
-		sector_t a = BB_OFFSET(p[mid]);
-		if (a < target)
-			lo = mid;
-		else
-			hi = mid;
-	}
-	if (hi > lo) {
-		/* p[lo] is the last range that could overlap the
-		 * current range.  Earlier ranges could also overlap,
-		 * but only this one can overlap the end of the range.
-		 */
-		if (BB_OFFSET(p[lo]) + BB_LEN(p[lo]) > target) {
-			/* Partial overlap, leave the tail of this range */
-			int ack = BB_ACK(p[lo]);
-			sector_t a = BB_OFFSET(p[lo]);
-			sector_t end = a + BB_LEN(p[lo]);
-
-			if (a < s) {
-				/* we need to split this range */
-				if (bb->count >= MD_MAX_BADBLOCKS) {
-					rv = 0;
-					goto out;
-				}
-				memmove(p+lo+1, p+lo, (bb->count - lo) * 8);
-				bb->count++;
-				p[lo] = BB_MAKE(a, s-a, ack);
-				lo++;
-			}
-			p[lo] = BB_MAKE(target, end - target, ack);
-			/* there is no longer an overlap */
-			hi = lo;
-			lo--;
-		}
-		while (lo >= 0 &&
-		       BB_OFFSET(p[lo]) + BB_LEN(p[lo]) > s) {
-			/* This range does overlap */
-			if (BB_OFFSET(p[lo]) < s) {
-				/* Keep the early parts of this range. */
-				int ack = BB_ACK(p[lo]);
-				sector_t start = BB_OFFSET(p[lo]);
-				p[lo] = BB_MAKE(start, s - start, ack);
-				/* now low doesn't overlap, so.. */
-				break;
-			}
-			lo--;
-		}
-		/* 'lo' is strictly before, 'hi' is strictly after,
-		 * anything between needs to be discarded
-		 */
-		if (hi - lo > 1) {
-			memmove(p+lo+1, p+hi, (bb->count - hi) * 8);
-			bb->count -= (hi - lo - 1);
-		}
-	}
-
-	bb->changed = 1;
-out:
-	write_sequnlock_irq(&bb->lock);
-	return rv;
-}
-
-int rdev_clear_badblocks(struct md_rdev *rdev, sector_t s, int sectors)
-{
-	return md_clear_badblocks(&rdev->badblocks,
-				  s + rdev->data_offset,
-				  sectors);
-}
-EXPORT_SYMBOL_GPL(rdev_clear_badblocks);
-
-/*
- * Acknowledge all bad blocks in a list.
- * This only succeeds if ->changed is clear.  It is used by
- * in-kernel metadata updates
- */
-void md_ack_all_badblocks(struct badblocks *bb)
-{
-	if (bb->page == NULL || bb->changed)
-		/* no point even trying */
-		return;
-	write_seqlock_irq(&bb->lock);
-
-	if (bb->changed == 0 && bb->unacked_exist) {
-		u64 *p = bb->page;
-		int i;
-		for (i = 0; i < bb->count ; i++) {
-			if (!BB_ACK(p[i])) {
-				sector_t start = BB_OFFSET(p[i]);
-				int len = BB_LEN(p[i]);
-				p[i] = BB_MAKE(start, len, 1);
-			}
-		}
-		bb->unacked_exist = 0;
-	}
-	write_sequnlock_irq(&bb->lock);
-}
-EXPORT_SYMBOL_GPL(md_ack_all_badblocks);
-
-/* sysfs access to bad-blocks list.
- * We present two files.
- * 'bad-blocks' lists sector numbers and lengths of ranges that
- *    are recorded as bad.  The list is truncated to fit within
- *    the one-page limit of sysfs.
- *    Writing "sector length" to this file adds an acknowledged
- *    bad block list.
- * 'unacknowledged-bad-blocks' lists bad blocks that have not yet
- *    been acknowledged.  Writing to this file adds bad blocks
- *    without acknowledging them.  This is largely for testing.
- */
-
-static ssize_t
-badblocks_show(struct badblocks *bb, char *page, int unack)
-{
-	size_t len;
-	int i;
-	u64 *p = bb->page;
-	unsigned seq;
-
-	if (bb->shift < 0)
-		return 0;
-
-retry:
-	seq = read_seqbegin(&bb->lock);
-
-	len = 0;
-	i = 0;
-
-	while (len < PAGE_SIZE && i < bb->count) {
-		sector_t s = BB_OFFSET(p[i]);
-		unsigned int length = BB_LEN(p[i]);
-		int ack = BB_ACK(p[i]);
-		i++;
-
-		if (unack && ack)
-			continue;
-
-		len += snprintf(page+len, PAGE_SIZE-len, "%llu %u\n",
-				(unsigned long long)s << bb->shift,
-				length << bb->shift);
-	}
-	if (unack && len == 0)
-		bb->unacked_exist = 0;
-
-	if (read_seqretry(&bb->lock, seq))
-		goto retry;
-
-	return len;
-}
-
-#define DO_DEBUG 1
-
-static ssize_t
-badblocks_store(struct badblocks *bb, const char *page, size_t len, int unack)
-{
-	unsigned long long sector;
-	int length;
-	char newline;
-#ifdef DO_DEBUG
-	/* Allow clearing via sysfs *only* for testing/debugging.
-	 * Normally only a successful write may clear a badblock
-	 */
-	int clear = 0;
-	if (page[0] == '-') {
-		clear = 1;
-		page++;
-	}
-#endif /* DO_DEBUG */
-
-	switch (sscanf(page, "%llu %d%c", &sector, &length, &newline)) {
-	case 3:
-		if (newline != '\n')
-			return -EINVAL;
-	case 2:
-		if (length <= 0)
-			return -EINVAL;
-		break;
-	default:
-		return -EINVAL;
-	}
-
-#ifdef DO_DEBUG
-	if (clear) {
-		md_clear_badblocks(bb, sector, length);
-		return len;
-	}
-#endif /* DO_DEBUG */
-	if (md_set_badblocks(bb, sector, length, !unack))
-		return len;
-	else
-		return -ENOSPC;
-}
-
-static int md_notify_reboot(struct notifier_block *this,
-			    unsigned long code, void *x)
-{
-	struct list_head *tmp;
-	struct mddev *mddev;
-	int need_delay = 0;
-
-	for_each_mddev(mddev, tmp) {
-=======
 void md_finish_reshape(struct mddev *mddev)
 {
 	/* called be personality module when reshape completes. */
@@ -15418,7 +9838,6 @@ static int md_notify_reboot(struct notifier_block *this,
 		if (!mddev_get(mddev))
 			continue;
 		spin_unlock(&all_mddevs_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mddev_trylock(mddev)) {
 			if (mddev->pers)
 				__md_stop_writes(mddev);
@@ -15427,15 +9846,11 @@ static int md_notify_reboot(struct notifier_block *this,
 			mddev_unlock(mddev);
 		}
 		need_delay = 1;
-<<<<<<< HEAD
-	}
-=======
 		mddev_put(mddev);
 		spin_lock(&all_mddevs_lock);
 	}
 	spin_unlock(&all_mddevs_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * certain more exotic SCSI devices are known to be
 	 * volatile wrt too early system reboots. While the
@@ -15443,11 +9858,7 @@ static int md_notify_reboot(struct notifier_block *this,
 	 * driver, we do want to have a safe RAID driver ...
 	 */
 	if (need_delay)
-<<<<<<< HEAD
-		mdelay(1000*1);
-=======
 		msleep(1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
@@ -15462,11 +9873,7 @@ static void md_geninit(void)
 {
 	pr_debug("md: sizeof(mdp_super_t) = %d\n", (int)sizeof(mdp_super_t));
 
-<<<<<<< HEAD
-	proc_create("mdstat", S_IRUGO, NULL, &md_seq_fops);
-=======
 	proc_create("mdstat", S_IRUGO, NULL, &mdstat_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init md_init(void)
@@ -15481,22 +9888,6 @@ static int __init md_init(void)
 	if (!md_misc_wq)
 		goto err_misc_wq;
 
-<<<<<<< HEAD
-	if ((ret = register_blkdev(MD_MAJOR, "md")) < 0)
-		goto err_md;
-
-	if ((ret = register_blkdev(0, "mdp")) < 0)
-		goto err_mdp;
-	mdp_major = ret;
-
-	blk_register_region(MKDEV(MD_MAJOR, 0), 1UL<<MINORBITS, THIS_MODULE,
-			    md_probe, NULL, NULL);
-	blk_register_region(MKDEV(mdp_major, 0), 1UL<<MINORBITS, THIS_MODULE,
-			    md_probe, NULL, NULL);
-
-	register_reboot_notifier(&md_notifier);
-	raid_table_header = register_sysctl_table(raid_root_table);
-=======
 	md_bitmap_wq = alloc_workqueue("md_bitmap", WQ_MEM_RECLAIM | WQ_UNBOUND,
 				       0);
 	if (!md_bitmap_wq)
@@ -15513,7 +9904,6 @@ static int __init md_init(void)
 
 	register_reboot_notifier(&md_notifier);
 	raid_table_header = register_sysctl("dev/raid", raid_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	md_geninit();
 	return 0;
@@ -15521,11 +9911,8 @@ static int __init md_init(void)
 err_mdp:
 	unregister_blkdev(MD_MAJOR, "md");
 err_md:
-<<<<<<< HEAD
-=======
 	destroy_workqueue(md_bitmap_wq);
 err_bitmap_wq:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(md_misc_wq);
 err_misc_wq:
 	destroy_workqueue(md_wq);
@@ -15533,8 +9920,6 @@ err_wq:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static void check_sb_changes(struct mddev *mddev, struct md_rdev *rdev)
 {
 	struct mdp_superblock_1 *sb = page_address(rdev->sb_page);
@@ -15714,7 +10099,6 @@ void md_reload_sb(struct mddev *mddev, int nr)
 }
 EXPORT_SYMBOL(md_reload_sb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MODULE
 
 /*
@@ -15722,10 +10106,7 @@ EXPORT_SYMBOL(md_reload_sb);
  * at boot time.
  */
 
-<<<<<<< HEAD
-=======
 static DEFINE_MUTEX(detected_devices_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(all_detected_devices);
 struct detected_devices_node {
 	struct list_head list;
@@ -15739,17 +10120,6 @@ void md_autodetect_dev(dev_t dev)
 	node_detected_dev = kzalloc(sizeof(*node_detected_dev), GFP_KERNEL);
 	if (node_detected_dev) {
 		node_detected_dev->dev = dev;
-<<<<<<< HEAD
-		list_add_tail(&node_detected_dev->list, &all_detected_devices);
-	} else {
-		printk(KERN_CRIT "md: md_autodetect_dev: kzalloc failed"
-			", skipping dev(%d,%d)\n", MAJOR(dev), MINOR(dev));
-	}
-}
-
-
-static void autostart_arrays(int part)
-=======
 		mutex_lock(&detected_devices_mutex);
 		list_add_tail(&node_detected_dev->list, &all_detected_devices);
 		mutex_unlock(&detected_devices_mutex);
@@ -15757,7 +10127,6 @@ static void autostart_arrays(int part)
 }
 
 void md_autostart_arrays(int part)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct md_rdev *rdev;
 	struct detected_devices_node *node_detected_dev;
@@ -15767,14 +10136,9 @@ void md_autostart_arrays(int part)
 	i_scanned = 0;
 	i_passed = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "md: Autodetecting RAID arrays.\n");
-
-=======
 	pr_info("md: Autodetecting RAID arrays.\n");
 
 	mutex_lock(&detected_devices_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&all_detected_devices) && i_scanned < INT_MAX) {
 		i_scanned++;
 		node_detected_dev = list_entry(all_detected_devices.next,
@@ -15782,16 +10146,6 @@ void md_autostart_arrays(int part)
 		list_del(&node_detected_dev->list);
 		dev = node_detected_dev->dev;
 		kfree(node_detected_dev);
-<<<<<<< HEAD
-		rdev = md_import_device(dev,0, 90);
-		if (IS_ERR(rdev))
-			continue;
-
-		if (test_bit(Faulty, &rdev->flags)) {
-			MD_BUG();
-			continue;
-		}
-=======
 		mutex_unlock(&detected_devices_mutex);
 		rdev = md_import_device(dev,0, 90);
 		mutex_lock(&detected_devices_mutex);
@@ -15801,20 +10155,13 @@ void md_autostart_arrays(int part)
 		if (test_bit(Faulty, &rdev->flags))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(AutoDetected, &rdev->flags);
 		list_add(&rdev->same_set, &pending_raid_disks);
 		i_passed++;
 	}
-<<<<<<< HEAD
-
-	printk(KERN_INFO "md: Scanned %d and added %d devices.\n",
-						i_scanned, i_passed);
-=======
 	mutex_unlock(&detected_devices_mutex);
 
 	pr_debug("md: Scanned %d and added %d devices.\n", i_scanned, i_passed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	autorun_devices(part);
 }
@@ -15823,29 +10170,13 @@ void md_autostart_arrays(int part)
 
 static __exit void md_exit(void)
 {
-<<<<<<< HEAD
-	struct mddev *mddev;
-	struct list_head *tmp;
-
-	blk_unregister_region(MKDEV(MD_MAJOR,0), 1U << MINORBITS);
-	blk_unregister_region(MKDEV(mdp_major,0), 1U << MINORBITS);
-=======
 	struct mddev *mddev, *n;
 	int delay = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unregister_blkdev(MD_MAJOR,"md");
 	unregister_blkdev(mdp_major, "mdp");
 	unregister_reboot_notifier(&md_notifier);
 	unregister_sysctl_table(raid_table_header);
-<<<<<<< HEAD
-	remove_proc_entry("mdstat", NULL);
-	for_each_mddev(mddev, tmp) {
-		export_array(mddev);
-		mddev->hold_active = 0;
-	}
-	destroy_workqueue(md_misc_wq);
-=======
 
 	/* We cannot unload the modules while some process is
 	 * waiting for us in select() or poll() - wake them up
@@ -15879,28 +10210,12 @@ static __exit void md_exit(void)
 
 	destroy_workqueue(md_misc_wq);
 	destroy_workqueue(md_bitmap_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(md_wq);
 }
 
 subsys_initcall(md_init);
 module_exit(md_exit)
 
-<<<<<<< HEAD
-static int get_ro(char *buffer, struct kernel_param *kp)
-{
-	return sprintf(buffer, "%d", start_readonly);
-}
-static int set_ro(const char *val, struct kernel_param *kp)
-{
-	char *e;
-	int num = simple_strtoul(val, &e, 10);
-	if (*val && (*e == '\0' || *e == '\n')) {
-		start_readonly = num;
-		return 0;
-	}
-	return -EINVAL;
-=======
 static int get_ro(char *buffer, const struct kernel_param *kp)
 {
 	return sprintf(buffer, "%d\n", start_readonly);
@@ -15908,30 +10223,13 @@ static int get_ro(char *buffer, const struct kernel_param *kp)
 static int set_ro(const char *val, const struct kernel_param *kp)
 {
 	return kstrtouint(val, 10, (unsigned int *)&start_readonly);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_param_call(start_ro, set_ro, get_ro, NULL, S_IRUSR|S_IWUSR);
 module_param(start_dirty_degraded, int, S_IRUGO|S_IWUSR);
-<<<<<<< HEAD
-
-module_param_call(new_array, add_named_array, NULL, NULL, S_IWUSR);
-
-EXPORT_SYMBOL(register_md_personality);
-EXPORT_SYMBOL(unregister_md_personality);
-EXPORT_SYMBOL(md_error);
-EXPORT_SYMBOL(md_done_sync);
-EXPORT_SYMBOL(md_write_start);
-EXPORT_SYMBOL(md_write_end);
-EXPORT_SYMBOL(md_register_thread);
-EXPORT_SYMBOL(md_unregister_thread);
-EXPORT_SYMBOL(md_wakeup_thread);
-EXPORT_SYMBOL(md_check_recovery);
-=======
 module_param_call(new_array, add_named_array, NULL, NULL, S_IWUSR);
 module_param(create_on_open, bool, S_IRUSR|S_IWUSR);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MD RAID framework");
 MODULE_ALIAS("md");

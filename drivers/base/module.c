@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-/*
- * module.c - module sysfs fun for drivers
- *
- * This file is released under the GPLv2
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * module.c - module sysfs fun for drivers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/device.h>
 #include <linux/module.h>
@@ -30,19 +22,12 @@ static char *make_driver_name(struct device_driver *drv)
 
 static void module_create_drivers_dir(struct module_kobject *mk)
 {
-<<<<<<< HEAD
-	if (!mk || mk->drivers_dir)
-		return;
-
-	mk->drivers_dir = kobject_create_and_add("drivers", &mk->kobj);
-=======
 	static DEFINE_MUTEX(drivers_dir_mutex);
 
 	mutex_lock(&drivers_dir_mutex);
 	if (mk && !mk->drivers_dir)
 		mk->drivers_dir = kobject_create_and_add("drivers", &mk->kobj);
 	mutex_unlock(&drivers_dir_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void module_add_driver(struct module *mod, struct device_driver *drv)

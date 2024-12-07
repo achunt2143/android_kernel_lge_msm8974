@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TCP Illinois congestion control.
  * Home page:
@@ -10,11 +7,7 @@
  * The algorithm is described in:
  * "TCP-Illinois: A Loss and Delay-Based Congestion Control Algorithm
  *  for High-Speed Networks"
-<<<<<<< HEAD
- * http://www.ifp.illinois.edu/~srikant/Papers/liubassri06perf.pdf
-=======
  * http://tamerbasar.csl.illinois.edu/LiuBasarSrikantPerfEvalArtJun2008.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Implemented from description in paper and ns-2 simulation.
  * Copyright (C) 2007 Stephen Hemminger <shemminger@linux-foundation.org>
@@ -31,10 +24,6 @@
 #define ALPHA_MIN	((3*ALPHA_SCALE)/10)	/* ~0.3 */
 #define ALPHA_MAX	(10*ALPHA_SCALE)	/* 10.0 */
 #define ALPHA_BASE	ALPHA_SCALE		/* 1.0 */
-<<<<<<< HEAD
-#define U32_MAX		((u32)~0U)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTT_MAX		(U32_MAX / ALPHA_MAX)	/* 3.3 secs */
 
 #define BETA_SHIFT	6
@@ -94,32 +83,6 @@ static void tcp_illinois_init(struct sock *sk)
 }
 
 /* Measure RTT for each ack. */
-<<<<<<< HEAD
-static void tcp_illinois_acked(struct sock *sk, u32 pkts_acked, s32 rtt)
-{
-	struct illinois *ca = inet_csk_ca(sk);
-
-	ca->acked = pkts_acked;
-
-	/* dup ack, no rtt sample */
-	if (rtt < 0)
-		return;
-
-	/* ignore bogus values, this prevents wraparound in alpha math */
-	if (rtt > RTT_MAX)
-		rtt = RTT_MAX;
-
-	/* keep track of minimum RTT seen so far */
-	if (ca->base_rtt > rtt)
-		ca->base_rtt = rtt;
-
-	/* and max */
-	if (ca->max_rtt < rtt)
-		ca->max_rtt = rtt;
-
-	++ca->cnt_rtt;
-	ca->sum_rtt += rtt;
-=======
 static void tcp_illinois_acked(struct sock *sk, const struct ack_sample *sample)
 {
 	struct illinois *ca = inet_csk_ca(sk);
@@ -145,7 +108,6 @@ static void tcp_illinois_acked(struct sock *sk, const struct ack_sample *sample)
 
 	++ca->cnt_rtt;
 	ca->sum_rtt += rtt_us;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Maximum queuing delay */
@@ -262,11 +224,7 @@ static void update_params(struct sock *sk)
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct illinois *ca = inet_csk_ca(sk);
 
-<<<<<<< HEAD
-	if (tp->snd_cwnd < win_thresh) {
-=======
 	if (tcp_snd_cwnd(tp) < win_thresh) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ca->alpha = ALPHA_BASE;
 		ca->beta = BETA_BASE;
 	} else if (ca->cnt_rtt > 0) {
@@ -299,11 +257,7 @@ static void tcp_illinois_state(struct sock *sk, u8 new_state)
 /*
  * Increase window in response to successful acknowledgment.
  */
-<<<<<<< HEAD
-static void tcp_illinois_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
-=======
 static void tcp_illinois_cong_avoid(struct sock *sk, u32 ack, u32 acked)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct illinois *ca = inet_csk_ca(sk);
@@ -312,21 +266,12 @@ static void tcp_illinois_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 		update_params(sk);
 
 	/* RFC2861 only increase cwnd if fully utilized */
-<<<<<<< HEAD
-	if (!tcp_is_cwnd_limited(sk, in_flight))
-		return;
-
-	/* In slow start */
-	if (tp->snd_cwnd <= tp->snd_ssthresh)
-		tcp_slow_start(tp);
-=======
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
 	/* In slow start */
 	if (tcp_in_slow_start(tp))
 		tcp_slow_start(tp, acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	else {
 		u32 delta;
@@ -339,15 +284,9 @@ static void tcp_illinois_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 		 * tp->snd_cwnd += alpha/tp->snd_cwnd
 		*/
 		delta = (tp->snd_cwnd_cnt * ca->alpha) >> ALPHA_SHIFT;
-<<<<<<< HEAD
-		if (delta >= tp->snd_cwnd) {
-			tp->snd_cwnd = min(tp->snd_cwnd + delta / tp->snd_cwnd,
-					   (u32) tp->snd_cwnd_clamp);
-=======
 		if (delta >= tcp_snd_cwnd(tp)) {
 			tcp_snd_cwnd_set(tp, min(tcp_snd_cwnd(tp) + delta / tcp_snd_cwnd(tp),
 						 (u32)tp->snd_cwnd_clamp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tp->snd_cwnd_cnt = 0;
 		}
 	}
@@ -357,17 +296,6 @@ static u32 tcp_illinois_ssthresh(struct sock *sk)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct illinois *ca = inet_csk_ca(sk);
-<<<<<<< HEAD
-
-	/* Multiplicative decrease */
-	return max(tp->snd_cwnd - ((tp->snd_cwnd * ca->beta) >> BETA_SHIFT), 2U);
-}
-
-
-/* Extract info for Tcp socket info provided via netlink. */
-static void tcp_illinois_info(struct sock *sk, u32 ext,
-			      struct sk_buff *skb)
-=======
 	u32 decr;
 
 	/* Multiplicative decrease */
@@ -378,34 +306,10 @@ static void tcp_illinois_info(struct sock *sk, u32 ext,
 /* Extract info for Tcp socket info provided via netlink. */
 static size_t tcp_illinois_info(struct sock *sk, u32 ext, int *attr,
 				union tcp_cc_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct illinois *ca = inet_csk_ca(sk);
 
 	if (ext & (1 << (INET_DIAG_VEGASINFO - 1))) {
-<<<<<<< HEAD
-		struct tcpvegas_info info = {
-			.tcpv_enabled = 1,
-			.tcpv_rttcnt = ca->cnt_rtt,
-			.tcpv_minrtt = ca->base_rtt,
-		};
-
-		if (info.tcpv_rttcnt > 0) {
-			u64 t = ca->sum_rtt;
-
-			do_div(t, info.tcpv_rttcnt);
-			info.tcpv_rtt = t;
-		}
-		nla_put(skb, INET_DIAG_VEGASINFO, sizeof(info), &info);
-	}
-}
-
-static struct tcp_congestion_ops tcp_illinois __read_mostly = {
-	.flags		= TCP_CONG_RTT_STAMP,
-	.init		= tcp_illinois_init,
-	.ssthresh	= tcp_illinois_ssthresh,
-	.min_cwnd	= tcp_reno_min_cwnd,
-=======
 		info->vegas.tcpv_enabled = 1;
 		info->vegas.tcpv_rttcnt = ca->cnt_rtt;
 		info->vegas.tcpv_minrtt = ca->base_rtt;
@@ -427,7 +331,6 @@ static struct tcp_congestion_ops tcp_illinois __read_mostly = {
 	.init		= tcp_illinois_init,
 	.ssthresh	= tcp_illinois_ssthresh,
 	.undo_cwnd	= tcp_reno_undo_cwnd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cong_avoid	= tcp_illinois_cong_avoid,
 	.set_state	= tcp_illinois_state,
 	.get_info	= tcp_illinois_info,

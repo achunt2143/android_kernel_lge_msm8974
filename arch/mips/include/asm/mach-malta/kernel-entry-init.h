@@ -5,20 +5,11 @@
  *
  * Chris Dearman (chris@mips.com)
  * Copyright (C) 2007 Mips Technologies, Inc.
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 Imagination Technologies Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_MACH_MIPS_KERNEL_ENTRY_INIT_H
 #define __ASM_MACH_MIPS_KERNEL_ENTRY_INIT_H
 
-<<<<<<< HEAD
-	.macro	kernel_entry_setup
-#ifdef CONFIG_MIPS_MT_SMTC
-	mfc0	t0, CP0_CONFIG
-	bgez	t0, 9f
-=======
 #include <asm/regdef.h>
 #include <asm/mipsregs.h>
 
@@ -107,32 +98,22 @@
 
 	mfc0    t1, CP0_CONFIG
 	bgez    t1, 9f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfc0	t0, CP0_CONFIG, 1
 	bgez	t0, 9f
 	mfc0	t0, CP0_CONFIG, 2
 	bgez	t0, 9f
 	mfc0	t0, CP0_CONFIG, 3
-<<<<<<< HEAD
-	and	t0, 1<<2
-	bnez	t0, 0f
-=======
 	sll     t0, t0, 6   /* SC bit */
 	bgez    t0, 9f
 
 	platform_eva_init
 	b       0f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 9:
 	/* Assume we came from YAMON... */
 	PTR_LA	v0, 0x9fc00534	/* YAMON print */
 	lw	v0, (v0)
 	move	a0, zero
-<<<<<<< HEAD
-	PTR_LA	a1, nonmt_processor
-=======
 	PTR_LA  a1, nonsc_processor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jal	v0
 
 	PTR_LA	v0, 0x9fc00520	/* YAMON exit */
@@ -141,15 +122,6 @@
 	jal	v0
 
 1:	b	1b
-<<<<<<< HEAD
-
-	__INITDATA
-nonmt_processor:
-	.asciz	"SMTC kernel requires the MT ASE to run\n"
-	__FINIT
-0:
-#endif
-=======
 	nop
 	__INITDATA
 nonsc_processor:
@@ -157,21 +129,17 @@ nonsc_processor:
 	__FINIT
 #endif /* CONFIG_EVA */
 0:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 /*
  * Do SMP slave processor setup necessary before we can safely execute C code.
  */
 	.macro	smp_slave_setup
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_EVA
 	sync
 	ehb
 	platform_eva_init
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 #endif /* __ASM_MACH_MIPS_KERNEL_ENTRY_INIT_H */

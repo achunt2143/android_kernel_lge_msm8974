@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Data structures for special overlays for broken devices.
  *
@@ -24,11 +21,6 @@ struct xen_pcibk_config_quirk {
 int xen_pcibk_config_quirks_add_field(struct pci_dev *dev, struct config_field
 				    *field);
 
-<<<<<<< HEAD
-int xen_pcibk_config_quirks_remove_field(struct pci_dev *dev, int reg);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xen_pcibk_config_quirks_init(struct pci_dev *dev);
 
 void xen_pcibk_config_field_free(struct config_field *field);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  /*
  * Driver for Microtek Scanmaker X6 USB scanner and possibly others.
  * 
@@ -17,16 +14,6 @@ typedef void (*mts_scsi_cmnd_callback)(struct scsi_cmnd *);
 
 struct mts_transfer_context
 {
-<<<<<<< HEAD
-	struct mts_desc* instance;
-	mts_scsi_cmnd_callback final_callback;
-	struct scsi_cmnd *srb;
-	
-	void* data;
-	unsigned data_length;
-	int data_pipe;
-	int fragment;
-=======
 	struct mts_desc *instance;
 	mts_scsi_cmnd_callback final_callback;
 	struct scsi_cmnd *srb;
@@ -35,7 +22,6 @@ struct mts_transfer_context
 	unsigned data_length;
 	int data_pipe;
 	struct scatterlist *curr_sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 *scsi_status; /* status returned from ep_response after command completion */
 };
@@ -53,11 +39,7 @@ struct mts_desc {
 	u8 ep_response;
 	u8 ep_image;
 
-<<<<<<< HEAD
-	struct Scsi_Host * host;
-=======
 	struct Scsi_Host *host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct urb *urb;
 	struct mts_transfer_context context;

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * wm831x-on.c - WM831X ON pin driver
  *
  * Copyright (C) 2009 Wolfson Microelectronics plc
@@ -22,10 +18,6 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -76,16 +68,6 @@ static irqreturn_t wm831x_on_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit wm831x_on_probe(struct platform_device *pdev)
-{
-	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_on *wm831x_on;
-	int irq = platform_get_irq(pdev, 0);
-	int ret;
-
-	wm831x_on = kzalloc(sizeof(struct wm831x_on), GFP_KERNEL);
-=======
 static int wm831x_on_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
@@ -95,7 +77,6 @@ static int wm831x_on_probe(struct platform_device *pdev)
 
 	wm831x_on = devm_kzalloc(&pdev->dev, sizeof(struct wm831x_on),
 				 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm831x_on) {
 		dev_err(&pdev->dev, "Can't allocate data\n");
 		return -ENOMEM;
@@ -104,11 +85,7 @@ static int wm831x_on_probe(struct platform_device *pdev)
 	wm831x_on->wm831x = wm831x;
 	INIT_DELAYED_WORK(&wm831x_on->work, wm831x_poll_on);
 
-<<<<<<< HEAD
-	wm831x_on->dev = input_allocate_device();
-=======
 	wm831x_on->dev = devm_input_allocate_device(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm831x_on->dev) {
 		dev_err(&pdev->dev, "Can't allocate input dev\n");
 		ret = -ENOMEM;
@@ -122,12 +99,8 @@ static int wm831x_on_probe(struct platform_device *pdev)
 	wm831x_on->dev->dev.parent = &pdev->dev;
 
 	ret = request_threaded_irq(irq, NULL, wm831x_on_irq,
-<<<<<<< HEAD
-				   IRQF_TRIGGER_RISING, "wm831x_on",
-=======
 				   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 				   "wm831x_on",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   wm831x_on);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Unable to request IRQ: %d\n", ret);
@@ -146,48 +119,24 @@ static int wm831x_on_probe(struct platform_device *pdev)
 err_irq:
 	free_irq(irq, wm831x_on);
 err_input_dev:
-<<<<<<< HEAD
-	input_free_device(wm831x_on->dev);
-err:
-	kfree(wm831x_on);
-	return ret;
-}
-
-static int __devexit wm831x_on_remove(struct platform_device *pdev)
-=======
 err:
 	return ret;
 }
 
 static void wm831x_on_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm831x_on *wm831x_on = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
 	free_irq(irq, wm831x_on);
 	cancel_delayed_work_sync(&wm831x_on->work);
-<<<<<<< HEAD
-	input_unregister_device(wm831x_on->dev);
-	kfree(wm831x_on);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm831x_on_driver = {
 	.probe		= wm831x_on_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(wm831x_on_remove),
-	.driver		= {
-		.name	= "wm831x-on",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= wm831x_on_remove,
 	.driver		= {
 		.name	= "wm831x-on",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(wm831x_on_driver);

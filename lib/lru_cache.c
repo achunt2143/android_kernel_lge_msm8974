@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    lru_cache.c
 
@@ -11,22 +8,6 @@
    Copyright (C) 2003-2008, Philipp Reisner <philipp.reisner@linbit.com>.
    Copyright (C) 2003-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
 
-<<<<<<< HEAD
-   drbd is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   drbd is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with drbd; see the file COPYING.  If not, write to
-   the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  */
 
@@ -51,13 +32,8 @@ MODULE_LICENSE("GPL");
 } while (0)
 
 #define RETURN(x...)     do { \
-<<<<<<< HEAD
-	clear_bit(__LC_PARANOIA, &lc->flags); \
-	smp_mb__after_clear_bit(); return x ; } while (0)
-=======
 	clear_bit_unlock(__LC_PARANOIA, &lc->flags); \
 	return x ; } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BUG() if e is not one of the elements tracked by lc */
 #define PARANOIA_LC_ELEMENT(lc, e) do {	\
@@ -67,11 +43,6 @@ MODULE_LICENSE("GPL");
 	BUG_ON(i >= lc_->nr_elements);	\
 	BUG_ON(lc_->lc_element[i] != e_); } while (0)
 
-<<<<<<< HEAD
-/**
- * lc_create - prepares to track objects in an active set
- * @name: descriptive name only used in lc_seq_printf_stats and lc_seq_dump_details
-=======
 
 /* We need to atomically
  *  - try to grab the lock (set LC_LOCKED)
@@ -96,7 +67,6 @@ int lc_try_lock(struct lru_cache *lc)
  * @name: descriptive name only used in lc_seq_printf_stats and lc_seq_dump_details
  * @cache: cache root pointer
  * @max_pending_changes: maximum changes to accumulate until a transaction is required
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @e_count: number of elements allowed to be active simultaneously
  * @e_size: size of the tracked objects
  * @e_off: offset to the &struct lc_element member in a tracked object
@@ -105,10 +75,7 @@ int lc_try_lock(struct lru_cache *lc)
  * or NULL on (allocation) failure.
  */
 struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
-<<<<<<< HEAD
-=======
 		unsigned max_pending_changes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned e_count, size_t e_size, size_t e_off)
 {
 	struct hlist_head *slot = NULL;
@@ -130,11 +97,7 @@ struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
 	slot = kcalloc(e_count, sizeof(struct hlist_head), GFP_KERNEL);
 	if (!slot)
 		goto out_fail;
-<<<<<<< HEAD
-	element = kzalloc(e_count * sizeof(struct lc_element *), GFP_KERNEL);
-=======
 	element = kcalloc(e_count, sizeof(struct lc_element *), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!element)
 		goto out_fail;
 
@@ -145,20 +108,13 @@ struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
 	INIT_LIST_HEAD(&lc->in_use);
 	INIT_LIST_HEAD(&lc->lru);
 	INIT_LIST_HEAD(&lc->free);
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&lc->to_be_changed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lc->name = name;
 	lc->element_size = e_size;
 	lc->element_off = e_off;
 	lc->nr_elements = e_count;
-<<<<<<< HEAD
-	lc->new_number = LC_FREE;
-=======
 	lc->max_pending_changes = max_pending_changes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lc->lc_cache = cache;
 	lc->lc_element = element;
 	lc->lc_slot = slot;
@@ -172,10 +128,7 @@ struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
 		e = p + e_off;
 		e->lc_index = i;
 		e->lc_number = LC_FREE;
-<<<<<<< HEAD
-=======
 		e->lc_new_number = LC_FREE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&e->list, &lc->free);
 		element[i] = e;
 	}
@@ -183,13 +136,8 @@ struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
 		return lc;
 
 	/* else: could not allocate all elements, give up */
-<<<<<<< HEAD
-	for (i--; i; i--) {
-		void *p = element[i];
-=======
 	while (i) {
 		void *p = element[--i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(cache, p - e_off);
 	}
 	kfree(lc);
@@ -199,11 +147,7 @@ out_fail:
 	return NULL;
 }
 
-<<<<<<< HEAD
-void lc_free_by_index(struct lru_cache *lc, unsigned i)
-=======
 static void lc_free_by_index(struct lru_cache *lc, unsigned i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *p = lc->lc_element[i];
 	WARN_ON(!p);
@@ -243,26 +187,15 @@ void lc_reset(struct lru_cache *lc)
 	INIT_LIST_HEAD(&lc->in_use);
 	INIT_LIST_HEAD(&lc->lru);
 	INIT_LIST_HEAD(&lc->free);
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&lc->to_be_changed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lc->used = 0;
 	lc->hits = 0;
 	lc->misses = 0;
 	lc->starving = 0;
-<<<<<<< HEAD
-	lc->dirty = 0;
-	lc->changed = 0;
-	lc->flags = 0;
-	lc->changing_element = NULL;
-	lc->new_number = LC_FREE;
-=======
 	lc->locked = 0;
 	lc->changed = 0;
 	lc->pending_changes = 0;
 	lc->flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(lc->lc_slot, 0, sizeof(struct hlist_head) * lc->nr_elements);
 
 	for (i = 0; i < lc->nr_elements; i++) {
@@ -273,10 +206,7 @@ void lc_reset(struct lru_cache *lc)
 		/* re-init it */
 		e->lc_index = i;
 		e->lc_number = LC_FREE;
-<<<<<<< HEAD
-=======
 		e->lc_new_number = LC_FREE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&e->list, &lc->free);
 	}
 }
@@ -286,25 +216,11 @@ void lc_reset(struct lru_cache *lc)
  * @seq: the seq_file to print into
  * @lc: the lru cache to print statistics of
  */
-<<<<<<< HEAD
-size_t lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc)
-=======
 void lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* NOTE:
 	 * total calls to lc_get are
 	 * (starving + hits + misses)
-<<<<<<< HEAD
-	 * misses include "dirty" count (update from an other thread in
-	 * progress) and "changed", when this in fact lead to an successful
-	 * update of the cache.
-	 */
-	return seq_printf(seq, "\t%s: used:%u/%u "
-		"hits:%lu misses:%lu starving:%lu dirty:%lu changed:%lu\n",
-		lc->name, lc->used, lc->nr_elements,
-		lc->hits, lc->misses, lc->starving, lc->dirty, lc->changed);
-=======
 	 * misses include "locked" count (update from an other thread in
 	 * progress) and "changed", when this in fact lead to an successful
 	 * update of the cache.
@@ -312,7 +228,6 @@ void lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc)
 	seq_printf(seq, "\t%s: used:%u/%u hits:%lu misses:%lu starving:%lu locked:%lu changed:%lu\n",
 		   lc->name, lc->used, lc->nr_elements,
 		   lc->hits, lc->misses, lc->starving, lc->locked, lc->changed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct hlist_head *lc_hash_slot(struct lru_cache *lc, unsigned int enr)
@@ -321,8 +236,6 @@ static struct hlist_head *lc_hash_slot(struct lru_cache *lc, unsigned int enr)
 }
 
 
-<<<<<<< HEAD
-=======
 static struct lc_element *__lc_find(struct lru_cache *lc, unsigned int enr,
 		bool include_changing)
 {
@@ -343,7 +256,6 @@ static struct lc_element *__lc_find(struct lru_cache *lc, unsigned int enr,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lc_find - find element by label, if present in the hash table
  * @lc: The lru_cache object
@@ -352,40 +264,6 @@ static struct lc_element *__lc_find(struct lru_cache *lc, unsigned int enr,
  * Returns the pointer to an element, if the element with the requested
  * "label" or element number is present in the hash table,
  * or NULL if not found. Does not change the refcnt.
-<<<<<<< HEAD
- */
-struct lc_element *lc_find(struct lru_cache *lc, unsigned int enr)
-{
-	struct hlist_node *n;
-	struct lc_element *e;
-
-	BUG_ON(!lc);
-	BUG_ON(!lc->nr_elements);
-	hlist_for_each_entry(e, n, lc_hash_slot(lc, enr), colision) {
-		if (e->lc_number == enr)
-			return e;
-	}
-	return NULL;
-}
-
-/* returned element will be "recycled" immediately */
-static struct lc_element *lc_evict(struct lru_cache *lc)
-{
-	struct list_head  *n;
-	struct lc_element *e;
-
-	if (list_empty(&lc->lru))
-		return NULL;
-
-	n = lc->lru.prev;
-	e = list_entry(n, struct lc_element, list);
-
-	PARANOIA_LC_ELEMENT(lc, e);
-
-	list_del(&e->list);
-	hlist_del(&e->colision);
-	return e;
-=======
  * Ignores elements that are "about to be used", i.e. not yet in the active
  * set, but still pending transaction commit.
  */
@@ -408,7 +286,6 @@ bool lc_is_used(struct lru_cache *lc, unsigned int enr)
 {
 	struct lc_element *e = __lc_find(lc, enr, 1);
 	return e && e->refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -425,28 +302,12 @@ void lc_del(struct lru_cache *lc, struct lc_element *e)
 	PARANOIA_LC_ELEMENT(lc, e);
 	BUG_ON(e->refcnt);
 
-<<<<<<< HEAD
-	e->lc_number = LC_FREE;
-=======
 	e->lc_number = e->lc_new_number = LC_FREE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hlist_del_init(&e->colision);
 	list_move(&e->list, &lc->free);
 	RETURN();
 }
 
-<<<<<<< HEAD
-static struct lc_element *lc_get_unused_element(struct lru_cache *lc)
-{
-	struct list_head *n;
-
-	if (list_empty(&lc->free))
-		return lc_evict(lc);
-
-	n = lc->free.next;
-	list_del(n);
-	return list_entry(n, struct lc_element, list);
-=======
 static struct lc_element *lc_prepare_for_change(struct lru_cache *lc, unsigned new_number)
 {
 	struct list_head *n;
@@ -469,7 +330,6 @@ static struct lc_element *lc_prepare_for_change(struct lru_cache *lc, unsigned n
 	list_move(&e->list, &lc->to_be_changed);
 
 	return e;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lc_unused_element_available(struct lru_cache *lc)
@@ -482,8 +342,6 @@ static int lc_unused_element_available(struct lru_cache *lc)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* used as internal flags to __lc_get */
 enum {
 	LC_GET_MAY_CHANGE = 1,
@@ -568,7 +426,6 @@ static struct lc_element *__lc_get(struct lru_cache *lc, unsigned int enr, unsig
 
 	RETURN(e);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lc_get - get element by label, maybe change the active set
@@ -597,14 +454,6 @@ static struct lc_element *__lc_get(struct lru_cache *lc, unsigned int enr, unsig
  *  pointer to an UNUSED element with some different element number,
  *          where that different number may also be %LC_FREE.
  *
-<<<<<<< HEAD
- *          In this case, the cache is marked %LC_DIRTY (blocking further changes),
- *          and the returned element pointer is removed from the lru list and
- *          hash collision chains.  The user now should do whatever housekeeping
- *          is necessary.
- *          Then he must call lc_changed(lc,element_pointer), to finish
- *          the change.
-=======
  *          In this case, the cache is marked %LC_DIRTY,
  *          so lc_try_lock() will no longer succeed.
  *          The returned element pointer is moved to the "to_be_changed" list,
@@ -614,107 +463,12 @@ static struct lc_element *__lc_get(struct lru_cache *lc, unsigned int enr, unsig
  *          The user now should do whatever housekeeping is necessary,
  *          typically serialize on lc_try_lock_for_transaction(), then call
  *          lc_committed(lc) and lc_unlock(), to finish the change.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: The user needs to check the lc_number on EACH use, so he recognizes
  *       any cache set change.
  */
 struct lc_element *lc_get(struct lru_cache *lc, unsigned int enr)
 {
-<<<<<<< HEAD
-	struct lc_element *e;
-
-	PARANOIA_ENTRY();
-	if (lc->flags & LC_STARVING) {
-		++lc->starving;
-		RETURN(NULL);
-	}
-
-	e = lc_find(lc, enr);
-	if (e) {
-		++lc->hits;
-		if (e->refcnt++ == 0)
-			lc->used++;
-		list_move(&e->list, &lc->in_use); /* Not evictable... */
-		RETURN(e);
-	}
-
-	++lc->misses;
-
-	/* In case there is nothing available and we can not kick out
-	 * the LRU element, we have to wait ...
-	 */
-	if (!lc_unused_element_available(lc)) {
-		__set_bit(__LC_STARVING, &lc->flags);
-		RETURN(NULL);
-	}
-
-	/* it was not present in the active set.
-	 * we are going to recycle an unused (or even "free") element.
-	 * user may need to commit a transaction to record that change.
-	 * we serialize on flags & TF_DIRTY */
-	if (test_and_set_bit(__LC_DIRTY, &lc->flags)) {
-		++lc->dirty;
-		RETURN(NULL);
-	}
-
-	e = lc_get_unused_element(lc);
-	BUG_ON(!e);
-
-	clear_bit(__LC_STARVING, &lc->flags);
-	BUG_ON(++e->refcnt != 1);
-	lc->used++;
-
-	lc->changing_element = e;
-	lc->new_number = enr;
-
-	RETURN(e);
-}
-
-/* similar to lc_get,
- * but only gets a new reference on an existing element.
- * you either get the requested element, or NULL.
- * will be consolidated into one function.
- */
-struct lc_element *lc_try_get(struct lru_cache *lc, unsigned int enr)
-{
-	struct lc_element *e;
-
-	PARANOIA_ENTRY();
-	if (lc->flags & LC_STARVING) {
-		++lc->starving;
-		RETURN(NULL);
-	}
-
-	e = lc_find(lc, enr);
-	if (e) {
-		++lc->hits;
-		if (e->refcnt++ == 0)
-			lc->used++;
-		list_move(&e->list, &lc->in_use); /* Not evictable... */
-	}
-	RETURN(e);
-}
-
-/**
- * lc_changed - tell @lc that the change has been recorded
- * @lc: the lru cache to operate on
- * @e: the element pending label change
- */
-void lc_changed(struct lru_cache *lc, struct lc_element *e)
-{
-	PARANOIA_ENTRY();
-	BUG_ON(e != lc->changing_element);
-	PARANOIA_LC_ELEMENT(lc, e);
-	++lc->changed;
-	e->lc_number = lc->new_number;
-	list_add(&e->list, &lc->in_use);
-	hlist_add_head(&e->colision, lc_hash_slot(lc, lc->new_number));
-	lc->changing_element = NULL;
-	lc->new_number = LC_FREE;
-	clear_bit(__LC_DIRTY, &lc->flags);
-	smp_mb__after_clear_bit();
-=======
 	return __lc_get(lc, enr, LC_GET_MAY_CHANGE);
 }
 
@@ -779,7 +533,6 @@ void lc_committed(struct lru_cache *lc)
 		list_move(&e->list, &lc->in_use);
 	}
 	lc->pending_changes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RETURN();
 }
 
@@ -798,21 +551,12 @@ unsigned int lc_put(struct lru_cache *lc, struct lc_element *e)
 	PARANOIA_ENTRY();
 	PARANOIA_LC_ELEMENT(lc, e);
 	BUG_ON(e->refcnt == 0);
-<<<<<<< HEAD
-	BUG_ON(e == lc->changing_element);
-=======
 	BUG_ON(e->lc_number != e->lc_new_number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (--e->refcnt == 0) {
 		/* move it to the front of LRU. */
 		list_move(&e->list, &lc->lru);
 		lc->used--;
-<<<<<<< HEAD
-		clear_bit(__LC_STARVING, &lc->flags);
-		smp_mb__after_clear_bit();
-=======
 		clear_bit_unlock(__LC_STARVING, &lc->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	RETURN(e->refcnt);
 }
@@ -831,48 +575,6 @@ struct lc_element *lc_element_by_index(struct lru_cache *lc, unsigned i)
 }
 
 /**
-<<<<<<< HEAD
- * lc_index_of
- * @lc: the lru cache to operate on
- * @e: the element to query for its index position in lc->element
- */
-unsigned int lc_index_of(struct lru_cache *lc, struct lc_element *e)
-{
-	PARANOIA_LC_ELEMENT(lc, e);
-	return e->lc_index;
-}
-
-/**
- * lc_set - associate index with label
- * @lc: the lru cache to operate on
- * @enr: the label to set
- * @index: the element index to associate label with.
- *
- * Used to initialize the active set to some previously recorded state.
- */
-void lc_set(struct lru_cache *lc, unsigned int enr, int index)
-{
-	struct lc_element *e;
-
-	if (index < 0 || index >= lc->nr_elements)
-		return;
-
-	e = lc_element_by_index(lc, index);
-	e->lc_number = enr;
-
-	hlist_del_init(&e->colision);
-	hlist_add_head(&e->colision, lc_hash_slot(lc, enr));
-	list_move(&e->list, e->refcnt ? &lc->in_use : &lc->lru);
-}
-
-/**
- * lc_dump - Dump a complete LRU cache to seq in textual form.
- * @lc: the lru cache to operate on
- * @seq: the &struct seq_file pointer to seq_printf into
- * @utext: user supplied "heading" or other info
- * @detail: function pointer the user may provide to dump further details
- * of the object the lc_element is embedded in.
-=======
  * lc_seq_dump_details - Dump a complete LRU cache to seq in textual form.
  * @lc: the lru cache to operate on
  * @seq: the &struct seq_file pointer to seq_printf into
@@ -880,7 +582,6 @@ void lc_set(struct lru_cache *lc, unsigned int enr, int index)
  * @detail: function pointer the user may provide to dump further details
  * of the object the lc_element is embedded in. May be NULL.
  * Note: a leading space ' ' and trailing newline '\n' is implied.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void lc_seq_dump_details(struct seq_file *seq, struct lru_cache *lc, char *utext,
 	     void (*detail) (struct seq_file *, struct lc_element *))
@@ -889,18 +590,6 @@ void lc_seq_dump_details(struct seq_file *seq, struct lru_cache *lc, char *utext
 	struct lc_element *e;
 	int i;
 
-<<<<<<< HEAD
-	seq_printf(seq, "\tnn: lc_number refcnt %s\n ", utext);
-	for (i = 0; i < nr_elements; i++) {
-		e = lc_element_by_index(lc, i);
-		if (e->lc_number == LC_FREE) {
-			seq_printf(seq, "\t%2d: FREE\n", i);
-		} else {
-			seq_printf(seq, "\t%2d: %4u %4u    ", i,
-				   e->lc_number, e->refcnt);
-			detail(seq, e);
-		}
-=======
 	seq_printf(seq, "\tnn: lc_number (new nr) refcnt %s\n ", utext);
 	for (i = 0; i < nr_elements; i++) {
 		e = lc_element_by_index(lc, i);
@@ -913,29 +602,17 @@ void lc_seq_dump_details(struct seq_file *seq, struct lru_cache *lc, char *utext
 		if (detail)
 			detail(seq, e);
 		seq_putc(seq, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 EXPORT_SYMBOL(lc_create);
 EXPORT_SYMBOL(lc_reset);
 EXPORT_SYMBOL(lc_destroy);
-<<<<<<< HEAD
-EXPORT_SYMBOL(lc_set);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(lc_del);
 EXPORT_SYMBOL(lc_try_get);
 EXPORT_SYMBOL(lc_find);
 EXPORT_SYMBOL(lc_get);
 EXPORT_SYMBOL(lc_put);
-<<<<<<< HEAD
-EXPORT_SYMBOL(lc_changed);
-EXPORT_SYMBOL(lc_element_by_index);
-EXPORT_SYMBOL(lc_index_of);
-EXPORT_SYMBOL(lc_seq_printf_stats);
-EXPORT_SYMBOL(lc_seq_dump_details);
-=======
 EXPORT_SYMBOL(lc_committed);
 EXPORT_SYMBOL(lc_element_by_index);
 EXPORT_SYMBOL(lc_seq_printf_stats);
@@ -943,4 +620,3 @@ EXPORT_SYMBOL(lc_seq_dump_details);
 EXPORT_SYMBOL(lc_try_lock);
 EXPORT_SYMBOL(lc_is_used);
 EXPORT_SYMBOL(lc_get_cumulative);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

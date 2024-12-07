@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: datagram.c
  *
@@ -9,27 +6,8 @@
  *
  * Copyright (C) 2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * Contact: Remi Denis-Courmont <remi.denis-courmont@nokia.com>
- * Original author: Sakari Ailus <sakari.ailus@nokia.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
-=======
  * Authors: Sakari Ailus <sakari.ailus@nokia.com>
  *          Rémi Denis-Courmont
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -50,26 +28,6 @@ static void pn_sock_close(struct sock *sk, long timeout)
 	sk_common_release(sk);
 }
 
-<<<<<<< HEAD
-static int pn_ioctl(struct sock *sk, int cmd, unsigned long arg)
-{
-	struct sk_buff *skb;
-	int answ;
-
-	switch (cmd) {
-	case SIOCINQ:
-		lock_sock(sk);
-		skb = skb_peek(&sk->sk_receive_queue);
-		answ = skb ? skb->len : 0;
-		release_sock(sk);
-		return put_user(answ, (int __user *)arg);
-
-	case SIOCPNADDRESOURCE:
-	case SIOCPNDELRESOURCE: {
-			u32 res;
-			if (get_user(res, (u32 __user *)arg))
-				return -EFAULT;
-=======
 static int pn_ioctl(struct sock *sk, int cmd, int *karg)
 {
 	struct sk_buff *skb;
@@ -85,7 +43,6 @@ static int pn_ioctl(struct sock *sk, int cmd, int *karg)
 	case SIOCPNADDRESOURCE:
 	case SIOCPNDELRESOURCE: {
 			u32 res = *karg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (res >= 256)
 				return -EINVAL;
 			if (cmd == SIOCPNADDRESOURCE)
@@ -110,16 +67,9 @@ static int pn_init(struct sock *sk)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pn_sendmsg(struct kiocb *iocb, struct sock *sk,
-			struct msghdr *msg, size_t len)
-{
-	struct sockaddr_pn *target;
-=======
 static int pn_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 {
 	DECLARE_SOCKADDR(struct sockaddr_pn *, target, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	int err;
 
@@ -127,20 +77,12 @@ static int pn_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 				MSG_CMSG_COMPAT))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (msg->msg_name == NULL)
-=======
 	if (target == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EDESTADDRREQ;
 
 	if (msg->msg_namelen < sizeof(struct sockaddr_pn))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	target = (struct sockaddr_pn *)msg->msg_name;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (target->spn_family != AF_PHONET)
 		return -EAFNOSUPPORT;
 
@@ -150,11 +92,7 @@ static int pn_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		return err;
 	skb_reserve(skb, MAX_PHONET_HEADER);
 
-<<<<<<< HEAD
-	err = memcpy_fromiovec((void *)skb_put(skb, len), msg->msg_iov, len);
-=======
 	err = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		kfree_skb(skb);
 		return err;
@@ -170,14 +108,8 @@ static int pn_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	return (err >= 0) ? len : err;
 }
 
-<<<<<<< HEAD
-static int pn_recvmsg(struct kiocb *iocb, struct sock *sk,
-			struct msghdr *msg, size_t len, int noblock,
-			int flags, int *addr_len)
-=======
 static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 		      int flags, int *addr_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb = NULL;
 	struct sockaddr_pn sa;
@@ -188,11 +120,7 @@ static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 			MSG_CMSG_COMPAT))
 		goto out_nofree;
 
-<<<<<<< HEAD
-	skb = skb_recv_datagram(sk, flags, noblock, &rval);
-=======
 	skb = skb_recv_datagram(sk, flags, &rval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb == NULL)
 		goto out_nofree;
 
@@ -204,11 +132,7 @@ static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 		copylen = len;
 	}
 
-<<<<<<< HEAD
-	rval = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copylen);
-=======
 	rval = skb_copy_datagram_msg(skb, 0, msg, copylen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rval) {
 		rval = -EFAULT;
 		goto out;
@@ -217,10 +141,7 @@ static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 	rval = (flags & MSG_TRUNC) ? skb->len : copylen;
 
 	if (msg->msg_name != NULL) {
-<<<<<<< HEAD
-=======
 		__sockaddr_check_size(sizeof(sa));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(msg->msg_name, &sa, sizeof(sa));
 		*addr_len = sizeof(sa);
 	}
@@ -258,11 +179,7 @@ static struct proto pn_proto = {
 	.name		= "PHONET",
 };
 
-<<<<<<< HEAD
-static struct phonet_protocol pn_dgram_proto = {
-=======
 static const struct phonet_protocol pn_dgram_proto = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ops		= &phonet_dgram_ops,
 	.prot		= &pn_proto,
 	.sock_type	= SOCK_DGRAM,

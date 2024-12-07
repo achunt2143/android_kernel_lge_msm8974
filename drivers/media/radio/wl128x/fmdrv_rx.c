@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FM Driver for Connectivity chip of Texas Instruments.
  *  This sub-module of FM driver implements FM RX functionality.
@@ -9,23 +6,6 @@
  *  Copyright (C) 2011 Texas Instruments
  *  Author: Raja Mani <raja_mani@ti.com>
  *  Author: Manjunatha Halli <manjunatha_halli@ti.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "fmdrv.h"
@@ -123,21 +103,12 @@ int fm_rx_set_freq(struct fmdev *fmdev, u32 freq)
 	if (ret < 0)
 		goto exit;
 
-<<<<<<< HEAD
-	curr_frq = be16_to_cpu(curr_frq);
-	curr_frq_in_khz = (fmdev->rx.region.bot_freq + ((u32)curr_frq * FM_FREQ_MUL));
-
-	if (curr_frq_in_khz != freq) {
-		pr_info("Frequency is set to (%d) but "
-			   "requested freq is (%d)\n", curr_frq_in_khz, freq);
-=======
 	curr_frq = be16_to_cpu((__force __be16)curr_frq);
 	curr_frq_in_khz = (fmdev->rx.region.bot_freq + ((u32)curr_frq * FM_FREQ_MUL));
 
 	if (curr_frq_in_khz != freq) {
 		pr_info("Frequency is set to (%d) but requested freq is (%d)\n",
 			curr_frq_in_khz, freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Update local cache  */
@@ -205,11 +176,7 @@ int fm_rx_seek(struct fmdev *fmdev, u32 seek_upward,
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	curr_frq = be16_to_cpu(curr_frq);
-=======
 	curr_frq = be16_to_cpu((__force __be16)curr_frq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last_frq = (fmdev->rx.region.top_freq - fmdev->rx.region.bot_freq) / FM_FREQ_MUL;
 
 	/* Check the offset in order to be aligned to the channel spacing*/
@@ -271,11 +238,7 @@ again:
 	if (!timeleft) {
 		fmerr("Timeout(%d sec),didn't get tune ended int\n",
 			   jiffies_to_msecs(FM_DRV_RX_SEEK_TIMEOUT) / 1000);
-<<<<<<< HEAD
-		return -ETIMEDOUT;
-=======
 		return -ENODATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	int_reason = fmdev->irq_info.flag & (FM_TUNE_COMPLETE | FM_BAND_LIMIT);
@@ -309,11 +272,7 @@ again:
 		if (ret < 0)
 			return ret;
 
-<<<<<<< HEAD
-		curr_frq = be16_to_cpu(curr_frq);
-=======
 		curr_frq = be16_to_cpu((__force __be16)curr_frq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fmdev->rx.freq = (fmdev->rx.region.bot_freq +
 				((u32)curr_frq * FM_FREQ_MUL));
 
@@ -333,11 +292,7 @@ int fm_rx_set_volume(struct fmdev *fmdev, u16 vol_to_set)
 	if (fmdev->curr_fmmode != FM_MODE_RX)
 		return -EPERM;
 
-<<<<<<< HEAD
-	if (vol_to_set < FM_RX_VOLUME_MIN || vol_to_set > FM_RX_VOLUME_MAX) {
-=======
 	if (vol_to_set > FM_RX_VOLUME_MAX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fmerr("Volume is not within(%d-%d) range\n",
 			   FM_RX_VOLUME_MIN, FM_RX_VOLUME_MAX);
 		return -EINVAL;
@@ -422,13 +377,8 @@ int fm_rx_set_region(struct fmdev *fmdev, u8 region_to_set)
 		new_frq = fmdev->rx.region.top_freq;
 
 	if (new_frq) {
-<<<<<<< HEAD
-		fmdbg("Current freq is not within band limit boundary,"
-				"switching to %d KHz\n", new_frq);
-=======
 		fmdbg("Current freq is not within band limit boundary,switching to %d KHz\n",
 		      new_frq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 /* Current RX frequency is not in range. So, update it */
 		ret = fm_rx_set_freq(fmdev, new_frq);
 	}
@@ -554,11 +504,7 @@ int fm_rx_set_rfdepend_softmute(struct fmdev *fmdev, u8 rfdepend_mute)
 /* Returns the signal strength level of current channel */
 int fm_rx_get_rssi_level(struct fmdev *fmdev, u16 *rssilvl)
 {
-<<<<<<< HEAD
-	u16 curr_rssi_lel;
-=======
 	__be16 curr_rssi_lel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 resp_len;
 	int ret;
 
@@ -649,11 +595,7 @@ int fm_rx_set_stereo_mono(struct fmdev *fmdev, u16 mode)
 /* Gets current RX stereo/mono mode */
 int fm_rx_get_stereo_mono(struct fmdev *fmdev, u16 *mode)
 {
-<<<<<<< HEAD
-	u16 curr_mode;
-=======
 	__be16 curr_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 resp_len;
 	int ret;
 
@@ -830,25 +772,6 @@ int fm_rx_set_rds_system(struct fmdev *fmdev, u8 rds_mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Returns current RDS operation mode */
-int fm_rx_get_rds_system(struct fmdev *fmdev, u8 *rds_mode)
-{
-	if (fmdev->curr_fmmode != FM_MODE_RX)
-		return -EPERM;
-
-	if (rds_mode == NULL) {
-		fmerr("Invalid memory\n");
-		return -ENOMEM;
-	}
-
-	*rds_mode = fmdev->rx.rds_mode;
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Configures Alternate Frequency switch mode */
 int fm_rx_set_af_switch(struct fmdev *fmdev, u8 af_mode)
 {

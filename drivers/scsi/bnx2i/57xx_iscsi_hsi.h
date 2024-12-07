@@ -1,25 +1,15 @@
-<<<<<<< HEAD
-/* 57xx_iscsi_hsi.h: Broadcom NetXtreme II iSCSI HSI.
- *
- * Copyright (c) 2006 - 2011 Broadcom Corporation
-=======
 /* 57xx_iscsi_hsi.h: QLogic NetXtreme II iSCSI HSI.
  *
  * Copyright (c) 2006 - 2013 Broadcom Corporation
  * Copyright (c) 2014, QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
-<<<<<<< HEAD
- * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
-=======
  * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
  * Maintained by: QLogic-Storage-Upstream@qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __57XX_ISCSI_HSI_LINUX_LE__
 #define __57XX_ISCSI_HSI_LINUX_LE__
@@ -279,9 +269,6 @@ struct bnx2i_cmd_request {
  * task statistics for write response
  */
 struct bnx2i_write_resp_task_stat {
-<<<<<<< HEAD
-	u32 num_data_ins;
-=======
 #if defined(__BIG_ENDIAN)
 	u16 num_r2ts;
 	u16 num_data_outs;
@@ -289,7 +276,6 @@ struct bnx2i_write_resp_task_stat {
 	u16 num_data_outs;
 	u16 num_r2ts;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -297,19 +283,11 @@ struct bnx2i_write_resp_task_stat {
  */
 struct bnx2i_read_resp_task_stat {
 #if defined(__BIG_ENDIAN)
-<<<<<<< HEAD
-	u16 num_data_outs;
-	u16 num_r2ts;
-#elif defined(__LITTLE_ENDIAN)
-	u16 num_r2ts;
-	u16 num_data_outs;
-=======
 	u16 reserved;
 	u16 num_data_ins;
 #elif defined(__LITTLE_ENDIAN)
 	u16 num_data_ins;
 	u16 reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -605,15 +583,10 @@ struct iscsi_kwqe_init1 {
 #define ISCSI_KWQE_INIT1_DELAYED_ACK_ENABLE_SHIFT 4
 #define ISCSI_KWQE_INIT1_KEEP_ALIVE_ENABLE (0x1<<5)
 #define ISCSI_KWQE_INIT1_KEEP_ALIVE_ENABLE_SHIFT 5
-<<<<<<< HEAD
-#define ISCSI_KWQE_INIT1_RESERVED1 (0x3<<6)
-#define ISCSI_KWQE_INIT1_RESERVED1_SHIFT 6
-=======
 #define ISCSI_KWQE_INIT1_TIME_STAMPS_ENABLE (0x1<<6)
 #define ISCSI_KWQE_INIT1_TIME_STAMPS_ENABLE_SHIFT 6
 #define ISCSI_KWQE_INIT1_RESERVED1 (0x1<<7)
 #define ISCSI_KWQE_INIT1_RESERVED1_SHIFT 7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cq_num_wqes;
 #elif defined(__LITTLE_ENDIAN)
 	u16 cq_num_wqes;
@@ -624,15 +597,10 @@ struct iscsi_kwqe_init1 {
 #define ISCSI_KWQE_INIT1_DELAYED_ACK_ENABLE_SHIFT 4
 #define ISCSI_KWQE_INIT1_KEEP_ALIVE_ENABLE (0x1<<5)
 #define ISCSI_KWQE_INIT1_KEEP_ALIVE_ENABLE_SHIFT 5
-<<<<<<< HEAD
-#define ISCSI_KWQE_INIT1_RESERVED1 (0x3<<6)
-#define ISCSI_KWQE_INIT1_RESERVED1_SHIFT 6
-=======
 #define ISCSI_KWQE_INIT1_TIME_STAMPS_ENABLE (0x1<<6)
 #define ISCSI_KWQE_INIT1_TIME_STAMPS_ENABLE_SHIFT 6
 #define ISCSI_KWQE_INIT1_RESERVED1 (0x1<<7)
 #define ISCSI_KWQE_INIT1_RESERVED1_SHIFT 7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 cq_log_wqes_per_page;
 #endif
 #if defined(__BIG_ENDIAN)

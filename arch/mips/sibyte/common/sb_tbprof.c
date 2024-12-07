@@ -1,22 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2001, 2002, 2003 Broadcom Corporation
  * Copyright (C) 2007 Ralf Baechle <ralf@linux-mips.org>
@@ -32,10 +15,7 @@
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
@@ -43,11 +23,7 @@
 #include <asm/io.h>
 #include <asm/sibyte/sb1250.h>
 
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 #ifdef CONFIG_SIBYTE_BCM1x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sibyte/bcm1480_regs.h>
 #include <asm/sibyte/bcm1480_scd.h>
 #include <asm/sibyte/bcm1480_int.h>
@@ -59,22 +35,14 @@
 #error invalid SiByte UART configuration
 #endif
 
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 #ifdef CONFIG_SIBYTE_BCM1x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef K_INT_TRACE_FREEZE
 #define K_INT_TRACE_FREEZE K_BCM1480_INT_TRACE_FREEZE
 #undef K_INT_PERF_CNT
 #define K_INT_PERF_CNT K_BCM1480_INT_PERF_CNT
 #endif
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SBPROF_TB_MAJOR 240
 
@@ -173,11 +141,7 @@ static u64 tb_period;
 
 static void arm_tb(void)
 {
-<<<<<<< HEAD
-        u64 scdperfcnt;
-=======
 	u64 scdperfcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 next = (1ULL << 40) - tb_period;
 	u64 tb_options = M_SCD_TRACE_CFG_FREEZE_FULL;
 
@@ -193,11 +157,7 @@ static void arm_tb(void)
 	 * a previous interrupt request.  This means that bus profiling
 	 * requires ALL of the SCD perf counters.
 	 */
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 #ifdef CONFIG_SIBYTE_BCM1x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writeq((scdperfcnt & ~M_SPC_CFG_SRC1) |
 						/* keep counters 0,2,3,4,5,6,7 as is */
 		     V_SPC_CFG_SRC1(1),		/* counter 1 counts cycles */
@@ -286,13 +246,8 @@ static irqreturn_t sbprof_pc_intr(int irq, void *dev_id)
 
 /*
  * Requires: Already called zclk_timer_init with a value that won't
-<<<<<<< HEAD
- *           saturate 40 bits.  No subsequent use of SCD performance counters
- *           or trace buffer.
-=======
  *	     saturate 40 bits.	No subsequent use of SCD performance counters
  *	     or trace buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static int sbprof_zbprof_start(struct file *filp)
@@ -322,13 +277,8 @@ static int sbprof_zbprof_start(struct file *filp)
 
 	/*
 	 * We grab this interrupt to prevent others from trying to use
-<<<<<<< HEAD
-         * it, even though we don't want to service the interrupts
-         * (they only feed into the trace-on-interrupt mechanism)
-=======
 	 * it, even though we don't want to service the interrupts
 	 * (they only feed into the trace-on-interrupt mechanism)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (request_irq(K_INT_PERF_CNT, sbprof_pc_intr, 0, DEVNAME " scd perfcnt", &sbp)) {
 		free_irq(K_INT_TRACE_FREEZE, &sbp);
@@ -337,17 +287,10 @@ static int sbprof_zbprof_start(struct file *filp)
 
 	/*
 	 * I need the core to mask these, but the interrupt mapper to
-<<<<<<< HEAD
-	 *  pass them through.  I am exploiting my knowledge that
-	 *  cp0_status masks out IP[5]. krw
-	 */
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 	 *  pass them through.	I am exploiting my knowledge that
 	 *  cp0_status masks out IP[5]. krw
 	 */
 #ifdef CONFIG_SIBYTE_BCM1x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writeq(K_BCM1480_INT_MAP_I3,
 		     IOADDR(A_BCM1480_IMR_REGISTER(0, R_BCM1480_IMR_INTERRUPT_MAP_BASE_L) +
 			    ((K_BCM1480_INT_PERF_CNT & 0x3f) << 3)));
@@ -374,11 +317,7 @@ static int sbprof_zbprof_start(struct file *filp)
 	__raw_writeq(0, IOADDR(A_ADDR_TRAP_CFG_3));
 
 	/* Initialize Trace Event 0-7 */
-<<<<<<< HEAD
-	/*				when interrupt  */
-=======
 	/*				when interrupt	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writeq(M_SCD_TREVT_INTERRUPT, IOADDR(A_SCD_TRACE_EVENT_0));
 	__raw_writeq(0, IOADDR(A_SCD_TRACE_EVENT_1));
 	__raw_writeq(0, IOADDR(A_SCD_TRACE_EVENT_2));
@@ -404,11 +343,7 @@ static int sbprof_zbprof_start(struct file *filp)
 	__raw_writeq(0, IOADDR(A_SCD_TRACE_SEQUENCE_7));
 
 	/* Now indicate the PERF_CNT interrupt as a trace-relevant interrupt */
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 #ifdef CONFIG_SIBYTE_BCM1x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writeq(1ULL << (K_BCM1480_INT_PERF_CNT & 0x3f),
 		     IOADDR(A_BCM1480_IMR_REGISTER(0, R_BCM1480_IMR_INTERRUPT_TRACE_L)));
 #else
@@ -502,27 +437,16 @@ static int sbprof_tb_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t sbprof_tb_read(struct file *filp, char *buf,
-=======
 static ssize_t sbprof_tb_read(struct file *filp, char __user *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      size_t size, loff_t *offp)
 {
 	int cur_sample, sample_off, cur_count, sample_left;
 	char *src;
 	int   count   =	 0;
-<<<<<<< HEAD
-	char *dest    =	 buf;
-	long  cur_off = *offp;
-
-	if (!access_ok(VERIFY_WRITE, buf, size))
-=======
 	char __user *dest    =	 buf;
 	long  cur_off = *offp;
 
 	if (!access_ok(buf, size))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	mutex_lock(&sbp.lock);
@@ -544,11 +468,7 @@ static ssize_t sbprof_tb_read(struct file *filp, char __user *buf,
 			return err;
 		}
 		pr_debug(DEVNAME ": read from sample %d, %d bytes\n",
-<<<<<<< HEAD
-		         cur_sample, cur_count);
-=======
 			 cur_sample, cur_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size -= cur_count;
 		sample_left -= cur_count;
 		if (!sample_left) {
@@ -592,11 +512,7 @@ static long sbprof_tb_ioctl(struct file *filp,
 		if (err)
 			break;
 
-<<<<<<< HEAD
-		err = put_user(TB_FULL, (int *) arg);
-=======
 		err = put_user(TB_FULL, (int __user *) arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -613,32 +529,20 @@ static const struct file_operations sbprof_tb_fops = {
 	.open		= sbprof_tb_open,
 	.release	= sbprof_tb_release,
 	.read		= sbprof_tb_read,
-<<<<<<< HEAD
-	.unlocked_ioctl	= sbprof_tb_ioctl,
-=======
 	.unlocked_ioctl = sbprof_tb_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compat_ioctl	= sbprof_tb_ioctl,
 	.mmap		= NULL,
 	.llseek		= default_llseek,
 };
 
-<<<<<<< HEAD
-static struct class *tb_class;
-=======
 static const struct class tb_class = {
 	.name = "sb_tracebuffer",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct device *tb_dev;
 
 static int __init sbprof_tb_init(void)
 {
 	struct device *dev;
-<<<<<<< HEAD
-	struct class *tbc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (register_chrdev(SBPROF_TB_MAJOR, DEVNAME, &sbprof_tb_fops)) {
@@ -647,23 +551,11 @@ static int __init sbprof_tb_init(void)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	tbc = class_create(THIS_MODULE, "sb_tracebuffer");
-	if (IS_ERR(tbc)) {
-		err = PTR_ERR(tbc);
-		goto out_chrdev;
-	}
-
-	tb_class = tbc;
-
-	dev = device_create(tbc, NULL, MKDEV(SBPROF_TB_MAJOR, 0), NULL, "tb");
-=======
 	err = class_register(&tb_class);
 	if (err)
 		goto out_chrdev;
 
 	dev = device_create(&tb_class, NULL, MKDEV(SBPROF_TB_MAJOR, 0), NULL, "tb");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dev)) {
 		err = PTR_ERR(dev);
 		goto out_class;
@@ -678,11 +570,7 @@ static int __init sbprof_tb_init(void)
 	return 0;
 
 out_class:
-<<<<<<< HEAD
-	class_destroy(tb_class);
-=======
 	class_unregister(&tb_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_chrdev:
 	unregister_chrdev(SBPROF_TB_MAJOR, DEVNAME);
 
@@ -691,15 +579,9 @@ out_chrdev:
 
 static void __exit sbprof_tb_cleanup(void)
 {
-<<<<<<< HEAD
-	device_destroy(tb_class, MKDEV(SBPROF_TB_MAJOR, 0));
-	unregister_chrdev(SBPROF_TB_MAJOR, DEVNAME);
-	class_destroy(tb_class);
-=======
 	device_destroy(&tb_class, MKDEV(SBPROF_TB_MAJOR, 0));
 	unregister_chrdev(SBPROF_TB_MAJOR, DEVNAME);
 	class_unregister(&tb_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(sbprof_tb_init);

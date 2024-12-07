@@ -5,11 +5,8 @@
 # Displays system-wide system call totals, broken down by syscall.
 # If a [comm] arg is specified, only syscalls called by [comm] are displayed.
 
-<<<<<<< HEAD
-=======
 from __future__ import print_function
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 import os, sys
 
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
@@ -36,55 +33,22 @@ if len(sys.argv) > 1:
 syscalls = autodict()
 
 def trace_begin():
-<<<<<<< HEAD
-	print "Press control+C to stop and show the summary"
-=======
 	print("Press control+C to stop and show the summary")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 def trace_end():
 	print_syscall_totals()
 
 def raw_syscalls__sys_enter(event_name, context, common_cpu,
-<<<<<<< HEAD
-	common_secs, common_nsecs, common_pid, common_comm,
-	id, args):
-
-	if (for_comm and common_comm != for_comm) or \
-	   (for_pid  and common_pid  != for_pid ):
-=======
 		common_secs, common_nsecs, common_pid, common_comm,
 		common_callchain, id, args):
 	if (for_comm and common_comm != for_comm) or \
 		(for_pid and common_pid != for_pid ):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return
 	try:
 		syscalls[common_comm][common_pid][id] += 1
 	except TypeError:
 		syscalls[common_comm][common_pid][id] = 1
 
-<<<<<<< HEAD
-def print_syscall_totals():
-    if for_comm is not None:
-	    print "\nsyscall events for %s:\n\n" % (for_comm),
-    else:
-	    print "\nsyscall events by comm/pid:\n\n",
-
-    print "%-40s  %10s\n" % ("comm [pid]/syscalls", "count"),
-    print "%-40s  %10s\n" % ("----------------------------------------", \
-                                 "----------"),
-
-    comm_keys = syscalls.keys()
-    for comm in comm_keys:
-	    pid_keys = syscalls[comm].keys()
-	    for pid in pid_keys:
-		    print "\n%s [%d]\n" % (comm, pid),
-		    id_keys = syscalls[comm][pid].keys()
-		    for id, val in sorted(syscalls[comm][pid].iteritems(), \
-				  key = lambda(k, v): (v, k),  reverse = True):
-			    print "  %-38s  %10d\n" % (syscall_name(id), val),
-=======
 def syscalls__sys_enter(event_name, context, common_cpu,
 		common_secs, common_nsecs, common_pid, common_comm,
 		id, args):
@@ -109,4 +73,3 @@ def print_syscall_totals():
 			for id, val in sorted(syscalls[comm][pid].items(),
 				key = lambda kv: (kv[1], kv[0]), reverse = True):
 				print("  %-38s  %10d" % (syscall_name(id), val))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

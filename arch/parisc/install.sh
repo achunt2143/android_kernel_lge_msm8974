@@ -1,10 +1,5 @@
 #!/bin/sh
 #
-<<<<<<< HEAD
-# arch/parisc/install.sh, derived from arch/i386/boot/install.sh
-#
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # This file is subject to the terms and conditions of the GNU General Public
 # License.  See the file "COPYING" in the main directory of this archive
 # for more details.
@@ -20,27 +15,6 @@
 #   $2 - kernel image file
 #   $3 - kernel map file
 #   $4 - default install path (blank if root directory)
-<<<<<<< HEAD
-#
-
-# User may have a custom install script
-
-if [ -x ~/bin/${INSTALLKERNEL} ]; then exec ~/bin/${INSTALLKERNEL} "$@"; fi
-if [ -x /sbin/${INSTALLKERNEL} ]; then exec /sbin/${INSTALLKERNEL} "$@"; fi
-
-# Default install
-
-if [ -f $4/vmlinux ]; then
-	mv $4/vmlinux $4/vmlinux.old
-fi
-
-if [ -f $4/System.map ]; then
-	mv $4/System.map $4/System.old
-fi
-
-cat $2 > $4/vmlinux
-cp $3 $4/System.map
-=======
 
 if [ "$(basename $2)" = "vmlinuz" ]; then
 # Compressed install
@@ -63,4 +37,3 @@ if [ -f $4/System.map-$1 ]; then
 fi
 cp $3 $4/System.map-$1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

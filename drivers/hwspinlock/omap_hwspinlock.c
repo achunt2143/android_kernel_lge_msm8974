@@ -1,32 +1,13 @@
-<<<<<<< HEAD
-/*
- * OMAP hardware spinlock driver
- *
- * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * OMAP hardware spinlock driver
  *
  * Copyright (C) 2010-2021 Texas Instruments Incorporated - https://www.ti.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Contact: Simon Que <sque@ti.com>
  *          Hari Kanigeri <h-kanigeri2@ti.com>
  *          Ohad Ben-Cohen <ohad@wizery.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
  *          Suman Anna <s-anna@ti.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -39,10 +20,7 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/hwspinlock.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 
 #include "hwspinlock_internal.h"
@@ -94,27 +72,6 @@ static const struct hwspinlock_ops omap_hwspinlock_ops = {
 	.relax = omap_hwspinlock_relax,
 };
 
-<<<<<<< HEAD
-static int __devinit omap_hwspinlock_probe(struct platform_device *pdev)
-{
-	struct hwspinlock_pdata *pdata = pdev->dev.platform_data;
-	struct hwspinlock_device *bank;
-	struct hwspinlock *hwlock;
-	struct resource *res;
-	void __iomem *io_base;
-	int num_locks, i, ret;
-
-	if (!pdata)
-		return -ENODEV;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res)
-		return -ENODEV;
-
-	io_base = ioremap(res->start, resource_size(res));
-	if (!io_base)
-		return -ENOMEM;
-=======
 static int omap_hwspinlock_probe(struct platform_device *pdev)
 {
 	struct hwspinlock_device *bank;
@@ -135,79 +92,11 @@ static int omap_hwspinlock_probe(struct platform_device *pdev)
 	ret = pm_runtime_resume_and_get(&pdev->dev);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine number of locks */
 	i = readl(io_base + SYSSTATUS_OFFSET);
 	i >>= SPINLOCK_NUMLOCKS_BIT_OFFSET;
 
-<<<<<<< HEAD
-	/* one of the four lsb's must be set, and nothing else */
-	if (hweight_long(i & 0xf) != 1 || i > 8) {
-		ret = -EINVAL;
-		goto iounmap_base;
-	}
-
-	num_locks = i * 32; /* actual number of locks in this device */
-
-	bank = kzalloc(sizeof(*bank) + num_locks * sizeof(*hwlock), GFP_KERNEL);
-	if (!bank) {
-		ret = -ENOMEM;
-		goto iounmap_base;
-	}
-
-	platform_set_drvdata(pdev, bank);
-
-	for (i = 0, hwlock = &bank->lock[0]; i < num_locks; i++, hwlock++)
-		hwlock->priv = io_base + LOCK_BASE_OFFSET + sizeof(u32) * i;
-
-	/*
-	 * runtime PM will make sure the clock of this module is
-	 * enabled iff at least one lock is requested
-	 */
-	pm_runtime_enable(&pdev->dev);
-
-	ret = hwspin_lock_register(bank, &pdev->dev, &omap_hwspinlock_ops,
-						pdata->base_id, num_locks);
-	if (ret)
-		goto reg_fail;
-
-	return 0;
-
-reg_fail:
-	pm_runtime_disable(&pdev->dev);
-	kfree(bank);
-iounmap_base:
-	iounmap(io_base);
-	return ret;
-}
-
-static int __devexit omap_hwspinlock_remove(struct platform_device *pdev)
-{
-	struct hwspinlock_device *bank = platform_get_drvdata(pdev);
-	void __iomem *io_base = bank->lock[0].priv - LOCK_BASE_OFFSET;
-	int ret;
-
-	ret = hwspin_lock_unregister(bank);
-	if (ret) {
-		dev_err(&pdev->dev, "%s failed: %d\n", __func__, ret);
-		return ret;
-	}
-
-	pm_runtime_disable(&pdev->dev);
-	iounmap(io_base);
-	kfree(bank);
-
-	return 0;
-}
-
-static struct platform_driver omap_hwspinlock_driver = {
-	.probe		= omap_hwspinlock_probe,
-	.remove		= __devexit_p(omap_hwspinlock_remove),
-	.driver		= {
-		.name	= "omap_hwspinlock",
-		.owner	= THIS_MODULE,
-=======
 	/*
 	 * runtime PM will make sure the clock of this module is
 	 * enabled again iff at least one lock is requested
@@ -247,7 +136,6 @@ static struct platform_driver omap_hwspinlock_driver = {
 	.driver		= {
 		.name	= "omap_hwspinlock",
 		.of_match_table = omap_hwspinlock_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

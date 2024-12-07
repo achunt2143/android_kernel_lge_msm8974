@@ -8,11 +8,7 @@
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpu.h>
 #include <asm/cpu.h>
 #include <asm/cpu-info.h>
@@ -28,13 +24,6 @@ EXPORT_SYMBOL(bcm63xx_regs_base);
 const int *bcm63xx_irqs;
 EXPORT_SYMBOL(bcm63xx_irqs);
 
-<<<<<<< HEAD
-static u16 bcm63xx_cpu_id;
-static u16 bcm63xx_cpu_rev;
-static unsigned int bcm63xx_cpu_freq;
-static unsigned int bcm63xx_memory_size;
-
-=======
 u16 bcm63xx_cpu_id __read_mostly;
 EXPORT_SYMBOL(bcm63xx_cpu_id);
 
@@ -58,7 +47,6 @@ static const int bcm6328_irqs[] = {
 	__GEN_CPU_IRQ_TABLE(6328)
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const unsigned long bcm6338_regs_base[] = {
 	__GEN_CPU_REGS_TABLE(6338)
 };
@@ -93,8 +81,6 @@ static const int bcm6358_irqs[] = {
 
 };
 
-<<<<<<< HEAD
-=======
 static const unsigned long bcm6362_regs_base[] = {
 	__GEN_CPU_REGS_TABLE(6362)
 };
@@ -104,7 +90,6 @@ static const int bcm6362_irqs[] = {
 
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const unsigned long bcm6368_regs_base[] = {
 	__GEN_CPU_REGS_TABLE(6368)
 };
@@ -114,18 +99,7 @@ static const int bcm6368_irqs[] = {
 
 };
 
-<<<<<<< HEAD
-u16 __bcm63xx_get_cpu_id(void)
-{
-	return bcm63xx_cpu_id;
-}
-
-EXPORT_SYMBOL(__bcm63xx_get_cpu_id);
-
-u16 bcm63xx_get_cpu_rev(void)
-=======
 u8 bcm63xx_get_cpu_rev(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return bcm63xx_cpu_rev;
 }
@@ -144,9 +118,6 @@ unsigned int bcm63xx_get_memory_size(void)
 
 static unsigned int detect_cpu_clock(void)
 {
-<<<<<<< HEAD
-	switch (bcm63xx_get_cpu_id()) {
-=======
 	u16 cpu_id = bcm63xx_get_cpu_id();
 
 	switch (cpu_id) {
@@ -180,7 +151,6 @@ static unsigned int detect_cpu_clock(void)
 		}
 
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BCM6338_CPU_ID:
 		/* BCM6338 has a fixed 240 Mhz frequency */
 		return 240000000;
@@ -216,8 +186,6 @@ static unsigned int detect_cpu_clock(void)
 		return (16 * 1000000 * n1 * n2) / m1;
 	}
 
-<<<<<<< HEAD
-=======
 	case BCM6362_CPU_ID:
 	{
 		unsigned int tmp, mips_pll_fcvo;
@@ -254,7 +222,6 @@ static unsigned int detect_cpu_clock(void)
 			return 320000000;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BCM6368_CPU_ID:
 	{
 		unsigned int tmp, p1, p2, ndiv, m1;
@@ -279,11 +246,7 @@ static unsigned int detect_cpu_clock(void)
 	}
 
 	default:
-<<<<<<< HEAD
-		BUG();
-=======
 		panic("Failed to detect clock for CPU with id=%04X\n", cpu_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -295,18 +258,12 @@ static unsigned int detect_memory_size(void)
 	unsigned int cols = 0, rows = 0, is_32bits = 0, banks = 0;
 	u32 val;
 
-<<<<<<< HEAD
-	if (BCMCPU_IS_6345()) {
-		val = bcm_sdram_readl(SDRAM_MBASE_REG);
-		return (val * 8 * 1024 * 1024);
-=======
 	if (BCMCPU_IS_6328() || BCMCPU_IS_6362())
 		return bcm_ddr_readl(DDR_CSEND_REG) << 24;
 
 	if (BCMCPU_IS_6345()) {
 		val = bcm_sdram_readl(SDRAM_MBASE_REG);
 		return val * 8 * 1024 * 1024;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (BCMCPU_IS_6338() || BCMCPU_IS_6348()) {
@@ -317,11 +274,7 @@ static unsigned int detect_memory_size(void)
 		banks = (val & SDRAM_CFG_BANK_MASK) ? 2 : 1;
 	}
 
-<<<<<<< HEAD
-	if (BCMCPU_IS_6358() || BCMCPU_IS_6368()) {
-=======
 	if (BCMCPU_IS_3368() || BCMCPU_IS_6358() || BCMCPU_IS_6368()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = bcm_memc_readl(MEMC_CFG_REG);
 		rows = (val & MEMC_CFG_ROW_MASK) >> MEMC_CFG_ROW_SHIFT;
 		cols = (val & MEMC_CFG_COL_MASK) >> MEMC_CFG_COL_SHIFT;
@@ -340,44 +293,6 @@ static unsigned int detect_memory_size(void)
 
 void __init bcm63xx_cpu_init(void)
 {
-<<<<<<< HEAD
-	unsigned int tmp, expected_cpu_id;
-	struct cpuinfo_mips *c = &current_cpu_data;
-	unsigned int cpu = smp_processor_id();
-
-	/* soc registers location depends on cpu type */
-	expected_cpu_id = 0;
-
-	switch (c->cputype) {
-	case CPU_BMIPS3300:
-		if ((read_c0_prid() & 0xff00) == PRID_IMP_BMIPS3300_ALT) {
-			expected_cpu_id = BCM6348_CPU_ID;
-			bcm63xx_regs_base = bcm6348_regs_base;
-			bcm63xx_irqs = bcm6348_irqs;
-		} else {
-			__cpu_name[cpu] = "Broadcom BCM6338";
-			expected_cpu_id = BCM6338_CPU_ID;
-			bcm63xx_regs_base = bcm6338_regs_base;
-			bcm63xx_irqs = bcm6338_irqs;
-		}
-		break;
-	case CPU_BMIPS32:
-		expected_cpu_id = BCM6345_CPU_ID;
-		bcm63xx_regs_base = bcm6345_regs_base;
-		bcm63xx_irqs = bcm6345_irqs;
-		break;
-	case CPU_BMIPS4350:
-		switch (read_c0_prid() & 0xf0) {
-		case 0x10:
-			expected_cpu_id = BCM6358_CPU_ID;
-			bcm63xx_regs_base = bcm6358_regs_base;
-			bcm63xx_irqs = bcm6358_irqs;
-			break;
-		case 0x30:
-			expected_cpu_id = BCM6368_CPU_ID;
-			bcm63xx_regs_base = bcm6368_regs_base;
-			bcm63xx_irqs = bcm6368_irqs;
-=======
 	unsigned int tmp;
 	unsigned int cpu = smp_processor_id();
 	u32 chipid_reg;
@@ -403,7 +318,6 @@ void __init bcm63xx_cpu_init(void)
 			break;
 		default:
 			chipid_reg = BCM_6368_PERF_BASE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		break;
@@ -413,22 +327,6 @@ void __init bcm63xx_cpu_init(void)
 	 * really early to panic, but delaying panic would not help since we
 	 * will never get any working console
 	 */
-<<<<<<< HEAD
-	if (!expected_cpu_id)
-		panic("unsupported Broadcom CPU");
-
-	/*
-	 * bcm63xx_regs_base is set, we can access soc registers
-	 */
-
-	/* double check CPU type */
-	tmp = bcm_perf_readl(PERF_REV_REG);
-	bcm63xx_cpu_id = (tmp & REV_CHIPID_MASK) >> REV_CHIPID_SHIFT;
-	bcm63xx_cpu_rev = (tmp & REV_REVID_MASK) >> REV_REVID_SHIFT;
-
-	if (bcm63xx_cpu_id != expected_cpu_id)
-		panic("bcm63xx CPU id mismatch");
-=======
 	if (!chipid_reg)
 		panic("unsupported Broadcom CPU");
 
@@ -474,24 +372,14 @@ void __init bcm63xx_cpu_init(void)
 		panic("unsupported broadcom CPU %x", bcm63xx_cpu_id);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bcm63xx_cpu_freq = detect_cpu_clock();
 	bcm63xx_memory_size = detect_memory_size();
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Detected Broadcom 0x%04x CPU revision %02x\n",
-	       bcm63xx_cpu_id, bcm63xx_cpu_rev);
-	printk(KERN_INFO "CPU frequency is %u MHz\n",
-	       bcm63xx_cpu_freq / 1000000);
-	printk(KERN_INFO "%uMB of RAM installed\n",
-	       bcm63xx_memory_size >> 20);
-=======
 	pr_info("Detected Broadcom 0x%04x CPU revision %02x\n",
 		bcm63xx_cpu_id, bcm63xx_cpu_rev);
 	pr_info("CPU frequency is %u MHz\n",
 		bcm63xx_cpu_freq / 1000000);
 	pr_info("%uMB of RAM installed\n",
 		bcm63xx_memory_size >> 20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

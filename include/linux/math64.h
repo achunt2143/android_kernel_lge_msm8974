@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_MATH64_H
 #define _LINUX_MATH64_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/math.h>
 #include <vdso/math64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/div64.h>
 
 #if BITS_PER_LONG == 64
 
-<<<<<<< HEAD
-#define div64_long(x,y) div64_s64((x),(y))
-
-/**
- * div_u64_rem - unsigned 64bit divide with 32bit divisor with remainder
-=======
 #define div64_long(x, y) div64_s64((x), (y))
 #define div64_ul(x, y)   div64_u64((x), (y))
 
@@ -31,7 +19,6 @@
  * @remainder: pointer to unsigned 32bit remainder
  *
  * Return: sets ``*remainder``, then returns dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is commonly provided by 32bit archs to provide an optimized 64bit
  * divide.
@@ -44,14 +31,11 @@ static inline u64 div_u64_rem(u64 dividend, u32 divisor, u32 *remainder)
 
 /**
  * div_s64_rem - signed 64bit divide with 32bit divisor with remainder
-<<<<<<< HEAD
-=======
  * @dividend: signed 64bit dividend
  * @divisor: signed 32bit divisor
  * @remainder: pointer to signed 32bit remainder
  *
  * Return: sets ``*remainder``, then returns dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline s64 div_s64_rem(s64 dividend, s32 divisor, s32 *remainder)
 {
@@ -60,9 +44,6 @@ static inline s64 div_s64_rem(s64 dividend, s32 divisor, s32 *remainder)
 }
 
 /**
-<<<<<<< HEAD
- * div64_u64 - unsigned 64bit divide with 64bit divisor
-=======
  * div64_u64_rem - unsigned 64bit divide with 64bit divisor and remainder
  * @dividend: unsigned 64bit dividend
  * @divisor: unsigned 64bit divisor
@@ -82,7 +63,6 @@ static inline u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder)
  * @divisor: unsigned 64bit divisor
  *
  * Return: dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline u64 div64_u64(u64 dividend, u64 divisor)
 {
@@ -91,13 +71,10 @@ static inline u64 div64_u64(u64 dividend, u64 divisor)
 
 /**
  * div64_s64 - signed 64bit divide with 64bit divisor
-<<<<<<< HEAD
-=======
  * @dividend: signed 64bit dividend
  * @divisor: signed 64bit divisor
  *
  * Return: dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline s64 div64_s64(s64 dividend, s64 divisor)
 {
@@ -106,12 +83,8 @@ static inline s64 div64_s64(s64 dividend, s64 divisor)
 
 #elif BITS_PER_LONG == 32
 
-<<<<<<< HEAD
-#define div64_long(x,y) div_s64((x),(y))
-=======
 #define div64_long(x, y) div_s64((x), (y))
 #define div64_ul(x, y)   div_u64((x), (y))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef div_u64_rem
 static inline u64 div_u64_rem(u64 dividend, u32 divisor, u32 *remainder)
@@ -125,13 +98,10 @@ static inline u64 div_u64_rem(u64 dividend, u32 divisor, u32 *remainder)
 extern s64 div_s64_rem(s64 dividend, s32 divisor, s32 *remainder);
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef div64_u64_rem
 extern u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef div64_u64
 extern u64 div64_u64(u64 dividend, u64 divisor);
 #endif
@@ -144,20 +114,14 @@ extern s64 div64_s64(s64 dividend, s64 divisor);
 
 /**
  * div_u64 - unsigned 64bit divide with 32bit divisor
-<<<<<<< HEAD
-=======
  * @dividend: unsigned 64bit dividend
  * @divisor: unsigned 32bit divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the most common 64bit divide and should be used if possible,
  * as many 32bit archs can optimize this variant better than a full 64bit
  * divide.
-<<<<<<< HEAD
-=======
  *
  * Return: dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef div_u64
 static inline u64 div_u64(u64 dividend, u32 divisor)
@@ -169,13 +133,10 @@ static inline u64 div_u64(u64 dividend, u32 divisor)
 
 /**
  * div_s64 - signed 64bit divide with 32bit divisor
-<<<<<<< HEAD
-=======
  * @dividend: signed 64bit dividend
  * @divisor: signed 32bit divisor
  *
  * Return: dividend / divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef div_s64
 static inline s64 div_s64(s64 dividend, s32 divisor)
@@ -187,27 +148,6 @@ static inline s64 div_s64(s64 dividend, s32 divisor)
 
 u32 iter_div_u64_rem(u64 dividend, u32 divisor, u64 *remainder);
 
-<<<<<<< HEAD
-static __always_inline u32
-__iter_div_u64_rem(u64 dividend, u32 divisor, u64 *remainder)
-{
-	u32 ret = 0;
-
-	while (dividend >= divisor) {
-		/* The following asm() prevents the compiler from
-		   optimising this loop into a modulo operation.  */
-		asm("" : "+rm"(dividend));
-
-		dividend -= divisor;
-		ret++;
-	}
-
-	*remainder = dividend;
-
-	return ret;
-}
-
-=======
 #ifndef mul_u32_u32
 /*
  * Many a GCC version messes this up and generates a 64x64 mult :-(
@@ -406,5 +346,4 @@ u64 mul_u64_u64_div_u64(u64 a, u64 mul, u64 div);
 		div_s64((__x - (__d / 2)), __d);	\
 }							\
 )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_MATH64_H */

@@ -1,62 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-omap1/clock.h
  *
  *  Copyright (C) 2004 - 2005, 2009 Nokia corporation
  *  Written by Tuukka Tikkanen <tuukka.tikkanen@elektrobit.com>
  *  Based on clocks.h by Tony Lindgren, Gordon McNutt and RidgeRun, Inc
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_MACH_OMAP1_CLOCK_H
 #define __ARCH_ARM_MACH_OMAP1_CLOCK_H
 
 #include <linux/clk.h>
-<<<<<<< HEAD
-
-#include <plat/clock.h>
-
-int omap1_clk_init(void);
-void omap1_clk_late_init(void);
-extern int omap1_clk_enable(struct clk *clk);
-extern void omap1_clk_disable(struct clk *clk);
-extern long omap1_clk_round_rate(struct clk *clk, unsigned long rate);
-extern int omap1_clk_set_rate(struct clk *clk, unsigned long rate);
-extern unsigned long omap1_ckctl_recalc(struct clk *clk);
-extern int omap1_set_sossi_rate(struct clk *clk, unsigned long rate);
-extern unsigned long omap1_sossi_recalc(struct clk *clk);
-extern unsigned long omap1_ckctl_recalc_dsp_domain(struct clk *clk);
-extern int omap1_clk_set_rate_dsp_domain(struct clk *clk, unsigned long rate);
-extern int omap1_set_uart_rate(struct clk *clk, unsigned long rate);
-extern unsigned long omap1_uart_recalc(struct clk *clk);
-extern int omap1_set_ext_clk_rate(struct clk *clk, unsigned long rate);
-extern long omap1_round_ext_clk_rate(struct clk *clk, unsigned long rate);
-extern void omap1_init_ext_clk(struct clk *clk);
-extern int omap1_select_table_rate(struct clk *clk, unsigned long rate);
-extern long omap1_round_to_table_rate(struct clk *clk, unsigned long rate);
-extern int omap1_clk_set_rate_ckctl_arm(struct clk *clk, unsigned long rate);
-extern long omap1_clk_round_rate_ckctl_arm(struct clk *clk, unsigned long rate);
-extern unsigned long omap1_watchdog_recalc(struct clk *clk);
-
-#ifdef CONFIG_OMAP_RESET_CLOCKS
-extern void omap1_clk_disable_unused(struct clk *clk);
-#else
-#define omap1_clk_disable_unused	NULL
-#endif
-
-struct uart_clk {
-	struct clk	clk;
-	unsigned long	sysc_addr;
-=======
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
 
@@ -168,20 +122,13 @@ long omap1_clk_round_rate_ckctl_arm(struct omap1_clk *clk, unsigned long rate,
 struct uart_clk {
 	struct omap1_clk	clk;
 	unsigned long		sysc_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Provide a method for preventing idling some ARM IDLECT clocks */
 struct arm_idlect1_clk {
-<<<<<<< HEAD
-	struct clk	clk;
-	unsigned long	no_idle_count;
-	__u8		idlect_shift;
-=======
 	struct omap1_clk	clk;
 	unsigned long		no_idle_count;
 	__u8			idlect_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* ARM_CKCTL bit shifts */
@@ -231,28 +178,18 @@ struct arm_idlect1_clk {
 #define SOFT_REQ_REG2		0xfffe0880
 
 extern __u32 arm_idlect1_mask;
-<<<<<<< HEAD
-extern struct clk *api_ck_p, *ck_dpll1_p, *ck_ref_p;
-
-extern const struct clkops clkops_dspck;
-extern const struct clkops clkops_dummy;
-=======
 extern struct omap1_clk *api_ck_p, *ck_dpll1_p, *ck_ref_p;
 
 extern const struct clkops clkops_dspck;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct clkops clkops_uart_16xx;
 extern const struct clkops clkops_generic;
 
 /* used for passing SoC type to omap1_{select,round_to}_table_rate() */
 extern u32 cpu_mask;
 
-<<<<<<< HEAD
-=======
 extern const struct clk_ops omap1_clk_null_ops;
 extern const struct clk_ops omap1_clk_gate_ops;
 extern const struct clk_ops omap1_clk_rate_ops;
 extern const struct clk_ops omap1_clk_full_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

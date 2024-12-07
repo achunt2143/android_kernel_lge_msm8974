@@ -384,11 +384,7 @@
 
 #define	AR9170_MAC_REG_BCN_ADDR			(AR9170_MAC_REG_BASE + 0xd84)
 #define	AR9170_MAC_REG_BCN_LENGTH		(AR9170_MAC_REG_BASE + 0xd88)
-<<<<<<< HEAD
-#define		AR9170_MAC_BCN_LENGTH_MAX		256
-=======
 #define		AR9170_MAC_BCN_LENGTH_MAX		(512 - 32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR9170_MAC_REG_BCN_STATUS		(AR9170_MAC_REG_BASE + 0xd8c)
 
@@ -457,11 +453,6 @@
 #define	AR9170_MC_REG_BASE			0x1d1000
 
 #define	AR9170_MC_REG_FLASH_WAIT_STATE		(AR9170_MC_REG_BASE + 0x000)
-<<<<<<< HEAD
-#define	AR9170_MC_REG_SEEPROM_WP0		(AR9170_MC_REG_BASE + 0x400)
-#define	AR9170_MC_REG_SEEPROM_WP1		(AR9170_MC_REG_BASE + 0x404)
-#define	AR9170_MC_REG_SEEPROM_WP2		(AR9170_MC_REG_BASE + 0x408)
-=======
 
 #define AR9170_SPI_REG_BASE			(AR9170_MC_REG_BASE + 0x200)
 #define AR9170_SPI_REG_CONTROL0			(AR9170_SPI_REG_BASE + 0x000)
@@ -530,7 +521,6 @@
 #define AR9170_EEPROM_REG_WRITE_PROTECT		(AR9170_EEPROM_REG_BASE + 0x014)
 #define		AR9170_EEPROM_WRITE_PROTECT_WP_STATUS	BIT(0)
 #define		AR9170_EEPROM_WRITE_PROTECT_WP_SET	BIT(8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Interrupt Controller */
 #define	AR9170_MAX_INT_SRC			9
@@ -664,19 +654,13 @@
 #define	AR9170_USB_REG_EP10_MAP			(AR9170_USB_REG_BASE + 0x039)
 
 #define	AR9170_USB_REG_EP_IN_MAX_SIZE_HIGH	(AR9170_USB_REG_BASE + 0x03f)
-<<<<<<< HEAD
-=======
 #define		AR9170_USB_EP_IN_STALL			0x8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		AR9170_USB_EP_IN_TOGGLE			0x10
 
 #define	AR9170_USB_REG_EP_IN_MAX_SIZE_LOW	(AR9170_USB_REG_BASE + 0x03e)
 
 #define	AR9170_USB_REG_EP_OUT_MAX_SIZE_HIGH	(AR9170_USB_REG_BASE + 0x05f)
-<<<<<<< HEAD
-=======
 #define		AR9170_USB_EP_OUT_STALL			0x8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		AR9170_USB_EP_OUT_TOGGLE		0x10
 
 #define	AR9170_USB_REG_EP_OUT_MAX_SIZE_LOW	(AR9170_USB_REG_BASE + 0x05e)
@@ -867,11 +851,7 @@ struct ar9170_stream {
 	__le16 length;
 	__le16 tag;
 
-<<<<<<< HEAD
-	u8 payload[0];
-=======
 	u8 payload[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed __aligned(4);
 #define AR9170_STREAM_LEN				4
 

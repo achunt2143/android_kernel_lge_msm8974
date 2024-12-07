@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NET_XFRM_H
 #define _NET_XFRM_H
 
@@ -17,11 +14,8 @@
 #include <linux/mutex.h>
 #include <linux/audit.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
 #include <linux/sockptr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/sock.h>
 #include <net/dst.h>
@@ -30,10 +24,7 @@
 #include <net/ipv6.h>
 #include <net/ip6_fib.h>
 #include <net/flow.h>
-<<<<<<< HEAD
-=======
 #include <net/gro_cells.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/interrupt.h>
 
@@ -55,20 +46,6 @@
 	MODULE_ALIAS("xfrm-mode-" __stringify(family) "-" __stringify(encap))
 #define MODULE_ALIAS_XFRM_TYPE(family, proto) \
 	MODULE_ALIAS("xfrm-type-" __stringify(family) "-" __stringify(proto))
-<<<<<<< HEAD
-
-#ifdef CONFIG_XFRM_STATISTICS
-#define XFRM_INC_STATS(net, field)	SNMP_INC_STATS((net)->mib.xfrm_statistics, field)
-#define XFRM_INC_STATS_BH(net, field)	SNMP_INC_STATS_BH((net)->mib.xfrm_statistics, field)
-#define XFRM_INC_STATS_USER(net, field)	SNMP_INC_STATS_USER((net)-mib.xfrm_statistics, field)
-#else
-#define XFRM_INC_STATS(net, field)	((void)(net))
-#define XFRM_INC_STATS_BH(net, field)	((void)(net))
-#define XFRM_INC_STATS_USER(net, field)	((void)(net))
-#endif
-
-extern struct mutex xfrm_cfg_mutex;
-=======
 #define MODULE_ALIAS_XFRM_OFFLOAD_TYPE(family, proto) \
 	MODULE_ALIAS("xfrm-offload-" __stringify(family) "-" __stringify(proto))
 
@@ -80,7 +57,6 @@ extern struct mutex xfrm_cfg_mutex;
 #define XFRM_ADD_STATS(net, field, val) ((void)(net))
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Organization of SPD aka "XFRM rules"
    ------------------------------------
@@ -146,13 +122,6 @@ extern struct mutex xfrm_cfg_mutex;
 struct xfrm_state_walk {
 	struct list_head	all;
 	u8			state;
-<<<<<<< HEAD
-	union {
-		u8		dying;
-		u8		proto;
-	};
-	u32			seq;
-=======
 	u8			dying;
 	u8			proto;
 	u32			seq;
@@ -200,41 +169,26 @@ enum xfrm_replay_mode {
 	XFRM_REPLAY_MODE_LEGACY,
 	XFRM_REPLAY_MODE_BMP,
 	XFRM_REPLAY_MODE_ESN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Full description of state of transformer. */
 struct xfrm_state {
-<<<<<<< HEAD
-#ifdef CONFIG_NET_NS
-	struct net		*xs_net;
-#endif
-=======
 	possible_net_t		xs_net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct hlist_node	gclist;
 		struct hlist_node	bydst;
 	};
 	struct hlist_node	bysrc;
 	struct hlist_node	byspi;
-<<<<<<< HEAD
-
-	atomic_t		refcnt;
-=======
 	struct hlist_node	byseq;
 
 	refcount_t		refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t		lock;
 
 	struct xfrm_id		id;
 	struct xfrm_selector	sel;
 	struct xfrm_mark	mark;
-<<<<<<< HEAD
-=======
 	u32			if_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			tfcpad;
 
 	u32			genid;
@@ -253,11 +207,8 @@ struct xfrm_state {
 		xfrm_address_t	saddr;
 		int		header_len;
 		int		trailer_len;
-<<<<<<< HEAD
-=======
 		u32		extra_flags;
 		struct xfrm_mark	smark;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} props;
 
 	struct xfrm_lifetime_cfg lft;
@@ -267,11 +218,6 @@ struct xfrm_state {
 	struct xfrm_algo	*ealg;
 	struct xfrm_algo	*calg;
 	struct xfrm_algo_aead	*aead;
-<<<<<<< HEAD
-
-	/* Data for encapsulator */
-	struct xfrm_encap_tmpl	*encap;
-=======
 	const char		*geniv;
 
 	/* mapping change rate limiting */
@@ -282,7 +228,6 @@ struct xfrm_state {
 	/* Data for encapsulator */
 	struct xfrm_encap_tmpl	*encap;
 	struct sock __rcu	*encap_sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Data for care-of address */
 	xfrm_address_t	*coaddr;
@@ -301,14 +246,8 @@ struct xfrm_state {
 	struct xfrm_replay_state preplay;
 	struct xfrm_replay_state_esn *preplay_esn;
 
-<<<<<<< HEAD
-	/* The functions for replay detection. */
-	struct xfrm_replay	*repl;
-
-=======
 	/* replay detection mode */
 	enum xfrm_replay_mode    repl_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* internal flag that only holds state for delayed aevent at the
 	 * moment
 	*/
@@ -325,12 +264,6 @@ struct xfrm_state {
 	struct xfrm_stats	stats;
 
 	struct xfrm_lifetime_cur curlft;
-<<<<<<< HEAD
-	struct tasklet_hrtimer	mtimer;
-
-	/* Last used time */
-	unsigned long		lastused;
-=======
 	struct hrtimer		mtimer;
 
 	struct xfrm_dev_offload xso;
@@ -342,22 +275,15 @@ struct xfrm_state {
 	time64_t		lastused;
 
 	struct page_frag xfrag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reference to data common to all the instances of this
 	 * transformer. */
 	const struct xfrm_type	*type;
-<<<<<<< HEAD
-	struct xfrm_mode	*inner_mode;
-	struct xfrm_mode	*inner_mode_iaf;
-	struct xfrm_mode	*outer_mode;
-=======
 	struct xfrm_mode	inner_mode;
 	struct xfrm_mode	inner_mode_iaf;
 	struct xfrm_mode	outer_mode;
 
 	const struct xfrm_type_offload	*type_offload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Security context */
 	struct xfrm_sec_ctx	*security;
@@ -374,10 +300,7 @@ static inline struct net *xs_net(struct xfrm_state *x)
 
 /* xflags - make enum if more show up */
 #define XFRM_TIME_DEFER	1
-<<<<<<< HEAD
-=======
 #define XFRM_SOFT_EXPIRE 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	XFRM_STATE_VOID,
@@ -399,29 +322,11 @@ struct km_event {
 	} data;
 
 	u32	seq;
-<<<<<<< HEAD
-	u32	pid;
-=======
 	u32	portid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	event;
 	struct net *net;
 };
 
-<<<<<<< HEAD
-struct xfrm_replay {
-	void	(*advance)(struct xfrm_state *x, __be32 net_seq);
-	int	(*check)(struct xfrm_state *x,
-			 struct sk_buff *skb,
-			 __be32 net_seq);
-	int	(*recheck)(struct xfrm_state *x,
-			   struct sk_buff *skb,
-			   __be32 net_seq);
-	void	(*notify)(struct xfrm_state *x, int event);
-	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
-};
-
-=======
 struct xfrm_if_decode_session_result {
 	struct net *net;
 	u32 if_id;
@@ -436,27 +341,10 @@ struct xfrm_if_cb {
 void xfrm_if_register_cb(const struct xfrm_if_cb *ifcb);
 void xfrm_if_unregister_cb(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct net_device;
 struct xfrm_type;
 struct xfrm_dst;
 struct xfrm_policy_afinfo {
-<<<<<<< HEAD
-	unsigned short		family;
-	struct dst_ops		*dst_ops;
-	void			(*garbage_collect)(struct net *net);
-	struct dst_entry	*(*dst_lookup)(struct net *net, int tos,
-					       const xfrm_address_t *saddr,
-					       const xfrm_address_t *daddr);
-	int			(*get_saddr)(struct net *net, xfrm_address_t *saddr, xfrm_address_t *daddr);
-	void			(*decode_session)(struct sk_buff *skb,
-						  struct flowi *fl,
-						  int reverse);
-	int			(*get_tos)(const struct flowi *fl);
-	int			(*init_path)(struct xfrm_dst *path,
-					     struct dst_entry *dst,
-					     int nfheader_len);
-=======
 	struct dst_ops		*dst_ops;
 	struct dst_entry	*(*dst_lookup)(struct net *net,
 					       int tos, int oif,
@@ -467,58 +355,12 @@ struct xfrm_policy_afinfo {
 					     xfrm_address_t *saddr,
 					     xfrm_address_t *daddr,
 					     u32 mark);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			(*fill_dst)(struct xfrm_dst *xdst,
 					    struct net_device *dev,
 					    const struct flowi *fl);
 	struct dst_entry	*(*blackhole_route)(struct net *net, struct dst_entry *orig);
 };
 
-<<<<<<< HEAD
-extern int xfrm_policy_register_afinfo(struct xfrm_policy_afinfo *afinfo);
-extern int xfrm_policy_unregister_afinfo(struct xfrm_policy_afinfo *afinfo);
-extern void km_policy_notify(struct xfrm_policy *xp, int dir, const struct km_event *c);
-extern void km_state_notify(struct xfrm_state *x, const struct km_event *c);
-
-struct xfrm_tmpl;
-extern int km_query(struct xfrm_state *x, struct xfrm_tmpl *t, struct xfrm_policy *pol);
-extern void km_state_expired(struct xfrm_state *x, int hard, u32 pid);
-extern int __xfrm_state_delete(struct xfrm_state *x);
-
-struct xfrm_state_afinfo {
-	unsigned int		family;
-	unsigned int		proto;
-	__be16			eth_proto;
-	struct module		*owner;
-	const struct xfrm_type	*type_map[IPPROTO_MAX];
-	struct xfrm_mode	*mode_map[XFRM_MODE_MAX];
-	int			(*init_flags)(struct xfrm_state *x);
-	void			(*init_tempsel)(struct xfrm_selector *sel,
-						const struct flowi *fl);
-	void			(*init_temprop)(struct xfrm_state *x,
-						const struct xfrm_tmpl *tmpl,
-						const xfrm_address_t *daddr,
-						const xfrm_address_t *saddr);
-	int			(*tmpl_sort)(struct xfrm_tmpl **dst, struct xfrm_tmpl **src, int n);
-	int			(*state_sort)(struct xfrm_state **dst, struct xfrm_state **src, int n);
-	int			(*output)(struct sk_buff *skb);
-	int			(*output_finish)(struct sk_buff *skb);
-	int			(*extract_input)(struct xfrm_state *x,
-						 struct sk_buff *skb);
-	int			(*extract_output)(struct xfrm_state *x,
-						  struct sk_buff *skb);
-	int			(*transport_finish)(struct sk_buff *skb,
-						    int async);
-};
-
-extern int xfrm_state_register_afinfo(struct xfrm_state_afinfo *afinfo);
-extern int xfrm_state_unregister_afinfo(struct xfrm_state_afinfo *afinfo);
-
-extern void xfrm_state_delete_tunnel(struct xfrm_state *x);
-
-struct xfrm_type {
-	char			*description;
-=======
 int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int family);
 void xfrm_policy_unregister_afinfo(const struct xfrm_policy_afinfo *afinfo);
 void km_policy_notify(struct xfrm_policy *xp, int dir,
@@ -570,7 +412,6 @@ void xfrm_flush_gc(void);
 void xfrm_state_delete_tunnel(struct xfrm_state *x);
 
 struct xfrm_type {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct module		*owner;
 	u8			proto;
 	u8			flags;
@@ -579,88 +420,13 @@ struct xfrm_type {
 #define XFRM_TYPE_LOCAL_COADDR	4
 #define XFRM_TYPE_REMOTE_COADDR	8
 
-<<<<<<< HEAD
-	int			(*init_state)(struct xfrm_state *x);
-=======
 	int			(*init_state)(struct xfrm_state *x,
 					      struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			(*destructor)(struct xfrm_state *);
 	int			(*input)(struct xfrm_state *, struct sk_buff *skb);
 	int			(*output)(struct xfrm_state *, struct sk_buff *pskb);
 	int			(*reject)(struct xfrm_state *, struct sk_buff *,
 					  const struct flowi *);
-<<<<<<< HEAD
-	int			(*hdr_offset)(struct xfrm_state *, struct sk_buff *, u8 **);
-	/* Estimate maximal size of result of transformation of a dgram */
-	u32			(*get_mtu)(struct xfrm_state *, int size);
-};
-
-extern int xfrm_register_type(const struct xfrm_type *type, unsigned short family);
-extern int xfrm_unregister_type(const struct xfrm_type *type, unsigned short family);
-
-struct xfrm_mode {
-	/*
-	 * Remove encapsulation header.
-	 *
-	 * The IP header will be moved over the top of the encapsulation
-	 * header.
-	 *
-	 * On entry, the transport header shall point to where the IP header
-	 * should be and the network header shall be set to where the IP
-	 * header currently is.  skb->data shall point to the start of the
-	 * payload.
-	 */
-	int (*input2)(struct xfrm_state *x, struct sk_buff *skb);
-
-	/*
-	 * This is the actual input entry point.
-	 *
-	 * For transport mode and equivalent this would be identical to
-	 * input2 (which does not need to be set).  While tunnel mode
-	 * and equivalent would set this to the tunnel encapsulation function
-	 * xfrm4_prepare_input that would in turn call input2.
-	 */
-	int (*input)(struct xfrm_state *x, struct sk_buff *skb);
-
-	/*
-	 * Add encapsulation header.
-	 *
-	 * On exit, the transport header will be set to the start of the
-	 * encapsulation header to be filled in by x->type->output and
-	 * the mac header will be set to the nextheader (protocol for
-	 * IPv4) field of the extension header directly preceding the
-	 * encapsulation header, or in its absence, that of the top IP
-	 * header.  The value of the network header will always point
-	 * to the top IP header while skb->data will point to the payload.
-	 */
-	int (*output2)(struct xfrm_state *x,struct sk_buff *skb);
-
-	/*
-	 * This is the actual output entry point.
-	 *
-	 * For transport mode and equivalent this would be identical to
-	 * output2 (which does not need to be set).  While tunnel mode
-	 * and equivalent would set this to a tunnel encapsulation function
-	 * (xfrm4_prepare_output or xfrm6_prepare_output) that would in turn
-	 * call output2.
-	 */
-	int (*output)(struct xfrm_state *x, struct sk_buff *skb);
-
-	struct xfrm_state_afinfo *afinfo;
-	struct module *owner;
-	unsigned int encap;
-	int flags;
-};
-
-/* Flags for xfrm_mode. */
-enum {
-	XFRM_MODE_FLAG_TUNNEL = 1,
-};
-
-extern int xfrm_register_mode(struct xfrm_mode *mode, int family);
-extern int xfrm_unregister_mode(struct xfrm_mode *mode, int family);
-=======
 };
 
 int xfrm_register_type(const struct xfrm_type *type, unsigned short family);
@@ -676,7 +442,6 @@ struct xfrm_type_offload {
 
 int xfrm_register_type_offload(const struct xfrm_type_offload *type, unsigned short family);
 void xfrm_unregister_type_offload(const struct xfrm_type_offload *type, unsigned short family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int xfrm_af2proto(unsigned int family)
 {
@@ -690,15 +455,6 @@ static inline int xfrm_af2proto(unsigned int family)
 	}
 }
 
-<<<<<<< HEAD
-static inline struct xfrm_mode *xfrm_ip2inner_mode(struct xfrm_state *x, int ipproto)
-{
-	if ((ipproto == IPPROTO_IPIP && x->props.family == AF_INET) ||
-	    (ipproto == IPPROTO_IPV6 && x->props.family == AF_INET6))
-		return x->inner_mode;
-	else
-		return x->inner_mode_iaf;
-=======
 static inline const struct xfrm_mode *xfrm_ip2inner_mode(struct xfrm_state *x, int ipproto)
 {
 	if ((ipproto == IPPROTO_IPIP && x->props.family == AF_INET) ||
@@ -706,7 +462,6 @@ static inline const struct xfrm_mode *xfrm_ip2inner_mode(struct xfrm_state *x, i
 		return &x->inner_mode;
 	else
 		return &x->inner_mode_iaf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct xfrm_tmpl {
@@ -744,10 +499,7 @@ struct xfrm_tmpl {
 };
 
 #define XFRM_MAX_DEPTH		6
-<<<<<<< HEAD
-=======
 #define XFRM_MAX_OFFLOAD_DEPTH	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xfrm_policy_walk_entry {
 	struct list_head	all;
@@ -760,12 +512,6 @@ struct xfrm_policy_walk {
 	u32 seq;
 };
 
-<<<<<<< HEAD
-struct xfrm_policy {
-#ifdef CONFIG_NET_NS
-	struct net		*xp_net;
-#endif
-=======
 struct xfrm_policy_queue {
 	struct sk_buff_head	hold_queue;
 	struct timer_list	hold_timer;
@@ -774,21 +520,11 @@ struct xfrm_policy_queue {
 
 struct xfrm_policy {
 	possible_net_t		xp_net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hlist_node	bydst;
 	struct hlist_node	byidx;
 
 	/* This lock only affects elements except for entry. */
 	rwlock_t		lock;
-<<<<<<< HEAD
-	atomic_t		refcnt;
-	struct timer_list	timer;
-
-	struct flow_cache_object flo;
-	atomic_t		genid;
-	u32			priority;
-	u32			index;
-=======
 	refcount_t		refcnt;
 	u32			pos;
 	struct timer_list	timer;
@@ -797,17 +533,13 @@ struct xfrm_policy {
 	u32			priority;
 	u32			index;
 	u32			if_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xfrm_mark	mark;
 	struct xfrm_selector	selector;
 	struct xfrm_lifetime_cfg lft;
 	struct xfrm_lifetime_cur curlft;
 	struct xfrm_policy_walk_entry walk;
-<<<<<<< HEAD
-=======
 	struct xfrm_policy_queue polq;
 	bool                    bydst_reinsert;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			type;
 	u8			action;
 	u8			flags;
@@ -815,13 +547,10 @@ struct xfrm_policy {
 	u16			family;
 	struct xfrm_sec_ctx	*security;
 	struct xfrm_tmpl       	xfrm_vec[XFRM_MAX_DEPTH];
-<<<<<<< HEAD
-=======
 	struct hlist_node	bydst_inexact_list;
 	struct rcu_head		rcu;
 
 	struct xfrm_dev_offload xdo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct net *xp_net(const struct xfrm_policy *xp)
@@ -850,13 +579,6 @@ struct xfrm_migrate {
 };
 
 #define XFRM_KM_TIMEOUT                30
-<<<<<<< HEAD
-/* which seqno */
-#define XFRM_REPLAY_SEQ		1
-#define XFRM_REPLAY_OSEQ	2
-#define XFRM_REPLAY_SEQ_MASK	3
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* what happened */
 #define XFRM_REPLAY_UPDATE	XFRM_AE_CR
 #define XFRM_REPLAY_TIMEOUT	XFRM_AE_CE
@@ -870,14 +592,8 @@ struct xfrm_migrate {
 
 struct xfrm_mgr {
 	struct list_head	list;
-<<<<<<< HEAD
-	char			*id;
-	int			(*notify)(struct xfrm_state *x, const struct km_event *c);
-	int			(*acquire)(struct xfrm_state *x, struct xfrm_tmpl *, struct xfrm_policy *xp, int dir);
-=======
 	int			(*notify)(struct xfrm_state *x, const struct km_event *c);
 	int			(*acquire)(struct xfrm_state *x, struct xfrm_tmpl *, struct xfrm_policy *xp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xfrm_policy	*(*compile_policy)(struct sock *sk, int opt, u8 *data, int len, int *dir);
 	int			(*new_mapping)(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport);
 	int			(*notify_policy)(struct xfrm_policy *x, int dir, const struct km_event *c);
@@ -886,13 +602,6 @@ struct xfrm_mgr {
 					   u8 dir, u8 type,
 					   const struct xfrm_migrate *m,
 					   int num_bundles,
-<<<<<<< HEAD
-					   const struct xfrm_kmaddress *k);
-};
-
-extern int xfrm_register_km(struct xfrm_mgr *km);
-extern int xfrm_unregister_km(struct xfrm_mgr *km);
-=======
 					   const struct xfrm_kmaddress *k,
 					   const struct xfrm_encap_tmpl *encap);
 	bool			(*is_alive)(const struct km_event *c);
@@ -914,7 +623,6 @@ struct xfrm_tunnel_skb_cb {
 };
 
 #define XFRM_TUNNEL_SKB_CB(__skb) ((struct xfrm_tunnel_skb_cb *)&((__skb)->cb[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This structure is used for the duration where packets are being
@@ -922,14 +630,7 @@ struct xfrm_tunnel_skb_cb {
  * area beyond the generic IP part may be overwritten.
  */
 struct xfrm_skb_cb {
-<<<<<<< HEAD
-	union {
-		struct inet_skb_parm h4;
-		struct inet6_skb_parm h6;
-        } header;
-=======
 	struct xfrm_tunnel_skb_cb header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         /* Sequence number for replay protection. */
 	union {
@@ -951,14 +652,7 @@ struct xfrm_skb_cb {
  * to transmit header information to the mode input/output functions.
  */
 struct xfrm_mode_skb_cb {
-<<<<<<< HEAD
-	union {
-		struct inet_skb_parm h4;
-		struct inet6_skb_parm h6;
-	} header;
-=======
 	struct xfrm_tunnel_skb_cb header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copied from header for IPv4, always set to zero and DF for IPv6. */
 	__be16 id;
@@ -990,49 +684,23 @@ struct xfrm_mode_skb_cb {
  * related information.
  */
 struct xfrm_spi_skb_cb {
-<<<<<<< HEAD
-	union {
-		struct inet_skb_parm h4;
-		struct inet6_skb_parm h6;
-	} header;
-
-	unsigned int daddroff;
-	unsigned int family;
-=======
 	struct xfrm_tunnel_skb_cb header;
 
 	unsigned int daddroff;
 	unsigned int family;
 	__be32 seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define XFRM_SPI_SKB_CB(__skb) ((struct xfrm_spi_skb_cb *)&((__skb)->cb[0]))
 
-<<<<<<< HEAD
-/* Audit Information */
-struct xfrm_audit {
-	u32	secid;
-	uid_t	loginuid;
-	u32	sessionid;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_AUDITSYSCALL
 static inline struct audit_buffer *xfrm_audit_start(const char *op)
 {
 	struct audit_buffer *audit_buf = NULL;
 
-<<<<<<< HEAD
-	if (audit_enabled == 0)
-		return NULL;
-	audit_buf = audit_log_start(current->audit_context, GFP_ATOMIC,
-=======
 	if (audit_enabled == AUDIT_OFF)
 		return NULL;
 	audit_buf = audit_log_start(audit_context(), GFP_ATOMIC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    AUDIT_MAC_IPSEC_EVENT);
 	if (audit_buf == NULL)
 		return NULL;
@@ -1040,44 +708,6 @@ static inline struct audit_buffer *xfrm_audit_start(const char *op)
 	return audit_buf;
 }
 
-<<<<<<< HEAD
-static inline void xfrm_audit_helper_usrinfo(uid_t auid, u32 ses, u32 secid,
-					     struct audit_buffer *audit_buf)
-{
-	char *secctx;
-	u32 secctx_len;
-
-	audit_log_format(audit_buf, " auid=%u ses=%u", auid, ses);
-	if (secid != 0 &&
-	    security_secid_to_secctx(secid, &secctx, &secctx_len) == 0) {
-		audit_log_format(audit_buf, " subj=%s", secctx);
-		security_release_secctx(secctx, secctx_len);
-	} else
-		audit_log_task_context(audit_buf);
-}
-
-extern void xfrm_audit_policy_add(struct xfrm_policy *xp, int result,
-				  u32 auid, u32 ses, u32 secid);
-extern void xfrm_audit_policy_delete(struct xfrm_policy *xp, int result,
-				  u32 auid, u32 ses, u32 secid);
-extern void xfrm_audit_state_add(struct xfrm_state *x, int result,
-				 u32 auid, u32 ses, u32 secid);
-extern void xfrm_audit_state_delete(struct xfrm_state *x, int result,
-				    u32 auid, u32 ses, u32 secid);
-extern void xfrm_audit_state_replay_overflow(struct xfrm_state *x,
-					     struct sk_buff *skb);
-extern void xfrm_audit_state_replay(struct xfrm_state *x,
-				    struct sk_buff *skb, __be32 net_seq);
-extern void xfrm_audit_state_notfound_simple(struct sk_buff *skb, u16 family);
-extern void xfrm_audit_state_notfound(struct sk_buff *skb, u16 family,
-				      __be32 net_spi, __be32 net_seq);
-extern void xfrm_audit_state_icvfail(struct xfrm_state *x,
-				     struct sk_buff *skb, u8 proto);
-#else
-
-static inline void xfrm_audit_policy_add(struct xfrm_policy *xp, int result,
-				  u32 auid, u32 ses, u32 secid)
-=======
 static inline void xfrm_audit_helper_usrinfo(bool task_valid,
 					     struct audit_buffer *audit_buf)
 {
@@ -1109,34 +739,21 @@ void xfrm_audit_state_icvfail(struct xfrm_state *x, struct sk_buff *skb,
 
 static inline void xfrm_audit_policy_add(struct xfrm_policy *xp, int result,
 					 bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static inline void xfrm_audit_policy_delete(struct xfrm_policy *xp, int result,
-<<<<<<< HEAD
-				  u32 auid, u32 ses, u32 secid)
-=======
 					    bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static inline void xfrm_audit_state_add(struct xfrm_state *x, int result,
-<<<<<<< HEAD
-				 u32 auid, u32 ses, u32 secid)
-=======
 					bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static inline void xfrm_audit_state_delete(struct xfrm_state *x, int result,
-<<<<<<< HEAD
-				    u32 auid, u32 ses, u32 secid)
-=======
 					   bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -1169,16 +786,6 @@ static inline void xfrm_audit_state_icvfail(struct xfrm_state *x,
 static inline void xfrm_pol_hold(struct xfrm_policy *policy)
 {
 	if (likely(policy != NULL))
-<<<<<<< HEAD
-		atomic_inc(&policy->refcnt);
-}
-
-extern void xfrm_policy_destroy(struct xfrm_policy *policy);
-
-static inline void xfrm_pol_put(struct xfrm_policy *policy)
-{
-	if (atomic_dec_and_test(&policy->refcnt))
-=======
 		refcount_inc(&policy->refcnt);
 }
 
@@ -1187,7 +794,6 @@ void xfrm_policy_destroy(struct xfrm_policy *policy);
 static inline void xfrm_pol_put(struct xfrm_policy *policy)
 {
 	if (refcount_dec_and_test(&policy->refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_policy_destroy(policy);
 }
 
@@ -1198,27 +804,15 @@ static inline void xfrm_pols_put(struct xfrm_policy **pols, int npols)
 		xfrm_pol_put(pols[i]);
 }
 
-<<<<<<< HEAD
-extern void __xfrm_state_destroy(struct xfrm_state *);
-
-static inline void __xfrm_state_put(struct xfrm_state *x)
-{
-	atomic_dec(&x->refcnt);
-=======
 void __xfrm_state_destroy(struct xfrm_state *, bool);
 
 static inline void __xfrm_state_put(struct xfrm_state *x)
 {
 	refcount_dec(&x->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void xfrm_state_put(struct xfrm_state *x)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&x->refcnt))
-		__xfrm_state_destroy(x);
-=======
 	if (refcount_dec_and_test(&x->refcnt))
 		__xfrm_state_destroy(x, false);
 }
@@ -1227,23 +821,10 @@ static inline void xfrm_state_put_sync(struct xfrm_state *x)
 {
 	if (refcount_dec_and_test(&x->refcnt))
 		__xfrm_state_destroy(x, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void xfrm_state_hold(struct xfrm_state *x)
 {
-<<<<<<< HEAD
-	atomic_inc(&x->refcnt);
-}
-
-static inline bool addr_match(const void *token1, const void *token2,
-			      int prefixlen)
-{
-	const __be32 *a1 = token1;
-	const __be32 *a2 = token2;
-	int pdw;
-	int pbi;
-=======
 	refcount_inc(&x->refcnt);
 }
 
@@ -1254,7 +835,6 @@ static inline bool addr_match(const void *token1, const void *token2,
 	const __be32 *a2 = token2;
 	unsigned int pdw;
 	unsigned int pbi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdw = prefixlen >> 5;	  /* num of whole u32 in prefix */
 	pbi = prefixlen &  0x1f;  /* num of bits in incomplete u32 in prefix */
@@ -1278,15 +858,9 @@ static inline bool addr_match(const void *token1, const void *token2,
 static inline bool addr4_match(__be32 a1, __be32 a2, u8 prefixlen)
 {
 	/* C99 6.5.7 (3): u32 << 32 is undefined behaviour */
-<<<<<<< HEAD
-	if (prefixlen == 0)
-		return true;
-	return !((a1 ^ a2) & htonl(0xFFFFFFFFu << (32 - prefixlen)));
-=======
 	if (sizeof(long) == 4 && prefixlen == 0)
 		return true;
 	return !((a1 ^ a2) & htonl(~0UL << (32 - prefixlen)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __inline__
@@ -1340,24 +914,14 @@ __be16 xfrm_flowi_dport(const struct flowi *fl, const union flowi_uli *uli)
 	return port;
 }
 
-<<<<<<< HEAD
-extern int xfrm_selector_match(const struct xfrm_selector *sel,
-			       const struct flowi *fl,
-			       unsigned short family);
-=======
 bool xfrm_selector_match(const struct xfrm_selector *sel,
 			 const struct flowi *fl, unsigned short family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SECURITY_NETWORK_XFRM
 /*	If neither has a context --> match
  * 	Otherwise, both must have a context and the sids, doi, alg must match
  */
-<<<<<<< HEAD
-static inline int xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_ctx *s2)
-=======
 static inline bool xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_ctx *s2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ((!s1 && !s2) ||
 		(s1 && s2 &&
@@ -1366,25 +930,15 @@ static inline bool xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_c
 		 (s1->ctx_alg == s2->ctx_alg)));
 }
 #else
-<<<<<<< HEAD
-static inline int xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_ctx *s2)
-{
-	return 1;
-=======
 static inline bool xfrm_sec_ctx_match(struct xfrm_sec_ctx *s1, struct xfrm_sec_ctx *s2)
 {
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 /* A struct encoding bundle of transformations to apply to some set of flow.
  *
-<<<<<<< HEAD
- * dst->child points to the next element of bundle.
-=======
  * xdst->child points to the next element of bundle.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dst->xfrm  points to an instanse of transformer.
  *
  * Due to unfortunate limitations of current routing cache, which we
@@ -1400,20 +954,10 @@ struct xfrm_dst {
 		struct rt6_info		rt6;
 	} u;
 	struct dst_entry *route;
-<<<<<<< HEAD
-	struct flow_cache_object flo;
-	struct xfrm_policy *pols[XFRM_POLICY_TYPE_MAX];
-	int num_pols, num_xfrms;
-#ifdef CONFIG_XFRM_SUB_POLICY
-	struct flowi *origin;
-	struct xfrm_selector *partner;
-#endif
-=======
 	struct dst_entry *child;
 	struct dst_entry *path;
 	struct xfrm_policy *pols[XFRM_POLICY_TYPE_MAX];
 	int num_pols, num_xfrms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 xfrm_genid;
 	u32 policy_genid;
 	u32 route_mtu_cached;
@@ -1422,9 +966,6 @@ struct xfrm_dst {
 	u32 path_cookie;
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_XFRM
-=======
 static inline struct dst_entry *xfrm_dst_path(const struct dst_entry *dst)
 {
 #ifdef CONFIG_XFRM
@@ -1454,59 +995,12 @@ static inline void xfrm_dst_set_child(struct xfrm_dst *xdst, struct dst_entry *c
 	xdst->child = child;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void xfrm_dst_destroy(struct xfrm_dst *xdst)
 {
 	xfrm_pols_put(xdst->pols, xdst->num_pols);
 	dst_release(xdst->route);
 	if (likely(xdst->u.dst.xfrm))
 		xfrm_state_put(xdst->u.dst.xfrm);
-<<<<<<< HEAD
-#ifdef CONFIG_XFRM_SUB_POLICY
-	kfree(xdst->origin);
-	xdst->origin = NULL;
-	kfree(xdst->partner);
-	xdst->partner = NULL;
-#endif
-}
-#endif
-
-extern void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
-
-struct sec_path {
-	atomic_t		refcnt;
-	int			len;
-	struct xfrm_state	*xvec[XFRM_MAX_DEPTH];
-};
-
-static inline int secpath_exists(struct sk_buff *skb)
-{
-#ifdef CONFIG_XFRM
-	return skb->sp != NULL;
-#else
-	return 0;
-#endif
-}
-
-static inline struct sec_path *
-secpath_get(struct sec_path *sp)
-{
-	if (sp)
-		atomic_inc(&sp->refcnt);
-	return sp;
-}
-
-extern void __secpath_destroy(struct sec_path *sp);
-
-static inline void
-secpath_put(struct sec_path *sp)
-{
-	if (sp && atomic_dec_and_test(&sp->refcnt))
-		__secpath_destroy(sp);
-}
-
-extern struct sec_path *secpath_dup(struct sec_path *src);
-=======
 }
 #endif
 
@@ -1572,18 +1066,12 @@ struct sec_path {
 };
 
 struct sec_path *secpath_set(struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void
 secpath_reset(struct sk_buff *skb)
 {
 #ifdef CONFIG_XFRM
-<<<<<<< HEAD
-	secpath_put(skb->sp);
-	skb->sp = NULL;
-=======
 	skb_ext_del(skb, SKB_EXT_SEC_PATH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -1594,11 +1082,7 @@ xfrm_addr_any(const xfrm_address_t *addr, unsigned short family)
 	case AF_INET:
 		return addr->a4 == 0;
 	case AF_INET6:
-<<<<<<< HEAD
-		return ipv6_addr_any((struct in6_addr *)&addr->a6);
-=======
 		return ipv6_addr_any(&addr->in6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1614,11 +1098,7 @@ static inline int
 __xfrm6_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x)
 {
 	return	(!ipv6_addr_any((struct in6_addr*)&tmpl->saddr) &&
-<<<<<<< HEAD
-		 ipv6_addr_cmp((struct in6_addr *)&tmpl->saddr, (struct in6_addr*)&x->props.saddr));
-=======
 		 !ipv6_addr_equal((struct in6_addr *)&tmpl->saddr, (struct in6_addr*)&x->props.saddr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
@@ -1634,9 +1114,6 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
 }
 
 #ifdef CONFIG_XFRM
-<<<<<<< HEAD
-extern int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb, unsigned short family);
-=======
 static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
 {
 	struct sec_path *sp = skb_sec_path(skb);
@@ -1683,7 +1160,6 @@ static inline bool __xfrm_check_dev_nopolicy(struct sk_buff *skb,
 	}
 	return skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int __xfrm_policy_check2(struct sock *sk, int dir,
 				       struct sk_buff *skb,
@@ -1691,25 +1167,12 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
 {
 	struct net *net = dev_net(skb->dev);
 	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
-<<<<<<< HEAD
-=======
 	struct xfrm_offload *xo = xfrm_offload(skb);
 	struct xfrm_state *x;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
 		return __xfrm_policy_check(sk, ndir, skb, family);
 
-<<<<<<< HEAD
-/* TD #60721(case 01588795), the kernel panic issue seeing on the specific AP.
-	return	(!net->xfrm.policy_count[dir] && !skb->sp) ||
-		(skb_dst(skb)->flags & DST_NOPOLICY) ||
-		__xfrm_policy_check(sk, ndir, skb, family);
-*/
-    return  (!net->xfrm.policy_count[dir] && !skb->sp) ||
-        ((skb_dst(skb)!= NULL) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-        __xfrm_policy_check(sk, ndir, skb, family);
-=======
 	if (xo) {
 		x = xfrm_input_state(skb);
 		if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
@@ -1720,7 +1183,6 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
 	return __xfrm_check_nopolicy(net, skb, dir) ||
 	       __xfrm_check_dev_nopolicy(skb, dir, family) ||
 	       __xfrm_policy_check(sk, ndir, skb, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb, unsigned short family)
@@ -1750,25 +1212,6 @@ static inline int xfrm6_policy_check_reverse(struct sock *sk, int dir,
 	return __xfrm_policy_check2(sk, dir, skb, AF_INET6, 1);
 }
 
-<<<<<<< HEAD
-extern int __xfrm_decode_session(struct sk_buff *skb, struct flowi *fl,
-				 unsigned int family, int reverse);
-
-static inline int xfrm_decode_session(struct sk_buff *skb, struct flowi *fl,
-				      unsigned int family)
-{
-	return __xfrm_decode_session(skb, fl, family, 0);
-}
-
-static inline int xfrm_decode_session_reverse(struct sk_buff *skb,
-					      struct flowi *fl,
-					      unsigned int family)
-{
-	return __xfrm_decode_session(skb, fl, family, 1);
-}
-
-extern int __xfrm_route_forward(struct sk_buff *skb, unsigned short family);
-=======
 int __xfrm_decode_session(struct net *net, struct sk_buff *skb, struct flowi *fl,
 			  unsigned int family, int reverse);
 
@@ -1786,24 +1229,17 @@ static inline int xfrm_decode_session_reverse(struct net *net, struct sk_buff *s
 }
 
 int __xfrm_route_forward(struct sk_buff *skb, unsigned short family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int xfrm_route_forward(struct sk_buff *skb, unsigned short family)
 {
 	struct net *net = dev_net(skb->dev);
 
-<<<<<<< HEAD
-	return	!net->xfrm.policy_count[XFRM_POLICY_OUT] ||
-		(skb_dst(skb)->flags & DST_NOXFRM) ||
-		__xfrm_route_forward(skb, family);
-=======
 	if (!net->xfrm.policy_count[XFRM_POLICY_OUT] &&
 	    net->xfrm.policy_default[XFRM_POLICY_OUT] == XFRM_USERPOLICY_ACCEPT)
 		return true;
 
 	return (skb_dst(skb)->flags & DST_NOXFRM) ||
 	       __xfrm_route_forward(skb, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int xfrm4_route_forward(struct sk_buff *skb)
@@ -1816,27 +1252,6 @@ static inline int xfrm6_route_forward(struct sk_buff *skb)
 	return xfrm_route_forward(skb, AF_INET6);
 }
 
-<<<<<<< HEAD
-extern int __xfrm_sk_clone_policy(struct sock *sk);
-
-static inline int xfrm_sk_clone_policy(struct sock *sk)
-{
-	if (unlikely(sk->sk_policy[0] || sk->sk_policy[1]))
-		return __xfrm_sk_clone_policy(sk);
-	return 0;
-}
-
-extern int xfrm_policy_delete(struct xfrm_policy *pol, int dir);
-
-static inline void xfrm_sk_free_policy(struct sock *sk)
-{
-	if (unlikely(sk->sk_policy[0] != NULL)) {
-		xfrm_policy_delete(sk->sk_policy[0], XFRM_POLICY_MAX);
-		sk->sk_policy[0] = NULL;
-	}
-	if (unlikely(sk->sk_policy[1] != NULL)) {
-		xfrm_policy_delete(sk->sk_policy[1], XFRM_POLICY_MAX+1);
-=======
 int __xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk);
 
 static inline int xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk)
@@ -1864,7 +1279,6 @@ static inline void xfrm_sk_free_policy(struct sock *sk)
 	pol = rcu_dereference_protected(sk->sk_policy[1], 1);
 	if (unlikely(pol != NULL)) {
 		xfrm_policy_delete(pol, XFRM_POLICY_MAX+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sk->sk_policy[1] = NULL;
 	}
 }
@@ -1872,15 +1286,6 @@ static inline void xfrm_sk_free_policy(struct sock *sk)
 #else
 
 static inline void xfrm_sk_free_policy(struct sock *sk) {}
-<<<<<<< HEAD
-static inline int xfrm_sk_clone_policy(struct sock *sk) { return 0; }
-static inline int xfrm6_route_forward(struct sk_buff *skb) { return 1; }  
-static inline int xfrm4_route_forward(struct sk_buff *skb) { return 1; } 
-static inline int xfrm6_policy_check(struct sock *sk, int dir, struct sk_buff *skb)
-{ 
-	return 1; 
-} 
-=======
 static inline int xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk) { return 0; }
 static inline int xfrm6_route_forward(struct sk_buff *skb) { return 1; }
 static inline int xfrm4_route_forward(struct sk_buff *skb) { return 1; }
@@ -1888,7 +1293,6 @@ static inline int xfrm6_policy_check(struct sock *sk, int dir, struct sk_buff *s
 {
 	return 1;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int xfrm4_policy_check(struct sock *sk, int dir, struct sk_buff *skb)
 {
 	return 1;
@@ -1897,11 +1301,7 @@ static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *sk
 {
 	return 1;
 }
-<<<<<<< HEAD
-static inline int xfrm_decode_session_reverse(struct sk_buff *skb,
-=======
 static inline int xfrm_decode_session_reverse(struct net *net, struct sk_buff *skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      struct flowi *fl,
 					      unsigned int family)
 {
@@ -1954,13 +1354,8 @@ void xfrm_flowi_addr_get(const struct flowi *fl,
 		memcpy(&daddr->a4, &fl->u.ip4.daddr, sizeof(daddr->a4));
 		break;
 	case AF_INET6:
-<<<<<<< HEAD
-		*(struct in6_addr *)saddr->a6 = fl->u.ip6.saddr;
-		*(struct in6_addr *)daddr->a6 = fl->u.ip6.daddr;
-=======
 		saddr->in6 = fl->u.ip6.saddr;
 		daddr->in6 = fl->u.ip6.daddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1979,15 +1374,9 @@ static __inline__ int
 __xfrm6_state_addr_check(const struct xfrm_state *x,
 			 const xfrm_address_t *daddr, const xfrm_address_t *saddr)
 {
-<<<<<<< HEAD
-	if (!ipv6_addr_cmp((struct in6_addr *)daddr, (struct in6_addr *)&x->id.daddr) &&
-	    (!ipv6_addr_cmp((struct in6_addr *)saddr, (struct in6_addr *)&x->props.saddr)|| 
-	     ipv6_addr_any((struct in6_addr *)saddr) || 
-=======
 	if (ipv6_addr_equal((struct in6_addr *)daddr, (struct in6_addr *)&x->id.daddr) &&
 	    (ipv6_addr_equal((struct in6_addr *)saddr, (struct in6_addr *)&x->props.saddr) ||
 	     ipv6_addr_any((struct in6_addr *)saddr) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ipv6_addr_any((struct in6_addr *)&x->props.saddr)))
 		return 1;
 	return 0;
@@ -2029,8 +1418,6 @@ static inline int xfrm_state_kern(const struct xfrm_state *x)
 	return atomic_read(&x->tunnel_users);
 }
 
-<<<<<<< HEAD
-=======
 static inline bool xfrm_id_proto_valid(u8 proto)
 {
 	switch (proto) {
@@ -2048,7 +1435,6 @@ static inline bool xfrm_id_proto_valid(u8 proto)
 }
 
 /* IPSEC_PROTO_ANY only matches 3 IPsec protocols, 0 could match all. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
 {
 	return (!userproto || proto == userproto ||
@@ -2061,10 +1447,7 @@ static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
  * xfrm algorithm information
  */
 struct xfrm_algo_aead_info {
-<<<<<<< HEAD
-=======
 	char *geniv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 icv_truncbits;
 };
 
@@ -2074,10 +1457,7 @@ struct xfrm_algo_auth_info {
 };
 
 struct xfrm_algo_encr_info {
-<<<<<<< HEAD
-=======
 	char *geniv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 blockbits;
 	u16 defkeybits;
 };
@@ -2090,10 +1470,7 @@ struct xfrm_algo_desc {
 	char *name;
 	char *compat;
 	u8 available:1;
-<<<<<<< HEAD
-=======
 	u8 pfkey_supported:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct xfrm_algo_aead_info aead;
 		struct xfrm_algo_auth_info auth;
@@ -2103,11 +1480,6 @@ struct xfrm_algo_desc {
 	struct sadb_alg desc;
 };
 
-<<<<<<< HEAD
-/* XFRM tunnel handlers.  */
-struct xfrm_tunnel {
-	int (*handler)(struct sk_buff *skb);
-=======
 /* XFRM protocol handlers.  */
 struct xfrm4_protocol {
 	int (*handler)(struct sk_buff *skb);
@@ -2136,7 +1508,6 @@ struct xfrm6_protocol {
 struct xfrm_tunnel {
 	int (*handler)(struct sk_buff *skb);
 	int (*cb_handler)(struct sk_buff *skb, int err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*err_handler)(struct sk_buff *skb, u32 info);
 
 	struct xfrm_tunnel __rcu *next;
@@ -2145,28 +1516,13 @@ struct xfrm_tunnel {
 
 struct xfrm6_tunnel {
 	int (*handler)(struct sk_buff *skb);
-<<<<<<< HEAD
-=======
 	int (*cb_handler)(struct sk_buff *skb, int err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*err_handler)(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			   u8 type, u8 code, int offset, __be32 info);
 	struct xfrm6_tunnel __rcu *next;
 	int priority;
 };
 
-<<<<<<< HEAD
-extern void xfrm_init(void);
-extern void xfrm4_init(int rt_hash_size);
-extern int xfrm_state_init(struct net *net);
-extern void xfrm_state_fini(struct net *net);
-extern void xfrm4_state_init(void);
-#ifdef CONFIG_XFRM
-extern int xfrm6_init(void);
-extern void xfrm6_fini(void);
-extern int xfrm6_state_init(void);
-extern void xfrm6_state_fini(void);
-=======
 void xfrm_init(void);
 void xfrm4_init(void);
 int xfrm_state_init(struct net *net);
@@ -2180,7 +1536,6 @@ int xfrm6_state_init(void);
 void xfrm6_state_fini(void);
 int xfrm6_protocol_init(void);
 void xfrm6_protocol_fini(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int xfrm6_init(void)
 {
@@ -2193,15 +1548,6 @@ static inline void xfrm6_fini(void)
 #endif
 
 #ifdef CONFIG_XFRM_STATISTICS
-<<<<<<< HEAD
-extern int xfrm_proc_init(struct net *net);
-extern void xfrm_proc_fini(struct net *net);
-#endif
-
-extern int xfrm_sysctl_init(struct net *net);
-#ifdef CONFIG_SYSCTL
-extern void xfrm_sysctl_fini(struct net *net);
-=======
 int xfrm_proc_init(struct net *net);
 void xfrm_proc_fini(struct net *net);
 #endif
@@ -2209,59 +1555,12 @@ void xfrm_proc_fini(struct net *net);
 int xfrm_sysctl_init(struct net *net);
 #ifdef CONFIG_SYSCTL
 void xfrm_sysctl_fini(struct net *net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void xfrm_sysctl_fini(struct net *net)
 {
 }
 #endif
 
-<<<<<<< HEAD
-extern void xfrm_state_walk_init(struct xfrm_state_walk *walk, u8 proto);
-extern int xfrm_state_walk(struct net *net, struct xfrm_state_walk *walk,
-			   int (*func)(struct xfrm_state *, int, void*), void *);
-extern void xfrm_state_walk_done(struct xfrm_state_walk *walk);
-extern struct xfrm_state *xfrm_state_alloc(struct net *net);
-extern struct xfrm_state *xfrm_state_find(const xfrm_address_t *daddr,
-					  const xfrm_address_t *saddr,
-					  const struct flowi *fl,
-					  struct xfrm_tmpl *tmpl,
-					  struct xfrm_policy *pol, int *err,
-					  unsigned short family);
-extern struct xfrm_state *xfrm_stateonly_find(struct net *net, u32 mark,
-					       xfrm_address_t *daddr,
-					       xfrm_address_t *saddr,
-					       unsigned short family,
-					       u8 mode, u8 proto, u32 reqid);
-extern int xfrm_state_check_expire(struct xfrm_state *x);
-extern void xfrm_state_insert(struct xfrm_state *x);
-extern int xfrm_state_add(struct xfrm_state *x);
-extern int xfrm_state_update(struct xfrm_state *x);
-extern struct xfrm_state *xfrm_state_lookup(struct net *net, u32 mark,
-					    const xfrm_address_t *daddr, __be32 spi,
-					    u8 proto, unsigned short family);
-extern struct xfrm_state *xfrm_state_lookup_byaddr(struct net *net, u32 mark,
-						   const xfrm_address_t *daddr,
-						   const xfrm_address_t *saddr,
-						   u8 proto,
-						   unsigned short family);
-#ifdef CONFIG_XFRM_SUB_POLICY
-extern int xfrm_tmpl_sort(struct xfrm_tmpl **dst, struct xfrm_tmpl **src,
-			  int n, unsigned short family);
-extern int xfrm_state_sort(struct xfrm_state **dst, struct xfrm_state **src,
-			   int n, unsigned short family);
-#else
-static inline int xfrm_tmpl_sort(struct xfrm_tmpl **dst, struct xfrm_tmpl **src,
-				 int n, unsigned short family)
-{
-	return -ENOSYS;
-}
-
-static inline int xfrm_state_sort(struct xfrm_state **dst, struct xfrm_state **src,
-				  int n, unsigned short family)
-{
-	return -ENOSYS;
-=======
 void xfrm_state_walk_init(struct xfrm_state_walk *walk, u8 proto,
 			  struct xfrm_address_filter *filter);
 int xfrm_state_walk(struct net *net, struct xfrm_state_walk *walk,
@@ -2323,7 +1622,6 @@ static inline void xfrm_tmpl_sort(struct xfrm_tmpl **d, struct xfrm_tmpl **s,
 static inline void xfrm_state_sort(struct xfrm_state **d, struct xfrm_state **s,
 				   int n, unsigned short family)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -2344,138 +1642,6 @@ struct xfrmk_spdinfo {
 	u32 spdhmcnt;
 };
 
-<<<<<<< HEAD
-extern struct xfrm_state *xfrm_find_acq_byseq(struct net *net, u32 mark,
-					      u32 seq);
-extern int xfrm_state_delete(struct xfrm_state *x);
-extern int xfrm_state_flush(struct net *net, u8 proto, struct xfrm_audit *audit_info);
-extern void xfrm_sad_getinfo(struct net *net, struct xfrmk_sadinfo *si);
-extern void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
-extern u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
-extern int xfrm_init_replay(struct xfrm_state *x);
-extern int xfrm_state_mtu(struct xfrm_state *x, int mtu);
-extern int __xfrm_init_state(struct xfrm_state *x, bool init_replay);
-extern int xfrm_init_state(struct xfrm_state *x);
-extern int xfrm_prepare_input(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi,
-		      int encap_type);
-extern int xfrm_input_resume(struct sk_buff *skb, int nexthdr);
-extern int xfrm_output_resume(struct sk_buff *skb, int err);
-extern int xfrm_output(struct sk_buff *skb);
-extern int xfrm_inner_extract_output(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm4_extract_header(struct sk_buff *skb);
-extern int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
-			   int encap_type);
-extern int xfrm4_transport_finish(struct sk_buff *skb, int async);
-extern int xfrm4_rcv(struct sk_buff *skb);
-
-static inline int xfrm4_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi)
-{
-	return xfrm4_rcv_encap(skb, nexthdr, spi, 0);
-}
-
-extern int xfrm4_extract_output(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm4_prepare_output(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm4_output(struct sk_buff *skb);
-extern int xfrm4_output_finish(struct sk_buff *skb);
-extern int xfrm4_tunnel_register(struct xfrm_tunnel *handler, unsigned short family);
-extern int xfrm4_tunnel_deregister(struct xfrm_tunnel *handler, unsigned short family);
-extern int xfrm6_extract_header(struct sk_buff *skb);
-extern int xfrm6_extract_input(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi);
-extern int xfrm6_transport_finish(struct sk_buff *skb, int async);
-extern int xfrm6_rcv(struct sk_buff *skb);
-extern int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
-			    xfrm_address_t *saddr, u8 proto);
-extern int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family);
-extern int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family);
-extern __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr);
-extern __be32 xfrm6_tunnel_spi_lookup(struct net *net, const xfrm_address_t *saddr);
-extern int xfrm6_extract_output(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm6_prepare_output(struct xfrm_state *x, struct sk_buff *skb);
-extern int xfrm6_output(struct sk_buff *skb);
-extern int xfrm6_output_finish(struct sk_buff *skb);
-extern int xfrm6_find_1stfragopt(struct xfrm_state *x, struct sk_buff *skb,
-				 u8 **prevhdr);
-
-#ifdef CONFIG_XFRM
-extern int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
-extern int xfrm_user_policy(struct sock *sk, int optname, u8 __user *optval, int optlen);
-#else
-static inline int xfrm_user_policy(struct sock *sk, int optname, u8 __user *optval, int optlen)
-{
- 	return -ENOPROTOOPT;
-} 
-
-static inline int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
-{
- 	/* should not happen */
- 	kfree_skb(skb);
-	return 0;
-}
-#endif
-
-struct xfrm_policy *xfrm_policy_alloc(struct net *net, gfp_t gfp);
-
-extern void xfrm_policy_walk_init(struct xfrm_policy_walk *walk, u8 type);
-extern int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
-	int (*func)(struct xfrm_policy *, int, int, void*), void *);
-extern void xfrm_policy_walk_done(struct xfrm_policy_walk *walk);
-int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl);
-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark,
-					  u8 type, int dir,
-					  struct xfrm_selector *sel,
-					  struct xfrm_sec_ctx *ctx, int delete,
-					  int *err);
-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u8, int dir, u32 id, int delete, int *err);
-int xfrm_policy_flush(struct net *net, u8 type, struct xfrm_audit *audit_info);
-u32 xfrm_get_acqseq(void);
-extern int xfrm_alloc_spi(struct xfrm_state *x, u32 minspi, u32 maxspi);
-struct xfrm_state *xfrm_find_acq(struct net *net, struct xfrm_mark *mark,
-				 u8 mode, u32 reqid, u8 proto,
-				 const xfrm_address_t *daddr,
-				 const xfrm_address_t *saddr, int create,
-				 unsigned short family);
-extern int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol);
-
-#ifdef CONFIG_XFRM_MIGRATE
-extern int km_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
-		      const struct xfrm_migrate *m, int num_bundles,
-		      const struct xfrm_kmaddress *k);
-extern struct xfrm_state * xfrm_migrate_state_find(struct xfrm_migrate *m);
-extern struct xfrm_state * xfrm_state_migrate(struct xfrm_state *x,
-					      struct xfrm_migrate *m);
-extern int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
-			struct xfrm_migrate *m, int num_bundles,
-			struct xfrm_kmaddress *k);
-#endif
-
-extern int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport);
-extern void km_policy_expired(struct xfrm_policy *pol, int dir, int hard, u32 pid);
-extern int km_report(struct net *net, u8 proto, struct xfrm_selector *sel, xfrm_address_t *addr);
-
-extern void xfrm_input_init(void);
-extern int xfrm_parse_spi(struct sk_buff *skb, u8 nexthdr, __be32 *spi, __be32 *seq);
-
-extern void xfrm_probe_algs(void);
-extern int xfrm_count_auth_supported(void);
-extern int xfrm_count_enc_supported(void);
-extern struct xfrm_algo_desc *xfrm_aalg_get_byidx(unsigned int idx);
-extern struct xfrm_algo_desc *xfrm_ealg_get_byidx(unsigned int idx);
-extern struct xfrm_algo_desc *xfrm_aalg_get_byid(int alg_id);
-extern struct xfrm_algo_desc *xfrm_ealg_get_byid(int alg_id);
-extern struct xfrm_algo_desc *xfrm_calg_get_byid(int alg_id);
-extern struct xfrm_algo_desc *xfrm_aalg_get_byname(const char *name, int probe);
-extern struct xfrm_algo_desc *xfrm_ealg_get_byname(const char *name, int probe);
-extern struct xfrm_algo_desc *xfrm_calg_get_byname(const char *name, int probe);
-extern struct xfrm_algo_desc *xfrm_aead_get_byname(const char *name, int icv_len,
-						   int probe);
-
-static inline int xfrm_addr_cmp(const xfrm_address_t *a,
-				const xfrm_address_t *b,
-				int family)
-=======
 struct xfrm_state *xfrm_find_acq_byseq(struct net *net, u32 mark, u32 seq);
 int xfrm_state_delete(struct xfrm_state *x);
 int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync);
@@ -2646,21 +1812,13 @@ static inline bool xfrm6_addr_equal(const xfrm_address_t *a,
 static inline bool xfrm_addr_equal(const xfrm_address_t *a,
 				   const xfrm_address_t *b,
 				   sa_family_t family)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (family) {
 	default:
 	case AF_INET:
-<<<<<<< HEAD
-		return (__force u32)a->a4 - (__force u32)b->a4;
-	case AF_INET6:
-		return ipv6_addr_cmp((const struct in6_addr *)a,
-				     (const struct in6_addr *)b);
-=======
 		return ((__force u32)a->a4 ^ (__force u32)b->a4) == 0;
 	case AF_INET6:
 		return xfrm6_addr_equal(a, b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2670,15 +1828,12 @@ static inline int xfrm_policy_id2dir(u32 index)
 }
 
 #ifdef CONFIG_XFRM
-<<<<<<< HEAD
-=======
 void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
 int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
 void xfrm_replay_notify(struct xfrm_state *x, int event);
 int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
 int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int xfrm_aevent_is_on(struct net *net)
 {
 	struct sock *nlsk;
@@ -2691,11 +1846,6 @@ static inline int xfrm_aevent_is_on(struct net *net)
 	rcu_read_unlock();
 	return ret;
 }
-<<<<<<< HEAD
-#endif
-
-static inline int xfrm_alg_len(const struct xfrm_algo *alg)
-=======
 
 static inline int xfrm_acquire_is_on(struct net *net)
 {
@@ -2713,30 +1863,21 @@ static inline int xfrm_acquire_is_on(struct net *net)
 #endif
 
 static inline unsigned int aead_len(struct xfrm_algo_aead *alg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sizeof(*alg) + ((alg->alg_key_len + 7) / 8);
 }
 
-<<<<<<< HEAD
-static inline int xfrm_alg_auth_len(const struct xfrm_algo_auth *alg)
-=======
 static inline unsigned int xfrm_alg_len(const struct xfrm_algo *alg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sizeof(*alg) + ((alg->alg_key_len + 7) / 8);
 }
 
-<<<<<<< HEAD
-static inline int xfrm_replay_state_esn_len(struct xfrm_replay_state_esn *replay_esn)
-=======
 static inline unsigned int xfrm_alg_auth_len(const struct xfrm_algo_auth *alg)
 {
 	return sizeof(*alg) + ((alg->alg_key_len + 7) / 8);
 }
 
 static inline unsigned int xfrm_replay_state_esn_len(struct xfrm_replay_state_esn *replay_esn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sizeof(*replay_esn) + replay_esn->bmp_len * sizeof(__u32);
 }
@@ -2745,23 +1886,6 @@ static inline unsigned int xfrm_replay_state_esn_len(struct xfrm_replay_state_es
 static inline int xfrm_replay_clone(struct xfrm_state *x,
 				     struct xfrm_state *orig)
 {
-<<<<<<< HEAD
-	x->replay_esn = kzalloc(xfrm_replay_state_esn_len(orig->replay_esn),
-				GFP_KERNEL);
-	if (!x->replay_esn)
-		return -ENOMEM;
-
-	x->replay_esn->bmp_len = orig->replay_esn->bmp_len;
-	x->replay_esn->replay_window = orig->replay_esn->replay_window;
-
-	x->preplay_esn = kmemdup(x->replay_esn,
-				 xfrm_replay_state_esn_len(x->replay_esn),
-				 GFP_KERNEL);
-	if (!x->preplay_esn) {
-		kfree(x->replay_esn);
-		return -ENOMEM;
-	}
-=======
 
 	x->replay_esn = kmemdup(orig->replay_esn,
 				xfrm_replay_state_esn_len(orig->replay_esn),
@@ -2773,20 +1897,16 @@ static inline int xfrm_replay_clone(struct xfrm_state *x,
 				 GFP_KERNEL);
 	if (!x->preplay_esn)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline struct xfrm_algo_aead *xfrm_algo_aead_clone(struct xfrm_algo_aead *orig)
 {
 	return kmemdup(orig, aead_len(orig), GFP_KERNEL);
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct xfrm_algo *xfrm_algo_clone(struct xfrm_algo *orig)
 {
 	return kmemdup(orig, xfrm_alg_len(orig), GFP_KERNEL);
@@ -2812,12 +1932,6 @@ static inline void xfrm_states_delete(struct xfrm_state **states, int n)
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_XFRM
-static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
-{
-	return skb->sp->xvec[skb->sp->len - 1];
-=======
 void __init xfrm_dev_init(void);
 
 #ifdef CONFIG_XFRM_OFFLOAD
@@ -2955,7 +2069,6 @@ static inline void xfrm_dev_state_advance_esn(struct xfrm_state *x)
 static inline bool xfrm_dst_offload_ok(struct dst_entry *dst)
 {
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -2971,16 +2084,6 @@ static inline int xfrm_mark_get(struct nlattr **attrs, struct xfrm_mark *m)
 
 static inline int xfrm_mark_put(struct sk_buff *skb, const struct xfrm_mark *m)
 {
-<<<<<<< HEAD
-	if (m->m | m->v)
-		NLA_PUT(skb, XFRMA_MARK, sizeof(struct xfrm_mark), m);
-	return 0;
-
-nla_put_failure:
-	return -1;
-}
-
-=======
 	int ret = 0;
 
 	if (m->m | m->v)
@@ -3099,5 +2202,4 @@ static inline int register_xfrm_state_bpf(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _NET_XFRM_H */

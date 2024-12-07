@@ -1,19 +1,13 @@
 /* 
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  * 
-<<<<<<< HEAD
- * System call entry code Copyright (c) Matthew Wilcox 1999 <willy@bofh.ai>
-=======
  * System call entry code / Linux gateway page
  * Copyright (c) Matthew Wilcox 1999 <willy@infradead.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Licensed under the GNU GPL.
  * thanks to Philipp Rumpf, Mike Shaver and various others
  * sorry about the wall, puffin..
  */
 
-<<<<<<< HEAD
-=======
 /*
 How does the Linux gateway page on PA-RISC work?
 ------------------------------------------------
@@ -36,7 +30,6 @@ registers).
 */
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm-offsets.h>
 #include <asm/unistd.h>
 #include <asm/errno.h>
@@ -45,11 +38,8 @@ registers).
 #include <asm/thread_info.h>
 #include <asm/assembly.h>
 #include <asm/processor.h>
-<<<<<<< HEAD
-=======
 #include <asm/cache.h>
 #include <asm/spinlock_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/linkage.h>
 
@@ -59,9 +49,6 @@ registers).
 	 */
 #define KILL_INSN	break	0,0
 
-<<<<<<< HEAD
-	.level          LEVEL
-=======
 	.level          PA_ASM_LEVEL
 
 	.macro	lws_pagefault_disable reg1,reg2
@@ -89,7 +76,6 @@ registers).
 	.word	SPINLOCK_BREAK_INSN
 #endif
 	.endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.text
 
@@ -115,19 +101,11 @@ ENTRY(linux_gateway_page)
 	/* ADDRESS 0xb0 to 0xb8, lws uses two insns for entry */
 	/* Light-weight-syscall entry must always be located at 0xb0 */
 	/* WARNING: Keep this number updated with table size changes */
-<<<<<<< HEAD
-#define __NR_lws_entries (2)
-
-lws_entry:
-	gate	lws_start, %r0		/* increase privilege */
-	depi	3, 31, 2, %r31		/* Ensure we return into user mode. */
-=======
 #define __NR_lws_entries (5)
 
 lws_entry:
 	gate	lws_start, %r0		/* increase privilege */
 	depi	PRIV_USER, 31, 2, %r31	/* Ensure we return into user mode. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill from 0xb8 to 0xe0 */
 	.rept 10
@@ -138,11 +116,7 @@ lws_entry:
 	mechanism to work. DO NOT MOVE THIS CODE EVER! */
 set_thread_pointer:
 	gate	.+8, %r0		/* increase privilege */
-<<<<<<< HEAD
-	depi	3, 31, 2, %r31		/* Ensure we return into user mode. */
-=======
 	depi	PRIV_USER, 31, 2, %r31	/* Ensure we return into user mode. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be	0(%sr7,%r31)		/* return to user space */
 	mtctl	%r26, %cr27		/* move arg0 to the control register */
 
@@ -153,33 +127,16 @@ set_thread_pointer:
 	.endr
 
 /* This address must remain fixed at 0x100 for glibc's syscalls to work */
-<<<<<<< HEAD
-	.align 256
-=======
 	.align LINUX_GATEWAY_ADDR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 linux_gateway_entry:
 	gate	.+8, %r0			/* become privileged */
 	mtsp	%r0,%sr4			/* get kernel space into sr4 */
 	mtsp	%r0,%sr5			/* get kernel space into sr5 */
 	mtsp	%r0,%sr6			/* get kernel space into sr6 */
-<<<<<<< HEAD
-	mfsp    %sr7,%r1                        /* save user sr7 */
-	mtsp    %r1,%sr3                        /* and store it in sr3 */
-
-#ifdef CONFIG_64BIT
-	/* for now we can *always* set the W bit on entry to the syscall
-	 * since we don't support wide userland processes.  We could
-	 * also save the current SM other than in r0 and restore it on
-	 * exit from the syscall, and also use that value to know
-	 * whether to do narrow or wide syscalls. -PB
-	 */
-=======
 
 #ifdef CONFIG_64BIT
 	/* Store W bit on entry to the syscall in case it's a wide userland
 	 * process. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssm	PSW_SM_W, %r1
 	extrd,u	%r1,PSW_W_BIT,1,%r1
 	/* sp must be aligned on 4, so deposit the W bit setting into
@@ -197,8 +154,6 @@ linux_gateway_entry:
 	depdi	0, 31, 32, %r21
 1:	
 #endif
-<<<<<<< HEAD
-=======
 
 	/* We use a rsm/ssm pair to prevent sr3 from being clobbered
 	 * by external interrupts.
@@ -207,20 +162,13 @@ linux_gateway_entry:
 	rsm	PSW_SM_I, %r0			/* disable interrupts */
 	mtsp    %r1,%sr3                        /* and store it in sr3 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfctl   %cr30,%r1
 	xor     %r1,%r30,%r30                   /* ye olde xor trick */
 	xor     %r1,%r30,%r1
 	xor     %r1,%r30,%r30
-<<<<<<< HEAD
-	
-	ldo     THREAD_SZ_ALGN+FRAME_SIZE(%r30),%r30  /* set up kernel stack */
-
-=======
 
 	LDREG	TASK_STACK(%r30),%r30		/* set up kernel stack */
 	ldo	FRAME_SIZE(%r30),%r30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* N.B.: It is critical that we don't set sr7 to 0 until r30
 	 *       contains a valid kernel stack pointer. It is also
 	 *       critical that we don't start using the kernel stack
@@ -228,15 +176,9 @@ linux_gateway_entry:
 	 */
 
 	mtsp	%r0,%sr7			/* get kernel space into sr7 */
-<<<<<<< HEAD
-	STREGM	%r1,FRAME_SIZE(%r30)		/* save r1 (usp) here for now */
-	mfctl	%cr30,%r1			/* get task ptr in %r1 */
-	LDREG	TI_TASK(%r1),%r1
-=======
 	ssm	PSW_SM_I, %r0			/* enable interrupts */
 	STREGM	%r1,FRAME_SIZE(%r30)		/* save r1 (usp) here for now */
 	mfctl	%cr30,%r1			/* get task ptr in %r1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save some registers for sigcontext and potential task
 	   switch (see entry.S for the details of which ones are
@@ -267,11 +209,7 @@ linux_gateway_entry:
 	STREG	%r26, TASK_PT_GR26(%r1)	 	/* 1st argument */
 	STREG	%r27, TASK_PT_GR27(%r1)		/* user dp */
 	STREG   %r28, TASK_PT_GR28(%r1)         /* return value 0 */
-<<<<<<< HEAD
-	STREG   %r28, TASK_PT_ORIG_R28(%r1)     /* return value 0 (saved for signals) */
-=======
 	STREG   %r0, TASK_PT_ORIG_R28(%r1)      /* don't prohibit restarts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STREG	%r29, TASK_PT_GR29(%r1)		/* return value 1 */
 	STREG	%r31, TASK_PT_GR31(%r1)		/* preserve syscall return ptr */
 	
@@ -295,16 +233,10 @@ linux_gateway_entry:
 
 	/* Are we being ptraced? */
 	mfctl	%cr30, %r1
-<<<<<<< HEAD
-	LDREG	TI_TASK(%r1),%r1
-	ldw	TASK_PTRACE(%r1), %r1
-	bb,<,n	%r1,31,.Ltracesys
-=======
 	LDREG	TASK_TI_FLAGS(%r1),%r1
 	ldi	_TIF_SYSCALL_TRACE_MASK, %r19
 	and,COND(=) %r1, %r19, %r0
 	b,n	.Ltracesys
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Note!  We cannot use the syscall table that is mapped
 	nearby since the gateway page is mapped execute-only. */
@@ -317,12 +249,7 @@ linux_gateway_entry:
 	or,=	%r2,%r2,%r2
 	ldo	R%sys_call_table64(%r1), %r19
 #else
-<<<<<<< HEAD
-	ldil	L%sys_call_table, %r1
-	ldo     R%sys_call_table(%r1), %r19
-=======
 	load32	sys_call_table, %r19
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	
 	comiclr,>>	__NR_Linux_syscalls, %r20, %r0
 	b,n	.Lsyscall_nosys
@@ -371,12 +298,7 @@ tracesys:
 	 * C bit set, a non-straced syscall entry results in C and D clear
 	 * in the saved PSW.
 	 */
-<<<<<<< HEAD
-	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
-	LDREG	TI_TASK(%r1), %r1
-=======
 	mfctl	%cr30,%r1			/* get task ptr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssm	0,%r2
 	STREG	%r2,TASK_PT_PSW(%r1)		/* Lower 8 bits only!! */
 	mfsp	%sr0,%r2
@@ -429,31 +351,13 @@ tracesys_next:
 	 *  task->thread.regs.gr[20] above.
 	 */
 	copy	%ret0,%r20
-<<<<<<< HEAD
-	ldil	L%sys_call_table,%r1
-	ldo     R%sys_call_table(%r1), %r19
-
-	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
-	LDREG	TI_TASK(%r1), %r1
-=======
 
 	mfctl	%cr30,%r1			/* get task ptr */
 	LDREG   TASK_PT_GR28(%r1), %r28		/* Restore return value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LDREG   TASK_PT_GR26(%r1), %r26		/* Restore the users args */
 	LDREG   TASK_PT_GR25(%r1), %r25
 	LDREG   TASK_PT_GR24(%r1), %r24
 	LDREG   TASK_PT_GR23(%r1), %r23
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-	LDREG   TASK_PT_GR22(%r1), %r22
-	LDREG   TASK_PT_GR21(%r1), %r21
-	ldo	-16(%r30),%r29			/* Reference param save area */
-#endif
-
-	comiclr,>>=	__NR_Linux_syscalls, %r20, %r0
-	b,n	.Lsyscall_nosys
-=======
 	LDREG   TASK_PT_GR22(%r1), %r22
 	LDREG   TASK_PT_GR21(%r1), %r21
 #ifdef CONFIG_64BIT
@@ -483,7 +387,6 @@ tracesys_next:
 #else
 	load32	sys_call_table, %r19
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	LDREGX  %r20(%r19), %r19
 
@@ -499,36 +402,21 @@ tracesys_next:
 	be      0(%sr7,%r19)
 	ldo	R%tracesys_exit(%r2),%r2
 
-<<<<<<< HEAD
-=======
 .Ltracesys_nosys:
 	ldo	-ENOSYS(%r0),%r28		/* set errno */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do *not* call this function on the gateway page, because it
 	makes a direct call to syscall_trace. */
 	
 tracesys_exit:
-<<<<<<< HEAD
-	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
-	LDREG	TI_TASK(%r1), %r1
-=======
 	mfctl	%cr30,%r1			/* get task ptr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29			/* Reference param save area */
 #endif
 	ldo	TASK_REGS(%r1),%r26
-<<<<<<< HEAD
-	bl	do_syscall_trace_exit,%r2
-	STREG   %r28,TASK_PT_GR28(%r1)          /* save return value now */
-	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
-	LDREG	TI_TASK(%r1), %r1
-=======
 	BL	do_syscall_trace_exit,%r2
 	STREG   %r28,TASK_PT_GR28(%r1)          /* save return value now */
 	mfctl	%cr30,%r1			/* get task ptr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LDREG   TASK_PT_GR28(%r1), %r28		/* Restore return val. */
 
 	ldil	L%syscall_exit,%r1
@@ -541,20 +429,11 @@ tracesys_exit:
 	ldo	R%tracesys_sigexit(%r2),%r2
 
 tracesys_sigexit:
-<<<<<<< HEAD
-	ldo     -THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1      /* get task ptr */
-	LDREG	TI_TASK(%r1), %r1
-#ifdef CONFIG_64BIT
-	ldo	-16(%r30),%r29			/* Reference param save area */
-#endif
-	bl	do_syscall_trace_exit,%r2
-=======
 	mfctl	%cr30,%r1			/* get task ptr */
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29			/* Reference param save area */
 #endif
 	BL	do_syscall_trace_exit,%r2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r1),%r26
 
 	ldil	L%syscall_exit_rfi,%r1
@@ -616,25 +495,13 @@ tracesys_sigexit:
 lws_start:
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-	/* FIXME: If we are a 64-bit kernel just
-	 *        turn this on unconditionally.
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssm	PSW_SM_W, %r1
 	extrd,u	%r1,PSW_W_BIT,1,%r1
 	/* sp must be aligned on 4, so deposit the W bit setting into
 	 * the bottom of sp temporarily */
-<<<<<<< HEAD
-	or,ev	%r1,%r30,%r30
-
-	/* Clip LWS number to a 32-bit value always */
-=======
 	or,od	%r1,%r30,%r30
 
 	/* Clip LWS number to a 32-bit value for 32-bit processes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depdi	0, 31, 32, %r20
 #endif	
 
@@ -642,14 +509,6 @@ lws_start:
 	comiclr,>>	__NR_lws_entries, %r20, %r0
 	b,n	lws_exit_nosys
 
-<<<<<<< HEAD
-	/* WARNING: Trashing sr2 and sr3 */
-	mfsp	%sr7,%r1			/* get userspace into sr3 */
-	mtsp	%r1,%sr3
-	mtsp	%r0,%sr2			/* get kernel space into sr2 */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Load table start */
 	ldil	L%lws_table, %r1
 	ldo	R%lws_table(%r1), %r28	/* Scratch use of r28 */
@@ -658,10 +517,6 @@ lws_start:
 	/* Jump to lws, lws table pointers already relocated */
 	be,n	0(%sr2,%r21)
 
-<<<<<<< HEAD
-lws_exit_nosys:
-	ldo	-ENOSYS(%r0),%r21		   /* set errno */
-=======
 lws_exit_noerror:
 	lws_pagefault_enable	%r1,%r21
 	ldi	__ARCH_SPIN_LOCK_UNLOCKED_VAL, %r21
@@ -692,7 +547,6 @@ lws_fault:
 
 lws_exit_nosys:
 	ldo	-ENOSYS(%r0),%r21
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fall through: Return to userspace */
 
 lws_exit:
@@ -711,11 +565,7 @@ lws_exit:
 
 	
 	/***************************************************
-<<<<<<< HEAD
-		Implementing CAS as an atomic operation:
-=======
 		Implementing 32bit CAS as an atomic operation:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		%r26 - Address to examine
 		%r25 - Old value to check (old)
@@ -723,21 +573,6 @@ lws_exit:
 		%r28 - Return prev through this register.
 		%r21 - Kernel error code
 
-<<<<<<< HEAD
-		If debugging is DISabled:
-
-		%r21 has the following meanings:
-
-		EAGAIN - CAS is busy, ldcw failed, try again.
-		EFAULT - Read or write failed.		
-
-		If debugging is enabled:
-
-		EDEADLOCK - CAS called recursively.
-		EAGAIN && r28 == 1 - CAS is busy. Lock contended.
-		EAGAIN && r28 == 2 - CAS is busy. ldcw failed.
-		EFAULT - Read or write failed.
-=======
 		%r21 returns the following error codes:
 		EAGAIN - CAS is busy, ldcw failed, try again.
 		EFAULT - Read or write failed.		
@@ -746,18 +581,11 @@ lws_exit:
 		r28 == 1 - CAS is busy. lock contended.
 		r28 == 2 - CAS is busy. ldcw failed.
 		r28 == 3 - CAS is busy. page fault.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		Scratch: r20, r28, r1
 
 	****************************************************/
 
-<<<<<<< HEAD
-	/* Do not enable LWS debugging */
-#define ENABLE_LWS_DEBUG 0 
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ELF64 Process entry path */
 lws_compare_and_swap64:
 #ifdef CONFIG_64BIT
@@ -770,12 +598,6 @@ lws_compare_and_swap64:
 	b,n	lws_exit_nosys
 #endif
 
-<<<<<<< HEAD
-	/* ELF32 Process entry path */
-lws_compare_and_swap32:
-#ifdef CONFIG_64BIT
-	/* Clip all the input registers */
-=======
 	/* ELF32/ELF64 Process entry path */
 lws_compare_and_swap32:
 #ifdef CONFIG_64BIT
@@ -783,24 +605,12 @@ lws_compare_and_swap32:
 	bb,<,n  %sp, 31, lws_compare_and_swap
 
 	/* Clip all the input registers for 32-bit processes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depdi	0, 31, 32, %r26
 	depdi	0, 31, 32, %r25
 	depdi	0, 31, 32, %r24
 #endif
 
 lws_compare_and_swap:
-<<<<<<< HEAD
-	/* Load start of lock table */
-	ldil	L%lws_lock_start, %r20
-	ldo	R%lws_lock_start(%r20), %r28
-
-	/* Extract four bits from r26 and hash lock (Bits 4-7) */
-	extru  %r26, 27, 4, %r20
-
-	/* Find lock to use, the hash is either one of 0 to
-	   15, multiplied by 16 (keep it 16-byte aligned)
-=======
 	/* Trigger memory reference interruptions without writing to memory */
 1:	ldw	0(%r26), %r28
 2:	stbys,e	%r0, 0(%r26)
@@ -814,42 +624,10 @@ lws_compare_and_swap:
 
 	/* Find lock to use, the hash index is one of 0 to
 	   255, multiplied by 16 (keep it 16-byte aligned)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   and add to the lock table offset. */
 	shlw	%r20, 4, %r20
 	add	%r20, %r28, %r20
 
-<<<<<<< HEAD
-# if ENABLE_LWS_DEBUG
-	/*	
-		DEBUG, check for deadlock! 
-		If the thread register values are the same
-		then we were the one that locked it last and
-		this is a recurisve call that will deadlock.
-		We *must* giveup this call and fail.
-	*/
-	ldw	4(%sr2,%r20), %r28			/* Load thread register */
-	/* WARNING: If cr27 cycles to the same value we have problems */
-	mfctl	%cr27, %r21				/* Get current thread register */
-	cmpb,<>,n	%r21, %r28, cas_lock		/* Called recursive? */
-	b	lws_exit				/* Return error! */
-	ldo	-EDEADLOCK(%r0), %r21
-cas_lock:
-	cmpb,=,n	%r0, %r28, cas_nocontend	/* Is nobody using it? */
-	ldo	1(%r0), %r28				/* 1st case */
-	b	lws_exit				/* Contended... */
-	ldo	-EAGAIN(%r0), %r21			/* Spin in userspace */
-cas_nocontend:
-# endif
-/* ENABLE_LWS_DEBUG */
-
-	LDCW	0(%sr2,%r20), %r28			/* Try to acquire the lock */
-	cmpb,<>,n	%r0, %r28, cas_action		/* Did we get it? */
-cas_wouldblock:
-	ldo	2(%r0), %r28				/* 2nd case */
-	b	lws_exit				/* Contended... */
-	ldo	-EAGAIN(%r0), %r21			/* Spin in userspace */
-=======
 	rsm	PSW_SM_I, %r0				/* Disable interrupts */
 
 	/* Try to acquire the lock */
@@ -860,7 +638,6 @@ cas_wouldblock:
 
 	/* Disable page faults to prevent sleeping in critical region */
 	lws_pagefault_disable	%r21,%r28
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 		prev = *addr;
@@ -870,49 +647,11 @@ cas_wouldblock:
 	*/
 
 	/* NOTES:
-<<<<<<< HEAD
-		This all works becuse intr_do_signal
-=======
 		This all works because intr_do_signal
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		and schedule both check the return iasq
 		and see that we are on the kernel page
 		so this process is never scheduled off
 		or is ever sent any signal of any sort,
-<<<<<<< HEAD
-		thus it is wholly atomic from usrspaces
-		perspective
-	*/
-cas_action:
-#if defined CONFIG_SMP && ENABLE_LWS_DEBUG
-	/* DEBUG */
-	mfctl	%cr27, %r1
-	stw	%r1, 4(%sr2,%r20)
-#endif
-	/* The load and store could fail */
-1:	ldw	0(%sr3,%r26), %r28
-	sub,<>	%r28, %r25, %r0
-2:	stw	%r24, 0(%sr3,%r26)
-	/* Free lock */
-	stw	%r20, 0(%sr2,%r20)
-#if ENABLE_LWS_DEBUG
-	/* Clear thread register indicator */
-	stw	%r0, 4(%sr2,%r20)
-#endif
-	/* Return to userspace, set no error */
-	b	lws_exit
-	copy	%r0, %r21
-
-3:		
-	/* Error occurred on load or store */
-	/* Free lock */
-	stw	%r20, 0(%sr2,%r20)
-#if ENABLE_LWS_DEBUG
-	stw	%r0, 4(%sr2,%r20)
-#endif
-	b	lws_exit
-	ldo	-EFAULT(%r0),%r21	/* set errno */
-=======
 		thus it is wholly atomic from usrspace's
 		perspective
 	*/
@@ -1235,22 +974,11 @@ atomic_xchg_begin:
 	b	atomic_xchg_start
 6:	stbys,e	%r0, 0(%r23)
 	nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop
 	nop
 	nop
 	nop
 
-<<<<<<< HEAD
-	/* Two exception table entries, one for the load,
-	   the other for the store. Either return -EFAULT.
-	   Each of the entries must be relocated. */
-	.section __ex_table,"aw"
-	ASM_ULONG_INSN (1b - linux_gateway_page), (3b - linux_gateway_page)
-	ASM_ULONG_INSN (2b - linux_gateway_page), (3b - linux_gateway_page)
-	.previous
-
-=======
 	/* 64-bit exchange */
 #ifdef CONFIG_64BIT
 7:	ldd	0(%r24), %r20
@@ -1561,7 +1289,6 @@ atomic_store_start:
 	ASM_EXCEPTIONTABLE_ENTRY(14b-linux_gateway_page, 31b-linux_gateway_page)
 	ASM_EXCEPTIONTABLE_ENTRY(15b-linux_gateway_page, 31b-linux_gateway_page)
 	ASM_EXCEPTIONTABLE_ENTRY(16b-linux_gateway_page, 31b-linux_gateway_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure nothing else is placed on this page */
 	.align PAGE_SIZE
@@ -1575,27 +1302,6 @@ ENTRY(end_linux_gateway_page)
 
 	.section .rodata,"a"
 
-<<<<<<< HEAD
-	.align PAGE_SIZE
-	/* Light-weight-syscall table */
-	/* Start of lws table. */
-ENTRY(lws_table)
-	LWS_ENTRY(compare_and_swap32)	/* 0 - ELF32 Atomic compare and swap */
-	LWS_ENTRY(compare_and_swap64)	/* 1 - ELF64 Atomic compare and swap */
-END(lws_table)
-	/* End of lws table */
-
-	.align PAGE_SIZE
-ENTRY(sys_call_table)
-#include "syscall_table.S"
-END(sys_call_table)
-
-#ifdef CONFIG_64BIT
-	.align PAGE_SIZE
-ENTRY(sys_call_table64)
-#define SYSCALL_TABLE_64BIT
-#include "syscall_table.S"
-=======
 	.align 8
 	/* Light-weight-syscall table */
 	/* Start of lws table. */
@@ -1624,7 +1330,6 @@ END(sys_call_table)
 	.align 8
 ENTRY(sys_call_table64)
 #include <asm/syscall_table_64.h>    /* 64-bit syscalls */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 END(sys_call_table64)
 #endif
 
@@ -1637,21 +1342,12 @@ END(sys_call_table64)
 		with ldcw.
 	*/
 	.section .data
-<<<<<<< HEAD
-	.align	PAGE_SIZE
-ENTRY(lws_lock_start)
-	/* lws locks */
-	.rept 16
-	/* Keep locks aligned at 16-bytes */
-	.word 1
-=======
 	.align	L1_CACHE_BYTES
 ENTRY(lws_lock_start)
 	/* lws locks */
 	.rept 256
 	/* Keep locks aligned at 16-bytes */
 	.word __ARCH_SPIN_LOCK_UNLOCKED_VAL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.word 0 
 	.word 0
 	.word 0
@@ -1660,8 +1356,3 @@ END(lws_lock_start)
 	.previous
 
 .end
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/console.c
  *
@@ -24,10 +21,7 @@
 struct pci_controller *pci_vga_hose;
 static struct resource alpha_vga = {
 	.name	= "alpha-vga+",
-<<<<<<< HEAD
-=======
 	.flags	= IORESOURCE_IO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start	= 0x3C0,
 	.end	= 0x3DF
 };
@@ -69,13 +63,9 @@ locate_and_init_vga(void *(*sel_func)(void *, void *))
 
 	/* Set the VGA hose and init the new console. */
 	pci_vga_hose = hose;
-<<<<<<< HEAD
-	take_over_console(&vga_con, 0, MAX_NR_CONSOLES-1, 1);
-=======
 	console_lock();
 	do_take_over_console(&vga_con, 0, MAX_NR_CONSOLES-1, 1);
 	console_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init

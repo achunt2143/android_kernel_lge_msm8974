@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * mdio.c: Generic support for MDIO-compatible transceivers
- * Copyright 2006-2009 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * mdio.c: Generic support for MDIO-compatible transceivers
  * Copyright 2006-2009 Solarflare Communications Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -93,11 +83,7 @@ int mdio_set_flag(const struct mdio_if_info *mdio,
 EXPORT_SYMBOL(mdio_set_flag);
 
 /**
-<<<<<<< HEAD
- * mdio_link_ok - is link status up/OK
-=======
  * mdio45_links_ok - is link status up/OK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mdio: MDIO interface
  * @mmd_mask: Mask for MMDs to check
  *
@@ -353,34 +339,6 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 EXPORT_SYMBOL(mdio45_ethtool_gset_npage);
 
 /**
-<<<<<<< HEAD
- * mdio45_ethtool_spauseparam_an - set auto-negotiated pause parameters
- * @mdio: MDIO interface
- * @ecmd: Ethtool request structure
- *
- * This function assumes that the PHY has an auto-negotiation MMD.  It
- * will enable and disable advertising of flow control as appropriate.
- */
-void mdio45_ethtool_spauseparam_an(const struct mdio_if_info *mdio,
-				   const struct ethtool_pauseparam *ecmd)
-{
-	int adv, old_adv;
-
-	WARN_ON(!(mdio->mmds & MDIO_DEVS_AN));
-
-	old_adv = mdio->mdio_read(mdio->dev, mdio->prtad, MDIO_MMD_AN,
-				  MDIO_AN_ADVERTISE);
-	adv = ((old_adv & ~(ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM)) |
-	       mii_advertise_flowctrl((ecmd->rx_pause ? FLOW_CTRL_RX : 0) |
-				      (ecmd->tx_pause ? FLOW_CTRL_TX : 0)));
-	if (adv != old_adv) {
-		mdio->mdio_write(mdio->dev, mdio->prtad, MDIO_MMD_AN,
-				 MDIO_AN_ADVERTISE, adv);
-		mdio45_nway_restart(mdio);
-	}
-}
-EXPORT_SYMBOL(mdio45_ethtool_spauseparam_an);
-=======
  * mdio45_ethtool_ksettings_get_npage - get settings for ETHTOOL_GLINKSETTINGS
  * @mdio: MDIO interface
  * @cmd: Ethtool request structure
@@ -557,7 +515,6 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 	}
 }
 EXPORT_SYMBOL(mdio45_ethtool_ksettings_get_npage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * mdio_mii_ioctl - MII ioctl interface for MDIO (clause 22 or 45) PHYs

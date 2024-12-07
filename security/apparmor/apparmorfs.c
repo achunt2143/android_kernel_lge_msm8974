@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
@@ -9,22 +6,6 @@
  *
  * Copyright (C) 1998-2008 Novell/SUSE
  * Copyright 2009-2010 Canonical Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- */
-
-#include <linux/security.h>
-#include <linux/vmalloc.h>
-#include <linux/module.h>
-#include <linux/seq_file.h>
-#include <linux/uaccess.h>
-#include <linux/namei.h>
-#include <linux/capability.h>
-=======
  */
 
 #include <linux/ctype.h>
@@ -43,20 +24,10 @@
 #include <linux/zstd.h>
 #include <uapi/linux/major.h>
 #include <uapi/linux/magic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "include/apparmor.h"
 #include "include/apparmorfs.h"
 #include "include/audit.h"
-<<<<<<< HEAD
-#include "include/context.h"
-#include "include/policy.h"
-#include "include/resource.h"
-
-/**
- * aa_simple_write_to_buffer - common routine for getting policy from user
- * @op: operation doing the user buffer copy
-=======
 #include "include/cred.h"
 #include "include/crypto.h"
 #include "include/ipc.h"
@@ -405,7 +376,6 @@ static void aafs_remove(struct dentry *dentry)
 
 /**
  * aa_simple_write_to_buffer - common routine for getting policy from user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @userbuf: user buffer to copy data from  (NOT NULL)
  * @alloc_size: size of user buffer (REQUIRES: @alloc_size >= @copy_size)
  * @copy_size: size of data to copy from user buffer
@@ -414,15 +384,6 @@ static void aafs_remove(struct dentry *dentry)
  * Returns: kernel buffer containing copy of user buffer data or an
  *          ERR_PTR on failure.
  */
-<<<<<<< HEAD
-static char *aa_simple_write_to_buffer(int op, const char __user *userbuf,
-				       size_t alloc_size, size_t copy_size,
-				       loff_t *pos)
-{
-	char *data;
-
-	BUG_ON(copy_size > alloc_size);
-=======
 static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
 						     size_t alloc_size,
 						     size_t copy_size,
@@ -431,28 +392,11 @@ static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
 	struct aa_loaddata *data;
 
 	AA_BUG(copy_size > alloc_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*pos != 0)
 		/* only writes from pos 0, that is complete writes */
 		return ERR_PTR(-ESPIPE);
 
-<<<<<<< HEAD
-	/*
-	 * Don't allow profile load/replace/remove from profiles that don't
-	 * have CAP_MAC_ADMIN
-	 */
-	if (!aa_may_manage_policy(op))
-		return ERR_PTR(-EACCES);
-
-	/* freed by caller to simple_write_to_buffer */
-	data = kvmalloc(alloc_size);
-	if (data == NULL)
-		return ERR_PTR(-ENOMEM);
-
-	if (copy_from_user(data, userbuf, copy_size)) {
-		kvfree(data);
-=======
 	/* freed by caller to simple_write_to_buffer */
 	data = aa_loaddata_alloc(alloc_size);
 	if (IS_ERR(data))
@@ -461,15 +405,12 @@ static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
 	data->size = copy_size;
 	if (copy_from_user(data->data, userbuf, copy_size)) {
 		aa_put_loaddata(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-EFAULT);
 	}
 
 	return data;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t policy_update(u32 mask, const char __user *buf, size_t size,
 			     loff_t *pos, struct aa_ns *ns)
 {
@@ -497,29 +438,15 @@ end_section:
 
 	return error;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* .load file hook fn to load policy */
 static ssize_t profile_load(struct file *f, const char __user *buf, size_t size,
 			    loff_t *pos)
 {
-<<<<<<< HEAD
-	char *data;
-	ssize_t error;
-
-	data = aa_simple_write_to_buffer(OP_PROF_LOAD, buf, size, size, pos);
-
-	error = PTR_ERR(data);
-	if (!IS_ERR(data)) {
-		error = aa_replace_profiles(data, size, PROF_ADD);
-		kvfree(data);
-	}
-=======
 	struct aa_ns *ns = aa_get_ns(f->f_inode->i_private);
 	int error = policy_update(AA_MAY_LOAD_POLICY, buf, size, pos, ns);
 
 	aa_put_ns(ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -533,22 +460,10 @@ static const struct file_operations aa_fs_profile_load = {
 static ssize_t profile_replace(struct file *f, const char __user *buf,
 			       size_t size, loff_t *pos)
 {
-<<<<<<< HEAD
-	char *data;
-	ssize_t error;
-
-	data = aa_simple_write_to_buffer(OP_PROF_REPL, buf, size, size, pos);
-	error = PTR_ERR(data);
-	if (!IS_ERR(data)) {
-		error = aa_replace_profiles(data, size, PROF_REPLACE);
-		kvfree(data);
-	}
-=======
 	struct aa_ns *ns = aa_get_ns(f->f_inode->i_private);
 	int error = policy_update(AA_MAY_LOAD_POLICY | AA_MAY_REPLACE_POLICY,
 				  buf, size, pos, ns);
 	aa_put_ns(ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -562,10 +477,6 @@ static const struct file_operations aa_fs_profile_replace = {
 static ssize_t profile_remove(struct file *f, const char __user *buf,
 			      size_t size, loff_t *pos)
 {
-<<<<<<< HEAD
-	char *data;
-	ssize_t error;
-=======
 	struct aa_loaddata *data;
 	struct aa_label *label;
 	ssize_t error;
@@ -579,23 +490,11 @@ static ssize_t profile_remove(struct file *f, const char __user *buf,
 				     AA_MAY_REMOVE_POLICY);
 	if (error)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * aa_remove_profile needs a null terminated string so 1 extra
 	 * byte is allocated and the copied data is null terminated.
 	 */
-<<<<<<< HEAD
-	data = aa_simple_write_to_buffer(OP_PROF_RM, buf, size + 1, size, pos);
-
-	error = PTR_ERR(data);
-	if (!IS_ERR(data)) {
-		data[size] = 0;
-		error = aa_remove_profiles(data, size);
-		kvfree(data);
-	}
-
-=======
 	data = aa_simple_write_to_buffer(buf, size + 1, size, pos);
 
 	error = PTR_ERR(data);
@@ -607,7 +506,6 @@ static ssize_t profile_remove(struct file *f, const char __user *buf,
  out:
 	end_current_label_crit_section(label);
 	aa_put_ns(ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -616,11 +514,6 @@ static const struct file_operations aa_fs_profile_remove = {
 	.llseek = default_llseek,
 };
 
-<<<<<<< HEAD
-static int aa_fs_seq_show(struct seq_file *seq, void *v)
-{
-	struct aa_fs_entry *fs_file = seq->private;
-=======
 struct aa_revision {
 	struct aa_ns *ns;
 	long last_read;
@@ -1098,21 +991,11 @@ static const struct file_operations aa_sfs_access = {
 static int aa_sfs_seq_show(struct seq_file *seq, void *v)
 {
 	struct aa_sfs_entry *fs_file = seq->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!fs_file)
 		return 0;
 
 	switch (fs_file->v_type) {
-<<<<<<< HEAD
-	case AA_FS_TYPE_BOOLEAN:
-		seq_printf(seq, "%s\n", fs_file->v.boolean ? "yes" : "no");
-		break;
-	case AA_FS_TYPE_STRING:
-		seq_printf(seq, "%s\n", fs_file->v.string);
-		break;
-	case AA_FS_TYPE_U64:
-=======
 	case AA_SFS_TYPE_BOOLEAN:
 		seq_printf(seq, "%s\n", fs_file->v.boolean ? "yes" : "no");
 		break;
@@ -1120,7 +1003,6 @@ static int aa_sfs_seq_show(struct seq_file *seq, void *v)
 		seq_printf(seq, "%s\n", fs_file->v.string);
 		break;
 	case AA_SFS_TYPE_U64:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(seq, "%#08lx\n", fs_file->v.u64);
 		break;
 	default:
@@ -1131,16 +1013,6 @@ static int aa_sfs_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int aa_fs_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, aa_fs_seq_show, inode->i_private);
-}
-
-const struct file_operations aa_fs_seq_file_ops = {
-	.owner		= THIS_MODULE,
-	.open		= aa_fs_seq_open,
-=======
 static int aa_sfs_seq_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, aa_sfs_seq_show, inode->i_private);
@@ -1149,58 +1021,11 @@ static int aa_sfs_seq_open(struct inode *inode, struct file *file)
 const struct file_operations aa_sfs_seq_file_ops = {
 	.owner		= THIS_MODULE,
 	.open		= aa_sfs_seq_open,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
 
-<<<<<<< HEAD
-/** Base file system setup **/
-
-static struct aa_fs_entry aa_fs_entry_file[] = {
-	AA_FS_FILE_STRING("mask", "create read write exec append mmap_exec " \
-				  "link lock"),
-	{ }
-};
-
-static struct aa_fs_entry aa_fs_entry_domain[] = {
-	AA_FS_FILE_BOOLEAN("change_hat",	1),
-	AA_FS_FILE_BOOLEAN("change_hatv",	1),
-	AA_FS_FILE_BOOLEAN("change_onexec",	1),
-	AA_FS_FILE_BOOLEAN("change_profile",	1),
-	{ }
-};
-
-static struct aa_fs_entry aa_fs_entry_features[] = {
-	AA_FS_DIR("domain",			aa_fs_entry_domain),
-	AA_FS_DIR("file",			aa_fs_entry_file),
-	AA_FS_FILE_U64("capability",		VFS_CAP_FLAGS_MASK),
-	AA_FS_DIR("rlimit",			aa_fs_entry_rlimit),
-	{ }
-};
-
-static struct aa_fs_entry aa_fs_entry_apparmor[] = {
-	AA_FS_FILE_FOPS(".load", 0640, &aa_fs_profile_load),
-	AA_FS_FILE_FOPS(".replace", 0640, &aa_fs_profile_replace),
-	AA_FS_FILE_FOPS(".remove", 0640, &aa_fs_profile_remove),
-	AA_FS_DIR("features", aa_fs_entry_features),
-	{ }
-};
-
-static struct aa_fs_entry aa_fs_entry =
-	AA_FS_DIR("apparmor", aa_fs_entry_apparmor);
-
-/**
- * aafs_create_file - create a file entry in the apparmor securityfs
- * @fs_file: aa_fs_entry to build an entry for (NOT NULL)
- * @parent: the parent dentry in the securityfs
- *
- * Use aafs_remove_file to remove entries created with this fn.
- */
-static int __init aafs_create_file(struct aa_fs_entry *fs_file,
-				   struct dentry *parent)
-=======
 /*
  * profile based file operations
  *     policy/profiles/XXXX/profiles/ *
@@ -2613,7 +2438,6 @@ static struct aa_sfs_entry aa_sfs_entry =
  */
 static int __init entry_create_file(struct aa_sfs_entry *fs_file,
 				    struct dentry *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = 0;
 
@@ -2628,33 +2452,6 @@ static int __init entry_create_file(struct aa_sfs_entry *fs_file,
 	return error;
 }
 
-<<<<<<< HEAD
-/**
- * aafs_create_dir - recursively create a directory entry in the securityfs
- * @fs_dir: aa_fs_entry (and all child entries) to build (NOT NULL)
- * @parent: the parent dentry in the securityfs
- *
- * Use aafs_remove_dir to remove entries created with this fn.
- */
-static int __init aafs_create_dir(struct aa_fs_entry *fs_dir,
-				  struct dentry *parent)
-{
-	int error;
-	struct aa_fs_entry *fs_file;
-
-	fs_dir->dentry = securityfs_create_dir(fs_dir->name, parent);
-	if (IS_ERR(fs_dir->dentry)) {
-		error = PTR_ERR(fs_dir->dentry);
-		fs_dir->dentry = NULL;
-		goto failed;
-	}
-
-	for (fs_file = fs_dir->v.files; fs_file->name; ++fs_file) {
-		if (fs_file->v_type == AA_FS_TYPE_DIR)
-			error = aafs_create_dir(fs_file, fs_dir->dentry);
-		else
-			error = aafs_create_file(fs_file, fs_dir->dentry);
-=======
 static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir);
 /**
  * entry_create_dir - recursively create a directory entry in the securityfs
@@ -2680,7 +2477,6 @@ static int __init entry_create_dir(struct aa_sfs_entry *fs_dir,
 			error = entry_create_dir(fs_file, fs_dir->dentry);
 		else
 			error = entry_create_file(fs_file, fs_dir->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto failed;
 	}
@@ -2688,26 +2484,16 @@ static int __init entry_create_dir(struct aa_sfs_entry *fs_dir,
 	return 0;
 
 failed:
-<<<<<<< HEAD
-=======
 	entry_remove_dir(fs_dir);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /**
-<<<<<<< HEAD
- * aafs_remove_file - drop a single file entry in the apparmor securityfs
- * @fs_file: aa_fs_entry to detach from the securityfs (NOT NULL)
- */
-static void __init aafs_remove_file(struct aa_fs_entry *fs_file)
-=======
  * entry_remove_file - drop a single file entry in the apparmor securityfs
  * @fs_file: aa_sfs_entry to detach from the securityfs (NOT NULL)
  */
 static void __init entry_remove_file(struct aa_sfs_entry *fs_file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!fs_file->dentry)
 		return;
@@ -2717,23 +2503,6 @@ static void __init entry_remove_file(struct aa_sfs_entry *fs_file)
 }
 
 /**
-<<<<<<< HEAD
- * aafs_remove_dir - recursively drop a directory entry from the securityfs
- * @fs_dir: aa_fs_entry (and all child entries) to detach (NOT NULL)
- */
-static void __init aafs_remove_dir(struct aa_fs_entry *fs_dir)
-{
-	struct aa_fs_entry *fs_file;
-
-	for (fs_file = fs_dir->v.files; fs_file->name; ++fs_file) {
-		if (fs_file->v_type == AA_FS_TYPE_DIR)
-			aafs_remove_dir(fs_file);
-		else
-			aafs_remove_file(fs_file);
-	}
-
-	aafs_remove_file(fs_dir);
-=======
  * entry_remove_dir - recursively drop a directory entry from the securityfs
  * @fs_dir: aa_sfs_entry (and all child entries) to detach (NOT NULL)
  */
@@ -2749,7 +2518,6 @@ static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir)
 	}
 
 	entry_remove_file(fs_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2759,11 +2527,6 @@ static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir)
  */
 void __init aa_destroy_aafs(void)
 {
-<<<<<<< HEAD
-	aafs_remove_dir(&aa_fs_entry);
-}
-
-=======
 	entry_remove_dir(&aa_sfs_entry);
 }
 
@@ -2857,7 +2620,6 @@ static const struct inode_operations policy_link_iops = {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * aa_create_aafs - create the apparmor security filesystem
  *
@@ -2867,32 +2629,17 @@ static const struct inode_operations policy_link_iops = {
  */
 static int __init aa_create_aafs(void)
 {
-<<<<<<< HEAD
-=======
 	struct dentry *dent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	if (!apparmor_initialized)
 		return 0;
 
-<<<<<<< HEAD
-	if (aa_fs_entry.dentry) {
-=======
 	if (aa_sfs_entry.dentry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AA_ERROR("%s: AppArmor securityfs already exists\n", __func__);
 		return -EEXIST;
 	}
 
-<<<<<<< HEAD
-	/* Populate fs tree. */
-	error = aafs_create_dir(&aa_fs_entry, NULL);
-	if (error)
-		goto error;
-
-	/* TODO: add support for apparmorfs_null and apparmorfs_mnt */
-=======
 	/* setup apparmorfs used to virtualize policy/ */
 	aafs_mnt = kern_mount(&aafs_ops);
 	if (IS_ERR(aafs_mnt))
@@ -2947,17 +2694,13 @@ static int __init aa_create_aafs(void)
 		goto error;
 
 	/* TODO: add default profile to apparmorfs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Report that AppArmor fs is enabled */
 	aa_info_message("AppArmor Filesystem Enabled");
 	return 0;
 
-<<<<<<< HEAD
-=======
 dent_error:
 	error = PTR_ERR(dent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error:
 	aa_destroy_aafs();
 	AA_ERROR("Error creating AppArmor securityfs\n");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC tlb.c
  *
@@ -13,14 +10,6 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Julius Baxter <julius.baxter@orsoc.se>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -33,13 +22,7 @@
 #include <linux/mm.h>
 #include <linux/init.h>
 
-<<<<<<< HEAD
-#include <asm/segment.h>
 #include <asm/tlbflush.h>
-#include <asm/pgtable.h>
-=======
-#include <asm/tlbflush.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/spr_defs.h>
 
@@ -60,11 +43,7 @@
  *
  */
 
-<<<<<<< HEAD
-void flush_tlb_all(void)
-=======
 void local_flush_tlb_all(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned long num_tlb_sets;
@@ -101,11 +80,7 @@ void local_flush_tlb_all(void)
 #define flush_itlb_page_no_eir(addr) \
 	mtspr_off(SPR_ITLBMR_BASE(0), ITLB_OFFSET(addr), 0);
 
-<<<<<<< HEAD
-void flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
-=======
 void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (have_dtlbeir)
 		flush_dtlb_page_eir(addr);
@@ -118,13 +93,8 @@ void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
 		flush_itlb_page_no_eir(addr);
 }
 
-<<<<<<< HEAD
-void flush_tlb_range(struct vm_area_struct *vma,
-		     unsigned long start, unsigned long end)
-=======
 void local_flush_tlb_range(struct vm_area_struct *vma,
 			   unsigned long start, unsigned long end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int addr;
 	bool dtlbeir;
@@ -153,22 +123,13 @@ void local_flush_tlb_range(struct vm_area_struct *vma,
  * This should be changed to loop over over mm and call flush_tlb_range.
  */
 
-<<<<<<< HEAD
-void flush_tlb_mm(struct mm_struct *mm)
-=======
 void local_flush_tlb_mm(struct mm_struct *mm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	/* Was seeing bugs with the mm struct passed to us. Scrapped most of
 	   this function. */
-<<<<<<< HEAD
-	/* Several architctures do this */
-	flush_tlb_all();
-=======
 	/* Several architectures do this */
 	local_flush_tlb_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called in schedule() just before actually doing the switch_to */
@@ -176,8 +137,6 @@ void local_flush_tlb_mm(struct mm_struct *mm)
 void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	       struct task_struct *next_tsk)
 {
-<<<<<<< HEAD
-=======
 	unsigned int cpu;
 
 	if (unlikely(prev == next))
@@ -188,30 +147,18 @@ void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	cpumask_clear_cpu(cpu, mm_cpumask(prev));
 	cpumask_set_cpu(cpu, mm_cpumask(next));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* remember the pgd for the fault handlers
 	 * this is similar to the pgd register in some other CPU's.
 	 * we need our own copy of it because current and active_mm
 	 * might be invalid at points where we still need to derefer
 	 * the pgd.
 	 */
-<<<<<<< HEAD
-	current_pgd = next->pgd;
-=======
 	current_pgd[cpu] = next->pgd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We don't have context support implemented, so flush all
 	 * entries belonging to previous map
 	 */
-<<<<<<< HEAD
-
-	if (prev != next)
-		flush_tlb_mm(prev);
-
-=======
 	local_flush_tlb_mm(prev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -235,15 +182,3 @@ void destroy_context(struct mm_struct *mm)
 	flush_tlb_mm(mm);
 
 }
-<<<<<<< HEAD
-
-/* called once during VM initialization, from init.c */
-
-void __init tlb_init(void)
-{
-	/* Do nothing... */
-	/* invalidate the entire TLB */
-	/* flush_tlb_all(); */
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

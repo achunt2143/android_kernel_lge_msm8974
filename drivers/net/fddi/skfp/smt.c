@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -31,13 +20,6 @@
 #define KERNEL
 #include "h/smtstate.h"
 
-<<<<<<< HEAD
-#ifndef	lint
-static const char ID_sccs[] = "@(#)smt.c	2.43 98/11/23 (C) SK " ;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FC in SMbuf
  */
@@ -45,10 +27,6 @@ static const char ID_sccs[] = "@(#)smt.c	2.43 98/11/23 (C) SK " ;
 
 #define SMT_TID_MAGIC	0x1f0a7b3c
 
-<<<<<<< HEAD
-#ifdef	DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *const smt_type_name[] = {
 	"SMT_00??", "SMT_INFO", "SMT_02??", "SMT_03??",
 	"SMT_04??", "SMT_05??", "SMT_06??", "SMT_07??",
@@ -60,11 +38,7 @@ static const char *const smt_class_name[] = {
 	"UNKNOWN","NIF","SIF_CONFIG","SIF_OPER","ECF","RAF","RDF",
 	"SRF","PMF_GET","PMF_SET","ESF"
 } ;
-<<<<<<< HEAD
-#endif
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LAST_CLASS	(SMT_PMF_SET)
 
 static const struct fddi_addr SMT_Unknown = {
@@ -220,11 +194,7 @@ void smt_agent_task(struct s_smc *smc)
 {
 	smt_timer_start(smc,&smc->sm.smt_timer, (u_long)1000000L,
 		EV_TOKEN(EVENT_SMT,SM_TIMER)) ;
-<<<<<<< HEAD
-	DB_SMT("SMT agent task\n",0,0) ;
-=======
 	DB_SMT("SMT agent task");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef SMT_REAL_TOKEN_CT
@@ -417,11 +387,7 @@ void smt_event(struct s_smc *smc, int event)
 	 */
 	if (smc->sm.smt_tvu &&
 	    time - smc->sm.smt_tvu > 228*TICKS_PER_SECOND) {
-<<<<<<< HEAD
-		DB_SMT("SMT : UNA expired\n",0,0) ;
-=======
 		DB_SMT("SMT : UNA expired");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smc->sm.smt_tvu = 0 ;
 
 		if (!is_equal(&smc->mib.m[MAC0].fddiMACUpstreamNbr,
@@ -444,11 +410,7 @@ void smt_event(struct s_smc *smc, int event)
 	}
 	if (smc->sm.smt_tvd &&
 	    time - smc->sm.smt_tvd > 228*TICKS_PER_SECOND) {
-<<<<<<< HEAD
-		DB_SMT("SMT : DNA expired\n",0,0) ;
-=======
 		DB_SMT("SMT : DNA expired");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smc->sm.smt_tvd = 0 ;
 		if (!is_equal(&smc->mib.m[MAC0].fddiMACDownstreamNbr,
 			&SMT_Unknown)){
@@ -533,18 +495,11 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 #endif
 
 	smt_swap_para(sm,(int) mb->sm_len,1) ;
-<<<<<<< HEAD
-	DB_SMT("SMT : received packet [%s] at 0x%x\n",
-		smt_type_name[m_fc(mb) & 0xf],sm) ;
-	DB_SMT("SMT : version %d, class %s\n",sm->smt_version,
-		smt_class_name[(sm->smt_class>LAST_CLASS)?0 : sm->smt_class]) ;
-=======
 	DB_SMT("SMT : received packet [%s] at 0x%p",
 	       smt_type_name[m_fc(mb) & 0xf], sm);
 	DB_SMT("SMT : version %d, class %s",
 	       sm->smt_version,
 	       smt_class_name[sm->smt_class > LAST_CLASS ? 0 : sm->smt_class]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef	SBA
 	/*
@@ -561,13 +516,8 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 	 * ignore any packet with NSA and A-indicator set
 	 */
 	if ( (fs & A_INDICATOR) && m_fc(mb) == FC_SMT_NSA) {
-<<<<<<< HEAD
-		DB_SMT("SMT : ignoring NSA with A-indicator set from %s\n",
-			addr_to_string(&sm->smt_source),0) ;
-=======
 		DB_SMT("SMT : ignoring NSA with A-indicator set from %pM",
 		       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smt_free_mbuf(smc,mb) ;
 		return ;
 	}
@@ -598,24 +548,15 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 		break ;
 	}
 	if (illegal) {
-<<<<<<< HEAD
-		DB_SMT("SMT : version = %d, dest = %s\n",
-			sm->smt_version,addr_to_string(&sm->smt_source)) ;
-=======
 		DB_SMT("SMT : version = %d, dest = %pM",
 		       sm->smt_version, &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smt_send_rdf(smc,mb,m_fc(mb),SMT_RDF_VERSION,local) ;
 		smt_free_mbuf(smc,mb) ;
 		return ;
 	}
 	if ((sm->smt_len > mb->sm_len - sizeof(struct smt_header)) ||
 	    ((sm->smt_len & 3) && (sm->smt_class != SMT_ECF))) {
-<<<<<<< HEAD
-		DB_SMT("SMT: info length error, len = %d\n",sm->smt_len,0) ;
-=======
 		DB_SMT("SMT: info length error, len = %d", sm->smt_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smt_send_rdf(smc,mb,m_fc(mb),SMT_RDF_LENGTH,local) ;
 		smt_free_mbuf(smc,mb) ;
 		return ;
@@ -623,11 +564,7 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 	switch (sm->smt_class) {
 	case SMT_NIF :
 		if (smt_check_para(smc,sm,plist_nif)) {
-<<<<<<< HEAD
-			DB_SMT("SMT: NIF with para problem, ignoring\n",0,0) ;
-=======
 			DB_SMT("SMT: NIF with para problem, ignoring");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break ;
 		}
 		switch (sm->smt_type) {
@@ -641,13 +578,8 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 				if (!is_equal(
 					&smc->mib.m[MAC0].fddiMACUpstreamNbr,
 					&sm->smt_source)) {
-<<<<<<< HEAD
-					DB_SMT("SMT : updated my UNA = %s\n",
-					addr_to_string(&sm->smt_source),0) ;
-=======
 					DB_SMT("SMT : updated my UNA = %pM",
 					       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!is_equal(&smc->mib.m[MAC0].
 					    fddiMACUpstreamNbr,&SMT_Unknown)){
 					 /* Do not update unknown address */
@@ -676,13 +608,8 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 			    is_individual(&sm->smt_source) &&
 			    ((!(fs & A_INDICATOR) && m_fc(mb) == FC_SMT_NSA) ||
 			     (m_fc(mb) != FC_SMT_NSA))) {
-<<<<<<< HEAD
-				DB_SMT("SMT : replying to NIF request %s\n",
-					addr_to_string(&sm->smt_source),0) ;
-=======
 				DB_SMT("SMT : replying to NIF request %pM",
 				       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smt_send_nif(smc,&sm->smt_source,
 					FC_SMT_INFO,
 					sm->smt_tid,
@@ -690,19 +617,11 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 			}
 			break ;
 		case SMT_REPLY :
-<<<<<<< HEAD
-			DB_SMT("SMT : received NIF response from %s\n",
-				addr_to_string(&sm->smt_source),0) ;
-			if (fs & A_INDICATOR) {
-				smc->sm.pend[SMT_TID_NIF] = 0 ;
-				DB_SMT("SMT : duplicate address\n",0,0) ;
-=======
 			DB_SMT("SMT : received NIF response from %pM",
 			       &sm->smt_source);
 			if (fs & A_INDICATOR) {
 				smc->sm.pend[SMT_TID_NIF] = 0 ;
 				DB_SMT("SMT : duplicate address");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smc->mib.m[MAC0].fddiMACDupAddressTest =
 					DA_FAILED ;
 				smc->r.dup_addr_test = DA_FAILED ;
@@ -717,11 +636,7 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 				if (!is_equal(
 					&smc->mib.m[MAC0].fddiMACDownstreamNbr,
 					&sm->smt_source)) {
-<<<<<<< HEAD
-					DB_SMT("SMT : updated my DNA\n",0,0) ;
-=======
 					DB_SMT("SMT : updated my DNA");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!is_equal(&smc->mib.m[MAC0].
 					 fddiMACDownstreamNbr, &SMT_Unknown)){
 					 /* Do not update unknown address */
@@ -748,19 +663,11 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 			}
 			else if (sm->smt_tid ==
 				smc->sm.pend[SMT_TID_NIF_TEST]) {
-<<<<<<< HEAD
-				DB_SMT("SMT : NIF test TID ok\n",0,0) ;
-			}
-			else {
-				DB_SMT("SMT : expected TID %lx, got %lx\n",
-				smc->sm.pend[SMT_TID_NIF],sm->smt_tid) ;
-=======
 				DB_SMT("SMT : NIF test TID ok");
 			}
 			else {
 				DB_SMT("SMT : expected TID %lx, got %x",
 				       smc->sm.pend[SMT_TID_NIF], sm->smt_tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break ;
 		default :
@@ -771,52 +678,21 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 	case SMT_SIF_CONFIG :	/* station information */
 		if (sm->smt_type != SMT_REQUEST)
 			break ;
-<<<<<<< HEAD
-		DB_SMT("SMT : replying to SIF Config request from %s\n",
-			addr_to_string(&sm->smt_source),0) ;
-=======
 		DB_SMT("SMT : replying to SIF Config request from %pM",
 		       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smt_send_sif_config(smc,&sm->smt_source,sm->smt_tid,local) ;
 		break ;
 	case SMT_SIF_OPER :	/* station information */
 		if (sm->smt_type != SMT_REQUEST)
 			break ;
-<<<<<<< HEAD
-		DB_SMT("SMT : replying to SIF Operation request from %s\n",
-			addr_to_string(&sm->smt_source),0) ;
-=======
 		DB_SMT("SMT : replying to SIF Operation request from %pM",
 		       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smt_send_sif_operation(smc,&sm->smt_source,sm->smt_tid,local) ;
 		break ;
 	case SMT_ECF :		/* echo frame */
 		switch (sm->smt_type) {
 		case SMT_REPLY :
 			smc->mib.priv.fddiPRIVECF_Reply_Rx++ ;
-<<<<<<< HEAD
-			DB_SMT("SMT: received ECF reply from %s\n",
-				addr_to_string(&sm->smt_source),0) ;
-			if (sm_to_para(smc,sm,SMT_P_ECHODATA) == NULL) {
-				DB_SMT("SMT: ECHODATA missing\n",0,0) ;
-				break ;
-			}
-			if (sm->smt_tid == smc->sm.pend[SMT_TID_ECF]) {
-				DB_SMT("SMT : ECF test TID ok\n",0,0) ;
-			}
-			else if (sm->smt_tid == smc->sm.pend[SMT_TID_ECF_UNA]) {
-				DB_SMT("SMT : ECF test UNA ok\n",0,0) ;
-			}
-			else if (sm->smt_tid == smc->sm.pend[SMT_TID_ECF_DNA]) {
-				DB_SMT("SMT : ECF test DNA ok\n",0,0) ;
-			}
-			else {
-				DB_SMT("SMT : expected TID %lx, got %lx\n",
-					smc->sm.pend[SMT_TID_ECF],
-					sm->smt_tid) ;
-=======
 			DB_SMT("SMT: received ECF reply from %pM",
 			       &sm->smt_source);
 			if (sm_to_para(smc,sm,SMT_P_ECHODATA) == NULL) {
@@ -836,29 +712,19 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 				DB_SMT("SMT : expected TID %lx, got %x",
 				       smc->sm.pend[SMT_TID_ECF],
 				       sm->smt_tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break ;
 		case SMT_REQUEST :
 			smc->mib.priv.fddiPRIVECF_Req_Rx++ ;
 			{
 			if (sm->smt_len && !sm_to_para(smc,sm,SMT_P_ECHODATA)) {
-<<<<<<< HEAD
-			DB_SMT("SMT: ECF with para problem,sending RDF\n",0,0) ;
-=======
 				DB_SMT("SMT: ECF with para problem,sending RDF");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smt_send_rdf(smc,mb,m_fc(mb),SMT_RDF_LENGTH,
 					local) ;
 				break ;
 			}
-<<<<<<< HEAD
-			DB_SMT("SMT - sending ECF reply to %s\n",
-				addr_to_string(&sm->smt_source),0) ;
-=======
 			DB_SMT("SMT - sending ECF reply to %pM",
 			       &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* set destination addr.  & reply */
 			sm->smt_dest = sm->smt_source ;
@@ -876,20 +742,12 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 #ifndef	BOOT
 	case SMT_RAF :		/* resource allocation */
 #ifdef	ESS
-<<<<<<< HEAD
-		DB_ESSN(2,"ESS: RAF frame received\n",0,0) ;
-=======
 		DB_ESSN(2, "ESS: RAF frame received");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fs = ess_raf_received_pack(smc,mb,sm,fs) ;
 #endif
 
 #ifdef	SBA
-<<<<<<< HEAD
-		DB_SBAN(2,"SBA: RAF frame received\n",0,0) ;
-=======
 		DB_SBAN(2, "SBA: RAF frame received") ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sba_raf_received_pack(smc,sm,fs) ;
 #endif
 		break ;
@@ -898,11 +756,7 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 		break ;
 	case SMT_ESF :		/* extended service - not supported */
 		if (sm->smt_type == SMT_REQUEST) {
-<<<<<<< HEAD
-			DB_SMT("SMT - received ESF, sending RDF\n",0,0) ;
-=======
 			DB_SMT("SMT - received ESF, sending RDF");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smt_send_rdf(smc,mb,m_fc(mb),SMT_RDF_CLASS,local) ;
 		}
 		break ;
@@ -920,11 +774,7 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 		 */
 		if ((sm->smt_class == SMT_PMF_SET) &&
 			!is_individual(&sm->smt_dest)) {
-<<<<<<< HEAD
-			DB_SMT("SMT: ignoring PMF-SET with I/G set\n",0,0) ;
-=======
 			DB_SMT("SMT: ignoring PMF-SET with I/G set");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break ;
 		}
 		smt_pmf_received_pack(smc,mb, local) ;
@@ -940,25 +790,15 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
 		 * we need to send a RDF frame according to 8.1.3.1.1,
 		 * only if it is a REQUEST.
 		 */
-<<<<<<< HEAD
-		DB_SMT("SMT : class = %d, send RDF to %s\n",
-			sm->smt_class, addr_to_string(&sm->smt_source)) ;
-=======
 		DB_SMT("SMT : class = %d, send RDF to %pM",
 		       sm->smt_class, &sm->smt_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		smt_send_rdf(smc,mb,m_fc(mb),SMT_RDF_CLASS,local) ;
 		break ;
 #endif
 	}
 	if (illegal) {
-<<<<<<< HEAD
-		DB_SMT("SMT: discarding invalid frame, reason = %d\n",
-			illegal,0) ;
-=======
 		DB_SMT("SMT: discarding invalid frame, reason = %d", illegal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	smt_free_mbuf(smc,mb) ;
 }
@@ -1020,13 +860,8 @@ static void smt_send_rdf(struct s_smc *smc, SMbuf *rej, int fc, int reason,
 	if (sm->smt_type != SMT_REQUEST)
 		return ;
 
-<<<<<<< HEAD
-	DB_SMT("SMT: sending RDF to %s,reason = 0x%x\n",
-		addr_to_string(&sm->smt_source),reason) ;
-=======
 	DB_SMT("SMT: sending RDF to %pM,reason = 0x%x",
 	       &sm->smt_source, reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/*
@@ -1056,11 +891,7 @@ static void smt_send_rdf(struct s_smc *smc, SMbuf *rej, int fc, int reason,
 	rdf->version.v_pad2 = 0 ;
 
 	/* set P13 */
-<<<<<<< HEAD
-	if ((unsigned) frame_len <= SMT_MAX_INFO_LEN - sizeof(*rdf) +
-=======
 	if ((unsigned int) frame_len <= SMT_MAX_INFO_LEN - sizeof(*rdf) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		2*sizeof(struct smt_header))
 		len = frame_len ;
 	else
@@ -1232,15 +1063,9 @@ static void smt_send_sif_operation(struct s_smc *smc, struct fddi_addr *dest,
 #endif
 
 	if (!(mb = smt_build_frame(smc,SMT_SIF_OPER,SMT_REPLY,
-<<<<<<< HEAD
-		SIZEOF_SMT_SIF_OPERATION+ports*sizeof(struct smt_p_lem))))
-		return ;
-	sif = smtod(mb, struct smt_sif_operation *) ;
-=======
 				   struct_size(sif, lem, ports))))
 		return ;
 	sif = smtod(mb, typeof(sif));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smt_fill_timestamp(smc,&sif->ts) ;	/* set time stamp */
 	smt_fill_mac_status(smc,&sif->status) ; /* set mac status */
 	smt_fill_mac_counter(smc,&sif->mc) ; /* set mac counter field */
@@ -1732,11 +1557,7 @@ u_long smt_get_tid(struct s_smc *smc)
 	return tid & 0x3fffffffL;
 }
 
-<<<<<<< HEAD
-
-=======
 #ifdef	LITTLE_ENDIAN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * table of parameter lengths
  */
@@ -1816,10 +1637,7 @@ static const struct smt_pdef {
 } ;
 
 #define N_SMT_PLEN	ARRAY_SIZE(smt_pdef)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int smt_check_para(struct s_smc *smc, struct smt_header	*sm,
 		   const u_short list[])
@@ -1827,11 +1645,7 @@ int smt_check_para(struct s_smc *smc, struct smt_header	*sm,
 	const u_short		*p = list ;
 	while (*p) {
 		if (!sm_to_para(smc,sm,(int) *p)) {
-<<<<<<< HEAD
-			DB_SMT("SMT: smt_check_para - missing para %x\n",*p,0);
-=======
 			DB_SMT("SMT: smt_check_para - missing para %hx", *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 		p++ ;
@@ -1857,19 +1671,11 @@ void *sm_to_para(struct s_smc *smc, struct smt_header *sm, int para)
 		p += plen ;
 		len -= plen ;
 		if (len < 0) {
-<<<<<<< HEAD
-			DB_SMT("SMT : sm_to_para - length error %d\n",plen,0) ;
-			return NULL;
-		}
-		if ((plen & 3) && (para != SMT_P_ECHODATA)) {
-			DB_SMT("SMT : sm_to_para - odd length %d\n",plen,0) ;
-=======
 			DB_SMT("SMT : sm_to_para - length error %d", plen);
 			return NULL;
 		}
 		if ((plen & 3) && (para != SMT_P_ECHODATA)) {
 			DB_SMT("SMT : sm_to_para - odd length %d", plen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 		if (found)
@@ -1906,37 +1712,6 @@ void fddi_send_antc(struct s_smc *smc, struct fddi_addr *dest)
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef	DEBUG
-char *addr_to_string(struct fddi_addr *addr)
-{
-	int	i ;
-	static char	string[6*3] = "****" ;
-
-	for (i = 0 ; i < 6 ; i++) {
-		string[i * 3] = hex_asc_hi(addr->a[i]);
-		string[i * 3 + 1] = hex_asc_lo(addr->a[i]);
-		string[i * 3 + 2] = ':';
-	}
-	string[5 * 3 + 2] = 0;
-	return string;
-}
-#endif
-
-#ifdef	AM29K
-int smt_ifconfig(int argc, char *argv[])
-{
-	if (argc >= 2 && !strcmp(argv[0],"opt_bypass") &&
-	    !strcmp(argv[1],"yes")) {
-		smc->mib.fddiSMTBypassPresent = 1 ;
-		return 0;
-	}
-	return amdfddi_config(0, argc, argv);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * return static mac index
  */
@@ -2071,17 +1846,10 @@ void smt_swap_para(struct smt_header *sm, int len, int direction)
 	}
 }
 
-<<<<<<< HEAD
-static void smt_string_swap(char *data, const char *format, int len)
-{
-	const char	*open_paren = NULL ;
-	int	x ;
-=======
 
 static void smt_string_swap(char *data, const char *format, int len)
 {
 	const char	*open_paren = NULL ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len > 0  && *format) {
 		switch (*format) {
@@ -2108,28 +1876,13 @@ static void smt_string_swap(char *data, const char *format, int len)
 			len-- ;
 			break ;
 		case 's' :
-<<<<<<< HEAD
-			x = data[0] ;
-			data[0] = data[1] ;
-			data[1] = x ;
-=======
 			swap(data[0], data[1]) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data += 2 ;
 			len -= 2 ;
 			break ;
 		case 'l' :
-<<<<<<< HEAD
-			x = data[0] ;
-			data[0] = data[3] ;
-			data[3] = x ;
-			x = data[1] ;
-			data[1] = data[2] ;
-			data[2] = x ;
-=======
 			swap(data[0], data[3]) ;
 			swap(data[1], data[2]) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data += 4 ;
 			len -= 4 ;
 			break ;
@@ -2154,11 +1907,7 @@ int smt_action(struct s_smc *smc, int class, int code, int index)
 {
 	int	event ;
 	int	port ;
-<<<<<<< HEAD
-	DB_SMT("SMT: action %d code %d\n",class,code) ;
-=======
 	DB_SMT("SMT: action %d code %d", class, code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(class) {
 	case SMT_STATION_ACTION :
 		switch(code) {

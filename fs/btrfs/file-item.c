@@ -1,55 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License v2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2007 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bio.h>
 #include <linux/slab.h>
 #include <linux/pagemap.h>
 #include <linux/highmem.h>
-<<<<<<< HEAD
-#include "ctree.h"
-#include "disk-io.h"
-#include "transaction.h"
-#include "print-tree.h"
-
-#define __MAX_CSUM_ITEMS(r, size) ((((BTRFS_LEAF_DATA_SIZE(r) - \
-				   sizeof(struct btrfs_item) * 2) / \
-				  size) - 1))
-
-#define MAX_CSUM_ITEMS(r, size) (min(__MAX_CSUM_ITEMS(r, size), PAGE_CACHE_SIZE))
-
-#define MAX_ORDERED_SUM_BYTES(r) ((PAGE_SIZE - \
-				   sizeof(struct btrfs_ordered_sum)) / \
-				   sizeof(struct btrfs_sector_sum) * \
-				   (r)->sectorsize - (r)->sectorsize)
-
-int btrfs_insert_file_extent(struct btrfs_trans_handle *trans,
-			     struct btrfs_root *root,
-			     u64 objectid, u64 pos,
-			     u64 disk_offset, u64 disk_num_bytes,
-			     u64 num_bytes, u64 offset, u64 ram_bytes,
-			     u8 compression, u8 encryption, u16 other_encoding)
-=======
 #include <linux/sched/mm.h>
 #include <crypto/hash.h>
 #include "messages.h"
@@ -201,7 +158,6 @@ static int btrfs_ordered_sum_size(struct btrfs_fs_info *fs_info, unsigned long b
 int btrfs_insert_hole_extent(struct btrfs_trans_handle *trans,
 			     struct btrfs_root *root,
 			     u64 objectid, u64 pos, u64 num_bytes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct btrfs_file_extent_item *item;
@@ -214,36 +170,12 @@ int btrfs_insert_hole_extent(struct btrfs_trans_handle *trans,
 		return -ENOMEM;
 	file_key.objectid = objectid;
 	file_key.offset = pos;
-<<<<<<< HEAD
-	btrfs_set_key_type(&file_key, BTRFS_EXTENT_DATA_KEY);
-
-	path->leave_spinning = 1;
-=======
 	file_key.type = BTRFS_EXTENT_DATA_KEY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = btrfs_insert_empty_item(trans, root, path, &file_key,
 				      sizeof(*item));
 	if (ret < 0)
 		goto out;
-<<<<<<< HEAD
-	BUG_ON(ret); /* Can't happen */
-	leaf = path->nodes[0];
-	item = btrfs_item_ptr(leaf, path->slots[0],
-			      struct btrfs_file_extent_item);
-	btrfs_set_file_extent_disk_bytenr(leaf, item, disk_offset);
-	btrfs_set_file_extent_disk_num_bytes(leaf, item, disk_num_bytes);
-	btrfs_set_file_extent_offset(leaf, item, offset);
-	btrfs_set_file_extent_num_bytes(leaf, item, num_bytes);
-	btrfs_set_file_extent_ram_bytes(leaf, item, ram_bytes);
-	btrfs_set_file_extent_generation(leaf, item, trans->transid);
-	btrfs_set_file_extent_type(leaf, item, BTRFS_FILE_EXTENT_REG);
-	btrfs_set_file_extent_compression(leaf, item, compression);
-	btrfs_set_file_extent_encryption(leaf, item, encryption);
-	btrfs_set_file_extent_other_encoding(leaf, item, other_encoding);
-
-	btrfs_mark_buffer_dirty(leaf);
-=======
 	leaf = path->nodes[0];
 	item = btrfs_item_ptr(leaf, path->slots[0],
 			      struct btrfs_file_extent_item);
@@ -259,19 +191,11 @@ int btrfs_insert_hole_extent(struct btrfs_trans_handle *trans,
 	btrfs_set_file_extent_other_encoding(leaf, item, 0);
 
 	btrfs_mark_buffer_dirty(trans, leaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	btrfs_free_path(path);
 	return ret;
 }
 
-<<<<<<< HEAD
-struct btrfs_csum_item *btrfs_lookup_csum(struct btrfs_trans_handle *trans,
-					  struct btrfs_root *root,
-					  struct btrfs_path *path,
-					  u64 bytenr, int cow)
-{
-=======
 static struct btrfs_csum_item *
 btrfs_lookup_csum(struct btrfs_trans_handle *trans,
 		  struct btrfs_root *root,
@@ -279,27 +203,18 @@ btrfs_lookup_csum(struct btrfs_trans_handle *trans,
 		  u64 bytenr, int cow)
 {
 	struct btrfs_fs_info *fs_info = root->fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	struct btrfs_key file_key;
 	struct btrfs_key found_key;
 	struct btrfs_csum_item *item;
 	struct extent_buffer *leaf;
 	u64 csum_offset = 0;
-<<<<<<< HEAD
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-=======
 	const u32 csum_size = fs_info->csum_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int csums_in_item;
 
 	file_key.objectid = BTRFS_EXTENT_CSUM_OBJECTID;
 	file_key.offset = bytenr;
-<<<<<<< HEAD
-	btrfs_set_key_type(&file_key, BTRFS_EXTENT_CSUM_KEY);
-=======
 	file_key.type = BTRFS_EXTENT_CSUM_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = btrfs_search_slot(trans, root, &file_key, path, 0, cow);
 	if (ret < 0)
 		goto fail;
@@ -310,19 +225,6 @@ btrfs_lookup_csum(struct btrfs_trans_handle *trans,
 			goto fail;
 		path->slots[0]--;
 		btrfs_item_key_to_cpu(leaf, &found_key, path->slots[0]);
-<<<<<<< HEAD
-		if (btrfs_key_type(&found_key) != BTRFS_EXTENT_CSUM_KEY)
-			goto fail;
-
-		csum_offset = (bytenr - found_key.offset) >>
-				root->fs_info->sb->s_blocksize_bits;
-		csums_in_item = btrfs_item_size_nr(leaf, path->slots[0]);
-		csums_in_item /= csum_size;
-
-		if (csum_offset >= csums_in_item) {
-			ret = -EFBIG;
-			goto fail;
-=======
 		if (found_key.type != BTRFS_EXTENT_CSUM_KEY)
 			goto fail;
 
@@ -336,7 +238,6 @@ btrfs_lookup_csum(struct btrfs_trans_handle *trans,
 			goto fail;
 		} else if (csum_offset > csums_in_item) {
 			goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	item = btrfs_item_ptr(leaf, path->slots[0], struct btrfs_csum_item);
@@ -349,58 +250,17 @@ fail:
 	return ERR_PTR(ret);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int btrfs_lookup_file_extent(struct btrfs_trans_handle *trans,
 			     struct btrfs_root *root,
 			     struct btrfs_path *path, u64 objectid,
 			     u64 offset, int mod)
 {
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btrfs_key file_key;
 	int ins_len = mod < 0 ? -1 : 0;
 	int cow = mod != 0;
 
 	file_key.objectid = objectid;
 	file_key.offset = offset;
-<<<<<<< HEAD
-	btrfs_set_key_type(&file_key, BTRFS_EXTENT_DATA_KEY);
-	ret = btrfs_search_slot(trans, root, &file_key, path, ins_len, cow);
-	return ret;
-}
-
-
-static int __btrfs_lookup_bio_sums(struct btrfs_root *root,
-				   struct inode *inode, struct bio *bio,
-				   u64 logical_offset, u32 *dst, int dio)
-{
-	u32 sum;
-	struct bio_vec *bvec = bio->bi_io_vec;
-	int bio_index = 0;
-	u64 offset = 0;
-	u64 item_start_offset = 0;
-	u64 item_last_offset = 0;
-	u64 disk_bytenr;
-	u32 diff;
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-	int ret;
-	struct btrfs_path *path;
-	struct btrfs_csum_item *item = NULL;
-	struct extent_io_tree *io_tree = &BTRFS_I(inode)->io_tree;
-
-	path = btrfs_alloc_path();
-	if (!path)
-		return -ENOMEM;
-	if (bio->bi_size > PAGE_CACHE_SIZE * 8)
-		path->reada = 2;
-
-	WARN_ON(bio->bi_vcnt <= 0);
-=======
 	file_key.type = BTRFS_EXTENT_DATA_KEY;
 
 	return btrfs_search_slot(trans, root, &file_key, path, ins_len, cow);
@@ -528,7 +388,6 @@ blk_status_t btrfs_lookup_bio_sums(struct btrfs_bio *bbio)
 	 */
 	if (nblocks > fs_info->csums_per_leaf)
 		path->reada = READA_FORWARD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * the free space stuff is only read when it hasn't been
@@ -536,109 +395,11 @@ blk_status_t btrfs_lookup_bio_sums(struct btrfs_bio *bbio)
 	 * read from the commit root and sidestep a nasty deadlock
 	 * between reading the free space cache and updating the csum tree.
 	 */
-<<<<<<< HEAD
-	if (btrfs_is_free_space_inode(root, inode)) {
-=======
 	if (btrfs_is_free_space_inode(inode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		path->search_commit_root = 1;
 		path->skip_locking = 1;
 	}
 
-<<<<<<< HEAD
-	disk_bytenr = (u64)bio->bi_sector << 9;
-	if (dio)
-		offset = logical_offset;
-	while (bio_index < bio->bi_vcnt) {
-		if (!dio)
-			offset = page_offset(bvec->bv_page) + bvec->bv_offset;
-		ret = btrfs_find_ordered_sum(inode, offset, disk_bytenr, &sum);
-		if (ret == 0)
-			goto found;
-
-		if (!item || disk_bytenr < item_start_offset ||
-		    disk_bytenr >= item_last_offset) {
-			struct btrfs_key found_key;
-			u32 item_size;
-
-			if (item)
-				btrfs_release_path(path);
-			item = btrfs_lookup_csum(NULL, root->fs_info->csum_root,
-						 path, disk_bytenr, 0);
-			if (IS_ERR(item)) {
-				ret = PTR_ERR(item);
-				if (ret == -ENOENT || ret == -EFBIG)
-					ret = 0;
-				sum = 0;
-				if (BTRFS_I(inode)->root->root_key.objectid ==
-				    BTRFS_DATA_RELOC_TREE_OBJECTID) {
-					set_extent_bits(io_tree, offset,
-						offset + bvec->bv_len - 1,
-						EXTENT_NODATASUM, GFP_NOFS);
-				} else {
-					printk(KERN_INFO "btrfs no csum found "
-					       "for inode %llu start %llu\n",
-					       (unsigned long long)
-					       btrfs_ino(inode),
-					       (unsigned long long)offset);
-				}
-				item = NULL;
-				btrfs_release_path(path);
-				goto found;
-			}
-			btrfs_item_key_to_cpu(path->nodes[0], &found_key,
-					      path->slots[0]);
-
-			item_start_offset = found_key.offset;
-			item_size = btrfs_item_size_nr(path->nodes[0],
-						       path->slots[0]);
-			item_last_offset = item_start_offset +
-				(item_size / csum_size) *
-				root->sectorsize;
-			item = btrfs_item_ptr(path->nodes[0], path->slots[0],
-					      struct btrfs_csum_item);
-		}
-		/*
-		 * this byte range must be able to fit inside
-		 * a single leaf so it will also fit inside a u32
-		 */
-		diff = disk_bytenr - item_start_offset;
-		diff = diff / root->sectorsize;
-		diff = diff * csum_size;
-
-		read_extent_buffer(path->nodes[0], &sum,
-				   ((unsigned long)item) + diff,
-				   csum_size);
-found:
-		if (dst)
-			*dst++ = sum;
-		else
-			set_state_private(io_tree, offset, sum);
-		disk_bytenr += bvec->bv_len;
-		offset += bvec->bv_len;
-		bio_index++;
-		bvec++;
-	}
-	btrfs_free_path(path);
-	return 0;
-}
-
-int btrfs_lookup_bio_sums(struct btrfs_root *root, struct inode *inode,
-			  struct bio *bio, u32 *dst)
-{
-	return __btrfs_lookup_bio_sums(root, inode, bio, 0, dst, 0);
-}
-
-int btrfs_lookup_bio_sums_dio(struct btrfs_root *root, struct inode *inode,
-			      struct bio *bio, u64 offset, u32 *dst)
-{
-	return __btrfs_lookup_bio_sums(root, inode, bio, offset, dst, 1);
-}
-
-int btrfs_lookup_csums_range(struct btrfs_root *root, u64 start, u64 end,
-			     struct list_head *list, int search_commit)
-{
-=======
 	while (bio_offset < orig_len) {
 		int count;
 		u64 cur_disk_bytenr = orig_disk_bytenr + bio_offset;
@@ -694,43 +455,25 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 			    bool nowait)
 {
 	struct btrfs_fs_info *fs_info = root->fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btrfs_key key;
 	struct btrfs_path *path;
 	struct extent_buffer *leaf;
 	struct btrfs_ordered_sum *sums;
-<<<<<<< HEAD
-	struct btrfs_sector_sum *sector_sum;
-	struct btrfs_csum_item *item;
-	LIST_HEAD(tmplist);
-	unsigned long offset;
-	int ret;
-	size_t size;
-	u64 csum_end;
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-=======
 	struct btrfs_csum_item *item;
 	LIST_HEAD(tmplist);
 	int ret;
 
 	ASSERT(IS_ALIGNED(start, fs_info->sectorsize) &&
 	       IS_ALIGNED(end + 1, fs_info->sectorsize));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = btrfs_alloc_path();
 	if (!path)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (search_commit) {
-		path->skip_locking = 1;
-		path->reada = 2;
-=======
 	path->nowait = nowait;
 	if (search_commit) {
 		path->skip_locking = 1;
 		path->reada = READA_FORWARD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		path->search_commit_root = 1;
 	}
 
@@ -744,14 +487,6 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 	if (ret > 0 && path->slots[0] > 0) {
 		leaf = path->nodes[0];
 		btrfs_item_key_to_cpu(leaf, &key, path->slots[0] - 1);
-<<<<<<< HEAD
-		if (key.objectid == BTRFS_EXTENT_CSUM_OBJECTID &&
-		    key.type == BTRFS_EXTENT_CSUM_KEY) {
-			offset = (start - key.offset) >>
-				 root->fs_info->sb->s_blocksize_bits;
-			if (offset * csum_size <
-			    btrfs_item_size_nr(leaf, path->slots[0] - 1))
-=======
 
 		/*
 		 * There are two cases we can hit here for the previous csum
@@ -772,17 +507,13 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 		    key.type == BTRFS_EXTENT_CSUM_KEY) {
 			if (bytes_to_csum_size(fs_info, start - key.offset) <
 			    btrfs_item_size(leaf, path->slots[0] - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				path->slots[0]--;
 		}
 	}
 
 	while (start <= end) {
-<<<<<<< HEAD
-=======
 		u64 csum_end;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		leaf = path->nodes[0];
 		if (path->slots[0] >= btrfs_header_nritems(leaf)) {
 			ret = btrfs_next_leaf(root, path);
@@ -795,28 +526,15 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 
 		btrfs_item_key_to_cpu(leaf, &key, path->slots[0]);
 		if (key.objectid != BTRFS_EXTENT_CSUM_OBJECTID ||
-<<<<<<< HEAD
-		    key.type != BTRFS_EXTENT_CSUM_KEY)
-			break;
-
-		btrfs_item_key_to_cpu(leaf, &key, path->slots[0]);
-		if (key.offset > end)
-=======
 		    key.type != BTRFS_EXTENT_CSUM_KEY ||
 		    key.offset > end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		if (key.offset > start)
 			start = key.offset;
 
-<<<<<<< HEAD
-		size = btrfs_item_size_nr(leaf, path->slots[0]);
-		csum_end = key.offset + (size / csum_size) * root->sectorsize;
-=======
 		csum_end = key.offset + csum_size_to_bytes(fs_info,
 					btrfs_item_size(leaf, path->slots[0]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (csum_end <= start) {
 			path->slots[0]++;
 			continue;
@@ -826,12 +544,6 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 		item = btrfs_item_ptr(path->nodes[0], path->slots[0],
 				      struct btrfs_csum_item);
 		while (start < csum_end) {
-<<<<<<< HEAD
-			size = min_t(size_t, csum_end - start,
-					MAX_ORDERED_SUM_BYTES(root));
-			sums = kzalloc(btrfs_ordered_sum_size(root, size),
-					GFP_NOFS);
-=======
 			unsigned long offset;
 			size_t size;
 
@@ -839,34 +551,11 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 				     max_ordered_sum_bytes(fs_info));
 			sums = kzalloc(btrfs_ordered_sum_size(fs_info, size),
 				       GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!sums) {
 				ret = -ENOMEM;
 				goto fail;
 			}
 
-<<<<<<< HEAD
-			sector_sum = sums->sums;
-			sums->bytenr = start;
-			sums->len = size;
-
-			offset = (start - key.offset) >>
-				root->fs_info->sb->s_blocksize_bits;
-			offset *= csum_size;
-
-			while (size > 0) {
-				read_extent_buffer(path->nodes[0],
-						&sector_sum->sum,
-						((unsigned long)item) +
-						offset, csum_size);
-				sector_sum->bytenr = start;
-
-				size -= root->sectorsize;
-				start += root->sectorsize;
-				offset += csum_size;
-				sector_sum++;
-			}
-=======
 			sums->logical = start;
 			sums->len = size;
 
@@ -878,7 +567,6 @@ int btrfs_lookup_csums_list(struct btrfs_root *root, u64 start, u64 end,
 					   bytes_to_csum_size(fs_info, size));
 
 			start += size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&sums->list, &tmplist);
 		}
 		path->slots[0]++;
@@ -896,87 +584,6 @@ fail:
 	return ret;
 }
 
-<<<<<<< HEAD
-int btrfs_csum_one_bio(struct btrfs_root *root, struct inode *inode,
-		       struct bio *bio, u64 file_start, int contig)
-{
-	struct btrfs_ordered_sum *sums;
-	struct btrfs_sector_sum *sector_sum;
-	struct btrfs_ordered_extent *ordered;
-	char *data;
-	struct bio_vec *bvec = bio->bi_io_vec;
-	int bio_index = 0;
-	unsigned long total_bytes = 0;
-	unsigned long this_sum_bytes = 0;
-	u64 offset;
-	u64 disk_bytenr;
-
-	WARN_ON(bio->bi_vcnt <= 0);
-	sums = kzalloc(btrfs_ordered_sum_size(root, bio->bi_size), GFP_NOFS);
-	if (!sums)
-		return -ENOMEM;
-
-	sector_sum = sums->sums;
-	disk_bytenr = (u64)bio->bi_sector << 9;
-	sums->len = bio->bi_size;
-	INIT_LIST_HEAD(&sums->list);
-
-	if (contig)
-		offset = file_start;
-	else
-		offset = page_offset(bvec->bv_page) + bvec->bv_offset;
-
-	ordered = btrfs_lookup_ordered_extent(inode, offset);
-	BUG_ON(!ordered); /* Logic error */
-	sums->bytenr = ordered->start;
-
-	while (bio_index < bio->bi_vcnt) {
-		if (!contig)
-			offset = page_offset(bvec->bv_page) + bvec->bv_offset;
-
-		if (!contig && (offset >= ordered->file_offset + ordered->len ||
-		    offset < ordered->file_offset)) {
-			unsigned long bytes_left;
-			sums->len = this_sum_bytes;
-			this_sum_bytes = 0;
-			btrfs_add_ordered_sum(inode, ordered, sums);
-			btrfs_put_ordered_extent(ordered);
-
-			bytes_left = bio->bi_size - total_bytes;
-
-			sums = kzalloc(btrfs_ordered_sum_size(root, bytes_left),
-				       GFP_NOFS);
-			BUG_ON(!sums); /* -ENOMEM */
-			sector_sum = sums->sums;
-			sums->len = bytes_left;
-			ordered = btrfs_lookup_ordered_extent(inode, offset);
-			BUG_ON(!ordered); /* Logic error */
-			sums->bytenr = ordered->start;
-		}
-
-		data = kmap_atomic(bvec->bv_page);
-		sector_sum->sum = ~(u32)0;
-		sector_sum->sum = btrfs_csum_data(root,
-						  data + bvec->bv_offset,
-						  sector_sum->sum,
-						  bvec->bv_len);
-		kunmap_atomic(data);
-		btrfs_csum_final(sector_sum->sum,
-				 (char *)&sector_sum->sum);
-		sector_sum->bytenr = disk_bytenr;
-
-		sector_sum++;
-		bio_index++;
-		total_bytes += bvec->bv_len;
-		this_sum_bytes += bvec->bv_len;
-		disk_bytenr += bvec->bv_len;
-		offset += bvec->bv_len;
-		bvec++;
-	}
-	this_sum_bytes = 0;
-	btrfs_add_ordered_sum(inode, ordered, sums);
-	btrfs_put_ordered_extent(ordered);
-=======
 /*
  * Do the same work as btrfs_lookup_csums_list(), the difference is in how
  * we return the result.
@@ -1169,25 +776,10 @@ blk_status_t btrfs_csum_one_bio(struct btrfs_bio *bbio)
 
 	bbio->sums = sums;
 	btrfs_add_ordered_sum(ordered, sums);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * helper function for csum removal, this expects the
- * key to describe the csum pointed to by the path, and it expects
- * the csum to overlap the range [bytenr, len]
- *
- * The csum should not be entirely contained in the range and the
- * range should not be entirely contained in the csum.
- *
- * This calls btrfs_truncate_item with the correct args based on the
- * overlap, and fixes up the key as required.
- */
-static noinline void truncate_one_csum(struct btrfs_trans_handle *trans,
-				       struct btrfs_root *root,
-=======
  * Nodatasum I/O on zoned file systems still requires an btrfs_ordered_sum to
  * record the updated logical address on Zone Append completion.
  * Allocate just the structure with an empty sums array here for that case.
@@ -1216,22 +808,10 @@ blk_status_t btrfs_alloc_dummy_sum(struct btrfs_bio *bbio)
  * and fixes up the key as required.
  */
 static noinline void truncate_one_csum(struct btrfs_trans_handle *trans,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       struct btrfs_path *path,
 				       struct btrfs_key *key,
 				       u64 bytenr, u64 len)
 {
-<<<<<<< HEAD
-	struct extent_buffer *leaf;
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-	u64 csum_end;
-	u64 end_byte = bytenr + len;
-	u32 blocksize_bits = root->fs_info->sb->s_blocksize_bits;
-
-	leaf = path->nodes[0];
-	csum_end = btrfs_item_size_nr(leaf, path->slots[0]) / csum_size;
-	csum_end <<= root->fs_info->sb->s_blocksize_bits;
-=======
 	struct btrfs_fs_info *fs_info = trans->fs_info;
 	struct extent_buffer *leaf;
 	const u32 csum_size = fs_info->csum_size;
@@ -1242,7 +822,6 @@ static noinline void truncate_one_csum(struct btrfs_trans_handle *trans,
 	leaf = path->nodes[0];
 	csum_end = btrfs_item_size(leaf, path->slots[0]) / csum_size;
 	csum_end <<= blocksize_bits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	csum_end += key->offset;
 
 	if (key->offset < bytenr && csum_end <= end_byte) {
@@ -1254,11 +833,7 @@ static noinline void truncate_one_csum(struct btrfs_trans_handle *trans,
 		 */
 		u32 new_size = (bytenr - key->offset) >> blocksize_bits;
 		new_size *= csum_size;
-<<<<<<< HEAD
-		btrfs_truncate_item(trans, root, path, new_size, 1);
-=======
 		btrfs_truncate_item(trans, path, new_size, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (key->offset >= bytenr && csum_end > end_byte &&
 		   end_byte > key->offset) {
 		/*
@@ -1270,56 +845,33 @@ static noinline void truncate_one_csum(struct btrfs_trans_handle *trans,
 		u32 new_size = (csum_end - end_byte) >> blocksize_bits;
 		new_size *= csum_size;
 
-<<<<<<< HEAD
-		btrfs_truncate_item(trans, root, path, new_size, 0);
-
-		key->offset = end_byte;
-		btrfs_set_item_key_safe(trans, root, path, key);
-=======
 		btrfs_truncate_item(trans, path, new_size, 0);
 
 		key->offset = end_byte;
 		btrfs_set_item_key_safe(trans, path, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		BUG();
 	}
 }
 
 /*
-<<<<<<< HEAD
- * deletes the csum items from the csum tree for a given
- * range of bytes.
-=======
  * Delete the csum items from the csum tree for a given range of bytes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int btrfs_del_csums(struct btrfs_trans_handle *trans,
 		    struct btrfs_root *root, u64 bytenr, u64 len)
 {
-<<<<<<< HEAD
-=======
 	struct btrfs_fs_info *fs_info = trans->fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btrfs_path *path;
 	struct btrfs_key key;
 	u64 end_byte = bytenr + len;
 	u64 csum_end;
 	struct extent_buffer *leaf;
-<<<<<<< HEAD
-	int ret;
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-	int blocksize_bits = root->fs_info->sb->s_blocksize_bits;
-
-	root = root->fs_info->csum_root;
-=======
 	int ret = 0;
 	const u32 csum_size = fs_info->csum_size;
 	u32 blocksize_bits = fs_info->sectorsize_bits;
 
 	ASSERT(root->root_key.objectid == BTRFS_CSUM_TREE_OBJECTID ||
 	       root->root_key.objectid == BTRFS_TREE_LOG_OBJECTID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = btrfs_alloc_path();
 	if (!path)
@@ -1330,15 +882,9 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 		key.offset = end_byte - 1;
 		key.type = BTRFS_EXTENT_CSUM_KEY;
 
-<<<<<<< HEAD
-		path->leave_spinning = 1;
-		ret = btrfs_search_slot(trans, root, &key, path, -1, 1);
-		if (ret > 0) {
-=======
 		ret = btrfs_search_slot(trans, root, &key, path, -1, 1);
 		if (ret > 0) {
 			ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (path->slots[0] == 0)
 				break;
 			path->slots[0]--;
@@ -1357,11 +903,7 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 		if (key.offset >= end_byte)
 			break;
 
-<<<<<<< HEAD
-		csum_end = btrfs_item_size_nr(leaf, path->slots[0]) / csum_size;
-=======
 		csum_end = btrfs_item_size(leaf, path->slots[0]) / csum_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		csum_end <<= blocksize_bits;
 		csum_end += key.offset;
 
@@ -1371,11 +913,6 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 
 		/* delete the entire item, it is inside our range */
 		if (key.offset >= bytenr && csum_end <= end_byte) {
-<<<<<<< HEAD
-			ret = btrfs_del_item(trans, root, path);
-			if (ret)
-				goto out;
-=======
 			int del_nr = 1;
 
 			/*
@@ -1405,7 +942,6 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 					      path->slots[0], del_nr);
 			if (ret)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (key.offset == bytenr)
 				break;
 		} else if (key.offset < bytenr && csum_end > end_byte) {
@@ -1438,11 +974,7 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 			item_offset = btrfs_item_ptr_offset(leaf,
 							    path->slots[0]);
 
-<<<<<<< HEAD
-			memset_extent_buffer(leaf, 0, item_offset + offset,
-=======
 			memzero_extent_buffer(leaf, item_offset + offset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     shift_len);
 			key.offset = bytenr;
 
@@ -1452,15 +984,6 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 			 */
 			ret = btrfs_split_item(trans, root, path, &key, offset);
 			if (ret && ret != -EAGAIN) {
-<<<<<<< HEAD
-				btrfs_abort_transaction(trans, root, ret);
-				goto out;
-			}
-
-			key.offset = end_byte - 1;
-		} else {
-			truncate_one_csum(trans, root, path, &key, bytenr, len);
-=======
 				btrfs_abort_transaction(trans, ret);
 				break;
 			}
@@ -1469,23 +992,15 @@ int btrfs_del_csums(struct btrfs_trans_handle *trans,
 			key.offset = end_byte - 1;
 		} else {
 			truncate_one_csum(trans, path, &key, bytenr, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (key.offset < bytenr)
 				break;
 		}
 		btrfs_release_path(path);
 	}
-<<<<<<< HEAD
-	ret = 0;
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_free_path(path);
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int find_next_csum_offset(struct btrfs_root *root,
 				 struct btrfs_path *path,
 				 u64 *next_offset)
@@ -1517,35 +1032,17 @@ static int find_next_csum_offset(struct btrfs_root *root,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int btrfs_csum_file_blocks(struct btrfs_trans_handle *trans,
 			   struct btrfs_root *root,
 			   struct btrfs_ordered_sum *sums)
 {
-<<<<<<< HEAD
-	u64 bytenr;
-	int ret;
-	struct btrfs_key file_key;
-	struct btrfs_key found_key;
-	u64 next_offset;
-	u64 total_bytes = 0;
-	int found_next;
-=======
 	struct btrfs_fs_info *fs_info = root->fs_info;
 	struct btrfs_key file_key;
 	struct btrfs_key found_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btrfs_path *path;
 	struct btrfs_csum_item *item;
 	struct btrfs_csum_item *item_end;
 	struct extent_buffer *leaf = NULL;
-<<<<<<< HEAD
-	u64 csum_offset;
-	struct btrfs_sector_sum *sector_sum;
-	u32 nritems;
-	u32 ins_size;
-	u16 csum_size = btrfs_super_csum_size(root->fs_info->super_copy);
-=======
 	u64 next_offset;
 	u64 total_bytes = 0;
 	u64 csum_offset;
@@ -1555,27 +1052,10 @@ int btrfs_csum_file_blocks(struct btrfs_trans_handle *trans,
 	int found_next;
 	int ret;
 	const u32 csum_size = fs_info->csum_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = btrfs_alloc_path();
 	if (!path)
 		return -ENOMEM;
-<<<<<<< HEAD
-
-	sector_sum = sums->sums;
-again:
-	next_offset = (u64)-1;
-	found_next = 0;
-	file_key.objectid = BTRFS_EXTENT_CSUM_OBJECTID;
-	file_key.offset = sector_sum->bytenr;
-	bytenr = sector_sum->bytenr;
-	btrfs_set_key_type(&file_key, BTRFS_EXTENT_CSUM_KEY);
-
-	item = btrfs_lookup_csum(trans, root, path, sector_sum->bytenr, 1);
-	if (!IS_ERR(item)) {
-		leaf = path->nodes[0];
-		ret = 0;
-=======
 again:
 	next_offset = (u64)-1;
 	found_next = 0;
@@ -1592,74 +1072,32 @@ again:
 					  struct btrfs_csum_item);
 		item_end = (struct btrfs_csum_item *)((char *)item_end +
 			   btrfs_item_size(leaf, path->slots[0]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto found;
 	}
 	ret = PTR_ERR(item);
 	if (ret != -EFBIG && ret != -ENOENT)
-<<<<<<< HEAD
-		goto fail_unlock;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret == -EFBIG) {
 		u32 item_size;
 		/* we found one, but it isn't big enough yet */
 		leaf = path->nodes[0];
-<<<<<<< HEAD
-		item_size = btrfs_item_size_nr(leaf, path->slots[0]);
-		if ((item_size / csum_size) >=
-		    MAX_CSUM_ITEMS(root, csum_size)) {
-=======
 		item_size = btrfs_item_size(leaf, path->slots[0]);
 		if ((item_size / csum_size) >=
 		    MAX_CSUM_ITEMS(fs_info, csum_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* already at max size, make a new one */
 			goto insert;
 		}
 	} else {
-<<<<<<< HEAD
-		int slot = path->slots[0] + 1;
-		/* we didn't find a csum item, insert one */
-		nritems = btrfs_header_nritems(path->nodes[0]);
-		if (path->slots[0] >= nritems - 1) {
-			ret = btrfs_next_leaf(root, path);
-			if (ret == 1)
-				found_next = 1;
-			if (ret != 0)
-				goto insert;
-			slot = 0;
-		}
-		btrfs_item_key_to_cpu(path->nodes[0], &found_key, slot);
-		if (found_key.objectid != BTRFS_EXTENT_CSUM_OBJECTID ||
-		    found_key.type != BTRFS_EXTENT_CSUM_KEY) {
-			found_next = 1;
-			goto insert;
-		}
-		next_offset = found_key.offset;
-=======
 		/* We didn't find a csum item, insert one. */
 		ret = find_next_csum_offset(root, path, &next_offset);
 		if (ret < 0)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		found_next = 1;
 		goto insert;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * at this point, we know the tree has an item, but it isn't big
-	 * enough yet to put our csum in.  Grow it
-	 */
-	btrfs_release_path(path);
-	ret = btrfs_search_slot(trans, root, &file_key, path,
-				csum_size, 1);
-	if (ret < 0)
-		goto fail_unlock;
-=======
 	 * At this point, we know the tree has a checksum item that ends at an
 	 * offset matching the start of the checksum range we want to insert.
 	 * We try to extend that item as much as possible and then add as many
@@ -1683,7 +1121,6 @@ again:
 	path->search_for_extension = 0;
 	if (ret < 0)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret > 0) {
 		if (path->slots[0] == 0)
@@ -1693,33 +1130,6 @@ again:
 
 	leaf = path->nodes[0];
 	btrfs_item_key_to_cpu(leaf, &found_key, path->slots[0]);
-<<<<<<< HEAD
-	csum_offset = (bytenr - found_key.offset) >>
-			root->fs_info->sb->s_blocksize_bits;
-
-	if (btrfs_key_type(&found_key) != BTRFS_EXTENT_CSUM_KEY ||
-	    found_key.objectid != BTRFS_EXTENT_CSUM_OBJECTID ||
-	    csum_offset >= MAX_CSUM_ITEMS(root, csum_size)) {
-		goto insert;
-	}
-
-	if (csum_offset >= btrfs_item_size_nr(leaf, path->slots[0]) /
-	    csum_size) {
-		u32 diff = (csum_offset + 1) * csum_size;
-
-		/*
-		 * is the item big enough already?  we dropped our lock
-		 * before and need to recheck
-		 */
-		if (diff < btrfs_item_size_nr(leaf, path->slots[0]))
-			goto csum;
-
-		diff = diff - btrfs_item_size_nr(leaf, path->slots[0]);
-		if (diff != csum_size)
-			goto insert;
-
-		btrfs_extend_item(trans, root, path, diff);
-=======
 	csum_offset = (bytenr - found_key.offset) >> fs_info->sectorsize_bits;
 
 	if (found_key.type != BTRFS_EXTENT_CSUM_KEY ||
@@ -1791,7 +1201,6 @@ extend_csum:
 
 		btrfs_extend_item(trans, path, diff);
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto csum;
 	}
 
@@ -1799,23 +1208,6 @@ insert:
 	btrfs_release_path(path);
 	csum_offset = 0;
 	if (found_next) {
-<<<<<<< HEAD
-		u64 tmp = total_bytes + root->sectorsize;
-		u64 next_sector = sector_sum->bytenr;
-		struct btrfs_sector_sum *next = sector_sum + 1;
-
-		while (tmp < sums->len) {
-			if (next_sector + root->sectorsize != next->bytenr)
-				break;
-			tmp += root->sectorsize;
-			next_sector = next->bytenr;
-			next++;
-		}
-		tmp = min(tmp, next_offset - file_key.offset);
-		tmp >>= root->fs_info->sb->s_blocksize_bits;
-		tmp = max((u64)1, tmp);
-		tmp = min(tmp, (u64)MAX_CSUM_ITEMS(root, csum_size));
-=======
 		u64 tmp;
 
 		tmp = sums->len - total_bytes;
@@ -1825,50 +1217,10 @@ insert:
 
 		tmp = max_t(u64, 1, tmp);
 		tmp = min_t(u64, tmp, MAX_CSUM_ITEMS(fs_info, csum_size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ins_size = csum_size * tmp;
 	} else {
 		ins_size = csum_size;
 	}
-<<<<<<< HEAD
-	path->leave_spinning = 1;
-	ret = btrfs_insert_empty_item(trans, root, path, &file_key,
-				      ins_size);
-	path->leave_spinning = 0;
-	if (ret < 0)
-		goto fail_unlock;
-	if (ret != 0) {
-		WARN_ON(1);
-		goto fail_unlock;
-	}
-csum:
-	leaf = path->nodes[0];
-	item = btrfs_item_ptr(leaf, path->slots[0], struct btrfs_csum_item);
-	ret = 0;
-	item = (struct btrfs_csum_item *)((unsigned char *)item +
-					  csum_offset * csum_size);
-found:
-	item_end = btrfs_item_ptr(leaf, path->slots[0], struct btrfs_csum_item);
-	item_end = (struct btrfs_csum_item *)((unsigned char *)item_end +
-				      btrfs_item_size_nr(leaf, path->slots[0]));
-next_sector:
-
-	write_extent_buffer(leaf, &sector_sum->sum, (unsigned long)item, csum_size);
-
-	total_bytes += root->sectorsize;
-	sector_sum++;
-	if (total_bytes < sums->len) {
-		item = (struct btrfs_csum_item *)((char *)item +
-						  csum_size);
-		if (item < item_end && bytenr + PAGE_CACHE_SIZE ==
-		    sector_sum->bytenr) {
-			bytenr = sector_sum->bytenr;
-			goto next_sector;
-		}
-	}
-
-	btrfs_mark_buffer_dirty(path->nodes[0]);
-=======
 	ret = btrfs_insert_empty_item(trans, root, path, &file_key,
 				      ins_size);
 	if (ret < 0)
@@ -1893,7 +1245,6 @@ found:
 	total_bytes += ins_size * fs_info->sectorsize;
 
 	btrfs_mark_buffer_dirty(trans, path->nodes[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (total_bytes < sums->len) {
 		btrfs_release_path(path);
 		cond_resched();
@@ -1902,11 +1253,6 @@ found:
 out:
 	btrfs_free_path(path);
 	return ret;
-<<<<<<< HEAD
-
-fail_unlock:
-	goto out;
-=======
 }
 
 void btrfs_extent_item_to_extent_map(struct btrfs_inode *inode,
@@ -1996,5 +1342,4 @@ u64 btrfs_file_extent_end(const struct btrfs_path *path)
 	}
 
 	return end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

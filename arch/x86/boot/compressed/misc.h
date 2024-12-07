@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BOOT_COMPRESSED_MISC_H
 #define BOOT_COMPRESSED_MISC_H
 
 /*
-<<<<<<< HEAD
- * we have to be careful, because no indirections are allowed here, and
- * paravirt_ops is a kind of one. As it will only run in baremetal anyway,
- * we just keep it from happening
- */
-#undef CONFIG_PARAVIRT
-#ifdef CONFIG_X86_32
-#define _ASM_X86_DESC_H 1
-#endif
-=======
  * Special hack: we have to be careful, because no indirections are allowed here,
  * and paravirt_ops is a kind of one. As it will only run in baremetal anyway,
  * we just keep it from happening. (This list needs to be extended when new
@@ -40,26 +27,10 @@
  */
 #define __pa(x)  ((unsigned long)(x))
 #define __va(x)  ((void *)((unsigned long)(x)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/linkage.h>
 #include <linux/screen_info.h>
 #include <linux/elf.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-#include <asm/page.h>
-#include <asm/boot.h>
-#include <asm/bootparam.h>
-
-#define BOOT_BOOT_H
-#include "../ctype.h"
-
-/* misc.c */
-extern struct boot_params *real_mode;		/* Pointer to real-mode data */
-void __putstr(int error, const char *s);
-#define putstr(__x)  __putstr(0, __x)
-#define puts(__x)  __putstr(0, __x)
-=======
 #include <asm/page.h>
 #include <asm/boot.h>
 #include <asm/bootparam.h>
@@ -117,19 +88,11 @@ static inline void debug_puthex(unsigned long value)
 #define debug_putaddr(x) /* */
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* cmdline.c */
 int cmdline_find_option(const char *option, char *buffer, int bufsize);
 int cmdline_find_option_bool(const char *option);
 
-<<<<<<< HEAD
-/* early_serial_console.c */
-extern int early_serial_base;
-void console_init(void);
-
-#endif
-=======
 struct mem_vector {
 	u64 start;
 	u64 size;
@@ -296,4 +259,3 @@ extern struct efi_unaccepted_memory *unaccepted_table;
 void accept_memory(phys_addr_t start, phys_addr_t end);
 
 #endif /* BOOT_COMPRESSED_MISC_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

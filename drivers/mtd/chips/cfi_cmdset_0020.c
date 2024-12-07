@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common Flash Interface support:
  *   ST Advanced Architecture Command Set (ID 0x0020)
  *
-<<<<<<< HEAD
- * (C) 2000 Red Hat. GPL'd
-=======
  * (C) 2000 Red Hat.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 10/10/2000	Nicolas Pitre <nico@fluxnic.net>
  * 	- completely revamped method functions so they are aware and
@@ -30,10 +23,6 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/byteorder.h>
 
@@ -187,10 +176,6 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 	//printk(KERN_DEBUG "number of CFI chips: %d\n", cfi->numchips);
 
 	if (!mtd) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Failed to allocate memory for MTD device\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(cfi->cmdset_priv);
 		return NULL;
 	}
@@ -200,17 +185,10 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 	mtd->size = devsize * cfi->numchips;
 
 	mtd->numeraseregions = cfi->cfiq->NumEraseRegions * cfi->numchips;
-<<<<<<< HEAD
-	mtd->eraseregions = kmalloc(sizeof(struct mtd_erase_region_info)
-			* mtd->numeraseregions, GFP_KERNEL);
-	if (!mtd->eraseregions) {
-		printk(KERN_ERR "Failed to allocate memory for MTD erase region info\n");
-=======
 	mtd->eraseregions = kmalloc_array(mtd->numeraseregions,
 					  sizeof(struct mtd_erase_region_info),
 					  GFP_KERNEL);
 	if (!mtd->eraseregions) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(cfi->cmdset_priv);
 		kfree(mtd);
 		return NULL;
@@ -230,25 +208,6 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 			mtd->eraseregions[(j*cfi->cfiq->NumEraseRegions)+i].numblocks = ernum;
 		}
 		offset += (ersize * ernum);
-<<<<<<< HEAD
-		}
-
-		if (offset != devsize) {
-			/* Argh */
-			printk(KERN_WARNING "Sum of regions (%lx) != total size of set of interleaved chips (%lx)\n", offset, devsize);
-			kfree(mtd->eraseregions);
-			kfree(cfi->cmdset_priv);
-			kfree(mtd);
-			return NULL;
-		}
-
-		for (i=0; i<mtd->numeraseregions;i++){
-			printk(KERN_DEBUG "%d: offset=0x%llx,size=0x%x,blocks=%d\n",
-			       i, (unsigned long long)mtd->eraseregions[i].offset,
-			       mtd->eraseregions[i].erasesize,
-			       mtd->eraseregions[i].numblocks);
-		}
-=======
 	}
 
 	if (offset != devsize) {
@@ -266,7 +225,6 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 		       mtd->eraseregions[i].erasesize,
 		       mtd->eraseregions[i].numblocks);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Also select the correct geometry setup too */
 	mtd->_erase = cfi_staa_erase_varsize;
@@ -367,11 +325,7 @@ static inline int do_read_onechip(struct map_info *map, struct flchip *chip, lof
 	case FL_JEDEC_QUERY:
 		map_write(map, CMD(0x70), cmd_addr);
 		chip->state = FL_STATUS;
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FL_STATUS:
 		status = map_read(map, cmd_addr);
 		if (map_word_andequal(map, status, status_OK, status_OK)) {
@@ -464,11 +418,7 @@ static int cfi_staa_read (struct mtd_info *mtd, loff_t from, size_t len, size_t 
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int do_write_buffer(struct map_info *map, struct flchip *chip,
-=======
 static int do_write_buffer(struct map_info *map, struct flchip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  unsigned long adr, const u_char *buf, int len)
 {
 	struct cfi_private *cfi = map->fldrv_priv;
@@ -512,11 +462,7 @@ static int do_write_buffer(struct map_info *map, struct flchip *chip,
 #ifdef DEBUG_CFI_FEATURES
 	printk("%s: 1 status[%x]\n", __func__, map_read(map, cmd_adr));
 #endif
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FL_STATUS:
 		status = map_read(map, cmd_adr);
 		if (map_word_andequal(map, status, status_OK, status_OK))
@@ -664,11 +610,7 @@ static int cfi_staa_write_buffers (struct mtd_info *mtd, loff_t to,
 	struct map_info *map = mtd->priv;
 	struct cfi_private *cfi = map->fldrv_priv;
 	int wbufsize = cfi_interleave(cfi) << cfi->cfiq->MaxBufWriteSize;
-<<<<<<< HEAD
-	int ret = 0;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int chipnum;
 	unsigned long ofs;
 
@@ -726,11 +668,7 @@ cfi_staa_writev(struct mtd_info *mtd, const struct kvec *vecs,
 	size_t	 totlen = 0, thislen;
 	int	 ret = 0;
 	size_t	 buflen = 0;
-<<<<<<< HEAD
-	static char *buffer;
-=======
 	char *buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ECCBUF_SIZE) {
 		/* We should fall back to a general writev implementation.
@@ -817,11 +755,7 @@ retry:
 	case FL_READY:
 		map_write(map, CMD(0x70), adr);
 		chip->state = FL_STATUS;
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FL_STATUS:
 		status = map_read(map, adr);
 		if (map_word_andequal(map, status, status_OK, status_OK))
@@ -959,11 +893,7 @@ static int cfi_staa_erase_varsize(struct mtd_info *mtd,
 {	struct map_info *map = mtd->priv;
 	struct cfi_private *cfi = map->fldrv_priv;
 	unsigned long adr, len;
-<<<<<<< HEAD
-	int chipnum, ret = 0;
-=======
 	int chipnum, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, first;
 	struct mtd_erase_region_info *regions = mtd->eraseregions;
 
@@ -1033,20 +963,10 @@ static int cfi_staa_erase_varsize(struct mtd_info *mtd,
 			chipnum++;
 
 			if (chipnum >= cfi->numchips)
-<<<<<<< HEAD
-			break;
-		}
-	}
-
-	instr->state = MTD_ERASE_DONE;
-	mtd_erase_callback(instr);
-
-=======
 				break;
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1076,10 +996,7 @@ static void cfi_staa_sync (struct mtd_info *mtd)
 			 * as the whole point is that nobody can do anything
 			 * with the chip now anyway.
 			 */
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FL_SYNCING:
 			mutex_unlock(&chip->mutex);
 			break;
@@ -1135,11 +1052,7 @@ retry:
 	case FL_READY:
 		map_write(map, CMD(0x70), adr);
 		chip->state = FL_STATUS;
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FL_STATUS:
 		status = map_read(map, adr);
 		if (map_word_andequal(map, status, status_OK, status_OK))
@@ -1216,11 +1129,7 @@ static int cfi_staa_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	struct map_info *map = mtd->priv;
 	struct cfi_private *cfi = map->fldrv_priv;
 	unsigned long adr;
-<<<<<<< HEAD
-	int chipnum, ret = 0;
-=======
 	int chipnum, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_LOCK_BITS
 	int ofs_factor = cfi->interleave * cfi->device_type;
 #endif
@@ -1261,11 +1170,7 @@ static int cfi_staa_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 			chipnum++;
 
 			if (chipnum >= cfi->numchips)
-<<<<<<< HEAD
-			break;
-=======
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -1293,11 +1198,7 @@ retry:
 	case FL_READY:
 		map_write(map, CMD(0x70), adr);
 		chip->state = FL_STATUS;
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FL_STATUS:
 		status = map_read(map, adr);
 		if (map_word_andequal(map, status, status_OK, status_OK))
@@ -1374,11 +1275,7 @@ static int cfi_staa_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	struct map_info *map = mtd->priv;
 	struct cfi_private *cfi = map->fldrv_priv;
 	unsigned long adr;
-<<<<<<< HEAD
-	int chipnum, ret = 0;
-=======
 	int chipnum, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_LOCK_BITS
 	int ofs_factor = cfi->interleave * cfi->device_type;
 #endif
@@ -1436,11 +1333,8 @@ static int cfi_staa_suspend(struct mtd_info *mtd)
 			 * as the whole point is that nobody can do anything
 			 * with the chip now anyway.
 			 */
-<<<<<<< HEAD
-=======
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FL_PM_SUSPENDED:
 			break;
 

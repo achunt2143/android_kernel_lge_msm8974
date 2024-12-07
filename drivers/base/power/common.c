@@ -1,53 +1,30 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/common.c - Common device power management code.
  *
  * Copyright (C) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Renesas Electronics Corp.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
  */
-
-#include <linux/init.h>
-=======
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/pm_clock.h>
-<<<<<<< HEAD
-=======
 #include <linux/acpi.h>
 #include <linux/pm_domain.h>
 
 #include "power.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * dev_pm_get_subsys_data - Create or refcount power.subsys_data for device.
  * @dev: Device to handle.
  *
  * If power.subsys_data is NULL, point it to a new object, otherwise increment
-<<<<<<< HEAD
- * its reference counter.  Return 1 if a new object has been created, otherwise
- * return 0 or error code.
-=======
  * its reference counter.  Return 0 if new object has been created or refcount
  * increased, otherwise negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dev_pm_get_subsys_data(struct device *dev)
 {
 	struct pm_subsys_data *psd;
-<<<<<<< HEAD
-	int ret = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psd = kzalloc(sizeof(*psd), GFP_KERNEL);
 	if (!psd)
@@ -63,10 +40,6 @@ int dev_pm_get_subsys_data(struct device *dev)
 		dev->power.subsys_data = psd;
 		pm_clk_init(dev);
 		psd = NULL;
-<<<<<<< HEAD
-		ret = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(&dev->power.lock);
@@ -74,11 +47,7 @@ int dev_pm_get_subsys_data(struct device *dev)
 	/* kfree() verifies that its argument is nonzero. */
 	kfree(psd);
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dev_pm_get_subsys_data);
 
@@ -87,44 +56,15 @@ EXPORT_SYMBOL_GPL(dev_pm_get_subsys_data);
  * @dev: Device to handle.
  *
  * If the reference counter of power.subsys_data is zero after dropping the
-<<<<<<< HEAD
- * reference, power.subsys_data is removed.  Return 1 if that happens or 0
- * otherwise.
- */
-int dev_pm_put_subsys_data(struct device *dev)
-{
-	struct pm_subsys_data *psd;
-	int ret = 0;
-=======
  * reference, power.subsys_data is removed.
  */
 void dev_pm_put_subsys_data(struct device *dev)
 {
 	struct pm_subsys_data *psd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&dev->power.lock);
 
 	psd = dev_to_psd(dev);
-<<<<<<< HEAD
-	if (!psd) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	if (--psd->refcount == 0) {
-		dev->power.subsys_data = NULL;
-		kfree(psd);
-		ret = 1;
-	}
-
- out:
-	spin_unlock_irq(&dev->power.lock);
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(dev_pm_put_subsys_data);
-=======
 	if (!psd)
 		goto out;
 
@@ -443,4 +383,3 @@ int dev_pm_domain_set_performance_state(struct device *dev, unsigned int state)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(dev_pm_domain_set_performance_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

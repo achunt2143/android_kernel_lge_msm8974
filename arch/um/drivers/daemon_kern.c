@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org) and
  * James Leu (jleu@mindspring.net).
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Copyright (C) 2001 by various other people who didn't put their name here.
-<<<<<<< HEAD
- * Licensed under the GPL.
- */
-
-#include "linux/init.h"
-#include <linux/netdevice.h>
-#include "net_kern.h"
-=======
  */
 
 #include <linux/init.h>
 #include <linux/netdevice.h>
 #include <net_kern.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "daemon.h"
 
 struct daemon_init {
@@ -77,11 +65,7 @@ static int daemon_setup(char *str, char **mac_out, void *data)
 
 	*init = ((struct daemon_init)
 		{ .sock_type 		= "unix",
-<<<<<<< HEAD
-		  .ctl_sock 		= "/tmp/uml.ctl" });
-=======
 		  .ctl_sock 		= CONFIG_UML_NET_DAEMON_DEFAULT_SOCK });
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	remain = split_if_spec(str, mac_out, &init->sock_type, &init->ctl_sock,
 			       NULL);

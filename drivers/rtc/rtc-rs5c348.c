@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A SPI driver for the Ricoh RS5C348 RTC
  *
  * Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The board specific init code should provide characteristics of this
  * device:
  *     Mode 1 (High-Active, Shift-Then-Sample), High Avtive CS
@@ -32,11 +22,6 @@
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#define DRV_VERSION "0.2"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RS5C348_REG_SECS	0
 #define RS5C348_REG_MINS	1
 #define RS5C348_REG_HOURS	2
@@ -74,12 +59,6 @@ static int
 rs5c348_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
-<<<<<<< HEAD
-	struct rs5c348_plat_data *pdata = spi->dev.platform_data;
-	u8 txbuf[5+7], *txp;
-	int ret;
-
-=======
 	struct rs5c348_plat_data *pdata = dev_get_platdata(&spi->dev);
 	u8 txbuf[5+7], *txp;
 	int ret;
@@ -95,7 +74,6 @@ rs5c348_rtc_set_time(struct device *dev, struct rtc_time *tm)
 			return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Transfer 5 bytes before writing SEC.  This gives 31us for carry. */
 	txp = txbuf;
 	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
@@ -128,12 +106,6 @@ static int
 rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
-<<<<<<< HEAD
-	struct rs5c348_plat_data *pdata = spi->dev.platform_data;
-	u8 txbuf[5], rxbuf[7];
-	int ret;
-
-=======
 	struct rs5c348_plat_data *pdata = dev_get_platdata(&spi->dev);
 	u8 txbuf[5], rxbuf[7];
 	int ret;
@@ -148,7 +120,6 @@ rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Transfer 5 byte befores reading SEC.  This gives 31us for carry. */
 	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
 	txbuf[1] = 0;	/* dummy */
@@ -182,14 +153,6 @@ rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_year = bcd2bin(rxbuf[RS5C348_REG_YEAR]) +
 		((rxbuf[RS5C348_REG_MONTH] & RS5C348_BIT_Y2K) ? 100 : 0);
 
-<<<<<<< HEAD
-	if (rtc_valid_tm(tm) < 0) {
-		dev_err(&spi->dev, "retrieved date/time is not valid.\n");
-		rtc_time_to_tm(0, tm);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -198,24 +161,14 @@ static const struct rtc_class_ops rs5c348_rtc_ops = {
 	.set_time	= rs5c348_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static struct spi_driver rs5c348_driver;
-
-static int __devinit rs5c348_probe(struct spi_device *spi)
-=======
 static int rs5c348_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct rtc_device *rtc;
 	struct rs5c348_plat_data *pdata;
 
-<<<<<<< HEAD
-	pdata = kzalloc(sizeof(struct rs5c348_plat_data), GFP_KERNEL);
-=======
 	pdata = devm_kzalloc(&spi->dev, sizeof(struct rs5c348_plat_data),
 				GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata)
 		return -ENOMEM;
 	spi->dev.platform_data = pdata;
@@ -224,68 +177,6 @@ static int rs5c348_probe(struct spi_device *spi)
 	ret = spi_w8r8(spi, RS5C348_CMD_R(RS5C348_REG_SECS));
 	if (ret < 0 || (ret & 0x80)) {
 		dev_err(&spi->dev, "not found.\n");
-<<<<<<< HEAD
-		goto kfree_exit;
-	}
-
-	dev_info(&spi->dev, "chip found, driver version " DRV_VERSION "\n");
-	dev_info(&spi->dev, "spiclk %u KHz.\n",
-		 (spi->max_speed_hz + 500) / 1000);
-
-	/* turn RTC on if it was not on */
-	ret = spi_w8r8(spi, RS5C348_CMD_R(RS5C348_REG_CTL2));
-	if (ret < 0)
-		goto kfree_exit;
-	if (ret & (RS5C348_BIT_XSTP | RS5C348_BIT_VDET)) {
-		u8 buf[2];
-		struct rtc_time tm;
-		if (ret & RS5C348_BIT_VDET)
-			dev_warn(&spi->dev, "voltage-low detected.\n");
-		if (ret & RS5C348_BIT_XSTP)
-			dev_warn(&spi->dev, "oscillator-stop detected.\n");
-		rtc_time_to_tm(0, &tm);	/* 1970/1/1 */
-		ret = rs5c348_rtc_set_time(&spi->dev, &tm);
-		if (ret < 0)
-			goto kfree_exit;
-		buf[0] = RS5C348_CMD_W(RS5C348_REG_CTL2);
-		buf[1] = 0;
-		ret = spi_write_then_read(spi, buf, sizeof(buf), NULL, 0);
-		if (ret < 0)
-			goto kfree_exit;
-	}
-
-	ret = spi_w8r8(spi, RS5C348_CMD_R(RS5C348_REG_CTL1));
-	if (ret < 0)
-		goto kfree_exit;
-	if (ret & RS5C348_BIT_24H)
-		pdata->rtc_24h = 1;
-
-	rtc = rtc_device_register(rs5c348_driver.driver.name, &spi->dev,
-				  &rs5c348_rtc_ops, THIS_MODULE);
-
-	if (IS_ERR(rtc)) {
-		ret = PTR_ERR(rtc);
-		goto kfree_exit;
-	}
-
-	pdata->rtc = rtc;
-
-	return 0;
- kfree_exit:
-	kfree(pdata);
-	return ret;
-}
-
-static int __devexit rs5c348_remove(struct spi_device *spi)
-{
-	struct rs5c348_plat_data *pdata = spi->dev.platform_data;
-	struct rtc_device *rtc = pdata->rtc;
-
-	if (rtc)
-		rtc_device_unregister(rtc);
-	kfree(pdata);
-	return 0;
-=======
 		return ret;
 	}
 
@@ -307,21 +198,13 @@ static int __devexit rs5c348_remove(struct spi_device *spi)
 	rtc->ops = &rs5c348_rtc_ops;
 
 	return devm_rtc_register_device(rtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver rs5c348_driver = {
 	.driver = {
 		.name	= "rtc-rs5c348",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
 	},
 	.probe	= rs5c348_probe,
-	.remove	= __devexit_p(rs5c348_remove),
-=======
-	},
-	.probe	= rs5c348_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(rs5c348_driver);
@@ -329,8 +212,4 @@ module_spi_driver(rs5c348_driver);
 MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
 MODULE_DESCRIPTION("Ricoh RS5C348 RTC driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("spi:rtc-rs5c348");

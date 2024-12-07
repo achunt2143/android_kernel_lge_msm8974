@@ -1,26 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ON pin driver for Dialog DA9052 PMICs
  *
  * Copyright(c) 2012 Dialog Semiconductor Ltd.
  *
  * Author: David Dajun Chen <dchen@diasemi.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
  */
 
-#include <linux/init.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -33,48 +19,22 @@ struct da9052_onkey {
 	struct da9052 *da9052;
 	struct input_dev *input;
 	struct delayed_work work;
-<<<<<<< HEAD
-	unsigned int irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void da9052_onkey_query(struct da9052_onkey *onkey)
 {
-<<<<<<< HEAD
-	int key_stat;
-
-	key_stat = da9052_reg_read(onkey->da9052, DA9052_EVENT_B_REG);
-	if (key_stat < 0) {
-		dev_err(onkey->da9052->dev,
-			"Failed to read onkey event %d\n", key_stat);
-=======
 	int ret;
 
 	ret = da9052_reg_read(onkey->da9052, DA9052_STATUS_A_REG);
 	if (ret < 0) {
 		dev_err(onkey->da9052->dev,
 			"Failed to read onkey event err=%d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * Since interrupt for deassertion of ONKEY pin is not
 		 * generated, onkey event state determines the onkey
 		 * button state.
 		 */
-<<<<<<< HEAD
-		key_stat &= DA9052_EVENTB_ENONKEY;
-		input_report_key(onkey->input, KEY_POWER, key_stat);
-		input_sync(onkey->input);
-	}
-
-	/*
-	 * Interrupt is generated only when the ONKEY pin is asserted.
-	 * Hence the deassertion of the pin is simulated through work queue.
-	 */
-	if (key_stat)
-		schedule_delayed_work(&onkey->work, msecs_to_jiffies(50));
-=======
 		bool pressed = !(ret & DA9052_STATUSA_NONKEY);
 
 		input_report_key(onkey->input, KEY_POWER, pressed);
@@ -89,7 +49,6 @@ static void da9052_onkey_query(struct da9052_onkey *onkey)
 			schedule_delayed_work(&onkey->work,
 						msecs_to_jiffies(50));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void da9052_onkey_work(struct work_struct *work)
@@ -109,19 +68,11 @@ static irqreturn_t da9052_onkey_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit da9052_onkey_probe(struct platform_device *pdev)
-=======
 static int da9052_onkey_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct da9052 *da9052 = dev_get_drvdata(pdev->dev.parent);
 	struct da9052_onkey *onkey;
 	struct input_dev *input_dev;
-<<<<<<< HEAD
-	int irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	if (!da9052) {
@@ -129,16 +80,6 @@ static int da9052_onkey_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	irq = platform_get_irq_byname(pdev, "ONKEY");
-	if (irq < 0) {
-		dev_err(&pdev->dev,
-			"Failed to get an IRQ for input device, %d\n", irq);
-		return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	onkey = kzalloc(sizeof(*onkey), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!onkey || !input_dev) {
@@ -149,10 +90,6 @@ static int da9052_onkey_probe(struct platform_device *pdev)
 
 	onkey->input = input_dev;
 	onkey->da9052 = da9052;
-<<<<<<< HEAD
-	onkey->irq = irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_DELAYED_WORK(&onkey->work, da9052_onkey_work);
 
 	input_dev->name = "da9052-onkey";
@@ -162,21 +99,11 @@ static int da9052_onkey_probe(struct platform_device *pdev)
 	input_dev->evbit[0] = BIT_MASK(EV_KEY);
 	__set_bit(KEY_POWER, input_dev->keybit);
 
-<<<<<<< HEAD
-	error = request_threaded_irq(onkey->irq, NULL, da9052_onkey_irq,
-				     IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-				     "ONKEY", onkey);
-	if (error < 0) {
-		dev_err(onkey->da9052->dev,
-			"Failed to register ONKEY IRQ %d, error = %d\n",
-			onkey->irq, error);
-=======
 	error = da9052_request_irq(onkey->da9052, DA9052_IRQ_NONKEY, "ONKEY",
 			    da9052_onkey_irq, onkey);
 	if (error < 0) {
 		dev_err(onkey->da9052->dev,
 			"Failed to register ONKEY IRQ: %d\n", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_mem;
 	}
 
@@ -191,11 +118,7 @@ static int da9052_onkey_probe(struct platform_device *pdev)
 	return 0;
 
 err_free_irq:
-<<<<<<< HEAD
-	free_irq(onkey->irq, onkey);
-=======
 	da9052_free_irq(onkey->da9052, DA9052_IRQ_NONKEY, onkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_delayed_work_sync(&onkey->work);
 err_free_mem:
 	input_free_device(input_dev);
@@ -204,42 +127,22 @@ err_free_mem:
 	return error;
 }
 
-<<<<<<< HEAD
-static int __devexit da9052_onkey_remove(struct platform_device *pdev)
-{
-	struct da9052_onkey *onkey = platform_get_drvdata(pdev);
-
-	free_irq(onkey->irq, onkey);
-=======
 static void da9052_onkey_remove(struct platform_device *pdev)
 {
 	struct da9052_onkey *onkey = platform_get_drvdata(pdev);
 
 	da9052_free_irq(onkey->da9052, DA9052_IRQ_NONKEY, onkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_delayed_work_sync(&onkey->work);
 
 	input_unregister_device(onkey->input);
 	kfree(onkey);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver da9052_onkey_driver = {
 	.probe	= da9052_onkey_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(da9052_onkey_remove),
-	.driver = {
-		.name	= "da9052-onkey",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new = da9052_onkey_remove,
 	.driver = {
 		.name	= "da9052-onkey",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(da9052_onkey_driver);

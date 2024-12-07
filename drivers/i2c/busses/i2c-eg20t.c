@@ -1,33 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/fs.h>
@@ -170,11 +148,7 @@ struct i2c_algo_pch_data {
 
 /**
  * struct adapter_info - This structure holds the adapter information for the
-<<<<<<< HEAD
-			 PCH i2c controller
-=======
  *			 PCH i2c controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pch_data:		stores a list of i2c_algo_pch_data
  * @pch_i2c_suspended:	specifies whether the system is suspended or not
  *			perhaps with more lines and words.
@@ -195,29 +169,18 @@ static wait_queue_head_t pch_event;
 static DEFINE_MUTEX(pch_mutex);
 
 /* Definition for ML7213 by LAPIS Semiconductor */
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_ROHM		0x10DB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_ML7213_I2C	0x802D
 #define PCI_DEVICE_ID_ML7223_I2C	0x8010
 #define PCI_DEVICE_ID_ML7831_I2C	0x8817
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(pch_pcidev_id) = {
-=======
 static const struct pci_device_id pch_pcidev_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_PCH_I2C),   1, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_I2C), 2, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_I2C), 1, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_I2C), 1, },
 	{0,}
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(pci, pch_pcidev_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t pch_i2c_handler(int irq, void *pData);
 
@@ -287,14 +250,6 @@ static void pch_i2c_init(struct i2c_algo_pch_data *adap)
 	init_waitqueue_head(&pch_event);
 }
 
-<<<<<<< HEAD
-static inline bool ktime_lt(const ktime_t cmp1, const ktime_t cmp2)
-{
-	return cmp1.tv64 < cmp2.tv64;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pch_i2c_wait_for_bus_idle() - check the status of bus.
  * @adap:	Pointer to struct i2c_algo_pch_data.
@@ -344,54 +299,6 @@ static void pch_i2c_start(struct i2c_algo_pch_data *adap)
 }
 
 /**
-<<<<<<< HEAD
- * pch_i2c_wait_for_xfer_complete() - initiates a wait for the tx complete event
- * @adap:	Pointer to struct i2c_algo_pch_data.
- */
-static s32 pch_i2c_wait_for_xfer_complete(struct i2c_algo_pch_data *adap)
-{
-	long ret;
-	ret = wait_event_timeout(pch_event,
-			(adap->pch_event_flag != 0), msecs_to_jiffies(1000));
-
-	if (ret == 0) {
-		pch_err(adap, "timeout: %x\n", adap->pch_event_flag);
-		adap->pch_event_flag = 0;
-		return -ETIMEDOUT;
-	}
-
-	if (adap->pch_event_flag & I2C_ERROR_MASK) {
-		pch_err(adap, "error bits set: %x\n", adap->pch_event_flag);
-		adap->pch_event_flag = 0;
-		return -EIO;
-	}
-
-	adap->pch_event_flag = 0;
-
-	return 0;
-}
-
-/**
- * pch_i2c_getack() - to confirm ACK/NACK
- * @adap:	Pointer to struct i2c_algo_pch_data.
- */
-static s32 pch_i2c_getack(struct i2c_algo_pch_data *adap)
-{
-	u32 reg_val;
-	void __iomem *p = adap->pch_base_address;
-	reg_val = ioread32(p + PCH_I2CSR) & PCH_GETACK;
-
-	if (reg_val != 0) {
-		pch_err(adap, "return%d\n", -EPROTO);
-		return -EPROTO;
-	}
-
-	return 0;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pch_i2c_stop() - generate stop condition in normal mode.
  * @adap:	Pointer to struct i2c_algo_pch_data.
  */
@@ -403,8 +310,6 @@ static void pch_i2c_stop(struct i2c_algo_pch_data *adap)
 	pch_clrbit(adap->pch_base_address, PCH_I2CCTL, PCH_START);
 }
 
-<<<<<<< HEAD
-=======
 static int pch_i2c_wait_for_check_xfer(struct i2c_algo_pch_data *adap)
 {
 	long ret;
@@ -439,7 +344,6 @@ static int pch_i2c_wait_for_check_xfer(struct i2c_algo_pch_data *adap)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pch_i2c_repstart() - generate repeated start condition in normal mode
  * @adap:	Pointer to struct i2c_algo_pch_data.
@@ -454,10 +358,7 @@ static void pch_i2c_repstart(struct i2c_algo_pch_data *adap)
 /**
  * pch_i2c_writebytes() - write data to I2C bus in normal mode
  * @i2c_adap:	Pointer to the struct i2c_adapter.
-<<<<<<< HEAD
-=======
  * @msgs:	Pointer to the i2c message structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @last:	specifies whether last message or not.
  *		In the case of compound mode it will be 1 for last message,
  *		otherwise 0.
@@ -498,32 +399,6 @@ static s32 pch_i2c_writebytes(struct i2c_adapter *i2c_adap,
 		if (first)
 			pch_i2c_start(adap);
 
-<<<<<<< HEAD
-		rtn = pch_i2c_wait_for_xfer_complete(adap);
-		if (rtn == 0) {
-			if (pch_i2c_getack(adap)) {
-				pch_dbg(adap, "Receive NACK for slave address"
-					"setting\n");
-				return -EIO;
-			}
-			addr_8_lsb = (addr & I2C_ADDR_MSK);
-			iowrite32(addr_8_lsb, p + PCH_I2CDR);
-		} else if (rtn == -EIO) { /* Arbitration Lost */
-			pch_err(adap, "Lost Arbitration\n");
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMAL_BIT);
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMIF_BIT);
-			pch_i2c_init(adap);
-			return -EAGAIN;
-		} else { /* wait-event timeout */
-			pch_i2c_stop(adap);
-			return -ETIME;
-		}
-	} else {
-		/* set 7 bit slave address and R/W bit as 0 */
-		iowrite32(addr << 1, p + PCH_I2CDR);
-=======
 		rtn = pch_i2c_wait_for_check_xfer(adap);
 		if (rtn)
 			return rtn;
@@ -533,64 +408,25 @@ static s32 pch_i2c_writebytes(struct i2c_adapter *i2c_adap,
 	} else {
 		/* set 7 bit slave address and R/W bit as 0 */
 		iowrite32(i2c_8bit_addr_from_msg(msgs), p + PCH_I2CDR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (first)
 			pch_i2c_start(adap);
 	}
 
-<<<<<<< HEAD
-	rtn = pch_i2c_wait_for_xfer_complete(adap);
-	if (rtn == 0) {
-		if (pch_i2c_getack(adap)) {
-			pch_dbg(adap, "Receive NACK for slave address"
-				"setting\n");
-			return -EIO;
-		}
-	} else if (rtn == -EIO) { /* Arbitration Lost */
-		pch_err(adap, "Lost Arbitration\n");
-		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMAL_BIT);
-		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMIF_BIT);
-		pch_i2c_init(adap);
-		return -EAGAIN;
-	} else { /* wait-event timeout */
-		pch_i2c_stop(adap);
-		return -ETIME;
-	}
-=======
 	rtn = pch_i2c_wait_for_check_xfer(adap);
 	if (rtn)
 		return rtn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (wrcount = 0; wrcount < length; ++wrcount) {
 		/* write buffer value to I2C data register */
 		iowrite32(buf[wrcount], p + PCH_I2CDR);
 		pch_dbg(adap, "writing %x to Data register\n", buf[wrcount]);
 
-<<<<<<< HEAD
-		rtn = pch_i2c_wait_for_xfer_complete(adap);
-		if (rtn == 0) {
-			if (pch_i2c_getack(adap)) {
-				pch_dbg(adap, "Receive NACK for slave address"
-					"setting\n");
-				return -EIO;
-			}
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMCF_BIT);
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMIF_BIT);
-		} else { /* wait-event timeout */
-			pch_i2c_stop(adap);
-			return -ETIME;
-		}
-=======
 		rtn = pch_i2c_wait_for_check_xfer(adap);
 		if (rtn)
 			return rtn;
 
 		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMCF_BIT);
 		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMIF_BIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check if this is the last message */
@@ -678,56 +514,6 @@ static s32 pch_i2c_readbytes(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
 		if (first)
 			pch_i2c_start(adap);
 
-<<<<<<< HEAD
-		rtn = pch_i2c_wait_for_xfer_complete(adap);
-		if (rtn == 0) {
-			if (pch_i2c_getack(adap)) {
-				pch_dbg(adap, "Receive NACK for slave address"
-					"setting\n");
-				return -EIO;
-			}
-			addr_8_lsb = (addr & I2C_ADDR_MSK);
-			iowrite32(addr_8_lsb, p + PCH_I2CDR);
-		} else if (rtn == -EIO) { /* Arbitration Lost */
-			pch_err(adap, "Lost Arbitration\n");
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMAL_BIT);
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMIF_BIT);
-			pch_i2c_init(adap);
-			return -EAGAIN;
-		} else { /* wait-event timeout */
-			pch_i2c_stop(adap);
-			return -ETIME;
-		}
-		pch_i2c_restart(adap);
-		rtn = pch_i2c_wait_for_xfer_complete(adap);
-		if (rtn == 0) {
-			if (pch_i2c_getack(adap)) {
-				pch_dbg(adap, "Receive NACK for slave address"
-					"setting\n");
-				return -EIO;
-			}
-			addr_2_msb |= I2C_RD;
-			iowrite32(addr_2_msb | TEN_BIT_ADDR_MASK,
-				  p + PCH_I2CDR);
-		} else if (rtn == -EIO) { /* Arbitration Lost */
-			pch_err(adap, "Lost Arbitration\n");
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMAL_BIT);
-			pch_clrbit(adap->pch_base_address, PCH_I2CSR,
-				   I2CMIF_BIT);
-			pch_i2c_init(adap);
-			return -EAGAIN;
-		} else { /* wait-event timeout */
-			pch_i2c_stop(adap);
-			return -ETIME;
-		}
-	} else {
-		/* 7 address bits + R/W bit */
-		addr = (((addr) << 1) | (I2C_RD));
-		iowrite32(addr, p + PCH_I2CDR);
-=======
 		rtn = pch_i2c_wait_for_check_xfer(adap);
 		if (rtn)
 			return rtn;
@@ -746,36 +532,15 @@ static s32 pch_i2c_readbytes(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
 	} else {
 		/* 7 address bits + R/W bit */
 		iowrite32(i2c_8bit_addr_from_msg(msgs), p + PCH_I2CDR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check if it is the first message */
 	if (first)
 		pch_i2c_start(adap);
 
-<<<<<<< HEAD
-	rtn = pch_i2c_wait_for_xfer_complete(adap);
-	if (rtn == 0) {
-		if (pch_i2c_getack(adap)) {
-			pch_dbg(adap, "Receive NACK for slave address"
-				"setting\n");
-			return -EIO;
-		}
-	} else if (rtn == -EIO) { /* Arbitration Lost */
-		pch_err(adap, "Lost Arbitration\n");
-		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMAL_BIT);
-		pch_clrbit(adap->pch_base_address, PCH_I2CSR, I2CMIF_BIT);
-		pch_i2c_init(adap);
-		return -EAGAIN;
-	} else { /* wait-event timeout */
-		pch_i2c_stop(adap);
-		return -ETIME;
-	}
-=======
 	rtn = pch_i2c_wait_for_check_xfer(adap);
 	if (rtn)
 		return rtn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (length == 0) {
 		pch_i2c_stop(adap);
@@ -794,24 +559,9 @@ static s32 pch_i2c_readbytes(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
 			if (loop != 1)
 				read_index++;
 
-<<<<<<< HEAD
-			rtn = pch_i2c_wait_for_xfer_complete(adap);
-			if (rtn == 0) {
-				if (pch_i2c_getack(adap)) {
-					pch_dbg(adap, "Receive NACK for slave"
-						"address setting\n");
-					return -EIO;
-				}
-			} else { /* wait-event timeout */
-				pch_i2c_stop(adap);
-				return -ETIME;
-			}
-
-=======
 			rtn = pch_i2c_wait_for_check_xfer(adap);
 			if (rtn)
 				return rtn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}	/* end for */
 
 		pch_i2c_sendnack(adap);
@@ -821,23 +571,9 @@ static s32 pch_i2c_readbytes(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
 		if (length != 1)
 			read_index++;
 
-<<<<<<< HEAD
-		rtn = pch_i2c_wait_for_xfer_complete(adap);
-		if (rtn == 0) {
-			if (pch_i2c_getack(adap)) {
-				pch_dbg(adap, "Receive NACK for slave"
-					"address setting\n");
-				return -EIO;
-			}
-		} else { /* wait-event timeout */
-			pch_i2c_stop(adap);
-			return -ETIME;
-		}
-=======
 		rtn = pch_i2c_wait_for_check_xfer(adap);
 		if (rtn)
 			return rtn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (last)
 			pch_i2c_stop(adap);
@@ -927,11 +663,7 @@ static s32 pch_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	ret = mutex_lock_interruptible(&pch_mutex);
 	if (ret)
-<<<<<<< HEAD
-		return -ERESTARTSYS;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adap->p_adapter_info->pch_i2c_suspended) {
 		mutex_unlock(&pch_mutex);
@@ -975,11 +707,7 @@ static u32 pch_i2c_func(struct i2c_adapter *adap)
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL | I2C_FUNC_10BIT_ADDR;
 }
 
-<<<<<<< HEAD
-static struct i2c_algorithm pch_algorithm = {
-=======
 static const struct i2c_algorithm pch_algorithm = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.master_xfer = pch_i2c_xfer,
 	.functionality = pch_i2c_func
 };
@@ -999,11 +727,7 @@ static void pch_i2c_disbl_int(struct i2c_algo_pch_data *adap)
 	iowrite32(BUFFER_MODE_INTR_DISBL, p + PCH_I2CBUFMSK);
 }
 
-<<<<<<< HEAD
-static int __devinit pch_i2c_probe(struct pci_dev *pdev,
-=======
 static int pch_i2c_probe(struct pci_dev *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const struct pci_device_id *id)
 {
 	void __iomem *base_addr;
@@ -1015,15 +739,8 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 	pch_pci_dbg(pdev, "Entered.\n");
 
 	adap_info = kzalloc((sizeof(struct adapter_info)), GFP_KERNEL);
-<<<<<<< HEAD
-	if (adap_info == NULL) {
-		pch_pci_err(pdev, "Memory allocation FAILED\n");
-		return -ENOMEM;
-	}
-=======
 	if (adap_info == NULL)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = pci_enable_device(pdev);
 	if (ret) {
@@ -1048,8 +765,6 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 	/* Set the number of I2C channel instance */
 	adap_info->ch_num = id->driver_data;
 
-<<<<<<< HEAD
-=======
 	for (i = 0; i < adap_info->ch_num; i++) {
 		pch_adap = &adap_info->pch_data[i].pch_adapter;
 		adap_info->pch_i2c_suspended = false;
@@ -1069,7 +784,6 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 		pch_adap->dev.parent = &pdev->dev;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = request_irq(pdev->irq, pch_i2c_handler, IRQF_SHARED,
 		  KBUILD_MODNAME, adap_info);
 	if (ret) {
@@ -1079,23 +793,6 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 
 	for (i = 0; i < adap_info->ch_num; i++) {
 		pch_adap = &adap_info->pch_data[i].pch_adapter;
-<<<<<<< HEAD
-		adap_info->pch_i2c_suspended = false;
-
-		adap_info->pch_data[i].p_adapter_info = adap_info;
-
-		pch_adap->owner = THIS_MODULE;
-		pch_adap->class = I2C_CLASS_HWMON;
-		strcpy(pch_adap->name, KBUILD_MODNAME);
-		pch_adap->algo = &pch_algorithm;
-		pch_adap->algo_data = &adap_info->pch_data[i];
-
-		/* base_addr + offset; */
-		adap_info->pch_data[i].pch_base_address = base_addr + 0x100 * i;
-
-		pch_adap->dev.parent = &pdev->dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pch_i2c_init(&adap_info->pch_data[i]);
 
@@ -1126,11 +823,7 @@ err_pci_enable:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit pch_i2c_remove(struct pci_dev *pdev)
-=======
 static void pch_i2c_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct adapter_info *adap_info = pci_get_drvdata(pdev);
@@ -1146,13 +839,7 @@ static void pch_i2c_remove(struct pci_dev *pdev)
 		pci_iounmap(pdev, adap_info->pch_data[0].pch_base_address);
 
 	for (i = 0; i < adap_info->ch_num; i++)
-<<<<<<< HEAD
-		adap_info->pch_data[i].pch_base_address = 0;
-
-	pci_set_drvdata(pdev, NULL);
-=======
 		adap_info->pch_data[i].pch_base_address = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_release_regions(pdev);
 
@@ -1160,18 +847,10 @@ static void pch_i2c_remove(struct pci_dev *pdev)
 	kfree(adap_info);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int pch_i2c_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	int ret;
-	int i;
-=======
 static int __maybe_unused pch_i2c_suspend(struct device *dev)
 {
 	int i;
 	struct pci_dev *pdev = to_pci_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adapter_info *adap_info = pci_get_drvdata(pdev);
 	void __iomem *p = adap_info->pch_data[0].pch_base_address;
 
@@ -1193,36 +872,6 @@ static int __maybe_unused pch_i2c_suspend(struct device *dev)
 		ioread32(p + PCH_I2CSR), ioread32(p + PCH_I2CBUFSTA),
 		ioread32(p + PCH_I2CESRSTA));
 
-<<<<<<< HEAD
-	ret = pci_save_state(pdev);
-
-	if (ret) {
-		pch_pci_err(pdev, "pci_save_state\n");
-		return ret;
-	}
-
-	pci_enable_wake(pdev, PCI_D3hot, 0);
-	pci_disable_device(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-
-	return 0;
-}
-
-static int pch_i2c_resume(struct pci_dev *pdev)
-{
-	int i;
-	struct adapter_info *adap_info = pci_get_drvdata(pdev);
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-
-	if (pci_enable_device(pdev) < 0) {
-		pch_pci_err(pdev, "pch_i2c_resume:pci_enable_device FAILED\n");
-		return -EIO;
-	}
-
-	pci_enable_wake(pdev, PCI_D3hot, 0);
-=======
 	return 0;
 }
 
@@ -1230,7 +879,6 @@ static int __maybe_unused pch_i2c_resume(struct device *dev)
 {
 	int i;
 	struct adapter_info *adap_info = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < adap_info->ch_num; i++)
 		pch_i2c_init(&adap_info->pch_data[i]);
@@ -1239,44 +887,18 @@ static int __maybe_unused pch_i2c_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define pch_i2c_suspend NULL
-#define pch_i2c_resume NULL
-#endif
-=======
 
 static SIMPLE_DEV_PM_OPS(pch_i2c_pm_ops, pch_i2c_suspend, pch_i2c_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver pch_pcidriver = {
 	.name = KBUILD_MODNAME,
 	.id_table = pch_pcidev_id,
 	.probe = pch_i2c_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(pch_i2c_remove),
-	.suspend = pch_i2c_suspend,
-	.resume = pch_i2c_resume
-};
-
-static int __init pch_pci_init(void)
-{
-	return pci_register_driver(&pch_pcidriver);
-}
-module_init(pch_pci_init);
-
-static void __exit pch_pci_exit(void)
-{
-	pci_unregister_driver(&pch_pcidriver);
-}
-module_exit(pch_pci_exit);
-=======
 	.remove = pch_i2c_remove,
 	.driver.pm = &pch_i2c_pm_ops,
 };
 
 module_pci_driver(pch_pcidriver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Intel EG20T PCH/LAPIS Semico ML7213/ML7223/ML7831 IOH I2C");
 MODULE_LICENSE("GPL");

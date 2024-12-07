@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/thread_info.h>
@@ -52,13 +49,10 @@ int save_fpu_state(struct pt_regs *regs, __siginfo_fpu_t __user *fpu)
 int restore_fpu_state(struct pt_regs *regs, __siginfo_fpu_t __user *fpu)
 {
 	int err;
-<<<<<<< HEAD
-=======
 
 	if (((unsigned long) fpu) & 3)
 		return -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	if (test_tsk_thread_flag(current, TIF_USEDFPU))
 		regs->psr &= ~PSR_EF;
@@ -71,11 +65,7 @@ int restore_fpu_state(struct pt_regs *regs, __siginfo_fpu_t __user *fpu)
 	set_used_math();
 	clear_tsk_thread_flag(current, TIF_USEDFPU);
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, fpu, sizeof(*fpu)))
-=======
 	if (!access_ok(fpu, sizeof(*fpu)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	err = __copy_from_user(&current->thread.float_regs[0], &fpu->si_float_regs[0],
@@ -112,14 +102,10 @@ int restore_rwin_state(__siginfo_rwin_t __user *rp)
 	struct thread_info *t = current_thread_info();
 	int i, wsaved, err;
 
-<<<<<<< HEAD
-	__get_user(wsaved, &rp->wsaved);
-=======
 	if (((unsigned long) rp) & 3)
 		return -EFAULT;
 
 	get_user(wsaved, &rp->wsaved);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wsaved > NSWINS)
 		return -EFAULT;
 

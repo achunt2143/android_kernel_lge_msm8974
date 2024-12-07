@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- *	Copyright (C) 2004, 2006  MIPS Technologies, Inc.  All rights reserved.
- *	    Author:	Maciej W. Rozycki <macro@mips.com>
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- */
-
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *	Copyright (C) 2004, 2006  MIPS Technologies, Inc.  All rights reserved.
@@ -19,18 +6,13 @@
  */
 
 #include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 
 /*
  * Set the BCM1250, etc. PCI host bridge's TRDY timeout
  * to the finite max.
  */
-<<<<<<< HEAD
-static void __init quirk_sb1250_pci(struct pci_dev *dev)
-=======
 static void quirk_sb1250_pci(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pci_write_config_byte(dev, 0x40, 0xff);
 }
@@ -38,13 +20,6 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_PCI,
 			quirk_sb1250_pci);
 
 /*
-<<<<<<< HEAD
- * The BCM1250, etc. PCI/HT bridge reports as a host bridge.
- */
-static void __init quirk_sb1250_ht(struct pci_dev *dev)
-{
-	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-=======
  * The BCM1250, etc. PCI host bridge does not support DAC on its 32-bit
  * bus, so we set the bus's DMA limit accordingly.  However the HT link
  * down the artificial PCI-HT bridge supports 40-bit addressing and the
@@ -101,7 +76,6 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_PCI,
 static void quirk_sb1250_ht(struct pci_dev *dev)
 {
 	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_HT,
 			quirk_sb1250_ht);
@@ -109,11 +83,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_HT,
 /*
  * Set the SP1011 HT/PCI bridge's TRDY timeout to the finite max.
  */
-<<<<<<< HEAD
-static void __init quirk_sp1011(struct pci_dev *dev)
-=======
 static void quirk_sp1011(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pci_write_config_byte(dev, 0x64, 0xff);
 }

@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -49,10 +30,6 @@
 
 #define RTL8712_IOBASE_FF	0x10300000 /*IOBASE_FIFO 0x1031000~0x103AFFFF*/
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*IOREG Offset for 8712*/
 #define RTL8712_SYSCFG_		RTL8712_IOBASE_IOREG
 #define RTL8712_CMDCTRL_	(RTL8712_IOBASE_IOREG + 0x40)
@@ -69,10 +46,6 @@
 #define RTL8712_DEBUGCTRL_	(RTL8712_IOBASE_IOREG + 0x310)
 #define RTL8712_OFFLOAD_	(RTL8712_IOBASE_IOREG + 0x2D0)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*FIFO for 8712*/
 #define RTL8712_DMA_BCNQ	(RTL8712_IOBASE_FF + 0x10000)
 #define RTL8712_DMA_MGTQ	(RTL8712_IOBASE_FF + 0x20000)
@@ -85,10 +58,6 @@
 #define RTL8712_DMA_H2CCMD	(RTL8712_IOBASE_FF + 0x90000)
 #define RTL8712_DMA_C2HCMD	(RTL8712_IOBASE_FF + 0xA0000)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*------------------------------*/
 
 /*BIT 16 15*/
@@ -99,12 +68,8 @@
 
 #define CMD_ADDR_MAPPING_SHIFT		2	/*SDIO CMD ADDR MAPPING,
 						 *shift 2 bit for match
-<<<<<<< HEAD
-						 * offset[14:2]*/
-=======
 						 * offset[14:2]
 						 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*Offset for SDIO LOCAL*/
 #define	OFFSET_SDIO_LOCAL				0x0FFF

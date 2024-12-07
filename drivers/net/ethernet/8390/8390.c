@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 8390 core for usual drivers */
 
 static const char version[] =
@@ -39,15 +36,9 @@ void ei_set_multicast_list(struct net_device *dev)
 }
 EXPORT_SYMBOL(ei_set_multicast_list);
 
-<<<<<<< HEAD
-void ei_tx_timeout(struct net_device *dev)
-{
-	__ei_tx_timeout(dev);
-=======
 void ei_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	__ei_tx_timeout(dev, txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ei_tx_timeout);
 
@@ -74,10 +65,6 @@ const struct net_device_ops ei_netdev_ops = {
 	.ndo_set_rx_mode	= ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= eth_mac_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= ei_poll,
 #endif
@@ -113,8 +100,5 @@ static void __exit ns8390_module_exit(void)
 module_init(ns8390_module_init);
 module_exit(ns8390_module_exit);
 #endif /* MODULE */
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("National Semiconductor 8390 core driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

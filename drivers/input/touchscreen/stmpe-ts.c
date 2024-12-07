@@ -1,40 +1,20 @@
-<<<<<<< HEAD
-/* STMicroelectronics STMPE811 Touchscreen Driver
- *
- * (C) 2010 Luotao Fu <l.fu@pengutronix.de>
- * All rights reserved.
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * STMicroelectronics STMPE811 Touchscreen Driver
  *
  * (C) 2010 Luotao Fu <l.fu@pengutronix.de>
  * All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/device.h>
-#include <linux/platform_device.h>
-#include <linux/input.h>
-=======
 #include <linux/device.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/input/touchscreen.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -46,11 +26,6 @@
  * with touchscreen controller
  */
 #define STMPE_REG_INT_STA		0x0B
-<<<<<<< HEAD
-#define STMPE_REG_ADC_CTRL1		0x20
-#define STMPE_REG_ADC_CTRL2		0x21
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define STMPE_REG_TSC_CTRL		0x40
 #define STMPE_REG_TSC_CFG		0x41
 #define STMPE_REG_FIFO_TH		0x4A
@@ -68,22 +43,6 @@
 
 #define STMPE_IRQ_TOUCH_DET		0
 
-<<<<<<< HEAD
-#define SAMPLE_TIME(x)			((x & 0xf) << 4)
-#define MOD_12B(x)			((x & 0x1) << 3)
-#define REF_SEL(x)			((x & 0x1) << 1)
-#define ADC_FREQ(x)			(x & 0x3)
-#define AVE_CTRL(x)			((x & 0x3) << 6)
-#define DET_DELAY(x)			((x & 0x7) << 3)
-#define SETTLING(x)			(x & 0x7)
-#define FRACTION_Z(x)			(x & 0x7)
-#define I_DRIVE(x)			(x & 0x1)
-#define OP_MODE(x)			((x & 0x7) << 1)
-
-#define STMPE_TS_NAME			"stmpe-ts"
-#define XY_MASK				0xfff
-
-=======
 #define STMPE_TS_NAME			"stmpe-ts"
 #define XY_MASK				0xfff
 
@@ -110,20 +69,12 @@
  * @i_drive: current limit value of the touchscreen drivers
  * (0 -> 20 mA typical 35 mA max, 1 -> 50 mA typical 80 mA max)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct stmpe_touch {
 	struct stmpe *stmpe;
 	struct input_dev *idev;
 	struct delayed_work work;
 	struct device *dev;
-<<<<<<< HEAD
-	u8 sample_time;
-	u8 mod_12b;
-	u8 ref_sel;
-	u8 adc_freq;
-=======
 	struct touchscreen_properties prop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ave_ctrl;
 	u8 touch_det_delay;
 	u8 settling;
@@ -171,10 +122,7 @@ static void stmpe_work(struct work_struct *work)
 	__stmpe_reset_fifo(ts->stmpe);
 
 	input_report_abs(ts->idev, ABS_PRESSURE, 0);
-<<<<<<< HEAD
-=======
 	input_report_key(ts->idev, BTN_TOUCH, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_sync(ts->idev);
 }
 
@@ -205,15 +153,9 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	y = ((data_set[1] & 0xf) << 8) | data_set[2];
 	z = data_set[3];
 
-<<<<<<< HEAD
-	input_report_abs(ts->idev, ABS_X, x);
-	input_report_abs(ts->idev, ABS_Y, y);
-	input_report_abs(ts->idev, ABS_PRESSURE, z);
-=======
 	touchscreen_report_pos(ts->idev, &ts->prop, x, y, false);
 	input_report_abs(ts->idev, ABS_PRESSURE, z);
 	input_report_key(ts->idev, BTN_TOUCH, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_sync(ts->idev);
 
        /* flush the FIFO after we have read out our values. */
@@ -224,26 +166,15 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 			STMPE_TSC_CTRL_TSC_EN, STMPE_TSC_CTRL_TSC_EN);
 
 	/* start polling for touch_det to detect release */
-<<<<<<< HEAD
-	schedule_delayed_work(&ts->work, HZ / 50);
-=======
 	schedule_delayed_work(&ts->work, msecs_to_jiffies(50));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit stmpe_init_hw(struct stmpe_touch *ts)
-{
-	int ret;
-	u8 adc_ctrl1, adc_ctrl1_mask, tsc_cfg, tsc_cfg_mask;
-=======
 static int stmpe_init_hw(struct stmpe_touch *ts)
 {
 	int ret;
 	u8 tsc_cfg, tsc_cfg_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct stmpe *stmpe = ts->stmpe;
 	struct device *dev = ts->dev;
 
@@ -253,29 +184,6 @@ static int stmpe_init_hw(struct stmpe_touch *ts)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	adc_ctrl1 = SAMPLE_TIME(ts->sample_time) | MOD_12B(ts->mod_12b) |
-		REF_SEL(ts->ref_sel);
-	adc_ctrl1_mask = SAMPLE_TIME(0xff) | MOD_12B(0xff) | REF_SEL(0xff);
-
-	ret = stmpe_set_bits(stmpe, STMPE_REG_ADC_CTRL1,
-			adc_ctrl1_mask, adc_ctrl1);
-	if (ret) {
-		dev_err(dev, "Could not setup ADC\n");
-		return ret;
-	}
-
-	ret = stmpe_set_bits(stmpe, STMPE_REG_ADC_CTRL2,
-			ADC_FREQ(0xff), ADC_FREQ(ts->adc_freq));
-	if (ret) {
-		dev_err(dev, "Could not setup ADC\n");
-		return ret;
-	}
-
-	tsc_cfg = AVE_CTRL(ts->ave_ctrl) | DET_DELAY(ts->touch_det_delay) |
-			SETTLING(ts->settling);
-	tsc_cfg_mask = AVE_CTRL(0xff) | DET_DELAY(0xff) | SETTLING(0xff);
-=======
 	ret = stmpe811_adc_common_init(stmpe);
 	if (ret) {
 		stmpe_disable(stmpe, STMPE_BLOCK_TOUCHSCREEN | STMPE_BLOCK_ADC);
@@ -287,7 +195,6 @@ static int stmpe_init_hw(struct stmpe_touch *ts)
 		  STMPE_SETTLING(ts->settling);
 	tsc_cfg_mask = STMPE_AVE_CTRL(0xff) | STMPE_DET_DELAY(0xff) |
 		       STMPE_SETTLING(0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = stmpe_set_bits(stmpe, STMPE_REG_TSC_CFG, tsc_cfg_mask, tsc_cfg);
 	if (ret) {
@@ -296,22 +203,14 @@ static int stmpe_init_hw(struct stmpe_touch *ts)
 	}
 
 	ret = stmpe_set_bits(stmpe, STMPE_REG_TSC_FRACTION_Z,
-<<<<<<< HEAD
-			FRACTION_Z(0xff), FRACTION_Z(ts->fraction_z));
-=======
 			STMPE_FRACTION_Z(0xff), STMPE_FRACTION_Z(ts->fraction_z));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "Could not config touch\n");
 		return ret;
 	}
 
 	ret = stmpe_set_bits(stmpe, STMPE_REG_TSC_I_DRIVE,
-<<<<<<< HEAD
-			I_DRIVE(0xff), I_DRIVE(ts->i_drive));
-=======
 			STMPE_I_DRIVE(0xff), STMPE_I_DRIVE(ts->i_drive));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "Could not config touch\n");
 		return ret;
@@ -325,11 +224,7 @@ static int stmpe_init_hw(struct stmpe_touch *ts)
 	}
 
 	ret = stmpe_set_bits(stmpe, STMPE_REG_TSC_CTRL,
-<<<<<<< HEAD
-			OP_MODE(0xff), OP_MODE(OP_MOD_XYZ));
-=======
 			STMPE_OP_MODE(0xff), STMPE_OP_MODE(OP_MOD_XYZ));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "Could not set mode\n");
 		return ret;
@@ -361,16 +256,6 @@ static void stmpe_ts_close(struct input_dev *dev)
 			STMPE_TSC_CTRL_TSC_EN, 0);
 }
 
-<<<<<<< HEAD
-static int __devinit stmpe_input_probe(struct platform_device *pdev)
-{
-	struct stmpe *stmpe = dev_get_drvdata(pdev->dev.parent);
-	struct stmpe_platform_data *pdata = stmpe->pdata;
-	struct stmpe_touch *ts;
-	struct input_dev *idev;
-	struct stmpe_ts_platform_data *ts_pdata = NULL;
-	int ret;
-=======
 static void stmpe_ts_get_platform_info(struct platform_device *pdev,
 					struct stmpe_touch *ts)
 {
@@ -405,26 +290,12 @@ static int stmpe_input_probe(struct platform_device *pdev)
 	struct stmpe_touch *ts;
 	struct input_dev *idev;
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ts_irq;
 
 	ts_irq = platform_get_irq_byname(pdev, "FIFO_TH");
 	if (ts_irq < 0)
 		return ts_irq;
 
-<<<<<<< HEAD
-	ts = kzalloc(sizeof(*ts), GFP_KERNEL);
-	if (!ts) {
-		ret = -ENOMEM;
-		goto err_out;
-	}
-
-	idev = input_allocate_device();
-	if (!idev) {
-		ret = -ENOMEM;
-		goto err_free_ts;
-	}
-=======
 	ts = devm_kzalloc(&pdev->dev, sizeof(*ts), GFP_KERNEL);
 	if (!ts)
 		return -ENOMEM;
@@ -432,47 +303,12 @@ static int stmpe_input_probe(struct platform_device *pdev)
 	idev = devm_input_allocate_device(&pdev->dev);
 	if (!idev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, ts);
 	ts->stmpe = stmpe;
 	ts->idev = idev;
 	ts->dev = &pdev->dev;
 
-<<<<<<< HEAD
-	if (pdata)
-		ts_pdata = pdata->ts;
-
-	if (ts_pdata) {
-		ts->sample_time = ts_pdata->sample_time;
-		ts->mod_12b = ts_pdata->mod_12b;
-		ts->ref_sel = ts_pdata->ref_sel;
-		ts->adc_freq = ts_pdata->adc_freq;
-		ts->ave_ctrl = ts_pdata->ave_ctrl;
-		ts->touch_det_delay = ts_pdata->touch_det_delay;
-		ts->settling = ts_pdata->settling;
-		ts->fraction_z = ts_pdata->fraction_z;
-		ts->i_drive = ts_pdata->i_drive;
-	}
-
-	INIT_DELAYED_WORK(&ts->work, stmpe_work);
-
-	ret = request_threaded_irq(ts_irq, NULL, stmpe_ts_handler,
-			IRQF_ONESHOT, STMPE_TS_NAME, ts);
-	if (ret) {
-		dev_err(&pdev->dev, "Failed to request IRQ %d\n", ts_irq);
-		goto err_free_input;
-	}
-
-	ret = stmpe_init_hw(ts);
-	if (ret)
-		goto err_free_irq;
-
-	idev->name = STMPE_TS_NAME;
-	idev->id.bustype = BUS_I2C;
-	idev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
-	idev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
-=======
 	stmpe_ts_get_platform_info(pdev, ts);
 
 	INIT_DELAYED_WORK(&ts->work, stmpe_work);
@@ -492,74 +328,17 @@ static int stmpe_input_probe(struct platform_device *pdev)
 	idev->name = STMPE_TS_NAME;
 	idev->phys = STMPE_TS_NAME"/input0";
 	idev->id.bustype = BUS_I2C;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idev->open = stmpe_ts_open;
 	idev->close = stmpe_ts_close;
 
 	input_set_drvdata(idev, ts);
 
-<<<<<<< HEAD
-=======
 	input_set_capability(idev, EV_KEY, BTN_TOUCH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_abs_params(idev, ABS_X, 0, XY_MASK, 0, 0);
 	input_set_abs_params(idev, ABS_Y, 0, XY_MASK, 0, 0);
 	input_set_abs_params(idev, ABS_PRESSURE, 0x0, 0xff, 0, 0);
 
-<<<<<<< HEAD
-	ret = input_register_device(idev);
-	if (ret) {
-		dev_err(&pdev->dev, "Could not register input device\n");
-		goto err_free_irq;
-	}
-
-	return ret;
-
-err_free_irq:
-	free_irq(ts_irq, ts);
-err_free_input:
-	input_free_device(idev);
-	platform_set_drvdata(pdev, NULL);
-err_free_ts:
-	kfree(ts);
-err_out:
-	return ret;
-}
-
-static int __devexit stmpe_ts_remove(struct platform_device *pdev)
-{
-	struct stmpe_touch *ts = platform_get_drvdata(pdev);
-	unsigned int ts_irq = platform_get_irq_byname(pdev, "FIFO_TH");
-
-	stmpe_disable(ts->stmpe, STMPE_BLOCK_TOUCHSCREEN);
-
-	free_irq(ts_irq, ts);
-
-	platform_set_drvdata(pdev, NULL);
-
-	input_unregister_device(ts->idev);
-
-	kfree(ts);
-
-	return 0;
-}
-
-static struct platform_driver stmpe_ts_driver = {
-	.driver = {
-		   .name = STMPE_TS_NAME,
-		   .owner = THIS_MODULE,
-		   },
-	.probe = stmpe_input_probe,
-	.remove = __devexit_p(stmpe_ts_remove),
-};
-module_platform_driver(stmpe_ts_driver);
-
-MODULE_AUTHOR("Luotao Fu <l.fu@pengutronix.de>");
-MODULE_DESCRIPTION("STMPEXXX touchscreen driver");
-MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:" STMPE_TS_NAME);
-=======
 	touchscreen_parse_properties(idev, false, &ts->prop);
 
 	error = input_register_device(idev);
@@ -596,4 +375,3 @@ MODULE_DEVICE_TABLE(of, stmpe_ts_ids);
 MODULE_AUTHOR("Luotao Fu <l.fu@pengutronix.de>");
 MODULE_DESCRIPTION("STMPEXXX touchscreen driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

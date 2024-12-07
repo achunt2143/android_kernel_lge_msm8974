@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AHCI SATA platform driver
  *
@@ -9,14 +6,6 @@
  *   Jeff Garzik <jgarzik@pobox.com>
  * Copyright 2010  MontaVista Software, LLC.
  *   Anton Vorontsov <avorontsov@ru.mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AHCI_PLATFORM_H
@@ -24,20 +13,6 @@
 
 #include <linux/compiler.h>
 
-<<<<<<< HEAD
-struct device;
-struct ata_port_info;
-
-struct ahci_platform_data {
-	int (*init)(struct device *dev, void __iomem *addr);
-	void (*exit)(struct device *dev);
-	int (*suspend)(struct device *dev);
-	int (*resume)(struct device *dev);
-	const struct ata_port_info *ata_port_info;
-	unsigned int force_port_map;
-	unsigned int mask_port_map;
-};
-=======
 struct clk;
 struct device;
 struct ata_port_info;
@@ -73,6 +48,5 @@ int ahci_platform_resume(struct device *dev);
 
 #define AHCI_PLATFORM_GET_RESETS	BIT(0)
 #define AHCI_PLATFORM_RST_TRIGGER	BIT(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _AHCI_PLATFORM_H */

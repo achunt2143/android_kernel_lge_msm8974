@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Silicon Labs C2 port Linux support
  *
  *  Copyright (c) 2007 Rodolfo Giometti <giometti@linux.it>
  *  Copyright (c) 2007 Eurotech S.p.A. <info@eurotech.it>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation
  */
 
-#include <linux/kmemcheck.h>
-
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define C2PORT_NAME_LEN			32
 
 struct device;
@@ -31,15 +17,8 @@ struct device;
 /* Main struct */
 struct c2port_ops;
 struct c2port_device {
-<<<<<<< HEAD
-	kmemcheck_bitfield_begin(flags);
 	unsigned int access:1;
 	unsigned int flash_access:1;
-	kmemcheck_bitfield_end(flags);
-=======
-	unsigned int access:1;
-	unsigned int flash_access:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int id;
 	char name[C2PORT_NAME_LEN];

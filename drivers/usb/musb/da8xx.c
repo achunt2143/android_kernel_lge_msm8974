@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Texas Instruments DA8xx/OMAP-L1x "glue layer"
  *
@@ -10,37 +7,6 @@
  * Based on the DaVinci "glue layer" code.
  * Copyright (C) 2005-2006 by Texas Instruments
  *
-<<<<<<< HEAD
- * This file is part of the Inventra Controller Driver for Linux.
- *
- * The Inventra Controller Driver for Linux is free software; you
- * can redistribute it and/or modify it under the terms of the GNU
- * General Public License version 2 as published by the Free Software
- * Foundation.
- *
- * The Inventra Controller Driver for Linux is distributed in
- * the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
- * License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with The Inventra Controller Driver for Linux ; if not,
- * write to the Free Software Foundation, Inc., 59 Temple Place,
- * Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/clk.h>
-#include <linux/io.h>
-#include <linux/platform_device.h>
-#include <linux/dma-mapping.h>
-
-#include <mach/da8xx.h>
-#include <mach/usb.h>
-=======
  * DT support
  * Copyright (c) 2016 Petr Kulhavy <petr@barix.com>
  *
@@ -57,7 +23,6 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/usb/usb_phy_generic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "musb_core.h"
 
@@ -70,14 +35,7 @@
 #define DA8XX_USB_CTRL_REG	0x04
 #define DA8XX_USB_STAT_REG	0x08
 #define DA8XX_USB_EMULATION_REG 0x0c
-<<<<<<< HEAD
-#define DA8XX_USB_MODE_REG	0x10	/* Transparent, CDC, [Generic] RNDIS */
-#define DA8XX_USB_AUTOREQ_REG	0x14
 #define DA8XX_USB_SRP_FIX_TIME_REG 0x18
-#define DA8XX_USB_TEARDOWN_REG	0x1c
-=======
-#define DA8XX_USB_SRP_FIX_TIME_REG 0x18
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA8XX_USB_INTR_SRC_REG	0x20
 #define DA8XX_USB_INTR_SRC_SET_REG 0x24
 #define DA8XX_USB_INTR_SRC_CLEAR_REG 0x28
@@ -106,62 +64,6 @@
 
 #define DA8XX_MENTOR_CORE_OFFSET 0x400
 
-<<<<<<< HEAD
-#define CFGCHIP2	IO_ADDRESS(DA8XX_SYSCFG0_BASE + DA8XX_CFGCHIP2_REG)
-
-struct da8xx_glue {
-	struct device		*dev;
-	struct platform_device	*musb;
-	struct clk		*clk;
-};
-
-/*
- * REVISIT (PM): we should be able to keep the PHY in low power mode most
- * of the time (24 MHz oscillator and PLL off, etc.) by setting POWER.D0
- * and, when in host mode, autosuspending idle root ports... PHY_PLLON
- * (overriding SUSPENDM?) then likely needs to stay off.
- */
-
-static inline void phy_on(void)
-{
-	u32 cfgchip2 = __raw_readl(CFGCHIP2);
-
-	/*
-	 * Start the on-chip PHY and its PLL.
-	 */
-	cfgchip2 &= ~(CFGCHIP2_RESET | CFGCHIP2_PHYPWRDN | CFGCHIP2_OTGPWRDN);
-	cfgchip2 |= CFGCHIP2_PHY_PLLON;
-	__raw_writel(cfgchip2, CFGCHIP2);
-
-	pr_info("Waiting for USB PHY clock good...\n");
-	while (!(__raw_readl(CFGCHIP2) & CFGCHIP2_PHYCLKGD))
-		cpu_relax();
-}
-
-static inline void phy_off(void)
-{
-	u32 cfgchip2 = __raw_readl(CFGCHIP2);
-
-	/*
-	 * Ensure that USB 1.1 reference clock is not being sourced from
-	 * USB 2.0 PHY.  Otherwise do not power down the PHY.
-	 */
-	if (!(cfgchip2 & CFGCHIP2_USB1PHYCLKMUX) &&
-	     (cfgchip2 & CFGCHIP2_USB1SUSPENDM)) {
-		pr_warning("USB 1.1 clocked from USB 2.0 PHY -- "
-			   "can't power it down\n");
-		return;
-	}
-
-	/*
-	 * Power down the on-chip PHY.
-	 */
-	cfgchip2 |= CFGCHIP2_PHYPWRDN | CFGCHIP2_OTGPWRDN;
-	__raw_writel(cfgchip2, CFGCHIP2);
-}
-
-/*
-=======
 struct da8xx_glue {
 	struct device		*dev;
 	struct platform_device	*musb;
@@ -171,7 +73,6 @@ struct da8xx_glue {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Because we don't set CTRL.UINT, it's "important" to:
  *	- not read/write INTRUSB/INTRUSBE (except during
  *	  initial setup, as a workaround);
@@ -193,14 +94,8 @@ static void da8xx_musb_enable(struct musb *musb)
 	musb_writel(reg_base, DA8XX_USB_INTR_MASK_SET_REG, mask);
 
 	/* Force the DRVVBUS IRQ so we can start polling for ID change. */
-<<<<<<< HEAD
-	if (is_otg_enabled(musb))
-		musb_writel(reg_base, DA8XX_USB_INTR_SRC_SET_REG,
-			    DA8XX_INTR_DRVVBUS << DA8XX_INTR_USB_SHIFT);
-=======
 	musb_writel(reg_base, DA8XX_USB_INTR_SRC_SET_REG,
 			DA8XX_INTR_DRVVBUS << DA8XX_INTR_USB_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -213,10 +108,6 @@ static void da8xx_musb_disable(struct musb *musb)
 	musb_writel(reg_base, DA8XX_USB_INTR_MASK_CLEAR_REG,
 		    DA8XX_INTR_USB_MASK |
 		    DA8XX_INTR_TX_MASK | DA8XX_INTR_RX_MASK);
-<<<<<<< HEAD
-	musb_writeb(musb->mregs, MUSB_DEVCTL, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	musb_writel(reg_base, DA8XX_USB_END_OF_INTR_REG, 0);
 }
 
@@ -229,17 +120,9 @@ static void da8xx_musb_set_vbus(struct musb *musb, int is_on)
 
 #define	POLL_SECONDS	2
 
-<<<<<<< HEAD
-static struct timer_list otg_workaround;
-
-static void otg_timer(unsigned long _musb)
-{
-	struct musb		*musb = (void *)_musb;
-=======
 static void otg_timer(struct timer_list *t)
 {
 	struct musb		*musb = from_timer(musb, t, dev_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem		*mregs = musb->mregs;
 	u8			devctl;
 	unsigned long		flags;
@@ -250,34 +133,20 @@ static void otg_timer(struct timer_list *t)
 	 */
 	devctl = musb_readb(mregs, MUSB_DEVCTL);
 	dev_dbg(musb->controller, "Poll devctl %02x (%s)\n", devctl,
-<<<<<<< HEAD
-		otg_state_string(musb->xceiv->state));
-
-	spin_lock_irqsave(&musb->lock, flags);
-	switch (musb->xceiv->state) {
-=======
 		usb_otg_state_string(musb->xceiv->otg->state));
 
 	spin_lock_irqsave(&musb->lock, flags);
 	switch (musb->xceiv->otg->state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OTG_STATE_A_WAIT_BCON:
 		devctl &= ~MUSB_DEVCTL_SESSION;
 		musb_writeb(musb->mregs, MUSB_DEVCTL, devctl);
 
 		devctl = musb_readb(musb->mregs, MUSB_DEVCTL);
 		if (devctl & MUSB_DEVCTL_BDEVICE) {
-<<<<<<< HEAD
-			musb->xceiv->state = OTG_STATE_B_IDLE;
-			MUSB_DEV_MODE(musb);
-		} else {
-			musb->xceiv->state = OTG_STATE_A_IDLE;
-=======
 			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
 			MUSB_DEV_MODE(musb);
 		} else {
 			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MUSB_HST_MODE(musb);
 		}
 		break;
@@ -289,27 +158,14 @@ static void otg_timer(struct timer_list *t)
 		 * VBUSERR got reported during enumeration" cases.
 		 */
 		if (devctl & MUSB_DEVCTL_VBUS) {
-<<<<<<< HEAD
-			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
-			break;
-		}
-		musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
-=======
 			mod_timer(&musb->dev_timer, jiffies + POLL_SECONDS * HZ);
 			break;
 		}
 		musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		musb_writel(musb->ctrl_base, DA8XX_USB_INTR_SRC_SET_REG,
 			    MUSB_INTR_VBUSERROR << DA8XX_INTR_USB_SHIFT);
 		break;
 	case OTG_STATE_B_IDLE:
-<<<<<<< HEAD
-		if (!is_peripheral_enabled(musb))
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * There's no ID-changed IRQ, so we have no good way to tell
 		 * when to switch to the A-Default state machine (by setting
@@ -325,15 +181,9 @@ static void otg_timer(struct timer_list *t)
 		musb_writeb(mregs, MUSB_DEVCTL, devctl | MUSB_DEVCTL_SESSION);
 		devctl = musb_readb(mregs, MUSB_DEVCTL);
 		if (devctl & MUSB_DEVCTL_BDEVICE)
-<<<<<<< HEAD
-			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
-		else
-			musb->xceiv->state = OTG_STATE_A_IDLE;
-=======
 			mod_timer(&musb->dev_timer, jiffies + POLL_SECONDS * HZ);
 		else
 			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -345,62 +195,35 @@ static void da8xx_musb_try_idle(struct musb *musb, unsigned long timeout)
 {
 	static unsigned long last_timer;
 
-<<<<<<< HEAD
-	if (!is_otg_enabled(musb))
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (timeout == 0)
 		timeout = jiffies + msecs_to_jiffies(3);
 
 	/* Never idle if active, or when VBUS timeout is not set as host */
 	if (musb->is_active || (musb->a_wait_bcon == 0 &&
-<<<<<<< HEAD
-				musb->xceiv->state == OTG_STATE_A_WAIT_BCON)) {
-		dev_dbg(musb->controller, "%s active, deleting timer\n",
-			otg_state_string(musb->xceiv->state));
-		del_timer(&otg_workaround);
-=======
 				musb->xceiv->otg->state == OTG_STATE_A_WAIT_BCON)) {
 		dev_dbg(musb->controller, "%s active, deleting timer\n",
 			usb_otg_state_string(musb->xceiv->otg->state));
 		del_timer(&musb->dev_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		last_timer = jiffies;
 		return;
 	}
 
-<<<<<<< HEAD
-	if (time_after(last_timer, timeout) && timer_pending(&otg_workaround)) {
-=======
 	if (time_after(last_timer, timeout) && timer_pending(&musb->dev_timer)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(musb->controller, "Longer idle timer already pending, ignoring...\n");
 		return;
 	}
 	last_timer = timeout;
 
 	dev_dbg(musb->controller, "%s inactive, starting idle timer for %u ms\n",
-<<<<<<< HEAD
-		otg_state_string(musb->xceiv->state),
-		jiffies_to_msecs(timeout - jiffies));
-	mod_timer(&otg_workaround, timeout);
-=======
 		usb_otg_state_string(musb->xceiv->otg->state),
 		jiffies_to_msecs(timeout - jiffies));
 	mod_timer(&musb->dev_timer, timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 {
 	struct musb		*musb = hci;
 	void __iomem		*reg_base = musb->ctrl_base;
-<<<<<<< HEAD
-	struct usb_otg		*otg = musb->xceiv->otg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		flags;
 	irqreturn_t		ret = IRQ_NONE;
 	u32			status;
@@ -438,12 +261,7 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 		u8 devctl = musb_readb(mregs, MUSB_DEVCTL);
 		int err;
 
-<<<<<<< HEAD
-		err = is_host_enabled(musb) && (musb->int_usb &
-						MUSB_INTR_VBUSERROR);
-=======
 		err = musb->int_usb & MUSB_INTR_VBUSERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			/*
 			 * The Mentor core doesn't debounce VBUS as needed
@@ -457,22 +275,6 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 			 * devctl.
 			 */
 			musb->int_usb &= ~MUSB_INTR_VBUSERROR;
-<<<<<<< HEAD
-			musb->xceiv->state = OTG_STATE_A_WAIT_VFALL;
-			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
-			WARNING("VBUS error workaround (delay coming)\n");
-		} else if (is_host_enabled(musb) && drvvbus) {
-			MUSB_HST_MODE(musb);
-			otg->default_a = 1;
-			musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
-			portstate(musb->port1_status |= USB_PORT_STAT_POWER);
-			del_timer(&otg_workaround);
-		} else {
-			musb->is_active = 0;
-			MUSB_DEV_MODE(musb);
-			otg->default_a = 0;
-			musb->xceiv->state = OTG_STATE_B_IDLE;
-=======
 			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VFALL;
 			mod_timer(&musb->dev_timer, jiffies + POLL_SECONDS * HZ);
 			WARNING("VBUS error workaround (delay coming)\n");
@@ -493,17 +295,12 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 			musb->is_active = 0;
 			MUSB_DEV_MODE(musb);
 			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			portstate(musb->port1_status &= ~USB_PORT_STAT_POWER);
 		}
 
 		dev_dbg(musb->controller, "VBUS %s (%s)%s, devctl %02x\n",
 				drvvbus ? "on" : "off",
-<<<<<<< HEAD
-				otg_state_string(musb->xceiv->state),
-=======
 				usb_otg_state_string(musb->xceiv->otg->state),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err ? " ERROR" : "",
 				devctl);
 		ret = IRQ_HANDLED;
@@ -518,13 +315,8 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 		musb_writel(reg_base, DA8XX_USB_END_OF_INTR_REG, 0);
 
 	/* Poll for ID change */
-<<<<<<< HEAD
-	if (is_otg_enabled(musb) && musb->xceiv->state == OTG_STATE_B_IDLE)
-		mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
-=======
 	if (musb->xceiv->otg->state == OTG_STATE_B_IDLE)
 		mod_timer(&musb->dev_timer, jiffies + POLL_SECONDS * HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&musb->lock, flags);
 
@@ -533,27 +325,6 @@ static irqreturn_t da8xx_musb_interrupt(int irq, void *hci)
 
 static int da8xx_musb_set_mode(struct musb *musb, u8 musb_mode)
 {
-<<<<<<< HEAD
-	u32 cfgchip2 = __raw_readl(CFGCHIP2);
-
-	cfgchip2 &= ~CFGCHIP2_OTGMODE;
-	switch (musb_mode) {
-	case MUSB_HOST:		/* Force VBUS valid, ID = 0 */
-		cfgchip2 |= CFGCHIP2_FORCE_HOST;
-		break;
-	case MUSB_PERIPHERAL:	/* Force VBUS valid, ID = 1 */
-		cfgchip2 |= CFGCHIP2_FORCE_DEVICE;
-		break;
-	case MUSB_OTG:		/* Don't override the VBUS/ID comparators */
-		cfgchip2 |= CFGCHIP2_NO_OVERRIDE;
-		break;
-	default:
-		dev_dbg(musb->controller, "Trying to set unsupported mode %u\n", musb_mode);
-	}
-
-	__raw_writel(cfgchip2, CFGCHIP2);
-	return 0;
-=======
 	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
 	enum phy_mode phy_mode;
 
@@ -579,30 +350,10 @@ static int da8xx_musb_set_mode(struct musb *musb, u8 musb_mode)
 	}
 
 	return phy_set_mode(glue->phy, phy_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int da8xx_musb_init(struct musb *musb)
 {
-<<<<<<< HEAD
-	void __iomem *reg_base = musb->ctrl_base;
-	u32 rev;
-
-	musb->mregs += DA8XX_MENTOR_CORE_OFFSET;
-
-	/* Returns zero if e.g. not clocked */
-	rev = musb_readl(reg_base, DA8XX_USB_REVISION_REG);
-	if (!rev)
-		goto fail;
-
-	usb_nop_xceiv_register();
-	musb->xceiv = usb_get_transceiver();
-	if (!musb->xceiv)
-		goto fail;
-
-	if (is_host_enabled(musb))
-		setup_timer(&otg_workaround, otg_timer, (unsigned long)musb);
-=======
 	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
 	void __iomem *reg_base = musb->ctrl_base;
 	u32 rev;
@@ -630,15 +381,11 @@ static int da8xx_musb_init(struct musb *musb)
 	}
 
 	timer_setup(&musb->dev_timer, otg_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the controller */
 	musb_writel(reg_base, DA8XX_USB_CTRL_REG, DA8XX_SOFT_RESET_MASK);
 
 	/* Start the on-chip PHY and its PLL. */
-<<<<<<< HEAD
-	phy_on();
-=======
 	ret = phy_init(glue->phy);
 	if (ret) {
 		dev_err(glue->dev, "Failed to init phy.\n");
@@ -650,45 +397,25 @@ static int da8xx_musb_init(struct musb *musb)
 		dev_err(glue->dev, "Failed to power on phy.\n");
 		goto err_phy_power_on;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msleep(5);
 
 	/* NOTE: IRQs are in mixed mode, not bypass to pure MUSB */
-<<<<<<< HEAD
-	pr_debug("DA8xx OTG revision %08x, PHY %03x, control %02x\n",
-		 rev, __raw_readl(CFGCHIP2),
-=======
 	pr_debug("DA8xx OTG revision %08x, control %02x\n", rev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 musb_readb(reg_base, DA8XX_USB_CTRL_REG));
 
 	musb->isr = da8xx_musb_interrupt;
 	return 0;
-<<<<<<< HEAD
-fail:
-	return -ENODEV;
-=======
 
 err_phy_power_on:
 	phy_exit(glue->phy);
 fail:
 	clk_disable_unprepare(glue->clk);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int da8xx_musb_exit(struct musb *musb)
 {
-<<<<<<< HEAD
-	if (is_host_enabled(musb))
-		del_timer_sync(&otg_workaround);
-
-	phy_off();
-
-	usb_put_transceiver(musb->xceiv);
-	usb_nop_xceiv_unregister();
-=======
 	struct da8xx_glue *glue = dev_get_drvdata(musb->controller->parent);
 
 	del_timer_sync(&musb->dev_timer);
@@ -698,17 +425,10 @@ static int da8xx_musb_exit(struct musb *musb)
 	clk_disable_unprepare(glue->clk);
 
 	usb_put_phy(musb->xceiv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct musb_platform_ops da8xx_ops = {
-	.init		= da8xx_musb_init,
-	.exit		= da8xx_musb_exit,
-
-=======
 static inline u8 get_vbus_power(struct device *dev)
 {
 	struct regulator *vbus_supply;
@@ -759,7 +479,6 @@ static const struct musb_platform_ops da8xx_ops = {
 	.dma_init	= da8xx_dma_controller_create,
 	.dma_exit	= cppi41_dma_controller_destroy,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable		= da8xx_musb_enable,
 	.disable	= da8xx_musb_disable,
 
@@ -769,103 +488,6 @@ static const struct musb_platform_ops da8xx_ops = {
 	.set_vbus	= da8xx_musb_set_vbus,
 };
 
-<<<<<<< HEAD
-static u64 da8xx_dmamask = DMA_BIT_MASK(32);
-
-static int __devinit da8xx_probe(struct platform_device *pdev)
-{
-	struct musb_hdrc_platform_data	*pdata = pdev->dev.platform_data;
-	struct platform_device		*musb;
-	struct da8xx_glue		*glue;
-
-	struct clk			*clk;
-
-	int				ret = -ENOMEM;
-
-	glue = kzalloc(sizeof(*glue), GFP_KERNEL);
-	if (!glue) {
-		dev_err(&pdev->dev, "failed to allocate glue context\n");
-		goto err0;
-	}
-
-	musb = platform_device_alloc("musb-hdrc", -1);
-	if (!musb) {
-		dev_err(&pdev->dev, "failed to allocate musb device\n");
-		goto err1;
-	}
-
-	clk = clk_get(&pdev->dev, "usb20");
-	if (IS_ERR(clk)) {
-		dev_err(&pdev->dev, "failed to get clock\n");
-		ret = PTR_ERR(clk);
-		goto err2;
-	}
-
-	ret = clk_enable(clk);
-	if (ret) {
-		dev_err(&pdev->dev, "failed to enable clock\n");
-		goto err3;
-	}
-
-	musb->dev.parent		= &pdev->dev;
-	musb->dev.dma_mask		= &da8xx_dmamask;
-	musb->dev.coherent_dma_mask	= da8xx_dmamask;
-
-	glue->dev			= &pdev->dev;
-	glue->musb			= musb;
-	glue->clk			= clk;
-
-	pdata->platform_ops		= &da8xx_ops;
-
-	platform_set_drvdata(pdev, glue);
-
-	ret = platform_device_add_resources(musb, pdev->resource,
-			pdev->num_resources);
-	if (ret) {
-		dev_err(&pdev->dev, "failed to add resources\n");
-		goto err4;
-	}
-
-	ret = platform_device_add_data(musb, pdata, sizeof(*pdata));
-	if (ret) {
-		dev_err(&pdev->dev, "failed to add platform_data\n");
-		goto err4;
-	}
-
-	ret = platform_device_add(musb);
-	if (ret) {
-		dev_err(&pdev->dev, "failed to register musb device\n");
-		goto err4;
-	}
-
-	return 0;
-
-err4:
-	clk_disable(clk);
-
-err3:
-	clk_put(clk);
-
-err2:
-	platform_device_put(musb);
-
-err1:
-	kfree(glue);
-
-err0:
-	return ret;
-}
-
-static int __devexit da8xx_remove(struct platform_device *pdev)
-{
-	struct da8xx_glue		*glue = platform_get_drvdata(pdev);
-
-	platform_device_del(glue->musb);
-	platform_device_put(glue->musb);
-	clk_disable(glue->clk);
-	clk_put(glue->clk);
-	kfree(glue);
-=======
 static const struct platform_device_info da8xx_dev_info = {
 	.name		= "musb-hdrc",
 	.id		= PLATFORM_DEVID_AUTO,
@@ -973,18 +595,10 @@ static int da8xx_suspend(struct device *dev)
 	if (ret)
 		return ret;
 	clk_disable_unprepare(glue->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_driver da8xx_driver = {
-	.probe		= da8xx_probe,
-	.remove		= __devexit_p(da8xx_remove),
-	.driver		= {
-		.name	= "musb-da8xx",
-=======
 static int da8xx_resume(struct device *dev)
 {
 	int ret;
@@ -1016,26 +630,10 @@ static struct platform_driver da8xx_driver = {
 		.name	= "musb-da8xx",
 		.pm = &da8xx_pm_ops,
 		.of_match_table = of_match_ptr(da8xx_id_table),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 MODULE_DESCRIPTION("DA8xx/OMAP-L1x MUSB Glue Layer");
 MODULE_AUTHOR("Sergei Shtylyov <sshtylyov@ru.mvista.com>");
 MODULE_LICENSE("GPL v2");
-<<<<<<< HEAD
-
-static int __init da8xx_init(void)
-{
-	return platform_driver_register(&da8xx_driver);
-}
-module_init(da8xx_init);
-
-static void __exit da8xx_exit(void)
-{
-	platform_driver_unregister(&da8xx_driver);
-}
-module_exit(da8xx_exit);
-=======
 module_platform_driver(da8xx_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

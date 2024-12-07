@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAN driver for EMS Dr. Thomas Wuensche CPC-USB/ARM7
  *
  * Copyright (C) 2004-2009 EMS Dr. Thomas Wuensche
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published
- * by the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-#include <linux/init.h>
-=======
  */
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -127,23 +106,16 @@ MODULE_LICENSE("GPL v2");
  */
 #define EMS_USB_ARM7_CLOCK 8000000
 
-<<<<<<< HEAD
-=======
 #define CPC_TX_QUEUE_TRIGGER_LOW	25
 #define CPC_TX_QUEUE_TRIGGER_HIGH	35
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAN-Message representation in a CPC_MSG. Message object type is
  * CPC_MSG_TYPE_CAN_FRAME or CPC_MSG_TYPE_RTR_FRAME or
  * CPC_MSG_TYPE_EXT_CAN_FRAME or CPC_MSG_TYPE_EXT_RTR_FRAME.
  */
 struct cpc_can_msg {
-<<<<<<< HEAD
-	u32 id;
-=======
 	__le32 id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 length;
 	u8 msg[8];
 };
@@ -220,17 +192,10 @@ struct __packed ems_cpc_msg {
 	u8 type;	/* type of message */
 	u8 length;	/* length of data within union 'msg' */
 	u8 msgid;	/* confirmation handle */
-<<<<<<< HEAD
-	u32 ts_sec;	/* timestamp in seconds */
-	u32 ts_nsec;	/* timestamp in nano seconds */
-
-	union {
-=======
 	__le32 ts_sec;	/* timestamp in seconds */
 	__le32 ts_nsec;	/* timestamp in nano seconds */
 
 	union __packed {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 generic[64];
 		struct cpc_can_msg can_msg;
 		struct cpc_can_params can_params;
@@ -266,18 +231,10 @@ struct ems_tx_urb_context {
 	struct ems_usb *dev;
 
 	u32 echo_index;
-<<<<<<< HEAD
-	u8 dlc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ems_usb {
 	struct can_priv can; /* must be the first member */
-<<<<<<< HEAD
-	int open_time;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sk_buff *echo_skb[MAX_TX_URBS];
 
@@ -298,11 +255,8 @@ struct ems_usb {
 	unsigned int free_slots; /* remember number of available slots */
 
 	struct ems_cpc_msg active_params; /* active controller parameters */
-<<<<<<< HEAD
-=======
 	void *rxbuf[MAX_RX_URBS];
 	dma_addr_t rxbuf_dma[MAX_RX_URBS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ems_usb_read_interrupt_callback(struct urb *urb)
@@ -317,21 +271,15 @@ static void ems_usb_read_interrupt_callback(struct urb *urb)
 	switch (urb->status) {
 	case 0:
 		dev->free_slots = dev->intr_in_buffer[1];
-<<<<<<< HEAD
-=======
 		if (dev->free_slots > CPC_TX_QUEUE_TRIGGER_HIGH &&
 		    netif_queue_stopped(netdev))
 			netif_wake_queue(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case -ECONNRESET: /* unlink */
 	case -ENOENT:
-<<<<<<< HEAD
-=======
 	case -EPIPE:
 	case -EPROTO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -ESHUTDOWN:
 		return;
 
@@ -360,11 +308,7 @@ static void ems_usb_rx_can_msg(struct ems_usb *dev, struct ems_cpc_msg *msg)
 		return;
 
 	cf->can_id = le32_to_cpu(msg->msg.can_msg.id);
-<<<<<<< HEAD
-	cf->can_dlc = get_can_dlc(msg->msg.can_msg.length & 0xF);
-=======
 	cf->len = can_cc_dlc2len(msg->msg.can_msg.length & 0xF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (msg->type == CPC_MSG_TYPE_EXT_CAN_FRAME ||
 	    msg->type == CPC_MSG_TYPE_EXT_RTR_FRAME)
@@ -374,16 +318,6 @@ static void ems_usb_rx_can_msg(struct ems_usb *dev, struct ems_cpc_msg *msg)
 	    msg->type == CPC_MSG_TYPE_EXT_RTR_FRAME) {
 		cf->can_id |= CAN_RTR_FLAG;
 	} else {
-<<<<<<< HEAD
-		for (i = 0; i < cf->can_dlc; i++)
-			cf->data[i] = msg->msg.can_msg.msg[i];
-	}
-
-	netif_rx(skb);
-
-	stats->rx_packets++;
-	stats->rx_bytes += cf->can_dlc;
-=======
 		for (i = 0; i < cf->len; i++)
 			cf->data[i] = msg->msg.can_msg.msg[i];
 
@@ -392,7 +326,6 @@ static void ems_usb_rx_can_msg(struct ems_usb *dev, struct ems_cpc_msg *msg)
 	stats->rx_packets++;
 
 	netif_rx(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
@@ -412,10 +345,7 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 			dev->can.state = CAN_STATE_BUS_OFF;
 			cf->can_id |= CAN_ERR_BUSOFF;
 
-<<<<<<< HEAD
-=======
 			dev->can.can_stats.bus_off++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			can_bus_off(dev->netdev);
 		} else if (state & SJA1000_SR_ES) {
 			dev->can.state = CAN_STATE_ERROR_WARNING;
@@ -446,10 +376,6 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 			cf->data[2] |= CAN_ERR_PROT_STUFF;
 			break;
 		default:
-<<<<<<< HEAD
-			cf->data[2] |= CAN_ERR_PROT_UNSPEC;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cf->data[3] = ecc & SJA1000_ECC_SEG;
 			break;
 		}
@@ -460,10 +386,7 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 
 		if (dev->can.state == CAN_STATE_ERROR_WARNING ||
 		    dev->can.state == CAN_STATE_ERROR_PASSIVE) {
-<<<<<<< HEAD
-=======
 			cf->can_id |= CAN_ERR_CRTL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cf->data[1] = (txerr > rxerr) ?
 			    CAN_ERR_CRTL_TX_PASSIVE : CAN_ERR_CRTL_RX_PASSIVE;
 		}
@@ -476,12 +399,6 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 	}
 
 	netif_rx(skb);
-<<<<<<< HEAD
-
-	stats->rx_packets++;
-	stats->rx_bytes += cf->can_dlc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -513,16 +430,9 @@ static void ems_usb_read_bulk_callback(struct urb *urb)
 	if (urb->actual_length > CPC_HEADER_SIZE) {
 		struct ems_cpc_msg *msg;
 		u8 *ibuf = urb->transfer_buffer;
-<<<<<<< HEAD
-		u8 msg_count, again, start;
-
-		msg_count = ibuf[0] & ~0x80;
-		again = ibuf[0] & 0x80;
-=======
 		u8 msg_count, start;
 
 		msg_count = ibuf[0] & ~0x80;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		start = CPC_HEADER_SIZE;
 
@@ -603,31 +513,16 @@ static void ems_usb_write_bulk_callback(struct urb *urb)
 	if (urb->status)
 		netdev_info(netdev, "Tx URB aborted (%d)\n", urb->status);
 
-<<<<<<< HEAD
-	netdev->trans_start = jiffies;
-
-	/* transmission complete interrupt */
-	netdev->stats.tx_packets++;
-	netdev->stats.tx_bytes += context->dlc;
-
-	can_get_echo_skb(netdev, context->echo_index);
-=======
 	netif_trans_update(netdev);
 
 	/* transmission complete interrupt */
 	netdev->stats.tx_packets++;
 	netdev->stats.tx_bytes += can_get_echo_skb(netdev, context->echo_index,
 						   NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release context */
 	context->echo_index = MAX_TX_URBS;
 
-<<<<<<< HEAD
-	if (netif_queue_stopped(netdev))
-		netif_wake_queue(netdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -687,37 +582,22 @@ static int ems_usb_start(struct ems_usb *dev)
 	int err, i;
 
 	dev->intr_in_buffer[0] = 0;
-<<<<<<< HEAD
-	dev->free_slots = 15; /* initial size */
-=======
 	dev->free_slots = 50; /* initial size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < MAX_RX_URBS; i++) {
 		struct urb *urb = NULL;
 		u8 *buf = NULL;
-<<<<<<< HEAD
-=======
 		dma_addr_t buf_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* create a URB, and a buffer for it */
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
-<<<<<<< HEAD
-			netdev_err(netdev, "No memory left for URBs\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 			break;
 		}
 
 		buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL,
-<<<<<<< HEAD
-					 &urb->transfer_dma);
-=======
 					 &buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!buf) {
 			netdev_err(netdev, "No memory left for USB buffer\n");
 			usb_free_urb(urb);
@@ -725,11 +605,8 @@ static int ems_usb_start(struct ems_usb *dev)
 			break;
 		}
 
-<<<<<<< HEAD
-=======
 		urb->transfer_dma = buf_dma;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_fill_bulk_urb(urb, dev->udev, usb_rcvbulkpipe(dev->udev, 2),
 				  buf, RX_BUFFER_SIZE,
 				  ems_usb_read_bulk_callback, dev);
@@ -741,11 +618,6 @@ static int ems_usb_start(struct ems_usb *dev)
 			usb_unanchor_urb(urb);
 			usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf,
 					  urb->transfer_dma);
-<<<<<<< HEAD
-			break;
-		}
-
-=======
 			usb_free_urb(urb);
 			break;
 		}
@@ -753,7 +625,6 @@ static int ems_usb_start(struct ems_usb *dev)
 		dev->rxbuf[i] = buf;
 		dev->rxbuf_dma[i] = buf_dma;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Drop reference, USB core will take care of freeing it */
 		usb_free_urb(urb);
 	}
@@ -819,13 +690,10 @@ static void unlink_all_urbs(struct ems_usb *dev)
 
 	usb_kill_anchored_urbs(&dev->rx_submitted);
 
-<<<<<<< HEAD
-=======
 	for (i = 0; i < MAX_RX_URBS; ++i)
 		usb_free_coherent(dev->udev, RX_BUFFER_SIZE,
 				  dev->rxbuf[i], dev->rxbuf_dma[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_anchored_urbs(&dev->tx_submitted);
 	atomic_set(&dev->active_tx_urbs, 0);
 
@@ -860,10 +728,6 @@ static int ems_usb_open(struct net_device *netdev)
 		return err;
 	}
 
-<<<<<<< HEAD
-	dev->open_time = jiffies;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_start_queue(netdev);
 
@@ -883,24 +747,13 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 	size_t size = CPC_HEADER_SIZE + CPC_MSG_HEADER_LEN
 			+ sizeof(struct cpc_can_msg);
 
-<<<<<<< HEAD
-	if (can_dropped_invalid_skb(netdev, skb))
-=======
 	if (can_dev_dropped_skb(netdev, skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 
 	/* create a URB, and a buffer for it, and copy the data to the URB */
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
-<<<<<<< HEAD
-	if (!urb) {
-		netdev_err(netdev, "No memory left for URBs\n");
-		goto nomem;
-	}
-=======
 	if (!urb)
 		goto nomem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = usb_alloc_coherent(dev->udev, size, GFP_ATOMIC, &urb->transfer_dma);
 	if (!buf) {
@@ -911,13 +764,8 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 
 	msg = (struct ems_cpc_msg *)&buf[CPC_HEADER_SIZE];
 
-<<<<<<< HEAD
-	msg->msg.can_msg.id = cf->can_id & CAN_ERR_MASK;
-	msg->msg.can_msg.length = cf->can_dlc;
-=======
 	msg->msg.can_msg.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
 	msg->msg.can_msg.length = cf->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cf->can_id & CAN_RTR_FLAG) {
 		msg->type = cf->can_id & CAN_EFF_FLAG ?
@@ -928,24 +776,12 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 		msg->type = cf->can_id & CAN_EFF_FLAG ?
 			CPC_CMD_TYPE_EXT_CAN_FRAME : CPC_CMD_TYPE_CAN_FRAME;
 
-<<<<<<< HEAD
-		for (i = 0; i < cf->can_dlc; i++)
-			msg->msg.can_msg.msg[i] = cf->data[i];
-
-		msg->length = CPC_CAN_MSG_MIN_SIZE + cf->can_dlc;
-	}
-
-	/* Respect byte order */
-	msg->msg.can_msg.id = cpu_to_le32(msg->msg.can_msg.id);
-
-=======
 		for (i = 0; i < cf->len; i++)
 			msg->msg.can_msg.msg[i] = cf->data[i];
 
 		msg->length = CPC_CAN_MSG_MIN_SIZE + cf->len;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < MAX_TX_URBS; i++) {
 		if (dev->tx_contexts[i].echo_index == MAX_TX_URBS) {
 			context = &dev->tx_contexts[i];
@@ -958,13 +794,8 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 	 * allowed (MAX_TX_URBS).
 	 */
 	if (!context) {
-<<<<<<< HEAD
-		usb_unanchor_urb(urb);
-		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
-=======
 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
 		usb_free_urb(urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		netdev_warn(netdev, "couldn't find free context\n");
 
@@ -973,38 +804,22 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 
 	context->dev = dev;
 	context->echo_index = i;
-<<<<<<< HEAD
-	context->dlc = cf->can_dlc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
 			  size, ems_usb_write_bulk_callback, context);
 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 	usb_anchor_urb(urb, &dev->tx_submitted);
 
-<<<<<<< HEAD
-	can_put_echo_skb(skb, netdev, context->echo_index);
-=======
 	can_put_echo_skb(skb, netdev, context->echo_index, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_inc(&dev->active_tx_urbs);
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (unlikely(err)) {
-<<<<<<< HEAD
-		can_free_echo_skb(netdev, context->echo_index);
-
-		usb_unanchor_urb(urb);
-		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
-		dev_kfree_skb(skb);
-=======
 		can_free_echo_skb(netdev, context->echo_index, NULL);
 
 		usb_unanchor_urb(urb);
 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		atomic_dec(&dev->active_tx_urbs);
 
@@ -1016,19 +831,11 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 			stats->tx_dropped++;
 		}
 	} else {
-<<<<<<< HEAD
-		netdev->trans_start = jiffies;
-
-		/* Slow down tx path */
-		if (atomic_read(&dev->active_tx_urbs) >= MAX_TX_URBS ||
-		    dev->free_slots < 5) {
-=======
 		netif_trans_update(netdev);
 
 		/* Slow down tx path */
 		if (atomic_read(&dev->active_tx_urbs) >= MAX_TX_URBS ||
 		    dev->free_slots < CPC_TX_QUEUE_TRIGGER_LOW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_stop_queue(netdev);
 		}
 	}
@@ -1063,11 +870,6 @@ static int ems_usb_close(struct net_device *netdev)
 
 	close_candev(netdev);
 
-<<<<<<< HEAD
-	dev->open_time = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1075,12 +877,6 @@ static const struct net_device_ops ems_usb_netdev_ops = {
 	.ndo_open = ems_usb_open,
 	.ndo_stop = ems_usb_close,
 	.ndo_start_xmit = ems_usb_start_xmit,
-<<<<<<< HEAD
-};
-
-static struct can_bittiming_const ems_usb_bittiming_const = {
-	.name = "ems_usb",
-=======
 	.ndo_change_mtu = can_change_mtu,
 };
 
@@ -1090,7 +886,6 @@ static const struct ethtool_ops ems_usb_ethtool_ops = {
 
 static const struct can_bittiming_const ems_usb_bittiming_const = {
 	.name = KBUILD_MODNAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tseg1_min = 1,
 	.tseg1_max = 16,
 	.tseg2_min = 1,
@@ -1105,12 +900,6 @@ static int ems_usb_set_mode(struct net_device *netdev, enum can_mode mode)
 {
 	struct ems_usb *dev = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	if (!dev->open_time)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mode) {
 	case CAN_MODE_START:
 		if (ems_usb_write_mode(dev, SJA1000_MOD_NORMAL))
@@ -1206,10 +995,7 @@ static int ems_usb_probe(struct usb_interface *intf,
 	dev->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
 
 	netdev->netdev_ops = &ems_usb_netdev_ops;
-<<<<<<< HEAD
-=======
 	netdev->ethtool_ops = &ems_usb_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->flags |= IFF_ECHO; /* we support local echo */
 
@@ -1222,25 +1008,6 @@ static int ems_usb_probe(struct usb_interface *intf,
 		dev->tx_contexts[i].echo_index = MAX_TX_URBS;
 
 	dev->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!dev->intr_urb) {
-		dev_err(&intf->dev, "Couldn't alloc intr URB\n");
-		goto cleanup_candev;
-	}
-
-	dev->intr_in_buffer = kzalloc(INTR_IN_BUFFER_SIZE, GFP_KERNEL);
-	if (!dev->intr_in_buffer) {
-		dev_err(&intf->dev, "Couldn't alloc Intr buffer\n");
-		goto cleanup_intr_urb;
-	}
-
-	dev->tx_msg_buffer = kzalloc(CPC_HEADER_SIZE +
-				     sizeof(struct ems_cpc_msg), GFP_KERNEL);
-	if (!dev->tx_msg_buffer) {
-		dev_err(&intf->dev, "Couldn't alloc Tx buffer\n");
-		goto cleanup_intr_in_buffer;
-	}
-=======
 	if (!dev->intr_urb)
 		goto cleanup_candev;
 
@@ -1252,7 +1019,6 @@ static int ems_usb_probe(struct usb_interface *intf,
 				     sizeof(struct ems_cpc_msg), GFP_KERNEL);
 	if (!dev->tx_msg_buffer)
 		goto cleanup_intr_in_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_set_intfdata(intf, dev);
 
@@ -1300,32 +1066,21 @@ static void ems_usb_disconnect(struct usb_interface *intf)
 
 	if (dev) {
 		unregister_netdev(dev->netdev);
-<<<<<<< HEAD
-		free_candev(dev->netdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		unlink_all_urbs(dev);
 
 		usb_free_urb(dev->intr_urb);
 
 		kfree(dev->intr_in_buffer);
-<<<<<<< HEAD
-=======
 		kfree(dev->tx_msg_buffer);
 
 		free_candev(dev->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* usb specific object needed to register this driver with the usb subsystem */
 static struct usb_driver ems_usb_driver = {
-<<<<<<< HEAD
-	.name = "ems_usb",
-=======
 	.name = KBUILD_MODNAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = ems_usb_probe,
 	.disconnect = ems_usb_disconnect,
 	.id_table = ems_usb_table,

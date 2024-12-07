@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- * MXC GPIO support. (c) 2008 Daniel Mack <daniel@caiaq.de>
- * Copyright 2008 Juergen Beisert, kernel@pengutronix.de
- *
- * Based on code from Freescale,
- * Copyright (C) 2004-2010 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA  02110-1301, USA.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // MXS GPIO support. (c) 2008 Daniel Mack <daniel@caiaq.de>
@@ -31,19 +7,10 @@
 // Copyright (C) 2004-2010 Freescale Semiconductor, Inc. All Rights Reserved.
 
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/platform_device.h>
-#include <linux/slab.h>
-#include <linux/basic_mmio_gpio.h>
-#include <linux/module.h>
-#include <mach/mxs.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -51,21 +18,10 @@
 #include <linux/slab.h>
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MXS_SET		0x4
 #define MXS_CLR		0x8
 
-<<<<<<< HEAD
-#define PINCTRL_DOUT(n)		((cpu_is_mx23() ? 0x0500 : 0x0700) + (n) * 0x10)
-#define PINCTRL_DIN(n)		((cpu_is_mx23() ? 0x0600 : 0x0900) + (n) * 0x10)
-#define PINCTRL_DOE(n)		((cpu_is_mx23() ? 0x0700 : 0x0b00) + (n) * 0x10)
-#define PINCTRL_PIN2IRQ(n)	((cpu_is_mx23() ? 0x0800 : 0x1000) + (n) * 0x10)
-#define PINCTRL_IRQEN(n)	((cpu_is_mx23() ? 0x0900 : 0x1100) + (n) * 0x10)
-#define PINCTRL_IRQLEV(n)	((cpu_is_mx23() ? 0x0a00 : 0x1200) + (n) * 0x10)
-#define PINCTRL_IRQPOL(n)	((cpu_is_mx23() ? 0x0b00 : 0x1300) + (n) * 0x10)
-#define PINCTRL_IRQSTAT(n)	((cpu_is_mx23() ? 0x0c00 : 0x1400) + (n) * 0x10)
-=======
 #define PINCTRL_DOUT(p)		((is_imx23_gpio(p) ? 0x0500 : 0x0700) + (p->id) * 0x10)
 #define PINCTRL_DIN(p)		((is_imx23_gpio(p) ? 0x0600 : 0x0900) + (p->id) * 0x10)
 #define PINCTRL_DOE(p)		((is_imx23_gpio(p) ? 0x0700 : 0x0b00) + (p->id) * 0x10)
@@ -74,7 +30,6 @@
 #define PINCTRL_IRQLEV(p)	((is_imx23_gpio(p) ? 0x0a00 : 0x1200) + (p->id) * 0x10)
 #define PINCTRL_IRQPOL(p)	((is_imx23_gpio(p) ? 0x0b00 : 0x1300) + (p->id) * 0x10)
 #define PINCTRL_IRQSTAT(p)	((is_imx23_gpio(p) ? 0x0c00 : 0x1400) + (p->id) * 0x10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GPIO_INT_FALL_EDGE	0x0
 #define GPIO_INT_LOW_LEV	0x1
@@ -83,25 +38,15 @@
 #define GPIO_INT_LEV_MASK	(1 << 0)
 #define GPIO_INT_POL_MASK	(1 << 1)
 
-<<<<<<< HEAD
-#define irq_to_gpio(irq)	((irq) - MXS_GPIO_IRQ_START)
-=======
 enum mxs_gpio_id {
 	IMX23_GPIO,
 	IMX28_GPIO,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mxs_gpio_port {
 	void __iomem *base;
 	int id;
 	int irq;
-<<<<<<< HEAD
-	int virtual_irq_start;
-	struct bgpio_chip bgc;
-};
-
-=======
 	struct irq_domain *domain;
 	struct gpio_chip gc;
 	struct device *dev;
@@ -114,28 +59,18 @@ static inline int is_imx23_gpio(struct mxs_gpio_port *port)
 	return port->devid == IMX23_GPIO;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Note: This driver assumes 32 GPIOs are handled in one register */
 
 static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 {
-<<<<<<< HEAD
-	u32 gpio = irq_to_gpio(d->irq);
-	u32 pin_mask = 1 << (gpio & 31);
-	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-=======
 	u32 val;
 	u32 pin_mask = 1 << d->hwirq;
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mxs_gpio_port *port = gc->private;
 	void __iomem *pin_addr;
 	int edge;
 
-<<<<<<< HEAD
-	switch (type) {
-=======
 	if (!(ct->type & type))
 		if (irq_setup_alt_chip(d, type))
 			return -EINVAL;
@@ -150,7 +85,6 @@ static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 			edge = GPIO_INT_RISE_EDGE;
 		port->both_edges |= pin_mask;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IRQ_TYPE_EDGE_RISING:
 		edge = GPIO_INT_RISE_EDGE;
 		break;
@@ -168,16 +102,6 @@ static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 	}
 
 	/* set level or edge */
-<<<<<<< HEAD
-	pin_addr = port->base + PINCTRL_IRQLEV(port->id);
-	if (edge & GPIO_INT_LEV_MASK)
-		writel(pin_mask, pin_addr + MXS_SET);
-	else
-		writel(pin_mask, pin_addr + MXS_CLR);
-
-	/* set polarity */
-	pin_addr = port->base + PINCTRL_IRQPOL(port->id);
-=======
 	pin_addr = port->base + PINCTRL_IRQLEV(port);
 	if (edge & GPIO_INT_LEV_MASK) {
 		writel(pin_mask, pin_addr + MXS_SET);
@@ -189,39 +113,16 @@ static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 
 	/* set polarity */
 	pin_addr = port->base + PINCTRL_IRQPOL(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (edge & GPIO_INT_POL_MASK)
 		writel(pin_mask, pin_addr + MXS_SET);
 	else
 		writel(pin_mask, pin_addr + MXS_CLR);
 
-<<<<<<< HEAD
-	writel(1 << (gpio & 0x1f),
-	       port->base + PINCTRL_IRQSTAT(port->id) + MXS_CLR);
-=======
 	writel(pin_mask, port->base + PINCTRL_IRQSTAT(port) + MXS_CLR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* MXS has one interrupt *per* gpio port */
-static void mxs_gpio_irq_handler(u32 irq, struct irq_desc *desc)
-{
-	u32 irq_stat;
-	struct mxs_gpio_port *port = irq_get_handler_data(irq);
-	u32 gpio_irq_no_base = port->virtual_irq_start;
-
-	desc->irq_data.chip->irq_ack(&desc->irq_data);
-
-	irq_stat = readl(port->base + PINCTRL_IRQSTAT(port->id)) &
-			readl(port->base + PINCTRL_IRQEN(port->id));
-
-	while (irq_stat != 0) {
-		int irqoffset = fls(irq_stat) - 1;
-		generic_handle_irq(gpio_irq_no_base + irqoffset);
-=======
 static void mxs_flip_edge(struct mxs_gpio_port *port, u32 gpio)
 {
 	u32 bit, val, edge;
@@ -256,7 +157,6 @@ static void mxs_gpio_irq_handler(struct irq_desc *desc)
 			mxs_flip_edge(port, irqoffset);
 
 		generic_handle_domain_irq(port->domain, irqoffset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_stat &= ~(1 << irqoffset);
 	}
 }
@@ -283,52 +183,6 @@ static int mxs_gpio_set_wake_irq(struct irq_data *d, unsigned int enable)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __init mxs_gpio_init_gc(struct mxs_gpio_port *port)
-{
-	struct irq_chip_generic *gc;
-	struct irq_chip_type *ct;
-
-	gc = irq_alloc_generic_chip("gpio-mxs", 1, port->virtual_irq_start,
-				    port->base, handle_level_irq);
-	gc->private = port;
-
-	ct = gc->chip_types;
-	ct->chip.irq_ack = irq_gc_ack_set_bit;
-	ct->chip.irq_mask = irq_gc_mask_clr_bit;
-	ct->chip.irq_unmask = irq_gc_mask_set_bit;
-	ct->chip.irq_set_type = mxs_gpio_set_irq_type;
-	ct->chip.irq_set_wake = mxs_gpio_set_wake_irq;
-	ct->regs.ack = PINCTRL_IRQSTAT(port->id) + MXS_CLR;
-	ct->regs.mask = PINCTRL_IRQEN(port->id);
-
-	irq_setup_generic_chip(gc, IRQ_MSK(32), IRQ_GC_INIT_NESTED_LOCK,
-			       IRQ_NOREQUEST, 0);
-}
-
-static int mxs_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
-{
-	struct bgpio_chip *bgc = to_bgpio_chip(gc);
-	struct mxs_gpio_port *port =
-		container_of(bgc, struct mxs_gpio_port, bgc);
-
-	return port->virtual_irq_start + offset;
-}
-
-static int __devinit mxs_gpio_probe(struct platform_device *pdev)
-{
-	static void __iomem *base;
-	struct mxs_gpio_port *port;
-	struct resource *iores = NULL;
-	int err;
-
-	port = kzalloc(sizeof(struct mxs_gpio_port), GFP_KERNEL);
-	if (!port)
-		return -ENOMEM;
-
-	port->id = pdev->id;
-	port->virtual_irq_start = MXS_GPIO_IRQ_START + port->id * 32;
-=======
 static int mxs_gpio_init_gc(struct mxs_gpio_port *port, int irq_base)
 {
 	struct irq_chip_generic *gc;
@@ -422,85 +276,12 @@ static int mxs_gpio_probe(struct platform_device *pdev)
 	port->irq = platform_get_irq(pdev, 0);
 	if (port->irq < 0)
 		return port->irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * map memory region only once, as all the gpio ports
 	 * share the same one
 	 */
 	if (!base) {
-<<<<<<< HEAD
-		iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-		if (!iores) {
-			err = -ENODEV;
-			goto out_kfree;
-		}
-
-		if (!request_mem_region(iores->start, resource_size(iores),
-					pdev->name)) {
-			err = -EBUSY;
-			goto out_kfree;
-		}
-
-		base = ioremap(iores->start, resource_size(iores));
-		if (!base) {
-			err = -ENOMEM;
-			goto out_release_mem;
-		}
-	}
-	port->base = base;
-
-	port->irq = platform_get_irq(pdev, 0);
-	if (port->irq < 0) {
-		err = -EINVAL;
-		goto out_iounmap;
-	}
-
-	/*
-	 * select the pin interrupt functionality but initially
-	 * disable the interrupts
-	 */
-	writel(~0U, port->base + PINCTRL_PIN2IRQ(port->id));
-	writel(0, port->base + PINCTRL_IRQEN(port->id));
-
-	/* clear address has to be used to clear IRQSTAT bits */
-	writel(~0U, port->base + PINCTRL_IRQSTAT(port->id) + MXS_CLR);
-
-	/* gpio-mxs can be a generic irq chip */
-	mxs_gpio_init_gc(port);
-
-	/* setup one handler for each entry */
-	irq_set_chained_handler(port->irq, mxs_gpio_irq_handler);
-	irq_set_handler_data(port->irq, port);
-
-	err = bgpio_init(&port->bgc, &pdev->dev, 4,
-			 port->base + PINCTRL_DIN(port->id),
-			 port->base + PINCTRL_DOUT(port->id), NULL,
-			 port->base + PINCTRL_DOE(port->id), NULL, false);
-	if (err)
-		goto out_iounmap;
-
-	port->bgc.gc.to_irq = mxs_gpio_to_irq;
-	port->bgc.gc.base = port->id * 32;
-
-	err = gpiochip_add(&port->bgc.gc);
-	if (err)
-		goto out_bgpio_remove;
-
-	return 0;
-
-out_bgpio_remove:
-	bgpio_remove(&port->bgc);
-out_iounmap:
-	if (iores)
-		iounmap(port->base);
-out_release_mem:
-	if (iores)
-		release_mem_region(iores->start, resource_size(iores));
-out_kfree:
-	kfree(port);
-	dev_info(&pdev->dev, "%s failed with errno %d\n", __func__, err);
-=======
 		parent = of_get_parent(np);
 		base = of_iomap(parent, 0);
 		of_node_put(parent);
@@ -560,19 +341,14 @@ out_irqdomain_remove:
 	irq_domain_remove(port->domain);
 out_iounmap:
 	iounmap(port->base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static struct platform_driver mxs_gpio_driver = {
 	.driver		= {
 		.name	= "gpio-mxs",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
 		.of_match_table = mxs_gpio_dt_ids,
 		.suppress_bind_attrs = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe		= mxs_gpio_probe,
 };
@@ -587,7 +363,3 @@ MODULE_AUTHOR("Freescale Semiconductor, "
 	      "Daniel Mack <danielncaiaq.de>, "
 	      "Juergen Beisert <kernel@pengutronix.de>");
 MODULE_DESCRIPTION("Freescale MXS GPIO");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

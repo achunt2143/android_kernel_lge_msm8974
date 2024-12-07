@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-
-#include <linux/slab.h>
-#include <linux/fs.h>
-#include <linux/seq_file.h>
-#include <linux/proc_fs.h>
-
-#include "sched.h"
-
-/*
- * bump this up when changing the output format or the meaning of an existing
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * /proc/schedstat implementation
@@ -123,7 +111,6 @@ void __update_stats_enqueue_sleeper(struct rq *rq, struct task_struct *p,
  * Current schedstat API version.
  *
  * Bump this up when changing the output format or the meaning of an existing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * format, so that tools can adapt (or abort)
  */
 #define SCHEDSTAT_VERSION 15
@@ -131,34 +118,18 @@ void __update_stats_enqueue_sleeper(struct rq *rq, struct task_struct *p,
 static int show_schedstat(struct seq_file *seq, void *v)
 {
 	int cpu;
-<<<<<<< HEAD
-	int mask_len = DIV_ROUND_UP(NR_CPUS, 32) * 9;
-	char *mask_str = kmalloc(mask_len, GFP_KERNEL);
-
-	if (mask_str == NULL)
-		return -ENOMEM;
-
-	seq_printf(seq, "version %d\n", SCHEDSTAT_VERSION);
-	seq_printf(seq, "timestamp %lu\n", jiffies);
-	for_each_online_cpu(cpu) {
-		struct rq *rq = cpu_rq(cpu);
-=======
 
 	if (v == (void *)1) {
 		seq_printf(seq, "version %d\n", SCHEDSTAT_VERSION);
 		seq_printf(seq, "timestamp %lu\n", jiffies);
 	} else {
 		struct rq *rq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 		struct sched_domain *sd;
 		int dcount = 0;
 #endif
-<<<<<<< HEAD
-=======
 		cpu = (unsigned long)(v - 2);
 		rq = cpu_rq(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* runqueue-specific stats */
 		seq_printf(seq,
@@ -177,14 +148,8 @@ static int show_schedstat(struct seq_file *seq, void *v)
 		for_each_domain(cpu, sd) {
 			enum cpu_idle_type itype;
 
-<<<<<<< HEAD
-			cpumask_scnprintf(mask_str, mask_len,
-					  sched_domain_span(sd));
-			seq_printf(seq, "domain%d %s", dcount++, mask_str);
-=======
 			seq_printf(seq, "domain%d %*pb", dcount++,
 				   cpumask_pr_args(sched_domain_span(sd)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (itype = CPU_IDLE; itype < CPU_MAX_IDLE_TYPES;
 					itype++) {
 				seq_printf(seq, " %u %u %u %u %u %u %u %u",
@@ -208,36 +173,6 @@ static int show_schedstat(struct seq_file *seq, void *v)
 		rcu_read_unlock();
 #endif
 	}
-<<<<<<< HEAD
-	kfree(mask_str);
-	return 0;
-}
-
-static int schedstat_open(struct inode *inode, struct file *file)
-{
-	unsigned int size = PAGE_SIZE * (1 + num_online_cpus() / 32);
-	char *buf = kmalloc(size, GFP_KERNEL);
-	struct seq_file *m;
-	int res;
-
-	if (!buf)
-		return -ENOMEM;
-	res = single_open(file, show_schedstat, NULL);
-	if (!res) {
-		m = file->private_data;
-		m->buf = buf;
-		m->size = size;
-	} else
-		kfree(buf);
-	return res;
-}
-
-static const struct file_operations proc_schedstat_operations = {
-	.open    = schedstat_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = single_release,
-=======
 	return 0;
 }
 
@@ -286,19 +221,11 @@ static const struct seq_operations schedstat_sops = {
 	.next  = schedstat_next,
 	.stop  = schedstat_stop,
 	.show  = show_schedstat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init proc_schedstat_init(void)
 {
-<<<<<<< HEAD
-	proc_create("schedstat", 0, NULL, &proc_schedstat_operations);
-	return 0;
-}
-module_init(proc_schedstat_init);
-=======
 	proc_create_seq("schedstat", 0, NULL, &schedstat_sops);
 	return 0;
 }
 subsys_initcall(proc_schedstat_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

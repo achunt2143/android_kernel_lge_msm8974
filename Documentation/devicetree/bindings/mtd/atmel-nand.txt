@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-Atmel NAND flash
-
-Required properties:
-- compatible : "atmel,at91rm9200-nand".
-- reg : should specify localbus address and size used for the chip,
-	and if availlable the ECC.
-=======
 Atmel NAND flash controller bindings
 
 The NAND flash controller node should be defined under the EBI bus (see
@@ -139,7 +131,6 @@ Required properties:
 	PMECC and PMECC Error Location controller.
 	The PMECC lookup table address and size in ROM is optional. If not
 	specified, driver will build it in runtime.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 - atmel,nand-addr-offset : offset for the address latch.
 - atmel,nand-cmd-offset : offset for the command latch.
 - #address-cells, #size-cells : Must be present if the device has sub-nodes
@@ -149,14 +140,6 @@ Required properties:
   optional gpio and may be set to 0 if not present.
 
 Optional properties:
-<<<<<<< HEAD
-- nand-ecc-mode : String, operation mode of the NAND ecc mode, soft by default.
-  Supported values are: "none", "soft", "hw", "hw_syndrome", "hw_oob_first",
-  "soft_bch".
-- nand-bus-width : 8 or 16 bus width if not present 8
-- nand-on-flash-bbt: boolean to enable on flash bbt option if not present false
-
-=======
 - atmel,nand-has-dma : boolean to support dma transfer for nand read/write.
 - nand-ecc-mode : String, operation mode of the NAND ecc mode, soft by default.
   Supported values are: "none", "soft", "hw", "hw_syndrome", "hw_oob_first",
@@ -184,7 +167,6 @@ Required properties:
 Optional properties:
 - atmel,write-by-sram: boolean to enable NFC write by SRAM.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Examples:
 nand0: nand@40000000,0 {
 	compatible = "atmel,at91rm9200-nand";
@@ -205,8 +187,6 @@ nand0: nand@40000000,0 {
 		...
 	};
 };
-<<<<<<< HEAD
-=======
 
 /* for PMECC supported chips */
 nand0: nand@40000000 {
@@ -254,4 +234,3 @@ nand0: nand@40000000 {
 		>;
 	};
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

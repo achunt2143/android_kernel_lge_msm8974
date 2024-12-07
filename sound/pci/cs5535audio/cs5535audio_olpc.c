@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OLPC XO-1 additional sound features
  *
  * Copyright © 2006  Jaya Kumar <jayakumar.lkml@gmail.com>
  * Copyright © 2007-2008  Andres Salomon <dilinger@debian.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <sound/core.h>
 #include <sound/info.h>
@@ -43,12 +32,8 @@ void olpc_analog_input(struct snd_ac97 *ac97, int on)
 	err = snd_ac97_update_bits(ac97, AC97_AD_TEST2,
 			1 << AC97_AD_HPFD_SHIFT, on << AC97_AD_HPFD_SHIFT);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "setting High Pass Filter - %d\n", err);
-=======
 		dev_err(ac97->bus->card->dev,
 			"setting High Pass Filter - %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -70,11 +55,7 @@ void olpc_mic_bias(struct snd_ac97 *ac97, int on)
 	err = snd_ac97_update_bits(ac97, AC97_AD_MISC,
 			1 << AC97_AD_VREFD_SHIFT, on << AC97_AD_VREFD_SHIFT);
 	if (err < 0)
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "setting MIC Bias - %d\n", err);
-=======
 		dev_err(ac97->bus->card->dev, "setting MIC Bias - %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int olpc_dc_info(struct snd_kcontrol *kctl,
@@ -130,11 +111,7 @@ static int olpc_mic_put(struct snd_kcontrol *kctl, struct snd_ctl_elem_value *v)
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new olpc_cs5535audio_ctls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new olpc_cs5535audio_ctls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "DC Mode Enable",
@@ -153,13 +130,8 @@ static const struct snd_kcontrol_new olpc_cs5535audio_ctls[] = {
 },
 };
 
-<<<<<<< HEAD
-void __devinit olpc_prequirks(struct snd_card *card,
-		struct snd_ac97_template *ac97)
-=======
 void olpc_prequirks(struct snd_card *card,
 		    struct snd_ac97_template *ac97)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!machine_is_olpc())
 		return;
@@ -169,11 +141,7 @@ void olpc_prequirks(struct snd_card *card,
 		ac97->scaps |= AC97_SCAP_INV_EAPD;
 }
 
-<<<<<<< HEAD
-int __devinit olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
-=======
 int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ctl_elem_id elem;
 	int i, err;
@@ -182,11 +150,7 @@ int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
 		return 0;
 
 	if (gpio_request(OLPC_GPIO_MIC_AC, DRV_NAME)) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": unable to allocate MIC GPIO\n");
-=======
 		dev_err(card->dev, "unable to allocate MIC GPIO\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	gpio_direction_output(OLPC_GPIO_MIC_AC, 0);
@@ -194,36 +158,21 @@ int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
 	/* drop the original AD1888 HPF control */
 	memset(&elem, 0, sizeof(elem));
 	elem.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-<<<<<<< HEAD
-	strncpy(elem.name, "High Pass Filter Enable", sizeof(elem.name));
-=======
 	strscpy(elem.name, "High Pass Filter Enable", sizeof(elem.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ctl_remove_id(card, &elem);
 
 	/* drop the original V_REFOUT control */
 	memset(&elem, 0, sizeof(elem));
 	elem.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-<<<<<<< HEAD
-	strncpy(elem.name, "V_REFOUT Enable", sizeof(elem.name));
-=======
 	strscpy(elem.name, "V_REFOUT Enable", sizeof(elem.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ctl_remove_id(card, &elem);
 
 	/* add the OLPC-specific controls */
 	for (i = 0; i < ARRAY_SIZE(olpc_cs5535audio_ctls); i++) {
 		err = snd_ctl_add(card, snd_ctl_new1(&olpc_cs5535audio_ctls[i],
 				ac97->private_data));
-<<<<<<< HEAD
-		if (err < 0) {
-			gpio_free(OLPC_GPIO_MIC_AC);
-			return err;
-		}
-=======
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* turn off the mic by default */
@@ -231,14 +180,8 @@ int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
 	return 0;
 }
 
-<<<<<<< HEAD
-void __devexit olpc_quirks_cleanup(void)
-{
-	gpio_free(OLPC_GPIO_MIC_AC);
-=======
 void olpc_quirks_cleanup(void)
 {
 	if (machine_is_olpc())
 		gpio_free(OLPC_GPIO_MIC_AC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iSCSI transport class definitions
  *
@@ -9,23 +6,6 @@
  * Copyright (C) Mike Christie, 2004 - 2005
  * Copyright (C) Dmitry Yusupov, 2004 - 2005
  * Copyright (C) Alex Aizman, 2004 - 2005
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -44,8 +24,6 @@
 
 #define ISCSI_TRANSPORT_VERSION "2.0-870"
 
-<<<<<<< HEAD
-=======
 #define ISCSI_SEND_MAX_ALLOWED  10
 
 #define CREATE_TRACE_POINTS
@@ -60,7 +38,6 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(iscsi_dbg_session);
 EXPORT_TRACEPOINT_SYMBOL_GPL(iscsi_dbg_tcp);
 EXPORT_TRACEPOINT_SYMBOL_GPL(iscsi_dbg_sw_tcp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dbg_session;
 module_param_named(debug_session, dbg_session, int,
 		   S_IRUGO | S_IWUSR);
@@ -83,12 +60,9 @@ MODULE_PARM_DESC(debug_conn,
 			iscsi_cls_session_printk(KERN_INFO, _session,	\
 						 "%s: " dbg_fmt,	\
 						 __func__, ##arg);	\
-<<<<<<< HEAD
-=======
 		iscsi_dbg_trace(trace_iscsi_dbg_trans_session,		\
 				&(_session)->dev,			\
 				"%s " dbg_fmt, __func__, ##arg);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0);
 
 #define ISCSI_DBG_TRANS_CONN(_conn, dbg_fmt, arg...)			\
@@ -96,14 +70,10 @@ MODULE_PARM_DESC(debug_conn,
 		if (dbg_conn)						\
 			iscsi_cls_conn_printk(KERN_INFO, _conn,		\
 					      "%s: " dbg_fmt,		\
-<<<<<<< HEAD
-					      __func__, ##arg);	\
-=======
 					      __func__, ##arg);		\
 		iscsi_dbg_trace(trace_iscsi_dbg_trans_conn,		\
 				&(_conn)->dev,				\
 				"%s " dbg_fmt, __func__, ##arg);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0);
 
 struct iscsi_internal {
@@ -116,17 +86,12 @@ struct iscsi_internal {
 	struct transport_container session_cont;
 };
 
-<<<<<<< HEAD
-static atomic_t iscsi_session_nr; /* sysfs session id for next new session */
-static struct workqueue_struct *iscsi_eh_timer_workq;
-=======
 static DEFINE_IDR(iscsi_ep_idr);
 static DEFINE_MUTEX(iscsi_ep_idr_mutex);
 
 static atomic_t iscsi_session_nr; /* sysfs session id for next new session */
 
 static struct workqueue_struct *iscsi_conn_cleanup_workq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_IDA(iscsi_sess_ida);
 /*
@@ -163,15 +128,11 @@ show_transport_handle(struct device *dev, struct device_attribute *attr,
 		      char *buf)
 {
 	struct iscsi_internal *priv = dev_to_iscsi_internal(dev);
-<<<<<<< HEAD
-	return sprintf(buf, "%llu\n", (unsigned long long)iscsi_handle(priv->iscsi_transport));
-=======
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 	return sysfs_emit(buf, "%llu\n",
 		  (unsigned long long)iscsi_handle(priv->iscsi_transport));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(handle, S_IRUGO, show_transport_handle, NULL);
 
@@ -181,11 +142,7 @@ show_transport_##name(struct device *dev, 				\
 		      struct device_attribute *attr,char *buf)		\
 {									\
 	struct iscsi_internal *priv = dev_to_iscsi_internal(dev);	\
-<<<<<<< HEAD
-	return sprintf(buf, format"\n", priv->iscsi_transport->name);	\
-=======
 	return sysfs_emit(buf, format"\n", priv->iscsi_transport->name);\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }									\
 static DEVICE_ATTR(name, S_IRUGO, show_transport_##name, NULL);
 
@@ -214,14 +171,11 @@ struct device_attribute dev_attr_##_prefix##_##_name =	\
 static void iscsi_endpoint_release(struct device *dev)
 {
 	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
-<<<<<<< HEAD
-=======
 
 	mutex_lock(&iscsi_ep_idr_mutex);
 	idr_remove(&iscsi_ep_idr, ep->id);
 	mutex_unlock(&iscsi_ep_idr_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ep);
 }
 
@@ -234,11 +188,7 @@ static ssize_t
 show_ep_handle(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
-<<<<<<< HEAD
-	return sprintf(buf, "%llu\n", (unsigned long long) ep->id);
-=======
 	return sysfs_emit(buf, "%d\n", ep->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static ISCSI_ATTR(ep, handle, S_IRUGO, show_ep_handle, NULL);
 
@@ -251,56 +201,16 @@ static struct attribute_group iscsi_endpoint_group = {
 	.attrs = iscsi_endpoint_attrs,
 };
 
-<<<<<<< HEAD
-#define ISCSI_MAX_EPID -1
-
-static int iscsi_match_epid(struct device *dev, void *data)
-{
-	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
-	uint64_t *epid = (uint64_t *) data;
-
-	return *epid == ep->id;
-}
-
-struct iscsi_endpoint *
-iscsi_create_endpoint(int dd_size)
-{
-	struct device *dev;
-	struct iscsi_endpoint *ep;
-	uint64_t id;
-	int err;
-
-	for (id = 1; id < ISCSI_MAX_EPID; id++) {
-		dev = class_find_device(&iscsi_endpoint_class, NULL, &id,
-					iscsi_match_epid);
-		if (!dev)
-			break;
-	}
-	if (id == ISCSI_MAX_EPID) {
-		printk(KERN_ERR "Too many connections. Max supported %u\n",
-		       ISCSI_MAX_EPID - 1);
-		return NULL;
-	}
-=======
 struct iscsi_endpoint *
 iscsi_create_endpoint(int dd_size)
 {
 	struct iscsi_endpoint *ep;
 	int err, id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep = kzalloc(sizeof(*ep) + dd_size, GFP_KERNEL);
 	if (!ep)
 		return NULL;
 
-<<<<<<< HEAD
-	ep->id = id;
-	ep->dev.class = &iscsi_endpoint_class;
-	dev_set_name(&ep->dev, "ep-%llu", (unsigned long long) id);
-	err = device_register(&ep->dev);
-        if (err)
-                goto free_ep;
-=======
 	mutex_lock(&iscsi_ep_idr_mutex);
 
 	/*
@@ -322,7 +232,6 @@ iscsi_create_endpoint(int dd_size)
 	err = device_register(&ep->dev);
         if (err)
 		goto put_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sysfs_create_group(&ep->dev.kobj, &iscsi_endpoint_group);
 	if (err)
@@ -336,15 +245,12 @@ unregister_dev:
 	device_unregister(&ep->dev);
 	return NULL;
 
-<<<<<<< HEAD
-=======
 put_dev:
 	mutex_lock(&iscsi_ep_idr_mutex);
 	idr_remove(&iscsi_ep_idr, id);
 	mutex_unlock(&iscsi_ep_idr_mutex);
 	put_device(&ep->dev);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_ep:
 	kfree(ep);
 	return NULL;
@@ -358,24 +264,6 @@ void iscsi_destroy_endpoint(struct iscsi_endpoint *ep)
 }
 EXPORT_SYMBOL_GPL(iscsi_destroy_endpoint);
 
-<<<<<<< HEAD
-struct iscsi_endpoint *iscsi_lookup_endpoint(u64 handle)
-{
-	struct iscsi_endpoint *ep;
-	struct device *dev;
-
-	dev = class_find_device(&iscsi_endpoint_class, NULL, &handle,
-				iscsi_match_epid);
-	if (!dev)
-		return NULL;
-
-	ep = iscsi_dev_to_endpoint(dev);
-	/*
-	 * we can drop this now because the interface will prevent
-	 * removals and lookups from racing.
-	 */
-	put_device(dev);
-=======
 void iscsi_put_endpoint(struct iscsi_endpoint *ep)
 {
 	put_device(&ep->dev);
@@ -400,7 +288,6 @@ struct iscsi_endpoint *iscsi_lookup_endpoint(u64 handle)
 	get_device(&ep->dev);
 unlock:
 	mutex_unlock(&iscsi_ep_idr_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ep;
 }
 EXPORT_SYMBOL_GPL(iscsi_lookup_endpoint);
@@ -443,25 +330,15 @@ show_##type##_##name(struct device *dev, struct device_attribute *attr,	\
 	iscsi_iface_attr_show(type, name, ISCSI_NET_PARAM, param)	\
 static ISCSI_IFACE_ATTR(type, name, S_IRUGO, show_##type##_##name, NULL);
 
-<<<<<<< HEAD
-/* generic read only ipvi4 attribute */
-=======
 #define iscsi_iface_attr(type, name, param)				\
 	iscsi_iface_attr_show(type, name, ISCSI_IFACE_PARAM, param)	\
 static ISCSI_IFACE_ATTR(type, name, S_IRUGO, show_##type##_##name, NULL);
 
 /* generic read only ipv4 attribute */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iscsi_iface_net_attr(ipv4_iface, ipaddress, ISCSI_NET_PARAM_IPV4_ADDR);
 iscsi_iface_net_attr(ipv4_iface, gateway, ISCSI_NET_PARAM_IPV4_GW);
 iscsi_iface_net_attr(ipv4_iface, subnet, ISCSI_NET_PARAM_IPV4_SUBNET);
 iscsi_iface_net_attr(ipv4_iface, bootproto, ISCSI_NET_PARAM_IPV4_BOOTPROTO);
-<<<<<<< HEAD
-
-/* generic read only ipv6 attribute */
-iscsi_iface_net_attr(ipv6_iface, ipaddress, ISCSI_NET_PARAM_IPV6_ADDR);
-iscsi_iface_net_attr(ipv6_iface, link_local_addr, ISCSI_NET_PARAM_IPV6_LINKLOCAL);
-=======
 iscsi_iface_net_attr(ipv4_iface, dhcp_dns_address_en,
 		     ISCSI_NET_PARAM_IPV4_DHCP_DNS_ADDR_EN);
 iscsi_iface_net_attr(ipv4_iface, dhcp_slp_da_info_en,
@@ -492,14 +369,11 @@ iscsi_iface_net_attr(ipv4_iface, ttl, ISCSI_NET_PARAM_IPV4_TTL);
 iscsi_iface_net_attr(ipv6_iface, ipaddress, ISCSI_NET_PARAM_IPV6_ADDR);
 iscsi_iface_net_attr(ipv6_iface, link_local_addr,
 		     ISCSI_NET_PARAM_IPV6_LINKLOCAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iscsi_iface_net_attr(ipv6_iface, router_addr, ISCSI_NET_PARAM_IPV6_ROUTER);
 iscsi_iface_net_attr(ipv6_iface, ipaddr_autocfg,
 		     ISCSI_NET_PARAM_IPV6_ADDR_AUTOCFG);
 iscsi_iface_net_attr(ipv6_iface, link_local_autocfg,
 		     ISCSI_NET_PARAM_IPV6_LINKLOCAL_AUTOCFG);
-<<<<<<< HEAD
-=======
 iscsi_iface_net_attr(ipv6_iface, link_local_state,
 		     ISCSI_NET_PARAM_IPV6_LINKLOCAL_STATE);
 iscsi_iface_net_attr(ipv6_iface, router_state,
@@ -521,7 +395,6 @@ iscsi_iface_net_attr(ipv6_iface, dup_addr_detect_cnt,
 		     ISCSI_NET_PARAM_IPV6_DUP_ADDR_DETECT_CNT);
 iscsi_iface_net_attr(ipv6_iface, router_adv_link_mtu,
 		     ISCSI_NET_PARAM_IPV6_RTR_ADV_LINK_MTU);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* common read only iface attribute */
 iscsi_iface_net_attr(iface, enabled, ISCSI_NET_PARAM_IFACE_ENABLE);
@@ -530,8 +403,6 @@ iscsi_iface_net_attr(iface, vlan_priority, ISCSI_NET_PARAM_VLAN_PRIORITY);
 iscsi_iface_net_attr(iface, vlan_enabled, ISCSI_NET_PARAM_VLAN_ENABLED);
 iscsi_iface_net_attr(iface, mtu, ISCSI_NET_PARAM_MTU);
 iscsi_iface_net_attr(iface, port, ISCSI_NET_PARAM_PORT);
-<<<<<<< HEAD
-=======
 iscsi_iface_net_attr(iface, ipaddress_state, ISCSI_NET_PARAM_IPADDR_STATE);
 iscsi_iface_net_attr(iface, delayed_ack_en, ISCSI_NET_PARAM_DELAYED_ACK_EN);
 iscsi_iface_net_attr(iface, tcp_nagle_disable,
@@ -566,7 +437,6 @@ iscsi_iface_attr(iface, discovery_logout,
 iscsi_iface_attr(iface, strict_login_comp_en,
 		 ISCSI_IFACE_PARAM_STRICT_LOGIN_COMP_EN);
 iscsi_iface_attr(iface, initiator_name, ISCSI_IFACE_PARAM_INITIATOR_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 					  struct attribute *attr, int i)
@@ -574,9 +444,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct iscsi_iface *iface = iscsi_dev_to_iface(dev);
 	struct iscsi_transport *t = iface->transport;
-<<<<<<< HEAD
-	int param;
-=======
 	int param = -1;
 
 	if (attr == &dev_attr_iface_def_taskmgmt_tmo.attr)
@@ -618,7 +485,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 
 	if (param != -1)
 		return t->attr_is_visible(ISCSI_IFACE_PARAM, param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (attr == &dev_attr_iface_enabled.attr)
 		param = ISCSI_NET_PARAM_IFACE_ENABLE;
@@ -632,8 +498,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_NET_PARAM_MTU;
 	else if (attr == &dev_attr_iface_port.attr)
 		param = ISCSI_NET_PARAM_PORT;
-<<<<<<< HEAD
-=======
 	else if (attr == &dev_attr_iface_ipaddress_state.attr)
 		param = ISCSI_NET_PARAM_IPADDR_STATE;
 	else if (attr == &dev_attr_iface_delayed_ack_en.attr)
@@ -652,7 +516,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_NET_PARAM_CACHE_ID;
 	else if (attr == &dev_attr_iface_redirect_en.attr)
 		param = ISCSI_NET_PARAM_REDIRECT_EN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (iface->iface_type == ISCSI_IFACE_TYPE_IPV4) {
 		if (attr == &dev_attr_ipv4_iface_ipaddress.attr)
 			param = ISCSI_NET_PARAM_IPV4_ADDR;
@@ -662,8 +525,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 			param = ISCSI_NET_PARAM_IPV4_SUBNET;
 		else if (attr == &dev_attr_ipv4_iface_bootproto.attr)
 			param = ISCSI_NET_PARAM_IPV4_BOOTPROTO;
-<<<<<<< HEAD
-=======
 		else if (attr ==
 			 &dev_attr_ipv4_iface_dhcp_dns_address_en.attr)
 			param = ISCSI_NET_PARAM_IPV4_DHCP_DNS_ADDR_EN;
@@ -700,7 +561,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 			param = ISCSI_NET_PARAM_IPV4_IN_FORWARD_EN;
 		else if (attr == &dev_attr_ipv4_iface_ttl.attr)
 			param = ISCSI_NET_PARAM_IPV4_TTL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			return 0;
 	} else if (iface->iface_type == ISCSI_IFACE_TYPE_IPV6) {
@@ -714,8 +574,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 			param = ISCSI_NET_PARAM_IPV6_ADDR_AUTOCFG;
 		else if (attr == &dev_attr_ipv6_iface_link_local_autocfg.attr)
 			param = ISCSI_NET_PARAM_IPV6_LINKLOCAL_AUTOCFG;
-<<<<<<< HEAD
-=======
 		else if (attr == &dev_attr_ipv6_iface_link_local_state.attr)
 			param = ISCSI_NET_PARAM_IPV6_LINKLOCAL_STATE;
 		else if (attr == &dev_attr_ipv6_iface_router_state.attr)
@@ -741,7 +599,6 @@ static umode_t iscsi_iface_attr_is_visible(struct kobject *kobj,
 			param = ISCSI_NET_PARAM_IPV6_DUP_ADDR_DETECT_CNT;
 		else if (attr == &dev_attr_ipv6_iface_router_adv_link_mtu.attr)
 			param = ISCSI_NET_PARAM_IPV6_RTR_ADV_LINK_MTU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			return 0;
 	} else {
@@ -768,8 +625,6 @@ static struct attribute *iscsi_iface_attrs[] = {
 	&dev_attr_ipv6_iface_link_local_autocfg.attr,
 	&dev_attr_iface_mtu.attr,
 	&dev_attr_iface_port.attr,
-<<<<<<< HEAD
-=======
 	&dev_attr_iface_ipaddress_state.attr,
 	&dev_attr_iface_delayed_ack_en.attr,
 	&dev_attr_iface_tcp_nagle_disable.attr,
@@ -823,7 +678,6 @@ static struct attribute *iscsi_iface_attrs[] = {
 	&dev_attr_ipv6_iface_nd_stale_tmo.attr,
 	&dev_attr_ipv6_iface_dup_addr_detect_cnt.attr,
 	&dev_attr_ipv6_iface_router_adv_link_mtu.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -832,8 +686,6 @@ static struct attribute_group iscsi_iface_group = {
 	.is_visible = iscsi_iface_attr_is_visible,
 };
 
-<<<<<<< HEAD
-=======
 /* convert iscsi_ipaddress_state values to ascii string name */
 static const struct {
 	enum iscsi_ipaddress_state	value;
@@ -889,7 +741,6 @@ char *iscsi_get_router_state_name(enum iscsi_router_state router_state)
 }
 EXPORT_SYMBOL_GPL(iscsi_get_router_state_name);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iscsi_iface *
 iscsi_create_iface(struct Scsi_Host *shost, struct iscsi_transport *transport,
 		   uint32_t iface_type, uint32_t iface_num, int dd_size)
@@ -917,11 +768,7 @@ iscsi_create_iface(struct Scsi_Host *shost, struct iscsi_transport *transport,
 
 	err = device_register(&iface->dev);
 	if (err)
-<<<<<<< HEAD
-		goto free_iface;
-=======
 		goto put_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sysfs_create_group(&iface->dev.kobj, &iscsi_iface_group);
 	if (err)
@@ -935,14 +782,8 @@ unreg_iface:
 	device_unregister(&iface->dev);
 	return NULL;
 
-<<<<<<< HEAD
-free_iface:
-	put_device(iface->dev.parent);
-	kfree(iface);
-=======
 put_dev:
 	put_device(&iface->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(iscsi_create_iface);
@@ -955,8 +796,6 @@ void iscsi_destroy_iface(struct iscsi_iface *iface)
 EXPORT_SYMBOL_GPL(iscsi_destroy_iface);
 
 /*
-<<<<<<< HEAD
-=======
  * Interface to display flash node params to sysfs
  */
 
@@ -1629,7 +1468,6 @@ void iscsi_destroy_all_flashnode(struct Scsi_Host *shost)
 EXPORT_SYMBOL_GPL(iscsi_destroy_all_flashnode);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BSG support
  */
 /**
@@ -1699,29 +1537,11 @@ iscsi_bsg_host_add(struct Scsi_Host *shost, struct iscsi_cls_host *ihost)
 	struct iscsi_internal *i = to_iscsi_internal(shost->transportt);
 	struct request_queue *q;
 	char bsg_name[20];
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i->iscsi_transport->bsg_request)
 		return -ENOTSUPP;
 
 	snprintf(bsg_name, sizeof(bsg_name), "iscsi_host%d", shost->host_no);
-<<<<<<< HEAD
-
-	q = __scsi_alloc_queue(shost, bsg_request_fn);
-	if (!q)
-		return -ENOMEM;
-
-	ret = bsg_setup_queue(dev, q, bsg_name, iscsi_bsg_host_dispatch, 0);
-	if (ret) {
-		shost_printk(KERN_ERR, shost, "bsg interface failed to "
-			     "initialize - no request queue\n");
-		blk_cleanup_queue(q);
-		return ret;
-	}
-=======
 	q = bsg_setup_queue(dev, bsg_name, iscsi_bsg_host_dispatch, NULL, 0);
 	if (IS_ERR(q)) {
 		shost_printk(KERN_ERR, shost, "bsg interface failed to "
@@ -1729,7 +1549,6 @@ iscsi_bsg_host_add(struct Scsi_Host *shost, struct iscsi_cls_host *ihost)
 		return PTR_ERR(q);
 	}
 	__scsi_init_queue(shost, q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ihost->bsg_q = q;
 	return 0;
@@ -1742,10 +1561,6 @@ static int iscsi_setup_host(struct transport_container *tc, struct device *dev,
 	struct iscsi_cls_host *ihost = shost->shost_data;
 
 	memset(ihost, 0, sizeof(*ihost));
-<<<<<<< HEAD
-	atomic_set(&ihost->nr_scans, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&ihost->mutex);
 
 	iscsi_bsg_host_add(shost, ihost);
@@ -1760,14 +1575,7 @@ static int iscsi_remove_host(struct transport_container *tc,
 	struct Scsi_Host *shost = dev_to_shost(dev);
 	struct iscsi_cls_host *ihost = shost->shost_data;
 
-<<<<<<< HEAD
-	if (ihost->bsg_q) {
-		bsg_remove_queue(ihost->bsg_q);
-		blk_cleanup_queue(ihost->bsg_q);
-	}
-=======
 	bsg_remove_queue(ihost->bsg_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1795,10 +1603,7 @@ static DEFINE_MUTEX(rx_queue_mutex);
 static LIST_HEAD(sesslist);
 static DEFINE_SPINLOCK(sesslock);
 static LIST_HEAD(connlist);
-<<<<<<< HEAD
-=======
 static LIST_HEAD(connlist_err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(connlock);
 
 static uint32_t iscsi_conn_get_sid(struct iscsi_cls_conn *conn)
@@ -1872,14 +1677,6 @@ static const char *iscsi_session_state_name(int state)
 	return name;
 }
 
-<<<<<<< HEAD
-int iscsi_session_chkready(struct iscsi_cls_session *session)
-{
-	unsigned long flags;
-	int err;
-
-	spin_lock_irqsave(&session->lock, flags);
-=======
 static char *iscsi_session_target_state_name[] = {
 	[ISCSI_SESSION_TARGET_UNBOUND]   = "UNBOUND",
 	[ISCSI_SESSION_TARGET_ALLOCATED] = "ALLOCATED",
@@ -1891,7 +1688,6 @@ int iscsi_session_chkready(struct iscsi_cls_session *session)
 {
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (session->state) {
 	case ISCSI_SESSION_LOGGED_IN:
 		err = 0;
@@ -1906,10 +1702,6 @@ int iscsi_session_chkready(struct iscsi_cls_session *session)
 		err = DID_NO_CONNECT << 16;
 		break;
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&session->lock, flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(iscsi_session_chkready);
@@ -1962,37 +1754,11 @@ void iscsi_host_for_each_session(struct Scsi_Host *shost,
 }
 EXPORT_SYMBOL_GPL(iscsi_host_for_each_session);
 
-<<<<<<< HEAD
-/**
- * iscsi_scan_finished - helper to report when running scans are done
- * @shost: scsi host
- * @time: scan run time
- *
- * This function can be used by drives like qla4xxx to report to the scsi
- * layer when the scans it kicked off at module load time are done.
- */
-int iscsi_scan_finished(struct Scsi_Host *shost, unsigned long time)
-{
-	struct iscsi_cls_host *ihost = shost->shost_data;
-	/*
-	 * qla4xxx will have kicked off some session unblocks before calling
-	 * scsi_scan_host, so just wait for them to complete.
-	 */
-	return !atomic_read(&ihost->nr_scans);
-}
-EXPORT_SYMBOL_GPL(iscsi_scan_finished);
-
-struct iscsi_scan_data {
-	unsigned int channel;
-	unsigned int id;
-	unsigned int lun;
-=======
 struct iscsi_scan_data {
 	unsigned int channel;
 	unsigned int id;
 	u64 lun;
 	enum scsi_scan_mode rescan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int iscsi_user_scan_session(struct device *dev, void *data)
@@ -2027,11 +1793,6 @@ static int iscsi_user_scan_session(struct device *dev, void *data)
 		if ((scan_data->channel == SCAN_WILD_CARD ||
 		     scan_data->channel == 0) &&
 		    (scan_data->id == SCAN_WILD_CARD ||
-<<<<<<< HEAD
-		     scan_data->id == id))
-			scsi_scan_target(&session->dev, 0, id,
-					 scan_data->lun, 1);
-=======
 		     scan_data->id == id)) {
 			scsi_scan_target(&session->dev, 0, id,
 					 scan_data->lun, scan_data->rescan);
@@ -2039,7 +1800,6 @@ static int iscsi_user_scan_session(struct device *dev, void *data)
 			session->target_state = ISCSI_SESSION_TARGET_SCANNED;
 			spin_unlock_irqrestore(&session->lock, flags);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 user_scan_exit:
@@ -2049,21 +1809,14 @@ user_scan_exit:
 }
 
 static int iscsi_user_scan(struct Scsi_Host *shost, uint channel,
-<<<<<<< HEAD
-			   uint id, uint lun)
-=======
 			   uint id, u64 lun)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_scan_data scan_data;
 
 	scan_data.channel = channel;
 	scan_data.id = id;
 	scan_data.lun = lun;
-<<<<<<< HEAD
-=======
 	scan_data.rescan = SCSI_SCAN_MANUAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return device_for_each_child(&shost->shost_gendev, &scan_data,
 				     iscsi_user_scan_session);
@@ -2073,25 +1826,14 @@ static void iscsi_scan_session(struct work_struct *work)
 {
 	struct iscsi_cls_session *session =
 			container_of(work, struct iscsi_cls_session, scan_work);
-<<<<<<< HEAD
-	struct Scsi_Host *shost = iscsi_session_to_shost(session);
-	struct iscsi_cls_host *ihost = shost->shost_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_scan_data scan_data;
 
 	scan_data.channel = 0;
 	scan_data.id = SCAN_WILD_CARD;
 	scan_data.lun = SCAN_WILD_CARD;
-<<<<<<< HEAD
-
-	iscsi_user_scan_session(&session->dev, &scan_data);
-	atomic_dec(&ihost->nr_scans);
-=======
 	scan_data.rescan = SCSI_SCAN_RESCAN;
 
 	iscsi_user_scan_session(&session->dev, &scan_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2149,21 +1891,12 @@ static void session_recovery_timedout(struct work_struct *work)
 	}
 	spin_unlock_irqrestore(&session->lock, flags);
 
-<<<<<<< HEAD
-	if (session->transport->session_recovery_timedout)
-		session->transport->session_recovery_timedout(session);
-
-	ISCSI_DBG_TRANS_SESSION(session, "Unblocking SCSI target\n");
-	scsi_target_unblock(&session->dev);
-	ISCSI_DBG_TRANS_SESSION(session, "Completed unblocking SCSI target\n");
-=======
 	ISCSI_DBG_TRANS_SESSION(session, "Unblocking SCSI target\n");
 	scsi_target_unblock(&session->dev, SDEV_TRANSPORT_OFFLINE);
 	ISCSI_DBG_TRANS_SESSION(session, "Completed unblocking SCSI target\n");
 
 	if (session->transport->session_recovery_timedout)
 		session->transport->session_recovery_timedout(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __iscsi_unblock_session(struct work_struct *work)
@@ -2171,42 +1904,16 @@ static void __iscsi_unblock_session(struct work_struct *work)
 	struct iscsi_cls_session *session =
 			container_of(work, struct iscsi_cls_session,
 				     unblock_work);
-<<<<<<< HEAD
-	struct Scsi_Host *shost = iscsi_session_to_shost(session);
-	struct iscsi_cls_host *ihost = shost->shost_data;
-	unsigned long flags;
-
-	ISCSI_DBG_TRANS_SESSION(session, "Unblocking session\n");
-	/*
-	 * The recovery and unblock work get run from the same workqueue,
-	 * so try to cancel it if it was going to run after this unblock.
-	 */
-	cancel_delayed_work(&session->recovery_work);
-=======
 	unsigned long flags;
 
 	ISCSI_DBG_TRANS_SESSION(session, "Unblocking session\n");
 
 	cancel_delayed_work_sync(&session->recovery_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&session->lock, flags);
 	session->state = ISCSI_SESSION_LOGGED_IN;
 	spin_unlock_irqrestore(&session->lock, flags);
 	/* start IO */
-<<<<<<< HEAD
-	scsi_target_unblock(&session->dev);
-	/*
-	 * Only do kernel scanning if the driver is properly hooked into
-	 * the async scanning code (drivers like iscsi_tcp do login and
-	 * scanning from userspace).
-	 */
-	if (shost->hostt->scan_finished) {
-		if (scsi_queue_work(shost, &session->scan_work))
-			atomic_inc(&ihost->nr_scans);
-	}
-=======
 	scsi_target_unblock(&session->dev, SDEV_RUNNING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISCSI_DBG_TRANS_SESSION(session, "Completed unblocking session\n");
 }
 
@@ -2218,14 +1925,6 @@ static void __iscsi_unblock_session(struct work_struct *work)
  */
 void iscsi_unblock_session(struct iscsi_cls_session *session)
 {
-<<<<<<< HEAD
-	queue_work(iscsi_eh_timer_workq, &session->unblock_work);
-	/*
-	 * make sure all the events have completed before tell the driver
-	 * it is safe
-	 */
-	flush_workqueue(iscsi_eh_timer_workq);
-=======
 	if (!cancel_work_sync(&session->block_work))
 		cancel_delayed_work_sync(&session->recovery_work);
 
@@ -2236,7 +1935,6 @@ void iscsi_unblock_session(struct iscsi_cls_session *session)
 	 * because it flushes/cancels the other works and updates the state.
 	 */
 	flush_work(&session->unblock_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(iscsi_unblock_session);
 
@@ -2245,38 +1943,24 @@ static void __iscsi_block_session(struct work_struct *work)
 	struct iscsi_cls_session *session =
 			container_of(work, struct iscsi_cls_session,
 				     block_work);
-<<<<<<< HEAD
-=======
 	struct Scsi_Host *shost = iscsi_session_to_shost(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	ISCSI_DBG_TRANS_SESSION(session, "Blocking session\n");
 	spin_lock_irqsave(&session->lock, flags);
 	session->state = ISCSI_SESSION_FAILED;
 	spin_unlock_irqrestore(&session->lock, flags);
-<<<<<<< HEAD
-	scsi_target_block(&session->dev);
-	ISCSI_DBG_TRANS_SESSION(session, "Completed SCSI target blocking\n");
-	if (session->recovery_tmo >= 0)
-		queue_delayed_work(iscsi_eh_timer_workq,
-=======
 	scsi_block_targets(shost, &session->dev);
 	ISCSI_DBG_TRANS_SESSION(session, "Completed SCSI target blocking\n");
 	if (session->recovery_tmo >= 0)
 		queue_delayed_work(session->workq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   &session->recovery_work,
 				   session->recovery_tmo * HZ);
 }
 
 void iscsi_block_session(struct iscsi_cls_session *session)
 {
-<<<<<<< HEAD
-	queue_work(iscsi_eh_timer_workq, &session->block_work);
-=======
 	queue_work(session->workq, &session->block_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(iscsi_block_session);
 
@@ -2289,24 +1973,13 @@ static void __iscsi_unbind_session(struct work_struct *work)
 	struct iscsi_cls_host *ihost = shost->shost_data;
 	unsigned long flags;
 	unsigned int target_id;
-<<<<<<< HEAD
-=======
 	bool remove_target = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ISCSI_DBG_TRANS_SESSION(session, "Unbinding session\n");
 
 	/* Prevent new scans and make sure scanning is not in progress */
 	mutex_lock(&ihost->mutex);
 	spin_lock_irqsave(&session->lock, flags);
-<<<<<<< HEAD
-	if (session->target_id == ISCSI_MAX_TARGET) {
-		spin_unlock_irqrestore(&session->lock, flags);
-		mutex_unlock(&ihost->mutex);
-		return;
-	}
-
-=======
 	if (session->target_state == ISCSI_SESSION_TARGET_ALLOCATED) {
 		remove_target = false;
 	} else if (session->target_state != ISCSI_SESSION_TARGET_SCANNED) {
@@ -2318,20 +1991,11 @@ static void __iscsi_unbind_session(struct work_struct *work)
 	}
 
 	session->target_state = ISCSI_SESSION_TARGET_UNBINDING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	target_id = session->target_id;
 	session->target_id = ISCSI_MAX_TARGET;
 	spin_unlock_irqrestore(&session->lock, flags);
 	mutex_unlock(&ihost->mutex);
 
-<<<<<<< HEAD
-	if (session->ida_used)
-		ida_simple_remove(&iscsi_sess_ida, target_id);
-
-	scsi_remove_target(&session->dev);
-	iscsi_session_event(session, ISCSI_KEVENT_UNBIND_SESSION);
-	ISCSI_DBG_TRANS_SESSION(session, "Completed target removal\n");
-=======
 	if (remove_target)
 		scsi_remove_target(&session->dev);
 
@@ -2352,7 +2016,6 @@ static void __iscsi_destroy_session(struct work_struct *work)
 		container_of(work, struct iscsi_cls_session, destroy_work);
 
 	session->transport->destroy_session(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct iscsi_cls_session *
@@ -2369,10 +2032,7 @@ iscsi_alloc_session(struct Scsi_Host *shost, struct iscsi_transport *transport,
 	session->transport = transport;
 	session->creator = -1;
 	session->recovery_tmo = 120;
-<<<<<<< HEAD
-=======
 	session->recovery_tmo_sysfs_override = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	session->state = ISCSI_SESSION_FREE;
 	INIT_DELAYED_WORK(&session->recovery_work, session_recovery_timedout);
 	INIT_LIST_HEAD(&session->sess_list);
@@ -2380,10 +2040,7 @@ iscsi_alloc_session(struct Scsi_Host *shost, struct iscsi_transport *transport,
 	INIT_WORK(&session->block_work, __iscsi_block_session);
 	INIT_WORK(&session->unbind_work, __iscsi_unbind_session);
 	INIT_WORK(&session->scan_work, iscsi_scan_session);
-<<<<<<< HEAD
-=======
 	INIT_WORK(&session->destroy_work, __iscsi_destroy_session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&session->lock);
 
 	/* this is released in the dev's release function */
@@ -2402,21 +2059,10 @@ EXPORT_SYMBOL_GPL(iscsi_alloc_session);
 int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
 {
 	struct Scsi_Host *shost = iscsi_session_to_shost(session);
-<<<<<<< HEAD
-	struct iscsi_cls_host *ihost;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int id = 0;
 	int err;
 
-<<<<<<< HEAD
-	ihost = shost->shost_data;
-	session->sid = atomic_add_return(1, &iscsi_session_nr);
-
-	if (target_id == ISCSI_MAX_TARGET) {
-		id = ida_simple_get(&iscsi_sess_ida, 0, 0, GFP_KERNEL);
-=======
 	session->sid = atomic_add_return(1, &iscsi_session_nr);
 
 	session->workq = alloc_workqueue("iscsi_ctrl_%d:%d",
@@ -2427,28 +2073,20 @@ int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
 
 	if (target_id == ISCSI_MAX_TARGET) {
 		id = ida_alloc(&iscsi_sess_ida, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (id < 0) {
 			iscsi_cls_session_printk(KERN_ERR, session,
 					"Failure in Target ID Allocation\n");
-<<<<<<< HEAD
-			return id;
-=======
 			err = id;
 			goto destroy_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		session->target_id = (unsigned int)id;
 		session->ida_used = true;
 	} else
 		session->target_id = target_id;
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&session->lock, flags);
 	session->target_state = ISCSI_SESSION_TARGET_ALLOCATED;
 	spin_unlock_irqrestore(&session->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_name(&session->dev, "session%u", session->sid);
 	err = device_add(&session->dev);
@@ -2457,16 +2095,12 @@ int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
 					 "could not register session's dev\n");
 		goto release_ida;
 	}
-<<<<<<< HEAD
-	transport_register_device(&session->dev);
-=======
 	err = transport_register_device(&session->dev);
 	if (err) {
 		iscsi_cls_session_printk(KERN_ERR, session,
 					 "could not register transport's dev\n");
 		goto release_dev;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&sesslock, flags);
 	list_add(&session->sess_list, &sesslist);
@@ -2476,12 +2110,6 @@ int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
 	ISCSI_DBG_TRANS_SESSION(session, "Completed session adding\n");
 	return 0;
 
-<<<<<<< HEAD
-release_ida:
-	if (session->ida_used)
-		ida_simple_remove(&iscsi_sess_ida, session->target_id);
-
-=======
 release_dev:
 	device_del(&session->dev);
 release_ida:
@@ -2489,7 +2117,6 @@ release_ida:
 		ida_free(&iscsi_sess_ida, session->target_id);
 destroy_wq:
 	destroy_workqueue(session->workq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(iscsi_add_session);
@@ -2540,37 +2167,19 @@ static int iscsi_iter_destroy_conn_fn(struct device *dev, void *data)
 {
 	if (!iscsi_is_conn_dev(dev))
 		return 0;
-<<<<<<< HEAD
-	return iscsi_destroy_conn(iscsi_dev_to_conn(dev));
-=======
 
 	iscsi_remove_conn(iscsi_dev_to_conn(dev));
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void iscsi_remove_session(struct iscsi_cls_session *session)
 {
-<<<<<<< HEAD
-	struct Scsi_Host *shost = iscsi_session_to_shost(session);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int err;
 
 	ISCSI_DBG_TRANS_SESSION(session, "Removing session\n");
 
 	spin_lock_irqsave(&sesslock, flags);
-<<<<<<< HEAD
-	list_del(&session->sess_list);
-	spin_unlock_irqrestore(&sesslock, flags);
-
-	/* make sure there are no blocks/unblocks queued */
-	flush_workqueue(iscsi_eh_timer_workq);
-	/* make sure the timedout callout is not running */
-	if (!cancel_delayed_work(&session->recovery_work))
-		flush_workqueue(iscsi_eh_timer_workq);
-=======
 	if (!list_empty(&session->sess_list))
 		list_del(&session->sess_list);
 	spin_unlock_irqrestore(&sesslock, flags);
@@ -2578,7 +2187,6 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
 	if (!cancel_work_sync(&session->block_work))
 		cancel_delayed_work_sync(&session->recovery_work);
 	cancel_work_sync(&session->unblock_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If we are blocked let commands flow again. The lld or iscsi
 	 * layer should set up the queuecommand to fail commands.
@@ -2589,11 +2197,6 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
 	session->state = ISCSI_SESSION_FREE;
 	spin_unlock_irqrestore(&session->lock, flags);
 
-<<<<<<< HEAD
-	scsi_target_unblock(&session->dev);
-	/* flush running scans then delete devices */
-	scsi_flush_work(shost);
-=======
 	scsi_target_unblock(&session->dev, SDEV_TRANSPORT_OFFLINE);
 	/*
 	 * qla4xxx can perform it's own scans when it runs in kernel only
@@ -2602,7 +2205,6 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
 	flush_work(&session->scan_work);
 	/* flush running unbind operations */
 	flush_work(&session->unbind_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__iscsi_unbind_session(&session->unbind_work);
 
 	/* hw iscsi may not have removed all connections from session */
@@ -2615,18 +2217,13 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
 
 	transport_unregister_device(&session->dev);
 
-<<<<<<< HEAD
-=======
 	destroy_workqueue(session->workq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISCSI_DBG_TRANS_SESSION(session, "Completing session removal\n");
 	device_del(&session->dev);
 }
 EXPORT_SYMBOL_GPL(iscsi_remove_session);
 
-<<<<<<< HEAD
-=======
 static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
 {
 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn.\n");
@@ -2817,7 +2414,6 @@ void iscsi_force_destroy_session(struct iscsi_cls_session *session)
 }
 EXPORT_SYMBOL_GPL(iscsi_force_destroy_session);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void iscsi_free_session(struct iscsi_cls_session *session)
 {
 	ISCSI_DBG_TRANS_SESSION(session, "Freeing session\n");
@@ -2827,45 +2423,6 @@ void iscsi_free_session(struct iscsi_cls_session *session)
 EXPORT_SYMBOL_GPL(iscsi_free_session);
 
 /**
-<<<<<<< HEAD
- * iscsi_destroy_session - destroy iscsi session
- * @session: iscsi_session
- *
- * Can be called by a LLD or iscsi_transport. There must not be
- * any running connections.
- */
-int iscsi_destroy_session(struct iscsi_cls_session *session)
-{
-	iscsi_remove_session(session);
-	ISCSI_DBG_TRANS_SESSION(session, "Completing session destruction\n");
-	iscsi_free_session(session);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(iscsi_destroy_session);
-
-/**
- * iscsi_create_conn - create iscsi class connection
- * @session: iscsi cls session
- * @dd_size: private driver data size
- * @cid: connection id
- *
- * This can be called from a LLD or iscsi_transport. The connection
- * is child of the session so cid must be unique for all connections
- * on the session.
- *
- * Since we do not support MCS, cid will normally be zero. In some cases
- * for software iscsi we could be trying to preallocate a connection struct
- * in which case there could be two connection structs and cid would be
- * non-zero.
- */
-struct iscsi_cls_conn *
-iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
-{
-	struct iscsi_transport *transport = session->transport;
-	struct iscsi_cls_conn *conn;
-	unsigned long flags;
-	int err;
-=======
  * iscsi_alloc_conn - alloc iscsi class connection
  * @session: iscsi cls session
  * @dd_size: private driver data size
@@ -2876,7 +2433,6 @@ iscsi_alloc_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
 {
 	struct iscsi_transport *transport = session->transport;
 	struct iscsi_cls_conn *conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	conn = kzalloc(sizeof(*conn) + dd_size, GFP_KERNEL);
 	if (!conn)
@@ -2885,35 +2441,18 @@ iscsi_alloc_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
 		conn->dd_data = &conn[1];
 
 	mutex_init(&conn->ep_mutex);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&conn->conn_list);
-	conn->transport = transport;
-	conn->cid = cid;
-=======
 	spin_lock_init(&conn->lock);
 	INIT_LIST_HEAD(&conn->conn_list);
 	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
 	conn->transport = transport;
 	conn->cid = cid;
 	WRITE_ONCE(conn->state, ISCSI_CONN_DOWN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this is released in the dev's release function */
 	if (!get_device(&session->dev))
 		goto free_conn;
 
 	dev_set_name(&conn->dev, "connection%d:%u", session->sid, cid);
-<<<<<<< HEAD
-	conn->dev.parent = &session->dev;
-	conn->dev.release = iscsi_conn_release;
-	err = device_register(&conn->dev);
-	if (err) {
-		iscsi_cls_session_printk(KERN_ERR, session, "could not "
-					 "register connection's dev\n");
-		goto release_parent_ref;
-	}
-	transport_register_device(&conn->dev);
-=======
 	device_initialize(&conn->dev);
 	conn->dev.parent = &session->dev;
 	conn->dev.release = iscsi_conn_release;
@@ -2952,33 +2491,11 @@ int iscsi_add_conn(struct iscsi_cls_conn *conn)
 		device_del(&conn->dev);
 		return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&connlock, flags);
 	list_add(&conn->conn_list, &connlist);
 	spin_unlock_irqrestore(&connlock, flags);
 
-<<<<<<< HEAD
-	ISCSI_DBG_TRANS_CONN(conn, "Completed conn creation\n");
-	return conn;
-
-release_parent_ref:
-	put_device(&session->dev);
-free_conn:
-	kfree(conn);
-	return NULL;
-}
-
-EXPORT_SYMBOL_GPL(iscsi_create_conn);
-
-/**
- * iscsi_destroy_conn - destroy iscsi class connection
- * @conn: iscsi cls session
- *
- * This can be called from a LLD or iscsi_transport.
- */
-int iscsi_destroy_conn(struct iscsi_cls_conn *conn)
-=======
 	return 0;
 }
 EXPORT_SYMBOL_GPL(iscsi_add_conn);
@@ -2991,7 +2508,6 @@ EXPORT_SYMBOL_GPL(iscsi_add_conn);
  * read/write of iscsi_cls_conn's attributes in sysfs to finish.
  */
 void iscsi_remove_conn(struct iscsi_cls_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -3000,13 +2516,6 @@ void iscsi_remove_conn(struct iscsi_cls_conn *conn)
 	spin_unlock_irqrestore(&connlock, flags);
 
 	transport_unregister_device(&conn->dev);
-<<<<<<< HEAD
-	ISCSI_DBG_TRANS_CONN(conn, "Completing conn destruction\n");
-	device_unregister(&conn->dev);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(iscsi_destroy_conn);
-=======
 	device_del(&conn->dev);
 }
 EXPORT_SYMBOL_GPL(iscsi_remove_conn);
@@ -3022,7 +2531,6 @@ void iscsi_get_conn(struct iscsi_cls_conn *conn)
 	get_device(&conn->dev);
 }
 EXPORT_SYMBOL_GPL(iscsi_get_conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * iscsi interface functions
@@ -3050,15 +2558,12 @@ iscsi_multicast_skb(struct sk_buff *skb, uint32_t group, gfp_t gfp)
 	return nlmsg_multicast(nls, skb, 0, group, gfp);
 }
 
-<<<<<<< HEAD
-=======
 static int
 iscsi_unicast_skb(struct sk_buff *skb, u32 portid)
 {
 	return nlmsg_unicast(nls, skb, portid);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int iscsi_recv_pdu(struct iscsi_cls_conn *conn, struct iscsi_hdr *hdr,
 		   char *data, uint32_t data_size)
 {
@@ -3067,13 +2572,8 @@ int iscsi_recv_pdu(struct iscsi_cls_conn *conn, struct iscsi_hdr *hdr,
 	struct iscsi_uevent *ev;
 	char *pdu;
 	struct iscsi_internal *priv;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev) + sizeof(struct iscsi_hdr) +
-			      data_size);
-=======
 	int len = nlmsg_total_size(sizeof(*ev) + sizeof(struct iscsi_hdr) +
 				   data_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = iscsi_if_transport_lookup(conn->transport);
 	if (!priv)
@@ -3088,11 +2588,7 @@ int iscsi_recv_pdu(struct iscsi_cls_conn *conn, struct iscsi_hdr *hdr,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ev, 0, sizeof(*ev));
 	ev->transport_handle = iscsi_handle(conn->transport);
 	ev->type = ISCSI_KEVENT_RECV_PDU;
@@ -3113,11 +2609,7 @@ int iscsi_offload_mesg(struct Scsi_Host *shost,
 	struct nlmsghdr	*nlh;
 	struct sk_buff *skb;
 	struct iscsi_uevent *ev;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev) + data_size);
-=======
 	int len = nlmsg_total_size(sizeof(*ev) + data_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(len, GFP_ATOMIC);
 	if (!skb) {
@@ -3126,11 +2618,7 @@ int iscsi_offload_mesg(struct Scsi_Host *shost,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ev, 0, sizeof(*ev));
 	ev->type = type;
 	ev->transport_handle = iscsi_handle(transport);
@@ -3155,9 +2643,6 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
 	struct sk_buff	*skb;
 	struct iscsi_uevent *ev;
 	struct iscsi_internal *priv;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev));
-=======
 	int len = nlmsg_total_size(sizeof(*ev));
 	unsigned long flags;
 	int state;
@@ -3185,7 +2670,6 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
 		break;
 	}
 	spin_unlock_irqrestore(&conn->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = iscsi_if_transport_lookup(conn->transport);
 	if (!priv)
@@ -3199,11 +2683,7 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->transport_handle = iscsi_handle(conn->transport);
 	ev->type = ISCSI_KEVENT_CONN_ERROR;
 	ev->r.connerror.error = error;
@@ -3224,11 +2704,7 @@ void iscsi_conn_login_event(struct iscsi_cls_conn *conn,
 	struct sk_buff  *skb;
 	struct iscsi_uevent *ev;
 	struct iscsi_internal *priv;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev));
-=======
 	int len = nlmsg_total_size(sizeof(*ev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = iscsi_if_transport_lookup(conn->transport);
 	if (!priv)
@@ -3242,11 +2718,7 @@ void iscsi_conn_login_event(struct iscsi_cls_conn *conn,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->transport_handle = iscsi_handle(conn->transport);
 	ev->type = ISCSI_KEVENT_CONN_LOGIN_STATE;
 	ev->r.conn_login.state = state;
@@ -3266,11 +2738,7 @@ void iscsi_post_host_event(uint32_t host_no, struct iscsi_transport *transport,
 	struct nlmsghdr *nlh;
 	struct sk_buff *skb;
 	struct iscsi_uevent *ev;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev) + data_size);
-=======
 	int len = nlmsg_total_size(sizeof(*ev) + data_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(len, GFP_NOIO);
 	if (!skb) {
@@ -3280,11 +2748,7 @@ void iscsi_post_host_event(uint32_t host_no, struct iscsi_transport *transport,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->transport_handle = iscsi_handle(transport);
 	ev->type = ISCSI_KEVENT_HOST_EVENT;
 	ev->r.host_event.host_no = host_no;
@@ -3305,11 +2769,7 @@ void iscsi_ping_comp_event(uint32_t host_no, struct iscsi_transport *transport,
 	struct nlmsghdr *nlh;
 	struct sk_buff *skb;
 	struct iscsi_uevent *ev;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev) + data_size);
-=======
 	int len = nlmsg_total_size(sizeof(*ev) + data_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(len, GFP_NOIO);
 	if (!skb) {
@@ -3318,11 +2778,7 @@ void iscsi_ping_comp_event(uint32_t host_no, struct iscsi_transport *transport,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->transport_handle = iscsi_handle(transport);
 	ev->type = ISCSI_KEVENT_PING_COMP;
 	ev->r.ping_comp.host_no = host_no;
@@ -3336,22 +2792,11 @@ void iscsi_ping_comp_event(uint32_t host_no, struct iscsi_transport *transport,
 EXPORT_SYMBOL_GPL(iscsi_ping_comp_event);
 
 static int
-<<<<<<< HEAD
-iscsi_if_send_reply(uint32_t group, int seq, int type, int done, int multi,
-		    void *payload, int size)
-{
-	struct sk_buff	*skb;
-	struct nlmsghdr	*nlh;
-	int len = NLMSG_SPACE(size);
-	int flags = multi ? NLM_F_MULTI : 0;
-	int t = done ? NLMSG_DONE : type;
-=======
 iscsi_if_send_reply(u32 portid, int type, void *payload, int size)
 {
 	struct sk_buff	*skb;
 	struct nlmsghdr	*nlh;
 	int len = nlmsg_total_size(size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(len, GFP_ATOMIC);
 	if (!skb) {
@@ -3359,43 +2804,25 @@ iscsi_if_send_reply(u32 portid, int type, void *payload, int size)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	nlh = __nlmsg_put(skb, 0, 0, t, (len - sizeof(*nlh)), 0);
-	nlh->nlmsg_flags = flags;
-	memcpy(NLMSG_DATA(nlh), payload, size);
-	return iscsi_multicast_skb(skb, group, GFP_ATOMIC);
-=======
 	nlh = __nlmsg_put(skb, 0, 0, type, (len - sizeof(*nlh)), 0);
 	memcpy(nlmsg_data(nlh), payload, size);
 	return iscsi_unicast_skb(skb, portid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 iscsi_if_get_stats(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 {
-<<<<<<< HEAD
-	struct iscsi_uevent *ev = NLMSG_DATA(nlh);
-=======
 	struct iscsi_uevent *ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_stats *stats;
 	struct sk_buff *skbstat;
 	struct iscsi_cls_conn *conn;
 	struct nlmsghdr	*nlhstat;
 	struct iscsi_uevent *evstat;
 	struct iscsi_internal *priv;
-<<<<<<< HEAD
-	int len = NLMSG_SPACE(sizeof(*ev) +
-			      sizeof(struct iscsi_stats) +
-			      sizeof(struct iscsi_stats_custom) *
-			      ISCSI_STATS_CUSTOM_MAX);
-=======
 	int len = nlmsg_total_size(sizeof(*ev) +
 				   sizeof(struct iscsi_stats) +
 				   sizeof(struct iscsi_stats_custom) *
 				   ISCSI_STATS_CUSTOM_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	priv = iscsi_if_transport_lookup(transport);
@@ -3418,11 +2845,7 @@ iscsi_if_get_stats(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 
 		nlhstat = __nlmsg_put(skbstat, 0, 0, 0,
 				      (len - sizeof(*nlhstat)), 0);
-<<<<<<< HEAD
-		evstat = NLMSG_DATA(nlhstat);
-=======
 		evstat = nlmsg_data(nlhstat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(evstat, 0, sizeof(*evstat));
 		evstat->transport_handle = iscsi_handle(conn->transport);
 		evstat->type = nlh->nlmsg_type;
@@ -3435,21 +2858,12 @@ iscsi_if_get_stats(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 		memset(stats, 0, sizeof(*stats));
 
 		transport->get_stats(conn, stats);
-<<<<<<< HEAD
-		actual_size = NLMSG_SPACE(sizeof(struct iscsi_uevent) +
-					  sizeof(struct iscsi_stats) +
-					  sizeof(struct iscsi_stats_custom) *
-					  stats->custom_length);
-		actual_size -= sizeof(*nlhstat);
-		actual_size = NLMSG_LENGTH(actual_size);
-=======
 		actual_size = nlmsg_total_size(sizeof(struct iscsi_uevent) +
 					       sizeof(struct iscsi_stats) +
 					       sizeof(struct iscsi_stats_custom) *
 					       stats->custom_length);
 		actual_size -= sizeof(*nlhstat);
 		actual_size = nlmsg_msg_size(actual_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_trim(skbstat, NLMSG_ALIGN(actual_size));
 		nlhstat->nlmsg_len = actual_size;
 
@@ -3473,11 +2887,7 @@ int iscsi_session_event(struct iscsi_cls_session *session,
 	struct iscsi_uevent *ev;
 	struct sk_buff  *skb;
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-	int rc, len = NLMSG_SPACE(sizeof(*ev));
-=======
 	int rc, len = nlmsg_total_size(sizeof(*ev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = iscsi_if_transport_lookup(session->transport);
 	if (!priv)
@@ -3493,11 +2903,7 @@ int iscsi_session_event(struct iscsi_cls_session *session,
 	}
 
 	nlh = __nlmsg_put(skb, 0, 0, 0, (len - sizeof(*nlh)), 0);
-<<<<<<< HEAD
-	ev = NLMSG_DATA(nlh);
-=======
 	ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->transport_handle = iscsi_handle(session->transport);
 
 	ev->type = event;
@@ -3598,57 +3004,32 @@ iscsi_if_destroy_conn(struct iscsi_transport *transport, struct iscsi_uevent *ev
 	if (!conn)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ISCSI_DBG_TRANS_CONN(conn, "Destroying transport conn\n");
-	if (transport->destroy_conn)
-		transport->destroy_conn(conn);
-
-=======
 	ISCSI_DBG_TRANS_CONN(conn, "Flushing cleanup during destruction\n");
 	flush_work(&conn->cleanup_work);
 	ISCSI_DBG_TRANS_CONN(conn, "Destroying transport conn\n");
 
 	if (transport->destroy_conn)
 		transport->destroy_conn(conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-iscsi_set_param(struct iscsi_transport *transport, struct iscsi_uevent *ev)
-=======
 iscsi_if_set_param(struct iscsi_transport *transport, struct iscsi_uevent *ev, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *data = (char*)ev + sizeof(*ev);
 	struct iscsi_cls_conn *conn;
 	struct iscsi_cls_session *session;
-<<<<<<< HEAD
-	int err = 0, value = 0;
-=======
 	int err = 0, value = 0, state;
 
 	if (ev->u.set_param.len > rlen ||
 	    ev->u.set_param.len > PAGE_SIZE)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session = iscsi_session_lookup(ev->u.set_param.sid);
 	conn = iscsi_conn_lookup(ev->u.set_param.sid, ev->u.set_param.cid);
 	if (!conn || !session)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (ev->u.set_param.param) {
-	case ISCSI_PARAM_SESS_RECOVERY_TMO:
-		sscanf(data, "%d", &value);
-		session->recovery_tmo = value;
-		break;
-	default:
-		err = transport->set_param(conn, ev->u.set_param.param,
-					   data, ev->u.set_param.len);
-=======
 	/* data will be regarded as NULL-ended string, do length check */
 	if (strlen(data) > ev->u.set_param.len)
 		return -EINVAL;
@@ -3667,7 +3048,6 @@ iscsi_if_set_param(struct iscsi_transport *transport, struct iscsi_uevent *ev, u
 		} else {
 			return -ENOTCONN;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -3722,16 +3102,6 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
 	ep = iscsi_lookup_endpoint(ep_handle);
 	if (!ep)
 		return -EINVAL;
-<<<<<<< HEAD
-	conn = ep->conn;
-	if (conn) {
-		mutex_lock(&conn->ep_mutex);
-		conn->ep = NULL;
-		mutex_unlock(&conn->ep_mutex);
-	}
-
-	transport->ep_disconnect(ep);
-=======
 
 	conn = ep->conn;
 	if (!conn) {
@@ -3748,17 +3118,12 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
 	mutex_unlock(&conn->ep_mutex);
 put_ep:
 	iscsi_put_endpoint(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
 iscsi_if_transport_ep(struct iscsi_transport *transport,
-<<<<<<< HEAD
-		      struct iscsi_uevent *ev, int msg_type)
-=======
 		      struct iscsi_uevent *ev, int msg_type, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_endpoint *ep;
 	int rc = 0;
@@ -3766,14 +3131,10 @@ iscsi_if_transport_ep(struct iscsi_transport *transport,
 	switch (msg_type) {
 	case ISCSI_UEVENT_TRANSPORT_EP_CONNECT_THROUGH_HOST:
 	case ISCSI_UEVENT_TRANSPORT_EP_CONNECT:
-<<<<<<< HEAD
-		rc = iscsi_if_ep_connect(transport, ev, msg_type);
-=======
 		if (rlen < sizeof(struct sockaddr))
 			rc = -EINVAL;
 		else
 			rc = iscsi_if_ep_connect(transport, ev, msg_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_UEVENT_TRANSPORT_EP_POLL:
 		if (!transport->ep_poll)
@@ -3785,10 +3146,7 @@ iscsi_if_transport_ep(struct iscsi_transport *transport,
 
 		ev->r.retcode = transport->ep_poll(ep,
 						   ev->u.ep_poll.timeout_ms);
-<<<<<<< HEAD
-=======
 		iscsi_put_endpoint(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_UEVENT_TRANSPORT_EP_DISCONNECT:
 		rc = iscsi_if_ep_disconnect(transport,
@@ -3800,22 +3158,15 @@ iscsi_if_transport_ep(struct iscsi_transport *transport,
 
 static int
 iscsi_tgt_dscvr(struct iscsi_transport *transport,
-<<<<<<< HEAD
-		struct iscsi_uevent *ev)
-=======
 		struct iscsi_uevent *ev, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost;
 	struct sockaddr *dst_addr;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (rlen < sizeof(*dst_addr))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!transport->tgt_dscvr)
 		return -EINVAL;
 
@@ -3836,11 +3187,7 @@ iscsi_tgt_dscvr(struct iscsi_transport *transport,
 
 static int
 iscsi_set_host_param(struct iscsi_transport *transport,
-<<<<<<< HEAD
-		     struct iscsi_uevent *ev)
-=======
 		     struct iscsi_uevent *ev, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *data = (char*)ev + sizeof(*ev);
 	struct Scsi_Host *shost;
@@ -3849,13 +3196,10 @@ iscsi_set_host_param(struct iscsi_transport *transport,
 	if (!transport->set_host_param)
 		return -ENOSYS;
 
-<<<<<<< HEAD
-=======
 	if (ev->u.set_host_param.len > rlen ||
 	    ev->u.set_host_param.len > PAGE_SIZE)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shost = scsi_host_lookup(ev->u.set_host_param.host_no);
 	if (!shost) {
 		printk(KERN_ERR "set_host_param could not find host no %u\n",
@@ -3863,13 +3207,10 @@ iscsi_set_host_param(struct iscsi_transport *transport,
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-=======
 	/* see similar check in iscsi_if_set_param() */
 	if (strlen(data) > ev->u.set_host_param.len)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = transport->set_host_param(shost, ev->u.set_host_param.param,
 					data, ev->u.set_host_param.len);
 	scsi_host_put(shost);
@@ -3877,22 +3218,15 @@ iscsi_set_host_param(struct iscsi_transport *transport,
 }
 
 static int
-<<<<<<< HEAD
-iscsi_set_path(struct iscsi_transport *transport, struct iscsi_uevent *ev)
-=======
 iscsi_set_path(struct iscsi_transport *transport, struct iscsi_uevent *ev, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost;
 	struct iscsi_path *params;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (rlen < sizeof(*params))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!transport->set_path)
 		return -ENOSYS;
 
@@ -3910,8 +3244,6 @@ iscsi_set_path(struct iscsi_transport *transport, struct iscsi_uevent *ev, u32 r
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int iscsi_session_has_conns(int sid)
 {
 	struct iscsi_cls_conn *conn;
@@ -3930,7 +3262,6 @@ static int iscsi_session_has_conns(int sid)
 	return found;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 iscsi_set_iface_params(struct iscsi_transport *transport,
 		       struct iscsi_uevent *ev, uint32_t len)
@@ -3955,22 +3286,15 @@ iscsi_set_iface_params(struct iscsi_transport *transport,
 }
 
 static int
-<<<<<<< HEAD
-iscsi_send_ping(struct iscsi_transport *transport, struct iscsi_uevent *ev)
-=======
 iscsi_send_ping(struct iscsi_transport *transport, struct iscsi_uevent *ev, u32 rlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost;
 	struct sockaddr *dst_addr;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (rlen < sizeof(*dst_addr))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!transport->send_ping)
 		return -ENOSYS;
 
@@ -3994,11 +3318,7 @@ iscsi_send_ping(struct iscsi_transport *transport, struct iscsi_uevent *ev, u32 
 static int
 iscsi_get_chap(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 {
-<<<<<<< HEAD
-	struct iscsi_uevent *ev = NLMSG_DATA(nlh);
-=======
 	struct iscsi_uevent *ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = NULL;
 	struct iscsi_chap_rec *chap_rec;
 	struct iscsi_internal *priv;
@@ -4017,19 +3337,11 @@ iscsi_get_chap(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 		return -EINVAL;
 
 	chap_buf_size = (ev->u.get_chap.num_entries * sizeof(*chap_rec));
-<<<<<<< HEAD
-	len = NLMSG_SPACE(sizeof(*ev) + chap_buf_size);
-
-	shost = scsi_host_lookup(ev->u.get_chap.host_no);
-	if (!shost) {
-		printk(KERN_ERR "%s: failed. Cound not find host no %u\n",
-=======
 	len = nlmsg_total_size(sizeof(*ev) + chap_buf_size);
 
 	shost = scsi_host_lookup(ev->u.get_chap.host_no);
 	if (!shost) {
 		printk(KERN_ERR "%s: failed. Could not find host no %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__, ev->u.get_chap.host_no);
 		return -ENODEV;
 	}
@@ -4046,32 +3358,20 @@ iscsi_get_chap(struct iscsi_transport *transport, struct nlmsghdr *nlh)
 
 		nlhchap = __nlmsg_put(skbchap, 0, 0, 0,
 				      (len - sizeof(*nlhchap)), 0);
-<<<<<<< HEAD
-		evchap = NLMSG_DATA(nlhchap);
-=======
 		evchap = nlmsg_data(nlhchap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(evchap, 0, sizeof(*evchap));
 		evchap->transport_handle = iscsi_handle(transport);
 		evchap->type = nlh->nlmsg_type;
 		evchap->u.get_chap.host_no = ev->u.get_chap.host_no;
 		evchap->u.get_chap.chap_tbl_idx = ev->u.get_chap.chap_tbl_idx;
 		evchap->u.get_chap.num_entries = ev->u.get_chap.num_entries;
-<<<<<<< HEAD
-		buf = (char *) ((char *)evchap + sizeof(*evchap));
-=======
 		buf = (char *)evchap + sizeof(*evchap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(buf, 0, chap_buf_size);
 
 		err = transport->get_chap(shost, ev->u.get_chap.chap_tbl_idx,
 				    &evchap->u.get_chap.num_entries, buf);
 
-<<<<<<< HEAD
-		actual_size = NLMSG_SPACE(sizeof(*ev) + chap_buf_size);
-=======
 		actual_size = nlmsg_total_size(sizeof(*ev) + chap_buf_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_trim(skbchap, NLMSG_ALIGN(actual_size));
 		nlhchap->nlmsg_len = actual_size;
 
@@ -4084,8 +3384,6 @@ exit_get_chap:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int iscsi_set_chap(struct iscsi_transport *transport,
 			  struct iscsi_uevent *ev, uint32_t len)
 {
@@ -4108,7 +3406,6 @@ static int iscsi_set_chap(struct iscsi_transport *transport,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int iscsi_delete_chap(struct iscsi_transport *transport,
 			     struct iscsi_uevent *ev)
 {
@@ -4130,8 +3427,6 @@ static int iscsi_delete_chap(struct iscsi_transport *transport,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static const struct {
 	enum iscsi_discovery_parent_type value;
 	char				*name;
@@ -4606,19 +3901,10 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 {
 	int err = 0;
-<<<<<<< HEAD
-	struct iscsi_uevent *ev = NLMSG_DATA(nlh);
-	struct iscsi_transport *transport = NULL;
-	struct iscsi_internal *priv;
-	struct iscsi_cls_session *session;
-	struct iscsi_cls_conn *conn;
-	struct iscsi_endpoint *ep = NULL;
-=======
 	u32 portid;
 	struct iscsi_uevent *ev = nlmsg_data(nlh);
 	struct iscsi_transport *transport = NULL;
@@ -4629,7 +3915,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 
 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nlh->nlmsg_type == ISCSI_UEVENT_PATH_UPDATE)
 		*group = ISCSI_NL_GRP_UIP;
@@ -4644,12 +3929,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	if (!try_module_get(transport->owner))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (nlh->nlmsg_type) {
-	case ISCSI_UEVENT_CREATE_SESSION:
-		err = iscsi_if_create_session(priv, ep, ev,
-					      NETLINK_CB(skb).pid,
-=======
 	portid = NETLINK_CB(skb).portid;
 
 	/*
@@ -4663,7 +3942,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	case ISCSI_UEVENT_CREATE_SESSION:
 		err = iscsi_if_create_session(priv, ep, ev,
 					      portid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      ev->u.c_session.initial_cmdsn,
 					      ev->u.c_session.cmds_max,
 					      ev->u.c_session.queue_depth);
@@ -4676,19 +3954,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 		}
 
 		err = iscsi_if_create_session(priv, ep, ev,
-<<<<<<< HEAD
-					NETLINK_CB(skb).pid,
-					ev->u.c_bound_session.initial_cmdsn,
-					ev->u.c_bound_session.cmds_max,
-					ev->u.c_bound_session.queue_depth);
-		break;
-	case ISCSI_UEVENT_DESTROY_SESSION:
-		session = iscsi_session_lookup(ev->u.d_session.sid);
-		if (session)
-			transport->destroy_session(session);
-		else
-			err = -EINVAL;
-=======
 					portid,
 					ev->u.c_bound_session.initial_cmdsn,
 					ev->u.c_bound_session.cmds_max,
@@ -4720,80 +3985,10 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 
 			queue_work(system_unbound_wq, &session->destroy_work);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_UEVENT_UNBIND_SESSION:
 		session = iscsi_session_lookup(ev->u.d_session.sid);
 		if (session)
-<<<<<<< HEAD
-			scsi_queue_work(iscsi_session_to_shost(session),
-					&session->unbind_work);
-		else
-			err = -EINVAL;
-		break;
-	case ISCSI_UEVENT_CREATE_CONN:
-		err = iscsi_if_create_conn(transport, ev);
-		break;
-	case ISCSI_UEVENT_DESTROY_CONN:
-		err = iscsi_if_destroy_conn(transport, ev);
-		break;
-	case ISCSI_UEVENT_BIND_CONN:
-		session = iscsi_session_lookup(ev->u.b_conn.sid);
-		conn = iscsi_conn_lookup(ev->u.b_conn.sid, ev->u.b_conn.cid);
-
-		if (conn && conn->ep)
-			iscsi_if_ep_disconnect(transport, conn->ep->id);
-
-		if (!session || !conn) {
-			err = -EINVAL;
-			break;
-		}
-
-		ev->r.retcode =	transport->bind_conn(session, conn,
-						ev->u.b_conn.transport_eph,
-						ev->u.b_conn.is_leading);
-		if (ev->r.retcode || !transport->ep_connect)
-			break;
-
-		ep = iscsi_lookup_endpoint(ev->u.b_conn.transport_eph);
-		if (ep) {
-			ep->conn = conn;
-
-			mutex_lock(&conn->ep_mutex);
-			conn->ep = ep;
-			mutex_unlock(&conn->ep_mutex);
-		} else
-			iscsi_cls_conn_printk(KERN_ERR, conn,
-					      "Could not set ep conn "
-					      "binding\n");
-		break;
-	case ISCSI_UEVENT_SET_PARAM:
-		err = iscsi_set_param(transport, ev);
-		break;
-	case ISCSI_UEVENT_START_CONN:
-		conn = iscsi_conn_lookup(ev->u.start_conn.sid, ev->u.start_conn.cid);
-		if (conn)
-			ev->r.retcode = transport->start_conn(conn);
-		else
-			err = -EINVAL;
-		break;
-	case ISCSI_UEVENT_STOP_CONN:
-		conn = iscsi_conn_lookup(ev->u.stop_conn.sid, ev->u.stop_conn.cid);
-		if (conn)
-			transport->stop_conn(conn, ev->u.stop_conn.flag);
-		else
-			err = -EINVAL;
-		break;
-	case ISCSI_UEVENT_SEND_PDU:
-		conn = iscsi_conn_lookup(ev->u.send_pdu.sid, ev->u.send_pdu.cid);
-		if (conn)
-			ev->r.retcode =	transport->send_pdu(conn,
-				(struct iscsi_hdr*)((char*)ev + sizeof(*ev)),
-				(char*)ev + sizeof(*ev) + ev->u.send_pdu.hdr_size,
-				ev->u.send_pdu.data_size);
-		else
-			err = -EINVAL;
-=======
 			queue_work(session->workq, &session->unbind_work);
 		else
 			err = -EINVAL;
@@ -4808,7 +4003,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	case ISCSI_UEVENT_BIND_CONN:
 	case ISCSI_UEVENT_SEND_PDU:
 		err = iscsi_if_transport_conn(transport, nlh, rlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_UEVENT_GET_STATS:
 		err = iscsi_if_get_stats(transport, nlh);
@@ -4817,25 +4011,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	case ISCSI_UEVENT_TRANSPORT_EP_POLL:
 	case ISCSI_UEVENT_TRANSPORT_EP_DISCONNECT:
 	case ISCSI_UEVENT_TRANSPORT_EP_CONNECT_THROUGH_HOST:
-<<<<<<< HEAD
-		err = iscsi_if_transport_ep(transport, ev, nlh->nlmsg_type);
-		break;
-	case ISCSI_UEVENT_TGT_DSCVR:
-		err = iscsi_tgt_dscvr(transport, ev);
-		break;
-	case ISCSI_UEVENT_SET_HOST_PARAM:
-		err = iscsi_set_host_param(transport, ev);
-		break;
-	case ISCSI_UEVENT_PATH_UPDATE:
-		err = iscsi_set_path(transport, ev);
-		break;
-	case ISCSI_UEVENT_SET_IFACE_PARAMS:
-		err = iscsi_set_iface_params(transport, ev,
-					     nlmsg_attrlen(nlh, sizeof(*ev)));
-		break;
-	case ISCSI_UEVENT_PING:
-		err = iscsi_send_ping(transport, ev);
-=======
 		err = iscsi_if_transport_ep(transport, ev, nlh->nlmsg_type, rlen);
 		break;
 	case ISCSI_UEVENT_TGT_DSCVR:
@@ -4852,7 +4027,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 		break;
 	case ISCSI_UEVENT_PING:
 		err = iscsi_send_ping(transport, ev, rlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_UEVENT_GET_CHAP:
 		err = iscsi_get_chap(transport, nlh);
@@ -4860,8 +4034,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	case ISCSI_UEVENT_DELETE_CHAP:
 		err = iscsi_delete_chap(transport, ev);
 		break;
-<<<<<<< HEAD
-=======
 	case ISCSI_UEVENT_SET_FLASHNODE_PARAMS:
 		err = iscsi_set_flashnode_param(transport, ev, rlen);
 		break;
@@ -4886,7 +4058,6 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 	case ISCSI_UEVENT_GET_HOST_STATS:
 		err = iscsi_get_host_stats(transport, nlh);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		err = -ENOSYS;
 		break;
@@ -4903,39 +4074,24 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
 static void
 iscsi_if_rx(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	mutex_lock(&rx_queue_mutex);
-	while (skb->len >= NLMSG_SPACE(0)) {
-=======
 	u32 portid = NETLINK_CB(skb).portid;
 
 	mutex_lock(&rx_queue_mutex);
 	while (skb->len >= NLMSG_HDRLEN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int err;
 		uint32_t rlen;
 		struct nlmsghdr	*nlh;
 		struct iscsi_uevent *ev;
 		uint32_t group;
-<<<<<<< HEAD
-
-		nlh = nlmsg_hdr(skb);
-		if (nlh->nlmsg_len < sizeof(*nlh) ||
-=======
 		int retries = ISCSI_SEND_MAX_ALLOWED;
 
 		nlh = nlmsg_hdr(skb);
 		if (nlh->nlmsg_len < sizeof(*nlh) + sizeof(*ev) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    skb->len < nlh->nlmsg_len) {
 			break;
 		}
 
-<<<<<<< HEAD
-		ev = NLMSG_DATA(nlh);
-=======
 		ev = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rlen = NLMSG_ALIGN(nlh->nlmsg_len);
 		if (rlen > skb->len)
 			rlen = skb->len;
@@ -4956,17 +4112,12 @@ iscsi_if_rx(struct sk_buff *skb)
 				break;
 			if (ev->type == ISCSI_UEVENT_GET_CHAP && !err)
 				break;
-<<<<<<< HEAD
-			err = iscsi_if_send_reply(group, nlh->nlmsg_seq,
-				nlh->nlmsg_type, 0, 0, ev, sizeof(*ev));
-=======
 			err = iscsi_if_send_reply(portid, nlh->nlmsg_type,
 						  ev, sizeof(*ev));
 			if (err == -EAGAIN && --retries < 0) {
 				printk(KERN_WARNING "Send reply failed, error %d\n", err);
 				break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (err < 0 && err != -ECONNREFUSED && err != -ESRCH);
 		skb_pull(skb, rlen);
 	}
@@ -5006,8 +4157,6 @@ iscsi_conn_attr(exp_statsn, ISCSI_PARAM_EXP_STATSN);
 iscsi_conn_attr(persistent_address, ISCSI_PARAM_PERSISTENT_ADDRESS);
 iscsi_conn_attr(ping_tmo, ISCSI_PARAM_PING_TMO);
 iscsi_conn_attr(recv_tmo, ISCSI_PARAM_RECV_TMO);
-<<<<<<< HEAD
-=======
 iscsi_conn_attr(local_port, ISCSI_PARAM_LOCAL_PORT);
 iscsi_conn_attr(statsn, ISCSI_PARAM_STATSN);
 iscsi_conn_attr(keepalive_tmo, ISCSI_PARAM_KEEPALIVE_TMO);
@@ -5048,7 +4197,6 @@ static ssize_t show_conn_state(struct device *dev,
 }
 static ISCSI_CLASS_ATTR(conn, state, S_IRUGO, show_conn_state,
 			NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define iscsi_conn_ep_attr_show(param)					\
 static ssize_t show_conn_ep_param_##param(struct device *dev,		\
@@ -5101,8 +4249,6 @@ static struct attribute *iscsi_conn_attrs[] = {
 	&dev_attr_conn_persistent_port.attr,
 	&dev_attr_conn_ping_tmo.attr,
 	&dev_attr_conn_recv_tmo.attr,
-<<<<<<< HEAD
-=======
 	&dev_attr_conn_local_port.attr,
 	&dev_attr_conn_statsn.attr,
 	&dev_attr_conn_keepalive_tmo.attr,
@@ -5121,7 +4267,6 @@ static struct attribute *iscsi_conn_attrs[] = {
 	&dev_attr_conn_tcp_recv_wsf.attr,
 	&dev_attr_conn_local_ipaddr.attr,
 	&dev_attr_conn_state.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -5159,8 +4304,6 @@ static umode_t iscsi_conn_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_PARAM_PING_TMO;
 	else if (attr == &dev_attr_conn_recv_tmo.attr)
 		param = ISCSI_PARAM_RECV_TMO;
-<<<<<<< HEAD
-=======
 	else if (attr == &dev_attr_conn_local_port.attr)
 		param = ISCSI_PARAM_LOCAL_PORT;
 	else if (attr == &dev_attr_conn_statsn.attr)
@@ -5197,7 +4340,6 @@ static umode_t iscsi_conn_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_PARAM_LOCAL_IPADDR;
 	else if (attr == &dev_attr_conn_state.attr)
 		return S_IRUGO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		WARN_ONCE(1, "Invalid conn attr");
 		return 0;
@@ -5255,8 +4397,6 @@ iscsi_session_attr(tgt_reset_tmo, ISCSI_PARAM_TGT_RESET_TMO, 0);
 iscsi_session_attr(ifacename, ISCSI_PARAM_IFACE_NAME, 0);
 iscsi_session_attr(initiatorname, ISCSI_PARAM_INITIATOR_NAME, 0);
 iscsi_session_attr(targetalias, ISCSI_PARAM_TARGET_ALIAS, 0);
-<<<<<<< HEAD
-=======
 iscsi_session_attr(boot_root, ISCSI_PARAM_BOOT_ROOT, 0);
 iscsi_session_attr(boot_nic, ISCSI_PARAM_BOOT_NIC, 0);
 iscsi_session_attr(boot_target, ISCSI_PARAM_BOOT_TARGET, 0);
@@ -5288,18 +4428,13 @@ show_priv_session_target_state(struct device *dev, struct device_attribute *attr
 
 static ISCSI_CLASS_ATTR(priv_sess, target_state, S_IRUGO,
 			show_priv_session_target_state, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 show_priv_session_state(struct device *dev, struct device_attribute *attr,
 			char *buf)
 {
 	struct iscsi_cls_session *session = iscsi_dev_to_session(dev->parent);
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", iscsi_session_state_name(session->state));
-=======
 	return sysfs_emit(buf, "%s\n", iscsi_session_state_name(session->state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static ISCSI_CLASS_ATTR(priv_sess, state, S_IRUGO, show_priv_session_state,
 			NULL);
@@ -5308,12 +4443,6 @@ show_priv_session_creator(struct device *dev, struct device_attribute *attr,
 			char *buf)
 {
 	struct iscsi_cls_session *session = iscsi_dev_to_session(dev->parent);
-<<<<<<< HEAD
-	return sprintf(buf, "%d\n", session->creator);
-}
-static ISCSI_CLASS_ATTR(priv_sess, creator, S_IRUGO, show_priv_session_creator,
-			NULL);
-=======
 	return sysfs_emit(buf, "%d\n", session->creator);
 }
 static ISCSI_CLASS_ATTR(priv_sess, creator, S_IRUGO, show_priv_session_creator,
@@ -5327,7 +4456,6 @@ show_priv_session_target_id(struct device *dev, struct device_attribute *attr,
 }
 static ISCSI_CLASS_ATTR(priv_sess, target_id, S_IRUGO,
 			show_priv_session_target_id, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define iscsi_priv_session_attr_show(field, format)			\
 static ssize_t								\
@@ -5337,13 +4465,8 @@ show_priv_session_##field(struct device *dev, 				\
 	struct iscsi_cls_session *session = 				\
 			iscsi_dev_to_session(dev->parent);		\
 	if (session->field == -1)					\
-<<<<<<< HEAD
-		return sprintf(buf, "off\n");				\
-	return sprintf(buf, format"\n", session->field);		\
-=======
 		return sysfs_emit(buf, "off\n");			\
 	return sysfs_emit(buf, format"\n", session->field);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define iscsi_priv_session_attr_store(field)				\
@@ -5359,24 +4482,15 @@ store_priv_session_##field(struct device *dev,				\
 	if ((session->state == ISCSI_SESSION_FREE) ||			\
 	    (session->state == ISCSI_SESSION_FAILED))			\
 		return -EBUSY;						\
-<<<<<<< HEAD
-	if (strncmp(buf, "off", 3) == 0)				\
-		session->field = -1;					\
-	else {								\
-=======
 	if (strncmp(buf, "off", 3) == 0) {				\
 		session->field = -1;					\
 		session->field##_sysfs_override = true;			\
 	} else {							\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = simple_strtoul(buf, &cp, 0);			\
 		if (*cp != '\0' && *cp != '\n')				\
 			return -EINVAL;					\
 		session->field = val;					\
-<<<<<<< HEAD
-=======
 		session->field##_sysfs_override = true;			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}								\
 	return count;							\
 }
@@ -5387,10 +4501,7 @@ store_priv_session_##field(struct device *dev,				\
 static ISCSI_CLASS_ATTR(priv_sess, field, S_IRUGO | S_IWUSR,		\
 			show_priv_session_##field,			\
 			store_priv_session_##field)
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iscsi_priv_session_rw_attr(recovery_tmo, "%d");
 
 static struct attribute *iscsi_session_attrs[] = {
@@ -5415,13 +4526,6 @@ static struct attribute *iscsi_session_attrs[] = {
 	&dev_attr_sess_ifacename.attr,
 	&dev_attr_sess_initiatorname.attr,
 	&dev_attr_sess_targetalias.attr,
-<<<<<<< HEAD
-	&dev_attr_priv_sess_recovery_tmo.attr,
-	&dev_attr_priv_sess_state.attr,
-	&dev_attr_priv_sess_creator.attr,
-	&dev_attr_sess_chap_out_idx.attr,
-	&dev_attr_sess_chap_in_idx.attr,
-=======
 	&dev_attr_sess_boot_root.attr,
 	&dev_attr_sess_boot_nic.attr,
 	&dev_attr_sess_boot_target.attr,
@@ -5446,7 +4550,6 @@ static struct attribute *iscsi_session_attrs[] = {
 	&dev_attr_sess_def_taskmgmt_tmo.attr,
 	&dev_attr_sess_discovery_parent_idx.attr,
 	&dev_attr_sess_discovery_parent_type.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -5504,8 +4607,6 @@ static umode_t iscsi_session_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_PARAM_INITIATOR_NAME;
 	else if (attr == &dev_attr_sess_targetalias.attr)
 		param = ISCSI_PARAM_TARGET_ALIAS;
-<<<<<<< HEAD
-=======
 	else if (attr == &dev_attr_sess_boot_root.attr)
 		param = ISCSI_PARAM_BOOT_ROOT;
 	else if (attr == &dev_attr_sess_boot_nic.attr)
@@ -5540,22 +4641,16 @@ static umode_t iscsi_session_attr_is_visible(struct kobject *kobj,
 		param = ISCSI_PARAM_DISCOVERY_PARENT_IDX;
 	else if (attr == &dev_attr_sess_discovery_parent_type.attr)
 		param = ISCSI_PARAM_DISCOVERY_PARENT_TYPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (attr == &dev_attr_priv_sess_recovery_tmo.attr)
 		return S_IRUGO | S_IWUSR;
 	else if (attr == &dev_attr_priv_sess_state.attr)
 		return S_IRUGO;
-<<<<<<< HEAD
-	else if (attr == &dev_attr_priv_sess_creator.attr)
-		return S_IRUGO;
-=======
 	else if (attr == &dev_attr_priv_sess_target_state.attr)
 		return S_IRUGO;
 	else if (attr == &dev_attr_priv_sess_creator.attr)
 		return S_IRUGO;
 	else if (attr == &dev_attr_priv_sess_target_id.attr)
 		return S_IRUGO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		WARN_ONCE(1, "Invalid session attr");
 		return 0;
@@ -5647,11 +4742,8 @@ static const struct {
 	{ISCSI_PORT_SPEED_100MBPS,	"100 Mbps" },
 	{ISCSI_PORT_SPEED_1GBPS,	"1 Gbps" },
 	{ISCSI_PORT_SPEED_10GBPS,	"10 Gbps" },
-<<<<<<< HEAD
-=======
 	{ISCSI_PORT_SPEED_25GBPS,       "25 Gbps" },
 	{ISCSI_PORT_SPEED_40GBPS,       "40 Gbps" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 char *iscsi_get_port_speed_name(struct Scsi_Host *shost)
@@ -5770,10 +4862,7 @@ iscsi_register_transport(struct iscsi_transport *tt)
 	int err;
 
 	BUG_ON(!tt);
-<<<<<<< HEAD
-=======
 	WARN_ON(tt->ep_disconnect && !tt->unbind_conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = iscsi_if_transport_lookup(tt);
 	if (priv)
@@ -5785,20 +4874,12 @@ iscsi_register_transport(struct iscsi_transport *tt)
 	INIT_LIST_HEAD(&priv->list);
 	priv->iscsi_transport = tt;
 	priv->t.user_scan = iscsi_user_scan;
-<<<<<<< HEAD
-	priv->t.create_work_queue = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->dev.class = &iscsi_transport_class;
 	dev_set_name(&priv->dev, "%s", tt->name);
 	err = device_register(&priv->dev);
 	if (err)
-<<<<<<< HEAD
-		goto free_priv;
-=======
 		goto put_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sysfs_create_group(&priv->dev.kobj, &iscsi_transport_group);
 	if (err)
@@ -5833,22 +4914,13 @@ iscsi_register_transport(struct iscsi_transport *tt)
 unregister_dev:
 	device_unregister(&priv->dev);
 	return NULL;
-<<<<<<< HEAD
-free_priv:
-	kfree(priv);
-=======
 put_dev:
 	put_device(&priv->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(iscsi_register_transport);
 
-<<<<<<< HEAD
-int iscsi_unregister_transport(struct iscsi_transport *tt)
-=======
 void iscsi_unregister_transport(struct iscsi_transport *tt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_internal *priv;
 	unsigned long flags;
@@ -5871,17 +4943,6 @@ void iscsi_unregister_transport(struct iscsi_transport *tt)
 	sysfs_remove_group(&priv->dev.kobj, &iscsi_transport_group);
 	device_unregister(&priv->dev);
 	mutex_unlock(&rx_queue_mutex);
-<<<<<<< HEAD
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(iscsi_unregister_transport);
-
-static __init int iscsi_transport_init(void)
-{
-	int err;
-
-=======
 }
 EXPORT_SYMBOL_GPL(iscsi_unregister_transport);
 
@@ -5906,7 +4967,6 @@ static __init int iscsi_transport_init(void)
 		.groups	= 1,
 		.input	= iscsi_if_rx,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "Loading iSCSI transport class v%s.\n",
 		ISCSI_TRANSPORT_VERSION);
 
@@ -5936,18 +4996,6 @@ static __init int iscsi_transport_init(void)
 	if (err)
 		goto unregister_conn_class;
 
-<<<<<<< HEAD
-	nls = netlink_kernel_create(&init_net, NETLINK_ISCSI, 1, iscsi_if_rx,
-				    NULL, THIS_MODULE);
-	if (!nls) {
-		err = -ENOBUFS;
-		goto unregister_session_class;
-	}
-
-	iscsi_eh_timer_workq = create_singlethread_workqueue("iscsi_eh");
-	if (!iscsi_eh_timer_workq)
-		goto release_nls;
-=======
 	err = bus_register(&iscsi_flashnode_bus);
 	if (err)
 		goto unregister_session_class;
@@ -5965,17 +5013,13 @@ static __init int iscsi_transport_init(void)
 		err = -ENOMEM;
 		goto release_nls;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 release_nls:
 	netlink_kernel_release(nls);
-<<<<<<< HEAD
-=======
 unregister_flashnode_bus:
 	bus_unregister(&iscsi_flashnode_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unregister_session_class:
 	transport_class_unregister(&iscsi_session_class);
 unregister_conn_class:
@@ -5993,14 +5037,9 @@ unregister_transport_class:
 
 static void __exit iscsi_transport_exit(void)
 {
-<<<<<<< HEAD
-	destroy_workqueue(iscsi_eh_timer_workq);
-	netlink_kernel_release(nls);
-=======
 	destroy_workqueue(iscsi_conn_cleanup_workq);
 	netlink_kernel_release(nls);
 	bus_unregister(&iscsi_flashnode_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_class_unregister(&iscsi_connection_class);
 	transport_class_unregister(&iscsi_session_class);
 	transport_class_unregister(&iscsi_host_class);

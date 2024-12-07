@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#include "builtin.h"
-#include "perf.h"
-
-#include "util/util.h"
-#include "util/cache.h"
-#include "util/symbol.h"
-#include "util/thread.h"
-#include "util/header.h"
-
-#include "util/parse-options.h"
-#include "util/trace-event.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <errno.h>
 #include <inttypes.h>
@@ -32,25 +19,10 @@
 #include <subcmd/parse-options.h>
 #include "util/trace-event.h"
 #include "util/tracepoint.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "util/debug.h"
 #include "util/session.h"
 #include "util/tool.h"
-<<<<<<< HEAD
-
-#include <sys/types.h>
-#include <sys/prctl.h>
-#include <semaphore.h>
-#include <pthread.h>
-#include <math.h>
-#include <limits.h>
-
-#include <linux/list.h>
-#include <linux/hash.h>
-
-static struct perf_session *session;
-=======
 #include "util/data.h"
 #include "util/string2.h"
 #include "util/map.h"
@@ -73,98 +45,16 @@ static struct perf_session *session;
 
 static struct perf_session *session;
 static struct target target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* based on kernel/lockdep.c */
 #define LOCKHASH_BITS		12
 #define LOCKHASH_SIZE		(1UL << LOCKHASH_BITS)
 
-<<<<<<< HEAD
-static struct list_head lockhash_table[LOCKHASH_SIZE];
-=======
 static struct hlist_head *lockhash_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __lockhashfn(key)	hash_long((unsigned long)key, LOCKHASH_BITS)
 #define lockhashentry(key)	(lockhash_table + __lockhashfn((key)))
 
-<<<<<<< HEAD
-struct lock_stat {
-	struct list_head	hash_entry;
-	struct rb_node		rb;		/* used for sorting */
-
-	/*
-	 * FIXME: raw_field_value() returns unsigned long long,
-	 * so address of lockdep_map should be dealed as 64bit.
-	 * Is there more better solution?
-	 */
-	void			*addr;		/* address of lockdep_map, used as ID */
-	char			*name;		/* for strcpy(), we cannot use const */
-
-	unsigned int		nr_acquire;
-	unsigned int		nr_acquired;
-	unsigned int		nr_contended;
-	unsigned int		nr_release;
-
-	unsigned int		nr_readlock;
-	unsigned int		nr_trylock;
-	/* these times are in nano sec. */
-	u64			wait_time_total;
-	u64			wait_time_min;
-	u64			wait_time_max;
-
-	int			discard; /* flag of blacklist */
-};
-
-/*
- * States of lock_seq_stat
- *
- * UNINITIALIZED is required for detecting first event of acquire.
- * As the nature of lock events, there is no guarantee
- * that the first event for the locks are acquire,
- * it can be acquired, contended or release.
- */
-#define SEQ_STATE_UNINITIALIZED      0	       /* initial state */
-#define SEQ_STATE_RELEASED	1
-#define SEQ_STATE_ACQUIRING	2
-#define SEQ_STATE_ACQUIRED	3
-#define SEQ_STATE_READ_ACQUIRED	4
-#define SEQ_STATE_CONTENDED	5
-
-/*
- * MAX_LOCK_DEPTH
- * Imported from include/linux/sched.h.
- * Should this be synchronized?
- */
-#define MAX_LOCK_DEPTH 48
-
-/*
- * struct lock_seq_stat:
- * Place to put on state of one lock sequence
- * 1) acquire -> acquired -> release
- * 2) acquire -> contended -> acquired -> release
- * 3) acquire (with read or try) -> release
- * 4) Are there other patterns?
- */
-struct lock_seq_stat {
-	struct list_head        list;
-	int			state;
-	u64			prev_event_time;
-	void                    *addr;
-
-	int                     read_count;
-};
-
-struct thread_stat {
-	struct rb_node		rb;
-
-	u32                     tid;
-	struct list_head        seq_list;
-};
-
-static struct rb_root		thread_stats;
-
-=======
 static struct rb_root		thread_stats;
 
 static bool combine_locks;
@@ -195,7 +85,6 @@ static bool needs_callstack(void)
 	return !list_empty(&callstack_filters);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct thread_stat *thread_stat_find(u32 tid)
 {
 	struct rb_node *node;
@@ -246,15 +135,10 @@ static struct thread_stat *thread_stat_findnew_after_first(u32 tid)
 		return st;
 
 	st = zalloc(sizeof(struct thread_stat));
-<<<<<<< HEAD
-	if (!st)
-		die("memory allocation failed\n");
-=======
 	if (!st) {
 		pr_err("memory allocation failed\n");
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	st->tid = tid;
 	INIT_LIST_HEAD(&st->seq_list);
@@ -273,15 +157,10 @@ static struct thread_stat *thread_stat_findnew_first(u32 tid)
 	struct thread_stat *st;
 
 	st = zalloc(sizeof(struct thread_stat));
-<<<<<<< HEAD
-	if (!st)
-		die("memory allocation failed\n");
-=======
 	if (!st) {
 		pr_err("memory allocation failed\n");
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	st->tid = tid;
 	INIT_LIST_HEAD(&st->seq_list);
 
@@ -302,10 +181,7 @@ static struct thread_stat *thread_stat_findnew_first(u32 tid)
 
 SINGLE_KEY(nr_acquired)
 SINGLE_KEY(nr_contended)
-<<<<<<< HEAD
-=======
 SINGLE_KEY(avg_wait_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SINGLE_KEY(wait_time_total)
 SINGLE_KEY(wait_time_max)
 
@@ -328,11 +204,6 @@ struct lock_key {
 	 * e.g. nr_acquired -> acquired, wait_time_total -> wait_total
 	 */
 	const char		*name;
-<<<<<<< HEAD
-	int			(*key)(struct lock_stat*, struct lock_stat*);
-};
-
-=======
 	/* header: the string printed on the header line */
 	const char		*header;
 	/* len: the printing width of the field */
@@ -408,32 +279,10 @@ static void lock_stat_key_print_wait_time_min(struct lock_key *key,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char		*sort_key = "acquired";
 
 static int			(*compare)(struct lock_stat *, struct lock_stat *);
 
-<<<<<<< HEAD
-static struct rb_root		result;	/* place to store sorted data */
-
-#define DEF_KEY_LOCK(name, fn_suffix)	\
-	{ #name, lock_stat_key_ ## fn_suffix }
-struct lock_key keys[] = {
-	DEF_KEY_LOCK(acquired, nr_acquired),
-	DEF_KEY_LOCK(contended, nr_contended),
-	DEF_KEY_LOCK(wait_total, wait_time_total),
-	DEF_KEY_LOCK(wait_min, wait_time_min),
-	DEF_KEY_LOCK(wait_max, wait_time_max),
-
-	/* extra comparisons much complicated should be here */
-
-	{ NULL, NULL }
-};
-
-static void select_key(void)
-{
-	int i;
-=======
 static struct rb_root		sorted; /* place to store intermediate data */
 static struct rb_root		result;	/* place to store sorted data */
 
@@ -472,18 +321,10 @@ static int select_key(bool contention)
 
 	if (contention)
 		keys = contention_keys;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; keys[i].name; i++) {
 		if (!strcmp(keys[i].name, sort_key)) {
 			compare = keys[i].key;
-<<<<<<< HEAD
-			return;
-		}
-	}
-
-	die("Unknown compare key:%s\n", sort_key);
-=======
 
 			/* selected key should be in the output fields */
 			if (list_empty(&keys[i].list))
@@ -595,7 +436,6 @@ static void combine_lock_stats(struct lock_stat *st)
 
 	rb_link_node(&st->rb, parent, rb);
 	rb_insert_color(&st->rb, &sorted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void insert_to_result(struct lock_stat *st,
@@ -605,12 +445,9 @@ static void insert_to_result(struct lock_stat *st,
 	struct rb_node *parent = NULL;
 	struct lock_stat *p;
 
-<<<<<<< HEAD
-=======
 	if (combine_locks && st->combined)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (*rb) {
 		p = container_of(*rb, struct lock_stat, rb);
 		parent = *rb;
@@ -640,14 +477,6 @@ static struct lock_stat *pop_from_result(void)
 	return container_of(node, struct lock_stat, rb);
 }
 
-<<<<<<< HEAD
-static struct lock_stat *lock_stat_findnew(void *addr, const char *name)
-{
-	struct list_head *entry = lockhashentry(addr);
-	struct lock_stat *ret, *new;
-
-	list_for_each_entry(ret, entry, hash_entry) {
-=======
 struct lock_stat *lock_stat_find(u64 addr)
 {
 	struct hlist_head *entry = lockhashentry(addr);
@@ -666,7 +495,6 @@ struct lock_stat *lock_stat_findnew(u64 addr, const char *name, int flags)
 	struct lock_stat *ret, *new;
 
 	hlist_for_each_entry(ret, entry, hash_entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret->addr == addr)
 			return ret;
 	}
@@ -676,77 +504,6 @@ struct lock_stat *lock_stat_findnew(u64 addr, const char *name, int flags)
 		goto alloc_failed;
 
 	new->addr = addr;
-<<<<<<< HEAD
-	new->name = zalloc(sizeof(char) * strlen(name) + 1);
-	if (!new->name)
-		goto alloc_failed;
-	strcpy(new->name, name);
-
-	new->wait_time_min = ULLONG_MAX;
-
-	list_add(&new->hash_entry, entry);
-	return new;
-
-alloc_failed:
-	die("memory allocation failed\n");
-}
-
-static const char *input_name;
-
-struct raw_event_sample {
-	u32			size;
-	char			data[0];
-};
-
-struct trace_acquire_event {
-	void			*addr;
-	const char		*name;
-	int			flag;
-};
-
-struct trace_acquired_event {
-	void			*addr;
-	const char		*name;
-};
-
-struct trace_contended_event {
-	void			*addr;
-	const char		*name;
-};
-
-struct trace_release_event {
-	void			*addr;
-	const char		*name;
-};
-
-struct trace_lock_handler {
-	void (*acquire_event)(struct trace_acquire_event *,
-			      struct event *,
-			      int cpu,
-			      u64 timestamp,
-			      struct thread *thread);
-
-	void (*acquired_event)(struct trace_acquired_event *,
-			       struct event *,
-			       int cpu,
-			       u64 timestamp,
-			       struct thread *thread);
-
-	void (*contended_event)(struct trace_contended_event *,
-				struct event *,
-				int cpu,
-				u64 timestamp,
-				struct thread *thread);
-
-	void (*release_event)(struct trace_release_event *,
-			      struct event *,
-			      int cpu,
-			      u64 timestamp,
-			      struct thread *thread);
-};
-
-static struct lock_seq_stat *get_seq(struct thread_stat *ts, void *addr)
-=======
 	new->name = strdup(name);
 	if (!new->name) {
 		free(new);
@@ -834,7 +591,6 @@ struct trace_lock_handler {
 };
 
 static struct lock_seq_stat *get_seq(struct thread_stat *ts, u64 addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lock_seq_stat *seq;
 
@@ -844,15 +600,10 @@ static struct lock_seq_stat *get_seq(struct thread_stat *ts, u64 addr)
 	}
 
 	seq = zalloc(sizeof(struct lock_seq_stat));
-<<<<<<< HEAD
-	if (!seq)
-		die("Not enough memory\n");
-=======
 	if (!seq) {
 		pr_err("memory allocation failed\n");
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq->state = SEQ_STATE_UNINITIALIZED;
 	seq->addr = addr;
 
@@ -875,14 +626,6 @@ enum acquire_flags {
 	READ_LOCK = 2,
 };
 
-<<<<<<< HEAD
-static void
-report_lock_acquire_event(struct trace_acquire_event *acquire_event,
-			struct event *__event __used,
-			int cpu __used,
-			u64 timestamp __used,
-			struct thread *thread __used)
-=======
 static int get_key_by_aggr_mode_simple(u64 *key, u64 addr, u32 tid)
 {
 	switch (aggr_mode) {
@@ -915,20 +658,10 @@ static int get_key_by_aggr_mode(u64 *key, u64 addr, struct evsel *evsel,
 
 static int report_lock_acquire_event(struct evsel *evsel,
 				     struct perf_sample *sample)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lock_stat *ls;
 	struct thread_stat *ts;
 	struct lock_seq_stat *seq;
-<<<<<<< HEAD
-
-	ls = lock_stat_findnew(acquire_event->addr, acquire_event->name);
-	if (ls->discard)
-		return;
-
-	ts = thread_stat_findnew(thread->pid);
-	seq = get_seq(ts, acquire_event->addr);
-=======
 	const char *name = evsel__strval(evsel, sample, "name");
 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
 	int flag = evsel__intval(evsel, sample, "flags");
@@ -950,26 +683,16 @@ static int report_lock_acquire_event(struct evsel *evsel,
 	seq = get_seq(ts, addr);
 	if (!seq)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
 	case SEQ_STATE_RELEASED:
-<<<<<<< HEAD
-		if (!acquire_event->flag) {
-			seq->state = SEQ_STATE_ACQUIRING;
-		} else {
-			if (acquire_event->flag & TRY_LOCK)
-				ls->nr_trylock++;
-			if (acquire_event->flag & READ_LOCK)
-=======
 		if (!flag) {
 			seq->state = SEQ_STATE_ACQUIRING;
 		} else {
 			if (flag & TRY_LOCK)
 				ls->nr_trylock++;
 			if (flag & READ_LOCK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ls->nr_readlock++;
 			seq->state = SEQ_STATE_READ_ACQUIRED;
 			seq->read_count = 1;
@@ -977,11 +700,7 @@ static int report_lock_acquire_event(struct evsel *evsel,
 		}
 		break;
 	case SEQ_STATE_READ_ACQUIRED:
-<<<<<<< HEAD
-		if (acquire_event->flag & READ_LOCK) {
-=======
 		if (flag & READ_LOCK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq->read_count++;
 			ls->nr_acquired++;
 			goto end;
@@ -993,15 +712,6 @@ static int report_lock_acquire_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRING:
 	case SEQ_STATE_CONTENDED:
 broken:
-<<<<<<< HEAD
-		/* broken lock sequence, discard it */
-		ls->discard = 1;
-		bad_hist[BROKEN_ACQUIRE]++;
-		list_del(&seq->list);
-		free(seq);
-		goto end;
-		break;
-=======
 		/* broken lock sequence */
 		if (!ls->broken) {
 			ls->broken = 1;
@@ -1010,26 +720,12 @@ broken:
 		list_del_init(&seq->list);
 		free(seq);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG_ON("Unknown state of lock sequence found!\n");
 		break;
 	}
 
 	ls->nr_acquire++;
-<<<<<<< HEAD
-	seq->prev_event_time = timestamp;
-end:
-	return;
-}
-
-static void
-report_lock_acquired_event(struct trace_acquired_event *acquired_event,
-			 struct event *__event __used,
-			 int cpu __used,
-			 u64 timestamp __used,
-			 struct thread *thread __used)
-=======
 	seq->prev_event_time = sample->time;
 end:
 	return 0;
@@ -1037,21 +733,11 @@ end:
 
 static int report_lock_acquired_event(struct evsel *evsel,
 				      struct perf_sample *sample)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lock_stat *ls;
 	struct thread_stat *ts;
 	struct lock_seq_stat *seq;
 	u64 contended_term;
-<<<<<<< HEAD
-
-	ls = lock_stat_findnew(acquired_event->addr, acquired_event->name);
-	if (ls->discard)
-		return;
-
-	ts = thread_stat_findnew(thread->pid);
-	seq = get_seq(ts, acquired_event->addr);
-=======
 	const char *name = evsel__strval(evsel, sample, "name");
 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
 	u64 key;
@@ -1072,24 +758,15 @@ static int report_lock_acquired_event(struct evsel *evsel,
 	seq = get_seq(ts, addr);
 	if (!seq)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
 		/* orphan event, do nothing */
-<<<<<<< HEAD
-		return;
-	case SEQ_STATE_ACQUIRING:
-		break;
-	case SEQ_STATE_CONTENDED:
-		contended_term = timestamp - seq->prev_event_time;
-=======
 		return 0;
 	case SEQ_STATE_ACQUIRING:
 		break;
 	case SEQ_STATE_CONTENDED:
 		contended_term = sample->time - seq->prev_event_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ls->wait_time_total += contended_term;
 		if (contended_term < ls->wait_time_min)
 			ls->wait_time_min = contended_term;
@@ -1099,16 +776,6 @@ static int report_lock_acquired_event(struct evsel *evsel,
 	case SEQ_STATE_RELEASED:
 	case SEQ_STATE_ACQUIRED:
 	case SEQ_STATE_READ_ACQUIRED:
-<<<<<<< HEAD
-		/* broken lock sequence, discard it */
-		ls->discard = 1;
-		bad_hist[BROKEN_ACQUIRED]++;
-		list_del(&seq->list);
-		free(seq);
-		goto end;
-		break;
-
-=======
 		/* broken lock sequence */
 		if (!ls->broken) {
 			ls->broken = 1;
@@ -1117,7 +784,6 @@ static int report_lock_acquired_event(struct evsel *evsel,
 		list_del_init(&seq->list);
 		free(seq);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG_ON("Unknown state of lock sequence found!\n");
 		break;
@@ -1125,19 +791,6 @@ static int report_lock_acquired_event(struct evsel *evsel,
 
 	seq->state = SEQ_STATE_ACQUIRED;
 	ls->nr_acquired++;
-<<<<<<< HEAD
-	seq->prev_event_time = timestamp;
-end:
-	return;
-}
-
-static void
-report_lock_contended_event(struct trace_contended_event *contended_event,
-			  struct event *__event __used,
-			  int cpu __used,
-			  u64 timestamp __used,
-			  struct thread *thread __used)
-=======
 	ls->avg_wait_time = ls->nr_contended ? ls->wait_time_total/ls->nr_contended : 0;
 	seq->prev_event_time = sample->time;
 end:
@@ -1146,20 +799,10 @@ end:
 
 static int report_lock_contended_event(struct evsel *evsel,
 				       struct perf_sample *sample)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lock_stat *ls;
 	struct thread_stat *ts;
 	struct lock_seq_stat *seq;
-<<<<<<< HEAD
-
-	ls = lock_stat_findnew(contended_event->addr, contended_event->name);
-	if (ls->discard)
-		return;
-
-	ts = thread_stat_findnew(thread->pid);
-	seq = get_seq(ts, contended_event->addr);
-=======
 	const char *name = evsel__strval(evsel, sample, "name");
 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
 	u64 key;
@@ -1180,31 +823,17 @@ static int report_lock_contended_event(struct evsel *evsel,
 	seq = get_seq(ts, addr);
 	if (!seq)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
 		/* orphan event, do nothing */
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SEQ_STATE_ACQUIRING:
 		break;
 	case SEQ_STATE_RELEASED:
 	case SEQ_STATE_ACQUIRED:
 	case SEQ_STATE_READ_ACQUIRED:
 	case SEQ_STATE_CONTENDED:
-<<<<<<< HEAD
-		/* broken lock sequence, discard it */
-		ls->discard = 1;
-		bad_hist[BROKEN_CONTENDED]++;
-		list_del(&seq->list);
-		free(seq);
-		goto end;
-		break;
-=======
 		/* broken lock sequence */
 		if (!ls->broken) {
 			ls->broken = 1;
@@ -1213,7 +842,6 @@ static int report_lock_contended_event(struct evsel *evsel,
 		list_del_init(&seq->list);
 		free(seq);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG_ON("Unknown state of lock sequence found!\n");
 		break;
@@ -1221,19 +849,6 @@ static int report_lock_contended_event(struct evsel *evsel,
 
 	seq->state = SEQ_STATE_CONTENDED;
 	ls->nr_contended++;
-<<<<<<< HEAD
-	seq->prev_event_time = timestamp;
-end:
-	return;
-}
-
-static void
-report_lock_release_event(struct trace_release_event *release_event,
-			struct event *__event __used,
-			int cpu __used,
-			u64 timestamp __used,
-			struct thread *thread __used)
-=======
 	ls->avg_wait_time = ls->wait_time_total/ls->nr_contended;
 	seq->prev_event_time = sample->time;
 end:
@@ -1242,20 +857,10 @@ end:
 
 static int report_lock_release_event(struct evsel *evsel,
 				     struct perf_sample *sample)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lock_stat *ls;
 	struct thread_stat *ts;
 	struct lock_seq_stat *seq;
-<<<<<<< HEAD
-
-	ls = lock_stat_findnew(release_event->addr, release_event->name);
-	if (ls->discard)
-		return;
-
-	ts = thread_stat_findnew(thread->pid);
-	seq = get_seq(ts, release_event->addr);
-=======
 	const char *name = evsel__strval(evsel, sample, "name");
 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
 	u64 key;
@@ -1276,25 +881,16 @@ static int report_lock_release_event(struct evsel *evsel,
 	seq = get_seq(ts, addr);
 	if (!seq)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (seq->state) {
 	case SEQ_STATE_UNINITIALIZED:
 		goto end;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SEQ_STATE_ACQUIRED:
 		break;
 	case SEQ_STATE_READ_ACQUIRED:
 		seq->read_count--;
 		BUG_ON(seq->read_count < 0);
-<<<<<<< HEAD
-		if (!seq->read_count) {
-=======
 		if (seq->read_count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ls->nr_release++;
 			goto end;
 		}
@@ -1302,20 +898,12 @@ static int report_lock_release_event(struct evsel *evsel,
 	case SEQ_STATE_ACQUIRING:
 	case SEQ_STATE_CONTENDED:
 	case SEQ_STATE_RELEASED:
-<<<<<<< HEAD
-		/* broken lock sequence, discard it */
-		ls->discard = 1;
-		bad_hist[BROKEN_RELEASE]++;
-		goto free_seq;
-		break;
-=======
 		/* broken lock sequence */
 		if (!ls->broken) {
 			ls->broken = 1;
 			bad_hist[BROKEN_RELEASE]++;
 		}
 		goto free_seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG_ON("Unknown state of lock sequence found!\n");
 		break;
@@ -1323,12 +911,6 @@ static int report_lock_release_event(struct evsel *evsel,
 
 	ls->nr_release++;
 free_seq:
-<<<<<<< HEAD
-	list_del(&seq->list);
-	free(seq);
-end:
-	return;
-=======
 	list_del_init(&seq->list);
 	free(seq);
 end:
@@ -1698,7 +1280,6 @@ static int report_lock_contention_end_event(struct evsel *evsel,
 	ls->avg_wait_time = ls->wait_time_total/ls->nr_acquired;
 end:
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* lock oriented handlers */
@@ -1708,102 +1289,6 @@ static struct trace_lock_handler report_lock_ops  = {
 	.acquired_event		= report_lock_acquired_event,
 	.contended_event	= report_lock_contended_event,
 	.release_event		= report_lock_release_event,
-<<<<<<< HEAD
-};
-
-static struct trace_lock_handler *trace_handler;
-
-static void
-process_lock_acquire_event(void *data,
-			   struct event *event __used,
-			   int cpu __used,
-			   u64 timestamp __used,
-			   struct thread *thread __used)
-{
-	struct trace_acquire_event acquire_event;
-	u64 tmp;		/* this is required for casting... */
-
-	tmp = raw_field_value(event, "lockdep_addr", data);
-	memcpy(&acquire_event.addr, &tmp, sizeof(void *));
-	acquire_event.name = (char *)raw_field_ptr(event, "name", data);
-	acquire_event.flag = (int)raw_field_value(event, "flag", data);
-
-	if (trace_handler->acquire_event)
-		trace_handler->acquire_event(&acquire_event, event, cpu, timestamp, thread);
-}
-
-static void
-process_lock_acquired_event(void *data,
-			    struct event *event __used,
-			    int cpu __used,
-			    u64 timestamp __used,
-			    struct thread *thread __used)
-{
-	struct trace_acquired_event acquired_event;
-	u64 tmp;		/* this is required for casting... */
-
-	tmp = raw_field_value(event, "lockdep_addr", data);
-	memcpy(&acquired_event.addr, &tmp, sizeof(void *));
-	acquired_event.name = (char *)raw_field_ptr(event, "name", data);
-
-	if (trace_handler->acquire_event)
-		trace_handler->acquired_event(&acquired_event, event, cpu, timestamp, thread);
-}
-
-static void
-process_lock_contended_event(void *data,
-			     struct event *event __used,
-			     int cpu __used,
-			     u64 timestamp __used,
-			     struct thread *thread __used)
-{
-	struct trace_contended_event contended_event;
-	u64 tmp;		/* this is required for casting... */
-
-	tmp = raw_field_value(event, "lockdep_addr", data);
-	memcpy(&contended_event.addr, &tmp, sizeof(void *));
-	contended_event.name = (char *)raw_field_ptr(event, "name", data);
-
-	if (trace_handler->acquire_event)
-		trace_handler->contended_event(&contended_event, event, cpu, timestamp, thread);
-}
-
-static void
-process_lock_release_event(void *data,
-			   struct event *event __used,
-			   int cpu __used,
-			   u64 timestamp __used,
-			   struct thread *thread __used)
-{
-	struct trace_release_event release_event;
-	u64 tmp;		/* this is required for casting... */
-
-	tmp = raw_field_value(event, "lockdep_addr", data);
-	memcpy(&release_event.addr, &tmp, sizeof(void *));
-	release_event.name = (char *)raw_field_ptr(event, "name", data);
-
-	if (trace_handler->acquire_event)
-		trace_handler->release_event(&release_event, event, cpu, timestamp, thread);
-}
-
-static void
-process_raw_event(void *data, int cpu, u64 timestamp, struct thread *thread)
-{
-	struct event *event;
-	int type;
-
-	type = trace_parse_common_type(data);
-	event = trace_find_event(type);
-
-	if (!strcmp(event->name, "lock_acquire"))
-		process_lock_acquire_event(data, event, cpu, timestamp, thread);
-	if (!strcmp(event->name, "lock_acquired"))
-		process_lock_acquired_event(data, event, cpu, timestamp, thread);
-	if (!strcmp(event->name, "lock_contended"))
-		process_lock_contended_event(data, event, cpu, timestamp, thread);
-	if (!strcmp(event->name, "lock_release"))
-		process_lock_release_event(data, event, cpu, timestamp, thread);
-=======
 	.contention_begin_event	= report_lock_contention_begin_event,
 	.contention_end_event	= report_lock_contention_end_event,
 };
@@ -1856,24 +1341,12 @@ static int evsel__process_contention_end(struct evsel *evsel, struct perf_sample
 	if (trace_handler->contention_end_event)
 		return trace_handler->contention_end_event(evsel, sample);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_bad_events(int bad, int total)
 {
 	/* Output for debug, this have to be removed */
 	int i;
-<<<<<<< HEAD
-	const char *name[4] =
-		{ "acquire", "acquired", "contended", "release" };
-
-	pr_info("\n=== output for debug===\n\n");
-	pr_info("bad: %d, total: %d\n", bad, total);
-	pr_info("bad rate: %f %%\n", (double)bad / (double)total * 100);
-	pr_info("histogram of events caused bad sequence\n");
-	for (i = 0; i < BROKEN_MAX; i++)
-		pr_info(" %10s: %d\n", name[i], bad_hist[i]);
-=======
 	int broken = 0;
 	const char *name[4] =
 		{ "acquire", "acquired", "contended", "release" };
@@ -1890,40 +1363,12 @@ static void print_bad_events(int bad, int total)
 	fprintf(lock_output, "histogram of events caused bad sequence\n");
 	for (i = 0; i < BROKEN_MAX; i++)
 		fprintf(lock_output, " %10s: %d\n", name[i], bad_hist[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* TODO: various way to print, coloring, nano or milli sec */
 static void print_result(void)
 {
 	struct lock_stat *st;
-<<<<<<< HEAD
-	char cut_name[20];
-	int bad, total;
-
-	pr_info("%20s ", "Name");
-	pr_info("%10s ", "acquired");
-	pr_info("%10s ", "contended");
-
-	pr_info("%15s ", "total wait (ns)");
-	pr_info("%15s ", "max wait (ns)");
-	pr_info("%15s ", "min wait (ns)");
-
-	pr_info("\n\n");
-
-	bad = total = 0;
-	while ((st = pop_from_result())) {
-		total++;
-		if (st->discard) {
-			bad++;
-			continue;
-		}
-		bzero(cut_name, 20);
-
-		if (strlen(st->name) < 16) {
-			/* output raw name */
-			pr_info("%20s ", st->name);
-=======
 	struct lock_key *key;
 	char cut_name[20];
 	int bad, total, printed;
@@ -1958,7 +1403,6 @@ static void print_result(void)
 			}
 
 			fprintf(lock_output, "%20s ", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			strncpy(cut_name, st->name, 16);
 			cut_name[16] = '.';
@@ -1966,19 +1410,6 @@ static void print_result(void)
 			cut_name[18] = '.';
 			cut_name[19] = '\0';
 			/* cut off name for saving output style */
-<<<<<<< HEAD
-			pr_info("%20s ", cut_name);
-		}
-
-		pr_info("%10u ", st->nr_acquired);
-		pr_info("%10u ", st->nr_contended);
-
-		pr_info("%15" PRIu64 " ", st->wait_time_total);
-		pr_info("%15" PRIu64 " ", st->wait_time_max);
-		pr_info("%15" PRIu64 " ", st->wait_time_min == ULLONG_MAX ?
-		       0 : st->wait_time_min);
-		pr_info("\n");
-=======
 			fprintf(lock_output, "%20s ", cut_name);
 		}
 
@@ -1990,7 +1421,6 @@ static void print_result(void)
 
 		if (++printed >= print_nr_entries)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	print_bad_events(bad, total);
@@ -2004,21 +1434,12 @@ static void dump_threads(void)
 	struct rb_node *node;
 	struct thread *t;
 
-<<<<<<< HEAD
-	pr_info("%10s: comm\n", "Thread ID");
-=======
 	fprintf(lock_output, "%10s: comm\n", "Thread ID");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	node = rb_first(&thread_stats);
 	while (node) {
 		st = container_of(node, struct thread_stat, rb);
 		t = perf_session__findnew(session, st->tid);
-<<<<<<< HEAD
-		pr_info("%10d: %s\n", st->tid, t->comm);
-		node = rb_next(node);
-	};
-=======
 		fprintf(lock_output, "%10d: %s\n", st->tid, thread__comm_str(t));
 		node = rb_next(node);
 		thread__put(t);
@@ -2038,7 +1459,6 @@ static int compare_maps(struct lock_stat *a, struct lock_stat *b)
 		return a->addr < b->addr;
 	else
 		return ret < 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dump_map(void)
@@ -2046,18 +1466,6 @@ static void dump_map(void)
 	unsigned int i;
 	struct lock_stat *st;
 
-<<<<<<< HEAD
-	pr_info("Address of instance: name of class\n");
-	for (i = 0; i < LOCKHASH_SIZE; i++) {
-		list_for_each_entry(st, &lockhash_table[i], hash_entry) {
-			pr_info(" %p: %s\n", st->addr, st->name);
-		}
-	}
-}
-
-static void dump_info(void)
-{
-=======
 	fprintf(lock_output, "Address of instance: name of class\n");
 	for (i = 0; i < LOCKHASH_SIZE; i++) {
 		hlist_for_each_entry(st, &lockhash_table[i], hash_entry) {
@@ -2073,24 +1481,10 @@ static int dump_info(void)
 {
 	int rc = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info_threads)
 		dump_threads();
 	else if (info_map)
 		dump_map();
-<<<<<<< HEAD
-	else
-		die("Unknown type of information\n");
-}
-
-static int process_sample_event(struct perf_tool *tool __used,
-				union perf_event *event,
-				struct perf_sample *sample,
-				struct perf_evsel *evsel __used,
-				struct machine *machine)
-{
-	struct thread *thread = machine__findnew_thread(machine, sample->tid);
-=======
 	else {
 		rc = -1;
 		pr_err("Unknown type of information\n");
@@ -2139,7 +1533,6 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 	int err = 0;
 	struct thread *thread = machine__findnew_thread(machine, sample->pid,
 							sample->tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (thread == NULL) {
 		pr_debug("problem processing %d event, skipping it.\n",
@@ -2147,26 +1540,6 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 		return -1;
 	}
 
-<<<<<<< HEAD
-	process_raw_event(sample->raw_data, sample->cpu, sample->time, thread);
-
-	return 0;
-}
-
-static struct perf_tool eops = {
-	.sample			= process_sample_event,
-	.comm			= perf_event__process_comm,
-	.ordered_samples	= true,
-};
-
-static int read_events(void)
-{
-	session = perf_session__new(input_name, O_RDONLY, 0, false, &eops);
-	if (!session)
-		die("Initializing perf session failed\n");
-
-	return perf_session__process_events(session, &eops);
-=======
 	if (evsel->handler != NULL) {
 		tracepoint_handler f = evsel->handler;
 		err = f(evsel, sample);
@@ -2190,7 +1563,6 @@ static void combine_result(void)
 			combine_lock_stats(st);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sort_result(void)
@@ -2199,85 +1571,12 @@ static void sort_result(void)
 	struct lock_stat *st;
 
 	for (i = 0; i < LOCKHASH_SIZE; i++) {
-<<<<<<< HEAD
-		list_for_each_entry(st, &lockhash_table[i], hash_entry) {
-=======
 		hlist_for_each_entry(st, &lockhash_table[i], hash_entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			insert_to_result(st, compare);
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void __cmd_report(void)
-{
-	setup_pager();
-	select_key();
-	read_events();
-	sort_result();
-	print_result();
-}
-
-static const char * const report_usage[] = {
-	"perf lock report [<options>]",
-	NULL
-};
-
-static const struct option report_options[] = {
-	OPT_STRING('k', "key", &sort_key, "acquired",
-		    "key for sorting (acquired / contended / wait_total / wait_max / wait_min)"),
-	/* TODO: type */
-	OPT_END()
-};
-
-static const char * const info_usage[] = {
-	"perf lock info [<options>]",
-	NULL
-};
-
-static const struct option info_options[] = {
-	OPT_BOOLEAN('t', "threads", &info_threads,
-		    "dump thread list in perf.data"),
-	OPT_BOOLEAN('m', "map", &info_map,
-		    "map of lock instances (address:name table)"),
-	OPT_END()
-};
-
-static const char * const lock_usage[] = {
-	"perf lock [<options>] {record|report|script|info}",
-	NULL
-};
-
-static const struct option lock_options[] = {
-	OPT_STRING('i', "input", &input_name, "file", "input file name"),
-	OPT_INCR('v', "verbose", &verbose, "be more verbose (show symbol address, etc)"),
-	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace, "dump raw trace in ASCII"),
-	OPT_END()
-};
-
-static const char *record_args[] = {
-	"record",
-	"-R",
-	"-f",
-	"-m", "1024",
-	"-c", "1",
-	"-e", "lock:lock_acquire",
-	"-e", "lock:lock_acquired",
-	"-e", "lock:lock_contended",
-	"-e", "lock:lock_release",
-};
-
-static int __cmd_record(int argc, const char **argv)
-{
-	unsigned int rec_argc, i, j;
-	const char **rec_argv;
-
-	rec_argc = ARRAY_SIZE(record_args) + argc - 1;
-	rec_argv = calloc(rec_argc + 1, sizeof(char *));
-
-	if (rec_argv == NULL)
-=======
 static const struct {
 	unsigned int flags;
 	const char *str;
@@ -2973,14 +2272,11 @@ setup_args:
 
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
 	if (!rec_argv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	for (i = 0; i < ARRAY_SIZE(record_args); i++)
 		rec_argv[i] = strdup(record_args[i]);
 
-<<<<<<< HEAD
-=======
 	for (j = 0; j < nr_tracepoints; j++) {
 		const char *ev_name;
 
@@ -3001,33 +2297,11 @@ setup_args:
 	for (j = 0; j < nr_callgraph_args; j++, i++)
 		rec_argv[i] = callgraph_args[j];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (j = 1; j < (unsigned int)argc; j++, i++)
 		rec_argv[i] = argv[j];
 
 	BUG_ON(i != rec_argc);
 
-<<<<<<< HEAD
-	return cmd_record(i, rec_argv, NULL);
-}
-
-int cmd_lock(int argc, const char **argv, const char *prefix __used)
-{
-	unsigned int i;
-
-	symbol__init();
-	for (i = 0; i < LOCKHASH_SIZE; i++)
-		INIT_LIST_HEAD(lockhash_table + i);
-
-	argc = parse_options(argc, argv, lock_options, lock_usage,
-			     PARSE_OPT_STOP_AT_NON_OPTION);
-	if (!argc)
-		usage_with_options(lock_usage, lock_options);
-
-	if (!strncmp(argv[0], "rec", 3)) {
-		return __cmd_record(argc, argv);
-	} else if (!strncmp(argv[0], "report", 6)) {
-=======
 	ret = cmd_record(i, rec_argv);
 	free(rec_argv);
 	return ret;
@@ -3402,7 +2676,6 @@ int cmd_lock(int argc, const char **argv)
 	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
 		return __cmd_record(argc, argv);
 	} else if (strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trace_handler = &report_lock_ops;
 		if (argc) {
 			argc = parse_options(argc, argv,
@@ -3410,17 +2683,10 @@ int cmd_lock(int argc, const char **argv)
 			if (argc)
 				usage_with_options(report_usage, report_options);
 		}
-<<<<<<< HEAD
-		__cmd_report();
-	} else if (!strcmp(argv[0], "script")) {
-		/* Aliased to 'perf script' */
-		return cmd_script(argc, argv, prefix);
-=======
 		rc = __cmd_report(false);
 	} else if (!strcmp(argv[0], "script")) {
 		/* Aliased to 'perf script' */
 		rc = cmd_script(argc, argv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!strcmp(argv[0], "info")) {
 		if (argc) {
 			argc = parse_options(argc, argv,
@@ -3430,11 +2696,6 @@ int cmd_lock(int argc, const char **argv)
 		}
 		/* recycling report_lock_ops */
 		trace_handler = &report_lock_ops;
-<<<<<<< HEAD
-		setup_pager();
-		read_events();
-		dump_info();
-=======
 		rc = __cmd_report(true);
 	} else if (strlen(argv[0]) > 2 && strstarts("contention", argv[0])) {
 		trace_handler = &contention_lock_ops;
@@ -3455,15 +2716,10 @@ int cmd_lock(int argc, const char **argv)
 			return -1;
 
 		rc = __cmd_contention(argc, argv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		usage_with_options(lock_usage, lock_options);
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	zfree(&lockhash_table);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

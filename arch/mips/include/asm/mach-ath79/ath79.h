@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Atheros AR71XX/AR724X/AR913X common definitions
  *
@@ -9,13 +6,6 @@
  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
  *
  *  Parts of this file are based on Atheros' 2.6.15 BSP
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License version 2 as published
- *  by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_MACH_ATH79_H
@@ -36,8 +26,6 @@ enum ath79_soc_type {
 	ATH79_SOC_AR9132,
 	ATH79_SOC_AR9330,
 	ATH79_SOC_AR9331,
-<<<<<<< HEAD
-=======
 	ATH79_SOC_AR9341,
 	ATH79_SOC_AR9342,
 	ATH79_SOC_AR9344,
@@ -46,7 +34,6 @@ enum ath79_soc_type {
 	ATH79_SOC_QCA9558,
 	ATH79_SOC_TP9343,
 	ATH79_SOC_QCA956X,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern enum ath79_soc_type ath79_soc;
@@ -93,9 +80,6 @@ static inline int soc_is_ar933x(void)
 		ath79_soc == ATH79_SOC_AR9331);
 }
 
-<<<<<<< HEAD
-extern void __iomem *ath79_ddr_base;
-=======
 static inline int soc_is_ar9341(void)
 {
 	return (ath79_soc == ATH79_SOC_AR9341);
@@ -164,7 +148,6 @@ static inline int soc_is_qca956x(void)
 void ath79_ddr_wb_flush(unsigned int reg);
 void ath79_ddr_set_pci_windows(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __iomem *ath79_pll_base;
 extern void __iomem *ath79_reset_base;
 
@@ -181,10 +164,7 @@ static inline u32 ath79_pll_rr(unsigned reg)
 static inline void ath79_reset_wr(unsigned reg, u32 val)
 {
 	__raw_writel(val, ath79_reset_base + reg);
-<<<<<<< HEAD
-=======
 	(void) __raw_readl(ath79_reset_base + reg); /* flush */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 ath79_reset_rr(unsigned reg)

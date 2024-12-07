@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/befs/befs_fs_types.h
  *
@@ -59,21 +56,12 @@ enum super_flags {
 };
 
 #define BEFS_BYTEORDER_NATIVE 0x42494745
-<<<<<<< HEAD
-#define BEFS_BYTEORDER_NATIVE_LE (__force fs32)cpu_to_le32(BEFS_BYTEORDER_NATIVE)
-#define BEFS_BYTEORDER_NATIVE_BE (__force fs32)cpu_to_be32(BEFS_BYTEORDER_NATIVE)
-
-#define BEFS_SUPER_MAGIC BEFS_SUPER_MAGIC1
-#define BEFS_SUPER_MAGIC1_LE (__force fs32)cpu_to_le32(BEFS_SUPER_MAGIC1)
-#define BEFS_SUPER_MAGIC1_BE (__force fs32)cpu_to_be32(BEFS_SUPER_MAGIC1)
-=======
 #define BEFS_BYTEORDER_NATIVE_LE ((__force fs32)cpu_to_le32(BEFS_BYTEORDER_NATIVE))
 #define BEFS_BYTEORDER_NATIVE_BE ((__force fs32)cpu_to_be32(BEFS_BYTEORDER_NATIVE))
 
 #define BEFS_SUPER_MAGIC BEFS_SUPER_MAGIC1
 #define BEFS_SUPER_MAGIC1_LE ((__force fs32)cpu_to_le32(BEFS_SUPER_MAGIC1))
 #define BEFS_SUPER_MAGIC1_BE ((__force fs32)cpu_to_be32(BEFS_SUPER_MAGIC1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flags of inode
@@ -92,11 +80,7 @@ enum inode_flags {
 	BEFS_INODE_WAS_WRITTEN = 0x00020000,
 	BEFS_NO_TRANSACTION = 0x00040000,
 };
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On-Disk datastructures of BeFS
  */
 
@@ -156,11 +140,7 @@ typedef struct {
 
 } PACKED befs_super_block;
 
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note: the indirect and dbl_indir block_runs may
  * be longer than one block!
  */

@@ -23,14 +23,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_crtc_helper.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-#include "atom.h"
-#include <linux/backlight.h>
-=======
 
 #include <linux/backlight.h>
 #include <linux/pci.h>
@@ -47,7 +39,6 @@
 #include "radeon_asic.h"
 #include "radeon_legacy_encoders.h"
 #include "atom.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PMAC_BACKLIGHT
 #include <asm/backlight.h>
 #endif
@@ -55,11 +46,7 @@
 static void radeon_legacy_encoder_disable(struct drm_encoder *encoder)
 {
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
-<<<<<<< HEAD
-	struct drm_encoder_helper_funcs *encoder_funcs;
-=======
 	const struct drm_encoder_helper_funcs *encoder_funcs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	encoder_funcs = encoder->helper_private;
 	encoder_funcs->dpms(encoder, DRM_MODE_DPMS_OFF);
@@ -267,11 +254,7 @@ static void radeon_legacy_lvds_mode_set(struct drm_encoder *encoder,
 }
 
 static bool radeon_legacy_mode_fixup(struct drm_encoder *encoder,
-<<<<<<< HEAD
-				     struct drm_display_mode *mode,
-=======
 				     const struct drm_display_mode *mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct drm_display_mode *adjusted_mode)
 {
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
@@ -296,16 +279,6 @@ static const struct drm_encoder_helper_funcs radeon_legacy_lvds_helper_funcs = {
 	.disable = radeon_legacy_encoder_disable,
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_BACKLIGHT_CLASS_DEVICE) || defined(CONFIG_BACKLIGHT_CLASS_DEVICE_MODULE)
-
-#define MAX_RADEON_LEVEL 0xFF
-
-struct radeon_backlight_privdata {
-	struct radeon_encoder *encoder;
-	uint8_t negative;
-};
-=======
 u8
 radeon_legacy_get_backlight_level(struct radeon_encoder *radeon_encoder)
 {
@@ -346,7 +319,6 @@ radeon_legacy_set_backlight_level(struct radeon_encoder *radeon_encoder, u8 leve
 
 	radeon_legacy_lvds_update(&radeon_encoder->base, dpms_mode);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static uint8_t radeon_legacy_lvds_level(struct backlight_device *bd)
 {
@@ -356,22 +328,13 @@ static uint8_t radeon_legacy_lvds_level(struct backlight_device *bd)
 	/* Convert brightness to hardware level */
 	if (bd->props.brightness < 0)
 		level = 0;
-<<<<<<< HEAD
-	else if (bd->props.brightness > MAX_RADEON_LEVEL)
-		level = MAX_RADEON_LEVEL;
-=======
 	else if (bd->props.brightness > RADEON_MAX_BL_LEVEL)
 		level = RADEON_MAX_BL_LEVEL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		level = bd->props.brightness;
 
 	if (pdata->negative)
-<<<<<<< HEAD
-		level = MAX_RADEON_LEVEL - level;
-=======
 		level = RADEON_MAX_BL_LEVEL - level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return level;
 }
@@ -380,32 +343,9 @@ static int radeon_legacy_backlight_update_status(struct backlight_device *bd)
 {
 	struct radeon_backlight_privdata *pdata = bl_get_data(bd);
 	struct radeon_encoder *radeon_encoder = pdata->encoder;
-<<<<<<< HEAD
-	struct drm_device *dev = radeon_encoder->base.dev;
-	struct radeon_device *rdev = dev->dev_private;
-	int dpms_mode = DRM_MODE_DPMS_ON;
-
-	if (radeon_encoder->enc_priv) {
-		if (rdev->is_atom_bios) {
-			struct radeon_encoder_atom_dig *lvds = radeon_encoder->enc_priv;
-			dpms_mode = lvds->dpms_mode;
-			lvds->backlight_level = radeon_legacy_lvds_level(bd);
-		} else {
-			struct radeon_encoder_lvds *lvds = radeon_encoder->enc_priv;
-			dpms_mode = lvds->dpms_mode;
-			lvds->backlight_level = radeon_legacy_lvds_level(bd);
-		}
-	}
-
-	if (bd->props.brightness > 0)
-		radeon_legacy_lvds_update(&radeon_encoder->base, dpms_mode);
-	else
-		radeon_legacy_lvds_update(&radeon_encoder->base, DRM_MODE_DPMS_OFF);
-=======
 
 	radeon_legacy_set_backlight_level(radeon_encoder,
 					  radeon_legacy_lvds_level(bd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -421,11 +361,7 @@ static int radeon_legacy_backlight_get_brightness(struct backlight_device *bd)
 	backlight_level = (RREG32(RADEON_LVDS_GEN_CNTL) >>
 			   RADEON_LVDS_BL_MOD_LEVEL_SHIFT) & 0xff;
 
-<<<<<<< HEAD
-	return pdata->negative ? MAX_RADEON_LEVEL - backlight_level : backlight_level;
-=======
 	return pdata->negative ? RADEON_MAX_BL_LEVEL - backlight_level : backlight_level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct backlight_ops radeon_backlight_ops = {
@@ -442,10 +378,7 @@ void radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,
 	struct backlight_properties props;
 	struct radeon_backlight_privdata *pdata;
 	uint8_t backlight_level;
-<<<<<<< HEAD
-=======
 	char bl_name[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!radeon_encoder->enc_priv)
 		return;
@@ -456,32 +389,23 @@ void radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,
 		return;
 #endif
 
-<<<<<<< HEAD
-=======
 	if (!acpi_video_backlight_use_native()) {
 		drm_info(dev, "Skipping radeon legacy LVDS backlight registration\n");
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata = kmalloc(sizeof(struct radeon_backlight_privdata), GFP_KERNEL);
 	if (!pdata) {
 		DRM_ERROR("Memory allocation failed\n");
 		goto error;
 	}
 
-<<<<<<< HEAD
-	props.max_brightness = MAX_RADEON_LEVEL;
-	props.type = BACKLIGHT_RAW;
-	bd = backlight_device_register("radeon_bl", &drm_connector->kdev,
-=======
 	memset(&props, 0, sizeof(props));
 	props.max_brightness = RADEON_MAX_BL_LEVEL;
 	props.type = BACKLIGHT_RAW;
 	snprintf(bl_name, sizeof(bl_name),
 		 "radeon_bl%d", dev->primary->index);
 	bd = backlight_device_register(bl_name, drm_connector->kdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       pdata, &radeon_backlight_ops, &props);
 	if (IS_ERR(bd)) {
 		DRM_ERROR("Backlight registration failed\n");
@@ -530,10 +454,7 @@ void radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,
 	backlight_update_status(bd);
 
 	DRM_INFO("radeon legacy LVDS backlight initialized\n");
-<<<<<<< HEAD
-=======
 	rdev->mode_info.bl_encoder = radeon_encoder;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
@@ -562,11 +483,7 @@ static void radeon_legacy_backlight_exit(struct radeon_encoder *radeon_encoder)
 	}
 
 	if (bd) {
-<<<<<<< HEAD
-		struct radeon_legacy_backlight_privdata *pdata;
-=======
 		struct radeon_backlight_privdata *pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pdata = bl_get_data(bd);
 		backlight_device_unregister(bd);
@@ -576,22 +493,6 @@ static void radeon_legacy_backlight_exit(struct radeon_encoder *radeon_encoder)
 	}
 }
 
-<<<<<<< HEAD
-#else /* !CONFIG_BACKLIGHT_CLASS_DEVICE */
-
-void radeon_legacy_backlight_init(struct radeon_encoder *encoder)
-{
-}
-
-static void radeon_legacy_backlight_exit(struct radeon_encoder *encoder)
-{
-}
-
-#endif
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void radeon_lvds_enc_destroy(struct drm_encoder *encoder)
 {
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
@@ -637,13 +538,9 @@ static void radeon_legacy_primary_dac_dpms(struct drm_encoder *encoder, int mode
 		break;
 	}
 
-<<<<<<< HEAD
-	WREG32(RADEON_CRTC_EXT_CNTL, crtc_ext_cntl);
-=======
 	/* handled in radeon_crtc_dpms() */
 	if (!(rdev->flags & RADEON_SINGLE_CRTC))
 		WREG32(RADEON_CRTC_EXT_CNTL, crtc_ext_cntl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(RADEON_DAC_CNTL, dac_cntl);
 	WREG32(RADEON_DAC_MACRO_CNTL, dac_macro_cntl);
 
@@ -776,11 +673,8 @@ static enum drm_connector_status radeon_legacy_primary_dac_detect(struct drm_enc
 
 	if (ASIC_IS_R300(rdev))
 		tmp |= (0x1b6 << RADEON_DAC_FORCE_DATA_SHIFT);
-<<<<<<< HEAD
-=======
 	else if (ASIC_IS_RV100(rdev))
 		tmp |= (0x1ac << RADEON_DAC_FORCE_DATA_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		tmp |= (0x180 << RADEON_DAC_FORCE_DATA_SHIFT);
 
@@ -924,54 +818,6 @@ static void radeon_legacy_tmds_int_mode_set(struct drm_encoder *encoder,
 	tmds_transmitter_cntl = RREG32(RADEON_TMDS_TRANSMITTER_CNTL) &
 		~(RADEON_TMDS_TRANSMITTER_PLLRST);
 
-<<<<<<< HEAD
-    if (rdev->family == CHIP_R200 ||
-	rdev->family == CHIP_R100 ||
-	ASIC_IS_R300(rdev))
-	    tmds_transmitter_cntl &= ~(RADEON_TMDS_TRANSMITTER_PLLEN);
-    else /* RV chips got this bit reversed */
-	    tmds_transmitter_cntl |= RADEON_TMDS_TRANSMITTER_PLLEN;
-
-    fp_gen_cntl = (RREG32(RADEON_FP_GEN_CNTL) |
-		   (RADEON_FP_CRTC_DONT_SHADOW_VPAR |
-		    RADEON_FP_CRTC_DONT_SHADOW_HEND));
-
-    fp_gen_cntl &= ~(RADEON_FP_FPON | RADEON_FP_TMDS_EN);
-
-    fp_gen_cntl &= ~(RADEON_FP_RMX_HVSYNC_CONTROL_EN |
-		     RADEON_FP_DFP_SYNC_SEL |
-		     RADEON_FP_CRT_SYNC_SEL |
-		     RADEON_FP_CRTC_LOCK_8DOT |
-		     RADEON_FP_USE_SHADOW_EN |
-		     RADEON_FP_CRTC_USE_SHADOW_VEND |
-		     RADEON_FP_CRT_SYNC_ALT);
-
-    if (1) /*  FIXME rgbBits == 8 */
-	    fp_gen_cntl |= RADEON_FP_PANEL_FORMAT;  /* 24 bit format */
-    else
-	    fp_gen_cntl &= ~RADEON_FP_PANEL_FORMAT;/* 18 bit format */
-
-    if (radeon_crtc->crtc_id == 0) {
-	    if (ASIC_IS_R300(rdev) || rdev->family == CHIP_R200) {
-		    fp_gen_cntl &= ~R200_FP_SOURCE_SEL_MASK;
-		    if (radeon_encoder->rmx_type != RMX_OFF)
-			    fp_gen_cntl |= R200_FP_SOURCE_SEL_RMX;
-		    else
-			    fp_gen_cntl |= R200_FP_SOURCE_SEL_CRTC1;
-	    } else
-		    fp_gen_cntl &= ~RADEON_FP_SEL_CRTC2;
-    } else {
-	    if (ASIC_IS_R300(rdev) || rdev->family == CHIP_R200) {
-		    fp_gen_cntl &= ~R200_FP_SOURCE_SEL_MASK;
-		    fp_gen_cntl |= R200_FP_SOURCE_SEL_CRTC2;
-	    } else
-		    fp_gen_cntl |= RADEON_FP_SEL_CRTC2;
-    }
-
-    WREG32(RADEON_TMDS_PLL_CNTL, tmds_pll_cntl);
-    WREG32(RADEON_TMDS_TRANSMITTER_CNTL, tmds_transmitter_cntl);
-    WREG32(RADEON_FP_GEN_CNTL, fp_gen_cntl);
-=======
 	if (rdev->family == CHIP_R200 ||
 	    rdev->family == CHIP_R100 ||
 	    ASIC_IS_R300(rdev))
@@ -1018,7 +864,6 @@ static void radeon_legacy_tmds_int_mode_set(struct drm_encoder *encoder,
 	WREG32(RADEON_TMDS_PLL_CNTL, tmds_pll_cntl);
 	WREG32(RADEON_TMDS_TRANSMITTER_CNTL, tmds_transmitter_cntl);
 	WREG32(RADEON_FP_GEN_CNTL, fp_gen_cntl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdev->is_atom_bios)
 		radeon_atombios_encoder_crtc_scratch_regs(encoder, radeon_crtc->crtc_id);
@@ -1121,15 +966,9 @@ static void radeon_legacy_tmds_ext_mode_set(struct drm_encoder *encoder,
 
 		/* XXX: these are oem specific */
 		if (ASIC_IS_R300(rdev)) {
-<<<<<<< HEAD
-			if ((dev->pdev->device == 0x4850) &&
-			    (dev->pdev->subsystem_vendor == 0x1028) &&
-			    (dev->pdev->subsystem_device == 0x2001)) /* Dell Inspiron 8600 */
-=======
 			if ((rdev->pdev->device == 0x4850) &&
 			    (rdev->pdev->subsystem_vendor == 0x1028) &&
 			    (rdev->pdev->subsystem_device == 0x2001)) /* Dell Inspiron 8600 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fp2_gen_cntl |= R300_FP2_DVO_CLOCK_MODE_SINGLE;
 			else
 				fp2_gen_cntl |= RADEON_FP2_PAD_FLOP_EN | R300_FP2_DVO_CLOCK_MODE_SINGLE;
@@ -1267,12 +1106,8 @@ static void radeon_legacy_tv_dac_dpms(struct drm_encoder *encoder, int mode)
 	} else {
 		if (is_tv)
 			WREG32(RADEON_TV_MASTER_CNTL, tv_master_cntl);
-<<<<<<< HEAD
-		else
-=======
 		/* handled in radeon_crtc_dpms() */
 		else if (!(rdev->flags & RADEON_SINGLE_CRTC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WREG32(RADEON_CRTC2_GEN_CNTL, crtc2_gen_cntl);
 		WREG32(RADEON_TV_DAC_CNTL, tv_dac_cntl);
 	}
@@ -1596,8 +1431,6 @@ static bool radeon_legacy_tv_detect(struct drm_encoder *encoder,
 	return found;
 }
 
-<<<<<<< HEAD
-=======
 static bool radeon_legacy_ext_dac_detect(struct drm_encoder *encoder,
 					 struct drm_connector *connector)
 {
@@ -1688,20 +1521,14 @@ static bool radeon_legacy_ext_dac_detect(struct drm_encoder *encoder,
 	return found;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder *encoder,
 							     struct drm_connector *connector)
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-	uint32_t crtc2_gen_cntl, tv_dac_cntl, dac_cntl2, dac_ext_cntl;
-	uint32_t disp_hw_debug, disp_output_cntl, gpiopad_a, pixclks_cntl, tmp;
-=======
 	uint32_t crtc2_gen_cntl = 0, tv_dac_cntl, dac_cntl2, dac_ext_cntl;
 	uint32_t gpiopad_a = 0, pixclks_cntl, tmp;
 	uint32_t disp_output_cntl = 0, disp_hw_debug = 0, crtc_ext_cntl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum drm_connector_status found = connector_status_disconnected;
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
 	struct radeon_encoder_tv_dac *tv_dac = radeon_encoder->enc_priv;
@@ -1738,14 +1565,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 		return connector_status_disconnected;
 	}
 
-<<<<<<< HEAD
-	/* save the regs we need */
-	pixclks_cntl = RREG32_PLL(RADEON_PIXCLKS_CNTL);
-	gpiopad_a = ASIC_IS_R300(rdev) ? RREG32(RADEON_GPIOPAD_A) : 0;
-	disp_output_cntl = ASIC_IS_R300(rdev) ? RREG32(RADEON_DISP_OUTPUT_CNTL) : 0;
-	disp_hw_debug = ASIC_IS_R300(rdev) ? 0 : RREG32(RADEON_DISP_HW_DEBUG);
-	crtc2_gen_cntl = RREG32(RADEON_CRTC2_GEN_CNTL);
-=======
 	/* R200 uses an external DAC for secondary DAC */
 	if (rdev->family == CHIP_R200) {
 		if (radeon_legacy_ext_dac_detect(encoder, connector))
@@ -1767,7 +1586,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 		}
 		crtc2_gen_cntl = RREG32(RADEON_CRTC2_GEN_CNTL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tv_dac_cntl = RREG32(RADEON_TV_DAC_CNTL);
 	dac_ext_cntl = RREG32(RADEON_DAC_EXT_CNTL);
 	dac_cntl2 = RREG32(RADEON_DAC_CNTL2);
@@ -1776,24 +1594,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 			       | RADEON_PIX2CLK_DAC_ALWAYS_ONb);
 	WREG32_PLL(RADEON_PIXCLKS_CNTL, tmp);
 
-<<<<<<< HEAD
-	if (ASIC_IS_R300(rdev))
-		WREG32_P(RADEON_GPIOPAD_A, 1, ~1);
-
-	tmp = crtc2_gen_cntl & ~RADEON_CRTC2_PIX_WIDTH_MASK;
-	tmp |= RADEON_CRTC2_CRT2_ON |
-		(2 << RADEON_CRTC2_PIX_WIDTH_SHIFT);
-
-	WREG32(RADEON_CRTC2_GEN_CNTL, tmp);
-
-	if (ASIC_IS_R300(rdev)) {
-		tmp = disp_output_cntl & ~RADEON_DISP_TVDAC_SOURCE_MASK;
-		tmp |= RADEON_DISP_TVDAC_SOURCE_CRTC2;
-		WREG32(RADEON_DISP_OUTPUT_CNTL, tmp);
-	} else {
-		tmp = disp_hw_debug & ~RADEON_CRT2_DISP1_SEL;
-		WREG32(RADEON_DISP_HW_DEBUG, tmp);
-=======
 	if (rdev->flags & RADEON_SINGLE_CRTC) {
 		tmp = crtc_ext_cntl | RADEON_CRTC_CRT_ON;
 		WREG32(RADEON_CRTC_EXT_CNTL, tmp);
@@ -1812,7 +1612,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 			tmp = disp_hw_debug & ~RADEON_CRT2_DISP1_SEL;
 			WREG32(RADEON_DISP_HW_DEBUG, tmp);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tmp = RADEON_TV_DAC_NBLANK |
@@ -1854,16 +1653,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 	WREG32(RADEON_DAC_CNTL2, dac_cntl2);
 	WREG32(RADEON_DAC_EXT_CNTL, dac_ext_cntl);
 	WREG32(RADEON_TV_DAC_CNTL, tv_dac_cntl);
-<<<<<<< HEAD
-	WREG32(RADEON_CRTC2_GEN_CNTL, crtc2_gen_cntl);
-
-	if (ASIC_IS_R300(rdev)) {
-		WREG32(RADEON_DISP_OUTPUT_CNTL, disp_output_cntl);
-		WREG32_P(RADEON_GPIOPAD_A, gpiopad_a, ~1);
-	} else {
-		WREG32(RADEON_DISP_HW_DEBUG, disp_hw_debug);
-	}
-=======
 
 	if (rdev->flags & RADEON_SINGLE_CRTC) {
 		WREG32(RADEON_CRTC_EXT_CNTL, crtc_ext_cntl);
@@ -1877,7 +1666,6 @@ static enum drm_connector_status radeon_legacy_tv_dac_detect(struct drm_encoder 
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32_PLL(RADEON_PIXCLKS_CNTL, pixclks_cntl);
 
 	return found;
@@ -1904,11 +1692,7 @@ static struct radeon_encoder_int_tmds *radeon_legacy_get_tmds_info(struct radeon
 {
 	struct drm_device *dev = encoder->base.dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-	struct radeon_encoder_int_tmds *tmds = NULL;
-=======
 	struct radeon_encoder_int_tmds *tmds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool ret;
 
 	tmds = kzalloc(sizeof(struct radeon_encoder_int_tmds), GFP_KERNEL);
@@ -1921,11 +1705,7 @@ static struct radeon_encoder_int_tmds *radeon_legacy_get_tmds_info(struct radeon
 	else
 		ret = radeon_legacy_get_tmds_info_from_combios(encoder, tmds);
 
-<<<<<<< HEAD
-	if (ret == false)
-=======
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_legacy_get_tmds_info_from_table(encoder, tmds);
 
 	return tmds;
@@ -1935,11 +1715,7 @@ static struct radeon_encoder_ext_tmds *radeon_legacy_get_ext_tmds_info(struct ra
 {
 	struct drm_device *dev = encoder->base.dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-	struct radeon_encoder_ext_tmds *tmds = NULL;
-=======
 	struct radeon_encoder_ext_tmds *tmds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool ret;
 
 	if (rdev->is_atom_bios)
@@ -1952,11 +1728,7 @@ static struct radeon_encoder_ext_tmds *radeon_legacy_get_ext_tmds_info(struct ra
 
 	ret = radeon_legacy_get_ext_tmds_info_from_combios(encoder, tmds);
 
-<<<<<<< HEAD
-	if (ret == false)
-=======
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_legacy_get_ext_tmds_info_from_table(encoder, tmds);
 
 	return tmds;
@@ -2000,12 +1772,8 @@ radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum, uint32_
 	switch (radeon_encoder->encoder_id) {
 	case ENCODER_OBJECT_ID_INTERNAL_LVDS:
 		encoder->possible_crtcs = 0x1;
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_legacy_lvds_enc_funcs, DRM_MODE_ENCODER_LVDS);
-=======
 		drm_encoder_init(dev, encoder, &radeon_legacy_lvds_enc_funcs,
 				 DRM_MODE_ENCODER_LVDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_legacy_lvds_helper_funcs);
 		if (rdev->is_atom_bios)
 			radeon_encoder->enc_priv = radeon_atombios_get_lvds_info(radeon_encoder);
@@ -2014,22 +1782,14 @@ radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum, uint32_
 		radeon_encoder->rmx_type = RMX_FULL;
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_TMDS1:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_legacy_tmds_int_enc_funcs, DRM_MODE_ENCODER_TMDS);
-=======
 		drm_encoder_init(dev, encoder, &radeon_legacy_tmds_int_enc_funcs,
 				 DRM_MODE_ENCODER_TMDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_legacy_tmds_int_helper_funcs);
 		radeon_encoder->enc_priv = radeon_legacy_get_tmds_info(radeon_encoder);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_DAC1:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_legacy_primary_dac_enc_funcs, DRM_MODE_ENCODER_DAC);
-=======
 		drm_encoder_init(dev, encoder, &radeon_legacy_primary_dac_enc_funcs,
 				 DRM_MODE_ENCODER_DAC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_legacy_primary_dac_helper_funcs);
 		if (rdev->is_atom_bios)
 			radeon_encoder->enc_priv = radeon_atombios_get_primary_dac_info(radeon_encoder);
@@ -2037,12 +1797,8 @@ radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum, uint32_
 			radeon_encoder->enc_priv = radeon_combios_get_primary_dac_info(radeon_encoder);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_DAC2:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_legacy_tv_dac_enc_funcs, DRM_MODE_ENCODER_TVDAC);
-=======
 		drm_encoder_init(dev, encoder, &radeon_legacy_tv_dac_enc_funcs,
 				 DRM_MODE_ENCODER_TVDAC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_legacy_tv_dac_helper_funcs);
 		if (rdev->is_atom_bios)
 			radeon_encoder->enc_priv = radeon_atombios_get_tv_dac_info(radeon_encoder);
@@ -2050,12 +1806,8 @@ radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum, uint32_
 			radeon_encoder->enc_priv = radeon_combios_get_tv_dac_info(radeon_encoder);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_DVO1:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_legacy_tmds_ext_enc_funcs, DRM_MODE_ENCODER_TMDS);
-=======
 		drm_encoder_init(dev, encoder, &radeon_legacy_tmds_ext_enc_funcs,
 				 DRM_MODE_ENCODER_TMDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_legacy_tmds_ext_helper_funcs);
 		if (!rdev->is_atom_bios)
 			radeon_encoder->enc_priv = radeon_legacy_get_ext_tmds_info(radeon_encoder);

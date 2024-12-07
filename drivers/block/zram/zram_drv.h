@@ -15,44 +15,12 @@
 #ifndef _ZRAM_DRV_H_
 #define _ZRAM_DRV_H_
 
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/zsmalloc.h>
-
-#include "zcomp.h"
-
-/*
- * Some arbitrary value. This is just to catch
- * invalid value for num_devices module parameter.
- */
-static const unsigned max_num_devices = 32;
-
-/*-- Configurable parameters */
-
-/*
- * Pages that compress to size greater than this are stored
- * uncompressed in memory.
- */
-static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
-
-/*
- * NOTE: max_zpage_size must be less than or equal to:
- *   ZS_MAX_ALLOC_SIZE. Otherwise, zs_malloc() would
- * always return failure.
- */
-
-/*-- End of configurable params */
-
-#define SECTOR_SHIFT		9
-#define SECTOR_SIZE		(1 << SECTOR_SHIFT)
-=======
 #include <linux/rwsem.h>
 #include <linux/zsmalloc.h>
 #include <linux/crypto.h>
 
 #include "zcomp.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SECTORS_PER_PAGE_SHIFT	(PAGE_SHIFT - SECTOR_SHIFT)
 #define SECTORS_PER_PAGE	(1 << SECTORS_PER_PAGE_SHIFT)
 #define ZRAM_LOGICAL_BLOCK_SHIFT 12
@@ -60,12 +28,6 @@ static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
 #define ZRAM_SECTOR_PER_LOGICAL_BLOCK	\
 	(1 << (ZRAM_LOGICAL_BLOCK_SHIFT - SECTOR_SHIFT))
 
-<<<<<<< HEAD
-/* Flags for zram pages (table[page_no].flags) */
-enum zram_pageflags {
-	/* Page consists entirely of zeros */
-	ZRAM_ZERO,
-=======
 
 /*
  * ZRAM is mainly used for memory efficiency so we want to keep memory
@@ -94,7 +56,6 @@ enum zram_pageflags {
 
 	ZRAM_COMP_PRIORITY_BIT1, /* First bit of comp priority index */
 	ZRAM_COMP_PRIORITY_BIT2, /* Second bit of comp priority index */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__NR_ZRAM_PAGEFLAGS,
 };
@@ -102,41 +63,6 @@ enum zram_pageflags {
 /*-- Data structures */
 
 /* Allocated for each disk page */
-<<<<<<< HEAD
-struct table {
-	unsigned long handle;
-	u16 size;	/* object size (excluding header) */
-	u8 flags;
-} __aligned(4);
-
-struct zram_stats {
-	atomic64_t compr_data_size;	/* compressed size of pages stored */
-	atomic64_t num_reads;	/* failed + successful */
-	atomic64_t num_writes;	/* --do-- */
-	atomic64_t failed_reads;	/* should NEVER! happen */
-	atomic64_t failed_writes;	/* can happen when memory is too low */
-	atomic64_t invalid_io;	/* non-page-aligned I/O requests */
-	atomic64_t notify_free;	/* no. of swap slot free notifications */
-	atomic64_t zero_pages;		/* no. of zero filled pages */
-	atomic64_t pages_stored;	/* no. of pages currently stored */
-};
-
-struct zram_meta {
-	rwlock_t tb_lock;	/* protect table */
-	struct table *table;
-	struct zs_pool *mem_pool;
-};
-
-struct zram {
-	struct zram_meta *meta;
-	struct request_queue *queue;
-	struct gendisk *disk;
-	struct zcomp *comp;
-
-	/* Prevent concurrent execution of device init, reset and R/W request */
-	struct rw_semaphore init_lock;
-	/*
-=======
 struct zram_table_entry {
 	union {
 		unsigned long handle;
@@ -191,16 +117,10 @@ struct zram {
 
 	struct zram_stats stats;
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * This is the limit on amount of *uncompressed* worth of data
 	 * we can store in a disk.
 	 */
 	u64 disksize;	/* bytes */
-<<<<<<< HEAD
-	int max_comp_streams;
-	struct zram_stats stats;
-	char compressor[10];
-=======
 	const char *comp_algs[ZRAM_MAX_COMPS];
 	s8 num_active_comps;
 	/*
@@ -219,6 +139,5 @@ struct zram {
 #ifdef CONFIG_ZRAM_MEMORY_TRACKING
 	struct dentry *debugfs_dir;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

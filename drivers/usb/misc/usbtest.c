@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -18,21 +15,6 @@
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-/* FIXME make these public somewhere; usbdevfs.h? */
-struct usbtest_param {
-	/* inputs */
-	unsigned		test_num;	/* 0..(TEST_CASES-1) */
-	unsigned		iterations;
-	unsigned		length;
-	unsigned		vary;
-	unsigned		sglen;
-
-	/* outputs */
-	struct timeval		duration;
-};
-#define USBTEST_REQUEST	_IOWR('U', 100, struct usbtest_param)
-=======
 static int override_alt = -1;
 module_param_named(alt, override_alt, int, 0644);
 MODULE_PARM_DESC(alt, ">= 0 to override altsetting selection");
@@ -77,7 +59,6 @@ struct usbtest_param_64 {
 #define USBTEST_REQUEST_32    _IOWR('U', 100, struct usbtest_param_32)
 /* COMPAT IOCTL interface to the driver. */
 #define USBTEST_REQUEST_64    _IOWR('U', 100, struct usbtest_param_64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
@@ -99,10 +80,7 @@ struct usbtest_info {
 	unsigned		autoconf:1;
 	unsigned		ctrl_out:1;
 	unsigned		iso:1;		/* try iso in/out */
-<<<<<<< HEAD
-=======
 	unsigned		intr:1;		/* try interrupt in/out */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			alt;
 };
 
@@ -119,14 +97,10 @@ struct usbtest_dev {
 	int			out_pipe;
 	int			in_iso_pipe;
 	int			out_iso_pipe;
-<<<<<<< HEAD
-	struct usb_endpoint_descriptor	*iso_in, *iso_out;
-=======
 	int			in_int_pipe;
 	int			out_int_pipe;
 	struct usb_endpoint_descriptor	*iso_in, *iso_out;
 	struct usb_endpoint_descriptor	*int_in, *int_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex		lock;
 
 #define TBUF_SIZE	256
@@ -147,11 +121,6 @@ static struct usb_device *testdev_to_usbdev(struct usbtest_dev *test)
 	dev_warn(&(tdev)->intf->dev , fmt , ## args)
 
 #define GUARD_BYTE	0xA5
-<<<<<<< HEAD
-
-/*-------------------------------------------------------------------------*/
-
-=======
 #define MAX_SGLEN	128
 
 /*-------------------------------------------------------------------------*/
@@ -170,7 +139,6 @@ static inline void endpoint_update(int edi,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 {
@@ -178,10 +146,7 @@ get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 	struct usb_host_interface	*alt;
 	struct usb_host_endpoint	*in, *out;
 	struct usb_host_endpoint	*iso_in, *iso_out;
-<<<<<<< HEAD
-=======
 	struct usb_host_endpoint	*int_in, *int_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_device		*udev;
 
 	for (tmp = 0; tmp < intf->num_altsetting; tmp++) {
@@ -189,10 +154,6 @@ get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 
 		in = out = NULL;
 		iso_in = iso_out = NULL;
-<<<<<<< HEAD
-		alt = intf->altsetting + tmp;
-
-=======
 		int_in = int_out = NULL;
 		alt = intf->altsetting + tmp;
 
@@ -200,44 +161,11 @@ get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 				override_alt != alt->desc.bAlternateSetting)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* take the first altsetting with in-bulk + out-bulk;
 		 * ignore other endpoints and altsettings.
 		 */
 		for (ep = 0; ep < alt->desc.bNumEndpoints; ep++) {
 			struct usb_host_endpoint	*e;
-<<<<<<< HEAD
-
-			e = alt->endpoint + ep;
-			switch (e->desc.bmAttributes) {
-			case USB_ENDPOINT_XFER_BULK:
-				break;
-			case USB_ENDPOINT_XFER_ISOC:
-				if (dev->info->iso)
-					goto try_iso;
-				/* FALLTHROUGH */
-			default:
-				continue;
-			}
-			if (usb_endpoint_dir_in(&e->desc)) {
-				if (!in)
-					in = e;
-			} else {
-				if (!out)
-					out = e;
-			}
-			continue;
-try_iso:
-			if (usb_endpoint_dir_in(&e->desc)) {
-				if (!iso_in)
-					iso_in = e;
-			} else {
-				if (!iso_out)
-					iso_out = e;
-			}
-		}
-		if ((in && out)  ||  iso_in || iso_out)
-=======
 			int edi;
 
 			e = alt->endpoint + ep;
@@ -260,17 +188,13 @@ try_iso:
 			}
 		}
 		if ((in && out)  ||  iso_in || iso_out || int_in || int_out)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto found;
 	}
 	return -EINVAL;
 
 found:
 	udev = testdev_to_usbdev(dev);
-<<<<<<< HEAD
-=======
 	dev->info->alt = alt->desc.bAlternateSetting;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (alt->desc.bAlternateSetting != 0) {
 		tmp = usb_set_interface(udev,
 				alt->desc.bInterfaceNumber,
@@ -279,14 +203,6 @@ found:
 			return tmp;
 	}
 
-<<<<<<< HEAD
-	if (in) {
-		dev->in_pipe = usb_rcvbulkpipe(udev,
-			in->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
-		dev->out_pipe = usb_sndbulkpipe(udev,
-			out->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
-	}
-=======
 	if (in)
 		dev->in_pipe = usb_rcvbulkpipe(udev,
 			in->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
@@ -294,7 +210,6 @@ found:
 		dev->out_pipe = usb_sndbulkpipe(udev,
 			out->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (iso_in) {
 		dev->iso_in = &iso_in->desc;
 		dev->in_iso_pipe = usb_rcvisocpipe(udev,
@@ -308,8 +223,6 @@ found:
 				iso_out->desc.bEndpointAddress
 					& USB_ENDPOINT_NUMBER_MASK);
 	}
-<<<<<<< HEAD
-=======
 
 	if (int_in) {
 		dev->int_in = &int_in->desc;
@@ -324,7 +237,6 @@ found:
 				int_out->desc.bEndpointAddress
 					& USB_ENDPOINT_NUMBER_MASK);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -347,22 +259,15 @@ static struct urb *usbtest_alloc_urb(
 	int			pipe,
 	unsigned long		bytes,
 	unsigned		transfer_flags,
-<<<<<<< HEAD
-	unsigned		offset)
-=======
 	unsigned		offset,
 	u8			bInterval,
 	usb_complete_t		complete_fn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct urb		*urb;
 
 	urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!urb)
 		return urb;
-<<<<<<< HEAD
-	usb_fill_bulk_urb(urb, udev, pipe, NULL, bytes, simple_callback, NULL);
-=======
 
 	if (bInterval)
 		usb_fill_int_urb(urb, udev, pipe, NULL, bytes, complete_fn,
@@ -371,7 +276,6 @@ static struct urb *usbtest_alloc_urb(
 		usb_fill_bulk_urb(urb, udev, pipe, NULL, bytes, complete_fn,
 				NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	urb->interval = (udev->speed == USB_SPEED_HIGH)
 			? (INTERRUPT_RATE << 3)
 			: INTERRUPT_RATE;
@@ -379,12 +283,9 @@ static struct urb *usbtest_alloc_urb(
 	if (usb_pipein(pipe))
 		urb->transfer_flags |= URB_SHORT_NOT_OK;
 
-<<<<<<< HEAD
-=======
 	if ((bytes + offset) == 0)
 		return urb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (urb->transfer_flags & URB_NO_TRANSFER_DMA_MAP)
 		urb->transfer_buffer = usb_alloc_coherent(udev, bytes + offset,
 			GFP_KERNEL, &urb->transfer_dma);
@@ -416,11 +317,6 @@ static struct urb *usbtest_alloc_urb(
 static struct urb *simple_alloc_urb(
 	struct usb_device	*udev,
 	int			pipe,
-<<<<<<< HEAD
-	unsigned long		bytes)
-{
-	return usbtest_alloc_urb(udev, pipe, bytes, URB_NO_TRANSFER_DMA_MAP, 0);
-=======
 	unsigned long		bytes,
 	u8			bInterval)
 {
@@ -436,7 +332,6 @@ static struct urb *complicated_alloc_urb(
 {
 	return usbtest_alloc_urb(udev, pipe, bytes, URB_NO_TRANSFER_DMA_MAP, 0,
 			bInterval, complicated_callback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned pattern;
@@ -444,9 +339,6 @@ static unsigned mod_pattern;
 module_param_named(pattern, mod_pattern, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(mod_pattern, "i/o pattern (0 == zeroes)");
 
-<<<<<<< HEAD
-static inline void simple_fill_buf(struct urb *urb)
-=======
 static unsigned get_maxpacket(struct usb_device *udev, int pipe)
 {
 	struct usb_host_endpoint	*ep;
@@ -464,35 +356,22 @@ static int ss_isoc_get_packet_num(struct usb_device *udev, int pipe)
 }
 
 static void simple_fill_buf(struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned	i;
 	u8		*buf = urb->transfer_buffer;
 	unsigned	len = urb->transfer_buffer_length;
-<<<<<<< HEAD
-
-	switch (pattern) {
-	default:
-		/* FALLTHROUGH */
-=======
 	unsigned	maxpacket;
 
 	switch (pattern) {
 	default:
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:
 		memset(buf, 0, len);
 		break;
 	case 1:			/* mod63 */
-<<<<<<< HEAD
-		for (i = 0; i < len; i++)
-			*buf++ = (u8) (i % 63);
-=======
 		maxpacket = get_maxpacket(urb->dev, urb->pipe);
 		for (i = 0; i < len; i++)
 			*buf++ = (u8) ((i % maxpacket) % 63);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -524,10 +403,7 @@ static int simple_check_buf(struct usbtest_dev *tdev, struct urb *urb)
 	u8		expected;
 	u8		*buf = urb->transfer_buffer;
 	unsigned	len = urb->actual_length;
-<<<<<<< HEAD
-=======
 	unsigned	maxpacket = get_maxpacket(urb->dev, urb->pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int ret = check_guard_bytes(tdev, urb);
 	if (ret)
@@ -545,11 +421,7 @@ static int simple_check_buf(struct usbtest_dev *tdev, struct urb *urb)
 		 * with set_interface or set_config.
 		 */
 		case 1:			/* mod63 */
-<<<<<<< HEAD
-			expected = i % 63;
-=======
 			expected = (i % maxpacket) % 63;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		/* always fail unsupported patterns */
 		default:
@@ -661,15 +533,6 @@ static void free_sglist(struct scatterlist *sg, int nents)
 }
 
 static struct scatterlist *
-<<<<<<< HEAD
-alloc_sglist(int nents, int max, int vary)
-{
-	struct scatterlist	*sg;
-	unsigned		i;
-	unsigned		size = max;
-
-	sg = kmalloc_array(nents, sizeof *sg, GFP_KERNEL);
-=======
 alloc_sglist(int nents, int max, int vary, struct usbtest_dev *dev, int pipe)
 {
 	struct scatterlist	*sg;
@@ -683,7 +546,6 @@ alloc_sglist(int nents, int max, int vary, struct usbtest_dev *dev, int pipe)
 		return NULL;
 
 	sg = kmalloc_array(nents, sizeof(*sg), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sg)
 		return NULL;
 	sg_init_table(sg, nents);
@@ -707,12 +569,8 @@ alloc_sglist(int nents, int max, int vary, struct usbtest_dev *dev, int pipe)
 			break;
 		case 1:
 			for (j = 0; j < size; j++)
-<<<<<<< HEAD
-				*buf++ = (u8) (j % 63);
-=======
 				*buf++ = (u8) (((j + n_size) % maxpacket) % 63);
 			n_size += size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -727,14 +585,6 @@ alloc_sglist(int nents, int max, int vary, struct usbtest_dev *dev, int pipe)
 	return sg;
 }
 
-<<<<<<< HEAD
-static void sg_timeout(unsigned long _req)
-{
-	struct usb_sg_request	*req = (struct usb_sg_request *) _req;
-
-	req->status = -ETIMEDOUT;
-	usb_sg_cancel(req);
-=======
 struct sg_timeout {
 	struct timer_list timer;
 	struct usb_sg_request *req;
@@ -745,7 +595,6 @@ static void sg_timeout(struct timer_list *t)
 	struct sg_timeout *timeout = from_timer(timeout, t, timer);
 
 	usb_sg_cancel(timeout->req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int perform_sglist(
@@ -759,17 +608,11 @@ static int perform_sglist(
 {
 	struct usb_device	*udev = testdev_to_usbdev(tdev);
 	int			retval = 0;
-<<<<<<< HEAD
-	struct timer_list	sg_timer;
-
-	setup_timer_on_stack(&sg_timer, sg_timeout, (unsigned long) req);
-=======
 	struct sg_timeout	timeout = {
 		.req = req,
 	};
 
 	timer_setup_on_stack(&timeout.timer, sg_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (retval == 0 && iterations-- > 0) {
 		retval = usb_sg_init(req, udev, pipe,
@@ -780,13 +623,6 @@ static int perform_sglist(
 
 		if (retval)
 			break;
-<<<<<<< HEAD
-		mod_timer(&sg_timer, jiffies +
-				msecs_to_jiffies(SIMPLE_IO_TIMEOUT));
-		usb_sg_wait(req);
-		del_timer_sync(&sg_timer);
-		retval = req->status;
-=======
 		mod_timer(&timeout.timer, jiffies +
 				msecs_to_jiffies(SIMPLE_IO_TIMEOUT));
 		usb_sg_wait(req);
@@ -795,7 +631,6 @@ static int perform_sglist(
 		else
 			retval = req->status;
 		destroy_timer_on_stack(&timeout.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* FIXME check resulting data pattern */
 
@@ -846,11 +681,7 @@ static int get_altsetting(struct usbtest_dev *dev)
 		return dev->buf[0];
 	case 0:
 		retval = -ERANGE;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return retval;
 	}
@@ -874,11 +705,7 @@ static int is_good_config(struct usbtest_dev *tdev, int len)
 {
 	struct usb_config_descriptor	*config;
 
-<<<<<<< HEAD
-	if (len < sizeof *config)
-=======
 	if (len < (int)sizeof(*config))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	config = (struct usb_config_descriptor *) tdev->buf;
 
@@ -911,8 +738,6 @@ static int is_good_config(struct usbtest_dev *tdev, int len)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int is_good_ext(struct usbtest_dev *tdev, u8 *buf)
 {
 	struct usb_ext_cap_descriptor *ext;
@@ -983,7 +808,6 @@ static int is_good_con_id(struct usbtest_dev *tdev, u8 *buf)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sanity test for standard requests working with usb_control_mesg() and some
  * of the utility functions which use it.
  *
@@ -1061,19 +885,12 @@ static int ch9_postconfig(struct usbtest_dev *dev)
 
 	/* there's always [9.4.3] a device descriptor [9.6.1] */
 	retval = usb_get_descriptor(udev, USB_DT_DEVICE, 0,
-<<<<<<< HEAD
-			dev->buf, sizeof udev->descriptor);
-	if (retval != sizeof udev->descriptor) {
-=======
 			dev->buf, sizeof(udev->descriptor));
 	if (retval != sizeof(udev->descriptor)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&iface->dev, "dev descriptor --> %d\n", retval);
 		return (retval < 0) ? retval : -EDOM;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * there's always [9.4.3] a bos device descriptor [9.6.2] in USB
 	 * 3.0 spec
@@ -1158,7 +975,6 @@ static int ch9_postconfig(struct usbtest_dev *dev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* there's always [9.4.3] at least one config descriptor [9.6.3] */
 	for (i = 0; i < udev->descriptor.bNumConfigurations; i++) {
 		retval = usb_get_descriptor(udev, USB_DT_CONFIG, i,
@@ -1188,11 +1004,7 @@ static int ch9_postconfig(struct usbtest_dev *dev)
 				dev_err(&iface->dev,
 						"hs dev qualifier --> %d\n",
 						retval);
-<<<<<<< HEAD
-				return (retval < 0) ? retval : -EDOM;
-=======
 				return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			/* usb2.0 but not high-speed capable; fine */
 		} else if (retval != sizeof(struct usb_qualifier_descriptor)) {
@@ -1220,36 +1032,21 @@ static int ch9_postconfig(struct usbtest_dev *dev)
 	/* FIXME fetch strings from at least the device descriptor */
 
 	/* [9.4.5] get_status always works */
-<<<<<<< HEAD
-	retval = usb_get_status(udev, USB_RECIP_DEVICE, 0, dev->buf);
-	if (retval != 2) {
-		dev_err(&iface->dev, "get dev status --> %d\n", retval);
-		return (retval < 0) ? retval : -EDOM;
-=======
 	retval = usb_get_std_status(udev, USB_RECIP_DEVICE, 0, dev->buf);
 	if (retval) {
 		dev_err(&iface->dev, "get dev status --> %d\n", retval);
 		return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* FIXME configuration.bmAttributes says if we could try to set/clear
 	 * the device's remote wakeup feature ... if we can, test that here
 	 */
 
-<<<<<<< HEAD
-	retval = usb_get_status(udev, USB_RECIP_INTERFACE,
-			iface->altsetting[0].desc.bInterfaceNumber, dev->buf);
-	if (retval != 2) {
-		dev_err(&iface->dev, "get interface status --> %d\n", retval);
-		return (retval < 0) ? retval : -EDOM;
-=======
 	retval = usb_get_std_status(udev, USB_RECIP_INTERFACE,
 			iface->altsetting[0].desc.bInterfaceNumber, dev->buf);
 	if (retval) {
 		dev_err(&iface->dev, "get interface status --> %d\n", retval);
 		return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* FIXME get status for each endpoint in the interface */
 
@@ -1275,19 +1072,11 @@ struct ctrl_ctx {
 	unsigned		pending;
 	int			status;
 	struct urb		**urb;
-<<<<<<< HEAD
-	struct usbtest_param	*param;
-	int			last;
-};
-
-#define NUM_SUBCASES	15		/* how many test subcases here? */
-=======
 	struct usbtest_param_32	*param;
 	int			last;
 };
 
 #define NUM_SUBCASES	16		/* how many test subcases here? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct subcase {
 	struct usb_ctrlrequest	setup;
@@ -1301,19 +1090,12 @@ static void ctrl_complete(struct urb *urb)
 	struct usb_ctrlrequest	*reqp;
 	struct subcase		*subcase;
 	int			status = urb->status;
-<<<<<<< HEAD
-=======
 	unsigned long		flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reqp = (struct usb_ctrlrequest *)urb->setup_packet;
 	subcase = container_of(reqp, struct subcase, setup);
 
-<<<<<<< HEAD
-	spin_lock(&ctx->lock);
-=======
 	spin_lock_irqsave(&ctx->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->count--;
 	ctx->pending--;
 
@@ -1412,19 +1194,11 @@ error:
 	/* signal completion when nothing's queued */
 	if (ctx->pending == 0)
 		complete(&ctx->complete);
-<<<<<<< HEAD
-	spin_unlock(&ctx->lock);
-}
-
-static int
-test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param *param)
-=======
 	spin_unlock_irqrestore(&ctx->lock, flags);
 }
 
 static int
 test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_device	*udev = testdev_to_usbdev(dev);
 	struct urb		**urb;
@@ -1467,11 +1241,7 @@ test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param)
 		 * device, but some are chosen to trigger protocol stalls
 		 * or short reads.
 		 */
-<<<<<<< HEAD
-		memset(&req, 0, sizeof req);
-=======
 		memset(&req, 0, sizeof(req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req.bRequest = USB_REQ_GET_DESCRIPTOR;
 		req.bRequestType = USB_DIR_IN|USB_RECIP_DEVICE;
 
@@ -1581,8 +1351,6 @@ test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param)
 			}
 			expected = -EREMOTEIO;
 			break;
-<<<<<<< HEAD
-=======
 		case 15:
 			req.wValue = cpu_to_le16(USB_DT_BOS << 8);
 			if (udev->bos)
@@ -1592,26 +1360,17 @@ test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param)
 			if (le16_to_cpu(udev->descriptor.bcdUSB) < 0x0201)
 				expected = -EPIPE;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			ERROR(dev, "bogus number of ctrl queue testcases!\n");
 			context.status = -EINVAL;
 			goto cleanup;
 		}
 		req.wLength = cpu_to_le16(len);
-<<<<<<< HEAD
-		urb[i] = u = simple_alloc_urb(udev, pipe, len);
-		if (!u)
-			goto cleanup;
-
-		reqp = kmalloc(sizeof *reqp, GFP_KERNEL);
-=======
 		urb[i] = u = simple_alloc_urb(udev, pipe, len, 0);
 		if (!u)
 			goto cleanup;
 
 		reqp = kmalloc(sizeof(*reqp), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!reqp)
 			goto cleanup;
 		reqp->setup = req;
@@ -1680,11 +1439,7 @@ static int unlink1(struct usbtest_dev *dev, int pipe, int size, int async)
 	int			retval = 0;
 
 	init_completion(&completion);
-<<<<<<< HEAD
-	urb = simple_alloc_urb(testdev_to_usbdev(dev), pipe, size);
-=======
 	urb = simple_alloc_urb(testdev_to_usbdev(dev), pipe, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!urb)
 		return -ENOMEM;
 	urb->context = &completion;
@@ -1715,12 +1470,9 @@ static int unlink1(struct usbtest_dev *dev, int pipe, int size, int async)
 		while (!completion_done(&completion)) {
 			retval = usb_unlink_urb(urb);
 
-<<<<<<< HEAD
-=======
 			if (retval == 0 && usb_pipein(urb->pipe))
 				retval = simple_check_buf(dev, urb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (retval) {
 			case -EBUSY:
 			case -EIDRM:
@@ -1880,11 +1632,7 @@ static int verify_not_halted(struct usbtest_dev *tdev, int ep, struct urb *urb)
 	u16	status;
 
 	/* shouldn't look or act halted */
-<<<<<<< HEAD
-	retval = usb_get_status(urb->dev, USB_RECIP_ENDPOINT, ep, &status);
-=======
 	retval = usb_get_std_status(urb->dev, USB_RECIP_ENDPOINT, ep, &status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0) {
 		ERROR(tdev, "ep %02x couldn't get no-halt status, %d\n",
 				ep, retval);
@@ -1906,20 +1654,12 @@ static int verify_halted(struct usbtest_dev *tdev, int ep, struct urb *urb)
 	u16	status;
 
 	/* should look and act halted */
-<<<<<<< HEAD
-	retval = usb_get_status(urb->dev, USB_RECIP_ENDPOINT, ep, &status);
-=======
 	retval = usb_get_std_status(urb->dev, USB_RECIP_ENDPOINT, ep, &status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0) {
 		ERROR(tdev, "ep %02x couldn't get halt status, %d\n",
 				ep, retval);
 		return retval;
 	}
-<<<<<<< HEAD
-	le16_to_cpus(&status);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != 1) {
 		ERROR(tdev, "ep %02x bogus status: %04x != 1\n", ep, status);
 		return -EINVAL;
@@ -1952,10 +1692,6 @@ static int test_halt(struct usbtest_dev *tdev, int ep, struct urb *urb)
 		return retval;
 	}
 	retval = verify_halted(tdev, ep, urb);
-<<<<<<< HEAD
-	if (retval < 0)
-		return retval;
-=======
 	if (retval < 0) {
 		int ret;
 
@@ -1967,7 +1703,6 @@ static int test_halt(struct usbtest_dev *tdev, int ep, struct urb *urb)
 
 		return retval;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clear halt (tests API + protocol), verify it worked */
 	retval = usb_clear_halt(urb->dev, urb->pipe);
@@ -1984,8 +1719,6 @@ static int test_halt(struct usbtest_dev *tdev, int ep, struct urb *urb)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int test_toggle_sync(struct usbtest_dev *tdev, int ep, struct urb *urb)
 {
 	int	retval;
@@ -2015,7 +1748,6 @@ static int test_toggle_sync(struct usbtest_dev *tdev, int ep, struct urb *urb)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int halt_simple(struct usbtest_dev *dev)
 {
 	int			ep;
@@ -2024,15 +1756,9 @@ static int halt_simple(struct usbtest_dev *dev)
 	struct usb_device	*udev = testdev_to_usbdev(dev);
 
 	if (udev->speed == USB_SPEED_SUPER)
-<<<<<<< HEAD
-		urb = simple_alloc_urb(udev, 0, 1024);
-	else
-		urb = simple_alloc_urb(udev, 0, 512);
-=======
 		urb = simple_alloc_urb(udev, 0, 1024, 0);
 	else
 		urb = simple_alloc_urb(udev, 0, 512, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (urb == NULL)
 		return -ENOMEM;
 
@@ -2054,8 +1780,6 @@ done:
 	return retval;
 }
 
-<<<<<<< HEAD
-=======
 static int toggle_sync_simple(struct usbtest_dev *dev)
 {
 	int			ep;
@@ -2083,7 +1807,6 @@ static int toggle_sync_simple(struct usbtest_dev *dev)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 /* Control OUT tests use the vendor control requests from Intel's
@@ -2121,11 +1844,7 @@ static int ctrl_out(struct usbtest_dev *dev,
 	for (i = 0; i < count; i++) {
 		/* write patterned data */
 		for (j = 0; j < len; j++)
-<<<<<<< HEAD
-			buf[j] = i + j;
-=======
 			buf[j] = (u8)(i + j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
 				0x5b, USB_DIR_OUT|USB_TYPE_VENDOR,
 				0, 0, buf, len, USB_CTRL_SET_TIMEOUT);
@@ -2155,15 +1874,9 @@ static int ctrl_out(struct usbtest_dev *dev,
 
 		/* fail if we can't verify */
 		for (j = 0; j < len; j++) {
-<<<<<<< HEAD
-			if (buf[j] != (u8) (i + j)) {
-				ERROR(dev, "ctrl_out, byte %d is %d not %d\n",
-					j, buf[j], (u8) i + j);
-=======
 			if (buf[j] != (u8)(i + j)) {
 				ERROR(dev, "ctrl_out, byte %d is %d not %d\n",
 					j, buf[j], (u8)(i + j));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				retval = -EBADMSG;
 				break;
 			}
@@ -2193,20 +1906,12 @@ static int ctrl_out(struct usbtest_dev *dev,
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-/* ISO tests ... mimics common usage
-=======
 /* ISO/BULK tests ... mimics common usage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  - buffer length is split into N packets (mostly maxpacket sized)
  *  - multi-buffers according to sglen
  */
 
-<<<<<<< HEAD
-struct iso_context {
-=======
 struct transfer_context {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		count;
 	unsigned		pending;
 	spinlock_t		lock;
@@ -2215,15 +1920,6 @@ struct transfer_context {
 	unsigned long		errors;
 	unsigned long		packet_count;
 	struct usbtest_dev	*dev;
-<<<<<<< HEAD
-};
-
-static void iso_callback(struct urb *urb)
-{
-	struct iso_context	*ctx = urb->context;
-
-	spin_lock(&ctx->lock);
-=======
 	bool			is_iso;
 };
 
@@ -2233,18 +1929,13 @@ static void complicated_callback(struct urb *urb)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ctx->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->count--;
 
 	ctx->packet_count += urb->number_of_packets;
 	if (urb->error_count > 0)
 		ctx->errors += urb->error_count;
 	else if (urb->status != 0)
-<<<<<<< HEAD
-		ctx->errors += urb->number_of_packets;
-=======
 		ctx->errors += (ctx->is_iso ? urb->number_of_packets : 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (urb->actual_length != urb->transfer_buffer_length)
 		ctx->errors++;
 	else if (check_guard_bytes(ctx->dev, urb) != 0)
@@ -2258,15 +1949,9 @@ static void complicated_callback(struct urb *urb)
 			goto done;
 		default:
 			dev_err(&ctx->dev->intf->dev,
-<<<<<<< HEAD
-					"iso resubmit err %d\n",
-					status);
-			/* FALLTHROUGH */
-=======
 					"resubmit err %d\n",
 					status);
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ENODEV:			/* disconnected */
 		case -ESHUTDOWN:		/* endpoint disabled */
 			ctx->submit_error = 1;
@@ -2278,20 +1963,12 @@ static void complicated_callback(struct urb *urb)
 	if (ctx->pending == 0) {
 		if (ctx->errors)
 			dev_err(&ctx->dev->intf->dev,
-<<<<<<< HEAD
-				"iso test, %lu errors out of %lu\n",
-=======
 				"during the test, %lu errors out of %lu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ctx->errors, ctx->packet_count);
 		complete(&ctx->done);
 	}
 done:
-<<<<<<< HEAD
-	spin_unlock(&ctx->lock);
-=======
 	spin_unlock_irqrestore(&ctx->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct urb *iso_alloc_urb(
@@ -2307,10 +1984,6 @@ static struct urb *iso_alloc_urb(
 
 	if (bytes < 0 || !desc)
 		return NULL;
-<<<<<<< HEAD
-	maxp = 0x7ff & usb_endpoint_maxp(desc);
-	maxp *= 1 + (0x3 & (usb_endpoint_maxp(desc) >> 11));
-=======
 
 	maxp = usb_endpoint_maxp(desc);
 	if (udev->speed >= USB_SPEED_SUPER)
@@ -2318,7 +1991,6 @@ static struct urb *iso_alloc_urb(
 	else
 		maxp *= usb_endpoint_maxp_mult(desc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	packets = DIV_ROUND_UP(bytes, maxp);
 
 	urb = usb_alloc_urb(packets, GFP_KERNEL);
@@ -2355,11 +2027,7 @@ static struct urb *iso_alloc_urb(
 		urb->iso_frame_desc[i].offset = maxp * i;
 	}
 
-<<<<<<< HEAD
-	urb->complete = iso_callback;
-=======
 	urb->complete = complicated_callback;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* urb->context = SET BY CALLER */
 	urb->interval = 1 << (desc->bInterval - 1);
 	urb->transfer_flags = URB_ISO_ASAP | URB_NO_TRANSFER_DMA_MAP;
@@ -2367,45 +2035,14 @@ static struct urb *iso_alloc_urb(
 }
 
 static int
-<<<<<<< HEAD
-test_iso_queue(struct usbtest_dev *dev, struct usbtest_param *param,
-		int pipe, struct usb_endpoint_descriptor *desc, unsigned offset)
-{
-	struct iso_context	context;
-=======
 test_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param,
 		int pipe, struct usb_endpoint_descriptor *desc, unsigned offset)
 {
 	struct transfer_context	context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_device	*udev;
 	unsigned		i;
 	unsigned long		packets = 0;
 	int			status = 0;
-<<<<<<< HEAD
-	struct urb		*urbs[10];	/* FIXME no limit */
-
-	if (param->sglen > 10)
-		return -EDOM;
-
-	memset(&context, 0, sizeof context);
-	context.count = param->iterations * param->sglen;
-	context.dev = dev;
-	init_completion(&context.done);
-	spin_lock_init(&context.lock);
-
-	memset(urbs, 0, sizeof urbs);
-	udev = testdev_to_usbdev(dev);
-	dev_info(&dev->intf->dev,
-		"... iso period %d %sframes, wMaxPacket %04x\n",
-		1 << (desc->bInterval - 1),
-		(udev->speed == USB_SPEED_HIGH) ? "micro" : "",
-		usb_endpoint_maxp(desc));
-
-	for (i = 0; i < param->sglen; i++) {
-		urbs[i] = iso_alloc_urb(udev, pipe, desc,
-					param->length, offset);
-=======
 	struct urb		**urbs;
 
 	if (!param->sglen || param->iterations > UINT_MAX / param->sglen)
@@ -2435,7 +2072,6 @@ test_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param,
 			urbs[i] = complicated_alloc_urb(udev, pipe,
 					param->length, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!urbs[i]) {
 			status = -ENOMEM;
 			goto fail;
@@ -2444,13 +2080,6 @@ test_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param,
 		urbs[i]->context = &context;
 	}
 	packets *= param->iterations;
-<<<<<<< HEAD
-	dev_info(&dev->intf->dev,
-		"... total %lu msec (%lu packets)\n",
-		(packets * (1 << (desc->bInterval - 1)))
-			/ ((udev->speed == USB_SPEED_HIGH) ? 8 : 1),
-		packets);
-=======
 
 	if (context.is_iso) {
 		int transaction_num;
@@ -2473,7 +2102,6 @@ test_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param,
 				/ ((udev->speed >= USB_SPEED_HIGH) ? 8 : 1),
 			packets);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&context.lock);
 	for (i = 0; i < param->sglen; i++) {
@@ -2510,16 +2138,11 @@ test_queue(struct usbtest_dev *dev, struct usbtest_param_32 *param,
 		;
 	else if (context.submit_error)
 		status = -EACCES;
-<<<<<<< HEAD
-	else if (context.errors > context.packet_count / 10)
-		status = -EIO;
-=======
 	else if (context.errors >
 			(context.is_iso ? context.packet_count / 10 : 0))
 		status = -EIO;
 
 	kfree(urbs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 
 fail:
@@ -2527,11 +2150,8 @@ fail:
 		if (urbs[i])
 			simple_free_urb(urbs[i]);
 	}
-<<<<<<< HEAD
-=======
 
 	kfree(urbs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2544,13 +2164,8 @@ static int test_unaligned_bulk(
 	const char *label)
 {
 	int retval;
-<<<<<<< HEAD
-	struct urb *urb = usbtest_alloc_urb(
-		testdev_to_usbdev(tdev), pipe, length, transfer_flags, 1);
-=======
 	struct urb *urb = usbtest_alloc_urb(testdev_to_usbdev(tdev),
 			pipe, length, transfer_flags, 1, 0, simple_callback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!urb)
 		return -ENOMEM;
@@ -2560,80 +2175,6 @@ static int test_unaligned_bulk(
 	return retval;
 }
 
-<<<<<<< HEAD
-/*-------------------------------------------------------------------------*/
-
-/* We only have this one interface to user space, through usbfs.
- * User mode code can scan usbfs to find N different devices (maybe on
- * different busses) to use when testing, and allocate one thread per
- * test.  So discovery is simplified, and we have no device naming issues.
- *
- * Don't use these only as stress/load tests.  Use them along with with
- * other USB bus activity:  plugging, unplugging, mousing, mp3 playback,
- * video capture, and so on.  Run different tests at different times, in
- * different sequences.  Nothing here should interact with other devices,
- * except indirectly by consuming USB bandwidth and CPU resources for test
- * threads and request completion.  But the only way to know that for sure
- * is to test when HC queues are in use by many devices.
- *
- * WARNING:  Because usbfs grabs udev->dev.sem before calling this ioctl(),
- * it locks out usbcore in certain code paths.  Notably, if you disconnect
- * the device-under-test, khubd will wait block forever waiting for the
- * ioctl to complete ... so that usb_disconnect() can abort the pending
- * urbs and then call usbtest_disconnect().  To abort a test, you're best
- * off just killing the userspace task and waiting for it to exit.
- */
-
-static int
-usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
-{
-	struct usbtest_dev	*dev = usb_get_intfdata(intf);
-	struct usb_device	*udev = testdev_to_usbdev(dev);
-	struct usbtest_param	*param = buf;
-	int			retval = -EOPNOTSUPP;
-	struct urb		*urb;
-	struct scatterlist	*sg;
-	struct usb_sg_request	req;
-	struct timeval		start;
-	unsigned		i;
-
-	/* FIXME USBDEVFS_CONNECTINFO doesn't say how fast the device is. */
-
-	pattern = mod_pattern;
-
-	if (code != USBTEST_REQUEST)
-		return -EOPNOTSUPP;
-
-	if (param->iterations <= 0)
-		return -EINVAL;
-
-	if (mutex_lock_interruptible(&dev->lock))
-		return -ERESTARTSYS;
-
-	/* FIXME: What if a system sleep starts while a test is running? */
-
-	/* some devices, like ez-usb default devices, need a non-default
-	 * altsetting to have any active endpoints.  some tests change
-	 * altsettings; force a default so most tests don't need to check.
-	 */
-	if (dev->info->alt >= 0) {
-		int	res;
-
-		if (intf->altsetting->desc.bInterfaceNumber) {
-			mutex_unlock(&dev->lock);
-			return -ENODEV;
-		}
-		res = set_altsetting(dev, dev->info->alt);
-		if (res) {
-			dev_err(&intf->dev,
-					"set altsetting to %d failed, %d\n",
-					dev->info->alt, res);
-			mutex_unlock(&dev->lock);
-			return res;
-		}
-	}
-
-=======
 /* Run tests. */
 static int
 usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
@@ -2650,7 +2191,6 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		return -EINVAL;
 	if (param->sglen > MAX_SGLEN)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Just a bunch of test cases that every HCD is expected to handle.
 	 *
@@ -2660,10 +2200,6 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 	 * FIXME add more tests!  cancel requests, verify the data, control
 	 * queueing, concurrent read+write threads, and so on.
 	 */
-<<<<<<< HEAD
-	do_gettimeofday(&start);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (param->test_num) {
 
 	case 0:
@@ -2678,11 +2214,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		dev_info(&intf->dev,
 				"TEST 1:  write %d bytes %u times\n",
 				param->length, param->iterations);
-<<<<<<< HEAD
-		urb = simple_alloc_urb(udev, dev->out_pipe, param->length);
-=======
 		urb = simple_alloc_urb(udev, dev->out_pipe, param->length, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!urb) {
 			retval = -ENOMEM;
 			break;
@@ -2697,11 +2229,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		dev_info(&intf->dev,
 				"TEST 2:  read %d bytes %u times\n",
 				param->length, param->iterations);
-<<<<<<< HEAD
-		urb = simple_alloc_urb(udev, dev->in_pipe, param->length);
-=======
 		urb = simple_alloc_urb(udev, dev->in_pipe, param->length, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!urb) {
 			retval = -ENOMEM;
 			break;
@@ -2716,11 +2244,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		dev_info(&intf->dev,
 				"TEST 3:  write/%d 0..%d bytes %u times\n",
 				param->vary, param->length, param->iterations);
-<<<<<<< HEAD
-		urb = simple_alloc_urb(udev, dev->out_pipe, param->length);
-=======
 		urb = simple_alloc_urb(udev, dev->out_pipe, param->length, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!urb) {
 			retval = -ENOMEM;
 			break;
@@ -2736,11 +2260,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		dev_info(&intf->dev,
 				"TEST 4:  read/%d 0..%d bytes %u times\n",
 				param->vary, param->length, param->iterations);
-<<<<<<< HEAD
-		urb = simple_alloc_urb(udev, dev->in_pipe, param->length);
-=======
 		urb = simple_alloc_urb(udev, dev->in_pipe, param->length, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!urb) {
 			retval = -ENOMEM;
 			break;
@@ -2759,12 +2279,8 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 5:  write %d sglists %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		sg = alloc_sglist(param->sglen, param->length, 0);
-=======
 		sg = alloc_sglist(param->sglen, param->length,
 				0, dev, dev->out_pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2782,12 +2298,8 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 6:  read %d sglists %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		sg = alloc_sglist(param->sglen, param->length, 0);
-=======
 		sg = alloc_sglist(param->sglen, param->length,
 				0, dev, dev->in_pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2804,12 +2316,8 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 7:  write/%d %d sglists %d entries 0..%d bytes\n",
 				param->vary, param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		sg = alloc_sglist(param->sglen, param->length, param->vary);
-=======
 		sg = alloc_sglist(param->sglen, param->length,
 				param->vary, dev, dev->out_pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2826,12 +2334,8 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 8:  read/%d %d sglists %d entries 0..%d bytes\n",
 				param->vary, param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		sg = alloc_sglist(param->sglen, param->length, param->vary);
-=======
 		sg = alloc_sglist(param->sglen, param->length,
 				param->vary, dev, dev->in_pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2928,11 +2432,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 				param->iterations,
 				param->sglen, param->length);
 		/* FIRMWARE:  iso sink */
-<<<<<<< HEAD
-		retval = test_iso_queue(dev, param,
-=======
 		retval = test_queue(dev, param,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->out_iso_pipe, dev->iso_out, 0);
 		break;
 
@@ -2945,11 +2445,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 				param->iterations,
 				param->sglen, param->length);
 		/* FIRMWARE:  iso source */
-<<<<<<< HEAD
-		retval = test_iso_queue(dev, param,
-=======
 		retval = test_queue(dev, param,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->in_iso_pipe, dev->iso_in, 0);
 		break;
 
@@ -3030,11 +2526,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 22:  write %d iso odd, %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		retval = test_iso_queue(dev, param,
-=======
 		retval = test_queue(dev, param,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->out_iso_pipe, dev->iso_out, 1);
 		break;
 
@@ -3045,11 +2537,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 			"TEST 23:  read %d iso odd, %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
-<<<<<<< HEAD
-		retval = test_iso_queue(dev, param,
-=======
 		retval = test_queue(dev, param,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->in_iso_pipe, dev->iso_in, 1);
 		break;
 
@@ -3058,11 +2546,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		if (dev->out_pipe == 0 || !param->length || param->sglen < 4)
 			break;
 		retval = 0;
-<<<<<<< HEAD
-		dev_info(&intf->dev, "TEST 17:  unlink from %d queues of "
-=======
 		dev_info(&intf->dev, "TEST 24:  unlink from %d queues of "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%d %d-byte writes\n",
 				param->iterations, param->sglen, param->length);
 		for (i = param->iterations; retval == 0 && i > 0; --i) {
@@ -3077,16 +2561,6 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
 		}
 		break;
 
-<<<<<<< HEAD
-	}
-	do_gettimeofday(&param->duration);
-	param->duration.tv_sec -= start.tv_sec;
-	param->duration.tv_usec -= start.tv_usec;
-	if (param->duration.tv_usec < 0) {
-		param->duration.tv_usec += 1000 * 1000;
-		param->duration.tv_sec -= 1;
-	}
-=======
 	/* Simple non-queued interrupt I/O tests */
 	case 25:
 		if (dev->out_int_pipe == 0)
@@ -3264,7 +2738,6 @@ usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
 	}
 
 free_mutex:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dev->lock);
 	return retval;
 }
@@ -3293,10 +2766,7 @@ usbtest_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	struct usbtest_info	*info;
 	char			*rtest, *wtest;
 	char			*irtest, *iwtest;
-<<<<<<< HEAD
-=======
 	char			*intrtest, *intwtest;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udev = interface_to_usbdev(intf);
 
@@ -3337,10 +2807,7 @@ usbtest_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	 */
 	rtest = wtest = "";
 	irtest = iwtest = "";
-<<<<<<< HEAD
-=======
 	intrtest = intwtest = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (force_interrupt || udev->speed == USB_SPEED_LOW) {
 		if (info->ep_in) {
 			dev->in_pipe = usb_rcvintpipe(udev, info->ep_in);
@@ -3351,11 +2818,7 @@ usbtest_probe(struct usb_interface *intf, const struct usb_device_id *id)
 			wtest = " intr-out";
 		}
 	} else {
-<<<<<<< HEAD
-		if (info->autoconf) {
-=======
 		if (override_alt >= 0 || info->autoconf) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int status;
 
 			status = get_endpoints(dev, intf);
@@ -3383,30 +2846,20 @@ usbtest_probe(struct usb_interface *intf, const struct usb_device_id *id)
 			irtest = " iso-in";
 		if (dev->out_iso_pipe)
 			iwtest = " iso-out";
-<<<<<<< HEAD
-=======
 		if (dev->in_int_pipe)
 			intrtest = " int-in";
 		if (dev->out_int_pipe)
 			intwtest = " int-out";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	usb_set_intfdata(intf, dev);
 	dev_info(&intf->dev, "%s\n", info->name);
-<<<<<<< HEAD
-	dev_info(&intf->dev, "%s {control%s%s%s%s%s} tests%s\n",
-=======
 	dev_info(&intf->dev, "%s {control%s%s%s%s%s%s%s} tests%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usb_speed_string(udev->speed),
 			info->ctrl_out ? " in/out" : "",
 			rtest, wtest,
 			irtest, iwtest,
-<<<<<<< HEAD
-=======
 			intrtest, intwtest,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			info->alt >= 0 ? " (+alt)" : "");
 	return 0;
 }
@@ -3428,10 +2881,7 @@ static void usbtest_disconnect(struct usb_interface *intf)
 
 	usb_set_intfdata(intf, NULL);
 	dev_dbg(&intf->dev, "disconnect\n");
-<<<<<<< HEAD
-=======
 	kfree(dev->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dev);
 }
 
@@ -3483,11 +2933,8 @@ static struct usbtest_info gz_info = {
 	.name		= "Linux gadget zero",
 	.autoconf	= 1,
 	.ctrl_out	= 1,
-<<<<<<< HEAD
-=======
 	.iso		= 1,
 	.intr		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alt		= 0,
 };
 

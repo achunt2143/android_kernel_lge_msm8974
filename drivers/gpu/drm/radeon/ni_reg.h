@@ -83,8 +83,6 @@
 #       define NI_REGAMMA_PROG_B                       4
 #       define NI_OVL_REGAMMA_MODE(x)                  (((x) & 0x7) << 4)
 
-<<<<<<< HEAD
-=======
 #define NI_DP_MSE_LINK_TIMING                          0x73a0
 #	define NI_DP_MSE_LINK_FRAME			(((x) & 0x3ff) << 0)
 #	define NI_DP_MSE_LINK_LINE                      (((x) & 0x3) << 16)
@@ -131,5 +129,4 @@
 #       define NI_DIG_DUAL_LINK_ENABLE(x)              (((x) & 0x1) << 16)
 #       define NI_DIG_SWAP(x)                          (((x) & 0x1) << 18)
 #       define NI_DIG_SYMCLK_FE_ON                     (0x1 << 24)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

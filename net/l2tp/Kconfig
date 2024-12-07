@@ -1,22 +1,14 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Layer Two Tunneling Protocol (L2TP)
 #
 
 menuconfig L2TP
 	tristate "Layer Two Tunneling Protocol (L2TP)"
-<<<<<<< HEAD
-	depends on INET
-	---help---
-=======
 	depends on (IPV6 || IPV6=n)
 	depends on INET
 	select NET_UDP_TUNNEL
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Layer Two Tunneling Protocol
 
 	  From RFC 2661 <http://www.ietf.org/rfc/rfc2661.txt>.
@@ -56,13 +48,8 @@ config L2TP_DEBUGFS
 	  will be called l2tp_debugfs.
 
 config L2TP_V3
-<<<<<<< HEAD
-	bool "L2TPv3 support (EXPERIMENTAL)"
-	depends on EXPERIMENTAL && L2TP
-=======
 	bool "L2TPv3 support"
 	depends on L2TP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Layer Two Tunneling Protocol Version 3
 

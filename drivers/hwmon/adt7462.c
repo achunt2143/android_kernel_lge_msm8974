@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A hwmon driver for the Analog Devices ADT7462
  * Copyright (C) 2008 IBM
  *
-<<<<<<< HEAD
- * Author: Darrick J. Wong <djwong@us.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
  * Author: Darrick J. Wong <darrick.wong@oracle.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -34,10 +13,6 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/log2.h>
 #include <linux/slab.h>
 
@@ -214,12 +189,7 @@ static const unsigned short normal_i2c[] = { 0x58, 0x5C, I2C_CLIENT_END };
 	(((value) & prefix##_MASK) >> prefix##_SHIFT)
 
 struct adt7462_data {
-<<<<<<< HEAD
-	struct device		*hwmon_dev;
-	struct attribute_group	attrs;
-=======
 	struct i2c_client	*client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex		lock;
 	char			sensors_valid;
 	char			limits_valid;
@@ -248,33 +218,6 @@ struct adt7462_data {
 	u8			alarms[ADT7462_ALARM_REG_COUNT];
 };
 
-<<<<<<< HEAD
-static int adt7462_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id);
-static int adt7462_detect(struct i2c_client *client,
-			  struct i2c_board_info *info);
-static int adt7462_remove(struct i2c_client *client);
-
-static const struct i2c_device_id adt7462_id[] = {
-	{ "adt7462", 0 },
-	{ }
-};
-MODULE_DEVICE_TABLE(i2c, adt7462_id);
-
-static struct i2c_driver adt7462_driver = {
-	.class		= I2C_CLASS_HWMON,
-	.driver = {
-		.name	= "adt7462",
-	},
-	.probe		= adt7462_probe,
-	.remove		= adt7462_remove,
-	.id_table	= adt7462_id,
-	.detect		= adt7462_detect,
-	.address_list	= normal_i2c,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 16-bit registers on the ADT7462 are low-byte first.  The data sheet says
  * that the low byte must be read before the high byte.
@@ -352,11 +295,7 @@ static int ADT7462_REG_VOLT_MAX(struct adt7462_data *data, int which)
 			return 0x4C;
 		break;
 	}
-<<<<<<< HEAD
-	return -ENODEV;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ADT7462_REG_VOLT_MIN(struct adt7462_data *data, int which)
@@ -415,11 +354,7 @@ static int ADT7462_REG_VOLT_MIN(struct adt7462_data *data, int which)
 			return 0x77;
 		break;
 	}
-<<<<<<< HEAD
-	return -ENODEV;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ADT7462_REG_VOLT(struct adt7462_data *data, int which)
@@ -478,11 +413,7 @@ static int ADT7462_REG_VOLT(struct adt7462_data *data, int which)
 			return 0x95;
 		break;
 	}
-<<<<<<< HEAD
-	return -ENODEV;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Provide labels for sysfs */
@@ -504,10 +435,7 @@ static const char *voltage_label(struct adt7462_data *data, int which)
 		case 3:
 			return "+1.5V";
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (!(data->pin_cfg[1] & ADT7462_PIN22_INPUT))
 			return "+12V3";
@@ -565,10 +493,7 @@ static const char *voltage_label(struct adt7462_data *data, int which)
 		case 3:
 			return "+1.5";
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 11:
 		if (data->pin_cfg[3] >> ADT7462_PIN28_SHIFT ==
 					ADT7462_PIN28_VOLT &&
@@ -606,10 +531,7 @@ static int voltage_multiplier(struct adt7462_data *data, int which)
 		case 3:
 			return 7800;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (!(data->pin_cfg[1] & ADT7462_PIN22_INPUT))
 			return 62500;
@@ -667,10 +589,7 @@ static int voltage_multiplier(struct adt7462_data *data, int which)
 		case 3:
 			return 7800;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 11:
 	case 12:
 		if (data->pin_cfg[3] >> ADT7462_PIN28_SHIFT ==
@@ -747,22 +666,13 @@ static int find_trange_value(int trange)
 		if (trange_values[i] == trange)
 			return i;
 
-<<<<<<< HEAD
-	return -ENODEV;
-=======
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct adt7462_data *adt7462_update_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long local_jiffies = jiffies;
 	int i;
 
@@ -865,14 +775,8 @@ out:
 	return data;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_min(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t temp_min_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -883,16 +787,6 @@ static ssize_t temp_min_show(struct device *dev,
 	return sprintf(buf, "%d\n", 1000 * (data->temp_min[attr->index] - 64));
 }
 
-<<<<<<< HEAD
-static ssize_t set_temp_min(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t temp_min_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -900,19 +794,13 @@ static ssize_t temp_min_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp) || !temp_enabled(data, attr->index))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, -64000, 191000);
 	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->temp_min[attr->index] = temp;
@@ -923,14 +811,8 @@ static ssize_t temp_min_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_max(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t temp_max_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -941,16 +823,6 @@ static ssize_t temp_max_show(struct device *dev,
 	return sprintf(buf, "%d\n", 1000 * (data->temp_max[attr->index] - 64));
 }
 
-<<<<<<< HEAD
-static ssize_t set_temp_max(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t temp_max_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -958,19 +830,13 @@ static ssize_t temp_max_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp) || !temp_enabled(data, attr->index))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, -64000, 191000);
 	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->temp_max[attr->index] = temp;
@@ -981,11 +847,7 @@ static ssize_t temp_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
-=======
 static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
@@ -999,14 +861,8 @@ static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
 				     250 * frac);
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_label(struct device *dev,
-			       struct device_attribute *devattr,
-			       char *buf)
-=======
 static ssize_t temp_label_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1014,14 +870,8 @@ static ssize_t temp_label_show(struct device *dev,
 	return sprintf(buf, "%s\n", temp_label(data, attr->index));
 }
 
-<<<<<<< HEAD
-static ssize_t show_volt_max(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t volt_max_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1033,16 +883,6 @@ static ssize_t volt_max_show(struct device *dev,
 	return sprintf(buf, "%d\n", x);
 }
 
-<<<<<<< HEAD
-static ssize_t set_volt_max(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t volt_max_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1050,22 +890,15 @@ static ssize_t volt_max_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x = voltage_multiplier(data, attr->index);
 	long temp;
 
 	if (kstrtol(buf, 10, &temp) || !x)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp *= 1000; /* convert mV to uV */
-	temp = DIV_ROUND_CLOSEST(temp, x);
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, 0, 255 * x / 1000);
 	temp *= 1000; /* convert mV to uV */
 	temp = DIV_ROUND_CLOSEST(temp, x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->volt_max[attr->index] = temp;
@@ -1077,14 +910,8 @@ static ssize_t volt_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_volt_min(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t volt_min_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1096,16 +923,6 @@ static ssize_t volt_min_show(struct device *dev,
 	return sprintf(buf, "%d\n", x);
 }
 
-<<<<<<< HEAD
-static ssize_t set_volt_min(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t volt_min_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1113,22 +930,15 @@ static ssize_t volt_min_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x = voltage_multiplier(data, attr->index);
 	long temp;
 
 	if (kstrtol(buf, 10, &temp) || !x)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp *= 1000; /* convert mV to uV */
-	temp = DIV_ROUND_CLOSEST(temp, x);
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, 0, 255 * x / 1000);
 	temp *= 1000; /* convert mV to uV */
 	temp = DIV_ROUND_CLOSEST(temp, x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->volt_min[attr->index] = temp;
@@ -1140,14 +950,8 @@ static ssize_t volt_min_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_voltage(struct device *dev,
-			    struct device_attribute *devattr,
-			    char *buf)
-=======
 static ssize_t voltage_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1159,14 +963,8 @@ static ssize_t voltage_show(struct device *dev,
 	return sprintf(buf, "%d\n", x);
 }
 
-<<<<<<< HEAD
-static ssize_t show_voltage_label(struct device *dev,
-				  struct device_attribute *devattr,
-				  char *buf)
-=======
 static ssize_t voltage_label_show(struct device *dev,
 				  struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1174,14 +972,8 @@ static ssize_t voltage_label_show(struct device *dev,
 	return sprintf(buf, "%s\n", voltage_label(data, attr->index));
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarm(struct device *dev,
-			  struct device_attribute *devattr,
-			  char *buf)
-=======
 static ssize_t alarm_show(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1199,14 +991,8 @@ static int fan_enabled(struct adt7462_data *data, int fan)
 	return data->fan_enabled & (1 << fan);
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan_min(struct device *dev,
-			    struct device_attribute *devattr,
-			    char *buf)
-=======
 static ssize_t fan_min_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1223,15 +1009,6 @@ static ssize_t fan_min_show(struct device *dev,
 	return sprintf(buf, "%d\n", FAN_PERIOD_TO_RPM(temp));
 }
 
-<<<<<<< HEAD
-static ssize_t set_fan_min(struct device *dev,
-			   struct device_attribute *devattr,
-			   const char *buf, size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t fan_min_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
@@ -1239,7 +1016,6 @@ static ssize_t fan_min_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp) || !temp ||
@@ -1248,11 +1024,7 @@ static ssize_t fan_min_store(struct device *dev,
 
 	temp = FAN_RPM_TO_PERIOD(temp);
 	temp >>= 8;
-<<<<<<< HEAD
-	temp = SENSORS_LIMIT(temp, 1, 255);
-=======
 	temp = clamp_val(temp, 1, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->fan_min[attr->index] = temp;
@@ -1263,11 +1035,7 @@ static ssize_t fan_min_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
-=======
 static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
@@ -1281,35 +1049,19 @@ static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
 		       FAN_PERIOD_TO_RPM(data->fan[attr->index]));
 }
 
-<<<<<<< HEAD
-static ssize_t show_force_pwm_max(struct device *dev,
-				  struct device_attribute *devattr,
-				  char *buf)
-=======
 static ssize_t force_pwm_max_show(struct device *dev,
 				  struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adt7462_data *data = adt7462_update_device(dev);
 	return sprintf(buf, "%d\n", (data->cfg2 & ADT7462_FSPD_MASK ? 1 : 0));
 }
 
-<<<<<<< HEAD
-static ssize_t set_force_pwm_max(struct device *dev,
-				 struct device_attribute *devattr,
-				 const char *buf,
-				 size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t force_pwm_max_store(struct device *dev,
 				   struct device_attribute *devattr,
 				   const char *buf, size_t count)
 {
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 	u8 reg;
 
@@ -1329,11 +1081,7 @@ static ssize_t force_pwm_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm(struct device *dev, struct device_attribute *devattr,
-=======
 static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
@@ -1341,31 +1089,18 @@ static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", data->pwm[attr->index]);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm(struct device *dev, struct device_attribute *devattr,
-			const char *buf, size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
 			 const char *buf, size_t count)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->pwm[attr->index] = temp;
@@ -1375,45 +1110,25 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_max(struct device *dev,
-			    struct device_attribute *devattr,
-			    char *buf)
-=======
 static ssize_t pwm_max_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adt7462_data *data = adt7462_update_device(dev);
 	return sprintf(buf, "%d\n", data->pwm_max);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_max(struct device *dev,
-			   struct device_attribute *devattr,
-			   const char *buf,
-			   size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_max_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
 {
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->pwm_max = temp;
@@ -1423,30 +1138,14 @@ static ssize_t pwm_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_min(struct device *dev,
-			    struct device_attribute *devattr,
-			    char *buf)
-=======
 static ssize_t pwm_min_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
 	return sprintf(buf, "%d\n", data->pwm_min[attr->index]);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_min(struct device *dev,
-			   struct device_attribute *devattr,
-			   const char *buf,
-			   size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_min_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
@@ -1454,17 +1153,12 @@ static ssize_t pwm_min_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->pwm_min[attr->index] = temp;
@@ -1475,14 +1169,8 @@ static ssize_t pwm_min_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_hyst(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t pwm_hyst_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1490,16 +1178,6 @@ static ssize_t pwm_hyst_show(struct device *dev,
 		      (data->pwm_trange[attr->index] & ADT7462_PWM_HYST_MASK));
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_hyst(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_hyst_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1507,19 +1185,13 @@ static ssize_t pwm_hyst_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = DIV_ROUND_CLOSEST(temp, 1000);
-	temp = SENSORS_LIMIT(temp, 0, 15);
-=======
 	temp = clamp_val(temp, 0, 15000);
 	temp = DIV_ROUND_CLOSEST(temp, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* package things up */
 	temp &= ADT7462_PWM_HYST_MASK;
@@ -1534,14 +1206,8 @@ static ssize_t pwm_hyst_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_tmax(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t pwm_tmax_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1554,17 +1220,6 @@ static ssize_t pwm_tmax_show(struct device *dev,
 	return sprintf(buf, "%d\n", tmin + trange);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_tmax(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	int temp;
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_tmax_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1573,7 +1228,6 @@ static ssize_t pwm_tmax_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tmin, trange_value;
 	long trange;
 
@@ -1583,14 +1237,8 @@ static ssize_t pwm_tmax_store(struct device *dev,
 	/* trange = tmax - tmin */
 	tmin = (data->pwm_tmin[attr->index] - 64) * 1000;
 	trange_value = find_trange_value(trange - tmin);
-<<<<<<< HEAD
-
-	if (trange_value < 0)
-		return -EINVAL;
-=======
 	if (trange_value < 0)
 		return trange_value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	temp = trange_value << ADT7462_PWM_RANGE_SHIFT;
 	temp |= data->pwm_trange[attr->index] & ADT7462_PWM_HYST_MASK;
@@ -1604,30 +1252,14 @@ static ssize_t pwm_tmax_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_tmin(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t pwm_tmin_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
 	return sprintf(buf, "%d\n", 1000 * (data->pwm_tmin[attr->index] - 64));
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_tmin(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_tmin_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1635,19 +1267,13 @@ static ssize_t pwm_tmin_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
-	temp = SENSORS_LIMIT(temp, 0, 255);
-=======
 	temp = clamp_val(temp, -64000, 191000);
 	temp = DIV_ROUND_CLOSEST(temp, 1000) + 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->lock);
 	data->pwm_tmin[attr->index] = temp;
@@ -1658,14 +1284,8 @@ static ssize_t pwm_tmin_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_auto(struct device *dev,
-			     struct device_attribute *devattr,
-			     char *buf)
-=======
 static ssize_t pwm_auto_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1695,16 +1315,6 @@ static void set_pwm_channel(struct i2c_client *client,
 	mutex_unlock(&data->lock);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_auto(struct device *dev,
-			    struct device_attribute *devattr,
-			    const char *buf,
-			    size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_auto_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
@@ -1712,7 +1322,6 @@ static ssize_t pwm_auto_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
@@ -1730,14 +1339,8 @@ static ssize_t pwm_auto_store(struct device *dev,
 	}
 }
 
-<<<<<<< HEAD
-static ssize_t show_pwm_auto_temp(struct device *dev,
-				  struct device_attribute *devattr,
-				  char *buf)
-=======
 static ssize_t pwm_auto_temp_show(struct device *dev,
 				  struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = adt7462_update_device(dev);
@@ -1769,16 +1372,6 @@ static int cvt_auto_temp(int input)
 	return ilog2(input);
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_auto_temp(struct device *dev,
-				 struct device_attribute *devattr,
-				 const char *buf,
-				 size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adt7462_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t pwm_auto_temp_store(struct device *dev,
 				   struct device_attribute *devattr,
 				   const char *buf, size_t count)
@@ -1786,7 +1379,6 @@ static ssize_t pwm_auto_temp_store(struct device *dev,
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adt7462_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long temp;
 
 	if (kstrtol(buf, 10, &temp))
@@ -1801,278 +1393,6 @@ static ssize_t pwm_auto_temp_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static SENSOR_DEVICE_ATTR(temp1_max, S_IWUSR | S_IRUGO, show_temp_max,
-		    set_temp_max, 0);
-static SENSOR_DEVICE_ATTR(temp2_max, S_IWUSR | S_IRUGO, show_temp_max,
-		    set_temp_max, 1);
-static SENSOR_DEVICE_ATTR(temp3_max, S_IWUSR | S_IRUGO, show_temp_max,
-		    set_temp_max, 2);
-static SENSOR_DEVICE_ATTR(temp4_max, S_IWUSR | S_IRUGO, show_temp_max,
-		    set_temp_max, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_min, S_IWUSR | S_IRUGO, show_temp_min,
-		    set_temp_min, 0);
-static SENSOR_DEVICE_ATTR(temp2_min, S_IWUSR | S_IRUGO, show_temp_min,
-		    set_temp_min, 1);
-static SENSOR_DEVICE_ATTR(temp3_min, S_IWUSR | S_IRUGO, show_temp_min,
-		    set_temp_min, 2);
-static SENSOR_DEVICE_ATTR(temp4_min, S_IWUSR | S_IRUGO, show_temp_min,
-		    set_temp_min, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_temp, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_temp, NULL, 1);
-static SENSOR_DEVICE_ATTR(temp3_input, S_IRUGO, show_temp, NULL, 2);
-static SENSOR_DEVICE_ATTR(temp4_input, S_IRUGO, show_temp, NULL, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_label, S_IRUGO, show_temp_label, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp2_label, S_IRUGO, show_temp_label, NULL, 1);
-static SENSOR_DEVICE_ATTR(temp3_label, S_IRUGO, show_temp_label, NULL, 2);
-static SENSOR_DEVICE_ATTR(temp4_label, S_IRUGO, show_temp_label, NULL, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM1 | ADT7462_LT_ALARM);
-static SENSOR_DEVICE_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM1 | ADT7462_R1T_ALARM);
-static SENSOR_DEVICE_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM1 | ADT7462_R2T_ALARM);
-static SENSOR_DEVICE_ATTR(temp4_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM1 | ADT7462_R3T_ALARM);
-
-static SENSOR_DEVICE_ATTR(in1_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 0);
-static SENSOR_DEVICE_ATTR(in2_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 1);
-static SENSOR_DEVICE_ATTR(in3_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 2);
-static SENSOR_DEVICE_ATTR(in4_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 3);
-static SENSOR_DEVICE_ATTR(in5_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 4);
-static SENSOR_DEVICE_ATTR(in6_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 5);
-static SENSOR_DEVICE_ATTR(in7_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 6);
-static SENSOR_DEVICE_ATTR(in8_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 7);
-static SENSOR_DEVICE_ATTR(in9_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 8);
-static SENSOR_DEVICE_ATTR(in10_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 9);
-static SENSOR_DEVICE_ATTR(in11_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 10);
-static SENSOR_DEVICE_ATTR(in12_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 11);
-static SENSOR_DEVICE_ATTR(in13_max, S_IWUSR | S_IRUGO, show_volt_max,
-		    set_volt_max, 12);
-
-static SENSOR_DEVICE_ATTR(in1_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 0);
-static SENSOR_DEVICE_ATTR(in2_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 1);
-static SENSOR_DEVICE_ATTR(in3_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 2);
-static SENSOR_DEVICE_ATTR(in4_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 3);
-static SENSOR_DEVICE_ATTR(in5_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 4);
-static SENSOR_DEVICE_ATTR(in6_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 5);
-static SENSOR_DEVICE_ATTR(in7_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 6);
-static SENSOR_DEVICE_ATTR(in8_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 7);
-static SENSOR_DEVICE_ATTR(in9_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 8);
-static SENSOR_DEVICE_ATTR(in10_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 9);
-static SENSOR_DEVICE_ATTR(in11_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 10);
-static SENSOR_DEVICE_ATTR(in12_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 11);
-static SENSOR_DEVICE_ATTR(in13_min, S_IWUSR | S_IRUGO, show_volt_min,
-		    set_volt_min, 12);
-
-static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, show_voltage, NULL, 0);
-static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, show_voltage, NULL, 1);
-static SENSOR_DEVICE_ATTR(in3_input, S_IRUGO, show_voltage, NULL, 2);
-static SENSOR_DEVICE_ATTR(in4_input, S_IRUGO, show_voltage, NULL, 3);
-static SENSOR_DEVICE_ATTR(in5_input, S_IRUGO, show_voltage, NULL, 4);
-static SENSOR_DEVICE_ATTR(in6_input, S_IRUGO, show_voltage, NULL, 5);
-static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, show_voltage, NULL, 6);
-static SENSOR_DEVICE_ATTR(in8_input, S_IRUGO, show_voltage, NULL, 7);
-static SENSOR_DEVICE_ATTR(in9_input, S_IRUGO, show_voltage, NULL, 8);
-static SENSOR_DEVICE_ATTR(in10_input, S_IRUGO, show_voltage, NULL, 9);
-static SENSOR_DEVICE_ATTR(in11_input, S_IRUGO, show_voltage, NULL, 10);
-static SENSOR_DEVICE_ATTR(in12_input, S_IRUGO, show_voltage, NULL, 11);
-static SENSOR_DEVICE_ATTR(in13_input, S_IRUGO, show_voltage, NULL, 12);
-
-static SENSOR_DEVICE_ATTR(in1_label, S_IRUGO, show_voltage_label, NULL, 0);
-static SENSOR_DEVICE_ATTR(in2_label, S_IRUGO, show_voltage_label, NULL, 1);
-static SENSOR_DEVICE_ATTR(in3_label, S_IRUGO, show_voltage_label, NULL, 2);
-static SENSOR_DEVICE_ATTR(in4_label, S_IRUGO, show_voltage_label, NULL, 3);
-static SENSOR_DEVICE_ATTR(in5_label, S_IRUGO, show_voltage_label, NULL, 4);
-static SENSOR_DEVICE_ATTR(in6_label, S_IRUGO, show_voltage_label, NULL, 5);
-static SENSOR_DEVICE_ATTR(in7_label, S_IRUGO, show_voltage_label, NULL, 6);
-static SENSOR_DEVICE_ATTR(in8_label, S_IRUGO, show_voltage_label, NULL, 7);
-static SENSOR_DEVICE_ATTR(in9_label, S_IRUGO, show_voltage_label, NULL, 8);
-static SENSOR_DEVICE_ATTR(in10_label, S_IRUGO, show_voltage_label, NULL, 9);
-static SENSOR_DEVICE_ATTR(in11_label, S_IRUGO, show_voltage_label, NULL, 10);
-static SENSOR_DEVICE_ATTR(in12_label, S_IRUGO, show_voltage_label, NULL, 11);
-static SENSOR_DEVICE_ATTR(in13_label, S_IRUGO, show_voltage_label, NULL, 12);
-
-static SENSOR_DEVICE_ATTR(in1_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V0_ALARM);
-static SENSOR_DEVICE_ATTR(in2_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V7_ALARM);
-static SENSOR_DEVICE_ATTR(in3_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V2_ALARM);
-static SENSOR_DEVICE_ATTR(in4_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V6_ALARM);
-static SENSOR_DEVICE_ATTR(in5_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V5_ALARM);
-static SENSOR_DEVICE_ATTR(in6_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V4_ALARM);
-static SENSOR_DEVICE_ATTR(in7_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V3_ALARM);
-static SENSOR_DEVICE_ATTR(in8_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM2 | ADT7462_V1_ALARM);
-static SENSOR_DEVICE_ATTR(in9_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM3 | ADT7462_V10_ALARM);
-static SENSOR_DEVICE_ATTR(in10_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM3 | ADT7462_V9_ALARM);
-static SENSOR_DEVICE_ATTR(in11_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM3 | ADT7462_V8_ALARM);
-static SENSOR_DEVICE_ATTR(in12_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM3 | ADT7462_V11_ALARM);
-static SENSOR_DEVICE_ATTR(in13_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM3 | ADT7462_V12_ALARM);
-
-static SENSOR_DEVICE_ATTR(fan1_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 0);
-static SENSOR_DEVICE_ATTR(fan2_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 1);
-static SENSOR_DEVICE_ATTR(fan3_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 2);
-static SENSOR_DEVICE_ATTR(fan4_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 3);
-static SENSOR_DEVICE_ATTR(fan5_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 4);
-static SENSOR_DEVICE_ATTR(fan6_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 5);
-static SENSOR_DEVICE_ATTR(fan7_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 6);
-static SENSOR_DEVICE_ATTR(fan8_min, S_IWUSR | S_IRUGO, show_fan_min,
-		    set_fan_min, 7);
-
-static SENSOR_DEVICE_ATTR(fan1_input, S_IRUGO, show_fan, NULL, 0);
-static SENSOR_DEVICE_ATTR(fan2_input, S_IRUGO, show_fan, NULL, 1);
-static SENSOR_DEVICE_ATTR(fan3_input, S_IRUGO, show_fan, NULL, 2);
-static SENSOR_DEVICE_ATTR(fan4_input, S_IRUGO, show_fan, NULL, 3);
-static SENSOR_DEVICE_ATTR(fan5_input, S_IRUGO, show_fan, NULL, 4);
-static SENSOR_DEVICE_ATTR(fan6_input, S_IRUGO, show_fan, NULL, 5);
-static SENSOR_DEVICE_ATTR(fan7_input, S_IRUGO, show_fan, NULL, 6);
-static SENSOR_DEVICE_ATTR(fan8_input, S_IRUGO, show_fan, NULL, 7);
-
-static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F0_ALARM);
-static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F1_ALARM);
-static SENSOR_DEVICE_ATTR(fan3_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F2_ALARM);
-static SENSOR_DEVICE_ATTR(fan4_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F3_ALARM);
-static SENSOR_DEVICE_ATTR(fan5_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F4_ALARM);
-static SENSOR_DEVICE_ATTR(fan6_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F5_ALARM);
-static SENSOR_DEVICE_ATTR(fan7_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F6_ALARM);
-static SENSOR_DEVICE_ATTR(fan8_alarm, S_IRUGO, show_alarm, NULL,
-			  ADT7462_ALARM4 | ADT7462_F7_ALARM);
-
-static SENSOR_DEVICE_ATTR(force_pwm_max, S_IWUSR | S_IRUGO,
-		    show_force_pwm_max, set_force_pwm_max, 0);
-
-static SENSOR_DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 0);
-static SENSOR_DEVICE_ATTR(pwm2, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 1);
-static SENSOR_DEVICE_ATTR(pwm3, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 2);
-static SENSOR_DEVICE_ATTR(pwm4, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 3);
-
-static SENSOR_DEVICE_ATTR(pwm1_auto_point1_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_min, set_pwm_min, 0);
-static SENSOR_DEVICE_ATTR(pwm2_auto_point1_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_min, set_pwm_min, 1);
-static SENSOR_DEVICE_ATTR(pwm3_auto_point1_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_min, set_pwm_min, 2);
-static SENSOR_DEVICE_ATTR(pwm4_auto_point1_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_min, set_pwm_min, 3);
-
-static SENSOR_DEVICE_ATTR(pwm1_auto_point2_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_max, set_pwm_max, 0);
-static SENSOR_DEVICE_ATTR(pwm2_auto_point2_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_max, set_pwm_max, 1);
-static SENSOR_DEVICE_ATTR(pwm3_auto_point2_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_max, set_pwm_max, 2);
-static SENSOR_DEVICE_ATTR(pwm4_auto_point2_pwm, S_IWUSR | S_IRUGO,
-		    show_pwm_max, set_pwm_max, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_auto_point1_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 0);
-static SENSOR_DEVICE_ATTR(temp2_auto_point1_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 1);
-static SENSOR_DEVICE_ATTR(temp3_auto_point1_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 2);
-static SENSOR_DEVICE_ATTR(temp4_auto_point1_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_auto_point2_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 0);
-static SENSOR_DEVICE_ATTR(temp2_auto_point2_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 1);
-static SENSOR_DEVICE_ATTR(temp3_auto_point2_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 2);
-static SENSOR_DEVICE_ATTR(temp4_auto_point2_hyst, S_IWUSR | S_IRUGO,
-		    show_pwm_hyst, set_pwm_hyst, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_auto_point1_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmin, set_pwm_tmin, 0);
-static SENSOR_DEVICE_ATTR(temp2_auto_point1_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmin, set_pwm_tmin, 1);
-static SENSOR_DEVICE_ATTR(temp3_auto_point1_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmin, set_pwm_tmin, 2);
-static SENSOR_DEVICE_ATTR(temp4_auto_point1_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmin, set_pwm_tmin, 3);
-
-static SENSOR_DEVICE_ATTR(temp1_auto_point2_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmax, set_pwm_tmax, 0);
-static SENSOR_DEVICE_ATTR(temp2_auto_point2_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmax, set_pwm_tmax, 1);
-static SENSOR_DEVICE_ATTR(temp3_auto_point2_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmax, set_pwm_tmax, 2);
-static SENSOR_DEVICE_ATTR(temp4_auto_point2_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_tmax, set_pwm_tmax, 3);
-
-static SENSOR_DEVICE_ATTR(pwm1_enable, S_IWUSR | S_IRUGO, show_pwm_auto,
-		    set_pwm_auto, 0);
-static SENSOR_DEVICE_ATTR(pwm2_enable, S_IWUSR | S_IRUGO, show_pwm_auto,
-		    set_pwm_auto, 1);
-static SENSOR_DEVICE_ATTR(pwm3_enable, S_IWUSR | S_IRUGO, show_pwm_auto,
-		    set_pwm_auto, 2);
-static SENSOR_DEVICE_ATTR(pwm4_enable, S_IWUSR | S_IRUGO, show_pwm_auto,
-		    set_pwm_auto, 3);
-
-static SENSOR_DEVICE_ATTR(pwm1_auto_channels_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_auto_temp, set_pwm_auto_temp, 0);
-static SENSOR_DEVICE_ATTR(pwm2_auto_channels_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_auto_temp, set_pwm_auto_temp, 1);
-static SENSOR_DEVICE_ATTR(pwm3_auto_channels_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_auto_temp, set_pwm_auto_temp, 2);
-static SENSOR_DEVICE_ATTR(pwm4_auto_channels_temp, S_IWUSR | S_IRUGO,
-		    show_pwm_auto_temp, set_pwm_auto_temp, 3);
-
-static struct attribute *adt7462_attr[] = {
-=======
 static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_max, 0);
 static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
 static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_max, 2);
@@ -2268,7 +1588,6 @@ static SENSOR_DEVICE_ATTR_RW(pwm3_auto_channels_temp, pwm_auto_temp, 2);
 static SENSOR_DEVICE_ATTR_RW(pwm4_auto_channels_temp, pwm_auto_temp, 3);
 
 static struct attribute *adt7462_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
 	&sensor_dev_attr_temp2_max.dev_attr.attr,
 	&sensor_dev_attr_temp3_max.dev_attr.attr,
@@ -2439,11 +1758,8 @@ static struct attribute *adt7462_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(adt7462);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Return 0 if detection is successful, -ENODEV otherwise */
 static int adt7462_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
@@ -2466,30 +1782,11 @@ static int adt7462_detect(struct i2c_client *client,
 	if (revision != ADT7462_REVISION)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	strlcpy(info->type, "adt7462", I2C_NAME_SIZE);
-=======
 	strscpy(info->type, "adt7462", I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adt7462_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	struct adt7462_data *data;
-	int err;
-
-	data = kzalloc(sizeof(struct adt7462_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-
-	i2c_set_clientdata(client, data);
-=======
 static int adt7462_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
@@ -2501,48 +1798,10 @@ static int adt7462_probe(struct i2c_client *client)
 		return -ENOMEM;
 
 	data->client = client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->lock);
 
 	dev_info(&client->dev, "%s chip found\n", client->name);
 
-<<<<<<< HEAD
-	/* Register sysfs hooks */
-	data->attrs.attrs = adt7462_attr;
-	err = sysfs_create_group(&client->dev.kobj, &data->attrs);
-	if (err)
-		goto exit_free;
-
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		err = PTR_ERR(data->hwmon_dev);
-		goto exit_remove;
-	}
-
-	return 0;
-
-exit_remove:
-	sysfs_remove_group(&client->dev.kobj, &data->attrs);
-exit_free:
-	kfree(data);
-exit:
-	return err;
-}
-
-static int adt7462_remove(struct i2c_client *client)
-{
-	struct adt7462_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &data->attrs);
-	kfree(data);
-	return 0;
-}
-
-module_i2c_driver(adt7462_driver);
-
-MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
-=======
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
 							   data,
 							   adt7462_groups);
@@ -2569,6 +1828,5 @@ static struct i2c_driver adt7462_driver = {
 module_i2c_driver(adt7462_driver);
 
 MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ADT7462 driver");
 MODULE_LICENSE("GPL");

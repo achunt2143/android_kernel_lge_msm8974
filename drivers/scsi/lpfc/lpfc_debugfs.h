@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2007-2011 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2022 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2007-2011 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -44,11 +38,6 @@
 /* dumpHostSlim output buffer size */
 #define LPFC_DUMPHOSTSLIM_SIZE 4096
 
-<<<<<<< HEAD
-/* hbqinfo output buffer size */
-#define LPFC_HBQINFO_SIZE 8192
-
-=======
 /* dumpSLIqinfo output buffer size */
 #define	LPFC_DUMPSLIQINFO_SIZE 4096
 
@@ -68,7 +57,6 @@
 
 #define LPFC_DEBUG_OUT_LINE_SZ	80
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For SLI4 iDiag debugfs diagnostics tool
  */
@@ -143,14 +131,6 @@
 #define LPFC_DRB_ACC_WR_CMD_ARG 2
 #define LPFC_DRB_ACC_BUF_SIZE 256
 
-<<<<<<< HEAD
-#define LPFC_DRB_EQCQ 1
-#define LPFC_DRB_MQ   2
-#define LPFC_DRB_WQ   3
-#define LPFC_DRB_RQ   4
-
-#define LPFC_DRB_MAX  4
-=======
 #define LPFC_DRB_EQ   1
 #define LPFC_DRB_CQ   2
 #define LPFC_DRB_MQ   3
@@ -158,7 +138,6 @@
 #define LPFC_DRB_RQ   5
 
 #define LPFC_DRB_MAX  5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IDIAG_DRBACC_REGID_INDX 0
 #define IDIAG_DRBACC_VALUE_INDX 1
@@ -225,15 +204,12 @@
 #define SIZE_U16 sizeof(uint16_t)
 #define SIZE_U32 sizeof(uint32_t)
 
-<<<<<<< HEAD
-=======
 #define lpfc_nvmeio_data(phba, fmt, arg...) \
 	{ \
 	if (phba->nvmeio_trc_on) \
 		lpfc_debugfs_nvme_trc(phba, fmt, ##arg); \
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_debug {
 	char *i_private;
 	char op;
@@ -252,8 +228,6 @@ struct lpfc_debugfs_trc {
 	unsigned long jif;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_debugfs_nvmeio_trc {
 	char *fmt;
 	uint16_t data1;
@@ -261,7 +235,6 @@ struct lpfc_debugfs_nvmeio_trc {
 	uint32_t data3;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_idiag_offset {
 	uint32_t last_rd;
 };
@@ -308,10 +281,6 @@ struct lpfc_idiag {
 	struct lpfc_idiag_offset offset;
 	void *ptr_private;
 };
-<<<<<<< HEAD
-#endif
-
-=======
 
 #define MAX_DEBUGFS_RX_INFO_SIZE	(128 * LPFC_MAX_RXMONITOR_ENTRY)
 struct lpfc_rx_monitor_debug {
@@ -336,7 +305,6 @@ enum {
 	DUMP_NVMELS,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mask for discovery_trace */
 #define LPFC_DISC_TRC_ELS_CMD		0x1	/* Trace ELS commands */
 #define LPFC_DISC_TRC_ELS_RSP		0x2	/* Trace ELS response */
@@ -353,8 +321,6 @@ enum {
 #define LPFC_DISC_TRC_DISCOVERY		0xef    /* common mask for general
 						 * discovery */
 #endif /* H_LPFC_DEBUG_FS */
-<<<<<<< HEAD
-=======
 
 
 /*
@@ -731,4 +697,3 @@ lpfc_debug_dump_eq_by_id(struct lpfc_hba *phba, int qid)
 }
 
 void lpfc_debug_dump_all_queues(struct lpfc_hba *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

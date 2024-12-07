@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ufs/ialloc.c
  *
@@ -61,10 +58,6 @@ void ufs_free_inode (struct inode * inode)
 {
 	struct super_block * sb;
 	struct ufs_sb_private_info * uspi;
-<<<<<<< HEAD
-	struct ufs_super_block_first * usb1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ufs_cg_private_info * ucpi;
 	struct ufs_cylinder_group * ucg;
 	int is_directory;
@@ -74,17 +67,6 @@ void ufs_free_inode (struct inode * inode)
 
 	sb = inode->i_sb;
 	uspi = UFS_SB(sb)->s_uspi;
-<<<<<<< HEAD
-	usb1 = ubh_get_usb_first(uspi);
-	
-	ino = inode->i_ino;
-
-	lock_super (sb);
-
-	if (!((ino > 1) && (ino < (uspi->s_ncg * uspi->s_ipg )))) {
-		ufs_warning(sb, "ufs_free_inode", "reserved inode or nonexistent inode %u\n", ino);
-		unlock_super (sb);
-=======
 	
 	ino = inode->i_ino;
 
@@ -93,7 +75,6 @@ void ufs_free_inode (struct inode * inode)
 	if (!((ino > 1) && (ino < (uspi->s_ncg * uspi->s_ipg )))) {
 		ufs_warning(sb, "ufs_free_inode", "reserved inode or nonexistent inode %u\n", ino);
 		mutex_unlock(&UFS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	
@@ -101,22 +82,14 @@ void ufs_free_inode (struct inode * inode)
 	bit = ufs_inotocgoff (ino);
 	ucpi = ufs_load_cylinder (sb, cg);
 	if (!ucpi) {
-<<<<<<< HEAD
-		unlock_super (sb);
-=======
 		mutex_unlock(&UFS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ucg = ubh_get_ucg(UCPI_UBH(ucpi));
 	if (!ufs_cg_chkmagic(sb, ucg))
 		ufs_panic (sb, "ufs_free_fragments", "internal error, bad cg magic number");
 
-<<<<<<< HEAD
-	ucg->cg_time = cpu_to_fs32(sb, get_seconds());
-=======
 	ucg->cg_time = ufs_get_seconds(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	is_directory = S_ISDIR(inode->i_mode);
 
@@ -139,19 +112,11 @@ void ufs_free_inode (struct inode * inode)
 
 	ubh_mark_buffer_dirty (USPI_UBH(uspi));
 	ubh_mark_buffer_dirty (UCPI_UBH(ucpi));
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS)
-		ubh_sync_block(UCPI_UBH(ucpi));
-	
-	sb->s_dirt = 1;
-	unlock_super (sb);
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS)
 		ubh_sync_block(UCPI_UBH(ucpi));
 	
 	ufs_mark_sb_dirty(sb);
 	mutex_unlock(&UFS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UFSD("EXIT\n");
 }
 
@@ -181,22 +146,14 @@ static void ufs2_init_inodes_chunk(struct super_block *sb,
 		set_buffer_uptodate(bh);
 		mark_buffer_dirty(bh);
 		unlock_buffer(bh);
-<<<<<<< HEAD
-		if (sb->s_flags & MS_SYNCHRONOUS)
-=======
 		if (sb->s_flags & SB_SYNCHRONOUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sync_dirty_buffer(bh);
 		brelse(bh);
 	}
 
 	fs32_add(sb, &ucg->cg_u.cg_u2.cg_initediblk, uspi->s_inopb);
 	ubh_mark_buffer_dirty(UCPI_UBH(ucpi));
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS)
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ubh_sync_block(UCPI_UBH(ucpi));
 
 	UFSD("EXIT\n");
@@ -217,17 +174,10 @@ struct inode *ufs_new_inode(struct inode *dir, umode_t mode)
 	struct super_block * sb;
 	struct ufs_sb_info * sbi;
 	struct ufs_sb_private_info * uspi;
-<<<<<<< HEAD
-	struct ufs_super_block_first * usb1;
-	struct ufs_cg_private_info * ucpi;
-	struct ufs_cylinder_group * ucg;
-	struct inode * inode;
-=======
 	struct ufs_cg_private_info * ucpi;
 	struct ufs_cylinder_group * ucg;
 	struct inode * inode;
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned cg, bit, i, j, start;
 	struct ufs_inode_info *ufsi;
 	int err = -ENOSPC;
@@ -244,14 +194,8 @@ struct inode *ufs_new_inode(struct inode *dir, umode_t mode)
 	ufsi = UFS_I(inode);
 	sbi = UFS_SB(sb);
 	uspi = sbi->s_uspi;
-<<<<<<< HEAD
-	usb1 = ubh_get_usb_first(uspi);
-
-	lock_super (sb);
-=======
 
 	mutex_lock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Try to place the inode in its parent directory
@@ -340,17 +284,6 @@ cg_found:
 	}
 	ubh_mark_buffer_dirty (USPI_UBH(uspi));
 	ubh_mark_buffer_dirty (UCPI_UBH(ucpi));
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS)
-		ubh_sync_block(UCPI_UBH(ucpi));
-	sb->s_dirt = 1;
-
-	inode->i_ino = cg * uspi->s_ipg + bit;
-	inode_init_owner(inode, dir, mode);
-	inode->i_blocks = 0;
-	inode->i_generation = 0;
-	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS)
 		ubh_sync_block(UCPI_UBH(ucpi));
 	ufs_mark_sb_dirty(sb);
@@ -360,7 +293,6 @@ cg_found:
 	inode->i_blocks = 0;
 	inode->i_generation = 0;
 	simple_inode_init_ts(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ufsi->i_flags = UFS_I(dir)->i_flags;
 	ufsi->i_lastfrag = 0;
 	ufsi->i_shadow = 0;
@@ -368,14 +300,10 @@ cg_found:
 	ufsi->i_oeftflag = 0;
 	ufsi->i_dir_start_lookup = 0;
 	memset(&ufsi->i_u1, 0, sizeof(ufsi->i_u1));
-<<<<<<< HEAD
-	insert_inode_hash(inode);
-=======
 	if (insert_inode_locked(inode) < 0) {
 		err = -EIO;
 		goto failed;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 
 	if (uspi->fs_magic == UFS2_MAGIC) {
@@ -397,18 +325,6 @@ cg_found:
 		lock_buffer(bh);
 		ufs2_inode = (struct ufs2_inode *)bh->b_data;
 		ufs2_inode += ufs_inotofsbo(inode->i_ino);
-<<<<<<< HEAD
-		ufs2_inode->ui_birthtime = cpu_to_fs64(sb, CURRENT_TIME.tv_sec);
-		ufs2_inode->ui_birthnsec = cpu_to_fs32(sb, CURRENT_TIME.tv_nsec);
-		mark_buffer_dirty(bh);
-		unlock_buffer(bh);
-		if (sb->s_flags & MS_SYNCHRONOUS)
-			sync_dirty_buffer(bh);
-		brelse(bh);
-	}
-
-	unlock_super (sb);
-=======
 		ktime_get_real_ts64(&ts);
 		ufs2_inode->ui_birthtime = cpu_to_fs64(sb, ts.tv_sec);
 		ufs2_inode->ui_birthnsec = cpu_to_fs32(sb, ts.tv_nsec);
@@ -419,22 +335,12 @@ cg_found:
 		brelse(bh);
 	}
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	UFSD("allocating inode %lu\n", inode->i_ino);
 	UFSD("EXIT\n");
 	return inode;
 
 fail_remove_inode:
-<<<<<<< HEAD
-	unlock_super(sb);
-	clear_nlink(inode);
-	iput(inode);
-	UFSD("EXIT (FAILED): err %d\n", err);
-	return ERR_PTR(err);
-failed:
-	unlock_super (sb);
-=======
 	mutex_unlock(&sbi->s_lock);
 	clear_nlink(inode);
 	discard_new_inode(inode);
@@ -442,7 +348,6 @@ failed:
 	return ERR_PTR(err);
 failed:
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	make_bad_inode(inode);
 	iput (inode);
 	UFSD("EXIT (FAILED): err %d\n", err);

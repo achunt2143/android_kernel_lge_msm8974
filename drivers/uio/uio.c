@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/uio/uio.c
  *
@@ -13,11 +10,6 @@
  * Userspace IO
  *
  * Base Functions
-<<<<<<< HEAD
- *
- * Licensed under the GPLv2 only.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -27,38 +19,15 @@
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/idr.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/kobject.h>
 #include <linux/cdev.h>
 #include <linux/uio_driver.h>
-<<<<<<< HEAD
-
-#define UIO_MAX_DEVICES		(1U << MINORBITS)
-
-struct uio_device {
-	struct module		*owner;
-	struct device		*dev;
-	int			minor;
-	atomic_t		event;
-	struct fasync_struct	*async_queue;
-	wait_queue_head_t	wait;
-	int			vma_count;
-	struct uio_info		*info;
-	struct kobject		*map_dir;
-	struct kobject		*portio_dir;
-};
-
-=======
 #include <linux/dma-mapping.h>
 
 #define UIO_MAX_DEVICES		(1U << MINORBITS)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int uio_major;
 static struct cdev *uio_cdev;
 static DEFINE_IDR(uio_idr);
@@ -87,29 +56,17 @@ static ssize_t map_name_show(struct uio_mem *mem, char *buf)
 
 static ssize_t map_addr_show(struct uio_mem *mem, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "0x%llx\n", (unsigned long long)mem->addr);
-=======
 	return sprintf(buf, "%pa\n", &mem->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t map_size_show(struct uio_mem *mem, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "0x%lx\n", mem->size);
-=======
 	return sprintf(buf, "%pa\n", &mem->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t map_offset_show(struct uio_mem *mem, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "0x%llx\n", (unsigned long long)mem->addr & ~PAGE_MASK);
-=======
 	return sprintf(buf, "0x%llx\n", (unsigned long long)mem->offs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct map_sysfs_entry {
@@ -127,21 +84,14 @@ static struct map_sysfs_entry size_attribute =
 static struct map_sysfs_entry offset_attribute =
 	__ATTR(offset, S_IRUGO, map_offset_show, NULL);
 
-<<<<<<< HEAD
-static struct attribute *attrs[] = {
-=======
 static struct attribute *map_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&name_attribute.attr,
 	&addr_attribute.attr,
 	&size_attribute.attr,
 	&offset_attribute.attr,
 	NULL,	/* need to NULL terminate the list of attributes */
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void map_release(struct kobject *kobj)
 {
@@ -171,11 +121,7 @@ static const struct sysfs_ops map_sysfs_ops = {
 static struct kobj_type map_attr_type = {
 	.release	= map_release,
 	.sysfs_ops	= &map_sysfs_ops,
-<<<<<<< HEAD
-	.default_attrs	= attrs,
-=======
 	.default_groups	= map_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct uio_portio {
@@ -234,10 +180,7 @@ static struct attribute *portio_attrs[] = {
 	&portio_porttype_attribute.attr,
 	NULL,
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(portio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void portio_release(struct kobject *kobj)
 {
@@ -267,26 +210,6 @@ static const struct sysfs_ops portio_sysfs_ops = {
 static struct kobj_type portio_attr_type = {
 	.release	= portio_release,
 	.sysfs_ops	= &portio_sysfs_ops,
-<<<<<<< HEAD
-	.default_attrs	= portio_attrs,
-};
-
-static ssize_t show_name(struct device *dev,
-			 struct device_attribute *attr, char *buf)
-{
-	struct uio_device *idev = dev_get_drvdata(dev);
-	return sprintf(buf, "%s\n", idev->info->name);
-}
-
-static ssize_t show_version(struct device *dev,
-			    struct device_attribute *attr, char *buf)
-{
-	struct uio_device *idev = dev_get_drvdata(dev);
-	return sprintf(buf, "%s\n", idev->info->version);
-}
-
-static ssize_t show_event(struct device *dev,
-=======
 	.default_groups	= portio_groups,
 };
 
@@ -333,21 +256,11 @@ out:
 static DEVICE_ATTR_RO(version);
 
 static ssize_t event_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct device_attribute *attr, char *buf)
 {
 	struct uio_device *idev = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", (unsigned int)atomic_read(&idev->event));
 }
-<<<<<<< HEAD
-
-static struct device_attribute uio_class_attributes[] = {
-	__ATTR(name, S_IRUGO, show_name, NULL),
-	__ATTR(version, S_IRUGO, show_version, NULL),
-	__ATTR(event, S_IRUGO, show_event, NULL),
-	{}
-};
-=======
 static DEVICE_ATTR_RO(event);
 
 static struct attribute *uio_attrs[] = {
@@ -357,22 +270,15 @@ static struct attribute *uio_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(uio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* UIO class infrastructure */
 static struct class uio_class = {
 	.name = "uio",
-<<<<<<< HEAD
-	.dev_attrs = uio_class_attributes,
-};
-
-=======
 	.dev_groups = uio_groups,
 };
 
 static bool uio_class_registered;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * device functions
  */
@@ -394,15 +300,6 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 		if (!map_found) {
 			map_found = 1;
 			idev->map_dir = kobject_create_and_add("maps",
-<<<<<<< HEAD
-							&idev->dev->kobj);
-			if (!idev->map_dir)
-				goto err_map;
-		}
-		map = kzalloc(sizeof(*map), GFP_KERNEL);
-		if (!map)
-			goto err_map;
-=======
 							&idev->dev.kobj);
 			if (!idev->map_dir) {
 				ret = -ENOMEM;
@@ -414,23 +311,15 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			ret = -ENOMEM;
 			goto err_map;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_init(&map->kobj, &map_attr_type);
 		map->mem = mem;
 		mem->map = map;
 		ret = kobject_add(&map->kobj, idev->map_dir, "map%d", mi);
 		if (ret)
-<<<<<<< HEAD
-			goto err_map;
-		ret = kobject_uevent(&map->kobj, KOBJ_ADD);
-		if (ret)
-			goto err_map;
-=======
 			goto err_map_kobj;
 		ret = kobject_uevent(&map->kobj, KOBJ_ADD);
 		if (ret)
 			goto err_map_kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (pi = 0; pi < MAX_UIO_PORT_REGIONS; pi++) {
@@ -440,15 +329,6 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 		if (!portio_found) {
 			portio_found = 1;
 			idev->portio_dir = kobject_create_and_add("portio",
-<<<<<<< HEAD
-							&idev->dev->kobj);
-			if (!idev->portio_dir)
-				goto err_portio;
-		}
-		portio = kzalloc(sizeof(*portio), GFP_KERNEL);
-		if (!portio)
-			goto err_portio;
-=======
 							&idev->dev.kobj);
 			if (!idev->portio_dir) {
 				ret = -ENOMEM;
@@ -460,59 +340,39 @@ static int uio_dev_add_attributes(struct uio_device *idev)
 			ret = -ENOMEM;
 			goto err_portio;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_init(&portio->kobj, &portio_attr_type);
 		portio->port = port;
 		port->portio = portio;
 		ret = kobject_add(&portio->kobj, idev->portio_dir,
 							"port%d", pi);
 		if (ret)
-<<<<<<< HEAD
-			goto err_portio;
-		ret = kobject_uevent(&portio->kobj, KOBJ_ADD);
-		if (ret)
-			goto err_portio;
-=======
 			goto err_portio_kobj;
 		ret = kobject_uevent(&portio->kobj, KOBJ_ADD);
 		if (ret)
 			goto err_portio_kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
 err_portio:
-<<<<<<< HEAD
-	for (pi--; pi >= 0; pi--) {
-=======
 	pi--;
 err_portio_kobj:
 	for (; pi >= 0; pi--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port = &idev->info->port[pi];
 		portio = port->portio;
 		kobject_put(&portio->kobj);
 	}
 	kobject_put(idev->portio_dir);
 err_map:
-<<<<<<< HEAD
-	for (mi--; mi>=0; mi--) {
-=======
 	mi--;
 err_map_kobj:
 	for (; mi >= 0; mi--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem = &idev->info->mem[mi];
 		map = mem->map;
 		kobject_put(&map->kobj);
 	}
 	kobject_put(idev->map_dir);
-<<<<<<< HEAD
-	dev_err(idev->dev, "error creating sysfs files (%d)\n", ret);
-=======
 	dev_err(&idev->dev, "error creating sysfs files (%d)\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -541,29 +401,6 @@ static void uio_dev_del_attributes(struct uio_device *idev)
 
 static int uio_get_minor(struct uio_device *idev)
 {
-<<<<<<< HEAD
-	int retval = -ENOMEM;
-	int id;
-
-	mutex_lock(&minor_lock);
-	if (idr_pre_get(&uio_idr, GFP_KERNEL) == 0)
-		goto exit;
-
-	retval = idr_get_new(&uio_idr, idev, &id);
-	if (retval < 0) {
-		if (retval == -EAGAIN)
-			retval = -ENOMEM;
-		goto exit;
-	}
-	if (id < UIO_MAX_DEVICES) {
-		idev->minor = id;
-	} else {
-		dev_err(idev->dev, "too many uio devices\n");
-		retval = -EINVAL;
-		idr_remove(&uio_idr, id);
-	}
-exit:
-=======
 	int retval;
 
 	mutex_lock(&minor_lock);
@@ -575,22 +412,14 @@ exit:
 		dev_err(&idev->dev, "too many uio devices\n");
 		retval = -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&minor_lock);
 	return retval;
 }
 
-<<<<<<< HEAD
-static void uio_free_minor(struct uio_device *idev)
-{
-	mutex_lock(&minor_lock);
-	idr_remove(&uio_idr, idev->minor);
-=======
 static void uio_free_minor(unsigned long minor)
 {
 	mutex_lock(&minor_lock);
 	idr_remove(&uio_idr, minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&minor_lock);
 }
 
@@ -616,14 +445,9 @@ EXPORT_SYMBOL_GPL(uio_event_notify);
 static irqreturn_t uio_interrupt(int irq, void *dev_id)
 {
 	struct uio_device *idev = (struct uio_device *)dev_id;
-<<<<<<< HEAD
-	irqreturn_t ret = idev->info->handler(irq, idev->info);
-
-=======
 	irqreturn_t ret;
 
 	ret = idev->info->handler(irq, idev->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == IRQ_HANDLED)
 		uio_event_notify(idev->info);
 
@@ -643,17 +467,6 @@ static int uio_open(struct inode *inode, struct file *filep)
 
 	mutex_lock(&minor_lock);
 	idev = idr_find(&uio_idr, iminor(inode));
-<<<<<<< HEAD
-	mutex_unlock(&minor_lock);
-	if (!idev) {
-		ret = -ENODEV;
-		goto out;
-	}
-
-	if (!try_module_get(idev->owner)) {
-		ret = -ENODEV;
-		goto out;
-=======
 	if (!idev) {
 		ret = -ENODEV;
 		mutex_unlock(&minor_lock);
@@ -665,7 +478,6 @@ static int uio_open(struct inode *inode, struct file *filep)
 	if (!try_module_get(idev->owner)) {
 		ret = -ENODEV;
 		goto err_module_get;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	listener = kmalloc(sizeof(*listener), GFP_KERNEL);
@@ -678,13 +490,6 @@ static int uio_open(struct inode *inode, struct file *filep)
 	listener->event_count = atomic_read(&idev->event);
 	filep->private_data = listener;
 
-<<<<<<< HEAD
-	if (idev->info->open) {
-		ret = idev->info->open(idev->info, inode);
-		if (ret)
-			goto err_infoopen;
-	}
-=======
 	mutex_lock(&idev->info_lock);
 	if (!idev->info) {
 		mutex_unlock(&idev->info_lock);
@@ -698,7 +503,6 @@ static int uio_open(struct inode *inode, struct file *filep)
 	if (ret)
 		goto err_infoopen;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_infoopen:
@@ -707,12 +511,9 @@ err_infoopen:
 err_alloc_listener:
 	module_put(idev->owner);
 
-<<<<<<< HEAD
-=======
 err_module_get:
 	put_device(&idev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -731,27 +532,6 @@ static int uio_release(struct inode *inode, struct file *filep)
 	struct uio_listener *listener = filep->private_data;
 	struct uio_device *idev = listener->dev;
 
-<<<<<<< HEAD
-	if (idev->info->release)
-		ret = idev->info->release(idev->info, inode);
-
-	module_put(idev->owner);
-	kfree(listener);
-	return ret;
-}
-
-static unsigned int uio_poll(struct file *filep, poll_table *wait)
-{
-	struct uio_listener *listener = filep->private_data;
-	struct uio_device *idev = listener->dev;
-
-	if (!idev->info->irq)
-		return -EIO;
-
-	poll_wait(filep, &idev->wait, wait);
-	if (listener->event_count != atomic_read(&idev->event))
-		return POLLIN | POLLRDNORM;
-=======
 	mutex_lock(&idev->info_lock);
 	if (idev->info && idev->info->release)
 		ret = idev->info->release(idev->info, inode);
@@ -780,7 +560,6 @@ static __poll_t uio_poll(struct file *filep, poll_table *wait)
 	poll_wait(filep, &idev->wait, wait);
 	if (listener->event_count != atomic_read(&idev->event))
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -790,26 +569,15 @@ static ssize_t uio_read(struct file *filep, char __user *buf,
 	struct uio_listener *listener = filep->private_data;
 	struct uio_device *idev = listener->dev;
 	DECLARE_WAITQUEUE(wait, current);
-<<<<<<< HEAD
-	ssize_t retval;
-	s32 event_count;
-
-	if (!idev->info->irq)
-		return -EIO;
-
-=======
 	ssize_t retval = 0;
 	s32 event_count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count != sizeof(s32))
 		return -EINVAL;
 
 	add_wait_queue(&idev->wait, &wait);
 
 	do {
-<<<<<<< HEAD
-=======
 		mutex_lock(&idev->info_lock);
 		if (!idev->info || !idev->info->irq) {
 			retval = -EIO;
@@ -818,15 +586,11 @@ static ssize_t uio_read(struct file *filep, char __user *buf,
 		}
 		mutex_unlock(&idev->info_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_current_state(TASK_INTERRUPTIBLE);
 
 		event_count = atomic_read(&idev->event);
 		if (event_count != listener->event_count) {
-<<<<<<< HEAD
-=======
 			__set_current_state(TASK_RUNNING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (copy_to_user(buf, &event_count, count))
 				retval = -EFAULT;
 			else {
@@ -862,22 +626,6 @@ static ssize_t uio_write(struct file *filep, const char __user *buf,
 	ssize_t retval;
 	s32 irq_on;
 
-<<<<<<< HEAD
-	if (!idev->info->irq)
-		return -EIO;
-
-	if (count != sizeof(s32))
-		return -EINVAL;
-
-	if (!idev->info->irqcontrol)
-		return -ENOSYS;
-
-	if (copy_from_user(&irq_on, buf, count))
-		return -EFAULT;
-
-	retval = idev->info->irqcontrol(idev->info, irq_on);
-
-=======
 	if (count != sizeof(s32))
 		return -EINVAL;
 
@@ -904,7 +652,6 @@ static ssize_t uio_write(struct file *filep, const char __user *buf,
 
 out:
 	mutex_unlock(&idev->info_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval ? retval : sizeof(s32);
 }
 
@@ -920,29 +667,6 @@ static int uio_find_mem_index(struct vm_area_struct *vma)
 	return -1;
 }
 
-<<<<<<< HEAD
-static void uio_vma_open(struct vm_area_struct *vma)
-{
-	struct uio_device *idev = vma->vm_private_data;
-	idev->vma_count++;
-}
-
-static void uio_vma_close(struct vm_area_struct *vma)
-{
-	struct uio_device *idev = vma->vm_private_data;
-	idev->vma_count--;
-}
-
-static int uio_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct uio_device *idev = vma->vm_private_data;
-	struct page *page;
-	unsigned long offset;
-
-	int mi = uio_find_mem_index(vma);
-	if (mi < 0)
-		return VM_FAULT_SIGBUS;
-=======
 static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
 {
 	struct uio_device *idev = vmf->vma->vm_private_data;
@@ -963,7 +687,6 @@ static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
 		ret = VM_FAULT_SIGBUS;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to subtract mi because userspace uses offset = N*PAGE_SIZE
@@ -971,20 +694,6 @@ static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
 	 */
 	offset = (vmf->pgoff - mi) << PAGE_SHIFT;
 
-<<<<<<< HEAD
-	if (idev->info->mem[mi].memtype == UIO_MEM_LOGICAL)
-		page = virt_to_page(idev->info->mem[mi].addr + offset);
-	else
-		page = vmalloc_to_page((void *)(unsigned long)idev->info->mem[mi].addr + offset);
-	get_page(page);
-	vmf->page = page;
-	return 0;
-}
-
-static const struct vm_operations_struct uio_logical_vm_ops = {
-	.open = uio_vma_open,
-	.close = uio_vma_close,
-=======
 	addr = (void *)(unsigned long)idev->info->mem[mi].addr + offset;
 	if (idev->info->mem[mi].memtype == UIO_MEM_LOGICAL)
 		page = virt_to_page(addr);
@@ -1000,20 +709,13 @@ out:
 }
 
 static const struct vm_operations_struct uio_logical_vm_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fault = uio_vma_fault,
 };
 
 static int uio_mmap_logical(struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-	vma->vm_flags |= VM_DONTEXPAND | VM_NODUMP;
-	vma->vm_ops = &uio_logical_vm_ops;
-	uio_vma_open(vma);
-=======
 	vm_flags_set(vma, VM_DONTEXPAND | VM_DONTDUMP);
 	vma->vm_ops = &uio_logical_vm_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1028,29 +730,19 @@ static int uio_mmap_physical(struct vm_area_struct *vma)
 	struct uio_device *idev = vma->vm_private_data;
 	int mi = uio_find_mem_index(vma);
 	struct uio_mem *mem;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mi < 0)
 		return -EINVAL;
 	mem = idev->info->mem + mi;
 
-<<<<<<< HEAD
-=======
 	if (mem->addr & ~PAGE_MASK)
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vma->vm_end - vma->vm_start > mem->size)
 		return -EINVAL;
 
 	vma->vm_ops = &uio_physical_vm_ops;
-<<<<<<< HEAD
-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-=======
 	if (idev->info->mem[mi].memtype == UIO_MEM_PHYS)
 		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We cannot use the vm_iomap_memory() helper here,
@@ -1061,10 +753,6 @@ static int uio_mmap_physical(struct vm_area_struct *vma)
 	 * So we just do the physical mmap without a page
 	 * offset.
 	 */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return remap_pfn_range(vma,
 			       vma->vm_start,
 			       mem->addr >> PAGE_SHIFT,
@@ -1072,8 +760,6 @@ static int uio_mmap_physical(struct vm_area_struct *vma)
 			       vma->vm_page_prot);
 }
 
-<<<<<<< HEAD
-=======
 static int uio_mmap_dma_coherent(struct vm_area_struct *vma)
 {
 	struct uio_device *idev = vma->vm_private_data;
@@ -1117,7 +803,6 @@ static int uio_mmap_dma_coherent(struct vm_area_struct *vma)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int uio_mmap(struct file *filep, struct vm_area_struct *vma)
 {
 	struct uio_listener *listener = filep->private_data;
@@ -1131,32 +816,6 @@ static int uio_mmap(struct file *filep, struct vm_area_struct *vma)
 
 	vma->vm_private_data = idev;
 
-<<<<<<< HEAD
-	mi = uio_find_mem_index(vma);
-	if (mi < 0)
-		return -EINVAL;
-
-	requested_pages = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
-	actual_pages = ((idev->info->mem[mi].addr & ~PAGE_MASK)
-			+ idev->info->mem[mi].size + PAGE_SIZE -1) >> PAGE_SHIFT;
-	if (requested_pages > actual_pages)
-		return -EINVAL;
-
-	if (idev->info->mmap) {
-		ret = idev->info->mmap(idev->info, vma);
-		return ret;
-	}
-
-	switch (idev->info->mem[mi].memtype) {
-		case UIO_MEM_PHYS:
-			return uio_mmap_physical(vma);
-		case UIO_MEM_LOGICAL:
-		case UIO_MEM_VIRTUAL:
-			return uio_mmap_logical(vma);
-		default:
-			return -EINVAL;
-	}
-=======
 	mutex_lock(&idev->info_lock);
 	if (!idev->info) {
 		ret = -EINVAL;
@@ -1201,7 +860,6 @@ static int uio_mmap(struct file *filep, struct vm_area_struct *vma)
  out:
 	mutex_unlock(&idev->info_lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations uio_fops = {
@@ -1271,12 +929,9 @@ static int init_uio_class(void)
 		printk(KERN_ERR "class_register failed for uio\n");
 		goto err_class_register;
 	}
-<<<<<<< HEAD
-=======
 
 	uio_class_registered = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_class_register:
@@ -1287,18 +942,11 @@ exit:
 
 static void release_uio_class(void)
 {
-<<<<<<< HEAD
-=======
 	uio_class_registered = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	class_unregister(&uio_class);
 	uio_major_cleanup();
 }
 
-<<<<<<< HEAD
-/**
- * uio_register_device - register a new userspace IO device
-=======
 static void uio_device_release(struct device *dev)
 {
 	struct uio_device *idev = dev_get_drvdata(dev);
@@ -1308,7 +956,6 @@ static void uio_device_release(struct device *dev)
 
 /**
  * __uio_register_device - register a new userspace IO device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @owner:	module that creates the new device
  * @parent:	parent device
  * @info:	UIO device capabilities
@@ -1322,12 +969,9 @@ int __uio_register_device(struct module *owner,
 	struct uio_device *idev;
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (!uio_class_registered)
 		return -EPROBE_DEFER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!parent || !info || !info->name || !info->version)
 		return -EINVAL;
 
@@ -1335,38 +979,16 @@ int __uio_register_device(struct module *owner,
 
 	idev = kzalloc(sizeof(*idev), GFP_KERNEL);
 	if (!idev) {
-<<<<<<< HEAD
-		ret = -ENOMEM;
-		goto err_kzalloc;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	idev->owner = owner;
 	idev->info = info;
-<<<<<<< HEAD
-=======
 	mutex_init(&idev->info_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&idev->wait);
 	atomic_set(&idev->event, 0);
 
 	ret = uio_get_minor(idev);
-<<<<<<< HEAD
-	if (ret)
-		goto err_get_minor;
-
-	idev->dev = device_create(&uio_class, parent,
-				  MKDEV(uio_major, idev->minor), idev,
-				  "uio%d", idev->minor);
-	if (IS_ERR(idev->dev)) {
-		printk(KERN_ERR "UIO: device register failed\n");
-		ret = PTR_ERR(idev->dev);
-		goto err_device_create;
-	}
-
-=======
 	if (ret) {
 		kfree(idev);
 		return ret;
@@ -1387,7 +1009,6 @@ int __uio_register_device(struct module *owner,
 	if (ret)
 		goto err_device_create;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = uio_dev_add_attributes(idev);
 	if (ret)
 		goto err_uio_dev_add_attributes;
@@ -1395,12 +1016,6 @@ int __uio_register_device(struct module *owner,
 	info->uio_dev = idev;
 
 	if (info->irq && (info->irq != UIO_IRQ_CUSTOM)) {
-<<<<<<< HEAD
-		ret = request_irq(info->irq, uio_interrupt,
-				  info->irq_flags, info->name, idev);
-		if (ret)
-			goto err_request_irq;
-=======
 		/*
 		 * Note that we deliberately don't use devm_request_irq
 		 * here. The parent module can unregister the UIO device
@@ -1415,7 +1030,6 @@ int __uio_register_device(struct module *owner,
 			info->uio_dev = NULL;
 			goto err_request_irq;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1423,25 +1037,14 @@ int __uio_register_device(struct module *owner,
 err_request_irq:
 	uio_dev_del_attributes(idev);
 err_uio_dev_add_attributes:
-<<<<<<< HEAD
-	device_destroy(&uio_class, MKDEV(uio_major, idev->minor));
-err_device_create:
-	uio_free_minor(idev);
-err_get_minor:
-	kfree(idev);
-err_kzalloc:
-=======
 	device_del(&idev->dev);
 err_device_create:
 	uio_free_minor(idev->minor);
 	put_device(&idev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(__uio_register_device);
 
-<<<<<<< HEAD
-=======
 static void devm_uio_unregister_device(struct device *dev, void *res)
 {
 	uio_unregister_device(*(struct uio_info **)res);
@@ -1480,7 +1083,6 @@ int __devm_uio_register_device(struct module *owner,
 }
 EXPORT_SYMBOL_GPL(__devm_uio_register_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * uio_unregister_device - unregister a industrial IO device
  * @info:	UIO device capabilities
@@ -1489,27 +1091,12 @@ EXPORT_SYMBOL_GPL(__devm_uio_register_device);
 void uio_unregister_device(struct uio_info *info)
 {
 	struct uio_device *idev;
-<<<<<<< HEAD
-=======
 	unsigned long minor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info || !info->uio_dev)
 		return;
 
 	idev = info->uio_dev;
-<<<<<<< HEAD
-
-	uio_free_minor(idev);
-
-	if (info->irq && (info->irq != UIO_IRQ_CUSTOM))
-		free_irq(info->irq, idev);
-
-	uio_dev_del_attributes(idev);
-
-	device_destroy(&uio_class, MKDEV(uio_major, idev->minor));
-	kfree(idev);
-=======
 	minor = idev->minor;
 
 	mutex_lock(&idev->info_lock);
@@ -1526,7 +1113,6 @@ void uio_unregister_device(struct uio_info *info)
 
 	uio_free_minor(minor);
 	device_unregister(&idev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -1540,10 +1126,7 @@ static int __init uio_init(void)
 static void __exit uio_exit(void)
 {
 	release_uio_class();
-<<<<<<< HEAD
-=======
 	idr_destroy(&uio_idr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(uio_init)

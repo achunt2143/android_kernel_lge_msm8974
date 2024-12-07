@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the TI network device drivers.
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_TLAN) += tlan.o
-obj-$(CONFIG_CPMAC) += cpmac.o
-obj-$(CONFIG_TI_DAVINCI_EMAC) += davinci_emac.o
-obj-$(CONFIG_TI_DAVINCI_MDIO) += davinci_mdio.o
-obj-$(CONFIG_TI_DAVINCI_CPDMA) += davinci_cpdma.o
-obj-$(CONFIG_TI_CPSW) += ti_cpsw.o
-ti_cpsw-y := cpsw_ale.o cpsw.o
-=======
 obj-$(CONFIG_TI_CPSW) += cpsw-common.o
 obj-$(CONFIG_TI_DAVINCI_EMAC) += cpsw-common.o
 obj-$(CONFIG_TI_CPSW_SWITCHDEV) += cpsw-common.o
@@ -52,4 +40,3 @@ icssg-prueth-y := icssg/icssg_prueth.o \
 		  icssg/icssg_stats.o \
 		  icssg/icssg_ethtool.o
 obj-$(CONFIG_TI_ICSS_IEP) += icssg/icss_iep.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

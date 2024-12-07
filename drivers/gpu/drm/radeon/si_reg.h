@@ -30,8 +30,6 @@
 #define SI_DC_GPIO_HPD_EN                        0x65b8
 #define SI_DC_GPIO_HPD_Y                         0x65bc
 
-<<<<<<< HEAD
-=======
 #define SI_GRPH_CONTROL                          0x6804
 #       define SI_GRPH_DEPTH(x)                  (((x) & 0x3) << 0)
 #       define SI_GRPH_DEPTH_8BPP                0
@@ -104,5 +102,4 @@
 #       define SI_ADDR_SURF_P8_32x32_16x32	 13
 #       define SI_ADDR_SURF_P8_32x64_32x32	 14
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

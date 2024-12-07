@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * C-Media CMI8788 driver - main driver module
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, version 2.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this driver; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -203,10 +184,6 @@ static void oxygen_gpio_changed(struct work_struct *work)
 		chip->model.gpio_changed(chip);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void oxygen_proc_read(struct snd_info_entry *entry,
 			     struct snd_info_buffer *buffer)
 {
@@ -255,19 +232,8 @@ static void oxygen_proc_read(struct snd_info_entry *entry,
 
 static void oxygen_proc_init(struct oxygen *chip)
 {
-<<<<<<< HEAD
-	struct snd_info_entry *entry;
-
-	if (!snd_card_proc_new(chip->card, "oxygen", &entry))
-		snd_info_set_text_ops(entry, chip, oxygen_proc_read);
-}
-#else
-#define oxygen_proc_init(chip)
-#endif
-=======
 	snd_card_ro_proc_new(chip->card, "oxygen", chip, oxygen_proc_read);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct pci_device_id *
 oxygen_search_pci_id(struct oxygen *chip, const struct pci_device_id ids[])
@@ -328,29 +294,18 @@ static void oxygen_restore_eeprom(struct oxygen *chip,
 		oxygen_clear_bits8(chip, OXYGEN_MISC,
 				   OXYGEN_MISC_WRITE_PCI_SUBID);
 
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "EEPROM ID restored\n");
-=======
 		dev_info(chip->card->dev, "EEPROM ID restored\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void configure_pcie_bridge(struct pci_dev *pci)
 {
-<<<<<<< HEAD
-	enum { PEX811X, PI7C9X110 };
-=======
 	enum { PEX811X, PI7C9X110, XIO2001 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const struct pci_device_id bridge_ids[] = {
 		{ PCI_VDEVICE(PLX, 0x8111), .driver_data = PEX811X },
 		{ PCI_VDEVICE(PLX, 0x8112), .driver_data = PEX811X },
 		{ PCI_DEVICE(0x12d8, 0xe110), .driver_data = PI7C9X110 },
-<<<<<<< HEAD
-=======
 		{ PCI_VDEVICE(TI, 0x8240), .driver_data = XIO2001 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ }
 	};
 	struct pci_dev *bridge;
@@ -384,8 +339,6 @@ static void configure_pcie_bridge(struct pci_dev *pci)
 		tmp |= 1;	/* park the PCI arbiter to the sound chip */
 		pci_write_config_dword(bridge, 0x40, tmp);
 		break;
-<<<<<<< HEAD
-=======
 
 	case XIO2001: /* Texas Instruments XIO2001 PCIe/PCI bridge */
 		pci_read_config_dword(bridge, 0xe8, &tmp);
@@ -394,7 +347,6 @@ static void configure_pcie_bridge(struct pci_dev *pci)
 		tmp |= 1 << 8;	/* request count limit: one buffer */
 		pci_write_config_dword(bridge, 0xe8, tmp);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -406,11 +358,7 @@ static void oxygen_init(struct oxygen *chip)
 	for (i = 0; i < 8; ++i)
 		chip->dac_volume[i] = chip->model.dac_volume_min;
 	chip->dac_mute = 1;
-<<<<<<< HEAD
-	chip->spdif_playback_enable = 1;
-=======
 	chip->spdif_playback_enable = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->spdif_bits = OXYGEN_SPDIF_C | OXYGEN_SPDIF_ORIGINAL |
 		(IEC958_AES1_CON_PCM_CODER << OXYGEN_SPDIF_CATEGORY_SHIFT);
 	chip->spdif_pcm_bits = chip->spdif_bits;
@@ -483,11 +431,6 @@ static void oxygen_init(struct oxygen *chip)
 		oxygen_write16(chip, OXYGEN_I2S_B_FORMAT,
 			       OXYGEN_I2S_MASTER |
 			       OXYGEN_I2S_MUTE_MCLK);
-<<<<<<< HEAD
-	oxygen_write16(chip, OXYGEN_I2S_C_FORMAT,
-		       OXYGEN_I2S_MASTER |
-		       OXYGEN_I2S_MUTE_MCLK);
-=======
 	if (chip->model.device_config & CAPTURE_3_FROM_I2S_3)
 		oxygen_write16(chip, OXYGEN_I2S_C_FORMAT,
 			       OXYGEN_RATE_48000 |
@@ -500,7 +443,6 @@ static void oxygen_init(struct oxygen *chip)
 		oxygen_write16(chip, OXYGEN_I2S_C_FORMAT,
 			       OXYGEN_I2S_MASTER |
 			       OXYGEN_I2S_MUTE_MCLK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oxygen_clear_bits32(chip, OXYGEN_SPDIF_CONTROL,
 			    OXYGEN_SPDIF_OUT_ENABLE |
 			    OXYGEN_SPDIF_LOOPBACK);
@@ -628,20 +570,6 @@ static void oxygen_card_free(struct snd_card *card)
 	struct oxygen *chip = card->private_data;
 
 	oxygen_shutdown(chip);
-<<<<<<< HEAD
-	if (chip->irq >= 0)
-		free_irq(chip->irq, chip);
-	flush_work_sync(&chip->spdif_input_bits_work);
-	flush_work_sync(&chip->gpio_work);
-	chip->model.cleanup(chip);
-	kfree(chip->model_data);
-	mutex_destroy(&chip->mutex);
-	pci_release_regions(chip->pci);
-	pci_disable_device(chip->pci);
-}
-
-int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
-=======
 	flush_work(&chip->spdif_input_bits_work);
 	flush_work(&chip->gpio_work);
 	chip->model.cleanup(chip);
@@ -649,7 +577,6 @@ int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 }
 
 static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     struct module *owner,
 		     const struct pci_device_id *ids,
 		     int (*get_model)(struct oxygen *chip,
@@ -662,12 +589,8 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 	const struct pci_device_id *pci_id;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_card_create(index, id, owner, sizeof(*chip), &card);
-=======
 	err = snd_devm_card_new(&pci->dev, index, id, owner,
 				sizeof(*chip), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -682,16 +605,6 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 	INIT_WORK(&chip->gpio_work, oxygen_gpio_changed);
 	init_waitqueue_head(&chip->ac97_waitqueue);
 
-<<<<<<< HEAD
-	err = pci_enable_device(pci);
-	if (err < 0)
-		goto err_card;
-
-	err = pci_request_regions(pci, DRIVER);
-	if (err < 0) {
-		snd_printk(KERN_ERR "cannot reserve PCI resources\n");
-		goto err_pci_enable;
-=======
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
@@ -700,45 +613,16 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 	if (err < 0) {
 		dev_err(card->dev, "cannot reserve PCI resources\n");
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!(pci_resource_flags(pci, 0) & IORESOURCE_IO) ||
 	    pci_resource_len(pci, 0) < OXYGEN_IO_SIZE) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "invalid PCI I/O range\n");
-		err = -ENXIO;
-		goto err_pci_regions;
-=======
 		dev_err(card->dev, "invalid PCI I/O range\n");
 		return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	chip->addr = pci_resource_start(pci, 0);
 
 	pci_id = oxygen_search_pci_id(chip, ids);
-<<<<<<< HEAD
-	if (!pci_id) {
-		err = -ENODEV;
-		goto err_pci_regions;
-	}
-	oxygen_restore_eeprom(chip, pci_id);
-	err = get_model(chip, pci_id);
-	if (err < 0)
-		goto err_pci_regions;
-
-	if (chip->model.model_data_size) {
-		chip->model_data = kzalloc(chip->model.model_data_size,
-					   GFP_KERNEL);
-		if (!chip->model_data) {
-			err = -ENOMEM;
-			goto err_pci_regions;
-		}
-	}
-
-	pci_set_master(pci);
-	snd_card_set_dev(card, &pci->dev);
-=======
 	if (!pci_id)
 		return -ENODEV;
 
@@ -756,22 +640,12 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 	}
 
 	pci_set_master(pci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->private_free = oxygen_card_free;
 
 	configure_pcie_bridge(pci);
 	oxygen_init(chip);
 	chip->model.init(chip);
 
-<<<<<<< HEAD
-	err = request_irq(pci->irq, oxygen_interrupt, IRQF_SHARED,
-			  KBUILD_MODNAME, chip);
-	if (err < 0) {
-		snd_printk(KERN_ERR "cannot grab interrupt %d\n", pci->irq);
-		goto err_card;
-	}
-	chip->irq = pci->irq;
-=======
 	err = devm_request_irq(&pci->dev, pci->irq, oxygen_interrupt,
 			       IRQF_SHARED, KBUILD_MODNAME, chip);
 	if (err < 0) {
@@ -780,7 +654,6 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 	}
 	chip->irq = pci->irq;
 	card->sync_irq = chip->irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, chip->model.chip);
 	strcpy(card->shortname, chip->model.shortname);
@@ -791,19 +664,11 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 
 	err = oxygen_pcm_init(chip);
 	if (err < 0)
-<<<<<<< HEAD
-		goto err_card;
-
-	err = oxygen_mixer_init(chip);
-	if (err < 0)
-		goto err_card;
-=======
 		return err;
 
 	err = oxygen_mixer_init(chip);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->model.device_config & (MIDI_OUTPUT | MIDI_INPUT)) {
 		unsigned int info_flags =
@@ -816,11 +681,7 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 					  chip->addr + OXYGEN_MPU401,
 					  info_flags, -1, &chip->midi);
 		if (err < 0)
-<<<<<<< HEAD
-			goto err_card;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	oxygen_proc_init(chip);
@@ -835,43 +696,6 @@ static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 
 	err = snd_card_register(card);
 	if (err < 0)
-<<<<<<< HEAD
-		goto err_card;
-
-	pci_set_drvdata(pci, card);
-	return 0;
-
-err_pci_regions:
-	pci_release_regions(pci);
-err_pci_enable:
-	pci_disable_device(pci);
-err_card:
-	snd_card_free(card);
-	return err;
-}
-EXPORT_SYMBOL(oxygen_pci_probe);
-
-void oxygen_pci_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-}
-EXPORT_SYMBOL(oxygen_pci_remove);
-
-#ifdef CONFIG_PM
-int oxygen_pci_suspend(struct pci_dev *pci, pm_message_t state)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-	struct oxygen *chip = card->private_data;
-	unsigned int i, saved_interrupt_mask;
-
-	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-
-	for (i = 0; i < PCM_COUNT; ++i)
-		if (chip->streams[i])
-			snd_pcm_suspend(chip->streams[i]);
-
-=======
 		return err;
 
 	pci_set_drvdata(pci, card);
@@ -898,7 +722,6 @@ static int oxygen_pci_suspend(struct device *dev)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->model.suspend)
 		chip->model.suspend(chip);
 
@@ -909,25 +732,11 @@ static int oxygen_pci_suspend(struct device *dev)
 	oxygen_write16(chip, OXYGEN_INTERRUPT_MASK, 0);
 	spin_unlock_irq(&chip->reg_lock);
 
-<<<<<<< HEAD
-	synchronize_irq(chip->irq);
-	flush_work_sync(&chip->spdif_input_bits_work);
-	flush_work_sync(&chip->gpio_work);
-	chip->interrupt_mask = saved_interrupt_mask;
-
-	pci_disable_device(pci);
-	pci_save_state(pci);
-	pci_set_power_state(pci, pci_choose_state(pci, state));
-	return 0;
-}
-EXPORT_SYMBOL(oxygen_pci_suspend);
-=======
 	flush_work(&chip->spdif_input_bits_work);
 	flush_work(&chip->gpio_work);
 	chip->interrupt_mask = saved_interrupt_mask;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u32 registers_to_restore[OXYGEN_IO_SIZE / 32] = {
 	0xffffffff, 0x00ff077f, 0x00011d08, 0x007f00ff,
@@ -955,30 +764,12 @@ static void oxygen_restore_ac97(struct oxygen *chip, unsigned int codec)
 					  chip->saved_ac97_registers[codec][i]);
 }
 
-<<<<<<< HEAD
-int oxygen_pci_resume(struct pci_dev *pci)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-	struct oxygen *chip = card->private_data;
-	unsigned int i;
-
-	pci_set_power_state(pci, PCI_D0);
-	pci_restore_state(pci);
-	if (pci_enable_device(pci) < 0) {
-		snd_printk(KERN_ERR "cannot reenable device");
-		snd_card_disconnect(card);
-		return -EIO;
-	}
-	pci_set_master(pci);
-
-=======
 static int oxygen_pci_resume(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct oxygen *chip = card->private_data;
 	unsigned int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oxygen_write16(chip, OXYGEN_DMA_STATUS, 0);
 	oxygen_write16(chip, OXYGEN_INTERRUPT_MASK, 0);
 	for (i = 0; i < OXYGEN_IO_SIZE; ++i)
@@ -997,15 +788,10 @@ static int oxygen_pci_resume(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(oxygen_pci_resume);
-#endif /* CONFIG_PM */
-=======
 
 SIMPLE_DEV_PM_OPS(oxygen_pci_pm, oxygen_pci_suspend, oxygen_pci_resume);
 EXPORT_SYMBOL(oxygen_pci_pm);
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void oxygen_pci_shutdown(struct pci_dev *pci)
 {

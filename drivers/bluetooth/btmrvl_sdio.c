@@ -1,45 +1,18 @@
-<<<<<<< HEAD
-/**
- * Marvell BT-over-SDIO driver: SDIO interface related functions.
- *
- * Copyright (C) 2009, Marvell International Ltd.
- *
- * This software file (the "File") is distributed by Marvell International
- * Ltd. under the terms of the GNU General Public License Version 2, June 1991
- * (the "License").  You may use, redistribute and/or modify this File in
- * accordance with the terms and conditions of the License, a copy of which
- * is available by writing to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or on the
- * worldwide web at http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
- *
- *
- * THE FILE IS DISTRIBUTED AS-IS, WITHOUT WARRANTY OF ANY KIND, AND THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE
- * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
- * this warranty disclaimer.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Marvell BT-over-SDIO driver: SDIO interface related functions.
  *
  * Copyright (C) 2009, Marvell International Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 
 #include <linux/firmware.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <linux/mmc/sdio_ids.h>
-#include <linux/mmc/sdio_func.h>
-=======
 #include <linux/suspend.h>
 
 #include <linux/mmc/sdio_ids.h>
 #include <linux/mmc/sdio_func.h>
 #include <linux/module.h>
 #include <linux/devcoredump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -49,8 +22,6 @@
 
 #define VERSION "1.0"
 
-<<<<<<< HEAD
-=======
 static struct memory_type_mapping mem_type_mapping_tbl[] = {
 	{"ITCM", NULL, 0, 0xF0},
 	{"DTCM", NULL, 0, 0xF1},
@@ -137,7 +108,6 @@ static int btmrvl_sdio_probe_of(struct device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The btmrvl_sdio_remove() callback function is called
  * when user removes this module from kernel space or ejects
  * the card from the slot. The driver handles these 2 cases
@@ -169,14 +139,9 @@ static const struct btmrvl_sdio_card_reg btmrvl_reg_8688 = {
 	.io_port_0 = 0x00,
 	.io_port_1 = 0x01,
 	.io_port_2 = 0x02,
-<<<<<<< HEAD
-};
-static const struct btmrvl_sdio_card_reg btmrvl_reg_8787 = {
-=======
 	.int_read_to_clear = false,
 };
 static const struct btmrvl_sdio_card_reg btmrvl_reg_87xx = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cfg = 0x00,
 	.host_int_mask = 0x02,
 	.host_intstatus = 0x03,
@@ -191,15 +156,6 @@ static const struct btmrvl_sdio_card_reg btmrvl_reg_87xx = {
 	.io_port_0 = 0x78,
 	.io_port_1 = 0x79,
 	.io_port_2 = 0x7a,
-<<<<<<< HEAD
-};
-
-static const struct btmrvl_sdio_device btmrvl_sdio_sd6888 = {
-	.helper		= "sd8688_helper.bin",
-	.firmware	= "sd8688.bin",
-	.reg		= &btmrvl_reg_8688,
-	.sd_blksz_fw_dl	= 64,
-=======
 	.int_read_to_clear = false,
 };
 
@@ -276,16 +232,11 @@ static const struct btmrvl_sdio_device btmrvl_sdio_sd8688 = {
 	.support_pscan_win_report = false,
 	.sd_blksz_fw_dl	= 64,
 	.supports_fw_dump = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct btmrvl_sdio_device btmrvl_sdio_sd8787 = {
 	.helper		= NULL,
 	.firmware	= "mrvl/sd8787_uapsta.bin",
-<<<<<<< HEAD
-	.reg		= &btmrvl_reg_8787,
-	.sd_blksz_fw_dl	= 256,
-=======
 	.reg		= &btmrvl_reg_87xx,
 	.support_pscan_win_report = false,
 	.sd_blksz_fw_dl	= 256,
@@ -344,18 +295,10 @@ static const struct btmrvl_sdio_device btmrvl_sdio_sd8997 = {
 	.support_pscan_win_report = true,
 	.sd_blksz_fw_dl = 256,
 	.supports_fw_dump = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct sdio_device_id btmrvl_sdio_ids[] = {
 	/* Marvell SD8688 Bluetooth device */
-<<<<<<< HEAD
-	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, 0x9105),
-			.driver_data = (unsigned long) &btmrvl_sdio_sd6888 },
-	/* Marvell SD8787 Bluetooth device */
-	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, 0x911A),
-			.driver_data = (unsigned long) &btmrvl_sdio_sd8787 },
-=======
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, SDIO_DEVICE_ID_MARVELL_8688_BT),
 			.driver_data = (unsigned long)&btmrvl_sdio_sd8688 },
 	/* Marvell SD8787 Bluetooth device */
@@ -382,7 +325,6 @@ static const struct sdio_device_id btmrvl_sdio_ids[] = {
 	/* Marvell SD8997 Bluetooth device */
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, SDIO_DEVICE_ID_MARVELL_8997_BT),
 			.driver_data = (unsigned long)&btmrvl_sdio_sd8997 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ }	/* Terminating entry */
 };
@@ -495,26 +437,6 @@ failed:
 static int btmrvl_sdio_verify_fw_download(struct btmrvl_sdio_card *card,
 								int pollnum)
 {
-<<<<<<< HEAD
-	int ret = -ETIMEDOUT;
-	u16 firmwarestat;
-	unsigned int tries;
-
-	 /* Wait for firmware to become ready */
-	for (tries = 0; tries < pollnum; tries++) {
-		if (btmrvl_sdio_read_fw_status(card, &firmwarestat) < 0)
-			continue;
-
-		if (firmwarestat == FIRMWARE_READY) {
-			ret = 0;
-			break;
-		} else {
-			msleep(10);
-		}
-	}
-
-	return ret;
-=======
 	u16 firmwarestat;
 	int tries, ret;
 
@@ -533,7 +455,6 @@ static int btmrvl_sdio_verify_fw_download(struct btmrvl_sdio_card *card,
 	}
 
 	return -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int btmrvl_sdio_download_helper(struct btmrvl_sdio_card *card)
@@ -630,13 +551,7 @@ static int btmrvl_sdio_download_helper(struct btmrvl_sdio_card *card)
 
 done:
 	kfree(tmphlprbuf);
-<<<<<<< HEAD
-	if (fw_helper)
-		release_firmware(fw_helper);
-
-=======
 	release_firmware(fw_helper);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -753,11 +668,7 @@ static int btmrvl_sdio_download_fw_w_helper(struct btmrvl_sdio_card *card)
 			if (firmwarelen - offset < txlen)
 				txlen = firmwarelen - offset;
 
-<<<<<<< HEAD
-			tx_blocks = (txlen + blksz_dl - 1) / blksz_dl;
-=======
 			tx_blocks = DIV_ROUND_UP(txlen, blksz_dl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			memcpy(fwbuf, &firmware[offset], txlen);
 		}
@@ -777,41 +688,23 @@ static int btmrvl_sdio_download_fw_w_helper(struct btmrvl_sdio_card *card)
 		offset += txlen;
 	} while (true);
 
-<<<<<<< HEAD
-	BT_DBG("FW download over, size %d bytes", offset);
-=======
 	BT_INFO("FW download over, size %d bytes", offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 
 done:
 	kfree(tmpfwbuf);
-<<<<<<< HEAD
-
-	if (fw_firmware)
-		release_firmware(fw_firmware);
-
-=======
 	release_firmware(fw_firmware);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 {
 	u16 buf_len = 0;
-<<<<<<< HEAD
-	int ret, buf_block_len, blksz;
-	struct sk_buff *skb = NULL;
-	u32 type;
-	u8 *payload = NULL;
-=======
 	int ret, num_blocks, blksz;
 	struct sk_buff *skb = NULL;
 	u32 type;
 	u8 *payload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hci_dev *hdev = priv->btmrvl_dev.hcidev;
 	struct btmrvl_sdio_card *card = priv->btmrvl_dev.card;
 
@@ -830,34 +723,20 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 	}
 
 	blksz = SDIO_BLOCK_SIZE;
-<<<<<<< HEAD
-	buf_block_len = (buf_len + blksz - 1) / blksz;
-
-	if (buf_len <= SDIO_HEADER_LEN
-			|| (buf_block_len * blksz) > ALLOC_BUF_SIZE) {
-=======
 	num_blocks = DIV_ROUND_UP(buf_len, blksz);
 
 	if (buf_len <= SDIO_HEADER_LEN
 	    || (num_blocks * blksz) > ALLOC_BUF_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_ERR("invalid packet length: %d", buf_len);
 		ret = -EINVAL;
 		goto exit;
 	}
 
 	/* Allocate buffer */
-<<<<<<< HEAD
-	skb = bt_skb_alloc(buf_block_len * blksz + BTSDIO_DMA_ALIGN,
-								GFP_ATOMIC);
-	if (skb == NULL) {
-		BT_ERR("No free skb");
-=======
 	skb = bt_skb_alloc(num_blocks * blksz + BTSDIO_DMA_ALIGN, GFP_KERNEL);
 	if (!skb) {
 		BT_ERR("No free skb");
 		ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -871,11 +750,7 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 	payload = skb->data;
 
 	ret = sdio_readsb(card->func, payload, card->ioport,
-<<<<<<< HEAD
-			  buf_block_len * blksz);
-=======
 			  num_blocks * blksz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		BT_ERR("readsb failed: %d", ret);
 		ret = -EIO;
@@ -887,9 +762,6 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 	 */
 
 	buf_len = payload[0];
-<<<<<<< HEAD
-	buf_len |= (u16) payload[1] << 8;
-=======
 	buf_len |= payload[1] << 8;
 	buf_len |= payload[2] << 16;
 
@@ -900,24 +772,12 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 		goto exit;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	type = payload[3];
 
 	switch (type) {
 	case HCI_ACLDATA_PKT:
 	case HCI_SCODATA_PKT:
 	case HCI_EVENT_PKT:
-<<<<<<< HEAD
-		bt_cb(skb)->pkt_type = type;
-		skb->dev = (void *)hdev;
-		skb_put(skb, buf_len);
-		skb_pull(skb, SDIO_HEADER_LEN);
-
-		if (type == HCI_EVENT_PKT)
-			btmrvl_check_evtpkt(priv, skb);
-
-		hci_recv_frame(skb);
-=======
 		hci_skb_pkt_type(skb) = type;
 		skb_put(skb, buf_len);
 		skb_pull(skb, SDIO_HEADER_LEN);
@@ -929,38 +789,23 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 			hci_recv_frame(hdev, skb);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdev->stat.byte_rx += buf_len;
 		break;
 
 	case MRVL_VENDOR_PKT:
-<<<<<<< HEAD
-		bt_cb(skb)->pkt_type = HCI_VENDOR_PKT;
-		skb->dev = (void *)hdev;
-=======
 		hci_skb_pkt_type(skb) = HCI_VENDOR_PKT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_put(skb, buf_len);
 		skb_pull(skb, SDIO_HEADER_LEN);
 
 		if (btmrvl_process_event(priv, skb))
-<<<<<<< HEAD
-			hci_recv_frame(skb);
-=======
 			hci_recv_frame(hdev, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdev->stat.byte_rx += buf_len;
 		break;
 
 	default:
 		BT_ERR("Unknown packet type:%d", type);
-<<<<<<< HEAD
-		print_hex_dump_bytes("", DUMP_PREFIX_OFFSET, payload,
-						blksz * buf_block_len);
-=======
 		BT_ERR("hex: %*ph", blksz * num_blocks, payload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		kfree_skb(skb);
 		skb = NULL;
@@ -970,12 +815,7 @@ static int btmrvl_sdio_card_to_host(struct btmrvl_private *priv)
 exit:
 	if (ret) {
 		hdev->stat.err_rx++;
-<<<<<<< HEAD
-		if (skb)
-			kfree_skb(skb);
-=======
 		kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -1009,8 +849,6 @@ static int btmrvl_sdio_process_int_status(struct btmrvl_private *priv)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int btmrvl_sdio_read_to_clear(struct btmrvl_sdio_card *card, u8 *ireg)
 {
 	struct btmrvl_adapter *adapter = card->priv->adapter;
@@ -1058,7 +896,6 @@ static int btmrvl_sdio_write_to_clear(struct btmrvl_sdio_card *card, u8 *ireg)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void btmrvl_sdio_interrupt(struct sdio_func *func)
 {
 	struct btmrvl_private *priv;
@@ -1069,42 +906,13 @@ static void btmrvl_sdio_interrupt(struct sdio_func *func)
 
 	card = sdio_get_drvdata(func);
 	if (!card || !card->priv) {
-<<<<<<< HEAD
-		BT_ERR("sbi_interrupt(%p) card or priv is "
-				"NULL, card=%p\n", func, card);
-=======
 		BT_ERR("sbi_interrupt(%p) card or priv is NULL, card=%p",
 		       func, card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	priv = card->priv;
 
-<<<<<<< HEAD
-	ireg = sdio_readb(card->func, card->reg->host_intstatus, &ret);
-	if (ret) {
-		BT_ERR("sdio_readb: read int status register failed");
-		return;
-	}
-
-	if (ireg != 0) {
-		/*
-		 * DN_LD_HOST_INT_STATUS and/or UP_LD_HOST_INT_STATUS
-		 * Clear the interrupt status register and re-enable the
-		 * interrupt.
-		 */
-		BT_DBG("ireg = 0x%x", ireg);
-
-		sdio_writeb(card->func, ~(ireg) & (DN_LD_HOST_INT_STATUS |
-					UP_LD_HOST_INT_STATUS),
-				card->reg->host_intstatus, &ret);
-		if (ret) {
-			BT_ERR("sdio_writeb: clear int status register failed");
-			return;
-		}
-	}
-=======
 	if (priv->surprise_removed)
 		return;
 
@@ -1115,7 +923,6 @@ static void btmrvl_sdio_interrupt(struct sdio_func *func)
 
 	if (ret)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->driver_lock, flags);
 	sdio_ireg |= ireg;
@@ -1128,11 +935,7 @@ static int btmrvl_sdio_register_dev(struct btmrvl_sdio_card *card)
 {
 	struct sdio_func *func;
 	u8 reg;
-<<<<<<< HEAD
-	int ret = 0;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!card || !card->func) {
 		BT_ERR("Error: card or function is NULL!");
@@ -1191,8 +994,6 @@ static int btmrvl_sdio_register_dev(struct btmrvl_sdio_card *card)
 
 	BT_DBG("SDIO FUNC%d IO port: 0x%x", func->num, card->ioport);
 
-<<<<<<< HEAD
-=======
 	if (card->reg->int_read_to_clear) {
 		reg = sdio_readb(func, card->reg->host_int_rsr, &ret);
 		if (ret < 0) {
@@ -1217,7 +1018,6 @@ static int btmrvl_sdio_register_dev(struct btmrvl_sdio_card *card)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdio_set_drvdata(func, card);
 
 	sdio_release_host(func);
@@ -1289,10 +1089,6 @@ static int btmrvl_sdio_host_to_card(struct btmrvl_private *priv,
 {
 	struct btmrvl_sdio_card *card = priv->btmrvl_dev.card;
 	int ret = 0;
-<<<<<<< HEAD
-	int buf_block_len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int blksz;
 	int i = 0;
 	u8 *buf = NULL;
@@ -1304,11 +1100,6 @@ static int btmrvl_sdio_host_to_card(struct btmrvl_private *priv,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	buf = payload;
-	if ((unsigned long) payload & (BTSDIO_DMA_ALIGN - 1)) {
-		tmpbufsz = ALIGN_SZ(nb, BTSDIO_DMA_ALIGN);
-=======
 	blksz = DIV_ROUND_UP(nb, SDIO_BLOCK_SIZE) * SDIO_BLOCK_SIZE;
 
 	buf = payload;
@@ -1316,7 +1107,6 @@ static int btmrvl_sdio_host_to_card(struct btmrvl_private *priv,
 	    nb < blksz) {
 		tmpbufsz = ALIGN_SZ(blksz, BTSDIO_DMA_ALIGN) +
 			   BTSDIO_DMA_ALIGN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmpbuf = kzalloc(tmpbufsz, GFP_KERNEL);
 		if (!tmpbuf)
 			return -ENOMEM;
@@ -1324,31 +1114,16 @@ static int btmrvl_sdio_host_to_card(struct btmrvl_private *priv,
 		memcpy(buf, payload, nb);
 	}
 
-<<<<<<< HEAD
-	blksz = SDIO_BLOCK_SIZE;
-	buf_block_len = (nb + blksz - 1) / blksz;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdio_claim_host(card->func);
 
 	do {
 		/* Transfer data to card */
 		ret = sdio_writesb(card->func, card->ioport, buf,
-<<<<<<< HEAD
-				   buf_block_len * blksz);
-		if (ret < 0) {
-			i++;
-			BT_ERR("i=%d writesb failed: %d", i, ret);
-			print_hex_dump_bytes("", DUMP_PREFIX_OFFSET,
-						payload, nb);
-=======
 				   blksz);
 		if (ret < 0) {
 			i++;
 			BT_ERR("i=%d writesb failed: %d", i, ret);
 			BT_ERR("hex: %*ph", nb, payload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			if (i > MAX_WRITE_IOMEM_RETRY)
 				goto exit;
@@ -1366,11 +1141,7 @@ exit:
 
 static int btmrvl_sdio_download_fw(struct btmrvl_sdio_card *card)
 {
-<<<<<<< HEAD
-	int ret = 0;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 fws0;
 	int pollnum = MAX_POLL_TRIES;
 
@@ -1378,15 +1149,6 @@ static int btmrvl_sdio_download_fw(struct btmrvl_sdio_card *card)
 		BT_ERR("card or function is NULL!");
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	sdio_claim_host(card->func);
-
-	if (!btmrvl_sdio_verify_fw_download(card, 1)) {
-		BT_DBG("Firmware already downloaded!");
-		goto done;
-	}
-
-=======
 
 	if (!btmrvl_sdio_verify_fw_download(card, 1)) {
 		BT_DBG("Firmware already downloaded!");
@@ -1395,7 +1157,6 @@ static int btmrvl_sdio_download_fw(struct btmrvl_sdio_card *card)
 
 	sdio_claim_host(card->func);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if other function driver is downloading the firmware */
 	fws0 = sdio_readb(card->func, card->reg->card_fw_status0, &ret);
 	if (ret) {
@@ -1425,31 +1186,22 @@ static int btmrvl_sdio_download_fw(struct btmrvl_sdio_card *card)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * winner or not, with this test the FW synchronizes when the
 	 * module can continue its initialization
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (btmrvl_sdio_verify_fw_download(card, pollnum)) {
 		BT_ERR("FW failed to be active in time!");
 		ret = -ETIMEDOUT;
 		goto done;
 	}
 
-<<<<<<< HEAD
-done:
-	sdio_release_host(card->func);
-
-=======
 	sdio_release_host(card->func);
 
 	return 0;
 
 done:
 	sdio_release_host(card->func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1474,8 +1226,6 @@ static int btmrvl_sdio_wakeup_fw(struct btmrvl_private *priv)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static void btmrvl_sdio_dump_regs(struct btmrvl_private *priv)
 {
 	struct btmrvl_sdio_card *card = priv->btmrvl_dev.card;
@@ -1756,7 +1506,6 @@ done:
 	BT_INFO("== btmrvl firmware dump to /sys/class/devcoredump end");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int btmrvl_sdio_probe(struct sdio_func *func,
 					const struct sdio_device_id *id)
 {
@@ -1767,17 +1516,9 @@ static int btmrvl_sdio_probe(struct sdio_func *func,
 	BT_INFO("vendor=0x%x, device=0x%x, class=%d, fn=%d",
 			id->vendor, id->device, id->class, func->num);
 
-<<<<<<< HEAD
-	card = kzalloc(sizeof(*card), GFP_KERNEL);
-	if (!card) {
-		ret = -ENOMEM;
-		goto done;
-	}
-=======
 	card = devm_kzalloc(&func->dev, sizeof(*card), GFP_KERNEL);
 	if (!card)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card->func = func;
 
@@ -1787,21 +1528,13 @@ static int btmrvl_sdio_probe(struct sdio_func *func,
 		card->firmware = data->firmware;
 		card->reg = data->reg;
 		card->sd_blksz_fw_dl = data->sd_blksz_fw_dl;
-<<<<<<< HEAD
-=======
 		card->support_pscan_win_report = data->support_pscan_win_report;
 		card->supports_fw_dump = data->supports_fw_dump;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (btmrvl_sdio_register_dev(card) < 0) {
 		BT_ERR("Failed to register BT device!");
-<<<<<<< HEAD
-		ret = -ENODEV;
-		goto free_card;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Disable the interrupts on the card */
@@ -1813,18 +1546,11 @@ static int btmrvl_sdio_probe(struct sdio_func *func,
 		goto unreg_dev;
 	}
 
-<<<<<<< HEAD
-	msleep(100);
-
-	btmrvl_sdio_enable_host_int(card);
-
-=======
 	btmrvl_sdio_enable_host_int(card);
 
 	/* Device tree node parsing and platform specific configuration*/
 	btmrvl_sdio_probe_of(&func->dev, card);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv = btmrvl_add_card(card);
 	if (!priv) {
 		BT_ERR("Initializing card failed!");
@@ -1845,24 +1571,12 @@ static int btmrvl_sdio_probe(struct sdio_func *func,
 		goto disable_host_int;
 	}
 
-<<<<<<< HEAD
-	priv->btmrvl_dev.psmode = 1;
-	btmrvl_enable_ps(priv);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 disable_host_int:
 	btmrvl_sdio_disable_host_int(card);
 unreg_dev:
 	btmrvl_sdio_unregister_dev(card);
-<<<<<<< HEAD
-free_card:
-	kfree(card);
-done:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1881,24 +1595,15 @@ static void btmrvl_sdio_remove(struct sdio_func *func)
 							MODULE_SHUTDOWN_REQ);
 				btmrvl_sdio_disable_host_int(card);
 			}
-<<<<<<< HEAD
-			BT_DBG("unregester dev");
-			btmrvl_sdio_unregister_dev(card);
-			btmrvl_remove_card(card->priv);
-			kfree(card);
-=======
 
 			BT_DBG("unregister dev");
 			card->priv->surprise_removed = true;
 			btmrvl_sdio_unregister_dev(card);
 			btmrvl_remove_card(card->priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int btmrvl_sdio_suspend(struct device *dev)
 {
 	struct sdio_func *func = dev_to_sdio_func(dev);
@@ -2025,20 +1730,16 @@ static const struct dev_pm_ops btmrvl_sdio_pm_ops = {
 	.resume		= btmrvl_sdio_resume,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sdio_driver bt_mrvl_sdio = {
 	.name		= "btmrvl_sdio",
 	.id_table	= btmrvl_sdio_ids,
 	.probe		= btmrvl_sdio_probe,
 	.remove		= btmrvl_sdio_remove,
-<<<<<<< HEAD
-=======
 	.drv = {
 		.owner = THIS_MODULE,
 		.coredump = btmrvl_sdio_coredump,
 		.pm = &btmrvl_sdio_pm_ops,
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init btmrvl_sdio_init_module(void)
@@ -2069,11 +1770,6 @@ MODULE_AUTHOR("Marvell International Ltd.");
 MODULE_DESCRIPTION("Marvell BT-over-SDIO driver ver " VERSION);
 MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL v2");
-<<<<<<< HEAD
-MODULE_FIRMWARE("sd8688_helper.bin");
-MODULE_FIRMWARE("sd8688.bin");
-MODULE_FIRMWARE("mrvl/sd8787_uapsta.bin");
-=======
 MODULE_FIRMWARE("mrvl/sd8688_helper.bin");
 MODULE_FIRMWARE("mrvl/sd8688.bin");
 MODULE_FIRMWARE("mrvl/sd8787_uapsta.bin");
@@ -2083,4 +1779,3 @@ MODULE_FIRMWARE("mrvl/sd8897_uapsta.bin");
 MODULE_FIRMWARE("mrvl/sdsd8977_combo_v2.bin");
 MODULE_FIRMWARE("mrvl/sd8987_uapsta.bin");
 MODULE_FIRMWARE("mrvl/sdsd8997_combo_v4.bin");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

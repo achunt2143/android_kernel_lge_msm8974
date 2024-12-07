@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _BR_PRIVATE_H
@@ -25,14 +14,11 @@
 #include <linux/netpoll.h>
 #include <linux/u64_stats_sync.h>
 #include <net/route.h>
-<<<<<<< HEAD
-=======
 #include <net/ip6_fib.h>
 #include <net/pkt_cls.h>
 #include <linux/if_vlan.h>
 #include <linux/rhashtable.h>
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BR_HASH_BITS 8
 #define BR_HASH_SIZE (1 << BR_HASH_BITS)
@@ -42,23 +28,16 @@
 #define BR_PORT_BITS	10
 #define BR_MAX_PORTS	(1<<BR_PORT_BITS)
 
-<<<<<<< HEAD
-=======
 #define BR_MULTICAST_DEFAULT_HASH_MAX 4096
 #define BR_MULTICAST_QUERY_INTVL_MIN msecs_to_jiffies(1000)
 #define BR_MULTICAST_STARTUP_QUERY_INTVL_MIN BR_MULTICAST_QUERY_INTVL_MIN
 
 #define BR_HWDOM_MAX BITS_PER_LONG
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BR_VERSION	"2.3"
 
 /* Control of forwarding link local multicast */
 #define BR_GROUPFWD_DEFAULT	0
-<<<<<<< HEAD
-/* Don't allow forwarding control protocols like STP and LLDP */
-#define BR_GROUPFWD_RESTRICTED	0x4007u
-=======
 /* Don't allow forwarding of control protocols like STP, MAC PAUSE and LACP */
 enum {
 	BR_GROUPFWD_STP		= BIT(0),
@@ -70,94 +49,16 @@ enum {
 				BR_GROUPFWD_LACP)
 /* The Nearest Customer Bridge Group Address, 01-80-C2-00-00-[00,0B,0C,0D,0F] */
 #define BR_GROUPFWD_8021AD	0xB801u
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Path to usermode spanning tree program */
 #define BR_STP_PROG	"/sbin/bridge-stp"
 
-<<<<<<< HEAD
-=======
 #define BR_FDB_NOTIFY_SETTABLE_BITS (FDB_NOTIFY_BIT | FDB_NOTIFY_INACTIVE_BIT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct bridge_id bridge_id;
 typedef struct mac_addr mac_addr;
 typedef __u16 port_id;
 
-<<<<<<< HEAD
-struct bridge_id
-{
-	unsigned char	prio[2];
-	unsigned char	addr[6];
-};
-
-struct mac_addr
-{
-	unsigned char	addr[6];
-};
-
-struct br_ip
-{
-	union {
-		__be32	ip4;
-#if IS_ENABLED(CONFIG_IPV6)
-		struct in6_addr ip6;
-#endif
-	} u;
-	__be16		proto;
-};
-
-struct net_bridge_fdb_entry
-{
-	struct hlist_node		hlist;
-	struct net_bridge_port		*dst;
-
-	struct rcu_head			rcu;
-	unsigned long			updated;
-	unsigned long			used;
-	mac_addr			addr;
-	unsigned char			is_local;
-	unsigned char			is_static;
-};
-
-struct net_bridge_port_group {
-	struct net_bridge_port		*port;
-	struct net_bridge_port_group __rcu *next;
-	struct hlist_node		mglist;
-	struct rcu_head			rcu;
-	struct timer_list		timer;
-	struct br_ip			addr;
-};
-
-struct net_bridge_mdb_entry
-{
-	struct hlist_node		hlist[2];
-	struct net_bridge		*br;
-	struct net_bridge_port_group __rcu *ports;
-	struct rcu_head			rcu;
-	struct timer_list		timer;
-	struct br_ip			addr;
-	bool				mglist;
-};
-
-struct net_bridge_mdb_htable
-{
-	struct hlist_head		*mhash;
-	struct rcu_head			rcu;
-	struct net_bridge_mdb_htable	*old;
-	u32				size;
-	u32				max;
-	u32				secret;
-	u32				ver;
-};
-
-struct net_bridge_port
-{
-	struct net_bridge		*br;
-	struct net_device		*dev;
-	struct list_head		list;
-
-=======
 struct bridge_id {
 	unsigned char	prio[2];
 	unsigned char	addr[ETH_ALEN];
@@ -491,7 +392,6 @@ struct net_bridge_port {
 	struct net_bridge_port		__rcu *backup_port;
 	u32				backup_nhid;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* STP */
 	u8				priority;
 	u8				state;
@@ -512,18 +412,6 @@ struct net_bridge_port {
 	struct kobject			kobj;
 	struct rcu_head			rcu;
 
-<<<<<<< HEAD
-	unsigned long 			flags;
-#define BR_HAIRPIN_MODE		0x00000001
-
-#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-	u32				multicast_startup_queries_sent;
-	unsigned char			multicast_router;
-	struct timer_list		multicast_router_timer;
-	struct timer_list		multicast_query_timer;
-	struct hlist_head		mglist;
-	struct hlist_node		rlist;
-=======
 	struct net_bridge_mcast_port	multicast_ctx;
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
@@ -532,7 +420,6 @@ struct net_bridge_port {
 	u32				multicast_eht_hosts_limit;
 	u32				multicast_eht_hosts_cnt;
 	struct hlist_head		mglist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_SYSFS
@@ -542,51 +429,6 @@ struct net_bridge_port {
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	struct netpoll			*np;
 #endif
-<<<<<<< HEAD
-};
-
-#define br_port_exists(dev) (dev->priv_flags & IFF_BRIDGE_PORT)
-
-static inline struct net_bridge_port *br_port_get_rcu(const struct net_device *dev)
-{
-	struct net_bridge_port *port = rcu_dereference(dev->rx_handler_data);
-	return br_port_exists(dev) ? port : NULL;
-}
-
-static inline struct net_bridge_port *br_port_get_rtnl(struct net_device *dev)
-{
-	return br_port_exists(dev) ?
-		rtnl_dereference(dev->rx_handler_data) : NULL;
-}
-
-struct br_cpu_netstats {
-	u64			rx_packets;
-	u64			rx_bytes;
-	u64			tx_packets;
-	u64			tx_bytes;
-	struct u64_stats_sync	syncp;
-};
-
-struct net_bridge
-{
-	spinlock_t			lock;
-	struct list_head		port_list;
-	struct net_device		*dev;
-
-	struct br_cpu_netstats __percpu *stats;
-	spinlock_t			hash_lock;
-	struct hlist_head		hash[BR_HASH_SIZE];
-#ifdef CONFIG_BRIDGE_NETFILTER
-	struct rtable 			fake_rtable;
-	bool				nf_call_iptables;
-	bool				nf_call_ip6tables;
-	bool				nf_call_arptables;
-#endif
-	unsigned long			flags;
-#define BR_SET_MAC_ADDR		0x00000001
-
-	u16				group_fwd_mask;
-=======
 #ifdef CONFIG_NET_SWITCHDEV
 	/* Identifier used to group ports that share the same switchdev
 	 * hardware domain.
@@ -666,24 +508,10 @@ struct net_bridge {
 #endif
 	u16				group_fwd_mask;
 	u16				group_fwd_mask_required;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* STP */
 	bridge_id			designated_root;
 	bridge_id			bridge_id;
-<<<<<<< HEAD
-	u32				root_path_cost;
-	unsigned long			max_age;
-	unsigned long			hello_time;
-	unsigned long			forward_delay;
-	unsigned long			bridge_max_age;
-	unsigned long			ageing_time;
-	unsigned long			bridge_hello_time;
-	unsigned long			bridge_forward_delay;
-
-	u8				group_addr[ETH_ALEN];
-	u16				root_port;
-=======
 	unsigned char			topology_change;
 	unsigned char			topology_change_detected;
 	u16				root_port;
@@ -698,7 +526,6 @@ struct net_bridge {
 	u32				root_path_cost;
 
 	u8				group_addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum {
 		BR_NO_STP, 		/* no spanning tree */
@@ -706,37 +533,6 @@ struct net_bridge {
 		BR_USER_STP,		/* new RSTP in userspace */
 	} stp_enabled;
 
-<<<<<<< HEAD
-	unsigned char			topology_change;
-	unsigned char			topology_change_detected;
-
-#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-	unsigned char			multicast_router;
-
-	u8				multicast_disabled:1;
-
-	u32				hash_elasticity;
-	u32				hash_max;
-
-	u32				multicast_last_member_count;
-	u32				multicast_startup_queries_sent;
-	u32				multicast_startup_query_count;
-
-	unsigned long			multicast_last_member_interval;
-	unsigned long			multicast_membership_interval;
-	unsigned long			multicast_querier_interval;
-	unsigned long			multicast_query_interval;
-	unsigned long			multicast_query_response_interval;
-	unsigned long			multicast_startup_query_interval;
-
-	spinlock_t			multicast_lock;
-	struct net_bridge_mdb_htable __rcu *mdb;
-	struct hlist_head		router_list;
-
-	struct timer_list		multicast_router_timer;
-	struct timer_list		multicast_querier_timer;
-	struct timer_list		multicast_query_timer;
-=======
 	struct net_bridge_mcast		multicast_ctx;
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
@@ -753,16 +549,11 @@ struct net_bridge {
 	struct hlist_head		mdb_list;
 
 	struct work_struct		mcast_gc_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	struct timer_list		hello_timer;
 	struct timer_list		tcn_timer;
 	struct timer_list		topology_change_timer;
-<<<<<<< HEAD
-	struct timer_list		gc_timer;
-	struct kobject			*ifobj;
-=======
 	struct delayed_work		gc_work;
 	struct kobject			*ifobj;
 	u32				auto_cnt;
@@ -786,17 +577,10 @@ struct net_bridge {
 #if IS_ENABLED(CONFIG_BRIDGE_CFM)
 	struct hlist_head		mep_list;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct br_input_skb_cb {
 	struct net_device *brdev;
-<<<<<<< HEAD
-#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-	int igmp;
-	int mrouters_only;
-#endif
-=======
 
 	u16 frag_max_size;
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
@@ -831,7 +615,6 @@ struct br_input_skb_cb {
 #endif
 
 	u32 backup_nhid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BR_INPUT_SKB_CB(__skb)	((struct br_input_skb_cb *)(__skb)->cb)
@@ -857,48 +640,12 @@ struct br_input_skb_cb {
 #define br_debug(br, format, args...)			\
 	pr_debug("%s: " format,  (br)->dev->name, ##args)
 
-<<<<<<< HEAD
-extern struct notifier_block br_device_notifier;
-extern const u8 br_group_address[ETH_ALEN];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* called under bridge lock */
 static inline int br_is_root_bridge(const struct net_bridge *br)
 {
 	return !memcmp(&br->bridge_id, &br->designated_root, 8);
 }
 
-<<<<<<< HEAD
-/* br_device.c */
-extern void br_dev_setup(struct net_device *dev);
-extern void br_dev_delete(struct net_device *dev, struct list_head *list);
-extern netdev_tx_t br_dev_xmit(struct sk_buff *skb,
-			       struct net_device *dev);
-#ifdef CONFIG_NET_POLL_CONTROLLER
-static inline struct netpoll_info *br_netpoll_info(struct net_bridge *br)
-{
-	return br->dev->npinfo;
-}
-
-static inline void br_netpoll_send_skb(const struct net_bridge_port *p,
-				       struct sk_buff *skb)
-{
-	struct netpoll *np = p->np;
-
-	if (np)
-		netpoll_send_skb(np, skb);
-}
-
-extern int br_netpoll_enable(struct net_bridge_port *p);
-extern void br_netpoll_disable(struct net_bridge_port *p);
-#else
-static inline struct netpoll_info *br_netpoll_info(struct net_bridge *br)
-{
-	return NULL;
-}
-
-=======
 /* check if a VLAN entry is global */
 static inline bool br_vlan_is_master(const struct net_bridge_vlan *v)
 {
@@ -1058,7 +805,6 @@ static inline void br_netpoll_send_skb(const struct net_bridge_port *p,
 int br_netpoll_enable(struct net_bridge_port *p);
 void br_netpoll_disable(struct net_bridge_port *p);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void br_netpoll_send_skb(const struct net_bridge_port *p,
 				       struct sk_buff *skb)
 {
@@ -1075,98 +821,6 @@ static inline void br_netpoll_disable(struct net_bridge_port *p)
 #endif
 
 /* br_fdb.c */
-<<<<<<< HEAD
-extern int br_fdb_init(void);
-extern void br_fdb_fini(void);
-extern void br_fdb_flush(struct net_bridge *br);
-extern void br_fdb_changeaddr(struct net_bridge_port *p,
-			      const unsigned char *newaddr);
-extern void br_fdb_change_mac_address(struct net_bridge *br, const u8 *newaddr);
-extern void br_fdb_cleanup(unsigned long arg);
-extern void br_fdb_delete_by_port(struct net_bridge *br,
-				  const struct net_bridge_port *p, int do_all);
-extern struct net_bridge_fdb_entry *__br_fdb_get(struct net_bridge *br,
-						 const unsigned char *addr);
-extern int br_fdb_test_addr(struct net_device *dev, unsigned char *addr);
-extern int br_fdb_fillbuf(struct net_bridge *br, void *buf,
-			  unsigned long count, unsigned long off);
-extern int br_fdb_insert(struct net_bridge *br,
-			 struct net_bridge_port *source,
-			 const unsigned char *addr);
-extern void br_fdb_update(struct net_bridge *br,
-			  struct net_bridge_port *source,
-			  const unsigned char *addr);
-extern int br_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb);
-extern int br_fdb_add(struct sk_buff *skb, struct nlmsghdr *nlh, void *arg);
-extern int br_fdb_delete(struct sk_buff *skb, struct nlmsghdr *nlh, void *arg);
-
-/* br_forward.c */
-extern void br_deliver(const struct net_bridge_port *to,
-		struct sk_buff *skb);
-extern int br_dev_queue_push_xmit(struct sk_buff *skb);
-extern void br_forward(const struct net_bridge_port *to,
-		struct sk_buff *skb, struct sk_buff *skb0);
-extern int br_forward_finish(struct sk_buff *skb);
-extern void br_flood_deliver(struct net_bridge *br, struct sk_buff *skb);
-extern void br_flood_forward(struct net_bridge *br, struct sk_buff *skb,
-			     struct sk_buff *skb2);
-
-/* br_if.c */
-extern void br_port_carrier_check(struct net_bridge_port *p);
-extern int br_add_bridge(struct net *net, const char *name);
-extern int br_del_bridge(struct net *net, const char *name);
-extern void br_net_exit(struct net *net);
-extern int br_add_if(struct net_bridge *br,
-	      struct net_device *dev);
-extern int br_del_if(struct net_bridge *br,
-	      struct net_device *dev);
-extern int br_min_mtu(const struct net_bridge *br);
-extern netdev_features_t br_features_recompute(struct net_bridge *br,
-	netdev_features_t features);
-
-/* br_input.c */
-extern int br_handle_frame_finish(struct sk_buff *skb);
-extern rx_handler_result_t br_handle_frame(struct sk_buff **pskb);
-
-/* br_ioctl.c */
-extern int br_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-extern int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *arg);
-
-/* br_multicast.c */
-#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-extern int br_multicast_rcv(struct net_bridge *br,
-			    struct net_bridge_port *port,
-			    struct sk_buff *skb);
-extern struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
-					       struct sk_buff *skb);
-extern void br_multicast_add_port(struct net_bridge_port *port);
-extern void br_multicast_del_port(struct net_bridge_port *port);
-extern void br_multicast_enable_port(struct net_bridge_port *port);
-extern void br_multicast_disable_port(struct net_bridge_port *port);
-extern void br_multicast_init(struct net_bridge *br);
-extern void br_multicast_open(struct net_bridge *br);
-extern void br_multicast_stop(struct net_bridge *br);
-extern void br_multicast_deliver(struct net_bridge_mdb_entry *mdst,
-				 struct sk_buff *skb);
-extern void br_multicast_forward(struct net_bridge_mdb_entry *mdst,
-				 struct sk_buff *skb, struct sk_buff *skb2);
-extern int br_multicast_set_router(struct net_bridge *br, unsigned long val);
-extern int br_multicast_set_port_router(struct net_bridge_port *p,
-					unsigned long val);
-extern int br_multicast_toggle(struct net_bridge *br, unsigned long val);
-extern int br_multicast_set_hash_max(struct net_bridge *br, unsigned long val);
-
-static inline bool br_multicast_is_router(struct net_bridge *br)
-{
-	return br->multicast_router == 2 ||
-	       (br->multicast_router == 1 &&
-		timer_pending(&br->multicast_router_timer));
-}
-#else
-static inline int br_multicast_rcv(struct net_bridge *br,
-				   struct net_bridge_port *port,
-				   struct sk_buff *skb)
-=======
 #define FDB_FLUSH_IGNORED_NDM_FLAGS (NTF_MASTER | NTF_SELF)
 #define FDB_FLUSH_ALLOWED_NDM_STATES (NUD_PERMANENT | NUD_NOARP)
 #define FDB_FLUSH_ALLOWED_NDM_FLAGS (NTF_USE | NTF_EXT_LEARNED | \
@@ -1695,31 +1349,20 @@ static inline int br_multicast_rcv(struct net_bridge_mcast **brmctx,
 				   struct net_bridge_vlan *vlan,
 				   struct sk_buff *skb,
 				   u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
-						      struct sk_buff *skb)
-=======
 static inline struct net_bridge_mdb_entry *
 br_mdb_entry_skb_get(struct net_bridge_mcast *brmctx, struct sk_buff *skb,
 		     u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NULL;
 }
 
-<<<<<<< HEAD
-static inline void br_multicast_add_port(struct net_bridge_port *port)
-{
-=======
 static inline int br_multicast_add_port(struct net_bridge_port *port)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void br_multicast_del_port(struct net_bridge_port *port)
@@ -1738,8 +1381,6 @@ static inline void br_multicast_init(struct net_bridge *br)
 {
 }
 
-<<<<<<< HEAD
-=======
 static inline void br_multicast_join_snoopers(struct net_bridge *br)
 {
 }
@@ -1748,7 +1389,6 @@ static inline void br_multicast_leave_snoopers(struct net_bridge *br)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void br_multicast_open(struct net_bridge *br)
 {
 }
@@ -1757,32 +1397,6 @@ static inline void br_multicast_stop(struct net_bridge *br)
 {
 }
 
-<<<<<<< HEAD
-static inline void br_multicast_deliver(struct net_bridge_mdb_entry *mdst,
-					struct sk_buff *skb)
-{
-}
-
-static inline void br_multicast_forward(struct net_bridge_mdb_entry *mdst,
-					struct sk_buff *skb,
-					struct sk_buff *skb2)
-{
-}
-static inline bool br_multicast_is_router(struct net_bridge *br)
-{
-	return 0;
-}
-#endif
-
-/* br_netfilter.c */
-#ifdef CONFIG_BRIDGE_NETFILTER
-extern int br_netfilter_init(void);
-extern void br_netfilter_fini(void);
-extern void br_netfilter_rtable_init(struct net_bridge *);
-#else
-#define br_netfilter_init()	(0)
-#define br_netfilter_fini()	do { } while(0)
-=======
 static inline void br_multicast_dev_del(struct net_bridge *br)
 {
 }
@@ -2344,50 +1958,10 @@ void br_netfilter_rtable_init(struct net_bridge *);
 #else
 static inline int br_nf_core_init(void) { return 0; }
 static inline void br_nf_core_fini(void) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define br_netfilter_rtable_init(x)
 #endif
 
 /* br_stp.c */
-<<<<<<< HEAD
-extern void br_log_state(const struct net_bridge_port *p);
-extern struct net_bridge_port *br_get_port(struct net_bridge *br,
-					   u16 port_no);
-extern void br_init_port(struct net_bridge_port *p);
-extern void br_become_designated_port(struct net_bridge_port *p);
-
-extern void __br_set_forward_delay(struct net_bridge *br, unsigned long t);
-extern int br_set_forward_delay(struct net_bridge *br, unsigned long x);
-extern int br_set_hello_time(struct net_bridge *br, unsigned long x);
-extern int br_set_max_age(struct net_bridge *br, unsigned long x);
-
-
-/* br_stp_if.c */
-extern void br_stp_enable_bridge(struct net_bridge *br);
-extern void br_stp_disable_bridge(struct net_bridge *br);
-extern void br_stp_set_enabled(struct net_bridge *br, unsigned long val);
-extern void br_stp_enable_port(struct net_bridge_port *p);
-extern void br_stp_disable_port(struct net_bridge_port *p);
-extern bool br_stp_recalculate_bridge_id(struct net_bridge *br);
-extern void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *a);
-extern void br_stp_set_bridge_priority(struct net_bridge *br,
-				       u16 newprio);
-extern int br_stp_set_port_priority(struct net_bridge_port *p,
-				    unsigned long newprio);
-extern int br_stp_set_path_cost(struct net_bridge_port *p,
-				unsigned long path_cost);
-extern ssize_t br_show_bridge_id(char *buf, const struct bridge_id *id);
-
-/* br_stp_bpdu.c */
-struct stp_proto;
-extern void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
-		       struct net_device *dev);
-
-/* br_stp_timer.c */
-extern void br_stp_timer_init(struct net_bridge *br);
-extern void br_stp_port_timer_init(struct net_bridge_port *p);
-extern unsigned long br_timer_value(const struct timer_list *timer);
-=======
 void br_set_state(struct net_bridge_port *p, unsigned int state);
 struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no);
 void br_init_port(struct net_bridge_port *p);
@@ -2424,20 +1998,12 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
 void br_stp_timer_init(struct net_bridge *br);
 void br_stp_port_timer_init(struct net_bridge_port *p);
 unsigned long br_timer_value(const struct timer_list *timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* br.c */
 #if IS_ENABLED(CONFIG_ATM_LANE)
 extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr);
 #endif
 
-<<<<<<< HEAD
-/* br_netlink.c */
-extern struct rtnl_link_ops br_link_ops;
-extern int br_netlink_init(void);
-extern void br_netlink_fini(void);
-extern void br_ifinfo_notify(int event, struct net_bridge_port *port);
-=======
 /* br_mrp.c */
 #if IS_ENABLED(CONFIG_BRIDGE_MRP)
 int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
@@ -2544,28 +2110,10 @@ int br_process_vlan_info(struct net_bridge *br,
 			 struct bridge_vlan_info **vinfo_last,
 			 bool *changed,
 			 struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SYSFS
 /* br_sysfs_if.c */
 extern const struct sysfs_ops brport_sysfs_ops;
-<<<<<<< HEAD
-extern int br_sysfs_addif(struct net_bridge_port *p);
-extern int br_sysfs_renameif(struct net_bridge_port *p);
-
-/* br_sysfs_br.c */
-extern int br_sysfs_addbr(struct net_device *dev);
-extern void br_sysfs_delbr(struct net_device *dev);
-
-#else
-
-#define br_sysfs_addif(p)	(0)
-#define br_sysfs_renameif(p)	(0)
-#define br_sysfs_addbr(dev)	(0)
-#define br_sysfs_delbr(dev)	do { } while(0)
-#endif /* CONFIG_SYSFS */
-
-=======
 int br_sysfs_addif(struct net_bridge_port *p);
 int br_sysfs_renameif(struct net_bridge_port *p);
 
@@ -2743,5 +2291,4 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
 		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
 struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
 bool br_is_neigh_suppress_enabled(const struct net_bridge_port *p, u16 vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

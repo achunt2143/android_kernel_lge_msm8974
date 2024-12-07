@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* thread_info.h: common low-level thread information accessors
  *
  * Copyright (C) 2002  David Howells (dhowells@redhat.com)
@@ -12,50 +9,6 @@
 #define _LINUX_THREAD_INFO_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-
-struct timespec;
-struct compat_timespec;
-
-/*
- * System call restart block.
- */
-struct restart_block {
-	long (*fn)(struct restart_block *);
-	union {
-		/* For futex_wait and futex_wait_requeue_pi */
-		struct {
-			u32 __user *uaddr;
-			u32 val;
-			u32 flags;
-			u32 bitset;
-			u64 time;
-			u32 __user *uaddr2;
-		} futex;
-		/* For nanosleep */
-		struct {
-			clockid_t clockid;
-			struct timespec __user *rmtp;
-#ifdef CONFIG_COMPAT
-			struct compat_timespec __user *compat_rmtp;
-#endif
-			u64 expires;
-		} nanosleep;
-		/* For poll */
-		struct {
-			struct pollfd __user *ufds;
-			int nfds;
-			int has_timeout;
-			unsigned long tv_sec;
-			unsigned long tv_nsec;
-		} poll;
-	};
-};
-
-extern long do_no_restart_syscall(struct restart_block *parm);
-
-#include <linux/bitops.h>
-=======
 #include <linux/limits.h>
 #include <linux/bug.h>
 #include <linux/restart_block.h>
@@ -104,13 +57,10 @@ enum syscall_work_bit {
 #define SYSCALL_WORK_SYSCALL_EXIT_TRAP	BIT(SYSCALL_WORK_BIT_SYSCALL_EXIT_TRAP)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/thread_info.h>
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-=======
 #ifndef arch_set_restart_data
 #define arch_set_restart_data(restart) do { } while (0)
 #endif
@@ -129,7 +79,6 @@ static inline long set_restart_fn(struct restart_block *restart,
 
 #define THREADINFO_GFP		(GFP_KERNEL_ACCOUNT | __GFP_ZERO)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * flag set/clear/test wrappers
  * - pass TIF_xxxx constants to these functions
@@ -145,8 +94,6 @@ static inline void clear_ti_thread_flag(struct thread_info *ti, int flag)
 	clear_bit(flag, (unsigned long *)&ti->flags);
 }
 
-<<<<<<< HEAD
-=======
 static inline void update_ti_thread_flag(struct thread_info *ti, int flag,
 					 bool value)
 {
@@ -156,7 +103,6 @@ static inline void update_ti_thread_flag(struct thread_info *ti, int flag,
 		clear_ti_thread_flag(ti, flag);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int test_and_set_ti_thread_flag(struct thread_info *ti, int flag)
 {
 	return test_and_set_bit(flag, (unsigned long *)&ti->flags);
@@ -172,8 +118,6 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
 	return test_bit(flag, (unsigned long *)&ti->flags);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * This may be used in noinstr code, and needs to be __always_inline to prevent
  * inadvertent instrumentation.
@@ -183,52 +127,18 @@ static __always_inline unsigned long read_ti_thread_flags(struct thread_info *ti
 	return READ_ONCE(ti->flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define set_thread_flag(flag) \
 	set_ti_thread_flag(current_thread_info(), flag)
 #define clear_thread_flag(flag) \
 	clear_ti_thread_flag(current_thread_info(), flag)
-<<<<<<< HEAD
-=======
 #define update_thread_flag(flag, value) \
 	update_ti_thread_flag(current_thread_info(), flag, value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define test_and_set_thread_flag(flag) \
 	test_and_set_ti_thread_flag(current_thread_info(), flag)
 #define test_and_clear_thread_flag(flag) \
 	test_and_clear_ti_thread_flag(current_thread_info(), flag)
 #define test_thread_flag(flag) \
 	test_ti_thread_flag(current_thread_info(), flag)
-<<<<<<< HEAD
-
-#define set_need_resched()	set_thread_flag(TIF_NEED_RESCHED)
-#define clear_need_resched()	clear_thread_flag(TIF_NEED_RESCHED)
-
-#if defined TIF_RESTORE_SIGMASK && !defined HAVE_SET_RESTORE_SIGMASK
-/*
- * An arch can define its own version of set_restore_sigmask() to get the
- * job done however works, with or without TIF_RESTORE_SIGMASK.
- */
-#define HAVE_SET_RESTORE_SIGMASK	1
-
-/**
- * set_restore_sigmask() - make sure saved_sigmask processing gets done
- *
- * This sets TIF_RESTORE_SIGMASK and ensures that the arch signal code
- * will run before returning to user mode, to process the flag.  For
- * all callers, TIF_SIGPENDING is already set or it's no harm to set
- * it.  TIF_RESTORE_SIGMASK need not be in the set of bits that the
- * arch code will notice on return to user mode, in case those bits
- * are scarce.  We set TIF_SIGPENDING here to ensure that the arch
- * signal code always gets run when TIF_RESTORE_SIGMASK is set.
- */
-static inline void set_restore_sigmask(void)
-{
-	set_thread_flag(TIF_RESTORE_SIGMASK);
-	set_thread_flag(TIF_SIGPENDING);
-}
-#endif	/* TIF_RESTORE_SIGMASK && !HAVE_SET_RESTORE_SIGMASK */
-=======
 #define read_thread_flags() \
 	read_ti_thread_flags(current_thread_info())
 
@@ -350,7 +260,6 @@ void arch_task_cache_init(void); /* for CONFIG_SH */
 void arch_release_task_struct(struct task_struct *tsk);
 int arch_dup_task_struct(struct task_struct *dst,
 				struct task_struct *src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __KERNEL__ */
 

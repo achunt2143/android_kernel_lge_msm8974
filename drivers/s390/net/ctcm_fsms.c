@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * drivers/s390/net/ctcm_fsms.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright IBM Corp. 2001, 2007
  * Authors:	Fritz Elfert (felfert@millenux.com)
  * 		Peter Tiedemann (ptiedem@de.ibm.com)
@@ -188,11 +182,7 @@ static void ctcmpc_chx_attnbusy(fsm_instance *, int, void *);
 static void ctcmpc_chx_resend(fsm_instance *, int, void *);
 static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg);
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Check return code of a preceding ccw_device call, halt_IO etc...
  *
  * ch	:	The channel, the error belongs to.
@@ -228,20 +218,12 @@ void ctcm_purge_skb_queue(struct sk_buff_head *q)
 	CTCM_DBF_TEXT(TRACE, CTC_DBF_DEBUG, __func__);
 
 	while ((skb = skb_dequeue(q))) {
-<<<<<<< HEAD
-		atomic_dec(&skb->users);
-=======
 		refcount_dec(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOP action for statemachines
  */
 static void ctcm_action_nop(fsm_instance *fi, int event, void *arg)
@@ -252,11 +234,7 @@ static void ctcm_action_nop(fsm_instance *fi, int event, void *arg)
  * Actions for channel - statemachines.
  */
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Normal data has been send. Free the corresponding
  * skb (it's in io_queue), reset dev->tbusy and
  * revert to idle state.
@@ -274,21 +252,11 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 	int first = 1;
 	int i;
 	unsigned long duration;
-<<<<<<< HEAD
-	struct timespec done_stamp = current_kernel_time(); /* xtime */
-
-	CTCM_PR_DEBUG("%s(%s): %s\n", __func__, ch->id, dev->name);
-
-	duration =
-	    (done_stamp.tv_sec - ch->prof.send_stamp.tv_sec) * 1000000 +
-	    (done_stamp.tv_nsec - ch->prof.send_stamp.tv_nsec) / 1000;
-=======
 	unsigned long done_stamp = jiffies;
 
 	CTCM_PR_DEBUG("%s(%s): %s\n", __func__, ch->id, dev->name);
 
 	duration = done_stamp - ch->prof.send_stamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (duration > ch->prof.tx_time)
 		ch->prof.tx_time = duration;
 
@@ -304,11 +272,7 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 			priv->stats.tx_bytes += 2;
 			first = 0;
 		}
-<<<<<<< HEAD
-		atomic_dec(&skb->users);
-=======
 		refcount_dec(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_irq(skb);
 	}
 	spin_lock(&ch->collect_lock);
@@ -334,11 +298,7 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 				skb_put(ch->trans_skb, skb->len), skb->len);
 			priv->stats.tx_packets++;
 			priv->stats.tx_bytes += skb->len - LL_HEADER_LENGTH;
-<<<<<<< HEAD
-			atomic_dec(&skb->users);
-=======
 			refcount_dec(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_irq(skb);
 			i++;
 		}
@@ -346,14 +306,8 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 		spin_unlock(&ch->collect_lock);
 		ch->ccw[1].count = ch->trans_skb->len;
 		fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
-<<<<<<< HEAD
-		ch->prof.send_stamp = current_kernel_time(); /* xtime */
-		rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-						(unsigned long)ch, 0xff, 0);
-=======
 		ch->prof.send_stamp = jiffies;
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->prof.doios_multi++;
 		if (rc != 0) {
 			priv->stats.tx_dropped += i;
@@ -368,11 +322,7 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 	ctcm_clear_busy_do(dev);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initial data is sent.
  * Notify device statemachine that we are up and
  * running.
@@ -394,11 +344,7 @@ void ctcm_chx_txidle(fsm_instance *fi, int event, void *arg)
 	fsm_event(priv->fsm, DEV_EVENT_TXUP, ch->netdev);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Got normal data, check for sanity, queue it up, allocate new buffer
  * trigger bottom half, and initiate next read.
  *
@@ -424,11 +370,7 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 					CTCM_FUNTAIL, dev->name, len);
 		priv->stats.rx_dropped++;
 		priv->stats.rx_length_errors++;
-<<<<<<< HEAD
-						goto again;
-=======
 		goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (len > ch->max_bufsize) {
 		CTCM_DBF_TEXT_(TRACE, CTC_DBF_NOTICE,
@@ -436,11 +378,7 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 				CTCM_FUNTAIL, dev->name, len, ch->max_bufsize);
 		priv->stats.rx_dropped++;
 		priv->stats.rx_length_errors++;
-<<<<<<< HEAD
-						goto again;
-=======
 		goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -465,11 +403,7 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 		*((__u16 *)skb->data) = len;
 		priv->stats.rx_dropped++;
 		priv->stats.rx_length_errors++;
-<<<<<<< HEAD
-						goto again;
-=======
 		goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (block_len > 2) {
 		*((__u16 *)skb->data) = block_len - 2;
@@ -482,21 +416,12 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 	if (ctcm_checkalloc_buffer(ch))
 		return;
 	ch->ccw[1].count = ch->max_bufsize;
-<<<<<<< HEAD
-	rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-					(unsigned long)ch, 0xff, 0);
-=======
 	rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc != 0)
 		ctcm_ccw_check_rc(ch, rc, "normal RX");
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize connection by sending a __u16 of value 0.
  *
  * fi		An instance of a channel statemachine.
@@ -551,12 +476,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 
 	fsm_newstate(fi, (CHANNEL_DIRECTION(ch->flags) == CTCM_READ)
 		     ? CTC_STATE_RXINIT : CTC_STATE_TXINIT);
-<<<<<<< HEAD
-	rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-					(unsigned long)ch, 0xff, 0);
-=======
 	rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc != 0) {
 		fsm_deltimer(&ch->timer);
 		fsm_newstate(fi, CTC_STATE_SETUPWAIT);
@@ -577,11 +497,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Got initial data, check it. If OK,
  * notify device statemachine that we are up and
  * running.
@@ -608,12 +524,7 @@ static void chx_rxidle(fsm_instance *fi, int event, void *arg)
 			return;
 		ch->ccw[1].count = ch->max_bufsize;
 		fsm_newstate(fi, CTC_STATE_RXIDLE);
-<<<<<<< HEAD
-		rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-						(unsigned long)ch, 0xff, 0);
-=======
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc != 0) {
 			fsm_newstate(fi, CTC_STATE_RXINIT);
 			ctcm_ccw_check_rc(ch, rc, "initial RX");
@@ -627,11 +538,7 @@ static void chx_rxidle(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Set channel into extended mode.
  *
  * fi		An instance of a channel statemachine.
@@ -660,12 +567,7 @@ static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg)
 			/* Such conditional locking is undeterministic in
 			 * static view. => ignore sparse warnings here. */
 
-<<<<<<< HEAD
-	rc = ccw_device_start(ch->cdev, &ch->ccw[6],
-					(unsigned long)ch, 0xff, 0);
-=======
 	rc = ccw_device_start(ch->cdev, &ch->ccw[6], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (event == CTC_EVENT_TIMER)	/* see above comments */
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
 	if (rc != 0) {
@@ -676,11 +578,7 @@ static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg)
 		ch->retry = 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Setup channel.
  *
  * fi		An instance of a channel statemachine.
@@ -734,11 +632,7 @@ static void ctcm_chx_start(fsm_instance *fi, int event, void *arg)
 	fsm_newstate(fi, CTC_STATE_STARTWAIT);
 	fsm_addtimer(&ch->timer, 1000, CTC_EVENT_TIMER, ch);
 	spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-<<<<<<< HEAD
-	rc = ccw_device_halt(ch->cdev, (unsigned long)ch);
-=======
 	rc = ccw_device_halt(ch->cdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
 	if (rc != 0) {
 		if (rc != -EBUSY)
@@ -747,11 +641,7 @@ static void ctcm_chx_start(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Shutdown a channel.
  *
  * fi		An instance of a channel statemachine.
@@ -777,11 +667,7 @@ static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg)
 			 * static view. => ignore sparse warnings here. */
 	oldstate = fsm_getstate(fi);
 	fsm_newstate(fi, CTC_STATE_TERM);
-<<<<<<< HEAD
-	rc = ccw_device_halt(ch->cdev, (unsigned long)ch);
-=======
 	rc = ccw_device_halt(ch->cdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event == CTC_EVENT_STOP)
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
@@ -796,11 +682,7 @@ static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Cleanup helper for chx_fail and chx_stopped
  * cleanup channels queue and notify interface statemachine.
  *
@@ -846,11 +728,7 @@ static void ctcm_chx_cleanup(fsm_instance *fi, int state,
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A channel has successfully been halted.
  * Cleanup it's queue and notify interface statemachine.
  *
@@ -863,11 +741,7 @@ static void ctcm_chx_stopped(fsm_instance *fi, int event, void *arg)
 	ctcm_chx_cleanup(fi, CTC_STATE_STOPPED, arg);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A stop command from device statemachine arrived and we are in
  * not operational mode. Set state to stopped.
  *
@@ -880,11 +754,7 @@ static void ctcm_chx_stop(fsm_instance *fi, int event, void *arg)
 	fsm_newstate(fi, CTC_STATE_STOPPED);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A machine check for no path, not operational status or gone device has
  * happened.
  * Cleanup queue and notify interface statemachine.
@@ -898,11 +768,7 @@ static void ctcm_chx_fail(fsm_instance *fi, int event, void *arg)
 	ctcm_chx_cleanup(fi, CTC_STATE_NOTOP, arg);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle error during setup of channel.
  *
  * fi		An instance of a channel statemachine.
@@ -928,11 +794,7 @@ static void ctcm_chx_setuperr(fsm_instance *fi, int event, void *arg)
 		fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
 		if (!IS_MPC(ch) &&
 		    (CHANNEL_DIRECTION(ch->flags) == CTCM_READ)) {
-<<<<<<< HEAD
-			int rc = ccw_device_halt(ch->cdev, (unsigned long)ch);
-=======
 			int rc = ccw_device_halt(ch->cdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc != 0)
 				ctcm_ccw_check_rc(ch, rc,
 					"HaltIO in chx_setuperr");
@@ -955,11 +817,7 @@ static void ctcm_chx_setuperr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Restart a channel after an error.
  *
  * fi		An instance of a channel statemachine.
@@ -988,11 +846,7 @@ static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg)
 			/* Such conditional locking is a known problem for
 			 * sparse because its undeterministic in static view.
 			 * Warnings should be ignored here. */
-<<<<<<< HEAD
-	rc = ccw_device_halt(ch->cdev, (unsigned long)ch);
-=======
 	rc = ccw_device_halt(ch->cdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (event == CTC_EVENT_TIMER)
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
 	if (rc != 0) {
@@ -1004,11 +858,7 @@ static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle error during RX initial handshake (exchange of
  * 0-length block header)
  *
@@ -1043,11 +893,7 @@ static void ctcm_chx_rxiniterr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notify device statemachine if we gave up initialization
  * of RX channel.
  *
@@ -1068,11 +914,7 @@ static void ctcm_chx_rxinitfail(fsm_instance *fi, int event, void *arg)
 	fsm_event(priv->fsm, DEV_EVENT_RXDOWN, dev);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle RX Unit check remote reset (remote disconnected)
  *
  * fi		An instance of a channel statemachine.
@@ -1100,19 +942,11 @@ static void ctcm_chx_rxdisc(fsm_instance *fi, int event, void *arg)
 	ch2 = priv->channel[CTCM_WRITE];
 	fsm_newstate(ch2->fsm, CTC_STATE_DTERM);
 
-<<<<<<< HEAD
-	ccw_device_halt(ch->cdev, (unsigned long)ch);
-	ccw_device_halt(ch2->cdev, (unsigned long)ch2);
-}
-
-/**
-=======
 	ccw_device_halt(ch->cdev, 0);
 	ccw_device_halt(ch2->cdev, 0);
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle error during TX channel initialization.
  *
  * fi		An instance of a channel statemachine.
@@ -1144,11 +978,7 @@ static void ctcm_chx_txiniterr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle TX timeout by retrying operation.
  *
  * fi		An instance of a channel statemachine.
@@ -1176,11 +1006,7 @@ static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 			use gptr as mpc indicator */
 		if (!(gptr && (fsm_getstate(gptr->fsm) != MPCG_STATE_READY)))
 			ctcm_chx_restart(fi, event, arg);
-<<<<<<< HEAD
-				goto done;
-=======
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	CTCM_DBF_TEXT_(TRACE, CTC_DBF_DEBUG,
@@ -1198,11 +1024,7 @@ static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 						CTCM_FUNTAIL, ch->id);
 			fsm_event(priv->fsm, DEV_EVENT_TXDOWN, dev);
 			ctcm_chx_restart(fi, event, arg);
-<<<<<<< HEAD
-				goto done;
-=======
 			goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		fsm_addtimer(&ch->timer, 1000, CTC_EVENT_TIMER, ch);
 		if (event == CTC_EVENT_TIMER) /* for TIMER not yet locked */
@@ -1214,12 +1036,7 @@ static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 			ctcmpc_dumpit((char *)&ch->ccw[3],
 					sizeof(struct ccw1) * 3);
 
-<<<<<<< HEAD
-		rc = ccw_device_start(ch->cdev, &ch->ccw[3],
-						(unsigned long)ch, 0xff, 0);
-=======
 		rc = ccw_device_start(ch->cdev, &ch->ccw[3], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (event == CTC_EVENT_TIMER)
 			spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev),
 					saveflags);
@@ -1233,11 +1050,7 @@ done:
 	return;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Handle fatal errors during an I/O command.
  *
  * fi		An instance of a channel statemachine.
@@ -1385,11 +1198,7 @@ int ch_fsm_len = ARRAY_SIZE(ch_fsm);
  * Actions for mpc channel statemachine.
  */
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Normal data has been send. Free the corresponding
  * skb (it's in io_queue), reset dev->tbusy and
  * revert to idle state.
@@ -1413,22 +1222,12 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	int		rc;
 	struct th_header *header;
 	struct pdu	*p_header;
-<<<<<<< HEAD
-	struct timespec done_stamp = current_kernel_time(); /* xtime */
-=======
 	unsigned long done_stamp = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CTCM_PR_DEBUG("Enter %s: %s cp:%i\n",
 			__func__, dev->name, smp_processor_id());
 
-<<<<<<< HEAD
-	duration =
-		(done_stamp.tv_sec - ch->prof.send_stamp.tv_sec) * 1000000 +
-		(done_stamp.tv_nsec - ch->prof.send_stamp.tv_nsec) / 1000;
-=======
 	duration = done_stamp - ch->prof.send_stamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (duration > ch->prof.tx_time)
 		ch->prof.tx_time = duration;
 
@@ -1444,11 +1243,7 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 			priv->stats.tx_bytes += 2;
 			first = 0;
 		}
-<<<<<<< HEAD
-		atomic_dec(&skb->users);
-=======
 		refcount_dec(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_irq(skb);
 	}
 	spin_lock(&ch->collect_lock);
@@ -1456,20 +1251,12 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	if ((ch->collect_len <= 0) || (grp->in_sweep != 0)) {
 		spin_unlock(&ch->collect_lock);
 		fsm_newstate(fi, CTC_STATE_TXIDLE);
-<<<<<<< HEAD
-				goto done;
-=======
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ctcm_checkalloc_buffer(ch)) {
 		spin_unlock(&ch->collect_lock);
-<<<<<<< HEAD
-				goto done;
-=======
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ch->trans_skb->data = ch->trans_skb_data;
 	skb_reset_tail_pointer(ch->trans_skb);
@@ -1487,19 +1274,11 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 		       __func__, data_space);
 
 	while ((skb = skb_dequeue(&ch->collect_queue))) {
-<<<<<<< HEAD
-		memcpy(skb_put(ch->trans_skb, skb->len), skb->data, skb->len);
-		p_header = (struct pdu *)
-			(skb_tail_pointer(ch->trans_skb) - skb->len);
-		p_header->pdu_flag = 0x00;
-		if (skb->protocol == ntohs(ETH_P_SNAP))
-=======
 		skb_put_data(ch->trans_skb, skb->data, skb->len);
 		p_header = (struct pdu *)
 			(skb_tail_pointer(ch->trans_skb) - skb->len);
 		p_header->pdu_flag = 0x00;
 		if (be16_to_cpu(skb->protocol) == ETH_P_SNAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p_header->pdu_flag |= 0x60;
 		else
 			p_header->pdu_flag |= 0x20;
@@ -1514,11 +1293,7 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 		data_space -= skb->len;
 		priv->stats.tx_packets++;
 		priv->stats.tx_bytes += skb->len;
-<<<<<<< HEAD
-		atomic_dec(&skb->users);
-=======
 		refcount_dec(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 		peekskb = skb_peek(&ch->collect_queue);
 		if (peekskb->len > data_space)
@@ -1528,19 +1303,10 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	/* p_header points to the last one we handled */
 	if (p_header)
 		p_header->pdu_flag |= PDU_LAST;	/*Say it's the last one*/
-<<<<<<< HEAD
-	header = kzalloc(TH_HEADER_LENGTH, gfp_type());
-	if (!header) {
-		spin_unlock(&ch->collect_lock);
-		fsm_event(priv->mpcg->fsm, MPCG_EVENT_INOP, dev);
-				goto done;
-	}
-=======
 
 	header = skb_push(ch->trans_skb, TH_HEADER_LENGTH);
 	memset(header, 0, TH_HEADER_LENGTH);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	header->th_ch_flag = TH_HAS_PDU;  /* Normal data */
 	ch->th_seq_num++;
 	header->th_seq_num = ch->th_seq_num;
@@ -1548,14 +1314,6 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	CTCM_PR_DBGDATA("%s: ToVTAM_th_seq= %08x\n" ,
 					__func__, ch->th_seq_num);
 
-<<<<<<< HEAD
-	memcpy(skb_push(ch->trans_skb, TH_HEADER_LENGTH), header,
-		TH_HEADER_LENGTH);	/* put the TH on the packet */
-
-	kfree(header);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTCM_PR_DBGDATA("%s: trans_skb len:%04x \n",
 		       __func__, ch->trans_skb->len);
 	CTCM_PR_DBGDATA("%s: up-to-50 bytes of trans_skb "
@@ -1567,11 +1325,7 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	clear_normalized_cda(&ch->ccw[1]);
 
 	CTCM_PR_DBGDATA("ccwcda=0x%p data=0x%p\n",
-<<<<<<< HEAD
-			(void *)(unsigned long)ch->ccw[1].cda,
-=======
 			(void *)(u64)dma32_to_u32(ch->ccw[1].cda),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ch->trans_skb->data);
 	ch->ccw[1].count = ch->max_bufsize;
 
@@ -1586,27 +1340,15 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 	}
 
 	CTCM_PR_DBGDATA("ccwcda=0x%p data=0x%p\n",
-<<<<<<< HEAD
-			(void *)(unsigned long)ch->ccw[1].cda,
-=======
 			(void *)(u64)dma32_to_u32(ch->ccw[1].cda),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ch->trans_skb->data);
 
 	ch->ccw[1].count = ch->trans_skb->len;
 	fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
-<<<<<<< HEAD
-	ch->prof.send_stamp = current_kernel_time(); /* xtime */
-	if (do_debug_ccw)
-		ctcmpc_dumpit((char *)&ch->ccw[0], sizeof(struct ccw1) * 3);
-	rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-					(unsigned long)ch, 0xff, 0);
-=======
 	ch->prof.send_stamp = jiffies;
 	if (do_debug_ccw)
 		ctcmpc_dumpit((char *)&ch->ccw[0], sizeof(struct ccw1) * 3);
 	rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ch->prof.doios_multi++;
 	if (rc != 0) {
 		priv->stats.tx_dropped += i;
@@ -1619,11 +1361,7 @@ done:
 	return;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Got normal data, check for sanity, queue it up, allocate new buffer
  * trigger bottom half, and initiate next read.
  *
@@ -1651,20 +1389,12 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 		CTCM_DBF_TEXT_(MPC_ERROR, CTC_DBF_ERROR,
 			"%s(%s): TRANS_SKB = NULL",
 				CTCM_FUNTAIL, dev->name);
-<<<<<<< HEAD
-			goto again;
-=======
 		goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (len < TH_HEADER_LENGTH) {
 		CTCM_DBF_TEXT_(MPC_ERROR, CTC_DBF_ERROR,
-<<<<<<< HEAD
-				"%s(%s): packet length %d to short",
-=======
 				"%s(%s): packet length %d too short",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					CTCM_FUNTAIL, dev->name, len);
 		priv->stats.rx_dropped++;
 		priv->stats.rx_length_errors++;
@@ -1676,17 +1406,10 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 
 		if (new_skb == NULL) {
 			CTCM_DBF_TEXT_(MPC_ERROR, CTC_DBF_ERROR,
-<<<<<<< HEAD
-				"%s(%d): skb allocation failed",
-						CTCM_FUNTAIL, dev->name);
-			fsm_event(priv->mpcg->fsm, MPCG_EVENT_INOP, dev);
-					goto again;
-=======
 				"%s(%s): skb allocation failed",
 						CTCM_FUNTAIL, dev->name);
 			fsm_event(priv->mpcg->fsm, MPCG_EVENT_INOP, dev);
 			goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		switch (fsm_getstate(grp->fsm)) {
 		case MPCG_STATE_RESET:
@@ -1695,21 +1418,12 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 			break;
 		case MPCG_STATE_FLOWC:
 		case MPCG_STATE_READY:
-<<<<<<< HEAD
-			memcpy(skb_put(new_skb, block_len),
-					       skb->data, block_len);
-=======
 			skb_put_data(new_skb, skb->data, block_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_queue_tail(&ch->io_queue, new_skb);
 			tasklet_schedule(&ch->ch_tasklet);
 			break;
 		default:
-<<<<<<< HEAD
-			memcpy(skb_put(new_skb, len), skb->data, len);
-=======
 			skb_put_data(new_skb, skb->data, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_queue_tail(&ch->io_queue, new_skb);
 			tasklet_hi_schedule(&ch->ch_tasklet);
 			break;
@@ -1727,17 +1441,6 @@ again:
 		skb_reset_tail_pointer(ch->trans_skb);
 		ch->trans_skb->len = 0;
 		ch->ccw[1].count = ch->max_bufsize;
-<<<<<<< HEAD
-			if (do_debug_ccw)
-			ctcmpc_dumpit((char *)&ch->ccw[0],
-					sizeof(struct ccw1) * 3);
-		dolock = !in_irq();
-		if (dolock)
-			spin_lock_irqsave(
-				get_ccwdev_lock(ch->cdev), saveflags);
-		rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-						(unsigned long)ch, 0xff, 0);
-=======
 		if (do_debug_ccw)
 			ctcmpc_dumpit((char *)&ch->ccw[0],
 				      sizeof(struct ccw1) * 3);
@@ -1746,16 +1449,12 @@ again:
 			spin_lock_irqsave(
 				get_ccwdev_lock(ch->cdev), saveflags);
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dolock) /* see remark about conditional locking */
 			spin_unlock_irqrestore(
 				get_ccwdev_lock(ch->cdev), saveflags);
 		if (rc != 0)
 			ctcm_ccw_check_rc(ch, rc, "normal RX");
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -1765,11 +1464,7 @@ again:
 
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize connection by sending a __u16 of value 0.
  *
  * fi		An instance of a channel statemachine.
@@ -1810,11 +1505,7 @@ static void ctcmpc_chx_firstio(fsm_instance *fi, int event, void *arg)
 				goto done;
 	default:
 		break;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fsm_newstate(fi, (CHANNEL_DIRECTION(ch->flags) == CTCM_READ)
 		     ? CTC_STATE_RXINIT : CTC_STATE_TXINIT);
@@ -1825,11 +1516,7 @@ done:
 	return;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Got initial data, check it. If OK,
  * notify device statemachine that we are up and
  * running.
@@ -1868,23 +1555,14 @@ void ctcmpc_chx_rxidle(fsm_instance *fi, int event, void *arg)
 		if (event == CTC_EVENT_START)
 			/* see remark about conditional locking */
 			spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-<<<<<<< HEAD
-		rc = ccw_device_start(ch->cdev, &ch->ccw[0],
-						(unsigned long)ch, 0xff, 0);
-=======
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (event == CTC_EVENT_START)
 			spin_unlock_irqrestore(
 					get_ccwdev_lock(ch->cdev), saveflags);
 		if (rc != 0) {
 			fsm_newstate(fi, CTC_STATE_RXINIT);
 			ctcm_ccw_check_rc(ch, rc, "initial RX");
-<<<<<<< HEAD
-				goto done;
-=======
 			goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -1999,17 +1677,10 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 		if (fsm_getstate(ch->fsm) == CH_XID0_INPROGRESS) {
 			fsm_newstate(ch->fsm, CH_XID0_PENDING) ;
 			fsm_deltimer(&grp->timer);
-<<<<<<< HEAD
-				goto done;
-		}
-		fsm_event(grp->fsm, MPCG_EVENT_INOP, dev);
-				goto done;
-=======
 			goto done;
 		}
 		fsm_event(grp->fsm, MPCG_EVENT_INOP, dev);
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MPCG_STATE_XID2INITX:
 		/* XID2 was received before ATTN Busy for second
 		   channel.Send yside xid for second channel.
@@ -2018,10 +1689,7 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 			grp->changed_side = 2;
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MPCG_STATE_XID0IOWAIX:
 	case MPCG_STATE_XID7INITW:
 	case MPCG_STATE_XID7INITX:
@@ -2100,11 +1768,7 @@ static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 		/* give the previous IO time to complete */
 		fsm_addtimer(&wch->sweep_timer,
 			200, CTC_EVENT_RSWEEP_TIMER, wch);
-<<<<<<< HEAD
-				goto done;
-=======
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	skb = skb_dequeue(&wch->sweep_queue);
@@ -2116,15 +1780,9 @@ static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 		ctcm_clear_busy_do(dev);
 		dev_kfree_skb_any(skb);
 		fsm_event(grp->fsm, MPCG_EVENT_INOP, dev);
-<<<<<<< HEAD
-				goto done;
-	} else {
-		atomic_inc(&skb->users);
-=======
 		goto done;
 	} else {
 		refcount_inc(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_queue_tail(&wch->io_queue, skb);
 	}
 
@@ -2151,14 +1809,8 @@ static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 	fsm_newstate(wch->fsm, CTC_STATE_TX);
 
 	spin_lock_irqsave(get_ccwdev_lock(wch->cdev), saveflags);
-<<<<<<< HEAD
-	wch->prof.send_stamp = current_kernel_time(); /* xtime */
-	rc = ccw_device_start(wch->cdev, &wch->ccw[3],
-					(unsigned long) wch, 0xff, 0);
-=======
 	wch->prof.send_stamp = jiffies;
 	rc = ccw_device_start(wch->cdev, &wch->ccw[3], 0, 0xff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(wch->cdev), saveflags);
 
 	if ((grp->sweep_req_pend_num == 0) &&
@@ -2391,11 +2043,7 @@ int mpc_ch_fsm_len = ARRAY_SIZE(ctcmpc_ch_fsm);
  * Actions for interface - statemachine.
  */
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Startup channels by sending CTC_EVENT_START to each channel.
  *
  * fi		An instance of an interface statemachine.
@@ -2420,11 +2068,7 @@ static void dev_action_start(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Shutdown channels by sending CTC_EVENT_STOP to each channel.
  *
  * fi		An instance of an interface statemachine.
@@ -2478,11 +2122,7 @@ static void dev_action_restart(fsm_instance *fi, int event, void *arg)
 			DEV_EVENT_START, dev);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called from channel statemachine
  * when a channel is up and running.
  *
@@ -2543,11 +2183,7 @@ static void dev_action_chup(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called from device statemachine
  * when a channel has been shutdown.
  *

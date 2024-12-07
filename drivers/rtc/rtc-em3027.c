@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An rtc/i2c driver for the EM Microelectronic EM3027
  * Copyright 2011 CompuLab, Ltd.
@@ -9,23 +6,13 @@
  * Author: Mike Rapoport <mike@compulab.co.il>
  *
  * Based on rtc-ds1672.c by Alessandro Zummo <a.zummo@towertech.it>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/i2c.h>
 #include <linux/rtc.h>
 #include <linux/bcd.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Registers */
 #define EM3027_REG_ON_OFF_CTRL	0x00
@@ -60,10 +47,6 @@ static int em3027_get_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[7];
 
 	struct i2c_msg msgs[] = {
-<<<<<<< HEAD
-		{client->addr, 0, 1, &addr},		/* setup read addr */
-		{client->addr, I2C_M_RD, 7, buf},	/* read time/date */
-=======
 		{/* setup read addr */
 			.addr = client->addr,
 			.len = 1,
@@ -75,7 +58,6 @@ static int em3027_get_time(struct device *dev, struct rtc_time *tm)
 			.len = 7,
 			.buf = buf
 		},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read time/date registers */
@@ -89,11 +71,7 @@ static int em3027_get_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_hour	= bcd2bin(buf[2]);
 	tm->tm_mday	= bcd2bin(buf[3]);
 	tm->tm_wday	= bcd2bin(buf[4]);
-<<<<<<< HEAD
-	tm->tm_mon	= bcd2bin(buf[5]);
-=======
 	tm->tm_mon	= bcd2bin(buf[5]) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm->tm_year	= bcd2bin(buf[6]) + 100;
 
 	return 0;
@@ -105,13 +83,9 @@ static int em3027_set_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[8];
 
 	struct i2c_msg msg = {
-<<<<<<< HEAD
-		client->addr, 0, 8, buf,	/* write time/date */
-=======
 		.addr = client->addr,
 		.len = 8,
 		.buf = buf,	/* write time/date */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	buf[0] = EM3027_REG_WATCH_SEC;
@@ -120,11 +94,7 @@ static int em3027_set_time(struct device *dev, struct rtc_time *tm)
 	buf[3] = bin2bcd(tm->tm_hour);
 	buf[4] = bin2bcd(tm->tm_mday);
 	buf[5] = bin2bcd(tm->tm_wday);
-<<<<<<< HEAD
-	buf[6] = bin2bcd(tm->tm_mon);
-=======
 	buf[6] = bin2bcd(tm->tm_mon + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[7] = bin2bcd(tm->tm_year % 100);
 
 	/* write time/date registers */
@@ -141,23 +111,14 @@ static const struct rtc_class_ops em3027_rtc_ops = {
 	.set_time = em3027_set_time,
 };
 
-<<<<<<< HEAD
-static int em3027_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-=======
 static int em3027_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_device *rtc;
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	rtc = rtc_device_register(em3027_driver.driver.name, &client->dev,
-=======
 	rtc = devm_rtc_device_register(&client->dev, em3027_driver.driver.name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  &em3027_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
@@ -167,22 +128,6 @@ static int em3027_probe(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int em3027_remove(struct i2c_client *client)
-{
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-
-	if (rtc)
-		rtc_device_unregister(rtc);
-
-	return 0;
-}
-
-static struct i2c_device_id em3027_id[] = {
-	{ "em3027", 0 },
-	{ }
-};
-=======
 static const struct i2c_device_id em3027_id[] = {
 	{ "em3027", 0 },
 	{ }
@@ -196,20 +141,13 @@ static const struct of_device_id em3027_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, em3027_of_match);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver em3027_driver = {
 	.driver = {
 		   .name = "rtc-em3027",
-<<<<<<< HEAD
-	},
-	.probe = &em3027_probe,
-	.remove = &em3027_remove,
-=======
 		   .of_match_table = of_match_ptr(em3027_of_match),
 	},
 	.probe = em3027_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = em3027_id,
 };
 

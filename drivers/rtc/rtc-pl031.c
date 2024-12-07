@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/rtc/rtc-pl031.c
  *
@@ -13,14 +10,6 @@
  *
  * Author: Mian Yousaf Kaukab <mian.yousaf.kaukab@stericsson.com>
  * Copyright 2010 (c) ST-Ericsson AB
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -30,10 +19,7 @@
 #include <linux/io.h>
 #include <linux/bcd.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-=======
 #include <linux/pm_wakeirq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 /*
@@ -80,13 +66,6 @@
 
 #define RTC_TIMER_FREQ 32768
 
-<<<<<<< HEAD
-struct pl031_local {
-	struct rtc_device *rtc;
-	void __iomem *base;
-	u8 hw_designer;
-	u8 hw_revision:4;
-=======
 /**
  * struct pl031_vendor_data - per-vendor variations
  * @ops: the vendor-specific operations used on this silicon version
@@ -109,7 +88,6 @@ struct pl031_local {
 	struct pl031_vendor_data *vendor;
 	struct rtc_device *rtc;
 	void __iomem *base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int pl031_alarm_irq_enable(struct device *dev,
@@ -147,17 +125,9 @@ static int pl031_stv2_tm_to_time(struct device *dev,
 		return -EINVAL;
 	} else if (wday == -1) {
 		/* wday is not provided, calculate it here */
-<<<<<<< HEAD
-		unsigned long time;
-		struct rtc_time calc_tm;
-
-		rtc_tm_to_time(tm, &time);
-		rtc_time_to_tm(time, &calc_tm);
-=======
 		struct rtc_time calc_tm;
 
 		rtc_time64_to_tm(rtc_tm_to_time64(tm), &calc_tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wday = calc_tm.tm_wday;
 	}
 
@@ -240,19 +210,6 @@ static int pl031_stv2_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	unsigned long bcd_year;
 	int ret;
 
-<<<<<<< HEAD
-	/* At the moment, we can only deal with non-wildcarded alarm times. */
-	ret = rtc_valid_tm(&alarm->time);
-	if (ret == 0) {
-		ret = pl031_stv2_tm_to_time(dev, &alarm->time,
-					    &time, &bcd_year);
-		if (ret == 0) {
-			writel(bcd_year, ldata->base + RTC_YMR);
-			writel(time, ldata->base + RTC_MR);
-
-			pl031_alarm_irq_enable(dev, alarm->enabled);
-		}
-=======
 	ret = pl031_stv2_tm_to_time(dev, &alarm->time,
 				    &time, &bcd_year);
 	if (ret == 0) {
@@ -260,7 +217,6 @@ static int pl031_stv2_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 		writel(time, ldata->base + RTC_MR);
 
 		pl031_alarm_irq_enable(dev, alarm->enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -273,23 +229,9 @@ static irqreturn_t pl031_interrupt(int irq, void *dev_id)
 	unsigned long events = 0;
 
 	rtcmis = readl(ldata->base + RTC_MIS);
-<<<<<<< HEAD
-	if (rtcmis) {
-		writel(rtcmis, ldata->base + RTC_ICR);
-
-		if (rtcmis & RTC_BIT_AI)
-			events |= (RTC_AF | RTC_IRQF);
-
-		/* Timer interrupt is only available in ST variants */
-		if ((rtcmis & RTC_BIT_PI) &&
-			(ldata->hw_designer == AMBA_VENDOR_ST))
-			events |= (RTC_PF | RTC_IRQF);
-
-=======
 	if (rtcmis & RTC_BIT_AI) {
 		writel(RTC_BIT_AI, ldata->base + RTC_ICR);
 		events |= (RTC_AF | RTC_IRQF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtc_update_irq(ldata->rtc, 1, events);
 
 		return IRQ_HANDLED;
@@ -302,46 +244,25 @@ static int pl031_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pl031_local *ldata = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(readl(ldata->base + RTC_DR), tm);
-=======
 	rtc_time64_to_tm(readl(ldata->base + RTC_DR), tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int pl031_set_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	unsigned long time;
-	struct pl031_local *ldata = dev_get_drvdata(dev);
-	int ret;
-
-	ret = rtc_tm_to_time(tm, &time);
-
-	if (ret == 0)
-		writel(time, ldata->base + RTC_LR);
-
-	return ret;
-=======
 	struct pl031_local *ldata = dev_get_drvdata(dev);
 
 	writel(rtc_tm_to_time64(tm), ldata->base + RTC_LR);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pl031_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct pl031_local *ldata = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(readl(ldata->base + RTC_MR), &alarm->time);
-=======
 	rtc_time64_to_tm(readl(ldata->base + RTC_MR), &alarm->time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	alarm->pending = readl(ldata->base + RTC_RIS) & RTC_BIT_AI;
 	alarm->enabled = readl(ldata->base + RTC_IMSC) & RTC_BIT_AI;
@@ -352,36 +273,6 @@ static int pl031_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 static int pl031_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct pl031_local *ldata = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	unsigned long time;
-	int ret;
-
-	/* At the moment, we can only deal with non-wildcarded alarm times. */
-	ret = rtc_valid_tm(&alarm->time);
-	if (ret == 0) {
-		ret = rtc_tm_to_time(&alarm->time, &time);
-		if (ret == 0) {
-			writel(time, ldata->base + RTC_MR);
-			pl031_alarm_irq_enable(dev, alarm->enabled);
-		}
-	}
-
-	return ret;
-}
-
-static int pl031_remove(struct amba_device *adev)
-{
-	struct pl031_local *ldata = dev_get_drvdata(&adev->dev);
-
-	amba_set_drvdata(adev, NULL);
-	free_irq(adev->irq[0], ldata->rtc);
-	rtc_device_unregister(ldata->rtc);
-	iounmap(ldata->base);
-	kfree(ldata);
-	amba_release_regions(adev);
-
-	return 0;
-=======
 
 	writel(rtc_tm_to_time64(&alarm->time), ldata->base + RTC_MR);
 	pl031_alarm_irq_enable(dev, alarm->enabled);
@@ -398,75 +289,45 @@ static void pl031_remove(struct amba_device *adev)
 	if (adev->irq[0])
 		free_irq(adev->irq[0], ldata);
 	amba_release_regions(adev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	int ret;
 	struct pl031_local *ldata;
-<<<<<<< HEAD
-	struct rtc_class_ops *ops = id->data;
-=======
 	struct pl031_vendor_data *vendor = id->data;
 	struct rtc_class_ops *ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long time, data;
 
 	ret = amba_request_regions(adev, NULL);
 	if (ret)
 		goto err_req;
 
-<<<<<<< HEAD
-	ldata = kzalloc(sizeof(struct pl031_local), GFP_KERNEL);
-	if (!ldata) {
-=======
 	ldata = devm_kzalloc(&adev->dev, sizeof(struct pl031_local),
 			     GFP_KERNEL);
 	ops = devm_kmemdup(&adev->dev, &vendor->ops, sizeof(vendor->ops),
 			   GFP_KERNEL);
 	if (!ldata || !ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ldata->base = ioremap(adev->res.start, resource_size(&adev->res));
-
-	if (!ldata->base) {
-		ret = -ENOMEM;
-		goto out_no_remap;
-=======
 	ldata->vendor = vendor;
 	ldata->base = devm_ioremap(&adev->dev, adev->res.start,
 				   resource_size(&adev->res));
 	if (!ldata->base) {
 		ret = -ENOMEM;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	amba_set_drvdata(adev, ldata);
 
-<<<<<<< HEAD
-	ldata->hw_designer = amba_manf(adev);
-	ldata->hw_revision = amba_rev(adev);
-
-	dev_dbg(&adev->dev, "designer ID = 0x%02x\n", ldata->hw_designer);
-	dev_dbg(&adev->dev, "revision = 0x%01x\n", ldata->hw_revision);
-
-	data = readl(ldata->base + RTC_CR);
-	/* Enable the clockwatch on ST Variants */
-	if (ldata->hw_designer == AMBA_VENDOR_ST)
-=======
 	dev_dbg(&adev->dev, "designer ID = 0x%02x\n", amba_manf(adev));
 	dev_dbg(&adev->dev, "revision = 0x%01x\n", amba_rev(adev));
 
 	data = readl(ldata->base + RTC_CR);
 	/* Enable the clockwatch on ST Variants */
 	if (vendor->clockwatch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data |= RTC_CR_CWEN;
 	else
 		data |= RTC_CR_EN;
@@ -476,11 +337,7 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 	 * On ST PL031 variants, the RTC reset value does not provide correct
 	 * weekday for 2000-01-01. Correct the erroneous sunday to saturday.
 	 */
-<<<<<<< HEAD
-	if (ldata->hw_designer == AMBA_VENDOR_ST) {
-=======
 	if (vendor->st_weekday) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (readl(ldata->base + RTC_YDR) == 0x2000) {
 			time = readl(ldata->base + RTC_DR);
 			if ((time &
@@ -493,30 +350,6 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 		}
 	}
 
-<<<<<<< HEAD
-	ldata->rtc = rtc_device_register("pl031", &adev->dev, ops,
-					THIS_MODULE);
-	if (IS_ERR(ldata->rtc)) {
-		ret = PTR_ERR(ldata->rtc);
-		goto out_no_rtc;
-	}
-
-	if (request_irq(adev->irq[0], pl031_interrupt,
-			0, "rtc-pl031", ldata)) {
-		ret = -EIO;
-		goto out_no_irq;
-	}
-
-	return 0;
-
-out_no_irq:
-	rtc_device_unregister(ldata->rtc);
-out_no_rtc:
-	iounmap(ldata->base);
-	amba_set_drvdata(adev, NULL);
-out_no_remap:
-	kfree(ldata);
-=======
 	device_init_wakeup(&adev->dev, true);
 	ldata->rtc = devm_rtc_allocate_device(&adev->dev);
 	if (IS_ERR(ldata->rtc)) {
@@ -544,7 +377,6 @@ out_no_remap:
 	}
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	amba_release_regions(adev);
 err_req:
@@ -553,39 +385,6 @@ err_req:
 }
 
 /* Operations for the original ARM version */
-<<<<<<< HEAD
-static struct rtc_class_ops arm_pl031_ops = {
-	.read_time = pl031_read_time,
-	.set_time = pl031_set_time,
-	.read_alarm = pl031_read_alarm,
-	.set_alarm = pl031_set_alarm,
-	.alarm_irq_enable = pl031_alarm_irq_enable,
-};
-
-/* The First ST derivative */
-static struct rtc_class_ops stv1_pl031_ops = {
-	.read_time = pl031_read_time,
-	.set_time = pl031_set_time,
-	.read_alarm = pl031_read_alarm,
-	.set_alarm = pl031_set_alarm,
-	.alarm_irq_enable = pl031_alarm_irq_enable,
-};
-
-/* And the second ST derivative */
-static struct rtc_class_ops stv2_pl031_ops = {
-	.read_time = pl031_stv2_read_time,
-	.set_time = pl031_stv2_set_time,
-	.read_alarm = pl031_stv2_read_alarm,
-	.set_alarm = pl031_stv2_set_alarm,
-	.alarm_irq_enable = pl031_alarm_irq_enable,
-};
-
-static struct amba_id pl031_ids[] = {
-	{
-		.id = 0x00041031,
-		.mask = 0x000fffff,
-		.data = &arm_pl031_ops,
-=======
 static struct pl031_vendor_data arm_pl031 = {
 	.ops = {
 		.read_time = pl031_read_time,
@@ -638,26 +437,17 @@ static const struct amba_id pl031_ids[] = {
 		.id = 0x00041031,
 		.mask = 0x000fffff,
 		.data = &arm_pl031,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* ST Micro variants */
 	{
 		.id = 0x00180031,
 		.mask = 0x00ffffff,
-<<<<<<< HEAD
-		.data = &stv1_pl031_ops,
-=======
 		.data = &stv1_pl031,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id = 0x00280031,
 		.mask = 0x00ffffff,
-<<<<<<< HEAD
-		.data = &stv2_pl031_ops,
-=======
 		.data = &stv2_pl031,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{0, 0},
 };
@@ -675,10 +465,6 @@ static struct amba_driver pl031_driver = {
 
 module_amba_driver(pl031_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Deepak Saxena <dsaxena@plexity.net");
-=======
 MODULE_AUTHOR("Deepak Saxena <dsaxena@plexity.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ARM AMBA PL031 RTC Driver");
 MODULE_LICENSE("GPL");

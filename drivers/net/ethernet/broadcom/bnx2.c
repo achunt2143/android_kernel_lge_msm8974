@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/* bnx2.c: Broadcom NX2 network driver.
- *
- * Copyright (c) 2004-2011 Broadcom Corporation
-=======
 /* bnx2.c: QLogic bnx2 network driver.
  *
  * Copyright (c) 2004-2014 Broadcom Corporation
  * Copyright (c) 2014-2015 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +15,7 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 
-<<<<<<< HEAD
-=======
 #include <linux/stringify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/timer.h>
 #include <linux/errno.h>
@@ -33,10 +24,6 @@
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
@@ -61,15 +48,9 @@
 #include <linux/cache.h>
 #include <linux/firmware.h>
 #include <linux/log2.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-
-#if defined(CONFIG_CNIC) || defined(CONFIG_CNIC_MODULE)
-=======
 #include <linux/crash_dump.h>
 
 #if IS_ENABLED(CONFIG_CNIC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_CNIC 1
 #include "cnic_if.h"
 #endif
@@ -77,11 +58,6 @@
 #include "bnx2_fw.h"
 
 #define DRV_MODULE_NAME		"bnx2"
-<<<<<<< HEAD
-#define DRV_MODULE_VERSION	"2.2.1"
-#define DRV_MODULE_RELDATE	"Dec 18, 2011"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FW_MIPS_FILE_06		"bnx2/bnx2-mips-06-6.2.3.fw"
 #define FW_RV2P_FILE_06		"bnx2/bnx2-rv2p-06-6.0.15.fw"
 #define FW_MIPS_FILE_09		"bnx2/bnx2-mips-09-6.2.1b.fw"
@@ -93,19 +69,9 @@
 /* Time in jiffies before concluding the transmitter is hung. */
 #define TX_TIMEOUT  (5*HZ)
 
-<<<<<<< HEAD
-static char version[] __devinitdata =
-	"Broadcom NetXtreme II Gigabit Ethernet Driver " DRV_MODULE_NAME " v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
-
-MODULE_AUTHOR("Michael Chan <mchan@broadcom.com>");
-MODULE_DESCRIPTION("Broadcom NetXtreme II BCM5706/5708/5709/5716 Driver");
-MODULE_LICENSE("GPL");
-MODULE_VERSION(DRV_MODULE_VERSION);
-=======
 MODULE_AUTHOR("Michael Chan <mchan@broadcom.com>");
 MODULE_DESCRIPTION("QLogic BCM5706/5708/5709/5716 Driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE(FW_MIPS_FILE_06);
 MODULE_FIRMWARE(FW_RV2P_FILE_06);
 MODULE_FIRMWARE(FW_MIPS_FILE_09);
@@ -114,11 +80,7 @@ MODULE_FIRMWARE(FW_RV2P_FILE_09_Ax);
 
 static int disable_msi = 0;
 
-<<<<<<< HEAD
-module_param(disable_msi, int, 0);
-=======
 module_param(disable_msi, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(disable_msi, "Disable Message Signaled Interrupt (MSI)");
 
 typedef enum {
@@ -138,11 +100,7 @@ typedef enum {
 /* indexed by board_t, above */
 static struct {
 	char *name;
-<<<<<<< HEAD
-} board_info[] __devinitdata = {
-=======
 } board_info[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Broadcom NetXtreme II BCM5706 1000Base-T" },
 	{ "HP NC370T Multifunction Gigabit Server Adapter" },
 	{ "HP NC370i Multifunction Gigabit Server Adapter" },
@@ -156,11 +114,7 @@ static struct {
 	{ "Broadcom NetXtreme II BCM5716 1000Base-SX" },
 	};
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(bnx2_pci_tbl) = {
-=======
 static const struct pci_device_id bnx2_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_NX2_5706,
 	  PCI_VENDOR_ID_HP, 0x3101, 0, 0, NC370T },
 	{ PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_NX2_5706,
@@ -221,20 +175,12 @@ static const struct flash_spec flash_table[] =
 	{0x19000002, 0x5b808201, 0x000500db, 0x03840253, 0xaf020406,
 	 NONBUFFERED_FLAGS, ST_MICRO_FLASH_PAGE_BITS, ST_MICRO_FLASH_PAGE_SIZE,
 	 ST_MICRO_FLASH_BYTE_ADDR_MASK, ST_MICRO_FLASH_BASE_TOTAL_SIZE*2,
-<<<<<<< HEAD
-	 "Entry 0101: ST M45PE10 (128kB non-bufferred)"},
-=======
 	 "Entry 0101: ST M45PE10 (128kB non-buffered)"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Entry 0110: ST M45PE20 (non-buffered flash)*/
 	{0x15000001, 0x57808201, 0x000500db, 0x03840253, 0xaf020406,
 	 NONBUFFERED_FLAGS, ST_MICRO_FLASH_PAGE_BITS, ST_MICRO_FLASH_PAGE_SIZE,
 	 ST_MICRO_FLASH_BYTE_ADDR_MASK, ST_MICRO_FLASH_BASE_TOTAL_SIZE*4,
-<<<<<<< HEAD
-	 "Entry 0110: ST M45PE20 (256kB non-bufferred)"},
-=======
 	 "Entry 0110: ST M45PE20 (256kB non-buffered)"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Saifun SA25F005 (non-buffered flash) */
 	/* strap, cfg1, & write1 need updates */
 	{0x1d000003, 0x5f808201, 0x00050081, 0x03840253, 0xaf020406,
@@ -301,19 +247,6 @@ static inline u32 bnx2_tx_avail(struct bnx2 *bp, struct bnx2_tx_ring_info *txr)
 {
 	u32 diff;
 
-<<<<<<< HEAD
-	/* Tell compiler to fetch tx_prod and tx_cons from memory. */
-	barrier();
-
-	/* The ring uses 256 indices for 255 entries, one of them
-	 * needs to be skipped.
-	 */
-	diff = txr->tx_prod - txr->tx_cons;
-	if (unlikely(diff >= TX_DESC_CNT)) {
-		diff &= 0xffff;
-		if (diff == TX_DESC_CNT)
-			diff = MAX_TX_DESC_CNT;
-=======
 	/* The ring uses 256 indices for 255 entries, one of them
 	 * needs to be skipped.
 	 */
@@ -322,7 +255,6 @@ static inline u32 bnx2_tx_avail(struct bnx2 *bp, struct bnx2_tx_ring_info *txr)
 		diff &= 0xffff;
 		if (diff == BNX2_TX_DESC_CNT)
 			diff = BNX2_MAX_TX_DESC_CNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return bp->tx_ring_size - diff;
 }
@@ -330,14 +262,6 @@ static inline u32 bnx2_tx_avail(struct bnx2 *bp, struct bnx2_tx_ring_info *txr)
 static u32
 bnx2_reg_rd_ind(struct bnx2 *bp, u32 offset)
 {
-<<<<<<< HEAD
-	u32 val;
-
-	spin_lock_bh(&bp->indirect_lock);
-	REG_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, offset);
-	val = REG_RD(bp, BNX2_PCICFG_REG_WINDOW);
-	spin_unlock_bh(&bp->indirect_lock);
-=======
 	unsigned long flags;
 	u32 val;
 
@@ -345,26 +269,18 @@ bnx2_reg_rd_ind(struct bnx2 *bp, u32 offset)
 	BNX2_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, offset);
 	val = BNX2_RD(bp, BNX2_PCICFG_REG_WINDOW);
 	spin_unlock_irqrestore(&bp->indirect_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 
 static void
 bnx2_reg_wr_ind(struct bnx2 *bp, u32 offset, u32 val)
 {
-<<<<<<< HEAD
-	spin_lock_bh(&bp->indirect_lock);
-	REG_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, offset);
-	REG_WR(bp, BNX2_PCICFG_REG_WINDOW, val);
-	spin_unlock_bh(&bp->indirect_lock);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&bp->indirect_lock, flags);
 	BNX2_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, offset);
 	BNX2_WR(bp, BNX2_PCICFG_REG_WINDOW, val);
 	spin_unlock_irqrestore(&bp->indirect_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -382,18 +298,6 @@ bnx2_shmem_rd(struct bnx2 *bp, u32 offset)
 static void
 bnx2_ctx_wr(struct bnx2 *bp, u32 cid_addr, u32 offset, u32 val)
 {
-<<<<<<< HEAD
-	offset += cid_addr;
-	spin_lock_bh(&bp->indirect_lock);
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		int i;
-
-		REG_WR(bp, BNX2_CTX_CTX_DATA, val);
-		REG_WR(bp, BNX2_CTX_CTX_CTRL,
-		       offset | BNX2_CTX_CTX_CTRL_WRITE_REQ);
-		for (i = 0; i < 5; i++) {
-			val = REG_RD(bp, BNX2_CTX_CTX_CTRL);
-=======
 	unsigned long flags;
 
 	offset += cid_addr;
@@ -406,23 +310,15 @@ bnx2_ctx_wr(struct bnx2 *bp, u32 cid_addr, u32 offset, u32 val)
 			offset | BNX2_CTX_CTX_CTRL_WRITE_REQ);
 		for (i = 0; i < 5; i++) {
 			val = BNX2_RD(bp, BNX2_CTX_CTX_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((val & BNX2_CTX_CTX_CTRL_WRITE_REQ) == 0)
 				break;
 			udelay(5);
 		}
 	} else {
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_CTX_DATA_ADR, offset);
-		REG_WR(bp, BNX2_CTX_DATA, val);
-	}
-	spin_unlock_bh(&bp->indirect_lock);
-=======
 		BNX2_WR(bp, BNX2_CTX_DATA_ADR, offset);
 		BNX2_WR(bp, BNX2_CTX_DATA, val);
 	}
 	spin_unlock_irqrestore(&bp->indirect_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef BCM_CNIC
@@ -471,10 +367,7 @@ static void bnx2_setup_cnic_irq_info(struct bnx2 *bp)
 	cp->irq_arr[0].status_blk = (void *)
 		((unsigned long) bnapi->status_blk.msi +
 		(BNX2_SBLK_MSIX_ALIGN_SIZE * sb_id));
-<<<<<<< HEAD
-=======
 	cp->irq_arr[0].status_blk_map = bp->status_blk_mapping;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->irq_arr[0].status_blk_num = sb_id;
 	cp->num_irq = 1;
 }
@@ -485,11 +378,7 @@ static int bnx2_register_cnic(struct net_device *dev, struct cnic_ops *ops,
 	struct bnx2 *bp = netdev_priv(dev);
 	struct cnic_eth_dev *cp = &bp->cnic_eth_dev;
 
-<<<<<<< HEAD
-	if (ops == NULL)
-=======
 	if (!ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (cp->drv_state & CNIC_DRV_STATE_REGD)
@@ -524,11 +413,7 @@ static int bnx2_unregister_cnic(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct cnic_eth_dev *bnx2_cnic_probe(struct net_device *dev)
-=======
 static struct cnic_eth_dev *bnx2_cnic_probe(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 	struct cnic_eth_dev *cp = &bp->cnic_eth_dev;
@@ -546,10 +431,6 @@ static struct cnic_eth_dev *bnx2_cnic_probe(struct net_device *dev)
 
 	return cp;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(bnx2_cnic_probe);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 bnx2_cnic_stop(struct bnx2 *bp)
@@ -609,19 +490,11 @@ bnx2_read_phy(struct bnx2 *bp, u32 reg, u32 *val)
 	int i, ret;
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_INT_MODE_AUTO_POLLING) {
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-		val1 &= ~BNX2_EMAC_MDIO_MODE_AUTO_POLL;
-
-		REG_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
-		REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
 		val1 &= ~BNX2_EMAC_MDIO_MODE_AUTO_POLL;
 
 		BNX2_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
 		BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		udelay(40);
 	}
@@ -629,28 +502,16 @@ bnx2_read_phy(struct bnx2 *bp, u32 reg, u32 *val)
 	val1 = (bp->phy_addr << 21) | (reg << 16) |
 		BNX2_EMAC_MDIO_COMM_COMMAND_READ | BNX2_EMAC_MDIO_COMM_DISEXT |
 		BNX2_EMAC_MDIO_COMM_START_BUSY;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MDIO_COMM, val1);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MDIO_COMM, val1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 50; i++) {
 		udelay(10);
 
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_COMM);
-		if (!(val1 & BNX2_EMAC_MDIO_COMM_START_BUSY)) {
-			udelay(5);
-
-			val1 = REG_RD(bp, BNX2_EMAC_MDIO_COMM);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_COMM);
 		if (!(val1 & BNX2_EMAC_MDIO_COMM_START_BUSY)) {
 			udelay(5);
 
 			val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_COMM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val1 &= BNX2_EMAC_MDIO_COMM_DATA;
 
 			break;
@@ -667,19 +528,11 @@ bnx2_read_phy(struct bnx2 *bp, u32 reg, u32 *val)
 	}
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_INT_MODE_AUTO_POLLING) {
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-		val1 |= BNX2_EMAC_MDIO_MODE_AUTO_POLL;
-
-		REG_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
-		REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
 		val1 |= BNX2_EMAC_MDIO_MODE_AUTO_POLL;
 
 		BNX2_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
 		BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		udelay(40);
 	}
@@ -694,19 +547,11 @@ bnx2_write_phy(struct bnx2 *bp, u32 reg, u32 val)
 	int i, ret;
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_INT_MODE_AUTO_POLLING) {
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-		val1 &= ~BNX2_EMAC_MDIO_MODE_AUTO_POLL;
-
-		REG_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
-		REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
 		val1 &= ~BNX2_EMAC_MDIO_MODE_AUTO_POLL;
 
 		BNX2_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
 		BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		udelay(40);
 	}
@@ -714,20 +559,12 @@ bnx2_write_phy(struct bnx2 *bp, u32 reg, u32 val)
 	val1 = (bp->phy_addr << 21) | (reg << 16) | val |
 		BNX2_EMAC_MDIO_COMM_COMMAND_WRITE |
 		BNX2_EMAC_MDIO_COMM_START_BUSY | BNX2_EMAC_MDIO_COMM_DISEXT;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MDIO_COMM, val1);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MDIO_COMM, val1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 50; i++) {
 		udelay(10);
 
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_COMM);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_COMM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(val1 & BNX2_EMAC_MDIO_COMM_START_BUSY)) {
 			udelay(5);
 			break;
@@ -735,28 +572,16 @@ bnx2_write_phy(struct bnx2 *bp, u32 reg, u32 val)
 	}
 
 	if (val1 & BNX2_EMAC_MDIO_COMM_START_BUSY)
-<<<<<<< HEAD
-        	ret = -EBUSY;
-=======
 		ret = -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ret = 0;
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_INT_MODE_AUTO_POLLING) {
-<<<<<<< HEAD
-		val1 = REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-		val1 |= BNX2_EMAC_MDIO_MODE_AUTO_POLL;
-
-		REG_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
-		REG_RD(bp, BNX2_EMAC_MDIO_MODE);
-=======
 		val1 = BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
 		val1 |= BNX2_EMAC_MDIO_MODE_AUTO_POLL;
 
 		BNX2_WR(bp, BNX2_EMAC_MDIO_MODE, val1);
 		BNX2_RD(bp, BNX2_EMAC_MDIO_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		udelay(40);
 	}
@@ -772,17 +597,10 @@ bnx2_disable_int(struct bnx2 *bp)
 
 	for (i = 0; i < bp->irq_nvecs; i++) {
 		bnapi = &bp->bnx2_napi[i];
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
-		       BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
-	}
-	REG_RD(bp, BNX2_PCICFG_INT_ACK_CMD);
-=======
 		BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
 		       BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
 	}
 	BNX2_RD(bp, BNX2_PCICFG_INT_ACK_CMD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -794,18 +612,6 @@ bnx2_enable_int(struct bnx2 *bp)
 	for (i = 0; i < bp->irq_nvecs; i++) {
 		bnapi = &bp->bnx2_napi[i];
 
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
-		       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-		       BNX2_PCICFG_INT_ACK_CMD_MASK_INT |
-		       bnapi->last_status_idx);
-
-		REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
-		       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-		       bnapi->last_status_idx);
-	}
-	REG_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW);
-=======
 		BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
 			BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
 			BNX2_PCICFG_INT_ACK_CMD_MASK_INT |
@@ -816,7 +622,6 @@ bnx2_enable_int(struct bnx2 *bp)
 			bnapi->last_status_idx);
 	}
 	BNX2_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -944,21 +749,13 @@ bnx2_alloc_tx_mem(struct bnx2 *bp)
 		struct bnx2_tx_ring_info *txr = &bnapi->tx_ring;
 
 		txr->tx_buf_ring = kzalloc(SW_TXBD_RING_SIZE, GFP_KERNEL);
-<<<<<<< HEAD
-		if (txr->tx_buf_ring == NULL)
-=======
 		if (!txr->tx_buf_ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 
 		txr->tx_desc_ring =
 			dma_alloc_coherent(&bp->pdev->dev, TXBD_RING_SIZE,
 					   &txr->tx_desc_mapping, GFP_KERNEL);
-<<<<<<< HEAD
-		if (txr->tx_desc_ring == NULL)
-=======
 		if (!txr->tx_desc_ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 	}
 	return 0;
@@ -975,13 +772,8 @@ bnx2_alloc_rx_mem(struct bnx2 *bp)
 		int j;
 
 		rxr->rx_buf_ring =
-<<<<<<< HEAD
-			vzalloc(SW_RXBD_RING_SIZE * bp->rx_max_ring);
-		if (rxr->rx_buf_ring == NULL)
-=======
 			vzalloc(array_size(SW_RXBD_RING_SIZE, bp->rx_max_ring));
 		if (!rxr->rx_buf_ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 
 		for (j = 0; j < bp->rx_max_ring; j++) {
@@ -990,26 +782,16 @@ bnx2_alloc_rx_mem(struct bnx2 *bp)
 						   RXBD_RING_SIZE,
 						   &rxr->rx_desc_mapping[j],
 						   GFP_KERNEL);
-<<<<<<< HEAD
-			if (rxr->rx_desc_ring[j] == NULL)
-=======
 			if (!rxr->rx_desc_ring[j])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 
 		}
 
 		if (bp->rx_pg_ring_size) {
-<<<<<<< HEAD
-			rxr->rx_pg_ring = vzalloc(SW_RXPG_RING_SIZE *
-						  bp->rx_max_pg_ring);
-			if (rxr->rx_pg_ring == NULL)
-=======
 			rxr->rx_pg_ring =
 				vzalloc(array_size(SW_RXPG_RING_SIZE,
 						   bp->rx_max_pg_ring));
 			if (!rxr->rx_pg_ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 
 		}
@@ -1020,11 +802,7 @@ bnx2_alloc_rx_mem(struct bnx2 *bp)
 						   RXBD_RING_SIZE,
 						   &rxr->rx_pg_desc_mapping[j],
 						   GFP_KERNEL);
-<<<<<<< HEAD
-			if (rxr->rx_pg_desc_ring[j] == NULL)
-=======
 			if (!rxr->rx_pg_desc_ring[j])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 
 		}
@@ -1033,8 +811,6 @@ bnx2_alloc_rx_mem(struct bnx2 *bp)
 }
 
 static void
-<<<<<<< HEAD
-=======
 bnx2_free_stats_blk(struct net_device *dev)
 {
 	struct bnx2 *bp = netdev_priv(dev);
@@ -1075,7 +851,6 @@ bnx2_alloc_stats_blk(struct net_device *dev)
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_free_mem(struct bnx2 *bp)
 {
 	int i;
@@ -1086,63 +861,25 @@ bnx2_free_mem(struct bnx2 *bp)
 
 	for (i = 0; i < bp->ctx_pages; i++) {
 		if (bp->ctx_blk[i]) {
-<<<<<<< HEAD
-			dma_free_coherent(&bp->pdev->dev, BCM_PAGE_SIZE,
-=======
 			dma_free_coherent(&bp->pdev->dev, BNX2_PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  bp->ctx_blk[i],
 					  bp->ctx_blk_mapping[i]);
 			bp->ctx_blk[i] = NULL;
 		}
 	}
-<<<<<<< HEAD
-	if (bnapi->status_blk.msi) {
-		dma_free_coherent(&bp->pdev->dev, bp->status_stats_size,
-				  bnapi->status_blk.msi,
-				  bp->status_blk_mapping);
-		bnapi->status_blk.msi = NULL;
-		bp->stats_blk = NULL;
-	}
-=======
 
 	if (bnapi->status_blk.msi)
 		bnapi->status_blk.msi = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 bnx2_alloc_mem(struct bnx2 *bp)
 {
-<<<<<<< HEAD
-	int i, status_blk_size, err;
-	struct bnx2_napi *bnapi;
-	void *status_blk;
-
-	/* Combine status and statistics blocks into one allocation. */
-	status_blk_size = L1_CACHE_ALIGN(sizeof(struct status_block));
-	if (bp->flags & BNX2_FLAG_MSIX_CAP)
-		status_blk_size = L1_CACHE_ALIGN(BNX2_MAX_MSIX_HW_VEC *
-						 BNX2_SBLK_MSIX_ALIGN_SIZE);
-	bp->status_stats_size = status_blk_size +
-				sizeof(struct statistics_block);
-
-	status_blk = dma_alloc_coherent(&bp->pdev->dev, bp->status_stats_size,
-					&bp->status_blk_mapping, GFP_KERNEL);
-	if (status_blk == NULL)
-		goto alloc_mem_err;
-
-	memset(status_blk, 0, bp->status_stats_size);
-
-	bnapi = &bp->bnx2_napi[0];
-	bnapi->status_blk.msi = status_blk;
-=======
 	int i, err;
 	struct bnx2_napi *bnapi;
 
 	bnapi = &bp->bnx2_napi[0];
 	bnapi->status_blk.msi = bp->status_blk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnapi->hw_tx_cons_ptr =
 		&bnapi->status_blk.msi->status_tx_quick_consumer_index0;
 	bnapi->hw_rx_cons_ptr =
@@ -1153,12 +890,7 @@ bnx2_alloc_mem(struct bnx2 *bp)
 
 			bnapi = &bp->bnx2_napi[i];
 
-<<<<<<< HEAD
-			sblk = (void *) (status_blk +
-					 BNX2_SBLK_MSIX_ALIGN_SIZE * i);
-=======
 			sblk = (bp->status_blk + BNX2_SBLK_MSIX_ALIGN_SIZE * i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bnapi->status_blk.msix = sblk;
 			bnapi->hw_tx_cons_ptr =
 				&sblk->status_tx_quick_consumer_index;
@@ -1168,32 +900,16 @@ bnx2_alloc_mem(struct bnx2 *bp)
 		}
 	}
 
-<<<<<<< HEAD
-	bp->stats_blk = status_blk + status_blk_size;
-
-	bp->stats_blk_mapping = bp->status_blk_mapping + status_blk_size;
-
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		bp->ctx_pages = 0x2000 / BCM_PAGE_SIZE;
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
 		bp->ctx_pages = 0x2000 / BNX2_PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bp->ctx_pages == 0)
 			bp->ctx_pages = 1;
 		for (i = 0; i < bp->ctx_pages; i++) {
 			bp->ctx_blk[i] = dma_alloc_coherent(&bp->pdev->dev,
-<<<<<<< HEAD
-						BCM_PAGE_SIZE,
-						&bp->ctx_blk_mapping[i],
-						GFP_KERNEL);
-			if (bp->ctx_blk[i] == NULL)
-=======
 						BNX2_PAGE_SIZE,
 						&bp->ctx_blk_mapping[i],
 						GFP_KERNEL);
 			if (!bp->ctx_blk[i])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto alloc_mem_err;
 		}
 	}
@@ -1331,11 +1047,7 @@ bnx2_resolve_flow_ctrl(struct bnx2 *bp)
 	}
 
 	if ((bp->phy_flags & BNX2_PHY_FLAG_SERDES) &&
-<<<<<<< HEAD
-	    (CHIP_NUM(bp) == CHIP_NUM_5708)) {
-=======
 	    (BNX2_CHIP(bp) == BNX2_CHIP_5708)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val;
 
 		bnx2_read_phy(bp, BCM5708S_1000X_STAT1, &val);
@@ -1501,11 +1213,8 @@ bnx2_copper_linkup(struct bnx2 *bp)
 {
 	u32 bmcr;
 
-<<<<<<< HEAD
-=======
 	bp->phy_flags &= ~BNX2_PHY_FLAG_MDIX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 	if (bmcr & BMCR_ANENABLE) {
 		u32 local_adv, remote_adv, common;
@@ -1564,8 +1273,6 @@ bnx2_copper_linkup(struct bnx2 *bp)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if (bp->link_up) {
 		u32 ext_status;
 
@@ -1574,7 +1281,6 @@ bnx2_copper_linkup(struct bnx2 *bp)
 			bp->phy_flags |= BNX2_PHY_FLAG_MDIX;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1611,16 +1317,6 @@ bnx2_set_mac_link(struct bnx2 *bp)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_TX_LENGTHS, 0x2620);
-	if (bp->link_up && (bp->line_speed == SPEED_1000) &&
-		(bp->duplex == DUPLEX_HALF)) {
-		REG_WR(bp, BNX2_EMAC_TX_LENGTHS, 0x26ff);
-	}
-
-	/* Configure the EMAC mode register. */
-	val = REG_RD(bp, BNX2_EMAC_MODE);
-=======
 	BNX2_WR(bp, BNX2_EMAC_TX_LENGTHS, 0x2620);
 	if (bp->link_up && (bp->line_speed == SPEED_1000) &&
 		(bp->duplex == DUPLEX_HALF)) {
@@ -1629,7 +1325,6 @@ bnx2_set_mac_link(struct bnx2 *bp)
 
 	/* Configure the EMAC mode register. */
 	val = BNX2_RD(bp, BNX2_EMAC_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val &= ~(BNX2_EMAC_MODE_PORT | BNX2_EMAC_MODE_HALF_DUPLEX |
 		BNX2_EMAC_MODE_MAC_LOOP | BNX2_EMAC_MODE_FORCE_LINK |
@@ -1638,29 +1333,17 @@ bnx2_set_mac_link(struct bnx2 *bp)
 	if (bp->link_up) {
 		switch (bp->line_speed) {
 			case SPEED_10:
-<<<<<<< HEAD
-				if (CHIP_NUM(bp) != CHIP_NUM_5706) {
-					val |= BNX2_EMAC_MODE_PORT_MII_10M;
-					break;
-				}
-				/* fall through */
-=======
 				if (BNX2_CHIP(bp) != BNX2_CHIP_5706) {
 					val |= BNX2_EMAC_MODE_PORT_MII_10M;
 					break;
 				}
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SPEED_100:
 				val |= BNX2_EMAC_MODE_PORT_MII;
 				break;
 			case SPEED_2500:
 				val |= BNX2_EMAC_MODE_25G_MODE;
-<<<<<<< HEAD
-				/* fall through */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SPEED_1000:
 				val |= BNX2_EMAC_MODE_PORT_GMII;
 				break;
@@ -1673,43 +1356,25 @@ bnx2_set_mac_link(struct bnx2 *bp)
 	/* Set the MAC to operate in the appropriate duplex mode. */
 	if (bp->duplex == DUPLEX_HALF)
 		val |= BNX2_EMAC_MODE_HALF_DUPLEX;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MODE, val);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MODE, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable/disable rx PAUSE. */
 	bp->rx_mode &= ~BNX2_EMAC_RX_MODE_FLOW_EN;
 
 	if (bp->flow_ctrl & FLOW_CTRL_RX)
 		bp->rx_mode |= BNX2_EMAC_RX_MODE_FLOW_EN;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_RX_MODE, bp->rx_mode);
-
-	/* Enable/disable tx PAUSE. */
-	val = REG_RD(bp, BNX2_EMAC_TX_MODE);
-=======
 	BNX2_WR(bp, BNX2_EMAC_RX_MODE, bp->rx_mode);
 
 	/* Enable/disable tx PAUSE. */
 	val = BNX2_RD(bp, BNX2_EMAC_TX_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val &= ~BNX2_EMAC_TX_MODE_FLOW_EN;
 
 	if (bp->flow_ctrl & FLOW_CTRL_TX)
 		val |= BNX2_EMAC_TX_MODE_FLOW_EN;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_TX_MODE, val);
-
-	/* Acknowledge the interrupt. */
-	REG_WR(bp, BNX2_EMAC_STATUS, BNX2_EMAC_STATUS_LINK_CHANGE);
-=======
 	BNX2_WR(bp, BNX2_EMAC_TX_MODE, val);
 
 	/* Acknowledge the interrupt. */
 	BNX2_WR(bp, BNX2_EMAC_STATUS, BNX2_EMAC_STATUS_LINK_CHANGE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2_init_all_rx_contexts(bp);
 }
@@ -1718,11 +1383,7 @@ static void
 bnx2_enable_bmsr1(struct bnx2 *bp)
 {
 	if ((bp->phy_flags & BNX2_PHY_FLAG_SERDES) &&
-<<<<<<< HEAD
-	    (CHIP_NUM(bp) == CHIP_NUM_5709))
-=======
 	    (BNX2_CHIP(bp) == BNX2_CHIP_5709))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
 			       MII_BNX2_BLK_ADDR_GP_STATUS);
 }
@@ -1731,11 +1392,7 @@ static void
 bnx2_disable_bmsr1(struct bnx2 *bp)
 {
 	if ((bp->phy_flags & BNX2_PHY_FLAG_SERDES) &&
-<<<<<<< HEAD
-	    (CHIP_NUM(bp) == CHIP_NUM_5709))
-=======
 	    (BNX2_CHIP(bp) == BNX2_CHIP_5709))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
 			       MII_BNX2_BLK_ADDR_COMBO_IEEEB0);
 }
@@ -1752,11 +1409,7 @@ bnx2_test_and_enable_2g5(struct bnx2 *bp)
 	if (bp->autoneg & AUTONEG_SPEED)
 		bp->advertising |= ADVERTISED_2500baseX_Full;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR, MII_BNX2_BLK_ADDR_OVER1G);
 
 	bnx2_read_phy(bp, bp->mii_up1, &up1);
@@ -1766,11 +1419,7 @@ bnx2_test_and_enable_2g5(struct bnx2 *bp)
 		ret = 0;
 	}
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
 			       MII_BNX2_BLK_ADDR_COMBO_IEEEB0);
 
@@ -1786,11 +1435,7 @@ bnx2_test_and_disable_2g5(struct bnx2 *bp)
 	if (!(bp->phy_flags & BNX2_PHY_FLAG_2_5G_CAPABLE))
 		return 0;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR, MII_BNX2_BLK_ADDR_OVER1G);
 
 	bnx2_read_phy(bp, bp->mii_up1, &up1);
@@ -1800,11 +1445,7 @@ bnx2_test_and_disable_2g5(struct bnx2 *bp)
 		ret = 1;
 	}
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
 			       MII_BNX2_BLK_ADDR_COMBO_IEEEB0);
 
@@ -1814,21 +1455,13 @@ bnx2_test_and_disable_2g5(struct bnx2 *bp)
 static void
 bnx2_enable_forced_2g5(struct bnx2 *bp)
 {
-<<<<<<< HEAD
-	u32 uninitialized_var(bmcr);
-=======
 	u32 bmcr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!(bp->phy_flags & BNX2_PHY_FLAG_2_5G_CAPABLE))
 		return;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val;
 
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
@@ -1844,11 +1477,7 @@ bnx2_enable_forced_2g5(struct bnx2 *bp)
 			       MII_BNX2_BLK_ADDR_COMBO_IEEEB0);
 		err = bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 
-<<<<<<< HEAD
-	} else if (CHIP_NUM(bp) == CHIP_NUM_5708) {
-=======
 	} else if (BNX2_CHIP(bp) == BNX2_CHIP_5708) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 		if (!err)
 			bmcr |= BCM5708S_BMCR_FORCE_2500;
@@ -1870,21 +1499,13 @@ bnx2_enable_forced_2g5(struct bnx2 *bp)
 static void
 bnx2_disable_forced_2g5(struct bnx2 *bp)
 {
-<<<<<<< HEAD
-	u32 uninitialized_var(bmcr);
-=======
 	u32 bmcr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!(bp->phy_flags & BNX2_PHY_FLAG_2_5G_CAPABLE))
 		return;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val;
 
 		bnx2_write_phy(bp, MII_BNX2_BLK_ADDR,
@@ -1898,11 +1519,7 @@ bnx2_disable_forced_2g5(struct bnx2 *bp)
 			       MII_BNX2_BLK_ADDR_COMBO_IEEEB0);
 		err = bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 
-<<<<<<< HEAD
-	} else if (CHIP_NUM(bp) == CHIP_NUM_5708) {
-=======
 	} else if (BNX2_CHIP(bp) == BNX2_CHIP_5708) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 		if (!err)
 			bmcr &= ~BCM5708S_BMCR_FORCE_2500;
@@ -1953,22 +1570,14 @@ bnx2_set_link(struct bnx2 *bp)
 	bnx2_disable_bmsr1(bp);
 
 	if ((bp->phy_flags & BNX2_PHY_FLAG_SERDES) &&
-<<<<<<< HEAD
-	    (CHIP_NUM(bp) == CHIP_NUM_5706)) {
-=======
 	    (BNX2_CHIP(bp) == BNX2_CHIP_5706)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val, an_dbg;
 
 		if (bp->phy_flags & BNX2_PHY_FLAG_FORCED_DOWN) {
 			bnx2_5706s_force_link_dn(bp, 0);
 			bp->phy_flags &= ~BNX2_PHY_FLAG_FORCED_DOWN;
 		}
-<<<<<<< HEAD
-		val = REG_RD(bp, BNX2_EMAC_STATUS);
-=======
 		val = BNX2_RD(bp, BNX2_EMAC_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bnx2_write_phy(bp, MII_BNX2_MISC_SHADOW, MISC_SHDW_AN_DBG);
 		bnx2_read_phy(bp, MII_BNX2_MISC_SHADOW, &an_dbg);
@@ -1985,19 +1594,11 @@ bnx2_set_link(struct bnx2 *bp)
 		bp->link_up = 1;
 
 		if (bp->phy_flags & BNX2_PHY_FLAG_SERDES) {
-<<<<<<< HEAD
-			if (CHIP_NUM(bp) == CHIP_NUM_5706)
-				bnx2_5706s_linkup(bp);
-			else if (CHIP_NUM(bp) == CHIP_NUM_5708)
-				bnx2_5708s_linkup(bp);
-			else if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 			if (BNX2_CHIP(bp) == BNX2_CHIP_5706)
 				bnx2_5706s_linkup(bp);
 			else if (BNX2_CHIP(bp) == BNX2_CHIP_5708)
 				bnx2_5708s_linkup(bp);
 			else if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bnx2_5709s_linkup(bp);
 		}
 		else {
@@ -2179,11 +1780,7 @@ __acquires(&bp->phy_lock)
 		new_bmcr = bmcr & ~BMCR_ANENABLE;
 		new_bmcr |= BMCR_SPEED1000;
 
-<<<<<<< HEAD
-		if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 		if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (bp->req_line_speed == SPEED_2500)
 				bnx2_enable_forced_2g5(bp);
 			else if (bp->req_line_speed == SPEED_1000) {
@@ -2191,11 +1788,7 @@ __acquires(&bp->phy_lock)
 				new_bmcr &= ~0x2000;
 			}
 
-<<<<<<< HEAD
-		} else if (CHIP_NUM(bp) == CHIP_NUM_5708) {
-=======
 		} else if (BNX2_CHIP(bp) == BNX2_CHIP_5708) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (bp->req_line_speed == SPEED_2500)
 				new_bmcr |= BCM5708S_BMCR_FORCE_2500;
 			else
@@ -2372,13 +1965,8 @@ bnx2_send_heart_beat(struct bnx2 *bp)
 	spin_lock(&bp->indirect_lock);
 	msg = (u32) (++bp->fw_drv_pulse_wr_seq & BNX2_DRV_PULSE_SEQ_MASK);
 	addr = bp->shmem_base + BNX2_DRV_PULSE_MB;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, addr);
-	REG_WR(bp, BNX2_PCICFG_REG_WINDOW, msg);
-=======
 	BNX2_WR(bp, BNX2_PCICFG_REG_WINDOW_ADDRESS, addr);
 	BNX2_WR(bp, BNX2_PCICFG_REG_WINDOW, msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&bp->indirect_lock);
 }
 
@@ -2407,38 +1995,26 @@ bnx2_remote_phy_event(struct bnx2 *bp)
 		switch (speed) {
 			case BNX2_LINK_STATUS_10HALF:
 				bp->duplex = DUPLEX_HALF;
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case BNX2_LINK_STATUS_10FULL:
 				bp->line_speed = SPEED_10;
 				break;
 			case BNX2_LINK_STATUS_100HALF:
 				bp->duplex = DUPLEX_HALF;
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case BNX2_LINK_STATUS_100BASE_T4:
 			case BNX2_LINK_STATUS_100FULL:
 				bp->line_speed = SPEED_100;
 				break;
 			case BNX2_LINK_STATUS_1000HALF:
 				bp->duplex = DUPLEX_HALF;
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case BNX2_LINK_STATUS_1000FULL:
 				bp->line_speed = SPEED_1000;
 				break;
 			case BNX2_LINK_STATUS_2500HALF:
 				bp->duplex = DUPLEX_HALF;
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case BNX2_LINK_STATUS_2500FULL:
 				bp->line_speed = SPEED_2500;
 				break;
@@ -2498,25 +2074,11 @@ bnx2_setup_copper_phy(struct bnx2 *bp)
 __releases(&bp->phy_lock)
 __acquires(&bp->phy_lock)
 {
-<<<<<<< HEAD
-	u32 bmcr;
-=======
 	u32 bmcr, adv_reg, new_adv = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 new_bmcr;
 
 	bnx2_read_phy(bp, bp->mii_bmcr, &bmcr);
 
-<<<<<<< HEAD
-	if (bp->autoneg & AUTONEG_SPEED) {
-		u32 adv_reg, adv1000_reg;
-		u32 new_adv = 0;
-		u32 new_adv1000 = 0;
-
-		bnx2_read_phy(bp, bp->mii_adv, &adv_reg);
-		adv_reg &= (PHY_ALL_10_100_SPEED | ADVERTISE_PAUSE_CAP |
-			ADVERTISE_PAUSE_ASYM);
-=======
 	bnx2_read_phy(bp, bp->mii_adv, &adv_reg);
 	adv_reg &= (PHY_ALL_10_100_SPEED | ADVERTISE_PAUSE_CAP |
 		    ADVERTISE_PAUSE_ASYM);
@@ -2528,21 +2090,11 @@ __acquires(&bp->phy_lock)
 		u32 new_adv1000 = 0;
 
 		new_adv |= bnx2_phy_get_pause_adv(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bnx2_read_phy(bp, MII_CTRL1000, &adv1000_reg);
 		adv1000_reg &= PHY_ALL_1000_SPEED;
 
-<<<<<<< HEAD
-		new_adv = ethtool_adv_to_mii_adv_t(bp->advertising);
-		new_adv |= ADVERTISE_CSMA;
-		new_adv |= bnx2_phy_get_pause_adv(bp);
-
 		new_adv1000 |= ethtool_adv_to_mii_ctrl1000_t(bp->advertising);
-
-=======
-		new_adv1000 |= ethtool_adv_to_mii_ctrl1000_t(bp->advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((adv1000_reg != new_adv1000) ||
 			(adv_reg != new_adv) ||
 			((bmcr & BMCR_ANENABLE) == 0)) {
@@ -2562,13 +2114,10 @@ __acquires(&bp->phy_lock)
 		return 0;
 	}
 
-<<<<<<< HEAD
-=======
 	/* advertise nothing when forcing speed */
 	if (adv_reg != new_adv)
 		bnx2_write_phy(bp, bp->mii_adv, new_adv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_bmcr = 0;
 	if (bp->req_line_speed == SPEED_100) {
 		new_bmcr |= BMCR_SPEED100;
@@ -2706,15 +2255,9 @@ bnx2_init_5708s_phy(struct bnx2 *bp, int reset_phy)
 		bnx2_write_phy(bp, BCM5708S_UP1, val);
 	}
 
-<<<<<<< HEAD
-	if ((CHIP_ID(bp) == CHIP_ID_5708_A0) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_B0) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_B1)) {
-=======
 	if ((BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_A0) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_B0) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_B1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* increase tx signal amplitude */
 		bnx2_write_phy(bp, BCM5708S_BLK_ADDR,
 			       BCM5708S_BLK_ADDR_TX_MISC);
@@ -2750,17 +2293,10 @@ bnx2_init_5706s_phy(struct bnx2 *bp, int reset_phy)
 
 	bp->phy_flags &= ~BNX2_PHY_FLAG_PARALLEL_DETECT;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5706)
-        	REG_WR(bp, BNX2_MISC_GP_HW_CTL0, 0x300);
-
-	if (bp->dev->mtu > 1500) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5706)
 		BNX2_WR(bp, BNX2_MISC_GP_HW_CTL0, 0x300);
 
 	if (bp->dev->mtu > ETH_DATA_LEN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val;
 
 		/* Set extended packet length bit */
@@ -2814,11 +2350,7 @@ bnx2_init_copper_phy(struct bnx2 *bp, int reset_phy)
 		bnx2_write_phy(bp, MII_BNX2_DSP_RW_PORT, val);
 	}
 
-<<<<<<< HEAD
-	if (bp->dev->mtu > 1500) {
-=======
 	if (bp->dev->mtu > ETH_DATA_LEN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Set extended packet length bit */
 		bnx2_write_phy(bp, 0x18, 0x7);
 		bnx2_read_phy(bp, 0x18, &val);
@@ -2837,11 +2369,6 @@ bnx2_init_copper_phy(struct bnx2 *bp, int reset_phy)
 	}
 
 	/* ethernet@wirespeed */
-<<<<<<< HEAD
-	bnx2_write_phy(bp, 0x18, 0x7007);
-	bnx2_read_phy(bp, 0x18, &val);
-	bnx2_write_phy(bp, 0x18, val | (1 << 15) | (1 << 4));
-=======
 	bnx2_write_phy(bp, MII_BNX2_AUX_CTL, AUX_CTL_MISC_CTL);
 	bnx2_read_phy(bp, MII_BNX2_AUX_CTL, &val);
 	val |=  AUX_CTL_MISC_CTL_WR | AUX_CTL_MISC_CTL_WIRESPEED;
@@ -2851,7 +2378,6 @@ bnx2_init_copper_phy(struct bnx2 *bp, int reset_phy)
 		val |=  AUX_CTL_MISC_CTL_AUTOMDIX;
 
 	bnx2_write_phy(bp, MII_BNX2_AUX_CTL, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2873,11 +2399,7 @@ __acquires(&bp->phy_lock)
 	bp->mii_adv = MII_ADVERTISE;
 	bp->mii_lpa = MII_LPA;
 
-<<<<<<< HEAD
-        REG_WR(bp, BNX2_EMAC_ATTENTION_ENA, BNX2_EMAC_ATTENTION_ENA_LINK);
-=======
 	BNX2_WR(bp, BNX2_EMAC_ATTENTION_ENA, BNX2_EMAC_ATTENTION_ENA_LINK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_REMOTE_PHY_CAP)
 		goto setup_phy;
@@ -2888,19 +2410,11 @@ __acquires(&bp->phy_lock)
 	bp->phy_id |= val & 0xffff;
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_SERDES) {
-<<<<<<< HEAD
-		if (CHIP_NUM(bp) == CHIP_NUM_5706)
-			rc = bnx2_init_5706s_phy(bp, reset_phy);
-		else if (CHIP_NUM(bp) == CHIP_NUM_5708)
-			rc = bnx2_init_5708s_phy(bp, reset_phy);
-		else if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 		if (BNX2_CHIP(bp) == BNX2_CHIP_5706)
 			rc = bnx2_init_5706s_phy(bp, reset_phy);
 		else if (BNX2_CHIP(bp) == BNX2_CHIP_5708)
 			rc = bnx2_init_5708s_phy(bp, reset_phy);
 		else if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = bnx2_init_5709s_phy(bp, reset_phy);
 	}
 	else {
@@ -2919,17 +2433,10 @@ bnx2_set_mac_loopback(struct bnx2 *bp)
 {
 	u32 mac_mode;
 
-<<<<<<< HEAD
-	mac_mode = REG_RD(bp, BNX2_EMAC_MODE);
-	mac_mode &= ~BNX2_EMAC_MODE_PORT;
-	mac_mode |= BNX2_EMAC_MODE_MAC_LOOP | BNX2_EMAC_MODE_FORCE_LINK;
-	REG_WR(bp, BNX2_EMAC_MODE, mac_mode);
-=======
 	mac_mode = BNX2_RD(bp, BNX2_EMAC_MODE);
 	mac_mode &= ~BNX2_EMAC_MODE_PORT;
 	mac_mode |= BNX2_EMAC_MODE_MAC_LOOP | BNX2_EMAC_MODE_FORCE_LINK;
 	BNX2_WR(bp, BNX2_EMAC_MODE, mac_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->link_up = 1;
 	return 0;
 }
@@ -2955,21 +2462,13 @@ bnx2_set_phy_loopback(struct bnx2 *bp)
 		msleep(100);
 	}
 
-<<<<<<< HEAD
-	mac_mode = REG_RD(bp, BNX2_EMAC_MODE);
-=======
 	mac_mode = BNX2_RD(bp, BNX2_EMAC_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac_mode &= ~(BNX2_EMAC_MODE_PORT | BNX2_EMAC_MODE_HALF_DUPLEX |
 		      BNX2_EMAC_MODE_MAC_LOOP | BNX2_EMAC_MODE_FORCE_LINK |
 		      BNX2_EMAC_MODE_25G_MODE);
 
 	mac_mode |= BNX2_EMAC_MODE_PORT_GMII;
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MODE, mac_mode);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MODE, mac_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->link_up = 1;
 	return 0;
 }
@@ -2981,11 +2480,7 @@ bnx2_dump_mcp_state(struct bnx2 *bp)
 	u32 mcp_p0, mcp_p1;
 
 	netdev_err(dev, "<--- start MCP states dump --->\n");
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp_p0 = BNX2_MCP_STATE_P0;
 		mcp_p1 = BNX2_MCP_STATE_P1;
 	} else {
@@ -3013,10 +2508,7 @@ bnx2_dump_mcp_state(struct bnx2 *bp)
 		   bnx2_shmem_rd(bp, BNX2_BC_STATE_RESET_TYPE));
 	pr_cont(" condition[%08x]\n",
 		bnx2_shmem_rd(bp, BNX2_BC_STATE_CONDITION));
-<<<<<<< HEAD
-=======
 	DP_SHMEM_LINE(bp, BNX2_BC_RESET_TYPE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DP_SHMEM_LINE(bp, 0x3cc);
 	DP_SHMEM_LINE(bp, 0x3dc);
 	DP_SHMEM_LINE(bp, 0x3ec);
@@ -3032,10 +2524,7 @@ bnx2_fw_sync(struct bnx2 *bp, u32 msg_data, int ack, int silent)
 
 	bp->fw_wr_seq++;
 	msg_data |= bp->fw_wr_seq;
-<<<<<<< HEAD
-=======
 	bp->fw_last_msg = msg_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2_shmem_wr(bp, BNX2_DRV_MB, msg_data);
 
@@ -3081,17 +2570,10 @@ bnx2_init_5709_context(struct bnx2 *bp)
 	u32 val;
 
 	val = BNX2_CTX_COMMAND_ENABLED | BNX2_CTX_COMMAND_MEM_INIT | (1 << 12);
-<<<<<<< HEAD
-	val |= (BCM_PAGE_BITS - 8) << 16;
-	REG_WR(bp, BNX2_CTX_COMMAND, val);
-	for (i = 0; i < 10; i++) {
-		val = REG_RD(bp, BNX2_CTX_COMMAND);
-=======
 	val |= (BNX2_PAGE_BITS - 8) << 16;
 	BNX2_WR(bp, BNX2_CTX_COMMAND, val);
 	for (i = 0; i < 10; i++) {
 		val = BNX2_RD(bp, BNX2_CTX_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(val & BNX2_CTX_COMMAND_MEM_INIT))
 			break;
 		udelay(2);
@@ -3103,22 +2585,6 @@ bnx2_init_5709_context(struct bnx2 *bp)
 		int j;
 
 		if (bp->ctx_blk[i])
-<<<<<<< HEAD
-			memset(bp->ctx_blk[i], 0, BCM_PAGE_SIZE);
-		else
-			return -ENOMEM;
-
-		REG_WR(bp, BNX2_CTX_HOST_PAGE_TBL_DATA0,
-		       (bp->ctx_blk_mapping[i] & 0xffffffff) |
-		       BNX2_CTX_HOST_PAGE_TBL_DATA0_VALID);
-		REG_WR(bp, BNX2_CTX_HOST_PAGE_TBL_DATA1,
-		       (u64) bp->ctx_blk_mapping[i] >> 32);
-		REG_WR(bp, BNX2_CTX_HOST_PAGE_TBL_CTRL, i |
-		       BNX2_CTX_HOST_PAGE_TBL_CTRL_WRITE_REQ);
-		for (j = 0; j < 10; j++) {
-
-			val = REG_RD(bp, BNX2_CTX_HOST_PAGE_TBL_CTRL);
-=======
 			memset(bp->ctx_blk[i], 0, BNX2_PAGE_SIZE);
 		else
 			return -ENOMEM;
@@ -3133,7 +2599,6 @@ bnx2_init_5709_context(struct bnx2 *bp)
 		for (j = 0; j < 10; j++) {
 
 			val = BNX2_RD(bp, BNX2_CTX_HOST_PAGE_TBL_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(val & BNX2_CTX_HOST_PAGE_TBL_CTRL_WRITE_REQ))
 				break;
 			udelay(5);
@@ -3158,11 +2623,7 @@ bnx2_init_context(struct bnx2 *bp)
 
 		vcid--;
 
-<<<<<<< HEAD
-		if (CHIP_ID(bp) == CHIP_ID_5706_A0) {
-=======
 		if (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u32 new_vcid;
 
 			vcid_addr = GET_PCID_ADDR(vcid);
@@ -3183,13 +2644,8 @@ bnx2_init_context(struct bnx2 *bp)
 			vcid_addr += (i << PHY_CTX_SHIFT);
 			pcid_addr += (i << PHY_CTX_SHIFT);
 
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_CTX_VIRT_ADDR, vcid_addr);
-			REG_WR(bp, BNX2_CTX_PAGE_TBL, pcid_addr);
-=======
 			BNX2_WR(bp, BNX2_CTX_VIRT_ADDR, vcid_addr);
 			BNX2_WR(bp, BNX2_CTX_PAGE_TBL, pcid_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Zero out the context. */
 			for (offset = 0; offset < PHY_CTX_SIZE; offset += 4)
@@ -3205,19 +2661,11 @@ bnx2_alloc_bad_rbuf(struct bnx2 *bp)
 	u32 good_mbuf_cnt;
 	u32 val;
 
-<<<<<<< HEAD
-	good_mbuf = kmalloc(512 * sizeof(u16), GFP_KERNEL);
-	if (good_mbuf == NULL)
-		return -ENOMEM;
-
-	REG_WR(bp, BNX2_MISC_ENABLE_SET_BITS,
-=======
 	good_mbuf = kmalloc_array(512, sizeof(u16), GFP_KERNEL);
 	if (!good_mbuf)
 		return -ENOMEM;
 
 	BNX2_WR(bp, BNX2_MISC_ENABLE_SET_BITS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNX2_MISC_ENABLE_SET_BITS_RX_MBUF_ENABLE);
 
 	good_mbuf_cnt = 0;
@@ -3256,55 +2704,33 @@ bnx2_alloc_bad_rbuf(struct bnx2 *bp)
 }
 
 static void
-<<<<<<< HEAD
-bnx2_set_mac_addr(struct bnx2 *bp, u8 *mac_addr, u32 pos)
-=======
 bnx2_set_mac_addr(struct bnx2 *bp, const u8 *mac_addr, u32 pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
 	val = (mac_addr[0] << 8) | mac_addr[1];
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MAC_MATCH0 + (pos * 8), val);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MAC_MATCH0 + (pos * 8), val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = (mac_addr[2] << 24) | (mac_addr[3] << 16) |
 		(mac_addr[4] << 8) | mac_addr[5];
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_MAC_MATCH1 + (pos * 8), val);
-=======
 	BNX2_WR(bp, BNX2_EMAC_MAC_MATCH1 + (pos * 8), val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
 bnx2_alloc_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gfp_t gfp)
 {
 	dma_addr_t mapping;
-<<<<<<< HEAD
-	struct sw_pg *rx_pg = &rxr->rx_pg_ring[index];
-	struct rx_bd *rxbd =
-		&rxr->rx_pg_desc_ring[RX_RING(index)][RX_IDX(index)];
-=======
 	struct bnx2_sw_pg *rx_pg = &rxr->rx_pg_ring[index];
 	struct bnx2_rx_bd *rxbd =
 		&rxr->rx_pg_desc_ring[BNX2_RX_RING(index)][BNX2_RX_IDX(index)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page = alloc_page(gfp);
 
 	if (!page)
 		return -ENOMEM;
 	mapping = dma_map_page(&bp->pdev->dev, page, 0, PAGE_SIZE,
-<<<<<<< HEAD
-			       PCI_DMA_FROMDEVICE);
-=======
 			       DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
 		__free_page(page);
 		return -EIO;
@@ -3320,22 +2746,14 @@ bnx2_alloc_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
 static void
 bnx2_free_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index)
 {
-<<<<<<< HEAD
-	struct sw_pg *rx_pg = &rxr->rx_pg_ring[index];
-=======
 	struct bnx2_sw_pg *rx_pg = &rxr->rx_pg_ring[index];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page = rx_pg->page;
 
 	if (!page)
 		return;
 
 	dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(rx_pg, mapping),
-<<<<<<< HEAD
-		       PAGE_SIZE, PCI_DMA_FROMDEVICE);
-=======
 		       PAGE_SIZE, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__free_page(page);
 	rx_pg->page = NULL;
@@ -3345,16 +2763,10 @@ static inline int
 bnx2_alloc_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gfp_t gfp)
 {
 	u8 *data;
-<<<<<<< HEAD
-	struct sw_bd *rx_buf = &rxr->rx_buf_ring[index];
-	dma_addr_t mapping;
-	struct rx_bd *rxbd = &rxr->rx_desc_ring[RX_RING(index)][RX_IDX(index)];
-=======
 	struct bnx2_sw_bd *rx_buf = &rxr->rx_buf_ring[index];
 	dma_addr_t mapping;
 	struct bnx2_rx_bd *rxbd =
 		&rxr->rx_desc_ring[BNX2_RX_RING(index)][BNX2_RX_IDX(index)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = kmalloc(bp->rx_buf_size, gfp);
 	if (!data)
@@ -3363,11 +2775,7 @@ bnx2_alloc_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
 	mapping = dma_map_single(&bp->pdev->dev,
 				 get_l2_fhdr(data),
 				 bp->rx_buf_use_size,
-<<<<<<< HEAD
-				 PCI_DMA_FROMDEVICE);
-=======
 				 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
 		kfree(data);
 		return -EIO;
@@ -3395,15 +2803,9 @@ bnx2_phy_event_is_set(struct bnx2 *bp, struct bnx2_napi *bnapi, u32 event)
 	old_link_state = sblk->status_attn_bits_ack & event;
 	if (new_link_state != old_link_state) {
 		if (new_link_state)
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_PCICFG_STATUS_BIT_SET_CMD, event);
-		else
-			REG_WR(bp, BNX2_PCICFG_STATUS_BIT_CLEAR_CMD, event);
-=======
 			BNX2_WR(bp, BNX2_PCICFG_STATUS_BIT_SET_CMD, event);
 		else
 			BNX2_WR(bp, BNX2_PCICFG_STATUS_BIT_CLEAR_CMD, event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		is_set = 0;
 
@@ -3429,17 +2831,9 @@ bnx2_get_hw_tx_cons(struct bnx2_napi *bnapi)
 {
 	u16 cons;
 
-<<<<<<< HEAD
-	/* Tell compiler that status block fields can change. */
-	barrier();
-	cons = *bnapi->hw_tx_cons_ptr;
-	barrier();
-	if (unlikely((cons & MAX_TX_DESC_CNT) == MAX_TX_DESC_CNT))
-=======
 	cons = READ_ONCE(*bnapi->hw_tx_cons_ptr);
 
 	if (unlikely((cons & BNX2_MAX_TX_DESC_CNT) == BNX2_MAX_TX_DESC_CNT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cons++;
 	return cons;
 }
@@ -3460,19 +2854,11 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 	sw_cons = txr->tx_cons;
 
 	while (sw_cons != hw_cons) {
-<<<<<<< HEAD
-		struct sw_tx_bd *tx_buf;
-		struct sk_buff *skb;
-		int i, last;
-
-		sw_ring_cons = TX_RING_IDX(sw_cons);
-=======
 		struct bnx2_sw_tx_bd *tx_buf;
 		struct sk_buff *skb;
 		int i, last;
 
 		sw_ring_cons = BNX2_TX_RING_IDX(sw_cons);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tx_buf = &txr->tx_buf_ring[sw_ring_cons];
 		skb = tx_buf->skb;
@@ -3486,11 +2872,7 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 
 			last_idx = sw_cons + tx_buf->nr_frags + 1;
 			last_ring_idx = sw_ring_cons + tx_buf->nr_frags + 1;
-<<<<<<< HEAD
-			if (unlikely(last_ring_idx >= MAX_TX_DESC_CNT)) {
-=======
 			if (unlikely(last_ring_idx >= BNX2_MAX_TX_DESC_CNT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				last_idx++;
 			}
 			if (((s16) ((s16) last_idx - (s16) hw_cons)) > 0) {
@@ -3499,32 +2881,12 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 		}
 
 		dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
-<<<<<<< HEAD
-			skb_headlen(skb), PCI_DMA_TODEVICE);
-=======
 			skb_headlen(skb), DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tx_buf->skb = NULL;
 		last = tx_buf->nr_frags;
 
 		for (i = 0; i < last; i++) {
-<<<<<<< HEAD
-			sw_cons = NEXT_TX_BD(sw_cons);
-
-			dma_unmap_page(&bp->pdev->dev,
-				dma_unmap_addr(
-					&txr->tx_buf_ring[TX_RING_IDX(sw_cons)],
-					mapping),
-				skb_frag_size(&skb_shinfo(skb)->frags[i]),
-				PCI_DMA_TODEVICE);
-		}
-
-		sw_cons = NEXT_TX_BD(sw_cons);
-
-		tx_bytes += skb->len;
-		dev_kfree_skb(skb);
-=======
 			struct bnx2_sw_tx_bd *tx_buf;
 
 			sw_cons = BNX2_NEXT_TX_BD(sw_cons);
@@ -3540,7 +2902,6 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 
 		tx_bytes += skb->len;
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_pkt++;
 		if (tx_pkt == budget)
 			break;
@@ -3576,13 +2937,8 @@ static void
 bnx2_reuse_rx_skb_pages(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 			struct sk_buff *skb, int count)
 {
-<<<<<<< HEAD
-	struct sw_pg *cons_rx_pg, *prod_rx_pg;
-	struct rx_bd *cons_bd, *prod_bd;
-=======
 	struct bnx2_sw_pg *cons_rx_pg, *prod_rx_pg;
 	struct bnx2_rx_bd *cons_bd, *prod_bd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u16 hw_prod, prod;
 	u16 cons = rxr->rx_pg_cons;
@@ -3600,10 +2956,6 @@ bnx2_reuse_rx_skb_pages(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 		shinfo = skb_shinfo(skb);
 		shinfo->nr_frags--;
 		page = skb_frag_page(&shinfo->frags[shinfo->nr_frags]);
-<<<<<<< HEAD
-		__skb_frag_set_page(&shinfo->frags[shinfo->nr_frags], NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cons_rx_pg->page = page;
 		dev_kfree_skb(skb);
@@ -3612,14 +2964,6 @@ bnx2_reuse_rx_skb_pages(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 	hw_prod = rxr->rx_pg_prod;
 
 	for (i = 0; i < count; i++) {
-<<<<<<< HEAD
-		prod = RX_PG_RING_IDX(hw_prod);
-
-		prod_rx_pg = &rxr->rx_pg_ring[prod];
-		cons_rx_pg = &rxr->rx_pg_ring[cons];
-		cons_bd = &rxr->rx_pg_desc_ring[RX_RING(cons)][RX_IDX(cons)];
-		prod_bd = &rxr->rx_pg_desc_ring[RX_RING(prod)][RX_IDX(prod)];
-=======
 		prod = BNX2_RX_PG_RING_IDX(hw_prod);
 
 		prod_rx_pg = &rxr->rx_pg_ring[prod];
@@ -3628,7 +2972,6 @@ bnx2_reuse_rx_skb_pages(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 						[BNX2_RX_IDX(cons)];
 		prod_bd = &rxr->rx_pg_desc_ring[BNX2_RX_RING(prod)]
 						[BNX2_RX_IDX(prod)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (prod != cons) {
 			prod_rx_pg->page = cons_rx_pg->page;
@@ -3640,13 +2983,8 @@ bnx2_reuse_rx_skb_pages(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 			prod_bd->rx_bd_haddr_lo = cons_bd->rx_bd_haddr_lo;
 
 		}
-<<<<<<< HEAD
-		cons = RX_PG_RING_IDX(NEXT_RX_BD(cons));
-		hw_prod = NEXT_RX_BD(hw_prod);
-=======
 		cons = BNX2_RX_PG_RING_IDX(BNX2_NEXT_RX_BD(cons));
 		hw_prod = BNX2_NEXT_RX_BD(hw_prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rxr->rx_pg_prod = hw_prod;
 	rxr->rx_pg_cons = cons;
@@ -3656,24 +2994,15 @@ static inline void
 bnx2_reuse_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 		   u8 *data, u16 cons, u16 prod)
 {
-<<<<<<< HEAD
-	struct sw_bd *cons_rx_buf, *prod_rx_buf;
-	struct rx_bd *cons_bd, *prod_bd;
-=======
 	struct bnx2_sw_bd *cons_rx_buf, *prod_rx_buf;
 	struct bnx2_rx_bd *cons_bd, *prod_bd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cons_rx_buf = &rxr->rx_buf_ring[cons];
 	prod_rx_buf = &rxr->rx_buf_ring[prod];
 
 	dma_sync_single_for_device(&bp->pdev->dev,
 		dma_unmap_addr(cons_rx_buf, mapping),
-<<<<<<< HEAD
-		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, PCI_DMA_FROMDEVICE);
-=======
 		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxr->rx_prod_bseq += bp->rx_buf_use_size;
 
@@ -3685,13 +3014,8 @@ bnx2_reuse_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
 	dma_unmap_addr_set(prod_rx_buf, mapping,
 			dma_unmap_addr(cons_rx_buf, mapping));
 
-<<<<<<< HEAD
-	cons_bd = &rxr->rx_desc_ring[RX_RING(cons)][RX_IDX(cons)];
-	prod_bd = &rxr->rx_desc_ring[RX_RING(prod)][RX_IDX(prod)];
-=======
 	cons_bd = &rxr->rx_desc_ring[BNX2_RX_RING(cons)][BNX2_RX_IDX(cons)];
 	prod_bd = &rxr->rx_desc_ring[BNX2_RX_RING(prod)][BNX2_RX_IDX(prod)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prod_bd->rx_bd_haddr_hi = cons_bd->rx_bd_haddr_hi;
 	prod_bd->rx_bd_haddr_lo = cons_bd->rx_bd_haddr_lo;
 }
@@ -3719,13 +3043,8 @@ error:
 	}
 
 	dma_unmap_single(&bp->pdev->dev, dma_addr, bp->rx_buf_use_size,
-<<<<<<< HEAD
-			 PCI_DMA_FROMDEVICE);
-	skb = build_skb(data);
-=======
 			 DMA_FROM_DEVICE);
 	skb = slab_build_skb(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		kfree(data);
 		goto error;
@@ -3736,11 +3055,7 @@ error:
 		return skb;
 	} else {
 		unsigned int i, frag_len, frag_size, pages;
-<<<<<<< HEAD
-		struct sw_pg *rx_pg;
-=======
 		struct bnx2_sw_pg *rx_pg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u16 pg_cons = rxr->rx_pg_cons;
 		u16 pg_prod = rxr->rx_pg_prod;
 
@@ -3783,11 +3098,7 @@ error:
 			rx_pg->page = NULL;
 
 			err = bnx2_alloc_rx_page(bp, rxr,
-<<<<<<< HEAD
-						 RX_PG_RING_IDX(pg_prod),
-=======
 						 BNX2_RX_PG_RING_IDX(pg_prod),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 GFP_ATOMIC);
 			if (unlikely(err)) {
 				rxr->rx_pg_cons = pg_cons;
@@ -3798,24 +3109,15 @@ error:
 			}
 
 			dma_unmap_page(&bp->pdev->dev, mapping_old,
-<<<<<<< HEAD
-				       PAGE_SIZE, PCI_DMA_FROMDEVICE);
-=======
 				       PAGE_SIZE, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			frag_size -= frag_len;
 			skb->data_len += frag_len;
 			skb->truesize += PAGE_SIZE;
 			skb->len += frag_len;
 
-<<<<<<< HEAD
-			pg_prod = NEXT_RX_BD(pg_prod);
-			pg_cons = RX_PG_RING_IDX(NEXT_RX_BD(pg_cons));
-=======
 			pg_prod = BNX2_NEXT_RX_BD(pg_prod);
 			pg_cons = BNX2_RX_PG_RING_IDX(BNX2_NEXT_RX_BD(pg_cons));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		rxr->rx_pg_prod = pg_prod;
 		rxr->rx_pg_cons = pg_cons;
@@ -3828,17 +3130,9 @@ bnx2_get_hw_rx_cons(struct bnx2_napi *bnapi)
 {
 	u16 cons;
 
-<<<<<<< HEAD
-	/* Tell compiler that status block fields can change. */
-	barrier();
-	cons = *bnapi->hw_rx_cons_ptr;
-	barrier();
-	if (unlikely((cons & MAX_RX_DESC_CNT) == MAX_RX_DESC_CNT))
-=======
 	cons = READ_ONCE(*bnapi->hw_rx_cons_ptr);
 
 	if (unlikely((cons & BNX2_MAX_RX_DESC_CNT) == BNX2_MAX_RX_DESC_CNT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cons++;
 	return cons;
 }
@@ -3851,12 +3145,9 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 	struct l2_fhdr *rx_hdr;
 	int rx_pkt = 0, pg_ring_used = 0;
 
-<<<<<<< HEAD
-=======
 	if (budget <= 0)
 		return rx_pkt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw_cons = bnx2_get_hw_rx_cons(bnapi);
 	sw_cons = rxr->rx_cons;
 	sw_prod = rxr->rx_prod;
@@ -3868,15 +3159,6 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 	while (sw_cons != hw_cons) {
 		unsigned int len, hdr_len;
 		u32 status;
-<<<<<<< HEAD
-		struct sw_bd *rx_buf, *next_rx_buf;
-		struct sk_buff *skb;
-		dma_addr_t dma_addr;
-		u8 *data;
-
-		sw_ring_cons = RX_RING_IDX(sw_cons);
-		sw_ring_prod = RX_RING_IDX(sw_prod);
-=======
 		struct bnx2_sw_bd *rx_buf, *next_rx_buf;
 		struct sk_buff *skb;
 		dma_addr_t dma_addr;
@@ -3885,7 +3167,6 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 
 		sw_ring_cons = BNX2_RX_RING_IDX(sw_cons);
 		sw_ring_prod = BNX2_RX_RING_IDX(sw_prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rx_buf = &rxr->rx_buf_ring[sw_ring_cons];
 		data = rx_buf->data;
@@ -3898,17 +3179,10 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 
 		dma_sync_single_for_cpu(&bp->pdev->dev, dma_addr,
 			BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH,
-<<<<<<< HEAD
-			PCI_DMA_FROMDEVICE);
-
-		next_rx_buf =
-			&rxr->rx_buf_ring[RX_RING_IDX(NEXT_RX_BD(sw_cons))];
-=======
 			DMA_FROM_DEVICE);
 
 		next_ring_idx = BNX2_RX_RING_IDX(BNX2_NEXT_RX_BD(sw_cons));
 		next_rx_buf = &rxr->rx_buf_ring[next_ring_idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prefetch(get_l2_fhdr(next_rx_buf->data));
 
 		len = rx_hdr->l2_fhdr_pkt_len;
@@ -3945,11 +3219,7 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 
 		if (len <= bp->rx_copy_thresh) {
 			skb = netdev_alloc_skb(bp->dev, len + 6);
-<<<<<<< HEAD
-			if (skb == NULL) {
-=======
 			if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bnx2_reuse_rx_data(bp, rxr, data, sw_ring_cons,
 						  sw_ring_prod);
 				goto next_rx;
@@ -3973,14 +3243,6 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 		}
 		if ((status & L2_FHDR_STATUS_L2_VLAN_TAG) &&
 		    !(bp->rx_mode & BNX2_EMAC_RX_MODE_KEEP_VLAN_TAG))
-<<<<<<< HEAD
-			__vlan_hwaccel_put_tag(skb, rx_hdr->l2_fhdr_vlan_tag);
-
-		skb->protocol = eth_type_trans(skb, bp->dev);
-
-		if ((len > (bp->dev->mtu + ETH_HLEN)) &&
-			(ntohs(skb->protocol) != 0x8100)) {
-=======
 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), rx_hdr->l2_fhdr_vlan_tag);
 
 		skb->protocol = eth_type_trans(skb, bp->dev);
@@ -3988,7 +3250,6 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 		if (len > (bp->dev->mtu + ETH_HLEN) &&
 		    skb->protocol != htons(0x8100) &&
 		    skb->protocol != htons(ETH_P_8021AD)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev_kfree_skb(skb);
 			goto next_rx;
@@ -4007,29 +3268,18 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
 		if ((bp->dev->features & NETIF_F_RXHASH) &&
 		    ((status & L2_FHDR_STATUS_USE_RXHASH) ==
 		     L2_FHDR_STATUS_USE_RXHASH))
-<<<<<<< HEAD
-			skb->rxhash = rx_hdr->l2_fhdr_hash;
-=======
 			skb_set_hash(skb, rx_hdr->l2_fhdr_hash,
 				     PKT_HASH_TYPE_L3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb_record_rx_queue(skb, bnapi - &bp->bnx2_napi[0]);
 		napi_gro_receive(&bnapi->napi, skb);
 		rx_pkt++;
 
 next_rx:
-<<<<<<< HEAD
-		sw_cons = NEXT_RX_BD(sw_cons);
-		sw_prod = NEXT_RX_BD(sw_prod);
-
-		if ((rx_pkt == budget))
-=======
 		sw_cons = BNX2_NEXT_RX_BD(sw_cons);
 		sw_prod = BNX2_NEXT_RX_BD(sw_prod);
 
 		if (rx_pkt == budget)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Refresh hw_cons to see if there is new work */
@@ -4042,21 +3292,11 @@ next_rx:
 	rxr->rx_prod = sw_prod;
 
 	if (pg_ring_used)
-<<<<<<< HEAD
-		REG_WR16(bp, rxr->rx_pg_bidx_addr, rxr->rx_pg_prod);
-
-	REG_WR16(bp, rxr->rx_bidx_addr, sw_prod);
-
-	REG_WR(bp, rxr->rx_bseq_addr, rxr->rx_prod_bseq);
-
-	mmiowb();
-=======
 		BNX2_WR16(bp, rxr->rx_pg_bidx_addr, rxr->rx_pg_prod);
 
 	BNX2_WR16(bp, rxr->rx_bidx_addr, sw_prod);
 
 	BNX2_WR(bp, rxr->rx_bseq_addr, rxr->rx_prod_bseq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rx_pkt;
 
@@ -4072,11 +3312,7 @@ bnx2_msi(int irq, void *dev_instance)
 	struct bnx2 *bp = bnapi->bp;
 
 	prefetch(bnapi->status_blk.msi);
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
-=======
 	BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNX2_PCICFG_INT_ACK_CMD_USE_INT_HC_PARAM |
 		BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
 
@@ -4120,30 +3356,18 @@ bnx2_interrupt(int irq, void *dev_instance)
 	 * the status block write.
 	 */
 	if ((sblk->status_idx == bnapi->last_status_idx) &&
-<<<<<<< HEAD
-	    (REG_RD(bp, BNX2_PCICFG_MISC_STATUS) &
-	     BNX2_PCICFG_MISC_STATUS_INTA_VALUE))
-		return IRQ_NONE;
-
-	REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
-=======
 	    (BNX2_RD(bp, BNX2_PCICFG_MISC_STATUS) &
 	     BNX2_PCICFG_MISC_STATUS_INTA_VALUE))
 		return IRQ_NONE;
 
 	BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNX2_PCICFG_INT_ACK_CMD_USE_INT_HC_PARAM |
 		BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
 
 	/* Read back to deassert IRQ immediately to avoid too many
 	 * spurious interrupts.
 	 */
-<<<<<<< HEAD
-	REG_RD(bp, BNX2_PCICFG_INT_ACK_CMD);
-=======
 	BNX2_RD(bp, BNX2_PCICFG_INT_ACK_CMD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return here if interrupt is shared and is disabled. */
 	if (unlikely(atomic_read(&bp->intr_sem) != 0))
@@ -4199,24 +3423,14 @@ bnx2_chk_missed_msi(struct bnx2 *bp)
 	u32 msi_ctrl;
 
 	if (bnx2_has_work(bnapi)) {
-<<<<<<< HEAD
-		msi_ctrl = REG_RD(bp, BNX2_PCICFG_MSI_CONTROL);
-=======
 		msi_ctrl = BNX2_RD(bp, BNX2_PCICFG_MSI_CONTROL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(msi_ctrl & BNX2_PCICFG_MSI_CONTROL_ENABLE))
 			return;
 
 		if (bnapi->last_status_idx == bp->idle_chk_status_idx) {
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_PCICFG_MSI_CONTROL, msi_ctrl &
-			       ~BNX2_PCICFG_MSI_CONTROL_ENABLE);
-			REG_WR(bp, BNX2_PCICFG_MSI_CONTROL, msi_ctrl);
-=======
 			BNX2_WR(bp, BNX2_PCICFG_MSI_CONTROL, msi_ctrl &
 				~BNX2_PCICFG_MSI_CONTROL_ENABLE);
 			BNX2_WR(bp, BNX2_PCICFG_MSI_CONTROL, msi_ctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bnx2_msi(bp->irq_tbl[0].vector, bnapi);
 		}
 	}
@@ -4255,15 +3469,9 @@ static void bnx2_poll_link(struct bnx2 *bp, struct bnx2_napi *bnapi)
 		/* This is needed to take care of transient status
 		 * during link changes.
 		 */
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_HC_COMMAND,
-		       bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW_WO_INT);
-		REG_RD(bp, BNX2_HC_COMMAND);
-=======
 		BNX2_WR(bp, BNX2_HC_COMMAND,
 			bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW_WO_INT);
 		BNX2_RD(bp, BNX2_HC_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4299,17 +3507,10 @@ static int bnx2_poll_msix(struct napi_struct *napi, int budget)
 		rmb();
 		if (likely(!bnx2_has_fast_work(bnapi))) {
 
-<<<<<<< HEAD
-			napi_complete(napi);
-			REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
-			       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-			       bnapi->last_status_idx);
-=======
 			napi_complete_done(napi, work_done);
 			BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD, bnapi->int_num |
 				BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
 				bnapi->last_status_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -4343,23 +3544,6 @@ static int bnx2_poll(struct napi_struct *napi, int budget)
 
 		rmb();
 		if (likely(!bnx2_has_work(bnapi))) {
-<<<<<<< HEAD
-			napi_complete(napi);
-			if (likely(bp->flags & BNX2_FLAG_USING_MSI_OR_MSIX)) {
-				REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
-				       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-				       bnapi->last_status_idx);
-				break;
-			}
-			REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
-			       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-			       BNX2_PCICFG_INT_ACK_CMD_MASK_INT |
-			       bnapi->last_status_idx);
-
-			REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
-			       BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
-			       bnapi->last_status_idx);
-=======
 			napi_complete_done(napi, work_done);
 			if (likely(bp->flags & BNX2_FLAG_USING_MSI_OR_MSIX)) {
 				BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
@@ -4375,7 +3559,6 @@ static int bnx2_poll(struct napi_struct *napi, int budget)
 			BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD,
 				BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
 				bnapi->last_status_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -4402,11 +3585,7 @@ bnx2_set_rx_mode(struct net_device *dev)
 	rx_mode = bp->rx_mode & ~(BNX2_EMAC_RX_MODE_PROMISCUOUS |
 				  BNX2_EMAC_RX_MODE_KEEP_VLAN_TAG);
 	sort_mode = 1 | BNX2_RPM_SORT_USER0_BC_EN;
-<<<<<<< HEAD
-	if (!(dev->features & NETIF_F_HW_VLAN_RX) &&
-=======
 	if (!(dev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     (bp->flags & BNX2_FLAG_CAN_KEEP_VLAN))
 		rx_mode |= BNX2_EMAC_RX_MODE_KEEP_VLAN_TAG;
 	if (dev->flags & IFF_PROMISC) {
@@ -4417,15 +3596,9 @@ bnx2_set_rx_mode(struct net_device *dev)
 	}
 	else if (dev->flags & IFF_ALLMULTI) {
 		for (i = 0; i < NUM_MC_HASH_REGISTERS; i++) {
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
-			       0xffffffff);
-        	}
-=======
 			BNX2_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
 				0xffffffff);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sort_mode |= BNX2_RPM_SORT_USER0_MC_EN;
 	}
 	else {
@@ -4446,13 +3619,8 @@ bnx2_set_rx_mode(struct net_device *dev)
 		}
 
 		for (i = 0; i < NUM_MC_HASH_REGISTERS; i++) {
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
-			       mc_filter[i]);
-=======
 			BNX2_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
 				mc_filter[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		sort_mode |= BNX2_RPM_SORT_USER0_MC_HSH_EN;
@@ -4477,21 +3645,12 @@ bnx2_set_rx_mode(struct net_device *dev)
 
 	if (rx_mode != bp->rx_mode) {
 		bp->rx_mode = rx_mode;
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_EMAC_RX_MODE, rx_mode);
-	}
-
-	REG_WR(bp, BNX2_RPM_SORT_USER0, 0x0);
-	REG_WR(bp, BNX2_RPM_SORT_USER0, sort_mode);
-	REG_WR(bp, BNX2_RPM_SORT_USER0, sort_mode | BNX2_RPM_SORT_USER0_ENA);
-=======
 		BNX2_WR(bp, BNX2_EMAC_RX_MODE, rx_mode);
 	}
 
 	BNX2_WR(bp, BNX2_RPM_SORT_USER0, 0x0);
 	BNX2_WR(bp, BNX2_RPM_SORT_USER0, sort_mode);
 	BNX2_WR(bp, BNX2_RPM_SORT_USER0, sort_mode | BNX2_RPM_SORT_USER0_ENA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_bh(&bp->phy_lock);
 }
@@ -4539,17 +3698,10 @@ static int bnx2_request_uncached_firmware(struct bnx2 *bp)
 	const struct bnx2_rv2p_fw_file *rv2p_fw;
 	int rc;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		mips_fw_file = FW_MIPS_FILE_09;
-		if ((CHIP_ID(bp) == CHIP_ID_5709_A0) ||
-		    (CHIP_ID(bp) == CHIP_ID_5709_A1))
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
 		mips_fw_file = FW_MIPS_FILE_09;
 		if ((BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5709_A0) ||
 		    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5709_A1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv2p_fw_file = FW_RV2P_FILE_09_Ax;
 		else
 			rv2p_fw_file = FW_RV2P_FILE_09;
@@ -4639,15 +3791,6 @@ load_rv2p_fw(struct bnx2 *bp, u32 rv2p_proc,
 	}
 
 	for (i = 0; i < rv2p_code_len; i += 8) {
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_RV2P_INSTR_HIGH, be32_to_cpu(*rv2p_code));
-		rv2p_code++;
-		REG_WR(bp, BNX2_RV2P_INSTR_LOW, be32_to_cpu(*rv2p_code));
-		rv2p_code++;
-
-		val = (i / 8) | cmd;
-		REG_WR(bp, addr, val);
-=======
 		BNX2_WR(bp, BNX2_RV2P_INSTR_HIGH, be32_to_cpu(*rv2p_code));
 		rv2p_code++;
 		BNX2_WR(bp, BNX2_RV2P_INSTR_LOW, be32_to_cpu(*rv2p_code));
@@ -4655,7 +3798,6 @@ load_rv2p_fw(struct bnx2 *bp, u32 rv2p_proc,
 
 		val = (i / 8) | cmd;
 		BNX2_WR(bp, addr, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rv2p_code = (__be32 *)(bp->rv2p_firmware->data + file_offset);
@@ -4665,15 +3807,6 @@ load_rv2p_fw(struct bnx2 *bp, u32 rv2p_proc,
 		loc = be32_to_cpu(fw_entry->fixup[i]);
 		if (loc && ((loc * 4) < rv2p_code_len)) {
 			code = be32_to_cpu(*(rv2p_code + loc - 1));
-<<<<<<< HEAD
-			REG_WR(bp, BNX2_RV2P_INSTR_HIGH, code);
-			code = be32_to_cpu(*(rv2p_code + loc));
-			code = rv2p_fw_fixup(rv2p_proc, i, loc, code);
-			REG_WR(bp, BNX2_RV2P_INSTR_LOW, code);
-
-			val = (loc / 2) | cmd;
-			REG_WR(bp, addr, val);
-=======
 			BNX2_WR(bp, BNX2_RV2P_INSTR_HIGH, code);
 			code = be32_to_cpu(*(rv2p_code + loc));
 			code = rv2p_fw_fixup(rv2p_proc, i, loc, code);
@@ -4681,33 +3814,21 @@ load_rv2p_fw(struct bnx2 *bp, u32 rv2p_proc,
 
 			val = (loc / 2) | cmd;
 			BNX2_WR(bp, addr, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Reset the processor, un-stall is done later. */
 	if (rv2p_proc == RV2P_PROC1) {
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_RV2P_COMMAND, BNX2_RV2P_COMMAND_PROC1_RESET);
-	}
-	else {
-		REG_WR(bp, BNX2_RV2P_COMMAND, BNX2_RV2P_COMMAND_PROC2_RESET);
-=======
 		BNX2_WR(bp, BNX2_RV2P_COMMAND, BNX2_RV2P_COMMAND_PROC1_RESET);
 	}
 	else {
 		BNX2_WR(bp, BNX2_RV2P_COMMAND, BNX2_RV2P_COMMAND_PROC2_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 load_cpu_fw(struct bnx2 *bp, const struct cpu_reg *cpu_reg,
 	    const struct bnx2_mips_fw_file_entry *fw_entry)
 {
@@ -4775,59 +3896,21 @@ load_cpu_fw(struct bnx2 *bp, const struct cpu_reg *cpu_reg,
 	val &= ~cpu_reg->mode_value_halt;
 	bnx2_reg_wr_ind(bp, cpu_reg->state, cpu_reg->state_value_clear);
 	bnx2_reg_wr_ind(bp, cpu_reg->mode, val);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static int
-=======
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_init_cpus(struct bnx2 *bp)
 {
 	const struct bnx2_mips_fw_file *mips_fw =
 		(const struct bnx2_mips_fw_file *) bp->mips_firmware->data;
 	const struct bnx2_rv2p_fw_file *rv2p_fw =
 		(const struct bnx2_rv2p_fw_file *) bp->rv2p_firmware->data;
-<<<<<<< HEAD
-	int rc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the RV2P processor. */
 	load_rv2p_fw(bp, RV2P_PROC1, &rv2p_fw->proc1);
 	load_rv2p_fw(bp, RV2P_PROC2, &rv2p_fw->proc2);
 
 	/* Initialize the RX Processor. */
-<<<<<<< HEAD
-	rc = load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
-	if (rc)
-		goto init_cpu_err;
-
-	/* Initialize the TX Processor. */
-	rc = load_cpu_fw(bp, &cpu_reg_txp, &mips_fw->txp);
-	if (rc)
-		goto init_cpu_err;
-
-	/* Initialize the TX Patch-up Processor. */
-	rc = load_cpu_fw(bp, &cpu_reg_tpat, &mips_fw->tpat);
-	if (rc)
-		goto init_cpu_err;
-
-	/* Initialize the Completion Processor. */
-	rc = load_cpu_fw(bp, &cpu_reg_com, &mips_fw->com);
-	if (rc)
-		goto init_cpu_err;
-
-	/* Initialize the Command Processor. */
-	rc = load_cpu_fw(bp, &cpu_reg_cp, &mips_fw->cp);
-
-init_cpu_err:
-	return rc;
-=======
 	load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
 
 	/* Initialize the TX Processor. */
@@ -4936,139 +4019,15 @@ bnx2_setup_wol(struct bnx2 *bp)
 		bnx2_shmem_wr(bp, BNX2_PORT_FEATURE, val);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 bnx2_set_power_state(struct bnx2 *bp, pci_power_t state)
 {
-<<<<<<< HEAD
-	u16 pmcsr;
-
-	pci_read_config_word(bp->pdev, bp->pm_cap + PCI_PM_CTRL, &pmcsr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (state) {
 	case PCI_D0: {
 		u32 val;
 
-<<<<<<< HEAD
-		pci_write_config_word(bp->pdev, bp->pm_cap + PCI_PM_CTRL,
-			(pmcsr & ~PCI_PM_CTRL_STATE_MASK) |
-			PCI_PM_CTRL_PME_STATUS);
-
-		if (pmcsr & PCI_PM_CTRL_STATE_MASK)
-			/* delay required during transition out of D3hot */
-			msleep(20);
-
-		val = REG_RD(bp, BNX2_EMAC_MODE);
-		val |= BNX2_EMAC_MODE_MPKT_RCVD | BNX2_EMAC_MODE_ACPI_RCVD;
-		val &= ~BNX2_EMAC_MODE_MPKT;
-		REG_WR(bp, BNX2_EMAC_MODE, val);
-
-		val = REG_RD(bp, BNX2_RPM_CONFIG);
-		val &= ~BNX2_RPM_CONFIG_ACPI_ENA;
-		REG_WR(bp, BNX2_RPM_CONFIG, val);
-		break;
-	}
-	case PCI_D3hot: {
-		int i;
-		u32 val, wol_msg;
-
-		if (bp->wol) {
-			u32 advertising;
-			u8 autoneg;
-
-			autoneg = bp->autoneg;
-			advertising = bp->advertising;
-
-			if (bp->phy_port == PORT_TP) {
-				bp->autoneg = AUTONEG_SPEED;
-				bp->advertising = ADVERTISED_10baseT_Half |
-					ADVERTISED_10baseT_Full |
-					ADVERTISED_100baseT_Half |
-					ADVERTISED_100baseT_Full |
-					ADVERTISED_Autoneg;
-			}
-
-			spin_lock_bh(&bp->phy_lock);
-			bnx2_setup_phy(bp, bp->phy_port);
-			spin_unlock_bh(&bp->phy_lock);
-
-			bp->autoneg = autoneg;
-			bp->advertising = advertising;
-
-			bnx2_set_mac_addr(bp, bp->dev->dev_addr, 0);
-
-			val = REG_RD(bp, BNX2_EMAC_MODE);
-
-			/* Enable port mode. */
-			val &= ~BNX2_EMAC_MODE_PORT;
-			val |= BNX2_EMAC_MODE_MPKT_RCVD |
-			       BNX2_EMAC_MODE_ACPI_RCVD |
-			       BNX2_EMAC_MODE_MPKT;
-			if (bp->phy_port == PORT_TP)
-				val |= BNX2_EMAC_MODE_PORT_MII;
-			else {
-				val |= BNX2_EMAC_MODE_PORT_GMII;
-				if (bp->line_speed == SPEED_2500)
-					val |= BNX2_EMAC_MODE_25G_MODE;
-			}
-
-			REG_WR(bp, BNX2_EMAC_MODE, val);
-
-			/* receive all multicast */
-			for (i = 0; i < NUM_MC_HASH_REGISTERS; i++) {
-				REG_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
-				       0xffffffff);
-			}
-			REG_WR(bp, BNX2_EMAC_RX_MODE,
-			       BNX2_EMAC_RX_MODE_SORT_MODE);
-
-			val = 1 | BNX2_RPM_SORT_USER0_BC_EN |
-			      BNX2_RPM_SORT_USER0_MC_EN;
-			REG_WR(bp, BNX2_RPM_SORT_USER0, 0x0);
-			REG_WR(bp, BNX2_RPM_SORT_USER0, val);
-			REG_WR(bp, BNX2_RPM_SORT_USER0, val |
-			       BNX2_RPM_SORT_USER0_ENA);
-
-			/* Need to enable EMAC and RPM for WOL. */
-			REG_WR(bp, BNX2_MISC_ENABLE_SET_BITS,
-			       BNX2_MISC_ENABLE_SET_BITS_RX_PARSER_MAC_ENABLE |
-			       BNX2_MISC_ENABLE_SET_BITS_TX_HEADER_Q_ENABLE |
-			       BNX2_MISC_ENABLE_SET_BITS_EMAC_ENABLE);
-
-			val = REG_RD(bp, BNX2_RPM_CONFIG);
-			val &= ~BNX2_RPM_CONFIG_ACPI_ENA;
-			REG_WR(bp, BNX2_RPM_CONFIG, val);
-
-			wol_msg = BNX2_DRV_MSG_CODE_SUSPEND_WOL;
-		}
-		else {
-			wol_msg = BNX2_DRV_MSG_CODE_SUSPEND_NO_WOL;
-		}
-
-		if (!(bp->flags & BNX2_FLAG_NO_WOL))
-			bnx2_fw_sync(bp, BNX2_DRV_MSG_DATA_WAIT3 | wol_msg,
-				     1, 0);
-
-		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-		if ((CHIP_ID(bp) == CHIP_ID_5706_A0) ||
-		    (CHIP_ID(bp) == CHIP_ID_5706_A1)) {
-
-			if (bp->wol)
-				pmcsr |= 3;
-		}
-		else {
-			pmcsr |= 3;
-		}
-		if (bp->wol) {
-			pmcsr |= PCI_PM_CTRL_PME_ENABLE;
-		}
-		pci_write_config_word(bp->pdev, bp->pm_cap + PCI_PM_CTRL,
-				      pmcsr);
-=======
 		pci_enable_wake(bp->pdev, PCI_D0, false);
 		pci_set_power_state(bp->pdev, PCI_D0);
 
@@ -5106,15 +4065,10 @@ bnx2_set_power_state(struct bnx2 *bp, pci_power_t state)
 			bnx2_shmem_wr(bp, BNX2_BC_STATE_CONDITION, val);
 		}
 		pci_set_power_state(bp->pdev, PCI_D3hot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* No more memory access after this point until
 		 * device is brought back to D0.
 		 */
-<<<<<<< HEAD
-		udelay(50);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
@@ -5130,15 +4084,9 @@ bnx2_acquire_nvram_lock(struct bnx2 *bp)
 	int j;
 
 	/* Request access to the flash interface. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_SW_ARB, BNX2_NVM_SW_ARB_ARB_REQ_SET2);
-	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
-		val = REG_RD(bp, BNX2_NVM_SW_ARB);
-=======
 	BNX2_WR(bp, BNX2_NVM_SW_ARB, BNX2_NVM_SW_ARB_ARB_REQ_SET2);
 	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
 		val = BNX2_RD(bp, BNX2_NVM_SW_ARB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (val & BNX2_NVM_SW_ARB_ARB_ARB2)
 			break;
 
@@ -5158,17 +4106,10 @@ bnx2_release_nvram_lock(struct bnx2 *bp)
 	u32 val;
 
 	/* Relinquish nvram interface. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_SW_ARB, BNX2_NVM_SW_ARB_ARB_REQ_CLR2);
-
-	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
-		val = REG_RD(bp, BNX2_NVM_SW_ARB);
-=======
 	BNX2_WR(bp, BNX2_NVM_SW_ARB, BNX2_NVM_SW_ARB_ARB_REQ_CLR2);
 
 	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
 		val = BNX2_RD(bp, BNX2_NVM_SW_ARB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(val & BNX2_NVM_SW_ARB_ARB_ARB2))
 			break;
 
@@ -5187,35 +4128,20 @@ bnx2_enable_nvram_write(struct bnx2 *bp)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_MISC_CFG);
-	REG_WR(bp, BNX2_MISC_CFG, val | BNX2_MISC_CFG_NVM_WR_EN_PCI);
-=======
 	val = BNX2_RD(bp, BNX2_MISC_CFG);
 	BNX2_WR(bp, BNX2_MISC_CFG, val | BNX2_MISC_CFG_NVM_WR_EN_PCI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bp->flash_info->flags & BNX2_NV_WREN) {
 		int j;
 
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
-		REG_WR(bp, BNX2_NVM_COMMAND,
-		       BNX2_NVM_COMMAND_WREN | BNX2_NVM_COMMAND_DOIT);
-=======
 		BNX2_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
 		BNX2_WR(bp, BNX2_NVM_COMMAND,
 			BNX2_NVM_COMMAND_WREN | BNX2_NVM_COMMAND_DOIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
 			udelay(5);
 
-<<<<<<< HEAD
-			val = REG_RD(bp, BNX2_NVM_COMMAND);
-=======
 			val = BNX2_RD(bp, BNX2_NVM_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (val & BNX2_NVM_COMMAND_DONE)
 				break;
 		}
@@ -5231,13 +4157,8 @@ bnx2_disable_nvram_write(struct bnx2 *bp)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_MISC_CFG);
-	REG_WR(bp, BNX2_MISC_CFG, val & ~BNX2_MISC_CFG_NVM_WR_EN);
-=======
 	val = BNX2_RD(bp, BNX2_MISC_CFG);
 	BNX2_WR(bp, BNX2_MISC_CFG, val & ~BNX2_MISC_CFG_NVM_WR_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -5246,17 +4167,10 @@ bnx2_enable_nvram_access(struct bnx2 *bp)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_NVM_ACCESS_ENABLE);
-	/* Enable both bits, even on read. */
-	REG_WR(bp, BNX2_NVM_ACCESS_ENABLE,
-	       val | BNX2_NVM_ACCESS_ENABLE_EN | BNX2_NVM_ACCESS_ENABLE_WR_EN);
-=======
 	val = BNX2_RD(bp, BNX2_NVM_ACCESS_ENABLE);
 	/* Enable both bits, even on read. */
 	BNX2_WR(bp, BNX2_NVM_ACCESS_ENABLE,
 		val | BNX2_NVM_ACCESS_ENABLE_EN | BNX2_NVM_ACCESS_ENABLE_WR_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -5264,15 +4178,9 @@ bnx2_disable_nvram_access(struct bnx2 *bp)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_NVM_ACCESS_ENABLE);
-	/* Disable both bits, even after read. */
-	REG_WR(bp, BNX2_NVM_ACCESS_ENABLE,
-=======
 	val = BNX2_RD(bp, BNX2_NVM_ACCESS_ENABLE);
 	/* Disable both bits, even after read. */
 	BNX2_WR(bp, BNX2_NVM_ACCESS_ENABLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val & ~(BNX2_NVM_ACCESS_ENABLE_EN |
 			BNX2_NVM_ACCESS_ENABLE_WR_EN));
 }
@@ -5292,15 +4200,6 @@ bnx2_nvram_erase_page(struct bnx2 *bp, u32 offset)
 	      BNX2_NVM_COMMAND_DOIT;
 
 	/* Need to clear DONE bit separately. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
-
-	/* Address of the NVRAM to read from. */
-	REG_WR(bp, BNX2_NVM_ADDR, offset & BNX2_NVM_ADDR_NVM_ADDR_VALUE);
-
-	/* Issue an erase command. */
-	REG_WR(bp, BNX2_NVM_COMMAND, cmd);
-=======
 	BNX2_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
 
 	/* Address of the NVRAM to read from. */
@@ -5308,7 +4207,6 @@ bnx2_nvram_erase_page(struct bnx2 *bp, u32 offset)
 
 	/* Issue an erase command. */
 	BNX2_WR(bp, BNX2_NVM_COMMAND, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for completion. */
 	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
@@ -5316,11 +4214,7 @@ bnx2_nvram_erase_page(struct bnx2 *bp, u32 offset)
 
 		udelay(5);
 
-<<<<<<< HEAD
-		val = REG_RD(bp, BNX2_NVM_COMMAND);
-=======
 		val = BNX2_RD(bp, BNX2_NVM_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (val & BNX2_NVM_COMMAND_DONE)
 			break;
 	}
@@ -5348,15 +4242,6 @@ bnx2_nvram_read_dword(struct bnx2 *bp, u32 offset, u8 *ret_val, u32 cmd_flags)
 	}
 
 	/* Need to clear DONE bit separately. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
-
-	/* Address of the NVRAM to read from. */
-	REG_WR(bp, BNX2_NVM_ADDR, offset & BNX2_NVM_ADDR_NVM_ADDR_VALUE);
-
-	/* Issue a read command. */
-	REG_WR(bp, BNX2_NVM_COMMAND, cmd);
-=======
 	BNX2_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
 
 	/* Address of the NVRAM to read from. */
@@ -5364,7 +4249,6 @@ bnx2_nvram_read_dword(struct bnx2 *bp, u32 offset, u8 *ret_val, u32 cmd_flags)
 
 	/* Issue a read command. */
 	BNX2_WR(bp, BNX2_NVM_COMMAND, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for completion. */
 	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
@@ -5372,15 +4256,9 @@ bnx2_nvram_read_dword(struct bnx2 *bp, u32 offset, u8 *ret_val, u32 cmd_flags)
 
 		udelay(5);
 
-<<<<<<< HEAD
-		val = REG_RD(bp, BNX2_NVM_COMMAND);
-		if (val & BNX2_NVM_COMMAND_DONE) {
-			__be32 v = cpu_to_be32(REG_RD(bp, BNX2_NVM_READ));
-=======
 		val = BNX2_RD(bp, BNX2_NVM_COMMAND);
 		if (val & BNX2_NVM_COMMAND_DONE) {
 			__be32 v = cpu_to_be32(BNX2_RD(bp, BNX2_NVM_READ));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(ret_val, &v, 4);
 			break;
 		}
@@ -5410,24 +4288,11 @@ bnx2_nvram_write_dword(struct bnx2 *bp, u32 offset, u8 *val, u32 cmd_flags)
 	}
 
 	/* Need to clear DONE bit separately. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
-=======
 	BNX2_WR(bp, BNX2_NVM_COMMAND, BNX2_NVM_COMMAND_DONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&val32, val, 4);
 
 	/* Write the data. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_NVM_WRITE, be32_to_cpu(val32));
-
-	/* Address of the NVRAM to write to. */
-	REG_WR(bp, BNX2_NVM_ADDR, offset & BNX2_NVM_ADDR_NVM_ADDR_VALUE);
-
-	/* Issue the write command. */
-	REG_WR(bp, BNX2_NVM_COMMAND, cmd);
-=======
 	BNX2_WR(bp, BNX2_NVM_WRITE, be32_to_cpu(val32));
 
 	/* Address of the NVRAM to write to. */
@@ -5435,17 +4300,12 @@ bnx2_nvram_write_dword(struct bnx2 *bp, u32 offset, u8 *val, u32 cmd_flags)
 
 	/* Issue the write command. */
 	BNX2_WR(bp, BNX2_NVM_COMMAND, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for completion. */
 	for (j = 0; j < NVRAM_TIMEOUT_COUNT; j++) {
 		udelay(5);
 
-<<<<<<< HEAD
-		if (REG_RD(bp, BNX2_NVM_COMMAND) & BNX2_NVM_COMMAND_DONE)
-=======
 		if (BNX2_RD(bp, BNX2_NVM_COMMAND) & BNX2_NVM_COMMAND_DONE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	if (j >= NVRAM_TIMEOUT_COUNT)
@@ -5461,21 +4321,13 @@ bnx2_init_nvram(struct bnx2 *bp)
 	int j, entry_count, rc = 0;
 	const struct flash_spec *flash;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->flash_info = &flash_5709;
 		goto get_flash_size;
 	}
 
 	/* Determine the selected interface. */
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_NVM_CFG1);
-=======
 	val = BNX2_RD(bp, BNX2_NVM_CFG1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	entry_count = ARRAY_SIZE(flash_table);
 
@@ -5514,17 +4366,10 @@ bnx2_init_nvram(struct bnx2 *bp)
 				bnx2_enable_nvram_access(bp);
 
 				/* Reconfigure the flash interface */
-<<<<<<< HEAD
-				REG_WR(bp, BNX2_NVM_CFG1, flash->config1);
-				REG_WR(bp, BNX2_NVM_CFG2, flash->config2);
-				REG_WR(bp, BNX2_NVM_CFG3, flash->config3);
-				REG_WR(bp, BNX2_NVM_WRITE1, flash->write1);
-=======
 				BNX2_WR(bp, BNX2_NVM_CFG1, flash->config1);
 				BNX2_WR(bp, BNX2_NVM_CFG2, flash->config2);
 				BNX2_WR(bp, BNX2_NVM_CFG3, flash->config3);
 				BNX2_WR(bp, BNX2_NVM_WRITE1, flash->write1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* Disable access to flash interface */
 				bnx2_disable_nvram_access(bp);
@@ -5694,11 +4539,7 @@ bnx2_nvram_write(struct bnx2 *bp, u32 offset, u8 *data_buf,
 
 	if (align_start || align_end) {
 		align_buf = kmalloc(len32, GFP_KERNEL);
-<<<<<<< HEAD
-		if (align_buf == NULL)
-=======
 		if (!align_buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		if (align_start) {
 			memcpy(align_buf, start, 4);
@@ -5712,11 +4553,7 @@ bnx2_nvram_write(struct bnx2 *bp, u32 offset, u8 *data_buf,
 
 	if (!(bp->flash_info->flags & BNX2_NV_BUFFERED)) {
 		flash_buffer = kmalloc(264, GFP_KERNEL);
-<<<<<<< HEAD
-		if (flash_buffer == NULL) {
-=======
 		if (!flash_buffer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto nvram_write_end;
 		}
@@ -5822,11 +4659,7 @@ bnx2_nvram_write(struct bnx2 *bp, u32 offset, u8 *data_buf,
 
 				if (addr == page_end-4) {
 					cmd_flags = BNX2_NVM_COMMAND_LAST;
-<<<<<<< HEAD
-                		}
-=======
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = bnx2_nvram_write_dword(bp, addr,
 					&flash_buffer[i], cmd_flags);
 
@@ -5897,14 +4730,6 @@ bnx2_init_fw_cap(struct bnx2 *bp)
 static void
 bnx2_setup_msix_tbl(struct bnx2 *bp)
 {
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCI_GRC_WINDOW_ADDR, BNX2_PCI_GRC_WINDOW_ADDR_SEP_WIN);
-
-	REG_WR(bp, BNX2_PCI_GRC_WINDOW2_ADDR, BNX2_MSIX_TABLE_ADDR);
-	REG_WR(bp, BNX2_PCI_GRC_WINDOW3_ADDR, BNX2_MSIX_PBA_ADDR);
-}
-
-=======
 	BNX2_WR(bp, BNX2_PCI_GRC_WINDOW_ADDR, BNX2_PCI_GRC_WINDOW_ADDR_SEP_WIN);
 
 	BNX2_WR(bp, BNX2_PCI_GRC_WINDOW2_ADDR, BNX2_MSIX_TABLE_ADDR);
@@ -5948,7 +4773,6 @@ bnx2_wait_dma_complete(struct bnx2 *bp)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 {
@@ -5958,32 +4782,7 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 
 	/* Wait for the current PCI transaction to complete before
 	 * issuing a reset. */
-<<<<<<< HEAD
-	if ((CHIP_NUM(bp) == CHIP_NUM_5706) ||
-	    (CHIP_NUM(bp) == CHIP_NUM_5708)) {
-		REG_WR(bp, BNX2_MISC_ENABLE_CLR_BITS,
-		       BNX2_MISC_ENABLE_CLR_BITS_TX_DMA_ENABLE |
-		       BNX2_MISC_ENABLE_CLR_BITS_DMA_ENGINE_ENABLE |
-		       BNX2_MISC_ENABLE_CLR_BITS_RX_DMA_ENABLE |
-		       BNX2_MISC_ENABLE_CLR_BITS_HOST_COALESCE_ENABLE);
-		val = REG_RD(bp, BNX2_MISC_ENABLE_CLR_BITS);
-		udelay(5);
-	} else {  /* 5709 */
-		val = REG_RD(bp, BNX2_MISC_NEW_CORE_CTL);
-		val &= ~BNX2_MISC_NEW_CORE_CTL_DMA_ENABLE;
-		REG_WR(bp, BNX2_MISC_NEW_CORE_CTL, val);
-		val = REG_RD(bp, BNX2_MISC_NEW_CORE_CTL);
-
-		for (i = 0; i < 100; i++) {
-			msleep(1);
-			val = REG_RD(bp, BNX2_PCICFG_DEVICE_CONTROL);
-			if (!(val & BNX2_PCICFG_DEVICE_STATUS_NO_PEND))
-				break;
-		}
-	}
-=======
 	bnx2_wait_dma_complete(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for the firmware to tell us it is ok to issue a reset. */
 	bnx2_fw_sync(bp, BNX2_DRV_MSG_DATA_WAIT0 | reset_code, 1, 1);
@@ -5995,29 +4794,17 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 
 	/* Do a dummy read to force the chip to complete all current transaction
 	 * before we issue a reset. */
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_MISC_ID);
-
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		REG_WR(bp, BNX2_MISC_COMMAND, BNX2_MISC_COMMAND_SW_RESET);
-		REG_RD(bp, BNX2_MISC_COMMAND);
-=======
 	val = BNX2_RD(bp, BNX2_MISC_ID);
 
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
 		BNX2_WR(bp, BNX2_MISC_COMMAND, BNX2_MISC_COMMAND_SW_RESET);
 		BNX2_RD(bp, BNX2_MISC_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udelay(5);
 
 		val = BNX2_PCICFG_MISC_CONFIG_REG_WINDOW_ENA |
 		      BNX2_PCICFG_MISC_CONFIG_TARGET_MB_WORD_SWAP;
 
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_PCICFG_MISC_CONFIG, val);
-=======
 		BNX2_WR(bp, BNX2_PCICFG_MISC_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		val = BNX2_PCICFG_MISC_CONFIG_CORE_RST_REQ |
@@ -6025,32 +4812,19 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 		      BNX2_PCICFG_MISC_CONFIG_TARGET_MB_WORD_SWAP;
 
 		/* Chip reset. */
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_PCICFG_MISC_CONFIG, val);
-=======
 		BNX2_WR(bp, BNX2_PCICFG_MISC_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Reading back any register after chip reset will hang the
 		 * bus on 5706 A0 and A1.  The msleep below provides plenty
 		 * of margin for write posting.
 		 */
-<<<<<<< HEAD
-		if ((CHIP_ID(bp) == CHIP_ID_5706_A0) ||
-		    (CHIP_ID(bp) == CHIP_ID_5706_A1))
-=======
 		if ((BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) ||
 		    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msleep(20);
 
 		/* Reset takes approximate 30 usec */
 		for (i = 0; i < 10; i++) {
-<<<<<<< HEAD
-			val = REG_RD(bp, BNX2_PCICFG_MISC_CONFIG);
-=======
 			val = BNX2_RD(bp, BNX2_PCICFG_MISC_CONFIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((val & (BNX2_PCICFG_MISC_CONFIG_CORE_RST_REQ |
 				    BNX2_PCICFG_MISC_CONFIG_CORE_RST_BSY)) == 0)
 				break;
@@ -6065,11 +4839,7 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 	}
 
 	/* Make sure byte swapping is properly configured. */
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_PCI_SWAP_DIAG0);
-=======
 	val = BNX2_RD(bp, BNX2_PCI_SWAP_DIAG0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val != 0x01020304) {
 		pr_err("Chip not in correct endian mode\n");
 		return -ENODEV;
@@ -6088,17 +4858,10 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 		bnx2_set_default_remote_link(bp);
 	spin_unlock_bh(&bp->phy_lock);
 
-<<<<<<< HEAD
-	if (CHIP_ID(bp) == CHIP_ID_5706_A0) {
-		/* Adjust the voltage regular to two steps lower.  The default
-		 * of this register is 0x0000000e. */
-		REG_WR(bp, BNX2_MISC_VREG_CONTROL, 0x000000fa);
-=======
 	if (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) {
 		/* Adjust the voltage regular to two steps lower.  The default
 		 * of this register is 0x0000000e. */
 		BNX2_WR(bp, BNX2_MISC_VREG_CONTROL, 0x000000fa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Remove bad rbuf memory from the free pool. */
 		rc = bnx2_alloc_bad_rbuf(bp);
@@ -6107,11 +4870,7 @@ bnx2_reset_chip(struct bnx2 *bp, u32 reset_code)
 	if (bp->flags & BNX2_FLAG_USING_MSIX) {
 		bnx2_setup_msix_tbl(bp);
 		/* Prevent MSIX table reads and write from timing out */
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_MISC_ECO_HW_CTL,
-=======
 		BNX2_WR(bp, BNX2_MISC_ECO_HW_CTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNX2_MISC_ECO_HW_CTL_LARGE_GRC_TMOUT_EN);
 	}
 
@@ -6125,11 +4884,7 @@ bnx2_init_chip(struct bnx2 *bp)
 	int rc, i;
 
 	/* Make sure the interrupt is not active. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCICFG_INT_ACK_CMD, BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
-=======
 	BNX2_WR(bp, BNX2_PCICFG_INT_ACK_CMD, BNX2_PCICFG_INT_ACK_CMD_MASK_INT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = BNX2_DMA_CONFIG_DATA_BYTE_SWAP |
 	      BNX2_DMA_CONFIG_DATA_WORD_SWAP |
@@ -6145,18 +4900,6 @@ bnx2_init_chip(struct bnx2 *bp)
 	if ((bp->flags & BNX2_FLAG_PCIX) && (bp->bus_speed_mhz == 133))
 		val |= (1 << 23);
 
-<<<<<<< HEAD
-	if ((CHIP_NUM(bp) == CHIP_NUM_5706) &&
-	    (CHIP_ID(bp) != CHIP_ID_5706_A0) && !(bp->flags & BNX2_FLAG_PCIX))
-		val |= BNX2_DMA_CONFIG_CNTL_PING_PONG_DMA;
-
-	REG_WR(bp, BNX2_DMA_CONFIG, val);
-
-	if (CHIP_ID(bp) == CHIP_ID_5706_A0) {
-		val = REG_RD(bp, BNX2_TDMA_CONFIG);
-		val |= BNX2_TDMA_CONFIG_ONE_DMA;
-		REG_WR(bp, BNX2_TDMA_CONFIG, val);
-=======
 	if ((BNX2_CHIP(bp) == BNX2_CHIP_5706) &&
 	    (BNX2_CHIP_ID(bp) != BNX2_CHIP_ID_5706_A0) &&
 	    !(bp->flags & BNX2_FLAG_PCIX))
@@ -6168,7 +4911,6 @@ bnx2_init_chip(struct bnx2 *bp)
 		val = BNX2_RD(bp, BNX2_TDMA_CONFIG);
 		val |= BNX2_TDMA_CONFIG_ONE_DMA;
 		BNX2_WR(bp, BNX2_TDMA_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (bp->flags & BNX2_FLAG_PCIX) {
@@ -6180,16 +4922,6 @@ bnx2_init_chip(struct bnx2 *bp)
 				      val16 & ~PCI_X_CMD_ERO);
 	}
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_MISC_ENABLE_SET_BITS,
-	       BNX2_MISC_ENABLE_SET_BITS_HOST_COALESCE_ENABLE |
-	       BNX2_MISC_ENABLE_STATUS_BITS_RX_V2P_ENABLE |
-	       BNX2_MISC_ENABLE_STATUS_BITS_CONTEXT_ENABLE);
-
-	/* Initialize context mapping and zero out the quick contexts.  The
-	 * context block must have already been enabled. */
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	BNX2_WR(bp, BNX2_MISC_ENABLE_SET_BITS,
 		BNX2_MISC_ENABLE_SET_BITS_HOST_COALESCE_ENABLE |
 		BNX2_MISC_ENABLE_STATUS_BITS_RX_V2P_ENABLE |
@@ -6198,49 +4930,18 @@ bnx2_init_chip(struct bnx2 *bp)
 	/* Initialize context mapping and zero out the quick contexts.  The
 	 * context block must have already been enabled. */
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = bnx2_init_5709_context(bp);
 		if (rc)
 			return rc;
 	} else
 		bnx2_init_context(bp);
 
-<<<<<<< HEAD
-	if ((rc = bnx2_init_cpus(bp)) != 0)
-		return rc;
-=======
 	bnx2_init_cpus(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2_init_nvram(bp);
 
 	bnx2_set_mac_addr(bp, bp->dev->dev_addr, 0);
 
-<<<<<<< HEAD
-	val = REG_RD(bp, BNX2_MQ_CONFIG);
-	val &= ~BNX2_MQ_CONFIG_KNL_BYP_BLK_SIZE;
-	val |= BNX2_MQ_CONFIG_KNL_BYP_BLK_SIZE_256;
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		val |= BNX2_MQ_CONFIG_BIN_MQ_MODE;
-		if (CHIP_REV(bp) == CHIP_REV_Ax)
-			val |= BNX2_MQ_CONFIG_HALT_DIS;
-	}
-
-	REG_WR(bp, BNX2_MQ_CONFIG, val);
-
-	val = 0x10000 + (MAX_CID_CNT * MB_KERNEL_CTX_SIZE);
-	REG_WR(bp, BNX2_MQ_KNL_BYP_WIND_START, val);
-	REG_WR(bp, BNX2_MQ_KNL_WIND_END, val);
-
-	val = (BCM_PAGE_BITS - 8) << 24;
-	REG_WR(bp, BNX2_RV2P_CONFIG, val);
-
-	/* Configure page size. */
-	val = REG_RD(bp, BNX2_TBDR_CONFIG);
-	val &= ~BNX2_TBDR_CONFIG_PAGE_SIZE;
-	val |= (BCM_PAGE_BITS - 8) << 24 | 0x40;
-	REG_WR(bp, BNX2_TBDR_CONFIG, val);
-=======
 	val = BNX2_RD(bp, BNX2_MQ_CONFIG);
 	val &= ~BNX2_MQ_CONFIG_KNL_BYP_BLK_SIZE;
 	val |= BNX2_MQ_CONFIG_KNL_BYP_BLK_SIZE_256;
@@ -6264,7 +4965,6 @@ bnx2_init_chip(struct bnx2 *bp)
 	val &= ~BNX2_TBDR_CONFIG_PAGE_SIZE;
 	val |= (BNX2_PAGE_BITS - 8) << 24 | 0x40;
 	BNX2_WR(bp, BNX2_TBDR_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = bp->mac_addr[0] +
 	      (bp->mac_addr[1] << 8) +
@@ -6272,30 +4972,17 @@ bnx2_init_chip(struct bnx2 *bp)
 	      bp->mac_addr[3] +
 	      (bp->mac_addr[4] << 8) +
 	      (bp->mac_addr[5] << 16);
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_EMAC_BACKOFF_SEED, val);
-=======
 	BNX2_WR(bp, BNX2_EMAC_BACKOFF_SEED, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Program the MTU.  Also include 4 bytes for CRC32. */
 	mtu = bp->dev->mtu;
 	val = mtu + ETH_HLEN + ETH_FCS_LEN;
-<<<<<<< HEAD
-	if (val > (MAX_ETHERNET_PACKET_SIZE + 4))
-		val |= BNX2_EMAC_RX_MTU_SIZE_JUMBO_ENA;
-	REG_WR(bp, BNX2_EMAC_RX_MTU_SIZE, val);
-
-	if (mtu < 1500)
-		mtu = 1500;
-=======
 	if (val > (MAX_ETHERNET_PACKET_SIZE + ETH_HLEN + 4))
 		val |= BNX2_EMAC_RX_MTU_SIZE_JUMBO_ENA;
 	BNX2_WR(bp, BNX2_EMAC_RX_MTU_SIZE, val);
 
 	if (mtu < ETH_DATA_LEN)
 		mtu = ETH_DATA_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2_reg_wr_ind(bp, BNX2_RBUF_CONFIG, BNX2_RBUF_CONFIG_VAL(mtu));
 	bnx2_reg_wr_ind(bp, BNX2_RBUF_CONFIG2, BNX2_RBUF_CONFIG2_VAL(mtu));
@@ -6307,48 +4994,6 @@ bnx2_init_chip(struct bnx2 *bp)
 
 	bp->idle_chk_status_idx = 0xffff;
 
-<<<<<<< HEAD
-	bp->rx_mode = BNX2_EMAC_RX_MODE_SORT_MODE;
-
-	/* Set up how to generate a link change interrupt. */
-	REG_WR(bp, BNX2_EMAC_ATTENTION_ENA, BNX2_EMAC_ATTENTION_ENA_LINK);
-
-	REG_WR(bp, BNX2_HC_STATUS_ADDR_L,
-	       (u64) bp->status_blk_mapping & 0xffffffff);
-	REG_WR(bp, BNX2_HC_STATUS_ADDR_H, (u64) bp->status_blk_mapping >> 32);
-
-	REG_WR(bp, BNX2_HC_STATISTICS_ADDR_L,
-	       (u64) bp->stats_blk_mapping & 0xffffffff);
-	REG_WR(bp, BNX2_HC_STATISTICS_ADDR_H,
-	       (u64) bp->stats_blk_mapping >> 32);
-
-	REG_WR(bp, BNX2_HC_TX_QUICK_CONS_TRIP,
-	       (bp->tx_quick_cons_trip_int << 16) | bp->tx_quick_cons_trip);
-
-	REG_WR(bp, BNX2_HC_RX_QUICK_CONS_TRIP,
-	       (bp->rx_quick_cons_trip_int << 16) | bp->rx_quick_cons_trip);
-
-	REG_WR(bp, BNX2_HC_COMP_PROD_TRIP,
-	       (bp->comp_prod_trip_int << 16) | bp->comp_prod_trip);
-
-	REG_WR(bp, BNX2_HC_TX_TICKS, (bp->tx_ticks_int << 16) | bp->tx_ticks);
-
-	REG_WR(bp, BNX2_HC_RX_TICKS, (bp->rx_ticks_int << 16) | bp->rx_ticks);
-
-	REG_WR(bp, BNX2_HC_COM_TICKS,
-	       (bp->com_ticks_int << 16) | bp->com_ticks);
-
-	REG_WR(bp, BNX2_HC_CMD_TICKS,
-	       (bp->cmd_ticks_int << 16) | bp->cmd_ticks);
-
-	if (bp->flags & BNX2_FLAG_BROKEN_STATS)
-		REG_WR(bp, BNX2_HC_STATS_TICKS, 0);
-	else
-		REG_WR(bp, BNX2_HC_STATS_TICKS, bp->stats_ticks);
-	REG_WR(bp, BNX2_HC_STAT_COLLECT_TICKS, 0xbb8);  /* 3ms */
-
-	if (CHIP_ID(bp) == CHIP_ID_5706_A1)
-=======
 	/* Set up how to generate a link change interrupt. */
 	BNX2_WR(bp, BNX2_EMAC_ATTENTION_ENA, BNX2_EMAC_ATTENTION_ENA_LINK);
 
@@ -6387,7 +5032,6 @@ bnx2_init_chip(struct bnx2 *bp)
 	BNX2_WR(bp, BNX2_HC_STAT_COLLECT_TICKS, 0xbb8);  /* 3ms */
 
 	if (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = BNX2_HC_CONFIG_COLLECT_STATS;
 	else {
 		val = BNX2_HC_CONFIG_RX_TMR_MODE | BNX2_HC_CONFIG_TX_TMR_MODE |
@@ -6395,13 +5039,8 @@ bnx2_init_chip(struct bnx2 *bp)
 	}
 
 	if (bp->flags & BNX2_FLAG_USING_MSIX) {
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_HC_MSIX_BIT_VECTOR,
-		       BNX2_HC_MSIX_BIT_VECTOR_VAL);
-=======
 		BNX2_WR(bp, BNX2_HC_MSIX_BIT_VECTOR,
 			BNX2_HC_MSIX_BIT_VECTOR_VAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		val |= BNX2_HC_CONFIG_SB_ADDR_INC_128B;
 	}
@@ -6409,11 +5048,7 @@ bnx2_init_chip(struct bnx2 *bp)
 	if (bp->flags & BNX2_FLAG_ONE_SHOT_MSI)
 		val |= BNX2_HC_CONFIG_ONE_SHOT | BNX2_HC_CONFIG_USE_INT_PARAM;
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_HC_CONFIG, val);
-=======
 	BNX2_WR(bp, BNX2_HC_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bp->rx_ticks < 25)
 		bnx2_reg_wr_ind(bp, BNX2_FW_RX_LOW_LATENCY, 1);
@@ -6424,29 +5059,11 @@ bnx2_init_chip(struct bnx2 *bp)
 		u32 base = ((i - 1) * BNX2_HC_SB_CONFIG_SIZE) +
 			   BNX2_HC_SB_CONFIG_1;
 
-<<<<<<< HEAD
-		REG_WR(bp, base,
-=======
 		BNX2_WR(bp, base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNX2_HC_SB_CONFIG_1_TX_TMR_MODE |
 			BNX2_HC_SB_CONFIG_1_RX_TMR_MODE |
 			BNX2_HC_SB_CONFIG_1_ONE_SHOT);
 
-<<<<<<< HEAD
-		REG_WR(bp, base + BNX2_HC_TX_QUICK_CONS_TRIP_OFF,
-			(bp->tx_quick_cons_trip_int << 16) |
-			 bp->tx_quick_cons_trip);
-
-		REG_WR(bp, base + BNX2_HC_TX_TICKS_OFF,
-			(bp->tx_ticks_int << 16) | bp->tx_ticks);
-
-		REG_WR(bp, base + BNX2_HC_RX_QUICK_CONS_TRIP_OFF,
-		       (bp->rx_quick_cons_trip_int << 16) |
-			bp->rx_quick_cons_trip);
-
-		REG_WR(bp, base + BNX2_HC_RX_TICKS_OFF,
-=======
 		BNX2_WR(bp, base + BNX2_HC_TX_QUICK_CONS_TRIP_OFF,
 			(bp->tx_quick_cons_trip_int << 16) |
 			 bp->tx_quick_cons_trip);
@@ -6459,54 +5076,31 @@ bnx2_init_chip(struct bnx2 *bp)
 			bp->rx_quick_cons_trip);
 
 		BNX2_WR(bp, base + BNX2_HC_RX_TICKS_OFF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(bp->rx_ticks_int << 16) | bp->rx_ticks);
 	}
 
 	/* Clear internal stats counters. */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_HC_COMMAND, BNX2_HC_COMMAND_CLR_STAT_NOW);
-
-	REG_WR(bp, BNX2_HC_ATTN_BITS_ENABLE, STATUS_ATTN_EVENTS);
-=======
 	BNX2_WR(bp, BNX2_HC_COMMAND, BNX2_HC_COMMAND_CLR_STAT_NOW);
 
 	BNX2_WR(bp, BNX2_HC_ATTN_BITS_ENABLE, STATUS_ATTN_EVENTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the receive filter. */
 	bnx2_set_rx_mode(bp->dev);
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		val = REG_RD(bp, BNX2_MISC_NEW_CORE_CTL);
-		val |= BNX2_MISC_NEW_CORE_CTL_DMA_ENABLE;
-		REG_WR(bp, BNX2_MISC_NEW_CORE_CTL, val);
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
 		val = BNX2_RD(bp, BNX2_MISC_NEW_CORE_CTL);
 		val |= BNX2_MISC_NEW_CORE_CTL_DMA_ENABLE;
 		BNX2_WR(bp, BNX2_MISC_NEW_CORE_CTL, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rc = bnx2_fw_sync(bp, BNX2_DRV_MSG_DATA_WAIT2 | BNX2_DRV_MSG_CODE_RESET,
 			  1, 0);
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_MISC_ENABLE_SET_BITS, BNX2_MISC_ENABLE_DEFAULT);
-	REG_RD(bp, BNX2_MISC_ENABLE_SET_BITS);
-
-	udelay(20);
-
-	bp->hc_cmd = REG_RD(bp, BNX2_HC_COMMAND);
-=======
 	BNX2_WR(bp, BNX2_MISC_ENABLE_SET_BITS, BNX2_MISC_ENABLE_DEFAULT);
 	BNX2_RD(bp, BNX2_MISC_ENABLE_SET_BITS);
 
 	udelay(20);
 
 	bp->hc_cmd = BNX2_RD(bp, BNX2_HC_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -6540,11 +5134,7 @@ bnx2_init_tx_context(struct bnx2 *bp, u32 cid, struct bnx2_tx_ring_info *txr)
 	u32 val, offset0, offset1, offset2, offset3;
 	u32 cid_addr = GET_CID_ADDR(cid);
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset0 = BNX2_L2CTX_TYPE_XI;
 		offset1 = BNX2_L2CTX_CMD_TYPE_XI;
 		offset2 = BNX2_L2CTX_TBDR_BHADDR_HI_XI;
@@ -6571,11 +5161,7 @@ bnx2_init_tx_context(struct bnx2 *bp, u32 cid, struct bnx2_tx_ring_info *txr)
 static void
 bnx2_init_tx_ring(struct bnx2 *bp, int ring_num)
 {
-<<<<<<< HEAD
-	struct tx_bd *txbd;
-=======
 	struct bnx2_tx_bd *txbd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cid = TX_CID;
 	struct bnx2_napi *bnapi;
 	struct bnx2_tx_ring_info *txr;
@@ -6590,11 +5176,7 @@ bnx2_init_tx_ring(struct bnx2 *bp, int ring_num)
 
 	bp->tx_wake_thresh = bp->tx_ring_size / 2;
 
-<<<<<<< HEAD
-	txbd = &txr->tx_desc_ring[MAX_TX_DESC_CNT];
-=======
 	txbd = &txr->tx_desc_ring[BNX2_MAX_TX_DESC_CNT];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txbd->tx_bd_haddr_hi = (u64) txr->tx_desc_mapping >> 32;
 	txbd->tx_bd_haddr_lo = (u64) txr->tx_desc_mapping & 0xffffffff;
@@ -6609,29 +5191,17 @@ bnx2_init_tx_ring(struct bnx2 *bp, int ring_num)
 }
 
 static void
-<<<<<<< HEAD
-bnx2_init_rxbd_rings(struct rx_bd *rx_ring[], dma_addr_t dma[], u32 buf_size,
-		     int num_rings)
-{
-	int i;
-	struct rx_bd *rxbd;
-=======
 bnx2_init_rxbd_rings(struct bnx2_rx_bd *rx_ring[], dma_addr_t dma[],
 		     u32 buf_size, int num_rings)
 {
 	int i;
 	struct bnx2_rx_bd *rxbd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num_rings; i++) {
 		int j;
 
 		rxbd = &rx_ring[i][0];
-<<<<<<< HEAD
-		for (j = 0; j < MAX_RX_DESC_CNT; j++, rxbd++) {
-=======
 		for (j = 0; j < BNX2_MAX_RX_DESC_CNT; j++, rxbd++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rxbd->rx_bd_len = buf_size;
 			rxbd->rx_bd_flags = RX_BD_FLAGS_START | RX_BD_FLAGS_END;
 		}
@@ -6665,15 +5235,9 @@ bnx2_init_rx_ring(struct bnx2 *bp, int ring_num)
 
 	bnx2_init_rx_context(bp, cid);
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-		val = REG_RD(bp, BNX2_MQ_MAP_L2_5);
-		REG_WR(bp, BNX2_MQ_MAP_L2_5, val | BNX2_MQ_MAP_L2_5_ARM);
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
 		val = BNX2_RD(bp, BNX2_MQ_MAP_L2_5);
 		BNX2_WR(bp, BNX2_MQ_MAP_L2_5, val | BNX2_MQ_MAP_L2_5_ARM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bnx2_ctx_wr(bp, rx_cid_addr, BNX2_L2CTX_PG_BUF_SIZE, 0);
@@ -6692,13 +5256,8 @@ bnx2_init_rx_ring(struct bnx2 *bp, int ring_num)
 		val = (u64) rxr->rx_pg_desc_mapping[0] & 0xffffffff;
 		bnx2_ctx_wr(bp, rx_cid_addr, BNX2_L2CTX_NX_PG_BDHADDR_LO, val);
 
-<<<<<<< HEAD
-		if (CHIP_NUM(bp) == CHIP_NUM_5709)
-			REG_WR(bp, BNX2_MQ_MAP_L2_3, BNX2_MQ_MAP_L2_3_DEFAULT);
-=======
 		if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
 			BNX2_WR(bp, BNX2_MQ_MAP_L2_3, BNX2_MQ_MAP_L2_3_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	val = (u64) rxr->rx_desc_mapping[0] >> 32;
@@ -6714,13 +5273,8 @@ bnx2_init_rx_ring(struct bnx2 *bp, int ring_num)
 				    ring_num, i, bp->rx_pg_ring_size);
 			break;
 		}
-<<<<<<< HEAD
-		prod = NEXT_RX_BD(prod);
-		ring_prod = RX_PG_RING_IDX(prod);
-=======
 		prod = BNX2_NEXT_RX_BD(prod);
 		ring_prod = BNX2_RX_PG_RING_IDX(prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rxr->rx_pg_prod = prod;
 
@@ -6731,13 +5285,8 @@ bnx2_init_rx_ring(struct bnx2 *bp, int ring_num)
 				    ring_num, i, bp->rx_ring_size);
 			break;
 		}
-<<<<<<< HEAD
-		prod = NEXT_RX_BD(prod);
-		ring_prod = RX_RING_IDX(prod);
-=======
 		prod = BNX2_NEXT_RX_BD(prod);
 		ring_prod = BNX2_RX_RING_IDX(prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rxr->rx_prod = prod;
 
@@ -6745,17 +5294,10 @@ bnx2_init_rx_ring(struct bnx2 *bp, int ring_num)
 	rxr->rx_bseq_addr = MB_GET_CID_ADDR(cid) + BNX2_L2CTX_HOST_BSEQ;
 	rxr->rx_pg_bidx_addr = MB_GET_CID_ADDR(cid) + BNX2_L2CTX_HOST_PG_BDIDX;
 
-<<<<<<< HEAD
-	REG_WR16(bp, rxr->rx_pg_bidx_addr, rxr->rx_pg_prod);
-	REG_WR16(bp, rxr->rx_bidx_addr, prod);
-
-	REG_WR(bp, rxr->rx_bseq_addr, rxr->rx_prod_bseq);
-=======
 	BNX2_WR16(bp, rxr->rx_pg_bidx_addr, rxr->rx_pg_prod);
 	BNX2_WR16(bp, rxr->rx_bidx_addr, prod);
 
 	BNX2_WR(bp, rxr->rx_bseq_addr, rxr->rx_prod_bseq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -6766,26 +5308,15 @@ bnx2_init_all_rings(struct bnx2 *bp)
 
 	bnx2_clear_ring_states(bp);
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_TSCH_TSS_CFG, 0);
-=======
 	BNX2_WR(bp, BNX2_TSCH_TSS_CFG, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < bp->num_tx_rings; i++)
 		bnx2_init_tx_ring(bp, i);
 
 	if (bp->num_tx_rings > 1)
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_TSCH_TSS_CFG, ((bp->num_tx_rings - 1) << 24) |
-		       (TX_TSS_CID << 7));
-
-	REG_WR(bp, BNX2_RLUP_RSS_CONFIG, 0);
-=======
 		BNX2_WR(bp, BNX2_TSCH_TSS_CFG, ((bp->num_tx_rings - 1) << 24) |
 			(TX_TSS_CID << 7));
 
 	BNX2_WR(bp, BNX2_RLUP_RSS_CONFIG, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_reg_wr_ind(bp, BNX2_RXP_SCRATCH_RSS_TBL_SZ, 0);
 
 	for (i = 0; i < bp->num_rx_rings; i++)
@@ -6799,13 +5330,8 @@ bnx2_init_all_rings(struct bnx2 *bp)
 
 			tbl_32 |= (i % (bp->num_rx_rings - 1)) << shift;
 			if ((i % 8) == 7) {
-<<<<<<< HEAD
-				REG_WR(bp, BNX2_RLUP_RSS_DATA, tbl_32);
-				REG_WR(bp, BNX2_RLUP_RSS_COMMAND, (i >> 3) |
-=======
 				BNX2_WR(bp, BNX2_RLUP_RSS_DATA, tbl_32);
 				BNX2_WR(bp, BNX2_RLUP_RSS_COMMAND, (i >> 3) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					BNX2_RLUP_RSS_COMMAND_RSS_WRITE_MASK |
 					BNX2_RLUP_RSS_COMMAND_WRITE |
 					BNX2_RLUP_RSS_COMMAND_HASH_MASK);
@@ -6816,11 +5342,7 @@ bnx2_init_all_rings(struct bnx2 *bp)
 		val = BNX2_RLUP_RSS_CONFIG_IPV4_RSS_TYPE_ALL_XI |
 		      BNX2_RLUP_RSS_CONFIG_IPV6_RSS_TYPE_ALL_XI;
 
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_RLUP_RSS_CONFIG, val);
-=======
 		BNX2_WR(bp, BNX2_RLUP_RSS_CONFIG, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	}
 }
@@ -6829,13 +5351,8 @@ static u32 bnx2_find_max_ring(u32 ring_size, u32 max_size)
 {
 	u32 max, num_rings = 1;
 
-<<<<<<< HEAD
-	while (ring_size > MAX_RX_DESC_CNT) {
-		ring_size -= MAX_RX_DESC_CNT;
-=======
 	while (ring_size > BNX2_MAX_RX_DESC_CNT) {
 		ring_size -= BNX2_MAX_RX_DESC_CNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_rings++;
 	}
 	/* round to next power of 2 */
@@ -6868,15 +5385,6 @@ bnx2_set_rx_ring_size(struct bnx2 *bp, u32 size)
 		int pages = PAGE_ALIGN(bp->dev->mtu - 40) >> PAGE_SHIFT;
 
 		jumbo_size = size * pages;
-<<<<<<< HEAD
-		if (jumbo_size > MAX_TOTAL_RX_PG_DESC_CNT)
-			jumbo_size = MAX_TOTAL_RX_PG_DESC_CNT;
-
-		bp->rx_pg_ring_size = jumbo_size;
-		bp->rx_max_pg_ring = bnx2_find_max_ring(jumbo_size,
-							MAX_RX_PG_RINGS);
-		bp->rx_max_pg_ring_idx = (bp->rx_max_pg_ring * RX_DESC_CNT) - 1;
-=======
 		if (jumbo_size > BNX2_MAX_TOTAL_RX_PG_DESC_CNT)
 			jumbo_size = BNX2_MAX_TOTAL_RX_PG_DESC_CNT;
 
@@ -6885,21 +5393,12 @@ bnx2_set_rx_ring_size(struct bnx2 *bp, u32 size)
 							BNX2_MAX_RX_PG_RINGS);
 		bp->rx_max_pg_ring_idx =
 			(bp->rx_max_pg_ring * BNX2_RX_DESC_CNT) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_size = BNX2_RX_COPY_THRESH + BNX2_RX_OFFSET;
 		bp->rx_copy_thresh = 0;
 	}
 
 	bp->rx_buf_use_size = rx_size;
 	/* hw alignment + build_skb() overhead*/
-<<<<<<< HEAD
-	bp->rx_buf_size = SKB_DATA_ALIGN(bp->rx_buf_use_size + BNX2_RX_ALIGN) +
-		NET_SKB_PAD + SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-	bp->rx_jumbo_thresh = rx_size - BNX2_RX_OFFSET;
-	bp->rx_ring_size = size;
-	bp->rx_max_ring = bnx2_find_max_ring(size, MAX_RX_RINGS);
-	bp->rx_max_ring_idx = (bp->rx_max_ring * RX_DESC_CNT) - 1;
-=======
 	bp->rx_buf_size = kmalloc_size_roundup(
 		SKB_DATA_ALIGN(bp->rx_buf_use_size + BNX2_RX_ALIGN) +
 		NET_SKB_PAD + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
@@ -6907,7 +5406,6 @@ bnx2_set_rx_ring_size(struct bnx2 *bp, u32 size)
 	bp->rx_ring_size = size;
 	bp->rx_max_ring = bnx2_find_max_ring(size, BNX2_MAX_RX_RINGS);
 	bp->rx_max_ring_idx = (bp->rx_max_ring * BNX2_RX_DESC_CNT) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -6920,18 +5418,6 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
 		struct bnx2_tx_ring_info *txr = &bnapi->tx_ring;
 		int j;
 
-<<<<<<< HEAD
-		if (txr->tx_buf_ring == NULL)
-			continue;
-
-		for (j = 0; j < TX_DESC_CNT; ) {
-			struct sw_tx_bd *tx_buf = &txr->tx_buf_ring[j];
-			struct sk_buff *skb = tx_buf->skb;
-			int k, last;
-
-			if (skb == NULL) {
-				j = NEXT_TX_BD(j);
-=======
 		if (!txr->tx_buf_ring)
 			continue;
 
@@ -6942,31 +5428,17 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
 
 			if (!skb) {
 				j = BNX2_NEXT_TX_BD(j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 
 			dma_unmap_single(&bp->pdev->dev,
 					 dma_unmap_addr(tx_buf, mapping),
 					 skb_headlen(skb),
-<<<<<<< HEAD
-					 PCI_DMA_TODEVICE);
-=======
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			tx_buf->skb = NULL;
 
 			last = tx_buf->nr_frags;
-<<<<<<< HEAD
-			j = NEXT_TX_BD(j);
-			for (k = 0; k < last; k++, j = NEXT_TX_BD(j)) {
-				tx_buf = &txr->tx_buf_ring[TX_RING_IDX(j)];
-				dma_unmap_page(&bp->pdev->dev,
-					dma_unmap_addr(tx_buf, mapping),
-					skb_frag_size(&skb_shinfo(skb)->frags[k]),
-					PCI_DMA_TODEVICE);
-=======
 			j = BNX2_NEXT_TX_BD(j);
 			for (k = 0; k < last; k++, j = BNX2_NEXT_TX_BD(j)) {
 				tx_buf = &txr->tx_buf_ring[BNX2_TX_RING_IDX(j)];
@@ -6974,7 +5446,6 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
 					dma_unmap_addr(tx_buf, mapping),
 					skb_frag_size(&skb_shinfo(skb)->frags[k]),
 					DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			dev_kfree_skb(skb);
 		}
@@ -6992,16 +5463,6 @@ bnx2_free_rx_skbs(struct bnx2 *bp)
 		struct bnx2_rx_ring_info *rxr = &bnapi->rx_ring;
 		int j;
 
-<<<<<<< HEAD
-		if (rxr->rx_buf_ring == NULL)
-			return;
-
-		for (j = 0; j < bp->rx_max_ring_idx; j++) {
-			struct sw_bd *rx_buf = &rxr->rx_buf_ring[j];
-			u8 *data = rx_buf->data;
-
-			if (data == NULL)
-=======
 		if (!rxr->rx_buf_ring)
 			return;
 
@@ -7010,17 +5471,12 @@ bnx2_free_rx_skbs(struct bnx2 *bp)
 			u8 *data = rx_buf->data;
 
 			if (!data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 
 			dma_unmap_single(&bp->pdev->dev,
 					 dma_unmap_addr(rx_buf, mapping),
 					 bp->rx_buf_use_size,
-<<<<<<< HEAD
-					 PCI_DMA_FROMDEVICE);
-=======
 					 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			rx_buf->data = NULL;
 
@@ -7209,11 +5665,7 @@ bnx2_test_registers(struct bnx2 *bp)
 
 	ret = 0;
 	is_5709 = 0;
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		is_5709 = 1;
 
 	for (i = 0; reg_tbl[i].offset != 0xffff; i++) {
@@ -7312,11 +5764,7 @@ bnx2_test_memory(struct bnx2 *bp)
 	};
 	struct mem_entry *mem_tbl;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_tbl = mem_tbl_5709;
 	else
 		mem_tbl = mem_tbl_5706;
@@ -7343,15 +5791,6 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 	unsigned char *packet;
 	u16 rx_start_idx, rx_idx;
 	dma_addr_t map;
-<<<<<<< HEAD
-	struct tx_bd *txbd;
-	struct sw_bd *rx_buf;
-	struct l2_fhdr *rx_hdr;
-	int ret = -ENODEV;
-	struct bnx2_napi *bnapi = &bp->bnx2_napi[0], *tx_napi;
-	struct bnx2_tx_ring_info *txr = &bnapi->tx_ring;
-	struct bnx2_rx_ring_info *rxr = &bnapi->rx_ring;
-=======
 	struct bnx2_tx_bd *txbd;
 	struct bnx2_sw_bd *rx_buf;
 	struct l2_fhdr *rx_hdr;
@@ -7359,7 +5798,6 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 	struct bnx2_napi *bnapi = &bp->bnx2_napi[0], *tx_napi;
 	struct bnx2_tx_ring_info *txr;
 	struct bnx2_rx_ring_info *rxr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tx_napi = bnapi;
 
@@ -7384,49 +5822,29 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 	if (!skb)
 		return -ENOMEM;
 	packet = skb_put(skb, pkt_size);
-<<<<<<< HEAD
-	memcpy(packet, bp->dev->dev_addr, 6);
-	memset(packet + 6, 0x0, 8);
-=======
 	memcpy(packet, bp->dev->dev_addr, ETH_ALEN);
 	memset(packet + ETH_ALEN, 0x0, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 14; i < pkt_size; i++)
 		packet[i] = (unsigned char) (i & 0xff);
 
 	map = dma_map_single(&bp->pdev->dev, skb->data, pkt_size,
-<<<<<<< HEAD
-			     PCI_DMA_TODEVICE);
-=======
 			     DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_mapping_error(&bp->pdev->dev, map)) {
 		dev_kfree_skb(skb);
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_HC_COMMAND,
-	       bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW_WO_INT);
-
-	REG_RD(bp, BNX2_HC_COMMAND);
-=======
 	BNX2_WR(bp, BNX2_HC_COMMAND,
 		bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW_WO_INT);
 
 	BNX2_RD(bp, BNX2_HC_COMMAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udelay(5);
 	rx_start_idx = bnx2_get_hw_rx_cons(bnapi);
 
 	num_pkts = 0;
 
-<<<<<<< HEAD
-	txbd = &txr->tx_desc_ring[TX_RING_IDX(txr->tx_prod)];
-=======
 	txbd = &txr->tx_desc_ring[BNX2_TX_RING_IDX(txr->tx_prod)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txbd->tx_bd_haddr_hi = (u64) map >> 32;
 	txbd->tx_bd_haddr_lo = (u64) map & 0xffffffff;
@@ -7434,24 +5852,6 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 	txbd->tx_bd_vlan_tag_flags = TX_BD_FLAGS_START | TX_BD_FLAGS_END;
 
 	num_pkts++;
-<<<<<<< HEAD
-	txr->tx_prod = NEXT_TX_BD(txr->tx_prod);
-	txr->tx_prod_bseq += pkt_size;
-
-	REG_WR16(bp, txr->tx_bidx_addr, txr->tx_prod);
-	REG_WR(bp, txr->tx_bseq_addr, txr->tx_prod_bseq);
-
-	udelay(100);
-
-	REG_WR(bp, BNX2_HC_COMMAND,
-	       bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW_WO_INT);
-
-	REG_RD(bp, BNX2_HC_COMMAND);
-
-	udelay(5);
-
-	dma_unmap_single(&bp->pdev->dev, map, pkt_size, PCI_DMA_TODEVICE);
-=======
 	txr->tx_prod = BNX2_NEXT_TX_BD(txr->tx_prod);
 	txr->tx_prod_bseq += pkt_size;
 
@@ -7468,7 +5868,6 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 	udelay(5);
 
 	dma_unmap_single(&bp->pdev->dev, map, pkt_size, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb(skb);
 
 	if (bnx2_get_hw_tx_cons(tx_napi) != txr->tx_prod)
@@ -7487,11 +5886,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
 
 	dma_sync_single_for_cpu(&bp->pdev->dev,
 		dma_unmap_addr(rx_buf, mapping),
-<<<<<<< HEAD
-		bp->rx_buf_use_size, PCI_DMA_FROMDEVICE);
-=======
 		bp->rx_buf_use_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rx_hdr->l2_fhdr_status &
 		(L2_FHDR_ERRORS_BAD_CRC |
@@ -7617,16 +6012,6 @@ bnx2_test_intr(struct bnx2 *bp)
 	if (!netif_running(bp->dev))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	status_idx = REG_RD(bp, BNX2_PCICFG_INT_ACK_CMD) & 0xffff;
-
-	/* This register is not touched during run-time. */
-	REG_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd | BNX2_HC_COMMAND_COAL_NOW);
-	REG_RD(bp, BNX2_HC_COMMAND);
-
-	for (i = 0; i < 10; i++) {
-		if ((REG_RD(bp, BNX2_PCICFG_INT_ACK_CMD) & 0xffff) !=
-=======
 	status_idx = BNX2_RD(bp, BNX2_PCICFG_INT_ACK_CMD) & 0xffff;
 
 	/* This register is not touched during run-time. */
@@ -7635,7 +6020,6 @@ bnx2_test_intr(struct bnx2 *bp)
 
 	for (i = 0; i < 10; i++) {
 		if ((BNX2_RD(bp, BNX2_PCICFG_INT_ACK_CMD) & 0xffff) !=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status_idx) {
 
 			break;
@@ -7777,15 +6161,9 @@ bnx2_5708_serdes_timer(struct bnx2 *bp)
 }
 
 static void
-<<<<<<< HEAD
-bnx2_timer(unsigned long data)
-{
-	struct bnx2 *bp = (struct bnx2 *) data;
-=======
 bnx2_timer(struct timer_list *t)
 {
 	struct bnx2 *bp = from_timer(bp, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(bp->dev))
 		return;
@@ -7804,19 +6182,11 @@ bnx2_timer(struct timer_list *t)
 
 	/* workaround occasional corrupted counters */
 	if ((bp->flags & BNX2_FLAG_BROKEN_STATS) && bp->stats_ticks)
-<<<<<<< HEAD
-		REG_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd |
-					    BNX2_HC_COMMAND_STATS_NOW);
-
-	if (bp->phy_flags & BNX2_PHY_FLAG_SERDES) {
-		if (CHIP_NUM(bp) == CHIP_NUM_5706)
-=======
 		BNX2_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd |
 			BNX2_HC_COMMAND_STATS_NOW);
 
 	if (bp->phy_flags & BNX2_PHY_FLAG_SERDES) {
 		if (BNX2_CHIP(bp) == BNX2_CHIP_5706)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bnx2_5706_serdes_timer(bp);
 		else
 			bnx2_5708_serdes_timer(bp);
@@ -7879,25 +6249,12 @@ bnx2_free_irq(struct bnx2 *bp)
 static void
 bnx2_enable_msix(struct bnx2 *bp, int msix_vecs)
 {
-<<<<<<< HEAD
-	int i, total_vecs, rc;
-=======
 	int i, total_vecs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msix_entry msix_ent[BNX2_MAX_MSIX_VEC];
 	struct net_device *dev = bp->dev;
 	const int len = sizeof(bp->irq_tbl[0].name);
 
 	bnx2_setup_msix_tbl(bp);
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCI_MSIX_CONTROL, BNX2_MAX_MSIX_HW_VEC - 1);
-	REG_WR(bp, BNX2_PCI_MSIX_TBL_OFF_BIR, BNX2_PCI_GRC_WINDOW2_BASE);
-	REG_WR(bp, BNX2_PCI_MSIX_PBA_OFF_BIT, BNX2_PCI_GRC_WINDOW3_BASE);
-
-	/*  Need to flush the previous three writes to ensure MSI-X
-	 *  is setup properly */
-	REG_RD(bp, BNX2_PCI_MSIX_CONTROL);
-=======
 	BNX2_WR(bp, BNX2_PCI_MSIX_CONTROL, BNX2_MAX_MSIX_HW_VEC - 1);
 	BNX2_WR(bp, BNX2_PCI_MSIX_TBL_OFF_BIR, BNX2_PCI_GRC_WINDOW2_BASE);
 	BNX2_WR(bp, BNX2_PCI_MSIX_PBA_OFF_BIT, BNX2_PCI_GRC_WINDOW3_BASE);
@@ -7905,7 +6262,6 @@ bnx2_enable_msix(struct bnx2 *bp, int msix_vecs)
 	/*  Need to flush the previous three writes to ensure MSI-X
 	 *  is setup properly */
 	BNX2_RD(bp, BNX2_PCI_MSIX_CONTROL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < BNX2_MAX_MSIX_VEC; i++) {
 		msix_ent[i].entry = i;
@@ -7916,22 +6272,9 @@ bnx2_enable_msix(struct bnx2 *bp, int msix_vecs)
 #ifdef BCM_CNIC
 	total_vecs++;
 #endif
-<<<<<<< HEAD
-	rc = -ENOSPC;
-	while (total_vecs >= BNX2_MIN_MSIX_VEC) {
-		rc = pci_enable_msix(bp->pdev, msix_ent, total_vecs);
-		if (rc <= 0)
-			break;
-		if (rc > 0)
-			total_vecs = rc;
-	}
-
-	if (rc != 0)
-=======
 	total_vecs = pci_enable_msix_range(bp->pdev, msix_ent,
 					   BNX2_MIN_MSIX_VEC, total_vecs);
 	if (total_vecs < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	msix_vecs = total_vecs;
@@ -7950,11 +6293,7 @@ bnx2_enable_msix(struct bnx2 *bp, int msix_vecs)
 static int
 bnx2_setup_int_mode(struct bnx2 *bp, int dis_msi)
 {
-<<<<<<< HEAD
-	int cpus = num_online_cpus();
-=======
 	int cpus = netif_get_num_default_rss_queues();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int msix_vecs;
 
 	if (!bp->num_req_rx_rings)
@@ -7978,11 +6317,7 @@ bnx2_setup_int_mode(struct bnx2 *bp, int dis_msi)
 	    !(bp->flags & BNX2_FLAG_USING_MSIX)) {
 		if (pci_enable_msi(bp->pdev) == 0) {
 			bp->flags |= BNX2_FLAG_USING_MSI;
-<<<<<<< HEAD
-			if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 			if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bp->flags |= BNX2_FLAG_ONE_SHOT_MSI;
 				bp->irq_tbl[0].handler = bnx2_msi_1shot;
 			} else
@@ -8020,10 +6355,6 @@ bnx2_open(struct net_device *dev)
 
 	netif_carrier_off(dev);
 
-<<<<<<< HEAD
-	bnx2_set_power_state(bp, PCI_D0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_disable_int(bp);
 
 	rc = bnx2_setup_int_mode(bp, disable_msi);
@@ -8099,10 +6430,7 @@ bnx2_reset_task(struct work_struct *work)
 {
 	struct bnx2 *bp = container_of(work, struct bnx2, reset_task);
 	int rc;
-<<<<<<< HEAD
-=======
 	u16 pcicmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtnl_lock();
 	if (!netif_running(bp->dev)) {
@@ -8112,15 +6440,12 @@ bnx2_reset_task(struct work_struct *work)
 
 	bnx2_netif_stop(bp, true);
 
-<<<<<<< HEAD
-=======
 	pci_read_config_word(bp->pdev, PCI_COMMAND, &pcicmd);
 	if (!(pcicmd & PCI_COMMAND_MEMORY)) {
 		/* in case PCI block has reset */
 		pci_restore_state(bp->pdev);
 		pci_save_state(bp->pdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = bnx2_init_nic(bp, 1);
 	if (rc) {
 		netdev_err(bp->dev, "failed to reset NIC, closing\n");
@@ -8135,8 +6460,6 @@ bnx2_reset_task(struct work_struct *work)
 	rtnl_unlock();
 }
 
-<<<<<<< HEAD
-=======
 #define BNX2_FTQ_ENTRY(ftq) { __stringify(ftq##FTQ_CTL), BNX2_##ftq##FTQ_CTL }
 
 static void
@@ -8206,7 +6529,6 @@ bnx2_dump_ftq(struct bnx2 *bp)
 	netdev_err(dev, "<--- end TBDC dump --->\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bnx2_dump_state(struct bnx2 *bp)
 {
@@ -8220,24 +6542,6 @@ bnx2_dump_state(struct bnx2 *bp)
 	pci_read_config_dword(bp->pdev, BNX2_PCICFG_MISC_CONFIG, &val2);
 	netdev_err(dev, "DEBUG: PCI_PM[%08x] PCI_MISC_CFG[%08x]\n", val1, val2);
 	netdev_err(dev, "DEBUG: EMAC_TX_STATUS[%08x] EMAC_RX_STATUS[%08x]\n",
-<<<<<<< HEAD
-		   REG_RD(bp, BNX2_EMAC_TX_STATUS),
-		   REG_RD(bp, BNX2_EMAC_RX_STATUS));
-	netdev_err(dev, "DEBUG: RPM_MGMT_PKT_CTRL[%08x]\n",
-		   REG_RD(bp, BNX2_RPM_MGMT_PKT_CTRL));
-	netdev_err(dev, "DEBUG: HC_STATS_INTERRUPT_STATUS[%08x]\n",
-		   REG_RD(bp, BNX2_HC_STATS_INTERRUPT_STATUS));
-	if (bp->flags & BNX2_FLAG_USING_MSIX)
-		netdev_err(dev, "DEBUG: PBA[%08x]\n",
-			   REG_RD(bp, BNX2_PCI_GRC_WINDOW3_BASE));
-}
-
-static void
-bnx2_tx_timeout(struct net_device *dev)
-{
-	struct bnx2 *bp = netdev_priv(dev);
-
-=======
 		   BNX2_RD(bp, BNX2_EMAC_TX_STATUS),
 		   BNX2_RD(bp, BNX2_EMAC_RX_STATUS));
 	netdev_err(dev, "DEBUG: RPM_MGMT_PKT_CTRL[%08x]\n",
@@ -8255,7 +6559,6 @@ bnx2_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	struct bnx2 *bp = netdev_priv(dev);
 
 	bnx2_dump_ftq(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_dump_state(bp);
 	bnx2_dump_mcp_state(bp);
 
@@ -8272,13 +6575,8 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 	dma_addr_t mapping;
-<<<<<<< HEAD
-	struct tx_bd *txbd;
-	struct sw_tx_bd *tx_buf;
-=======
 	struct bnx2_tx_bd *txbd;
 	struct bnx2_sw_tx_bd *tx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 len, vlan_tag_flags, last_frag, mss;
 	u16 prod, ring_prod;
 	int i;
@@ -8301,26 +6599,16 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 	len = skb_headlen(skb);
 	prod = txr->tx_prod;
-<<<<<<< HEAD
-	ring_prod = TX_RING_IDX(prod);
-=======
 	ring_prod = BNX2_TX_RING_IDX(prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vlan_tag_flags = 0;
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		vlan_tag_flags |= TX_BD_FLAGS_TCP_UDP_CKSUM;
 	}
 
-<<<<<<< HEAD
-	if (vlan_tx_tag_present(skb)) {
-		vlan_tag_flags |=
-			(TX_BD_FLAGS_VLAN_TAG | (vlan_tx_tag_get(skb) << 16));
-=======
 	if (skb_vlan_tag_present(skb)) {
 		vlan_tag_flags |=
 			(TX_BD_FLAGS_VLAN_TAG | (skb_vlan_tag_get(skb) << 16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((mss = skb_shinfo(skb)->gso_size)) {
@@ -8357,16 +6645,10 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	} else
 		mss = 0;
 
-<<<<<<< HEAD
-	mapping = dma_map_single(&bp->pdev->dev, skb->data, len, PCI_DMA_TODEVICE);
-	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
-		dev_kfree_skb(skb);
-=======
 	mapping = dma_map_single(&bp->pdev->dev, skb->data, len,
 				 DMA_TO_DEVICE);
 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 	}
 
@@ -8388,13 +6670,8 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	for (i = 0; i < last_frag; i++) {
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
-<<<<<<< HEAD
-		prod = NEXT_TX_BD(prod);
-		ring_prod = TX_RING_IDX(prod);
-=======
 		prod = BNX2_NEXT_TX_BD(prod);
 		ring_prod = BNX2_TX_RING_IDX(prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txbd = &txr->tx_desc_ring[ring_prod];
 
 		len = skb_frag_size(frag);
@@ -8418,21 +6695,11 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	netdev_tx_sent_queue(txq, skb->len);
 
-<<<<<<< HEAD
-	prod = NEXT_TX_BD(prod);
-	txr->tx_prod_bseq += skb->len;
-
-	REG_WR16(bp, txr->tx_bidx_addr, prod);
-	REG_WR(bp, txr->tx_bseq_addr, txr->tx_prod_bseq);
-
-	mmiowb();
-=======
 	prod = BNX2_NEXT_TX_BD(prod);
 	txr->tx_prod_bseq += skb->len;
 
 	BNX2_WR16(bp, txr->tx_bidx_addr, prod);
 	BNX2_WR(bp, txr->tx_bseq_addr, txr->tx_prod_bseq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txr->tx_prod = prod;
 
@@ -8456,25 +6723,6 @@ dma_error:
 
 	/* start back at beginning and unmap skb */
 	prod = txr->tx_prod;
-<<<<<<< HEAD
-	ring_prod = TX_RING_IDX(prod);
-	tx_buf = &txr->tx_buf_ring[ring_prod];
-	tx_buf->skb = NULL;
-	dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
-			 skb_headlen(skb), PCI_DMA_TODEVICE);
-
-	/* unmap remaining mapped pages */
-	for (i = 0; i < last_frag; i++) {
-		prod = NEXT_TX_BD(prod);
-		ring_prod = TX_RING_IDX(prod);
-		tx_buf = &txr->tx_buf_ring[ring_prod];
-		dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
-			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
-			       PCI_DMA_TODEVICE);
-	}
-
-	dev_kfree_skb(skb);
-=======
 	ring_prod = BNX2_TX_RING_IDX(prod);
 	tx_buf = &txr->tx_buf_ring[ring_prod];
 	tx_buf->skb = NULL;
@@ -8492,7 +6740,6 @@ dma_error:
 	}
 
 	dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 }
 
@@ -8504,10 +6751,7 @@ bnx2_close(struct net_device *dev)
 
 	bnx2_disable_int_sync(bp);
 	bnx2_napi_disable(bp);
-<<<<<<< HEAD
-=======
 	netif_tx_disable(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer_sync(&bp->timer);
 	bnx2_shutdown_chip(bp);
 	bnx2_free_irq(bp);
@@ -8516,10 +6760,6 @@ bnx2_close(struct net_device *dev)
 	bnx2_del_napi(bp);
 	bp->link_up = 0;
 	netif_carrier_off(bp->dev);
-<<<<<<< HEAD
-	bnx2_set_power_state(bp, PCI_D3hot);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -8558,22 +6798,13 @@ bnx2_save_stats(struct bnx2 *bp)
 	(unsigned long) (bp->stats_blk->ctr +			\
 			 bp->temp_stats_blk->ctr)
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *net_stats)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (bp->stats_blk == NULL)
-		return net_stats;
-=======
 	if (!bp->stats_blk)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	net_stats->rx_packets =
 		GET_64BIT_NET_STATS(stat_IfHCInUcastPkts) +
@@ -8619,13 +6850,8 @@ bnx2_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *net_stats)
 		GET_32BIT_NET_STATS(stat_Dot3StatsExcessiveCollisions) +
 		GET_32BIT_NET_STATS(stat_Dot3StatsLateCollisions);
 
-<<<<<<< HEAD
-	if ((CHIP_NUM(bp) == CHIP_NUM_5706) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_A0))
-=======
 	if ((BNX2_CHIP(bp) == BNX2_CHIP_5706) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_A0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		net_stats->tx_carrier_errors = 0;
 	else {
 		net_stats->tx_carrier_errors =
@@ -8642,23 +6868,11 @@ bnx2_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *net_stats)
 		GET_32BIT_NET_STATS(stat_IfInMBUFDiscards) +
 		GET_32BIT_NET_STATS(stat_FwRxDrop);
 
-<<<<<<< HEAD
-	return net_stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* All ethtool functions called with rtnl_lock */
 
 static int
-<<<<<<< HEAD
-bnx2_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct bnx2 *bp = netdev_priv(dev);
-	int support_serdes = 0, support_copper = 0;
-
-	cmd->supported = SUPPORTED_Autoneg;
-=======
 bnx2_get_link_ksettings(struct net_device *dev,
 			struct ethtool_link_ksettings *cmd)
 {
@@ -8667,7 +6881,6 @@ bnx2_get_link_ksettings(struct net_device *dev,
 	u32 supported, advertising;
 
 	supported = SUPPORTED_Autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bp->phy_flags & BNX2_PHY_FLAG_REMOTE_PHY_CAP) {
 		support_serdes = 1;
 		support_copper = 1;
@@ -8677,16 +6890,6 @@ bnx2_get_link_ksettings(struct net_device *dev,
 		support_copper = 1;
 
 	if (support_serdes) {
-<<<<<<< HEAD
-		cmd->supported |= SUPPORTED_1000baseT_Full |
-			SUPPORTED_FIBRE;
-		if (bp->phy_flags & BNX2_PHY_FLAG_2_5G_CAPABLE)
-			cmd->supported |= SUPPORTED_2500baseX_Full;
-
-	}
-	if (support_copper) {
-		cmd->supported |= SUPPORTED_10baseT_Half |
-=======
 		supported |= SUPPORTED_1000baseT_Full |
 			SUPPORTED_FIBRE;
 		if (bp->phy_flags & BNX2_PHY_FLAG_2_5G_CAPABLE)
@@ -8694,39 +6897,11 @@ bnx2_get_link_ksettings(struct net_device *dev,
 	}
 	if (support_copper) {
 		supported |= SUPPORTED_10baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SUPPORTED_10baseT_Full |
 			SUPPORTED_100baseT_Half |
 			SUPPORTED_100baseT_Full |
 			SUPPORTED_1000baseT_Full |
 			SUPPORTED_TP;
-<<<<<<< HEAD
-
-	}
-
-	spin_lock_bh(&bp->phy_lock);
-	cmd->port = bp->phy_port;
-	cmd->advertising = bp->advertising;
-
-	if (bp->autoneg & AUTONEG_SPEED) {
-		cmd->autoneg = AUTONEG_ENABLE;
-	} else {
-		cmd->autoneg = AUTONEG_DISABLE;
-	}
-
-	if (netif_carrier_ok(dev)) {
-		ethtool_cmd_speed_set(cmd, bp->line_speed);
-		cmd->duplex = bp->duplex;
-	}
-	else {
-		ethtool_cmd_speed_set(cmd, -1);
-		cmd->duplex = -1;
-	}
-	spin_unlock_bh(&bp->phy_lock);
-
-	cmd->transceiver = XCVR_INTERNAL;
-	cmd->phy_address = bp->phy_addr;
-=======
 	}
 
 	spin_lock_bh(&bp->phy_lock);
@@ -8761,18 +6936,13 @@ bnx2_get_link_ksettings(struct net_device *dev,
 						supported);
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
 						advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-bnx2_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 bnx2_set_link_ksettings(struct net_device *dev,
 			const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 	u8 autoneg = bp->autoneg;
@@ -8783,33 +6953,16 @@ bnx2_set_link_ksettings(struct net_device *dev,
 
 	spin_lock_bh(&bp->phy_lock);
 
-<<<<<<< HEAD
-	if (cmd->port != PORT_TP && cmd->port != PORT_FIBRE)
-		goto err_out_unlock;
-
-	if (cmd->port != bp->phy_port &&
-=======
 	if (cmd->base.port != PORT_TP && cmd->base.port != PORT_FIBRE)
 		goto err_out_unlock;
 
 	if (cmd->base.port != bp->phy_port &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !(bp->phy_flags & BNX2_PHY_FLAG_REMOTE_PHY_CAP))
 		goto err_out_unlock;
 
 	/* If device is down, we can store the settings only if the user
 	 * is setting the currently active port.
 	 */
-<<<<<<< HEAD
-	if (!netif_running(dev) && cmd->port != bp->phy_port)
-		goto err_out_unlock;
-
-	if (cmd->autoneg == AUTONEG_ENABLE) {
-		autoneg |= AUTONEG_SPEED;
-
-		advertising = cmd->advertising;
-		if (cmd->port == PORT_TP) {
-=======
 	if (!netif_running(dev) && cmd->base.port != bp->phy_port)
 		goto err_out_unlock;
 
@@ -8820,7 +6973,6 @@ bnx2_set_link_ksettings(struct net_device *dev,
 			&advertising, cmd->link_modes.advertising);
 
 		if (cmd->base.port == PORT_TP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			advertising &= ETHTOOL_ALL_COPPER_SPEED;
 			if (!advertising)
 				advertising = ETHTOOL_ALL_COPPER_SPEED;
@@ -8832,20 +6984,12 @@ bnx2_set_link_ksettings(struct net_device *dev,
 		advertising |= ADVERTISED_Autoneg;
 	}
 	else {
-<<<<<<< HEAD
-		u32 speed = ethtool_cmd_speed(cmd);
-		if (cmd->port == PORT_FIBRE) {
-			if ((speed != SPEED_1000 &&
-			     speed != SPEED_2500) ||
-			    (cmd->duplex != DUPLEX_FULL))
-=======
 		u32 speed = cmd->base.speed;
 
 		if (cmd->base.port == PORT_FIBRE) {
 			if ((speed != SPEED_1000 &&
 			     speed != SPEED_2500) ||
 			    (cmd->base.duplex != DUPLEX_FULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto err_out_unlock;
 
 			if (speed == SPEED_2500 &&
@@ -8856,11 +7000,7 @@ bnx2_set_link_ksettings(struct net_device *dev,
 
 		autoneg &= ~AUTONEG_SPEED;
 		req_line_speed = speed;
-<<<<<<< HEAD
-		req_duplex = cmd->duplex;
-=======
 		req_duplex = cmd->base.duplex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		advertising = 0;
 	}
 
@@ -8874,11 +7014,7 @@ bnx2_set_link_ksettings(struct net_device *dev,
 	 * brought up.
 	 */
 	if (netif_running(dev))
-<<<<<<< HEAD
-		err = bnx2_setup_phy(bp, cmd->port);
-=======
 		err = bnx2_setup_phy(bp, cmd->base.port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_out_unlock:
 	spin_unlock_bh(&bp->phy_lock);
@@ -8891,16 +7027,9 @@ bnx2_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(bp->pdev), sizeof(info->bus_info));
-	strlcpy(info->fw_version, bp->fw_version, sizeof(info->fw_version));
-=======
 	strscpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
 	strscpy(info->bus_info, pci_name(bp->pdev), sizeof(info->bus_info));
 	strscpy(info->fw_version, bp->fw_version, sizeof(info->fw_version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define BNX2_REGDUMP_LEN		(32 * 1024)
@@ -8953,11 +7082,7 @@ bnx2_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *_p)
 	offset = reg_boundaries[0];
 	p += offset;
 	while (offset < BNX2_REGDUMP_LEN) {
-<<<<<<< HEAD
-		*p++ = REG_RD(bp, offset);
-=======
 		*p++ = BNX2_RD(bp, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset += 4;
 		if (offset == reg_boundaries[i + 1]) {
 			offset = reg_boundaries[i + 2];
@@ -9003,12 +7128,9 @@ bnx2_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	else {
 		bp->wol = 0;
 	}
-<<<<<<< HEAD
-=======
 
 	device_set_wakeup_enable(&bp->pdev->dev, bp->wol);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -9071,11 +7193,7 @@ bnx2_get_eeprom_len(struct net_device *dev)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (bp->flash_info == NULL)
-=======
 	if (!bp->flash_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return (int) bp->flash_size;
@@ -9088,12 +7206,6 @@ bnx2_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	struct bnx2 *bp = netdev_priv(dev);
 	int rc;
 
-<<<<<<< HEAD
-	if (!netif_running(dev))
-		return -EAGAIN;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* parameters already validated in ethtool_get_eeprom */
 
 	rc = bnx2_nvram_read(bp, eeprom->offset, eebuf, eeprom->len);
@@ -9108,12 +7220,6 @@ bnx2_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	struct bnx2 *bp = netdev_priv(dev);
 	int rc;
 
-<<<<<<< HEAD
-	if (!netif_running(dev))
-		return -EAGAIN;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* parameters already validated in ethtool_set_eeprom */
 
 	rc = bnx2_nvram_write(bp, eeprom->offset, eebuf, eeprom->len);
@@ -9121,15 +7227,10 @@ bnx2_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int
-bnx2_get_coalesce(struct net_device *dev, struct ethtool_coalesce *coal)
-=======
 static int bnx2_get_coalesce(struct net_device *dev,
 			     struct ethtool_coalesce *coal,
 			     struct kernel_ethtool_coalesce *kernel_coal,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
@@ -9150,15 +7251,10 @@ static int bnx2_get_coalesce(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-bnx2_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal)
-=======
 static int bnx2_set_coalesce(struct net_device *dev,
 			     struct ethtool_coalesce *coal,
 			     struct kernel_ethtool_coalesce *kernel_coal,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
@@ -9207,14 +7303,6 @@ static int bnx2_set_coalesce(struct net_device *dev,
 }
 
 static void
-<<<<<<< HEAD
-bnx2_get_ringparam(struct net_device *dev, struct ethtool_ringparam *ering)
-{
-	struct bnx2 *bp = netdev_priv(dev);
-
-	ering->rx_max_pending = MAX_TOTAL_RX_DESC_CNT;
-	ering->rx_jumbo_max_pending = MAX_TOTAL_RX_PG_DESC_CNT;
-=======
 bnx2_get_ringparam(struct net_device *dev, struct ethtool_ringparam *ering,
 		   struct kernel_ethtool_ringparam *kernel_ering,
 		   struct netlink_ext_ack *extack)
@@ -9223,16 +7311,11 @@ bnx2_get_ringparam(struct net_device *dev, struct ethtool_ringparam *ering,
 
 	ering->rx_max_pending = BNX2_MAX_TOTAL_RX_DESC_CNT;
 	ering->rx_jumbo_max_pending = BNX2_MAX_TOTAL_RX_PG_DESC_CNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ering->rx_pending = bp->rx_ring_size;
 	ering->rx_jumbo_pending = bp->rx_pg_ring_size;
 
-<<<<<<< HEAD
-	ering->tx_max_pending = MAX_TX_DESC_CNT;
-=======
 	ering->tx_max_pending = BNX2_MAX_TX_DESC_CNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ering->tx_pending = bp->tx_ring_size;
 }
 
@@ -9293,24 +7376,15 @@ bnx2_change_ring_size(struct bnx2 *bp, u32 rx, u32 tx, bool reset_irq)
 }
 
 static int
-<<<<<<< HEAD
-bnx2_set_ringparam(struct net_device *dev, struct ethtool_ringparam *ering)
-=======
 bnx2_set_ringparam(struct net_device *dev, struct ethtool_ringparam *ering,
 		   struct kernel_ethtool_ringparam *kernel_ering,
 		   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 	int rc;
 
-<<<<<<< HEAD
-	if ((ering->rx_pending > MAX_TOTAL_RX_DESC_CNT) ||
-		(ering->tx_pending > MAX_TX_DESC_CNT) ||
-=======
 	if ((ering->rx_pending > BNX2_MAX_TOTAL_RX_DESC_CNT) ||
 		(ering->tx_pending > BNX2_MAX_TX_DESC_CNT) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(ering->tx_pending <= MAX_SKB_FRAGS)) {
 
 		return -EINVAL;
@@ -9409,12 +7483,7 @@ static struct {
 	{ "rx_fw_discards" },
 };
 
-<<<<<<< HEAD
-#define BNX2_NUM_STATS (sizeof(bnx2_stats_str_arr)/\
-			sizeof(bnx2_stats_str_arr[0]))
-=======
 #define BNX2_NUM_STATS ARRAY_SIZE(bnx2_stats_str_arr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STATS_OFFSET32(offset_name) (offsetof(struct statistics_block, offset_name) / 4)
 
@@ -9518,11 +7587,6 @@ bnx2_self_test(struct net_device *dev, struct ethtool_test *etest, u64 *buf)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	bnx2_set_power_state(bp, PCI_D0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(buf, 0, sizeof(u64) * BNX2_NUM_TESTS);
 	if (etest->flags & ETH_TEST_FL_OFFLINE) {
 		int i;
@@ -9571,11 +7635,6 @@ bnx2_self_test(struct net_device *dev, struct ethtool_test *etest, u64 *buf)
 		etest->flags |= ETH_TEST_FL_FAILED;
 
 	}
-<<<<<<< HEAD
-	if (!netif_running(bp->dev))
-		bnx2_set_power_state(bp, PCI_D3hot);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -9603,26 +7662,15 @@ bnx2_get_ethtool_stats(struct net_device *dev,
 	u32 *temp_stats = (u32 *) bp->temp_stats_blk;
 	u8 *stats_len_arr = NULL;
 
-<<<<<<< HEAD
-	if (hw_stats == NULL) {
-=======
 	if (!hw_stats) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(buf, 0, sizeof(u64) * BNX2_NUM_STATS);
 		return;
 	}
 
-<<<<<<< HEAD
-	if ((CHIP_ID(bp) == CHIP_ID_5706_A0) ||
-	    (CHIP_ID(bp) == CHIP_ID_5706_A1) ||
-	    (CHIP_ID(bp) == CHIP_ID_5706_A2) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_A0))
-=======
 	if ((BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A1) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A2) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_A0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stats_len_arr = bnx2_5706_stats_len_arr;
 	else
 		stats_len_arr = bnx2_5708_stats_len_arr;
@@ -9658,33 +7706,6 @@ bnx2_set_phys_id(struct net_device *dev, enum ethtool_phys_id_state state)
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
-<<<<<<< HEAD
-		bnx2_set_power_state(bp, PCI_D0);
-
-		bp->leds_save = REG_RD(bp, BNX2_MISC_CFG);
-		REG_WR(bp, BNX2_MISC_CFG, BNX2_MISC_CFG_LEDMODE_MAC);
-		return 1;	/* cycle on/off once per second */
-
-	case ETHTOOL_ID_ON:
-		REG_WR(bp, BNX2_EMAC_LED, BNX2_EMAC_LED_OVERRIDE |
-		       BNX2_EMAC_LED_1000MB_OVERRIDE |
-		       BNX2_EMAC_LED_100MB_OVERRIDE |
-		       BNX2_EMAC_LED_10MB_OVERRIDE |
-		       BNX2_EMAC_LED_TRAFFIC_OVERRIDE |
-		       BNX2_EMAC_LED_TRAFFIC);
-		break;
-
-	case ETHTOOL_ID_OFF:
-		REG_WR(bp, BNX2_EMAC_LED, BNX2_EMAC_LED_OVERRIDE);
-		break;
-
-	case ETHTOOL_ID_INACTIVE:
-		REG_WR(bp, BNX2_EMAC_LED, 0);
-		REG_WR(bp, BNX2_MISC_CFG, bp->leds_save);
-
-		if (!netif_running(dev))
-			bnx2_set_power_state(bp, PCI_D3hot);
-=======
 		bp->leds_save = BNX2_RD(bp, BNX2_MISC_CFG);
 		BNX2_WR(bp, BNX2_MISC_CFG, BNX2_MISC_CFG_LEDMODE_MAC);
 		return 1;	/* cycle on/off once per second */
@@ -9705,47 +7726,24 @@ bnx2_set_phys_id(struct net_device *dev, enum ethtool_phys_id_state state)
 	case ETHTOOL_ID_INACTIVE:
 		BNX2_WR(bp, BNX2_EMAC_LED, 0);
 		BNX2_WR(bp, BNX2_MISC_CFG, bp->leds_save);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static netdev_features_t
-bnx2_fix_features(struct net_device *dev, netdev_features_t features)
-{
-	struct bnx2 *bp = netdev_priv(dev);
-
-	if (!(bp->flags & BNX2_FLAG_CAN_KEEP_VLAN))
-		features |= NETIF_F_HW_VLAN_RX;
-
-	return features;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 bnx2_set_features(struct net_device *dev, netdev_features_t features)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
 	/* TSO with VLAN tag won't work with current firmware */
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_TX)
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_TX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->vlan_features |= (dev->hw_features & NETIF_F_ALL_TSO);
 	else
 		dev->vlan_features &= ~NETIF_F_ALL_TSO;
 
-<<<<<<< HEAD
-	if ((!!(features & NETIF_F_HW_VLAN_RX) !=
-=======
 	if ((!!(features & NETIF_F_HW_VLAN_CTAG_RX) !=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !!(bp->rx_mode & BNX2_EMAC_RX_MODE_KEEP_VLAN_TAG)) &&
 	    netif_running(dev)) {
 		bnx2_netif_stop(bp, false);
@@ -9808,16 +7806,11 @@ static int bnx2_set_channels(struct net_device *dev,
 }
 
 static const struct ethtool_ops bnx2_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings		= bnx2_get_settings,
-	.set_settings		= bnx2_set_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
 				     ETHTOOL_COALESCE_MAX_FRAMES |
 				     ETHTOOL_COALESCE_USECS_IRQ |
 				     ETHTOOL_COALESCE_MAX_FRAMES_IRQ |
 				     ETHTOOL_COALESCE_STATS_BLOCK_USECS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= bnx2_get_drvinfo,
 	.get_regs_len		= bnx2_get_regs_len,
 	.get_regs		= bnx2_get_regs,
@@ -9841,11 +7834,8 @@ static const struct ethtool_ops bnx2_ethtool_ops = {
 	.get_sset_count		= bnx2_get_sset_count,
 	.get_channels		= bnx2_get_channels,
 	.set_channels		= bnx2_set_channels,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= bnx2_get_link_ksettings,
 	.set_link_ksettings	= bnx2_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Called with rtnl_lock */
@@ -9860,11 +7850,7 @@ bnx2_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	case SIOCGMIIPHY:
 		data->phy_id = bp->phy_addr;
 
-<<<<<<< HEAD
-		/* fallthru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGMIIREG: {
 		u32 mii_regval;
 
@@ -9913,11 +7899,7 @@ bnx2_change_mac_addr(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(dev))
 		bnx2_set_mac_addr(bp, bp->dev->dev_addr, 0);
 
@@ -9930,13 +7912,6 @@ bnx2_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct bnx2 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (((new_mtu + ETH_HLEN) > MAX_ETHERNET_JUMBO_PACKET_SIZE) ||
-		((new_mtu + ETH_HLEN) < MIN_ETHERNET_PACKET_SIZE))
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mtu = new_mtu;
 	return bnx2_change_ring_size(bp, bp->rx_ring_size, bp->tx_ring_size,
 				     false);
@@ -9959,17 +7934,10 @@ poll_bnx2(struct net_device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-static void __devinit
-bnx2_get_5709_media(struct bnx2 *bp)
-{
-	u32 val = REG_RD(bp, BNX2_MISC_DUAL_MEDIA_CTRL);
-=======
 static void
 bnx2_get_5709_media(struct bnx2 *bp)
 {
 	u32 val = BNX2_RD(bp, BNX2_MISC_DUAL_MEDIA_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 bond_id = val & BNX2_MISC_DUAL_MEDIA_CTRL_BOND_ID;
 	u32 strap;
 
@@ -9985,11 +7953,7 @@ bnx2_get_5709_media(struct bnx2 *bp)
 	else
 		strap = (val & BNX2_MISC_DUAL_MEDIA_CTRL_PHY_CTRL_STRAP) >> 8;
 
-<<<<<<< HEAD
-	if (PCI_FUNC(bp->pdev->devfn) == 0) {
-=======
 	if (bp->func == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (strap) {
 		case 0x4:
 		case 0x5:
@@ -10008,30 +7972,18 @@ bnx2_get_5709_media(struct bnx2 *bp)
 	}
 }
 
-<<<<<<< HEAD
-static void __devinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_get_pci_speed(struct bnx2 *bp)
 {
 	u32 reg;
 
-<<<<<<< HEAD
-	reg = REG_RD(bp, BNX2_PCICFG_MISC_STATUS);
-=======
 	reg = BNX2_RD(bp, BNX2_PCICFG_MISC_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg & BNX2_PCICFG_MISC_STATUS_PCIX_DET) {
 		u32 clkreg;
 
 		bp->flags |= BNX2_FLAG_PCIX;
 
-<<<<<<< HEAD
-		clkreg = REG_RD(bp, BNX2_PCICFG_PCI_CLOCK_CONTROL_BITS);
-=======
 		clkreg = BNX2_RD(bp, BNX2_PCICFG_PCI_CLOCK_CONTROL_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		clkreg &= BNX2_PCICFG_PCI_CLOCK_CONTROL_BITS_PCI_CLK_SPD_DET;
 		switch (clkreg) {
@@ -10072,76 +8024,17 @@ bnx2_get_pci_speed(struct bnx2 *bp)
 
 }
 
-<<<<<<< HEAD
-static void __devinit
-bnx2_read_vpd_fw_ver(struct bnx2 *bp)
-{
-	int rc, i, j;
-	u8 *data;
-	unsigned int block_end, rosize, len;
-=======
 static void
 bnx2_read_vpd_fw_ver(struct bnx2 *bp)
 {
 	unsigned int len;
 	int rc, i, j;
 	u8 *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNX2_VPD_NVRAM_OFFSET	0x300
 #define BNX2_VPD_LEN		128
 #define BNX2_MAX_VER_SLEN	30
 
-<<<<<<< HEAD
-	data = kmalloc(256, GFP_KERNEL);
-	if (!data)
-		return;
-
-	rc = bnx2_nvram_read(bp, BNX2_VPD_NVRAM_OFFSET, data + BNX2_VPD_LEN,
-			     BNX2_VPD_LEN);
-	if (rc)
-		goto vpd_done;
-
-	for (i = 0; i < BNX2_VPD_LEN; i += 4) {
-		data[i] = data[i + BNX2_VPD_LEN + 3];
-		data[i + 1] = data[i + BNX2_VPD_LEN + 2];
-		data[i + 2] = data[i + BNX2_VPD_LEN + 1];
-		data[i + 3] = data[i + BNX2_VPD_LEN];
-	}
-
-	i = pci_vpd_find_tag(data, 0, BNX2_VPD_LEN, PCI_VPD_LRDT_RO_DATA);
-	if (i < 0)
-		goto vpd_done;
-
-	rosize = pci_vpd_lrdt_size(&data[i]);
-	i += PCI_VPD_LRDT_TAG_SIZE;
-	block_end = i + rosize;
-
-	if (block_end > BNX2_VPD_LEN)
-		goto vpd_done;
-
-	j = pci_vpd_find_info_keyword(data, i, rosize,
-				      PCI_VPD_RO_KEYWORD_MFR_ID);
-	if (j < 0)
-		goto vpd_done;
-
-	len = pci_vpd_info_field_size(&data[j]);
-
-	j += PCI_VPD_INFO_FLD_HDR_SIZE;
-	if (j + len > block_end || len != 4 ||
-	    memcmp(&data[j], "1028", 4))
-		goto vpd_done;
-
-	j = pci_vpd_find_info_keyword(data, i, rosize,
-				      PCI_VPD_RO_KEYWORD_VENDOR0);
-	if (j < 0)
-		goto vpd_done;
-
-	len = pci_vpd_info_field_size(&data[j]);
-
-	j += PCI_VPD_INFO_FLD_HDR_SIZE;
-	if (j + len > block_end || len > BNX2_MAX_VER_SLEN)
-=======
 	data = kmalloc(BNX2_VPD_LEN, GFP_KERNEL);
 	if (!data)
 		return;
@@ -10168,7 +8061,6 @@ bnx2_read_vpd_fw_ver(struct bnx2 *bp)
 		goto vpd_done;
 
 	if (len > BNX2_MAX_VER_SLEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto vpd_done;
 
 	memcpy(bp->fw_version, &data[j], len);
@@ -10178,17 +8070,6 @@ vpd_done:
 	kfree(data);
 }
 
-<<<<<<< HEAD
-static int __devinit
-bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
-{
-	struct bnx2 *bp;
-	unsigned long mem_len;
-	int rc, i, j;
-	u32 reg;
-	u64 dma_mask, persist_dma_mask;
-	int err;
-=======
 static int
 bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 {
@@ -10196,7 +8077,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	int rc, i, j;
 	u32 reg;
 	u64 dma_mask, persist_dma_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	bp = netdev_priv(dev);
@@ -10207,11 +8087,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	bp->temp_stats_blk =
 		kzalloc(sizeof(struct statistics_block), GFP_KERNEL);
 
-<<<<<<< HEAD
-	if (bp->temp_stats_blk == NULL) {
-=======
 	if (!bp->temp_stats_blk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto err_out;
 	}
@@ -10238,11 +8114,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-	bp->pm_cap = pci_find_capability(pdev, PCI_CAP_ID_PM);
-=======
 	bp->pm_cap = pdev->pm_cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bp->pm_cap == 0) {
 		dev_err(&pdev->dev,
 			"Cannot find power management capability, aborting\n");
@@ -10260,42 +8132,18 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 #endif
 	INIT_WORK(&bp->reset_task, bnx2_reset_task);
 
-<<<<<<< HEAD
-	dev->base_addr = dev->mem_start = pci_resource_start(pdev, 0);
-	mem_len = MB_GET_CID_ADDR(TX_TSS_CID + TX_MAX_TSS_RINGS + 1);
-	dev->mem_end = dev->mem_start + mem_len;
-	dev->irq = pdev->irq;
-
-	bp->regview = ioremap_nocache(dev->base_addr, mem_len);
-
-=======
 	bp->regview = pci_iomap(pdev, 0, MB_GET_CID_ADDR(TX_TSS_CID +
 							 TX_MAX_TSS_RINGS + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bp->regview) {
 		dev_err(&pdev->dev, "Cannot map register space, aborting\n");
 		rc = -ENOMEM;
 		goto err_out_release;
 	}
 
-<<<<<<< HEAD
-	bnx2_set_power_state(bp, PCI_D0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Configure byte swap and enable write to the reg_window registers.
 	 * Rely on CPU to do target byte swapping on big endian systems
 	 * The chip's target access swapping will not swap all accesses
 	 */
-<<<<<<< HEAD
-	REG_WR(bp, BNX2_PCICFG_MISC_CONFIG,
-		   BNX2_PCICFG_MISC_CONFIG_REG_WINDOW_ENA |
-		   BNX2_PCICFG_MISC_CONFIG_TARGET_MB_WORD_SWAP);
-
-	bp->chip_id = REG_RD(bp, BNX2_MISC_ID);
-
-	if (CHIP_NUM(bp) == CHIP_NUM_5709) {
-=======
 	BNX2_WR(bp, BNX2_PCICFG_MISC_CONFIG,
 		BNX2_PCICFG_MISC_CONFIG_REG_WINDOW_ENA |
 		BNX2_PCICFG_MISC_CONFIG_TARGET_MB_WORD_SWAP);
@@ -10303,26 +8151,14 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	bp->chip_id = BNX2_RD(bp, BNX2_MISC_ID);
 
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pci_is_pcie(pdev)) {
 			dev_err(&pdev->dev, "Not PCIE, aborting\n");
 			rc = -EIO;
 			goto err_out_unmap;
 		}
 		bp->flags |= BNX2_FLAG_PCIE;
-<<<<<<< HEAD
-		if (CHIP_REV(bp) == CHIP_REV_Ax)
-			bp->flags |= BNX2_FLAG_JUMBO_BROKEN;
-
-		/* AER (Advanced Error Reporting) hooks */
-		err = pci_enable_pcie_error_reporting(pdev);
-		if (!err)
-			bp->flags |= BNX2_FLAG_AER_ENABLED;
-
-=======
 		if (BNX2_CHIP_REV(bp) == BNX2_CHIP_REV_Ax)
 			bp->flags |= BNX2_FLAG_JUMBO_BROKEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bp->pcix_cap = pci_find_capability(pdev, PCI_CAP_ID_PCIX);
 		if (bp->pcix_cap == 0) {
@@ -10334,15 +8170,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 		bp->flags |= BNX2_FLAG_BROKEN_STATS;
 	}
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709 && CHIP_REV(bp) != CHIP_REV_Ax) {
-		if (pci_find_capability(pdev, PCI_CAP_ID_MSIX))
-			bp->flags |= BNX2_FLAG_MSIX_CAP;
-	}
-
-	if (CHIP_ID(bp) != CHIP_ID_5706_A0 && CHIP_ID(bp) != CHIP_ID_5706_A1) {
-		if (pci_find_capability(pdev, PCI_CAP_ID_MSI))
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709 &&
 	    BNX2_CHIP_REV(bp) != BNX2_CHIP_REV_Ax) {
 		if (pdev->msix_cap)
@@ -10352,32 +8179,16 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	if (BNX2_CHIP_ID(bp) != BNX2_CHIP_ID_5706_A0 &&
 	    BNX2_CHIP_ID(bp) != BNX2_CHIP_ID_5706_A1) {
 		if (pdev->msi_cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bp->flags |= BNX2_FLAG_MSI_CAP;
 	}
 
 	/* 5708 cannot support DMA addresses > 40-bit.  */
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5708)
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5708)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		persist_dma_mask = dma_mask = DMA_BIT_MASK(40);
 	else
 		persist_dma_mask = dma_mask = DMA_BIT_MASK(64);
 
 	/* Configure DMA attributes. */
-<<<<<<< HEAD
-	if (pci_set_dma_mask(pdev, dma_mask) == 0) {
-		dev->features |= NETIF_F_HIGHDMA;
-		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
-		if (rc) {
-			dev_err(&pdev->dev,
-				"pci_set_consistent_dma_mask failed, aborting\n");
-			goto err_out_unmap;
-		}
-	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
-=======
 	if (dma_set_mask(&pdev->dev, dma_mask) == 0) {
 		dev->features |= NETIF_F_HIGHDMA;
 		rc = dma_set_coherent_mask(&pdev->dev, persist_dma_mask);
@@ -10387,7 +8198,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 			goto err_out_unmap;
 		}
 	} else if ((rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "System does not support DMA, aborting\n");
 		goto err_out_unmap;
 	}
@@ -10396,18 +8206,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 		bnx2_get_pci_speed(bp);
 
 	/* 5706A0 may falsely detect SERR and PERR. */
-<<<<<<< HEAD
-	if (CHIP_ID(bp) == CHIP_ID_5706_A0) {
-		reg = REG_RD(bp, PCI_COMMAND);
-		reg &= ~(PCI_COMMAND_SERR | PCI_COMMAND_PARITY);
-		REG_WR(bp, PCI_COMMAND, reg);
-	}
-	else if ((CHIP_ID(bp) == CHIP_ID_5706_A1) &&
-		!(bp->flags & BNX2_FLAG_PCIX)) {
-
-		dev_err(&pdev->dev,
-			"5706 A1 can only be used in a PCIX bus, aborting\n");
-=======
 	if (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) {
 		reg = BNX2_RD(bp, PCI_COMMAND);
 		reg &= ~(PCI_COMMAND_SERR | PCI_COMMAND_PARITY);
@@ -10417,7 +8215,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 		dev_err(&pdev->dev,
 			"5706 A1 can only be used in a PCIX bus, aborting\n");
 		rc = -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_unmap;
 	}
 
@@ -10425,18 +8222,12 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 
 	reg = bnx2_reg_rd_ind(bp, BNX2_SHM_HDR_SIGNATURE);
 
-<<<<<<< HEAD
-	if ((reg & BNX2_SHM_HDR_SIGNATURE_SIG_MASK) ==
-	    BNX2_SHM_HDR_SIGNATURE_SIG) {
-		u32 off = PCI_FUNC(pdev->devfn) << 2;
-=======
 	if (bnx2_reg_rd_ind(bp, BNX2_MCP_TOE_ID) & BNX2_MCP_TOE_ID_FUNCTION_ID)
 		bp->func = 1;
 
 	if ((reg & BNX2_SHM_HDR_SIGNATURE_SIG_MASK) ==
 	    BNX2_SHM_HDR_SIGNATURE_SIG) {
 		u32 off = bp->func << 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bp->shmem_base = bnx2_reg_rd_ind(bp, BNX2_SHM_HDR_ADDR_0 + off);
 	} else
@@ -10516,11 +8307,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	bp->mac_addr[4] = (u8) (reg >> 8);
 	bp->mac_addr[5] = (u8) reg;
 
-<<<<<<< HEAD
-	bp->tx_ring_size = MAX_TX_DESC_CNT;
-=======
 	bp->tx_ring_size = BNX2_MAX_TX_DESC_CNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_set_rx_ring_size(bp, 255);
 
 	bp->tx_quick_cons_trip_int = 2;
@@ -10539,12 +8326,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 
 	bp->phy_addr = 1;
 
-<<<<<<< HEAD
-	/* Disable WOL support if we are running on a SERDES chip. */
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-		bnx2_get_5709_media(bp);
-	else if (CHIP_BOND_ID(bp) & CHIP_BOND_ID_SERDES_BIT)
-=======
 	/* allocate stats_blk */
 	rc = bnx2_alloc_stats_blk(dev);
 	if (rc)
@@ -10554,7 +8335,6 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
 		bnx2_get_5709_media(bp);
 	else if (BNX2_CHIP_BOND(bp) & BNX2_CHIP_BOND_SERDES_BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->phy_flags |= BNX2_PHY_FLAG_SERDES;
 
 	bp->phy_port = PORT_TP;
@@ -10565,11 +8345,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 			bp->flags |= BNX2_FLAG_NO_WOL;
 			bp->wol = 0;
 		}
-<<<<<<< HEAD
-		if (CHIP_NUM(bp) == CHIP_NUM_5706) {
-=======
 		if (BNX2_CHIP(bp) == BNX2_CHIP_5706) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Don't do parallel detect on this board because of
 			 * some board problems.  The link will not go down
 			 * if we do parallel detect.
@@ -10582,50 +8358,30 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 			if (reg & BNX2_SHARED_HW_CFG_PHY_2_5G)
 				bp->phy_flags |= BNX2_PHY_FLAG_2_5G_CAPABLE;
 		}
-<<<<<<< HEAD
-	} else if (CHIP_NUM(bp) == CHIP_NUM_5706 ||
-		   CHIP_NUM(bp) == CHIP_NUM_5708)
-		bp->phy_flags |= BNX2_PHY_FLAG_CRC_FIX;
-	else if (CHIP_NUM(bp) == CHIP_NUM_5709 &&
-		 (CHIP_REV(bp) == CHIP_REV_Ax ||
-		  CHIP_REV(bp) == CHIP_REV_Bx))
-=======
 	} else if (BNX2_CHIP(bp) == BNX2_CHIP_5706 ||
 		   BNX2_CHIP(bp) == BNX2_CHIP_5708)
 		bp->phy_flags |= BNX2_PHY_FLAG_CRC_FIX;
 	else if (BNX2_CHIP(bp) == BNX2_CHIP_5709 &&
 		 (BNX2_CHIP_REV(bp) == BNX2_CHIP_REV_Ax ||
 		  BNX2_CHIP_REV(bp) == BNX2_CHIP_REV_Bx))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->phy_flags |= BNX2_PHY_FLAG_DIS_EARLY_DAC;
 
 	bnx2_init_fw_cap(bp);
 
-<<<<<<< HEAD
-	if ((CHIP_ID(bp) == CHIP_ID_5708_A0) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_B0) ||
-	    (CHIP_ID(bp) == CHIP_ID_5708_B1) ||
-	    !(REG_RD(bp, BNX2_PCI_CONFIG_3) & BNX2_PCI_CONFIG_3_VAUX_PRESET)) {
-=======
 	if ((BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_A0) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_B0) ||
 	    (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5708_B1) ||
 	    !(BNX2_RD(bp, BNX2_PCI_CONFIG_3) & BNX2_PCI_CONFIG_3_VAUX_PRESET)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->flags |= BNX2_FLAG_NO_WOL;
 		bp->wol = 0;
 	}
 
-<<<<<<< HEAD
-	if (CHIP_ID(bp) == CHIP_ID_5706_A0) {
-=======
 	if (bp->flags & BNX2_FLAG_NO_WOL)
 		device_set_wakeup_capable(&bp->pdev->dev, false);
 	else
 		device_set_wakeup_enable(&bp->pdev->dev, bp->wol);
 
 	if (BNX2_CHIP_ID(bp) == BNX2_CHIP_ID_5706_A0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->tx_quick_cons_trip_int =
 			bp->tx_quick_cons_trip;
 		bp->tx_ticks_int = bp->tx_ticks;
@@ -10647,11 +8403,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	 * AMD believes this incompatibility is unique to the 5706, and
 	 * prefers to locally disable MSI rather than globally disabling it.
 	 */
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5706 && disable_msi == 0) {
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5706 && disable_msi == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pci_dev *amd_8132 = NULL;
 
 		while ((amd_8132 = pci_get_device(PCI_VENDOR_ID_AMD,
@@ -10670,60 +8422,29 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
 	bnx2_set_default_link(bp);
 	bp->req_flow_ctrl = FLOW_CTRL_RX | FLOW_CTRL_TX;
 
-<<<<<<< HEAD
-	init_timer(&bp->timer);
-	bp->timer.expires = RUN_AT(BNX2_TIMER_INTERVAL);
-	bp->timer.data = (unsigned long) bp;
-	bp->timer.function = bnx2_timer;
-=======
 	timer_setup(&bp->timer, bnx2_timer, 0);
 	bp->timer.expires = RUN_AT(BNX2_TIMER_INTERVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef BCM_CNIC
 	if (bnx2_shmem_rd(bp, BNX2_ISCSI_INITIATOR) & BNX2_ISCSI_INITIATOR_EN)
 		bp->cnic_eth_dev.max_iscsi_conn =
 			(bnx2_shmem_rd(bp, BNX2_ISCSI_MAX_CONN) &
 			 BNX2_ISCSI_MAX_CONN_MASK) >> BNX2_ISCSI_MAX_CONN_SHIFT;
-<<<<<<< HEAD
-=======
 	bp->cnic_probe = bnx2_cnic_probe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	pci_save_state(pdev);
 
 	return 0;
 
 err_out_unmap:
-<<<<<<< HEAD
-	if (bp->flags & BNX2_FLAG_AER_ENABLED) {
-		pci_disable_pcie_error_reporting(pdev);
-		bp->flags &= ~BNX2_FLAG_AER_ENABLED;
-	}
-
-	if (bp->regview) {
-		iounmap(bp->regview);
-		bp->regview = NULL;
-	}
-=======
 	pci_iounmap(pdev, bp->regview);
 	bp->regview = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_out_release:
 	pci_release_regions(pdev);
 
 err_out_disable:
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-
-err_out:
-	return rc;
-}
-
-static char * __devinit
-=======
 
 err_out:
 	kfree(bp->temp_stats_blk);
@@ -10732,7 +8453,6 @@ err_out:
 }
 
 static char *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_bus_string(struct bnx2 *bp, char *str)
 {
 	char *s = str;
@@ -10775,11 +8495,7 @@ bnx2_init_napi(struct bnx2 *bp)
 		else
 			poll = bnx2_poll_msix;
 
-<<<<<<< HEAD
-		netif_napi_add(bp->dev, &bp->bnx2_napi[i].napi, poll, 64);
-=======
 		netif_napi_add(bp->dev, &bp->bnx2_napi[i].napi, poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnapi->bp = bp;
 	}
 }
@@ -10790,18 +8506,10 @@ static const struct net_device_ops bnx2_netdev_ops = {
 	.ndo_stop		= bnx2_close,
 	.ndo_get_stats64	= bnx2_get_stats64,
 	.ndo_set_rx_mode	= bnx2_set_rx_mode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= bnx2_ioctl,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_set_mac_address	= bnx2_change_mac_addr,
-	.ndo_change_mtu		= bnx2_change_mtu,
-	.ndo_fix_features	= bnx2_fix_features,
-=======
 	.ndo_eth_ioctl		= bnx2_ioctl,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= bnx2_change_mac_addr,
 	.ndo_change_mtu		= bnx2_change_mtu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_features	= bnx2_set_features,
 	.ndo_tx_timeout		= bnx2_tx_timeout,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -10809,46 +8517,22 @@ static const struct net_device_ops bnx2_netdev_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit
-bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-{
-	static int version_printed = 0;
-	struct net_device *dev = NULL;
-=======
 static int
 bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct net_device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2 *bp;
 	int rc;
 	char str[40];
 
-<<<<<<< HEAD
-	if (version_printed++ == 0)
-		pr_info("%s", version);
-
 	/* dev zeroed in init_etherdev */
 	dev = alloc_etherdev_mq(sizeof(*bp), TX_MAX_RINGS);
-
-=======
-	/* dev zeroed in init_etherdev */
-	dev = alloc_etherdev_mq(sizeof(*bp), TX_MAX_RINGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 
 	rc = bnx2_init_board(pdev, dev);
-<<<<<<< HEAD
-	if (rc < 0) {
-		free_netdev(dev);
-		return rc;
-	}
-=======
 	if (rc < 0)
 		goto err_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &bnx2_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
@@ -10858,10 +8542,6 @@ bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, dev);
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, bp->mac_addr, 6);
-	memcpy(dev->perm_addr, bp->mac_addr, 6);
-=======
 	/*
 	 * In-flight DMA from 1st kernel could continue going in kdump kernel.
 	 * New io-page table has been created before bnx2 does reset at open stage.
@@ -10872,21 +8552,11 @@ bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		bnx2_wait_dma_complete(bp);
 
 	eth_hw_addr_set(dev, bp->mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->hw_features = NETIF_F_IP_CSUM | NETIF_F_SG |
 		NETIF_F_TSO | NETIF_F_TSO_ECN |
 		NETIF_F_RXHASH | NETIF_F_RXCSUM;
 
-<<<<<<< HEAD
-	if (CHIP_NUM(bp) == CHIP_NUM_5709)
-		dev->hw_features |= NETIF_F_IPV6_CSUM | NETIF_F_TSO6;
-
-	dev->vlan_features = dev->hw_features;
-	dev->hw_features |= NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX;
-	dev->features |= dev->hw_features;
-	dev->priv_flags |= IFF_UNICAST_FLT;
-=======
 	if (BNX2_CHIP(bp) == BNX2_CHIP_5709)
 		dev->hw_features |= NETIF_F_IPV6_CSUM | NETIF_F_TSO6;
 
@@ -10899,55 +8569,32 @@ bnx2_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	if (!(bp->flags & BNX2_FLAG_CAN_KEEP_VLAN))
 		dev->hw_features &= ~NETIF_F_HW_VLAN_CTAG_RX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = register_netdev(dev))) {
 		dev_err(&pdev->dev, "Cannot register net device\n");
 		goto error;
 	}
 
-<<<<<<< HEAD
-	netdev_info(dev, "%s (%c%d) %s found at mem %lx, IRQ %d, node addr %pM\n",
-		    board_info[ent->driver_data].name,
-		    ((CHIP_ID(bp) & 0xf000) >> 12) + 'A',
-		    ((CHIP_ID(bp) & 0x0ff0) >> 4),
-		    bnx2_bus_string(bp, str),
-		    dev->base_addr,
-		    bp->pdev->irq, dev->dev_addr);
-=======
 	netdev_info(dev, "%s (%c%d) %s found at mem %lx, IRQ %d, "
 		    "node addr %pM\n", board_info[ent->driver_data].name,
 		    ((BNX2_CHIP_ID(bp) & 0xf000) >> 12) + 'A',
 		    ((BNX2_CHIP_ID(bp) & 0x0ff0) >> 4),
 		    bnx2_bus_string(bp, str), (long)pci_resource_start(pdev, 0),
 		    pdev->irq, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	if (bp->regview)
-		iounmap(bp->regview);
-	pci_release_regions(pdev);
-	pci_disable_device(pdev);
-	pci_set_drvdata(pdev, NULL);
-=======
 	pci_iounmap(pdev, bp->regview);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
 err_free:
 	bnx2_free_stats_blk(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnx2_remove_one(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -10958,56 +8605,17 @@ bnx2_remove_one(struct pci_dev *pdev)
 	del_timer_sync(&bp->timer);
 	cancel_work_sync(&bp->reset_task);
 
-<<<<<<< HEAD
-	if (bp->regview)
-		iounmap(bp->regview);
-
-	kfree(bp->temp_stats_blk);
-
-	if (bp->flags & BNX2_FLAG_AER_ENABLED) {
-		pci_disable_pcie_error_reporting(pdev);
-		bp->flags &= ~BNX2_FLAG_AER_ENABLED;
-	}
-
-=======
 	pci_iounmap(bp->pdev, bp->regview);
 
 	bnx2_free_stats_blk(dev);
 	kfree(bp->temp_stats_blk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_release_firmware(bp);
 
 	free_netdev(dev);
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-}
-
-static int
-bnx2_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-	struct bnx2 *bp = netdev_priv(dev);
-
-	/* PCI register 4 needs to be saved whether netif_running() or not.
-	 * MSI address and data need to be saved if using MSI and
-	 * netif_running().
-	 */
-	pci_save_state(pdev);
-	if (!netif_running(dev))
-		return 0;
-
-	cancel_work_sync(&bp->reset_task);
-	bnx2_netif_stop(bp, true);
-	netif_device_detach(dev);
-	del_timer_sync(&bp->timer);
-	bnx2_shutdown_chip(bp);
-	bnx2_free_skbs(bp);
-	bnx2_set_power_state(bp, pci_choose_state(pdev, state));
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -11027,41 +8635,26 @@ bnx2_suspend(struct device *device)
 		bnx2_free_skbs(bp);
 	}
 	bnx2_setup_wol(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-bnx2_resume(struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-	struct bnx2 *bp = netdev_priv(dev);
-
-	pci_restore_state(pdev);
-=======
 bnx2_resume(struct device *device)
 {
 	struct net_device *dev = dev_get_drvdata(device);
 	struct bnx2 *bp = netdev_priv(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(dev))
 		return 0;
 
 	bnx2_set_power_state(bp, PCI_D0);
 	netif_device_attach(dev);
-<<<<<<< HEAD
-=======
 	bnx2_request_irq(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2_init_nic(bp, 1);
 	bnx2_netif_start(bp, true);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(bnx2_pm_ops, bnx2_suspend, bnx2_resume);
 #define BNX2_PM_OPS (&bnx2_pm_ops)
 
@@ -11070,7 +8663,6 @@ static SIMPLE_DEV_PM_OPS(bnx2_pm_ops, bnx2_suspend, bnx2_resume);
 #define BNX2_PM_OPS NULL
 
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2_io_error_detected - called when PCI error is detected
  * @pdev: Pointer to PCI device
@@ -11116,47 +8708,18 @@ static pci_ers_result_t bnx2_io_slot_reset(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct bnx2 *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	pci_ers_result_t result;
-	int err;
-=======
 	pci_ers_result_t result = PCI_ERS_RESULT_DISCONNECT;
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtnl_lock();
 	if (pci_enable_device(pdev)) {
 		dev_err(&pdev->dev,
 			"Cannot re-enable PCI device after reset\n");
-<<<<<<< HEAD
-		result = PCI_ERS_RESULT_DISCONNECT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pci_set_master(pdev);
 		pci_restore_state(pdev);
 		pci_save_state(pdev);
 
-<<<<<<< HEAD
-		if (netif_running(dev)) {
-			bnx2_set_power_state(bp, PCI_D0);
-			bnx2_init_nic(bp, 1);
-		}
-		result = PCI_ERS_RESULT_RECOVERED;
-	}
-	rtnl_unlock();
-
-	if (!(bp->flags & BNX2_FLAG_AER_ENABLED))
-		return result;
-
-	err = pci_cleanup_aer_uncorrect_error_status(pdev);
-	if (err) {
-		dev_err(&pdev->dev,
-			"pci_cleanup_aer_uncorrect_error_status failed 0x%0x\n",
-			 err); /* non-fatal, continue */
-	}
-
-=======
 		if (netif_running(dev))
 			err = bnx2_init_nic(bp, 1);
 
@@ -11170,7 +8733,6 @@ static pci_ers_result_t bnx2_io_slot_reset(struct pci_dev *pdev)
 	}
 	rtnl_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -11194,9 +8756,6 @@ static void bnx2_io_resume(struct pci_dev *pdev)
 	rtnl_unlock();
 }
 
-<<<<<<< HEAD
-static struct pci_error_handlers bnx2_err_handler = {
-=======
 static void bnx2_shutdown(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -11220,7 +8779,6 @@ static void bnx2_shutdown(struct pci_dev *pdev)
 }
 
 static const struct pci_error_handlers bnx2_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected	= bnx2_io_error_detected,
 	.slot_reset	= bnx2_io_slot_reset,
 	.resume		= bnx2_io_resume,
@@ -11230,29 +8788,6 @@ static struct pci_driver bnx2_pci_driver = {
 	.name		= DRV_MODULE_NAME,
 	.id_table	= bnx2_pci_tbl,
 	.probe		= bnx2_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(bnx2_remove_one),
-	.suspend	= bnx2_suspend,
-	.resume		= bnx2_resume,
-	.err_handler	= &bnx2_err_handler,
-};
-
-static int __init bnx2_init(void)
-{
-	return pci_register_driver(&bnx2_pci_driver);
-}
-
-static void __exit bnx2_cleanup(void)
-{
-	pci_unregister_driver(&bnx2_pci_driver);
-}
-
-module_init(bnx2_init);
-module_exit(bnx2_cleanup);
-
-
-
-=======
 	.remove		= bnx2_remove_one,
 	.driver.pm	= BNX2_PM_OPS,
 	.err_handler	= &bnx2_err_handler,
@@ -11260,4 +8795,3 @@ module_exit(bnx2_cleanup);
 };
 
 module_pci_driver(bnx2_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

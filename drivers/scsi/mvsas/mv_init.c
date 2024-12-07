@@ -1,56 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE64xx/88SE94xx pci init
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of the
- * License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 
 #include "mv_sas.h"
 
-<<<<<<< HEAD
-static int lldd_max_execute_num = 1;
-module_param_named(collector, lldd_max_execute_num, int, S_IRUGO);
-MODULE_PARM_DESC(collector, "\n"
-	"\tIf greater than one, tells the SAS Layer to run in Task Collector\n"
-	"\tMode.  If 1 or 0, tells the SAS Layer to run in Direct Mode.\n"
-	"\tThe mvsas SAS LLDD supports both modes.\n"
-	"\tDefault: 1 (Direct Mode).\n");
-
 int interrupt_coalescing = 0x80;
 
 static struct scsi_transport_template *mvs_stt;
-struct kmem_cache *mvs_task_list_cache;
-=======
-int interrupt_coalescing = 0x80;
-
-static struct scsi_transport_template *mvs_stt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct mvs_chip_info mvs_chips[] = {
 	[chip_6320] =	{ 1, 2, 0x400, 17, 16, 6,  9, &mvs_64xx_dispatch, },
 	[chip_6440] =	{ 1, 4, 0x400, 17, 16, 6,  9, &mvs_64xx_dispatch, },
@@ -63,16 +25,6 @@ static const struct mvs_chip_info mvs_chips[] = {
 	[chip_1320] =	{ 2, 4, 0x800, 17, 64, 8,  9, &mvs_94xx_dispatch, },
 };
 
-<<<<<<< HEAD
-struct device_attribute *mvst_host_attrs[];
-
-#define SOC_SAS_NUM 2
-
-static struct scsi_host_template mvs_sht = {
-	.module			= THIS_MODULE,
-	.name			= DRV_NAME,
-	.queuecommand		= sas_queuecommand,
-=======
 static const struct attribute_group *mvst_host_groups[];
 
 #define SOC_SAS_NUM 2
@@ -82,27 +34,11 @@ static const struct scsi_host_template mvs_sht = {
 	.name			= DRV_NAME,
 	.queuecommand		= sas_queuecommand,
 	.dma_need_drain		= ata_scsi_dma_need_drain,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.target_alloc		= sas_target_alloc,
 	.slave_configure	= sas_slave_configure,
 	.scan_finished		= mvs_scan_finished,
 	.scan_start		= mvs_scan_start,
 	.change_queue_depth	= sas_change_queue_depth,
-<<<<<<< HEAD
-	.change_queue_type	= sas_change_queue_type,
-	.bios_param		= sas_bios_param,
-	.can_queue		= 1,
-	.cmd_per_lun		= 1,
-	.this_id		= -1,
-	.sg_tablesize		= SG_ALL,
-	.max_sectors		= SCSI_DEFAULT_MAX_SECTORS,
-	.use_clustering		= ENABLE_CLUSTERING,
-	.eh_device_reset_handler = sas_eh_device_reset_handler,
-	.eh_bus_reset_handler	= sas_eh_bus_reset_handler,
-	.target_destroy		= sas_target_destroy,
-	.ioctl			= sas_ioctl,
-	.shost_attrs		= mvst_host_attrs,
-=======
 	.bios_param		= sas_bios_param,
 	.can_queue		= 1,
 	.this_id		= -1,
@@ -118,7 +54,6 @@ static const struct scsi_host_template mvs_sht = {
 #endif
 	.shost_groups		= mvst_host_groups,
 	.track_queue_depth	= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct sas_domain_function_template mvs_transport_ops = {
@@ -128,50 +63,29 @@ static struct sas_domain_function_template mvs_transport_ops = {
 	.lldd_control_phy	= mvs_phy_control,
 
 	.lldd_abort_task	= mvs_abort_task,
-<<<<<<< HEAD
-	.lldd_abort_task_set    = mvs_abort_task_set,
-	.lldd_clear_aca         = mvs_clear_aca,
-	.lldd_clear_task_set    = mvs_clear_task_set,
-=======
 	.lldd_abort_task_set    = sas_abort_task_set,
 	.lldd_clear_task_set    = sas_clear_task_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.lldd_I_T_nexus_reset	= mvs_I_T_nexus_reset,
 	.lldd_lu_reset 		= mvs_lu_reset,
 	.lldd_query_task	= mvs_query_task,
 	.lldd_port_formed	= mvs_port_formed,
 	.lldd_port_deformed     = mvs_port_deformed,
 
-<<<<<<< HEAD
-};
-
-static void __devinit mvs_phy_init(struct mvs_info *mvi, int phy_id)
-=======
 	.lldd_write_gpio	= mvs_gpio_write,
 
 };
 
 static void mvs_phy_init(struct mvs_info *mvi, int phy_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mvs_phy *phy = &mvi->phy[phy_id];
 	struct asd_sas_phy *sas_phy = &phy->sas_phy;
 
 	phy->mvi = mvi;
 	phy->port = NULL;
-<<<<<<< HEAD
-	init_timer(&phy->timer);
-	sas_phy->enabled = (phy_id < mvi->chip->n_phy) ? 1 : 0;
-	sas_phy->class = SAS;
-	sas_phy->iproto = SAS_PROTOCOL_ALL;
-	sas_phy->tproto = 0;
-	sas_phy->type = PHY_TYPE_PHYSICAL;
-=======
 	timer_setup(&phy->timer, NULL, 0);
 	sas_phy->enabled = (phy_id < mvi->chip->n_phy) ? 1 : 0;
 	sas_phy->iproto = SAS_PROTOCOL_ALL;
 	sas_phy->tproto = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_phy->role = PHY_ROLE_INITIATOR;
 	sas_phy->oob_mode = OOB_NOT_CONNECTED;
 	sas_phy->linkrate = SAS_LINK_RATE_UNKNOWN;
@@ -196,12 +110,7 @@ static void mvs_free(struct mvs_info *mvi)
 	else
 		slot_nr = MVS_CHIP_SLOT_SZ;
 
-<<<<<<< HEAD
-	if (mvi->dma_pool)
-		pci_pool_destroy(mvi->dma_pool);
-=======
 	dma_pool_destroy(mvi->dma_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mvi->tx)
 		dma_free_coherent(mvi->dev,
@@ -231,11 +140,7 @@ static void mvs_free(struct mvs_info *mvi)
 		scsi_host_put(mvi->shost);
 	list_for_each_entry(mwq, &mvi->wq_list, entry)
 		cancel_delayed_work(&mwq->work_q);
-<<<<<<< HEAD
-	kfree(mvi->tags);
-=======
 	kfree(mvi->rsvd_tags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mvi);
 }
 
@@ -270,26 +175,16 @@ out:
 
 static irqreturn_t mvs_interrupt(int irq, void *opaque)
 {
-<<<<<<< HEAD
-	u32 core_nr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 stat;
 	struct mvs_info *mvi;
 	struct sas_ha_struct *sha = opaque;
 #ifndef CONFIG_SCSI_MVSAS_TASKLET
 	u32 i;
-<<<<<<< HEAD
-#endif
-
-	core_nr = ((struct mvs_prv_info *)sha->lldd_ha)->n_host;
-=======
 	u32 core_nr;
 
 	core_nr = ((struct mvs_prv_info *)sha->lldd_ha)->n_host;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mvi = ((struct mvs_prv_info *)sha->lldd_ha)->mvi[0];
 
 	if (unlikely(!mvi))
@@ -317,11 +212,7 @@ static irqreturn_t mvs_interrupt(int irq, void *opaque)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
-=======
 static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = 0, slot_nr;
 	char pool_name[32];
@@ -340,16 +231,9 @@ static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
 	}
 	for (i = 0; i < MVS_MAX_DEVICES; i++) {
 		mvi->devices[i].taskfileset = MVS_ID_NOT_MAPPED;
-<<<<<<< HEAD
-		mvi->devices[i].dev_type = NO_DEVICE;
-		mvi->devices[i].device_id = i;
-		mvi->devices[i].dev_status = MVS_DEV_NORMAL;
-		init_timer(&mvi->devices[i].timer);
-=======
 		mvi->devices[i].dev_type = SAS_PHY_UNUSED;
 		mvi->devices[i].device_id = i;
 		mvi->devices[i].dev_status = MVS_DEV_NORMAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -360,28 +244,16 @@ static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
 				     &mvi->tx_dma, GFP_KERNEL);
 	if (!mvi->tx)
 		goto err_out;
-<<<<<<< HEAD
-	memset(mvi->tx, 0, sizeof(*mvi->tx) * MVS_CHIP_SLOT_SZ);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mvi->rx_fis = dma_alloc_coherent(mvi->dev, MVS_RX_FISL_SZ,
 					 &mvi->rx_fis_dma, GFP_KERNEL);
 	if (!mvi->rx_fis)
 		goto err_out;
-<<<<<<< HEAD
-	memset(mvi->rx_fis, 0, MVS_RX_FISL_SZ);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mvi->rx = dma_alloc_coherent(mvi->dev,
 				     sizeof(*mvi->rx) * (MVS_RX_RING_SZ + 1),
 				     &mvi->rx_dma, GFP_KERNEL);
 	if (!mvi->rx)
 		goto err_out;
-<<<<<<< HEAD
-	memset(mvi->rx, 0, sizeof(*mvi->rx) * (MVS_RX_RING_SZ + 1));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mvi->rx[0] = cpu_to_le32(0xfff);
 	mvi->rx_cons = 0xfff;
 
@@ -390,10 +262,6 @@ static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
 				       &mvi->slot_dma, GFP_KERNEL);
 	if (!mvi->slot)
 		goto err_out;
-<<<<<<< HEAD
-	memset(mvi->slot, 0, sizeof(*mvi->slot) * slot_nr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mvi->bulk_buffer = dma_alloc_coherent(mvi->dev,
 				       TRASH_BUCKET_SIZE,
@@ -408,24 +276,13 @@ static int mvs_alloc(struct mvs_info *mvi, struct Scsi_Host *shost)
 		goto err_out;
 
 	sprintf(pool_name, "%s%d", "mvs_dma_pool", mvi->id);
-<<<<<<< HEAD
-	mvi->dma_pool = pci_pool_create(pool_name, mvi->pdev, MVS_SLOT_BUF_SZ, 16, 0);
-=======
 	mvi->dma_pool = dma_pool_create(pool_name, &mvi->pdev->dev,
 					MVS_SLOT_BUF_SZ, 16, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mvi->dma_pool) {
 			printk(KERN_DEBUG "failed to create dma pool %s.\n", pool_name);
 			goto err_out;
 	}
-<<<<<<< HEAD
-	mvi->tags_num = slot_nr;
 
-	/* Initialize tags */
-	mvs_tag_init(mvi);
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 err_out:
 	return 1;
@@ -434,11 +291,7 @@ err_out:
 
 int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 {
-<<<<<<< HEAD
-	unsigned long res_start, res_len, res_flag, res_flag_ex = 0;
-=======
 	unsigned long res_start, res_len, res_flag_ex = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev = mvi->pdev;
 	if (bar_ex != -1) {
 		/*
@@ -450,19 +303,9 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 			goto err_out;
 
 		res_flag_ex = pci_resource_flags(pdev, bar_ex);
-<<<<<<< HEAD
-		if (res_flag_ex & IORESOURCE_MEM) {
-			if (res_flag_ex & IORESOURCE_CACHEABLE)
-				mvi->regs_ex = ioremap(res_start, res_len);
-			else
-				mvi->regs_ex = ioremap_nocache(res_start,
-						res_len);
-		} else
-=======
 		if (res_flag_ex & IORESOURCE_MEM)
 			mvi->regs_ex = ioremap(res_start, res_len);
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mvi->regs_ex = (void *)res_start;
 		if (!mvi->regs_ex)
 			goto err_out;
@@ -470,16 +313,6 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 
 	res_start = pci_resource_start(pdev, bar);
 	res_len = pci_resource_len(pdev, bar);
-<<<<<<< HEAD
-	if (!res_start || !res_len)
-		goto err_out;
-
-	res_flag = pci_resource_flags(pdev, bar);
-	if (res_flag & IORESOURCE_CACHEABLE)
-		mvi->regs = ioremap(res_start, res_len);
-	else
-		mvi->regs = ioremap_nocache(res_start, res_len);
-=======
 	if (!res_start || !res_len) {
 		iounmap(mvi->regs_ex);
 		mvi->regs_ex = NULL;
@@ -487,7 +320,6 @@ int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex)
 	}
 
 	mvi->regs = ioremap(res_start, res_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mvi->regs) {
 		if (mvi->regs_ex && (res_flag_ex & IORESOURCE_MEM))
@@ -506,11 +338,7 @@ void mvs_iounmap(void __iomem *regs)
 	iounmap(regs);
 }
 
-<<<<<<< HEAD
-static struct mvs_info *__devinit mvs_pci_alloc(struct pci_dev *pdev,
-=======
 static struct mvs_info *mvs_pci_alloc(struct pci_dev *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct pci_device_id *ent,
 				struct Scsi_Host *shost, unsigned int id)
 {
@@ -536,13 +364,8 @@ static struct mvs_info *mvs_pci_alloc(struct pci_dev *pdev,
 	mvi->sas = sha;
 	mvi->shost = shost;
 
-<<<<<<< HEAD
-	mvi->tags = kzalloc(MVS_CHIP_SLOT_SZ>>3, GFP_KERNEL);
-	if (!mvi->tags)
-=======
 	mvi->rsvd_tags = bitmap_zalloc(MVS_RSVD_SLOTS, GFP_KERNEL);
 	if (!mvi->rsvd_tags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 
 	if (MVS_CHIP_DISP->chip_ioremap(mvi))
@@ -558,48 +381,20 @@ static int pci_go_64(struct pci_dev *pdev)
 {
 	int rc;
 
-<<<<<<< HEAD
-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (rc) {
-			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-			if (rc) {
-				dev_printk(KERN_ERR, &pdev->dev,
-					   "64-bit DMA enable failed\n");
-				return rc;
-			}
-		}
-	} else {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (rc) {
 		rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			dev_printk(KERN_ERR, &pdev->dev,
 				   "32-bit DMA enable failed\n");
 			return rc;
 		}
-<<<<<<< HEAD
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_printk(KERN_ERR, &pdev->dev,
-				   "32-bit consistent DMA enable failed\n");
-			return rc;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
 }
 
-<<<<<<< HEAD
-static int __devinit mvs_prep_sas_ha_init(struct Scsi_Host *shost,
-=======
 static int mvs_prep_sas_ha_init(struct Scsi_Host *shost,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct mvs_chip_info *chip_info)
 {
 	int phy_nr, port_nr; unsigned short core_nr;
@@ -619,11 +414,7 @@ static int mvs_prep_sas_ha_init(struct Scsi_Host *shost,
 
 	sha->sas_phy = arr_phy;
 	sha->sas_port = arr_port;
-<<<<<<< HEAD
-	sha->core.shost = shost;
-=======
 	sha->shost = shost;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sha->lldd_ha = kzalloc(sizeof(struct mvs_prv_info), GFP_KERNEL);
 	if (!sha->lldd_ha)
@@ -645,11 +436,7 @@ exit_free:
 
 }
 
-<<<<<<< HEAD
-static void  __devinit mvs_post_sas_ha_init(struct Scsi_Host *shost,
-=======
 static void  mvs_post_sas_ha_init(struct Scsi_Host *shost,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			const struct mvs_chip_info *chip_info)
 {
 	int can_queue, i = 0, j = 0;
@@ -669,38 +456,21 @@ static void  mvs_post_sas_ha_init(struct Scsi_Host *shost,
 
 	sha->sas_ha_name = DRV_NAME;
 	sha->dev = mvi->dev;
-<<<<<<< HEAD
-	sha->lldd_module = THIS_MODULE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sha->sas_addr = &mvi->sas_addr[0];
 
 	sha->num_phys = nr_core * chip_info->n_phy;
 
-<<<<<<< HEAD
-	sha->lldd_max_execute_num = lldd_max_execute_num;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mvi->flags & MVF_FLAG_SOC)
 		can_queue = MVS_SOC_CAN_QUEUE;
 	else
 		can_queue = MVS_CHIP_SLOT_SZ;
 
-<<<<<<< HEAD
-	sha->lldd_queue_size = can_queue;
-	shost->sg_tablesize = min_t(u16, SG_ALL, MVS_MAX_SG);
-	shost->can_queue = can_queue;
-	mvi->shost->cmd_per_lun = MVS_QUEUE_SIZE;
-	sha->core.shost = mvi->shost;
-=======
 	can_queue -= MVS_RSVD_SLOTS;
 
 	shost->sg_tablesize = min_t(u16, SG_ALL, MVS_MAX_SG);
 	shost->can_queue = can_queue;
 	mvi->shost->cmd_per_lun = MVS_QUEUE_SIZE;
 	sha->shost = mvi->shost;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mvs_init_sas_add(struct mvs_info *mvi)
@@ -715,19 +485,10 @@ static void mvs_init_sas_add(struct mvs_info *mvi)
 	memcpy(mvi->sas_addr, &mvi->phy[0].dev_sas_addr, SAS_ADDR_SIZE);
 }
 
-<<<<<<< HEAD
-static int __devinit mvs_pci_init(struct pci_dev *pdev,
-				  const struct pci_device_id *ent)
-{
-	unsigned int rc, nhost = 0;
-	struct mvs_info *mvi;
-	struct mvs_prv_info *mpi;
-=======
 static int mvs_pci_init(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	unsigned int rc, nhost = 0;
 	struct mvs_info *mvi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_handler_t irq_handler = mvs_interrupt;
 	struct Scsi_Host *shost = NULL;
 	const struct mvs_chip_info *chip;
@@ -758,22 +519,14 @@ static int mvs_pci_init(struct pci_dev *pdev, const struct pci_device_id *ent)
 	SHOST_TO_SAS_HA(shost) =
 		kcalloc(1, sizeof(struct sas_ha_struct), GFP_KERNEL);
 	if (!SHOST_TO_SAS_HA(shost)) {
-<<<<<<< HEAD
-		kfree(shost);
-=======
 		scsi_host_put(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto err_out_regions;
 	}
 
 	rc = mvs_prep_sas_ha_init(shost, chip);
 	if (rc) {
-<<<<<<< HEAD
-		kfree(shost);
-=======
 		scsi_host_put(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto err_out_regions;
 	}
@@ -800,12 +553,6 @@ static int mvs_pci_init(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 		nhost++;
 	} while (nhost < chip->n_host);
-<<<<<<< HEAD
-	mpi = (struct mvs_prv_info *)(SHOST_TO_SAS_HA(shost)->lldd_ha);
-#ifdef CONFIG_SCSI_MVSAS_TASKLET
-	tasklet_init(&(mpi->mv_tasklet), mvs_tasklet,
-		     (unsigned long)SHOST_TO_SAS_HA(shost));
-=======
 #ifdef CONFIG_SCSI_MVSAS_TASKLET
 	{
 	struct mvs_prv_info *mpi = SHOST_TO_SAS_HA(shost)->lldd_ha;
@@ -813,7 +560,6 @@ static int mvs_pci_init(struct pci_dev *pdev, const struct pci_device_id *ent)
 	tasklet_init(&(mpi->mv_tasklet), mvs_tasklet,
 		     (unsigned long)SHOST_TO_SAS_HA(shost));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	mvs_post_sas_ha_init(shost, chip);
@@ -848,11 +594,7 @@ err_out_enable:
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit mvs_pci_remove(struct pci_dev *pdev)
-=======
 static void mvs_pci_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short core_nr, i = 0;
 	struct sas_ha_struct *sha = pci_get_drvdata(pdev);
@@ -865,15 +607,8 @@ static void mvs_pci_remove(struct pci_dev *pdev)
 	tasklet_kill(&((struct mvs_prv_info *)sha->lldd_ha)->mv_tasklet);
 #endif
 
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
 	sas_unregister_ha(sha);
 	sas_remove_host(mvi->shost);
-	scsi_remove_host(mvi->shost);
-=======
-	sas_unregister_ha(sha);
-	sas_remove_host(mvi->shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MVS_CHIP_DISP->interrupt_disable(mvi);
 	free_irq(mvi->pdev->irq, sha);
@@ -889,11 +624,7 @@ static void mvs_pci_remove(struct pci_dev *pdev)
 	return;
 }
 
-<<<<<<< HEAD
-static struct pci_device_id __devinitdata mvs_pci_table[] = {
-=======
 static struct pci_device_id mvs_pci_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(MARVELL, 0x6320), chip_6320 },
 	{ PCI_VDEVICE(MARVELL, 0x6340), chip_6440 },
 	{
@@ -912,10 +643,7 @@ static struct pci_device_id mvs_pci_table[] = {
 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
-<<<<<<< HEAD
-=======
 	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
@@ -924,11 +652,7 @@ static struct pci_device_id mvs_pci_table[] = {
 	{ PCI_VDEVICE(TTI, 0x2744), chip_9480 },
 	{ PCI_VDEVICE(TTI, 0x2760), chip_9480 },
 	{
-<<<<<<< HEAD
-		.vendor		= 0x1b4b,
-=======
 		.vendor		= PCI_VENDOR_ID_MARVELL_EXT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.device		= 0x9480,
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= 0x9480,
@@ -937,11 +661,7 @@ static struct pci_device_id mvs_pci_table[] = {
 		.driver_data	= chip_9480,
 	},
 	{
-<<<<<<< HEAD
-		.vendor		= 0x1b4b,
-=======
 		.vendor		= PCI_VENDOR_ID_MARVELL_EXT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.device		= 0x9445,
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= 0x9480,
@@ -949,19 +669,7 @@ static struct pci_device_id mvs_pci_table[] = {
 		.class_mask	= 0,
 		.driver_data	= chip_9445,
 	},
-<<<<<<< HEAD
-	{
-		.vendor		= 0x1b4b,
-		.device		= 0x9485,
-		.subvendor	= PCI_ANY_ID,
-		.subdevice	= 0x9480,
-		.class		= 0,
-		.class_mask	= 0,
-		.driver_data	= chip_9485,
-	},
-=======
 	{ PCI_VDEVICE(MARVELL_EXT, 0x9485), chip_9485 }, /* Marvell 9480/9485 (any vendor/model) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(OCZ, 0x1021), chip_9485}, /* OCZ RevoDrive3 */
 	{ PCI_VDEVICE(OCZ, 0x1022), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
 	{ PCI_VDEVICE(OCZ, 0x1040), chip_9485}, /* OCZ RevoDrive3/zDriveR4 (exact model unknown) */
@@ -980,29 +688,6 @@ static struct pci_driver mvs_pci_driver = {
 	.name		= DRV_NAME,
 	.id_table	= mvs_pci_table,
 	.probe		= mvs_pci_init,
-<<<<<<< HEAD
-	.remove		= __devexit_p(mvs_pci_remove),
-};
-
-static ssize_t
-mvs_show_driver_version(struct device *cdev,
-		struct device_attribute *attr,  char *buffer)
-{
-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
-}
-
-static DEVICE_ATTR(driver_version,
-			 S_IRUGO,
-			 mvs_show_driver_version,
-			 NULL);
-
-static ssize_t
-mvs_store_interrupt_coalescing(struct device *cdev,
-			struct device_attribute *attr,
-			const char *buffer, size_t size)
-{
-	int val = 0;
-=======
 	.remove		= mvs_pci_remove,
 };
 
@@ -1019,7 +704,6 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
 					  const char *buffer, size_t size)
 {
 	unsigned int val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mvs_info *mvi = NULL;
 	struct Scsi_Host *shost = class_to_shost(cdev);
 	struct sas_ha_struct *sha = SHOST_TO_SAS_HA(shost);
@@ -1027,11 +711,7 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
 	if (buffer == NULL)
 		return size;
 
-<<<<<<< HEAD
-	if (sscanf(buffer, "%d", &val) != 1)
-=======
 	if (sscanf(buffer, "%u", &val) != 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (val >= 0x10000) {
@@ -1059,21 +739,6 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
 	return strlen(buffer);
 }
 
-<<<<<<< HEAD
-static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
-			struct device_attribute *attr, char *buffer)
-{
-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
-}
-
-static DEVICE_ATTR(interrupt_coalescing,
-			 S_IRUGO|S_IWUSR,
-			 mvs_show_interrupt_coalescing,
-			 mvs_store_interrupt_coalescing);
-
-/* task handler */
-struct task_struct *mvs_th;
-=======
 static ssize_t interrupt_coalescing_show(struct device *cdev,
 					 struct device_attribute *attr, char *buffer)
 {
@@ -1082,7 +747,6 @@ static ssize_t interrupt_coalescing_show(struct device *cdev,
 
 static DEVICE_ATTR_RW(interrupt_coalescing);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init mvs_init(void)
 {
 	int rc;
@@ -1090,20 +754,7 @@ static int __init mvs_init(void)
 	if (!mvs_stt)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	mvs_task_list_cache = kmem_cache_create("mvs_task_list", sizeof(struct mvs_task_list),
-							 0, SLAB_HWCACHE_ALIGN, NULL);
-	if (!mvs_task_list_cache) {
-		rc = -ENOMEM;
-		mv_printk("%s: mvs_task_list_cache alloc failed! \n", __func__);
-		goto err_out;
-	}
-
 	rc = pci_register_driver(&mvs_pci_driver);
-
-=======
-	rc = pci_register_driver(&mvs_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto err_out;
 
@@ -1118,17 +769,6 @@ static void __exit mvs_exit(void)
 {
 	pci_unregister_driver(&mvs_pci_driver);
 	sas_release_transport(mvs_stt);
-<<<<<<< HEAD
-	kmem_cache_destroy(mvs_task_list_cache);
-}
-
-struct device_attribute *mvst_host_attrs[] = {
-	&dev_attr_driver_version,
-	&dev_attr_interrupt_coalescing,
-	NULL,
-};
-
-=======
 }
 
 static struct attribute *mvst_host_attrs[] = {
@@ -1139,7 +779,6 @@ static struct attribute *mvst_host_attrs[] = {
 
 ATTRIBUTE_GROUPS(mvst_host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(mvs_init);
 module_exit(mvs_exit);
 

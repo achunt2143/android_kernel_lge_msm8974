@@ -1,38 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2011 Freescale Semiconductor, Inc.
  * Copyright 2011 Linaro Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/of.h>
-#include <linux/of_address.h>
-#include <linux/smp.h>
-#include <asm/smp_plat.h>
-
-#define SRC_SCR				0x000
-#define SRC_GPR1			0x020
-#define BP_SRC_SCR_WARM_RESET_ENABLE	0
-#define BP_SRC_SCR_CORE1_RST		14
-#define BP_SRC_SCR_CORE1_ENABLE		22
-
-static void __iomem *src_base;
-=======
 #include <linux/iopoll.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -145,19 +118,12 @@ void imx_gpcv2_set_core1_pdn_pup_by_software(bool pdn)
 
 	imx_gpcv2_set_m_core_pgc(false, GPC_PGC_C1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void imx_enable_cpu(int cpu, bool enable)
 {
 	u32 mask, val;
 
 	cpu = cpu_logical_map(cpu);
-<<<<<<< HEAD
-	mask = 1 << (BP_SRC_SCR_CORE1_ENABLE + cpu - 1);
-	val = readl_relaxed(src_base + SRC_SCR);
-	val = enable ? val | mask : val & ~mask;
-	writel_relaxed(val, src_base + SRC_SCR);
-=======
 	spin_lock(&scr_lock);
 	if (gpr_v2) {
 		if (enable)
@@ -175,29 +141,11 @@ void imx_enable_cpu(int cpu, bool enable)
 		writel_relaxed(val, src_base + SRC_SCR);
 	}
 	spin_unlock(&scr_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void imx_set_cpu_jump(int cpu, void *jump_addr)
 {
 	cpu = cpu_logical_map(cpu);
-<<<<<<< HEAD
-	writel_relaxed(virt_to_phys(jump_addr),
-		       src_base + SRC_GPR1 + cpu * 8);
-}
-
-void imx_src_prepare_restart(void)
-{
-	u32 val;
-
-	/* clear enable bits of secondary cores */
-	val = readl_relaxed(src_base + SRC_SCR);
-	val &= ~(0x7 << BP_SRC_SCR_CORE1_ENABLE);
-	writel_relaxed(val, src_base + SRC_SCR);
-
-	/* clear persistent entry register of primary core */
-	writel_relaxed(0, src_base + SRC_GPR1);
-=======
 	writel_relaxed(__pa_symbol(jump_addr),
 		       src_base + SRC_GPR1(gpr_v2) + cpu * 8);
 }
@@ -212,7 +160,6 @@ void imx_set_cpu_arg(int cpu, u32 arg)
 {
 	cpu = cpu_logical_map(cpu);
 	writel_relaxed(arg, src_base + SRC_GPR1(gpr_v2) + cpu * 8 + 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init imx_src_init(void)
@@ -220,13 +167,9 @@ void __init imx_src_init(void)
 	struct device_node *np;
 	u32 val;
 
-<<<<<<< HEAD
-	np = of_find_compatible_node(NULL, NULL, "fsl,imx6q-src");
-=======
 	np = of_find_compatible_node(NULL, NULL, "fsl,imx51-src");
 	if (!np)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	src_base = of_iomap(np, 0);
 	WARN_ON(!src_base);
 
@@ -234,12 +177,6 @@ void __init imx_src_init(void)
 	 * force warm reset sources to generate cold reset
 	 * for a more reliable restart
 	 */
-<<<<<<< HEAD
-	val = readl_relaxed(src_base + SRC_SCR);
-	val &= ~(1 << BP_SRC_SCR_WARM_RESET_ENABLE);
-	writel_relaxed(val, src_base + SRC_SCR);
-}
-=======
 	spin_lock(&scr_lock);
 	val = readl_relaxed(src_base + SRC_SCR);
 	val &= ~(1 << BP_SRC_SCR_WARM_RESET_ENABLE);
@@ -299,4 +236,3 @@ static struct platform_driver imx_src_driver = {
 	.probe = imx_src_probe,
 };
 builtin_platform_driver(imx_src_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

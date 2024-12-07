@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPVS:        Destination Hashing scheduling module
  *
@@ -10,17 +7,7 @@
  *              Inspired by the consistent hashing scheduler patch from
  *              Thomas Proell <proellt@gmx.de>
  *
-<<<<<<< HEAD
- *              This program is free software; you can redistribute it and/or
- *              modify it under the terms of the GNU General Public License
- *              as published by the Free Software Foundation; either version
- *              2 of the License, or (at your option) any later version.
- *
  * Changes:
- *
-=======
- * Changes:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -51,10 +38,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-=======
 #include <linux/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip_vs.h>
 
@@ -63,11 +47,7 @@
  *      IPVS DH bucket
  */
 struct ip_vs_dh_bucket {
-<<<<<<< HEAD
-	struct ip_vs_dest       *dest;          /* real server (cache) */
-=======
 	struct ip_vs_dest __rcu	*dest;	/* real server (cache) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -80,22 +60,15 @@ struct ip_vs_dh_bucket {
 #define IP_VS_DH_TAB_SIZE               (1 << IP_VS_DH_TAB_BITS)
 #define IP_VS_DH_TAB_MASK               (IP_VS_DH_TAB_SIZE - 1)
 
-<<<<<<< HEAD
-=======
 struct ip_vs_dh_state {
 	struct ip_vs_dh_bucket		buckets[IP_VS_DH_TAB_SIZE];
 	struct rcu_head			rcu_head;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Returns hash value for IPVS DH entry
  */
-<<<<<<< HEAD
-static inline unsigned ip_vs_dh_hashkey(int af, const union nf_inet_addr *addr)
-=======
 static inline unsigned int ip_vs_dh_hashkey(int af, const union nf_inet_addr *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 addr_fold = addr->ip;
 
@@ -104,11 +77,7 @@ static inline unsigned int ip_vs_dh_hashkey(int af, const union nf_inet_addr *ad
 		addr_fold = addr->ip6[0]^addr->ip6[1]^
 			    addr->ip6[2]^addr->ip6[3];
 #endif
-<<<<<<< HEAD
-	return (ntohl(addr_fold)*2654435761UL) & IP_VS_DH_TAB_MASK;
-=======
 	return hash_32(ntohl(addr_fold), IP_VS_DH_TAB_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -116,16 +85,9 @@ static inline unsigned int ip_vs_dh_hashkey(int af, const union nf_inet_addr *ad
  *      Get ip_vs_dest associated with supplied parameters.
  */
 static inline struct ip_vs_dest *
-<<<<<<< HEAD
-ip_vs_dh_get(int af, struct ip_vs_dh_bucket *tbl,
-	     const union nf_inet_addr *addr)
-{
-	return (tbl[ip_vs_dh_hashkey(af, addr)]).dest;
-=======
 ip_vs_dh_get(int af, struct ip_vs_dh_state *s, const union nf_inet_addr *addr)
 {
 	return rcu_dereference(s->buckets[ip_vs_dh_hashkey(af, addr)].dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -133,25 +95,12 @@ ip_vs_dh_get(int af, struct ip_vs_dh_state *s, const union nf_inet_addr *addr)
  *      Assign all the hash buckets of the specified table with the service.
  */
 static int
-<<<<<<< HEAD
-ip_vs_dh_assign(struct ip_vs_dh_bucket *tbl, struct ip_vs_service *svc)
-=======
 ip_vs_dh_reassign(struct ip_vs_dh_state *s, struct ip_vs_service *svc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct ip_vs_dh_bucket *b;
 	struct list_head *p;
 	struct ip_vs_dest *dest;
-<<<<<<< HEAD
-
-	b = tbl;
-	p = &svc->destinations;
-	for (i=0; i<IP_VS_DH_TAB_SIZE; i++) {
-		if (list_empty(p)) {
-			b->dest = NULL;
-		} else {
-=======
 	bool empty;
 
 	b = &s->buckets[0];
@@ -164,18 +113,12 @@ ip_vs_dh_reassign(struct ip_vs_dh_state *s, struct ip_vs_service *svc)
 		if (empty)
 			RCU_INIT_POINTER(b->dest, NULL);
 		else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (p == &svc->destinations)
 				p = p->next;
 
 			dest = list_entry(p, struct ip_vs_dest, n_list);
-<<<<<<< HEAD
-			atomic_inc(&dest->refcnt);
-			b->dest = dest;
-=======
 			ip_vs_dest_hold(dest);
 			RCU_INIT_POINTER(b->dest, dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			p = p->next;
 		}
@@ -188,18 +131,6 @@ ip_vs_dh_reassign(struct ip_vs_dh_state *s, struct ip_vs_service *svc)
 /*
  *      Flush all the hash buckets of the specified table.
  */
-<<<<<<< HEAD
-static void ip_vs_dh_flush(struct ip_vs_dh_bucket *tbl)
-{
-	int i;
-	struct ip_vs_dh_bucket *b;
-
-	b = tbl;
-	for (i=0; i<IP_VS_DH_TAB_SIZE; i++) {
-		if (b->dest) {
-			atomic_dec(&b->dest->refcnt);
-			b->dest = NULL;
-=======
 static void ip_vs_dh_flush(struct ip_vs_dh_state *s)
 {
 	int i;
@@ -212,7 +143,6 @@ static void ip_vs_dh_flush(struct ip_vs_dh_state *s)
 		if (dest) {
 			ip_vs_dest_put(dest);
 			RCU_INIT_POINTER(b->dest, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		b++;
 	}
@@ -221,23 +151,6 @@ static void ip_vs_dh_flush(struct ip_vs_dh_state *s)
 
 static int ip_vs_dh_init_svc(struct ip_vs_service *svc)
 {
-<<<<<<< HEAD
-	struct ip_vs_dh_bucket *tbl;
-
-	/* allocate the DH table for this service */
-	tbl = kmalloc(sizeof(struct ip_vs_dh_bucket)*IP_VS_DH_TAB_SIZE,
-		      GFP_ATOMIC);
-	if (tbl == NULL)
-		return -ENOMEM;
-
-	svc->sched_data = tbl;
-	IP_VS_DBG(6, "DH hash table (memory=%Zdbytes) allocated for "
-		  "current service\n",
-		  sizeof(struct ip_vs_dh_bucket)*IP_VS_DH_TAB_SIZE);
-
-	/* assign the hash buckets with the updated service */
-	ip_vs_dh_assign(tbl, svc);
-=======
 	struct ip_vs_dh_state *s;
 
 	/* allocate the DH table for this service */
@@ -252,39 +165,11 @@ static int ip_vs_dh_init_svc(struct ip_vs_service *svc)
 
 	/* assign the hash buckets with current dests */
 	ip_vs_dh_reassign(s, svc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static int ip_vs_dh_done_svc(struct ip_vs_service *svc)
-{
-	struct ip_vs_dh_bucket *tbl = svc->sched_data;
-
-	/* got to clean up hash buckets here */
-	ip_vs_dh_flush(tbl);
-
-	/* release the table itself */
-	kfree(svc->sched_data);
-	IP_VS_DBG(6, "DH hash table (memory=%Zdbytes) released\n",
-		  sizeof(struct ip_vs_dh_bucket)*IP_VS_DH_TAB_SIZE);
-
-	return 0;
-}
-
-
-static int ip_vs_dh_update_svc(struct ip_vs_service *svc)
-{
-	struct ip_vs_dh_bucket *tbl = svc->sched_data;
-
-	/* got to clean up hash buckets here */
-	ip_vs_dh_flush(tbl);
-
-	/* assign the hash buckets with the updated service */
-	ip_vs_dh_assign(tbl, svc);
-=======
 static void ip_vs_dh_done_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_dh_state *s = svc->sched_data;
@@ -306,7 +191,6 @@ static int ip_vs_dh_dest_changed(struct ip_vs_service *svc,
 
 	/* assign the hash buckets with the updated service */
 	ip_vs_dh_reassign(s, svc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -326,20 +210,6 @@ static inline int is_overloaded(struct ip_vs_dest *dest)
  *      Destination hashing scheduling
  */
 static struct ip_vs_dest *
-<<<<<<< HEAD
-ip_vs_dh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
-{
-	struct ip_vs_dest *dest;
-	struct ip_vs_dh_bucket *tbl;
-	struct ip_vs_iphdr iph;
-
-	ip_vs_fill_iphdr(svc->af, skb_network_header(skb), &iph);
-
-	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
-
-	tbl = (struct ip_vs_dh_bucket *)svc->sched_data;
-	dest = ip_vs_dh_get(svc->af, tbl, &iph.daddr);
-=======
 ip_vs_dh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
 {
@@ -350,26 +220,17 @@ ip_vs_dh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 
 	s = (struct ip_vs_dh_state *) svc->sched_data;
 	dest = ip_vs_dh_get(svc->af, s, &iph->daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dest
 	    || !(dest->flags & IP_VS_DEST_F_AVAILABLE)
 	    || atomic_read(&dest->weight) <= 0
 	    || is_overloaded(dest)) {
-<<<<<<< HEAD
-=======
 		ip_vs_scheduler_err(svc, "no destination available");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	IP_VS_DBG_BUF(6, "DH: destination IP address %s --> server %s:%d\n",
-<<<<<<< HEAD
-		      IP_VS_DBG_ADDR(svc->af, &iph.daddr),
-		      IP_VS_DBG_ADDR(svc->af, &dest->addr),
-=======
 		      IP_VS_DBG_ADDR(svc->af, &iph->daddr),
 		      IP_VS_DBG_ADDR(dest->af, &dest->addr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      ntohs(dest->port));
 
 	return dest;
@@ -387,12 +248,8 @@ static struct ip_vs_scheduler ip_vs_dh_scheduler =
 	.n_list =		LIST_HEAD_INIT(ip_vs_dh_scheduler.n_list),
 	.init_service =		ip_vs_dh_init_svc,
 	.done_service =		ip_vs_dh_done_svc,
-<<<<<<< HEAD
-	.update_service =	ip_vs_dh_update_svc,
-=======
 	.add_dest =		ip_vs_dh_dest_changed,
 	.del_dest =		ip_vs_dh_dest_changed,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.schedule =		ip_vs_dh_schedule,
 };
 
@@ -406,17 +263,11 @@ static int __init ip_vs_dh_init(void)
 static void __exit ip_vs_dh_cleanup(void)
 {
 	unregister_ip_vs_scheduler(&ip_vs_dh_scheduler);
-<<<<<<< HEAD
-=======
 	synchronize_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 module_init(ip_vs_dh_init);
 module_exit(ip_vs_dh_cleanup);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ipvs destination hashing scheduler");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

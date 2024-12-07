@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C)2003,2004 USAGI/WIDE Project
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
- * 		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C)2003,2004 USAGI/WIDE Project
@@ -31,7 +8,6 @@
 
 #define pr_fmt(fmt) "IPv6: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/icmpv6.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -45,10 +21,6 @@
 
 static struct xfrm6_tunnel __rcu *tunnel6_handlers __read_mostly;
 static struct xfrm6_tunnel __rcu *tunnel46_handlers __read_mostly;
-<<<<<<< HEAD
-static DEFINE_MUTEX(tunnel6_mutex);
-
-=======
 static struct xfrm6_tunnel __rcu *tunnelmpls6_handlers __read_mostly;
 static DEFINE_MUTEX(tunnel6_mutex);
 
@@ -57,7 +29,6 @@ static inline int xfrm6_tunnel_mpls_supported(void)
 	return IS_ENABLED(CONFIG_MPLS);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family)
 {
 	struct xfrm6_tunnel __rcu **pprev;
@@ -67,10 +38,6 @@ int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family)
 
 	mutex_lock(&tunnel6_mutex);
 
-<<<<<<< HEAD
-	for (pprev = (family == AF_INET6) ? &tunnel6_handlers : &tunnel46_handlers;
-	     (t = rcu_dereference_protected(*pprev,
-=======
 	switch (family) {
 	case AF_INET6:
 		pprev = &tunnel6_handlers;
@@ -86,7 +53,6 @@ int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family)
 	}
 
 	for (; (t = rcu_dereference_protected(*pprev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lockdep_is_held(&tunnel6_mutex))) != NULL;
 	     pprev = &t->next) {
 		if (t->priority > priority)
@@ -105,10 +71,6 @@ err:
 
 	return ret;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(xfrm6_tunnel_register);
 
 int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family)
@@ -119,10 +81,6 @@ int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family)
 
 	mutex_lock(&tunnel6_mutex);
 
-<<<<<<< HEAD
-	for (pprev = (family == AF_INET6) ? &tunnel6_handlers : &tunnel46_handlers;
-	     (t = rcu_dereference_protected(*pprev,
-=======
 	switch (family) {
 	case AF_INET6:
 		pprev = &tunnel6_handlers;
@@ -138,7 +96,6 @@ int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family)
 	}
 
 	for (; (t = rcu_dereference_protected(*pprev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lockdep_is_held(&tunnel6_mutex))) != NULL;
 	     pprev = &t->next) {
 		if (t == handler) {
@@ -148,20 +105,13 @@ int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&tunnel6_mutex);
 
 	synchronize_net();
 
 	return ret;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(xfrm6_tunnel_deregister);
 
 #define for_each_tunnel_rcu(head, handler)		\
@@ -169,8 +119,6 @@ EXPORT_SYMBOL(xfrm6_tunnel_deregister);
 	     handler != NULL;				\
 	     handler = rcu_dereference(handler->next))	\
 
-<<<<<<< HEAD
-=======
 static int tunnelmpls6_rcv(struct sk_buff *skb)
 {
 	struct xfrm6_tunnel *handler;
@@ -189,7 +137,6 @@ drop:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tunnel6_rcv(struct sk_buff *skb)
 {
 	struct xfrm6_tunnel *handler;
@@ -208,8 +155,6 @@ drop:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_INET6_XFRM_TUNNEL)
 static int tunnel6_rcv_cb(struct sk_buff *skb, u8 proto, int err)
 {
@@ -237,7 +182,6 @@ static const struct xfrm_input_afinfo tunnel6_input_afinfo = {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tunnel46_rcv(struct sk_buff *skb)
 {
 	struct xfrm6_tunnel *handler;
@@ -256,39 +200,25 @@ drop:
 	return 0;
 }
 
-<<<<<<< HEAD
-static void tunnel6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
-=======
 static int tunnel6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 type, u8 code, int offset, __be32 info)
 {
 	struct xfrm6_tunnel *handler;
 
 	for_each_tunnel_rcu(tunnel6_handlers, handler)
 		if (!handler->err_handler(skb, opt, type, code, offset, info))
-<<<<<<< HEAD
-			break;
-}
-
-static void tunnel46_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
-=======
 			return 0;
 
 	return -ENOENT;
 }
 
 static int tunnel46_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 u8 type, u8 code, int offset, __be32 info)
 {
 	struct xfrm6_tunnel *handler;
 
 	for_each_tunnel_rcu(tunnel46_handlers, handler)
 		if (!handler->err_handler(skb, opt, type, code, offset, info))
-<<<<<<< HEAD
-			break;
-=======
 			return 0;
 
 	return -ENOENT;
@@ -304,7 +234,6 @@ static int tunnelmpls6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			return 0;
 
 	return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct inet6_protocol tunnel6_protocol = {
@@ -319,19 +248,6 @@ static const struct inet6_protocol tunnel46_protocol = {
 	.flags          = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
 };
 
-<<<<<<< HEAD
-static int __init tunnel6_init(void)
-{
-	if (inet6_add_protocol(&tunnel6_protocol, IPPROTO_IPV6)) {
-		printk(KERN_ERR "tunnel6 init(): can't add protocol\n");
-		return -EAGAIN;
-	}
-	if (inet6_add_protocol(&tunnel46_protocol, IPPROTO_IPIP)) {
-		printk(KERN_ERR "tunnel6 init(): can't add protocol\n");
-		inet6_del_protocol(&tunnel6_protocol, IPPROTO_IPV6);
-		return -EAGAIN;
-	}
-=======
 static const struct inet6_protocol tunnelmpls6_protocol = {
 	.handler	= tunnelmpls6_rcv,
 	.err_handler	= tunnelmpls6_err,
@@ -366,18 +282,11 @@ static int __init tunnel6_init(void)
 		return -EAGAIN;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit tunnel6_fini(void)
 {
-<<<<<<< HEAD
-	if (inet6_del_protocol(&tunnel46_protocol, IPPROTO_IPIP))
-		printk(KERN_ERR "tunnel6 close: can't remove protocol\n");
-	if (inet6_del_protocol(&tunnel6_protocol, IPPROTO_IPV6))
-		printk(KERN_ERR "tunnel6 close: can't remove protocol\n");
-=======
 #if IS_ENABLED(CONFIG_INET6_XFRM_TUNNEL)
 	if (xfrm_input_unregister_afinfo(&tunnel6_input_afinfo))
 		pr_err("%s: can't remove input afinfo\n", __func__);
@@ -389,13 +298,9 @@ static void __exit tunnel6_fini(void)
 	if (xfrm6_tunnel_mpls_supported() &&
 	    inet6_del_protocol(&tunnelmpls6_protocol, IPPROTO_MPLS))
 		pr_err("%s: can't remove protocol\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(tunnel6_init);
 module_exit(tunnel6_fini);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("IP-in-IPv6 tunnel driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

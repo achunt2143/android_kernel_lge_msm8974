@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata-cs5530.c 	- CS5530 PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
  *
  * based upon cs5530.c by Mark Lord.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Loosely based on the piix & svwks drivers.
  *
  * Documentation:
@@ -33,10 +14,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -169,16 +146,10 @@ static unsigned int cs5530_qc_issue(struct ata_queued_cmd *qc)
 	return ata_bmdma_qc_issue(qc);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template cs5530_sht = {
-	ATA_BMDMA_SHT(DRV_NAME),
-	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
-=======
 static const struct scsi_host_template cs5530_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
 	.dma_boundary	= ATA_DMA_BOUNDARY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations cs5530_port_ops = {
@@ -294,25 +265,14 @@ static int cs5530_init_chip(void)
 	pci_dev_put(cs5530_0);
 	return 0;
 fail_put:
-<<<<<<< HEAD
-	if (master_0)
-		pci_dev_put(master_0);
-	if (cs5530_0)
-		pci_dev_put(cs5530_0);
-=======
 	pci_dev_put(master_0);
 	pci_dev_put(cs5530_0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
 /**
  *	cs5530_init_one		-	Initialise a CS5530
-<<<<<<< HEAD
- *	@dev: PCI device
-=======
  *	@pdev: PCI device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@id: Entry in match table
  *
  *	Install a driver for the newly found CS5530 companion chip. Most of
@@ -353,17 +313,10 @@ static int cs5530_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return ata_pci_bmdma_init_one(pdev, ppi, &cs5530_sht, NULL, 0);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int cs5530_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int cs5530_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -377,11 +330,7 @@ static int cs5530_reinit_one(struct pci_dev *pdev)
 	ata_host_resume(host);
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-=======
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct pci_device_id cs5530[] = {
 	{ PCI_VDEVICE(CYRIX, PCI_DEVICE_ID_CYRIX_5530_IDE), },
@@ -394,38 +343,16 @@ static struct pci_driver cs5530_pci_driver = {
 	.id_table	= cs5530,
 	.probe 		= cs5530_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= cs5530_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init cs5530_init(void)
-{
-	return pci_register_driver(&cs5530_pci_driver);
-}
-
-static void __exit cs5530_exit(void)
-{
-	pci_unregister_driver(&cs5530_pci_driver);
-}
-=======
 module_pci_driver(cs5530_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for the Cyrix/NS/AMD 5530");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, cs5530);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(cs5530_init);
-module_exit(cs5530_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,30 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * File: rxtx.h
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose:
  *
  * Author: Jerry Chen
@@ -36,16 +14,10 @@
 #ifndef __RXTX_H__
 #define __RXTX_H__
 
-<<<<<<< HEAD
-#include "ttype.h"
-#include "device.h"
-#include "wcmd.h"
-=======
 #include "device.h"
 
 #define DEFAULT_MSDU_LIFETIME_RES_64us	8000 /* 64us */
 #define DEFAULT_MGN_LIFETIME_RES_64us	125  /* 64us */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*---------------------  Export Definitions -------------------------*/
 
@@ -53,54 +25,6 @@
 
 /*---------------------  Export Functions  --------------------------*/
 
-<<<<<<< HEAD
-/*
-void
-vGenerateMACHeader(PSDevice pDevice, unsigned long dwTxBufferAddr, unsigned char *pbySkbData,
-	unsigned int cbPacketSize, bool bDMA0Used, unsigned int *pcbHeadSize,
-	unsigned int *pcbAppendPayload);
-
-void
-vProcessRxMACHeader(PSDevice pDevice, unsigned long dwRxBufferAddr, unsigned int cbPacketSize,
-	bool bIsWEP, unsigned int *pcbHeadSize);
-*/
-
-
-void
-vGenerateMACHeader (
-    PSDevice         pDevice,
-    unsigned char *pbyBufferAddr,
-    unsigned short wDuration,
-    PSEthernetHeader psEthHeader,
-    bool bNeedEncrypt,
-    unsigned short wFragType,
-    unsigned int uDMAIdx,
-    unsigned int uFragIdx
-    );
-
-
-unsigned int
-cbGetFragCount(
-    PSDevice         pDevice,
-    PSKeyItem        pTransmitKey,
-    unsigned int	cbFrameBodySize,
-    PSEthernetHeader psEthHeader
-    );
-
-
-void
-vGenerateFIFOHeader(PSDevice pDevice, unsigned char byPktTyp, unsigned char *pbyTxBufferAddr,
-	bool bNeedEncrypt, unsigned int	cbPayloadSize, unsigned int uDMAIdx, PSTxDesc pHeadTD,
-	PSEthernetHeader psEthHeader, unsigned char *pPacket, PSKeyItem pTransmitKey,
-	unsigned int uNodeIndex, unsigned int *puMACfragNum, unsigned int *pcbHeaderSize);
-
-
-void vDMA0_tx_80211(PSDevice  pDevice, struct sk_buff *skb, unsigned char *pbMPDU, unsigned int cbMPDULen);
-CMD_STATUS csMgmt_xmit(PSDevice pDevice, PSTxMgmtPacket pPacket);
-CMD_STATUS csBeacon_xmit(PSDevice pDevice, PSTxMgmtPacket pPacket);
-
-#endif // __RXTX_H__
-=======
 /* MIC HDR data header */
 struct vnt_mic_hdr {
 	u8 id;
@@ -258,4 +182,3 @@ int vnt_beacon_enable(struct vnt_private *priv, struct ieee80211_vif *vif,
 		      struct ieee80211_bss_conf *conf);
 
 #endif /* __RXTX_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

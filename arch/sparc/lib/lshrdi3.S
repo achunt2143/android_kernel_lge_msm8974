@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-
-	.globl	__lshrdi3
-__lshrdi3:
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/export.h>
 #include <linux/linkage.h>
 
 ENTRY(__lshrdi3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	%o2, 0
 	be	3f
 	 mov	0x20, %g2
@@ -32,8 +26,5 @@ ENTRY(__lshrdi3)
 3:
 	retl 
 	 nop 
-<<<<<<< HEAD
-=======
 ENDPROC(__lshrdi3)
 EXPORT_SYMBOL(__lshrdi3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

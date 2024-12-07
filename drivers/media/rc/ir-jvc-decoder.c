@@ -1,22 +1,7 @@
-<<<<<<< HEAD
-/* ir-jvc-decoder.c - handle JVC IR Pulse/Space protocol
- *
- * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* ir-jvc-decoder.c - handle JVC IR Pulse/Space protocol
  *
  * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bitrev.h>
@@ -24,11 +9,7 @@
 #include "rc-core-priv.h"
 
 #define JVC_NBITS		16		/* dev(8) + func(8) */
-<<<<<<< HEAD
-#define JVC_UNIT		525000		/* ns */
-=======
 #define JVC_UNIT		525		/* us */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JVC_HEADER_PULSE	(16 * JVC_UNIT) /* lack of header -> repeat */
 #define JVC_HEADER_SPACE	(8  * JVC_UNIT)
 #define JVC_BIT_PULSE		(1  * JVC_UNIT)
@@ -50,11 +31,7 @@ enum jvc_state {
 /**
  * ir_jvc_decode() - Decode one JVC pulse or space
  * @dev:	the struct rc_dev descriptor of the device
-<<<<<<< HEAD
- * @duration:   the struct ir_raw_event descriptor of the pulse/space
-=======
  * @ev:   the struct ir_raw_event descriptor of the pulse/space
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function returns -EINVAL if the pulse violates the state machine
  */
@@ -62,16 +39,8 @@ static int ir_jvc_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct jvc_dec *data = &dev->raw->jvc;
 
-<<<<<<< HEAD
-	if (!(dev->raw->enabled_protocols & RC_TYPE_JVC))
-		return 0;
-
-	if (!is_timing_event(ev)) {
-		if (ev.reset)
-=======
 	if (!is_timing_event(ev)) {
 		if (ev.overflow)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -79,13 +48,8 @@ static int ir_jvc_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	if (!geq_margin(ev.duration, JVC_UNIT, JVC_UNIT / 2))
 		goto out;
 
-<<<<<<< HEAD
-	IR_dprintk(2, "JVC decode started at state %d (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "JVC decode started at state %d (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 again:
 	switch (data->state) {
@@ -164,17 +128,6 @@ again:
 			u32 scancode;
 			scancode = (bitrev8((data->bits >> 8) & 0xff) << 8) |
 				   (bitrev8((data->bits >> 0) & 0xff) << 0);
-<<<<<<< HEAD
-			IR_dprintk(1, "JVC scancode 0x%04x\n", scancode);
-			rc_keydown(dev, scancode, data->toggle);
-			data->first = false;
-			data->old_bits = data->bits;
-		} else if (data->bits == data->old_bits) {
-			IR_dprintk(1, "JVC repeat\n");
-			rc_repeat(dev);
-		} else {
-			IR_dprintk(1, "JVC invalid repeat msg\n");
-=======
 			dev_dbg(&dev->dev, "JVC scancode 0x%04x\n", scancode);
 			rc_keydown(dev, RC_PROTO_JVC, scancode, data->toggle);
 			data->first = false;
@@ -184,7 +137,6 @@ again:
 			rc_repeat(dev);
 		} else {
 			dev_dbg(&dev->dev, "JVC invalid repeat msg\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -204,22 +156,12 @@ again:
 	}
 
 out:
-<<<<<<< HEAD
-	IR_dprintk(1, "JVC decode failed at state %d (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "JVC decode failed at state %d (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->state = STATE_INACTIVE;
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static struct ir_raw_handler jvc_handler = {
-	.protocols	= RC_TYPE_JVC,
-	.decode		= ir_jvc_decode,
-=======
 static const struct ir_raw_timings_pd ir_jvc_timings = {
 	.header_pulse  = JVC_HEADER_PULSE,
 	.header_space  = JVC_HEADER_SPACE,
@@ -264,7 +206,6 @@ static struct ir_raw_handler jvc_handler = {
 	.encode		= ir_jvc_encode,
 	.carrier	= 38000,
 	.min_timeout	= JVC_TRAILER_SPACE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ir_jvc_decode_init(void)

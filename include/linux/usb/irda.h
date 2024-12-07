@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB IrDA Bridge Device Definition
  */
@@ -122,17 +119,11 @@ struct usb_irda_cs_descriptor {
  * 6 - 115200 bps
  * 7 - 576000 bps
  * 8 - 1.152 Mbps
-<<<<<<< HEAD
- * 9 - 5 mbps
-=======
  * 9 - 4 Mbps
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 10..15 - Reserved
  */
 #define USB_IRDA_STATUS_LINK_SPEED	0x0f
 
-<<<<<<< HEAD
-=======
 #define USB_IRDA_LS_NO_CHANGE		0
 #define USB_IRDA_LS_2400		1
 #define USB_IRDA_LS_9600		2
@@ -144,7 +135,6 @@ struct usb_irda_cs_descriptor {
 #define USB_IRDA_LS_1152000		8
 #define USB_IRDA_LS_4000000		9
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The following is a 4-bit value used only for
  * outbound header:
  *

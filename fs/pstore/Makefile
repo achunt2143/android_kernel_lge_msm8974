@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux pstorefs routines.
 #
 
-<<<<<<< HEAD
-obj-y += pstore.o
-
-pstore-objs += inode.o platform.o
-=======
 obj-$(CONFIG_PSTORE) += pstore.o
 
 pstore-objs += inode.o platform.o
@@ -26,4 +18,3 @@ obj-$(CONFIG_PSTORE_ZONE)	+= pstore_zone.o
 
 pstore_blk-objs += blk.o
 obj-$(CONFIG_PSTORE_BLK)	+= pstore_blk.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -10,16 +10,6 @@
 #ifndef __ASM_MACH_IP27_IRQ_H
 #define __ASM_MACH_IP27_IRQ_H
 
-<<<<<<< HEAD
-/*
- * A hardwired interrupt number is completly stupid for this system - a
- * large configuration might have thousands if not tenthousands of
- * interrupts.
- */
-#define NR_IRQS 256
-
-#include_next <irq.h>
-=======
 #define NR_IRQS 256
 
 #include <asm/mach-generic/irq.h>
@@ -30,6 +20,5 @@
 
 #define IP27_HUB_IRQ_BASE	(MIPS_CPU_IRQ_BASE + 8)
 #define IP27_HUB_IRQ_COUNT	128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_MACH_IP27_IRQ_H */

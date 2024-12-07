@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ifdef CONFIG_FUNCTION_TRACER
 # Do not profile debug and lowlevel utilities
 CFLAGS_REMOVE_spinlock.o = -pg
@@ -11,24 +8,6 @@ CFLAGS_REMOVE_irq.o = -pg
 endif
 
 # Make sure early boot has no stackprotector
-<<<<<<< HEAD
-nostackp := $(call cc-option, -fno-stack-protector)
-CFLAGS_enlighten.o		:= $(nostackp)
-CFLAGS_mmu.o			:= $(nostackp)
-
-obj-y		:= enlighten.o setup.o multicalls.o mmu.o irq.o \
-			time.o xen-asm.o xen-asm_$(BITS).o \
-			grant-table.o suspend.o platform-pci-unplug.o \
-			p2m.o
-
-obj-$(CONFIG_EVENT_TRACING) += trace.o
-
-obj-$(CONFIG_SMP)		+= smp.o
-obj-$(CONFIG_PARAVIRT_SPINLOCKS)+= spinlock.o
-obj-$(CONFIG_XEN_DEBUG_FS)	+= debugfs.o
-obj-$(CONFIG_XEN_DOM0)		+= vga.o
-obj-$(CONFIG_SWIOTLB_XEN)	+= pci-swiotlb-xen.o
-=======
 CFLAGS_enlighten_pv.o		:= -fno-stack-protector
 CFLAGS_mmu_pv.o			:= -fno-stack-protector
 
@@ -69,4 +48,3 @@ obj-$(CONFIG_XEN_DEBUG_FS)	+= debugfs.o
 obj-$(CONFIG_XEN_DOM0)		+= vga.o
 
 obj-$(CONFIG_XEN_EFI)		+= efi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

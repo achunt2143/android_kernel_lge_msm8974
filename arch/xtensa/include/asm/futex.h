@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-#include <asm-generic/futex.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Atomic futex routines
@@ -168,4 +165,3 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 }
 
 #endif /* _ASM_XTENSA_FUTEX_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

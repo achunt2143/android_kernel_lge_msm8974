@@ -13,36 +13,18 @@
 #include <linux/mbus.h>
 #include <linux/io.h>
 #include <linux/gpio.h>
-<<<<<<< HEAD
-#include <mach/hardware.h>
-#include <plat/mpp.h>
-
-/* Address of the ith MPP control register */
-static __init unsigned long mpp_ctrl_addr(unsigned int i,
-					  unsigned long dev_bus)
-=======
 #include <plat/orion-gpio.h>
 #include <plat/mpp.h>
 
 /* Address of the ith MPP control register */
 static __init void __iomem *mpp_ctrl_addr(unsigned int i,
 					  void __iomem *dev_bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev_bus + (i) * 4;
 }
 
 
 void __init orion_mpp_conf(unsigned int *mpp_list, unsigned int variant_mask,
-<<<<<<< HEAD
-			   unsigned int mpp_max, unsigned int dev_bus)
-{
-	unsigned int mpp_nr_regs = (1 + mpp_max/8);
-	u32 mpp_ctrl[mpp_nr_regs];
-	int i;
-
-	printk(KERN_DEBUG "initial MPP regs:");
-=======
 			   unsigned int mpp_max, void __iomem *dev_bus)
 {
 	unsigned int mpp_nr_regs = (1 + mpp_max/8);
@@ -55,7 +37,6 @@ void __init orion_mpp_conf(unsigned int *mpp_list, unsigned int variant_mask,
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < mpp_nr_regs; i++) {
 		mpp_ctrl[i] = readl(mpp_ctrl_addr(i, dev_bus));
 		printk(" %08x", mpp_ctrl[i]);
@@ -72,11 +53,7 @@ void __init orion_mpp_conf(unsigned int *mpp_list, unsigned int variant_mask,
 					"number (%u)\n", num);
 			continue;
 		}
-<<<<<<< HEAD
-		if (variant_mask & !(*mpp_list & variant_mask)) {
-=======
 		if (variant_mask && !(*mpp_list & variant_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_WARNING
 			       "orion_mpp_conf: requested MPP%u config "
 			       "unavailable on this hardware\n", num);

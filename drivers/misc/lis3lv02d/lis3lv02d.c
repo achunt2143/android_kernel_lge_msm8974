@@ -1,50 +1,22 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  lis3lv02d.c - ST LIS3LV02DL accelerometer driver
  *
  *  Copyright (C) 2007-2008 Yan Burman
  *  Copyright (C) 2008 Eric Piel
  *  Copyright (C) 2008-2009 Pavel Machek
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dmi.h>
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/input-polldev.h>
-=======
 #include <linux/input.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/wait.h>
 #include <linux/poll.h>
@@ -54,10 +26,7 @@
 #include <linux/miscdevice.h>
 #include <linux/pm_runtime.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lis3lv02d.h"
 
 #define DRIVER_NAME     "lis3lv02d"
@@ -99,8 +68,6 @@
 #define LIS3_SENSITIVITY_12B		((LIS3_ACCURACY * 1000) / 1024)
 #define LIS3_SENSITIVITY_8B		(18 * LIS3_ACCURACY)
 
-<<<<<<< HEAD
-=======
 /*
  * LIS331DLH spec says 1LSBs corresponds 4G/4096 -> 1LSB is 1000/1024 mG.
  * Below macros defines sensitivity values for +/-2G. Dataout bits for
@@ -110,7 +77,6 @@
 #define LIS3DLH_SENSITIVITY_2G		((LIS3_ACCURACY * 1000) / 1024)
 #define SHIFT_ADJ_2G			4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LIS3_DEFAULT_FUZZ_12B		3
 #define LIS3_DEFAULT_FLAT_12B		3
 #define LIS3_DEFAULT_FUZZ_8B		1
@@ -137,11 +103,7 @@ static int param_set_axis(const char *val, const struct kernel_param *kp)
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_axis = {
-=======
 static const struct kernel_param_ops param_ops_axis = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_axis,
 	.get = param_get_int,
 };
@@ -170,8 +132,6 @@ static s16 lis3lv02d_read_12(struct lis3lv02d *lis3, int reg)
 	return (s16)((hi << 8) | lo);
 }
 
-<<<<<<< HEAD
-=======
 /* 12bits for 2G range, 13 bits for 4G range and 14 bits for 8G range */
 static s16 lis331dlh_read_data(struct lis3lv02d *lis3, int reg)
 {
@@ -185,7 +145,6 @@ static s16 lis331dlh_read_data(struct lis3lv02d *lis3, int reg)
 	return (s16) v >> lis3->shift_adj;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lis3lv02d_get_axis - For the given axis, give the value converted
  * @axis:      1,2,3 - can also be negative
@@ -246,16 +205,10 @@ static void lis3lv02d_get_xyz(struct lis3lv02d *lis3, int *x, int *y, int *z)
 static int lis3_12_rates[4] = {40, 160, 640, 2560};
 static int lis3_8_rates[2] = {100, 400};
 static int lis3_3dc_rates[16] = {0, 1, 10, 25, 50, 100, 200, 400, 1600, 5000};
-<<<<<<< HEAD
-
-/* ODR is Output Data Rate */
-static int lis3lv02d_get_odr(struct lis3lv02d *lis3)
-=======
 static int lis3_3dlh_rates[4] = {50, 100, 400, 1000};
 
 /* ODR is Output Data Rate */
 static int lis3lv02d_get_odr_index(struct lis3lv02d *lis3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 ctrl;
 	int shift;
@@ -263,21 +216,11 @@ static int lis3lv02d_get_odr_index(struct lis3lv02d *lis3)
 	lis3->read(lis3, CTRL_REG1, &ctrl);
 	ctrl &= lis3->odr_mask;
 	shift = ffs(lis3->odr_mask) - 1;
-<<<<<<< HEAD
-	return lis3->odrs[(ctrl >> shift)];
-=======
 	return (ctrl >> shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lis3lv02d_get_pwron_wait(struct lis3lv02d *lis3)
 {
-<<<<<<< HEAD
-	int div = lis3lv02d_get_odr(lis3);
-
-	if (WARN_ONCE(div == 0, "device returned spurious data"))
-		return -ENXIO;
-=======
 	int odr_idx = lis3lv02d_get_odr_index(lis3);
 	int div = lis3->odrs[odr_idx];
 
@@ -290,7 +233,6 @@ static int lis3lv02d_get_pwron_wait(struct lis3lv02d *lis3)
 		dev_err(&lis3->pdev->dev, "Error unknown odrs-index: %d\n", odr_idx);
 		return -ENXIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* LIS3 power on delay is quite long */
 	msleep(lis3->pwron_delay / div);
@@ -344,11 +286,7 @@ static int lis3lv02d_selftest(struct lis3lv02d *lis3, s16 results[3])
 				(LIS3_IRQ1_DATA_READY | LIS3_IRQ2_DATA_READY));
 	}
 
-<<<<<<< HEAD
-	if (lis3->whoami == WAI_3DC) {
-=======
 	if ((lis3->whoami == WAI_3DC) || (lis3->whoami == WAI_3DLH)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctlreg = CTRL_REG4;
 		selftest = CTRL4_ST0;
 	} else {
@@ -479,11 +417,6 @@ int lis3lv02d_poweron(struct lis3lv02d *lis3)
 		lis3->read(lis3, CTRL_REG2, &reg);
 		if (lis3->whoami ==  WAI_12B)
 			reg |= CTRL2_BDU | CTRL2_BOOT;
-<<<<<<< HEAD
-		else
-			reg |= CTRL2_BOOT_8B;
-		lis3->write(lis3, CTRL_REG2, reg);
-=======
 		else if (lis3->whoami ==  WAI_3DLH)
 			reg |= CTRL2_BOOT_3DLH;
 		else
@@ -495,7 +428,6 @@ int lis3lv02d_poweron(struct lis3lv02d *lis3)
 			reg |= CTRL4_BDU;
 			lis3->write(lis3, CTRL_REG4, reg);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = lis3lv02d_get_pwron_wait(lis3);
@@ -510,31 +442,13 @@ int lis3lv02d_poweron(struct lis3lv02d *lis3)
 EXPORT_SYMBOL_GPL(lis3lv02d_poweron);
 
 
-<<<<<<< HEAD
-static void lis3lv02d_joystick_poll(struct input_polled_dev *pidev)
-{
-	struct lis3lv02d *lis3 = pidev->private;
-=======
 static void lis3lv02d_joystick_poll(struct input_dev *input)
 {
 	struct lis3lv02d *lis3 = input_get_drvdata(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x, y, z;
 
 	mutex_lock(&lis3->mutex);
 	lis3lv02d_get_xyz(lis3, &x, &y, &z);
-<<<<<<< HEAD
-	input_report_abs(pidev->input, ABS_X, x);
-	input_report_abs(pidev->input, ABS_Y, y);
-	input_report_abs(pidev->input, ABS_Z, z);
-	input_sync(pidev->input);
-	mutex_unlock(&lis3->mutex);
-}
-
-static void lis3lv02d_joystick_open(struct input_polled_dev *pidev)
-{
-	struct lis3lv02d *lis3 = pidev->private;
-=======
 	input_report_abs(input, ABS_X, x);
 	input_report_abs(input, ABS_Y, y);
 	input_report_abs(input, ABS_Z, z);
@@ -545,7 +459,6 @@ static void lis3lv02d_joystick_open(struct input_polled_dev *pidev)
 static int lis3lv02d_joystick_open(struct input_dev *input)
 {
 	struct lis3lv02d *lis3 = input_get_drvdata(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lis3->pm_dev)
 		pm_runtime_get_sync(lis3->pm_dev);
@@ -556,14 +469,6 @@ static int lis3lv02d_joystick_open(struct input_dev *input)
 	 * Update coordinates for the case where poll interval is 0 and
 	 * the chip in running purely under interrupt control
 	 */
-<<<<<<< HEAD
-	lis3lv02d_joystick_poll(pidev);
-}
-
-static void lis3lv02d_joystick_close(struct input_polled_dev *pidev)
-{
-	struct lis3lv02d *lis3 = pidev->private;
-=======
 	lis3lv02d_joystick_poll(input);
 
 	return 0;
@@ -572,7 +477,6 @@ static void lis3lv02d_joystick_close(struct input_polled_dev *pidev)
 static void lis3lv02d_joystick_close(struct input_dev *input)
 {
 	struct lis3lv02d *lis3 = input_get_drvdata(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_set(&lis3->wake_thread, 0);
 	if (lis3->pm_dev)
@@ -603,11 +507,7 @@ out:
 
 static void lis302dl_interrupt_handle_click(struct lis3lv02d *lis3)
 {
-<<<<<<< HEAD
-	struct input_dev *dev = lis3->idev->input;
-=======
 	struct input_dev *dev = lis3->idev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 click_src;
 
 	mutex_lock(&lis3->mutex);
@@ -690,10 +590,6 @@ static int lis3lv02d_misc_release(struct inode *inode, struct file *file)
 	struct lis3lv02d *lis3 = container_of(file->private_data,
 					      struct lis3lv02d, miscdev);
 
-<<<<<<< HEAD
-	fasync_helper(-1, file, 0, &lis3->async_queue);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(0, &lis3->misc_opened); /* release the device */
 	if (lis3->pm_dev)
 		pm_runtime_put(lis3->pm_dev);
@@ -752,22 +648,14 @@ out:
 	return retval;
 }
 
-<<<<<<< HEAD
-static unsigned int lis3lv02d_misc_poll(struct file *file, poll_table *wait)
-=======
 static __poll_t lis3lv02d_misc_poll(struct file *file, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lis3lv02d *lis3 = container_of(file->private_data,
 					      struct lis3lv02d, miscdev);
 
 	poll_wait(file, &lis3->misc_wait, wait);
 	if (atomic_read(&lis3->count))
-<<<<<<< HEAD
-		return POLLIN | POLLRDNORM;
-=======
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -799,39 +687,19 @@ int lis3lv02d_joystick_enable(struct lis3lv02d *lis3)
 	if (lis3->idev)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	lis3->idev = input_allocate_polled_device();
-	if (!lis3->idev)
-		return -ENOMEM;
-
-	lis3->idev->poll = lis3lv02d_joystick_poll;
-	lis3->idev->open = lis3lv02d_joystick_open;
-	lis3->idev->close = lis3lv02d_joystick_close;
-	lis3->idev->poll_interval = MDPS_POLL_INTERVAL;
-	lis3->idev->poll_interval_min = MDPS_POLL_MIN;
-	lis3->idev->poll_interval_max = MDPS_POLL_MAX;
-	lis3->idev->private = lis3;
-	input_dev = lis3->idev->input;
-
-=======
 	input_dev = input_allocate_device();
 	if (!input_dev)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->name       = "ST LIS3LV02DL Accelerometer";
 	input_dev->phys       = DRIVER_NAME "/input0";
 	input_dev->id.bustype = BUS_HOST;
 	input_dev->id.vendor  = 0;
 	input_dev->dev.parent = &lis3->pdev->dev;
 
-<<<<<<< HEAD
-	set_bit(EV_ABS, input_dev->evbit);
-=======
 	input_dev->open = lis3lv02d_joystick_open;
 	input_dev->close = lis3lv02d_joystick_close;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_val = (lis3->mdps_max_val * lis3->scale) / LIS3_ACCURACY;
 	if (lis3->whoami == WAI_12B) {
 		fuzz = LIS3_DEFAULT_FUZZ_12B;
@@ -847,8 +715,6 @@ int lis3lv02d_joystick_enable(struct lis3lv02d *lis3)
 	input_set_abs_params(input_dev, ABS_Y, -max_val, max_val, fuzz, flat);
 	input_set_abs_params(input_dev, ABS_Z, -max_val, max_val, fuzz, flat);
 
-<<<<<<< HEAD
-=======
 	input_set_drvdata(input_dev, lis3);
 	lis3->idev = input_dev;
 
@@ -860,20 +726,10 @@ int lis3lv02d_joystick_enable(struct lis3lv02d *lis3)
 	input_set_min_poll_interval(input_dev, MDPS_POLL_MIN);
 	input_set_max_poll_interval(input_dev, MDPS_POLL_MAX);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis3->mapped_btns[0] = lis3lv02d_get_axis(abs(lis3->ac.x), btns);
 	lis3->mapped_btns[1] = lis3lv02d_get_axis(abs(lis3->ac.y), btns);
 	lis3->mapped_btns[2] = lis3lv02d_get_axis(abs(lis3->ac.z), btns);
 
-<<<<<<< HEAD
-	err = input_register_polled_device(lis3->idev);
-	if (err) {
-		input_free_polled_device(lis3->idev);
-		lis3->idev = NULL;
-	}
-
-	return err;
-=======
 	err = input_register_device(lis3->idev);
 	if (err)
 		goto err_free_input;
@@ -885,7 +741,6 @@ err_free_input:
 	lis3->idev = NULL;
 	return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(lis3lv02d_joystick_enable);
 
@@ -901,12 +756,7 @@ void lis3lv02d_joystick_disable(struct lis3lv02d *lis3)
 
 	if (lis3->irq)
 		misc_deregister(&lis3->miscdev);
-<<<<<<< HEAD
-	input_unregister_polled_device(lis3->idev);
-	input_free_polled_device(lis3->idev);
-=======
 	input_unregister_device(lis3->idev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis3->idev = NULL;
 }
 EXPORT_SYMBOL_GPL(lis3lv02d_joystick_disable);
@@ -974,18 +824,12 @@ static ssize_t lis3lv02d_rate_show(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {
 	struct lis3lv02d *lis3 = dev_get_drvdata(dev);
-<<<<<<< HEAD
-
-	lis3lv02d_sysfs_poweron(lis3);
-	return sprintf(buf, "%d\n", lis3lv02d_get_odr(lis3));
-=======
 	int odr_idx;
 
 	lis3lv02d_sysfs_poweron(lis3);
 
 	odr_idx = lis3lv02d_get_odr_index(lis3);
 	return sprintf(buf, "%d\n", lis3->odrs[odr_idx]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t lis3lv02d_rate_set(struct device *dev,
@@ -994,17 +838,11 @@ static ssize_t lis3lv02d_rate_set(struct device *dev,
 {
 	struct lis3lv02d *lis3 = dev_get_drvdata(dev);
 	unsigned long rate;
-<<<<<<< HEAD
-
-	if (strict_strtoul(buf, 0, &rate))
-		return -EINVAL;
-=======
 	int ret;
 
 	ret = kstrtoul(buf, 0, &rate);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lis3lv02d_sysfs_poweron(lis3);
 	if (lis3lv02d_set_odr(lis3, rate))
@@ -1025,11 +863,7 @@ static struct attribute *lis3lv02d_attributes[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group lis3lv02d_attribute_group = {
-=======
 static const struct attribute_group lis3lv02d_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = lis3lv02d_attributes
 };
 
@@ -1044,11 +878,7 @@ static int lis3lv02d_add_fs(struct lis3lv02d *lis3)
 	return sysfs_create_group(&lis3->pdev->dev.kobj, &lis3lv02d_attribute_group);
 }
 
-<<<<<<< HEAD
-int lis3lv02d_remove_fs(struct lis3lv02d *lis3)
-=======
 void lis3lv02d_remove_fs(struct lis3lv02d *lis3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sysfs_remove_group(&lis3->pdev->dev.kobj, &lis3lv02d_attribute_group);
 	platform_device_unregister(lis3->pdev);
@@ -1064,10 +894,6 @@ void lis3lv02d_remove_fs(struct lis3lv02d *lis3)
 		pm_runtime_set_suspended(lis3->pm_dev);
 	}
 	kfree(lis3->reg_cache);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(lis3lv02d_remove_fs);
 
@@ -1088,16 +914,9 @@ static void lis3lv02d_8b_configure(struct lis3lv02d *lis3,
 			(p->click_thresh_y << 4));
 
 		if (lis3->idev) {
-<<<<<<< HEAD
-			struct input_dev *input_dev = lis3->idev->input;
-			input_set_capability(input_dev, EV_KEY, BTN_X);
-			input_set_capability(input_dev, EV_KEY, BTN_Y);
-			input_set_capability(input_dev, EV_KEY, BTN_Z);
-=======
 			input_set_capability(lis3->idev, EV_KEY, BTN_X);
 			input_set_capability(lis3->idev, EV_KEY, BTN_Y);
 			input_set_capability(lis3->idev, EV_KEY, BTN_Z);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1131,8 +950,6 @@ static void lis3lv02d_8b_configure(struct lis3lv02d *lis3,
 	}
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OF
 int lis3lv02d_init_dt(struct lis3lv02d *lis3)
 {
@@ -1299,7 +1116,6 @@ int lis3lv02d_init_dt(struct lis3lv02d *lis3)
 #endif
 EXPORT_SYMBOL_GPL(lis3lv02d_init_dt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialise the accelerometer and the various subsystems.
  * Should be rather independent of the bus system.
@@ -1344,11 +1160,6 @@ int lis3lv02d_init_device(struct lis3lv02d *lis3)
 		lis3->odr_mask = CTRL1_ODR0|CTRL1_ODR1|CTRL1_ODR2|CTRL1_ODR3;
 		lis3->scale = LIS3_SENSITIVITY_8B;
 		break;
-<<<<<<< HEAD
-	default:
-		pr_err("unknown sensor type 0x%X\n", lis3->whoami);
-		return -EINVAL;
-=======
 	case WAI_3DLH:
 		pr_info("16 bits lis331dlh sensor found\n");
 		lis3->read_data = lis331dlh_read_data;
@@ -1362,21 +1173,13 @@ int lis3lv02d_init_device(struct lis3lv02d *lis3)
 	default:
 		pr_err("unknown sensor type 0x%X\n", lis3->whoami);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lis3->reg_cache = kzalloc(max(sizeof(lis3_wai8_regs),
 				     sizeof(lis3_wai12_regs)), GFP_KERNEL);
 
-<<<<<<< HEAD
-	if (lis3->reg_cache == NULL) {
-		printk(KERN_ERR DRIVER_NAME "out of memory\n");
-		return -ENOMEM;
-	}
-=======
 	if (lis3->reg_cache == NULL)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&lis3->mutex);
 	atomic_set(&lis3->wake_thread, 0);

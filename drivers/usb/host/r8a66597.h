@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * R8A66597 HCD (Host Controller Driver)
  *
@@ -11,36 +8,12 @@
  * Portions Copyright (C) 1999 Roman Weissgaerber
  *
  * Author : Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __R8A66597_H__
 #define __R8A66597_H__
 
-<<<<<<< HEAD
-#ifdef CONFIG_HAVE_CLK
 #include <linux/clk.h>
-#endif
-
-=======
-#include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb/r8a66597.h>
 
 #define R8A66597_MAX_NUM_PIPE		10
@@ -121,14 +94,6 @@ struct r8a66597_root_hub {
 	struct r8a66597_device	*dev;
 };
 
-<<<<<<< HEAD
-struct r8a66597 {
-	spinlock_t lock;
-	void __iomem *reg;
-#ifdef CONFIG_HAVE_CLK
-	struct clk *clk;
-#endif
-=======
 struct r8a66597;
 
 struct r8a66597_timers {
@@ -141,19 +106,13 @@ struct r8a66597 {
 	spinlock_t lock;
 	void __iomem *reg;
 	struct clk *clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r8a66597_platdata	*pdata;
 	struct r8a66597_device		device0;
 	struct r8a66597_root_hub	root_hub[R8A66597_MAX_ROOT_HUB];
 	struct list_head		pipe_queue[R8A66597_MAX_NUM_PIPE];
 
 	struct timer_list rh_timer;
-<<<<<<< HEAD
-	struct timer_list td_timer[R8A66597_MAX_NUM_PIPE];
-	struct timer_list interval_timer[R8A66597_MAX_NUM_PIPE];
-=======
 	struct r8a66597_timers timers[R8A66597_MAX_NUM_PIPE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned short address_map;
 	unsigned short timeout_map;

@@ -26,16 +26,6 @@
 #define __ARCH_ARM_MACH_OMAP2PLUS_COMMON_H
 #ifndef __ASSEMBLER__
 
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <plat/common.h>
-#include <asm/proc-fns.h>
-
-#ifdef CONFIG_SOC_OMAP2420
-extern void omap242x_map_common_io(void);
-#else
-static inline void omap242x_map_common_io(void)
-=======
 #include <linux/irq.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -108,17 +98,10 @@ static inline int omap_l2_cache_init(void)
 extern void omap5_realtime_timer_init(void);
 #else
 static inline void omap5_realtime_timer_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAP2430
-extern void omap243x_map_common_io(void);
-#else
-static inline void omap243x_map_common_io(void)
-=======
 void omap2420_init_early(void);
 void omap2430_init_early(void);
 void omap3430_init_early(void);
@@ -159,123 +142,35 @@ static inline void omap2xxx_restart(enum reboot_mode mode, const char *cmd)
 void am33xx_restart(enum reboot_mode mode, const char *cmd);
 #else
 static inline void am33xx_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
 #ifdef CONFIG_ARCH_OMAP3
-<<<<<<< HEAD
-extern void omap34xx_map_common_io(void);
-#else
-static inline void omap34xx_map_common_io(void)
-=======
 void omap3xxx_restart(enum reboot_mode mode, const char *cmd);
 #else
 static inline void omap3xxx_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAPTI81XX
-extern void omapti81xx_map_common_io(void);
-#else
-static inline void omapti81xx_map_common_io(void)
-=======
 #ifdef CONFIG_SOC_TI81XX
 void ti81xx_restart(enum reboot_mode mode, const char *cmd);
 #else
 static inline void ti81xx_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SOC_OMAPAM33XX
-extern void omapam33xx_map_common_io(void);
-#else
-static inline void omapam33xx_map_common_io(void)
-=======
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM43XX)
 void omap44xx_restart(enum reboot_mode mode, const char *cmd);
 #else
 static inline void omap44xx_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_OMAP4
-extern void omap44xx_map_common_io(void);
-#else
-static inline void omap44xx_map_common_io(void)
-{
-}
-#endif
-
-extern void omap2_init_common_infrastructure(void);
-
-extern struct sys_timer omap2_timer;
-extern struct sys_timer omap3_timer;
-extern struct sys_timer omap3_secure_timer;
-extern struct sys_timer omap4_timer;
-
-void omap2420_init_early(void);
-void omap2430_init_early(void);
-void omap3430_init_early(void);
-void omap35xx_init_early(void);
-void omap3630_init_early(void);
-void omap3_init_early(void);	/* Do not use this one */
-void am35xx_init_early(void);
-void ti81xx_init_early(void);
-void omap4430_init_early(void);
-void omap_prcm_restart(char, const char *);
-
-/*
- * IO bases for various OMAP processors
- * Except the tap base, rest all the io bases
- * listed are physical addresses.
- */
-struct omap_globals {
-	u32		class;		/* OMAP class to detect */
-	void __iomem	*tap;		/* Control module ID code */
-	void __iomem	*sdrc;           /* SDRAM Controller */
-	void __iomem	*sms;            /* SDRAM Memory Scheduler */
-	void __iomem	*ctrl;           /* System Control Module */
-	void __iomem	*ctrl_pad;	/* PAD Control Module */
-	void __iomem	*prm;            /* Power and Reset Management */
-	void __iomem	*cm;             /* Clock Management */
-	void __iomem	*cm2;
-};
-
-void omap2_set_globals_242x(void);
-void omap2_set_globals_243x(void);
-void omap2_set_globals_3xxx(void);
-void omap2_set_globals_443x(void);
-void omap2_set_globals_ti81xx(void);
-void omap2_set_globals_am33xx(void);
-
-/* These get called from omap2_set_globals_xxxx(), do not call these */
-void omap2_set_globals_tap(struct omap_globals *);
-void omap2_set_globals_sdrc(struct omap_globals *);
-void omap2_set_globals_control(struct omap_globals *);
-void omap2_set_globals_prcm(struct omap_globals *);
-
-void omap242x_map_io(void);
-void omap243x_map_io(void);
-void omap3_map_io(void);
-void am33xx_map_io(void);
-void omap4_map_io(void);
-void ti81xx_map_io(void);
-void omap_barriers_init(void);
-
-extern void __init omap_init_consistent_dma_size(void);
-=======
 #ifdef CONFIG_OMAP_INTERCONNECT_BARRIER
 void omap_barrier_reserve_memblock(void);
 void omap_barriers_init(void);
@@ -296,7 +191,6 @@ void __init omap4_map_io(void);
 void __init omap5_map_io(void);
 void __init dra7xx_map_io(void);
 void __init ti81xx_map_io(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * omap_test_timeout - busy-loop, testing a condition
@@ -318,45 +212,13 @@ void __init ti81xx_map_io(void);
 	}							\
 })
 
-<<<<<<< HEAD
-extern struct device *omap2_get_mpuss_device(void);
-extern struct device *omap2_get_iva_device(void);
-extern struct device *omap2_get_l3_device(void);
-extern struct device *omap4_get_dsp_device(void);
-
-void omap2_init_irq(void);
-void omap3_init_irq(void);
-void ti81xx_init_irq(void);
-extern int omap_irq_pending(void);
-void omap_intc_save_context(void);
-void omap_intc_restore_context(void);
-void omap3_intc_suspend(void);
-void omap3_intc_prepare_idle(void);
-void omap3_intc_resume_idle(void);
-void omap2_intc_handle_irq(struct pt_regs *regs);
-void omap3_intc_handle_irq(struct pt_regs *regs);
-=======
 void omap_gic_of_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CACHE_L2X0
 extern void __iomem *omap4_get_l2cache_base(void);
 #endif
 
 struct device_node;
-<<<<<<< HEAD
-#ifdef CONFIG_OF
-int __init omap_intc_of_init(struct device_node *node,
-			     struct device_node *parent);
-#else
-int __init omap_intc_of_init(struct device_node *node,
-			     struct device_node *parent)
-{
-	return 0;
-}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 extern void __iomem *omap4_get_scu_base(void);
@@ -367,31 +229,6 @@ static inline void __iomem *omap4_get_scu_base(void)
 }
 #endif
 
-<<<<<<< HEAD
-extern void __init gic_init_irq(void);
-extern void omap_smc1(u32 fn, u32 arg);
-extern void __iomem *omap4_get_sar_ram_base(void);
-extern void omap_do_wfi(void);
-
-#ifdef CONFIG_SMP
-/* Needed for secondary core boot */
-extern void omap_secondary_startup(void);
-extern u32 omap_modify_auxcoreboot0(u32 set_mask, u32 clear_mask);
-extern void omap_auxcoreboot_addr(u32 cpu_addr);
-extern u32 omap_read_auxcoreboot0(void);
-#endif
-
-#if defined(CONFIG_SMP) && defined(CONFIG_PM)
-extern int omap4_mpuss_init(void);
-extern int omap4_enter_lowpower(unsigned int cpu, unsigned int power_state);
-extern int omap4_finish_suspend(unsigned long cpu_state);
-extern void omap4_cpu_resume(void);
-extern int omap4_hotplug_cpu(unsigned int cpu, unsigned int power_state);
-extern u32 omap4_mpuss_read_prev_context_state(void);
-#else
-static inline int omap4_enter_lowpower(unsigned int cpu,
-					unsigned int power_state)
-=======
 extern void gic_dist_disable(void);
 extern void gic_dist_enable(void);
 extern bool gic_dist_disabled(void);
@@ -426,7 +263,6 @@ extern int omap4_hotplug_cpu(unsigned int cpu, unsigned int power_state);
 static inline int omap4_enter_lowpower(unsigned int cpu,
 					unsigned int power_state,
 					bool rcuidle)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpu_do_idle();
 	return 0;
@@ -443,8 +279,6 @@ static inline int omap4_mpuss_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #endif
 
 #ifdef CONFIG_ARCH_OMAP4
@@ -460,18 +294,10 @@ static inline void omap4_secondary_startup(void)
 static inline void omap4460_secondary_startup(void)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int omap4_finish_suspend(unsigned long cpu_state)
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-static inline void omap4_cpu_resume(void)
-{}
-
-static inline u32 omap4_mpuss_read_prev_context_state(void)
-=======
 static inline void omap4_cpu_resume(void)
 {
 }
@@ -514,18 +340,10 @@ int omap_iommu_set_pwrdm_constraint(struct platform_device *pdev, bool request,
 #else
 static inline int omap_iommu_set_pwrdm_constraint(struct platform_device *pdev,
 						  bool request, u8 *pwrst)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-struct omap_sdrc_params;
-extern void omap_sdrc_init(struct omap_sdrc_params *sdrc_cs0,
-				      struct omap_sdrc_params *sdrc_cs1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLER__ */
 #endif /* __ARCH_ARM_MACH_OMAP2PLUS_COMMON_H */

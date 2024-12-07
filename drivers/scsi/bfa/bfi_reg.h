@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-
-/*
- * bfi_reg.h ASIC register defines for all Brocade adapter ASICs
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -31,7 +10,6 @@
 
 /*
  * bfi_reg.h ASIC register defines for all QLogic BR-series adapter ASICs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFI_REG_H__
@@ -353,10 +331,7 @@ enum {
 #define __A2T_AHB_LOAD			0x00000800
 #define __WGN_READY			0x00000400
 #define __GLBL_PF_VF_CFG_RDY		0x00000200
-<<<<<<< HEAD
-=======
 #define CT2_NFC_STS_REG			0x00027410
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CT2_NFC_CSR_CLR_REG		0x00027420
 #define CT2_NFC_CSR_SET_REG		0x00027424
 #define __HALT_NFC_CONTROLLER		0x00000002
@@ -374,11 +349,8 @@ enum {
 	(CT2_CSI_MAC0_CONTROL_REG +	\
 	(__n) * (CT2_CSI_MAC1_CONTROL_REG - CT2_CSI_MAC0_CONTROL_REG))
 
-<<<<<<< HEAD
-=======
 #define CT2_NFC_FLASH_STS_REG		0x00014834
 #define __FLASH_PLL_INIT_AND_RESET_IN_PROGRESS	0x00000020
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Name semaphore registers based on usage
  */

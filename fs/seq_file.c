@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/seq_file.c
  *
@@ -9,34 +6,14 @@
  * initial implementation -- AV, Oct 2001.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cache.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/export.h>
 #include <linux/seq_file.h>
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/mm.h>
-
-#include <asm/uaccess.h>
-#include <asm/page.h>
-
-
-/*
- * seq_files have a buffer which can may overflow. When this happens a larger
- * buffer is reallocated and all the data will be printed again.
- * The overflow state is true when m->count == m->size.
- */
-static bool seq_overflow(struct seq_file *m)
-{
-	return m->count == m->size;
-}
-=======
 #include <linux/cred.h>
 #include <linux/mm.h>
 #include <linux/printk.h>
@@ -47,7 +24,6 @@ static bool seq_overflow(struct seq_file *m)
 #include <asm/page.h>
 
 static struct kmem_cache *seq_file_cache __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void seq_set_overflow(struct seq_file *m)
 {
@@ -56,21 +32,10 @@ static void seq_set_overflow(struct seq_file *m)
 
 static void *seq_buf_alloc(unsigned long size)
 {
-<<<<<<< HEAD
-	void *buf;
-
-	if (size > PAGE_SIZE)
-		buf = vmalloc(size);
-	else
-		buf = kmalloc(size, GFP_KERNEL | __GFP_NOWARN);
-
-	return buf;
-=======
 	if (unlikely(size > MAX_RW_COUNT))
 		return NULL;
 
 	return kvmalloc(size, GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -86,29 +51,6 @@ static void *seq_buf_alloc(unsigned long size)
  *	ERR_PTR(error).  In the end of sequence they return %NULL. ->show()
  *	returns 0 in case of success and negative number in case of error.
  *	Returning SEQ_SKIP means "discard this element and move on".
-<<<<<<< HEAD
- */
-int seq_open(struct file *file, const struct seq_operations *op)
-{
-	struct seq_file *p = file->private_data;
-
-	if (!p) {
-		p = kmalloc(sizeof(*p), GFP_KERNEL);
-		if (!p)
-			return -ENOMEM;
-		file->private_data = p;
-	}
-	memset(p, 0, sizeof(*p));
-	mutex_init(&p->lock);
-	p->op = op;
-
-	/*
-	 * Wrappers around seq_open(e.g. swaps_open) need to be
-	 * aware of this. If they set f_version themselves, they
-	 * should call seq_open first and then set f_version.
-	 */
-	file->f_version = 0;
-=======
  *	Note: seq_open() will allocate a struct seq_file and store its
  *	pointer in @file->private_data. This pointer should not be modified.
  */
@@ -130,7 +72,6 @@ int seq_open(struct file *file, const struct seq_operations *op)
 	// No refcounting: the lifetime of 'p' is constrained
 	// to the lifetime of the file.
 	p->file = file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * seq_files support lseek() and pread().  They do not implement
@@ -148,19 +89,6 @@ EXPORT_SYMBOL(seq_open);
 
 static int traverse(struct seq_file *m, loff_t offset)
 {
-<<<<<<< HEAD
-	loff_t pos = 0, index;
-	int error = 0;
-	void *p;
-
-	m->version = 0;
-	index = 0;
-	m->count = m->from = 0;
-	if (!offset) {
-		m->index = index;
-		return 0;
-	}
-=======
 	loff_t pos = 0;
 	int error = 0;
 	void *p;
@@ -170,17 +98,12 @@ static int traverse(struct seq_file *m, loff_t offset)
 	if (!offset)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!m->buf) {
 		m->buf = seq_buf_alloc(m->size = PAGE_SIZE);
 		if (!m->buf)
 			return -ENOMEM;
 	}
-<<<<<<< HEAD
-	p = m->op->start(m, &index);
-=======
 	p = m->op->start(m, &m->index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (p) {
 		error = PTR_ERR(p);
 		if (IS_ERR(p))
@@ -192,50 +115,26 @@ static int traverse(struct seq_file *m, loff_t offset)
 			error = 0;
 			m->count = 0;
 		}
-<<<<<<< HEAD
-		if (seq_overflow(m))
-			goto Eoverflow;
-		if (pos + m->count > offset) {
-			m->from = offset - pos;
-			m->count -= m->from;
-			m->index = index;
-=======
 		if (seq_has_overflowed(m))
 			goto Eoverflow;
 		p = m->op->next(m, p, &m->index);
 		if (pos + m->count > offset) {
 			m->from = offset - pos;
 			m->count -= m->from;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		pos += m->count;
 		m->count = 0;
-<<<<<<< HEAD
-		if (pos == offset) {
-			index++;
-			m->index = index;
-			break;
-		}
-		p = m->op->next(m, p, &index);
-	}
-	m->op->stop(m, p);
-	m->index = index;
-=======
 		if (pos == offset)
 			break;
 	}
 	m->op->stop(m, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 
 Eoverflow:
 	m->op->stop(m, p);
 	kvfree(m->buf);
-<<<<<<< HEAD
-=======
 	m->count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m->buf = seq_buf_alloc(m->size <<= 1);
 	return !m->buf ? -ENOMEM : -EAGAIN;
 }
@@ -251,11 +150,6 @@ Eoverflow:
  */
 ssize_t seq_read(struct file *file, char __user *buf, size_t size, loff_t *ppos)
 {
-<<<<<<< HEAD
-	struct seq_file *m = file->private_data;
-	size_t copied = 0;
-	loff_t pos;
-=======
 	struct iovec iov = { .iov_base = buf, .iov_len = size};
 	struct kiocb kiocb;
 	struct iov_iter iter;
@@ -278,31 +172,10 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 {
 	struct seq_file *m = iocb->ki_filp->private_data;
 	size_t copied = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t n;
 	void *p;
 	int err = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&m->lock);
-
-	/*
-	 * seq_file->op->..m_start/m_stop/m_next may do special actions
-	 * or optimisations based on the file->f_version, so we want to
-	 * pass the file->f_version to those methods.
-	 *
-	 * seq_file->version is just copy of f_version, and seq_file
-	 * methods can treat it simply as file version.
-	 * It is copied in first and copied out after all operations.
-	 * It is convenient to have it as  part of structure to avoid the
-	 * need of passing another argument to all the seq_file methods.
-	 */
-	m->version = file->f_version;
-
-	/* Don't assume *ppos is where we left it */
-	if (unlikely(*ppos != m->read_pos)) {
-		while ((err = traverse(m, *ppos)) == -EAGAIN)
-=======
 	if (!iov_iter_count(iter))
 		return 0;
 
@@ -320,24 +193,15 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 	/* Don't assume ki_pos is where we left it */
 	if (unlikely(iocb->ki_pos != m->read_pos)) {
 		while ((err = traverse(m, iocb->ki_pos)) == -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			;
 		if (err) {
 			/* With prejudice... */
 			m->read_pos = 0;
-<<<<<<< HEAD
-			m->version = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			m->index = 0;
 			m->count = 0;
 			goto Done;
 		} else {
-<<<<<<< HEAD
-			m->read_pos = *ppos;
-=======
 			m->read_pos = iocb->ki_pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -347,53 +211,6 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 		if (!m->buf)
 			goto Enomem;
 	}
-<<<<<<< HEAD
-	/* if not empty - flush it first */
-	if (m->count) {
-		n = min(m->count, size);
-		err = copy_to_user(buf, m->buf + m->from, n);
-		if (err)
-			goto Efault;
-		m->count -= n;
-		m->from += n;
-		size -= n;
-		buf += n;
-		copied += n;
-		if (!m->count)
-			m->index++;
-		if (!size)
-			goto Done;
-	}
-	/* we need at least one record in buffer */
-	pos = m->index;
-	p = m->op->start(m, &pos);
-	while (1) {
-		err = PTR_ERR(p);
-		if (!p || IS_ERR(p))
-			break;
-		err = m->op->show(m, p);
-		if (err < 0)
-			break;
-		if (unlikely(err))
-			m->count = 0;
-		if (unlikely(!m->count)) {
-			p = m->op->next(m, p, &pos);
-			m->index = pos;
-			continue;
-		}
-		if (m->count < m->size)
-			goto Fill;
-		m->op->stop(m, p);
-		kvfree(m->buf);
-		m->buf = seq_buf_alloc(m->size <<= 1);
-		if (!m->buf)
-			goto Enomem;
-		m->count = 0;
-		m->version = 0;
-		pos = m->index;
-		p = m->op->start(m, &pos);
-	}
-=======
 	// something left in the buffer - copy it out first
 	if (m->count) {
 		n = copy_to_iter(m->buf + m->from, m->count, iter);
@@ -431,50 +248,10 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 		p = m->op->start(m, &m->index);
 	}
 	// EOF or an error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m->op->stop(m, p);
 	m->count = 0;
 	goto Done;
 Fill:
-<<<<<<< HEAD
-	/* they want more? let's try to get some more */
-	while (m->count < size) {
-		size_t offs = m->count;
-		loff_t next = pos;
-		p = m->op->next(m, p, &next);
-		if (!p || IS_ERR(p)) {
-			err = PTR_ERR(p);
-			break;
-		}
-		err = m->op->show(m, p);
-		if (seq_overflow(m) || err) {
-			m->count = offs;
-			if (likely(err <= 0))
-				break;
-		}
-		pos = next;
-	}
-	m->op->stop(m, p);
-	n = min(m->count, size);
-	err = copy_to_user(buf, m->buf, n);
-	if (err)
-		goto Efault;
-	copied += n;
-	m->count -= n;
-	if (m->count)
-		m->from = n;
-	else
-		pos++;
-	m->index = pos;
-Done:
-	if (!copied)
-		copied = err;
-	else {
-		*ppos += copied;
-		m->read_pos += copied;
-	}
-	file->f_version = m->version;
-=======
 	// one non-empty record is in the buffer; if they want more,
 	// try to fit more in, but in any case we need to advance
 	// the iterator once for every record shown.
@@ -512,72 +289,28 @@ Done:
 		iocb->ki_pos += copied;
 		m->read_pos += copied;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&m->lock);
 	return copied;
 Enomem:
 	err = -ENOMEM;
 	goto Done;
-<<<<<<< HEAD
-Efault:
-	err = -EFAULT;
-	goto Done;
-}
-EXPORT_SYMBOL(seq_read);
-=======
 }
 EXPORT_SYMBOL(seq_read_iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	seq_lseek -	->llseek() method for sequential files.
  *	@file: the file in question
  *	@offset: new position
-<<<<<<< HEAD
- *	@origin: 0 for absolute, 1 for relative position
- *
- *	Ready-made ->f_op->llseek()
- */
-loff_t seq_lseek(struct file *file, loff_t offset, int origin)
-=======
  *	@whence: 0 for absolute, 1 for relative position
  *
  *	Ready-made ->f_op->llseek()
  */
 loff_t seq_lseek(struct file *file, loff_t offset, int whence)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct seq_file *m = file->private_data;
 	loff_t retval = -EINVAL;
 
 	mutex_lock(&m->lock);
-<<<<<<< HEAD
-	m->version = file->f_version;
-	switch (origin) {
-		case 1:
-			offset += file->f_pos;
-		case 0:
-			if (offset < 0)
-				break;
-			retval = offset;
-			if (offset != m->read_pos) {
-				while ((retval=traverse(m, offset)) == -EAGAIN)
-					;
-				if (retval) {
-					/* with extreme prejudice... */
-					file->f_pos = 0;
-					m->read_pos = 0;
-					m->version = 0;
-					m->index = 0;
-					m->count = 0;
-				} else {
-					m->read_pos = offset;
-					retval = file->f_pos = offset;
-				}
-			}
-	}
-	file->f_version = m->version;
-=======
 	switch (whence) {
 	case SEEK_CUR:
 		offset += file->f_pos;
@@ -603,7 +336,6 @@ loff_t seq_lseek(struct file *file, loff_t offset, int whence)
 			file->f_pos = offset;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&m->lock);
 	return retval;
 }
@@ -612,11 +344,7 @@ EXPORT_SYMBOL(seq_lseek);
 /**
  *	seq_release -	free the structures associated with sequential file.
  *	@file: file in question
-<<<<<<< HEAD
- *	@inode: file->f_path.dentry->d_inode
-=======
  *	@inode: its inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Frees the structures associated with sequential file; can be used
  *	as ->f_op->release() if you don't have private data to destroy.
@@ -625,72 +353,12 @@ int seq_release(struct inode *inode, struct file *file)
 {
 	struct seq_file *m = file->private_data;
 	kvfree(m->buf);
-<<<<<<< HEAD
-	kfree(m);
-=======
 	kmem_cache_free(seq_file_cache, m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(seq_release);
 
 /**
-<<<<<<< HEAD
- *	seq_escape -	print string into buffer, escaping some characters
- *	@m:	target buffer
- *	@s:	string
- *	@esc:	set of characters that need escaping
- *
- *	Puts string into buffer, replacing each occurrence of character from
- *	@esc with usual octal escape.  Returns 0 in case of success, -1 - in
- *	case of overflow.
- */
-int seq_escape(struct seq_file *m, const char *s, const char *esc)
-{
-	char *end = m->buf + m->size;
-        char *p;
-	char c;
-
-        for (p = m->buf + m->count; (c = *s) != '\0' && p < end; s++) {
-		if (!strchr(esc, c)) {
-			*p++ = c;
-			continue;
-		}
-		if (p + 3 < end) {
-			*p++ = '\\';
-			*p++ = '0' + ((c & 0300) >> 6);
-			*p++ = '0' + ((c & 070) >> 3);
-			*p++ = '0' + (c & 07);
-			continue;
-		}
-		seq_set_overflow(m);
-		return -1;
-        }
-	m->count = p - m->buf;
-        return 0;
-}
-EXPORT_SYMBOL(seq_escape);
-
-int seq_printf(struct seq_file *m, const char *f, ...)
-{
-	va_list args;
-	int len;
-
-	if (m->count < m->size) {
-		va_start(args, f);
-		len = vsnprintf(m->buf + m->count, m->size - m->count, f, args);
-		va_end(args);
-		if (m->count + len < m->size) {
-			m->count += len;
-			return 0;
-		}
-	}
-	seq_set_overflow(m);
-	return -1;
-}
-EXPORT_SYMBOL(seq_printf);
-
-=======
  * seq_escape_mem - print data into buffer, escaping some characters
  * @m: target buffer
  * @src: source buffer
@@ -758,7 +426,6 @@ void seq_bprintf(struct seq_file *m, const char *f, const u32 *binary)
 EXPORT_SYMBOL(seq_bprintf);
 #endif /* CONFIG_BINARY_PRINTF */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	mangle_path -	mangle and copy path to buffer beginning
  *	@s: buffer start
@@ -820,8 +487,6 @@ int seq_path(struct seq_file *m, const struct path *path, const char *esc)
 }
 EXPORT_SYMBOL(seq_path);
 
-<<<<<<< HEAD
-=======
 /**
  * seq_file_path - seq_file interface to print a pathname of a file
  * @m: the seq_file handle
@@ -836,7 +501,6 @@ int seq_file_path(struct seq_file *m, struct file *file, const char *esc)
 }
 EXPORT_SYMBOL(seq_file_path);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Same as seq_path, but relative to supplied root.
  */
@@ -888,50 +552,11 @@ int seq_dentry(struct seq_file *m, struct dentry *dentry, const char *esc)
 
 	return res;
 }
-<<<<<<< HEAD
-
-int seq_bitmap(struct seq_file *m, const unsigned long *bits,
-				   unsigned int nr_bits)
-{
-	if (m->count < m->size) {
-		int len = bitmap_scnprintf(m->buf + m->count,
-				m->size - m->count, bits, nr_bits);
-		if (m->count + len < m->size) {
-			m->count += len;
-			return 0;
-		}
-	}
-	seq_set_overflow(m);
-	return -1;
-}
-EXPORT_SYMBOL(seq_bitmap);
-
-int seq_bitmap_list(struct seq_file *m, const unsigned long *bits,
-		unsigned int nr_bits)
-{
-	if (m->count < m->size) {
-		int len = bitmap_scnlistprintf(m->buf + m->count,
-				m->size - m->count, bits, nr_bits);
-		if (m->count + len < m->size) {
-			m->count += len;
-			return 0;
-		}
-	}
-	seq_set_overflow(m);
-	return -1;
-}
-EXPORT_SYMBOL(seq_bitmap_list);
-
-static void *single_start(struct seq_file *p, loff_t *pos)
-{
-	return NULL + (*pos == 0);
-=======
 EXPORT_SYMBOL(seq_dentry);
 
 void *single_start(struct seq_file *p, loff_t *pos)
 {
 	return *pos ? NULL : SEQ_START_TOKEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *single_next(struct seq_file *p, void *v, loff_t *pos)
@@ -947,11 +572,7 @@ static void single_stop(struct seq_file *p, void *v)
 int single_open(struct file *file, int (*show)(struct seq_file *, void *),
 		void *data)
 {
-<<<<<<< HEAD
-	struct seq_operations *op = kmalloc(sizeof(*op), GFP_KERNEL);
-=======
 	struct seq_operations *op = kmalloc(sizeof(*op), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res = -ENOMEM;
 
 	if (op) {
@@ -969,8 +590,6 @@ int single_open(struct file *file, int (*show)(struct seq_file *, void *),
 }
 EXPORT_SYMBOL(single_open);
 
-<<<<<<< HEAD
-=======
 int single_open_size(struct file *file, int (*show)(struct seq_file *, void *),
 		void *data, size_t size)
 {
@@ -989,7 +608,6 @@ int single_open_size(struct file *file, int (*show)(struct seq_file *, void *),
 }
 EXPORT_SYMBOL(single_open_size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int single_release(struct inode *inode, struct file *file)
 {
 	const struct seq_operations *op = ((struct seq_file *)file->private_data)->op;
@@ -1016,11 +634,7 @@ void *__seq_open_private(struct file *f, const struct seq_operations *ops,
 	void *private;
 	struct seq_file *seq;
 
-<<<<<<< HEAD
-	private = kzalloc(psize, GFP_KERNEL);
-=======
 	private = kzalloc(psize, GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (private == NULL)
 		goto out;
 
@@ -1046,40 +660,6 @@ int seq_open_private(struct file *filp, const struct seq_operations *ops,
 }
 EXPORT_SYMBOL(seq_open_private);
 
-<<<<<<< HEAD
-int seq_putc(struct seq_file *m, char c)
-{
-	if (m->count < m->size) {
-		m->buf[m->count++] = c;
-		return 0;
-	}
-	return -1;
-}
-EXPORT_SYMBOL(seq_putc);
-
-int seq_puts(struct seq_file *m, const char *s)
-{
-	int len = strlen(s);
-	if (m->count + len < m->size) {
-		memcpy(m->buf + m->count, s, len);
-		m->count += len;
-		return 0;
-	}
-	seq_set_overflow(m);
-	return -1;
-}
-EXPORT_SYMBOL(seq_puts);
-
-/*
- * A helper routine for putting decimal numbers without rich format of printf().
- * only 'unsigned long long' is supported.
- * This routine will put one byte delimiter + number into seq_file.
- * This routine is very quick when you show lots of numbers.
- * In usual cases, it will be better to use seq_printf(). It's easier to read.
- */
-int seq_put_decimal_ull(struct seq_file *m, char delimiter,
-			unsigned long long num)
-=======
 void seq_putc(struct seq_file *m, char c)
 {
 	if (m->count >= m->size)
@@ -1117,49 +697,12 @@ EXPORT_SYMBOL(seq_puts);
  */
 void seq_put_decimal_ull_width(struct seq_file *m, const char *delimiter,
 			 unsigned long long num, unsigned int width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
 	if (m->count + 2 >= m->size) /* we'll write 2 bytes at least */
 		goto overflow;
 
-<<<<<<< HEAD
-	if (delimiter)
-		m->buf[m->count++] = delimiter;
-
-	if (num < 10) {
-		m->buf[m->count++] = num + '0';
-		return 0;
-	}
-
-	len = num_to_str(m->buf + m->count, m->size - m->count, num);
-	if (!len)
-		goto overflow;
-	m->count += len;
-	return 0;
-overflow:
-	seq_set_overflow(m);
-	return -1;
-}
-EXPORT_SYMBOL(seq_put_decimal_ull);
-
-int seq_put_decimal_ll(struct seq_file *m, char delimiter,
-			long long num)
-{
-	if (num < 0) {
-		if (m->count + 3 >= m->size) {
-			seq_set_overflow(m);
-			return -1;
-		}
-		if (delimiter)
-			m->buf[m->count++] = delimiter;
-		num = -num;
-		delimiter = '-';
-	}
-	return seq_put_decimal_ull(m, delimiter, num);
-
-=======
 	if (delimiter && delimiter[0]) {
 		if (delimiter[1] == 0)
 			seq_putc(m, delimiter[0]);
@@ -1273,7 +816,6 @@ void seq_put_decimal_ll(struct seq_file *m, const char *delimiter, long long num
 
 overflow:
 	seq_set_overflow(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(seq_put_decimal_ll);
 
@@ -1305,10 +847,6 @@ EXPORT_SYMBOL(seq_write);
 void seq_pad(struct seq_file *m, char c)
 {
 	int size = m->pad_until - m->count;
-<<<<<<< HEAD
-	if (size > 0)
-		seq_printf(m, "%*s", size, "");
-=======
 	if (size > 0) {
 		if (size + m->count > m->size) {
 			seq_set_overflow(m);
@@ -1317,14 +855,11 @@ void seq_pad(struct seq_file *m, char c)
 		memset(m->buf + m->count, ' ', size);
 		m->count += size;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (c)
 		seq_putc(m, c);
 }
 EXPORT_SYMBOL(seq_pad);
 
-<<<<<<< HEAD
-=======
 /* A complete analogue of print_hex_dump() */
 void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
 		  int rowsize, int groupsize, const void *buf, size_t len,
@@ -1365,7 +900,6 @@ void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
 }
 EXPORT_SYMBOL(seq_hex_dump);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct list_head *seq_list_start(struct list_head *head, loff_t pos)
 {
 	struct list_head *lh;
@@ -1397,8 +931,6 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
 }
 EXPORT_SYMBOL(seq_list_next);
 
-<<<<<<< HEAD
-=======
 struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
 {
 	struct list_head *lh;
@@ -1431,7 +963,6 @@ struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
 }
 EXPORT_SYMBOL(seq_list_next_rcu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * seq_hlist_start - start an iteration of a hlist
  * @head: the head of the hlist
@@ -1558,8 +1089,6 @@ struct hlist_node *seq_hlist_next_rcu(void *v,
 		return rcu_dereference(node->next);
 }
 EXPORT_SYMBOL(seq_hlist_next_rcu);
-<<<<<<< HEAD
-=======
 
 /**
  * seq_hlist_start_percpu - start an iteration of a percpu hlist array
@@ -1619,4 +1148,3 @@ void __init seq_file_init(void)
 {
 	seq_file_cache = KMEM_CACHE(seq_file, SLAB_ACCOUNT|SLAB_PANIC);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

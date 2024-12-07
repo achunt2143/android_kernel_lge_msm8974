@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
@@ -32,10 +26,7 @@
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/lockdep.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -43,14 +34,10 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport_fc.h>
 #include <scsi/fc/fc_fs.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-=======
 #include <linux/crash_dump.h>
 #ifdef CONFIG_X86
 #include <asm/set_memory.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "lpfc_hw4.h"
 #include "lpfc_hw.h"
@@ -58,23 +45,15 @@
 #include "lpfc_sli4.h"
 #include "lpfc_nl.h"
 #include "lpfc_disc.h"
-<<<<<<< HEAD
-#include "lpfc_scsi.h"
-#include "lpfc.h"
-=======
 #include "lpfc.h"
 #include "lpfc_scsi.h"
 #include "lpfc_nvme.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lpfc_crtn.h"
 #include "lpfc_logmsg.h"
 #include "lpfc_compat.h"
 #include "lpfc_debugfs.h"
 #include "lpfc_vport.h"
-<<<<<<< HEAD
-=======
 #include "lpfc_version.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* There are only four IOCB completion types. */
 typedef enum _lpfc_iocb_type {
@@ -90,21 +69,6 @@ static int lpfc_sli_issue_mbox_s4(struct lpfc_hba *, LPFC_MBOXQ_t *,
 				  uint32_t);
 static int lpfc_sli4_read_rev(struct lpfc_hba *, LPFC_MBOXQ_t *,
 			      uint8_t *, uint32_t *);
-<<<<<<< HEAD
-static struct lpfc_iocbq *lpfc_sli4_els_wcqe_to_rspiocbq(struct lpfc_hba *,
-							 struct lpfc_iocbq *);
-static void lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *,
-				      struct hbq_dmabuf *);
-static int lpfc_sli4_fp_handle_wcqe(struct lpfc_hba *, struct lpfc_queue *,
-				    struct lpfc_cqe *);
-
-static IOCB_t *
-lpfc_get_iocb_from_iocbq(struct lpfc_iocbq *iocbq)
-{
-	return &iocbq->iocb;
-}
-
-=======
 static struct lpfc_iocbq *
 lpfc_sli4_els_preprocess_rspiocbq(struct lpfc_hba *phba,
 				  struct lpfc_iocbq *rspiocbq);
@@ -284,7 +248,6 @@ lpfc_sli4_pcimem_bcopy(void *srcp, void *destp, uint32_t cnt)
 #define lpfc_sli4_pcimem_bcopy(a, b, c) lpfc_sli_pcimem_bcopy(a, b, c)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_wq_put - Put a Work Queue Entry on an Work Queue
  * @q: The Work Queue to operate on.
@@ -297,53 +260,20 @@ lpfc_sli4_pcimem_bcopy(void *srcp, void *destp, uint32_t cnt)
  * -ENOMEM.
  * The caller is expected to hold the hbalock when calling this routine.
  **/
-<<<<<<< HEAD
-static uint32_t
-lpfc_sli4_wq_put(struct lpfc_queue *q, union lpfc_wqe *wqe)
-=======
 static int
 lpfc_sli4_wq_put(struct lpfc_queue *q, union lpfc_wqe128 *wqe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union lpfc_wqe *temp_wqe;
 	struct lpfc_register doorbell;
 	uint32_t host_index;
-<<<<<<< HEAD
-=======
 	uint32_t idx;
 	uint32_t i = 0;
 	uint8_t *tmp;
 	u32 if_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (unlikely(!q))
 		return -ENOMEM;
-<<<<<<< HEAD
-	temp_wqe = q->qe[q->host_index].wqe;
-
-	/* If the host has not yet processed the next entry then we are done */
-	if (((q->host_index + 1) % q->entry_count) == q->hba_index)
-		return -ENOMEM;
-	/* set consumption flag every once in a while */
-	if (!((q->host_index + 1) % q->entry_repost))
-		bf_set(wqe_wqec, &wqe->generic.wqe_com, 1);
-	if (q->phba->sli3_options & LPFC_SLI4_PHWQ_ENABLED)
-		bf_set(wqe_wqid, &wqe->generic.wqe_com, q->queue_id);
-	lpfc_sli_pcimem_bcopy(wqe, temp_wqe, q->entry_size);
-
-	/* Update the host index before invoking device */
-	host_index = q->host_index;
-	q->host_index = ((q->host_index + 1) % q->entry_count);
-
-	/* Ring Doorbell */
-	doorbell.word0 = 0;
-	bf_set(lpfc_wq_doorbell_num_posted, &doorbell, 1);
-	bf_set(lpfc_wq_doorbell_index, &doorbell, host_index);
-	bf_set(lpfc_wq_doorbell_id, &doorbell, q->queue_id);
-	writel(doorbell.word0, q->phba->sli4_hba.WQDBregaddr);
-	readl(q->phba->sli4_hba.WQDBregaddr); /* Flush */
-=======
 
 	temp_wqe = lpfc_sli4_qe(q, q->host_index);
 
@@ -411,7 +341,6 @@ lpfc_sli4_wq_put(struct lpfc_queue *q, union lpfc_wqe128 *wqe)
 		return -EINVAL;
 	}
 	writel(doorbell.word0, q->db_regaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -424,27 +353,6 @@ lpfc_sli4_wq_put(struct lpfc_queue *q, union lpfc_wqe128 *wqe)
  * This routine will update the HBA index of a queue to reflect consumption of
  * Work Queue Entries by the HBA. When the HBA indicates that it has consumed
  * an entry the host calls this function to update the queue's internal
-<<<<<<< HEAD
- * pointers. This routine returns the number of entries that were consumed by
- * the HBA.
- **/
-static uint32_t
-lpfc_sli4_wq_release(struct lpfc_queue *q, uint32_t index)
-{
-	uint32_t released = 0;
-
-	/* sanity check on queue memory */
-	if (unlikely(!q))
-		return 0;
-
-	if (q->hba_index == index)
-		return 0;
-	do {
-		q->hba_index = ((q->hba_index + 1) % q->entry_count);
-		released++;
-	} while (q->hba_index != index);
-	return released;
-=======
  * pointers.
  **/
 static void
@@ -455,17 +363,12 @@ lpfc_sli4_wq_release(struct lpfc_queue *q, uint32_t index)
 		return;
 
 	q->hba_index = index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * lpfc_sli4_mq_put - Put a Mailbox Queue Entry on an Mailbox Queue
  * @q: The Mailbox Queue to operate on.
-<<<<<<< HEAD
- * @wqe: The Mailbox Queue Entry to put on the Work queue.
-=======
  * @mqe: The Mailbox Queue Entry to put on the Work queue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will copy the contents of @mqe to the next available entry on
  * the @q. This function will then ring the Work Queue Doorbell to signal the
@@ -479,36 +382,20 @@ lpfc_sli4_mq_put(struct lpfc_queue *q, struct lpfc_mqe *mqe)
 {
 	struct lpfc_mqe *temp_mqe;
 	struct lpfc_register doorbell;
-<<<<<<< HEAD
-	uint32_t host_index;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (unlikely(!q))
 		return -ENOMEM;
-<<<<<<< HEAD
-	temp_mqe = q->qe[q->host_index].mqe;
-=======
 	temp_mqe = lpfc_sli4_qe(q, q->host_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the host has not yet processed the next entry then we are done */
 	if (((q->host_index + 1) % q->entry_count) == q->hba_index)
 		return -ENOMEM;
-<<<<<<< HEAD
-	lpfc_sli_pcimem_bcopy(mqe, temp_mqe, q->entry_size);
-=======
 	lpfc_sli4_pcimem_bcopy(mqe, temp_mqe, q->entry_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save off the mailbox pointer for completion */
 	q->phba->mbox = (MAILBOX_t *)temp_mqe;
 
 	/* Update the host index before invoking device */
-<<<<<<< HEAD
-	host_index = q->host_index;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->host_index = ((q->host_index + 1) % q->entry_count);
 
 	/* Ring Doorbell */
@@ -516,10 +403,6 @@ lpfc_sli4_mq_put(struct lpfc_queue *q, struct lpfc_mqe *mqe)
 	bf_set(lpfc_mq_doorbell_num_posted, &doorbell, 1);
 	bf_set(lpfc_mq_doorbell_id, &doorbell, q->queue_id);
 	writel(doorbell.word0, q->phba->sli4_hba.MQDBregaddr);
-<<<<<<< HEAD
-	readl(q->phba->sli4_hba.MQDBregaddr); /* Flush */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -563,18 +446,6 @@ lpfc_sli4_eq_get(struct lpfc_queue *q)
 	/* sanity check on queue memory */
 	if (unlikely(!q))
 		return NULL;
-<<<<<<< HEAD
-	eqe = q->qe[q->hba_index].eqe;
-
-	/* If the next EQE is not valid then we are done */
-	if (!bf_get_le32(lpfc_eqe_valid, eqe))
-		return NULL;
-	/* If the host has not yet processed the next entry then we are done */
-	if (((q->hba_index + 1) % q->entry_count) == q->host_index)
-		return NULL;
-
-	q->hba_index = ((q->hba_index + 1) % q->entry_count);
-=======
 	eqe = lpfc_sli4_qe(q, q->host_index);
 
 	/* If the next EQE is not valid then we are done */
@@ -591,47 +462,10 @@ lpfc_sli4_eq_get(struct lpfc_queue *q)
 	 * ensures the check is before any data is copied.
 	 */
 	mb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return eqe;
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_eq_release - Indicates the host has finished processing an EQ
- * @q: The Event Queue that the host has completed processing for.
- * @arm: Indicates whether the host wants to arms this CQ.
- *
- * This routine will mark all Event Queue Entries on @q, from the last
- * known completed entry to the last entry that was processed, as completed
- * by clearing the valid bit for each completion queue entry. Then it will
- * notify the HBA, by ringing the doorbell, that the EQEs have been processed.
- * The internal host index in the @q will be updated by this routine to indicate
- * that the host has finished processing the entries. The @arm parameter
- * indicates that the queue should be rearmed when ringing the doorbell.
- *
- * This function will return the number of EQEs that were popped.
- **/
-uint32_t
-lpfc_sli4_eq_release(struct lpfc_queue *q, bool arm)
-{
-	uint32_t released = 0;
-	struct lpfc_eqe *temp_eqe;
-	struct lpfc_register doorbell;
-
-	/* sanity check on queue memory */
-	if (unlikely(!q))
-		return 0;
-
-	/* while there are valid entries */
-	while (q->hba_index != q->host_index) {
-		temp_eqe = q->qe[q->host_index].eqe;
-		bf_set_le32(lpfc_eqe_valid, temp_eqe, 0);
-		released++;
-		q->host_index = ((q->host_index + 1) % q->entry_count);
-	}
-	if (unlikely(released == 0 && !arm))
-		return 0;
-=======
  * lpfc_sli4_eq_clr_intr - Turn off interrupts from this EQ
  * @q: The Event Queue to disable interrupts
  *
@@ -685,7 +519,6 @@ lpfc_sli4_write_eq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 	/* sanity check on queue memory */
 	if (unlikely(!q || (count == 0 && !arm)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ring doorbell for number popped */
 	doorbell.word0 = 0;
@@ -693,22 +526,11 @@ lpfc_sli4_write_eq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 		bf_set(lpfc_eqcq_doorbell_arm, &doorbell, 1);
 		bf_set(lpfc_eqcq_doorbell_eqci, &doorbell, 1);
 	}
-<<<<<<< HEAD
-	bf_set(lpfc_eqcq_doorbell_num_released, &doorbell, released);
-=======
 	bf_set(lpfc_eqcq_doorbell_num_released, &doorbell, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bf_set(lpfc_eqcq_doorbell_qt, &doorbell, LPFC_QUEUE_TYPE_EVENT);
 	bf_set(lpfc_eqcq_doorbell_eqid_hi, &doorbell,
 			(q->queue_id >> LPFC_EQID_HI_FIELD_SHIFT));
 	bf_set(lpfc_eqcq_doorbell_eqid_lo, &doorbell, q->queue_id);
-<<<<<<< HEAD
-	writel(doorbell.word0, q->phba->sli4_hba.EQCQDBregaddr);
-	/* PCI read to flush PCI pipeline on re-arming for INTx mode */
-	if ((q->phba->intr_type == INTx) && (arm == LPFC_QUEUE_REARM))
-		readl(q->phba->sli4_hba.EQCQDBregaddr);
-	return released;
-=======
 	writel(doorbell.word0, q->phba->sli4_hba.EQDBregaddr);
 	/* PCI read to flush PCI pipeline on re-arming for INTx mode */
 	if ((q->phba->intr_type == INTx) && (arm == LPFC_QUEUE_REARM))
@@ -846,7 +668,6 @@ rearm_and_exit:
 	phba->sli4_hba.sli4_write_eq_db(phba, eq, consumed, rearm);
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -866,55 +687,6 @@ lpfc_sli4_cq_get(struct lpfc_queue *q)
 	/* sanity check on queue memory */
 	if (unlikely(!q))
 		return NULL;
-<<<<<<< HEAD
-
-	/* If the next CQE is not valid then we are done */
-	if (!bf_get_le32(lpfc_cqe_valid, q->qe[q->hba_index].cqe))
-		return NULL;
-	/* If the host has not yet processed the next entry then we are done */
-	if (((q->hba_index + 1) % q->entry_count) == q->host_index)
-		return NULL;
-
-	cqe = q->qe[q->hba_index].cqe;
-	q->hba_index = ((q->hba_index + 1) % q->entry_count);
-	return cqe;
-}
-
-/**
- * lpfc_sli4_cq_release - Indicates the host has finished processing a CQ
- * @q: The Completion Queue that the host has completed processing for.
- * @arm: Indicates whether the host wants to arms this CQ.
- *
- * This routine will mark all Completion queue entries on @q, from the last
- * known completed entry to the last entry that was processed, as completed
- * by clearing the valid bit for each completion queue entry. Then it will
- * notify the HBA, by ringing the doorbell, that the CQEs have been processed.
- * The internal host index in the @q will be updated by this routine to indicate
- * that the host has finished processing the entries. The @arm parameter
- * indicates that the queue should be rearmed when ringing the doorbell.
- *
- * This function will return the number of CQEs that were released.
- **/
-uint32_t
-lpfc_sli4_cq_release(struct lpfc_queue *q, bool arm)
-{
-	uint32_t released = 0;
-	struct lpfc_cqe *temp_qe;
-	struct lpfc_register doorbell;
-
-	/* sanity check on queue memory */
-	if (unlikely(!q))
-		return 0;
-	/* while there are valid entries */
-	while (q->hba_index != q->host_index) {
-		temp_qe = q->qe[q->host_index].cqe;
-		bf_set_le32(lpfc_cqe_valid, temp_qe, 0);
-		released++;
-		q->host_index = ((q->host_index + 1) % q->entry_count);
-	}
-	if (unlikely(released == 0 && !arm))
-		return 0;
-=======
 	cqe = lpfc_sli4_qe(q, q->host_index);
 
 	/* If the next CQE is not valid then we are done */
@@ -967,31 +739,16 @@ lpfc_sli4_write_cq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 	/* sanity check on queue memory */
 	if (unlikely(!q || (count == 0 && !arm)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ring doorbell for number popped */
 	doorbell.word0 = 0;
 	if (arm)
 		bf_set(lpfc_eqcq_doorbell_arm, &doorbell, 1);
-<<<<<<< HEAD
-	bf_set(lpfc_eqcq_doorbell_num_released, &doorbell, released);
-=======
 	bf_set(lpfc_eqcq_doorbell_num_released, &doorbell, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bf_set(lpfc_eqcq_doorbell_qt, &doorbell, LPFC_QUEUE_TYPE_COMPLETION);
 	bf_set(lpfc_eqcq_doorbell_cqid_hi, &doorbell,
 			(q->queue_id >> LPFC_CQID_HI_FIELD_SHIFT));
 	bf_set(lpfc_eqcq_doorbell_cqid_lo, &doorbell, q->queue_id);
-<<<<<<< HEAD
-	writel(doorbell.word0, q->phba->sli4_hba.EQCQDBregaddr);
-	return released;
-}
-
-/**
- * lpfc_sli4_rq_put - Put a Receive Buffer Queue Entry on a Receive Queue
- * @q: The Header Receive Queue to operate on.
- * @wqe: The Receive Queue Entry to put on the Receive queue.
-=======
 	writel(doorbell.word0, q->phba->sli4_hba.CQDBregaddr);
 }
 
@@ -1027,7 +784,6 @@ lpfc_sli4_if6_write_cq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 
 /*
  * lpfc_sli4_rq_put - Put a Receive Buffer Queue Entry on a Receive Queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will copy the contents of @wqe to the next available entry on
  * the @q. This function will then ring the Receive Queue Doorbell to signal the
@@ -1036,60 +792,19 @@ lpfc_sli4_if6_write_cq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
  * on @q then this function will return -ENOMEM.
  * The caller is expected to hold the hbalock when calling this routine.
  **/
-<<<<<<< HEAD
-static int
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_sli4_rq_put(struct lpfc_queue *hq, struct lpfc_queue *dq,
 		 struct lpfc_rqe *hrqe, struct lpfc_rqe *drqe)
 {
 	struct lpfc_rqe *temp_hrqe;
 	struct lpfc_rqe *temp_drqe;
 	struct lpfc_register doorbell;
-<<<<<<< HEAD
-	int put_index = hq->host_index;
-=======
 	int hq_put_index;
 	int dq_put_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (unlikely(!hq) || unlikely(!dq))
 		return -ENOMEM;
-<<<<<<< HEAD
-	temp_hrqe = hq->qe[hq->host_index].rqe;
-	temp_drqe = dq->qe[dq->host_index].rqe;
-
-	if (hq->type != LPFC_HRQ || dq->type != LPFC_DRQ)
-		return -EINVAL;
-	if (hq->host_index != dq->host_index)
-		return -EINVAL;
-	/* If the host has not yet processed the next entry then we are done */
-	if (((hq->host_index + 1) % hq->entry_count) == hq->hba_index)
-		return -EBUSY;
-	lpfc_sli_pcimem_bcopy(hrqe, temp_hrqe, hq->entry_size);
-	lpfc_sli_pcimem_bcopy(drqe, temp_drqe, dq->entry_size);
-
-	/* Update the host index to point to the next slot */
-	hq->host_index = ((hq->host_index + 1) % hq->entry_count);
-	dq->host_index = ((dq->host_index + 1) % dq->entry_count);
-
-	/* Ring The Header Receive Queue Doorbell */
-	if (!(hq->host_index % hq->entry_repost)) {
-		doorbell.word0 = 0;
-		bf_set(lpfc_rq_doorbell_num_posted, &doorbell,
-		       hq->entry_repost);
-		bf_set(lpfc_rq_doorbell_id, &doorbell, hq->queue_id);
-		writel(doorbell.word0, hq->phba->sli4_hba.RQDBregaddr);
-	}
-	return put_index;
-}
-
-/**
- * lpfc_sli4_rq_release - Updates internal hba index for RQ
- * @q: The Header Receive Queue to operate on.
-=======
 	hq_put_index = hq->host_index;
 	dq_put_index = dq->host_index;
 	temp_hrqe = lpfc_sli4_qe(hq, hq_put_index);
@@ -1133,7 +848,6 @@ lpfc_sli4_rq_put(struct lpfc_queue *hq, struct lpfc_queue *dq,
 
 /*
  * lpfc_sli4_rq_release - Updates internal hba index for RQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will update the HBA index of a queue to reflect consumption of
  * one Receive Queue Entry by the HBA. When the HBA indicates that it has
@@ -1168,13 +882,8 @@ lpfc_sli4_rq_release(struct lpfc_queue *hq, struct lpfc_queue *dq)
 static inline IOCB_t *
 lpfc_cmd_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 {
-<<<<<<< HEAD
-	return (IOCB_t *) (((char *) pring->cmdringaddr) +
-			   pring->cmdidx * phba->iocb_cmd_size);
-=======
 	return (IOCB_t *) (((char *) pring->sli.sli3.cmdringaddr) +
 			   pring->sli.sli3.cmdidx * phba->iocb_cmd_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1190,13 +899,8 @@ lpfc_cmd_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 static inline IOCB_t *
 lpfc_resp_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 {
-<<<<<<< HEAD
-	return (IOCB_t *) (((char *) pring->rspringaddr) +
-			   pring->rspidx * phba->iocb_rsp_size);
-=======
 	return (IOCB_t *) (((char *) pring->sli.sli3.rspringaddr) +
 			   pring->sli.sli3.rspidx * phba->iocb_rsp_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1208,21 +912,14 @@ lpfc_resp_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
  * allocation is successful, it returns pointer to the newly
  * allocated iocb object else it returns NULL.
  **/
-<<<<<<< HEAD
-static struct lpfc_iocbq *
-=======
 struct lpfc_iocbq *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __lpfc_sli_get_iocbq(struct lpfc_hba *phba)
 {
 	struct list_head *lpfc_iocb_list = &phba->lpfc_iocb_list;
 	struct lpfc_iocbq * iocbq = NULL;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_remove_head(lpfc_iocb_list, iocbq, struct lpfc_iocbq, list);
 	if (iocbq)
 		phba->iocb_cnt++;
@@ -1236,22 +933,14 @@ __lpfc_sli_get_iocbq(struct lpfc_hba *phba)
  * @phba: Pointer to HBA context object.
  * @xritag: XRI value.
  *
-<<<<<<< HEAD
- * This function clears the sglq pointer from the array of acive
-=======
  * This function clears the sglq pointer from the array of active
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sglq's. The xritag that is passed in is used to index into the
  * array. Before the xritag can be used it needs to be adjusted
  * by subtracting the xribase.
  *
  * Returns sglq ponter = success, NULL = Failure.
  **/
-<<<<<<< HEAD
-static struct lpfc_sglq *
-=======
 struct lpfc_sglq *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __lpfc_clear_active_sglq(struct lpfc_hba *phba, uint16_t xritag)
 {
 	struct lpfc_sglq *sglq;
@@ -1266,11 +955,7 @@ __lpfc_clear_active_sglq(struct lpfc_hba *phba, uint16_t xritag)
  * @phba: Pointer to HBA context object.
  * @xritag: XRI value.
  *
-<<<<<<< HEAD
- * This function returns the sglq pointer from the array of acive
-=======
  * This function returns the sglq pointer from the array of active
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sglq's. The xritag that is passed in is used to index into the
  * array. Before the xritag can be used it needs to be adjusted
  * by subtracting the xribase.
@@ -1300,22 +985,6 @@ lpfc_clr_rrq_active(struct lpfc_hba *phba,
 {
 	struct lpfc_nodelist *ndlp = NULL;
 
-<<<<<<< HEAD
-	if ((rrq->vport) && NLP_CHK_NODE_ACT(rrq->ndlp))
-		ndlp = lpfc_findnode_did(rrq->vport, rrq->nlp_DID);
-
-	/* The target DID could have been swapped (cable swap)
-	 * we should use the ndlp from the findnode if it is
-	 * available.
-	 */
-	if ((!ndlp) && rrq->ndlp)
-		ndlp = rrq->ndlp;
-
-	if (!ndlp)
-		goto out;
-
-	if (test_and_clear_bit(xritag, ndlp->active_rrqs.xri_bitmap)) {
-=======
 	/* Lookup did to verify if did is still active on this vport */
 	if (rrq->vport)
 		ndlp = lpfc_findnode_did(rrq->vport, rrq->nlp_DID);
@@ -1324,7 +993,6 @@ lpfc_clr_rrq_active(struct lpfc_hba *phba,
 		goto out;
 
 	if (test_and_clear_bit(xritag, ndlp->active_rrqs_xri_bitmap)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rrq->send_rrq = 0;
 		rrq->xritag = 0;
 		rrq->rrq_stop_time = 0;
@@ -1358,11 +1026,7 @@ lpfc_handle_rrq_active(struct lpfc_hba *phba)
 
 	spin_lock_irqsave(&phba->hbalock, iflags);
 	phba->hba_flag &= ~HBA_RRQ_ACTIVE;
-<<<<<<< HEAD
-	next_time = jiffies + HZ * (phba->fc_ratov + 1);
-=======
 	next_time = jiffies + msecs_to_jiffies(1000 * (phba->fc_ratov + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(rrq, nextrrq,
 				 &phba->active_rrq_list, list) {
 		if (time_after(jiffies, rrq->rrq_stop_time))
@@ -1371,16 +1035,6 @@ lpfc_handle_rrq_active(struct lpfc_hba *phba)
 			next_time = rrq->rrq_stop_time;
 	}
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
-<<<<<<< HEAD
-	if (!list_empty(&phba->active_rrq_list))
-		mod_timer(&phba->rrq_tmr, next_time);
-	list_for_each_entry_safe(rrq, nextrrq, &send_rrq, list) {
-		list_del(&rrq->list);
-		if (!rrq->send_rrq)
-			/* this call will free the rrq */
-		lpfc_clr_rrq_active(phba, rrq->xritag, rrq);
-		else if (lpfc_send_rrq(phba, rrq)) {
-=======
 	if ((!list_empty(&phba->active_rrq_list)) &&
 	    (!test_bit(FC_UNLOADING, &phba->pport->load_flag)))
 		mod_timer(&phba->rrq_tmr, next_time);
@@ -1390,7 +1044,6 @@ lpfc_handle_rrq_active(struct lpfc_hba *phba)
 			/* this call will free the rrq */
 			lpfc_clr_rrq_active(phba, rrq->xritag, rrq);
 		} else if (lpfc_send_rrq(phba, rrq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* if we send the rrq then the completion handler
 			*  will clear the bit in the xribitmap.
 			*/
@@ -1457,11 +1110,6 @@ lpfc_cleanup_vports_rrqs(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 		lpfc_sli4_vport_delete_fcp_xri_aborted(vport);
 	}
 	spin_lock_irqsave(&phba->hbalock, iflags);
-<<<<<<< HEAD
-	list_for_each_entry_safe(rrq, nextrrq, &phba->active_rrq_list, list)
-		if ((rrq->vport == vport) && (!ndlp  || rrq->ndlp == ndlp))
-			list_move(&rrq->list, &rrq_list);
-=======
 	list_for_each_entry_safe(rrq, nextrrq, &phba->active_rrq_list, list) {
 		if (rrq->vport != vport)
 			continue;
@@ -1470,7 +1118,6 @@ lpfc_cleanup_vports_rrqs(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 			list_move(&rrq->list, &rrq_list);
 
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 
 	list_for_each_entry_safe(rrq, nextrrq, &rrq_list, list) {
@@ -1480,50 +1127,6 @@ lpfc_cleanup_vports_rrqs(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_cleanup_wt_rrqs - Remove all rrq's from the active list.
- * @phba: Pointer to HBA context object.
- *
- * Remove all rrqs from the phba->active_rrq_list and free them by
- * calling __lpfc_clr_active_rrq
- *
- **/
-void
-lpfc_cleanup_wt_rrqs(struct lpfc_hba *phba)
-{
-	struct lpfc_node_rrq *rrq;
-	struct lpfc_node_rrq *nextrrq;
-	unsigned long next_time;
-	unsigned long iflags;
-	LIST_HEAD(rrq_list);
-
-	if (phba->sli_rev != LPFC_SLI_REV4)
-		return;
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	phba->hba_flag &= ~HBA_RRQ_ACTIVE;
-	next_time = jiffies + HZ * (phba->fc_ratov * 2);
-	list_splice_init(&phba->active_rrq_list, &rrq_list);
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-
-	list_for_each_entry_safe(rrq, nextrrq, &rrq_list, list) {
-		list_del(&rrq->list);
-		lpfc_clr_rrq_active(phba, rrq->xritag, rrq);
-	}
-	if (!list_empty(&phba->active_rrq_list))
-		mod_timer(&phba->rrq_tmr, next_time);
-}
-
-
-/**
- * lpfc_test_rrq_active - Test RRQ bit in xri_bitmap.
- * @phba: Pointer to HBA context object.
- * @ndlp: Targets nodelist pointer for this exchange.
- * @xritag the xri in the bitmap to test.
- *
- * This function is called with hbalock held. This function
- * returns 0 = rrq not active for this xri
- *         1 = rrq is valid for this xri.
-=======
  * lpfc_test_rrq_active - Test RRQ bit in xri_bitmap.
  * @phba: Pointer to HBA context object.
  * @ndlp: Targets nodelist pointer for this exchange.
@@ -1532,7 +1135,6 @@ lpfc_cleanup_wt_rrqs(struct lpfc_hba *phba)
  * This function returns:
  * 0 = rrq not active for this xri
  * 1 = rrq is valid for this xri.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int
 lpfc_test_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
@@ -1540,15 +1142,10 @@ lpfc_test_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
 {
 	if (!ndlp)
 		return 0;
-<<<<<<< HEAD
-	if (test_bit(xritag, ndlp->active_rrqs.xri_bitmap))
-			return 1;
-=======
 	if (!ndlp->active_rrqs_xri_bitmap)
 		return 0;
 	if (test_bit(xritag, ndlp->active_rrqs_xri_bitmap))
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 }
@@ -1583,31 +1180,11 @@ lpfc_set_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
 		return -EINVAL;
 
 	spin_lock_irqsave(&phba->hbalock, iflags);
-<<<<<<< HEAD
-	if (phba->pport->load_flag & FC_UNLOADING) {
-=======
 	if (test_bit(FC_UNLOADING, &phba->pport->load_flag)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->hba_flag &= ~HBA_RRQ_ACTIVE;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * set the active bit even if there is no mem available.
-	 */
-	if (NLP_CHK_FREE_REQ(ndlp))
-		goto out;
-
-	if (ndlp->vport && (ndlp->vport->load_flag & FC_UNLOADING))
-		goto out;
-
-	if (test_and_set_bit(xritag, ndlp->active_rrqs.xri_bitmap))
-		goto out;
-
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-	rrq = mempool_alloc(phba->rrq_pool, GFP_KERNEL);
-=======
 	if (ndlp->vport && test_bit(FC_UNLOADING, &ndlp->vport->load_flag))
 		goto out;
 
@@ -1619,7 +1196,6 @@ lpfc_set_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
 
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 	rrq = mempool_alloc(phba->rrq_pool, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rrq) {
 		lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 				"3155 Unable to allocate RRQ xri:0x%x rxid:0x%x"
@@ -1627,16 +1203,6 @@ lpfc_set_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
 				xritag, rxid, ndlp->nlp_DID, send_rrq);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	rrq->send_rrq = send_rrq;
-	rrq->xritag = xritag;
-	rrq->rrq_stop_time = jiffies + HZ * (phba->fc_ratov + 1);
-	rrq->ndlp = ndlp;
-	rrq->nlp_DID = ndlp->nlp_DID;
-	rrq->vport = ndlp->vport;
-	rrq->rxid = rxid;
-	rrq->send_rrq = send_rrq;
-=======
 	if (phba->cfg_enable_rrq == 1)
 		rrq->send_rrq = send_rrq;
 	else
@@ -1647,20 +1213,13 @@ lpfc_set_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
 	rrq->nlp_DID = ndlp->nlp_DID;
 	rrq->vport = ndlp->vport;
 	rrq->rxid = rxid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&phba->hbalock, iflags);
 	empty = list_empty(&phba->active_rrq_list);
 	list_add_tail(&rrq->list, &phba->active_rrq_list);
 	phba->hba_flag |= HBA_RRQ_ACTIVE;
-<<<<<<< HEAD
-	if (empty)
-		lpfc_worker_wake_up(phba);
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-=======
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 	if (empty)
 		lpfc_worker_wake_up(phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
@@ -1672,50 +1231,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * __lpfc_sli_get_sglq - Allocates an iocb object from sgl pool
- * @phba: Pointer to HBA context object.
- * @piocb: Pointer to the iocbq.
- *
- * This function is called with hbalock held. This function
- * gets a new driver sglq object from the sglq list. If the
- * list is not empty then it is successful, it returns pointer to the newly
- * allocated sglq object else it returns NULL.
- **/
-static struct lpfc_sglq *
-__lpfc_sli_get_sglq(struct lpfc_hba *phba, struct lpfc_iocbq *piocbq)
-{
-	struct list_head *lpfc_sgl_list = &phba->sli4_hba.lpfc_sgl_list;
-	struct lpfc_sglq *sglq = NULL;
-	struct lpfc_sglq *start_sglq = NULL;
-	struct lpfc_scsi_buf *lpfc_cmd;
-	struct lpfc_nodelist *ndlp;
-	int found = 0;
-
-	if (piocbq->iocb_flag &  LPFC_IO_FCP) {
-		lpfc_cmd = (struct lpfc_scsi_buf *) piocbq->context1;
-		ndlp = lpfc_cmd->rdata->pnode;
-	} else  if ((piocbq->iocb.ulpCommand == CMD_GEN_REQUEST64_CR) &&
-			!(piocbq->iocb_flag & LPFC_IO_LIBDFC))
-		ndlp = piocbq->context_un.ndlp;
-	else
-		ndlp = piocbq->context1;
-
-	list_remove_head(lpfc_sgl_list, sglq, struct lpfc_sglq, list);
-	start_sglq = sglq;
-	while (!found) {
-		if (!sglq)
-			return NULL;
-		if (lpfc_test_rrq_active(phba, ndlp, sglq->sli4_xritag)) {
-			/* This xri has an rrq outstanding for this DID.
-			 * put it back in the list and get another xri.
-			 */
-			list_add_tail(&sglq->list, lpfc_sgl_list);
-			sglq = NULL;
-			list_remove_head(lpfc_sgl_list, sglq,
-						struct lpfc_sglq, list);
-			if (sglq == start_sglq) {
-=======
  * __lpfc_sli_get_els_sglq - Allocates an iocb object from sgl pool
  * @phba: Pointer to HBA context object.
  * @piocbq: Pointer to the iocbq.
@@ -1772,7 +1287,6 @@ __lpfc_sli_get_els_sglq(struct lpfc_hba *phba, struct lpfc_iocbq *piocbq)
 						struct lpfc_sglq, list);
 			if (sglq == start_sglq) {
 				list_add_tail(&sglq->list, lpfc_els_sgl_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sglq = NULL;
 				break;
 			} else
@@ -1783,8 +1297,6 @@ __lpfc_sli_get_els_sglq(struct lpfc_hba *phba, struct lpfc_iocbq *piocbq)
 		phba->sli4_hba.lpfc_sglq_active_list[sglq->sli4_lxritag] = sglq;
 		sglq->state = SGL_ALLOCATED;
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock(&phba->sli4_hba.sgl_list_lock);
 	return sglq;
 }
@@ -1814,7 +1326,6 @@ __lpfc_sli_get_nvmet_sglq(struct lpfc_hba *phba, struct lpfc_iocbq *piocbq)
 		return NULL;
 	phba->sli4_hba.lpfc_sglq_active_list[sglq->sli4_lxritag] = sglq;
 	sglq->state = SGL_ALLOCATED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sglq;
 }
 
@@ -1844,13 +1355,8 @@ lpfc_sli_get_iocbq(struct lpfc_hba *phba)
  * @phba: Pointer to HBA context object.
  * @iocbq: Pointer to driver iocb object.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held to release driver
- * iocb object to the iocb pool. The iotag in the iocb object
-=======
  * This function is called to release the driver iocb object
  * to the iocb pool. The iotag in the iocb object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * does not change for each use of the iocb object. This function
  * clears all other fields of the iocb object when it is freed.
  * The sqlq structure that holds the xritag and phys and virtual
@@ -1860,50 +1366,21 @@ lpfc_sli_get_iocbq(struct lpfc_hba *phba)
  * this IO was aborted then the sglq entry it put on the
  * lpfc_abts_els_sgl_list until the CQ_ABORTED_XRI is received. If the
  * IO has good status or fails for any other reason then the sglq
-<<<<<<< HEAD
- * entry is added to the free list (lpfc_sgl_list).
-=======
  * entry is added to the free list (lpfc_els_sgl_list). The hbalock is
  *  asserted held in the code path calling this routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void
 __lpfc_sli_release_iocbq_s4(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 {
 	struct lpfc_sglq *sglq;
-<<<<<<< HEAD
-	size_t start_clean = offsetof(struct lpfc_iocbq, iocb);
-	unsigned long iflag = 0;
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_ELS_RING];
-=======
 	unsigned long iflag = 0;
 	struct lpfc_sli_ring *pring;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (iocbq->sli4_xritag == NO_XRI)
 		sglq = NULL;
 	else
 		sglq = __lpfc_clear_active_sglq(phba, iocbq->sli4_lxritag);
 
-<<<<<<< HEAD
-	if (sglq)  {
-		if ((iocbq->iocb_flag & LPFC_EXCHANGE_BUSY) &&
-			(sglq->state != SGL_XRI_ABORTED)) {
-			spin_lock_irqsave(&phba->sli4_hba.abts_sgl_list_lock,
-					iflag);
-			list_add(&sglq->list,
-				&phba->sli4_hba.lpfc_abts_els_sgl_list);
-			spin_unlock_irqrestore(
-				&phba->sli4_hba.abts_sgl_list_lock, iflag);
-		} else {
-			sglq->state = SGL_FREED;
-			sglq->ndlp = NULL;
-			list_add_tail(&sglq->list,
-				&phba->sli4_hba.lpfc_sgl_list);
-
-			/* Check if TXQ queue needs to be serviced */
-			if (pring->txq_cnt)
-=======
 
 	if (sglq)  {
 		if (iocbq->cmd_flag & LPFC_IO_NVMET) {
@@ -1944,20 +1421,10 @@ __lpfc_sli_release_iocbq_s4(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 			pring = lpfc_phba_elsring(phba);
 			/* Check if TXQ queue needs to be serviced */
 			if (pring && (!list_empty(&pring->txq)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_worker_wake_up(phba);
 		}
 	}
 
-<<<<<<< HEAD
-
-	/*
-	 * Clean all volatile data fields, preserve iotag and node struct.
-	 */
-	memset((char *)iocbq + start_clean, 0, sizeof(*iocbq) - start_clean);
-	iocbq->sli4_lxritag = NO_XRI;
-	iocbq->sli4_xritag = NO_XRI;
-=======
 out:
 	/*
 	 * Clean all volatile data fields, preserve iotag and node struct.
@@ -1967,7 +1434,6 @@ out:
 	iocbq->sli4_xritag = NO_XRI;
 	iocbq->cmd_flag &= ~(LPFC_IO_NVME | LPFC_IO_NVMET | LPFC_IO_CMF |
 			      LPFC_IO_NVME_LS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&iocbq->list, &phba->lpfc_iocb_list);
 }
 
@@ -1977,35 +1443,20 @@ out:
  * @phba: Pointer to HBA context object.
  * @iocbq: Pointer to driver iocb object.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held to release driver
- * iocb object to the iocb pool. The iotag in the iocb object
- * does not change for each use of the iocb object. This function
- * clears all other fields of the iocb object when it is freed.
-=======
  * This function is called to release the driver iocb object to the
  * iocb pool. The iotag in the iocb object does not change for each
  * use of the iocb object. This function clears all other fields of
  * the iocb object when it is freed. The hbalock is asserted held in
  * the code path calling this routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void
 __lpfc_sli_release_iocbq_s3(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 {
-<<<<<<< HEAD
-	size_t start_clean = offsetof(struct lpfc_iocbq, iocb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clean all volatile data fields, preserve iotag and node struct.
 	 */
-<<<<<<< HEAD
-	memset((char*)iocbq + start_clean, 0, sizeof(*iocbq) - start_clean);
-=======
 	memset_startat(iocbq, 0, iocb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iocbq->sli4_xritag = NO_XRI;
 	list_add_tail(&iocbq->list, &phba->lpfc_iocb_list);
 }
@@ -2023,11 +1474,8 @@ __lpfc_sli_release_iocbq_s3(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 static void
 __lpfc_sli_release_iocbq(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 {
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->__lpfc_sli_release_iocbq(phba, iocbq);
 	phba->iocb_cnt--;
 }
@@ -2073,15 +1521,6 @@ lpfc_sli_cancel_iocbs(struct lpfc_hba *phba, struct list_head *iocblist,
 
 	while (!list_empty(iocblist)) {
 		list_remove_head(iocblist, piocb, struct lpfc_iocbq, list);
-<<<<<<< HEAD
-
-		if (!piocb->iocb_cmpl)
-			lpfc_sli_release_iocbq(phba, piocb);
-		else {
-			piocb->iocb.ulpStatus = ulpstatus;
-			piocb->iocb.un.ulpWord[4] = ulpWord4;
-			(piocb->iocb_cmpl) (phba, piocb, piocb);
-=======
 		if (piocb->cmd_cmpl) {
 			if (piocb->cmd_flag & LPFC_IO_NVME) {
 				lpfc_nvme_cancel_iocb(phba, piocb,
@@ -2099,7 +1538,6 @@ lpfc_sli_cancel_iocbs(struct lpfc_hba *phba, struct list_head *iocblist,
 			}
 		} else {
 			lpfc_sli_release_iocbq(phba, piocb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return;
@@ -2174,10 +1612,7 @@ lpfc_sli_iocb_cmd_type(uint8_t iocb_cmnd)
 	case DSSCMD_IWRITE64_CX:
 	case DSSCMD_IREAD64_CR:
 	case DSSCMD_IREAD64_CX:
-<<<<<<< HEAD
-=======
 	case CMD_SEND_FRAME:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = LPFC_SOL_IOCB;
 		break;
 	case CMD_ABORT_XRI_CN:
@@ -2252,11 +1687,7 @@ lpfc_sli_ring_map(struct lpfc_hba *phba)
 		lpfc_config_ring(phba, i, pmb);
 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_POLL);
 		if (rc != MBX_SUCCESS) {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0446 Adapter failed to init (%d), "
 					"mbxCmd x%x CFG_RING, mbxStatus x%x, "
 					"ring %d\n",
@@ -2277,12 +1708,8 @@ lpfc_sli_ring_map(struct lpfc_hba *phba)
  * @pring: Pointer to driver SLI ring object.
  * @piocb: Pointer to the driver iocb object.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held. The function adds the
-=======
  * The driver calls this function with the hbalock held for SLI3 ports or
  * the ring lock held for SLI4 ports. The function adds the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * new iocb to txcmplq of the given ring. This function always returns
  * 0. If this function is called for ELS ring, this function checks if
  * there is a vport associated with the ELS command. This function also
@@ -2292,25 +1719,6 @@ static int
 lpfc_sli_ringtxcmpl_put(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 			struct lpfc_iocbq *piocb)
 {
-<<<<<<< HEAD
-	list_add_tail(&piocb->list, &pring->txcmplq);
-	piocb->iocb_flag |= LPFC_IO_ON_Q;
-	pring->txcmplq_cnt++;
-	if (pring->txcmplq_cnt > pring->txcmplq_max)
-		pring->txcmplq_max = pring->txcmplq_cnt;
-
-	if ((unlikely(pring->ringno == LPFC_ELS_RING)) &&
-	   (piocb->iocb.ulpCommand != CMD_ABORT_XRI_CN) &&
-	   (piocb->iocb.ulpCommand != CMD_CLOSE_XRI_CN)) {
-		if (!piocb->vport)
-			BUG();
-		else
-			mod_timer(&piocb->vport->els_tmofunc,
-				  jiffies + HZ * (phba->fc_ratov << 1));
-	}
-
-
-=======
 	u32 ulp_command = 0;
 
 	BUG_ON(!piocb);
@@ -2330,7 +1738,6 @@ lpfc_sli_ringtxcmpl_put(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 				  msecs_to_jiffies(1000 * (phba->fc_ratov << 1)));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2349,21 +1756,13 @@ lpfc_sli_ringtx_get(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 {
 	struct lpfc_iocbq *cmd_iocb;
 
-<<<<<<< HEAD
-	list_remove_head((&pring->txq), cmd_iocb, struct lpfc_iocbq, list);
-	if (cmd_iocb != NULL)
-		pring->txq_cnt--;
-=======
 	lockdep_assert_held(&phba->hbalock);
 
 	list_remove_head((&pring->txq), cmd_iocb, struct lpfc_iocbq, list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cmd_iocb;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_cmf_sync_cmpl - Process a CMF_SYNC_WQE cmpl
  * @phba: Pointer to HBA context object.
  * @cmdiocb: Pointer to driver command iocb object.
@@ -2638,7 +2037,6 @@ out_unlock:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli_next_iocb_slot - Get next iocb slot in the ring
  * @phba: Pointer to HBA context object.
  * @pring: Pointer to driver SLI ring object.
@@ -2656,23 +2054,6 @@ static IOCB_t *
 lpfc_sli_next_iocb_slot (struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 {
 	struct lpfc_pgp *pgp = &phba->port_gp[pring->ringno];
-<<<<<<< HEAD
-	uint32_t  max_cmd_idx = pring->numCiocb;
-	if ((pring->next_cmdidx == pring->cmdidx) &&
-	   (++pring->next_cmdidx >= max_cmd_idx))
-		pring->next_cmdidx = 0;
-
-	if (unlikely(pring->local_getidx == pring->next_cmdidx)) {
-
-		pring->local_getidx = le32_to_cpu(pgp->cmdGetInx);
-
-		if (unlikely(pring->local_getidx >= max_cmd_idx)) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"0315 Ring %d issue: portCmdGet %d "
-					"is bigger than cmd ring %d\n",
-					pring->ringno,
-					pring->local_getidx, max_cmd_idx);
-=======
 	uint32_t  max_cmd_idx = pring->sli.sli3.numCiocb;
 
 	lockdep_assert_held(&phba->hbalock);
@@ -2693,7 +2074,6 @@ lpfc_sli_next_iocb_slot (struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 					pring->ringno,
 					pring->sli.sli3.local_getidx,
 					max_cmd_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			phba->link_state = LPFC_HBA_ERROR;
 			/*
@@ -2708,11 +2088,7 @@ lpfc_sli_next_iocb_slot (struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 			return NULL;
 		}
 
-<<<<<<< HEAD
-		if (pring->local_getidx == pring->next_cmdidx)
-=======
 		if (pring->sli.sli3.local_getidx == pring->sli.sli3.next_cmdidx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 	}
 
@@ -2752,11 +2128,7 @@ lpfc_sli_next_iotag(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
 					   - LPFC_IOCBQ_LOOKUP_INCREMENT)) {
 		new_len = psli->iocbq_lookup_len + LPFC_IOCBQ_LOOKUP_INCREMENT;
 		spin_unlock_irq(&phba->hbalock);
-<<<<<<< HEAD
-		new_arr = kzalloc(new_len * sizeof (struct lpfc_iocbq *),
-=======
 		new_arr = kcalloc(new_len, sizeof(struct lpfc_iocbq *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  GFP_KERNEL);
 		if (new_arr) {
 			spin_lock_irq(&phba->hbalock);
@@ -2806,20 +2178,12 @@ lpfc_sli_next_iotag(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
  * @nextiocb: Pointer to driver iocb object which need to be
  *            posted to firmware.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held to post a new iocb to
- * the firmware. This function copies the new iocb to ring iocb slot and
- * updates the ring pointers. It adds the new iocb to txcmplq if there is
- * a completion call back for this iocb else the function will free the
- * iocb object.
-=======
  * This function is called to post a new iocb to the firmware. This
  * function copies the new iocb to ring iocb slot and updates the
  * ring pointers. It adds the new iocb to txcmplq if there is
  * a completion call back for this iocb else the function will free the
  * iocb object.  The hbalock is asserted held in the code path calling
  * this routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void
 lpfc_sli_submit_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
@@ -2828,11 +2192,7 @@ lpfc_sli_submit_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	/*
 	 * Set up an iotag
 	 */
-<<<<<<< HEAD
-	nextiocb->iocb.ulpIoTag = (nextiocb->iocb_cmpl) ? nextiocb->iotag : 0;
-=======
 	nextiocb->iocb.ulpIoTag = (nextiocb->cmd_cmpl) ? nextiocb->iotag : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	if (pring->ringno == LPFC_ELS_RING) {
@@ -2853,15 +2213,9 @@ lpfc_sli_submit_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	/*
 	 * If there is no completion routine to call, we can release the
 	 * IOCB buffer back right now. For IOCBs, like QUE_RING_BUF,
-<<<<<<< HEAD
-	 * that have no rsp ring completion, iocb_cmpl MUST be NULL.
-	 */
-	if (nextiocb->iocb_cmpl)
-=======
 	 * that have no rsp ring completion, cmd_cmpl MUST be NULL.
 	 */
 	if (nextiocb->cmd_cmpl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_sli_ringtxcmpl_put(phba, pring, nextiocb);
 	else
 		__lpfc_sli_release_iocbq(phba, nextiocb);
@@ -2870,13 +2224,8 @@ lpfc_sli_submit_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	 * Let the HBA know what IOCB slot will be the next one the
 	 * driver will put a command into.
 	 */
-<<<<<<< HEAD
-	pring->cmdidx = pring->next_cmdidx;
-	writel(pring->cmdidx, &phba->host_gp[pring->ringno].cmdPutInx);
-=======
 	pring->sli.sli3.cmdidx = pring->sli.sli3.next_cmdidx;
 	writel(pring->sli.sli3.cmdidx, &phba->host_gp[pring->ringno].cmdPutInx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2949,11 +2298,8 @@ lpfc_sli_resume_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 	IOCB_t *iocb;
 	struct lpfc_iocbq *nextiocb;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check to see if:
 	 *  (a) there is anything on the txq to send
@@ -2961,16 +2307,10 @@ lpfc_sli_resume_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 	 *  (c) link attention events can be processed (fcp ring only)
 	 *  (d) IOCB processing is not blocked by the outstanding mbox command.
 	 */
-<<<<<<< HEAD
-	if (pring->txq_cnt &&
-	    lpfc_is_link_up(phba) &&
-	    (pring->ringno != phba->sli.fcp_ring ||
-=======
 
 	if (lpfc_is_link_up(phba) &&
 	    (!list_empty(&pring->txq)) &&
 	    (pring->ringno != LPFC_FCP_RING ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     phba->sli.sli_flag & LPFC_PROCESS_LA)) {
 
 		while ((iocb = lpfc_sli_next_iocb_slot(phba, pring)) &&
@@ -3001,11 +2341,8 @@ lpfc_sli_next_hbq_slot(struct lpfc_hba *phba, uint32_t hbqno)
 {
 	struct hbq_s *hbqp = &phba->hbqs[hbqno];
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hbqp->next_hbqPutIdx == hbqp->hbqPutIdx &&
 	    ++hbqp->next_hbqPutIdx >= hbqp->entry_count)
 		hbqp->next_hbqPutIdx = 0;
@@ -3017,12 +2354,7 @@ lpfc_sli_next_hbq_slot(struct lpfc_hba *phba, uint32_t hbqno)
 		hbqp->local_hbqGetIdx = getidx;
 
 		if (unlikely(hbqp->local_hbqGetIdx >= hbqp->entry_count)) {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR,
-					LOG_SLI | LOG_VPORT,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"1802 HBQ %d: local_hbqGetIdx "
 					"%u is > than hbqp->entry_count %u\n",
 					hbqno, hbqp->local_hbqGetIdx,
@@ -3056,10 +2388,6 @@ lpfc_sli_hbqbuf_free_all(struct lpfc_hba *phba)
 	struct hbq_dmabuf *hbq_buf;
 	unsigned long flags;
 	int i, hbq_count;
-<<<<<<< HEAD
-	uint32_t hbqno;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hbq_count = lpfc_sli_hbq_count();
 	/* Return all memory used by all HBQs */
@@ -3073,27 +2401,6 @@ lpfc_sli_hbqbuf_free_all(struct lpfc_hba *phba)
 		}
 		phba->hbqs[i].buffer_count = 0;
 	}
-<<<<<<< HEAD
-	/* Return all HBQ buffer that are in-fly */
-	list_for_each_entry_safe(dmabuf, next_dmabuf, &phba->rb_pend_list,
-				 list) {
-		hbq_buf = container_of(dmabuf, struct hbq_dmabuf, dbuf);
-		list_del(&hbq_buf->dbuf.list);
-		if (hbq_buf->tag == -1) {
-			(phba->hbqs[LPFC_ELS_HBQ].hbq_free_buffer)
-				(phba, hbq_buf);
-		} else {
-			hbqno = hbq_buf->tag >> 16;
-			if (hbqno >= LPFC_MAX_HBQS)
-				(phba->hbqs[LPFC_ELS_HBQ].hbq_free_buffer)
-					(phba, hbq_buf);
-			else
-				(phba->hbqs[hbqno].hbq_free_buffer)(phba,
-					hbq_buf);
-		}
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mark the HBQs not in use */
 	phba->hbq_in_use = 0;
@@ -3116,10 +2423,7 @@ static int
 lpfc_sli_hbq_to_firmware(struct lpfc_hba *phba, uint32_t hbqno,
 			 struct hbq_dmabuf *hbq_buf)
 {
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return phba->lpfc_sli_hbq_to_firmware(phba, hbqno, hbq_buf);
 }
 
@@ -3141,10 +2445,7 @@ lpfc_sli_hbq_to_firmware_s3(struct lpfc_hba *phba, uint32_t hbqno,
 	struct lpfc_hbq_entry *hbqe;
 	dma_addr_t physaddr = hbq_buf->dbuf.phys;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get next HBQ entry slot to use */
 	hbqe = lpfc_sli_next_hbq_slot(phba, hbqno);
 	if (hbqe) {
@@ -3152,11 +2453,7 @@ lpfc_sli_hbq_to_firmware_s3(struct lpfc_hba *phba, uint32_t hbqno,
 
 		hbqe->bde.addrHigh = le32_to_cpu(putPaddrHigh(physaddr));
 		hbqe->bde.addrLow  = le32_to_cpu(putPaddrLow(physaddr));
-<<<<<<< HEAD
-		hbqe->bde.tus.f.bdeSize = hbq_buf->size;
-=======
 		hbqe->bde.tus.f.bdeSize = hbq_buf->total_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hbqe->bde.tus.f.bdeFlags = 0;
 		hbqe->bde.tus.w = le32_to_cpu(hbqe->bde.tus.w);
 		hbqe->buffer_tag = le32_to_cpu(hbq_buf->tag);
@@ -3188,9 +2485,6 @@ lpfc_sli_hbq_to_firmware_s4(struct lpfc_hba *phba, uint32_t hbqno,
 	int rc;
 	struct lpfc_rqe hrqe;
 	struct lpfc_rqe drqe;
-<<<<<<< HEAD
-
-=======
 	struct lpfc_queue *hrq;
 	struct lpfc_queue *drq;
 
@@ -3200,23 +2494,14 @@ lpfc_sli_hbq_to_firmware_s4(struct lpfc_hba *phba, uint32_t hbqno,
 	drq = phba->sli4_hba.dat_rq;
 
 	lockdep_assert_held(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hrqe.address_lo = putPaddrLow(hbq_buf->hbuf.phys);
 	hrqe.address_hi = putPaddrHigh(hbq_buf->hbuf.phys);
 	drqe.address_lo = putPaddrLow(hbq_buf->dbuf.phys);
 	drqe.address_hi = putPaddrHigh(hbq_buf->dbuf.phys);
-<<<<<<< HEAD
-	rc = lpfc_sli4_rq_put(phba->sli4_hba.hdr_rq, phba->sli4_hba.dat_rq,
-			      &hrqe, &drqe);
-	if (rc < 0)
-		return rc;
-	hbq_buf->tag = rc;
-=======
 	rc = lpfc_sli4_rq_put(hrq, drq, &hrqe, &drqe);
 	if (rc < 0)
 		return rc;
 	hbq_buf->tag = (rc | (hbqno << 16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&hbq_buf->dbuf.list, &phba->hbqs[hbqno].hbq_buffer_list);
 	return 0;
 }
@@ -3233,28 +2518,9 @@ static struct lpfc_hbq_init lpfc_els_hbq = {
 	.add_count = 40,
 };
 
-<<<<<<< HEAD
-/* HBQ for the extra ring if needed */
-static struct lpfc_hbq_init lpfc_extra_hbq = {
-	.rn = 1,
-	.entry_count = 200,
-	.mask_count = 0,
-	.profile = 0,
-	.ring_mask = (1 << LPFC_EXTRA_RING),
-	.buffer_count = 0,
-	.init_count = 0,
-	.add_count = 5,
-};
-
 /* Array of HBQs */
 struct lpfc_hbq_init *lpfc_hbq_defs[] = {
 	&lpfc_els_hbq,
-	&lpfc_extra_hbq,
-=======
-/* Array of HBQs */
-struct lpfc_hbq_init *lpfc_hbq_defs[] = {
-	&lpfc_els_hbq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -3356,15 +2622,8 @@ lpfc_sli_hbqbuf_init_hbqs(struct lpfc_hba *phba, uint32_t qno)
 					 lpfc_hbq_defs[qno]->init_count);
 }
 
-<<<<<<< HEAD
-/**
- * lpfc_sli_hbqbuf_get - Remove the first hbq off of an hbq list
- * @phba: Pointer to HBA context object.
- * @hbqno: HBQ number.
-=======
 /*
  * lpfc_sli_hbqbuf_get - Remove the first hbq off of an hbq list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function removes the first hbq buffer on an hbq list and returns a
  * pointer to that buffer. If it finds no buffers on the list it returns NULL.
@@ -3381,8 +2640,6 @@ lpfc_sli_hbqbuf_get(struct list_head *rb_list)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_sli_rqbuf_get - Remove the first dma buffer off of an RQ list
  * @phba: Pointer to HBA context object.
  * @hrq: HBQ number.
@@ -3406,21 +2663,13 @@ lpfc_sli_rqbuf_get(struct lpfc_hba *phba, struct lpfc_queue *hrq)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli_hbqbuf_find - Find the hbq buffer associated with a tag
  * @phba: Pointer to HBA context object.
  * @tag: Tag of the hbq buffer.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held. This function searches
- * for the hbq buffer associated with the given tag in the hbq buffer
- * list. If it finds the hbq buffer, it returns the hbq_buffer other wise
- * it returns NULL.
-=======
  * This function searches for the hbq buffer associated with the given tag in
  * the hbq buffer list. If it finds the hbq buffer, it returns the hbq_buffer
  * otherwise it returns NULL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static struct hbq_dmabuf *
 lpfc_sli_hbqbuf_find(struct lpfc_hba *phba, uint32_t tag)
@@ -3442,11 +2691,7 @@ lpfc_sli_hbqbuf_find(struct lpfc_hba *phba, uint32_t tag)
 		}
 	}
 	spin_unlock_irq(&phba->hbalock);
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI | LOG_VPORT,
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"1803 Bad hbq tag. Data: x%x x%x\n",
 			tag, phba->hbqs[tag >> 16].buffer_count);
 	return NULL;
@@ -3552,10 +2797,7 @@ lpfc_sli_chk_mbx_command(uint8_t mbxCommand)
 	case MBX_READ_EVENT_LOG:
 	case MBX_SECURITY_MGMT:
 	case MBX_AUTH_PORT:
-<<<<<<< HEAD
-=======
 	case MBX_ACCESS_VDATA:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = mbxCommand;
 		break;
 	default:
@@ -3579,38 +2821,22 @@ lpfc_sli_chk_mbx_command(uint8_t mbxCommand)
 void
 lpfc_sli_wake_mbox_wait(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq)
 {
-<<<<<<< HEAD
-	wait_queue_head_t *pdone_q;
-	unsigned long drvr_flag;
-
-	/*
-	 * If pdone_q is empty, the driver thread gave up waiting and
-=======
 	unsigned long drvr_flag;
 	struct completion *pmbox_done;
 
 	/*
 	 * If pmbox_done is empty, the driver thread gave up waiting and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * continued running.
 	 */
 	pmboxq->mbox_flag |= LPFC_MBX_WAKE;
 	spin_lock_irqsave(&phba->hbalock, drvr_flag);
-<<<<<<< HEAD
-	pdone_q = (wait_queue_head_t *) pmboxq->context1;
-	if (pdone_q)
-		wake_up_interruptible(pdone_q);
-=======
 	pmbox_done = pmboxq->ctx_u.mbox_wait;
 	if (pmbox_done)
 		complete(pmbox_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 	return;
 }
 
-<<<<<<< HEAD
-=======
 static void
 __lpfc_sli_rpi_release(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
@@ -3631,7 +2857,6 @@ lpfc_sli_rpi_release(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
 	__lpfc_sli_rpi_release(vport, ndlp);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_sli_def_mbox_cmpl - Default mailbox completion handler
@@ -3653,28 +2878,10 @@ lpfc_sli_def_mbox_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	uint16_t rpi, vpi;
 	int rc;
 
-<<<<<<< HEAD
-	mp = (struct lpfc_dmabuf *) (pmb->context1);
-
-	if (mp) {
-		lpfc_mbuf_free(phba, mp->virt, mp->phys);
-		kfree(mp);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If a REG_LOGIN succeeded  after node is destroyed or node
 	 * is in re-discovery driver need to cleanup the RPI.
 	 */
-<<<<<<< HEAD
-	if (!(phba->pport->load_flag & FC_UNLOADING) &&
-	    pmb->u.mb.mbxCommand == MBX_REG_LOGIN64 &&
-	    !pmb->u.mb.mbxStatus) {
-		rpi = pmb->u.mb.un.varWords[0];
-		vpi = pmb->u.mb.un.varRegLogin.vpi;
-		lpfc_unreg_login(phba, vpi, rpi, pmb);
-=======
 	if (!test_bit(FC_UNLOADING, &phba->pport->load_flag) &&
 	    pmb->u.mb.mbxCommand == MBX_REG_LOGIN64 &&
 	    !pmb->u.mb.mbxStatus) {
@@ -3690,7 +2897,6 @@ lpfc_sli_def_mbox_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 			vpi -= phba->sli4_hba.max_cfg_param.vpi_base;
 		lpfc_unreg_login(phba, vpi, rpi, pmb);
 		pmb->vport = vport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
 		if (rc != MBX_NOT_FINISHED)
@@ -3698,25 +2904,11 @@ lpfc_sli_def_mbox_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	}
 
 	if ((pmb->u.mb.mbxCommand == MBX_REG_VPI) &&
-<<<<<<< HEAD
-		!(phba->pport->load_flag & FC_UNLOADING) &&
-=======
 		!test_bit(FC_UNLOADING, &phba->pport->load_flag) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		!pmb->u.mb.mbxStatus) {
 		shost = lpfc_shost_from_vport(vport);
 		spin_lock_irq(shost->host_lock);
 		vport->vpi_state |= LPFC_VPI_REGISTERED;
-<<<<<<< HEAD
-		vport->fc_flag &= ~FC_VPORT_NEEDS_REG_VPI;
-		spin_unlock_irq(shost->host_lock);
-	}
-
-	if (pmb->u.mb.mbxCommand == MBX_REG_LOGIN64) {
-		ndlp = (struct lpfc_nodelist *)pmb->context2;
-		lpfc_nlp_put(ndlp);
-		pmb->context2 = NULL;
-=======
 		spin_unlock_irq(shost->host_lock);
 		clear_bit(FC_VPORT_NEEDS_REG_VPI, &vport->fc_flag);
 	}
@@ -3762,26 +2954,18 @@ lpfc_sli_def_mbox_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	if (pmb->u.mb.mbxCommand == MBX_RESUME_RPI) {
 		ndlp = pmb->ctx_ndlp;
 		lpfc_nlp_put(ndlp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Check security permission status on INIT_LINK mailbox command */
 	if ((pmb->u.mb.mbxCommand == MBX_INIT_LINK) &&
 	    (pmb->u.mb.mbxStatus == MBXERR_SEC_NO_PERMISSION))
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2860 SLI authentication is required "
 				"for INIT_LINK but has not done yet\n");
 
 	if (bf_get(lpfc_mqe_command, &pmb->u.mqe) == MBX_SLI4_CONFIG)
 		lpfc_sli4_mbox_cmd_free(phba, pmb);
 	else
-<<<<<<< HEAD
-		mempool_free(pmb, phba->mbox_mem_pool);
-=======
 		lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
 }
  /**
@@ -3850,7 +3034,6 @@ lpfc_sli4_unreg_rpi_cmpl_clr(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	}
 
 	mempool_free(pmb, phba->mbox_mem_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3914,18 +3097,11 @@ lpfc_sli_handle_mb_event(struct lpfc_hba *phba)
 		if (lpfc_sli_chk_mbx_command(pmbox->mbxCommand) ==
 		    MBX_SHUTDOWN) {
 			/* Unknown mailbox command compl */
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-					"(%d):0323 Unknown Mailbox command "
-					"x%x (x%x/x%x) Cmpl\n",
-					pmb->vport ? pmb->vport->vpi : 0,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"(%d):0323 Unknown Mailbox command "
 					"x%x (x%x/x%x) Cmpl\n",
 					pmb->vport ? pmb->vport->vpi :
 					LPFC_VPORT_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pmbox->mbxCommand,
 					lpfc_sli_config_mbox_subsys_get(phba,
 									pmb),
@@ -3946,12 +3122,8 @@ lpfc_sli_handle_mb_event(struct lpfc_hba *phba)
 					"(%d):0305 Mbox cmd cmpl "
 					"error - RETRYing Data: x%x "
 					"(x%x/x%x) x%x x%x x%x\n",
-<<<<<<< HEAD
-					pmb->vport ? pmb->vport->vpi : 0,
-=======
 					pmb->vport ? pmb->vport->vpi :
 					LPFC_VPORT_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pmbox->mbxCommand,
 					lpfc_sli_config_mbox_subsys_get(phba,
 									pmb),
@@ -3959,12 +3131,8 @@ lpfc_sli_handle_mb_event(struct lpfc_hba *phba)
 									pmb),
 					pmbox->mbxStatus,
 					pmbox->un.varWords[0],
-<<<<<<< HEAD
-					pmb->vport->port_state);
-=======
 					pmb->vport ? pmb->vport->port_state :
 					LPFC_VPORT_UNKNOWN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pmbox->mbxStatus = 0;
 				pmbox->mbxOwner = OWN_HOST;
 				rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
@@ -3975,14 +3143,9 @@ lpfc_sli_handle_mb_event(struct lpfc_hba *phba)
 
 		/* Mailbox cmd <cmd> Cmpl <cmpl> */
 		lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
-<<<<<<< HEAD
-				"(%d):0307 Mailbox cmd x%x (x%x/x%x) Cmpl x%p "
-				"Data: x%x x%x x%x x%x x%x x%x x%x x%x x%x\n",
-=======
 				"(%d):0307 Mailbox cmd x%x (x%x/x%x) Cmpl %ps "
 				"Data: x%x x%x x%x x%x x%x x%x x%x x%x x%x "
 				"x%x x%x x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pmb->vport ? pmb->vport->vpi : 0,
 				pmbox->mbxCommand,
 				lpfc_sli_config_mbox_subsys_get(phba, pmb),
@@ -3996,14 +3159,10 @@ lpfc_sli_handle_mb_event(struct lpfc_hba *phba)
 				pmbox->un.varWords[4],
 				pmbox->un.varWords[5],
 				pmbox->un.varWords[6],
-<<<<<<< HEAD
-				pmbox->un.varWords[7]);
-=======
 				pmbox->un.varWords[7],
 				pmbox->un.varWords[8],
 				pmbox->un.varWords[9],
 				pmbox->un.varWords[10]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pmb->mbox_cmpl)
 			pmb->mbox_cmpl(phba,pmb);
@@ -4039,8 +3198,6 @@ lpfc_sli_get_buff(struct lpfc_hba *phba,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_nvme_unsol_ls_handler - Process an unsolicited event data buffer
  *                              containing a NVME LS request.
  * @phba: pointer to lpfc hba data structure.
@@ -4179,7 +3336,6 @@ out_fail:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_complete_unsol_iocb - Complete an unsolicited sequence
  * @phba: Pointer to HBA context object.
  * @pring: Pointer to driver SLI ring object.
@@ -4198,8 +3354,6 @@ lpfc_complete_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 {
 	int i;
 
-<<<<<<< HEAD
-=======
 	switch (fch_type) {
 	case FC_TYPE_NVME:
 		lpfc_nvme_unsol_ls_handler(phba, saveq);
@@ -4208,7 +3362,6 @@ lpfc_complete_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* unSolicited Responses */
 	if (pring->prt[0].profile) {
 		if (pring->prt[0].lpfc_sli_rcv_unsol_event)
@@ -4230,8 +3383,6 @@ lpfc_complete_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void
 lpfc_sli_prep_unsol_wqe(struct lpfc_hba *phba,
 			struct lpfc_iocbq *saveq)
@@ -4282,7 +3433,6 @@ lpfc_sli_prep_unsol_wqe(struct lpfc_hba *phba,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli_process_unsol_iocb - Unsolicited iocb handler
  * @phba: Pointer to HBA context object.
@@ -4303,15 +3453,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 {
 	IOCB_t           * irsp;
 	WORD5            * w5p;
-<<<<<<< HEAD
-	uint32_t           Rctl, Type;
-	uint32_t           match;
-	struct lpfc_iocbq *iocbq;
-	struct lpfc_dmabuf *dmzbuf;
-
-	match = 0;
-	irsp = &(saveq->iocb);
-=======
 	dma_addr_t	 paddr;
 	uint32_t           Rctl, Type;
 	struct lpfc_iocbq *iocbq;
@@ -4319,7 +3460,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 
 	irsp = &saveq->iocb;
 	saveq->vport = phba->pport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (irsp->ulpCommand == CMD_ASYNC_STATUS) {
 		if (pring->lpfc_sli_rcv_async_status)
@@ -4337,37 +3477,22 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	}
 
 	if ((irsp->ulpCommand == CMD_IOCB_RET_XRI64_CX) &&
-<<<<<<< HEAD
-		(phba->sli3_options & LPFC_SLI3_HBQ_ENABLED)) {
-		if (irsp->ulpBdeCount > 0) {
-			dmzbuf = lpfc_sli_get_buff(phba, pring,
-					irsp->un.ulpWord[3]);
-=======
 	    (phba->sli3_options & LPFC_SLI3_HBQ_ENABLED)) {
 		if (irsp->ulpBdeCount > 0) {
 			dmzbuf = lpfc_sli_get_buff(phba, pring,
 						   irsp->un.ulpWord[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_in_buf_free(phba, dmzbuf);
 		}
 
 		if (irsp->ulpBdeCount > 1) {
 			dmzbuf = lpfc_sli_get_buff(phba, pring,
-<<<<<<< HEAD
-					irsp->unsli3.sli3Words[3]);
-=======
 						   irsp->unsli3.sli3Words[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_in_buf_free(phba, dmzbuf);
 		}
 
 		if (irsp->ulpBdeCount > 2) {
 			dmzbuf = lpfc_sli_get_buff(phba, pring,
-<<<<<<< HEAD
-				irsp->unsli3.sli3Words[7]);
-=======
 						   irsp->unsli3.sli3Words[7]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_in_buf_free(phba, dmzbuf);
 		}
 
@@ -4376,15 +3501,9 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 
 	if (phba->sli3_options & LPFC_SLI3_HBQ_ENABLED) {
 		if (irsp->ulpBdeCount != 0) {
-<<<<<<< HEAD
-			saveq->context2 = lpfc_sli_get_buff(phba, pring,
-						irsp->un.ulpWord[3]);
-			if (!saveq->context2)
-=======
 			saveq->cmd_dmabuf = lpfc_sli_get_buff(phba, pring,
 						irsp->un.ulpWord[3]);
 			if (!saveq->cmd_dmabuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_printf_log(phba,
 					KERN_ERR,
 					LOG_SLI,
@@ -4394,15 +3513,9 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 					irsp->un.ulpWord[3]);
 		}
 		if (irsp->ulpBdeCount == 2) {
-<<<<<<< HEAD
-			saveq->context3 = lpfc_sli_get_buff(phba, pring,
-						irsp->unsli3.sli3Words[7]);
-			if (!saveq->context3)
-=======
 			saveq->bpl_dmabuf = lpfc_sli_get_buff(phba, pring,
 						irsp->unsli3.sli3Words[7]);
 			if (!saveq->bpl_dmabuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_printf_log(phba,
 					KERN_ERR,
 					LOG_SLI,
@@ -4412,20 +3525,12 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 					irsp->unsli3.sli3Words[7]);
 		}
 		list_for_each_entry(iocbq, &saveq->list, list) {
-<<<<<<< HEAD
-			irsp = &(iocbq->iocb);
-			if (irsp->ulpBdeCount != 0) {
-				iocbq->context2 = lpfc_sli_get_buff(phba, pring,
-							irsp->un.ulpWord[3]);
-				if (!iocbq->context2)
-=======
 			irsp = &iocbq->iocb;
 			if (irsp->ulpBdeCount != 0) {
 				iocbq->cmd_dmabuf = lpfc_sli_get_buff(phba,
 							pring,
 							irsp->un.ulpWord[3]);
 				if (!iocbq->cmd_dmabuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					lpfc_printf_log(phba,
 						KERN_ERR,
 						LOG_SLI,
@@ -4435,16 +3540,10 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 						irsp->un.ulpWord[3]);
 			}
 			if (irsp->ulpBdeCount == 2) {
-<<<<<<< HEAD
-				iocbq->context3 = lpfc_sli_get_buff(phba, pring,
-						irsp->unsli3.sli3Words[7]);
-				if (!iocbq->context3)
-=======
 				iocbq->bpl_dmabuf = lpfc_sli_get_buff(phba,
 						pring,
 						irsp->unsli3.sli3Words[7]);
 				if (!iocbq->bpl_dmabuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					lpfc_printf_log(phba,
 						KERN_ERR,
 						LOG_SLI,
@@ -4455,9 +3554,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 						irsp->unsli3.sli3Words[7]);
 			}
 		}
-<<<<<<< HEAD
-	}
-=======
 	} else {
 		paddr = getPaddr(irsp->un.cont64[0].addrHigh,
 				 irsp->un.cont64[0].addrLow);
@@ -4472,7 +3568,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (irsp->ulpBdeCount != 0 &&
 	    (irsp->ulpCommand == CMD_IOCB_RCV_CONT64_CX ||
 	     irsp->ulpStatus == IOSTAT_INTERMED_RSP)) {
@@ -4490,14 +3585,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		if (!found)
 			list_add_tail(&saveq->clist,
 				      &pring->iocb_continue_saveq);
-<<<<<<< HEAD
-		if (saveq->iocb.ulpStatus != IOSTAT_INTERMED_RSP) {
-			list_del_init(&iocbq->clist);
-			saveq = iocbq;
-			irsp = &(saveq->iocb);
-		} else
-			return 0;
-=======
 
 		if (saveq->iocb.ulpStatus != IOSTAT_INTERMED_RSP) {
 			list_del_init(&iocbq->clist);
@@ -4506,7 +3593,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		} else {
 			return 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ((irsp->ulpCommand == CMD_RCV_ELS_REQ64_CX) ||
 	    (irsp->ulpCommand == CMD_RCV_ELS_REQ_CX) ||
@@ -4529,8 +3615,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if ((phba->sli3_options & LPFC_SLI3_NPIV_ENABLED) &&
 	    (irsp->ulpCommand == CMD_IOCB_RCV_ELS64_CX ||
 	    irsp->ulpCommand == CMD_IOCB_RCV_SEQ64_CX)) {
@@ -4544,7 +3628,6 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	/* Prepare WQE with Unsol frame */
 	lpfc_sli_prep_unsol_wqe(phba, saveq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lpfc_complete_unsol_iocb(phba, pring, saveq, Rctl, Type))
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 				"0313 Ring %d handler: unexpected Rctl x%x "
@@ -4562,12 +3645,8 @@ lpfc_sli_process_unsol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
  *
  * This function looks up the iocb_lookup table to get the command iocb
  * corresponding to the given response iocb using the iotag of the
-<<<<<<< HEAD
- * response iocb. This function is called with the hbalock held.
-=======
  * response iocb. The driver calls this function with the hbalock held
  * for SLI3 ports or the ring lock held for SLI4 ports.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function returns the command iocb object if it finds the command
  * iocb else returns NULL.
  **/
@@ -4577,27 +3656,6 @@ lpfc_sli_iocbq_lookup(struct lpfc_hba *phba,
 		      struct lpfc_iocbq *prspiocb)
 {
 	struct lpfc_iocbq *cmd_iocb = NULL;
-<<<<<<< HEAD
-	uint16_t iotag;
-
-	iotag = prspiocb->iocb.ulpIoTag;
-
-	if (iotag != 0 && iotag <= phba->sli.last_iotag) {
-		cmd_iocb = phba->sli.iocbq_lookup[iotag];
-		list_del_init(&cmd_iocb->list);
-		if (cmd_iocb->iocb_flag & LPFC_IO_ON_Q) {
-			pring->txcmplq_cnt--;
-			cmd_iocb->iocb_flag &= ~LPFC_IO_ON_Q;
-		}
-		return cmd_iocb;
-	}
-
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"0317 iotag x%x is out off "
-			"range: max iotag x%x wd0 x%x\n",
-			iotag, phba->sli.last_iotag,
-			*(((uint32_t *) &prspiocb->iocb) + 7));
-=======
 	u16 iotag;
 
 	if (phba->sli_rev == LPFC_SLI_REV4)
@@ -4620,7 +3678,6 @@ lpfc_sli_iocbq_lookup(struct lpfc_hba *phba,
 			"0317 iotag x%x is out of "
 			"range: max iotag x%x\n",
 			iotag, phba->sli.last_iotag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -4631,13 +3688,8 @@ lpfc_sli_iocbq_lookup(struct lpfc_hba *phba,
  * @iotag: IOCB tag.
  *
  * This function looks up the iocb_lookup table to get the command iocb
-<<<<<<< HEAD
- * corresponding to the given iotag. This function is called with the
- * hbalock held.
-=======
  * corresponding to the given iotag. The driver calls this function with
  * the ring lock held because this function is an SLI4 port only helper.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function returns the command iocb object if it finds the command
  * iocb else returns NULL.
  **/
@@ -4645,23 +3697,6 @@ static struct lpfc_iocbq *
 lpfc_sli_iocbq_lookup_by_tag(struct lpfc_hba *phba,
 			     struct lpfc_sli_ring *pring, uint16_t iotag)
 {
-<<<<<<< HEAD
-	struct lpfc_iocbq *cmd_iocb;
-
-	if (iotag != 0 && iotag <= phba->sli.last_iotag) {
-		cmd_iocb = phba->sli.iocbq_lookup[iotag];
-		list_del_init(&cmd_iocb->list);
-		if (cmd_iocb->iocb_flag & LPFC_IO_ON_Q) {
-			cmd_iocb->iocb_flag &= ~LPFC_IO_ON_Q;
-			pring->txcmplq_cnt--;
-		}
-		return cmd_iocb;
-	}
-
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"0372 iotag x%x is out off range: max iotag (x%x)\n",
-			iotag, phba->sli.last_iotag);
-=======
 	struct lpfc_iocbq *cmd_iocb = NULL;
 
 	if (iotag != 0 && iotag <= phba->sli.last_iotag) {
@@ -4680,7 +3715,6 @@ lpfc_sli_iocbq_lookup_by_tag(struct lpfc_hba *phba,
 			"cmd_flag x%x\n",
 			iotag, phba->sli.last_iotag,
 			cmd_iocb ? cmd_iocb->cmd_flag : 0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -4706,18 +3740,6 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 			  struct lpfc_iocbq *saveq)
 {
 	struct lpfc_iocbq *cmdiocbp;
-<<<<<<< HEAD
-	int rc = 1;
-	unsigned long iflag;
-
-	/* Based on the iotag field, get the cmd IOCB from the txcmplq */
-	spin_lock_irqsave(&phba->hbalock, iflag);
-	cmdiocbp = lpfc_sli_iocbq_lookup(phba, pring, saveq);
-	spin_unlock_irqrestore(&phba->hbalock, iflag);
-
-	if (cmdiocbp) {
-		if (cmdiocbp->iocb_cmpl) {
-=======
 	unsigned long iflag;
 	u32 ulp_command, ulp_status, ulp_word4, ulp_context, iotag;
 
@@ -4743,21 +3765,13 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	if (cmdiocbp) {
 		ulp_command = get_job_cmnd(phba, cmdiocbp);
 		if (cmdiocbp->cmd_cmpl) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If an ELS command failed send an event to mgmt
 			 * application.
 			 */
-<<<<<<< HEAD
-			if (saveq->iocb.ulpStatus &&
-			     (pring->ringno == LPFC_ELS_RING) &&
-			     (cmdiocbp->iocb.ulpCommand ==
-				CMD_ELS_REQUEST64_CR))
-=======
 			if (ulp_status &&
 			     (pring->ringno == LPFC_ELS_RING) &&
 			     (ulp_command == CMD_ELS_REQUEST64_CR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_send_els_failure_event(phba,
 					cmdiocbp, saveq);
 
@@ -4767,19 +3781,11 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 			 */
 			if (pring->ringno == LPFC_ELS_RING) {
 				if ((phba->sli_rev < LPFC_SLI_REV4) &&
-<<<<<<< HEAD
-				    (cmdiocbp->iocb_flag &
-							LPFC_DRIVER_ABORTED)) {
-					spin_lock_irqsave(&phba->hbalock,
-							  iflag);
-					cmdiocbp->iocb_flag &=
-=======
 				    (cmdiocbp->cmd_flag &
 							LPFC_DRIVER_ABORTED)) {
 					spin_lock_irqsave(&phba->hbalock,
 							  iflag);
 					cmdiocbp->cmd_flag &=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						~LPFC_DRIVER_ABORTED;
 					spin_unlock_irqrestore(&phba->hbalock,
 							       iflag);
@@ -4794,20 +3800,12 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 					 */
 					spin_lock_irqsave(&phba->hbalock,
 							  iflag);
-<<<<<<< HEAD
-					saveq->iocb_flag |= LPFC_DELAY_MEM_FREE;
-=======
 					saveq->cmd_flag |= LPFC_DELAY_MEM_FREE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					spin_unlock_irqrestore(&phba->hbalock,
 							       iflag);
 				}
 				if (phba->sli_rev == LPFC_SLI_REV4) {
-<<<<<<< HEAD
-					if (saveq->iocb_flag &
-=======
 					if (saveq->cmd_flag &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    LPFC_EXCHANGE_BUSY) {
 						/* Set cmdiocb flag for the
 						 * exchange busy so sgl (xri)
@@ -4817,20 +3815,12 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 						 */
 						spin_lock_irqsave(
 							&phba->hbalock, iflag);
-<<<<<<< HEAD
-						cmdiocbp->iocb_flag |=
-=======
 						cmdiocbp->cmd_flag |=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							LPFC_EXCHANGE_BUSY;
 						spin_unlock_irqrestore(
 							&phba->hbalock, iflag);
 					}
-<<<<<<< HEAD
-					if (cmdiocbp->iocb_flag &
-=======
 					if (cmdiocbp->cmd_flag &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    LPFC_DRIVER_ABORTED) {
 						/*
 						 * Clear LPFC_DRIVER_ABORTED
@@ -4839,18 +3829,6 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 						 */
 						spin_lock_irqsave(
 							&phba->hbalock, iflag);
-<<<<<<< HEAD
-						cmdiocbp->iocb_flag &=
-							~LPFC_DRIVER_ABORTED;
-						spin_unlock_irqrestore(
-							&phba->hbalock, iflag);
-						cmdiocbp->iocb.ulpStatus =
-							IOSTAT_LOCAL_REJECT;
-						cmdiocbp->iocb.un.ulpWord[4] =
-							IOERR_ABORT_REQUESTED;
-						/*
-						 * For SLI4, irsiocb contains
-=======
 						cmdiocbp->cmd_flag &=
 							~LPFC_DRIVER_ABORTED;
 						spin_unlock_irqrestore(
@@ -4861,20 +3839,10 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 								 IOERR_ABORT_REQUESTED);
 						/*
 						 * For SLI4, irspiocb contains
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 * NO_XRI in sli_xritag, it
 						 * shall not affect releasing
 						 * sgl (xri) process.
 						 */
-<<<<<<< HEAD
-						saveq->iocb.ulpStatus =
-							IOSTAT_LOCAL_REJECT;
-						saveq->iocb.un.ulpWord[4] =
-							IOERR_SLI_ABORTED;
-						spin_lock_irqsave(
-							&phba->hbalock, iflag);
-						saveq->iocb_flag |=
-=======
 						set_job_ulpstatus(saveq,
 								  IOSTAT_LOCAL_REJECT);
 						set_job_ulpword4(saveq,
@@ -4882,18 +3850,13 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 						spin_lock_irqsave(
 							&phba->hbalock, iflag);
 						saveq->cmd_flag |=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							LPFC_DELAY_MEM_FREE;
 						spin_unlock_irqrestore(
 							&phba->hbalock, iflag);
 					}
 				}
 			}
-<<<<<<< HEAD
-			(cmdiocbp->iocb_cmpl) (phba, cmdiocbp, saveq);
-=======
 			cmdiocbp->cmd_cmpl(phba, cmdiocbp, saveq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			lpfc_sli_release_iocbq(phba, cmdiocbp);
 	} else {
@@ -4911,25 +3874,12 @@ lpfc_sli_process_sol_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 					 "0322 Ring %d handler: "
 					 "unexpected completion IoTag x%x "
 					 "Data: x%x x%x x%x x%x\n",
-<<<<<<< HEAD
-					 pring->ringno,
-					 saveq->iocb.ulpIoTag,
-					 saveq->iocb.ulpStatus,
-					 saveq->iocb.un.ulpWord[4],
-					 saveq->iocb.ulpCommand,
-					 saveq->iocb.ulpContext);
-		}
-	}
-
-	return rc;
-=======
 					 pring->ringno, iotag, ulp_status,
 					 ulp_word4, ulp_command, ulp_context);
 		}
 	}
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4950,19 +3900,11 @@ lpfc_sli_rsp_pointers_error(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 	 * Ring <ringno> handler: portRspPut <portRspPut> is bigger than
 	 * rsp ring <portRspMax>
 	 */
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"0312 Ring %d handler: portRspPut %d "
-			"is bigger than rsp ring %d\n",
-			pring->ringno, le32_to_cpu(pgp->rspPutInx),
-			pring->numRiocb);
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 			"0312 Ring %d handler: portRspPut %d "
 			"is bigger than rsp ring %d\n",
 			pring->ringno, le32_to_cpu(pgp->rspPutInx),
 			pring->sli.sli3.numRiocb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phba->link_state = LPFC_HBA_ERROR;
 
@@ -4980,11 +3922,7 @@ lpfc_sli_rsp_pointers_error(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 
 /**
  * lpfc_poll_eratt - Error attention polling timer timeout handler
-<<<<<<< HEAD
- * @ptr: Pointer to address of HBA context object.
-=======
  * @t: Context to fetch pointer to address of HBA context object from.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is invoked by the Error Attention polling timer when the
  * timer times out. It will check the SLI Error Attention register for
@@ -4992,14 +3930,6 @@ lpfc_sli_rsp_pointers_error(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
  * and wake up worker thread to process it. Otherwise, it will set up the
  * Error Attention polling timer for the next poll.
  **/
-<<<<<<< HEAD
-void lpfc_poll_eratt(unsigned long ptr)
-{
-	struct lpfc_hba *phba;
-	uint32_t eratt = 0;
-
-	phba = (struct lpfc_hba *)ptr;
-=======
 void lpfc_poll_eratt(struct timer_list *t)
 {
 	struct lpfc_hba *phba;
@@ -5027,7 +3957,6 @@ void lpfc_poll_eratt(struct timer_list *t)
 	phba->sli.slistat.sli_ips = cnt;
 
 	phba->sli.slistat.sli_prev_intr = sli_intr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check chip HA register for error event */
 	eratt = lpfc_sli_check_eratt(phba);
@@ -5037,14 +3966,9 @@ void lpfc_poll_eratt(struct timer_list *t)
 		lpfc_worker_wake_up(phba);
 	else
 		/* Restart the timer for next eratt poll */
-<<<<<<< HEAD
-		mod_timer(&phba->eratt_poll, jiffies +
-					HZ * LPFC_ERATT_POLL_INTERVAL);
-=======
 		mod_timer(&phba->eratt_poll,
 			  jiffies +
 			  msecs_to_jiffies(1000 * phba->eratt_poll_interval));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -5089,11 +4013,7 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 	 * The next available response entry should never exceed the maximum
 	 * entries.  If it does, treat it as an adapter hardware error.
 	 */
-<<<<<<< HEAD
-	portRspMax = pring->numRiocb;
-=======
 	portRspMax = pring->sli.sli3.numRiocb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	portRspPut = le32_to_cpu(pgp->rspPutInx);
 	if (unlikely(portRspPut >= portRspMax)) {
 		lpfc_sli_rsp_pointers_error(phba, pring);
@@ -5107,11 +4027,7 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 		phba->fcp_ring_in_use = 1;
 
 	rmb();
-<<<<<<< HEAD
-	while (pring->rspidx != portRspPut) {
-=======
 	while (pring->sli.sli3.rspidx != portRspPut) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Fetch an entry off the ring and copy it into a local data
 		 * structure.  The copy involves a byte-swap since the
@@ -5120,13 +4036,8 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 		entry = lpfc_resp_iocb(phba, pring);
 		phba->last_completion_time = jiffies;
 
-<<<<<<< HEAD
-		if (++pring->rspidx >= portRspMax)
-			pring->rspidx = 0;
-=======
 		if (++pring->sli.sli3.rspidx >= portRspMax)
 			pring->sli.sli3.rspidx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		lpfc_sli_pcimem_bcopy((uint32_t *) entry,
 				      (uint32_t *) &rspiocbq.iocb,
@@ -5144,12 +4055,8 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 			 * queuedepths of the SCSI device.
 			 */
 			if ((irsp->ulpStatus == IOSTAT_LOCAL_REJECT) &&
-<<<<<<< HEAD
-				(irsp->un.ulpWord[4] == IOERR_NO_RESOURCES)) {
-=======
 			    ((irsp->un.ulpWord[4] & IOERR_PARAM_MASK) ==
 			     IOERR_NO_RESOURCES)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_unlock_irqrestore(&phba->hbalock, iflag);
 				phba->lpfc_rampdown_queue_depth(phba);
 				spin_lock_irqsave(&phba->hbalock, iflag);
@@ -5190,20 +4097,11 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 							 &rspiocbq);
 			if (unlikely(!cmdiocbq))
 				break;
-<<<<<<< HEAD
-			if (cmdiocbq->iocb_flag & LPFC_DRIVER_ABORTED)
-				cmdiocbq->iocb_flag &= ~LPFC_DRIVER_ABORTED;
-			if (cmdiocbq->iocb_cmpl) {
-				spin_unlock_irqrestore(&phba->hbalock, iflag);
-				(cmdiocbq->iocb_cmpl)(phba, cmdiocbq,
-						      &rspiocbq);
-=======
 			if (cmdiocbq->cmd_flag & LPFC_DRIVER_ABORTED)
 				cmdiocbq->cmd_flag &= ~LPFC_DRIVER_ABORTED;
 			if (cmdiocbq->cmd_cmpl) {
 				spin_unlock_irqrestore(&phba->hbalock, iflag);
 				cmdiocbq->cmd_cmpl(phba, cmdiocbq, &rspiocbq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_lock_irqsave(&phba->hbalock, iflag);
 			}
 			break;
@@ -5223,11 +4121,7 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 					 phba->brd_no, adaptermsg);
 			} else {
 				/* Unknown IOCB command */
-<<<<<<< HEAD
-				lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 				lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"0334 Unknown IOCB command "
 						"Data: x%x, x%x x%x x%x x%x\n",
 						type, irsp->ulpCommand,
@@ -5244,16 +4138,10 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 		 * been updated, sync the pgp->rspPutInx and fetch the new port
 		 * response put pointer.
 		 */
-<<<<<<< HEAD
-		writel(pring->rspidx, &phba->host_gp[pring->ringno].rspGetInx);
-
-		if (pring->rspidx == portRspPut)
-=======
 		writel(pring->sli.sli3.rspidx,
 			&phba->host_gp[pring->ringno].rspGetInx);
 
 		if (pring->sli.sli3.rspidx == portRspPut)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			portRspPut = le32_to_cpu(pgp->rspPutInx);
 	}
 
@@ -5268,11 +4156,7 @@ lpfc_sli_handle_fast_ring_event(struct lpfc_hba *phba,
 		pring->stats.iocb_cmd_empty++;
 
 		/* Force update of the local copy of cmdGetInx */
-<<<<<<< HEAD
-		pring->local_getidx = le32_to_cpu(pgp->cmdGetInx);
-=======
 		pring->sli.sli3.local_getidx = le32_to_cpu(pgp->cmdGetInx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_sli_resume_iocb(phba, pring);
 
 		if ((pring->lpfc_sli_cmd_available))
@@ -5308,15 +4192,6 @@ lpfc_sli_sp_handle_rspiocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 			struct lpfc_iocbq *rspiocbp)
 {
 	struct lpfc_iocbq *saveq;
-<<<<<<< HEAD
-	struct lpfc_iocbq *cmdiocbp;
-	struct lpfc_iocbq *next_iocb;
-	IOCB_t *irsp = NULL;
-	uint32_t free_saveq;
-	uint8_t iocb_cmd_type;
-	lpfc_iocb_type type;
-	unsigned long iflag;
-=======
 	struct lpfc_iocbq *cmdiocb;
 	struct lpfc_iocbq *next_iocb;
 	IOCB_t *irsp;
@@ -5327,147 +4202,10 @@ lpfc_sli_sp_handle_rspiocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	u32 ulp_status = get_job_ulpstatus(phba, rspiocbp);
 	u32 ulp_word4 = get_job_word4(phba, rspiocbp);
 	u32 ulp_command = get_job_cmnd(phba, rspiocbp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	spin_lock_irqsave(&phba->hbalock, iflag);
 	/* First add the response iocb to the countinueq list */
-<<<<<<< HEAD
-	list_add_tail(&rspiocbp->list, &(pring->iocb_continueq));
-	pring->iocb_continueq_cnt++;
-
-	/* Now, determine whether the list is completed for processing */
-	irsp = &rspiocbp->iocb;
-	if (irsp->ulpLe) {
-		/*
-		 * By default, the driver expects to free all resources
-		 * associated with this iocb completion.
-		 */
-		free_saveq = 1;
-		saveq = list_get_first(&pring->iocb_continueq,
-				       struct lpfc_iocbq, list);
-		irsp = &(saveq->iocb);
-		list_del_init(&pring->iocb_continueq);
-		pring->iocb_continueq_cnt = 0;
-
-		pring->stats.iocb_rsp++;
-
-		/*
-		 * If resource errors reported from HBA, reduce
-		 * queuedepths of the SCSI device.
-		 */
-		if ((irsp->ulpStatus == IOSTAT_LOCAL_REJECT) &&
-		    (irsp->un.ulpWord[4] == IOERR_NO_RESOURCES)) {
-			spin_unlock_irqrestore(&phba->hbalock, iflag);
-			phba->lpfc_rampdown_queue_depth(phba);
-			spin_lock_irqsave(&phba->hbalock, iflag);
-		}
-
-		if (irsp->ulpStatus) {
-			/* Rsp ring <ringno> error: IOCB */
-			lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-					"0328 Rsp Ring %d error: "
-					"IOCB Data: "
-					"x%x x%x x%x x%x "
-					"x%x x%x x%x x%x "
-					"x%x x%x x%x x%x "
-					"x%x x%x x%x x%x\n",
-					pring->ringno,
-					irsp->un.ulpWord[0],
-					irsp->un.ulpWord[1],
-					irsp->un.ulpWord[2],
-					irsp->un.ulpWord[3],
-					irsp->un.ulpWord[4],
-					irsp->un.ulpWord[5],
-					*(((uint32_t *) irsp) + 6),
-					*(((uint32_t *) irsp) + 7),
-					*(((uint32_t *) irsp) + 8),
-					*(((uint32_t *) irsp) + 9),
-					*(((uint32_t *) irsp) + 10),
-					*(((uint32_t *) irsp) + 11),
-					*(((uint32_t *) irsp) + 12),
-					*(((uint32_t *) irsp) + 13),
-					*(((uint32_t *) irsp) + 14),
-					*(((uint32_t *) irsp) + 15));
-		}
-
-		/*
-		 * Fetch the IOCB command type and call the correct completion
-		 * routine. Solicited and Unsolicited IOCBs on the ELS ring
-		 * get freed back to the lpfc_iocb_list by the discovery
-		 * kernel thread.
-		 */
-		iocb_cmd_type = irsp->ulpCommand & CMD_IOCB_MASK;
-		type = lpfc_sli_iocb_cmd_type(iocb_cmd_type);
-		switch (type) {
-		case LPFC_SOL_IOCB:
-			spin_unlock_irqrestore(&phba->hbalock, iflag);
-			rc = lpfc_sli_process_sol_iocb(phba, pring, saveq);
-			spin_lock_irqsave(&phba->hbalock, iflag);
-			break;
-
-		case LPFC_UNSOL_IOCB:
-			spin_unlock_irqrestore(&phba->hbalock, iflag);
-			rc = lpfc_sli_process_unsol_iocb(phba, pring, saveq);
-			spin_lock_irqsave(&phba->hbalock, iflag);
-			if (!rc)
-				free_saveq = 0;
-			break;
-
-		case LPFC_ABORT_IOCB:
-			cmdiocbp = NULL;
-			if (irsp->ulpCommand != CMD_XRI_ABORTED_CX)
-				cmdiocbp = lpfc_sli_iocbq_lookup(phba, pring,
-								 saveq);
-			if (cmdiocbp) {
-				/* Call the specified completion routine */
-				if (cmdiocbp->iocb_cmpl) {
-					spin_unlock_irqrestore(&phba->hbalock,
-							       iflag);
-					(cmdiocbp->iocb_cmpl)(phba, cmdiocbp,
-							      saveq);
-					spin_lock_irqsave(&phba->hbalock,
-							  iflag);
-				} else
-					__lpfc_sli_release_iocbq(phba,
-								 cmdiocbp);
-			}
-			break;
-
-		case LPFC_UNKNOWN_IOCB:
-			if (irsp->ulpCommand == CMD_ADAPTER_MSG) {
-				char adaptermsg[LPFC_MAX_ADPTMSG];
-				memset(adaptermsg, 0, LPFC_MAX_ADPTMSG);
-				memcpy(&adaptermsg[0], (uint8_t *)irsp,
-				       MAX_MSG_DATA);
-				dev_warn(&((phba->pcidev)->dev),
-					 "lpfc%d: %s\n",
-					 phba->brd_no, adaptermsg);
-			} else {
-				/* Unknown IOCB command */
-				lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-						"0335 Unknown IOCB "
-						"command Data: x%x "
-						"x%x x%x x%x\n",
-						irsp->ulpCommand,
-						irsp->ulpStatus,
-						irsp->ulpIoTag,
-						irsp->ulpContext);
-			}
-			break;
-		}
-
-		if (free_saveq) {
-			list_for_each_entry_safe(rspiocbp, next_iocb,
-						 &saveq->list, list) {
-				list_del(&rspiocbp->list);
-				__lpfc_sli_release_iocbq(phba, rspiocbp);
-			}
-			__lpfc_sli_release_iocbq(phba, saveq);
-		}
-		rspiocbp = NULL;
-	}
-=======
 	list_add_tail(&rspiocbp->list, &pring->iocb_continueq);
 	pring->iocb_continueq_cnt++;
 
@@ -5607,7 +4345,6 @@ lpfc_sli_sp_handle_rspiocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		__lpfc_sli_release_iocbq(phba, saveq);
 	}
 	rspiocbp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phba->hbalock, iflag);
 	return rspiocbp;
 }
@@ -5659,22 +4396,14 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 	 * The next available response entry should never exceed the maximum
 	 * entries.  If it does, treat it as an adapter hardware error.
 	 */
-<<<<<<< HEAD
-	portRspMax = pring->numRiocb;
-=======
 	portRspMax = pring->sli.sli3.numRiocb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	portRspPut = le32_to_cpu(pgp->rspPutInx);
 	if (portRspPut >= portRspMax) {
 		/*
 		 * Ring <ringno> handler: portRspPut <portRspPut> is bigger than
 		 * rsp ring <portRspMax>
 		 */
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0303 Ring %d handler: portRspPut %d "
 				"is bigger than rsp ring %d\n",
 				pring->ringno, portRspPut, portRspMax);
@@ -5689,11 +4418,7 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 	}
 
 	rmb();
-<<<<<<< HEAD
-	while (pring->rspidx != portRspPut) {
-=======
 	while (pring->sli.sli3.rspidx != portRspPut) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Build a completion list and call the appropriate handler.
 		 * The process is to get the next available response iocb, get
@@ -5721,13 +4446,8 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 				      phba->iocb_rsp_size);
 		irsp = &rspiocbp->iocb;
 
-<<<<<<< HEAD
-		if (++pring->rspidx >= portRspMax)
-			pring->rspidx = 0;
-=======
 		if (++pring->sli.sli3.rspidx >= portRspMax)
 			pring->sli.sli3.rspidx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pring->ringno == LPFC_ELS_RING) {
 			lpfc_debugfs_slow_ring_trc(phba,
@@ -5737,12 +4457,8 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 				*(((uint32_t *) irsp) + 7));
 		}
 
-<<<<<<< HEAD
-		writel(pring->rspidx, &phba->host_gp[pring->ringno].rspGetInx);
-=======
 		writel(pring->sli.sli3.rspidx,
 			&phba->host_gp[pring->ringno].rspGetInx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_unlock_irqrestore(&phba->hbalock, iflag);
 		/* Handle the response IOCB */
@@ -5754,17 +4470,10 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 		 * the pgp->rspPutInx in the MAILBOX_tand fetch the new port
 		 * response put pointer.
 		 */
-<<<<<<< HEAD
-		if (pring->rspidx == portRspPut) {
-			portRspPut = le32_to_cpu(pgp->rspPutInx);
-		}
-	} /* while (pring->rspidx != portRspPut) */
-=======
 		if (pring->sli.sli3.rspidx == portRspPut) {
 			portRspPut = le32_to_cpu(pgp->rspPutInx);
 		}
 	} /* while (pring->sli.sli3.rspidx != portRspPut) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rspiocbp != NULL) && (mask & HA_R0RE_REQ)) {
 		/* At least one response entry has been freed */
@@ -5779,11 +4488,7 @@ lpfc_sli_handle_slow_ring_event_s3(struct lpfc_hba *phba,
 		pring->stats.iocb_cmd_empty++;
 
 		/* Force update of the local copy of cmdGetInx */
-<<<<<<< HEAD
-		pring->local_getidx = le32_to_cpu(pgp->cmdGetInx);
-=======
 		pring->sli.sli3.local_getidx = le32_to_cpu(pgp->cmdGetInx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_sli_resume_iocb(phba, pring);
 
 		if ((pring->lpfc_sli_cmd_available))
@@ -5815,10 +4520,7 @@ lpfc_sli_handle_slow_ring_event_s4(struct lpfc_hba *phba,
 	struct hbq_dmabuf *dmabuf;
 	struct lpfc_cq_event *cq_event;
 	unsigned long iflag;
-<<<<<<< HEAD
-=======
 	int count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&phba->hbalock, iflag);
 	phba->hba_flag &= ~HBA_SP_QUEUE_EVT;
@@ -5835,41 +4537,27 @@ lpfc_sli_handle_slow_ring_event_s4(struct lpfc_hba *phba,
 			irspiocbq = container_of(cq_event, struct lpfc_iocbq,
 						 cq_event);
 			/* Translate ELS WCQE to response IOCBQ */
-<<<<<<< HEAD
-			irspiocbq = lpfc_sli4_els_wcqe_to_rspiocbq(phba,
-								   irspiocbq);
-			if (irspiocbq)
-				lpfc_sli_sp_handle_rspiocb(phba, pring,
-							   irspiocbq);
-=======
 			irspiocbq = lpfc_sli4_els_preprocess_rspiocbq(phba,
 								      irspiocbq);
 			if (irspiocbq)
 				lpfc_sli_sp_handle_rspiocb(phba, pring,
 							   irspiocbq);
 			count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case CQE_CODE_RECEIVE:
 		case CQE_CODE_RECEIVE_V1:
 			dmabuf = container_of(cq_event, struct hbq_dmabuf,
 					      cq_event);
 			lpfc_sli4_handle_received_buffer(phba, dmabuf);
-<<<<<<< HEAD
-=======
 			count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
 		}
-<<<<<<< HEAD
-=======
 
 		/* Limit the number of events to 64 to avoid soft lockups */
 		if (count == 64)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -5886,41 +4574,19 @@ lpfc_sli_handle_slow_ring_event_s4(struct lpfc_hba *phba,
 void
 lpfc_sli_abort_iocb_ring(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 {
-<<<<<<< HEAD
-	LIST_HEAD(completions);
-	struct lpfc_iocbq *iocb, *next_iocb;
-=======
 	LIST_HEAD(tx_completions);
 	LIST_HEAD(txcmplq_completions);
 	struct lpfc_iocbq *iocb, *next_iocb;
 	int offline;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pring->ringno == LPFC_ELS_RING) {
 		lpfc_fabric_abort_hba(phba);
 	}
-<<<<<<< HEAD
-=======
 	offline = pci_channel_offline(phba->pcidev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Error everything on txq and txcmplq
 	 * First do the txq.
 	 */
-<<<<<<< HEAD
-	spin_lock_irq(&phba->hbalock);
-	list_splice_init(&pring->txq, &completions);
-	pring->txq_cnt = 0;
-
-	/* Next issue ABTS for everything on the txcmplq */
-	list_for_each_entry_safe(iocb, next_iocb, &pring->txcmplq, list)
-		lpfc_sli_issue_abort_iotag(phba, pring, iocb);
-
-	spin_unlock_irq(&phba->hbalock);
-
-	/* Cancel all the IOCBs from the completions list */
-	lpfc_sli_cancel_iocbs(phba, &completions, IOSTAT_LOCAL_REJECT,
-=======
 	if (phba->sli_rev >= LPFC_SLI_REV4) {
 		spin_lock_irq(&pring->ring_lock);
 		list_splice_init(&pring->txq, &tx_completions);
@@ -5964,17 +4630,10 @@ lpfc_sli_abort_iocb_ring(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
 	}
 	/* Cancel all the IOCBs from the completions list */
 	lpfc_sli_cancel_iocbs(phba, &tx_completions, IOSTAT_LOCAL_REJECT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      IOERR_SLI_ABORTED);
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_flush_fcp_rings - flush all iocbs in the fcp ring
- * @phba: Pointer to HBA context object.
- *
- * This function flushes all iocbs in the fcp ring and frees all the iocb
-=======
  * lpfc_sli_abort_fcp_rings - Abort all iocbs in all FCP rings
  * @phba: Pointer to HBA context object.
  *
@@ -6007,46 +4666,18 @@ lpfc_sli_abort_fcp_rings(struct lpfc_hba *phba)
  * @phba: Pointer to HBA context object.
  *
  * This function flushes all iocbs in the IO ring and frees all the iocb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * objects in txq and txcmplq. This function will not issue abort iocbs
  * for all the iocb commands in txcmplq, they will just be returned with
  * IOERR_SLI_DOWN. This function is invoked with EEH when device's PCI
  * slot has been permanently disabled.
  **/
 void
-<<<<<<< HEAD
-lpfc_sli_flush_fcp_rings(struct lpfc_hba *phba)
-=======
 lpfc_sli_flush_io_rings(struct lpfc_hba *phba)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LIST_HEAD(txq);
 	LIST_HEAD(txcmplq);
 	struct lpfc_sli *psli = &phba->sli;
 	struct lpfc_sli_ring  *pring;
-<<<<<<< HEAD
-
-	/* Currently, only one fcp ring */
-	pring = &psli->ring[psli->fcp_ring];
-
-	spin_lock_irq(&phba->hbalock);
-	/* Retrieve everything on txq */
-	list_splice_init(&pring->txq, &txq);
-	pring->txq_cnt = 0;
-
-	/* Retrieve everything on the txcmplq */
-	list_splice_init(&pring->txcmplq, &txcmplq);
-	pring->txcmplq_cnt = 0;
-	spin_unlock_irq(&phba->hbalock);
-
-	/* Flush the txq */
-	lpfc_sli_cancel_iocbs(phba, &txq, IOSTAT_LOCAL_REJECT,
-			      IOERR_SLI_DOWN);
-
-	/* Flush the txcmpq */
-	lpfc_sli_cancel_iocbs(phba, &txcmplq, IOSTAT_LOCAL_REJECT,
-			      IOERR_SLI_DOWN);
-=======
 	uint32_t i;
 	struct lpfc_iocbq *piocb, *next_iocb;
 
@@ -6105,7 +4736,6 @@ lpfc_sli_flush_io_rings(struct lpfc_hba *phba)
 		lpfc_sli_cancel_iocbs(phba, &txcmplq, IOSTAT_LOCAL_REJECT,
 				      IOERR_SLI_DOWN);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6132,11 +4762,8 @@ lpfc_sli_brdready_s3(struct lpfc_hba *phba, uint32_t mask)
 	if (lpfc_readl(phba->HSregaddr, &status))
 		return 1;
 
-<<<<<<< HEAD
-=======
 	phba->hba_flag |= HBA_NEEDS_CFG_PORT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check status register every 100ms for 5 retries, then every
 	 * 500ms for 5, then every 2.5 sec for 5, then reset board and
@@ -6168,11 +4795,7 @@ lpfc_sli_brdready_s3(struct lpfc_hba *phba, uint32_t mask)
 
 	/* Check to see if any errors occurred during init */
 	if ((status & HS_FFERM) || (i >= 20)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2751 Adapter failed to restart, "
 				"status reg x%x, FW Data: A8 x%x AC x%x\n",
 				status,
@@ -6218,10 +4841,7 @@ lpfc_sli_brdready_s4(struct lpfc_hba *phba, uint32_t mask)
 	} else
 		phba->sli4_hba.intr_enable = 0;
 
-<<<<<<< HEAD
-=======
 	phba->hba_flag &= ~HBA_SETUP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -6252,24 +4872,15 @@ void lpfc_reset_barrier(struct lpfc_hba *phba)
 {
 	uint32_t __iomem *resp_buf;
 	uint32_t __iomem *mbox_buf;
-<<<<<<< HEAD
-	volatile uint32_t mbox;
-=======
 	volatile struct MAILBOX_word0 mbox;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t hc_copy, ha_copy, resp_data;
 	int  i;
 	uint8_t hdrtype;
 
-<<<<<<< HEAD
-	pci_read_config_byte(phba->pcidev, PCI_HEADER_TYPE, &hdrtype);
-	if (hdrtype != 0x80 ||
-=======
 	lockdep_assert_held(&phba->hbalock);
 
 	pci_read_config_byte(phba->pcidev, PCI_HEADER_TYPE, &hdrtype);
 	if (hdrtype != PCI_HEADER_TYPE_MFD ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (FC_JEDEC_ID(phba->vpd.rev.biuRev) != HELIOS_JEDEC_ID &&
 	     FC_JEDEC_ID(phba->vpd.rev.biuRev) != THOR_JEDEC_ID))
 		return;
@@ -6295,15 +4906,6 @@ void lpfc_reset_barrier(struct lpfc_hba *phba)
 		phba->pport->stopped = 1;
 	}
 
-<<<<<<< HEAD
-	mbox = 0;
-	((MAILBOX_t *)&mbox)->mbxCommand = MBX_KILL_BOARD;
-	((MAILBOX_t *)&mbox)->mbxOwner = OWN_CHIP;
-
-	writel(BARRIER_TEST_PATTERN, (resp_buf + 1));
-	mbox_buf = phba->MBslimaddr;
-	writel(mbox, mbox_buf);
-=======
 	mbox.word0 = 0;
 	mbox.mbxCommand = MBX_KILL_BOARD;
 	mbox.mbxOwner = OWN_CHIP;
@@ -6311,7 +4913,6 @@ void lpfc_reset_barrier(struct lpfc_hba *phba)
 	writel(BARRIER_TEST_PATTERN, (resp_buf + 1));
 	mbox_buf = phba->MBslimaddr;
 	writel(mbox.word0, mbox_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 50; i++) {
 		if (lpfc_readl((resp_buf + 1), &resp_data))
@@ -6332,20 +4933,12 @@ void lpfc_reset_barrier(struct lpfc_hba *phba)
 			goto clear_errat;
 	}
 
-<<<<<<< HEAD
-	((MAILBOX_t *)&mbox)->mbxOwner = OWN_HOST;
-=======
 	mbox.mbxOwner = OWN_HOST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resp_data = 0;
 	for (i = 0; i < 500; i++) {
 		if (lpfc_readl(resp_buf, &resp_data))
 			return;
-<<<<<<< HEAD
-		if (resp_data != mbox)
-=======
 		if (resp_data != mbox.word0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdelay(1);
 		else
 			break;
@@ -6425,11 +5018,7 @@ lpfc_sli_brdkill(struct lpfc_hba *phba)
 	if (retval != MBX_SUCCESS) {
 		if (retval != MBX_BUSY)
 			mempool_free(pmb, phba->mbox_mem_pool);
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2752 KILL_BOARD command failed retval %d\n",
 				retval);
 		spin_lock_irq(&phba->hbalock);
@@ -6498,23 +5087,12 @@ lpfc_sli_brdreset(struct lpfc_hba *phba)
 	/* Reset HBA */
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 			"0325 Reset HBA Data: x%x x%x\n",
-<<<<<<< HEAD
-			phba->pport->port_state, psli->sli_flag);
-=======
 			(phba->pport) ? phba->pport->port_state : 0,
 			psli->sli_flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* perform board reset */
 	phba->fc_eventTag = 0;
 	phba->link_events = 0;
-<<<<<<< HEAD
-	phba->pport->fc_myDID = 0;
-	phba->pport->fc_prevDID = 0;
-
-	/* Turn off parity checking and serr during the physical reset */
-	pci_read_config_word(phba->pcidev, PCI_COMMAND, &cfg_value);
-=======
 	phba->hba_flag |= HBA_NEEDS_CFG_PORT;
 	if (phba->pport) {
 		phba->pport->fc_myDID = 0;
@@ -6525,7 +5103,6 @@ lpfc_sli_brdreset(struct lpfc_hba *phba)
 	if (pci_read_config_word(phba->pcidev, PCI_COMMAND, &cfg_value))
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_word(phba->pcidev, PCI_COMMAND,
 			      (cfg_value &
 			       ~(PCI_COMMAND_PARITY | PCI_COMMAND_SERR)));
@@ -6544,21 +5121,12 @@ lpfc_sli_brdreset(struct lpfc_hba *phba)
 
 	/* Initialize relevant SLI info */
 	for (i = 0; i < psli->num_rings; i++) {
-<<<<<<< HEAD
-		pring = &psli->ring[i];
-		pring->flag = 0;
-		pring->rspidx = 0;
-		pring->next_cmdidx  = 0;
-		pring->local_getidx = 0;
-		pring->cmdidx = 0;
-=======
 		pring = &psli->sli3_ring[i];
 		pring->flag = 0;
 		pring->sli.sli3.rspidx = 0;
 		pring->sli.sli3.next_cmdidx  = 0;
 		pring->sli.sli3.local_getidx = 0;
 		pring->sli.sli3.cmdidx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pring->missbufcnt = 0;
 	}
 
@@ -6574,24 +5142,13 @@ lpfc_sli_brdreset(struct lpfc_hba *phba)
  * checking during resets the device. The caller is not required to hold
  * any locks.
  *
-<<<<<<< HEAD
- * This function returns 0 always.
-=======
  * This function returns 0 on success else returns negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int
 lpfc_sli4_brdreset(struct lpfc_hba *phba)
 {
 	struct lpfc_sli *psli = &phba->sli;
 	uint16_t cfg_value;
-<<<<<<< HEAD
-
-	/* Reset HBA */
-	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
-			"0295 Reset HBA Data: x%x x%x\n",
-			phba->pport->port_state, psli->sli_flag);
-=======
 	int rc = 0;
 
 	/* Reset HBA */
@@ -6599,17 +5156,13 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
 			"0295 Reset HBA Data: x%x x%x x%x\n",
 			phba->pport->port_state, psli->sli_flag,
 			phba->hba_flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* perform board reset */
 	phba->fc_eventTag = 0;
 	phba->link_events = 0;
 	phba->pport->fc_myDID = 0;
 	phba->pport->fc_prevDID = 0;
-<<<<<<< HEAD
-=======
 	phba->hba_flag &= ~HBA_SETUP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&phba->hbalock);
 	psli->sli_flag &= ~(LPFC_PROCESS_LA);
@@ -6621,15 +5174,6 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
 			"0389 Performing PCI function reset!\n");
 
 	/* Turn off parity checking and serr during the physical reset */
-<<<<<<< HEAD
-	pci_read_config_word(phba->pcidev, PCI_COMMAND, &cfg_value);
-	pci_write_config_word(phba->pcidev, PCI_COMMAND, (cfg_value &
-			      ~(PCI_COMMAND_PARITY | PCI_COMMAND_SERR)));
-
-	/* Perform FCoE PCI function reset */
-	lpfc_sli4_queue_destroy(phba);
-	lpfc_pci_function_reset(phba);
-=======
 	if (pci_read_config_word(phba->pcidev, PCI_COMMAND, &cfg_value)) {
 		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
 				"3205 PCI read Config failed\n");
@@ -6641,16 +5185,11 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
 
 	/* Perform FCoE PCI function reset before freeing queue memory */
 	rc = lpfc_pci_function_reset(phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore PCI cmd register */
 	pci_write_config_word(phba->pcidev, PCI_COMMAND, cfg_value);
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6669,66 +5208,27 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
 static int
 lpfc_sli_brdrestart_s3(struct lpfc_hba *phba)
 {
-<<<<<<< HEAD
-	MAILBOX_t *mb;
-	struct lpfc_sli *psli;
-	volatile uint32_t word0;
-	void __iomem *to_slim;
-	uint32_t hba_aer_enabled;
-
-	spin_lock_irq(&phba->hbalock);
-
-	/* Take PCIe device Advanced Error Reporting (AER) state */
-	hba_aer_enabled = phba->hba_flag & HBA_AER_ENABLED;
-
-=======
 	volatile struct MAILBOX_word0 mb;
 	struct lpfc_sli *psli;
 	void __iomem *to_slim;
 
 	spin_lock_irq(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psli = &phba->sli;
 
 	/* Restart HBA */
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 			"0337 Restart HBA Data: x%x x%x\n",
-<<<<<<< HEAD
-			phba->pport->port_state, psli->sli_flag);
-
-	word0 = 0;
-	mb = (MAILBOX_t *) &word0;
-	mb->mbxCommand = MBX_RESTART;
-	mb->mbxHc = 1;
-=======
 			(phba->pport) ? phba->pport->port_state : 0,
 			psli->sli_flag);
 
 	mb.word0 = 0;
 	mb.mbxCommand = MBX_RESTART;
 	mb.mbxHc = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_reset_barrier(phba);
 
 	to_slim = phba->MBslimaddr;
-<<<<<<< HEAD
-	writel(*(uint32_t *) mb, to_slim);
-	readl(to_slim); /* flush */
-
-	/* Only skip post after fc_ffinit is completed */
-	if (phba->pport->port_state)
-		word0 = 1;	/* This is really setting up word1 */
-	else
-		word0 = 0;	/* This is really setting up word1 */
-	to_slim = phba->MBslimaddr + sizeof (uint32_t);
-	writel(*(uint32_t *) mb, to_slim);
-	readl(to_slim); /* flush */
-
-	lpfc_sli_brdreset(phba);
-	phba->pport->stopped = 0;
-=======
 	writel(mb.word0, to_slim);
 	readl(to_slim); /* flush */
 
@@ -6744,28 +5244,16 @@ lpfc_sli_brdrestart_s3(struct lpfc_hba *phba)
 	lpfc_sli_brdreset(phba);
 	if (phba->pport)
 		phba->pport->stopped = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->link_state = LPFC_INIT_START;
 	phba->hba_flag = 0;
 	spin_unlock_irq(&phba->hbalock);
 
 	memset(&psli->lnk_stat_offsets, 0, sizeof(psli->lnk_stat_offsets));
-<<<<<<< HEAD
-	psli->stats_start = get_seconds();
-=======
 	psli->stats_start = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Give the INITFF and Post time to settle. */
 	mdelay(100);
 
-<<<<<<< HEAD
-	/* Reset HBA AER if it was enabled, note hba_flag was reset above */
-	if (hba_aer_enabled)
-		pci_disable_pcie_error_reporting(phba->pcidev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_hba_down_post(phba);
 
 	return 0;
@@ -6784,48 +5272,23 @@ static int
 lpfc_sli_brdrestart_s4(struct lpfc_hba *phba)
 {
 	struct lpfc_sli *psli = &phba->sli;
-<<<<<<< HEAD
-	uint32_t hba_aer_enabled;
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restart HBA */
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 			"0296 Restart HBA Data: x%x x%x\n",
 			phba->pport->port_state, psli->sli_flag);
 
-<<<<<<< HEAD
-	/* Take PCIe device Advanced Error Reporting (AER) state */
-	hba_aer_enabled = phba->hba_flag & HBA_AER_ENABLED;
-
-	lpfc_sli4_brdreset(phba);
-=======
 	rc = lpfc_sli4_brdreset(phba);
 	if (rc) {
 		phba->link_state = LPFC_HBA_ERROR;
 		goto hba_down_queue;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&phba->hbalock);
 	phba->pport->stopped = 0;
 	phba->link_state = LPFC_INIT_START;
 	phba->hba_flag = 0;
-<<<<<<< HEAD
-	spin_unlock_irq(&phba->hbalock);
-
-	memset(&psli->lnk_stat_offsets, 0, sizeof(psli->lnk_stat_offsets));
-	psli->stats_start = get_seconds();
-
-	/* Reset HBA AER if it was enabled, note hba_flag was reset above */
-	if (hba_aer_enabled)
-		pci_disable_pcie_error_reporting(phba->pcidev);
-
-	lpfc_hba_down_post(phba);
-
-	return 0;
-=======
 	/* Preserve FA-PWWN expectation */
 	phba->sli4_hba.fawwpn_flag &= LPFC_FAWWPN_FABRIC;
 	spin_unlock_irq(&phba->hbalock);
@@ -6838,7 +5301,6 @@ hba_down_queue:
 	lpfc_sli4_queue_destroy(phba);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6864,11 +5326,7 @@ lpfc_sli_brdrestart(struct lpfc_hba *phba)
  * iteration, the function will restart the HBA again. The function returns
  * zero if HBA successfully restarted else returns negative error code.
  **/
-<<<<<<< HEAD
-static int
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_sli_chipset_init(struct lpfc_hba *phba)
 {
 	uint32_t status, i = 0;
@@ -6892,11 +5350,7 @@ lpfc_sli_chipset_init(struct lpfc_hba *phba)
 		if (i++ >= 200) {
 			/* Adapter failed to init, timeout, status reg
 			   <status> */
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0436 Adapter failed to init, "
 					"timeout, status reg x%x, "
 					"FW Data: A8 x%x AC x%x\n", status,
@@ -6911,11 +5365,7 @@ lpfc_sli_chipset_init(struct lpfc_hba *phba)
 			/* ERROR: During chipset initialization */
 			/* Adapter failed to init, chipset, status reg
 			   <status> */
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0437 Adapter failed to init, "
 					"chipset, status reg x%x, "
 					"FW Data: A8 x%x AC x%x\n", status,
@@ -6946,11 +5396,7 @@ lpfc_sli_chipset_init(struct lpfc_hba *phba)
 	if (status & HS_FFERM) {
 		/* ERROR: During chipset initialization */
 		/* Adapter failed to init, chipset, status reg <status> */
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0438 Adapter failed to init, chipset, "
 				"status reg x%x, "
 				"FW Data: A8 x%x AC x%x\n", status,
@@ -6960,11 +5406,8 @@ lpfc_sli_chipset_init(struct lpfc_hba *phba)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-=======
 	phba->hba_flag |= HBA_NEEDS_CFG_PORT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear all interrupt enable conditions */
 	writel(0, phba->HCregaddr);
 	readl(phba->HCregaddr); /* flush */
@@ -7100,12 +5543,6 @@ static int
 lpfc_sli4_rb_setup(struct lpfc_hba *phba)
 {
 	phba->hbq_in_use = 1;
-<<<<<<< HEAD
-	phba->hbqs[0].entry_count = lpfc_hbq_defs[0]->entry_count;
-	phba->hbq_count = 1;
-	/* Initially populate or replenish the HBQs */
-	lpfc_sli_hbqbuf_init_hbqs(phba, 0);
-=======
 	/**
 	 * Specific case when the MDS diagnostics is enabled and supported.
 	 * The receive buffer count is truncated to manage the incoming
@@ -7120,7 +5557,6 @@ lpfc_sli4_rb_setup(struct lpfc_hba *phba)
 	phba->hbq_count = 1;
 	lpfc_sli_hbqbuf_init_hbqs(phba, LPFC_ELS_HBQ);
 	/* Initially populate or replenish the HBQs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -7129,11 +5565,7 @@ lpfc_sli4_rb_setup(struct lpfc_hba *phba)
  * @phba: Pointer to HBA context object.
  * @sli_mode: sli mode - 2/3
  *
-<<<<<<< HEAD
- * This function is called by the sli intialization code path
-=======
  * This function is called by the sli initialization code path
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to issue config_port mailbox command. This function restarts the
  * HBA firmware and issues a config_port mailbox command to configure
  * the SLI interface in the sli mode specified by sli_mode
@@ -7187,16 +5619,9 @@ lpfc_sli_config_port(struct lpfc_hba *phba, int sli_mode)
 		phba->sli3_options &= ~(LPFC_SLI3_NPIV_ENABLED |
 					LPFC_SLI3_HBQ_ENABLED |
 					LPFC_SLI3_CRP_ENABLED |
-<<<<<<< HEAD
-					LPFC_SLI3_BG_ENABLED |
-					LPFC_SLI3_DSS_ENABLED);
-		if (rc != MBX_SUCCESS) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 					LPFC_SLI3_DSS_ENABLED);
 		if (rc != MBX_SUCCESS) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0442 Adapter failed to init, mbxCmd x%x "
 				"CONFIG_PORT, mbxStatus x%x Data: x%x\n",
 				pmb->u.mb.mbxCommand, pmb->u.mb.mbxStatus, 0);
@@ -7234,26 +5659,6 @@ lpfc_sli_config_port(struct lpfc_hba *phba, int sli_mode)
 
 		} else
 			phba->max_vpi = 0;
-<<<<<<< HEAD
-		phba->fips_level = 0;
-		phba->fips_spec_rev = 0;
-		if (pmb->u.mb.un.varCfgPort.gdss) {
-			phba->sli3_options |= LPFC_SLI3_DSS_ENABLED;
-			phba->fips_level = pmb->u.mb.un.varCfgPort.fips_level;
-			phba->fips_spec_rev = pmb->u.mb.un.varCfgPort.fips_rev;
-			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-					"2850 Security Crypto Active. FIPS x%d "
-					"(Spec Rev: x%d)",
-					phba->fips_level, phba->fips_spec_rev);
-		}
-		if (pmb->u.mb.un.varCfgPort.sec_err) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-					"2856 Config Port Security Crypto "
-					"Error: x%x ",
-					pmb->u.mb.un.varCfgPort.sec_err);
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pmb->u.mb.un.varCfgPort.gerbm)
 			phba->sli3_options |= LPFC_SLI3_HBQ_ENABLED;
 		if (pmb->u.mb.un.varCfgPort.gcrp)
@@ -7262,15 +5667,6 @@ lpfc_sli_config_port(struct lpfc_hba *phba, int sli_mode)
 		phba->hbq_get = phba->mbox->us.s3_pgp.hbq_get;
 		phba->port_gp = phba->mbox->us.s3_pgp.port;
 
-<<<<<<< HEAD
-		if (phba->cfg_enable_bg) {
-			if (pmb->u.mb.un.varCfgPort.gbg)
-				phba->sli3_options |= LPFC_SLI3_BG_ENABLED;
-			else
-				lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-						"0443 Adapter did not grant "
-						"BlockGuard\n");
-=======
 		if (phba->sli3_options & LPFC_SLI3_BG_ENABLED) {
 			if (pmb->u.mb.un.varCfgPort.gbg == 0) {
 				phba->cfg_enable_bg = 0;
@@ -7279,7 +5675,6 @@ lpfc_sli_config_port(struct lpfc_hba *phba, int sli_mode)
 						"0443 Adapter did not grant "
 						"BlockGuard\n");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		phba->hbq_get = NULL;
@@ -7293,19 +5688,11 @@ do_prep_failed:
 
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_hba_setup - SLI intialization function
- * @phba: Pointer to HBA context object.
- *
- * This function is the main SLI intialization function. This function
- * is called by the HBA intialization code, HBA reset code and HBA
-=======
  * lpfc_sli_hba_setup - SLI initialization function
  * @phba: Pointer to HBA context object.
  *
  * This function is the main SLI initialization function. This function
  * is called by the HBA initialization code, HBA reset code and HBA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error attention handler code. Caller is not required to hold any
  * locks. This function issues config_port mailbox command to configure
  * the SLI, setup iocb rings and HBQ rings. In the end the function
@@ -7317,61 +5704,6 @@ int
 lpfc_sli_hba_setup(struct lpfc_hba *phba)
 {
 	uint32_t rc;
-<<<<<<< HEAD
-	int  mode = 3, i;
-	int longs;
-
-	switch (lpfc_sli_mode) {
-	case 2:
-		if (phba->cfg_enable_npiv) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT | LOG_VPORT,
-				"1824 NPIV enabled: Override lpfc_sli_mode "
-				"parameter (%d) to auto (0).\n",
-				lpfc_sli_mode);
-			break;
-		}
-		mode = 2;
-		break;
-	case 0:
-	case 3:
-		break;
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT | LOG_VPORT,
-				"1819 Unrecognized lpfc_sli_mode "
-				"parameter: %d.\n", lpfc_sli_mode);
-
-		break;
-	}
-
-	rc = lpfc_sli_config_port(phba, mode);
-
-	if (rc && lpfc_sli_mode == 3)
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT | LOG_VPORT,
-				"1820 Unable to select SLI-3.  "
-				"Not supported by adapter.\n");
-	if (rc && mode != 2)
-		rc = lpfc_sli_config_port(phba, 2);
-	if (rc)
-		goto lpfc_sli_hba_setup_error;
-
-	/* Enable PCIe device Advanced Error Reporting (AER) if configured */
-	if (phba->cfg_aer_support == 1 && !(phba->hba_flag & HBA_AER_ENABLED)) {
-		rc = pci_enable_pcie_error_reporting(phba->pcidev);
-		if (!rc) {
-			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-					"2709 This device supports "
-					"Advanced Error Reporting (AER)\n");
-			spin_lock_irq(&phba->hbalock);
-			phba->hba_flag |= HBA_AER_ENABLED;
-			spin_unlock_irq(&phba->hbalock);
-		} else {
-			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-					"2708 This device does not support "
-					"Advanced Error Reporting (AER)\n");
-			phba->cfg_aer_support = 0;
-		}
-	}
-=======
 	int  i;
 	int longs;
 
@@ -7383,7 +5715,6 @@ lpfc_sli_hba_setup(struct lpfc_hba *phba)
 		phba->hba_flag &= ~HBA_NEEDS_CFG_PORT;
 	}
 	phba->fcp_embed_io = 0;	/* SLI4 FC support only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->sli_rev == 3) {
 		phba->iocb_cmd_size = SLI3_IOCB_CMD_SIZE;
@@ -7411,27 +5742,17 @@ lpfc_sli_hba_setup(struct lpfc_hba *phba)
 		 */
 		if ((phba->vpi_bmask == NULL) && (phba->vpi_ids == NULL)) {
 			longs = (phba->max_vpi + BITS_PER_LONG) / BITS_PER_LONG;
-<<<<<<< HEAD
-			phba->vpi_bmask = kzalloc(longs * sizeof(unsigned long),
-=======
 			phba->vpi_bmask = kcalloc(longs,
 						  sizeof(unsigned long),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  GFP_KERNEL);
 			if (!phba->vpi_bmask) {
 				rc = -ENOMEM;
 				goto lpfc_sli_hba_setup_error;
 			}
 
-<<<<<<< HEAD
-			phba->vpi_ids = kzalloc(
-					(phba->max_vpi+1) * sizeof(uint16_t),
-					GFP_KERNEL);
-=======
 			phba->vpi_ids = kcalloc(phba->max_vpi + 1,
 						sizeof(uint16_t),
 						GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!phba->vpi_ids) {
 				kfree(phba->vpi_bmask);
 				rc = -ENOMEM;
@@ -7460,11 +5781,7 @@ lpfc_sli_hba_setup(struct lpfc_hba *phba)
 
 lpfc_sli_hba_setup_error:
 	phba->link_state = LPFC_HBA_ERROR;
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"0445 Firmware initialization failed\n");
 	return rc;
 }
@@ -7472,11 +5789,7 @@ lpfc_sli_hba_setup_error:
 /**
  * lpfc_sli4_read_fcoe_params - Read fcoe params from conf region
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
- * @mboxq: mailbox pointer.
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function issue a dump mailbox command to read config region
  * 23 and parse the records in the region and populate driver
  * data structure.
@@ -7506,11 +5819,7 @@ lpfc_sli4_read_fcoe_params(struct lpfc_hba *phba)
 		goto out_free_mboxq;
 	}
 
-<<<<<<< HEAD
-	mp = (struct lpfc_dmabuf *) mboxq->context1;
-=======
 	mp = mboxq->ctx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
 
 	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
@@ -7535,39 +5844,20 @@ lpfc_sli4_read_fcoe_params(struct lpfc_hba *phba)
 			mboxq->mcqe.trailer);
 
 	if (rc) {
-<<<<<<< HEAD
-		lpfc_mbuf_free(phba, mp->virt, mp->phys);
-		kfree(mp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 		goto out_free_mboxq;
 	}
 	data_length = mqe->un.mb_words[5];
 	if (data_length > DMP_RGN23_SIZE) {
-<<<<<<< HEAD
-		lpfc_mbuf_free(phba, mp->virt, mp->phys);
-		kfree(mp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 		goto out_free_mboxq;
 	}
 
 	lpfc_parse_fcoe_conf(phba, mp->virt, data_length);
-<<<<<<< HEAD
-	lpfc_mbuf_free(phba, mp->virt, mp->phys);
-	kfree(mp);
-	rc = 0;
-
-out_free_mboxq:
-	mempool_free(mboxq, phba->mbox_mem_pool);
-=======
 	rc = 0;
 
 out_free_mboxq:
 	lpfc_mbox_rsrc_cleanup(phba, mboxq, MBOX_THD_UNLOCKED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -7604,23 +5894,12 @@ lpfc_sli4_read_rev(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 	 * mailbox command.
 	 */
 	dma_size = *vpd_size;
-<<<<<<< HEAD
-	dmabuf->virt = dma_alloc_coherent(&phba->pcidev->dev,
-					  dma_size,
-					  &dmabuf->phys,
-					  GFP_KERNEL);
-=======
 	dmabuf->virt = dma_alloc_coherent(&phba->pcidev->dev, dma_size,
 					  &dmabuf->phys, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dmabuf->virt) {
 		kfree(dmabuf);
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	memset(dmabuf->virt, 0, dma_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The SLI4 implementation of READ_REV conflicts at word1,
@@ -7660,61 +5939,26 @@ lpfc_sli4_read_rev(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_retrieve_pport_name - Retrieve SLI4 device physical port name
-=======
  * lpfc_sli4_get_ctl_attr - Retrieve SLI4 device controller attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @phba: pointer to lpfc hba data structure.
  *
  * This routine retrieves SLI4 device physical port name this PCI function
  * is attached to.
  *
  * Return codes
-<<<<<<< HEAD
- *      0 - sucessful
- *      otherwise - failed to retrieve physical port name
- **/
-static int
-lpfc_sli4_retrieve_pport_name(struct lpfc_hba *phba)
-=======
  *      0 - successful
  *      otherwise - failed to retrieve controller attributes
  **/
 static int
 lpfc_sli4_get_ctl_attr(struct lpfc_hba *phba)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LPFC_MBOXQ_t *mboxq;
 	struct lpfc_mbx_get_cntl_attributes *mbx_cntl_attr;
 	struct lpfc_controller_attribute *cntl_attr;
-<<<<<<< HEAD
-	struct lpfc_mbx_get_port_name *get_port_name;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *virtaddr = NULL;
 	uint32_t alloclen, reqlen;
 	uint32_t shdr_status, shdr_add_status;
 	union lpfc_sli4_cfg_shdr *shdr;
-<<<<<<< HEAD
-	char cport_name = 0;
-	int rc;
-
-	/* We assume nothing at this point */
-	phba->sli4_hba.lnk_info.lnk_dv = LPFC_LNK_DAT_INVAL;
-	phba->sli4_hba.pport_name_sta = LPFC_SLI4_PPNAME_NON;
-
-	mboxq = (LPFC_MBOXQ_t *)mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
-	if (!mboxq)
-		return -ENOMEM;
-	/* obtain link type and link number via READ_CONFIG */
-	phba->sli4_hba.lnk_info.lnk_dv = LPFC_LNK_DAT_INVAL;
-	lpfc_sli4_read_config(phba);
-	if (phba->sli4_hba.lnk_info.lnk_dv == LPFC_LNK_DAT_VAL)
-		goto retrieve_ppname;
-
-	/* obtain link type and link number via COMMON_GET_CNTL_ATTRIBUTES */
-=======
 	int rc;
 
 	mboxq = (LPFC_MBOXQ_t *)mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
@@ -7722,19 +5966,13 @@ lpfc_sli4_get_ctl_attr(struct lpfc_hba *phba)
 		return -ENOMEM;
 
 	/* Send COMMON_GET_CNTL_ATTRIBUTES mbox cmd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reqlen = sizeof(struct lpfc_mbx_get_cntl_attributes);
 	alloclen = lpfc_sli4_config(phba, mboxq, LPFC_MBOX_SUBSYSTEM_COMMON,
 			LPFC_MBOX_OPCODE_GET_CNTL_ATTRIBUTES, reqlen,
 			LPFC_SLI4_MBX_NEMBED);
-<<<<<<< HEAD
-	if (alloclen < reqlen) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 
 	if (alloclen < reqlen) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"3084 Allocated DMA memory size (%d) is "
 				"less than the requested DMA memory size "
 				"(%d)\n", alloclen, reqlen);
@@ -7758,22 +5996,13 @@ lpfc_sli4_get_ctl_attr(struct lpfc_hba *phba)
 		rc = -ENXIO;
 		goto out_free_mboxq;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cntl_attr = &mbx_cntl_attr->cntl_attr;
 	phba->sli4_hba.lnk_info.lnk_dv = LPFC_LNK_DAT_VAL;
 	phba->sli4_hba.lnk_info.lnk_tp =
 		bf_get(lpfc_cntl_attr_lnk_type, cntl_attr);
 	phba->sli4_hba.lnk_info.lnk_no =
 		bf_get(lpfc_cntl_attr_lnk_numb, cntl_attr);
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
-			"3086 lnk_type:%d, lnk_numb:%d\n",
-			phba->sli4_hba.lnk_info.lnk_tp,
-			phba->sli4_hba.lnk_info.lnk_no);
-=======
 	phba->sli4_hba.flash_id = bf_get(lpfc_cntl_attr_flash_id, cntl_attr);
 	phba->sli4_hba.asic_rev = bf_get(lpfc_cntl_attr_asic_rev, cntl_attr);
 
@@ -7838,7 +6067,6 @@ lpfc_sli4_retrieve_pport_name(struct lpfc_hba *phba)
 	rc = lpfc_sli4_get_ctl_attr(phba);
 	if (rc)
 		goto out_free_mboxq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 retrieve_ppname:
 	lpfc_sli4_config(phba, mboxq, LPFC_MBOX_SUBSYSTEM_COMMON,
@@ -7898,19 +6126,10 @@ retrieve_ppname:
 	}
 
 out_free_mboxq:
-<<<<<<< HEAD
-	if (rc != MBX_TIMEOUT) {
-		if (bf_get(lpfc_mqe_command, &mboxq->u.mqe) == MBX_SLI4_CONFIG)
-			lpfc_sli4_mbox_cmd_free(phba, mboxq);
-		else
-			mempool_free(mboxq, phba->mbox_mem_pool);
-	}
-=======
 	if (bf_get(lpfc_mqe_command, &mboxq->u.mqe) == MBX_SLI4_CONFIG)
 		lpfc_sli4_mbox_cmd_free(phba, mboxq);
 	else
 		mempool_free(mboxq, phba->mbox_mem_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -7924,25 +6143,6 @@ out_free_mboxq:
 static void
 lpfc_sli4_arm_cqeq_intr(struct lpfc_hba *phba)
 {
-<<<<<<< HEAD
-	uint8_t fcp_eqidx;
-
-	lpfc_sli4_cq_release(phba->sli4_hba.mbx_cq, LPFC_QUEUE_REARM);
-	lpfc_sli4_cq_release(phba->sli4_hba.els_cq, LPFC_QUEUE_REARM);
-	fcp_eqidx = 0;
-	if (phba->sli4_hba.fcp_cq) {
-		do
-			lpfc_sli4_cq_release(phba->sli4_hba.fcp_cq[fcp_eqidx],
-					     LPFC_QUEUE_REARM);
-		while (++fcp_eqidx < phba->cfg_fcp_eq_count);
-	}
-	lpfc_sli4_eq_release(phba->sli4_hba.sp_eq, LPFC_QUEUE_REARM);
-	if (phba->sli4_hba.fp_eq) {
-		for (fcp_eqidx = 0; fcp_eqidx < phba->cfg_fcp_eq_count;
-		     fcp_eqidx++)
-			lpfc_sli4_eq_release(phba->sli4_hba.fp_eq[fcp_eqidx],
-					     LPFC_QUEUE_REARM);
-=======
 	int qidx;
 	struct lpfc_sli4_hba *sli4_hba = &phba->sli4_hba;
 	struct lpfc_sli4_hdw_queue *qp;
@@ -7978,7 +6178,6 @@ lpfc_sli4_arm_cqeq_intr(struct lpfc_hba *phba)
 				sli4_hba->nvmet_cqset[qidx], 0,
 				LPFC_QUEUE_REARM);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -8004,12 +6203,9 @@ lpfc_sli4_get_avail_extnt_rsrc(struct lpfc_hba *phba, uint16_t type,
 	struct lpfc_mbx_get_rsrc_extent_info *rsrc_info;
 	LPFC_MBOXQ_t *mbox;
 
-<<<<<<< HEAD
-=======
 	*extnt_count = 0;
 	*extnt_size = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox = (LPFC_MBOXQ_t *) mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
 		return -ENOMEM;
@@ -8043,11 +6239,7 @@ lpfc_sli4_get_avail_extnt_rsrc(struct lpfc_hba *phba, uint16_t type,
 	rsrc_info = &mbox->u.mqe.un.rsrc_extent_info;
 	if (bf_get(lpfc_mbox_hdr_status,
 		   &rsrc_info->header.cfg_shdr.response)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2930 Failed to get resource extents "
 				"Status 0x%x Add'l Status 0x%x\n",
 				bf_get(lpfc_mbox_hdr_status,
@@ -8062,16 +6254,12 @@ lpfc_sli4_get_avail_extnt_rsrc(struct lpfc_hba *phba, uint16_t type,
 			      &rsrc_info->u.rsp);
 	*extnt_size = bf_get(lpfc_mbx_get_rsrc_extent_info_size,
 			     &rsrc_info->u.rsp);
-<<<<<<< HEAD
- err_exit:
-=======
 
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 			"3162 Retrieved extents type-%d from port: count:%d, "
 			"size:%d\n", type, *extnt_count, *extnt_size);
 
 err_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(mbox, phba->mbox_mem_pool);
 	return rc;
 }
@@ -8140,17 +6328,10 @@ lpfc_sli4_chk_avail_extnt_rsrc(struct lpfc_hba *phba, uint16_t type)
 /**
  * lpfc_sli4_cfg_post_extnts -
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
- * @extnt_cnt - number of available extents.
- * @type - the extent type (rpi, xri, vfi, vpi).
- * @emb - buffer to hold either MBX_EMBED or MBX_NEMBED operation.
- * @mbox - pointer to the caller's allocated mailbox structure.
-=======
  * @extnt_cnt: number of available extents.
  * @type: the extent type (rpi, xri, vfi, vpi).
  * @emb: buffer to hold either MBX_EMBED or MBX_NEMBED operation.
  * @mbox: pointer to the caller's allocated mailbox structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function executes the extents allocation request.  It also
  * takes care of the amount of memory needed to allocate or get the
@@ -8162,11 +6343,7 @@ lpfc_sli4_chk_avail_extnt_rsrc(struct lpfc_hba *phba, uint16_t type)
  *   0: if successful
  **/
 static int
-<<<<<<< HEAD
-lpfc_sli4_cfg_post_extnts(struct lpfc_hba *phba, uint16_t *extnt_cnt,
-=======
 lpfc_sli4_cfg_post_extnts(struct lpfc_hba *phba, uint16_t extnt_cnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  uint16_t type, bool *emb, LPFC_MBOXQ_t *mbox)
 {
 	int rc = 0;
@@ -8175,11 +6352,7 @@ lpfc_sli4_cfg_post_extnts(struct lpfc_hba *phba, uint16_t extnt_cnt,
 	uint32_t alloc_len, mbox_tmo;
 
 	/* Calculate the total requested length of the dma memory */
-<<<<<<< HEAD
-	req_len = *extnt_cnt * sizeof(uint16_t);
-=======
 	req_len = extnt_cnt * sizeof(uint16_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Calculate the size of an embedded mailbox.  The uint32_t
@@ -8194,11 +6367,7 @@ lpfc_sli4_cfg_post_extnts(struct lpfc_hba *phba, uint16_t extnt_cnt,
 	 */
 	*emb = LPFC_SLI4_MBX_EMBED;
 	if (req_len > emb_len) {
-<<<<<<< HEAD
-		req_len = *extnt_cnt * sizeof(uint16_t) +
-=======
 		req_len = extnt_cnt * sizeof(uint16_t) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(union lpfc_sli4_cfg_shdr) +
 			sizeof(uint32_t);
 		*emb = LPFC_SLI4_MBX_NEMBED;
@@ -8208,21 +6377,13 @@ lpfc_sli4_cfg_post_extnts(struct lpfc_hba *phba, uint16_t extnt_cnt,
 				     LPFC_MBOX_OPCODE_ALLOC_RSRC_EXTENT,
 				     req_len, *emb);
 	if (alloc_len < req_len) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2982 Allocated DMA memory size (x%x) is "
 			"less than the requested DMA memory "
 			"size (x%x)\n", alloc_len, req_len);
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	rc = lpfc_sli4_mbox_rsrc_extent(phba, mbox, *extnt_cnt, type, *emb);
-=======
 	rc = lpfc_sli4_mbox_rsrc_extent(phba, mbox, extnt_cnt, type, *emb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(rc))
 		return -EIO;
 
@@ -8272,11 +6433,7 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		return -EIO;
 
 	if ((rsrc_cnt == 0) || (rsrc_size == 0)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"3009 No available Resource Extents "
 			"for resource type 0x%x: Count: 0x%x, "
 			"Size 0x%x\n", type, rsrc_cnt,
@@ -8284,27 +6441,15 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_INIT,
-			"2903 Available Resource Extents "
-			"for resource type 0x%x: Count: 0x%x, "
-			"Size 0x%x\n", type, rsrc_cnt,
-			rsrc_size);
-=======
 	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_INIT | LOG_SLI,
 			"2903 Post resource extents type-0x%x: "
 			"count:%d, size %d\n", type, rsrc_cnt, rsrc_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox = (LPFC_MBOXQ_t *) mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	rc = lpfc_sli4_cfg_post_extnts(phba, &rsrc_cnt, type, &emb, mbox);
-=======
 	rc = lpfc_sli4_cfg_post_extnts(phba, rsrc_cnt, type, &emb, mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(rc)) {
 		rc = -EIO;
 		goto err_exit;
@@ -8337,22 +6482,14 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 	length = sizeof(struct lpfc_rsrc_blks);
 	switch (type) {
 	case LPFC_RSC_TYPE_FCOE_RPI:
-<<<<<<< HEAD
-		phba->sli4_hba.rpi_bmask = kzalloc(longs *
-=======
 		phba->sli4_hba.rpi_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.rpi_bmask)) {
 			rc = -ENOMEM;
 			goto err_exit;
 		}
-<<<<<<< HEAD
-		phba->sli4_hba.rpi_ids = kzalloc(rsrc_id_cnt *
-=======
 		phba->sli4_hba.rpi_ids = kcalloc(rsrc_id_cnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 sizeof(uint16_t),
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.rpi_ids)) {
@@ -8374,23 +6511,13 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		ext_blk_list = &phba->sli4_hba.lpfc_rpi_blk_list;
 		break;
 	case LPFC_RSC_TYPE_FCOE_VPI:
-<<<<<<< HEAD
-		phba->vpi_bmask = kzalloc(longs *
-					  sizeof(unsigned long),
-=======
 		phba->vpi_bmask = kcalloc(longs, sizeof(unsigned long),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  GFP_KERNEL);
 		if (unlikely(!phba->vpi_bmask)) {
 			rc = -ENOMEM;
 			goto err_exit;
 		}
-<<<<<<< HEAD
-		phba->vpi_ids = kzalloc(rsrc_id_cnt *
-					 sizeof(uint16_t),
-=======
 		phba->vpi_ids = kcalloc(rsrc_id_cnt, sizeof(uint16_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 GFP_KERNEL);
 		if (unlikely(!phba->vpi_ids)) {
 			kfree(phba->vpi_bmask);
@@ -8404,23 +6531,15 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		ext_blk_list = &phba->lpfc_vpi_blk_list;
 		break;
 	case LPFC_RSC_TYPE_FCOE_XRI:
-<<<<<<< HEAD
-		phba->sli4_hba.xri_bmask = kzalloc(longs *
-=======
 		phba->sli4_hba.xri_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.xri_bmask)) {
 			rc = -ENOMEM;
 			goto err_exit;
 		}
-<<<<<<< HEAD
-		phba->sli4_hba.xri_ids = kzalloc(rsrc_id_cnt *
-=======
 		phba->sli4_hba.max_cfg_param.xri_used = 0;
 		phba->sli4_hba.xri_ids = kcalloc(rsrc_id_cnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 sizeof(uint16_t),
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.xri_ids)) {
@@ -8435,22 +6554,14 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		ext_blk_list = &phba->sli4_hba.lpfc_xri_blk_list;
 		break;
 	case LPFC_RSC_TYPE_FCOE_VFI:
-<<<<<<< HEAD
-		phba->sli4_hba.vfi_bmask = kzalloc(longs *
-=======
 		phba->sli4_hba.vfi_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.vfi_bmask)) {
 			rc = -ENOMEM;
 			goto err_exit;
 		}
-<<<<<<< HEAD
-		phba->sli4_hba.vfi_ids = kzalloc(rsrc_id_cnt *
-=======
 		phba->sli4_hba.vfi_ids = kcalloc(rsrc_id_cnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 sizeof(uint16_t),
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.vfi_ids)) {
@@ -8498,16 +6609,10 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 		rsrc_blks->rsrc_size = rsrc_size;
 		list_add_tail(&rsrc_blks->list, ext_blk_list);
 		rsrc_start = rsrc_id;
-<<<<<<< HEAD
-		if ((type == LPFC_RSC_TYPE_FCOE_XRI) && (j == 0))
-			phba->sli4_hba.scsi_xri_start = rsrc_start +
-				lpfc_sli4_get_els_iocb_cnt(phba);
-=======
 		if ((type == LPFC_RSC_TYPE_FCOE_XRI) && (j == 0)) {
 			phba->sli4_hba.io_xri_start = rsrc_start +
 				lpfc_sli4_get_iocb_cnt(phba);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (rsrc_id < (rsrc_start + rsrc_size)) {
 			ids[j] = rsrc_id;
@@ -8523,11 +6628,8 @@ lpfc_sli4_alloc_extent(struct lpfc_hba *phba, uint16_t type)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_dealloc_extent - Deallocate an SLI4 resource extent.
  * @phba: Pointer to HBA context object.
@@ -8582,11 +6684,7 @@ lpfc_sli4_dealloc_extent(struct lpfc_hba *phba, uint16_t type)
 	dealloc_rsrc = &mbox->u.mqe.un.dealloc_rsrc_extents;
 	if (bf_get(lpfc_mbox_hdr_status,
 		   &dealloc_rsrc->header.cfg_shdr.response)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2919 Failed to release resource extents "
 				"for type %d - Status 0x%x Add'l Status 0x%x. "
 				"Resource memory not released.\n",
@@ -8610,18 +6708,11 @@ lpfc_sli4_dealloc_extent(struct lpfc_hba *phba, uint16_t type)
 			list_del_init(&rsrc_blk->list);
 			kfree(rsrc_blk);
 		}
-<<<<<<< HEAD
-=======
 		phba->sli4_hba.max_cfg_param.vpi_used = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LPFC_RSC_TYPE_FCOE_XRI:
 		kfree(phba->sli4_hba.xri_bmask);
 		kfree(phba->sli4_hba.xri_ids);
-<<<<<<< HEAD
-		bf_set(lpfc_xri_rsrc_rdy, &phba->sli4_hba.sli4_flags, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry_safe(rsrc_blk, rsrc_blk_next,
 				    &phba->sli4_hba.lpfc_xri_blk_list, list) {
 			list_del_init(&rsrc_blk->list);
@@ -8657,8 +6748,6 @@ lpfc_sli4_dealloc_extent(struct lpfc_hba *phba, uint16_t type)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static void
 lpfc_set_features(struct lpfc_hba *phba, LPFC_MBOXQ_t *mbox,
 		  uint32_t feature)
@@ -9048,7 +7137,6 @@ lpfc_sli4_ras_setup(struct lpfc_hba *phba)
 				 LPFC_RAS_ENABLE_LOGGING);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_alloc_resource_identifiers - Allocate all SLI4 resource extents.
  * @phba: Pointer to HBA context object.
@@ -9151,11 +7239,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 		}
 		/* RPIs. */
 		count = phba->sli4_hba.max_cfg_param.max_rpi;
-<<<<<<< HEAD
-		base = phba->sli4_hba.max_cfg_param.rpi_base;
-		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
-		phba->sli4_hba.rpi_bmask = kzalloc(longs *
-=======
 		if (count <= 0) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"3279 Invalid provisioning of "
@@ -9166,19 +7249,13 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 		base = phba->sli4_hba.max_cfg_param.rpi_base;
 		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
 		phba->sli4_hba.rpi_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.rpi_bmask)) {
 			rc = -ENOMEM;
 			goto err_exit;
 		}
-<<<<<<< HEAD
-		phba->sli4_hba.rpi_ids = kzalloc(count *
-						 sizeof(uint16_t),
-=======
 		phba->sli4_hba.rpi_ids = kcalloc(count, sizeof(uint16_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.rpi_ids)) {
 			rc = -ENOMEM;
@@ -9190,12 +7267,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 
 		/* VPIs. */
 		count = phba->sli4_hba.max_cfg_param.max_vpi;
-<<<<<<< HEAD
-		base = phba->sli4_hba.max_cfg_param.vpi_base;
-		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
-		phba->vpi_bmask = kzalloc(longs *
-					  sizeof(unsigned long),
-=======
 		if (count <= 0) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"3280 Invalid provisioning of "
@@ -9206,18 +7277,12 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 		base = phba->sli4_hba.max_cfg_param.vpi_base;
 		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
 		phba->vpi_bmask = kcalloc(longs, sizeof(unsigned long),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  GFP_KERNEL);
 		if (unlikely(!phba->vpi_bmask)) {
 			rc = -ENOMEM;
 			goto free_rpi_ids;
 		}
-<<<<<<< HEAD
-		phba->vpi_ids = kzalloc(count *
-					sizeof(uint16_t),
-=======
 		phba->vpi_ids = kcalloc(count, sizeof(uint16_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 		if (unlikely(!phba->vpi_ids)) {
 			rc = -ENOMEM;
@@ -9229,11 +7294,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 
 		/* XRIs. */
 		count = phba->sli4_hba.max_cfg_param.max_xri;
-<<<<<<< HEAD
-		base = phba->sli4_hba.max_cfg_param.xri_base;
-		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
-		phba->sli4_hba.xri_bmask = kzalloc(longs *
-=======
 		if (count <= 0) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"3281 Invalid provisioning of "
@@ -9244,7 +7304,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 		base = phba->sli4_hba.max_cfg_param.xri_base;
 		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
 		phba->sli4_hba.xri_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.xri_bmask)) {
@@ -9252,13 +7311,7 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 			goto free_vpi_ids;
 		}
 		phba->sli4_hba.max_cfg_param.xri_used = 0;
-<<<<<<< HEAD
-		phba->sli4_hba.xri_count = 0;
-		phba->sli4_hba.xri_ids = kzalloc(count *
-						 sizeof(uint16_t),
-=======
 		phba->sli4_hba.xri_ids = kcalloc(count, sizeof(uint16_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.xri_ids)) {
 			rc = -ENOMEM;
@@ -9270,11 +7323,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 
 		/* VFIs. */
 		count = phba->sli4_hba.max_cfg_param.max_vfi;
-<<<<<<< HEAD
-		base = phba->sli4_hba.max_cfg_param.vfi_base;
-		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
-		phba->sli4_hba.vfi_bmask = kzalloc(longs *
-=======
 		if (count <= 0) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"3282 Invalid provisioning of "
@@ -9285,19 +7333,13 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 		base = phba->sli4_hba.max_cfg_param.vfi_base;
 		longs = (count + BITS_PER_LONG - 1) / BITS_PER_LONG;
 		phba->sli4_hba.vfi_bmask = kcalloc(longs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(unsigned long),
 						   GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.vfi_bmask)) {
 			rc = -ENOMEM;
 			goto free_xri_ids;
 		}
-<<<<<<< HEAD
-		phba->sli4_hba.vfi_ids = kzalloc(count *
-						 sizeof(uint16_t),
-=======
 		phba->sli4_hba.vfi_ids = kcalloc(count, sizeof(uint16_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 GFP_KERNEL);
 		if (unlikely(!phba->sli4_hba.vfi_ids)) {
 			rc = -ENOMEM;
@@ -9318,20 +7360,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
 
  free_vfi_bmask:
 	kfree(phba->sli4_hba.vfi_bmask);
-<<<<<<< HEAD
- free_xri_ids:
-	kfree(phba->sli4_hba.xri_ids);
- free_xri_bmask:
-	kfree(phba->sli4_hba.xri_bmask);
- free_vpi_ids:
-	kfree(phba->vpi_ids);
- free_vpi_bmask:
-	kfree(phba->vpi_bmask);
- free_rpi_ids:
-	kfree(phba->sli4_hba.rpi_ids);
- free_rpi_bmask:
-	kfree(phba->sli4_hba.rpi_bmask);
-=======
 	phba->sli4_hba.vfi_bmask = NULL;
  free_xri_ids:
 	kfree(phba->sli4_hba.xri_ids);
@@ -9351,7 +7379,6 @@ lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *phba)
  free_rpi_bmask:
 	kfree(phba->sli4_hba.rpi_bmask);
 	phba->sli4_hba.rpi_bmask = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_exit:
 	return rc;
 }
@@ -9373,18 +7400,11 @@ lpfc_sli4_dealloc_resource_identifiers(struct lpfc_hba *phba)
 		lpfc_sli4_dealloc_extent(phba, LPFC_RSC_TYPE_FCOE_VFI);
 	} else {
 		kfree(phba->vpi_bmask);
-<<<<<<< HEAD
-=======
 		phba->sli4_hba.max_cfg_param.vpi_used = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(phba->vpi_ids);
 		bf_set(lpfc_vpi_rsrc_rdy, &phba->sli4_hba.sli4_flags, 0);
 		kfree(phba->sli4_hba.xri_bmask);
 		kfree(phba->sli4_hba.xri_ids);
-<<<<<<< HEAD
-		bf_set(lpfc_xri_rsrc_rdy, &phba->sli4_hba.sli4_flags, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(phba->sli4_hba.vfi_bmask);
 		kfree(phba->sli4_hba.vfi_ids);
 		bf_set(lpfc_vfi_rsrc_rdy, &phba->sli4_hba.sli4_flags, 0);
@@ -9398,11 +7418,7 @@ lpfc_sli4_dealloc_resource_identifiers(struct lpfc_hba *phba)
  * lpfc_sli4_get_allocated_extnts - Get the port's allocated extents.
  * @phba: Pointer to HBA context object.
  * @type: The resource extent type.
-<<<<<<< HEAD
- * @extnt_count: buffer to hold port extent count response
-=======
  * @extnt_cnt: buffer to hold port extent count response
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @extnt_size: buffer to hold port extent size response.
  *
  * This function calls the port to read the host allocated extents
@@ -9457,12 +7473,6 @@ lpfc_sli4_get_allocated_extnts(struct lpfc_hba *phba, uint16_t type,
 		curr_blks++;
 	}
 
-<<<<<<< HEAD
-	/* Calculate the total requested length of the dma memory. */
-	req_len = curr_blks * sizeof(uint16_t);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Calculate the size of an embedded mailbox.  The uint32_t
 	 * accounts for extents-specific word.
@@ -9492,11 +7502,7 @@ lpfc_sli4_get_allocated_extnts(struct lpfc_hba *phba, uint16_t type,
 				     LPFC_MBOX_OPCODE_GET_ALLOC_RSRC_EXTENT,
 				     req_len, emb);
 	if (alloc_len < req_len) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2983 Allocated DMA memory size (x%x) is "
 			"less than the requested DMA memory "
 			"size (x%x)\n", alloc_len, req_len);
@@ -9539,11 +7545,7 @@ lpfc_sli4_get_allocated_extnts(struct lpfc_hba *phba, uint16_t type,
 	}
 
 	if (bf_get(lpfc_mbox_hdr_status, &shdr->response)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2984 Failed to read allocated resources "
 			"for type %d - Status 0x%x Add'l Status 0x%x.\n",
 			type,
@@ -9558,13 +7560,6 @@ lpfc_sli4_get_allocated_extnts(struct lpfc_hba *phba, uint16_t type,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_hba_setup - SLI4 device intialization PCI function
- * @phba: Pointer to HBA context object.
- *
- * This function is the main SLI4 device intialization PCI function. This
- * function is called by the HBA intialization code, HBA reset code and
-=======
  * lpfc_sli4_repost_sgl_list - Repost the buffers sgl pages as block
  * @phba: pointer to lpfc hba data structure.
  * @sgl_list: linked link of sgl buffers to post
@@ -10450,18 +8445,13 @@ lpfc_set_host_tm(struct lpfc_hba *phba)
  *
  * This function is the main SLI4 device initialization PCI function. This
  * function is called by the HBA initialization code, HBA reset code and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HBA error attention handler code. Caller is not required to hold any
  * locks.
  **/
 int
 lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 {
-<<<<<<< HEAD
-	int rc;
-=======
 	int rc, i, cnt, len, dd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LPFC_MBOXQ_t *mboxq;
 	struct lpfc_mqe *mqe;
 	uint8_t *vpd;
@@ -10470,11 +8460,8 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	struct Scsi_Host *shost = lpfc_shost_from_vport(phba->pport);
 	struct lpfc_vport *vport = phba->pport;
 	struct lpfc_dmabuf *mp;
-<<<<<<< HEAD
-=======
 	struct lpfc_rqb *rqbp;
 	u32 flg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Perform a PCI function reset to start from clean */
 	rc = lpfc_pci_function_reset(phba);
@@ -10488,10 +8475,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	else {
 		spin_lock_irq(&phba->hbalock);
 		phba->sli.sli_flag |= LPFC_SLI_ACTIVE;
-<<<<<<< HEAD
-		spin_unlock_irq(&phba->hbalock);
-	}
-=======
 		flg = phba->sli.sli_flag;
 		spin_unlock_irq(&phba->hbalock);
 		/* Allow a little time after setting SLI_ACTIVE for any polled
@@ -10507,7 +8490,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	phba->hba_flag &= ~HBA_SETUP;
 
 	lpfc_sli4_dip(phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate a single mailbox container for initializing the
@@ -10530,14 +8512,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 		kfree(vpd);
 		goto out_free_mbox;
 	}
-<<<<<<< HEAD
-	mqe = &mboxq->u.mqe;
-	phba->sli_rev = bf_get(lpfc_mbx_rd_rev_sli_lvl, &mqe->un.read_rev);
-	if (bf_get(lpfc_mbx_rd_rev_fcoe, &mqe->un.read_rev))
-		phba->hba_flag |= HBA_FCOE_MODE;
-	else
-		phba->hba_flag &= ~HBA_FCOE_MODE;
-=======
 
 	mqe = &mboxq->u.mqe;
 	phba->sli_rev = bf_get(lpfc_mbx_rd_rev_sli_lvl, &mqe->un.read_rev);
@@ -10547,7 +8521,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	} else {
 		phba->hba_flag &= ~HBA_FCOE_MODE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bf_get(lpfc_mbx_rd_rev_cee_ver, &mqe->un.read_rev) ==
 		LPFC_DCBX_CEE_MODE)
@@ -10555,15 +8528,10 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	else
 		phba->hba_flag &= ~HBA_FIP_SUPPORT;
 
-<<<<<<< HEAD
-	if (phba->sli_rev != LPFC_SLI_REV4) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 	phba->hba_flag &= ~HBA_IOQ_FLUSH;
 
 	if (phba->sli_rev != LPFC_SLI_REV4) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"0376 READ_REV Error. SLI Level %d "
 			"FCoE enabled %d\n",
 			phba->sli_rev, phba->hba_flag & HBA_FCOE_MODE);
@@ -10572,13 +8540,10 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 		goto out_free_mbox;
 	}
 
-<<<<<<< HEAD
-=======
 	rc = lpfc_set_host_tm(phba);
 	lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_INIT,
 			"6468 Set host date / time: Status x%x:\n", rc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Continue initialization with default values even if driver failed
 	 * to read FCoE param config regions, only read parameters if the
@@ -10599,41 +8564,27 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				"3080 Successful retrieving SLI4 device "
 				"physical port name: %s.\n", phba->Port);
 
-<<<<<<< HEAD
-=======
 	rc = lpfc_sli4_get_ctl_attr(phba);
 	if (!rc)
 		lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
 				"8351 Successful retrieving SLI4 device "
 				"CTL ATTR\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Evaluate the read rev and vpd data. Populate the driver
 	 * state with the results. If this routine fails, the failure
 	 * is not fatal as the driver will use generic values.
 	 */
 	rc = lpfc_parse_vpd(phba, vpd, vpd_size);
-<<<<<<< HEAD
-	if (unlikely(!rc)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-				"0377 Error %d parsing vpd. "
-				"Using defaults.\n", rc);
-		rc = 0;
-	}
-=======
 	if (unlikely(!rc))
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0377 Error %d parsing vpd. "
 				"Using defaults.\n", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(vpd);
 
 	/* Save information as VPD data */
 	phba->vpd.rev.biuRev = mqe->un.read_rev.first_hw_rev;
 	phba->vpd.rev.smRev = mqe->un.read_rev.second_hw_rev;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * This is because first G7 ASIC doesn't support the standard
@@ -10646,7 +8597,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	    (phba->cfg_nvme_embed_cmd == 1))
 		phba->cfg_nvme_embed_cmd = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->vpd.rev.endecRev = mqe->un.read_rev.third_hw_rev;
 	phba->vpd.rev.fcphHigh = bf_get(lpfc_mbx_rd_rev_fcph_high,
 					 &mqe->un.read_rev);
@@ -10671,8 +8621,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 			phba->vpd.rev.fcphHigh, phba->vpd.rev.fcphLow,
 			phba->vpd.rev.feaLevelHigh, phba->vpd.rev.feaLevelLow);
 
-<<<<<<< HEAD
-=======
 	if (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) ==
 	    LPFC_SLI_INTF_IF_TYPE_0) {
 		lpfc_set_features(phba, mboxq, LPFC_SET_UE_RECOVERY);
@@ -10698,7 +8646,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 			phba->mds_diags_support = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Discover the port's supported feature set and match it against the
 	 * hosts requests.
@@ -10710,8 +8657,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 		goto out_free_mbox;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Disable VMID if app header is not supported */
 	if (phba->cfg_vmid_app_header && !(bf_get(lpfc_mbx_rq_ftr_rsp_ashdr,
 						  &mqe->un.req_ftrs))) {
@@ -10721,7 +8666,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				"1242 vmid feature not supported\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The port must support FCP initiator mode as this is the
 	 * only mode running in the host.
@@ -10731,12 +8675,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				"0378 No support for fcpi mode.\n");
 		ftr_rsp++;
 	}
-<<<<<<< HEAD
-	if (bf_get(lpfc_mbx_rq_ftr_rsp_perfh, &mqe->un.req_ftrs))
-		phba->sli3_options |= LPFC_SLI4_PERFH_ENABLED;
-	else
-		phba->sli3_options &= ~LPFC_SLI4_PERFH_ENABLED;
-=======
 
 	/* Performance Hints are ONLY for FCoE */
 	if (phba->hba_flag & HBA_FCOE_MODE) {
@@ -10746,27 +8684,17 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 			phba->sli3_options &= ~LPFC_SLI4_PERFH_ENABLED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the port cannot support the host's requested features
 	 * then turn off the global config parameters to disable the
 	 * feature in the driver.  This is not a fatal error.
 	 */
-<<<<<<< HEAD
-	phba->sli3_options &= ~LPFC_SLI3_BG_ENABLED;
-	if (phba->cfg_enable_bg) {
-		if (bf_get(lpfc_mbx_rq_ftr_rsp_dif, &mqe->un.req_ftrs))
-			phba->sli3_options |= LPFC_SLI3_BG_ENABLED;
-		else
-			ftr_rsp++;
-=======
 	if (phba->sli3_options & LPFC_SLI3_BG_ENABLED) {
 		if (!(bf_get(lpfc_mbx_rq_ftr_rsp_dif, &mqe->un.req_ftrs))) {
 			phba->cfg_enable_bg = 0;
 			phba->sli3_options &= ~LPFC_SLI3_BG_ENABLED;
 			ftr_rsp++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (phba->max_vpi && phba->cfg_enable_npiv &&
@@ -10790,8 +8718,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	phba->sli3_options |= (LPFC_SLI3_NPIV_ENABLED | LPFC_SLI3_HBQ_ENABLED);
 	spin_unlock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-=======
 	/* Always try to enable dual dump feature if we can */
 	lpfc_set_features(phba, mboxq, LPFC_SET_DUAL_DUMP);
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
@@ -10809,26 +8735,17 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				lpfc_sli_config_mbox_opcode_get(
 					phba, mboxq),
 				rc, dd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Allocate all resources (xri,rpi,vpi,vfi) now.  Subsequent
 	 * calls depends on these resources to complete port setup.
 	 */
 	rc = lpfc_sli4_alloc_resource_identifiers(phba);
 	if (rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2920 Failed to alloc Resource IDs "
 				"rc = x%x\n", rc);
 		goto out_free_mbox;
 	}
-<<<<<<< HEAD
-	/* update physical xri mappings in the scsi buffers */
-	lpfc_scsi_buf_update(phba);
-=======
 
 	lpfc_set_host_data(phba, mboxq);
 
@@ -10838,7 +8755,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				"2134 Failed to set host os driver version %x",
 				rc);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read the port's service parameters. */
 	rc = lpfc_read_sparam(phba, mboxq, vport->vpi);
@@ -10850,27 +8766,13 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 
 	mboxq->vport = vport;
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
-<<<<<<< HEAD
-	mp = (struct lpfc_dmabuf *) mboxq->context1;
-=======
 	mp = mboxq->ctx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc == MBX_SUCCESS) {
 		memcpy(&vport->fc_sparam, mp->virt, sizeof(struct serv_parm));
 		rc = 0;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * This memory was allocated by the lpfc_read_sparam routine. Release
-	 * it to the mbuf pool.
-	 */
-	lpfc_mbuf_free(phba, mp->virt, mp->phys);
-	kfree(mp);
-	mboxq->context1 = NULL;
-	if (unlikely(rc)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 	 * This memory was allocated by the lpfc_read_sparam routine but is
 	 * no longer needed.  It is released and ctx_buf NULLed to prevent
 	 * unintended pointer access as the mbox is reused.
@@ -10880,7 +8782,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	mboxq->ctx_buf = NULL;
 	if (unlikely(rc)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0382 READ_SPARAM command failed "
 				"status %d, mbxStatus x%x\n",
 				rc, bf_get(lpfc_mqe_status, mqe));
@@ -10895,39 +8796,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	fc_host_node_name(shost) = wwn_to_u64(vport->fc_nodename.u.wwn);
 	fc_host_port_name(shost) = wwn_to_u64(vport->fc_portname.u.wwn);
 
-<<<<<<< HEAD
-	/* Register SGL pool to the device using non-embedded mailbox command */
-	if (!phba->sli4_hba.extents_in_use) {
-		rc = lpfc_sli4_post_els_sgl_list(phba);
-		if (unlikely(rc)) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-					"0582 Error %d during els sgl post "
-					"operation\n", rc);
-			rc = -ENODEV;
-			goto out_free_mbox;
-		}
-	} else {
-		rc = lpfc_sli4_post_els_sgl_list_ext(phba);
-		if (unlikely(rc)) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-					"2560 Error %d during els sgl post "
-					"operation\n", rc);
-			rc = -ENODEV;
-			goto out_free_mbox;
-		}
-	}
-
-	/* Register SCSI SGL pool to the device */
-	rc = lpfc_sli4_repost_scsi_sgl_list(phba);
-	if (unlikely(rc)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-				"0383 Error %d during scsi sgl post "
-				"operation\n", rc);
-		/* Some Scsi buffers were moved to the abort scsi list */
-		/* A pci function reset will repost them */
-		rc = -ENODEV;
-		goto out_free_mbox;
-=======
 	/* Create all the SLI4 queues */
 	rc = lpfc_sli4_queue_create(phba);
 	if (rc) {
@@ -11055,43 +8923,11 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 				phba->sli4_hba.nvmet_mrq_data[i],
 				phba->cfg_nvmet_mrq_post, i);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Post the rpi header region to the device. */
 	rc = lpfc_sli4_post_all_rpi_hdrs(phba);
 	if (unlikely(rc)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-				"0393 Error %d during rpi post operation\n",
-				rc);
-		rc = -ENODEV;
-		goto out_free_mbox;
-	}
-	lpfc_sli4_node_prep(phba);
-
-	/* Create all the SLI4 queues */
-	rc = lpfc_sli4_queue_create(phba);
-	if (rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"3089 Failed to allocate queues\n");
-		rc = -ENODEV;
-		goto out_stop_timers;
-	}
-	/* Set up all the queues to the device */
-	rc = lpfc_sli4_queue_setup(phba);
-	if (unlikely(rc)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-				"0381 Error %d during queue setup.\n ", rc);
-		goto out_destroy_queue;
-	}
-
-	/* Arm the CQs and then EQs on device */
-	lpfc_sli4_arm_cqeq_intr(phba);
-
-	/* Indicate device interrupt mode */
-	phba->sli4_hba.intr_enable = 1;
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0393 Error %d during rpi post operation\n",
 				rc);
@@ -11156,7 +8992,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	} else {
 		phba->cfg_xri_rebalancing = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allow asynchronous mailbox command to go through */
 	spin_lock_irq(&phba->hbalock);
@@ -11172,54 +9007,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 
 	/* Start the ELS watchdog timer */
 	mod_timer(&vport->els_tmofunc,
-<<<<<<< HEAD
-		  jiffies + HZ * (phba->fc_ratov * 2));
-
-	/* Start heart beat timer */
-	mod_timer(&phba->hb_tmofunc,
-		  jiffies + HZ * LPFC_HB_MBOX_INTERVAL);
-	phba->hb_outstanding = 0;
-	phba->last_completion_time = jiffies;
-
-	/* Start error attention (ERATT) polling timer */
-	mod_timer(&phba->eratt_poll, jiffies + HZ * LPFC_ERATT_POLL_INTERVAL);
-
-	/* Enable PCIe device Advanced Error Reporting (AER) if configured */
-	if (phba->cfg_aer_support == 1 && !(phba->hba_flag & HBA_AER_ENABLED)) {
-		rc = pci_enable_pcie_error_reporting(phba->pcidev);
-		if (!rc) {
-			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-					"2829 This device supports "
-					"Advanced Error Reporting (AER)\n");
-			spin_lock_irq(&phba->hbalock);
-			phba->hba_flag |= HBA_AER_ENABLED;
-			spin_unlock_irq(&phba->hbalock);
-		} else {
-			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-					"2830 This device does not support "
-					"Advanced Error Reporting (AER)\n");
-			phba->cfg_aer_support = 0;
-		}
-		rc = 0;
-	}
-
-	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
-		/*
-		 * The FC Port needs to register FCFI (index 0)
-		 */
-		lpfc_reg_fcfi(phba, mboxq);
-		mboxq->vport = phba->pport;
-		rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
-		if (rc != MBX_SUCCESS)
-			goto out_unset_queue;
-		rc = 0;
-		phba->fcf.fcfi = bf_get(lpfc_reg_fcfi_fcfi,
-					&mboxq->u.mqe.un.reg_fcfi);
-
-		/* Check if the port is configured to be disabled */
-		lpfc_sli_read_link_ste(phba);
-	}
-=======
 		  jiffies + msecs_to_jiffies(1000 * (phba->fc_ratov * 2)));
 
 	/* Start heart beat timer */
@@ -11239,7 +9026,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	/* Start error attention (ERATT) polling timer */
 	mod_timer(&phba->eratt_poll,
 		  jiffies + msecs_to_jiffies(1000 * phba->eratt_poll_interval));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The port is ready, set the host's link state to LINK_DOWN
@@ -11247,12 +9033,6 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	 */
 	spin_lock_irq(&phba->hbalock);
 	phba->link_state = LPFC_LINK_DOWN;
-<<<<<<< HEAD
-	spin_unlock_irq(&phba->hbalock);
-	if (!(phba->hba_flag & HBA_FCOE_MODE) &&
-	    (phba->hba_flag & LINK_DISABLED)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT | LOG_SLI,
-=======
 
 	/* Check if physical ports are trunked */
 	if (bf_get(lpfc_conf_trunk_port0, &phba->sli4_hba))
@@ -11277,38 +9057,20 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
 	if (!(phba->hba_flag & HBA_FCOE_MODE) &&
 	    (phba->hba_flag & LINK_DISABLED)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"3103 Adapter Link is disabled.\n");
 		lpfc_down_link(phba, mboxq);
 		rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
 		if (rc != MBX_SUCCESS) {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT | LOG_SLI,
-					"3104 Adapter failed to issue "
-					"DOWN_LINK mbox cmd, rc:x%x\n", rc);
-			goto out_unset_queue;
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"3104 Adapter failed to issue "
 					"DOWN_LINK mbox cmd, rc:x%x\n", rc);
 			goto out_io_buff_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (phba->cfg_suppress_link_up == LPFC_INITIALIZE_LINK) {
 		/* don't perform init_link on SLI4 FC port loopback test */
 		if (!(phba->link_flag & LS_LOOPBACK_MODE)) {
 			rc = phba->lpfc_hba_init_link(phba, MBX_NOWAIT);
 			if (rc)
-<<<<<<< HEAD
-				goto out_unset_queue;
-		}
-	}
-	mempool_free(mboxq, phba->mbox_mem_pool);
-	return rc;
-out_unset_queue:
-	/* Unset all the queues set up in this routine when error out */
-	lpfc_sli4_queue_unset(phba);
-=======
 				goto out_io_buff_free;
 		}
 	}
@@ -11328,7 +9090,6 @@ out_unset_queue:
 	lpfc_sli4_queue_unset(phba);
 out_free_iocblist:
 	lpfc_free_iocb_list(phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_destroy_queue:
 	lpfc_sli4_queue_destroy(phba);
 out_stop_timers:
@@ -11340,11 +9101,7 @@ out_free_mbox:
 
 /**
  * lpfc_mbox_timeout - Timeout call back function for mbox timer
-<<<<<<< HEAD
- * @ptr: context object - pointer to hba structure.
-=======
  * @t: Context to fetch pointer to hba structure from.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the callback function for mailbox timer. The mailbox
  * timer is armed when a new mailbox command is issued and the timer
@@ -11355,15 +9112,9 @@ out_free_mbox:
  * done by the worker thread function lpfc_mbox_timeout_handler.
  **/
 void
-<<<<<<< HEAD
-lpfc_mbox_timeout(unsigned long ptr)
-{
-	struct lpfc_hba  *phba = (struct lpfc_hba *) ptr;
-=======
 lpfc_mbox_timeout(struct timer_list *t)
 {
 	struct lpfc_hba  *phba = from_timer(phba, t, sli.mbox_tmo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long iflag;
 	uint32_t tmo_posted;
 
@@ -11378,8 +9129,6 @@ lpfc_mbox_timeout(struct timer_list *t)
 	return;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * lpfc_sli4_mbox_completions_pending - check to see if any mailbox completions
  *                                    are pending
@@ -11488,7 +9237,6 @@ lpfc_sli4_process_missed_mbox_completions(struct lpfc_hba *phba)
 	return mbox_pending;
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_mbox_timeout_handler - Worker thread function to handle mailbox timeout
@@ -11502,12 +9250,6 @@ void
 lpfc_mbox_timeout_handler(struct lpfc_hba *phba)
 {
 	LPFC_MBOXQ_t *pmbox = phba->sli.mbox_active;
-<<<<<<< HEAD
-	MAILBOX_t *mb = &pmbox->u.mb;
-	struct lpfc_sli *psli = &phba->sli;
-	struct lpfc_sli_ring *pring;
-
-=======
 	MAILBOX_t *mb = NULL;
 
 	struct lpfc_sli *psli = &phba->sli;
@@ -11520,7 +9262,6 @@ lpfc_mbox_timeout_handler(struct lpfc_hba *phba)
 
 	if (pmbox != NULL)
 		mb = &pmbox->u.mb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check the pmbox pointer first.  There is a race condition
 	 * between the mbox timeout handler getting executed in the
 	 * worklist and the mailbox actually completing. When this
@@ -11537,13 +9278,8 @@ lpfc_mbox_timeout_handler(struct lpfc_hba *phba)
 	}
 
 	/* Mbox cmd <mbxCommand> timeout */
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-			"0310 Mailbox command x%x timeout Data: x%x x%x x%p\n",
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 			"0310 Mailbox command x%x timeout Data: x%x x%x x%px\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mb->mbxCommand,
 			phba->pport->port_state,
 			phba->sli.sli_flag,
@@ -11554,10 +9290,7 @@ lpfc_mbox_timeout_handler(struct lpfc_hba *phba)
 	 * would get IOCB_ERROR from lpfc_sli_issue_iocb, allowing
 	 * it to fail all outstanding SCSI IO.
 	 */
-<<<<<<< HEAD
-=======
 	set_bit(MBX_TMO_ERR, &phba->bit_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&phba->pport->work_port_lock);
 	phba->pport->work_port_events &= ~WORKER_MBOX_TMO;
 	spin_unlock_irq(&phba->pport->work_port_lock);
@@ -11566,14 +9299,7 @@ lpfc_mbox_timeout_handler(struct lpfc_hba *phba)
 	psli->sli_flag &= ~LPFC_SLI_ACTIVE;
 	spin_unlock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-	pring = &psli->ring[psli->fcp_ring];
-	lpfc_sli_abort_iocb_ring(phba, pring);
-
-	lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"0345 Resetting board due to mailbox timeout\n");
 
 	/* Reset the HBA device */
@@ -11610,11 +9336,7 @@ static int
 lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 		       uint32_t flag)
 {
-<<<<<<< HEAD
-	MAILBOX_t *mb;
-=======
 	MAILBOX_t *mbx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli *psli = &phba->sli;
 	uint32_t status, evtctr;
 	uint32_t ha_copy, hc_copy;
@@ -11668,22 +9390,14 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 
 	psli = &phba->sli;
 
-<<<<<<< HEAD
-	mb = &pmbox->u.mb;
-=======
 	mbx = &pmbox->u.mb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = MBX_SUCCESS;
 
 	if (phba->link_state == LPFC_HBA_ERROR) {
 		spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 
 		/* Mbox command <mbxCommand> cannot issue */
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):0311 Mailbox command x%x cannot "
 				"issue Data: x%x x%x\n",
 				pmbox->vport ? pmbox->vport->vpi : 0,
@@ -11691,19 +9405,11 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 		goto out_not_finished;
 	}
 
-<<<<<<< HEAD
-	if (mb->mbxCommand != MBX_KILL_BOARD && flag & MBX_NOWAIT) {
-		if (lpfc_readl(phba->HCregaddr, &hc_copy) ||
-			!(hc_copy & HC_MBINT_ENA)) {
-			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 	if (mbx->mbxCommand != MBX_KILL_BOARD && flag & MBX_NOWAIT) {
 		if (lpfc_readl(phba->HCregaddr, &hc_copy) ||
 			!(hc_copy & HC_MBINT_ENA)) {
 			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):2528 Mailbox command x%x cannot "
 				"issue Data: x%x x%x\n",
 				pmbox->vport ? pmbox->vport->vpi : 0,
@@ -11722,11 +9428,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 
 			/* Mbox command <mbxCommand> cannot issue */
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"(%d):2529 Mailbox command x%x "
 					"cannot issue Data: x%x x%x\n",
 					pmbox->vport ? pmbox->vport->vpi : 0,
@@ -11738,11 +9440,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 		if (!(psli->sli_flag & LPFC_SLI_ACTIVE)) {
 			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 			/* Mbox command <mbxCommand> cannot issue */
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"(%d):2530 Mailbox command x%x "
 					"cannot issue Data: x%x x%x\n",
 					pmbox->vport ? pmbox->vport->vpi : 0,
@@ -11761,12 +9459,8 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 				"(%d):0308 Mbox cmd issue - BUSY Data: "
 				"x%x x%x x%x x%x\n",
 				pmbox->vport ? pmbox->vport->vpi : 0xffffff,
-<<<<<<< HEAD
-				mb->mbxCommand, phba->pport->port_state,
-=======
 				mbx->mbxCommand,
 				phba->pport ? phba->pport->port_state : 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				psli->sli_flag, flag);
 
 		psli->slistat.mbox_busy++;
@@ -11776,25 +9470,15 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 			lpfc_debugfs_disc_trc(pmbox->vport,
 				LPFC_DISC_TRC_MBOX_VPORT,
 				"MBOX Bsy vport:  cmd:x%x mb:x%x x%x",
-<<<<<<< HEAD
-				(uint32_t)mb->mbxCommand,
-				mb->un.varWords[0], mb->un.varWords[1]);
-=======
 				(uint32_t)mbx->mbxCommand,
 				mbx->un.varWords[0], mbx->un.varWords[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		else {
 			lpfc_debugfs_disc_trc(phba->pport,
 				LPFC_DISC_TRC_MBOX,
 				"MBOX Bsy:        cmd:x%x mb:x%x x%x",
-<<<<<<< HEAD
-				(uint32_t)mb->mbxCommand,
-				mb->un.varWords[0], mb->un.varWords[1]);
-=======
 				(uint32_t)mbx->mbxCommand,
 				mbx->un.varWords[0], mbx->un.varWords[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return MBX_BUSY;
@@ -11805,19 +9489,11 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 	/* If we are not polling, we MUST be in SLI2 mode */
 	if (flag != MBX_POLL) {
 		if (!(psli->sli_flag & LPFC_SLI_ACTIVE) &&
-<<<<<<< HEAD
-		    (mb->mbxCommand != MBX_KILL_BOARD)) {
-			psli->sli_flag &= ~LPFC_SLI_MBOX_ACTIVE;
-			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
-			/* Mbox command <mbxCommand> cannot issue */
-			lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		    (mbx->mbxCommand != MBX_KILL_BOARD)) {
 			psli->sli_flag &= ~LPFC_SLI_MBOX_ACTIVE;
 			spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
 			/* Mbox command <mbxCommand> cannot issue */
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"(%d):2531 Mailbox command x%x "
 					"cannot issue Data: x%x x%x\n",
 					pmbox->vport ? pmbox->vport->vpi : 0,
@@ -11826,14 +9502,9 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 			goto out_not_finished;
 		}
 		/* timeout active mbox command */
-<<<<<<< HEAD
-		mod_timer(&psli->mbox_tmo, (jiffies +
-			       (HZ * lpfc_mbox_tmo_val(phba, pmbox))));
-=======
 		timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, pmbox) *
 					   1000);
 		mod_timer(&psli->mbox_tmo, jiffies + timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Mailbox cmd <cmd> issue */
@@ -11841,41 +9512,24 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 			"(%d):0309 Mailbox cmd x%x issue Data: x%x x%x "
 			"x%x\n",
 			pmbox->vport ? pmbox->vport->vpi : 0,
-<<<<<<< HEAD
-			mb->mbxCommand, phba->pport->port_state,
-			psli->sli_flag, flag);
-
-	if (mb->mbxCommand != MBX_HEARTBEAT) {
-=======
 			mbx->mbxCommand,
 			phba->pport ? phba->pport->port_state : 0xff,
 			psli->sli_flag, flag);
 
 	if (mbx->mbxCommand != MBX_HEARTBEAT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pmbox->vport) {
 			lpfc_debugfs_disc_trc(pmbox->vport,
 				LPFC_DISC_TRC_MBOX_VPORT,
 				"MBOX Send vport: cmd:x%x mb:x%x x%x",
-<<<<<<< HEAD
-				(uint32_t)mb->mbxCommand,
-				mb->un.varWords[0], mb->un.varWords[1]);
-=======
 				(uint32_t)mbx->mbxCommand,
 				mbx->un.varWords[0], mbx->un.varWords[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		else {
 			lpfc_debugfs_disc_trc(phba->pport,
 				LPFC_DISC_TRC_MBOX,
 				"MBOX Send:       cmd:x%x mb:x%x x%x",
-<<<<<<< HEAD
-				(uint32_t)mb->mbxCommand,
-				mb->un.varWords[0], mb->un.varWords[1]);
-=======
 				(uint32_t)mbx->mbxCommand,
 				mbx->un.varWords[0], mbx->un.varWords[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -11883,51 +9537,17 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 	evtctr = psli->slistat.mbox_event;
 
 	/* next set own bit for the adapter and copy over command word */
-<<<<<<< HEAD
-	mb->mbxOwner = OWN_CHIP;
-=======
 	mbx->mbxOwner = OWN_CHIP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psli->sli_flag & LPFC_SLI_ACTIVE) {
 		/* Populate mbox extension offset word. */
 		if (pmbox->in_ext_byte_len || pmbox->out_ext_byte_len) {
-<<<<<<< HEAD
-			*(((uint32_t *)mb) + pmbox->mbox_offset_word)
-=======
 			*(((uint32_t *)mbx) + pmbox->mbox_offset_word)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				= (uint8_t *)phba->mbox_ext
 				  - (uint8_t *)phba->mbox;
 		}
 
 		/* Copy the mailbox extension data */
-<<<<<<< HEAD
-		if (pmbox->in_ext_byte_len && pmbox->context2) {
-			lpfc_sli_pcimem_bcopy(pmbox->context2,
-				(uint8_t *)phba->mbox_ext,
-				pmbox->in_ext_byte_len);
-		}
-		/* Copy command data to host SLIM area */
-		lpfc_sli_pcimem_bcopy(mb, phba->mbox, MAILBOX_CMD_SIZE);
-	} else {
-		/* Populate mbox extension offset word. */
-		if (pmbox->in_ext_byte_len || pmbox->out_ext_byte_len)
-			*(((uint32_t *)mb) + pmbox->mbox_offset_word)
-				= MAILBOX_HBA_EXT_OFFSET;
-
-		/* Copy the mailbox extension data */
-		if (pmbox->in_ext_byte_len && pmbox->context2) {
-			lpfc_memcpy_to_slim(phba->MBslimaddr +
-				MAILBOX_HBA_EXT_OFFSET,
-				pmbox->context2, pmbox->in_ext_byte_len);
-
-		}
-		if (mb->mbxCommand == MBX_CONFIG_PORT) {
-			/* copy command data into host mbox for cmpl */
-			lpfc_sli_pcimem_bcopy(mb, phba->mbox, MAILBOX_CMD_SIZE);
-		}
-=======
 		if (pmbox->in_ext_byte_len && pmbox->ext_buf) {
 			lpfc_sli_pcimem_bcopy(pmbox->ext_buf,
 					      (uint8_t *)phba->mbox_ext,
@@ -11951,38 +9571,22 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 			/* copy command data into host mbox for cmpl */
 			lpfc_sli_pcimem_bcopy(mbx, phba->mbox,
 					      MAILBOX_CMD_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* First copy mbox command data to HBA SLIM, skip past first
 		   word */
 		to_slim = phba->MBslimaddr + sizeof (uint32_t);
-<<<<<<< HEAD
-		lpfc_memcpy_to_slim(to_slim, &mb->un.varWords[0],
-			    MAILBOX_CMD_SIZE - sizeof (uint32_t));
-
-		/* Next copy over first word, with mbxOwner set */
-		ldata = *((uint32_t *)mb);
-=======
 		lpfc_memcpy_to_slim(to_slim, &mbx->un.varWords[0],
 			    MAILBOX_CMD_SIZE - sizeof (uint32_t));
 
 		/* Next copy over first word, with mbxOwner set */
 		ldata = *((uint32_t *)mbx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		to_slim = phba->MBslimaddr;
 		writel(ldata, to_slim);
 		readl(to_slim); /* flush */
 
-<<<<<<< HEAD
-		if (mb->mbxCommand == MBX_CONFIG_PORT) {
-			/* switch over to host mailbox */
-			psli->sli_flag |= LPFC_SLI_ACTIVE;
-		}
-=======
 		if (mbx->mbxCommand == MBX_CONFIG_PORT)
 			/* switch over to host mailbox */
 			psli->sli_flag |= LPFC_SLI_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wmb();
@@ -12054,11 +9658,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 				/* First copy command data */
 				word0 = *((uint32_t *)phba->mbox);
 				word0 = le32_to_cpu(word0);
-<<<<<<< HEAD
-				if (mb->mbxCommand == MBX_CONFIG_PORT) {
-=======
 				if (mbx->mbxCommand == MBX_CONFIG_PORT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					MAILBOX_t *slimmb;
 					uint32_t slimword0;
 					/* Check real SLIM for any errors */
@@ -12085,38 +9685,22 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 
 		if (psli->sli_flag & LPFC_SLI_ACTIVE) {
 			/* copy results back to user */
-<<<<<<< HEAD
-			lpfc_sli_pcimem_bcopy(phba->mbox, mb, MAILBOX_CMD_SIZE);
-			/* Copy the mailbox extension data */
-			if (pmbox->out_ext_byte_len && pmbox->context2) {
-				lpfc_sli_pcimem_bcopy(phba->mbox_ext,
-						      pmbox->context2,
-=======
 			lpfc_sli_pcimem_bcopy(phba->mbox, mbx,
 						MAILBOX_CMD_SIZE);
 			/* Copy the mailbox extension data */
 			if (pmbox->out_ext_byte_len && pmbox->ext_buf) {
 				lpfc_sli_pcimem_bcopy(phba->mbox_ext,
 						      pmbox->ext_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      pmbox->out_ext_byte_len);
 			}
 		} else {
 			/* First copy command data */
-<<<<<<< HEAD
-			lpfc_memcpy_from_slim(mb, phba->MBslimaddr,
-							MAILBOX_CMD_SIZE);
-			/* Copy the mailbox extension data */
-			if (pmbox->out_ext_byte_len && pmbox->context2) {
-				lpfc_memcpy_from_slim(pmbox->context2,
-=======
 			lpfc_memcpy_from_slim(mbx, phba->MBslimaddr,
 						MAILBOX_CMD_SIZE);
 			/* Copy the mailbox extension data */
 			if (pmbox->out_ext_byte_len && pmbox->ext_buf) {
 				lpfc_memcpy_from_slim(
 					pmbox->ext_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					phba->MBslimaddr +
 					MAILBOX_HBA_EXT_OFFSET,
 					pmbox->out_ext_byte_len);
@@ -12127,11 +9711,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
 		readl(phba->HAregaddr); /* flush */
 
 		psli->sli_flag &= ~LPFC_SLI_MBOX_ACTIVE;
-<<<<<<< HEAD
-		status = mb->mbxStatus;
-=======
 		status = mbx->mbxStatus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&phba->hbalock, drvr_flag);
@@ -12161,16 +9741,11 @@ static int
 lpfc_sli4_async_mbox_block(struct lpfc_hba *phba)
 {
 	struct lpfc_sli *psli = &phba->sli;
-<<<<<<< HEAD
-	int rc = 0;
-	unsigned long timeout = 0;
-=======
 	LPFC_MBOXQ_t *mboxq;
 	int rc = 0;
 	unsigned long timeout = 0;
 	u32 sli_flag;
 	u8 cmd, subsys, opcode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mark the asynchronous mailbox command posting as blocked */
 	spin_lock_irq(&phba->hbalock);
@@ -12184,22 +9759,15 @@ lpfc_sli4_async_mbox_block(struct lpfc_hba *phba)
 						1000) + jiffies;
 	spin_unlock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-	/* Wait for the outstnading mailbox command to complete */
-=======
 	/* Make sure the mailbox is really active */
 	if (timeout)
 		lpfc_sli4_process_missed_mbox_completions(phba);
 
 	/* Wait for the outstanding mailbox command to complete */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (phba->sli.mbox_active) {
 		/* Check active mailbox complete status every 2ms */
 		msleep(2);
 		if (time_after(jiffies, timeout)) {
-<<<<<<< HEAD
-			/* Timeout, marked the outstanding cmd not complete */
-=======
 			/* Timeout, mark the outstanding cmd not complete */
 
 			/* Sanity check sli.mbox_active has not completed or
@@ -12226,7 +9794,6 @@ lpfc_sli4_async_mbox_block(struct lpfc_hba *phba)
 				spin_unlock_irq(&phba->hbalock);
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = 1;
 			break;
 		}
@@ -12272,17 +9839,11 @@ lpfc_sli4_async_mbox_unblock(struct lpfc_hba *phba)
 	psli->sli_flag &= ~LPFC_SLI_ASYNC_MBX_BLK;
 	spin_unlock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-	/* wake up worker thread to post asynchronlous mailbox command */
-=======
 	/* wake up worker thread to post asynchronous mailbox command */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_worker_wake_up(phba);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_sli4_wait_bmbx_ready - Wait for bootstrap mailbox register ready
  * @phba: Pointer to HBA context object.
  * @mboxq: Pointer to mailbox object.
@@ -12335,7 +9896,6 @@ lpfc_sli4_wait_bmbx_ready(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli4_post_sync_mbox - Post an SLI4 mailbox to the bootstrap mailbox
  * @phba: Pointer to HBA context object.
  * @mboxq: Pointer to mailbox object.
@@ -12356,23 +9916,12 @@ lpfc_sli4_post_sync_mbox(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 {
 	int rc = MBX_SUCCESS;
 	unsigned long iflag;
-<<<<<<< HEAD
-	uint32_t db_ready;
 	uint32_t mcqe_status;
 	uint32_t mbx_cmnd;
-	unsigned long timeout;
-=======
-	uint32_t mcqe_status;
-	uint32_t mbx_cmnd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli *psli = &phba->sli;
 	struct lpfc_mqe *mb = &mboxq->u.mqe;
 	struct lpfc_bmbx_create *mbox_rgn;
 	struct dma_address *dma_address;
-<<<<<<< HEAD
-	struct lpfc_register bmbx_reg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Only one mailbox can be active to the bootstrap mailbox region
@@ -12381,11 +9930,7 @@ lpfc_sli4_post_sync_mbox(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	spin_lock_irqsave(&phba->hbalock, iflag);
 	if (psli->sli_flag & LPFC_SLI_MBOX_ACTIVE) {
 		spin_unlock_irqrestore(&phba->hbalock, iflag);
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):2532 Mailbox command x%x (x%x/x%x) "
 				"cannot issue Data: x%x x%x\n",
 				mboxq->vport ? mboxq->vport->vpi : 0,
@@ -12400,13 +9945,10 @@ lpfc_sli4_post_sync_mbox(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	phba->sli.mbox_active = mboxq;
 	spin_unlock_irqrestore(&phba->hbalock, iflag);
 
-<<<<<<< HEAD
-=======
 	/* wait for bootstrap mbox register for readyness */
 	rc = lpfc_sli4_wait_bmbx_ready(phba, mboxq);
 	if (rc)
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialize the bootstrap memory region to avoid stale data areas
 	 * in the mailbox post.  Then copy the caller's mailbox contents to
@@ -12414,49 +9956,13 @@ lpfc_sli4_post_sync_mbox(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	 */
 	mbx_cmnd = bf_get(lpfc_mqe_command, mb);
 	memset(phba->sli4_hba.bmbx.avirt, 0, sizeof(struct lpfc_bmbx_create));
-<<<<<<< HEAD
-	lpfc_sli_pcimem_bcopy(mb, phba->sli4_hba.bmbx.avirt,
-			      sizeof(struct lpfc_mqe));
-=======
 	lpfc_sli4_pcimem_bcopy(mb, phba->sli4_hba.bmbx.avirt,
 			       sizeof(struct lpfc_mqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Post the high mailbox dma address to the port and wait for ready. */
 	dma_address = &phba->sli4_hba.bmbx.dma_address;
 	writel(dma_address->addr_hi, phba->sli4_hba.BMBXregaddr);
 
-<<<<<<< HEAD
-	timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, mboxq)
-				   * 1000) + jiffies;
-	do {
-		bmbx_reg.word0 = readl(phba->sli4_hba.BMBXregaddr);
-		db_ready = bf_get(lpfc_bmbx_rdy, &bmbx_reg);
-		if (!db_ready)
-			msleep(2);
-
-		if (time_after(jiffies, timeout)) {
-			rc = MBXERR_ERROR;
-			goto exit;
-		}
-	} while (!db_ready);
-
-	/* Post the low mailbox dma address to the port. */
-	writel(dma_address->addr_lo, phba->sli4_hba.BMBXregaddr);
-	timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, mboxq)
-				   * 1000) + jiffies;
-	do {
-		bmbx_reg.word0 = readl(phba->sli4_hba.BMBXregaddr);
-		db_ready = bf_get(lpfc_bmbx_rdy, &bmbx_reg);
-		if (!db_ready)
-			msleep(2);
-
-		if (time_after(jiffies, timeout)) {
-			rc = MBXERR_ERROR;
-			goto exit;
-		}
-	} while (!db_ready);
-=======
 	/* wait for bootstrap mbox register for hi-address write done */
 	rc = lpfc_sli4_wait_bmbx_ready(phba, mboxq);
 	if (rc)
@@ -12469,26 +9975,17 @@ lpfc_sli4_post_sync_mbox(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	rc = lpfc_sli4_wait_bmbx_ready(phba, mboxq);
 	if (rc)
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read the CQ to ensure the mailbox has completed.
 	 * If so, update the mailbox status so that the upper layers
 	 * can complete the request normally.
 	 */
-<<<<<<< HEAD
-	lpfc_sli_pcimem_bcopy(phba->sli4_hba.bmbx.avirt, mb,
-			      sizeof(struct lpfc_mqe));
-	mbox_rgn = (struct lpfc_bmbx_create *) phba->sli4_hba.bmbx.avirt;
-	lpfc_sli_pcimem_bcopy(&mbox_rgn->mcqe, &mboxq->mcqe,
-			      sizeof(struct lpfc_mcqe));
-=======
 	lpfc_sli4_pcimem_bcopy(phba->sli4_hba.bmbx.avirt, mb,
 			       sizeof(struct lpfc_mqe));
 	mbox_rgn = (struct lpfc_bmbx_create *) phba->sli4_hba.bmbx.avirt;
 	lpfc_sli4_pcimem_bcopy(&mbox_rgn->mcqe, &mboxq->mcqe,
 			       sizeof(struct lpfc_mcqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcqe_status = bf_get(lpfc_mcqe_status, &mbox_rgn->mcqe);
 	/*
 	 * When the CQE status indicates a failure and the mailbox status
@@ -12532,11 +10029,7 @@ exit:
 /**
  * lpfc_sli_issue_mbox_s4 - Issue an SLI4 mailbox command to firmware
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
- * @pmbox: Pointer to mailbox object.
-=======
  * @mboxq: Pointer to mailbox object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flag: Flag indicating how the mailbox need to be processed.
  *
  * This function is called by discovery code and HBA management code to submit
@@ -12558,11 +10051,7 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 
 	rc = lpfc_mbox_dev_check(phba);
 	if (unlikely(rc)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):2544 Mailbox command x%x (x%x/x%x) "
 				"cannot issue Data: x%x x%x\n",
 				mboxq->vport ? mboxq->vport->vpi : 0,
@@ -12582,37 +10071,25 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 		if (rc != MBX_SUCCESS)
 			lpfc_printf_log(phba, KERN_WARNING, LOG_MBOX | LOG_SLI,
 					"(%d):2541 Mailbox command x%x "
-<<<<<<< HEAD
-					"(x%x/x%x) cannot issue Data: "
-					"x%x x%x\n",
-=======
 					"(x%x/x%x) failure: "
 					"mqe_sta: x%x mcqe_sta: x%x/x%x "
 					"Data: x%x x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mboxq->vport ? mboxq->vport->vpi : 0,
 					mboxq->u.mb.mbxCommand,
 					lpfc_sli_config_mbox_subsys_get(phba,
 									mboxq),
 					lpfc_sli_config_mbox_opcode_get(phba,
 									mboxq),
-<<<<<<< HEAD
-=======
 					bf_get(lpfc_mqe_status, &mboxq->u.mqe),
 					bf_get(lpfc_mcqe_status, &mboxq->mcqe),
 					bf_get(lpfc_mcqe_ext_status,
 					       &mboxq->mcqe),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					psli->sli_flag, flag);
 		return rc;
 	} else if (flag == MBX_POLL) {
 		lpfc_printf_log(phba, KERN_WARNING, LOG_MBOX | LOG_SLI,
 				"(%d):2542 Try to issue mailbox command "
-<<<<<<< HEAD
-				"x%x (x%x/x%x) synchronously ahead of async"
-=======
 				"x%x (x%x/x%x) synchronously ahead of async "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"mailbox command queue: x%x x%x\n",
 				mboxq->vport ? mboxq->vport->vpi : 0,
 				mboxq->u.mb.mbxCommand,
@@ -12625,15 +10102,6 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 			/* Successfully blocked, now issue sync mbox cmd */
 			rc = lpfc_sli4_post_sync_mbox(phba, mboxq);
 			if (rc != MBX_SUCCESS)
-<<<<<<< HEAD
-				lpfc_printf_log(phba, KERN_ERR,
-					LOG_MBOX | LOG_SLI,
-					"(%d):2597 Mailbox command "
-					"x%x (x%x/x%x) cannot issue "
-					"Data: x%x x%x\n",
-					mboxq->vport ?
-					mboxq->vport->vpi : 0,
-=======
 				lpfc_printf_log(phba, KERN_WARNING,
 					LOG_MBOX | LOG_SLI,
 					"(%d):2597 Sync Mailbox command "
@@ -12641,19 +10109,15 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 					"mqe_sta: x%x mcqe_sta: x%x/x%x "
 					"Data: x%x x%x\n",
 					mboxq->vport ? mboxq->vport->vpi : 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mboxq->u.mb.mbxCommand,
 					lpfc_sli_config_mbox_subsys_get(phba,
 									mboxq),
 					lpfc_sli_config_mbox_opcode_get(phba,
 									mboxq),
-<<<<<<< HEAD
-=======
 					bf_get(lpfc_mqe_status, &mboxq->u.mqe),
 					bf_get(lpfc_mcqe_status, &mboxq->mcqe),
 					bf_get(lpfc_mcqe_ext_status,
 					       &mboxq->mcqe),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					psli->sli_flag, flag);
 			/* Unblock the async mailbox posting afterward */
 			lpfc_sli4_async_mbox_unblock(phba);
@@ -12661,17 +10125,10 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 		return rc;
 	}
 
-<<<<<<< HEAD
-	/* Now, interrupt mode asynchrous mailbox command */
-	rc = lpfc_mbox_cmd_check(phba, mboxq);
-	if (rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 	/* Now, interrupt mode asynchronous mailbox command */
 	rc = lpfc_mbox_cmd_check(phba, mboxq);
 	if (rc) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):2543 Mailbox command x%x (x%x/x%x) "
 				"cannot issue Data: x%x x%x\n",
 				mboxq->vport ? mboxq->vport->vpi : 0,
@@ -12689,19 +10146,12 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
 			"(%d):0354 Mbox cmd issue - Enqueue Data: "
-<<<<<<< HEAD
-			"x%x (x%x/x%x) x%x x%x x%x\n",
-=======
 			"x%x (x%x/x%x) x%x x%x x%x x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mboxq->vport ? mboxq->vport->vpi : 0xffffff,
 			bf_get(lpfc_mqe_command, &mboxq->u.mqe),
 			lpfc_sli_config_mbox_subsys_get(phba, mboxq),
 			lpfc_sli_config_mbox_opcode_get(phba, mboxq),
-<<<<<<< HEAD
-=======
 			mboxq->u.mb.un.varUnregLogin.rpi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phba->pport->port_state,
 			psli->sli_flag, MBX_NOWAIT);
 	/* Wake up worker thread to transport mailbox command from head */
@@ -12747,11 +10197,7 @@ lpfc_sli4_post_async_mbox(struct lpfc_hba *phba)
 	}
 	if (unlikely(phba->sli.mbox_active)) {
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0384 There is pending active mailbox cmd\n");
 		return MBX_NOT_FINISHED;
 	}
@@ -12782,11 +10228,7 @@ lpfc_sli4_post_async_mbox(struct lpfc_hba *phba)
 
 	/* Start timer for the mbox_tmo and log some mailbox post messages */
 	mod_timer(&psli->mbox_tmo, (jiffies +
-<<<<<<< HEAD
-		  (HZ * lpfc_mbox_tmo_val(phba, mboxq))));
-=======
 		  msecs_to_jiffies(1000 * lpfc_mbox_tmo_val(phba, mboxq))));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
 			"(%d):0355 Mailbox cmd x%x (x%x/x%x) issue Data: "
@@ -12816,11 +10258,7 @@ lpfc_sli4_post_async_mbox(struct lpfc_hba *phba)
 	/* Post the mailbox command to the port */
 	rc = lpfc_sli4_mq_put(phba->sli4_hba.mbx_wq, mqe);
 	if (rc != MBX_SUCCESS) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX | LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"(%d):2533 Mailbox command x%x (x%x/x%x) "
 				"cannot issue Data: x%x x%x\n",
 				mboxq->vport ? mboxq->vport->vpi : 0,
@@ -12900,10 +10338,6 @@ lpfc_mbox_api_table_setup(struct lpfc_hba *phba, uint8_t dev_grp)
 				"1420 Invalid HBA PCI-device group: 0x%x\n",
 				dev_grp);
 		return -ENODEV;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -12914,12 +10348,8 @@ lpfc_mbox_api_table_setup(struct lpfc_hba *phba, uint8_t dev_grp)
  * @pring: Pointer to driver SLI ring object.
  * @piocb: Pointer to address of newly added command iocb.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held to add a command
-=======
  * This function is called with hbalock held for SLI3 ports or
  * the ring lock held for SLI4 ports to add a command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iocb to the txq when SLI layer cannot submit the command iocb
  * to the ring.
  **/
@@ -12927,18 +10357,12 @@ void
 __lpfc_sli_ringtx_put(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 		    struct lpfc_iocbq *piocb)
 {
-<<<<<<< HEAD
-	/* Insert the caller's iocb in the txq tail for later processing. */
-	list_add_tail(&piocb->list, &pring->txq);
-	pring->txq_cnt++;
-=======
 	if (phba->sli_rev == LPFC_SLI_REV4)
 		lockdep_assert_held(&pring->ring_lock);
 	else
 		lockdep_assert_held(&phba->hbalock);
 	/* Insert the caller's iocb in the txq tail for later processing. */
 	list_add_tail(&piocb->list, &pring->txq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -12964,11 +10388,8 @@ lpfc_sli_next_iocb(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 {
 	struct lpfc_iocbq * nextiocb;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nextiocb = lpfc_sli_ringtx_get(phba, pring);
 	if (!nextiocb) {
 		nextiocb = *piocb;
@@ -13006,15 +10427,6 @@ __lpfc_sli_issue_iocb_s3(struct lpfc_hba *phba, uint32_t ring_number,
 {
 	struct lpfc_iocbq *nextiocb;
 	IOCB_t *iocb;
-<<<<<<< HEAD
-	struct lpfc_sli_ring *pring = &phba->sli.ring[ring_number];
-
-	if (piocb->iocb_cmpl && (!piocb->vport) &&
-	   (piocb->iocb.ulpCommand != CMD_ABORT_XRI_CN) &&
-	   (piocb->iocb.ulpCommand != CMD_CLOSE_XRI_CN)) {
-		lpfc_printf_log(phba, KERN_ERR,
-				LOG_SLI | LOG_VPORT,
-=======
 	struct lpfc_sli_ring *pring = &phba->sli.sli3_ring[ring_number];
 
 	lockdep_assert_held(&phba->hbalock);
@@ -13023,7 +10435,6 @@ __lpfc_sli_issue_iocb_s3(struct lpfc_hba *phba, uint32_t ring_number,
 	   (piocb->iocb.ulpCommand != CMD_ABORT_XRI_CN) &&
 	   (piocb->iocb.ulpCommand != CMD_CLOSE_XRI_CN)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"1807 IOCB x%x failed. No vport\n",
 				piocb->iocb.ulpCommand);
 		dump_stack();
@@ -13058,36 +10469,15 @@ __lpfc_sli_issue_iocb_s3(struct lpfc_hba *phba, uint32_t ring_number,
 		 * can be issued if the link is not up.
 		 */
 		switch (piocb->iocb.ulpCommand) {
-<<<<<<< HEAD
-		case CMD_GEN_REQUEST64_CR:
-		case CMD_GEN_REQUEST64_CX:
-			if (!(phba->sli.sli_flag & LPFC_MENLO_MAINT) ||
-				(piocb->iocb.un.genreq64.w5.hcsw.Rctl !=
-					FC_RCTL_DD_UNSOL_CMD) ||
-				(piocb->iocb.un.genreq64.w5.hcsw.Type !=
-					MENLO_TRANSPORT_TYPE))
-
-				goto iocb_busy;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CMD_QUE_RING_BUF_CN:
 		case CMD_QUE_RING_BUF64_CN:
 			/*
 			 * For IOCBs, like QUE_RING_BUF, that have no rsp ring
-<<<<<<< HEAD
-			 * completion, iocb_cmpl MUST be 0.
-			 */
-			if (piocb->iocb_cmpl)
-				piocb->iocb_cmpl = NULL;
-			/*FALLTHROUGH*/
-=======
 			 * completion, cmd_cmpl MUST be 0.
 			 */
 			if (piocb->cmd_cmpl)
 				piocb->cmd_cmpl = NULL;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CMD_CREATE_XRI_CR:
 		case CMD_CLOSE_XRI_CN:
 		case CMD_CLOSE_XRI_CX:
@@ -13100,11 +10490,7 @@ __lpfc_sli_issue_iocb_s3(struct lpfc_hba *phba, uint32_t ring_number,
 	 * For FCP commands, we must be in a state where we can process link
 	 * attention events.
 	 */
-<<<<<<< HEAD
-	} else if (unlikely(pring->ringno == phba->sli.fcp_ring &&
-=======
 	} else if (unlikely(pring->ringno == LPFC_FCP_RING &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !(phba->sli.sli_flag & LPFC_PROCESS_LA))) {
 		goto iocb_busy;
 	}
@@ -13137,556 +10523,6 @@ __lpfc_sli_issue_iocb_s3(struct lpfc_hba *phba, uint32_t ring_number,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_bpl2sgl - Convert the bpl/bde to a sgl.
- * @phba: Pointer to HBA context object.
- * @piocb: Pointer to command iocb.
- * @sglq: Pointer to the scatter gather queue object.
- *
- * This routine converts the bpl or bde that is in the IOCB
- * to a sgl list for the sli4 hardware. The physical address
- * of the bpl/bde is converted back to a virtual address.
- * If the IOCB contains a BPL then the list of BDE's is
- * converted to sli4_sge's. If the IOCB contains a single
- * BDE then it is converted to a single sli_sge.
- * The IOCB is still in cpu endianess so the contents of
- * the bpl can be used without byte swapping.
- *
- * Returns valid XRI = Success, NO_XRI = Failure.
-**/
-static uint16_t
-lpfc_sli4_bpl2sgl(struct lpfc_hba *phba, struct lpfc_iocbq *piocbq,
-		struct lpfc_sglq *sglq)
-{
-	uint16_t xritag = NO_XRI;
-	struct ulp_bde64 *bpl = NULL;
-	struct ulp_bde64 bde;
-	struct sli4_sge *sgl  = NULL;
-	struct lpfc_dmabuf *dmabuf;
-	IOCB_t *icmd;
-	int numBdes = 0;
-	int i = 0;
-	uint32_t offset = 0; /* accumulated offset in the sg request list */
-	int inbound = 0; /* number of sg reply entries inbound from firmware */
-
-	if (!piocbq || !sglq)
-		return xritag;
-
-	sgl  = (struct sli4_sge *)sglq->sgl;
-	icmd = &piocbq->iocb;
-	if (icmd->ulpCommand == CMD_XMIT_BLS_RSP64_CX)
-		return sglq->sli4_xritag;
-	if (icmd->un.genreq64.bdl.bdeFlags == BUFF_TYPE_BLP_64) {
-		numBdes = icmd->un.genreq64.bdl.bdeSize /
-				sizeof(struct ulp_bde64);
-		/* The addrHigh and addrLow fields within the IOCB
-		 * have not been byteswapped yet so there is no
-		 * need to swap them back.
-		 */
-		if (piocbq->context3)
-			dmabuf = (struct lpfc_dmabuf *)piocbq->context3;
-		else
-			return xritag;
-
-		bpl  = (struct ulp_bde64 *)dmabuf->virt;
-		if (!bpl)
-			return xritag;
-
-		for (i = 0; i < numBdes; i++) {
-			/* Should already be byte swapped. */
-			sgl->addr_hi = bpl->addrHigh;
-			sgl->addr_lo = bpl->addrLow;
-
-			sgl->word2 = le32_to_cpu(sgl->word2);
-			if ((i+1) == numBdes)
-				bf_set(lpfc_sli4_sge_last, sgl, 1);
-			else
-				bf_set(lpfc_sli4_sge_last, sgl, 0);
-			/* swap the size field back to the cpu so we
-			 * can assign it to the sgl.
-			 */
-			bde.tus.w = le32_to_cpu(bpl->tus.w);
-			sgl->sge_len = cpu_to_le32(bde.tus.f.bdeSize);
-			/* The offsets in the sgl need to be accumulated
-			 * separately for the request and reply lists.
-			 * The request is always first, the reply follows.
-			 */
-			if (piocbq->iocb.ulpCommand == CMD_GEN_REQUEST64_CR) {
-				/* add up the reply sg entries */
-				if (bpl->tus.f.bdeFlags == BUFF_TYPE_BDE_64I)
-					inbound++;
-				/* first inbound? reset the offset */
-				if (inbound == 1)
-					offset = 0;
-				bf_set(lpfc_sli4_sge_offset, sgl, offset);
-				bf_set(lpfc_sli4_sge_type, sgl,
-					LPFC_SGE_TYPE_DATA);
-				offset += bde.tus.f.bdeSize;
-			}
-			sgl->word2 = cpu_to_le32(sgl->word2);
-			bpl++;
-			sgl++;
-		}
-	} else if (icmd->un.genreq64.bdl.bdeFlags == BUFF_TYPE_BDE_64) {
-			/* The addrHigh and addrLow fields of the BDE have not
-			 * been byteswapped yet so they need to be swapped
-			 * before putting them in the sgl.
-			 */
-			sgl->addr_hi =
-				cpu_to_le32(icmd->un.genreq64.bdl.addrHigh);
-			sgl->addr_lo =
-				cpu_to_le32(icmd->un.genreq64.bdl.addrLow);
-			sgl->word2 = le32_to_cpu(sgl->word2);
-			bf_set(lpfc_sli4_sge_last, sgl, 1);
-			sgl->word2 = cpu_to_le32(sgl->word2);
-			sgl->sge_len =
-				cpu_to_le32(icmd->un.genreq64.bdl.bdeSize);
-	}
-	return sglq->sli4_xritag;
-}
-
-/**
- * lpfc_sli4_scmd_to_wqidx_distr - scsi command to SLI4 WQ index distribution
- * @phba: Pointer to HBA context object.
- *
- * This routine performs a roundrobin SCSI command to SLI4 FCP WQ index
- * distribution.  This is called by __lpfc_sli_issue_iocb_s4() with the hbalock
- * held.
- *
- * Return: index into SLI4 fast-path FCP queue index.
- **/
-static uint32_t
-lpfc_sli4_scmd_to_wqidx_distr(struct lpfc_hba *phba)
-{
-	++phba->fcp_qidx;
-	if (phba->fcp_qidx >= phba->cfg_fcp_wq_count)
-		phba->fcp_qidx = 0;
-
-	return phba->fcp_qidx;
-}
-
-/**
- * lpfc_sli_iocb2wqe - Convert the IOCB to a work queue entry.
- * @phba: Pointer to HBA context object.
- * @piocb: Pointer to command iocb.
- * @wqe: Pointer to the work queue entry.
- *
- * This routine converts the iocb command to its Work Queue Entry
- * equivalent. The wqe pointer should not have any fields set when
- * this routine is called because it will memcpy over them.
- * This routine does not set the CQ_ID or the WQEC bits in the
- * wqe.
- *
- * Returns: 0 = Success, IOCB_ERROR = Failure.
- **/
-static int
-lpfc_sli4_iocb2wqe(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq,
-		union lpfc_wqe *wqe)
-{
-	uint32_t xmit_len = 0, total_len = 0;
-	uint8_t ct = 0;
-	uint32_t fip;
-	uint32_t abort_tag;
-	uint8_t command_type = ELS_COMMAND_NON_FIP;
-	uint8_t cmnd;
-	uint16_t xritag;
-	uint16_t abrt_iotag;
-	struct lpfc_iocbq *abrtiocbq;
-	struct ulp_bde64 *bpl = NULL;
-	uint32_t els_id = LPFC_ELS_ID_DEFAULT;
-	int numBdes, i;
-	struct ulp_bde64 bde;
-	struct lpfc_nodelist *ndlp;
-	uint32_t *pcmd;
-	uint32_t if_type;
-
-	fip = phba->hba_flag & HBA_FIP_SUPPORT;
-	/* The fcp commands will set command type */
-	if (iocbq->iocb_flag &  LPFC_IO_FCP)
-		command_type = FCP_COMMAND;
-	else if (fip && (iocbq->iocb_flag & LPFC_FIP_ELS_ID_MASK))
-		command_type = ELS_COMMAND_FIP;
-	else
-		command_type = ELS_COMMAND_NON_FIP;
-
-	/* Some of the fields are in the right position already */
-	memcpy(wqe, &iocbq->iocb, sizeof(union lpfc_wqe));
-	abort_tag = (uint32_t) iocbq->iotag;
-	xritag = iocbq->sli4_xritag;
-	wqe->generic.wqe_com.word7 = 0; /* The ct field has moved so reset */
-	/* words0-2 bpl convert bde */
-	if (iocbq->iocb.un.genreq64.bdl.bdeFlags == BUFF_TYPE_BLP_64) {
-		numBdes = iocbq->iocb.un.genreq64.bdl.bdeSize /
-				sizeof(struct ulp_bde64);
-		bpl  = (struct ulp_bde64 *)
-			((struct lpfc_dmabuf *)iocbq->context3)->virt;
-		if (!bpl)
-			return IOCB_ERROR;
-
-		/* Should already be byte swapped. */
-		wqe->generic.bde.addrHigh =  le32_to_cpu(bpl->addrHigh);
-		wqe->generic.bde.addrLow =  le32_to_cpu(bpl->addrLow);
-		/* swap the size field back to the cpu so we
-		 * can assign it to the sgl.
-		 */
-		wqe->generic.bde.tus.w  = le32_to_cpu(bpl->tus.w);
-		xmit_len = wqe->generic.bde.tus.f.bdeSize;
-		total_len = 0;
-		for (i = 0; i < numBdes; i++) {
-			bde.tus.w  = le32_to_cpu(bpl[i].tus.w);
-			total_len += bde.tus.f.bdeSize;
-		}
-	} else
-		xmit_len = iocbq->iocb.un.fcpi64.bdl.bdeSize;
-
-	iocbq->iocb.ulpIoTag = iocbq->iotag;
-	cmnd = iocbq->iocb.ulpCommand;
-
-	switch (iocbq->iocb.ulpCommand) {
-	case CMD_ELS_REQUEST64_CR:
-		ndlp = (struct lpfc_nodelist *)iocbq->context1;
-		if (!iocbq->iocb.ulpLe) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2007 Only Limited Edition cmd Format"
-				" supported 0x%x\n",
-				iocbq->iocb.ulpCommand);
-			return IOCB_ERROR;
-		}
-
-		wqe->els_req.payload_len = xmit_len;
-		/* Els_reguest64 has a TMO */
-		bf_set(wqe_tmo, &wqe->els_req.wqe_com,
-			iocbq->iocb.ulpTimeout);
-		/* Need a VF for word 4 set the vf bit*/
-		bf_set(els_req64_vf, &wqe->els_req, 0);
-		/* And a VFID for word 12 */
-		bf_set(els_req64_vfid, &wqe->els_req, 0);
-		ct = ((iocbq->iocb.ulpCt_h << 1) | iocbq->iocb.ulpCt_l);
-		bf_set(wqe_ctxt_tag, &wqe->els_req.wqe_com,
-		       iocbq->iocb.ulpContext);
-		bf_set(wqe_ct, &wqe->els_req.wqe_com, ct);
-		bf_set(wqe_pu, &wqe->els_req.wqe_com, 0);
-		/* CCP CCPE PV PRI in word10 were set in the memcpy */
-		if (command_type == ELS_COMMAND_FIP)
-			els_id = ((iocbq->iocb_flag & LPFC_FIP_ELS_ID_MASK)
-					>> LPFC_FIP_ELS_ID_SHIFT);
-		pcmd = (uint32_t *) (((struct lpfc_dmabuf *)
-					iocbq->context2)->virt);
-		if_type = bf_get(lpfc_sli_intf_if_type,
-					&phba->sli4_hba.sli_intf);
-		if (if_type == LPFC_SLI_INTF_IF_TYPE_2) {
-			if (pcmd && (*pcmd == ELS_CMD_FLOGI ||
-				*pcmd == ELS_CMD_SCR ||
-				*pcmd == ELS_CMD_FDISC ||
-				*pcmd == ELS_CMD_LOGO ||
-				*pcmd == ELS_CMD_PLOGI)) {
-				bf_set(els_req64_sp, &wqe->els_req, 1);
-				bf_set(els_req64_sid, &wqe->els_req,
-					iocbq->vport->fc_myDID);
-				bf_set(wqe_ct, &wqe->els_req.wqe_com, 1);
-				bf_set(wqe_ctxt_tag, &wqe->els_req.wqe_com,
-					phba->vpi_ids[phba->pport->vpi]);
-			} else if (pcmd && iocbq->context1) {
-				bf_set(wqe_ct, &wqe->els_req.wqe_com, 0);
-				bf_set(wqe_ctxt_tag, &wqe->els_req.wqe_com,
-					phba->sli4_hba.rpi_ids[ndlp->nlp_rpi]);
-			}
-		}
-		bf_set(wqe_temp_rpi, &wqe->els_req.wqe_com,
-		       phba->sli4_hba.rpi_ids[ndlp->nlp_rpi]);
-		bf_set(wqe_els_id, &wqe->els_req.wqe_com, els_id);
-		bf_set(wqe_dbde, &wqe->els_req.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->els_req.wqe_com, LPFC_WQE_IOD_READ);
-		bf_set(wqe_qosd, &wqe->els_req.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->els_req.wqe_com, LPFC_WQE_LENLOC_NONE);
-		bf_set(wqe_ebde_cnt, &wqe->els_req.wqe_com, 0);
-		break;
-	case CMD_XMIT_SEQUENCE64_CX:
-		bf_set(wqe_ctxt_tag, &wqe->xmit_sequence.wqe_com,
-		       iocbq->iocb.un.ulpWord[3]);
-		bf_set(wqe_rcvoxid, &wqe->xmit_sequence.wqe_com,
-		       iocbq->iocb.unsli3.rcvsli3.ox_id);
-		/* The entire sequence is transmitted for this IOCB */
-		xmit_len = total_len;
-		cmnd = CMD_XMIT_SEQUENCE64_CR;
-		if (phba->link_flag & LS_LOOPBACK_MODE)
-			bf_set(wqe_xo, &wqe->xmit_sequence.wge_ctl, 1);
-	case CMD_XMIT_SEQUENCE64_CR:
-		/* word3 iocb=io_tag32 wqe=reserved */
-		wqe->xmit_sequence.rsvd3 = 0;
-		/* word4 relative_offset memcpy */
-		/* word5 r_ctl/df_ctl memcpy */
-		bf_set(wqe_pu, &wqe->xmit_sequence.wqe_com, 0);
-		bf_set(wqe_dbde, &wqe->xmit_sequence.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->xmit_sequence.wqe_com,
-		       LPFC_WQE_IOD_WRITE);
-		bf_set(wqe_lenloc, &wqe->xmit_sequence.wqe_com,
-		       LPFC_WQE_LENLOC_WORD12);
-		bf_set(wqe_ebde_cnt, &wqe->xmit_sequence.wqe_com, 0);
-		wqe->xmit_sequence.xmit_len = xmit_len;
-		command_type = OTHER_COMMAND;
-		break;
-	case CMD_XMIT_BCAST64_CN:
-		/* word3 iocb=iotag32 wqe=seq_payload_len */
-		wqe->xmit_bcast64.seq_payload_len = xmit_len;
-		/* word4 iocb=rsvd wqe=rsvd */
-		/* word5 iocb=rctl/type/df_ctl wqe=rctl/type/df_ctl memcpy */
-		/* word6 iocb=ctxt_tag/io_tag wqe=ctxt_tag/xri */
-		bf_set(wqe_ct, &wqe->xmit_bcast64.wqe_com,
-			((iocbq->iocb.ulpCt_h << 1) | iocbq->iocb.ulpCt_l));
-		bf_set(wqe_dbde, &wqe->xmit_bcast64.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->xmit_bcast64.wqe_com, LPFC_WQE_IOD_WRITE);
-		bf_set(wqe_lenloc, &wqe->xmit_bcast64.wqe_com,
-		       LPFC_WQE_LENLOC_WORD3);
-		bf_set(wqe_ebde_cnt, &wqe->xmit_bcast64.wqe_com, 0);
-		break;
-	case CMD_FCP_IWRITE64_CR:
-		command_type = FCP_COMMAND_DATA_OUT;
-		/* word3 iocb=iotag wqe=payload_offset_len */
-		/* Add the FCP_CMD and FCP_RSP sizes to get the offset */
-		wqe->fcp_iwrite.payload_offset_len =
-			xmit_len + sizeof(struct fcp_rsp);
-		/* word4 iocb=parameter wqe=total_xfer_length memcpy */
-		/* word5 iocb=initial_xfer_len wqe=initial_xfer_len memcpy */
-		bf_set(wqe_erp, &wqe->fcp_iwrite.wqe_com,
-		       iocbq->iocb.ulpFCP2Rcvy);
-		bf_set(wqe_lnk, &wqe->fcp_iwrite.wqe_com, iocbq->iocb.ulpXS);
-		/* Always open the exchange */
-		bf_set(wqe_xc, &wqe->fcp_iwrite.wqe_com, 0);
-		bf_set(wqe_iod, &wqe->fcp_iwrite.wqe_com, LPFC_WQE_IOD_WRITE);
-		bf_set(wqe_lenloc, &wqe->fcp_iwrite.wqe_com,
-		       LPFC_WQE_LENLOC_WORD4);
-		bf_set(wqe_ebde_cnt, &wqe->fcp_iwrite.wqe_com, 0);
-		bf_set(wqe_pu, &wqe->fcp_iwrite.wqe_com, iocbq->iocb.ulpPU);
-		if (iocbq->iocb_flag & LPFC_IO_DIF) {
-			iocbq->iocb_flag &= ~LPFC_IO_DIF;
-			bf_set(wqe_dif, &wqe->generic.wqe_com, 1);
-		}
-		bf_set(wqe_dbde, &wqe->fcp_iwrite.wqe_com, 1);
-		break;
-	case CMD_FCP_IREAD64_CR:
-		/* word3 iocb=iotag wqe=payload_offset_len */
-		/* Add the FCP_CMD and FCP_RSP sizes to get the offset */
-		wqe->fcp_iread.payload_offset_len =
-			xmit_len + sizeof(struct fcp_rsp);
-		/* word4 iocb=parameter wqe=total_xfer_length memcpy */
-		/* word5 iocb=initial_xfer_len wqe=initial_xfer_len memcpy */
-		bf_set(wqe_erp, &wqe->fcp_iread.wqe_com,
-		       iocbq->iocb.ulpFCP2Rcvy);
-		bf_set(wqe_lnk, &wqe->fcp_iread.wqe_com, iocbq->iocb.ulpXS);
-		/* Always open the exchange */
-		bf_set(wqe_xc, &wqe->fcp_iread.wqe_com, 0);
-		bf_set(wqe_iod, &wqe->fcp_iread.wqe_com, LPFC_WQE_IOD_READ);
-		bf_set(wqe_lenloc, &wqe->fcp_iread.wqe_com,
-		       LPFC_WQE_LENLOC_WORD4);
-		bf_set(wqe_ebde_cnt, &wqe->fcp_iread.wqe_com, 0);
-		bf_set(wqe_pu, &wqe->fcp_iread.wqe_com, iocbq->iocb.ulpPU);
-		if (iocbq->iocb_flag & LPFC_IO_DIF) {
-			iocbq->iocb_flag &= ~LPFC_IO_DIF;
-			bf_set(wqe_dif, &wqe->generic.wqe_com, 1);
-		}
-		bf_set(wqe_dbde, &wqe->fcp_iread.wqe_com, 1);
-		break;
-	case CMD_FCP_ICMND64_CR:
-		/* word3 iocb=IO_TAG wqe=reserved */
-		wqe->fcp_icmd.rsrvd3 = 0;
-		bf_set(wqe_pu, &wqe->fcp_icmd.wqe_com, 0);
-		/* Always open the exchange */
-		bf_set(wqe_xc, &wqe->fcp_icmd.wqe_com, 0);
-		bf_set(wqe_dbde, &wqe->fcp_icmd.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->fcp_icmd.wqe_com, LPFC_WQE_IOD_WRITE);
-		bf_set(wqe_qosd, &wqe->fcp_icmd.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->fcp_icmd.wqe_com,
-		       LPFC_WQE_LENLOC_NONE);
-		bf_set(wqe_ebde_cnt, &wqe->fcp_icmd.wqe_com, 0);
-		break;
-	case CMD_GEN_REQUEST64_CR:
-		/* For this command calculate the xmit length of the
-		 * request bde.
-		 */
-		xmit_len = 0;
-		numBdes = iocbq->iocb.un.genreq64.bdl.bdeSize /
-			sizeof(struct ulp_bde64);
-		for (i = 0; i < numBdes; i++) {
-			bde.tus.w = le32_to_cpu(bpl[i].tus.w);
-			if (bde.tus.f.bdeFlags != BUFF_TYPE_BDE_64)
-				break;
-			xmit_len += bde.tus.f.bdeSize;
-		}
-		/* word3 iocb=IO_TAG wqe=request_payload_len */
-		wqe->gen_req.request_payload_len = xmit_len;
-		/* word4 iocb=parameter wqe=relative_offset memcpy */
-		/* word5 [rctl, type, df_ctl, la] copied in memcpy */
-		/* word6 context tag copied in memcpy */
-		if (iocbq->iocb.ulpCt_h  || iocbq->iocb.ulpCt_l) {
-			ct = ((iocbq->iocb.ulpCt_h << 1) | iocbq->iocb.ulpCt_l);
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2015 Invalid CT %x command 0x%x\n",
-				ct, iocbq->iocb.ulpCommand);
-			return IOCB_ERROR;
-		}
-		bf_set(wqe_ct, &wqe->gen_req.wqe_com, 0);
-		bf_set(wqe_tmo, &wqe->gen_req.wqe_com, iocbq->iocb.ulpTimeout);
-		bf_set(wqe_pu, &wqe->gen_req.wqe_com, iocbq->iocb.ulpPU);
-		bf_set(wqe_dbde, &wqe->gen_req.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->gen_req.wqe_com, LPFC_WQE_IOD_READ);
-		bf_set(wqe_qosd, &wqe->gen_req.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->gen_req.wqe_com, LPFC_WQE_LENLOC_NONE);
-		bf_set(wqe_ebde_cnt, &wqe->gen_req.wqe_com, 0);
-		command_type = OTHER_COMMAND;
-		break;
-	case CMD_XMIT_ELS_RSP64_CX:
-		ndlp = (struct lpfc_nodelist *)iocbq->context1;
-		/* words0-2 BDE memcpy */
-		/* word3 iocb=iotag32 wqe=response_payload_len */
-		wqe->xmit_els_rsp.response_payload_len = xmit_len;
-		/* word4 iocb=did wge=rsvd. */
-		wqe->xmit_els_rsp.rsvd4 = 0;
-		/* word5 iocb=rsvd wge=did */
-		bf_set(wqe_els_did, &wqe->xmit_els_rsp.wqe_dest,
-			 iocbq->iocb.un.elsreq64.remoteID);
-		bf_set(wqe_ct, &wqe->xmit_els_rsp.wqe_com,
-		       ((iocbq->iocb.ulpCt_h << 1) | iocbq->iocb.ulpCt_l));
-		bf_set(wqe_pu, &wqe->xmit_els_rsp.wqe_com, iocbq->iocb.ulpPU);
-		bf_set(wqe_rcvoxid, &wqe->xmit_els_rsp.wqe_com,
-		       iocbq->iocb.unsli3.rcvsli3.ox_id);
-		if (!iocbq->iocb.ulpCt_h && iocbq->iocb.ulpCt_l)
-			bf_set(wqe_ctxt_tag, &wqe->xmit_els_rsp.wqe_com,
-			       phba->vpi_ids[iocbq->vport->vpi]);
-		bf_set(wqe_dbde, &wqe->xmit_els_rsp.wqe_com, 1);
-		bf_set(wqe_iod, &wqe->xmit_els_rsp.wqe_com, LPFC_WQE_IOD_WRITE);
-		bf_set(wqe_qosd, &wqe->xmit_els_rsp.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->xmit_els_rsp.wqe_com,
-		       LPFC_WQE_LENLOC_WORD3);
-		bf_set(wqe_ebde_cnt, &wqe->xmit_els_rsp.wqe_com, 0);
-		bf_set(wqe_rsp_temp_rpi, &wqe->xmit_els_rsp,
-		       phba->sli4_hba.rpi_ids[ndlp->nlp_rpi]);
-		pcmd = (uint32_t *) (((struct lpfc_dmabuf *)
-					iocbq->context2)->virt);
-		if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
-				bf_set(els_req64_sp, &wqe->els_req, 1);
-				bf_set(els_req64_sid, &wqe->els_req,
-					iocbq->vport->fc_myDID);
-				bf_set(wqe_ct, &wqe->els_req.wqe_com, 1);
-				bf_set(wqe_ctxt_tag, &wqe->els_req.wqe_com,
-					phba->vpi_ids[phba->pport->vpi]);
-		}
-		command_type = OTHER_COMMAND;
-		break;
-	case CMD_CLOSE_XRI_CN:
-	case CMD_ABORT_XRI_CN:
-	case CMD_ABORT_XRI_CX:
-		/* words 0-2 memcpy should be 0 rserved */
-		/* port will send abts */
-		abrt_iotag = iocbq->iocb.un.acxri.abortContextTag;
-		if (abrt_iotag != 0 && abrt_iotag <= phba->sli.last_iotag) {
-			abrtiocbq = phba->sli.iocbq_lookup[abrt_iotag];
-			fip = abrtiocbq->iocb_flag & LPFC_FIP_ELS_ID_MASK;
-		} else
-			fip = 0;
-
-		if ((iocbq->iocb.ulpCommand == CMD_CLOSE_XRI_CN) || fip)
-			/*
-			 * The link is down, or the command was ELS_FIP
-			 * so the fw does not need to send abts
-			 * on the wire.
-			 */
-			bf_set(abort_cmd_ia, &wqe->abort_cmd, 1);
-		else
-			bf_set(abort_cmd_ia, &wqe->abort_cmd, 0);
-		bf_set(abort_cmd_criteria, &wqe->abort_cmd, T_XRI_TAG);
-		/* word5 iocb=CONTEXT_TAG|IO_TAG wqe=reserved */
-		wqe->abort_cmd.rsrvd5 = 0;
-		bf_set(wqe_ct, &wqe->abort_cmd.wqe_com,
-			((iocbq->iocb.ulpCt_h << 1) | iocbq->iocb.ulpCt_l));
-		abort_tag = iocbq->iocb.un.acxri.abortIoTag;
-		/*
-		 * The abort handler will send us CMD_ABORT_XRI_CN or
-		 * CMD_CLOSE_XRI_CN and the fw only accepts CMD_ABORT_XRI_CX
-		 */
-		bf_set(wqe_cmnd, &wqe->abort_cmd.wqe_com, CMD_ABORT_XRI_CX);
-		bf_set(wqe_qosd, &wqe->abort_cmd.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->abort_cmd.wqe_com,
-		       LPFC_WQE_LENLOC_NONE);
-		cmnd = CMD_ABORT_XRI_CX;
-		command_type = OTHER_COMMAND;
-		xritag = 0;
-		break;
-	case CMD_XMIT_BLS_RSP64_CX:
-		ndlp = (struct lpfc_nodelist *)iocbq->context1;
-		/* As BLS ABTS RSP WQE is very different from other WQEs,
-		 * we re-construct this WQE here based on information in
-		 * iocbq from scratch.
-		 */
-		memset(wqe, 0, sizeof(union lpfc_wqe));
-		/* OX_ID is invariable to who sent ABTS to CT exchange */
-		bf_set(xmit_bls_rsp64_oxid, &wqe->xmit_bls_rsp,
-		       bf_get(lpfc_abts_oxid, &iocbq->iocb.un.bls_rsp));
-		if (bf_get(lpfc_abts_orig, &iocbq->iocb.un.bls_rsp) ==
-		    LPFC_ABTS_UNSOL_INT) {
-			/* ABTS sent by initiator to CT exchange, the
-			 * RX_ID field will be filled with the newly
-			 * allocated responder XRI.
-			 */
-			bf_set(xmit_bls_rsp64_rxid, &wqe->xmit_bls_rsp,
-			       iocbq->sli4_xritag);
-		} else {
-			/* ABTS sent by responder to CT exchange, the
-			 * RX_ID field will be filled with the responder
-			 * RX_ID from ABTS.
-			 */
-			bf_set(xmit_bls_rsp64_rxid, &wqe->xmit_bls_rsp,
-			       bf_get(lpfc_abts_rxid, &iocbq->iocb.un.bls_rsp));
-		}
-		bf_set(xmit_bls_rsp64_seqcnthi, &wqe->xmit_bls_rsp, 0xffff);
-		bf_set(wqe_xmit_bls_pt, &wqe->xmit_bls_rsp.wqe_dest, 0x1);
-
-		/* Use CT=VPI */
-		bf_set(wqe_els_did, &wqe->xmit_bls_rsp.wqe_dest,
-			ndlp->nlp_DID);
-		bf_set(xmit_bls_rsp64_temprpi, &wqe->xmit_bls_rsp,
-			iocbq->iocb.ulpContext);
-		bf_set(wqe_ct, &wqe->xmit_bls_rsp.wqe_com, 1);
-		bf_set(wqe_ctxt_tag, &wqe->xmit_bls_rsp.wqe_com,
-			phba->vpi_ids[phba->pport->vpi]);
-		bf_set(wqe_qosd, &wqe->xmit_bls_rsp.wqe_com, 1);
-		bf_set(wqe_lenloc, &wqe->xmit_bls_rsp.wqe_com,
-		       LPFC_WQE_LENLOC_NONE);
-		/* Overwrite the pre-set comnd type with OTHER_COMMAND */
-		command_type = OTHER_COMMAND;
-		if (iocbq->iocb.un.xseq64.w5.hcsw.Rctl == FC_RCTL_BA_RJT) {
-			bf_set(xmit_bls_rsp64_rjt_vspec, &wqe->xmit_bls_rsp,
-			       bf_get(lpfc_vndr_code, &iocbq->iocb.un.bls_rsp));
-			bf_set(xmit_bls_rsp64_rjt_expc, &wqe->xmit_bls_rsp,
-			       bf_get(lpfc_rsn_expln, &iocbq->iocb.un.bls_rsp));
-			bf_set(xmit_bls_rsp64_rjt_rsnc, &wqe->xmit_bls_rsp,
-			       bf_get(lpfc_rsn_code, &iocbq->iocb.un.bls_rsp));
-		}
-
-		break;
-	case CMD_XRI_ABORTED_CX:
-	case CMD_CREATE_XRI_CR: /* Do we expect to use this? */
-	case CMD_IOCB_FCP_IBIDIR64_CR: /* bidirectional xfer */
-	case CMD_FCP_TSEND64_CX: /* Target mode send xfer-ready */
-	case CMD_FCP_TRSP64_CX: /* Target mode rcv */
-	case CMD_FCP_AUTO_TRSP_CX: /* Auto target rsp */
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2014 Invalid command 0x%x\n",
-				iocbq->iocb.ulpCommand);
-		return IOCB_ERROR;
-		break;
-	}
-
-	bf_set(wqe_xri_tag, &wqe->generic.wqe_com, xritag);
-	bf_set(wqe_reqtag, &wqe->generic.wqe_com, iocbq->iotag);
-	wqe->generic.wqe_com.abort_tag = abort_tag;
-	bf_set(wqe_cmd_type, &wqe->generic.wqe_com, command_type);
-	bf_set(wqe_cmnd, &wqe->generic.wqe_com, cmnd);
-	bf_set(wqe_class, &wqe->generic.wqe_com, iocbq->iocb.ulpClass);
-	bf_set(wqe_cqid, &wqe->generic.wqe_com, LPFC_WQE_CQ_ID_DEFAULT);
-	return 0;
-=======
  * __lpfc_sli_issue_fcp_io_s3 - SLI3 device for sending fcp io iocb
  * @phba: Pointer to HBA context object.
  * @ring_number: SLI ring number to issue wqe on.
@@ -13791,7 +10627,6 @@ lpfc_prep_embed_io(struct lpfc_hba *phba, struct lpfc_io_buf *lpfc_cmd)
 			wqe->words[31] = piocb->vmid_tag.app_id;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -13804,11 +10639,7 @@ lpfc_prep_embed_io(struct lpfc_hba *phba, struct lpfc_io_buf *lpfc_cmd)
  * __lpfc_sli_issue_iocb_s4 is used by other functions in the driver to issue
  * an iocb command to an HBA with SLI-4 interface spec.
  *
-<<<<<<< HEAD
- * This function is called with hbalock held. The function will return success
-=======
  * This function is called with ringlock held. The function will return success
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * after it successfully submit the iocb to firmware or after adding to the
  * txq.
  **/
@@ -13817,20 +10648,6 @@ __lpfc_sli_issue_iocb_s4(struct lpfc_hba *phba, uint32_t ring_number,
 			 struct lpfc_iocbq *piocb, uint32_t flag)
 {
 	struct lpfc_sglq *sglq;
-<<<<<<< HEAD
-	union lpfc_wqe wqe;
-	struct lpfc_sli_ring *pring = &phba->sli.ring[ring_number];
-
-	if (piocb->sli4_xritag == NO_XRI) {
-		if (piocb->iocb.ulpCommand == CMD_ABORT_XRI_CN ||
-		    piocb->iocb.ulpCommand == CMD_CLOSE_XRI_CN)
-			sglq = NULL;
-		else {
-			if (pring->txq_cnt) {
-				if (!(flag & SLI_IOCB_RET_IOCB)) {
-					__lpfc_sli_ringtx_put(phba,
-						pring, piocb);
-=======
 	union lpfc_wqe128 *wqe;
 	struct lpfc_queue *wq;
 	struct lpfc_sli_ring *pring;
@@ -13863,30 +10680,10 @@ __lpfc_sli_issue_iocb_s4(struct lpfc_hba *phba, uint32_t ring_number,
 					__lpfc_sli_ringtx_put(phba,
 							pring,
 							piocb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return IOCB_SUCCESS;
 				} else {
 					return IOCB_BUSY;
 				}
-<<<<<<< HEAD
-			} else {
-				sglq = __lpfc_sli_get_sglq(phba, piocb);
-				if (!sglq) {
-					if (!(flag & SLI_IOCB_RET_IOCB)) {
-						__lpfc_sli_ringtx_put(phba,
-								pring,
-								piocb);
-						return IOCB_SUCCESS;
-					} else
-						return IOCB_BUSY;
-				}
-			}
-		}
-	} else if (piocb->iocb_flag &  LPFC_IO_FCP) {
-		/* These IO's already have an XRI and a mapped sgl. */
-		sglq = NULL;
-	} else {
-=======
 			}
 		}
 	} else if (piocb->cmd_flag &  LPFC_IO_FCP) {
@@ -13894,16 +10691,11 @@ __lpfc_sli_issue_iocb_s4(struct lpfc_hba *phba, uint32_t ring_number,
 		sglq = NULL;
 	}
 	else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This is a continuation of a commandi,(CX) so this
 		 * sglq is on the active list
 		 */
-<<<<<<< HEAD
-		sglq = __lpfc_get_active_sglq(phba, piocb->sli4_xritag);
-=======
 		sglq = __lpfc_get_active_sglq(phba, piocb->sli4_lxritag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sglq)
 			return IOCB_ERROR;
 	}
@@ -13911,34 +10703,6 @@ __lpfc_sli_issue_iocb_s4(struct lpfc_hba *phba, uint32_t ring_number,
 	if (sglq) {
 		piocb->sli4_lxritag = sglq->sli4_lxritag;
 		piocb->sli4_xritag = sglq->sli4_xritag;
-<<<<<<< HEAD
-		if (NO_XRI == lpfc_sli4_bpl2sgl(phba, piocb, sglq))
-			return IOCB_ERROR;
-	}
-
-	if (lpfc_sli4_iocb2wqe(phba, piocb, &wqe))
-		return IOCB_ERROR;
-
-	if ((piocb->iocb_flag & LPFC_IO_FCP) ||
-		(piocb->iocb_flag & LPFC_USE_FCPWQIDX)) {
-		/*
-		 * For FCP command IOCB, get a new WQ index to distribute
-		 * WQE across the WQsr. On the other hand, for abort IOCB,
-		 * it carries the same WQ index to the original command
-		 * IOCB.
-		 */
-		if (piocb->iocb_flag & LPFC_IO_FCP)
-			piocb->fcp_wqidx = lpfc_sli4_scmd_to_wqidx_distr(phba);
-		if (unlikely(!phba->sli4_hba.fcp_wq))
-			return IOCB_ERROR;
-		if (lpfc_sli4_wq_put(phba->sli4_hba.fcp_wq[piocb->fcp_wqidx],
-				     &wqe))
-			return IOCB_ERROR;
-	} else {
-		if (lpfc_sli4_wq_put(phba->sli4_hba.els_wq, &wqe))
-			return IOCB_ERROR;
-	}
-=======
 
 		/* ABTS sent by initiator to CT exchange, the
 		 * RX_ID field will be filled with the newly
@@ -13959,15 +10723,11 @@ __lpfc_sli_issue_iocb_s4(struct lpfc_hba *phba, uint32_t ring_number,
 	if (lpfc_sli4_wq_put(wq, wqe))
 		return IOCB_ERROR;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_sli_ringtxcmpl_put(phba, pring, piocb);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
  * lpfc_sli_issue_fcp_io - Wrapper func for issuing fcp i/o
  *
@@ -13988,22 +10748,15 @@ lpfc_sli_issue_fcp_io(struct lpfc_hba *phba, uint32_t ring_number,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __lpfc_sli_issue_iocb - Wrapper func of lockless version for issuing iocb
  *
  * This routine wraps the actual lockless version for issusing IOCB function
  * pointer from the lpfc_hba struct.
  *
  * Return codes:
-<<<<<<< HEAD
- * 	IOCB_ERROR - Error
- * 	IOCB_SUCCESS - Success
- * 	IOCB_BUSY - Busy
-=======
  * IOCB_ERROR - Error
  * IOCB_SUCCESS - Success
  * IOCB_BUSY - Busy
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int
 __lpfc_sli_issue_iocb(struct lpfc_hba *phba, uint32_t ring_number,
@@ -14012,8 +10765,6 @@ __lpfc_sli_issue_iocb(struct lpfc_hba *phba, uint32_t ring_number,
 	return phba->__lpfc_sli_issue_iocb(phba, ring_number, piocb, flag);
 }
 
-<<<<<<< HEAD
-=======
 static void
 __lpfc_sli_prep_els_req_rsp_s3(struct lpfc_iocbq *cmdiocbq,
 			       struct lpfc_vport *vport,
@@ -14419,7 +11170,6 @@ lpfc_sli_prep_abort_xri(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocbq,
 					cqid, ia, wqec);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli_api_table_setup - Set up sli api function jump table
  * @phba: The hba struct for which this call is being executed.
@@ -14437,48 +11187,31 @@ lpfc_sli_api_table_setup(struct lpfc_hba *phba, uint8_t dev_grp)
 	case LPFC_PCI_DEV_LP:
 		phba->__lpfc_sli_issue_iocb = __lpfc_sli_issue_iocb_s3;
 		phba->__lpfc_sli_release_iocbq = __lpfc_sli_release_iocbq_s3;
-<<<<<<< HEAD
-=======
 		phba->__lpfc_sli_issue_fcp_io = __lpfc_sli_issue_fcp_io_s3;
 		phba->__lpfc_sli_prep_els_req_rsp = __lpfc_sli_prep_els_req_rsp_s3;
 		phba->__lpfc_sli_prep_gen_req = __lpfc_sli_prep_gen_req_s3;
 		phba->__lpfc_sli_prep_xmit_seq64 = __lpfc_sli_prep_xmit_seq64_s3;
 		phba->__lpfc_sli_prep_abort_xri = __lpfc_sli_prep_abort_xri_s3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LPFC_PCI_DEV_OC:
 		phba->__lpfc_sli_issue_iocb = __lpfc_sli_issue_iocb_s4;
 		phba->__lpfc_sli_release_iocbq = __lpfc_sli_release_iocbq_s4;
-<<<<<<< HEAD
-=======
 		phba->__lpfc_sli_issue_fcp_io = __lpfc_sli_issue_fcp_io_s4;
 		phba->__lpfc_sli_prep_els_req_rsp = __lpfc_sli_prep_els_req_rsp_s4;
 		phba->__lpfc_sli_prep_gen_req = __lpfc_sli_prep_gen_req_s4;
 		phba->__lpfc_sli_prep_xmit_seq64 = __lpfc_sli_prep_xmit_seq64_s4;
 		phba->__lpfc_sli_prep_abort_xri = __lpfc_sli_prep_abort_xri_s4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 				"1419 Invalid HBA PCI-device group: 0x%x\n",
 				dev_grp);
 		return -ENODEV;
-<<<<<<< HEAD
-		break;
 	}
-	phba->lpfc_get_iocb_from_iocbq = lpfc_get_iocb_from_iocbq;
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_issue_iocb - Wrapper function for __lpfc_sli_issue_iocb
- * @phba: Pointer to HBA context object.
- * @pring: Pointer to driver SLI ring object.
-=======
  * lpfc_sli4_calc_ring - Calculates which ring to use
  * @phba: Pointer to HBA context object.
  * @piocb: Pointer to command iocb.
@@ -14542,7 +11275,6 @@ inline void lpfc_sli4_poll_eq(struct lpfc_queue *eq)
  * lpfc_sli_issue_iocb - Wrapper function for __lpfc_sli_issue_iocb
  * @phba: Pointer to HBA context object.
  * @ring_number: Ring number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @piocb: Pointer to command iocb.
  * @flag: Flag indicating if this command can be put into txq.
  *
@@ -14556,15 +11288,6 @@ int
 lpfc_sli_issue_iocb(struct lpfc_hba *phba, uint32_t ring_number,
 		    struct lpfc_iocbq *piocb, uint32_t flag)
 {
-<<<<<<< HEAD
-	unsigned long iflags;
-	int rc;
-
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	rc = __lpfc_sli_issue_iocb(phba, ring_number, piocb, flag);
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-
-=======
 	struct lpfc_sli_ring *pring;
 	struct lpfc_queue *eq;
 	unsigned long iflags;
@@ -14594,7 +11317,6 @@ lpfc_sli_issue_iocb(struct lpfc_hba *phba, uint32_t ring_number,
 		rc = __lpfc_sli_issue_iocb(phba, ring_number, piocb, flag);
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -14607,11 +11329,7 @@ lpfc_sli_issue_iocb(struct lpfc_hba *phba, uint32_t ring_number,
  * only when driver needs to support target mode functionality
  * or IP over FC functionalities.
  *
-<<<<<<< HEAD
- * This function is called with no lock held.
-=======
  * This function is called with no lock held. SLI3 only.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int
 lpfc_extra_ring_setup( struct lpfc_hba *phba)
@@ -14624,21 +11342,6 @@ lpfc_extra_ring_setup( struct lpfc_hba *phba)
 	/* Adjust cmd/rsp ring iocb entries more evenly */
 
 	/* Take some away from the FCP ring */
-<<<<<<< HEAD
-	pring = &psli->ring[psli->fcp_ring];
-	pring->numCiocb -= SLI2_IOCB_CMD_R1XTRA_ENTRIES;
-	pring->numRiocb -= SLI2_IOCB_RSP_R1XTRA_ENTRIES;
-	pring->numCiocb -= SLI2_IOCB_CMD_R3XTRA_ENTRIES;
-	pring->numRiocb -= SLI2_IOCB_RSP_R3XTRA_ENTRIES;
-
-	/* and give them to the extra ring */
-	pring = &psli->ring[psli->extra_ring];
-
-	pring->numCiocb += SLI2_IOCB_CMD_R1XTRA_ENTRIES;
-	pring->numRiocb += SLI2_IOCB_RSP_R1XTRA_ENTRIES;
-	pring->numCiocb += SLI2_IOCB_CMD_R3XTRA_ENTRIES;
-	pring->numRiocb += SLI2_IOCB_RSP_R3XTRA_ENTRIES;
-=======
 	pring = &psli->sli3_ring[LPFC_FCP_RING];
 	pring->sli.sli3.numCiocb -= SLI2_IOCB_CMD_R1XTRA_ENTRIES;
 	pring->sli.sli3.numRiocb -= SLI2_IOCB_RSP_R1XTRA_ENTRIES;
@@ -14652,7 +11355,6 @@ lpfc_extra_ring_setup( struct lpfc_hba *phba)
 	pring->sli.sli3.numRiocb += SLI2_IOCB_RSP_R1XTRA_ENTRIES;
 	pring->sli.sli3.numCiocb += SLI2_IOCB_CMD_R3XTRA_ENTRIES;
 	pring->sli.sli3.numRiocb += SLI2_IOCB_RSP_R3XTRA_ENTRIES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup default profile for this ring */
 	pring->iotag_max = 4096;
@@ -14664,56 +11366,6 @@ lpfc_extra_ring_setup( struct lpfc_hba *phba)
 	return 0;
 }
 
-<<<<<<< HEAD
-/* lpfc_sli_abts_recover_port - Recover a port that failed an ABTS.
- * @vport: pointer to virtual port object.
- * @ndlp: nodelist pointer for the impacted rport.
- *
- * The driver calls this routine in response to a XRI ABORT CQE
- * event from the port.  In this event, the driver is required to
- * recover its login to the rport even though its login may be valid
- * from the driver's perspective.  The failed ABTS notice from the
- * port indicates the rport is not responding.
- */
-static void
-lpfc_sli_abts_recover_port(struct lpfc_vport *vport,
-			   struct lpfc_nodelist *ndlp)
-{
-	struct Scsi_Host *shost;
-	struct lpfc_hba *phba;
-	unsigned long flags = 0;
-
-	shost = lpfc_shost_from_vport(vport);
-	phba = vport->phba;
-	if (ndlp->nlp_state != NLP_STE_MAPPED_NODE) {
-		lpfc_printf_log(phba, KERN_INFO,
-			LOG_SLI, "3093 No rport recovery needed. "
-			"rport in state 0x%x\n",
-			ndlp->nlp_state);
-		return;
-	}
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"3094 Start rport recovery on shost id 0x%x "
-			"fc_id 0x%06x vpi 0x%x rpi 0x%x state 0x%x "
-			"flags 0x%x\n",
-			shost->host_no, ndlp->nlp_DID,
-			vport->vpi, ndlp->nlp_rpi, ndlp->nlp_state,
-			ndlp->nlp_flag);
-	/*
-	 * The rport is not responding.  Don't attempt ADISC recovery.
-	 * Remove the FCP-2 flag to force a PLOGI.
-	 */
-	spin_lock_irqsave(shost->host_lock, flags);
-	ndlp->nlp_fcp_info &= ~NLP_FCP_2_DEVICE;
-	spin_unlock_irqrestore(shost->host_lock, flags);
-	lpfc_disc_state_machine(vport, ndlp, NULL,
-				NLP_EVT_DEVICE_RECOVERY);
-	lpfc_cancel_retry_delay_tmo(vport, ndlp);
-	spin_lock_irqsave(shost->host_lock, flags);
-	ndlp->nlp_flag |= NLP_NPR_2B_DISC;
-	spin_unlock_irqrestore(shost->host_lock, flags);
-	lpfc_disc_start(vport);
-=======
 static void
 lpfc_sli_post_recovery_event(struct lpfc_hba *phba,
 			     struct lpfc_nodelist *ndlp)
@@ -14738,7 +11390,6 @@ lpfc_sli_post_recovery_event(struct lpfc_hba *phba,
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 
 	lpfc_worker_wake_up(phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* lpfc_sli_abts_err_handler - handle a failed ABTS request from an SLI3 port.
@@ -14774,11 +11425,7 @@ lpfc_sli_abts_err_handler(struct lpfc_hba *phba,
 	if (!vport)
 		goto err_exit;
 	ndlp = lpfc_findnode_rpi(vport, rpi);
-<<<<<<< HEAD
-	if (!ndlp || !NLP_CHK_NODE_ACT(ndlp))
-=======
 	if (!ndlp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_exit;
 
 	if (iocbq->iocb.ulpStatus == IOSTAT_LOCAL_REJECT)
@@ -14789,13 +11436,8 @@ lpfc_sli_abts_err_handler(struct lpfc_hba *phba,
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 			"3095 Event Context not found, no "
 			"action on vpi %d rpi %d status 0x%x, reason 0x%x\n",
-<<<<<<< HEAD
-			iocbq->iocb.ulpContext, iocbq->iocb.ulpStatus,
-			vpi, rpi);
-=======
 			vpi, rpi, iocbq->iocb.ulpStatus,
 			iocbq->iocb.ulpContext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* lpfc_sli4_abts_err_handler - handle a failed ABTS request from an SLI4 port.
@@ -14813,34 +11455,19 @@ lpfc_sli4_abts_err_handler(struct lpfc_hba *phba,
 			   struct lpfc_nodelist *ndlp,
 			   struct sli4_wcqe_xri_aborted *axri)
 {
-<<<<<<< HEAD
-	struct lpfc_vport *vport;
-	uint32_t ext_status = 0;
-
-	if (!ndlp || !NLP_CHK_NODE_ACT(ndlp)) {
-=======
 	uint32_t ext_status = 0;
 
 	if (!ndlp) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
 				"3115 Node Context not found, driver "
 				"ignoring abts err event\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	vport = ndlp->vport;
-	lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-			"3116 Port generated FCP XRI ABORT event on "
-			"vpi %d rpi %d xri x%x status 0x%x parameter x%x\n",
-			ndlp->vport->vpi, ndlp->nlp_rpi,
-=======
 	lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 			"3116 Port generated FCP XRI ABORT event on "
 			"vpi %d rpi %d xri x%x status 0x%x parameter x%x\n",
 			ndlp->vport->vpi, phba->sli4_hba.rpi_ids[ndlp->nlp_rpi],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bf_get(lpfc_wcqe_xa_xri, axri),
 			bf_get(lpfc_wcqe_xa_status, axri),
 			axri->parameter);
@@ -14850,17 +11477,10 @@ lpfc_sli4_abts_err_handler(struct lpfc_hba *phba,
 	 * LOCAL_REJECT and 0 for a failed ABTS exchange and later OCe and
 	 * LPe FW releases returned LOCAL_REJECT and SEQUENCE_TIMEOUT.
 	 */
-<<<<<<< HEAD
-	ext_status = axri->parameter & WCQE_PARAM_MASK;
-	if ((bf_get(lpfc_wcqe_xa_status, axri) == IOSTAT_LOCAL_REJECT) &&
-	    ((ext_status == IOERR_SEQUENCE_TIMEOUT) || (ext_status == 0)))
-		lpfc_sli_abts_recover_port(vport, ndlp);
-=======
 	ext_status = axri->parameter & IOERR_PARAM_MASK;
 	if ((bf_get(lpfc_wcqe_xa_status, axri) == IOSTAT_LOCAL_REJECT) &&
 	    ((ext_status == IOERR_SEQUENCE_TIMEOUT) || (ext_status == 0)))
 		lpfc_sli_post_recovery_event(phba, ndlp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -14896,21 +11516,13 @@ lpfc_sli_async_event_handler(struct lpfc_hba * phba,
 		temp_event_data.event_type = FC_REG_TEMPERATURE_EVENT;
 		if (evt_code == ASYNC_TEMP_WARN) {
 			temp_event_data.event_code = LPFC_THRESHOLD_TEMP;
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_TEMP,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0347 Adapter is very hot, please take "
 				"corrective action. temperature : %d Celsius\n",
 				(uint32_t) icmd->ulpContext);
 		} else {
 			temp_event_data.event_code = LPFC_NORMAL_TEMP;
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_TEMP,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0340 Adapter temperature is OK now. "
 				"temperature : %d Celsius\n",
 				(uint32_t) icmd->ulpContext);
@@ -14927,11 +11539,7 @@ lpfc_sli_async_event_handler(struct lpfc_hba * phba,
 		break;
 	default:
 		iocb_w = (uint32_t *) icmd;
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"0346 Ring %d handler: unexpected ASYNC_STATUS"
 			" evt_code 0x%x\n"
 			"W0  0x%08x W1  0x%08x W2  0x%08x W3  0x%08x\n"
@@ -14950,11 +11558,7 @@ lpfc_sli_async_event_handler(struct lpfc_hba * phba,
 
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_setup - SLI ring setup function
-=======
  * lpfc_sli4_setup - SLI ring setup function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @phba: Pointer to HBA context object.
  *
  * lpfc_sli_setup sets up rings of the SLI interface with
@@ -14965,8 +11569,6 @@ lpfc_sli_async_event_handler(struct lpfc_hba * phba,
  * This function always returns 0.
  **/
 int
-<<<<<<< HEAD
-=======
 lpfc_sli4_setup(struct lpfc_hba *phba)
 {
 	struct lpfc_sli_ring *pring;
@@ -15012,45 +11614,20 @@ lpfc_sli4_setup(struct lpfc_hba *phba)
  * This function always returns 0. SLI3 only.
  **/
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_sli_setup(struct lpfc_hba *phba)
 {
 	int i, totiocbsize = 0;
 	struct lpfc_sli *psli = &phba->sli;
 	struct lpfc_sli_ring *pring;
 
-<<<<<<< HEAD
-	psli->num_rings = MAX_CONFIGURED_RINGS;
-	psli->sli_flag = 0;
-	psli->fcp_ring = LPFC_FCP_RING;
-	psli->next_ring = LPFC_FCP_NEXT_RING;
-	psli->extra_ring = LPFC_EXTRA_RING;
-=======
 	psli->num_rings = MAX_SLI3_CONFIGURED_RINGS;
 	psli->sli_flag = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psli->iocbq_lookup = NULL;
 	psli->iocbq_lookup_len = 0;
 	psli->last_iotag = 0;
 
 	for (i = 0; i < psli->num_rings; i++) {
-<<<<<<< HEAD
-		pring = &psli->ring[i];
-		switch (i) {
-		case LPFC_FCP_RING:	/* ring 0 - FCP */
-			/* numCiocb and numRiocb are used in config_port */
-			pring->numCiocb = SLI2_IOCB_CMD_R0_ENTRIES;
-			pring->numRiocb = SLI2_IOCB_RSP_R0_ENTRIES;
-			pring->numCiocb += SLI2_IOCB_CMD_R1XTRA_ENTRIES;
-			pring->numRiocb += SLI2_IOCB_RSP_R1XTRA_ENTRIES;
-			pring->numCiocb += SLI2_IOCB_CMD_R3XTRA_ENTRIES;
-			pring->numRiocb += SLI2_IOCB_RSP_R3XTRA_ENTRIES;
-			pring->sizeCiocb = (phba->sli_rev == 3) ?
-							SLI3_IOCB_CMD_SIZE :
-							SLI2_IOCB_CMD_SIZE;
-			pring->sizeRiocb = (phba->sli_rev == 3) ?
-=======
 		pring = &psli->sli3_ring[i];
 		switch (i) {
 		case LPFC_FCP_RING:	/* ring 0 - FCP */
@@ -15069,7 +11646,6 @@ lpfc_sli_setup(struct lpfc_hba *phba)
 							SLI3_IOCB_CMD_SIZE :
 							SLI2_IOCB_CMD_SIZE;
 			pring->sli.sli3.sizeRiocb = (phba->sli_rev == 3) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							SLI3_IOCB_RSP_SIZE :
 							SLI2_IOCB_RSP_SIZE;
 			pring->iotag_ctr = 0;
@@ -15080,21 +11656,12 @@ lpfc_sli_setup(struct lpfc_hba *phba)
 			break;
 		case LPFC_EXTRA_RING:	/* ring 1 - EXTRA */
 			/* numCiocb and numRiocb are used in config_port */
-<<<<<<< HEAD
-			pring->numCiocb = SLI2_IOCB_CMD_R1_ENTRIES;
-			pring->numRiocb = SLI2_IOCB_RSP_R1_ENTRIES;
-			pring->sizeCiocb = (phba->sli_rev == 3) ?
-							SLI3_IOCB_CMD_SIZE :
-							SLI2_IOCB_CMD_SIZE;
-			pring->sizeRiocb = (phba->sli_rev == 3) ?
-=======
 			pring->sli.sli3.numCiocb = SLI2_IOCB_CMD_R1_ENTRIES;
 			pring->sli.sli3.numRiocb = SLI2_IOCB_RSP_R1_ENTRIES;
 			pring->sli.sli3.sizeCiocb = (phba->sli_rev == 3) ?
 							SLI3_IOCB_CMD_SIZE :
 							SLI2_IOCB_CMD_SIZE;
 			pring->sli.sli3.sizeRiocb = (phba->sli_rev == 3) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							SLI3_IOCB_RSP_SIZE :
 							SLI2_IOCB_RSP_SIZE;
 			pring->iotag_max = phba->cfg_hba_queue_depth;
@@ -15102,21 +11669,12 @@ lpfc_sli_setup(struct lpfc_hba *phba)
 			break;
 		case LPFC_ELS_RING:	/* ring 2 - ELS / CT */
 			/* numCiocb and numRiocb are used in config_port */
-<<<<<<< HEAD
-			pring->numCiocb = SLI2_IOCB_CMD_R2_ENTRIES;
-			pring->numRiocb = SLI2_IOCB_RSP_R2_ENTRIES;
-			pring->sizeCiocb = (phba->sli_rev == 3) ?
-							SLI3_IOCB_CMD_SIZE :
-							SLI2_IOCB_CMD_SIZE;
-			pring->sizeRiocb = (phba->sli_rev == 3) ?
-=======
 			pring->sli.sli3.numCiocb = SLI2_IOCB_CMD_R2_ENTRIES;
 			pring->sli.sli3.numRiocb = SLI2_IOCB_RSP_R2_ENTRIES;
 			pring->sli.sli3.sizeCiocb = (phba->sli_rev == 3) ?
 							SLI3_IOCB_CMD_SIZE :
 							SLI2_IOCB_CMD_SIZE;
 			pring->sli.sli3.sizeRiocb = (phba->sli_rev == 3) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							SLI3_IOCB_RSP_SIZE :
 							SLI2_IOCB_RSP_SIZE;
 			pring->fast_iotag = 0;
@@ -15149,24 +11707,11 @@ lpfc_sli_setup(struct lpfc_hba *phba)
 			pring->prt[3].type = FC_TYPE_CT;
 			pring->prt[3].lpfc_sli_rcv_unsol_event =
 			    lpfc_ct_unsol_event;
-<<<<<<< HEAD
-			/* abort unsolicited sequence */
-			pring->prt[4].profile = 0;	/* Mask 4 */
-			pring->prt[4].rctl = FC_RCTL_BA_ABTS;
-			pring->prt[4].type = FC_TYPE_BLS;
-			pring->prt[4].lpfc_sli_rcv_unsol_event =
-			    lpfc_sli4_ct_abort_unsol_event;
-			break;
-		}
-		totiocbsize += (pring->numCiocb * pring->sizeCiocb) +
-				(pring->numRiocb * pring->sizeRiocb);
-=======
 			break;
 		}
 		totiocbsize += (pring->sli.sli3.numCiocb *
 			pring->sli.sli3.sizeCiocb) +
 			(pring->sli.sli3.numRiocb * pring->sli.sli3.sizeRiocb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (totiocbsize > MAX_SLIM_IOCB_SIZE) {
 		/* Too many cmd / rsp ring entries in SLI2 SLIM */
@@ -15182,27 +11727,16 @@ lpfc_sli_setup(struct lpfc_hba *phba)
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_queue_setup - Queue initialization function
- * @phba: Pointer to HBA context object.
- *
- * lpfc_sli_queue_setup sets up mailbox queues and iocb queues for each
-=======
  * lpfc_sli4_queue_init - Queue initialization function
  * @phba: Pointer to HBA context object.
  *
  * lpfc_sli4_queue_init sets up mailbox queues and iocb queues for each
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ring. This function also initializes ring indices of each ring.
  * This function is called during the initialization of the SLI
  * interface of an HBA.
  * This function is called with no lock held and always returns
  * 1.
  **/
-<<<<<<< HEAD
-int
-lpfc_sli_queue_setup(struct lpfc_hba *phba)
-=======
 void
 lpfc_sli4_queue_init(struct lpfc_hba *phba)
 {
@@ -15261,7 +11795,6 @@ lpfc_sli4_queue_init(struct lpfc_hba *phba)
  **/
 void
 lpfc_sli_queue_init(struct lpfc_hba *phba)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lpfc_sli *psli;
 	struct lpfc_sli_ring *pring;
@@ -15273,21 +11806,6 @@ lpfc_sli_queue_init(struct lpfc_hba *phba)
 	INIT_LIST_HEAD(&psli->mboxq_cmpl);
 	/* Initialize list headers for txq and txcmplq as double linked lists */
 	for (i = 0; i < psli->num_rings; i++) {
-<<<<<<< HEAD
-		pring = &psli->ring[i];
-		pring->ringno = i;
-		pring->next_cmdidx  = 0;
-		pring->local_getidx = 0;
-		pring->cmdidx = 0;
-		INIT_LIST_HEAD(&pring->txq);
-		INIT_LIST_HEAD(&pring->txcmplq);
-		INIT_LIST_HEAD(&pring->iocb_continueq);
-		INIT_LIST_HEAD(&pring->iocb_continue_saveq);
-		INIT_LIST_HEAD(&pring->postbufq);
-	}
-	spin_unlock_irq(&phba->hbalock);
-	return 1;
-=======
 		pring = &psli->sli3_ring[i];
 		pring->ringno = i;
 		pring->sli.sli3.next_cmdidx  = 0;
@@ -15302,7 +11820,6 @@ lpfc_sli_queue_init(struct lpfc_hba *phba)
 		spin_lock_init(&pring->ring_lock);
 	}
 	spin_unlock_irq(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -15328,17 +11845,12 @@ lpfc_sli_mbox_sys_flush(struct lpfc_hba *phba)
 	LPFC_MBOXQ_t *pmb;
 	unsigned long iflag;
 
-<<<<<<< HEAD
-	/* Flush all the mailbox commands in the mbox system */
-	spin_lock_irqsave(&phba->hbalock, iflag);
-=======
 	/* Disable softirqs, including timers from obtaining phba->hbalock */
 	local_bh_disable();
 
 	/* Flush all the mailbox commands in the mbox system */
 	spin_lock_irqsave(&phba->hbalock, iflag);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The pending mailbox command queue */
 	list_splice_init(&phba->sli.mboxq, &completions);
 	/* The outstanding active mailbox command */
@@ -15351,12 +11863,9 @@ lpfc_sli_mbox_sys_flush(struct lpfc_hba *phba)
 	list_splice_init(&phba->sli.mboxq_cmpl, &completions);
 	spin_unlock_irqrestore(&phba->hbalock, iflag);
 
-<<<<<<< HEAD
-=======
 	/* Enable softirqs again, done with phba->hbalock */
 	local_bh_enable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Return all flushed mailbox commands with MBX_NOT_FINISHED status */
 	while (!list_empty(&completions)) {
 		list_remove_head(&completions, pmb, LPFC_MBOXQ_t, list);
@@ -15389,10 +11898,7 @@ lpfc_sli_host_down(struct lpfc_vport *vport)
 	LIST_HEAD(completions);
 	struct lpfc_hba *phba = vport->phba;
 	struct lpfc_sli *psli = &phba->sli;
-<<<<<<< HEAD
-=======
 	struct lpfc_queue *qp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli_ring *pring;
 	struct lpfc_iocbq *iocb, *next_iocb;
 	int i;
@@ -15402,41 +11908,6 @@ lpfc_sli_host_down(struct lpfc_vport *vport)
 	lpfc_cleanup_discovery_resources(vport);
 
 	spin_lock_irqsave(&phba->hbalock, flags);
-<<<<<<< HEAD
-	for (i = 0; i < psli->num_rings; i++) {
-		pring = &psli->ring[i];
-		prev_pring_flag = pring->flag;
-		/* Only slow rings */
-		if (pring->ringno == LPFC_ELS_RING) {
-			pring->flag |= LPFC_DEFERRED_RING_EVENT;
-			/* Set the lpfc data pending flag */
-			set_bit(LPFC_DATA_READY, &phba->data_flags);
-		}
-		/*
-		 * Error everything on the txq since these iocbs have not been
-		 * given to the FW yet.
-		 */
-		list_for_each_entry_safe(iocb, next_iocb, &pring->txq, list) {
-			if (iocb->vport != vport)
-				continue;
-			list_move_tail(&iocb->list, &completions);
-			pring->txq_cnt--;
-		}
-
-		/* Next issue ABTS for everything on the txcmplq */
-		list_for_each_entry_safe(iocb, next_iocb, &pring->txcmplq,
-									list) {
-			if (iocb->vport != vport)
-				continue;
-			lpfc_sli_issue_abort_iotag(phba, pring, iocb);
-		}
-
-		pring->flag = prev_pring_flag;
-	}
-
-	spin_unlock_irqrestore(&phba->hbalock, flags);
-
-=======
 
 	/*
 	 * Error everything on the txq since these iocbs
@@ -15502,7 +11973,6 @@ lpfc_sli_host_down(struct lpfc_vport *vport)
 	/* Make sure HBA is alive */
 	lpfc_issue_hb_tmo(phba);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Cancel all the IOCBs from the completions list */
 	lpfc_sli_cancel_iocbs(phba, &completions, IOSTAT_LOCAL_REJECT,
 			      IOERR_SLI_DOWN);
@@ -15529,41 +11999,13 @@ lpfc_sli_hba_down(struct lpfc_hba *phba)
 {
 	LIST_HEAD(completions);
 	struct lpfc_sli *psli = &phba->sli;
-<<<<<<< HEAD
-=======
 	struct lpfc_queue *qp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli_ring *pring;
 	struct lpfc_dmabuf *buf_ptr;
 	unsigned long flags = 0;
 	int i;
 
 	/* Shutdown the mailbox command sub-system */
-<<<<<<< HEAD
-	lpfc_sli_mbox_sys_shutdown(phba);
-
-	lpfc_hba_down_prep(phba);
-
-	lpfc_fabric_abort_hba(phba);
-
-	spin_lock_irqsave(&phba->hbalock, flags);
-	for (i = 0; i < psli->num_rings; i++) {
-		pring = &psli->ring[i];
-		/* Only slow rings */
-		if (pring->ringno == LPFC_ELS_RING) {
-			pring->flag |= LPFC_DEFERRED_RING_EVENT;
-			/* Set the lpfc data pending flag */
-			set_bit(LPFC_DATA_READY, &phba->data_flags);
-		}
-
-		/*
-		 * Error everything on the txq since these iocbs have not been
-		 * given to the FW yet.
-		 */
-		list_splice_init(&pring->txq, &completions);
-		pring->txq_cnt = 0;
-
-=======
 	lpfc_sli_mbox_sys_shutdown(phba, LPFC_MBX_WAIT);
 
 	lpfc_hba_down_prep(phba);
@@ -15604,7 +12046,6 @@ lpfc_sli_hba_down(struct lpfc_hba *phba)
 				set_bit(LPFC_DATA_READY, &phba->data_flags);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&phba->hbalock, flags);
 
@@ -15625,12 +12066,9 @@ lpfc_sli_hba_down(struct lpfc_hba *phba)
 		kfree(buf_ptr);
 	}
 
-<<<<<<< HEAD
-=======
 	/* Enable softirqs again, done with phba->hbalock */
 	local_bh_enable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Return any active mbox cmds */
 	del_timer_sync(&psli->mbox_tmo);
 
@@ -15780,15 +12218,9 @@ lpfc_sli_ring_taggedbuf_get(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	}
 
 	spin_unlock_irq(&phba->hbalock);
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-			"0402 Cannot find virtual addr for buffer tag on "
-			"ring %d Data x%lx x%p x%p x%x\n",
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 			"0402 Cannot find virtual addr for buffer tag on "
 			"ring %d Data x%lx x%px x%px x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pring->ringno, (unsigned long) tag,
 			slp->next, slp->prev, pring->postbufq_cnt);
 
@@ -15830,15 +12262,9 @@ lpfc_sli_ringpostbuf_get(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	}
 
 	spin_unlock_irq(&phba->hbalock);
-<<<<<<< HEAD
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-			"0410 Cannot find virtual addr for mapped buf on "
-			"ring %d Data x%llx x%p x%p x%x\n",
-=======
 	lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 			"0410 Cannot find virtual addr for mapped buf on "
 			"ring %d Data x%llx x%px x%px x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pring->ringno, (unsigned long long)phys,
 			slp->next, slp->prev, pring->postbufq_cnt);
 	return NULL;
@@ -15859,52 +12285,15 @@ static void
 lpfc_sli_abort_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 			struct lpfc_iocbq *rspiocb)
 {
-<<<<<<< HEAD
-	IOCB_t *irsp = &rspiocb->iocb;
-	uint16_t abort_iotag, abort_context;
-	struct lpfc_iocbq *abort_iocb = NULL;
-
-	if (irsp->ulpStatus) {
-
-=======
 	u32 ulp_status = get_job_ulpstatus(phba, rspiocb);
 	u32 ulp_word4 = get_job_word4(phba, rspiocb);
 	u8 cmnd = get_job_cmnd(phba, cmdiocb);
 
 	if (ulp_status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Assume that the port already completed and returned, or
 		 * will return the iocb. Just Log the message.
 		 */
-<<<<<<< HEAD
-		abort_context = cmdiocb->iocb.un.acxri.abortContextTag;
-		abort_iotag = cmdiocb->iocb.un.acxri.abortIoTag;
-
-		spin_lock_irq(&phba->hbalock);
-		if (phba->sli_rev < LPFC_SLI_REV4) {
-			if (abort_iotag != 0 &&
-				abort_iotag <= phba->sli.last_iotag)
-				abort_iocb =
-					phba->sli.iocbq_lookup[abort_iotag];
-		} else
-			/* For sli4 the abort_tag is the XRI,
-			 * so the abort routine puts the iotag  of the iocb
-			 * being aborted in the context field of the abort
-			 * IOCB.
-			 */
-			abort_iocb = phba->sli.iocbq_lookup[abort_context];
-
-		lpfc_printf_log(phba, KERN_WARNING, LOG_ELS | LOG_SLI,
-				"0327 Cannot abort els iocb %p "
-				"with tag %x context %x, abort status %x, "
-				"abort code %x\n",
-				abort_iocb, abort_iotag, abort_context,
-				irsp->ulpStatus, irsp->un.ulpWord[4]);
-
-		spin_unlock_irq(&phba->hbalock);
-	}
-=======
 		if (phba->sli_rev < LPFC_SLI_REV4) {
 			if (cmnd == CMD_ABORT_XRI_CX &&
 			    ulp_status == IOSTAT_LOCAL_REJECT &&
@@ -15925,7 +12314,6 @@ lpfc_sli_abort_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 
 	}
 release_iocb:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_sli_release_iocbq(phba, cmdiocb);
 	return;
 }
@@ -15941,111 +12329,6 @@ release_iocb:
  * which are aborted. The function frees memory resources used for
  * the aborted ELS commands.
  **/
-<<<<<<< HEAD
-static void
-lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
-		     struct lpfc_iocbq *rspiocb)
-{
-	IOCB_t *irsp = &rspiocb->iocb;
-
-	/* ELS cmd tag <ulpIoTag> completes */
-	lpfc_printf_log(phba, KERN_INFO, LOG_ELS,
-			"0139 Ignoring ELS cmd tag x%x completion Data: "
-			"x%x x%x x%x\n",
-			irsp->ulpIoTag, irsp->ulpStatus,
-			irsp->un.ulpWord[4], irsp->ulpTimeout);
-	if (cmdiocb->iocb.ulpCommand == CMD_GEN_REQUEST64_CR)
-		lpfc_ct_free_iocb(phba, cmdiocb);
-	else
-		lpfc_els_free_iocb(phba, cmdiocb);
-	return;
-}
-
-/**
- * lpfc_sli_abort_iotag_issue - Issue abort for a command iocb
- * @phba: Pointer to HBA context object.
- * @pring: Pointer to driver SLI ring object.
- * @cmdiocb: Pointer to driver command iocb object.
- *
- * This function issues an abort iocb for the provided command iocb down to
- * the port. Other than the case the outstanding command iocb is an abort
- * request, this function issues abort out unconditionally. This function is
- * called with hbalock held. The function returns 0 when it fails due to
- * memory allocation failure or when the command iocb is an abort request.
- **/
-static int
-lpfc_sli_abort_iotag_issue(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
-			   struct lpfc_iocbq *cmdiocb)
-{
-	struct lpfc_vport *vport = cmdiocb->vport;
-	struct lpfc_iocbq *abtsiocbp;
-	IOCB_t *icmd = NULL;
-	IOCB_t *iabt = NULL;
-	int retval;
-
-	/*
-	 * There are certain command types we don't want to abort.  And we
-	 * don't want to abort commands that are already in the process of
-	 * being aborted.
-	 */
-	icmd = &cmdiocb->iocb;
-	if (icmd->ulpCommand == CMD_ABORT_XRI_CN ||
-	    icmd->ulpCommand == CMD_CLOSE_XRI_CN ||
-	    (cmdiocb->iocb_flag & LPFC_DRIVER_ABORTED) != 0)
-		return 0;
-
-	/* issue ABTS for this IOCB based on iotag */
-	abtsiocbp = __lpfc_sli_get_iocbq(phba);
-	if (abtsiocbp == NULL)
-		return 0;
-
-	/* This signals the response to set the correct status
-	 * before calling the completion handler
-	 */
-	cmdiocb->iocb_flag |= LPFC_DRIVER_ABORTED;
-
-	iabt = &abtsiocbp->iocb;
-	iabt->un.acxri.abortType = ABORT_TYPE_ABTS;
-	iabt->un.acxri.abortContextTag = icmd->ulpContext;
-	if (phba->sli_rev == LPFC_SLI_REV4) {
-		iabt->un.acxri.abortIoTag = cmdiocb->sli4_xritag;
-		iabt->un.acxri.abortContextTag = cmdiocb->iotag;
-	}
-	else
-		iabt->un.acxri.abortIoTag = icmd->ulpIoTag;
-	iabt->ulpLe = 1;
-	iabt->ulpClass = icmd->ulpClass;
-
-	/* ABTS WQE must go to the same WQ as the WQE to be aborted */
-	abtsiocbp->fcp_wqidx = cmdiocb->fcp_wqidx;
-	if (cmdiocb->iocb_flag & LPFC_IO_FCP)
-		abtsiocbp->iocb_flag |= LPFC_USE_FCPWQIDX;
-
-	if (phba->link_state >= LPFC_LINK_UP)
-		iabt->ulpCommand = CMD_ABORT_XRI_CN;
-	else
-		iabt->ulpCommand = CMD_CLOSE_XRI_CN;
-
-	abtsiocbp->iocb_cmpl = lpfc_sli_abort_els_cmpl;
-
-	lpfc_printf_vlog(vport, KERN_INFO, LOG_SLI,
-			 "0339 Abort xri x%x, original iotag x%x, "
-			 "abort cmd iotag x%x\n",
-			 iabt->un.acxri.abortIoTag,
-			 iabt->un.acxri.abortContextTag,
-			 abtsiocbp->iotag);
-	retval = __lpfc_sli_issue_iocb(phba, pring->ringno, abtsiocbp, 0);
-
-	if (retval)
-		__lpfc_sli_release_iocbq(phba, abtsiocbp);
-
-	/*
-	 * Caller to this routine should check for IOCB_ERROR
-	 * and handle it properly.  This routine no longer removes
-	 * iocb off txcmplq and call compl in case of IOCB_ERROR.
-	 */
-	return retval;
-=======
 void
 lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 		     struct lpfc_iocbq *rspiocb)
@@ -16092,7 +12375,6 @@ lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 		lpfc_els_free_iocb(phba, cmdiocb);
 
 	lpfc_nlp_put(ndlp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -16100,27 +12382,12 @@ lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
  * @phba: Pointer to HBA context object.
  * @pring: Pointer to driver SLI ring object.
  * @cmdiocb: Pointer to driver command iocb object.
-<<<<<<< HEAD
-=======
  * @cmpl: completion function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function issues an abort iocb for the provided command iocb. In case
  * of unloading, the abort iocb will not be issued to commands on the ELS
  * ring. Instead, the callback function shall be changed to those commands
  * so that nothing happens when them finishes. This function is called with
-<<<<<<< HEAD
- * hbalock held. The function returns 0 when the command iocb is an abort
- * request.
- **/
-int
-lpfc_sli_issue_abort_iotag(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
-			   struct lpfc_iocbq *cmdiocb)
-{
-	struct lpfc_vport *vport = cmdiocb->vport;
-	int retval = IOCB_ERROR;
-	IOCB_t *icmd = NULL;
-=======
  * hbalock held andno ring_lock held (SLI4). The function returns IOCB_SUCCESS
  * when the command iocb is an abort request.
  *
@@ -16137,20 +12404,12 @@ lpfc_sli_issue_abort_iotag(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	u32 ulp_command = get_job_cmnd(phba, cmdiocb);
 	u16 ulp_context, iotag;
 	bool ia;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * There are certain command types we don't want to abort.  And we
 	 * don't want to abort commands that are already in the process of
 	 * being aborted.
 	 */
-<<<<<<< HEAD
-	icmd = &cmdiocb->iocb;
-	if (icmd->ulpCommand == CMD_ABORT_XRI_CN ||
-	    icmd->ulpCommand == CMD_CLOSE_XRI_CN ||
-	    (cmdiocb->iocb_flag & LPFC_DRIVER_ABORTED) != 0)
-		return 0;
-=======
 	if (ulp_command == CMD_ABORT_XRI_WQE ||
 	    ulp_command == CMD_ABORT_XRI_CN ||
 	    ulp_command == CMD_CLOSE_XRI_CN ||
@@ -16164,27 +12423,11 @@ lpfc_sli_issue_abort_iotag(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 			cmdiocb->cmd_cmpl = lpfc_ignore_els_cmpl;
 		return retval;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're unloading, don't abort iocb on the ELS ring, but change
 	 * the callback so that nothing happens when it finishes.
 	 */
-<<<<<<< HEAD
-	if ((vport->load_flag & FC_UNLOADING) &&
-	    (pring->ringno == LPFC_ELS_RING)) {
-		if (cmdiocb->iocb_flag & LPFC_IO_FABRIC)
-			cmdiocb->fabric_iocb_cmpl = lpfc_ignore_els_cmpl;
-		else
-			cmdiocb->iocb_cmpl = lpfc_ignore_els_cmpl;
-		goto abort_iotag_exit;
-	}
-
-	/* Now, we try to issue the abort to the cmdiocb out */
-	retval = lpfc_sli_abort_iotag_issue(phba, pring, cmdiocb);
-
-abort_iotag_exit:
-=======
 	if (test_bit(FC_UNLOADING, &vport->load_flag) &&
 	    pring->ringno == LPFC_ELS_RING) {
 		if (cmdiocb->cmd_flag & LPFC_IO_FABRIC)
@@ -16273,7 +12516,6 @@ abort_iotag_exit:
 		__lpfc_sli_release_iocbq(phba, abtsiocbp);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Caller to this routine should check for IOCB_ERROR
 	 * and handle it properly.  This routine no longer removes
@@ -16283,46 +12525,6 @@ abort_iotag_exit:
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_iocb_ring_abort - Unconditionally abort all iocbs on an iocb ring
- * @phba: Pointer to HBA context object.
- * @pring: Pointer to driver SLI ring object.
- *
- * This function aborts all iocbs in the given ring and frees all the iocb
- * objects in txq. This function issues abort iocbs unconditionally for all
- * the iocb commands in txcmplq. The iocbs in the txcmplq is not guaranteed
- * to complete before the return of this function. The caller is not required
- * to hold any locks.
- **/
-static void
-lpfc_sli_iocb_ring_abort(struct lpfc_hba *phba, struct lpfc_sli_ring *pring)
-{
-	LIST_HEAD(completions);
-	struct lpfc_iocbq *iocb, *next_iocb;
-
-	if (pring->ringno == LPFC_ELS_RING)
-		lpfc_fabric_abort_hba(phba);
-
-	spin_lock_irq(&phba->hbalock);
-
-	/* Take off all the iocbs on txq for cancelling */
-	list_splice_init(&pring->txq, &completions);
-	pring->txq_cnt = 0;
-
-	/* Next issue ABTS for everything on the txcmplq */
-	list_for_each_entry_safe(iocb, next_iocb, &pring->txcmplq, list)
-		lpfc_sli_abort_iotag_issue(phba, pring, iocb);
-
-	spin_unlock_irq(&phba->hbalock);
-
-	/* Cancel all the IOCBs from the completions list */
-	lpfc_sli_cancel_iocbs(phba, &completions, IOSTAT_LOCAL_REJECT,
-			      IOERR_SLI_ABORTED);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli_hba_iocb_abort - Abort all iocbs to an hba.
  * @phba: pointer to lpfc HBA data structure.
  *
@@ -16333,13 +12535,6 @@ lpfc_sli_hba_iocb_abort(struct lpfc_hba *phba)
 {
 	struct lpfc_sli *psli = &phba->sli;
 	struct lpfc_sli_ring *pring;
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < psli->num_rings; i++) {
-		pring = &psli->ring[i];
-		lpfc_sli_iocb_ring_abort(phba, pring);
-=======
 	struct lpfc_queue *qp = NULL;
 	int i;
 
@@ -16355,14 +12550,10 @@ lpfc_sli_hba_iocb_abort(struct lpfc_hba *phba)
 		if (!pring)
 			continue;
 		lpfc_sli_abort_iocb_ring(phba, pring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli_validate_fcp_iocb - find commands associated with a vport or LUN
-=======
  * lpfc_sli_validate_fcp_iocb_for_abort - filter iocbs appropriate for FCP aborts
  * @iocbq: Pointer to iocb object.
  * @vport: Pointer to driver virtual port object.
@@ -16402,22 +12593,16 @@ lpfc_sli_validate_fcp_iocb_for_abort(struct lpfc_iocbq *iocbq,
 
 /**
  * lpfc_sli_validate_fcp_iocb - validate commands associated with a SCSI target
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @iocbq: Pointer to driver iocb object.
  * @vport: Pointer to driver virtual port object.
  * @tgt_id: SCSI ID of the target.
  * @lun_id: LUN ID of the scsi device.
  * @ctx_cmd: LPFC_CTX_LUN/LPFC_CTX_TGT/LPFC_CTX_HOST
  *
-<<<<<<< HEAD
- * This function acts as an iocb filter for functions which abort or count
- * all FCP iocbs pending on a lun/SCSI target/SCSI host. It will return
-=======
  * This function acts as an iocb filter for validating a lun/SCSI target/SCSI
  * host.
  *
  * It will return
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 0 if the filtering criteria is met for the given iocb and will return
  * 1 if the filtering criteria is not met.
  * If ctx_cmd == LPFC_CTX_LUN, the function returns 0 only if the
@@ -16435,44 +12620,23 @@ lpfc_sli_validate_fcp_iocb(struct lpfc_iocbq *iocbq, struct lpfc_vport *vport,
 			   uint16_t tgt_id, uint64_t lun_id,
 			   lpfc_ctx_cmd ctx_cmd)
 {
-<<<<<<< HEAD
-	struct lpfc_scsi_buf *lpfc_cmd;
-	int rc = 1;
-
-	if (!(iocbq->iocb_flag &  LPFC_IO_FCP))
-		return rc;
-
-	if (iocbq->vport != vport)
-		return rc;
-
-	lpfc_cmd = container_of(iocbq, struct lpfc_scsi_buf, cur_iocbq);
-=======
 	struct lpfc_io_buf *lpfc_cmd;
 	int rc = 1;
 
 	lpfc_cmd = container_of(iocbq, struct lpfc_io_buf, cur_iocbq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lpfc_cmd->pCmd == NULL)
 		return rc;
 
 	switch (ctx_cmd) {
 	case LPFC_CTX_LUN:
-<<<<<<< HEAD
-		if ((lpfc_cmd->rdata->pnode) &&
-=======
 		if ((lpfc_cmd->rdata) && (lpfc_cmd->rdata->pnode) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (lpfc_cmd->rdata->pnode->nlp_sid == tgt_id) &&
 		    (scsilun_to_int(&lpfc_cmd->fcp_cmnd->fcp_lun) == lun_id))
 			rc = 0;
 		break;
 	case LPFC_CTX_TGT:
-<<<<<<< HEAD
-		if ((lpfc_cmd->rdata->pnode) &&
-=======
 		if ((lpfc_cmd->rdata) && (lpfc_cmd->rdata->pnode) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (lpfc_cmd->rdata->pnode->nlp_sid == tgt_id))
 			rc = 0;
 		break;
@@ -16514,16 +12678,6 @@ lpfc_sli_sum_iocb(struct lpfc_vport *vport, uint16_t tgt_id, uint64_t lun_id,
 	struct lpfc_hba *phba = vport->phba;
 	struct lpfc_iocbq *iocbq;
 	int sum, i;
-<<<<<<< HEAD
-
-	for (i = 1, sum = 0; i <= phba->sli.last_iotag; i++) {
-		iocbq = phba->sli.iocbq_lookup[i];
-
-		if (lpfc_sli_validate_fcp_iocb (iocbq, vport, tgt_id, lun_id,
-						ctx_cmd) == 0)
-			sum++;
-	}
-=======
 	unsigned long iflags;
 	u8 ulp_command;
 
@@ -16551,7 +12705,6 @@ lpfc_sli_sum_iocb(struct lpfc_vport *vport, uint16_t tgt_id, uint64_t lun_id,
 			sum++;
 	}
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sum;
 }
@@ -16571,15 +12724,6 @@ lpfc_sli_abort_fcp_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 			struct lpfc_iocbq *rspiocb)
 {
 	lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
-<<<<<<< HEAD
-			"3096 ABORT_XRI_CN completing on xri x%x "
-			"original iotag x%x, abort cmd iotag x%x "
-			"status 0x%x, reason 0x%x\n",
-			cmdiocb->iocb.un.acxri.abortContextTag,
-			cmdiocb->iocb.un.acxri.abortIoTag,
-			cmdiocb->iotag, rspiocb->iocb.ulpStatus,
-			rspiocb->iocb.un.ulpWord[4]);
-=======
 			"3096 ABORT_XRI_CX completing on rpi x%x "
 			"original iotag x%x, abort cmd iotag x%x "
 			"status 0x%x, reason 0x%x\n",
@@ -16589,7 +12733,6 @@ lpfc_sli_abort_fcp_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 			get_job_abtsiotag(phba, cmdiocb),
 			cmdiocb->iotag, get_job_ulpstatus(phba, rspiocb),
 			get_job_word4(phba, rspiocb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_sli_release_iocbq(phba, cmdiocb);
 	return;
 }
@@ -16597,25 +12740,17 @@ lpfc_sli_abort_fcp_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 /**
  * lpfc_sli_abort_iocb - issue abort for all commands on a host/target/LUN
  * @vport: Pointer to virtual port.
-<<<<<<< HEAD
- * @pring: Pointer to driver SLI ring object.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tgt_id: SCSI ID of the target.
  * @lun_id: LUN ID of the scsi device.
  * @abort_cmd: LPFC_CTX_LUN/LPFC_CTX_TGT/LPFC_CTX_HOST.
  *
  * This function sends an abort command for every SCSI command
  * associated with the given virtual port pending on the ring
-<<<<<<< HEAD
- * filtered by lpfc_sli_validate_fcp_iocb function.
-=======
  * filtered by lpfc_sli_validate_fcp_iocb_for_abort and then
  * lpfc_sli_validate_fcp_iocb function.  The ordering for validation before
  * submitting abort iocbs must be lpfc_sli_validate_fcp_iocb_for_abort
  * followed by lpfc_sli_validate_fcp_iocb.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * When abort_cmd == LPFC_CTX_LUN, the function sends abort only to the
  * FCP iocbs associated with lun specified by tgt_id and lun_id
  * parameters
@@ -16623,30 +12758,12 @@ lpfc_sli_abort_fcp_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
  * FCP iocbs associated with SCSI target specified by tgt_id parameter.
  * When abort_cmd == LPFC_CTX_HOST, the function sends abort to all
  * FCP iocbs associated with virtual port.
-<<<<<<< HEAD
-=======
  * The pring used for SLI3 is sli3_ring[LPFC_FCP_RING], for SLI4
  * lpfc_sli4_calc_ring is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function returns number of iocbs it failed to abort.
  * This function is called with no locks held.
  **/
 int
-<<<<<<< HEAD
-lpfc_sli_abort_iocb(struct lpfc_vport *vport, struct lpfc_sli_ring *pring,
-		    uint16_t tgt_id, uint64_t lun_id, lpfc_ctx_cmd abort_cmd)
-{
-	struct lpfc_hba *phba = vport->phba;
-	struct lpfc_iocbq *iocbq;
-	struct lpfc_iocbq *abtsiocb;
-	IOCB_t *cmd = NULL;
-	int errcnt = 0, ret_val = 0;
-	int i;
-
-	for (i = 1; i <= phba->sli.last_iotag; i++) {
-		iocbq = phba->sli.iocbq_lookup[i];
-
-=======
 lpfc_sli_abort_iocb(struct lpfc_vport *vport, u16 tgt_id, u64 lun_id,
 		    lpfc_ctx_cmd abort_cmd)
 {
@@ -16667,50 +12784,10 @@ lpfc_sli_abort_iocb(struct lpfc_vport *vport, u16 tgt_id, u64 lun_id,
 		if (lpfc_sli_validate_fcp_iocb_for_abort(iocbq, vport))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lpfc_sli_validate_fcp_iocb(iocbq, vport, tgt_id, lun_id,
 					       abort_cmd) != 0)
 			continue;
 
-<<<<<<< HEAD
-		/* issue ABTS for this IOCB based on iotag */
-		abtsiocb = lpfc_sli_get_iocbq(phba);
-		if (abtsiocb == NULL) {
-			errcnt++;
-			continue;
-		}
-
-		cmd = &iocbq->iocb;
-		abtsiocb->iocb.un.acxri.abortType = ABORT_TYPE_ABTS;
-		abtsiocb->iocb.un.acxri.abortContextTag = cmd->ulpContext;
-		if (phba->sli_rev == LPFC_SLI_REV4)
-			abtsiocb->iocb.un.acxri.abortIoTag = iocbq->sli4_xritag;
-		else
-			abtsiocb->iocb.un.acxri.abortIoTag = cmd->ulpIoTag;
-		abtsiocb->iocb.ulpLe = 1;
-		abtsiocb->iocb.ulpClass = cmd->ulpClass;
-		abtsiocb->vport = phba->pport;
-
-		/* ABTS WQE must go to the same WQ as the WQE to be aborted */
-		abtsiocb->fcp_wqidx = iocbq->fcp_wqidx;
-		if (iocbq->iocb_flag & LPFC_IO_FCP)
-			abtsiocb->iocb_flag |= LPFC_USE_FCPWQIDX;
-
-		if (lpfc_is_link_up(phba))
-			abtsiocb->iocb.ulpCommand = CMD_ABORT_XRI_CN;
-		else
-			abtsiocb->iocb.ulpCommand = CMD_CLOSE_XRI_CN;
-
-		/* Setup callback routine and issue the command. */
-		abtsiocb->iocb_cmpl = lpfc_sli_abort_fcp_cmpl;
-		ret_val = lpfc_sli_issue_iocb(phba, pring->ringno,
-					      abtsiocb, 0);
-		if (ret_val == IOCB_ERROR) {
-			lpfc_sli_release_iocbq(phba, abtsiocb);
-			errcnt++;
-			continue;
-		}
-=======
 		spin_lock_irqsave(&phba->hbalock, iflags);
 		if (phba->sli_rev == LPFC_SLI_REV3) {
 			pring = &phba->sli.sli3_ring[LPFC_FCP_RING];
@@ -16722,15 +12799,12 @@ lpfc_sli_abort_iocb(struct lpfc_vport *vport, u16 tgt_id, u64 lun_id,
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 		if (ret_val != IOCB_SUCCESS)
 			errcnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return errcnt;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_sli_abort_taskmgmt - issue abort for all commands on a host/target/LUN
  * @vport: Pointer to virtual port.
  * @pring: Pointer to driver SLI ring object.
@@ -16897,7 +12971,6 @@ lpfc_sli_abort_taskmgmt(struct lpfc_vport *vport, struct lpfc_sli_ring *pring,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli_wake_iocb_wait - lpfc_sli_issue_iocb_wait's completion handler
  * @phba: Pointer to HBA context object.
  * @cmdiocbq: Pointer to command iocb.
@@ -16921,22 +12994,6 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba *phba,
 {
 	wait_queue_head_t *pdone_q;
 	unsigned long iflags;
-<<<<<<< HEAD
-	struct lpfc_scsi_buf *lpfc_cmd;
-
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	cmdiocbq->iocb_flag |= LPFC_IO_WAKE;
-	if (cmdiocbq->context2 && rspiocbq)
-		memcpy(&((struct lpfc_iocbq *)cmdiocbq->context2)->iocb,
-		       &rspiocbq->iocb, sizeof(IOCB_t));
-
-	/* Set the exchange busy flag for task management commands */
-	if ((cmdiocbq->iocb_flag & LPFC_IO_FCP) &&
-		!(cmdiocbq->iocb_flag & LPFC_IO_LIBDFC)) {
-		lpfc_cmd = container_of(cmdiocbq, struct lpfc_scsi_buf,
-			cur_iocbq);
-		lpfc_cmd->exch_busy = rspiocbq->iocb_flag & LPFC_EXCHANGE_BUSY;
-=======
 	struct lpfc_io_buf *lpfc_cmd;
 	size_t offset = offsetof(struct lpfc_iocbq, wqe);
 
@@ -16974,7 +13031,6 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba *phba,
 			lpfc_cmd->flags |= LPFC_SBUF_XBUSY;
 		else
 			lpfc_cmd->flags &= ~LPFC_SBUF_XBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pdone_q = cmdiocbq->context_un.wait_queue;
@@ -16990,11 +13046,7 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba *phba,
  * @piocbq: Pointer to command iocb.
  * @flag: Flag to test.
  *
-<<<<<<< HEAD
- * This routine grabs the hbalock and then test the iocb_flag to
-=======
  * This routine grabs the hbalock and then test the cmd_flag to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * see if the passed in flag is set.
  * Returns:
  * 1 if flag is set.
@@ -17008,11 +13060,7 @@ lpfc_chk_iocb_flg(struct lpfc_hba *phba,
 	int ret;
 
 	spin_lock_irqsave(&phba->hbalock, iflags);
-<<<<<<< HEAD
-	ret = piocbq->iocb_flag & flag;
-=======
 	ret = piocbq->cmd_flag & flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 	return ret;
 
@@ -17021,22 +13069,12 @@ lpfc_chk_iocb_flg(struct lpfc_hba *phba,
 /**
  * lpfc_sli_issue_iocb_wait - Synchronous function to issue iocb commands
  * @phba: Pointer to HBA context object..
-<<<<<<< HEAD
- * @pring: Pointer to sli ring.
-=======
  * @ring_number: Ring number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @piocb: Pointer to command iocb.
  * @prspiocbq: Pointer to response iocb.
  * @timeout: Timeout in number of seconds.
  *
  * This function issues the iocb to firmware and waits for the
-<<<<<<< HEAD
- * iocb to complete. If the iocb command is not
- * completed within timeout seconds, it returns IOCB_TIMEDOUT.
- * Caller should not free the iocb resources if this function
- * returns IOCB_TIMEDOUT.
-=======
  * iocb to complete. The cmd_cmpl field of the shall be used
  * to handle iocbs which time out. If the field is NULL, the
  * function shall free the iocbq structure.  If more clean up is
@@ -17047,7 +13085,6 @@ lpfc_chk_iocb_flg(struct lpfc_hba *phba,
  * completion function set in the cmd_cmpl field and then return
  * a status of IOCB_TIMEDOUT.  The caller should not free the iocb
  * resources if this function returns IOCB_TIMEDOUT.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The function waits for the iocb completion using an
  * non-interruptible wait.
  * This function will sleep while waiting for iocb completion.
@@ -17057,11 +13094,7 @@ lpfc_chk_iocb_flg(struct lpfc_hba *phba,
  * This function assumes that the iocb completions occur while
  * this function sleep. So, this function cannot be called from
  * the thread which process iocb completion for this ring.
-<<<<<<< HEAD
- * This function clears the iocb_flag of the iocb object before
-=======
  * This function clears the cmd_flag of the iocb object before
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * issuing the iocb and the iocb completion handler sets this
  * flag and wakes this thread when the iocb completes.
  * The contents of the response iocb will be copied to prspiocbq
@@ -17080,22 +13113,6 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 	long timeleft, timeout_req = 0;
 	int retval = IOCB_SUCCESS;
 	uint32_t creg_val;
-<<<<<<< HEAD
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_ELS_RING];
-	/*
-	 * If the caller has provided a response iocbq buffer, then context2
-	 * is NULL or its an error.
-	 */
-	if (prspiocbq) {
-		if (piocb->context2)
-			return IOCB_ERROR;
-		piocb->context2 = prspiocbq;
-	}
-
-	piocb->iocb_cmpl = lpfc_sli_wake_iocb_wait;
-	piocb->context_un.wait_queue = &done_q;
-	piocb->iocb_flag &= ~LPFC_IO_WAKE;
-=======
 	struct lpfc_iocbq *iocb;
 	int txq_cnt = 0;
 	int txcmplq_cnt = 0;
@@ -17123,7 +13140,6 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 	piocb->cmd_cmpl = lpfc_sli_wake_iocb_wait;
 	piocb->context_un.wait_queue = &done_q;
 	piocb->cmd_flag &= ~(LPFC_IO_WAKE | LPFC_IO_WAKE_TMO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->cfg_poll & DISABLE_FCP_RING_INT) {
 		if (lpfc_readl(phba->HCregaddr, &creg_val))
@@ -17136,18 +13152,6 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 	retval = lpfc_sli_issue_iocb(phba, ring_number, piocb,
 				     SLI_IOCB_RET_IOCB);
 	if (retval == IOCB_SUCCESS) {
-<<<<<<< HEAD
-		timeout_req = timeout * HZ;
-		timeleft = wait_event_timeout(done_q,
-				lpfc_chk_iocb_flg(phba, piocb, LPFC_IO_WAKE),
-				timeout_req);
-
-		if (piocb->iocb_flag & LPFC_IO_WAKE) {
-			lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
-					"0331 IOCB wake signaled\n");
-		} else if (timeleft == 0) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		timeout_req = msecs_to_jiffies(timeout * 1000);
 		timeleft = wait_event_timeout(done_q,
 				lpfc_chk_iocb_flg(phba, piocb, LPFC_IO_WAKE),
@@ -17174,27 +13178,17 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 			 * */
 		} else if (timeleft == 0) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0338 IOCB wait timeout error - no "
 					"wake response Data x%x\n", timeout);
 			retval = IOCB_TIMEDOUT;
 		} else {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0330 IOCB wake NOT set, "
 					"Data x%x x%lx\n",
 					timeout, (timeleft / jiffies));
 			retval = IOCB_TIMEDOUT;
 		}
 	} else if (retval == IOCB_BUSY) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
-			"2818 Max IOCBs %d txq cnt %d txcmplq cnt %d\n",
-			phba->iocb_cnt, pring->txq_cnt, pring->txcmplq_cnt);
-=======
 		if (phba->cfg_log_verbose & LOG_SLI) {
 			list_for_each_entry(iocb, &pring->txq, list) {
 				txq_cnt++;
@@ -17206,7 +13200,6 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 				"2818 Max IOCBs %d txq cnt %d txcmplq cnt %d\n",
 				phba->iocb_cnt, txq_cnt, txcmplq_cnt);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	} else {
 		lpfc_printf_log(phba, KERN_INFO, LOG_SLI,
@@ -17224,17 +13217,10 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
 	}
 
 	if (prspiocbq)
-<<<<<<< HEAD
-		piocb->context2 = NULL;
-
-	piocb->context_un.wait_queue = NULL;
-	piocb->iocb_cmpl = NULL;
-=======
 		piocb->rsp_iocb = NULL;
 
 	piocb->context_un.wait_queue = NULL;
 	piocb->cmd_cmpl = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -17268,31 +13254,6 @@ int
 lpfc_sli_issue_mbox_wait(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq,
 			 uint32_t timeout)
 {
-<<<<<<< HEAD
-	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(done_q);
-	int retval;
-	unsigned long flag;
-
-	/* The caller must leave context1 empty. */
-	if (pmboxq->context1)
-		return MBX_NOT_FINISHED;
-
-	pmboxq->mbox_flag &= ~LPFC_MBX_WAKE;
-	/* setup wake call as IOCB callback */
-	pmboxq->mbox_cmpl = lpfc_sli_wake_mbox_wait;
-	/* setup context field to pass wait_queue pointer to wake function  */
-	pmboxq->context1 = &done_q;
-
-	/* now issue the command */
-	retval = lpfc_sli_issue_mbox(phba, pmboxq, MBX_NOWAIT);
-	if (retval == MBX_BUSY || retval == MBX_SUCCESS) {
-		wait_event_interruptible_timeout(done_q,
-				pmboxq->mbox_flag & LPFC_MBX_WAKE,
-				timeout * HZ);
-
-		spin_lock_irqsave(&phba->hbalock, flag);
-		pmboxq->context1 = NULL;
-=======
 	struct completion mbox_done;
 	int retval;
 	unsigned long flag;
@@ -17312,37 +13273,25 @@ lpfc_sli_issue_mbox_wait(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq,
 
 		spin_lock_irqsave(&phba->hbalock, flag);
 		pmboxq->ctx_u.mbox_wait = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * if LPFC_MBX_WAKE flag is set the mailbox is completed
 		 * else do not free the resources.
 		 */
 		if (pmboxq->mbox_flag & LPFC_MBX_WAKE) {
 			retval = MBX_SUCCESS;
-<<<<<<< HEAD
-			lpfc_sli4_swap_str(phba, pmboxq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			retval = MBX_TIMEOUT;
 			pmboxq->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 		}
 		spin_unlock_irqrestore(&phba->hbalock, flag);
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 /**
  * lpfc_sli_mbox_sys_shutdown - shutdown mailbox command sub-system
  * @phba: Pointer to HBA context.
-<<<<<<< HEAD
-=======
  * @mbx_action: Mailbox shutdown options.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called to shutdown the driver's mailbox sub-system.
  * It first marks the mailbox sub-system is in a block state to prevent
@@ -17356,19 +13305,11 @@ lpfc_sli_issue_mbox_wait(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq,
  * sub-system flush routine to gracefully bring down mailbox sub-system.
  **/
 void
-<<<<<<< HEAD
-lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba)
-=======
 lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lpfc_sli *psli = &phba->sli;
 	unsigned long timeout;
 
-<<<<<<< HEAD
-	timeout = msecs_to_jiffies(LPFC_MBOX_TMO * 1000) + jiffies;
-
-=======
 	if (mbx_action == LPFC_MBX_NO_WAIT) {
 		/* delay 100ms for port state */
 		msleep(100);
@@ -17380,7 +13321,6 @@ lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
 	/* Disable softirqs, including timers from obtaining phba->hbalock */
 	local_bh_disable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&phba->hbalock);
 	psli->sli_flag |= LPFC_SLI_ASYNC_MBX_BLK;
 
@@ -17394,12 +13334,9 @@ lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
 						1000) + jiffies;
 		spin_unlock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-=======
 		/* Enable softirqs again, done with phba->hbalock */
 		local_bh_enable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (phba->sli.mbox_active) {
 			/* Check active mailbox complete status every 2ms */
 			msleep(2);
@@ -17409,11 +13346,6 @@ lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
 				 */
 				break;
 		}
-<<<<<<< HEAD
-	} else
-		spin_unlock_irq(&phba->hbalock);
-
-=======
 	} else {
 		spin_unlock_irq(&phba->hbalock);
 
@@ -17421,7 +13353,6 @@ lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
 		local_bh_enable();
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_sli_mbox_sys_flush(phba);
 }
 
@@ -17495,10 +13426,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
 	uint32_t uerr_sta_hi, uerr_sta_lo;
 	uint32_t if_type, portsmphr;
 	struct lpfc_register portstat_reg;
-<<<<<<< HEAD
-=======
 	u32 logmask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For now, use the SLI4 device internal unrecoverable error
@@ -17518,11 +13446,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
 		}
 		if ((~phba->sli4_hba.ue_mask_lo & uerr_sta_lo) ||
 		    (~phba->sli4_hba.ue_mask_hi & uerr_sta_hi)) {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"1423 HBA Unrecoverable error: "
 					"uerr_lo_reg=0x%x, uerr_hi_reg=0x%x, "
 					"ue_mask_lo_reg=0x%x, "
@@ -17538,10 +13462,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
 		}
 		break;
 	case LPFC_SLI_INTF_IF_TYPE_2:
-<<<<<<< HEAD
-=======
 	case LPFC_SLI_INTF_IF_TYPE_6:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lpfc_readl(phba->sli4_hba.u.if_type2.STATUSregaddr,
 			&portstat_reg.word0) ||
 			lpfc_readl(phba->sli4_hba.PSMPHRregaddr,
@@ -17556,16 +13477,12 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
 				readl(phba->sli4_hba.u.if_type2.ERR1regaddr);
 			phba->work_status[1] =
 				readl(phba->sli4_hba.u.if_type2.ERR2regaddr);
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 			logmask = LOG_TRACE_EVENT;
 			if (phba->work_status[0] ==
 				SLIPORT_ERR1_REG_ERR_CODE_2 &&
 			    phba->work_status[1] == SLIPORT_ERR2_REG_FW_RESTART)
 				logmask = LOG_SLI;
 			lpfc_printf_log(phba, KERN_ERR, logmask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2885 Port Status Event: "
 					"port status reg 0x%x, "
 					"port smphr reg 0x%x, "
@@ -17581,11 +13498,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
 		break;
 	case LPFC_SLI_INTF_IF_TYPE_1:
 	default:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2886 HBA Error Attention on unsupported "
 				"if type %d.", if_type);
 		return 1;
@@ -17649,11 +13562,7 @@ lpfc_sli_check_eratt(struct lpfc_hba *phba)
 		ha_copy = lpfc_sli4_eratt_read(phba);
 		break;
 	default:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0299 Invalid SLI revision (%d)\n",
 				phba->sli_rev);
 		ha_copy = 0;
@@ -17886,12 +13795,7 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 				 * Stray Mailbox Interrupt, mbxCommand <cmd>
 				 * mbxStatus <status>
 				 */
-<<<<<<< HEAD
-				lpfc_printf_log(phba, KERN_ERR, LOG_MBOX |
-						LOG_SLI,
-=======
 				lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"(%d):0304 Stray Mailbox "
 						"Interrupt mbxCommand x%x "
 						"mbxStatus x%x\n",
@@ -17909,17 +13813,10 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 					lpfc_sli_pcimem_bcopy(mbox, pmbox,
 							MAILBOX_CMD_SIZE);
 					if (pmb->out_ext_byte_len &&
-<<<<<<< HEAD
-						pmb->context2)
-						lpfc_sli_pcimem_bcopy(
-						phba->mbox_ext,
-						pmb->context2,
-=======
 						pmb->ext_buf)
 						lpfc_sli_pcimem_bcopy(
 						phba->mbox_ext,
 						pmb->ext_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						pmb->out_ext_byte_len);
 				}
 				if (pmb->mbox_flag & LPFC_MBX_IMED_UNREG) {
@@ -17933,15 +13830,8 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 						pmbox->un.varWords[0], 0);
 
 					if (!pmbox->mbxStatus) {
-<<<<<<< HEAD
-						mp = (struct lpfc_dmabuf *)
-							(pmb->context1);
-						ndlp = (struct lpfc_nodelist *)
-							pmb->context2;
-=======
 						mp = pmb->ctx_buf;
 						ndlp = pmb->ctx_ndlp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 						/* Reg_LOGIN of dflt RPI was
 						 * successful. new lets get
@@ -17954,13 +13844,8 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 							pmb);
 						pmb->mbox_cmpl =
 							lpfc_mbx_cmpl_dflt_rpi;
-<<<<<<< HEAD
-						pmb->context1 = mp;
-						pmb->context2 = ndlp;
-=======
 						pmb->ctx_buf = mp;
 						pmb->ctx_ndlp = ndlp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						pmb->vport = vport;
 						rc = lpfc_sli_issue_mbox(phba,
 								pmb,
@@ -17968,11 +13853,7 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 						if (rc != MBX_BUSY)
 							lpfc_printf_log(phba,
 							KERN_ERR,
-<<<<<<< HEAD
-							LOG_MBOX | LOG_SLI,
-=======
 							LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							"0350 rc should have"
 							"been MBX_BUSY\n");
 						if (rc != MBX_NOT_FINISHED)
@@ -17987,9 +13868,6 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 				spin_unlock_irqrestore(
 						&phba->pport->work_port_lock,
 						iflag);
-<<<<<<< HEAD
-				lpfc_mbox_cmpl_put(phba, pmb);
-=======
 
 				/* Do NOT queue MBX_HEARTBEAT to the worker
 				 * thread for processing.
@@ -18005,7 +13883,6 @@ lpfc_sli_sp_intr_handler(int irq, void *dev_id)
 					/* Queue to worker thread to process */
 					lpfc_mbox_cmpl_put(phba, pmb);
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else
 			spin_unlock_irqrestore(&phba->hbalock, iflag);
@@ -18019,14 +13896,9 @@ send_current_mbox:
 							 MBX_NOWAIT);
 			} while (rc == MBX_NOT_FINISHED);
 			if (rc != MBX_SUCCESS)
-<<<<<<< HEAD
-				lpfc_printf_log(phba, KERN_ERR, LOG_MBOX |
-						LOG_SLI, "0349 rc should be "
-=======
 				lpfc_printf_log(phba, KERN_ERR,
 						LOG_TRACE_EVENT,
 						"0349 rc should be "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"MBX_SUCCESS\n");
 		}
 
@@ -18068,10 +13940,7 @@ lpfc_sli_fp_intr_handler(int irq, void *dev_id)
 	uint32_t ha_copy;
 	unsigned long status;
 	unsigned long iflag;
-<<<<<<< HEAD
-=======
 	struct lpfc_sli_ring *pring;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the driver's phba structure from the dev_id and
 	 * assume the HBA is not interrupting.
@@ -18116,16 +13985,9 @@ lpfc_sli_fp_intr_handler(int irq, void *dev_id)
 
 	status = (ha_copy & (HA_RXMASK << (4*LPFC_FCP_RING)));
 	status >>= (4*LPFC_FCP_RING);
-<<<<<<< HEAD
-	if (status & HA_RXMASK)
-		lpfc_sli_handle_fast_ring_event(phba,
-						&phba->sli.ring[LPFC_FCP_RING],
-						status);
-=======
 	pring = &phba->sli.sli3_ring[LPFC_FCP_RING];
 	if (status & HA_RXMASK)
 		lpfc_sli_handle_fast_ring_event(phba, pring, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->cfg_multi_ring_support == 2) {
 		/*
@@ -18136,11 +13998,7 @@ lpfc_sli_fp_intr_handler(int irq, void *dev_id)
 		status >>= (4*LPFC_EXTRA_RING);
 		if (status & HA_RXMASK) {
 			lpfc_sli_handle_fast_ring_event(phba,
-<<<<<<< HEAD
-					&phba->sli.ring[LPFC_EXTRA_RING],
-=======
 					&phba->sli.sli3_ring[LPFC_EXTRA_RING],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					status);
 		}
 	}
@@ -18265,38 +14123,6 @@ lpfc_sli_intr_handler(int irq, void *dev_id)
 }  /* lpfc_sli_intr_handler */
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_fcp_xri_abort_event_proc - Process fcp xri abort event
- * @phba: pointer to lpfc hba data structure.
- *
- * This routine is invoked by the worker thread to process all the pending
- * SLI4 FCP abort XRI events.
- **/
-void lpfc_sli4_fcp_xri_abort_event_proc(struct lpfc_hba *phba)
-{
-	struct lpfc_cq_event *cq_event;
-
-	/* First, declare the fcp xri abort event has been handled */
-	spin_lock_irq(&phba->hbalock);
-	phba->hba_flag &= ~FCP_XRI_ABORT_EVENT;
-	spin_unlock_irq(&phba->hbalock);
-	/* Now, handle all the fcp xri abort events */
-	while (!list_empty(&phba->sli4_hba.sp_fcp_xri_aborted_work_queue)) {
-		/* Get the first event from the head of the event queue */
-		spin_lock_irq(&phba->hbalock);
-		list_remove_head(&phba->sli4_hba.sp_fcp_xri_aborted_work_queue,
-				 cq_event, struct lpfc_cq_event, list);
-		spin_unlock_irq(&phba->hbalock);
-		/* Notify aborted XRI for FCP work queue */
-		lpfc_sli4_fcp_xri_aborted(phba, &cq_event->cqe.wcqe_axri);
-		/* Free the event processed back to the free pool */
-		lpfc_sli4_cq_event_release(phba, cq_event);
-	}
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli4_els_xri_abort_event_proc - Process els xri abort event
  * @phba: pointer to lpfc hba data structure.
  *
@@ -18306,118 +14132,6 @@ void lpfc_sli4_fcp_xri_abort_event_proc(struct lpfc_hba *phba)
 void lpfc_sli4_els_xri_abort_event_proc(struct lpfc_hba *phba)
 {
 	struct lpfc_cq_event *cq_event;
-<<<<<<< HEAD
-
-	/* First, declare the els xri abort event has been handled */
-	spin_lock_irq(&phba->hbalock);
-	phba->hba_flag &= ~ELS_XRI_ABORT_EVENT;
-	spin_unlock_irq(&phba->hbalock);
-	/* Now, handle all the els xri abort events */
-	while (!list_empty(&phba->sli4_hba.sp_els_xri_aborted_work_queue)) {
-		/* Get the first event from the head of the event queue */
-		spin_lock_irq(&phba->hbalock);
-		list_remove_head(&phba->sli4_hba.sp_els_xri_aborted_work_queue,
-				 cq_event, struct lpfc_cq_event, list);
-		spin_unlock_irq(&phba->hbalock);
-		/* Notify aborted XRI for ELS work queue */
-		lpfc_sli4_els_xri_aborted(phba, &cq_event->cqe.wcqe_axri);
-		/* Free the event processed back to the free pool */
-		lpfc_sli4_cq_event_release(phba, cq_event);
-	}
-}
-
-/**
- * lpfc_sli4_iocb_param_transfer - Transfer pIocbOut and cmpl status to pIocbIn
- * @phba: pointer to lpfc hba data structure
- * @pIocbIn: pointer to the rspiocbq
- * @pIocbOut: pointer to the cmdiocbq
- * @wcqe: pointer to the complete wcqe
- *
- * This routine transfers the fields of a command iocbq to a response iocbq
- * by copying all the IOCB fields from command iocbq and transferring the
- * completion status information from the complete wcqe.
- **/
-static void
-lpfc_sli4_iocb_param_transfer(struct lpfc_hba *phba,
-			      struct lpfc_iocbq *pIocbIn,
-			      struct lpfc_iocbq *pIocbOut,
-			      struct lpfc_wcqe_complete *wcqe)
-{
-	unsigned long iflags;
-	uint32_t status;
-	size_t offset = offsetof(struct lpfc_iocbq, iocb);
-
-	memcpy((char *)pIocbIn + offset, (char *)pIocbOut + offset,
-	       sizeof(struct lpfc_iocbq) - offset);
-	/* Map WCQE parameters into irspiocb parameters */
-	status = bf_get(lpfc_wcqe_c_status, wcqe);
-	pIocbIn->iocb.ulpStatus = (status & LPFC_IOCB_STATUS_MASK);
-	if (pIocbOut->iocb_flag & LPFC_IO_FCP)
-		if (pIocbIn->iocb.ulpStatus == IOSTAT_FCP_RSP_ERROR)
-			pIocbIn->iocb.un.fcpi.fcpi_parm =
-					pIocbOut->iocb.un.fcpi.fcpi_parm -
-					wcqe->total_data_placed;
-		else
-			pIocbIn->iocb.un.ulpWord[4] = wcqe->parameter;
-	else {
-		pIocbIn->iocb.un.ulpWord[4] = wcqe->parameter;
-		pIocbIn->iocb.un.genreq64.bdl.bdeSize = wcqe->total_data_placed;
-	}
-
-	/* Convert BG errors for completion status */
-	if (status == CQE_STATUS_DI_ERROR) {
-		pIocbIn->iocb.ulpStatus = IOSTAT_LOCAL_REJECT;
-
-		if (bf_get(lpfc_wcqe_c_bg_edir, wcqe))
-			pIocbIn->iocb.un.ulpWord[4] = IOERR_RX_DMA_FAILED;
-		else
-			pIocbIn->iocb.un.ulpWord[4] = IOERR_TX_DMA_FAILED;
-
-		pIocbIn->iocb.unsli3.sli3_bg.bgstat = 0;
-		if (bf_get(lpfc_wcqe_c_bg_ge, wcqe)) /* Guard Check failed */
-			pIocbIn->iocb.unsli3.sli3_bg.bgstat |=
-				BGS_GUARD_ERR_MASK;
-		if (bf_get(lpfc_wcqe_c_bg_ae, wcqe)) /* App Tag Check failed */
-			pIocbIn->iocb.unsli3.sli3_bg.bgstat |=
-				BGS_APPTAG_ERR_MASK;
-		if (bf_get(lpfc_wcqe_c_bg_re, wcqe)) /* Ref Tag Check failed */
-			pIocbIn->iocb.unsli3.sli3_bg.bgstat |=
-				BGS_REFTAG_ERR_MASK;
-
-		/* Check to see if there was any good data before the error */
-		if (bf_get(lpfc_wcqe_c_bg_tdpv, wcqe)) {
-			pIocbIn->iocb.unsli3.sli3_bg.bgstat |=
-				BGS_HI_WATER_MARK_PRESENT_MASK;
-			pIocbIn->iocb.unsli3.sli3_bg.bghm =
-				wcqe->total_data_placed;
-		}
-
-		/*
-		* Set ALL the error bits to indicate we don't know what
-		* type of error it is.
-		*/
-		if (!pIocbIn->iocb.unsli3.sli3_bg.bgstat)
-			pIocbIn->iocb.unsli3.sli3_bg.bgstat |=
-				(BGS_REFTAG_ERR_MASK | BGS_APPTAG_ERR_MASK |
-				BGS_GUARD_ERR_MASK);
-	}
-
-	/* Pick up HBA exchange busy condition */
-	if (bf_get(lpfc_wcqe_c_xb, wcqe)) {
-		spin_lock_irqsave(&phba->hbalock, iflags);
-		pIocbIn->iocb_flag |= LPFC_EXCHANGE_BUSY;
-		spin_unlock_irqrestore(&phba->hbalock, iflags);
-	}
-}
-
-/**
- * lpfc_sli4_els_wcqe_to_rspiocbq - Get response iocbq from els wcqe
- * @phba: Pointer to HBA context object.
- * @wcqe: Pointer to work-queue completion queue entry.
- *
- * This routine handles an ELS work-queue completion event and construct
- * a pseudo response ELS IODBQ from the SLI4 ELS WCQE for the common
-=======
 	unsigned long iflags;
 
 	/* First, declare the els xri abort event has been handled */
@@ -18451,51 +14165,29 @@ lpfc_sli4_iocb_param_transfer(struct lpfc_hba *phba,
  *
  * This routine handles an ELS work-queue completion event and construct
  * a pseudo response ELS IOCBQ from the SLI4 ELS WCQE for the common
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * discovery engine to handle.
  *
  * Return: Pointer to the receive IOCBQ, NULL otherwise.
  **/
 static struct lpfc_iocbq *
-<<<<<<< HEAD
-lpfc_sli4_els_wcqe_to_rspiocbq(struct lpfc_hba *phba,
-			       struct lpfc_iocbq *irspiocbq)
-{
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_ELS_RING];
-=======
 lpfc_sli4_els_preprocess_rspiocbq(struct lpfc_hba *phba,
 				  struct lpfc_iocbq *irspiocbq)
 {
 	struct lpfc_sli_ring *pring;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_iocbq *cmdiocbq;
 	struct lpfc_wcqe_complete *wcqe;
 	unsigned long iflags;
 
-<<<<<<< HEAD
-	wcqe = &irspiocbq->cq_event.cqe.wcqe_cmpl;
-	spin_lock_irqsave(&phba->hbalock, iflags);
-=======
 	pring = lpfc_phba_elsring(phba);
 	if (unlikely(!pring))
 		return NULL;
 
 	wcqe = &irspiocbq->cq_event.cqe.wcqe_cmpl;
 	spin_lock_irqsave(&pring->ring_lock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pring->stats.iocb_event++;
 	/* Look up the ELS command IOCB and create pseudo response IOCB */
 	cmdiocbq = lpfc_sli_iocbq_lookup_by_tag(phba, pring,
 				bf_get(lpfc_wcqe_c_request_tag, wcqe));
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-
-	if (unlikely(!cmdiocbq)) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-				"0386 ELS complete with no corresponding "
-				"cmdiocb: iotag (%d)\n",
-				bf_get(lpfc_wcqe_c_request_tag, wcqe));
-=======
 	if (unlikely(!cmdiocbq)) {
 		spin_unlock_irqrestore(&pring->ring_lock, iflags);
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
@@ -18503,15 +14195,10 @@ lpfc_sli4_els_preprocess_rspiocbq(struct lpfc_hba *phba,
 				"cmdiocb: 0x%x 0x%x 0x%x 0x%x\n",
 				wcqe->word0, wcqe->total_data_placed,
 				wcqe->parameter, wcqe->word3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_sli_release_iocbq(phba, irspiocbq);
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	/* Fake the irspiocbq and copy necessary response information */
-	lpfc_sli4_iocb_param_transfer(phba, irspiocbq, cmdiocbq, wcqe);
-=======
 	memcpy(&irspiocbq->wqe, &cmdiocbq->wqe, sizeof(union lpfc_wqe128));
 	memcpy(&irspiocbq->wcqe_cmpl, wcqe, sizeof(*wcqe));
 
@@ -18524,19 +14211,10 @@ lpfc_sli4_els_preprocess_rspiocbq(struct lpfc_hba *phba,
 		irspiocbq->cmd_flag |= LPFC_EXCHANGE_BUSY;
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return irspiocbq;
 }
 
-<<<<<<< HEAD
-/**
- * lpfc_sli4_sp_handle_async_event - Handle an asynchroous event
- * @phba: Pointer to HBA context object.
- * @cqe: Pointer to mailbox completion queue entry.
- *
- * This routine process a mailbox completion queue entry with asynchrous
-=======
 inline struct lpfc_cq_event *
 lpfc_cq_event_setup(struct lpfc_hba *phba, void *entry, int size)
 {
@@ -18561,7 +14239,6 @@ lpfc_cq_event_setup(struct lpfc_hba *phba, void *entry, int size)
  * @mcqe: Pointer to mailbox completion queue entry.
  *
  * This routine process a mailbox completion queue entry with asynchronous
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * event.
  *
  * Return: true if work posted to worker thread, otherwise false.
@@ -18577,21 +14254,6 @@ lpfc_sli4_sp_handle_async_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 			"word2:x%x, word3:x%x\n", mcqe->word0,
 			mcqe->mcqe_tag0, mcqe->mcqe_tag1, mcqe->trailer);
 
-<<<<<<< HEAD
-	/* Allocate a new internal CQ_EVENT entry */
-	cq_event = lpfc_sli4_cq_event_alloc(phba);
-	if (!cq_event) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0394 Failed to allocate CQ_EVENT entry\n");
-		return false;
-	}
-
-	/* Move the CQE into an asynchronous event entry */
-	memcpy(&cq_event->cqe, mcqe, sizeof(struct lpfc_mcqe));
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	list_add_tail(&cq_event->list, &phba->sli4_hba.sp_asynce_work_queue);
-	/* Set the async event flag */
-=======
 	cq_event = lpfc_cq_event_setup(phba, mcqe, sizeof(struct lpfc_mcqe));
 	if (!cq_event)
 		return false;
@@ -18602,7 +14264,6 @@ lpfc_sli4_sp_handle_async_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 
 	/* Set the async event flag */
 	spin_lock_irqsave(&phba->hbalock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->hba_flag |= ASYNC_EVENT;
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 
@@ -18612,11 +14273,7 @@ lpfc_sli4_sp_handle_async_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 /**
  * lpfc_sli4_sp_handle_mbox_event - Handle a mailbox completion event
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
- * @cqe: Pointer to mailbox completion queue entry.
-=======
  * @mcqe: Pointer to mailbox completion queue entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine process a mailbox completion queue entry with mailbox
  * completion event.
@@ -18645,11 +14302,7 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 	spin_lock_irqsave(&phba->hbalock, iflags);
 	pmb = phba->sli.mbox_active;
 	if (unlikely(!pmb)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"1832 No pending MBOX command to handle\n");
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 		goto out_no_mqe_complete;
@@ -18666,11 +14319,7 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 
 	/* Move mbox data to caller's mailbox region, do endian swapping */
 	if (pmb->mbox_cmpl && mbox)
-<<<<<<< HEAD
-		lpfc_sli_pcimem_bcopy(mbox, mqe, sizeof(struct lpfc_mqe));
-=======
 		lpfc_sli4_pcimem_bcopy(mbox, mqe, sizeof(struct lpfc_mqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For mcqe errors, conditionally move a modified error code to
@@ -18689,23 +14338,6 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 				      mcqe_status,
 				      pmbox->un.varWords[0], 0);
 		if (mcqe_status == MB_CQE_STATUS_SUCCESS) {
-<<<<<<< HEAD
-			mp = (struct lpfc_dmabuf *)(pmb->context1);
-			ndlp = (struct lpfc_nodelist *)pmb->context2;
-			/* Reg_LOGIN of dflt RPI was successful. Now lets get
-			 * RID of the PPI using the same mbox buffer.
-			 */
-			lpfc_unreg_login(phba, vport->vpi,
-					 pmbox->un.varWords[0], pmb);
-			pmb->mbox_cmpl = lpfc_mbx_cmpl_dflt_rpi;
-			pmb->context1 = mp;
-			pmb->context2 = ndlp;
-			pmb->vport = vport;
-			rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
-			if (rc != MBX_BUSY)
-				lpfc_printf_log(phba, KERN_ERR, LOG_MBOX |
-						LOG_SLI, "0385 rc should "
-=======
 			mp = pmb->ctx_buf;
 			ndlp = pmb->ctx_ndlp;
 
@@ -18734,7 +14366,6 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 				lpfc_printf_log(phba, KERN_ERR,
 						LOG_TRACE_EVENT,
 						"0385 rc should "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"have been MBX_BUSY\n");
 			if (rc != MBX_NOT_FINISHED)
 				goto send_current_mbox;
@@ -18744,9 +14375,6 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 	phba->pport->work_port_events &= ~WORKER_MBOX_TMO;
 	spin_unlock_irqrestore(&phba->pport->work_port_lock, iflags);
 
-<<<<<<< HEAD
-	/* There is mailbox completion work to do */
-=======
 	/* Do NOT queue MBX_HEARTBEAT to the worker thread for processing. */
 	if (pmbox->mbxCommand == MBX_HEARTBEAT) {
 		spin_lock_irqsave(&phba->hbalock, iflags);
@@ -18767,7 +14395,6 @@ lpfc_sli4_sp_handle_mbox_event(struct lpfc_hba *phba, struct lpfc_mcqe *mcqe)
 	}
 
 	/* There is mailbox completion work to queue to the worker thread */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&phba->hbalock, iflags);
 	__lpfc_mbox_cmpl_put(phba, pmb);
 	phba->work_ha |= HA_MBATT;
@@ -18780,15 +14407,6 @@ send_current_mbox:
 	phba->sli.sli_flag &= ~LPFC_SLI_MBOX_ACTIVE;
 	/* Setting active mailbox pointer need to be in sync to flag clear */
 	phba->sli.mbox_active = NULL;
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-	/* Wake up worker thread to post the next pending mailbox command */
-	lpfc_worker_wake_up(phba);
-out_no_mqe_complete:
-	if (bf_get(lpfc_trailer_consumed, mcqe))
-		lpfc_sli4_mq_release(phba->sli4_hba.mbx_wq);
-	return workposted;
-=======
 	if (bf_get(lpfc_trailer_consumed, mcqe))
 		lpfc_sli4_mq_release(phba->sli4_hba.mbx_wq);
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
@@ -18802,48 +14420,31 @@ out_no_mqe_complete:
 		lpfc_sli4_mq_release(phba->sli4_hba.mbx_wq);
 	spin_unlock_irqrestore(&phba->hbalock, iflags);
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * lpfc_sli4_sp_handle_mcqe - Process a mailbox completion queue entry
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
- * @cqe: Pointer to mailbox completion queue entry.
- *
- * This routine process a mailbox completion queue entry, it invokes the
- * proper mailbox complete handling or asynchrous event handling routine
-=======
  * @cq: Pointer to associated CQ
  * @cqe: Pointer to mailbox completion queue entry.
  *
  * This routine process a mailbox completion queue entry, it invokes the
  * proper mailbox complete handling or asynchronous event handling routine
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * according to the MCQE's async bit.
  *
  * Return: true if work posted to worker thread, otherwise false.
  **/
 static bool
-<<<<<<< HEAD
-lpfc_sli4_sp_handle_mcqe(struct lpfc_hba *phba, struct lpfc_cqe *cqe)
-=======
 lpfc_sli4_sp_handle_mcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 			 struct lpfc_cqe *cqe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lpfc_mcqe mcqe;
 	bool workposted;
 
-<<<<<<< HEAD
-	/* Copy the mailbox MCQE and convert endian order as needed */
-	lpfc_sli_pcimem_bcopy(cqe, &mcqe, sizeof(struct lpfc_mcqe));
-=======
 	cq->CQ_mbox++;
 
 	/* Copy the mailbox MCQE and convert endian order as needed */
 	lpfc_sli4_pcimem_bcopy(cqe, &mcqe, sizeof(struct lpfc_mcqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Invoke the proper event handling routine */
 	if (!bf_get(lpfc_trailer_async, &mcqe))
@@ -18856,10 +14457,7 @@ lpfc_sli4_sp_handle_mcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 /**
  * lpfc_sli4_sp_handle_els_wcqe - Handle els work-queue completion event
  * @phba: Pointer to HBA context object.
-<<<<<<< HEAD
-=======
  * @cq: Pointer to associated CQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wcqe: Pointer to work-queue completion queue entry.
  *
  * This routine handles an ELS work-queue completion event.
@@ -18867,18 +14465,11 @@ lpfc_sli4_sp_handle_mcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
  * Return: true if work posted to worker thread, otherwise false.
  **/
 static bool
-<<<<<<< HEAD
-lpfc_sli4_sp_handle_els_wcqe(struct lpfc_hba *phba,
-=======
 lpfc_sli4_sp_handle_els_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct lpfc_wcqe_complete *wcqe)
 {
 	struct lpfc_iocbq *irspiocbq;
 	unsigned long iflags;
-<<<<<<< HEAD
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_FCP_RING];
-=======
 	struct lpfc_sli_ring *pring = cq->pring;
 	int txq_cnt = 0;
 	int txcmplq_cnt = 0;
@@ -18893,19 +14484,10 @@ lpfc_sli4_sp_handle_els_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 				wcqe->word0, wcqe->total_data_placed,
 				wcqe->parameter, wcqe->word3);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get an irspiocbq for later ELS response processing use */
 	irspiocbq = lpfc_sli_get_iocbq(phba);
 	if (!irspiocbq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"0387 NO IOCBQ data: txq_cnt=%d iocb_cnt=%d "
-			"fcp_txcmplq_cnt=%d, els_txcmplq_cnt=%d\n",
-			pring->txq_cnt, phba->iocb_cnt,
-			phba->sli.ring[LPFC_FCP_RING].txcmplq_cnt,
-			phba->sli.ring[LPFC_ELS_RING].txcmplq_cnt);
-=======
 		if (!list_empty(&pring->txq))
 			txq_cnt++;
 		if (!list_empty(&pring->txcmplq))
@@ -18915,7 +14497,6 @@ lpfc_sli4_sp_handle_els_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 			"els_txcmplq_cnt=%d\n",
 			txq_cnt, phba->iocb_cnt,
 			txcmplq_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -18935,11 +14516,7 @@ lpfc_sli4_sp_handle_els_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
  * @phba: Pointer to HBA context object.
  * @wcqe: Pointer to work-queue completion queue entry.
  *
-<<<<<<< HEAD
- * This routine handles slow-path WQ entry comsumed event by invoking the
-=======
  * This routine handles slow-path WQ entry consumed event by invoking the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * proper WQ release routine to the slow-path WQ.
  **/
 static void
@@ -18980,30 +14557,6 @@ lpfc_sli4_sp_handle_abort_xri_wcqe(struct lpfc_hba *phba,
 	struct lpfc_cq_event *cq_event;
 	unsigned long iflags;
 
-<<<<<<< HEAD
-	/* Allocate a new internal CQ_EVENT entry */
-	cq_event = lpfc_sli4_cq_event_alloc(phba);
-	if (!cq_event) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0602 Failed to allocate CQ_EVENT entry\n");
-		return false;
-	}
-
-	/* Move the CQE into the proper xri abort event list */
-	memcpy(&cq_event->cqe, wcqe, sizeof(struct sli4_wcqe_xri_aborted));
-	switch (cq->subtype) {
-	case LPFC_FCP:
-		spin_lock_irqsave(&phba->hbalock, iflags);
-		list_add_tail(&cq_event->list,
-			      &phba->sli4_hba.sp_fcp_xri_aborted_work_queue);
-		/* Set the fcp xri abort event flag */
-		phba->hba_flag |= FCP_XRI_ABORT_EVENT;
-		spin_unlock_irqrestore(&phba->hbalock, iflags);
-		workposted = true;
-		break;
-	case LPFC_ELS:
-		spin_lock_irqsave(&phba->hbalock, iflags);
-=======
 	switch (cq->subtype) {
 	case LPFC_IO:
 		lpfc_sli4_io_xri_aborted(phba, wcqe, cq->hdwq);
@@ -19024,20 +14577,10 @@ lpfc_sli4_sp_handle_abort_xri_wcqe(struct lpfc_hba *phba,
 		cq_event->hdwq = cq->hdwq;
 		spin_lock_irqsave(&phba->sli4_hba.els_xri_abrt_list_lock,
 				  iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&cq_event->list,
 			      &phba->sli4_hba.sp_els_xri_aborted_work_queue);
 		/* Set the els xri abort event flag */
 		phba->hba_flag |= ELS_XRI_ABORT_EVENT;
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&phba->hbalock, iflags);
-		workposted = true;
-		break;
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0603 Invalid work queue CQE subtype (x%x)\n",
-				cq->subtype);
-=======
 		spin_unlock_irqrestore(&phba->sli4_hba.els_xri_abrt_list_lock,
 				       iflags);
 		workposted = true;
@@ -19048,18 +14591,14 @@ lpfc_sli4_sp_handle_abort_xri_wcqe(struct lpfc_hba *phba,
 				"%08x %08x %08x %08x\n",
 				cq->subtype, wcqe->word0, wcqe->parameter,
 				wcqe->word2, wcqe->word3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		workposted = false;
 		break;
 	}
 	return workposted;
 }
 
-<<<<<<< HEAD
-=======
 #define FC_RCTL_MDS_DIAGS	0xF4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_sp_handle_rcqe - Process a receive-queue completion queue entry
  * @phba: Pointer to HBA context object.
@@ -19073,15 +14612,10 @@ static bool
 lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 {
 	bool workposted = false;
-<<<<<<< HEAD
-	struct lpfc_queue *hrq = phba->sli4_hba.hdr_rq;
-	struct lpfc_queue *drq = phba->sli4_hba.dat_rq;
-=======
 	struct fc_frame_header *fc_hdr;
 	struct lpfc_queue *hrq = phba->sli4_hba.hdr_rq;
 	struct lpfc_queue *drq = phba->sli4_hba.dat_rq;
 	struct lpfc_nvmet_tgtport *tgtp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hbq_dmabuf *dma_buf;
 	uint32_t status, rq_id;
 	unsigned long iflags;
@@ -19100,20 +14634,6 @@ lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 	status = bf_get(lpfc_rcqe_status, rcqe);
 	switch (status) {
 	case FC_STATUS_RQ_BUF_LEN_EXCEEDED:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2537 Receive Frame Truncated!!\n");
-	case FC_STATUS_RQ_SUCCESS:
-		lpfc_sli4_rq_release(hrq, drq);
-		spin_lock_irqsave(&phba->hbalock, iflags);
-		dma_buf = lpfc_sli_hbqbuf_get(&phba->hbqs[0].hbq_buffer_list);
-		if (!dma_buf) {
-			spin_unlock_irqrestore(&phba->hbalock, iflags);
-			goto out;
-		}
-		memcpy(&dma_buf->cq_event.cqe.rcqe_cmpl, rcqe, sizeof(*rcqe));
-		/* save off the frame for the word thread to process */
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"2537 Receive Frame Truncated!!\n");
 		fallthrough;
@@ -19145,7 +14665,6 @@ lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 		}
 
 		/* save off the frame for the work thread to process */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&dma_buf->cq_event.list,
 			      &phba->sli4_hba.sp_queue_event);
 		/* Frame received */
@@ -19153,10 +14672,6 @@ lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 		workposted = true;
 		break;
-<<<<<<< HEAD
-	case FC_STATUS_INSUFF_BUF_NEED_BUF:
-	case FC_STATUS_INSUFF_BUF_FRM_DISC:
-=======
 	case FC_STATUS_INSUFF_BUF_FRM_DISC:
 		if (phba->nvmet_support) {
 			tgtp = phba->targetport->private;
@@ -19173,15 +14688,12 @@ lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 
 	case FC_STATUS_INSUFF_BUF_NEED_BUF:
 		hrq->RQ_no_posted_buf++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Post more buffers if possible */
 		spin_lock_irqsave(&phba->hbalock, iflags);
 		phba->hba_flag |= HBA_POST_RECEIVE_BUFFER;
 		spin_unlock_irqrestore(&phba->hbalock, iflags);
 		workposted = true;
 		break;
-<<<<<<< HEAD
-=======
 	case FC_STATUS_RQ_DMA_FAILURE:
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"2564 RQE DMA Error x%x, x%08x x%08x x%08x "
@@ -19214,7 +14726,6 @@ lpfc_sli4_sp_handle_rcqe(struct lpfc_hba *phba, struct lpfc_rcqe *rcqe)
 				status, rcqe->word0, rcqe->word1,
 				rcqe->word2, rcqe->word3);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return workposted;
@@ -19224,11 +14735,7 @@ out:
  * lpfc_sli4_sp_handle_cqe - Process a slow path completion queue entry
  * @phba: Pointer to HBA context object.
  * @cq: Pointer to the completion queue.
-<<<<<<< HEAD
- * @wcqe: Pointer to a completion queue entry.
-=======
  * @cqe: Pointer to a completion queue entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine process a slow-path work-queue or receive queue completion queue
  * entry.
@@ -19243,22 +14750,14 @@ lpfc_sli4_sp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	bool workposted = false;
 
 	/* Copy the work queue CQE and convert endian order if needed */
-<<<<<<< HEAD
-	lpfc_sli_pcimem_bcopy(cqe, &cqevt, sizeof(struct lpfc_cqe));
-=======
 	lpfc_sli4_pcimem_bcopy(cqe, &cqevt, sizeof(struct lpfc_cqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check and process for different type of WCQE and dispatch */
 	switch (bf_get(lpfc_cqe_code, &cqevt)) {
 	case CQE_CODE_COMPL_WQE:
 		/* Process the WQ/RQ complete event */
 		phba->last_completion_time = jiffies;
-<<<<<<< HEAD
-		workposted = lpfc_sli4_sp_handle_els_wcqe(phba,
-=======
 		workposted = lpfc_sli4_sp_handle_els_wcqe(phba, cq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(struct lpfc_wcqe_complete *)&cqevt);
 		break;
 	case CQE_CODE_RELEASE_WQE:
@@ -19280,11 +14779,7 @@ lpfc_sli4_sp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 				(struct lpfc_rcqe *)&cqevt);
 		break;
 	default:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0388 Not a valid WCQE code: x%x\n",
 				bf_get(lpfc_cqe_code, &cqevt));
 		break;
@@ -19296,10 +14791,7 @@ lpfc_sli4_sp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
  * lpfc_sli4_sp_handle_eqe - Process a slow-path event queue entry
  * @phba: Pointer to HBA context object.
  * @eqe: Pointer to fast-path event queue entry.
-<<<<<<< HEAD
-=======
  * @speq: Pointer to slow-path event queue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine process a event queue entry from the slow-path event queue.
  * It will check the MajorCode and MinorCode to determine this is for a
@@ -19310,43 +14802,16 @@ lpfc_sli4_sp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
  *
  **/
 static void
-<<<<<<< HEAD
-lpfc_sli4_sp_handle_eqe(struct lpfc_hba *phba, struct lpfc_eqe *eqe)
-{
-	struct lpfc_queue *cq = NULL, *childq, *speq;
-	struct lpfc_cqe *cqe;
-	bool workposted = false;
-	int ecount = 0;
-	uint16_t cqid;
-
-	if (bf_get_le32(lpfc_eqe_major_code, eqe) != 0) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0359 Not a valid slow-path completion "
-				"event: majorcode=x%x, minorcode=x%x\n",
-				bf_get_le32(lpfc_eqe_major_code, eqe),
-				bf_get_le32(lpfc_eqe_minor_code, eqe));
-		return;
-	}
-=======
 lpfc_sli4_sp_handle_eqe(struct lpfc_hba *phba, struct lpfc_eqe *eqe,
 	struct lpfc_queue *speq)
 {
 	struct lpfc_queue *cq = NULL, *childq;
 	uint16_t cqid;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the reference to the corresponding CQ */
 	cqid = bf_get_le32(lpfc_eqe_resource_id, eqe);
 
-<<<<<<< HEAD
-	/* Search for completion queue pointer matching this cqid */
-	speq = phba->sli4_hba.sp_eq;
-	/* sanity check on queue memory */
-	if (unlikely(!speq))
-		return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(childq, &speq->child_list, list) {
 		if (childq->queue_id == cqid) {
 			cq = childq;
@@ -19355,41 +14820,12 @@ lpfc_sli4_sp_handle_eqe(struct lpfc_hba *phba, struct lpfc_eqe *eqe,
 	}
 	if (unlikely(!cq)) {
 		if (phba->sli.sli_flag & LPFC_SLI_ACTIVE)
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0365 Slow-path CQ identifier "
 					"(%d) does not exist\n", cqid);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* Process all the entries to the CQ */
-	switch (cq->type) {
-	case LPFC_MCQ:
-		while ((cqe = lpfc_sli4_cq_get(cq))) {
-			workposted |= lpfc_sli4_sp_handle_mcqe(phba, cqe);
-			if (!(++ecount % cq->entry_repost))
-				lpfc_sli4_cq_release(cq, LPFC_QUEUE_NOARM);
-		}
-		break;
-	case LPFC_WCQ:
-		while ((cqe = lpfc_sli4_cq_get(cq))) {
-			if (cq->subtype == LPFC_FCP)
-				workposted |= lpfc_sli4_fp_handle_wcqe(phba, cq,
-								       cqe);
-			else
-				workposted |= lpfc_sli4_sp_handle_cqe(phba, cq,
-								      cqe);
-			if (!(++ecount % cq->entry_repost))
-				lpfc_sli4_cq_release(cq, LPFC_QUEUE_NOARM);
-		}
-		break;
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 	/* Save EQ associated with this CQ */
 	cq->assoc_qp = speq;
 
@@ -19532,22 +14968,11 @@ __lpfc_sli4_sp_process_cq(struct lpfc_queue *cq)
 		break;
 	default:
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0370 Invalid completion queue type (%d)\n",
 				cq->type);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* Catch the no cq entry condition, log an error */
-	if (unlikely(ecount == 0))
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0371 No entry from the CQ: identifier "
-				"(x%x), type (%d)\n", cq->queue_id, cq->type);
-
-	/* In any case, flash and re-arm the RCQ */
-	lpfc_sli4_cq_release(cq, LPFC_QUEUE_REARM);
-=======
 	if (delay) {
 		if (is_kdump_kernel())
 			ret = queue_delayed_work(phba->wq, &cq->sched_spwork,
@@ -19561,7 +14986,6 @@ __lpfc_sli4_sp_process_cq(struct lpfc_queue *cq)
 				"for cqid=%d on CPU %d\n",
 				cq->queue_id, cq->chann);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wake up worker thread if there are works to be done */
 	if (workposted)
@@ -19569,10 +14993,6 @@ __lpfc_sli4_sp_process_cq(struct lpfc_queue *cq)
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_fp_handle_fcp_wcqe - Process fast-path work queue completion entry
- * @eqe: Pointer to fast-path completion queue entry.
-=======
  * lpfc_sli4_sp_process_cq - slow-path work handler when started by
  *   interrupt
  * @work: pointer to work element
@@ -19607,26 +15027,11 @@ lpfc_sli4_dly_sp_process_cq(struct work_struct *work)
  * @phba: Pointer to HBA context object.
  * @cq: Pointer to associated CQ
  * @wcqe: Pointer to work-queue completion queue entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine process a fast-path work queue completion entry from fast-path
  * event queue for FCP command response completion.
  **/
 static void
-<<<<<<< HEAD
-lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba,
-			     struct lpfc_wcqe_complete *wcqe)
-{
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_FCP_RING];
-	struct lpfc_iocbq *cmdiocbq;
-	struct lpfc_iocbq irspiocbq;
-	unsigned long iflags;
-
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	pring->stats.iocb_event++;
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-
-=======
 lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 			     struct lpfc_wcqe_complete *wcqe)
 {
@@ -19634,35 +15039,11 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	struct lpfc_iocbq *cmdiocbq;
 	unsigned long iflags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check for response status */
 	if (unlikely(bf_get(lpfc_wcqe_c_status, wcqe))) {
 		/* If resource errors reported from HBA, reduce queue
 		 * depth of the SCSI device.
 		 */
-<<<<<<< HEAD
-		if ((bf_get(lpfc_wcqe_c_status, wcqe) ==
-		     IOSTAT_LOCAL_REJECT) &&
-		    (wcqe->parameter == IOERR_NO_RESOURCES)) {
-			phba->lpfc_rampdown_queue_depth(phba);
-		}
-		/* Log the error status */
-		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-				"0373 FCP complete error: status=x%x, "
-				"hw_status=x%x, total_data_specified=%d, "
-				"parameter=x%x, word3=x%x\n",
-				bf_get(lpfc_wcqe_c_status, wcqe),
-				bf_get(lpfc_wcqe_c_hw_status, wcqe),
-				wcqe->total_data_placed, wcqe->parameter,
-				wcqe->word3);
-	}
-
-	/* Look up the FCP command IOCB and create pseudo response IOCB */
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	cmdiocbq = lpfc_sli_iocbq_lookup_by_tag(phba, pring,
-				bf_get(lpfc_wcqe_c_request_tag, wcqe));
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-=======
 		if (((bf_get(lpfc_wcqe_c_status, wcqe) ==
 		     IOSTAT_LOCAL_REJECT)) &&
 		    ((wcqe->parameter & IOERR_PARAM_MASK) ==
@@ -19684,7 +15065,6 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	cmdiocbq = lpfc_sli_iocbq_lookup_by_tag(phba, pring,
 				bf_get(lpfc_wcqe_c_request_tag, wcqe));
 	spin_unlock_irqrestore(&pring->ring_lock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!cmdiocbq)) {
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 				"0374 FCP complete with no corresponding "
@@ -19692,9 +15072,6 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 				bf_get(lpfc_wcqe_c_request_tag, wcqe));
 		return;
 	}
-<<<<<<< HEAD
-	if (unlikely(!cmdiocbq->iocb_cmpl)) {
-=======
 #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
 	cmdiocbq->isr_timestamp = cq->isr_timestamp;
 #endif
@@ -19718,29 +15095,11 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 		       sizeof(struct lpfc_wcqe_complete));
 		cmdiocbq->cmd_cmpl(phba, cmdiocbq, cmdiocbq);
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 				"0375 FCP cmdiocb not callback function "
 				"iotag: (%d)\n",
 				bf_get(lpfc_wcqe_c_request_tag, wcqe));
-<<<<<<< HEAD
-		return;
 	}
-
-	/* Fake the irspiocb and copy necessary response information */
-	lpfc_sli4_iocb_param_transfer(phba, &irspiocbq, cmdiocbq, wcqe);
-
-	if (cmdiocbq->iocb_flag & LPFC_DRIVER_ABORTED) {
-		spin_lock_irqsave(&phba->hbalock, iflags);
-		cmdiocbq->iocb_flag &= ~LPFC_DRIVER_ABORTED;
-		spin_unlock_irqrestore(&phba->hbalock, iflags);
-	}
-
-	/* Pass the cmd_iocb and the rsp state to the upper layer */
-	(cmdiocbq->iocb_cmpl)(phba, cmdiocbq, &irspiocbq);
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -19749,11 +15108,7 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
  * @cq: Pointer to completion queue.
  * @wcqe: Pointer to work-queue completion queue entry.
  *
-<<<<<<< HEAD
- * This routine handles an fast-path WQ entry comsumed event by invoking the
-=======
  * This routine handles an fast-path WQ entry consumed event by invoking the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * proper WQ release routine to the slow-path WQ.
  **/
 static void
@@ -19762,16 +15117,6 @@ lpfc_sli4_fp_handle_rel_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 {
 	struct lpfc_queue *childwq;
 	bool wqid_matched = false;
-<<<<<<< HEAD
-	uint16_t fcp_wqid;
-
-	/* Check for fast-path FCP work queue release */
-	fcp_wqid = bf_get(lpfc_wcqe_r_wq_id, wcqe);
-	list_for_each_entry(childwq, &cq->child_list, list) {
-		if (childwq->queue_id == fcp_wqid) {
-			lpfc_sli4_wq_release(childwq,
-					bf_get(lpfc_wcqe_r_wqe_index, wcqe));
-=======
 	uint16_t hba_wqid;
 
 	/* Check for fast-path FCP work queue release */
@@ -19782,7 +15127,6 @@ lpfc_sli4_fp_handle_rel_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 					bf_get(lpfc_wcqe_r_wqe_index, wcqe));
 			if (childwq->q_flag & HBA_NVMET_WQFULL)
 				lpfc_nvmet_wqfull_process(phba, childwq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wqid_matched = true;
 			break;
 		}
@@ -19791,21 +15135,6 @@ lpfc_sli4_fp_handle_rel_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	if (wqid_matched != true)
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 				"2580 Fast-path wqe consume event carries "
-<<<<<<< HEAD
-				"miss-matched qid: wcqe-qid=x%x\n", fcp_wqid);
-}
-
-/**
- * lpfc_sli4_fp_handle_wcqe - Process fast-path work queue completion entry
- * @cq: Pointer to the completion queue.
- * @eqe: Pointer to fast-path completion queue entry.
- *
- * This routine process a fast-path work queue completion entry from fast-path
- * event queue for FCP command response completion.
- **/
-static int
-lpfc_sli4_fp_handle_wcqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
-=======
 				"miss-matched qid: wcqe-qid=x%x\n", hba_wqid);
 }
 
@@ -19962,30 +15291,17 @@ out:
  **/
 static bool
 lpfc_sli4_fp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct lpfc_cqe *cqe)
 {
 	struct lpfc_wcqe_release wcqe;
 	bool workposted = false;
 
 	/* Copy the work queue CQE and convert endian order if needed */
-<<<<<<< HEAD
-	lpfc_sli_pcimem_bcopy(cqe, &wcqe, sizeof(struct lpfc_cqe));
-=======
 	lpfc_sli4_pcimem_bcopy(cqe, &wcqe, sizeof(struct lpfc_cqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check and process for different type of WCQE and dispatch */
 	switch (bf_get(lpfc_wcqe_c_code, &wcqe)) {
 	case CQE_CODE_COMPL_WQE:
-<<<<<<< HEAD
-		/* Process the WQ complete event */
-		phba->last_completion_time = jiffies;
-		lpfc_sli4_fp_handle_fcp_wcqe(phba,
-				(struct lpfc_wcqe_complete *)&wcqe);
-		break;
-	case CQE_CODE_RELEASE_WQE:
-=======
 	case CQE_CODE_NVME_ERSP:
 		cq->CQ_wq++;
 		/* Process the WQ complete event */
@@ -19996,26 +15312,17 @@ lpfc_sli4_fp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 		break;
 	case CQE_CODE_RELEASE_WQE:
 		cq->CQ_release_wqe++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Process the WQ release event */
 		lpfc_sli4_fp_handle_rel_wcqe(phba, cq,
 				(struct lpfc_wcqe_release *)&wcqe);
 		break;
 	case CQE_CODE_XRI_ABORTED:
-<<<<<<< HEAD
-=======
 		cq->CQ_xri_aborted++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Process the WQ XRI abort event */
 		phba->last_completion_time = jiffies;
 		workposted = lpfc_sli4_sp_handle_abort_xri_wcqe(phba, cq,
 				(struct sli4_wcqe_xri_aborted *)&wcqe);
 		break;
-<<<<<<< HEAD
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0144 Not a valid WCQE code: x%x\n",
-=======
 	case CQE_CODE_RECEIVE_V1:
 	case CQE_CODE_RECEIVE:
 		phba->last_completion_time = jiffies;
@@ -20027,7 +15334,6 @@ lpfc_sli4_fp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	default:
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0144 Not a valid CQE code: x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bf_get(lpfc_wcqe_c_code, &wcqe));
 		break;
 	}
@@ -20035,11 +15341,6 @@ lpfc_sli4_fp_handle_cqe(struct lpfc_hba *phba, struct lpfc_queue *cq,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_fp_handle_eqe - Process a fast-path event queue entry
- * @phba: Pointer to HBA context object.
- * @eqe: Pointer to fast-path event queue entry.
-=======
  * __lpfc_sli4_hba_process_cq - Process a fast-path event queue entry
  * @cq: Pointer to CQ to be processed
  *
@@ -20106,7 +15407,6 @@ lpfc_sli4_hba_process_cq(struct work_struct *work)
  * @eq: Pointer to the queue structure.
  * @eqe: Pointer to fast-path event queue entry.
  * @poll_mode: poll_mode to execute processing the cq.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine process a event queue entry from the fast-path event queue.
  * It will check the MajorCode and MinorCode to determine this is for a
@@ -20116,20 +15416,6 @@ lpfc_sli4_hba_process_cq(struct work_struct *work)
  * completion queue, and then return.
  **/
 static void
-<<<<<<< HEAD
-lpfc_sli4_fp_handle_eqe(struct lpfc_hba *phba, struct lpfc_eqe *eqe,
-			uint32_t fcp_cqidx)
-{
-	struct lpfc_queue *cq;
-	struct lpfc_cqe *cqe;
-	bool workposted = false;
-	uint16_t cqid;
-	int ecount = 0;
-
-	if (unlikely(bf_get_le32(lpfc_eqe_major_code, eqe) != 0)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0366 Not a valid fast-path completion "
-=======
 lpfc_sli4_hba_handle_eqe(struct lpfc_hba *phba, struct lpfc_queue *eq,
 			 struct lpfc_eqe *eqe, enum lpfc_poll_mode poll_mode)
 {
@@ -20141,34 +15427,12 @@ lpfc_sli4_hba_handle_eqe(struct lpfc_hba *phba, struct lpfc_queue *eq,
 	if (unlikely(bf_get_le32(lpfc_eqe_major_code, eqe) != 0)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0366 Not a valid completion "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"event: majorcode=x%x, minorcode=x%x\n",
 				bf_get_le32(lpfc_eqe_major_code, eqe),
 				bf_get_le32(lpfc_eqe_minor_code, eqe));
 		return;
 	}
 
-<<<<<<< HEAD
-	if (unlikely(!phba->sli4_hba.fcp_cq)) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-				"3146 Fast-path completion queues "
-				"does not exist\n");
-		return;
-	}
-	cq = phba->sli4_hba.fcp_cq[fcp_cqidx];
-	if (unlikely(!cq)) {
-		if (phba->sli.sli_flag & LPFC_SLI_ACTIVE)
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"0367 Fast-path completion queue "
-					"(%d) does not exist\n", fcp_cqidx);
-		return;
-	}
-
-	/* Get the reference to the corresponding CQ */
-	cqid = bf_get_le32(lpfc_eqe_resource_id, eqe);
-	if (unlikely(cqid != cq->queue_id)) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 	/* Get the reference to the corresponding CQ */
 	cqid = bf_get_le32(lpfc_eqe_resource_id, eqe);
 
@@ -20205,130 +15469,12 @@ lpfc_sli4_hba_handle_eqe(struct lpfc_hba *phba, struct lpfc_queue *eq,
 process_cq:
 	if (unlikely(cqid != cq->queue_id)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0368 Miss-matched fast-path completion "
 				"queue identifier: eqcqid=%d, fcpcqid=%d\n",
 				cqid, cq->queue_id);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* Process all the entries to the CQ */
-	while ((cqe = lpfc_sli4_cq_get(cq))) {
-		workposted |= lpfc_sli4_fp_handle_wcqe(phba, cq, cqe);
-		if (!(++ecount % cq->entry_repost))
-			lpfc_sli4_cq_release(cq, LPFC_QUEUE_NOARM);
-	}
-
-	/* Catch the no cq entry condition */
-	if (unlikely(ecount == 0))
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0369 No entry from fast-path completion "
-				"queue fcpcqid=%d\n", cq->queue_id);
-
-	/* In any case, flash and re-arm the CQ */
-	lpfc_sli4_cq_release(cq, LPFC_QUEUE_REARM);
-
-	/* wake up worker thread if there are works to be done */
-	if (workposted)
-		lpfc_worker_wake_up(phba);
-}
-
-static void
-lpfc_sli4_eq_flush(struct lpfc_hba *phba, struct lpfc_queue *eq)
-{
-	struct lpfc_eqe *eqe;
-
-	/* walk all the EQ entries and drop on the floor */
-	while ((eqe = lpfc_sli4_eq_get(eq)))
-		;
-
-	/* Clear and re-arm the EQ */
-	lpfc_sli4_eq_release(eq, LPFC_QUEUE_REARM);
-}
-
-/**
- * lpfc_sli4_sp_intr_handler - Slow-path interrupt handler to SLI-4 device
- * @irq: Interrupt number.
- * @dev_id: The device context pointer.
- *
- * This function is directly called from the PCI layer as an interrupt
- * service routine when device with SLI-4 interface spec is enabled with
- * MSI-X multi-message interrupt mode and there are slow-path events in
- * the HBA. However, when the device is enabled with either MSI or Pin-IRQ
- * interrupt mode, this function is called as part of the device-level
- * interrupt handler. When the PCI slot is in error recovery or the HBA is
- * undergoing initialization, the interrupt handler will not process the
- * interrupt. The link attention and ELS ring attention events are handled
- * by the worker thread. The interrupt handler signals the worker thread
- * and returns for these events. This function is called without any lock
- * held. It gets the hbalock to access and update SLI data structures.
- *
- * This function returns IRQ_HANDLED when interrupt is handled else it
- * returns IRQ_NONE.
- **/
-irqreturn_t
-lpfc_sli4_sp_intr_handler(int irq, void *dev_id)
-{
-	struct lpfc_hba *phba;
-	struct lpfc_queue *speq;
-	struct lpfc_eqe *eqe;
-	unsigned long iflag;
-	int ecount = 0;
-
-	/*
-	 * Get the driver's phba structure from the dev_id
-	 */
-	phba = (struct lpfc_hba *)dev_id;
-
-	if (unlikely(!phba))
-		return IRQ_NONE;
-
-	/* Get to the EQ struct associated with this vector */
-	speq = phba->sli4_hba.sp_eq;
-	if (unlikely(!speq))
-		return IRQ_NONE;
-
-	/* Check device state for handling interrupt */
-	if (unlikely(lpfc_intr_state_check(phba))) {
-		/* Check again for link_state with lock held */
-		spin_lock_irqsave(&phba->hbalock, iflag);
-		if (phba->link_state < LPFC_LINK_DOWN)
-			/* Flush, clear interrupt, and rearm the EQ */
-			lpfc_sli4_eq_flush(phba, speq);
-		spin_unlock_irqrestore(&phba->hbalock, iflag);
-		return IRQ_NONE;
-	}
-
-	/*
-	 * Process all the event on FCP slow-path EQ
-	 */
-	while ((eqe = lpfc_sli4_eq_get(speq))) {
-		lpfc_sli4_sp_handle_eqe(phba, eqe);
-		if (!(++ecount % speq->entry_repost))
-			lpfc_sli4_eq_release(speq, LPFC_QUEUE_NOARM);
-	}
-
-	/* Always clear and re-arm the slow-path EQ */
-	lpfc_sli4_eq_release(speq, LPFC_QUEUE_REARM);
-
-	/* Catch the no cq entry condition */
-	if (unlikely(ecount == 0)) {
-		if (phba->intr_type == MSIX)
-			/* MSI-X treated interrupt served as no EQ share INT */
-			lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-					"0357 MSI-X interrupt with no EQE\n");
-		else
-			/* Non MSI-X treated on interrupt as EQ share INT */
-			return IRQ_NONE;
-	}
-
-	return IRQ_HANDLED;
-} /* lpfc_sli4_sp_intr_handler */
-
-/**
- * lpfc_sli4_fp_intr_handler - Fast-path interrupt handler to SLI-4 device
-=======
 work_cq:
 #if defined(CONFIG_SCSI_LPFC_DEBUG_FS)
 	if (phba->ktime_on)
@@ -20374,7 +15520,6 @@ lpfc_sli4_dly_hba_process_cq(struct work_struct *work)
 
 /**
  * lpfc_sli4_hba_intr_handler - HBA interrupt handler to SLI-4 device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @irq: Interrupt number.
  * @dev_id: The device context pointer.
  *
@@ -20391,34 +15536,6 @@ lpfc_sli4_dly_hba_process_cq(struct work_struct *work)
  * the FCP EQ to FCP CQ are one-to-one map such that the FCP EQ index is
  * equal to that of FCP CQ index.
  *
-<<<<<<< HEAD
- * This function returns IRQ_HANDLED when interrupt is handled else it
- * returns IRQ_NONE.
- **/
-irqreturn_t
-lpfc_sli4_fp_intr_handler(int irq, void *dev_id)
-{
-	struct lpfc_hba *phba;
-	struct lpfc_fcp_eq_hdl *fcp_eq_hdl;
-	struct lpfc_queue *fpeq;
-	struct lpfc_eqe *eqe;
-	unsigned long iflag;
-	int ecount = 0;
-	uint32_t fcp_eqidx;
-
-	/* Get the driver's phba structure from the dev_id */
-	fcp_eq_hdl = (struct lpfc_fcp_eq_hdl *)dev_id;
-	phba = fcp_eq_hdl->phba;
-	fcp_eqidx = fcp_eq_hdl->idx;
-
-	if (unlikely(!phba))
-		return IRQ_NONE;
-	if (unlikely(!phba->sli4_hba.fp_eq))
-		return IRQ_NONE;
-
-	/* Get to the EQ struct associated with this vector */
-	fpeq = phba->sli4_hba.fp_eq[fcp_eqidx];
-=======
  * The link attention and ELS ring attention events are handled
  * by the worker thread. The interrupt handler signals the worker thread
  * and returns for these events. This function is called without any lock
@@ -20451,7 +15568,6 @@ lpfc_sli4_hba_intr_handler(int irq, void *dev_id)
 
 	/* Get to the EQ struct associated with this vector */
 	fpeq = phba->sli4_hba.hba_eq_hdl[hba_eqidx].eq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!fpeq))
 		return IRQ_NONE;
 
@@ -20461,41 +15577,11 @@ lpfc_sli4_hba_intr_handler(int irq, void *dev_id)
 		spin_lock_irqsave(&phba->hbalock, iflag);
 		if (phba->link_state < LPFC_LINK_DOWN)
 			/* Flush, clear interrupt, and rearm the EQ */
-<<<<<<< HEAD
-			lpfc_sli4_eq_flush(phba, fpeq);
-=======
 			lpfc_sli4_eqcq_flush(phba, fpeq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&phba->hbalock, iflag);
 		return IRQ_NONE;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Process all the event on FCP fast-path EQ
-	 */
-	while ((eqe = lpfc_sli4_eq_get(fpeq))) {
-		lpfc_sli4_fp_handle_eqe(phba, eqe, fcp_eqidx);
-		if (!(++ecount % fpeq->entry_repost))
-			lpfc_sli4_eq_release(fpeq, LPFC_QUEUE_NOARM);
-	}
-
-	/* Always clear and re-arm the fast-path EQ */
-	lpfc_sli4_eq_release(fpeq, LPFC_QUEUE_REARM);
-
-	if (unlikely(ecount == 0)) {
-		if (phba->intr_type == MSIX)
-			/* MSI-X treated interrupt served as no EQ share INT */
-			lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
-					"0358 MSI-X interrupt with no EQE\n");
-		else
-			/* Non MSI-X treated on interrupt as EQ share INT */
-			return IRQ_NONE;
-	}
-
-	return IRQ_HANDLED;
-} /* lpfc_sli4_fp_intr_handler */
-=======
 	switch (fpeq->poll_mode) {
 	case LPFC_THREADED_IRQ:
 		/* CGN mgmt is mutually exclusive from irq processing */
@@ -20535,7 +15621,6 @@ lpfc_sli4_hba_intr_handler(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 } /* lpfc_sli4_hba_intr_handler */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_sli4_intr_handler - Device-level interrupt handler for SLI-4 device
@@ -20558,15 +15643,9 @@ irqreturn_t
 lpfc_sli4_intr_handler(int irq, void *dev_id)
 {
 	struct lpfc_hba  *phba;
-<<<<<<< HEAD
-	irqreturn_t sp_irq_rc, fp_irq_rc;
-	bool fp_handled = false;
-	uint32_t fcp_eqidx;
-=======
 	irqreturn_t hba_irq_rc;
 	bool hba_handled = false;
 	int qidx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the driver's phba structure from the dev_id */
 	phba = (struct lpfc_hba *)dev_id;
@@ -20575,25 +15654,6 @@ lpfc_sli4_intr_handler(int irq, void *dev_id)
 		return IRQ_NONE;
 
 	/*
-<<<<<<< HEAD
-	 * Invokes slow-path host attention interrupt handling as appropriate.
-	 */
-	sp_irq_rc = lpfc_sli4_sp_intr_handler(irq, dev_id);
-
-	/*
-	 * Invoke fast-path host attention interrupt handling as appropriate.
-	 */
-	for (fcp_eqidx = 0; fcp_eqidx < phba->cfg_fcp_eq_count; fcp_eqidx++) {
-		fp_irq_rc = lpfc_sli4_fp_intr_handler(irq,
-					&phba->sli4_hba.fcp_eq_hdl[fcp_eqidx]);
-		if (fp_irq_rc == IRQ_HANDLED)
-			fp_handled |= true;
-	}
-
-	return (fp_handled == true) ? IRQ_HANDLED : sp_irq_rc;
-} /* lpfc_sli4_intr_handler */
-
-=======
 	 * Invoke fast-path host attention interrupt handling as appropriate.
 	 */
 	for (qidx = 0; qidx < phba->cfg_irq_chann; qidx++) {
@@ -20717,7 +15777,6 @@ void lpfc_sli4_stop_polling(struct lpfc_queue *eq)
 	phba->sli4_hba.sli4_write_eq_db(phba, eq, 0, LPFC_QUEUE_REARM);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_queue_free - free a queue structure and associated memory
  * @queue: The queue structure to free.
@@ -20734,15 +15793,6 @@ lpfc_sli4_queue_free(struct lpfc_queue *queue)
 	if (!queue)
 		return;
 
-<<<<<<< HEAD
-	while (!list_empty(&queue->page_list)) {
-		list_remove_head(&queue->page_list, dmabuf, struct lpfc_dmabuf,
-				 list);
-		dma_free_coherent(&queue->phba->pcidev->dev, SLI4_PAGE_SIZE,
-				  dmabuf->virt, dmabuf->phys);
-		kfree(dmabuf);
-	}
-=======
 	if (!list_empty(&queue->wq_list))
 		list_del(&queue->wq_list);
 
@@ -20761,7 +15811,6 @@ lpfc_sli4_queue_free(struct lpfc_queue *queue)
 	if (!list_empty(&queue->cpu_list))
 		list_del(&queue->cpu_list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(queue);
 	return;
 }
@@ -20769,46 +15818,16 @@ lpfc_sli4_queue_free(struct lpfc_queue *queue)
 /**
  * lpfc_sli4_queue_alloc - Allocate and initialize a queue structure
  * @phba: The HBA that this queue is being created on.
-<<<<<<< HEAD
- * @entry_size: The size of each queue entry for this queue.
- * @entry count: The number of entries that this queue will handle.
-=======
  * @page_size: The size of a queue page
  * @entry_size: The size of each queue entry for this queue.
  * @entry_count: The number of entries that this queue will handle.
  * @cpu: The cpu that will primarily utilize this queue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function allocates a queue structure and the DMAable memory used for
  * the host resident queue. This function must be called before creating the
  * queue on the HBA.
  **/
 struct lpfc_queue *
-<<<<<<< HEAD
-lpfc_sli4_queue_alloc(struct lpfc_hba *phba, uint32_t entry_size,
-		      uint32_t entry_count)
-{
-	struct lpfc_queue *queue;
-	struct lpfc_dmabuf *dmabuf;
-	int x, total_qe_count;
-	void *dma_pointer;
-	uint32_t hw_page_size = phba->sli4_hba.pc_sli4_params.if_page_sz;
-
-	if (!phba->sli4_hba.pc_sli4_params.supported)
-		hw_page_size = SLI4_PAGE_SIZE;
-
-	queue = kzalloc(sizeof(struct lpfc_queue) +
-			(sizeof(union sli4_qe) * entry_count), GFP_KERNEL);
-	if (!queue)
-		return NULL;
-	queue->page_count = (ALIGN(entry_size * entry_count,
-			hw_page_size))/hw_page_size;
-	INIT_LIST_HEAD(&queue->list);
-	INIT_LIST_HEAD(&queue->page_list);
-	INIT_LIST_HEAD(&queue->child_list);
-	for (x = 0, total_qe_count = 0; x < queue->page_count; x++) {
-		dmabuf = kzalloc(sizeof(struct lpfc_dmabuf), GFP_KERNEL);
-=======
 lpfc_sli4_queue_alloc(struct lpfc_hba *phba, uint32_t page_size,
 		      uint32_t entry_size, uint32_t entry_count, int cpu)
 {
@@ -20853,7 +15872,6 @@ lpfc_sli4_queue_alloc(struct lpfc_hba *phba, uint32_t page_size,
 	for (x = 0; x < queue->page_count; x++) {
 		dmabuf = kzalloc_node(sizeof(*dmabuf), GFP_KERNEL,
 				      dev_to_node(&phba->pcidev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dmabuf)
 			goto out_fail;
 		dmabuf->virt = dma_alloc_coherent(&phba->pcidev->dev,
@@ -20863,31 +15881,6 @@ lpfc_sli4_queue_alloc(struct lpfc_hba *phba, uint32_t page_size,
 			kfree(dmabuf);
 			goto out_fail;
 		}
-<<<<<<< HEAD
-		memset(dmabuf->virt, 0, hw_page_size);
-		dmabuf->buffer_tag = x;
-		list_add_tail(&dmabuf->list, &queue->page_list);
-		/* initialize queue's entry array */
-		dma_pointer = dmabuf->virt;
-		for (; total_qe_count < entry_count &&
-		     dma_pointer < (hw_page_size + dmabuf->virt);
-		     total_qe_count++, dma_pointer += entry_size) {
-			queue->qe[total_qe_count].address = dma_pointer;
-		}
-	}
-	queue->entry_size = entry_size;
-	queue->entry_count = entry_count;
-
-	/*
-	 * entry_repost is calculated based on the number of entries in the
-	 * queue. This works out except for RQs. If buffers are NOT initially
-	 * posted for every RQE, entry_repost should be adjusted accordingly.
-	 */
-	queue->entry_repost = (entry_count >> 3);
-	if (queue->entry_repost < LPFC_QUEUE_MIN_REPOST)
-		queue->entry_repost = LPFC_QUEUE_MIN_REPOST;
-	queue->phba = phba;
-=======
 		dmabuf->buffer_tag = x;
 		list_add_tail(&dmabuf->list, &queue->page_list);
 		/* use lpfc_sli4_qe to index a paritcular entry in this page */
@@ -20899,7 +15892,6 @@ lpfc_sli4_queue_alloc(struct lpfc_hba *phba, uint32_t page_size,
 	INIT_DELAYED_WORK(&queue->sched_spwork, lpfc_sli4_dly_sp_process_cq);
 
 	/* notify_interval will be set during q creation */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return queue;
 out_fail:
@@ -20908,8 +15900,6 @@ out_fail:
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_dual_chute_pci_bar_map - Map pci base address register to host memory
  * @phba: HBA structure that indicates port to create a queue on.
  * @pci_barset: PCI BAR set flag.
@@ -21053,7 +16043,6 @@ lpfc_modify_hba_eq_delay(struct lpfc_hba *phba, uint32_t startq,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_eq_create - Create an Event Queue on the HBA
  * @phba: HBA structure that indicates port to create a queue on.
  * @eq: The queue structure to use to create the event queue.
@@ -21073,13 +16062,8 @@ lpfc_modify_hba_eq_delay(struct lpfc_hba *phba, uint32_t startq,
  * memory this function will return -ENOMEM. If the queue create mailbox command
  * fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint16_t imax)
-=======
 int
 lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lpfc_mbx_eq_create *eq_create;
 	LPFC_MBOXQ_t *mbox;
@@ -21105,19 +16089,12 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 			 LPFC_MBOX_OPCODE_EQ_CREATE,
 			 length, LPFC_SLI4_MBX_EMBED);
 	eq_create = &mbox->u.mqe.un.eq_create;
-<<<<<<< HEAD
-=======
 	shdr = (union lpfc_sli4_cfg_shdr *) &eq_create->header.cfg_shdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bf_set(lpfc_mbx_eq_create_num_pages, &eq_create->u.request,
 	       eq->page_count);
 	bf_set(lpfc_eq_context_size, &eq_create->u.request.context,
 	       LPFC_EQE_SIZE);
 	bf_set(lpfc_eq_context_valid, &eq_create->u.request.context, 1);
-<<<<<<< HEAD
-	/* Calculate delay multiper from maximum interrupt per second */
-	dmult = LPFC_DMULT_CONST/imax - 1;
-=======
 
 	/* Use version 2 of CREATE_EQ if eqav is set */
 	if (phba->sli4_hba.pc_sli4_params.eqav) {
@@ -21129,19 +16106,10 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 
 	/* don't setup delay multiplier using EQ_CREATE */
 	dmult = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bf_set(lpfc_eq_context_delay_multi, &eq_create->u.request.context,
 	       dmult);
 	switch (eq->entry_count) {
 	default:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0360 Unsupported EQ count. (%d)\n",
-				eq->entry_count);
-		if (eq->entry_count < 256)
-			return -EINVAL;
-		/* otherwise default to smallest count (drop through) */
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0360 Unsupported EQ count. (%d)\n",
 				eq->entry_count);
@@ -21150,7 +16118,6 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 			goto out;
 		}
 		fallthrough;	/* otherwise default to smallest count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 256:
 		bf_set(lpfc_eq_context_count, &eq_create->u.request.context,
 		       LPFC_EQ_CNT_256);
@@ -21181,15 +16148,6 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 	}
 	mbox->vport = phba->pport;
 	mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
-<<<<<<< HEAD
-	mbox->context1 = NULL;
-	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
-	shdr = (union lpfc_sli4_cfg_shdr *) &eq_create->header.cfg_shdr;
-	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
-	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 	mbox->ctx_buf = NULL;
 	mbox->ctx_ndlp = NULL;
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
@@ -21197,7 +16155,6 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2500 EQ_CREATE mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -21209,21 +16166,14 @@ lpfc_eq_create(struct lpfc_hba *phba, struct lpfc_queue *eq, uint32_t imax)
 	if (eq->queue_id == 0xFFFF)
 		status = -ENXIO;
 	eq->host_index = 0;
-<<<<<<< HEAD
-	eq->hba_index = 0;
-
-=======
 	eq->notify_interval = LPFC_EQ_NOTIFY_INTRVL;
 	eq->max_proc_limit = LPFC_EQ_MAX_PROC_LIMIT;
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(mbox, phba->mbox_mem_pool);
 	return status;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_sli4_hba_intr_handler_th - SLI4 HBA threaded interrupt handler
  * @irq: Interrupt number.
  * @dev_id: The device context pointer.
@@ -21289,16 +16239,12 @@ irqreturn_t lpfc_sli4_hba_intr_handler_th(int irq, void *dev_id)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_cq_create - Create a Completion Queue on the HBA
  * @phba: HBA structure that indicates port to create a queue on.
  * @cq: The queue structure to use to create the completion queue.
  * @eq: The event queue to bind this completion queue to.
-<<<<<<< HEAD
-=======
  * @type: Type of queue (EQ, GCQ, MCQ, WCQ, etc).
  * @subtype: Functional purpose of the queue (MBOX, IO, ELS, NVMET, etc).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function creates a completion queue, as detailed in @wq, on a port,
  * described by @phba by sending a CQ_CREATE mailbox command to the HBA.
@@ -21315,11 +16261,7 @@ irqreturn_t lpfc_sli4_hba_intr_handler_th(int irq, void *dev_id)
  * memory this function will return -ENOMEM. If the queue create mailbox command
  * fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	       struct lpfc_queue *eq, uint32_t type, uint32_t subtype)
 {
@@ -21329,19 +16271,10 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	int rc, length, status = 0;
 	uint32_t shdr_status, shdr_add_status;
 	union lpfc_sli4_cfg_shdr *shdr;
-<<<<<<< HEAD
-	uint32_t hw_page_size = phba->sli4_hba.pc_sli4_params.if_page_sz;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (!cq || !eq)
 		return -ENODEV;
-<<<<<<< HEAD
-	if (!phba->sli4_hba.pc_sli4_params.supported)
-		hw_page_size = SLI4_PAGE_SIZE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
@@ -21360,33 +16293,17 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	bf_set(lpfc_mbox_hdr_version, &shdr->request,
 	       phba->sli4_hba.pc_sli4_params.cqv);
 	if (phba->sli4_hba.pc_sli4_params.cqv == LPFC_Q_CREATE_VERSION_2) {
-<<<<<<< HEAD
-		/* FW only supports 1. Should be PAGE_SIZE/SLI4_PAGE_SIZE */
-		bf_set(lpfc_mbx_cq_create_page_size, &cq_create->u.request, 1);
-		bf_set(lpfc_cq_eq_id_2, &cq_create->u.request.context,
-		       eq->queue_id);
-=======
 		bf_set(lpfc_mbx_cq_create_page_size, &cq_create->u.request,
 		       (cq->page_size / SLI4_PAGE_SIZE));
 		bf_set(lpfc_cq_eq_id_2, &cq_create->u.request.context,
 		       eq->queue_id);
 		bf_set(lpfc_cq_context_autovalid, &cq_create->u.request.context,
 		       phba->sli4_hba.pc_sli4_params.cqav);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bf_set(lpfc_cq_eq_id, &cq_create->u.request.context,
 		       eq->queue_id);
 	}
 	switch (cq->entry_count) {
-<<<<<<< HEAD
-	default:
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0361 Unsupported CQ count. (%d)\n",
-				cq->entry_count);
-		if (cq->entry_count < 256)
-			return -EINVAL;
-		/* otherwise default to smallest count (drop through) */
-=======
 	case 2048:
 	case 4096:
 		if (phba->sli4_hba.pc_sli4_params.cqv ==
@@ -21410,7 +16327,6 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 			goto out;
 		}
 		fallthrough;	/* otherwise default to smallest count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 256:
 		bf_set(lpfc_cq_context_count, &cq_create->u.request.context,
 		       LPFC_CQ_CNT_256);
@@ -21425,11 +16341,7 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 		break;
 	}
 	list_for_each_entry(dmabuf, &cq->page_list, list) {
-<<<<<<< HEAD
-		memset(dmabuf->virt, 0, hw_page_size);
-=======
 		memset(dmabuf->virt, 0, cq->page_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cq_create->u.request.page[dmabuf->buffer_tag].addr_lo =
 					putPaddrLow(dmabuf->phys);
 		cq_create->u.request.page[dmabuf->buffer_tag].addr_hi =
@@ -21441,11 +16353,7 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2501 CQ_CREATE mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -21464,11 +16372,6 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	cq->subtype = subtype;
 	cq->queue_id = bf_get(lpfc_mbx_cq_create_q_id, &cq_create->u.response);
 	cq->assoc_qid = eq->queue_id;
-<<<<<<< HEAD
-	cq->host_index = 0;
-	cq->hba_index = 0;
-
-=======
 	cq->assoc_qp = eq;
 	cq->host_index = 0;
 	cq->notify_interval = LPFC_CQ_NOTIFY_INTRVL;
@@ -21476,15 +16379,12 @@ lpfc_cq_create(struct lpfc_hba *phba, struct lpfc_queue *cq,
 
 	if (cq->queue_id > phba->sli4_hba.cq_max)
 		phba->sli4_hba.cq_max = cq->queue_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mempool_free(mbox, phba->mbox_mem_pool);
 	return status;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_cq_create_set - Create a set of Completion Queues on the HBA for MRQ
  * @phba: HBA structure that indicates port to create a queue on.
  * @cqp: The queue structure array to use to create the completion queues.
@@ -21738,7 +16638,6 @@ out:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_mq_create_fb_init - Send MCC_CREATE without async events registration
  * @phba: HBA structure that indicates port to create a queue on.
  * @mq: The queue structure to use to create the mailbox queue.
@@ -21871,14 +16770,6 @@ lpfc_mq_create(struct lpfc_hba *phba, struct lpfc_queue *mq,
 		       cq->queue_id);
 	switch (mq->entry_count) {
 	default:
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"0362 Unsupported MQ count. (%d)\n",
-				mq->entry_count);
-		if (mq->entry_count < 16)
-			return -EINVAL;
-		/* otherwise default to smallest count (drop through) */
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"0362 Unsupported MQ count. (%d)\n",
 				mq->entry_count);
@@ -21887,7 +16778,6 @@ lpfc_mq_create(struct lpfc_hba *phba, struct lpfc_queue *mq,
 			goto out;
 		}
 		fallthrough;	/* otherwise default to smallest count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 16:
 		bf_set(lpfc_mq_context_ring_size,
 		       &mq_create_ext->u.request.context,
@@ -21936,11 +16826,7 @@ lpfc_mq_create(struct lpfc_hba *phba, struct lpfc_queue *mq,
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2502 MQ_CREATE mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -21986,11 +16872,7 @@ out:
  * memory this function will return -ENOMEM. If the queue create mailbox command
  * fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 	       struct lpfc_queue *cq, uint32_t subtype)
 {
@@ -22002,8 +16884,6 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 	union lpfc_sli4_cfg_shdr *shdr;
 	uint32_t hw_page_size = phba->sli4_hba.pc_sli4_params.if_page_sz;
 	struct dma_address *page;
-<<<<<<< HEAD
-=======
 	void __iomem *bar_memmap_p;
 	uint32_t db_offset;
 	uint16_t pci_barset;
@@ -22013,17 +16893,12 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 #ifdef CONFIG_X86
 	unsigned long pg_addr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (!wq || !cq)
 		return -ENODEV;
 	if (!phba->sli4_hba.pc_sli4_params.supported)
-<<<<<<< HEAD
-		hw_page_size = SLI4_PAGE_SIZE;
-=======
 		hw_page_size = wq->page_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
@@ -22039,13 +16914,6 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 		    wq->page_count);
 	bf_set(lpfc_mbx_wq_create_cq_id, &wq_create->u.request,
 		    cq->queue_id);
-<<<<<<< HEAD
-	bf_set(lpfc_mbox_hdr_version, &shdr->request,
-	       phba->sli4_hba.pc_sli4_params.wqv);
-	if (phba->sli4_hba.pc_sli4_params.wqv == LPFC_Q_CREATE_VERSION_1) {
-		bf_set(lpfc_mbx_wq_create_wqe_count, &wq_create->u.request_1,
-		       wq->entry_count);
-=======
 
 	/* wqv is the earliest version supported, NOT the latest */
 	bf_set(lpfc_mbox_hdr_version, &shdr->request,
@@ -22064,7 +16932,6 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 		bf_set(lpfc_mbox_hdr_version, &shdr->request,
 		       LPFC_Q_CREATE_VERSION_1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (wq->entry_size) {
 		default:
 		case 64:
@@ -22078,14 +16945,6 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 			       LPFC_WQ_WQE_SIZE_128);
 			break;
 		}
-<<<<<<< HEAD
-		bf_set(lpfc_mbx_wq_create_page_size, &wq_create->u.request_1,
-		       (PAGE_SIZE/SLI4_PAGE_SIZE));
-		page = wq_create->u.request_1.page;
-	} else {
-		page = wq_create->u.request.page;
-	}
-=======
 		/* Request DPP by default */
 		bf_set(lpfc_mbx_wq_create_dpp_req, &wq_create->u.request_1, 1);
 		bf_set(lpfc_mbx_wq_create_page_size,
@@ -22098,38 +16957,27 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(dmabuf, &wq->page_list, list) {
 		memset(dmabuf->virt, 0, hw_page_size);
 		page[dmabuf->buffer_tag].addr_lo = putPaddrLow(dmabuf->phys);
 		page[dmabuf->buffer_tag].addr_hi = putPaddrHigh(dmabuf->phys);
 	}
-<<<<<<< HEAD
-=======
 
 	if (phba->sli4_hba.fw_func_mode & LPFC_DUA_MODE)
 		bf_set(lpfc_mbx_wq_create_dua, &wq_create->u.request, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	/* The IOCTL status is embedded in the mailbox subheader. */
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2503 WQ_CREATE mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
 		status = -ENXIO;
 		goto out;
 	}
-<<<<<<< HEAD
-	wq->queue_id = bf_get(lpfc_mbx_wq_create_q_id, &wq_create->u.response);
-=======
 
 	if (wq_create_version == LPFC_Q_CREATE_VERSION_0)
 		wq->queue_id = bf_get(lpfc_mbx_wq_create_q_id,
@@ -22138,13 +16986,10 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 		wq->queue_id = bf_get(lpfc_mbx_wq_create_v1_q_id,
 					&wq_create->u.response_1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wq->queue_id == 0xFFFF) {
 		status = -ENXIO;
 		goto out;
 	}
-<<<<<<< HEAD
-=======
 
 	wq->db_format = LPFC_DB_LIST_FORMAT;
 	if (wq_create_version == LPFC_Q_CREATE_VERSION_0) {
@@ -22253,17 +17098,12 @@ lpfc_wq_create(struct lpfc_hba *phba, struct lpfc_queue *wq,
 		status = -ENOMEM;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wq->type = LPFC_WQ;
 	wq->assoc_qid = cq->queue_id;
 	wq->subtype = subtype;
 	wq->host_index = 0;
 	wq->hba_index = 0;
-<<<<<<< HEAD
-	wq->entry_repost = LPFC_RELEASE_NOTIFICATION_INTERVAL;
-=======
 	wq->notify_interval = LPFC_WQ_NOTIFY_INTRVL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* link the wq onto the parent cq child list */
 	list_add_tail(&wq->list, &cq->child_list);
@@ -22273,46 +17113,12 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_rq_adjust_repost - Adjust entry_repost for an RQ
- * @phba: HBA structure that indicates port to create a queue on.
- * @rq:   The queue structure to use for the receive queue.
- * @qno:  The associated HBQ number
- *
- *
- * For SLI4 we need to adjust the RQ repost value based on
- * the number of buffers that are initially posted to the RQ.
- */
-void
-lpfc_rq_adjust_repost(struct lpfc_hba *phba, struct lpfc_queue *rq, int qno)
-{
-	uint32_t cnt;
-
-	/* sanity check on queue memory */
-	if (!rq)
-		return;
-	cnt = lpfc_hbq_defs[qno]->entry_count;
-
-	/* Recalc repost for RQs based on buffers initially posted */
-	cnt = (cnt >> 3);
-	if (cnt < LPFC_QUEUE_MIN_REPOST)
-		cnt = LPFC_QUEUE_MIN_REPOST;
-
-	rq->entry_repost = cnt;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_rq_create - Create a Receive Queue on the HBA
  * @phba: HBA structure that indicates port to create a queue on.
  * @hrq: The queue structure to use to create the header receive queue.
  * @drq: The queue structure to use to create the data receive queue.
  * @cq: The completion queue to bind this work queue to.
-<<<<<<< HEAD
-=======
  * @subtype: The subtype of the work queue indicating its functionality.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function creates a receive buffer queue pair , as detailed in @hrq and
  * @drq, on a port, described by @phba by sending a RQ_CREATE mailbox command
@@ -22330,11 +17136,7 @@ lpfc_rq_adjust_repost(struct lpfc_hba *phba, struct lpfc_queue *rq, int qno)
  * memory this function will return -ENOMEM. If the queue create mailbox command
  * fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	       struct lpfc_queue *drq, struct lpfc_queue *cq, uint32_t subtype)
 {
@@ -22345,12 +17147,9 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	uint32_t shdr_status, shdr_add_status;
 	union lpfc_sli4_cfg_shdr *shdr;
 	uint32_t hw_page_size = phba->sli4_hba.pc_sli4_params.if_page_sz;
-<<<<<<< HEAD
-=======
 	void __iomem *bar_memmap_p;
 	uint32_t db_offset;
 	uint16_t pci_barset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check on queue memory */
 	if (!hrq || !drq || !cq)
@@ -22382,18 +17181,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		       LPFC_RQE_SIZE_8);
 		bf_set(lpfc_rq_context_page_size,
 		       &rq_create->u.request.context,
-<<<<<<< HEAD
-		       (PAGE_SIZE/SLI4_PAGE_SIZE));
-	} else {
-		switch (hrq->entry_count) {
-		default:
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2535 Unsupported RQ count. (%d)\n",
-					hrq->entry_count);
-			if (hrq->entry_count < 512)
-				return -EINVAL;
-			/* otherwise default to smallest count (drop through) */
-=======
 		       LPFC_RQ_PAGE_SIZE_4096);
 	} else {
 		switch (hrq->entry_count) {
@@ -22406,7 +17193,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 				goto out;
 			}
 			fallthrough;	/* otherwise default to smallest count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 512:
 			bf_set(lpfc_rq_context_rqe_count,
 			       &rq_create->u.request.context,
@@ -22442,22 +17228,15 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		rq_create->u.request.page[dmabuf->buffer_tag].addr_hi =
 					putPaddrHigh(dmabuf->phys);
 	}
-<<<<<<< HEAD
-=======
 	if (phba->sli4_hba.fw_func_mode & LPFC_DUA_MODE)
 		bf_set(lpfc_mbx_rq_create_dua, &rq_create->u.request, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	/* The IOCTL status is embedded in the mailbox subheader. */
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2504 RQ_CREATE mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -22469,8 +17248,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		status = -ENXIO;
 		goto out;
 	}
-<<<<<<< HEAD
-=======
 
 	if (phba->sli4_hba.fw_func_mode & LPFC_DUA_MODE) {
 		hrq->db_format = bf_get(lpfc_mbx_rq_create_db_format,
@@ -22516,16 +17293,12 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		hrq->db_format = LPFC_DB_RING_FORMAT;
 		hrq->db_regaddr = phba->sli4_hba.RQDBregaddr;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hrq->type = LPFC_HRQ;
 	hrq->assoc_qid = cq->queue_id;
 	hrq->subtype = subtype;
 	hrq->host_index = 0;
 	hrq->hba_index = 0;
-<<<<<<< HEAD
-=======
 	hrq->notify_interval = LPFC_RQ_NOTIFY_INTRVL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now create the data queue */
 	lpfc_sli4_config(phba, mbox, LPFC_MBOX_SUBSYSTEM_FCOE,
@@ -22536,16 +17309,12 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	if (phba->sli4_hba.pc_sli4_params.rqv == LPFC_Q_CREATE_VERSION_1) {
 		bf_set(lpfc_rq_context_rqe_count_1,
 		       &rq_create->u.request.context, hrq->entry_count);
-<<<<<<< HEAD
-		rq_create->u.request.context.buffer_size = LPFC_DATA_BUF_SIZE;
-=======
 		if (subtype == LPFC_NVMET)
 			rq_create->u.request.context.buffer_size =
 				LPFC_NVMET_DATA_BUF_SIZE;
 		else
 			rq_create->u.request.context.buffer_size =
 				LPFC_DATA_BUF_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bf_set(lpfc_rq_context_rqe_size, &rq_create->u.request.context,
 		       LPFC_RQE_SIZE_8);
 		bf_set(lpfc_rq_context_page_size, &rq_create->u.request.context,
@@ -22553,14 +17322,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	} else {
 		switch (drq->entry_count) {
 		default:
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2536 Unsupported RQ count. (%d)\n",
-					drq->entry_count);
-			if (drq->entry_count < 512)
-				return -EINVAL;
-			/* otherwise default to smallest count (drop through) */
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 					"2536 Unsupported RQ count. (%d)\n",
 					drq->entry_count);
@@ -22569,7 +17330,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 				goto out;
 			}
 			fallthrough;	/* otherwise default to smallest count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 512:
 			bf_set(lpfc_rq_context_rqe_count,
 			       &rq_create->u.request.context,
@@ -22591,10 +17351,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 			       LPFC_RQ_RING_SIZE_4096);
 			break;
 		}
-<<<<<<< HEAD
-		bf_set(lpfc_rq_context_buf_size, &rq_create->u.request.context,
-		       LPFC_DATA_BUF_SIZE);
-=======
 		if (subtype == LPFC_NVMET)
 			bf_set(lpfc_rq_context_buf_size,
 			       &rq_create->u.request.context,
@@ -22603,7 +17359,6 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 			bf_set(lpfc_rq_context_buf_size,
 			       &rq_create->u.request.context,
 			       LPFC_DATA_BUF_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	bf_set(lpfc_rq_context_cq_id, &rq_create->u.request.context,
 	       cq->queue_id);
@@ -22615,11 +17370,8 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		rq_create->u.request.page[dmabuf->buffer_tag].addr_hi =
 					putPaddrHigh(dmabuf->phys);
 	}
-<<<<<<< HEAD
-=======
 	if (phba->sli4_hba.fw_func_mode & LPFC_DUA_MODE)
 		bf_set(lpfc_mbx_rq_create_dua, &rq_create->u.request, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	/* The IOCTL status is embedded in the mailbox subheader. */
 	shdr = (union lpfc_sli4_cfg_shdr *) &rq_create->header.cfg_shdr;
@@ -22639,10 +17391,7 @@ lpfc_rq_create(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	drq->subtype = subtype;
 	drq->host_index = 0;
 	drq->hba_index = 0;
-<<<<<<< HEAD
-=======
 	drq->notify_interval = LPFC_RQ_NOTIFY_INTRVL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* link the header and data RQs onto the parent cq child list */
 	list_add_tail(&hrq->list, &cq->child_list);
@@ -22654,9 +17403,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_eq_destroy - Destroy an event Queue on the HBA
-=======
  * lpfc_mrq_create - Create MRQ Receive Queues on the HBA
  * @phba: HBA structure that indicates port to create a queue on.
  * @hrqp: The queue structure array to use to create the header receive queues.
@@ -22853,7 +17599,6 @@ out:
 /**
  * lpfc_eq_destroy - Destroy an event Queue on the HBA
  * @phba: HBA structure that indicates port to destroy a queue on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @eq: The queue structure associated with the queue to destroy.
  *
  * This function destroys a queue, as detailed in @eq by sending an mailbox
@@ -22864,11 +17609,7 @@ out:
  * On success this function will return a zero. If the queue destroy mailbox
  * command fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_eq_destroy(struct lpfc_hba *phba, struct lpfc_queue *eq)
 {
 	LPFC_MBOXQ_t *mbox;
@@ -22879,10 +17620,7 @@ lpfc_eq_destroy(struct lpfc_hba *phba, struct lpfc_queue *eq)
 	/* sanity check on queue memory */
 	if (!eq)
 		return -ENODEV;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox = mempool_alloc(eq->phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
 		return -ENOMEM;
@@ -22903,11 +17641,7 @@ lpfc_eq_destroy(struct lpfc_hba *phba, struct lpfc_queue *eq)
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2505 EQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -22922,10 +17656,7 @@ lpfc_eq_destroy(struct lpfc_hba *phba, struct lpfc_queue *eq)
 
 /**
  * lpfc_cq_destroy - Destroy a Completion Queue on the HBA
-<<<<<<< HEAD
-=======
  * @phba: HBA structure that indicates port to destroy a queue on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cq: The queue structure associated with the queue to destroy.
  *
  * This function destroys a queue, as detailed in @cq by sending an mailbox
@@ -22936,11 +17667,7 @@ lpfc_eq_destroy(struct lpfc_hba *phba, struct lpfc_queue *eq)
  * On success this function will return a zero. If the queue destroy mailbox
  * command fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_cq_destroy(struct lpfc_hba *phba, struct lpfc_queue *cq)
 {
 	LPFC_MBOXQ_t *mbox;
@@ -22970,11 +17697,7 @@ lpfc_cq_destroy(struct lpfc_hba *phba, struct lpfc_queue *cq)
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2506 CQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -22988,12 +17711,8 @@ lpfc_cq_destroy(struct lpfc_hba *phba, struct lpfc_queue *cq)
 
 /**
  * lpfc_mq_destroy - Destroy a Mailbox Queue on the HBA
-<<<<<<< HEAD
- * @qm: The queue structure associated with the queue to destroy.
-=======
  * @phba: HBA structure that indicates port to destroy a queue on.
  * @mq: The queue structure associated with the queue to destroy.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function destroys a queue, as detailed in @mq by sending an mailbox
  * command, specific to the type of queue, to the HBA.
@@ -23003,11 +17722,7 @@ lpfc_cq_destroy(struct lpfc_hba *phba, struct lpfc_queue *cq)
  * On success this function will return a zero. If the queue destroy mailbox
  * command fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_mq_destroy(struct lpfc_hba *phba, struct lpfc_queue *mq)
 {
 	LPFC_MBOXQ_t *mbox;
@@ -23037,11 +17752,7 @@ lpfc_mq_destroy(struct lpfc_hba *phba, struct lpfc_queue *mq)
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2507 MQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -23055,10 +17766,7 @@ lpfc_mq_destroy(struct lpfc_hba *phba, struct lpfc_queue *mq)
 
 /**
  * lpfc_wq_destroy - Destroy a Work Queue on the HBA
-<<<<<<< HEAD
-=======
  * @phba: HBA structure that indicates port to destroy a queue on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wq: The queue structure associated with the queue to destroy.
  *
  * This function destroys a queue, as detailed in @wq by sending an mailbox
@@ -23069,11 +17777,7 @@ lpfc_mq_destroy(struct lpfc_hba *phba, struct lpfc_queue *mq)
  * On success this function will return a zero. If the queue destroy mailbox
  * command fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_wq_destroy(struct lpfc_hba *phba, struct lpfc_queue *wq)
 {
 	LPFC_MBOXQ_t *mbox;
@@ -23102,11 +17806,7 @@ lpfc_wq_destroy(struct lpfc_hba *phba, struct lpfc_queue *wq)
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2508 WQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -23114,24 +17814,17 @@ lpfc_wq_destroy(struct lpfc_hba *phba, struct lpfc_queue *wq)
 	}
 	/* Remove wq from any list */
 	list_del_init(&wq->list);
-<<<<<<< HEAD
-=======
 	kfree(wq->pring);
 	wq->pring = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(mbox, wq->phba->mbox_mem_pool);
 	return status;
 }
 
 /**
  * lpfc_rq_destroy - Destroy a Receive Queue on the HBA
-<<<<<<< HEAD
- * @rq: The queue structure associated with the queue to destroy.
-=======
  * @phba: HBA structure that indicates port to destroy a queue on.
  * @hrq: The queue structure associated with the queue to destroy.
  * @drq: The queue structure associated with the queue to destroy.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function destroys a queue, as detailed in @rq by sending an mailbox
  * command, specific to the type of queue, to the HBA.
@@ -23141,11 +17834,7 @@ lpfc_wq_destroy(struct lpfc_hba *phba, struct lpfc_queue *wq)
  * On success this function will return a zero. If the queue destroy mailbox
  * command fails this function will return -ENXIO.
  **/
-<<<<<<< HEAD
-uint32_t
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_rq_destroy(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 		struct lpfc_queue *drq)
 {
@@ -23176,20 +17865,11 @@ lpfc_rq_destroy(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"2509 RQ_DESTROY mailbox failed with "
-				"status x%x add_status x%x, mbx status x%x\n",
-				shdr_status, shdr_add_status, rc);
-		if (rc != MBX_TIMEOUT)
-			mempool_free(mbox, hrq->phba->mbox_mem_pool);
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"2509 RQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
 		mempool_free(mbox, hrq->phba->mbox_mem_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 	bf_set(lpfc_mbx_rq_destroy_q_id, &mbox->u.mqe.un.rq_destroy.u.request,
@@ -23200,11 +17880,7 @@ lpfc_rq_destroy(struct lpfc_hba *phba, struct lpfc_queue *hrq,
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status || rc) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2510 RQ_DESTROY mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
@@ -23252,11 +17928,7 @@ lpfc_sli4_post_sgl(struct lpfc_hba *phba,
 	union lpfc_sli4_cfg_shdr *shdr;
 
 	if (xritag == NO_XRI) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0364 Invalid param:\n");
 		return -EINVAL;
 	}
@@ -23294,16 +17966,6 @@ lpfc_sli4_post_sgl(struct lpfc_hba *phba,
 	shdr = (union lpfc_sli4_cfg_shdr *) &post_sgl_pages->header.cfg_shdr;
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-<<<<<<< HEAD
-	if (rc != MBX_TIMEOUT)
-		mempool_free(mbox, phba->mbox_mem_pool);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"2511 POST_SGL mailbox failed with "
-				"status x%x add_status x%x, mbx status x%x\n",
-				shdr_status, shdr_add_status, rc);
-		rc = -ENXIO;
-=======
 	if (!phba->sli4_hba.intr_enable)
 		mempool_free(mbox, phba->mbox_mem_pool);
 	else if (rc != MBX_TIMEOUT)
@@ -23313,7 +17975,6 @@ lpfc_sli4_post_sgl(struct lpfc_hba *phba,
 				"2511 POST_SGL mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -23331,11 +17992,7 @@ lpfc_sli4_post_sgl(struct lpfc_hba *phba,
  *	A nonzero rpi defined as rpi_base <= rpi < max_rpi if successful
  *	LPFC_RPI_ALLOC_ERROR if no rpis are available.
  **/
-<<<<<<< HEAD
-uint16_t
-=======
 static uint16_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_sli4_alloc_xri(struct lpfc_hba *phba)
 {
 	unsigned long xri;
@@ -23345,55 +18002,31 @@ lpfc_sli4_alloc_xri(struct lpfc_hba *phba)
 	 * the driver starts at 0 each time.
 	 */
 	spin_lock_irq(&phba->hbalock);
-<<<<<<< HEAD
-	xri = find_next_zero_bit(phba->sli4_hba.xri_bmask,
-				 phba->sli4_hba.max_cfg_param.max_xri, 0);
-=======
 	xri = find_first_zero_bit(phba->sli4_hba.xri_bmask,
 				 phba->sli4_hba.max_cfg_param.max_xri);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xri >= phba->sli4_hba.max_cfg_param.max_xri) {
 		spin_unlock_irq(&phba->hbalock);
 		return NO_XRI;
 	} else {
 		set_bit(xri, phba->sli4_hba.xri_bmask);
 		phba->sli4_hba.max_cfg_param.xri_used++;
-<<<<<<< HEAD
-		phba->sli4_hba.xri_count++;
 	}
-
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&phba->hbalock);
 	return xri;
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_free_xri - Release an xri for reuse.
- * @phba: pointer to lpfc hba data structure.
-=======
  * __lpfc_sli4_free_xri - Release an xri for reuse.
  * @phba: pointer to lpfc hba data structure.
  * @xri: xri to release.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to release an xri to the pool of
  * available rpis maintained by the driver.
  **/
-<<<<<<< HEAD
-void
-__lpfc_sli4_free_xri(struct lpfc_hba *phba, int xri)
-{
-	if (test_and_clear_bit(xri, phba->sli4_hba.xri_bmask)) {
-		phba->sli4_hba.xri_count--;
-=======
 static void
 __lpfc_sli4_free_xri(struct lpfc_hba *phba, int xri)
 {
 	if (test_and_clear_bit(xri, phba->sli4_hba.xri_bmask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->sli4_hba.max_cfg_param.xri_used--;
 	}
 }
@@ -23401,10 +18034,7 @@ __lpfc_sli4_free_xri(struct lpfc_hba *phba, int xri)
 /**
  * lpfc_sli4_free_xri - Release an xri for reuse.
  * @phba: pointer to lpfc hba data structure.
-<<<<<<< HEAD
-=======
  * @xri: xri to release.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to release an xri to the pool of
  * available rpis maintained by the driver.
@@ -23433,23 +18063,6 @@ lpfc_sli4_next_xritag(struct lpfc_hba *phba)
 	uint16_t xri_index;
 
 	xri_index = lpfc_sli4_alloc_xri(phba);
-<<<<<<< HEAD
-	if (xri_index != NO_XRI)
-		return xri_index;
-
-	lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"2004 Failed to allocate XRI.last XRITAG is %d"
-			" Max XRI is %d, Used XRI is %d\n",
-			xri_index,
-			phba->sli4_hba.max_cfg_param.max_xri,
-			phba->sli4_hba.max_cfg_param.xri_used);
-	return NO_XRI;
-}
-
-/**
- * lpfc_sli4_post_els_sgl_list - post a block of ELS sgls to the port.
- * @phba: pointer to lpfc hba data structure.
-=======
 	if (xri_index == NO_XRI)
 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
 				"2004 Failed to allocate XRI.last XRITAG is %d"
@@ -23465,46 +18078,24 @@ lpfc_sli4_next_xritag(struct lpfc_hba *phba)
  * @phba: pointer to lpfc hba data structure.
  * @post_sgl_list: pointer to els sgl entry list.
  * @post_cnt: number of els sgl entries on the list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to post a block of driver's sgl pages to the
  * HBA using non-embedded mailbox command. No Lock is held. This routine
  * is only called when the driver is loading and after all IO has been
  * stopped.
  **/
-<<<<<<< HEAD
-int
-lpfc_sli4_post_els_sgl_list(struct lpfc_hba *phba)
-{
-	struct lpfc_sglq *sglq_entry;
-=======
 static int
 lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 			    struct list_head *post_sgl_list,
 			    int post_cnt)
 {
 	struct lpfc_sglq *sglq_entry = NULL, *sglq_next = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_mbx_post_uembed_sgl_page1 *sgl;
 	struct sgl_page_pairs *sgl_pg_pairs;
 	void *viraddr;
 	LPFC_MBOXQ_t *mbox;
 	uint32_t reqlen, alloclen, pg_pairs;
 	uint32_t mbox_tmo;
-<<<<<<< HEAD
-	uint16_t xritag_start = 0, lxri = 0;
-	int els_xri_cnt, rc = 0;
-	uint32_t shdr_status, shdr_add_status;
-	union lpfc_sli4_cfg_shdr *shdr;
-
-	/* The number of sgls to be posted */
-	els_xri_cnt = lpfc_sli4_get_els_iocb_cnt(phba);
-
-	reqlen = els_xri_cnt * sizeof(struct sgl_page_pairs) +
-		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
-	if (reqlen > SLI4_PAGE_SIZE) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
-=======
 	uint16_t xritag_start = 0;
 	int rc = 0;
 	uint32_t shdr_status, shdr_add_status;
@@ -23514,15 +18105,11 @@ lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
 	if (reqlen > SLI4_PAGE_SIZE) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2559 Block sgl registration required DMA "
 				"size (%d) great than a page\n", reqlen);
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
 		return -ENOMEM;
@@ -23533,11 +18120,7 @@ lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 			 LPFC_SLI4_MBX_NEMBED);
 
 	if (alloclen < reqlen) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0285 Allocated DMA memory size (%d) is "
 				"less than the requested DMA memory "
 				"size (%d)\n", alloclen, reqlen);
@@ -23549,30 +18132,8 @@ lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 	sgl = (struct lpfc_mbx_post_uembed_sgl_page1 *)viraddr;
 	sgl_pg_pairs = &sgl->sgl_pg_pairs;
 
-<<<<<<< HEAD
-	for (pg_pairs = 0; pg_pairs < els_xri_cnt; pg_pairs++) {
-		sglq_entry = phba->sli4_hba.lpfc_els_sgl_array[pg_pairs];
-
-		/*
-		 * Assign the sglq a physical xri only if the driver has not
-		 * initialized those resources.  A port reset only needs
-		 * the sglq's posted.
-		 */
-		if (bf_get(lpfc_xri_rsrc_rdy, &phba->sli4_hba.sli4_flags) !=
-		    LPFC_XRI_RSRC_RDY) {
-			lxri = lpfc_sli4_next_xritag(phba);
-			if (lxri == NO_XRI) {
-				lpfc_sli4_mbox_cmd_free(phba, mbox);
-				return -ENOMEM;
-			}
-			sglq_entry->sli4_lxritag = lxri;
-			sglq_entry->sli4_xritag = phba->sli4_hba.xri_ids[lxri];
-		}
-
-=======
 	pg_pairs = 0;
 	list_for_each_entry_safe(sglq_entry, sglq_next, post_sgl_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Set up the sge entry */
 		sgl_pg_pairs->sgl_pg0_addr_lo =
 				cpu_to_le32(putPaddrLow(sglq_entry->phys));
@@ -23587,22 +18148,14 @@ lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 		if (pg_pairs == 0)
 			xritag_start = sglq_entry->sli4_xritag;
 		sgl_pg_pairs++;
-<<<<<<< HEAD
-=======
 		pg_pairs++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Complete initialization and perform endian conversion. */
 	bf_set(lpfc_post_sgl_pages_xri, sgl, xritag_start);
-<<<<<<< HEAD
-	bf_set(lpfc_post_sgl_pages_xricnt, sgl, els_xri_cnt);
-	sgl->word0 = cpu_to_le32(sgl->word0);
-=======
 	bf_set(lpfc_post_sgl_pages_xricnt, sgl, post_cnt);
 	sgl->word0 = cpu_to_le32(sgl->word0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!phba->sli4_hba.intr_enable)
 		rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	else {
@@ -23612,225 +18165,21 @@ lpfc_sli4_post_sgl_list(struct lpfc_hba *phba,
 	shdr = (union lpfc_sli4_cfg_shdr *) &sgl->cfg_shdr;
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-<<<<<<< HEAD
-	if (rc != MBX_TIMEOUT)
-		lpfc_sli4_mbox_cmd_free(phba, mbox);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 	if (!phba->sli4_hba.intr_enable)
 		lpfc_sli4_mbox_cmd_free(phba, mbox);
 	else if (rc != MBX_TIMEOUT)
 		lpfc_sli4_mbox_cmd_free(phba, mbox);
 	if (shdr_status || shdr_add_status || rc) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2513 POST_SGL_BLOCK mailbox command failed "
 				"status x%x add_status x%x mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
 		rc = -ENXIO;
 	}
-<<<<<<< HEAD
-
-	if (rc == 0)
-		bf_set(lpfc_xri_rsrc_rdy, &phba->sli4_hba.sli4_flags,
-		       LPFC_XRI_RSRC_RDY);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_post_els_sgl_list_ext - post a block of ELS sgls to the port.
- * @phba: pointer to lpfc hba data structure.
- *
- * This routine is invoked to post a block of driver's sgl pages to the
- * HBA using non-embedded mailbox command. No Lock is held. This routine
- * is only called when the driver is loading and after all IO has been
- * stopped.
- **/
-int
-lpfc_sli4_post_els_sgl_list_ext(struct lpfc_hba *phba)
-{
-	struct lpfc_sglq *sglq_entry;
-	struct lpfc_mbx_post_uembed_sgl_page1 *sgl;
-	struct sgl_page_pairs *sgl_pg_pairs;
-	void *viraddr;
-	LPFC_MBOXQ_t *mbox;
-	uint32_t reqlen, alloclen, index;
-	uint32_t mbox_tmo;
-	uint16_t rsrc_start, rsrc_size, els_xri_cnt, post_els_xri_cnt;
-	uint16_t xritag_start = 0, lxri = 0;
-	struct lpfc_rsrc_blks *rsrc_blk;
-	int cnt, ttl_cnt, rc = 0;
-	int loop_cnt;
-	uint32_t shdr_status, shdr_add_status;
-	union lpfc_sli4_cfg_shdr *shdr;
-
-	/* The number of sgls to be posted */
-	els_xri_cnt = lpfc_sli4_get_els_iocb_cnt(phba);
-
-	reqlen = els_xri_cnt * sizeof(struct sgl_page_pairs) +
-		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
-	if (reqlen > SLI4_PAGE_SIZE) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
-				"2989 Block sgl registration required DMA "
-				"size (%d) great than a page\n", reqlen);
-		return -ENOMEM;
-	}
-
-	cnt = 0;
-	ttl_cnt = 0;
-	post_els_xri_cnt = els_xri_cnt;
-	list_for_each_entry(rsrc_blk, &phba->sli4_hba.lpfc_xri_blk_list,
-			    list) {
-		rsrc_start = rsrc_blk->rsrc_start;
-		rsrc_size = rsrc_blk->rsrc_size;
-
-		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-				"3014 Working ELS Extent start %d, cnt %d\n",
-				rsrc_start, rsrc_size);
-
-		loop_cnt = min(post_els_xri_cnt, rsrc_size);
-		if (loop_cnt < post_els_xri_cnt) {
-			post_els_xri_cnt -= loop_cnt;
-			ttl_cnt += loop_cnt;
-		} else
-			ttl_cnt += post_els_xri_cnt;
-
-		mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
-		if (!mbox)
-			return -ENOMEM;
-		/*
-		 * Allocate DMA memory and set up the non-embedded mailbox
-		 * command.
-		 */
-		alloclen = lpfc_sli4_config(phba, mbox,
-					LPFC_MBOX_SUBSYSTEM_FCOE,
-					LPFC_MBOX_OPCODE_FCOE_POST_SGL_PAGES,
-					reqlen, LPFC_SLI4_MBX_NEMBED);
-		if (alloclen < reqlen) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-					"2987 Allocated DMA memory size (%d) "
-					"is less than the requested DMA memory "
-					"size (%d)\n", alloclen, reqlen);
-			lpfc_sli4_mbox_cmd_free(phba, mbox);
-			return -ENOMEM;
-		}
-
-		/* Set up the SGL pages in the non-embedded DMA pages */
-		viraddr = mbox->sge_array->addr[0];
-		sgl = (struct lpfc_mbx_post_uembed_sgl_page1 *)viraddr;
-		sgl_pg_pairs = &sgl->sgl_pg_pairs;
-
-		/*
-		 * The starting resource may not begin at zero. Control
-		 * the loop variants via the block resource parameters,
-		 * but handle the sge pointers with a zero-based index
-		 * that doesn't get reset per loop pass.
-		 */
-		for (index = rsrc_start;
-		     index < rsrc_start + loop_cnt;
-		     index++) {
-			sglq_entry = phba->sli4_hba.lpfc_els_sgl_array[cnt];
-
-			/*
-			 * Assign the sglq a physical xri only if the driver
-			 * has not initialized those resources.  A port reset
-			 * only needs the sglq's posted.
-			 */
-			if (bf_get(lpfc_xri_rsrc_rdy,
-				   &phba->sli4_hba.sli4_flags) !=
-				   LPFC_XRI_RSRC_RDY) {
-				lxri = lpfc_sli4_next_xritag(phba);
-				if (lxri == NO_XRI) {
-					lpfc_sli4_mbox_cmd_free(phba, mbox);
-					rc = -ENOMEM;
-					goto err_exit;
-				}
-				sglq_entry->sli4_lxritag = lxri;
-				sglq_entry->sli4_xritag =
-						phba->sli4_hba.xri_ids[lxri];
-			}
-
-			/* Set up the sge entry */
-			sgl_pg_pairs->sgl_pg0_addr_lo =
-				cpu_to_le32(putPaddrLow(sglq_entry->phys));
-			sgl_pg_pairs->sgl_pg0_addr_hi =
-				cpu_to_le32(putPaddrHigh(sglq_entry->phys));
-			sgl_pg_pairs->sgl_pg1_addr_lo =
-				cpu_to_le32(putPaddrLow(0));
-			sgl_pg_pairs->sgl_pg1_addr_hi =
-				cpu_to_le32(putPaddrHigh(0));
-
-			/* Track the starting physical XRI for the mailbox. */
-			if (index == rsrc_start)
-				xritag_start = sglq_entry->sli4_xritag;
-			sgl_pg_pairs++;
-			cnt++;
-		}
-
-		/* Complete initialization and perform endian conversion. */
-		rsrc_blk->rsrc_used += loop_cnt;
-		bf_set(lpfc_post_sgl_pages_xri, sgl, xritag_start);
-		bf_set(lpfc_post_sgl_pages_xricnt, sgl, loop_cnt);
-		sgl->word0 = cpu_to_le32(sgl->word0);
-
-		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-				"3015 Post ELS Extent SGL, start %d, "
-				"cnt %d, used %d\n",
-				xritag_start, loop_cnt, rsrc_blk->rsrc_used);
-		if (!phba->sli4_hba.intr_enable)
-			rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
-		else {
-			mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
-			rc = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
-		}
-		shdr = (union lpfc_sli4_cfg_shdr *) &sgl->cfg_shdr;
-		shdr_status = bf_get(lpfc_mbox_hdr_status,
-				     &shdr->response);
-		shdr_add_status = bf_get(lpfc_mbox_hdr_add_status,
-					 &shdr->response);
-		if (rc != MBX_TIMEOUT)
-			lpfc_sli4_mbox_cmd_free(phba, mbox);
-		if (shdr_status || shdr_add_status || rc) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2988 POST_SGL_BLOCK mailbox "
-					"command failed status x%x "
-					"add_status x%x mbx status x%x\n",
-					shdr_status, shdr_add_status, rc);
-			rc = -ENXIO;
-			goto err_exit;
-		}
-		if (ttl_cnt >= els_xri_cnt)
-			break;
-	}
-
- err_exit:
-	if (rc == 0)
-		bf_set(lpfc_xri_rsrc_rdy, &phba->sli4_hba.sli4_flags,
-		       LPFC_XRI_RSRC_RDY);
-	return rc;
-}
-
-/**
- * lpfc_sli4_post_scsi_sgl_block - post a block of scsi sgl list to firmware
- * @phba: pointer to lpfc hba data structure.
- * @sblist: pointer to scsi buffer list.
- * @count: number of scsi buffers on the list.
- *
- * This routine is invoked to post a block of @count scsi sgl pages from a
- * SCSI buffer list @sblist to the HBA using non-embedded mailbox command.
- * No Lock is held.
- *
- **/
-int
-lpfc_sli4_post_scsi_sgl_block(struct lpfc_hba *phba, struct list_head *sblist,
-			      int cnt)
-{
-	struct lpfc_scsi_buf *psb;
-=======
  * lpfc_sli4_post_io_sgl_block - post a block of nvme sgl list to firmware
  * @phba: pointer to lpfc hba data structure.
  * @nblist: pointer to nvme buffer list.
@@ -23846,7 +18195,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 			    int count)
 {
 	struct lpfc_io_buf *lpfc_ncmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_mbx_post_uembed_sgl_page1 *sgl;
 	struct sgl_page_pairs *sgl_pg_pairs;
 	void *viraddr;
@@ -23860,51 +18208,29 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 	union lpfc_sli4_cfg_shdr *shdr;
 
 	/* Calculate the requested length of the dma memory */
-<<<<<<< HEAD
-	reqlen = cnt * sizeof(struct sgl_page_pairs) +
-		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
-	if (reqlen > SLI4_PAGE_SIZE) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
-				"0217 Block sgl registration required DMA "
-=======
 	reqlen = count * sizeof(struct sgl_page_pairs) +
 		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
 	if (reqlen > SLI4_PAGE_SIZE) {
 		lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
 				"6118 Block sgl registration required DMA "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"size (%d) great than a page\n", reqlen);
 		return -ENOMEM;
 	}
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"0283 Failed to allocate mbox cmd memory\n");
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"6119 Failed to allocate mbox cmd memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	/* Allocate DMA memory and set up the non-embedded mailbox command */
 	alloclen = lpfc_sli4_config(phba, mbox, LPFC_MBOX_SUBSYSTEM_FCOE,
-<<<<<<< HEAD
-				LPFC_MBOX_OPCODE_FCOE_POST_SGL_PAGES, reqlen,
-				LPFC_SLI4_MBX_NEMBED);
-
-	if (alloclen < reqlen) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"2561 Allocated DMA memory size (%d) is "
-=======
 				    LPFC_MBOX_OPCODE_FCOE_POST_SGL_PAGES,
 				    reqlen, LPFC_SLI4_MBX_NEMBED);
 
 	if (alloclen < reqlen) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"6120 Allocated DMA memory size (%d) is "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"less than the requested DMA memory "
 				"size (%d)\n", alloclen, reqlen);
 		lpfc_sli4_mbox_cmd_free(phba, mbox);
@@ -23919,16 +18245,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 	sgl_pg_pairs = &sgl->sgl_pg_pairs;
 
 	pg_pairs = 0;
-<<<<<<< HEAD
-	list_for_each_entry(psb, sblist, list) {
-		/* Set up the sge entry */
-		sgl_pg_pairs->sgl_pg0_addr_lo =
-			cpu_to_le32(putPaddrLow(psb->dma_phys_bpl));
-		sgl_pg_pairs->sgl_pg0_addr_hi =
-			cpu_to_le32(putPaddrHigh(psb->dma_phys_bpl));
-		if (phba->cfg_sg_dma_buf_size > SGL_PAGE_SIZE)
-			pdma_phys_bpl1 = psb->dma_phys_bpl + SGL_PAGE_SIZE;
-=======
 	list_for_each_entry(lpfc_ncmd, nblist, list) {
 		/* Set up the sge entry */
 		sgl_pg_pairs->sgl_pg0_addr_lo =
@@ -23938,7 +18254,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 		if (phba->cfg_sg_dma_buf_size > SGL_PAGE_SIZE)
 			pdma_phys_bpl1 = lpfc_ncmd->dma_phys_sgl +
 						SGL_PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			pdma_phys_bpl1 = 0;
 		sgl_pg_pairs->sgl_pg1_addr_lo =
@@ -23947,11 +18262,7 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 			cpu_to_le32(putPaddrHigh(pdma_phys_bpl1));
 		/* Keep the first xritag on the list */
 		if (pg_pairs == 0)
-<<<<<<< HEAD
-			xritag_start = psb->cur_iocbq.sli4_xritag;
-=======
 			xritag_start = lpfc_ncmd->cur_iocbq.sli4_xritag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sgl_pg_pairs++;
 		pg_pairs++;
 	}
@@ -23960,22 +18271,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 	/* Perform endian conversion if necessary */
 	sgl->word0 = cpu_to_le32(sgl->word0);
 
-<<<<<<< HEAD
-	if (!phba->sli4_hba.intr_enable)
-		rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
-	else {
-		mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
-		rc = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
-	}
-	shdr = (union lpfc_sli4_cfg_shdr *) &sgl->cfg_shdr;
-	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
-	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-	if (rc != MBX_TIMEOUT)
-		lpfc_sli4_mbox_cmd_free(phba, mbox);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2564 POST_SGL_BLOCK mailbox command failed "
-=======
 	if (!phba->sli4_hba.intr_enable) {
 		rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	} else {
@@ -23992,7 +18287,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 	if (shdr_status || shdr_add_status || rc) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
 				"6125 POST_SGL_BLOCK mailbox command failed "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"status x%x add_status x%x mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
 		rc = -ENXIO;
@@ -24001,168 +18295,6 @@ lpfc_sli4_post_io_sgl_block(struct lpfc_hba *phba, struct list_head *nblist,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_post_scsi_sgl_blk_ext - post a block of scsi sgls to the port.
- * @phba: pointer to lpfc hba data structure.
- * @sblist: pointer to scsi buffer list.
- * @count: number of scsi buffers on the list.
- *
- * This routine is invoked to post a block of @count scsi sgl pages from a
- * SCSI buffer list @sblist to the HBA using non-embedded mailbox command.
- * No Lock is held.
- *
- **/
-int
-lpfc_sli4_post_scsi_sgl_blk_ext(struct lpfc_hba *phba, struct list_head *sblist,
-				int cnt)
-{
-	struct lpfc_scsi_buf *psb = NULL;
-	struct lpfc_mbx_post_uembed_sgl_page1 *sgl;
-	struct sgl_page_pairs *sgl_pg_pairs;
-	void *viraddr;
-	LPFC_MBOXQ_t *mbox;
-	uint32_t reqlen, alloclen, pg_pairs;
-	uint32_t mbox_tmo;
-	uint16_t xri_start = 0, scsi_xri_start;
-	uint16_t rsrc_range;
-	int rc = 0, avail_cnt;
-	uint32_t shdr_status, shdr_add_status;
-	dma_addr_t pdma_phys_bpl1;
-	union lpfc_sli4_cfg_shdr *shdr;
-	struct lpfc_rsrc_blks *rsrc_blk;
-	uint32_t xri_cnt = 0;
-
-	/* Calculate the total requested length of the dma memory */
-	reqlen = cnt * sizeof(struct sgl_page_pairs) +
-		 sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
-	if (reqlen > SLI4_PAGE_SIZE) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
-				"2932 Block sgl registration required DMA "
-				"size (%d) great than a page\n", reqlen);
-		return -ENOMEM;
-	}
-
-	/*
-	 * The use of extents requires the driver to post the sgl headers
-	 * in multiple postings to meet the contiguous resource assignment.
-	 */
-	psb = list_prepare_entry(psb, sblist, list);
-	scsi_xri_start = phba->sli4_hba.scsi_xri_start;
-	list_for_each_entry(rsrc_blk, &phba->sli4_hba.lpfc_xri_blk_list,
-			    list) {
-		rsrc_range = rsrc_blk->rsrc_start + rsrc_blk->rsrc_size;
-		if (rsrc_range < scsi_xri_start)
-			continue;
-		else if (rsrc_blk->rsrc_used >= rsrc_blk->rsrc_size)
-			continue;
-		else
-			avail_cnt = rsrc_blk->rsrc_size - rsrc_blk->rsrc_used;
-
-		reqlen = (avail_cnt * sizeof(struct sgl_page_pairs)) +
-			sizeof(union lpfc_sli4_cfg_shdr) + sizeof(uint32_t);
-		/*
-		 * Allocate DMA memory and set up the non-embedded mailbox
-		 * command. The mbox is used to post an SGL page per loop
-		 * but the DMA memory has a use-once semantic so the mailbox
-		 * is used and freed per loop pass.
-		 */
-		mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
-		if (!mbox) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-					"2933 Failed to allocate mbox cmd "
-					"memory\n");
-			return -ENOMEM;
-		}
-		alloclen = lpfc_sli4_config(phba, mbox,
-					LPFC_MBOX_SUBSYSTEM_FCOE,
-					LPFC_MBOX_OPCODE_FCOE_POST_SGL_PAGES,
-					reqlen,
-					LPFC_SLI4_MBX_NEMBED);
-		if (alloclen < reqlen) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-					"2934 Allocated DMA memory size (%d) "
-					"is less than the requested DMA memory "
-					"size (%d)\n", alloclen, reqlen);
-			lpfc_sli4_mbox_cmd_free(phba, mbox);
-			return -ENOMEM;
-		}
-
-		/* Get the first SGE entry from the non-embedded DMA memory */
-		viraddr = mbox->sge_array->addr[0];
-
-		/* Set up the SGL pages in the non-embedded DMA pages */
-		sgl = (struct lpfc_mbx_post_uembed_sgl_page1 *)viraddr;
-		sgl_pg_pairs = &sgl->sgl_pg_pairs;
-
-		/* pg_pairs tracks posted SGEs per loop iteration. */
-		pg_pairs = 0;
-		list_for_each_entry_continue(psb, sblist, list) {
-			/* Set up the sge entry */
-			sgl_pg_pairs->sgl_pg0_addr_lo =
-				cpu_to_le32(putPaddrLow(psb->dma_phys_bpl));
-			sgl_pg_pairs->sgl_pg0_addr_hi =
-				cpu_to_le32(putPaddrHigh(psb->dma_phys_bpl));
-			if (phba->cfg_sg_dma_buf_size > SGL_PAGE_SIZE)
-				pdma_phys_bpl1 = psb->dma_phys_bpl +
-					SGL_PAGE_SIZE;
-			else
-				pdma_phys_bpl1 = 0;
-			sgl_pg_pairs->sgl_pg1_addr_lo =
-				cpu_to_le32(putPaddrLow(pdma_phys_bpl1));
-			sgl_pg_pairs->sgl_pg1_addr_hi =
-				cpu_to_le32(putPaddrHigh(pdma_phys_bpl1));
-			/* Keep the first xri for this extent. */
-			if (pg_pairs == 0)
-				xri_start = psb->cur_iocbq.sli4_xritag;
-			sgl_pg_pairs++;
-			pg_pairs++;
-			xri_cnt++;
-
-			/*
-			 * Track two exit conditions - the loop has constructed
-			 * all of the caller's SGE pairs or all available
-			 * resource IDs in this extent are consumed.
-			 */
-			if ((xri_cnt == cnt) || (pg_pairs >= avail_cnt))
-				break;
-		}
-		rsrc_blk->rsrc_used += pg_pairs;
-		bf_set(lpfc_post_sgl_pages_xri, sgl, xri_start);
-		bf_set(lpfc_post_sgl_pages_xricnt, sgl, pg_pairs);
-
-		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-				"3016 Post SCSI Extent SGL, start %d, cnt %d "
-				"blk use %d\n",
-				xri_start, pg_pairs, rsrc_blk->rsrc_used);
-		/* Perform endian conversion if necessary */
-		sgl->word0 = cpu_to_le32(sgl->word0);
-		if (!phba->sli4_hba.intr_enable)
-			rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
-		else {
-			mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
-			rc = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
-		}
-		shdr = (union lpfc_sli4_cfg_shdr *) &sgl->cfg_shdr;
-		shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
-		shdr_add_status = bf_get(lpfc_mbox_hdr_add_status,
-					 &shdr->response);
-		if (rc != MBX_TIMEOUT)
-			lpfc_sli4_mbox_cmd_free(phba, mbox);
-		if (shdr_status || shdr_add_status || rc) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2935 POST_SGL_BLOCK mailbox command "
-					"failed status x%x add_status x%x "
-					"mbx status x%x\n",
-					shdr_status, shdr_add_status, rc);
-			return -ENXIO;
-		}
-
-		/* Post only what is requested. */
-		if (xri_cnt >= cnt)
-			break;
-	}
-	return rc;
-=======
  * lpfc_sli4_post_io_sgl_list - Post blocks of nvme buffer sgls from a list
  * @phba: pointer to lpfc hba data structure.
  * @post_nblist: pointer to the nvme buffer list.
@@ -24289,7 +18421,6 @@ lpfc_sli4_post_io_sgl_list(struct lpfc_hba *phba,
 	lpfc_io_buf_replenish(phba, &nvme_nblist);
 
 	return num_posted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -24306,19 +18437,11 @@ static int
 lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
 {
 	/*  make rctl_names static to save stack space */
-<<<<<<< HEAD
-	static char *rctl_names[] = FC_RCTL_NAMES_INIT;
-	char *type_names[] = FC_TYPE_NAMES_INIT;
-	struct fc_vft_header *fc_vft_hdr;
-	uint32_t *header = (uint32_t *) fc_hdr;
-
-=======
 	struct fc_vft_header *fc_vft_hdr;
 	uint32_t *header = (uint32_t *) fc_hdr;
 
 #define FC_RCTL_MDS_DIAGS	0xF4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (fc_hdr->fh_r_ctl) {
 	case FC_RCTL_DD_UNCAT:		/* uncategorized information */
 	case FC_RCTL_DD_SOL_DATA:	/* solicited data */
@@ -24332,10 +18455,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
 	case FC_RCTL_ELS_REP:	/* extended link services reply */
 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
-<<<<<<< HEAD
-	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
 	case FC_RCTL_BA_RMC: 	/* remove connection */
 	case FC_RCTL_BA_ACC:	/* basic accept */
@@ -24349,36 +18468,24 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
 	case FC_RCTL_F_BSY:	/* fabric busy to data frame */
 	case FC_RCTL_F_BSYL:	/* fabric busy to link control frame */
 	case FC_RCTL_LCR:	/* link credit reset */
-<<<<<<< HEAD
-=======
 	case FC_RCTL_MDS_DIAGS: /* MDS Diagnostics */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_RCTL_END:	/* end */
 		break;
 	case FC_RCTL_VFTH:	/* Virtual Fabric tagging Header */
 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
 		return lpfc_fc_frame_check(phba, fc_hdr);
-<<<<<<< HEAD
-	default:
-		goto drop;
-	}
-=======
 	case FC_RCTL_BA_NOP:	/* basic link service NOP */
 	default:
 		goto drop;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (fc_hdr->fh_type) {
 	case FC_TYPE_BLS:
 	case FC_TYPE_ELS:
 	case FC_TYPE_FCP:
 	case FC_TYPE_CT:
-<<<<<<< HEAD
-=======
 	case FC_TYPE_NVME:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case FC_TYPE_IP:
 	case FC_TYPE_ILS:
@@ -24387,21 +18494,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
 	}
 
 	lpfc_printf_log(phba, KERN_INFO, LOG_ELS,
-<<<<<<< HEAD
-			"2538 Received frame rctl:%s type:%s "
-			"Frame Data:%08x %08x %08x %08x %08x %08x\n",
-			rctl_names[fc_hdr->fh_r_ctl],
-			type_names[fc_hdr->fh_type],
-			be32_to_cpu(header[0]), be32_to_cpu(header[1]),
-			be32_to_cpu(header[2]), be32_to_cpu(header[3]),
-			be32_to_cpu(header[4]), be32_to_cpu(header[5]));
-	return 0;
-drop:
-	lpfc_printf_log(phba, KERN_WARNING, LOG_ELS,
-			"2539 Dropped frame rctl:%s type:%s\n",
-			rctl_names[fc_hdr->fh_r_ctl],
-			type_names[fc_hdr->fh_type]);
-=======
 			"2538 Received frame rctl:x%x, type:x%x, "
 			"frame Data:%08x %08x %08x %08x %08x %08x %08x\n",
 			fc_hdr->fh_r_ctl, fc_hdr->fh_type,
@@ -24414,7 +18506,6 @@ drop:
 	lpfc_printf_log(phba, KERN_WARNING, LOG_ELS,
 			"2539 Dropped frame rctl:x%x type:x%x\n",
 			fc_hdr->fh_r_ctl, fc_hdr->fh_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -24441,10 +18532,7 @@ lpfc_fc_hdr_get_vfi(struct fc_frame_header *fc_hdr)
  * @phba: Pointer to the HBA structure to search for the vport on
  * @fc_hdr: A pointer to the FC Header data (In Big Endian Format)
  * @fcfi: The FC Fabric ID that the frame came from
-<<<<<<< HEAD
-=======
  * @did: Destination ID to match against
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function searches the @phba for a vport that matches the content of the
  * @fc_hdr passed in and the @fcfi. This function uses the @fc_hdr to fetch the
@@ -24454,24 +18542,11 @@ lpfc_fc_hdr_get_vfi(struct fc_frame_header *fc_hdr)
  **/
 static struct lpfc_vport *
 lpfc_fc_frame_to_vport(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr,
-<<<<<<< HEAD
-		       uint16_t fcfi)
-=======
 		       uint16_t fcfi, uint32_t did)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lpfc_vport **vports;
 	struct lpfc_vport *vport = NULL;
 	int i;
-<<<<<<< HEAD
-	uint32_t did = (fc_hdr->fh_d_id[0] << 16 |
-			fc_hdr->fh_d_id[1] << 8 |
-			fc_hdr->fh_d_id[2]);
-	if (did == Fabric_DID)
-		return phba->pport;
-	vports = lpfc_create_vport_work_array(phba);
-	if (vports != NULL)
-=======
 
 	if (did == Fabric_DID)
 		return phba->pport;
@@ -24481,7 +18556,6 @@ lpfc_fc_frame_to_vport(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr,
 
 	vports = lpfc_create_vport_work_array(phba);
 	if (vports != NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i <= phba->max_vpi && vports[i] != NULL; i++) {
 			if (phba->fcf.fcfi == fcfi &&
 			    vports[i]->vfi == lpfc_fc_hdr_get_vfi(fc_hdr) &&
@@ -24490,10 +18564,7 @@ lpfc_fc_frame_to_vport(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr,
 				break;
 			}
 		}
-<<<<<<< HEAD
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_destroy_vport_work_array(phba, vports);
 	return vport;
 }
@@ -24508,11 +18579,7 @@ lpfc_fc_frame_to_vport(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr,
  * the driver uses this time stamp to indicate if any received sequences have
  * timed out.
  **/
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_update_rcv_time_stamp(struct lpfc_vport *vport)
 {
 	struct lpfc_dmabuf *h_buf;
@@ -24603,10 +18670,7 @@ lpfc_rcv_seq_check_edtov(struct lpfc_vport *vport)
 
 /**
  * lpfc_fc_frame_add - Adds a frame to the vport's list of received sequences
-<<<<<<< HEAD
-=======
  * @vport: pointer to a vitural port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dmabuf: pointer to a dmabuf that describes the hdr and data of the FC frame
  *
  * This function searches through the existing incomplete sequences that have
@@ -24626,18 +18690,12 @@ lpfc_fc_frame_add(struct lpfc_vport *vport, struct hbq_dmabuf *dmabuf)
 	struct lpfc_dmabuf *h_buf;
 	struct hbq_dmabuf *seq_dmabuf = NULL;
 	struct hbq_dmabuf *temp_dmabuf = NULL;
-<<<<<<< HEAD
-=======
 	uint8_t	found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&dmabuf->dbuf.list);
 	dmabuf->time_stamp = jiffies;
 	new_hdr = (struct fc_frame_header *)dmabuf->hbuf.virt;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Use the hdr_buf to find the sequence that this frame belongs to */
 	list_for_each_entry(h_buf, &vport->rcv_buffer_list, list) {
 		temp_hdr = (struct fc_frame_header *)h_buf->virt;
@@ -24672,20 +18730,12 @@ lpfc_fc_frame_add(struct lpfc_vport *vport, struct hbq_dmabuf *dmabuf)
 	seq_dmabuf->time_stamp = jiffies;
 	lpfc_update_rcv_time_stamp(vport);
 	if (list_empty(&seq_dmabuf->dbuf.list)) {
-<<<<<<< HEAD
-		temp_hdr = dmabuf->hbuf.virt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&dmabuf->dbuf.list, &seq_dmabuf->dbuf.list);
 		return seq_dmabuf;
 	}
 	/* find the correct place in the sequence to insert this frame */
-<<<<<<< HEAD
-	list_for_each_entry_reverse(d_buf, &seq_dmabuf->dbuf.list, list) {
-=======
 	d_buf = list_entry(seq_dmabuf->dbuf.list.prev, typeof(*d_buf), list);
 	while (!found) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		temp_dmabuf = container_of(d_buf, struct hbq_dmabuf, dbuf);
 		temp_hdr = (struct fc_frame_header *)temp_dmabuf->hbuf.virt;
 		/*
@@ -24695,11 +18745,6 @@ lpfc_fc_frame_add(struct lpfc_vport *vport, struct hbq_dmabuf *dmabuf)
 		if (be16_to_cpu(new_hdr->fh_seq_cnt) >
 			be16_to_cpu(temp_hdr->fh_seq_cnt)) {
 			list_add(&dmabuf->dbuf.list, &temp_dmabuf->dbuf.list);
-<<<<<<< HEAD
-			return seq_dmabuf;
-		}
-	}
-=======
 			found = 1;
 			break;
 		}
@@ -24711,7 +18756,6 @@ lpfc_fc_frame_add(struct lpfc_vport *vport, struct hbq_dmabuf *dmabuf)
 
 	if (found)
 		return seq_dmabuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -24768,8 +18812,6 @@ lpfc_sli4_abort_partial_seq(struct lpfc_vport *vport,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_sli4_abort_ulp_seq - Abort assembled unsol sequence from ulp
  * @vport: pointer to a vitural port
  * @dmabuf: pointer to a dmabuf that describes the FC sequence
@@ -24804,7 +18846,6 @@ lpfc_sli4_abort_ulp_seq(struct lpfc_vport *vport, struct hbq_dmabuf *dmabuf)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sli4_seq_abort_rsp_cmpl - BLS ABORT RSP seq abort iocb complete handler
  * @phba: Pointer to HBA context object.
  * @cmd_iocbq: pointer to the command iocbq structure.
@@ -24819,17 +18860,6 @@ lpfc_sli4_seq_abort_rsp_cmpl(struct lpfc_hba *phba,
 			     struct lpfc_iocbq *cmd_iocbq,
 			     struct lpfc_iocbq *rsp_iocbq)
 {
-<<<<<<< HEAD
-	if (cmd_iocbq)
-		lpfc_sli_release_iocbq(phba, cmd_iocbq);
-
-	/* Failure means BLS ABORT RSP did not get delivered to remote node*/
-	if (rsp_iocbq && rsp_iocbq->iocb.ulpStatus)
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-			"3154 BLS ABORT RSP failed, data:  x%x/x%x\n",
-			rsp_iocbq->iocb.ulpStatus,
-			rsp_iocbq->iocb.un.ulpWord[4]);
-=======
 	if (cmd_iocbq) {
 		lpfc_nlp_put(cmd_iocbq->ndlp);
 		lpfc_sli_release_iocbq(phba, cmd_iocbq);
@@ -24841,7 +18871,6 @@ lpfc_sli4_seq_abort_rsp_cmpl(struct lpfc_hba *phba,
 			"3154 BLS ABORT RSP failed, data:  x%x/x%x\n",
 			get_job_ulpstatus(phba, rsp_iocbq),
 			get_job_word4(phba, rsp_iocbq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -24856,11 +18885,7 @@ uint16_t
 lpfc_sli4_xri_inrange(struct lpfc_hba *phba,
 		      uint16_t xri)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	uint16_t i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < phba->sli4_hba.max_cfg_param.max_xri; i++) {
 		if (xri == phba->sli4_hba.xri_ids[i])
@@ -24869,34 +18894,15 @@ lpfc_sli4_xri_inrange(struct lpfc_hba *phba,
 	return NO_XRI;
 }
 
-<<<<<<< HEAD
-
-/**
- * lpfc_sli4_seq_abort_rsp - bls rsp to sequence abort
- * @phba: Pointer to HBA context object.
- * @fc_hdr: pointer to a FC frame header.
-=======
 /**
  * lpfc_sli4_seq_abort_rsp - bls rsp to sequence abort
  * @vport: pointer to a virtual port.
  * @fc_hdr: pointer to a FC frame header.
  * @aborted: was the partially assembled receive sequence successfully aborted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function sends a basic response to a previous unsol sequence abort
  * event after aborting the sequence handling.
  **/
-<<<<<<< HEAD
-static void
-lpfc_sli4_seq_abort_rsp(struct lpfc_hba *phba,
-			struct fc_frame_header *fc_hdr)
-{
-	struct lpfc_iocbq *ctiocb = NULL;
-	struct lpfc_nodelist *ndlp;
-	uint16_t oxid, rxid;
-	uint32_t sid, fctl;
-	IOCB_t *icmd;
-=======
 void
 lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 			struct fc_frame_header *fc_hdr, bool aborted)
@@ -24907,7 +18913,6 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 	uint16_t oxid, rxid, xri, lxri;
 	uint32_t sid, fctl;
 	union lpfc_wqe128 *icmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (!lpfc_is_link_up(phba))
@@ -24917,17 +18922,6 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 	oxid = be16_to_cpu(fc_hdr->fh_ox_id);
 	rxid = be16_to_cpu(fc_hdr->fh_rx_id);
 
-<<<<<<< HEAD
-	ndlp = lpfc_findnode_did(phba->pport, sid);
-	if (!ndlp) {
-		lpfc_printf_log(phba, KERN_WARNING, LOG_ELS,
-				"1268 Find ndlp returned NULL for oxid:x%x "
-				"SID:x%x\n", oxid, sid);
-		return;
-	}
-	if (lpfc_sli4_xri_inrange(phba, rxid))
-		lpfc_set_rrq_active(phba, ndlp, rxid, oxid, 0);
-=======
 	ndlp = lpfc_findnode_did(vport, sid);
 	if (!ndlp) {
 		ndlp = lpfc_nlp_init(vport, sid);
@@ -24940,51 +18934,12 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 		/* Put ndlp onto vport node list */
 		lpfc_enqueue_node(vport, ndlp);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate buffer for rsp iocb */
 	ctiocb = lpfc_sli_get_iocbq(phba);
 	if (!ctiocb)
 		return;
 
-<<<<<<< HEAD
-	/* Extract the F_CTL field from FC_HDR */
-	fctl = sli4_fctl_from_fc_hdr(fc_hdr);
-
-	icmd = &ctiocb->iocb;
-	icmd->un.xseq64.bdl.bdeSize = 0;
-	icmd->un.xseq64.bdl.ulpIoTag32 = 0;
-	icmd->un.xseq64.w5.hcsw.Dfctl = 0;
-	icmd->un.xseq64.w5.hcsw.Rctl = FC_RCTL_BA_ACC;
-	icmd->un.xseq64.w5.hcsw.Type = FC_TYPE_BLS;
-
-	/* Fill in the rest of iocb fields */
-	icmd->ulpCommand = CMD_XMIT_BLS_RSP64_CX;
-	icmd->ulpBdeCount = 0;
-	icmd->ulpLe = 1;
-	icmd->ulpClass = CLASS3;
-	icmd->ulpContext = phba->sli4_hba.rpi_ids[ndlp->nlp_rpi];
-	ctiocb->context1 = ndlp;
-
-	ctiocb->iocb_cmpl = NULL;
-	ctiocb->vport = phba->pport;
-	ctiocb->iocb_cmpl = lpfc_sli4_seq_abort_rsp_cmpl;
-	ctiocb->sli4_lxritag = NO_XRI;
-	ctiocb->sli4_xritag = NO_XRI;
-
-	/* If the oxid maps to the FCP XRI range or if it is out of range,
-	 * send a BLS_RJT.  The driver no longer has that exchange.
-	 * Override the IOCB for a BA_RJT.
-	 */
-	if (oxid > (phba->sli4_hba.max_cfg_param.max_xri +
-		    phba->sli4_hba.max_cfg_param.xri_base) ||
-	    oxid > (lpfc_sli4_get_els_iocb_cnt(phba) +
-		    phba->sli4_hba.max_cfg_param.xri_base)) {
-		icmd->un.xseq64.w5.hcsw.Rctl = FC_RCTL_BA_RJT;
-		bf_set(lpfc_vndr_code, &icmd->un.bls_rsp, 0);
-		bf_set(lpfc_rsn_expln, &icmd->un.bls_rsp, FC_BA_RJT_INV_XID);
-		bf_set(lpfc_rsn_code, &icmd->un.bls_rsp, FC_BA_RJT_UNABLE);
-=======
 	icmd = &ctiocb->wqe;
 
 	/* Extract the F_CTL field from FC_HDR */
@@ -25039,7 +18994,6 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 		       FC_BA_RJT_INV_XID);
 		bf_set(xmit_bls_rsp64_rjt_rsnc, &icmd->xmit_bls_rsp,
 		       FC_BA_RJT_UNABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (fctl & FC_FC_EX_CTX) {
@@ -25047,38 +19001,13 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 		 * of BA_ACC will use OX_ID from ABTS for the XRI_TAG
 		 * field and RX_ID from ABTS for RX_ID field.
 		 */
-<<<<<<< HEAD
-		bf_set(lpfc_abts_orig, &icmd->un.bls_rsp, LPFC_ABTS_UNSOL_RSP);
-=======
 		ctiocb->abort_bls = LPFC_ABTS_UNSOL_RSP;
 		bf_set(xmit_bls_rsp64_rxid, &icmd->xmit_bls_rsp, rxid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* ABTS sent by initiator to CT exchange, construction
 		 * of BA_ACC will need to allocate a new XRI as for the
 		 * XRI_TAG field.
 		 */
-<<<<<<< HEAD
-		bf_set(lpfc_abts_orig, &icmd->un.bls_rsp, LPFC_ABTS_UNSOL_INT);
-	}
-	bf_set(lpfc_abts_rxid, &icmd->un.bls_rsp, rxid);
-	bf_set(lpfc_abts_oxid, &icmd->un.bls_rsp, oxid);
-
-	/* Xmit CT abts response on exchange <xid> */
-	lpfc_printf_log(phba, KERN_INFO, LOG_ELS,
-			"1200 Send BLS cmd x%x on oxid x%x Data: x%x\n",
-			icmd->un.xseq64.w5.hcsw.Rctl, oxid, phba->link_state);
-
-	rc = lpfc_sli_issue_iocb(phba, LPFC_ELS_RING, ctiocb, 0);
-	if (rc == IOCB_ERROR) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_ELS,
-				"2925 Failed to issue CT ABTS RSP x%x on "
-				"xri x%x, Data x%x\n",
-				icmd->un.xseq64.w5.hcsw.Rctl, oxid,
-				phba->link_state);
-		lpfc_sli_release_iocbq(phba, ctiocb);
-	}
-=======
 		ctiocb->abort_bls = LPFC_ABTS_UNSOL_INT;
 	}
 
@@ -25119,7 +19048,6 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
 		ndlp->nlp_flag |= NLP_DROPPED;
 		lpfc_nlp_put(ndlp);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -25131,57 +19059,24 @@ lpfc_sli4_seq_abort_rsp(struct lpfc_vport *vport,
  * receive sequence is only partially assembed by the driver, it shall abort
  * the partially assembled frames for the sequence. Otherwise, if the
  * unsolicited receive sequence has been completely assembled and passed to
-<<<<<<< HEAD
- * the Upper Layer Protocol (UPL), it then mark the per oxid status for the
- * unsolicited sequence has been aborted. After that, it will issue a basic
- * accept to accept the abort.
- **/
-void
-=======
  * the Upper Layer Protocol (ULP), it then mark the per oxid status for the
  * unsolicited sequence has been aborted. After that, it will issue a basic
  * accept to accept the abort.
  **/
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_sli4_handle_unsol_abort(struct lpfc_vport *vport,
 			     struct hbq_dmabuf *dmabuf)
 {
 	struct lpfc_hba *phba = vport->phba;
 	struct fc_frame_header fc_hdr;
 	uint32_t fctl;
-<<<<<<< HEAD
-	bool abts_par;
-=======
 	bool aborted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make a copy of fc_hdr before the dmabuf being released */
 	memcpy(&fc_hdr, dmabuf->hbuf.virt, sizeof(struct fc_frame_header));
 	fctl = sli4_fctl_from_fc_hdr(&fc_hdr);
 
 	if (fctl & FC_FC_EX_CTX) {
-<<<<<<< HEAD
-		/*
-		 * ABTS sent by responder to exchange, just free the buffer
-		 */
-		lpfc_in_buf_free(phba, &dmabuf->dbuf);
-	} else {
-		/*
-		 * ABTS sent by initiator to exchange, need to do cleanup
-		 */
-		/* Try to abort partially assembled seq */
-		abts_par = lpfc_sli4_abort_partial_seq(vport, dmabuf);
-
-		/* Send abort to ULP if partially seq abort failed */
-		if (abts_par == false)
-			lpfc_sli4_send_seq_to_ulp(vport, dmabuf);
-		else
-			lpfc_in_buf_free(phba, &dmabuf->dbuf);
-	}
-	/* Send basic accept (BA_ACC) to the abort requester */
-	lpfc_sli4_seq_abort_rsp(phba, &fc_hdr);
-=======
 		/* ABTS by responder to exchange, no cleanup needed */
 		aborted = true;
 	} else {
@@ -25199,7 +19094,6 @@ lpfc_sli4_handle_unsol_abort(struct lpfc_vport *vport,
 
 	/* Respond with BA_ACC or BA_RJT accordingly */
 	lpfc_sli4_seq_abort_rsp(vport, &fc_hdr, aborted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -25252,11 +19146,7 @@ lpfc_seq_complete(struct hbq_dmabuf *dmabuf)
 /**
  * lpfc_prep_seq - Prep sequence for ULP processing
  * @vport: Pointer to the vport on which this sequence was received
-<<<<<<< HEAD
- * @dmabuf: pointer to a dmabuf that describes the FC sequence
-=======
  * @seq_dmabuf: pointer to a dmabuf that describes the FC sequence
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function takes a sequence, described by a list of frames, and creates
  * a list of iocbq structures to describe the sequence. This iocbq list will be
@@ -25275,10 +19165,6 @@ lpfc_prep_seq(struct lpfc_vport *vport, struct hbq_dmabuf *seq_dmabuf)
 	struct fc_frame_header *fc_hdr;
 	uint32_t sid;
 	uint32_t len, tot_len;
-<<<<<<< HEAD
-	struct ulp_bde64 *pbde;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_hdr = (struct fc_frame_header *)seq_dmabuf->hbuf.virt;
 	/* remove from receive buffer list */
@@ -25291,27 +19177,6 @@ lpfc_prep_seq(struct lpfc_vport *vport, struct hbq_dmabuf *seq_dmabuf)
 	first_iocbq = lpfc_sli_get_iocbq(vport->phba);
 	if (first_iocbq) {
 		/* Initialize the first IOCB. */
-<<<<<<< HEAD
-		first_iocbq->iocb.unsli3.rcvsli3.acc_len = 0;
-		first_iocbq->iocb.ulpStatus = IOSTAT_SUCCESS;
-		first_iocbq->iocb.ulpCommand = CMD_IOCB_RCV_SEQ64_CX;
-		first_iocbq->iocb.ulpContext = NO_XRI;
-		first_iocbq->iocb.unsli3.rcvsli3.ox_id =
-			be16_to_cpu(fc_hdr->fh_ox_id);
-		/* iocbq is prepped for internal consumption.  Physical vpi. */
-		first_iocbq->iocb.unsli3.rcvsli3.vpi =
-			vport->phba->vpi_ids[vport->vpi];
-		/* put the first buffer into the first IOCBq */
-		first_iocbq->context2 = &seq_dmabuf->dbuf;
-		first_iocbq->context3 = NULL;
-		first_iocbq->iocb.ulpBdeCount = 1;
-		first_iocbq->iocb.un.cont64[0].tus.f.bdeSize =
-							LPFC_DATA_BUF_SIZE;
-		first_iocbq->iocb.un.rcvels.remoteID = sid;
-		tot_len = bf_get(lpfc_rcqe_length,
-				       &seq_dmabuf->cq_event.cqe.rcqe_cmpl);
-		first_iocbq->iocb.unsli3.rcvsli3.acc_len = tot_len;
-=======
 		first_iocbq->wcqe_cmpl.total_data_placed = 0;
 		bf_set(lpfc_wcqe_c_status, &first_iocbq->wcqe_cmpl,
 		       IOSTAT_SUCCESS);
@@ -25346,7 +19211,6 @@ lpfc_prep_seq(struct lpfc_vport *vport, struct hbq_dmabuf *seq_dmabuf)
 		first_iocbq->wcqe_cmpl.total_data_placed = tot_len;
 		bf_set(wqe_els_did, &first_iocbq->wqe.xmit_els_rsp.wqe_dest,
 		       sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	iocbq = first_iocbq;
 	/*
@@ -25358,72 +19222,33 @@ lpfc_prep_seq(struct lpfc_vport *vport, struct hbq_dmabuf *seq_dmabuf)
 			lpfc_in_buf_free(vport->phba, d_buf);
 			continue;
 		}
-<<<<<<< HEAD
-		if (!iocbq->context3) {
-			iocbq->context3 = d_buf;
-			iocbq->iocb.ulpBdeCount++;
-			pbde = (struct ulp_bde64 *)
-					&iocbq->iocb.unsli3.sli3Words[4];
-			pbde->tus.f.bdeSize = LPFC_DATA_BUF_SIZE;
-
-=======
 		if (!iocbq->bpl_dmabuf) {
 			iocbq->bpl_dmabuf = d_buf;
 			iocbq->wcqe_cmpl.word3++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We need to get the size out of the right CQE */
 			hbq_buf = container_of(d_buf, struct hbq_dmabuf, dbuf);
 			len = bf_get(lpfc_rcqe_length,
 				       &hbq_buf->cq_event.cqe.rcqe_cmpl);
-<<<<<<< HEAD
-			iocbq->iocb.unsli3.rcvsli3.acc_len += len;
-=======
 			iocbq->unsol_rcv_len = len;
 			iocbq->wcqe_cmpl.total_data_placed += len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tot_len += len;
 		} else {
 			iocbq = lpfc_sli_get_iocbq(vport->phba);
 			if (!iocbq) {
 				if (first_iocbq) {
-<<<<<<< HEAD
-					first_iocbq->iocb.ulpStatus =
-							IOSTAT_FCP_RSP_ERROR;
-					first_iocbq->iocb.un.ulpWord[4] =
-							IOERR_NO_RESOURCES;
-=======
 					bf_set(lpfc_wcqe_c_status,
 					       &first_iocbq->wcqe_cmpl,
 					       IOSTAT_SUCCESS);
 					first_iocbq->wcqe_cmpl.parameter =
 						IOERR_NO_RESOURCES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				lpfc_in_buf_free(vport->phba, d_buf);
 				continue;
 			}
-<<<<<<< HEAD
-			iocbq->context2 = d_buf;
-			iocbq->context3 = NULL;
-			iocbq->iocb.ulpBdeCount = 1;
-			iocbq->iocb.un.cont64[0].tus.f.bdeSize =
-							LPFC_DATA_BUF_SIZE;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We need to get the size out of the right CQE */
 			hbq_buf = container_of(d_buf, struct hbq_dmabuf, dbuf);
 			len = bf_get(lpfc_rcqe_length,
 				       &hbq_buf->cq_event.cqe.rcqe_cmpl);
-<<<<<<< HEAD
-			tot_len += len;
-			iocbq->iocb.unsli3.rcvsli3.acc_len = tot_len;
-
-			iocbq->iocb.un.rcvels.remoteID = sid;
-			list_add_tail(&iocbq->list, &first_iocbq->list);
-		}
-	}
-=======
 			iocbq->cmd_dmabuf = d_buf;
 			iocbq->bpl_dmabuf = NULL;
 			iocbq->wcqe_cmpl.word3 = 1;
@@ -25446,7 +19271,6 @@ lpfc_prep_seq(struct lpfc_vport *vport, struct hbq_dmabuf *seq_dmabuf)
 	if (!first_iocbq)
 		lpfc_in_buf_free(vport->phba, &seq_dmabuf->dbuf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return first_iocbq;
 }
 
@@ -25461,11 +19285,7 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
 	fc_hdr = (struct fc_frame_header *)seq_dmabuf->hbuf.virt;
 	iocbq = lpfc_prep_seq(vport, seq_dmabuf);
 	if (!iocbq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2707 Ring %d handler: Failed to allocate "
 				"iocb Rctl x%x Type x%x received\n",
 				LPFC_ELS_RING,
@@ -25473,45 +19293,26 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
 		return;
 	}
 	if (!lpfc_complete_unsol_iocb(phba,
-<<<<<<< HEAD
-				      &phba->sli.ring[LPFC_ELS_RING],
-				      iocbq, fc_hdr->fh_r_ctl,
-				      fc_hdr->fh_type))
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 				      phba->sli4_hba.els_wq->pring,
 				      iocbq, fc_hdr->fh_r_ctl,
 				      fc_hdr->fh_type)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2540 Ring %d handler: unexpected Rctl "
 				"x%x Type x%x received\n",
 				LPFC_ELS_RING,
 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
-<<<<<<< HEAD
-
-	/* Free iocb created in lpfc_prep_seq */
-	list_for_each_entry_safe(curr_iocb, next_iocb,
-		&iocbq->list, list) {
-=======
 		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
 	}
 
 	/* Free iocb created in lpfc_prep_seq */
 	list_for_each_entry_safe(curr_iocb, next_iocb,
 				 &iocbq->list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&curr_iocb->list);
 		lpfc_sli_release_iocbq(phba, curr_iocb);
 	}
 	lpfc_sli_release_iocbq(phba, iocbq);
 }
 
-<<<<<<< HEAD
-/**
- * lpfc_sli4_handle_received_buffer - Handle received buffers from firmware
- * @phba: Pointer to HBA context object.
-=======
 static void
 lpfc_sli4_mds_loopback_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
 			    struct lpfc_iocbq *rspiocb)
@@ -25629,17 +19430,11 @@ exit:
  * lpfc_sli4_handle_received_buffer - Handle received buffers from firmware
  * @phba: Pointer to HBA context object.
  * @dmabuf: Pointer to a dmabuf that describes the FC sequence.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called with no lock held. This function processes all
  * the received buffers and gives it to upper layers when a received buffer
  * indicates that it is the final frame in the sequence. The interrupt
-<<<<<<< HEAD
- * service routine processes received buffers at interrupt contexts and adds
- * received dma buffers to the rb_pend_list queue and signals the worker thread.
-=======
  * service routine processes received buffers at interrupt contexts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Worker thread calls lpfc_sli4_handle_received_buffer, which will call the
  * appropriate receive function when the final frame in a sequence is received.
  **/
@@ -25651,11 +19446,6 @@ lpfc_sli4_handle_received_buffer(struct lpfc_hba *phba,
 	struct fc_frame_header *fc_hdr;
 	struct lpfc_vport *vport;
 	uint32_t fcfi;
-<<<<<<< HEAD
-
-	/* Process each received buffer */
-	fc_hdr = (struct fc_frame_header *)dmabuf->hbuf.virt;
-=======
 	uint32_t did;
 
 	/* Process each received buffer */
@@ -25672,16 +19462,12 @@ lpfc_sli4_handle_received_buffer(struct lpfc_hba *phba,
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check to see if this a valid type of frame */
 	if (lpfc_fc_frame_check(phba, fc_hdr)) {
 		lpfc_in_buf_free(phba, &dmabuf->dbuf);
 		return;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((bf_get(lpfc_cqe_code,
 		    &dmabuf->cq_event.cqe.rcqe_cmpl) == CQE_CODE_RECEIVE_V1))
 		fcfi = bf_get(lpfc_rcqe_fcf_id_v1,
@@ -25689,10 +19475,6 @@ lpfc_sli4_handle_received_buffer(struct lpfc_hba *phba,
 	else
 		fcfi = bf_get(lpfc_rcqe_fcf_id,
 			      &dmabuf->cq_event.cqe.rcqe_cmpl);
-<<<<<<< HEAD
-	vport = lpfc_fc_frame_to_vport(phba, fc_hdr, fcfi);
-	if (!vport || !(vport->vpi_state & LPFC_VPI_REGISTERED)) {
-=======
 
 	if (fc_hdr->fh_r_ctl == 0xF4 && fc_hdr->fh_type == 0xFF) {
 		vport = phba->pport;
@@ -25710,13 +19492,10 @@ lpfc_sli4_handle_received_buffer(struct lpfc_hba *phba,
 
 	vport = lpfc_fc_frame_to_vport(phba, fc_hdr, fcfi, did);
 	if (!vport) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* throw out the frame */
 		lpfc_in_buf_free(phba, &dmabuf->dbuf);
 		return;
 	}
-<<<<<<< HEAD
-=======
 
 	/* vport is registered unless we rcv a FLOGI directed to Fabric_DID */
 	if (!(vport->vpi_state & LPFC_VPI_REGISTERED) &&
@@ -25733,7 +19512,6 @@ lpfc_sli4_handle_received_buffer(struct lpfc_hba *phba,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Handle the basic abort sequence (BA_ABTS) event */
 	if (fc_hdr->fh_r_ctl == FC_RCTL_BA_ABTS) {
 		lpfc_sli4_handle_unsol_abort(vport, dmabuf);
@@ -25801,11 +19579,7 @@ lpfc_sli4_post_all_rpi_hdrs(struct lpfc_hba *phba)
 
 		rc = lpfc_sli4_post_rpi_hdr(phba, rpi_page);
 		if (rc != MBX_SUCCESS) {
-<<<<<<< HEAD
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2008 Error %d posting all rpi "
 					"headers\n", rc);
 			rc = -EIO;
@@ -25851,11 +19625,7 @@ lpfc_sli4_post_rpi_hdr(struct lpfc_hba *phba, struct lpfc_rpi_hdr *rpi_page)
 	/* The port is notified of the header region via a mailbox command. */
 	mboxq = (LPFC_MBOXQ_t *) mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2001 Unable to allocate memory for issuing "
 				"SLI_CONFIG_SPECIAL mailbox command\n");
 		return -ENOMEM;
@@ -25882,22 +19652,13 @@ lpfc_sli4_post_rpi_hdr(struct lpfc_hba *phba, struct lpfc_rpi_hdr *rpi_page)
 	shdr = (union lpfc_sli4_cfg_shdr *) &hdr_tmpl->header.cfg_shdr;
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-<<<<<<< HEAD
-	if (rc != MBX_TIMEOUT)
-		mempool_free(mboxq, phba->mbox_mem_pool);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 	mempool_free(mboxq, phba->mbox_mem_pool);
 	if (shdr_status || shdr_add_status || rc) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2514 POST_RPI_HDR mailbox failed with "
 				"status x%x add_status x%x, mbx status x%x\n",
 				shdr_status, shdr_add_status, rc);
 		rc = -ENXIO;
-<<<<<<< HEAD
-=======
 	} else {
 		/*
 		 * The next_rpi stores the next logical module-64 rpi value used
@@ -25906,7 +19667,6 @@ lpfc_sli4_post_rpi_hdr(struct lpfc_hba *phba, struct lpfc_rpi_hdr *rpi_page)
 		spin_lock_irq(&phba->hbalock);
 		phba->sli4_hba.next_rpi = rpi_page->next_rpi;
 		spin_unlock_irq(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
@@ -25931,28 +19691,17 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 	uint16_t max_rpi, rpi_limit;
 	uint16_t rpi_remaining, lrpi = 0;
 	struct lpfc_rpi_hdr *rpi_hdr;
-<<<<<<< HEAD
-
-	max_rpi = phba->sli4_hba.max_cfg_param.max_rpi;
-	rpi_limit = phba->sli4_hba.next_rpi;
-=======
 	unsigned long iflag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fetch the next logical rpi.  Because this index is logical,
 	 * the  driver starts at 0 each time.
 	 */
-<<<<<<< HEAD
-	spin_lock_irq(&phba->hbalock);
-	rpi = find_next_zero_bit(phba->sli4_hba.rpi_bmask, rpi_limit, 0);
-=======
 	spin_lock_irqsave(&phba->hbalock, iflag);
 	max_rpi = phba->sli4_hba.max_cfg_param.max_rpi;
 	rpi_limit = phba->sli4_hba.next_rpi;
 
 	rpi = find_first_zero_bit(phba->sli4_hba.rpi_bmask, rpi_limit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rpi >= rpi_limit)
 		rpi = LPFC_RPI_ALLOC_ERROR;
 	else {
@@ -25960,13 +19709,10 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 		phba->sli4_hba.max_cfg_param.rpi_used++;
 		phba->sli4_hba.rpi_count++;
 	}
-<<<<<<< HEAD
-=======
 	lpfc_printf_log(phba, KERN_INFO,
 			LOG_NODE | LOG_DISCOVERY,
 			"0001 Allocated rpi:x%x max:x%x lim:x%x\n",
 			(int) rpi, max_rpi, rpi_limit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Don't try to allocate more rpi header regions if the device limit
@@ -25974,11 +19720,7 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 	 */
 	if ((rpi == LPFC_RPI_ALLOC_ERROR) &&
 	    (phba->sli4_hba.rpi_count >= max_rpi)) {
-<<<<<<< HEAD
-		spin_unlock_irq(&phba->hbalock);
-=======
 		spin_unlock_irqrestore(&phba->hbalock, iflag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rpi;
 	}
 
@@ -25987,11 +19729,7 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 	 * extents.
 	 */
 	if (!phba->sli4_hba.rpi_hdrs_in_use) {
-<<<<<<< HEAD
-		spin_unlock_irq(&phba->hbalock);
-=======
 		spin_unlock_irqrestore(&phba->hbalock, iflag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rpi;
 	}
 
@@ -26002,19 +19740,11 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 	 * how many are supported max by the device.
 	 */
 	rpi_remaining = phba->sli4_hba.next_rpi - phba->sli4_hba.rpi_count;
-<<<<<<< HEAD
-	spin_unlock_irq(&phba->hbalock);
-	if (rpi_remaining < LPFC_RPI_LOW_WATER_MARK) {
-		rpi_hdr = lpfc_sli4_create_rpi_hdr(phba);
-		if (!rpi_hdr) {
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 	spin_unlock_irqrestore(&phba->hbalock, iflag);
 	if (rpi_remaining < LPFC_RPI_LOW_WATER_MARK) {
 		rpi_hdr = lpfc_sli4_create_rpi_hdr(phba);
 		if (!rpi_hdr) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2002 Error Could not grow rpi "
 					"count\n");
 		} else {
@@ -26028,26 +19758,13 @@ lpfc_sli4_alloc_rpi(struct lpfc_hba *phba)
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_sli4_free_rpi - Release an rpi for reuse.
- * @phba: pointer to lpfc hba data structure.
-=======
  * __lpfc_sli4_free_rpi - Release an rpi for reuse.
  * @phba: pointer to lpfc hba data structure.
  * @rpi: rpi to free
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to release an rpi to the pool of
  * available rpis maintained by the driver.
  **/
-<<<<<<< HEAD
-void
-__lpfc_sli4_free_rpi(struct lpfc_hba *phba, int rpi)
-{
-	if (test_and_clear_bit(rpi, phba->sli4_hba.rpi_bmask)) {
-		phba->sli4_hba.rpi_count--;
-		phba->sli4_hba.max_cfg_param.rpi_used--;
-=======
 static void
 __lpfc_sli4_free_rpi(struct lpfc_hba *phba, int rpi)
 {
@@ -26066,17 +19783,13 @@ __lpfc_sli4_free_rpi(struct lpfc_hba *phba, int rpi)
 				LOG_NODE | LOG_DISCOVERY,
 				"2016 rpi %x not inuse\n",
 				rpi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
  * lpfc_sli4_free_rpi - Release an rpi for reuse.
  * @phba: pointer to lpfc hba data structure.
-<<<<<<< HEAD
-=======
  * @rpi: rpi to free
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to release an rpi to the pool of
  * available rpis maintained by the driver.
@@ -26106,25 +19819,17 @@ lpfc_sli4_remove_rpis(struct lpfc_hba *phba)
 
 /**
  * lpfc_sli4_resume_rpi - Remove the rpi bitmask region
-<<<<<<< HEAD
- * @phba: pointer to lpfc hba data structure.
-=======
  * @ndlp: pointer to lpfc nodelist data structure.
  * @cmpl: completion call-back.
  * @iocbq: data to load as mbox ctx_u information
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is invoked to remove the memory region that
  * provided rpi via a bitmask.
  **/
 int
 lpfc_sli4_resume_rpi(struct lpfc_nodelist *ndlp,
-<<<<<<< HEAD
-	void (*cmpl)(struct lpfc_hba *, LPFC_MBOXQ_t *), void *arg)
-=======
 		     void (*cmpl)(struct lpfc_hba *, LPFC_MBOXQ_t *),
 		     struct lpfc_iocbq *iocbq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LPFC_MBOXQ_t *mboxq;
 	struct lpfc_hba *phba = ndlp->phba;
@@ -26135,8 +19840,6 @@ lpfc_sli4_resume_rpi(struct lpfc_nodelist *ndlp,
 	if (!mboxq)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	/* If cmpl assigned, then this nlp_get pairs with
 	 * lpfc_mbx_cmpl_resume_rpi.
 	 *
@@ -26151,24 +19854,10 @@ lpfc_sli4_resume_rpi(struct lpfc_nodelist *ndlp,
 		return -EIO;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Post all rpi memory regions to the port. */
 	lpfc_resume_rpi(mboxq, ndlp);
 	if (cmpl) {
 		mboxq->mbox_cmpl = cmpl;
-<<<<<<< HEAD
-		mboxq->context1 = arg;
-		mboxq->context2 = ndlp;
-	} else
-		mboxq->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
-	mboxq->vport = ndlp->vport;
-	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_NOWAIT);
-	if (rc == MBX_NOT_FINISHED) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"2010 Resume RPI Mailbox failed "
-				"status %d, mbxStatus x%x\n", rc,
-				bf_get(lpfc_mqe_status, &mboxq->u.mqe));
-=======
 		mboxq->ctx_u.save_iocb = iocbq;
 	} else
 		mboxq->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
@@ -26181,7 +19870,6 @@ lpfc_sli4_resume_rpi(struct lpfc_nodelist *ndlp,
 				"status %d, mbxStatus x%x\n", rc,
 				bf_get(lpfc_mqe_status, &mboxq->u.mqe));
 		lpfc_nlp_put(ndlp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(mboxq, phba->mbox_mem_pool);
 		return -EIO;
 	}
@@ -26213,11 +19901,7 @@ lpfc_sli4_init_vpi(struct lpfc_vport *vport)
 	mbox_tmo = lpfc_mbox_tmo_val(phba, mboxq);
 	rc = lpfc_sli_issue_mbox_wait(phba, mboxq, mbox_tmo);
 	if (rc != MBX_SUCCESS) {
-<<<<<<< HEAD
-		lpfc_printf_vlog(vport, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2022 INIT VPI Mailbox failed "
 				"status %d, mbxStatus x%x\n", rc,
 				bf_get(lpfc_mqe_status, &mboxq->u.mqe));
@@ -26253,11 +19937,7 @@ lpfc_mbx_cmpl_add_fcf_record(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 
 	if ((shdr_status || shdr_add_status) &&
 		(shdr_status != STATUS_FCF_IN_USE))
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2558 ADD_FCF_RECORD mailbox failed with "
 			"status x%x add_status x%x\n",
 			shdr_status, shdr_add_status);
@@ -26281,21 +19961,13 @@ lpfc_sli4_add_fcf_record(struct lpfc_hba *phba, struct fcf_record *fcf_record)
 	LPFC_MBOXQ_t *mboxq;
 	uint8_t *bytep;
 	void *virt_addr;
-<<<<<<< HEAD
-	dma_addr_t phys_addr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_mbx_sge sge;
 	uint32_t alloc_len, req_len;
 	uint32_t fcfindex;
 
 	mboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2009 Failed to allocate mbox for ADD_FCF cmd\n");
 		return -ENOMEM;
 	}
@@ -26308,11 +19980,7 @@ lpfc_sli4_add_fcf_record(struct lpfc_hba *phba, struct fcf_record *fcf_record)
 				     LPFC_MBOX_OPCODE_FCOE_ADD_FCF,
 				     req_len, LPFC_SLI4_MBX_NEMBED);
 	if (alloc_len < req_len) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2523 Allocated DMA memory size (x%x) is "
 			"less than the requested DMA memory "
 			"size (x%x)\n", alloc_len, req_len);
@@ -26325,10 +19993,6 @@ lpfc_sli4_add_fcf_record(struct lpfc_hba *phba, struct fcf_record *fcf_record)
 	 * routine only uses a single SGE.
 	 */
 	lpfc_sli4_mbx_sge_get(mboxq, 0, &sge);
-<<<<<<< HEAD
-	phys_addr = getPaddr(sge.pa_hi, sge.pa_lo);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	virt_addr = mboxq->sge_array->addr[0];
 	/*
 	 * Configure the FCF record for FCFI 0.  This is the driver's
@@ -26349,11 +20013,7 @@ lpfc_sli4_add_fcf_record(struct lpfc_hba *phba, struct fcf_record *fcf_record)
 	mboxq->mbox_cmpl = lpfc_mbx_cmpl_add_fcf_record;
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_NOWAIT);
 	if (rc == MBX_NOT_FINISHED) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2515 ADD_FCF_RECORD mailbox failed with "
 			"status 0x%x\n", rc);
 		lpfc_sli4_mbox_cmd_free(phba, mboxq);
@@ -26426,11 +20086,7 @@ lpfc_sli4_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, uint16_t fcf_index)
 	phba->fcoe_cvl_eventtag_attn = phba->fcoe_cvl_eventtag;
 	mboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2000 Failed to allocate mbox for "
 				"READ_FCF cmd\n");
 		error = -ENOMEM;
@@ -26564,13 +20220,8 @@ fail_fcf_read:
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_check_next_fcf_pri
- * phba pointer to the lpfc_hba struct for this port.
-=======
  * lpfc_check_next_fcf_pri_level
  * @phba: pointer to the lpfc_hba struct for this port.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This routine is called from the lpfc_sli4_fcf_rr_next_index_get
  * routine when the rr_bmask is empty. The FCF indecies are put into the
  * rr_bmask based on their priority level. Starting from the highest priority
@@ -26581,11 +20232,7 @@ fail_fcf_read:
  * returns:
  * 1=success 0=failure
  **/
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_check_next_fcf_pri_level(struct lpfc_hba *phba)
 {
 	uint16_t next_fcf_pri;
@@ -26598,25 +20245,18 @@ lpfc_check_next_fcf_pri_level(struct lpfc_hba *phba)
 			LPFC_SLI4_FCF_TBL_INDX_MAX);
 	lpfc_printf_log(phba, KERN_INFO, LOG_FIP,
 			"3060 Last IDX %d\n", last_index);
-<<<<<<< HEAD
-	if (list_empty(&phba->fcf.fcf_pri_list)) {
-=======
 
 	/* Verify the priority list has 2 or more entries */
 	spin_lock_irq(&phba->hbalock);
 	if (list_empty(&phba->fcf.fcf_pri_list) ||
 	    list_is_singular(&phba->fcf.fcf_pri_list)) {
 		spin_unlock_irq(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
 			"3061 Last IDX %d\n", last_index);
 		return 0; /* Empty rr list */
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock_irq(&phba->hbalock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next_fcf_pri = 0;
 	/*
 	 * Clear the rr_bmask and set all of the bits that are at this
@@ -26646,11 +20286,7 @@ lpfc_check_next_fcf_pri_level(struct lpfc_hba *phba)
 	/*
 	 * if next_fcf_pri was not set above and the list is not empty then
 	 * we have failed flogis on all of them. So reset flogi failed
-<<<<<<< HEAD
-	 * and start at the begining.
-=======
 	 * and start at the beginning.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!next_fcf_pri && !list_empty(&phba->fcf.fcf_pri_list)) {
 		list_for_each_entry(fcf_pri, &phba->fcf.fcf_pri_list, list) {
@@ -26691,12 +20327,6 @@ lpfc_sli4_fcf_rr_next_index_get(struct lpfc_hba *phba)
 {
 	uint16_t next_fcf_index;
 
-<<<<<<< HEAD
-	/* Search start from next bit of currently registered FCF index */
-next_priority:
-	next_fcf_index = (phba->fcf.current_rec.fcf_indx + 1) %
-					LPFC_SLI4_FCF_TBL_INDX_MAX;
-=======
 initial_priority:
 	/* Search start from next bit of currently registered FCF index */
 	next_fcf_index = phba->fcf.current_rec.fcf_indx;
@@ -26704,7 +20334,6 @@ initial_priority:
 next_priority:
 	/* Determine the next fcf index to check */
 	next_fcf_index = (next_fcf_index + 1) % LPFC_SLI4_FCF_TBL_INDX_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next_fcf_index = find_next_bit(phba->fcf.fcf_rr_bmask,
 				       LPFC_SLI4_FCF_TBL_INDX_MAX,
 				       next_fcf_index);
@@ -26716,13 +20345,8 @@ next_priority:
 		 * have been tested so that we can detect when we should
 		 * change the priority level.
 		 */
-<<<<<<< HEAD
-		next_fcf_index = find_next_bit(phba->fcf.fcf_rr_bmask,
-					       LPFC_SLI4_FCF_TBL_INDX_MAX, 0);
-=======
 		next_fcf_index = find_first_bit(phba->fcf.fcf_rr_bmask,
 					       LPFC_SLI4_FCF_TBL_INDX_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 
@@ -26736,41 +20360,21 @@ next_priority:
 		 * at that level and continue the selection process.
 		 */
 		if (lpfc_check_next_fcf_pri_level(phba))
-<<<<<<< HEAD
-			goto next_priority;
-		lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
-				"2844 No roundrobin failover FCF available\n");
-		if (next_fcf_index >= LPFC_SLI4_FCF_TBL_INDX_MAX)
-			return LPFC_FCOE_FCF_NEXT_NONE;
-		else {
-			lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
-				"3063 Only FCF available idx %d, flag %x\n",
-				next_fcf_index,
-			phba->fcf.fcf_pri[next_fcf_index].fcf_rec.flag);
-			return next_fcf_index;
-		}
-=======
 			goto initial_priority;
 		lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
 				"2844 No roundrobin failover FCF available\n");
 
 		return LPFC_FCOE_FCF_NEXT_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (next_fcf_index < LPFC_SLI4_FCF_TBL_INDX_MAX &&
 		phba->fcf.fcf_pri[next_fcf_index].fcf_rec.flag &
-<<<<<<< HEAD
-		LPFC_FCF_FLOGI_FAILED)
-		goto next_priority;
-=======
 		LPFC_FCF_FLOGI_FAILED) {
 		if (list_is_singular(&phba->fcf.fcf_pri_list))
 			return LPFC_FCOE_FCF_NEXT_NONE;
 
 		goto next_priority;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_printf_log(phba, KERN_INFO, LOG_FIP,
 			"2845 Get next roundrobin failover FCF (x%x)\n",
@@ -26782,10 +20386,7 @@ next_priority:
 /**
  * lpfc_sli4_fcf_rr_index_set - Set bmask with eligible fcf record index
  * @phba: pointer to lpfc hba data structure.
-<<<<<<< HEAD
-=======
  * @fcf_index: index into the FCF table to 'set'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine sets the FCF record index in to the eligible bmask for
  * roundrobin failover search. It checks to make sure that the index
@@ -26818,10 +20419,7 @@ lpfc_sli4_fcf_rr_index_set(struct lpfc_hba *phba, uint16_t fcf_index)
 /**
  * lpfc_sli4_fcf_rr_index_clear - Clear bmask from eligible fcf record index
  * @phba: pointer to lpfc hba data structure.
-<<<<<<< HEAD
-=======
  * @fcf_index: index into the FCF table to 'clear'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine clears the FCF record index from the eligible bmask for
  * roundrobin failover search. It checks to make sure that the index
@@ -26831,11 +20429,7 @@ lpfc_sli4_fcf_rr_index_set(struct lpfc_hba *phba, uint16_t fcf_index)
 void
 lpfc_sli4_fcf_rr_index_clear(struct lpfc_hba *phba, uint16_t fcf_index)
 {
-<<<<<<< HEAD
-	struct lpfc_fcf_pri *fcf_pri;
-=======
 	struct lpfc_fcf_pri *fcf_pri, *fcf_pri_next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fcf_index >= LPFC_SLI4_FCF_TBL_INDX_MAX) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
 				"2762 FCF (x%x) reached driver's book "
@@ -26845,12 +20439,8 @@ lpfc_sli4_fcf_rr_index_clear(struct lpfc_hba *phba, uint16_t fcf_index)
 	}
 	/* Clear the eligible FCF record index bmask */
 	spin_lock_irq(&phba->hbalock);
-<<<<<<< HEAD
-	list_for_each_entry(fcf_pri, &phba->fcf.fcf_pri_list, list) {
-=======
 	list_for_each_entry_safe(fcf_pri, fcf_pri_next, &phba->fcf.fcf_pri_list,
 				 list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fcf_pri->fcf_rec.fcf_index == fcf_index) {
 			list_del_init(&fcf_pri->list);
 			break;
@@ -26867,20 +20457,13 @@ lpfc_sli4_fcf_rr_index_clear(struct lpfc_hba *phba, uint16_t fcf_index)
 /**
  * lpfc_mbx_cmpl_redisc_fcf_table - completion routine for rediscover FCF table
  * @phba: pointer to lpfc hba data structure.
-<<<<<<< HEAD
-=======
  * @mbox: An allocated pointer to type LPFC_MBOXQ_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is the completion routine for the rediscover FCF table mailbox
  * command. If the mailbox command returned failure, it will try to stop the
  * FCF rediscover wait timer.
  **/
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_mbx_cmpl_redisc_fcf_table(struct lpfc_hba *phba, LPFC_MBOXQ_t *mbox)
 {
 	struct lpfc_mbx_redisc_fcf_tbl *redisc_fcf;
@@ -26949,11 +20532,7 @@ lpfc_sli4_redisc_fcf_table(struct lpfc_hba *phba)
 
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2745 Failed to allocate mbox for "
 				"requesting FCF rediscover.\n");
 		return -ENOMEM;
@@ -27028,11 +20607,7 @@ lpfc_sli_get_config_region23(struct lpfc_hba *phba, char *rgn23_data)
 
 	pmb = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!pmb) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2600 failed to allocate mailbox memory\n");
 		return 0;
 	}
@@ -27055,10 +20630,7 @@ lpfc_sli_get_config_region23(struct lpfc_hba *phba, char *rgn23_data)
 		 */
 		if (mb->un.varDmp.word_cnt == 0)
 			break;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mb->un.varDmp.word_cnt > DMP_RGN23_SIZE - offset)
 			mb->un.varDmp.word_cnt = DMP_RGN23_SIZE - offset;
 
@@ -27095,11 +20667,7 @@ lpfc_sli4_get_config_region23(struct lpfc_hba *phba, char *rgn23_data)
 
 	mboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"3105 failed to allocate mailbox memory\n");
 		return 0;
 	}
@@ -27107,11 +20675,7 @@ lpfc_sli4_get_config_region23(struct lpfc_hba *phba, char *rgn23_data)
 	if (lpfc_sli4_dump_cfg_rg23(phba, mboxq))
 		goto out;
 	mqe = &mboxq->u.mqe;
-<<<<<<< HEAD
-	mp = (struct lpfc_dmabuf *) mboxq->context1;
-=======
 	mp = mboxq->ctx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_POLL);
 	if (rc)
 		goto out;
@@ -27124,15 +20688,7 @@ lpfc_sli4_get_config_region23(struct lpfc_hba *phba, char *rgn23_data)
 	}
 	lpfc_sli_pcimem_bcopy((char *)mp->virt, rgn23_data, data_length);
 out:
-<<<<<<< HEAD
-	mempool_free(mboxq, phba->mbox_mem_pool);
-	if (mp) {
-		lpfc_mbuf_free(phba, mp->virt, mp->phys);
-		kfree(mp);
-	}
-=======
 	lpfc_mbox_rsrc_cleanup(phba, mboxq, MBOX_THD_UNLOCKED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return data_length;
 }
 
@@ -27171,11 +20727,7 @@ lpfc_sli_read_link_ste(struct lpfc_hba *phba)
 
 	/* Check the region signature first */
 	if (memcmp(&rgn23_data[offset], LPFC_REGION23_SIGNATURE, 4)) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2619 Config region 23 has bad signature\n");
 			goto out;
 	}
@@ -27183,11 +20735,7 @@ lpfc_sli_read_link_ste(struct lpfc_hba *phba)
 
 	/* Check the data structure version */
 	if (rgn23_data[offset] != LPFC_REGION23_VERSION) {
-<<<<<<< HEAD
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-=======
 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2620 Config region 23 has bad version\n");
 		goto out;
 	}
@@ -27243,8 +20791,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_log_fw_write_cmpl - logs firmware write completion status
  * @phba: pointer to lpfc hba data structure
  * @shdr_status: wr_object rsp's status field
@@ -27330,7 +20876,6 @@ lpfc_log_fw_write_cmpl(struct lpfc_hba *phba, u32 shdr_status,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_wr_object - write an object to the firmware
  * @phba: HBA structure that indicates port to create a queue on.
  * @dmabuf_list: list of dmabufs to write to the port.
@@ -27345,11 +20890,7 @@ lpfc_log_fw_write_cmpl(struct lpfc_hba *phba, u32 shdr_status,
  * the offset after the write object mailbox has completed. @size is used to
  * determine the end of the object and whether the eof bit should be set.
  *
-<<<<<<< HEAD
- * Return 0 is successful and offset will contain the the new offset to use
-=======
  * Return 0 is successful and offset will contain the new offset to use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * for the next write.
  * Return negative value for error cases.
  **/
@@ -27360,13 +20901,6 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
 	struct lpfc_mbx_wr_object *wr_object;
 	LPFC_MBOXQ_t *mbox;
 	int rc = 0, i = 0;
-<<<<<<< HEAD
-	uint32_t shdr_status, shdr_add_status;
-	uint32_t mbox_tmo;
-	union lpfc_sli4_cfg_shdr *shdr;
-	struct lpfc_dmabuf *dmabuf;
-	uint32_t written = 0;
-=======
 	int mbox_status = 0;
 	uint32_t shdr_status, shdr_add_status, shdr_add_status_2;
 	uint32_t shdr_change_status = 0, shdr_csf = 0;
@@ -27374,7 +20908,6 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
 	struct lpfc_dmabuf *dmabuf;
 	uint32_t written = 0;
 	bool check_change_status = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox)
@@ -27402,11 +20935,8 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
 				(size - written);
 			written += (size - written);
 			bf_set(lpfc_wr_object_eof, &wr_object->u.request, 1);
-<<<<<<< HEAD
-=======
 			bf_set(lpfc_wr_object_eas, &wr_object->u.request, 1);
 			check_change_status = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			wr_object->u.request.bde[i].tus.f.bdeSize =
 				SLI4_PAGE_SIZE;
@@ -27417,27 +20947,6 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
 	wr_object->u.request.bde_count = i;
 	bf_set(lpfc_wr_object_write_length, &wr_object->u.request, written);
 	if (!phba->sli4_hba.intr_enable)
-<<<<<<< HEAD
-		rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
-	else {
-		mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
-		rc = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
-	}
-	/* The IOCTL status is embedded in the mailbox subheader. */
-	shdr = (union lpfc_sli4_cfg_shdr *) &wr_object->header.cfg_shdr;
-	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
-	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
-	if (rc != MBX_TIMEOUT)
-		mempool_free(mbox, phba->mbox_mem_pool);
-	if (shdr_status || shdr_add_status || rc) {
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"3025 Write Object mailbox failed with "
-				"status x%x add_status x%x, mbx status x%x\n",
-				shdr_status, shdr_add_status, rc);
-		rc = -ENXIO;
-	} else
-		*offset += wr_object->u.response.actual_write_length;
-=======
 		mbox_status = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
 	else {
 		mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
@@ -27484,7 +20993,6 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
 	else if (mbox_status != MBX_TIMEOUT)
 		mempool_free(mbox, phba->mbox_mem_pool);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -27502,15 +21010,8 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 {
 	struct lpfc_hba *phba = vport->phba;
 	LPFC_MBOXQ_t *mb, *nextmb;
-<<<<<<< HEAD
-	struct lpfc_dmabuf *mp;
 	struct lpfc_nodelist *ndlp;
 	struct lpfc_nodelist *act_mbx_ndlp = NULL;
-	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
-=======
-	struct lpfc_nodelist *ndlp;
-	struct lpfc_nodelist *act_mbx_ndlp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LIST_HEAD(mbox_cmd_list);
 	uint8_t restart_loop;
 
@@ -27524,12 +21025,7 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 			(mb->u.mb.mbxCommand != MBX_REG_VPI))
 			continue;
 
-<<<<<<< HEAD
-		list_del(&mb->list);
-		list_add_tail(&mb->list, &mbox_cmd_list);
-=======
 		list_move_tail(&mb->list, &mbox_cmd_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Clean up active mailbox command with the vport */
 	mb = phba->sli.mbox_active;
@@ -27538,11 +21034,6 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 			(mb->u.mb.mbxCommand == MBX_REG_VPI))
 			mb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 		if (mb->u.mb.mbxCommand == MBX_REG_LOGIN64) {
-<<<<<<< HEAD
-			act_mbx_ndlp = (struct lpfc_nodelist *)mb->context2;
-			/* Put reference count for delayed processing */
-			act_mbx_ndlp = lpfc_nlp_get(act_mbx_ndlp);
-=======
 			act_mbx_ndlp = mb->ctx_ndlp;
 
 			/* This reference is local to this routine.  The
@@ -27550,7 +21041,6 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 			 */
 			act_mbx_ndlp = lpfc_nlp_get(act_mbx_ndlp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Unregister the RPI when mailbox complete */
 			mb->mbox_flag |= LPFC_MBX_IMED_UNREG;
 		}
@@ -27573,24 +21063,14 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 
 			mb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 			if (mb->u.mb.mbxCommand == MBX_REG_LOGIN64) {
-<<<<<<< HEAD
-				ndlp = (struct lpfc_nodelist *)mb->context2;
-=======
 				ndlp = mb->ctx_ndlp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Unregister the RPI when mailbox complete */
 				mb->mbox_flag |= LPFC_MBX_IMED_UNREG;
 				restart_loop = 1;
 				spin_unlock_irq(&phba->hbalock);
-<<<<<<< HEAD
-				spin_lock(shost->host_lock);
-				ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
-				spin_unlock(shost->host_lock);
-=======
 				spin_lock(&ndlp->lock);
 				ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
 				spin_unlock(&ndlp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_lock_irq(&phba->hbalock);
 				break;
 			}
@@ -27603,23 +21083,6 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 	while (!list_empty(&mbox_cmd_list)) {
 		list_remove_head(&mbox_cmd_list, mb, LPFC_MBOXQ_t, list);
 		if (mb->u.mb.mbxCommand == MBX_REG_LOGIN64) {
-<<<<<<< HEAD
-			mp = (struct lpfc_dmabuf *) (mb->context1);
-			if (mp) {
-				__lpfc_mbuf_free(phba, mp->virt, mp->phys);
-				kfree(mp);
-			}
-			ndlp = (struct lpfc_nodelist *) mb->context2;
-			mb->context2 = NULL;
-			if (ndlp) {
-				spin_lock(shost->host_lock);
-				ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
-				spin_unlock(shost->host_lock);
-				lpfc_nlp_put(ndlp);
-			}
-		}
-		mempool_free(mb, phba->mbox_mem_pool);
-=======
 			ndlp = mb->ctx_ndlp;
 			mb->ctx_ndlp = NULL;
 			if (ndlp) {
@@ -27630,20 +21093,13 @@ lpfc_cleanup_pending_mbox(struct lpfc_vport *vport)
 			}
 		}
 		lpfc_mbox_rsrc_cleanup(phba, mb, MBOX_THD_UNLOCKED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Release the ndlp with the cleaned-up active mailbox command */
 	if (act_mbx_ndlp) {
-<<<<<<< HEAD
-		spin_lock(shost->host_lock);
-		act_mbx_ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
-		spin_unlock(shost->host_lock);
-=======
 		spin_lock(&act_mbx_ndlp->lock);
 		act_mbx_ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
 		spin_unlock(&act_mbx_ndlp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_nlp_put(act_mbx_ndlp);
 	}
 }
@@ -27663,76 +21119,6 @@ uint32_t
 lpfc_drain_txq(struct lpfc_hba *phba)
 {
 	LIST_HEAD(completions);
-<<<<<<< HEAD
-	struct lpfc_sli_ring *pring = &phba->sli.ring[LPFC_ELS_RING];
-	struct lpfc_iocbq *piocbq = 0;
-	unsigned long iflags = 0;
-	char *fail_msg = NULL;
-	struct lpfc_sglq *sglq;
-	union lpfc_wqe wqe;
-
-	spin_lock_irqsave(&phba->hbalock, iflags);
-	if (pring->txq_cnt > pring->txq_max)
-		pring->txq_max = pring->txq_cnt;
-
-	spin_unlock_irqrestore(&phba->hbalock, iflags);
-
-	while (pring->txq_cnt) {
-		spin_lock_irqsave(&phba->hbalock, iflags);
-
-		piocbq = lpfc_sli_ringtx_get(phba, pring);
-		sglq = __lpfc_sli_get_sglq(phba, piocbq);
-		if (!sglq) {
-			__lpfc_sli_ringtx_put(phba, pring, piocbq);
-			spin_unlock_irqrestore(&phba->hbalock, iflags);
-			break;
-		} else {
-			if (!piocbq) {
-				/* The txq_cnt out of sync. This should
-				 * never happen
-				 */
-				sglq = __lpfc_clear_active_sglq(phba,
-						 sglq->sli4_lxritag);
-				spin_unlock_irqrestore(&phba->hbalock, iflags);
-				lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2823 txq empty and txq_cnt is %d\n ",
-					pring->txq_cnt);
-				break;
-			}
-		}
-
-		/* The xri and iocb resources secured,
-		 * attempt to issue request
-		 */
-		piocbq->sli4_lxritag = sglq->sli4_lxritag;
-		piocbq->sli4_xritag = sglq->sli4_xritag;
-		if (NO_XRI == lpfc_sli4_bpl2sgl(phba, piocbq, sglq))
-			fail_msg = "to convert bpl to sgl";
-		else if (lpfc_sli4_iocb2wqe(phba, piocbq, &wqe))
-			fail_msg = "to convert iocb to wqe";
-		else if (lpfc_sli4_wq_put(phba->sli4_hba.els_wq, &wqe))
-			fail_msg = " - Wq is full";
-		else
-			lpfc_sli_ringtxcmpl_put(phba, pring, piocbq);
-
-		if (fail_msg) {
-			/* Failed means we can't issue and need to cancel */
-			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-					"2822 IOCB failed %s iotag 0x%x "
-					"xri 0x%x\n",
-					fail_msg,
-					piocbq->iotag, piocbq->sli4_xritag);
-			list_add_tail(&piocbq->list, &completions);
-		}
-		spin_unlock_irqrestore(&phba->hbalock, iflags);
-	}
-
-	/* Cancel all the IOCBs that cannot be issued */
-	lpfc_sli_cancel_iocbs(phba, &completions, IOSTAT_LOCAL_REJECT,
-				IOERR_SLI_ABORTED);
-
-	return pring->txq_cnt;
-=======
 	struct lpfc_sli_ring *pring;
 	struct lpfc_iocbq *piocbq = NULL;
 	unsigned long iflags = 0;
@@ -29366,5 +22752,4 @@ lpfc_sli_prep_wqe(struct lpfc_hba *phba, struct lpfc_iocbq *job)
 	bf_set(wqe_reqtag, &wqe->generic.wqe_com, job->iotag);
 	bf_set(wqe_cmd_type, &wqe->generic.wqe_com, command_type);
 	bf_set(wqe_cqid, &wqe->generic.wqe_com, LPFC_WQE_CQ_ID_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menuconfig MTD_UBI
 	tristate "Enable UBI - Unsorted block images"
 	select CRC32
 	help
-<<<<<<< HEAD
-	  UBI is a software layer above MTD layer which admits of LVM-like
-=======
 	  UBI is a software layer above MTD layer which admits use of LVM-like
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  logical volumes on top of MTD devices, hides some complexities of
 	  flash chips like wear and bad blocks and provides some other useful
 	  capabilities. Please, consult the MTD web site for more details
@@ -35,22 +28,6 @@ config MTD_UBI_WL_THRESHOLD
 	  life-cycle less than 10000, the threshold should be lessened (e.g.,
 	  to 128 or 256, although it does not have to be power of 2).
 
-<<<<<<< HEAD
-config MTD_UBI_BEB_RESERVE
-	int "Percentage of reserved eraseblocks for bad eraseblocks handling"
-	default 1
-	range 0 25
-	help
-	  If the MTD device admits of bad eraseblocks (e.g. NAND flash), UBI
-	  reserves some amount of physical eraseblocks to handle new bad
-	  eraseblocks. For example, if a flash physical eraseblock becomes bad,
-	  UBI uses these reserved physical eraseblocks to relocate the bad one.
-	  This option specifies how many physical eraseblocks will be reserved
-	  for bad eraseblock handling (percents of total number of good flash
-	  eraseblocks). If the underlying flash does not admit of bad
-	  eraseblocks (e.g. NOR flash), this value is ignored and nothing is
-	  reserved. Leave the default value if unsure.
-=======
 config MTD_UBI_BEB_LIMIT
 	int "Maximum expected bad eraseblock count per 1024 eraseblocks"
 	default 20
@@ -100,7 +77,6 @@ config MTD_UBI_FASTMAP
 	   into one PEB. UBI will reserve PEBs to hold two fastmaps.
 
 	   If in doubt, say "N".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MTD_UBI_GLUEBI
 	tristate "MTD devices emulation driver (gluebi)"
@@ -112,15 +88,6 @@ config MTD_UBI_GLUEBI
 	   work on top of UBI. Do not enable this unless you use legacy
 	   software.
 
-<<<<<<< HEAD
-config MTD_UBI_DEBUG
-	bool "UBI debugging"
-	depends on SYSFS
-	select DEBUG_FS
-	select KALLSYMS
-	help
-	  This option enables UBI debugging.
-=======
 config MTD_UBI_BLOCK
 	bool "Read-only block devices on top of UBI volumes"
 	default n
@@ -158,6 +125,5 @@ config MTD_UBI_NVMEM
 	   specific Wi-Fi calibration data.
 
 	   If in doubt, say "N".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # MTD_UBI

@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for Analog Devices ADP5520/ADP5501 MFD PMICs
  *
  * Copyright 2009 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -73,18 +65,7 @@ static int adp5520_bl_set(struct backlight_device *bl, int brightness)
 
 static int adp5520_bl_update_status(struct backlight_device *bl)
 {
-<<<<<<< HEAD
-	int brightness = bl->props.brightness;
-	if (bl->props.power != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	return adp5520_bl_set(bl, brightness);
-=======
 	return adp5520_bl_set(bl, backlight_get_brightness(bl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int adp5520_bl_get_brightness(struct backlight_device *bl)
@@ -154,15 +135,6 @@ static int adp5520_bl_setup(struct backlight_device *bl)
 static ssize_t adp5520_show(struct device *dev, char *buf, int reg)
 {
 	struct adp5520_bl *data = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	int error;
-	uint8_t reg_val;
-
-	mutex_lock(&data->lock);
-	error = adp5520_read(data->master, reg, &reg_val);
-	mutex_unlock(&data->lock);
-
-=======
 	int ret;
 	uint8_t reg_val;
 
@@ -173,7 +145,6 @@ static ssize_t adp5520_show(struct device *dev, char *buf, int reg)
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%u\n", reg_val);
 }
 
@@ -184,11 +155,7 @@ static ssize_t adp5520_store(struct device *dev, const char *buf,
 	unsigned long val;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 10, &val);
-=======
 	ret = kstrtoul(buf, 10, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -242,11 +209,7 @@ static ssize_t adp5520_bl_daylight_max_store(struct device *dev,
 	struct adp5520_bl *data = dev_get_drvdata(dev);
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 10, &data->cached_daylight_max);
-=======
 	ret = kstrtoul(buf, 10, &data->cached_daylight_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -314,11 +277,7 @@ static const struct attribute_group adp5520_bl_attr_group = {
 	.attrs = adp5520_bl_attributes,
 };
 
-<<<<<<< HEAD
-static int __devinit adp5520_bl_probe(struct platform_device *pdev)
-=======
 static int adp5520_bl_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_properties props;
 	struct backlight_device *bl;
@@ -330,11 +289,7 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	data->master = pdev->dev.parent;
-<<<<<<< HEAD
-	data->pdata = pdev->dev.platform_data;
-=======
 	data->pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data->pdata  == NULL) {
 		dev_err(&pdev->dev, "missing platform data\n");
@@ -349,14 +304,9 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = ADP5020_MAX_BRIGHTNESS;
-<<<<<<< HEAD
-	bl = backlight_device_register(pdev->name, data->master, data,
-				       &adp5520_bl_ops, &props);
-=======
 	bl = devm_backlight_device_register(&pdev->dev, pdev->name,
 					data->master, data, &adp5520_bl_ops,
 					&props);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -369,19 +319,6 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register sysfs\n");
-<<<<<<< HEAD
-		backlight_device_unregister(bl);
-	}
-
-	platform_set_drvdata(pdev, bl);
-	ret |= adp5520_bl_setup(bl);
-	backlight_update_status(bl);
-
-	return ret;
-}
-
-static int __devexit adp5520_bl_remove(struct platform_device *pdev)
-=======
 		return ret;
 	}
 
@@ -401,7 +338,6 @@ static int __devexit adp5520_bl_remove(struct platform_device *pdev)
 }
 
 static void adp5520_bl_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bl = platform_get_drvdata(pdev);
 	struct adp5520_bl *data = bl_get_data(bl);
@@ -411,25 +347,6 @@ static void adp5520_bl_remove(struct platform_device *pdev)
 	if (data->pdata->en_ambl_sens)
 		sysfs_remove_group(&bl->dev.kobj,
 				&adp5520_bl_attr_group);
-<<<<<<< HEAD
-
-	backlight_device_unregister(bl);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int adp5520_bl_suspend(struct platform_device *pdev,
-				 pm_message_t state)
-{
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-	return adp5520_bl_set(bl, 0);
-}
-
-static int adp5520_bl_resume(struct platform_device *pdev)
-{
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -443,27 +360,10 @@ static int adp5520_bl_suspend(struct device *dev)
 static int adp5520_bl_resume(struct device *dev)
 {
 	struct backlight_device *bl = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	backlight_update_status(bl);
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define adp5520_bl_suspend	NULL
-#define adp5520_bl_resume	NULL
-#endif
-
-static struct platform_driver adp5520_bl_driver = {
-	.driver		= {
-		.name	= "adp5520-backlight",
-		.owner	= THIS_MODULE,
-	},
-	.probe		= adp5520_bl_probe,
-	.remove		= __devexit_p(adp5520_bl_remove),
-	.suspend	= adp5520_bl_suspend,
-	.resume		= adp5520_bl_resume,
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(adp5520_bl_pm_ops, adp5520_bl_suspend,
@@ -476,16 +376,11 @@ static struct platform_driver adp5520_bl_driver = {
 	},
 	.probe		= adp5520_bl_probe,
 	.remove_new	= adp5520_bl_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(adp5520_bl_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-=======
 MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ADP5520(01) Backlight Driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:adp5520-backlight");

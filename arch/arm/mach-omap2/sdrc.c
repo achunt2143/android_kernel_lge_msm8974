@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMS/SDRC (SDRAM controller) common code for OMAP2/3
  *
@@ -11,13 +8,6 @@
  * Tony Lindgren <tony@atomide.com>
  * Paul Walmsley
  * Richard Woodruff <r-woodruff2@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef DEBUG
 
@@ -31,14 +21,7 @@
 #include <linux/io.h>
 
 #include "common.h"
-<<<<<<< HEAD
-#include <plat/clock.h>
-#include <plat/sram.h>
-
-#include <plat/sdrc.h>
-=======
 #include "clock.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sdrc.h"
 
 static struct omap_sdrc_params *sdrc_init_params_cs0, *sdrc_init_params_cs1;
@@ -62,11 +45,7 @@ static struct omap2_sms_regs sms_context;
  *
  * Save SMS registers that need to be restored after off mode.
  */
-<<<<<<< HEAD
-void omap2_sms_save_context(void)
-=======
 static void omap2_sms_save_context(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sms_context.sms_sysconfig = sms_read_reg(SMS_SYSCONFIG);
 }
@@ -81,68 +60,10 @@ void omap2_sms_restore_context(void)
 	sms_write_reg(sms_context.sms_sysconfig, SMS_SYSCONFIG);
 }
 
-<<<<<<< HEAD
-/**
- * omap2_sdrc_get_params - return SDRC register values for a given clock rate
- * @r: SDRC clock rate (in Hz)
- * @sdrc_cs0: chip select 0 ram timings **
- * @sdrc_cs1: chip select 1 ram timings **
- *
- * Return pre-calculated values for the SDRC_ACTIM_CTRLA,
- *  SDRC_ACTIM_CTRLB, SDRC_RFR_CTRL and SDRC_MR registers in sdrc_cs[01]
- *  structs,for a given SDRC clock rate 'r'.
- * These parameters control various timing delays in the SDRAM controller
- *  that are expressed in terms of the number of SDRC clock cycles to
- *  wait; hence the clock rate dependency.
- *
- * Supports 2 different timing parameters for both chip selects.
- *
- * Note 1: the sdrc_init_params_cs[01] must be sorted rate descending.
- * Note 2: If sdrc_init_params_cs_1 is not NULL it must be of same size
- *  as sdrc_init_params_cs_0.
- *
- * Fills in the struct omap_sdrc_params * for each chip select.
- * Returns 0 upon success or -1 upon failure.
- */
-int omap2_sdrc_get_params(unsigned long r,
-			  struct omap_sdrc_params **sdrc_cs0,
-			  struct omap_sdrc_params **sdrc_cs1)
-{
-	struct omap_sdrc_params *sp0, *sp1;
-
-	if (!sdrc_init_params_cs0)
-		return -1;
-
-	sp0 = sdrc_init_params_cs0;
-	sp1 = sdrc_init_params_cs1;
-
-	while (sp0->rate && sp0->rate != r) {
-		sp0++;
-		if (sdrc_init_params_cs1)
-			sp1++;
-	}
-
-	if (!sp0->rate)
-		return -1;
-
-	*sdrc_cs0 = sp0;
-	*sdrc_cs1 = sp1;
-	return 0;
-}
-
-
-void __init omap2_set_globals_sdrc(struct omap_globals *omap2_globals)
-{
-	if (omap2_globals->sdrc)
-		omap2_sdrc_base = omap2_globals->sdrc;
-	if (omap2_globals->sms)
-		omap2_sms_base = omap2_globals->sms;
-=======
 void __init omap2_set_globals_sdrc(void __iomem *sdrc, void __iomem *sms)
 {
 	omap2_sdrc_base = sdrc;
 	omap2_sms_base = sms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -182,22 +103,3 @@ void __init omap2_sdrc_init(struct omap_sdrc_params *sdrc_cs0,
 	sdrc_write_reg(l, SDRC_POWER);
 	omap2_sms_save_context();
 }
-<<<<<<< HEAD
-
-void omap2_sms_write_rot_control(u32 val, unsigned ctx)
-{
-	sms_write_reg(val, SMS_ROT_CONTROL(ctx));
-}
-
-void omap2_sms_write_rot_size(u32 val, unsigned ctx)
-{
-	sms_write_reg(val, SMS_ROT_SIZE(ctx));
-}
-
-void omap2_sms_write_rot_physical_ba(u32 val, unsigned ctx)
-{
-	sms_write_reg(val, SMS_ROT_PHYSICAL_BA(ctx));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

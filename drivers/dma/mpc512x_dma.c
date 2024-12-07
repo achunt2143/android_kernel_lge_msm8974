@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) Freescale Semicondutor, Inc. 2007, 2008.
  * Copyright (C) Semihalf 2009
  * Copyright (C) Ilya Yanok, Emcraft Systems 2010
-<<<<<<< HEAD
-=======
  * Copyright (C) Alexander Popov, Promcontroller 2014
  * Copyright (C) Mario Six, Guntermann & Drunck GmbH, 2016
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written by Piotr Ziecik <kosmo@semihalf.com>. Hardware description
  * (defines, structures and comments) was taken from MPC5121 DMA driver
@@ -18,30 +12,6 @@
  *
  * Approved as OSADL project by a majority of OSADL members and funded
  * by OSADL membership fees in 2009;  for details see www.osadl.org.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
- */
-
-/*
- * This is initial version of MPC5121 DMA driver. Only memory to memory
- * transfers are supported (tested using dmatest module).
-=======
  */
 
 /*
@@ -58,7 +28,6 @@
  *     addresses and destination addresses must be aligned accordingly;
  *     furthermore, for MPC512x SoCs, the transfer size must be aligned on
  *     (chunk size * maxburst)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -67,16 +36,11 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/of_platform.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/of_dma.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/random.h>
 
@@ -86,11 +50,6 @@
 #define MPC_DMA_DESCRIPTORS	64
 
 /* Macro definitions */
-<<<<<<< HEAD
-#define MPC_DMA_CHANNELS	64
-#define MPC_DMA_TCD_OFFSET	0x1000
-
-=======
 #define MPC_DMA_TCD_OFFSET	0x1000
 
 /*
@@ -102,7 +61,6 @@
 #define MPC512x_DMACHAN_MAX	64
 #define MPC_DMA_CHANNELS	64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Arbitration mode of group and channel */
 #define MPC_DMA_DMACR_EDCG	(1 << 31)
 #define MPC_DMA_DMACR_ERGA	(1 << 3)
@@ -229,10 +187,7 @@ struct mpc_dma_desc {
 	dma_addr_t			tcd_paddr;
 	int				error;
 	struct list_head		node;
-<<<<<<< HEAD
-=======
 	int				will_access_peripheral;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mpc_dma_chan {
@@ -245,8 +200,6 @@ struct mpc_dma_chan {
 	struct mpc_dma_tcd		*tcd;
 	dma_addr_t			tcd_paddr;
 
-<<<<<<< HEAD
-=======
 	/* Settings for access to peripheral FIFO */
 	dma_addr_t			src_per_paddr;
 	u32				src_tcd_nunits;
@@ -255,7 +208,6 @@ struct mpc_dma_chan {
 	u32				dst_tcd_nunits;
 	u8				dwidth;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Lock for this structure */
 	spinlock_t			lock;
 };
@@ -287,10 +239,7 @@ static inline struct mpc_dma_chan *dma_chan_to_mpc_dma_chan(struct dma_chan *c)
 static inline struct mpc_dma *dma_chan_to_mpc_dma(struct dma_chan *c)
 {
 	struct mpc_dma_chan *mchan = dma_chan_to_mpc_dma_chan(c);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return container_of(mchan, struct mpc_dma, channels[c->chan_id]);
 }
 
@@ -298,15 +247,9 @@ static inline struct mpc_dma *dma_chan_to_mpc_dma(struct dma_chan *c)
  * Execute all queued DMA descriptors.
  *
  * Following requirements must be met while calling mpc_dma_execute():
-<<<<<<< HEAD
- * 	a) mchan->lock is acquired,
- * 	b) mchan->active list is empty,
- * 	c) mchan->queued list contains at least one entry.
-=======
  *	a) mchan->lock is acquired,
  *	b) mchan->active list is empty,
  *	c) mchan->queued list contains at least one entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 {
@@ -316,10 +259,6 @@ static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 	struct mpc_dma_desc *mdesc;
 	int cid = mchan->chan.chan_id;
 
-<<<<<<< HEAD
-	/* Move all queued descriptors to active list */
-	list_splice_tail_init(&mchan->queued, &mchan->active);
-=======
 	while (!list_empty(&mchan->queued)) {
 		mdesc = list_first_entry(&mchan->queued,
 						struct mpc_dma_desc, node);
@@ -337,7 +276,6 @@ static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 			list_move_tail(&mdesc->node, &mchan->active);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Chain descriptors into one transaction */
 	list_for_each_entry(mdesc, &mchan->active, node) {
@@ -363,9 +301,6 @@ static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 
 	if (first != prev)
 		mdma->tcd[cid].e_sg = 1;
-<<<<<<< HEAD
-	out_8(&mdma->regs->dmassrt, cid);
-=======
 
 	if (mdma->is_mpc8308) {
 		/* MPC8308, no request lines, software initiated start */
@@ -377,7 +312,6 @@ static void mpc_dma_execute(struct mpc_dma_chan *mchan)
 		/* Memory to memory transfer, software initiated start */
 		out_8(&mdma->regs->dmassrt, cid);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Handle interrupt on one half of DMA controller (32 channels) */
@@ -465,12 +399,7 @@ static void mpc_dma_process_completed(struct mpc_dma *mdma)
 		list_for_each_entry(mdesc, &list, node) {
 			desc = &mdesc->desc;
 
-<<<<<<< HEAD
-			if (desc->callback)
-				desc->callback(desc->callback_param);
-=======
 			dmaengine_desc_get_callback_invoke(desc, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			last_cookie = desc->cookie;
 			dma_run_dependencies(desc);
@@ -485,15 +414,9 @@ static void mpc_dma_process_completed(struct mpc_dma *mdma)
 }
 
 /* DMA Tasklet */
-<<<<<<< HEAD
-static void mpc_dma_tasklet(unsigned long data)
-{
-	struct mpc_dma *mdma = (void *)data;
-=======
 static void mpc_dma_tasklet(struct tasklet_struct *t)
 {
 	struct mpc_dma *mdma = from_tasklet(mdma, t, tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	uint es;
 
@@ -515,22 +438,6 @@ static void mpc_dma_tasklet(struct tasklet_struct *t)
 		if (es & MPC_DMA_DMAES_SAE)
 			dev_err(mdma->dma.dev, "- Source Address Error\n");
 		if (es & MPC_DMA_DMAES_SOE)
-<<<<<<< HEAD
-			dev_err(mdma->dma.dev, "- Source Offset"
-						" Configuration Error\n");
-		if (es & MPC_DMA_DMAES_DAE)
-			dev_err(mdma->dma.dev, "- Destination Address"
-								" Error\n");
-		if (es & MPC_DMA_DMAES_DOE)
-			dev_err(mdma->dma.dev, "- Destination Offset"
-						" Configuration Error\n");
-		if (es & MPC_DMA_DMAES_NCE)
-			dev_err(mdma->dma.dev, "- NBytes/Citter"
-						" Configuration Error\n");
-		if (es & MPC_DMA_DMAES_SGE)
-			dev_err(mdma->dma.dev, "- Scatter/Gather"
-						" Configuration Error\n");
-=======
 			dev_err(mdma->dma.dev, "- Source Offset Configuration Error\n");
 		if (es & MPC_DMA_DMAES_DAE)
 			dev_err(mdma->dma.dev, "- Destination Address Error\n");
@@ -540,7 +447,6 @@ static void mpc_dma_tasklet(struct tasklet_struct *t)
 			dev_err(mdma->dma.dev, "- NBytes/Citter Configuration Error\n");
 		if (es & MPC_DMA_DMAES_SGE)
 			dev_err(mdma->dma.dev, "- Scatter/Gather Configuration Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (es & MPC_DMA_DMAES_SBE)
 			dev_err(mdma->dma.dev, "- Source Bus Error\n");
 		if (es & MPC_DMA_DMAES_DBE)
@@ -599,13 +505,8 @@ static int mpc_dma_alloc_chan_resources(struct dma_chan *chan)
 	for (i = 0; i < MPC_DMA_DESCRIPTORS; i++) {
 		mdesc = kzalloc(sizeof(struct mpc_dma_desc), GFP_KERNEL);
 		if (!mdesc) {
-<<<<<<< HEAD
-			dev_notice(mdma->dma.dev, "Memory allocation error. "
-					"Allocated only %u descriptors\n", i);
-=======
 			dev_notice(mdma->dma.dev,
 				"Memory allocation error. Allocated only %u descriptors\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -692,19 +593,7 @@ static enum dma_status
 mpc_dma_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	       struct dma_tx_state *txstate)
 {
-<<<<<<< HEAD
-	struct mpc_dma_chan *mchan = dma_chan_to_mpc_dma_chan(chan);
-	enum dma_status ret;
-	unsigned long flags;
-
-	spin_lock_irqsave(&mchan->lock, flags);
-	ret = dma_cookie_status(chan, cookie, txstate);
-	spin_unlock_irqrestore(&mchan->lock, flags);
-
-	return ret;
-=======
 	return dma_cookie_status(chan, cookie, txstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Prepare descriptor for memory to memory copy */
@@ -734,10 +623,7 @@ mpc_dma_prep_memcpy(struct dma_chan *chan, dma_addr_t dst, dma_addr_t src,
 	}
 
 	mdesc->error = 0;
-<<<<<<< HEAD
-=======
 	mdesc->will_access_peripheral = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tcd = mdesc->tcd;
 
 	/* Prepare Transfer Control Descriptor for this transaction */
@@ -785,9 +671,6 @@ mpc_dma_prep_memcpy(struct dma_chan *chan, dma_addr_t dst, dma_addr_t src,
 	return &mdesc->desc;
 }
 
-<<<<<<< HEAD
-static int __devinit mpc_dma_probe(struct platform_device *op)
-=======
 inline u8 buswidth_to_dmatsize(u8 buswidth)
 {
 	u8 res;
@@ -1013,7 +896,6 @@ static int mpc_dma_device_terminate_all(struct dma_chan *chan)
 }
 
 static int mpc_dma_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn = op->dev.of_node;
 	struct device *dev = &op->dev;
@@ -1023,19 +905,6 @@ static int mpc_dma_probe(struct platform_device *op)
 	struct resource res;
 	ulong regs_start, regs_size;
 	int retval, i;
-<<<<<<< HEAD
-
-	mdma = devm_kzalloc(dev, sizeof(struct mpc_dma), GFP_KERNEL);
-	if (!mdma) {
-		dev_err(dev, "Memory exhausted!\n");
-		return -ENOMEM;
-	}
-
-	mdma->irq = irq_of_parse_and_map(dn, 0);
-	if (mdma->irq == NO_IRQ) {
-		dev_err(dev, "Error mapping IRQ!\n");
-		return -EINVAL;
-=======
 	u8 chancnt;
 
 	mdma = devm_kzalloc(dev, sizeof(struct mpc_dma), GFP_KERNEL);
@@ -1049,33 +918,22 @@ static int mpc_dma_probe(struct platform_device *op)
 		dev_err(dev, "Error mapping IRQ!\n");
 		retval = -EINVAL;
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (of_device_is_compatible(dn, "fsl,mpc8308-dma")) {
 		mdma->is_mpc8308 = 1;
 		mdma->irq2 = irq_of_parse_and_map(dn, 1);
-<<<<<<< HEAD
-		if (mdma->irq2 == NO_IRQ) {
-			dev_err(dev, "Error mapping IRQ!\n");
-			return -EINVAL;
-=======
 		if (!mdma->irq2) {
 			dev_err(dev, "Error mapping IRQ!\n");
 			retval = -EINVAL;
 			goto err_dispose1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	retval = of_address_to_resource(dn, 0, &res);
 	if (retval) {
 		dev_err(dev, "Error parsing memory region!\n");
-<<<<<<< HEAD
-		return retval;
-=======
 		goto err_dispose2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	regs_start = res.start;
@@ -1083,43 +941,20 @@ static int mpc_dma_probe(struct platform_device *op)
 
 	if (!devm_request_mem_region(dev, regs_start, regs_size, DRV_NAME)) {
 		dev_err(dev, "Error requesting memory region!\n");
-<<<<<<< HEAD
-		return -EBUSY;
-=======
 		retval = -EBUSY;
 		goto err_dispose2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mdma->regs = devm_ioremap(dev, regs_start, regs_size);
 	if (!mdma->regs) {
 		dev_err(dev, "Error mapping memory region!\n");
-<<<<<<< HEAD
-		return -ENOMEM;
-=======
 		retval = -ENOMEM;
 		goto err_dispose2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mdma->tcd = (struct mpc_dma_tcd *)((u8 *)(mdma->regs)
 							+ MPC_DMA_TCD_OFFSET);
 
-<<<<<<< HEAD
-	retval = devm_request_irq(dev, mdma->irq, &mpc_dma_irq, 0, DRV_NAME,
-									mdma);
-	if (retval) {
-		dev_err(dev, "Error requesting IRQ!\n");
-		return -EINVAL;
-	}
-
-	if (mdma->is_mpc8308) {
-		retval = devm_request_irq(dev, mdma->irq2, &mpc_dma_irq, 0,
-				DRV_NAME, mdma);
-		if (retval) {
-			dev_err(dev, "Error requesting IRQ2!\n");
-			return -EINVAL;
-=======
 	retval = request_irq(mdma->irq, &mpc_dma_irq, 0, DRV_NAME, mdma);
 	if (retval) {
 		dev_err(dev, "Error requesting IRQ!\n");
@@ -1134,7 +969,6 @@ static int mpc_dma_probe(struct platform_device *op)
 			dev_err(dev, "Error requesting IRQ2!\n");
 			retval = -EINVAL;
 			goto err_free1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1142,25 +976,11 @@ static int mpc_dma_probe(struct platform_device *op)
 
 	dma = &mdma->dma;
 	dma->dev = dev;
-<<<<<<< HEAD
-	if (!mdma->is_mpc8308)
-		dma->chancnt = MPC_DMA_CHANNELS;
-	else
-		dma->chancnt = 16; /* MPC8308 DMA has only 16 channels */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma->device_alloc_chan_resources = mpc_dma_alloc_chan_resources;
 	dma->device_free_chan_resources = mpc_dma_free_chan_resources;
 	dma->device_issue_pending = mpc_dma_issue_pending;
 	dma->device_tx_status = mpc_dma_tx_status;
 	dma->device_prep_dma_memcpy = mpc_dma_prep_memcpy;
-<<<<<<< HEAD
-
-	INIT_LIST_HEAD(&dma->channels);
-	dma_cap_set(DMA_MEMCPY, dma->cap_mask);
-
-	for (i = 0; i < dma->chancnt; i++) {
-=======
 	dma->device_prep_slave_sg = mpc_dma_prep_slave_sg;
 	dma->device_config = mpc_dma_device_config;
 	dma->device_terminate_all = mpc_dma_device_terminate_all;
@@ -1175,7 +995,6 @@ static int mpc_dma_probe(struct platform_device *op)
 		chancnt = MPC512x_DMACHAN_MAX;
 
 	for (i = 0; i < chancnt; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mchan = &mdma->channels[i];
 
 		mchan->chan.device = dma;
@@ -1191,11 +1010,7 @@ static int mpc_dma_probe(struct platform_device *op)
 		list_add_tail(&mchan->chan.device_node, &dma->channels);
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&mdma->tasklet, mpc_dma_tasklet, (unsigned long)mdma);
-=======
 	tasklet_setup(&mdma->tasklet, mpc_dma_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Configure DMA Engine:
@@ -1203,11 +1018,6 @@ static int mpc_dma_probe(struct platform_device *op)
 	 * - Round-robin group arbitration,
 	 * - Round-robin channel arbitration.
 	 */
-<<<<<<< HEAD
-	if (!mdma->is_mpc8308) {
-		out_be32(&mdma->regs->dmacr, MPC_DMA_DMACR_EDCG |
-					MPC_DMA_DMACR_ERGA | MPC_DMA_DMACR_ERCA);
-=======
 	if (mdma->is_mpc8308) {
 		/* MPC8308 has 16 channels and lacks some registers */
 		out_be32(&mdma->regs->dmacr, MPC_DMA_DMACR_ERCA);
@@ -1224,7 +1034,6 @@ static int mpc_dma_probe(struct platform_device *op)
 		out_be32(&mdma->regs->dmacr, MPC_DMA_DMACR_EDCG |
 						MPC_DMA_DMACR_ERGA |
 						MPC_DMA_DMACR_ERCA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Disable hardware DMA requests */
 		out_be32(&mdma->regs->dmaerqh, 0);
@@ -1243,37 +1052,11 @@ static int mpc_dma_probe(struct platform_device *op)
 		/* Route interrupts to IPIC */
 		out_be32(&mdma->regs->dmaihsa, 0);
 		out_be32(&mdma->regs->dmailsa, 0);
-<<<<<<< HEAD
-	} else {
-		/* MPC8308 has 16 channels and lacks some registers */
-		out_be32(&mdma->regs->dmacr, MPC_DMA_DMACR_ERCA);
-
-		/* enable snooping */
-		out_be32(&mdma->regs->dmagpor, MPC_DMA_DMAGPOR_SNOOP_ENABLE);
-		/* Disable error interrupts */
-		out_be32(&mdma->regs->dmaeeil, 0);
-
-		/* Clear interrupts status */
-		out_be32(&mdma->regs->dmaintl, 0xFFFF);
-		out_be32(&mdma->regs->dmaerrl, 0xFFFF);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register DMA engine */
 	dev_set_drvdata(dev, mdma);
 	retval = dma_async_device_register(dma);
-<<<<<<< HEAD
-	if (retval) {
-		devm_free_irq(dev, mdma->irq, mdma);
-		irq_dispose_mapping(mdma->irq);
-	}
-
-	return retval;
-}
-
-static int __devexit mpc_dma_remove(struct platform_device *op)
-=======
 	if (retval)
 		goto err_free2;
 
@@ -1302,31 +1085,10 @@ err:
 }
 
 static void mpc_dma_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &op->dev;
 	struct mpc_dma *mdma = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	dma_async_device_unregister(&mdma->dma);
-	devm_free_irq(dev, mdma->irq, mdma);
-	irq_dispose_mapping(mdma->irq);
-
-	return 0;
-}
-
-static struct of_device_id mpc_dma_match[] = {
-	{ .compatible = "fsl,mpc5121-dma", },
-	{},
-};
-
-static struct platform_driver mpc_dma_driver = {
-	.probe		= mpc_dma_probe,
-	.remove		= __devexit_p(mpc_dma_remove),
-	.driver = {
-		.name = DRV_NAME,
-		.owner = THIS_MODULE,
-=======
 	if (dev->of_node)
 		of_dma_controller_free(dev->of_node);
 	dma_async_device_unregister(&mdma->dma);
@@ -1351,7 +1113,6 @@ static struct platform_driver mpc_dma_driver = {
 	.remove_new	= mpc_dma_remove,
 	.driver = {
 		.name = DRV_NAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table	= mpc_dma_match,
 	},
 };

@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xtensa mmu stuff
  *
  * Extracted from init.c
  */
-<<<<<<< HEAD
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/init.h>
 #include <linux/string.h>
@@ -21,12 +15,6 @@
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-
-void __init paging_init(void)
-{
-	memset(swapper_pg_dir, 0, PAGE_SIZE);
-=======
 #include <asm/initialize_mmu.h>
 #include <asm/io.h>
 
@@ -78,21 +66,11 @@ void __init paging_init(void)
 	pkmap_page_table = init_pmd(PKMAP_BASE, LAST_PKMAP);
 	kmap_init();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Flush the mmu and reset associated register to default values.
  */
-<<<<<<< HEAD
-void __init init_mmu(void)
-{
-	/* Writing zeros to the <t>TLBCFG special registers ensure
-	 * that valid values exist in the register.  For existing
-	 * PGSZID<w> fields, zero selects the first element of the
-	 * page-size array.  For nonexistent PGSZID<w> fields, zero is
-	 * the best value to write.  Also, when changing PGSZID<w>
-=======
 void init_mmu(void)
 {
 #if !(XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
@@ -103,18 +81,10 @@ void init_mmu(void)
 	 * For existing PGSZID<w> fields, zero selects the first element
 	 * of the page-size array.  For nonexistent PGSZID<w> fields,
 	 * zero is the best value to write.  Also, when changing PGSZID<w>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * fields, the corresponding TLB must be flushed.
 	 */
 	set_itlbcfg_register(0);
 	set_dtlbcfg_register(0);
-<<<<<<< HEAD
-	flush_tlb_all();
-
-	/* Set rasid register to a known value. */
-
-	set_rasid_register(ASID_USER_FIRST);
-=======
 #endif
 	init_kio();
 	local_flush_tlb_all();
@@ -122,36 +92,12 @@ void init_mmu(void)
 	/* Set rasid register to a known value. */
 
 	set_rasid_register(ASID_INSERT(ASID_USER_FIRST));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set PTEVADDR special register to the start of the page
 	 * table, which is in kernel mappable space (ie. not
 	 * statically mapped).  This register's value is undefined on
 	 * reset.
 	 */
-<<<<<<< HEAD
-	set_ptevaddr_register(PGTABLE_START);
-}
-
-struct kmem_cache *pgtable_cache __read_mostly;
-
-static void pgd_ctor(void *addr)
-{
-	pte_t *ptep = (pte_t *)addr;
-	int i;
-
-	for (i = 0; i < 1024; i++, ptep++)
-		pte_clear(NULL, 0, ptep);
-
-}
-
-void __init pgtable_cache_init(void)
-{
-	pgtable_cache = kmem_cache_create("pgd",
-			PAGE_SIZE, PAGE_SIZE,
-			SLAB_HWCACHE_ALIGN,
-			pgd_ctor);
-=======
 	set_ptevaddr_register(XCHAL_PAGE_TABLE_VADDR);
 }
 
@@ -170,5 +116,4 @@ void init_kio(void)
 	write_itlb_entry(__pte(xtensa_kio_paddr + CA_BYPASS),
 			XCHAL_KIO_BYPASS_VADDR + 6);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

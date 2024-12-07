@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * License Terms: GNU General Public License, version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/slab.h>
-#include <linux/input.h>
-#include <linux/interrupt.h>
-=======
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/input/matrix_keypad.h>
 #include <linux/mfd/stmpe.h>
@@ -60,11 +46,6 @@
 #define STMPE_KEYPAD_MAX_ROWS		8
 #define STMPE_KEYPAD_MAX_COLS		8
 #define STMPE_KEYPAD_ROW_SHIFT		3
-<<<<<<< HEAD
-#define STMPE_KEYPAD_KEYMAP_SIZE	\
-	(STMPE_KEYPAD_MAX_ROWS * STMPE_KEYPAD_MAX_COLS)
-
-=======
 #define STMPE_KEYPAD_KEYMAP_MAX_SIZE \
 	(STMPE_KEYPAD_MAX_ROWS * STMPE_KEYPAD_MAX_COLS)
 
@@ -76,15 +57,11 @@
 /* Make sure it covers all cases above */
 #define MAX_NUM_DATA		5
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct stmpe_keypad_variant - model-specific attributes
  * @auto_increment: whether the KPC_DATA_BYTE register address
  *		    auto-increments on multiple read
-<<<<<<< HEAD
-=======
  * @set_pullup: whether the pins need to have their pull-ups set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @num_data: number of data bytes
  * @num_normal_data: number of normal keys' data bytes
  * @max_cols: maximum number of columns supported
@@ -94,10 +71,7 @@
  */
 struct stmpe_keypad_variant {
 	bool		auto_increment;
-<<<<<<< HEAD
-=======
 	bool		set_pullup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		num_data;
 	int		num_normal_data;
 	int		max_cols;
@@ -109,11 +83,7 @@ struct stmpe_keypad_variant {
 static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 	[STMPE1601] = {
 		.auto_increment		= true,
-<<<<<<< HEAD
-		.num_data		= 5,
-=======
 		.num_data		= STMPE1601_NUM_DATA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.num_normal_data	= 3,
 		.max_cols		= 8,
 		.max_rows		= 8,
@@ -122,30 +92,18 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 	},
 	[STMPE2401] = {
 		.auto_increment		= false,
-<<<<<<< HEAD
-		.num_data		= 3,
-=======
 		.set_pullup		= true,
 		.num_data		= STMPE2401_NUM_DATA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.num_normal_data	= 2,
 		.max_cols		= 8,
 		.max_rows		= 12,
 		.col_gpios		= 0x0000ff,	/* GPIO 0 - 7*/
-<<<<<<< HEAD
-		.row_gpios		= 0x1fef00,	/* GPIO 8-14, 16-20 */
-	},
-	[STMPE2403] = {
-		.auto_increment		= true,
-		.num_data		= 5,
-=======
 		.row_gpios		= 0x1f7f00,	/* GPIO 8-14, 16-20 */
 	},
 	[STMPE2403] = {
 		.auto_increment		= true,
 		.set_pullup		= true,
 		.num_data		= STMPE2403_NUM_DATA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.num_normal_data	= 3,
 		.max_cols		= 8,
 		.max_rows		= 12,
@@ -154,8 +112,6 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct stmpe_keypad - STMPE keypad state container
  * @stmpe: pointer to parent STMPE device
@@ -170,26 +126,16 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
  * @cols: bitmask for the columns
  * @keymap: the keymap
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct stmpe_keypad {
 	struct stmpe *stmpe;
 	struct input_dev *input;
 	const struct stmpe_keypad_variant *variant;
-<<<<<<< HEAD
-	const struct stmpe_keypad_platform_data *plat;
-
-	unsigned int rows;
-	unsigned int cols;
-
-	unsigned short keymap[STMPE_KEYPAD_KEYMAP_SIZE];
-=======
 	unsigned int debounce_ms;
 	unsigned int scan_count;
 	bool no_autorepeat;
 	unsigned int rows;
 	unsigned int cols;
 	unsigned short keymap[STMPE_KEYPAD_KEYMAP_MAX_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int stmpe_keypad_read_data(struct stmpe_keypad *keypad, u8 *data)
@@ -219,11 +165,7 @@ static irqreturn_t stmpe_keypad_irq(int irq, void *dev)
 	struct stmpe_keypad *keypad = dev;
 	struct input_dev *input = keypad->input;
 	const struct stmpe_keypad_variant *variant = keypad->variant;
-<<<<<<< HEAD
-	u8 fifo[variant->num_data];
-=======
 	u8 fifo[MAX_NUM_DATA];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	int i;
 
@@ -250,24 +192,16 @@ static irqreturn_t stmpe_keypad_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
-=======
 static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct stmpe_keypad_variant *variant = keypad->variant;
 	unsigned int col_gpios = variant->col_gpios;
 	unsigned int row_gpios = variant->row_gpios;
 	struct stmpe *stmpe = keypad->stmpe;
-<<<<<<< HEAD
-	unsigned int pins = 0;
-=======
 	u8 pureg = stmpe->regs[STMPE_IDX_GPPUR_LSB];
 	unsigned int pins = 0;
 	unsigned int pu_pins = 0;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/*
@@ -284,15 +218,10 @@ static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
 	for (i = 0; i < variant->max_cols; i++) {
 		int num = __ffs(col_gpios);
 
-<<<<<<< HEAD
-		if (keypad->cols & (1 << i))
-			pins |= 1 << num;
-=======
 		if (keypad->cols & (1 << i)) {
 			pins |= 1 << num;
 			pu_pins |= 1 << num;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		col_gpios &= ~(1 << num);
 	}
@@ -306,14 +235,6 @@ static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
 		row_gpios &= ~(1 << num);
 	}
 
-<<<<<<< HEAD
-	return stmpe_set_altfunc(stmpe, pins, STMPE_BLOCK_KEYPAD);
-}
-
-static int __devinit stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
-{
-	const struct stmpe_keypad_platform_data *plat = keypad->plat;
-=======
 	ret = stmpe_set_altfunc(stmpe, pins, STMPE_BLOCK_KEYPAD);
 	if (ret)
 		return ret;
@@ -343,22 +264,14 @@ static int __devinit stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
 
 static int stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct stmpe_keypad_variant *variant = keypad->variant;
 	struct stmpe *stmpe = keypad->stmpe;
 	int ret;
 
-<<<<<<< HEAD
-	if (plat->debounce_ms > STMPE_KEYPAD_MAX_DEBOUNCE)
-		return -EINVAL;
-
-	if (plat->scan_count > STMPE_KEYPAD_MAX_SCAN_COUNT)
-=======
 	if (keypad->debounce_ms > STMPE_KEYPAD_MAX_DEBOUNCE)
 		return -EINVAL;
 
 	if (keypad->scan_count > STMPE_KEYPAD_MAX_SCAN_COUNT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	ret = stmpe_enable(stmpe, STMPE_BLOCK_KEYPAD);
@@ -387,11 +300,7 @@ static int stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
 
 	ret = stmpe_set_bits(stmpe, STMPE_KPC_CTRL_MSB,
 			     STMPE_KPC_CTRL_MSB_SCAN_COUNT,
-<<<<<<< HEAD
-			     plat->scan_count << 4);
-=======
 			     keypad->scan_count << 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -399,24 +308,6 @@ static int stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
 			      STMPE_KPC_CTRL_LSB_SCAN |
 			      STMPE_KPC_CTRL_LSB_DEBOUNCE,
 			      STMPE_KPC_CTRL_LSB_SCAN |
-<<<<<<< HEAD
-			      (plat->debounce_ms << 1));
-}
-
-static int __devinit stmpe_keypad_probe(struct platform_device *pdev)
-{
-	struct stmpe *stmpe = dev_get_drvdata(pdev->dev.parent);
-	struct stmpe_keypad_platform_data *plat;
-	struct stmpe_keypad *keypad;
-	struct input_dev *input;
-	int ret;
-	int irq;
-	int i;
-
-	plat = stmpe->pdata->keypad;
-	if (!plat)
-		return -ENODEV;
-=======
 			      (keypad->debounce_ms << 1));
 }
 
@@ -447,23 +338,11 @@ static int stmpe_keypad_probe(struct platform_device *pdev)
 	u32 cols;
 	int error;
 	int irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-<<<<<<< HEAD
-	keypad = kzalloc(sizeof(struct stmpe_keypad), GFP_KERNEL);
-	if (!keypad)
-		return -ENOMEM;
-
-	input = input_allocate_device();
-	if (!input) {
-		ret = -ENOMEM;
-		goto out_freekeypad;
-	}
-=======
 	keypad = devm_kzalloc(&pdev->dev, sizeof(struct stmpe_keypad),
 			      GFP_KERNEL);
 	if (!keypad)
@@ -479,55 +358,11 @@ static int stmpe_keypad_probe(struct platform_device *pdev)
 	input = devm_input_allocate_device(&pdev->dev);
 	if (!input)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->name = "STMPE keypad";
 	input->id.bustype = BUS_I2C;
 	input->dev.parent = &pdev->dev;
 
-<<<<<<< HEAD
-	input_set_capability(input, EV_MSC, MSC_SCAN);
-
-	__set_bit(EV_KEY, input->evbit);
-	if (!plat->no_autorepeat)
-		__set_bit(EV_REP, input->evbit);
-
-	input->keycode = keypad->keymap;
-	input->keycodesize = sizeof(keypad->keymap[0]);
-	input->keycodemax = ARRAY_SIZE(keypad->keymap);
-
-	matrix_keypad_build_keymap(plat->keymap_data, STMPE_KEYPAD_ROW_SHIFT,
-				   input->keycode, input->keybit);
-
-	for (i = 0; i < plat->keymap_data->keymap_size; i++) {
-		unsigned int key = plat->keymap_data->keymap[i];
-
-		keypad->cols |= 1 << KEY_COL(key);
-		keypad->rows |= 1 << KEY_ROW(key);
-	}
-
-	keypad->stmpe = stmpe;
-	keypad->plat = plat;
-	keypad->input = input;
-	keypad->variant = &stmpe_keypad_variants[stmpe->partnum];
-
-	ret = stmpe_keypad_chip_init(keypad);
-	if (ret < 0)
-		goto out_freeinput;
-
-	ret = input_register_device(input);
-	if (ret) {
-		dev_err(&pdev->dev,
-			"unable to register input device: %d\n", ret);
-		goto out_freeinput;
-	}
-
-	ret = request_threaded_irq(irq, NULL, stmpe_keypad_irq, IRQF_ONESHOT,
-				   "stmpe-keypad", keypad);
-	if (ret) {
-		dev_err(&pdev->dev, "unable to get irq: %d\n", ret);
-		goto out_unregisterinput;
-=======
 	error = matrix_keypad_parse_properties(&pdev->dev, &rows, &cols);
 	if (error)
 		return error;
@@ -562,39 +397,11 @@ static int stmpe_keypad_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"unable to register input device: %d\n", error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, keypad);
 
 	return 0;
-<<<<<<< HEAD
-
-out_unregisterinput:
-	input_unregister_device(input);
-	input = NULL;
-out_freeinput:
-	input_free_device(input);
-out_freekeypad:
-	kfree(keypad);
-	return ret;
-}
-
-static int __devexit stmpe_keypad_remove(struct platform_device *pdev)
-{
-	struct stmpe_keypad *keypad = platform_get_drvdata(pdev);
-	struct stmpe *stmpe = keypad->stmpe;
-	int irq = platform_get_irq(pdev, 0);
-
-	stmpe_disable(stmpe, STMPE_BLOCK_KEYPAD);
-
-	free_irq(irq, keypad);
-	input_unregister_device(keypad->input);
-	platform_set_drvdata(pdev, NULL);
-	kfree(keypad);
-
-	return 0;
-=======
 }
 
 static void stmpe_keypad_remove(struct platform_device *pdev)
@@ -602,18 +409,13 @@ static void stmpe_keypad_remove(struct platform_device *pdev)
 	struct stmpe_keypad *keypad = platform_get_drvdata(pdev);
 
 	stmpe_disable(keypad->stmpe, STMPE_BLOCK_KEYPAD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver stmpe_keypad_driver = {
 	.driver.name	= "stmpe-keypad",
 	.driver.owner	= THIS_MODULE,
 	.probe		= stmpe_keypad_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(stmpe_keypad_remove),
-=======
 	.remove_new	= stmpe_keypad_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(stmpe_keypad_driver);
 

@@ -72,10 +72,6 @@ struct port_info {
 	struct cphy phy;
 	struct cmac mac;
 	struct link_config link_config;
-<<<<<<< HEAD
-	struct net_device_stats netstats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int activity;
 	__be32 iscsi_ipv4addr;
 	struct iscsi_config iscsic;
@@ -182,11 +178,7 @@ struct sge_txq {		/* state for an SGE Tx queue */
 	unsigned int token;	/* WR token */
 	dma_addr_t phys_addr;	/* physical address of the ring */
 	struct sk_buff_head sendq;	/* List of backpressured offload packets */
-<<<<<<< HEAD
-	struct tasklet_struct qresume_tsk;	/* restarts the queue */
-=======
 	struct work_struct qresume_task;	/* restarts the queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cntxt_id;	/* SGE context id for the Tx q */
 	unsigned long stops;	/* # of times q has been stopped */
 	unsigned long restarts;	/* # of queue restarts */
@@ -245,11 +237,7 @@ struct adapter {
 	int msix_nvectors;
 	struct {
 		unsigned short vec;
-<<<<<<< HEAD
-		char desc[22];
-=======
 		char desc[IFNAMSIZ + 1 + 12];	/* Needs space for "%s-%d" */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} msix_info[SGE_QSETS + 1];
 
 	/* T3 modules */
@@ -325,10 +313,7 @@ void t3_os_link_fault(struct adapter *adapter, int port_id, int state);
 void t3_os_link_fault_handler(struct adapter *adapter, int port_id);
 
 void t3_sge_start(struct adapter *adap);
-<<<<<<< HEAD
-=======
 void t3_sge_stop_dma(struct adapter *adap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void t3_sge_stop(struct adapter *adap);
 void t3_start_sge_timers(struct adapter *adap);
 void t3_stop_sge_timers(struct adapter *adap);

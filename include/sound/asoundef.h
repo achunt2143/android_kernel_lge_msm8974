@@ -1,32 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_ASOUNDEF_H
 #define __SOUND_ASOUNDEF_H
 
 /*
  *  Advanced Linux Sound Architecture - ALSA - Driver
  *  Copyright (c) 1994-2000 by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /****************************************************************************
@@ -177,8 +155,6 @@
 #define IEC958_AES5_CON_CGMSA_COPYNOMORE (2<<0)	/* condition not be used */
 #define IEC958_AES5_CON_CGMSA_COPYNEVER	(3<<0)	/* no copying is permitted */
 
-<<<<<<< HEAD
-=======
 /****************************************************************************
  *                                                                          *
  *        CEA-861 Audio InfoFrame. Used in HDMI and DisplayPort		    *
@@ -220,7 +196,6 @@
 #define CEA861_AUDIO_INFOFRAME_DB5_DM_INH_PROHIBITED (1<<7) /* stereo downmis prohibited */
 #define CEA861_AUDIO_INFOFRAME_DB5_LSV		(0xf<<3) /* mask - level-shift values */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  *                            MIDI v1.0 interface                            *

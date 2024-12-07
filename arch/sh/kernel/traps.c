@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/io.h>
 #include <linux/types.h>
 #include <linux/kdebug.h>
 #include <linux/signal.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/uaccess.h>
-#include <linux/hardirq.h>
-#include <asm/unwinder.h>
-#include <asm/traps.h>
-
-=======
 #include <linux/sched/debug.h>
 #include <linux/sched/task_stack.h>
 #include <linux/uaccess.h>
@@ -96,7 +86,6 @@ void die_if_no_fixup(const char *str, struct pt_regs *regs, long err)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_GENERIC_BUG
 static void handle_BUG(struct pt_regs *regs)
 {
@@ -129,11 +118,7 @@ int is_valid_bugaddr(unsigned long addr)
 
 	if (addr < PAGE_OFFSET)
 		return 0;
-<<<<<<< HEAD
-	if (probe_kernel_address((insn_size_t *)addr, opcode))
-=======
 	if (get_kernel_nofault(opcode, (insn_size_t *)addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if (opcode == TRAPA_BUG_OPCODE)
 		return 1;
@@ -156,11 +141,7 @@ BUILD_TRAP_HANDLER(debug)
 		       SIGTRAP) == NOTIFY_STOP)
 		return;
 
-<<<<<<< HEAD
-	force_sig(SIGTRAP, current);
-=======
 	force_sig(SIGTRAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -186,18 +167,6 @@ BUILD_TRAP_HANDLER(bug)
 	}
 #endif
 
-<<<<<<< HEAD
-	force_sig(SIGTRAP, current);
-}
-
-BUILD_TRAP_HANDLER(nmi)
-{
-	unsigned int cpu = smp_processor_id();
-	TRAP_HANDLER_DECL;
-
-	nmi_enter();
-	nmi_count(cpu)++;
-=======
 	force_sig(SIGTRAP);
 }
 
@@ -217,7 +186,6 @@ BUILD_TRAP_HANDLER(nmi)
 
 	nmi_enter();
 	this_cpu_inc(irq_stat.__nmi_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (notify_die(DIE_NMI, "NMI", regs, 0, vec & 0xff, SIGINT)) {
 	case NOTIFY_OK:
@@ -231,9 +199,6 @@ BUILD_TRAP_HANDLER(nmi)
 	}
 
 	nmi_exit();
-<<<<<<< HEAD
-=======
 
 	arch_ftrace_nmi_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

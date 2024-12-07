@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tracing clocks
  *
@@ -22,18 +19,10 @@
 #include <linux/module.h>
 #include <linux/percpu.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/ktime.h>
-#include <linux/trace_clock.h>
-
-#include "trace.h"
-
-=======
 #include <linux/sched/clock.h>
 #include <linux/ktime.h>
 #include <linux/trace_clock.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * trace_clock_local(): the simplest and least coherent tracing clock.
  *
@@ -55,10 +44,7 @@ u64 notrace trace_clock_local(void)
 
 	return clock;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(trace_clock_local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * trace_clock(): 'between' trace clock. Not completely serialized,
@@ -72,9 +58,6 @@ u64 notrace trace_clock(void)
 {
 	return local_clock();
 }
-<<<<<<< HEAD
-
-=======
 EXPORT_SYMBOL_GPL(trace_clock);
 
 /*
@@ -89,7 +72,6 @@ u64 notrace trace_clock_jiffies(void)
 	return jiffies_64_to_clock_t(jiffies_64 - INITIAL_JIFFIES);
 }
 EXPORT_SYMBOL_GPL(trace_clock_jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * trace_clock_global(): special globally coherent trace clock
@@ -113,17 +95,6 @@ u64 notrace trace_clock_global(void)
 {
 	unsigned long flags;
 	int this_cpu;
-<<<<<<< HEAD
-	u64 now;
-
-	local_irq_save(flags);
-
-	this_cpu = raw_smp_processor_id();
-	now = cpu_clock(this_cpu);
-	/*
-	 * If in an NMI context then dont risk lockups and return the
-	 * cpu_clock() time:
-=======
 	u64 now, prev_time;
 
 	raw_local_irq_save(flags);
@@ -151,32 +122,10 @@ u64 notrace trace_clock_global(void)
 	/*
 	 * If in an NMI context then dont risk lockups and simply return
 	 * the current time.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (unlikely(in_nmi()))
 		goto out;
 
-<<<<<<< HEAD
-	arch_spin_lock(&trace_clock_struct.lock);
-
-	/*
-	 * TODO: if this happens often then maybe we should reset
-	 * my_scd->clock to prev_time+1, to make sure
-	 * we start ticking with the local clock from now on?
-	 */
-	if ((s64)(now - trace_clock_struct.prev_time) < 0)
-		now = trace_clock_struct.prev_time + 1;
-
-	trace_clock_struct.prev_time = now;
-
-	arch_spin_unlock(&trace_clock_struct.lock);
-
- out:
-	local_irq_restore(flags);
-
-	return now;
-}
-=======
 	/* Tracing can cause strange recursion, always use a try lock */
 	if (arch_spin_trylock(&trace_clock_struct.lock)) {
 		/* Reread prev_time in case it was already updated */
@@ -195,7 +144,6 @@ u64 notrace trace_clock_global(void)
 	return now;
 }
 EXPORT_SYMBOL_GPL(trace_clock_global);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static atomic64_t trace_counter;
 

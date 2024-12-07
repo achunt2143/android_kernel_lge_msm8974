@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for PC-speaker like devices found on various Sparc systems.
  *
@@ -12,12 +9,8 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/input.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/of.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/io.h>
@@ -95,15 +88,6 @@ static int bbc_spkr_event(struct input_dev *dev, unsigned int type, unsigned int
 	spin_lock_irqsave(&state->lock, flags);
 
 	if (count) {
-<<<<<<< HEAD
-		outb(0x01,                 info->regs + 0);
-		outb(0x00,                 info->regs + 2);
-		outb((count >> 16) & 0xff, info->regs + 3);
-		outb((count >>  8) & 0xff, info->regs + 4);
-		outb(0x00,                 info->regs + 5);
-	} else {
-		outb(0x00,                 info->regs + 0);
-=======
 		sbus_writeb(0x01,                 info->regs + 0);
 		sbus_writeb(0x00,                 info->regs + 2);
 		sbus_writeb((count >> 16) & 0xff, info->regs + 3);
@@ -111,7 +95,6 @@ static int bbc_spkr_event(struct input_dev *dev, unsigned int type, unsigned int
 		sbus_writeb(0x00,                 info->regs + 5);
 	} else {
 		sbus_writeb(0x00,                 info->regs + 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&state->lock, flags);
@@ -142,17 +125,6 @@ static int grover_spkr_event(struct input_dev *dev, unsigned int type, unsigned 
 
 	if (count) {
 		/* enable counter 2 */
-<<<<<<< HEAD
-		outb(inb(info->enable_reg) | 3, info->enable_reg);
-		/* set command for counter 2, 2 byte write */
-		outb(0xB6, info->freq_regs + 1);
-		/* select desired HZ */
-		outb(count & 0xff, info->freq_regs + 0);
-		outb((count >> 8) & 0xff, info->freq_regs + 0);
-	} else {
-		/* disable counter 2 */
-		outb(inb_p(info->enable_reg) & 0xFC, info->enable_reg);
-=======
 		sbus_writeb(sbus_readb(info->enable_reg) | 3, info->enable_reg);
 		/* set command for counter 2, 2 byte write */
 		sbus_writeb(0xB6, info->freq_regs + 1);
@@ -162,7 +134,6 @@ static int grover_spkr_event(struct input_dev *dev, unsigned int type, unsigned 
 	} else {
 		/* disable counter 2 */
 		sbus_writeb(sbus_readb(info->enable_reg) & 0xFC, info->enable_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&state->lock, flags);
@@ -170,11 +141,7 @@ static int grover_spkr_event(struct input_dev *dev, unsigned int type, unsigned 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit sparcspkr_probe(struct device *dev)
-=======
 static int sparcspkr_probe(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sparcspkr_state *state = dev_get_drvdata(dev);
 	struct input_dev *input_dev;
@@ -210,22 +177,14 @@ static int sparcspkr_probe(struct device *dev)
 
 static void sparcspkr_shutdown(struct platform_device *dev)
 {
-<<<<<<< HEAD
-	struct sparcspkr_state *state = dev_get_drvdata(&dev->dev);
-=======
 	struct sparcspkr_state *state = platform_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input_dev = state->input_dev;
 
 	/* turn off the speaker */
 	state->event(input_dev, EV_SND, SND_BELL, 0);
 }
 
-<<<<<<< HEAD
-static int __devinit bbc_beep_probe(struct platform_device *op)
-=======
 static int bbc_beep_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sparcspkr_state *state;
 	struct bbc_beep_info *info;
@@ -247,10 +206,7 @@ static int bbc_beep_probe(struct platform_device *op)
 
 	info = &state->u.bbc;
 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
-<<<<<<< HEAD
-=======
 	of_node_put(dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info->clock_freq)
 		goto out_free;
 
@@ -258,11 +214,7 @@ static int bbc_beep_probe(struct platform_device *op)
 	if (!info->regs)
 		goto out_free;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, state);
-=======
 	platform_set_drvdata(op, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sparcspkr_probe(&op->dev);
 	if (err)
@@ -271,10 +223,6 @@ static int bbc_beep_probe(struct platform_device *op)
 	return 0;
 
 out_clear_drvdata:
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_iounmap(&op->resource[0], info->regs, 6);
 
 out_free:
@@ -283,15 +231,9 @@ out_err:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit bbc_remove(struct platform_device *op)
-{
-	struct sparcspkr_state *state = dev_get_drvdata(&op->dev);
-=======
 static void bbc_remove(struct platform_device *op)
 {
 	struct sparcspkr_state *state = platform_get_drvdata(op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input_dev = state->input_dev;
 	struct bbc_beep_info *info = &state->u.bbc;
 
@@ -302,14 +244,7 @@ static void bbc_remove(struct platform_device *op)
 
 	of_iounmap(&op->resource[0], info->regs, 6);
 
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, NULL);
 	kfree(state);
-
-	return 0;
-=======
-	kfree(state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id bbc_beep_match[] = {
@@ -319,25 +254,11 @@ static const struct of_device_id bbc_beep_match[] = {
 	},
 	{},
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(of, bbc_beep_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver bbc_beep_driver = {
 	.driver = {
 		.name = "bbcbeep",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = bbc_beep_match,
-	},
-	.probe		= bbc_beep_probe,
-	.remove		= __devexit_p(bbc_remove),
-	.shutdown	= sparcspkr_shutdown,
-};
-
-static int __devinit grover_beep_probe(struct platform_device *op)
-=======
 		.of_match_table = bbc_beep_match,
 	},
 	.probe		= bbc_beep_probe,
@@ -346,7 +267,6 @@ static int __devinit grover_beep_probe(struct platform_device *op)
 };
 
 static int grover_beep_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sparcspkr_state *state;
 	struct grover_beep_info *info;
@@ -369,11 +289,7 @@ static int grover_beep_probe(struct platform_device *op)
 	if (!info->enable_reg)
 		goto out_unmap_freq_regs;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, state);
-=======
 	platform_set_drvdata(op, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sparcspkr_probe(&op->dev);
 	if (err)
@@ -382,10 +298,6 @@ static int grover_beep_probe(struct platform_device *op)
 	return 0;
 
 out_clear_drvdata:
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_iounmap(&op->resource[3], info->enable_reg, 1);
 
 out_unmap_freq_regs:
@@ -396,15 +308,9 @@ out_err:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit grover_remove(struct platform_device *op)
-{
-	struct sparcspkr_state *state = dev_get_drvdata(&op->dev);
-=======
 static void grover_remove(struct platform_device *op)
 {
 	struct sparcspkr_state *state = platform_get_drvdata(op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct grover_beep_info *info = &state->u.grover;
 	struct input_dev *input_dev = state->input_dev;
 
@@ -416,14 +322,7 @@ static void grover_remove(struct platform_device *op)
 	of_iounmap(&op->resource[3], info->enable_reg, 1);
 	of_iounmap(&op->resource[2], info->freq_regs, 2);
 
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, NULL);
 	kfree(state);
-
-	return 0;
-=======
-	kfree(state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id grover_beep_match[] = {
@@ -433,35 +332,11 @@ static const struct of_device_id grover_beep_match[] = {
 	},
 	{},
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(of, grover_beep_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver grover_beep_driver = {
 	.driver = {
 		.name = "groverbeep",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = grover_beep_match,
-	},
-	.probe		= grover_beep_probe,
-	.remove		= __devexit_p(grover_remove),
-	.shutdown	= sparcspkr_shutdown,
-};
-
-static int __init sparcspkr_init(void)
-{
-	int err = platform_driver_register(&bbc_beep_driver);
-
-	if (!err) {
-		err = platform_driver_register(&grover_beep_driver);
-		if (err)
-			platform_driver_unregister(&bbc_beep_driver);
-	}
-
-	return err;
-=======
 		.of_match_table = grover_beep_match,
 	},
 	.probe		= grover_beep_probe,
@@ -477,17 +352,11 @@ static struct platform_driver * const drivers[] = {
 static int __init sparcspkr_init(void)
 {
 	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit sparcspkr_exit(void)
 {
-<<<<<<< HEAD
-	platform_driver_unregister(&bbc_beep_driver);
-	platform_driver_unregister(&grover_beep_driver);
-=======
 	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(sparcspkr_init);

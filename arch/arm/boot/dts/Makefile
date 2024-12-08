@@ -16,6 +16,7 @@ subdir-y += gemini
 subdir-y += hisilicon
 subdir-y += hpe
 subdir-y += intel
+subdir-y += lge
 subdir-y += marvell
 subdir-y += mediatek
 subdir-y += microchip

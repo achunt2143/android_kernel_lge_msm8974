@@ -255,6 +255,223 @@ patches and you just want to resolve the conflict. Git will have
 inserted conflict markers into your file. Out of the box, this will look
 something like::
 
+    <<<<<<< HEAD
+    this is what's in your current tree before cherry-picking
+    =======
+    this is what the patch wants it to be after cherry-picking
+    >>>>>>> <commit>... title
+
+This is what you would see if you opened the file in your editor.
+However, if you were to run ``git diff`` without any arguments, the
+output would look something like this::
+
+    $ git diff
+    [...]
+    ++<<<<<<<< HEAD
+     +this is what's in your current tree before cherry-picking
+    ++========
+    + this is what the patch wants it to be after cherry-picking
+    ++>>>>>>>> <commit>... title
+
+When you are resolving a conflict, the behavior of ``git diff`` differs
+from its normal behavior. Notice the two columns of diff markers
+instead of the usual one; this is a so-called "`combined diff`_", here
+showing the 3-way diff (or diff-of-diffs) between
+
+#. the current branch (before cherry-picking) and the current working
+   directory, and
+#. the current branch (before cherry-picking) and the file as it looks
+   after the original patch has been applied.
+
+.. _combined diff: https://git-scm.com/docs/diff-format#_combined_diff_format
+
+
+Better diffs
+~~~~~~~~~~~~
+
+3-way combined diffs include all the other changes that happened to the
+file between your current branch and the branch you are cherry-picking
+from. While this is useful for spotting other changes that you need to
+take into account, this also makes the output of ``git diff`` somewhat
+intimidating and difficult to read. You may instead prefer to run
+``git diff HEAD`` (or ``git diff --ours``) which shows only the diff
+between the current branch before cherry-picking and the current working
+directory. It looks like this::
+
+    $ git diff HEAD
+    [...]
+    +<<<<<<<< HEAD
+     this is what's in your current tree before cherry-picking
+    +========
+    +this is what the patch wants it to be after cherry-picking
+    +>>>>>>>> <commit>... title
+
+As you can see, this reads just like any other diff and makes it clear
+which lines are in the current branch and which lines are being added
+because they are part of the merge conflict or the patch being
+cherry-picked.
+
+Merge styles and diff3
+~~~~~~~~~~~~~~~~~~~~~~
+
+The default conflict marker style shown above is known as the ``merge``
+style. There is also another style available, known as the ``diff3``
+style, which looks like this::
+
+    <<<<<<< HEAD
+    this is what is in your current tree before cherry-picking
+    ||||||| parent of <commit> (title)
+    this is what the patch expected to find there
+    =======
+    this is what the patch wants it to be after being applied
+    >>>>>>> <commit> (title)
+
+As you can see, this has 3 parts instead of 2, and includes what git
+expected to find there but didn't. It is *highly recommended* to use
+this conflict style as it makes it much clearer what the patch actually
+changed; i.e., it allows you to compare the before-and-after versions
+of the file for the commit you are cherry-picking. This allows you to
+make better decisions about how to resolve the conflict.
+
+To change conflict marker styles, you can use the following command::
+
+    git config merge.conflictStyle diff3
+
+There is a third option, ``zdiff3``, introduced in `Git 2.35`_,
+which has the same 3 sections as ``diff3``, but where common lines have
+been trimmed off, making the conflict area smaller in some cases.
+
+.. _Git 2.35: https://github.blog/2022-01-24-highlights-from-git-2-35/
+
+Iterating on conflict resolutions
+---------------------------------
+
+The first step in any conflict resolution process is to understand the
+patch you are backporting. For the Linux kernel this is especially
+important, since an incorrect change can lead to the whole system
+crashing -- or worse, an undetected security vulnerability.
+
+Understanding the patch can be easy or difficult depending on the patch
+itself, the changelog, and your familiarity with the code being changed.
+However, a good question for every change (or every hunk of the patch)
+might be: "Why is this hunk in the patch?" The answers to these
+questions will inform your conflict resolution.
+
+Resolution process
+~~~~~~~~~~~~~~~~~~
+
+Sometimes the easiest thing to do is to just remove all but the first
+part of the conflict, leaving the file essentially unchanged, and apply
+the changes by hand. Perhaps the patch is changing a function call
+argument from ``0`` to ``1`` while a conflicting change added an
+entirely new (and insignificant) parameter to the end of the parameter
+list; in that case, it's easy enough to change the argument from ``0``
+to ``1`` by hand and leave the rest of the arguments alone. This
+technique of manually applying changes is mostly useful if the conflict
+pulled in a lot of unrelated context that you don't really need to care
+about.
+
+For particularly nasty conflicts with many conflict markers, you can use
+``git add`` or ``git add -i`` to selectively stage your resolutions to
+get them out of the way; this also lets you use ``git diff HEAD`` to
+always see what remains to be resolved or ``git diff --cached`` to see
+what your patch looks like so far.
+
+Dealing with file renames
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the most annoying things that can happen while backporting a
+patch is discovering that one of the files being patched has been
+renamed, as that typically means git won't even put in conflict markers,
+but will just throw up its hands and say (paraphrased): "Unmerged path!
+You do the work..."
+
+There are generally a few ways to deal with this. If the patch to the
+renamed file is small, like a one-line change, the easiest thing is to
+just go ahead and apply the change by hand and be done with it. On the
+other hand, if the change is big or complicated, you definitely don't
+want to do it by hand.
+
+As a first pass, you can try something like this, which will lower the
+rename detection threshold to 30% (by default, git uses 50%, meaning
+that two files need to have at least 50% in common for it to consider
+an add-delete pair to be a potential rename)::
+
+  git cherry-pick -strategy=recursive -Xrename-threshold=30
+
+Sometimes the right thing to do will be to also backport the patch that
+did the rename, but that's definitely not the most common case. Instead,
+what you can do is to temporarily rename the file in the branch you're
+backporting to (using ``git mv`` and committing the result), restart the
+attempt to cherry-pick the patch, rename the file back (``git mv`` and
+committing again), and finally squash the result using ``git rebase -i``
+(see the `rebase tutorial`_) so it appears as a single commit when you
+are done.
+
+.. _rebase tutorial: https://medium.com/@slamflipstrom/a-beginners-guide-to-squashing-commits-with-git-rebase-8185cf6e62ec
+
+Gotchas
+-------
+
+Function arguments
+~~~~~~~~~~~~~~~~~~
+
+Pay attention to changing function arguments! It's easy to gloss over
+details and think that two lines are the same but actually they differ
+in some small detail like which variable was passed as an argument
+(especially if the two variables are both a single character that look
+the same, like i and j).
+
+Error handling
+~~~~~~~~~~~~~~
+
+If you cherry-pick a patch that includes a ``goto`` statement (typically
+for error handling), it is absolutely imperative to double check that
+the target label is still correct in the branch you are backporting to.
+The same goes for added ``return``, ``break``, and ``continue``
+statements.
+
+Error handling is typically located at the bottom of the function, so it
+may not be part of the conflict even though could have been changed by
+other patches.
+
+A good way to ensure that you review the error paths is to always use
+``git diff -W`` and ``git show -W`` (AKA ``--function-context``) when
+inspecting your changes.  For C code, this will show you the whole
+function that's being changed in a patch. One of the things that often
+go wrong during backports is that something else in the function changed
+on either of the branches that you're backporting from or to. By
+including the whole function in the diff you get more context and can
+more easily spot problems that might otherwise go unnoticed.
+
+Refactored code
+~~~~~~~~~~~~~~~
+
+Something that happens quite often is that code gets refactored by
+"factoring out" a common code sequence or pattern into a helper
+function. When backporting patches to an area where such a refactoring
+has taken place, you effectively need to do the reverse when
+backporting: a patch to a single location may need to be applied to
+multiple locations in the backported version. (One giveaway for this
+scenario is that a function was renamed -- but that's not always the
+case.)
+
+To avoid incomplete backports, it's worth trying to figure out if the
+patch fixes a bug that appears in more than one place. One way to do
+this would be to use ``git grep``. (This is actually a good idea to do
+in general, not just for backports.) If you do find that the same kind
+of fix would apply to other places, it's also worth seeing if those
+places exist upstream -- if they don't, it's likely the patch may need
+to be adjusted. ``git log`` is your friend to figure out what happened
+to these areas as ``git blame`` won't show you code that has been
+removed.
+
+If you do find other instances of the same pattern in the upstream tree
+and you're not sure whether it's also a bug, it may be worth asking the
+patch author. It's not uncommon to find new bugs during backporting!
+
+Verifying the result
+====================
 
 colordiff
 ---------

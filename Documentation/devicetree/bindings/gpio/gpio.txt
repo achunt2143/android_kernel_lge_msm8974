@@ -1,5 +1,4 @@
 Specifying GPIO information for devices
-=======
 =======================================
 
 1) gpios property

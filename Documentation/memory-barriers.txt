@@ -2308,9 +2308,6 @@ Other functions that imply barriers:
  (*) schedule() and similar imply full memory barriers.
 
 
-INTER-CPU LOCKING BARRIER EFFECTS
-=================================
-=======
 ===================================
 INTER-CPU ACQUIRING BARRIER EFFECTS
 ===================================

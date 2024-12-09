@@ -32,7 +32,6 @@ header-y += sembuf.h
 header-y += setup.h
 header-y += shmbuf.h
 header-y += sigcontext.h
-header-y += siginfo.h
 header-y += signal.h
 header-y += socket.h
 header-y += sockios.h
